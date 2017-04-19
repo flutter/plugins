@@ -1,0 +1,9 @@
+name: url_launcher
+description: A new flutter plugin project.
+
+flutter:
+  plugin:
+
+dependencies:
+  flutter:
+    sdk: flutter
