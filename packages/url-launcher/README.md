@@ -1,6 +1,6 @@
 # url_launcher
 
-A Flutter plugin project for launching a URL.
+A Flutter plugin for launching a URL.
 
 ## Getting Started
 
