@@ -1,5 +1,10 @@
 name: url_launcher
 
+version: 0.1.0
+description: Flutter plugin for launching a URL
+author: Flutter Team
+homepage: https://github.com/flutter/plugins/tree/urlLauncher/packages/url-launcher
+
 flutter:
   plugin:
     androidPackage: io.flutter.plugins.url_launcher
