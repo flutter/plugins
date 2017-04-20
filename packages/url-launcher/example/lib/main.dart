@@ -9,11 +9,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-        title: 'URL Laucher',
-        theme: new ThemeData(
-            primarySwatch: Colors.blue,
-        ),
-        home: new MyHomePage(title: 'URL Launcher'),
+      title: 'URL Laucher',
+      theme: new ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: new MyHomePage(title: 'URL Launcher'),
     );
   }
 }
@@ -34,20 +34,24 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-        appBar: new AppBar(
-            title: new Text(widget.title),
-        ),
-        body: new Center(
-            child: new Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  new Padding(
-                      padding: new EdgeInsets.all(16.0),
-                      child: new Text("https://flutter.io")),
-                  new RaisedButton(onPressed: _launchUrl, child: new Text("Go"))
-                ],
+      appBar: new AppBar(
+        title: new Text(widget.title),
+      ),
+      body: new Center(
+        child: new Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            new Padding(
+              padding: new EdgeInsets.all(16.0),
+              child: new Text("https://flutter.io"),
             ),
+            new RaisedButton(
+              onPressed: _launchUrl,
+              child: new Text("Go"),
+            ),
+          ],
         ),
+      ),
     );
   }
 }
