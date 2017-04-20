@@ -1,16 +1,16 @@
 #include "AppDelegate.h"
-#include "UrlLauncherPlugin.h"
+#include "PluginRegistry.h"
 
 @implementation AppDelegate {
-  UrlLauncherPlugin *_url_launcher;
+  PluginRegistry *plugins;
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // Override point for customization after application launch.
+  // Override point for customization after application launch.
   FlutterViewController *flutterController =
       (FlutterViewController *)self.window.rootViewController;
-  _url_launcher = [[UrlLauncherPlugin alloc] initWithFlutterView:flutterController];
-    return YES;
+  plugins = [[PluginRegistry alloc] initWithController:flutterController];
+  return YES;
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {

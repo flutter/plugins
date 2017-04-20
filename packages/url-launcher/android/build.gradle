@@ -1,4 +1,4 @@
-group 'com.yourcompany.url_launcher'
+group 'io.flutter.plugins.url_launcher'
 version '1.0-SNAPSHOT'
 
 buildscript {

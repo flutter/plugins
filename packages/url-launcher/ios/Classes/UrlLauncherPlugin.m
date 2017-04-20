@@ -3,12 +3,12 @@
 @implementation UrlLauncherPlugin {
 }
 
-- (instancetype)initWithFlutterView:(FlutterViewController *)flutterView {
+- (instancetype)initWithController:(FlutterViewController *)controller {
   self = [super init];
   if (self) {
     FlutterMethodChannel* channel = [FlutterMethodChannel
-        methodChannelWithName:@"plugins.flutter.io/URLLauncher"
-           binaryMessenger:flutterView];
+                                     methodChannelWithName:@"plugins.flutter.io/URLLauncher"
+                                     binaryMessenger:controller];
     [channel setMethodCallHandler:^(FlutterMethodCall *call,
                                     FlutterResult result) {
       if ([@"UrlLauncher.launch" isEqualToString:call.method]) {

@@ -1,8 +1,7 @@
 # url_launcher
 
-A new flutter plugin project.
+A flutter plugin project for launching a URL.
 
 ## Getting Started
 
-For help getting started with Flutter, view our online
-[documentation](http://flutter.io/).
+Try out the plugin by running the project in the example/ folder.

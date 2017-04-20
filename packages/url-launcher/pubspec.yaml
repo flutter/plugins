@@ -1,8 +1,9 @@
 name: url_launcher
-description: A new flutter plugin project.
 
 flutter:
   plugin:
+    androidPackage: io.flutter.plugins.url_launcher
+    pluginClass: UrlLauncherPlugin
 
 dependencies:
   flutter:
