@@ -29,8 +29,6 @@ launchURL() {
 
 ```
 
-
-
 ## Supported URL schemes
 
 The supported URL schemes depend on the underlying platform and installed system apps.
