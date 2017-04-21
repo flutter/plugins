@@ -3,8 +3,7 @@
 A Flutter plugin for launching a URL in the mobile platform. Supports iOS and Android.
 
 ## Usage
-
-Get this plugin as described [here] (https://www.dartlang.org/tools/pub/get-started).
+To use this plugin, add url_launcher as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
 
 ### Example
 
@@ -31,7 +30,9 @@ launchURL() {
 
 ## Supported URL schemes
 
-The supported URL schemes depend on the underlying platform and installed system apps.
+The `launch` method takes a string argument containing a URL. This URL
+can be formatted using a number of different URL schemes. The supported
+URL schemes depend on the underlying platform and installed apps.
 
 Common schemes supported by both iOS and Android:
 
@@ -40,9 +41,5 @@ Common schemes supported by both iOS and Android:
 * tel:<phone-number>
 * sms:<phone-number>
 
-More details can be found here for [iOS](https://developer.apple.com/library/content/featuredarticles/iPhoneURLScheme_Reference/Introduction/Introduction.html) or [Android](https://developer.android.com/guide/components/intents-common.html)
+More details can be found here for [iOS](https://developer.apple.com/library/content/featuredarticles/iPhoneURLScheme_Reference/Introduction/Introduction.html) and [Android](https://developer.android.com/guide/components/intents-common.html)
 
-
-## More info
-
-For more info on Flutter plugins see [this guide](https://flutter.io/platform-plugins/)
