@@ -1,5 +1,12 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 
 void main() {
   runApp(new MyApp());
@@ -27,8 +34,28 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  Future<Null> _launched;
+
   void _launchUrl() {
-    launch('https://flutter.io');
+    setState(() {
+      _launched = _launch('https://flutter.io');
+    });
+  }
+
+  Future<Null> _launch(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw "Cannot launch $url";
+    }
+  }
+
+  Widget _launchStatus(BuildContext context, AsyncSnapshot<Null> snapshot) {
+    if (snapshot.hasError) {
+      return new Text('Error: ${snapshot.error}');
+    } else {
+      return const Text('');
+    }
   }
 
   @override
@@ -38,17 +65,23 @@ class _MyHomePageState extends State<MyHomePage> {
         title: new Text(widget.title),
       ),
       body: new Center(
-        child: new Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            new Padding(
-              padding: new EdgeInsets.all(16.0),
-              child: new Text("https://flutter.io"),
+        child: new Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            new Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                new Padding(
+                  padding: new EdgeInsets.all(16.0),
+                  child: new Text("https://flutter.io"),
+                ),
+                new RaisedButton(
+                  onPressed: _launchUrl,
+                  child: new Text("Go"),
+                ),
+              ],
             ),
-            new RaisedButton(
-              onPressed: _launchUrl,
-              child: new Text("Go"),
-            ),
+            new FutureBuilder(future: _launched, builder: _launchStatus),
           ],
         ),
       ),
