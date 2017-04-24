@@ -23,7 +23,7 @@ void main() {
 }
 
 launchURL() {
-  UrlLauncher.launch('https://flutter.io');
+  launch('https://flutter.io');
 }
 
 ```
