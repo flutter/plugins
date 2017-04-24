@@ -28,7 +28,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   void _launchUrl() {
-    UrlLauncher.launch("https://flutter.io");
+    launch('https://flutter.io');
   }
 
   @override
