@@ -37,7 +37,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _launchUrl() {
     setState(() {
-      _launched = _launch('htts://flutter.io');
+      _launched = _launch('https://flutter.io');
     });
   }
 
