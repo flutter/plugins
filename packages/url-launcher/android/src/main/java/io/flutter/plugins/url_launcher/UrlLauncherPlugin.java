@@ -61,8 +61,7 @@ public class UrlLauncherPlugin implements MethodCallHandler {
                 "{com.android.fallback/com.android.fallback.Fallback}".
                         equals(componentName.toShortString())) {
             result.success(false);
-        }
-        else {
+        } else {
             result.success(true);
         }
     }

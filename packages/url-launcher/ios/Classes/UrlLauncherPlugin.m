@@ -13,8 +13,7 @@
                                     FlutterResult result) {
       NSString* url = call.arguments;
       if ([@"UrlLauncher.canLaunch" isEqualToString:call.method]) {
-        BOOL can = ([self canLaunchURL:url]);
-        result(@(can));
+        result(@([self canLaunchURL:url]));
       } else if ([@"UrlLauncher.launch" isEqualToString:call.method]) {
         [self launchURL:url result:result];
       } else {
@@ -22,7 +21,6 @@
       }
     }];
   }
-
   return self;
 }
 
