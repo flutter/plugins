@@ -27,15 +27,15 @@ public class UrlLauncherPlugin implements MethodCallHandler {
     private UrlLauncherPlugin(FlutterActivity activity) {
         this.activity = activity;
         new MethodChannel(
-                activity.getFlutterView(), "plugins.flutter.io/URLLauncher").setMethodCallHandler(this);
+                activity.getFlutterView(), "plugins.flutter.io/url_launcher").setMethodCallHandler(this);
     }
 
     @Override
     public void onMethodCall(MethodCall call, Result result) {
         String url = call.arguments();
-        if (call.method.equals("UrlLauncher.canLaunch")) {
+        if (call.method.equals("canLaunch")) {
             canLaunch(url, result);
-        } else if (call.method.equals("UrlLauncher.launch")) {
+        } else if (call.method.equals("launch")) {
             launchURL(url, result);
         } else {
             result.notImplemented();
@@ -43,26 +43,20 @@ public class UrlLauncherPlugin implements MethodCallHandler {
     }
 
     private void launchURL(String url, Result result) {
-        try {
-            Intent launchIntent = new Intent(Intent.ACTION_VIEW);
-            launchIntent.setData(Uri.parse(url));
-            activity.startActivity(launchIntent);
-            result.success(null);
-        } catch (java.lang.Exception exception) {
-            result.error("ERROR", exception.getMessage(), null);
-        }
+        Intent launchIntent = new Intent(Intent.ACTION_VIEW);
+        launchIntent.setData(Uri.parse(url));
+        activity.startActivity(launchIntent);
+        result.success(null);
     }
 
     private void canLaunch(String url, Result result) {
         Intent launchIntent = new Intent(Intent.ACTION_VIEW);
         launchIntent.setData(Uri.parse(url));
         ComponentName componentName = launchIntent.resolveActivity(activity.getPackageManager());
-        if (componentName == null ||
+
+        boolean canLaunch = componentName == null ||
                 "{com.android.fallback/com.android.fallback.Fallback}".
-                        equals(componentName.toShortString())) {
-            result.success(false);
-        } else {
-            result.success(true);
-        }
+                        equals(componentName.toShortString()));
+        result.success(canLaunch);
     }
 }

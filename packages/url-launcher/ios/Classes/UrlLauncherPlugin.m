@@ -7,14 +7,14 @@
   self = [super init];
   if (self) {
     FlutterMethodChannel* channel = [FlutterMethodChannel
-                                     methodChannelWithName:@"plugins.flutter.io/URLLauncher"
+                                     methodChannelWithName:@"plugins.flutter.io/url_launcher"
                                      binaryMessenger:controller];
     [channel setMethodCallHandler:^(FlutterMethodCall *call,
                                     FlutterResult result) {
       NSString* url = call.arguments;
-      if ([@"UrlLauncher.canLaunch" isEqualToString:call.method]) {
+      if ([@"canLaunch" isEqualToString:call.method]) {
         result(@([self canLaunchURL:url]));
-      } else if ([@"UrlLauncher.launch" isEqualToString:call.method]) {
+      } else if ([@"launch" isEqualToString:call.method]) {
         [self launchURL:url result:result];
       } else {
         result(FlutterMethodNotImplemented);

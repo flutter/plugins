@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-      title: 'URL Laucher',
+      title: 'URL Launcher',
       theme: new ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -37,7 +37,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _launchUrl() {
     setState(() {
-      _launched = _launch('https://flutter.io');
+      _launched = _launch('htts://flutter.io');
     });
   }
 
@@ -80,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ],
             ),
-            new FutureBuilder(future: _launched, builder: _launchStatus),
+            new FutureBuilder<Null>(future: _launched, builder: _launchStatus),
           ],
         ),
       ),
