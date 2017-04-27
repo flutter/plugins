@@ -32,11 +32,11 @@ public class UrlLauncherPlugin implements MethodCallHandler {
 
     @Override
     public void onMethodCall(MethodCall call, Result result) {
+        String url = call.arguments();
         if (call.method.equals("UrlLauncher.canLaunch")) {
-            //todo upgrade flutter
-            canLaunch((String) call.arguments, result);
+            canLaunch(url, result);
         } else if (call.method.equals("UrlLauncher.launch")) {
-            launchURL((String) call.arguments, result);
+            launchURL(url, result);
         } else {
             result.notImplemented();
         }
@@ -65,6 +65,5 @@ public class UrlLauncherPlugin implements MethodCallHandler {
         else {
             result.success(true);
         }
-
     }
 }
