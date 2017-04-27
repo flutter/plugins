@@ -6,12 +6,7 @@ package io.flutter.plugins.url_launcher;
 
 import android.content.ComponentName;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import android.provider.Settings;
-
-import java.util.List;
 
 import io.flutter.app.FlutterActivity;
 import io.flutter.plugin.common.MethodChannel;
@@ -67,8 +62,9 @@ public class UrlLauncherPlugin implements MethodCallHandler {
                         equals(componentName.toShortString())) {
             result.success(false);
         }
-
-        result.success(true);
+        else {
+            result.success(true);
+        }
 
     }
 }
