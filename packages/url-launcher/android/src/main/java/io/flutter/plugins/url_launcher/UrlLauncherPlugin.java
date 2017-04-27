@@ -54,9 +54,9 @@ public class UrlLauncherPlugin implements MethodCallHandler {
         launchIntent.setData(Uri.parse(url));
         ComponentName componentName = launchIntent.resolveActivity(activity.getPackageManager());
 
-        boolean canLaunch = componentName == null ||
-                "{com.android.fallback/com.android.fallback.Fallback}".
-                        equals(componentName.toShortString()));
+        boolean canLaunch = componentName != null &&
+                !"{com.android.fallback/com.android.fallback.Fallback}".
+                        equals(componentName.toShortString());
         result.success(canLaunch);
     }
 }
