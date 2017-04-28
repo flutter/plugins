@@ -16,7 +16,8 @@ Future<Null> launch(String urlString) {
     urlString,
   );
 }
-
+/// Checks whether the specified URL can be handled by some app installed on
+/// the device.
 Future<bool> canLaunch(String urlString) {
   return _channel.invokeMethod(
     'canLaunch',
