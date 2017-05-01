@@ -23,13 +23,14 @@ void main() {
 }
 
 _launchURL() async {
-  String url = 'http,,tter.io';
+  String url = 'https://flutter.io';
   if (await canLaunch(url)) {
     launch(url);
   } else {
     throw "Could not launch $url";
   }
 }
+
 ```
 
 ## Supported URL schemes
