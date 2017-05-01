@@ -1,6 +1,6 @@
 name: url_launcher
 
-version: 0.3.0
+version: 0.3.1
 description: Flutter plugin for launching a URL
 author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins
