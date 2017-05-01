@@ -15,17 +15,21 @@ void main() {
   runApp(new Scaffold(
     body: new Center(
       child: new RaisedButton(
-        onPressed: launchURL,
+        onPressed: _launchURL,
         child: new Text('Show Flutter homepage'),
       ),
     ),
   ));
 }
 
-launchURL() {
-  launch('https://flutter.io');
+_launchURL() async {
+  String url = 'http,,tter.io';
+  if (await canLaunch(url)) {
+    launch(url);
+  } else {
+    throw "Could not launch $url";
+  }
 }
-
 ```
 
 ## Supported URL schemes
