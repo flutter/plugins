@@ -8,8 +8,12 @@ import 'package:flutter/services.dart';
 
 const _channel = const MethodChannel('plugins.flutter.io/url_launcher');
 
-/// Parse the specified URL string and delegate handling of the same to the
+/// Parses the specified URL string and delegates handling of it to the
 /// underlying platform.
+///
+/// The returned future completes with a [PlatformException] on invalid URLs and
+/// schemes which cannot be handled, that is when [canLaunch] would complete
+/// with false.
 Future<Null> launch(String urlString) {
   return _channel.invokeMethod(
     'launch',
@@ -17,8 +21,12 @@ Future<Null> launch(String urlString) {
   );
 }
 
-Future<bool> canLaunch(String urlString) {
-  return _channel.invokeMethod(
+/// Checks whether the specified URL can be handled by some app installed on the
+/// device.
+Future<bool> canLaunch(String urlString) async {
+  if (urlString == null)
+    return false;
+  return await _channel.invokeMethod(
     'canLaunch',
     urlString,
   );
