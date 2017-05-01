@@ -23,11 +23,11 @@ void main() {
 }
 
 _launchURL() async {
-  String url = 'https://flutter.io';
+  const url = 'https://flutter.io';
   if (await canLaunch(url)) {
-    launch(url);
+    await launch(url);
   } else {
-    throw "Could not launch $url";
+    throw 'Could not launch $url';
   }
 }
 
