@@ -15,15 +15,20 @@ void main() {
   runApp(new Scaffold(
     body: new Center(
       child: new RaisedButton(
-        onPressed: launchURL,
+        onPressed: _launchURL,
         child: new Text('Show Flutter homepage'),
       ),
     ),
   ));
 }
 
-launchURL() {
-  launch('https://flutter.io');
+_launchURL() async {
+  const url = 'https://flutter.io';
+  if (await canLaunch(url)) {
+    await launch(url);
+  } else {
+    throw 'Could not launch $url';
+  }
 }
 
 ```

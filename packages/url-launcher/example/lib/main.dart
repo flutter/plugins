@@ -45,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (await canLaunch(url)) {
       await launch(url);
     } else {
-      throw "Could not launch $url";
+      throw 'Could not launch $url';
     }
   }
 
@@ -72,11 +72,11 @@ class _MyHomePageState extends State<MyHomePage> {
               children: [
                 new Padding(
                   padding: new EdgeInsets.all(16.0),
-                  child: new Text("https://flutter.io"),
+                  child: new Text('https://flutter.io'),
                 ),
                 new RaisedButton(
                   onPressed: _launchUrl,
-                  child: new Text("Go"),
+                  child: new Text('Go'),
                 ),
               ],
             ),
