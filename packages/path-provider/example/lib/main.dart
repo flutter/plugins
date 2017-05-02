@@ -43,42 +43,23 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  Widget _buildTempDirectory(
+  Widget _buildDirectory(
       BuildContext context, AsyncSnapshot<Directory> snapshot) {
+    Text text;
     if (snapshot.hasError) {
-      return new Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: new Text('Error: ${snapshot.error}'));
+      text = new Text('Error: ${snapshot.error}');
     } else if (snapshot.hasData) {
-      return new Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: new Text('path: ${snapshot.data.path}'));
+      text = new Text('path: ${snapshot.data.path}');
     } else {
-      return new Padding(
-          padding: const EdgeInsets.all(16.0), child: new Text(''));
+      text = new Text('');
     }
+    return new Padding(padding: const EdgeInsets.all(16.0), child: text);
   }
 
   void _requestAppDocumentsDirectory() {
     setState(() {
       _appDocumentsDirectory = getApplicationDocumentsDirectory();
     });
-  }
-
-  Widget _buildAppDocumentsDirectory(
-      BuildContext context, AsyncSnapshot<Directory> snapshot) {
-    if (snapshot.hasError) {
-      return new Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: new Text('Error: ${snapshot.error}'));
-    } else if (snapshot.hasData) {
-      return new Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: new Text('path: ${snapshot.data.path}'));
-    } else {
-      return new Padding(
-          padding: const EdgeInsets.all(16.0), child: new Text(''));
-    }
   }
 
   @override
@@ -92,7 +73,6 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
             new Column(
-              mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 new Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -105,10 +85,9 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             new Expanded(
               child: new FutureBuilder<Directory>(
-                  future: _tempDirectory, builder: _buildTempDirectory),
+                  future: _tempDirectory, builder: _buildDirectory),
             ),
             new Column(
-              mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 new Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -121,8 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             new Expanded(
               child: new FutureBuilder<Directory>(
-                  future: _appDocumentsDirectory,
-                  builder: _buildAppDocumentsDirectory),
+                  future: _appDocumentsDirectory, builder: _buildDirectory),
             ),
           ],
         ),

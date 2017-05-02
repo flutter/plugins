@@ -27,14 +27,13 @@ public class PathProviderPlugin implements MethodCallHandler {
 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
-    if (call.method.equals("getTemporaryDirectory")) {
-      result.success(getPathProviderTemporaryDirectory());
-    } else if (call.method.equals("getApplicationDocumentsDirectory")) {
-      result.success(getPathProviderApplicationDocumentsDirectory());
-    } else if (call.method.equals("getPlatformVersion")) {
-      result.success("Android " + android.os.Build.VERSION.RELEASE);
-    } else {
-      result.notImplemented();
+    switch (call.method) {
+      case "getTemporaryDirectory":
+        result.success(getPathProviderTemporaryDirectory());
+      case "getApplicationDocumentsDirectory":
+        result.success(getPathProviderApplicationDocumentsDirectory());
+      default:
+        result.notImplemented();
     }
   }
 
@@ -45,5 +44,4 @@ public class PathProviderPlugin implements MethodCallHandler {
   private String getPathProviderApplicationDocumentsDirectory() {
     return PathUtils.getDataDirectory(activity);
   }
-
 }
