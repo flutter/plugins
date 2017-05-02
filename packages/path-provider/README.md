@@ -1,8 +1,17 @@
 # path_provider
 
-A new flutter plugin project.
+Flutter plugin for finding commonly used locations on the filesystem. Supports iOS and Android.
+
 
 ## Getting Started
 
-For help getting started with Flutter, view our online
-[documentation](http://flutter.io/).
+To use this plugin, add path_provider as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
+
+
+### Example
+
+``` dart
+import 'package:flutter/material.dart';
+
+
+```

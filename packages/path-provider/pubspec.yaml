@@ -1,5 +1,5 @@
 name: path_provider
-description: A new flutter plugin project.
+description: Flutter plugin for finding commonly used locations on the filesystem.
 
 flutter:
   plugin:
