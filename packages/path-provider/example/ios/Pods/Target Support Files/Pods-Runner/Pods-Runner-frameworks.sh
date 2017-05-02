@@ -89,11 +89,11 @@ strip_invalid_archs() {
 
 
 if [[ "$CONFIGURATION" == "Debug" ]]; then
-  install_framework "${PODS_ROOT}/../../../../../../flutter/bin/cache/artifacts/engine/ios/Flutter.framework"
+  install_framework "${PODS_ROOT}/../../../../../../flutter/bin/cache/artifacts/engine/ios-release/Flutter.framework"
   install_framework "$BUILT_PRODUCTS_DIR/path_provider/path_provider.framework"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
-  install_framework "${PODS_ROOT}/../../../../../../flutter/bin/cache/artifacts/engine/ios/Flutter.framework"
+  install_framework "${PODS_ROOT}/../../../../../../flutter/bin/cache/artifacts/engine/ios-release/Flutter.framework"
   install_framework "$BUILT_PRODUCTS_DIR/path_provider/path_provider.framework"
 fi
 if [ "${COCOAPODS_PARALLEL_CODE_SIGN}" == "true" ]; then

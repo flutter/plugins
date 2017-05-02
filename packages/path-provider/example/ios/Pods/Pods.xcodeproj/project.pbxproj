@@ -8,11 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		12D3ECA0FDF9A749CEC89C05282EB5A4 /* Pods-Runner-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E631AC9676BE84AEB52F7D6520E4684 /* Pods-Runner-dummy.m */; };
-		2D0EF0869DC3409AEF4DCAD2D2DA1004 /* path_provider-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 40B0CF11528BB45B7C8F3C4464D6EA05 /* path_provider-dummy.m */; };
+		2D0EF0869DC3409AEF4DCAD2D2DA1004 /* path_provider-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = DF07219C09604ADBC06879CAE281BE48 /* path_provider-dummy.m */; };
 		34510C53CAC810E0E4307A3BC1400422 /* Pods-Runner-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 800A16960E73EBAF012C139238277358 /* Pods-Runner-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		5A38444634826423930C21EF1161F253 /* PathProviderPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = A413DE07857572BEC5087059B017EE87 /* PathProviderPlugin.m */; };
-		623B374A403B41535326A59C0001CDE3 /* PathProviderPlugin.h in Headers */ = {isa = PBXBuildFile; fileRef = 98E93A26BAA4A29B374B0F5B7EA0B0FD /* PathProviderPlugin.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		71A5F5531D240D41341731D16C4D7CA5 /* path_provider-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 9A90696F08EF52A00849E5D67F934BDA /* path_provider-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		5A38444634826423930C21EF1161F253 /* PathProviderPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 564F5DE3140BF4951CDD28F482CCCFCE /* PathProviderPlugin.m */; };
+		623B374A403B41535326A59C0001CDE3 /* PathProviderPlugin.h in Headers */ = {isa = PBXBuildFile; fileRef = D60A070084D8F6CD01766D4661B9E927 /* PathProviderPlugin.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		71A5F5531D240D41341731D16C4D7CA5 /* path_provider-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 22C711D4E0C672344177F11F17344846 /* path_provider-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		916A0CF83F9B90421937B1FCBB784FA5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CBB3DE36805AF21409EC968A9691732F /* Foundation.framework */; };
 		B12DA244C115515D82F3C7CCF345AF46 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CBB3DE36805AF21409EC968A9691732F /* Foundation.framework */; };
 /* End PBXBuildFile section */
@@ -29,27 +29,27 @@
 
 /* Begin PBXFileReference section */
 		1026CF1DA26280B555007FE14EDFC956 /* path_provider.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = path_provider.framework; path = path_provider.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		10B74D5B222488560B76D93FB5268A2D /* Flutter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Flutter.framework; sourceTree = "<group>"; };
+		10EE1B5C3E6CEE90C89AB43DF3F1C351 /* path_provider-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "path_provider-prefix.pch"; sourceTree = "<group>"; };
 		1230911B0B1C1A5E00676A90606DE300 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1E631AC9676BE84AEB52F7D6520E4684 /* Pods-Runner-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-Runner-dummy.m"; sourceTree = "<group>"; };
-		40B0CF11528BB45B7C8F3C4464D6EA05 /* path_provider-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "path_provider-dummy.m"; sourceTree = "<group>"; };
+		22C711D4E0C672344177F11F17344846 /* path_provider-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "path_provider-umbrella.h"; sourceTree = "<group>"; };
+		564F5DE3140BF4951CDD28F482CCCFCE /* PathProviderPlugin.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = PathProviderPlugin.m; sourceTree = "<group>"; };
 		5EB571A3ABC7BF67A4642C216D6F0E21 /* Pods-Runner-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-Runner-resources.sh"; sourceTree = "<group>"; };
 		60BA499A645871628CFA2E5806E78269 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
+		60CFA3DFCDBAC7963DF1480C931A8132 /* path_provider.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = path_provider.xcconfig; sourceTree = "<group>"; };
 		63BC99522783D0218755FDE8464650E4 /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
-		7B579E7BA2A9552A42653E5F35A2A689 /* path_provider.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; path = path_provider.modulemap; sourceTree = "<group>"; };
-		7B7644899149322537E00C78FA19389A /* path_provider-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "path_provider-prefix.pch"; sourceTree = "<group>"; };
 		800A16960E73EBAF012C139238277358 /* Pods-Runner-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-Runner-umbrella.h"; sourceTree = "<group>"; };
+		80D50C5DA528168417E6B6F849343B53 /* path_provider.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; path = path_provider.modulemap; sourceTree = "<group>"; };
 		820303DDBFB04D47450E66B28FF32086 /* Pods-Runner-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-Runner-acknowledgements.plist"; sourceTree = "<group>"; };
-		8C26FB6E520E4C8F20E1D705A9EC2F14 /* path_provider.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = path_provider.xcconfig; sourceTree = "<group>"; };
 		93A4A3777CF96A4AAC1D13BA6DCCEA73 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		98E93A26BAA4A29B374B0F5B7EA0B0FD /* PathProviderPlugin.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = PathProviderPlugin.h; sourceTree = "<group>"; };
-		9A90696F08EF52A00849E5D67F934BDA /* path_provider-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "path_provider-umbrella.h"; sourceTree = "<group>"; };
-		A413DE07857572BEC5087059B017EE87 /* PathProviderPlugin.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = PathProviderPlugin.m; sourceTree = "<group>"; };
+		94B9AB26574C9177CCF577B355679FBB /* Flutter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Flutter.framework; sourceTree = "<group>"; };
 		B8331DA3DF79C3AB28033920E45C4B46 /* Pods-Runner-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-Runner-frameworks.sh"; sourceTree = "<group>"; };
 		BE191574A51A7A7D07FEEACB1323F4E5 /* Pods-Runner.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; path = "Pods-Runner.modulemap"; sourceTree = "<group>"; };
 		CA0501A66E945611274FD9BED1573FA5 /* Pods-Runner-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-Runner-acknowledgements.markdown"; sourceTree = "<group>"; };
 		CBB3DE36805AF21409EC968A9691732F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
-		D07CCFAD2612B394CC158E92970CC2A8 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D01E8BC915886FAC8F130A7CE46A8671 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D60A070084D8F6CD01766D4661B9E927 /* PathProviderPlugin.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = PathProviderPlugin.h; sourceTree = "<group>"; };
+		DF07219C09604ADBC06879CAE281BE48 /* path_provider-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "path_provider-dummy.m"; sourceTree = "<group>"; };
 		F404C7A83DF4325827691D5A86584FA5 /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_Runner.framework; path = "Pods-Runner.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -73,6 +73,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1C927379501FACB72785A89A26D979DC /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				D60A070084D8F6CD01766D4661B9E927 /* PathProviderPlugin.h */,
+				564F5DE3140BF4951CDD28F482CCCFCE /* PathProviderPlugin.m */,
+			);
+			name = Classes;
+			path = Classes;
+			sourceTree = "<group>";
+		};
 		2DE526D491B80AA65F8A8ADC05327CC8 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -82,21 +92,13 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		335C34D865B87E3528AA8E78BE3D6675 /* Frameworks */ = {
+		7101FE4D13B1B9163B7C86904A410CEF /* Flutter */ = {
 			isa = PBXGroup;
 			children = (
-				10B74D5B222488560B76D93FB5268A2D /* Flutter.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		666C57A1156137EC86C22C559EA9F028 /* Flutter */ = {
-			isa = PBXGroup;
-			children = (
-				335C34D865B87E3528AA8E78BE3D6675 /* Frameworks */,
+				A9E4D89779CFA8DA0AE1D2213FBE48DC /* Frameworks */,
 			);
 			name = Flutter;
-			path = /Users/zarah/flutter/bin/cache/artifacts/engine/ios;
+			path = "/Users/zarah/flutter/bin/cache/artifacts/engine/ios-release";
 			sourceTree = "<absolute>";
 		};
 		7531C8F8DE19F1AA3C8A7AC97A91DC29 /* iOS */ = {
@@ -111,30 +113,19 @@
 			isa = PBXGroup;
 			children = (
 				93A4A3777CF96A4AAC1D13BA6DCCEA73 /* Podfile */,
-				9CDBE126E774089699B1215875DBE748 /* Development Pods */,
+				FE26AAB62CD3FB63DFC47CA35FC595F7 /* Development Pods */,
 				BC3CA7F9E30CC8F7E2DD044DD34432FC /* Frameworks */,
 				2DE526D491B80AA65F8A8ADC05327CC8 /* Products */,
 				B88D6092221BFC46BA797811AC7C0DEC /* Targets Support Files */,
 			);
 			sourceTree = "<group>";
 		};
-		9A60E335C29E4AA3DCA231EBB9020096 /* Classes */ = {
+		A9E4D89779CFA8DA0AE1D2213FBE48DC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				98E93A26BAA4A29B374B0F5B7EA0B0FD /* PathProviderPlugin.h */,
-				A413DE07857572BEC5087059B017EE87 /* PathProviderPlugin.m */,
+				94B9AB26574C9177CCF577B355679FBB /* Flutter.framework */,
 			);
-			name = Classes;
-			path = Classes;
-			sourceTree = "<group>";
-		};
-		9CDBE126E774089699B1215875DBE748 /* Development Pods */ = {
-			isa = PBXGroup;
-			children = (
-				666C57A1156137EC86C22C559EA9F028 /* Flutter */,
-				D65AC03D53DFBAA18AA300104B3DA7D1 /* path_provider */,
-			);
-			name = "Development Pods";
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		B88D6092221BFC46BA797811AC7C0DEC /* Targets Support Files */ = {
@@ -145,20 +136,6 @@
 			name = "Targets Support Files";
 			sourceTree = "<group>";
 		};
-		BC35633818DABF7E892A30E455C28DE0 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				D07CCFAD2612B394CC158E92970CC2A8 /* Info.plist */,
-				7B579E7BA2A9552A42653E5F35A2A689 /* path_provider.modulemap */,
-				8C26FB6E520E4C8F20E1D705A9EC2F14 /* path_provider.xcconfig */,
-				40B0CF11528BB45B7C8F3C4464D6EA05 /* path_provider-dummy.m */,
-				7B7644899149322537E00C78FA19389A /* path_provider-prefix.pch */,
-				9A90696F08EF52A00849E5D67F934BDA /* path_provider-umbrella.h */,
-			);
-			name = "Support Files";
-			path = "../example/ios/Pods/Target Support Files/path_provider";
-			sourceTree = "<group>";
-		};
 		BC3CA7F9E30CC8F7E2DD044DD34432FC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -167,11 +144,25 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		D65AC03D53DFBAA18AA300104B3DA7D1 /* path_provider */ = {
+		C3C72F2742945C22972F0308A566416B /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				9A60E335C29E4AA3DCA231EBB9020096 /* Classes */,
-				BC35633818DABF7E892A30E455C28DE0 /* Support Files */,
+				D01E8BC915886FAC8F130A7CE46A8671 /* Info.plist */,
+				80D50C5DA528168417E6B6F849343B53 /* path_provider.modulemap */,
+				60CFA3DFCDBAC7963DF1480C931A8132 /* path_provider.xcconfig */,
+				DF07219C09604ADBC06879CAE281BE48 /* path_provider-dummy.m */,
+				10EE1B5C3E6CEE90C89AB43DF3F1C351 /* path_provider-prefix.pch */,
+				22C711D4E0C672344177F11F17344846 /* path_provider-umbrella.h */,
+			);
+			name = "Support Files";
+			path = "../example/ios/Pods/Target Support Files/path_provider";
+			sourceTree = "<group>";
+		};
+		E29B57BA2AEE6AF7B99FE00338EFEF4F /* path_provider */ = {
+			isa = PBXGroup;
+			children = (
+				1C927379501FACB72785A89A26D979DC /* Classes */,
+				C3C72F2742945C22972F0308A566416B /* Support Files */,
 			);
 			name = path_provider;
 			path = "/Users/zarah/plugins/packages/path-provider/ios";
@@ -193,6 +184,15 @@
 			);
 			name = "Pods-Runner";
 			path = "Target Support Files/Pods-Runner";
+			sourceTree = "<group>";
+		};
+		FE26AAB62CD3FB63DFC47CA35FC595F7 /* Development Pods */ = {
+			isa = PBXGroup;
+			children = (
+				7101FE4D13B1B9163B7C86904A410CEF /* Flutter */,
+				E29B57BA2AEE6AF7B99FE00338EFEF4F /* path_provider */,
+			);
+			name = "Development Pods";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -396,7 +396,7 @@
 		};
 		49F5850C8A206D267B64D453AF2D4E38 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8C26FB6E520E4C8F20E1D705A9EC2F14 /* path_provider.xcconfig */;
+			baseConfigurationReference = 60CFA3DFCDBAC7963DF1480C931A8132 /* path_provider.xcconfig */;
 			buildSettings = {
 				ARCHS = arm64;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
@@ -503,7 +503,7 @@
 		};
 		B17AAD93E8EC1424BCAF0D5068CF3885 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8C26FB6E520E4C8F20E1D705A9EC2F14 /* path_provider.xcconfig */;
+			baseConfigurationReference = 60CFA3DFCDBAC7963DF1480C931A8132 /* path_provider.xcconfig */;
 			buildSettings = {
 				ARCHS = arm64;
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
