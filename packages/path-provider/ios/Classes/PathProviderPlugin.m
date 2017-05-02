@@ -23,23 +23,9 @@ NSString* GetDirectoryOfType(NSSearchPathDirectory dir) {
     [channel setMethodCallHandler:^(FlutterMethodCall *call,
                                     FlutterResult result) {
       if ([@"getTemporaryDirectory" isEqualToString:call.method]) {
-        NSString* dirPath = [self getTemporaryDirectory];
-        if (dirPath) {
-          result(dirPath);
-        } else {
-          result([FlutterError errorWithCode:@"ERROR"
-                                     message:@"Could not find temp dir"
-                                     details:nil]);
-        }
+        result([self getTemporaryDirectory]);
       } else if ([@"getApplicationDocumentsDirectory" isEqualToString:call.method]) {
-        NSString* dirPath = [self getApplicationDocumentsDirectory];
-        if (dirPath) {
-          result(dirPath);
-        } else {
-          result([FlutterError errorWithCode:@"ERROR"
-                                     message:@"Could not find app documents dir"
-                                     details:nil]);
-        }
+        result([self getApplicationDocumentsDirectory]);
       } else {
         result(FlutterMethodNotImplemented);
       }
