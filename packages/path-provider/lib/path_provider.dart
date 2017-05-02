@@ -11,9 +11,6 @@ import 'package:flutter/services.dart';
   
 const _channel = const MethodChannel('plugins.flutter.io/path_provider');
 
-  Future<String> get platformVersion =>
-      _channel.invokeMethod('getPlatformVersion');
-
   /// Path to the temporary directory on the device.
   ///
   /// Files in this directory may be cleared at any time. This does *not* return

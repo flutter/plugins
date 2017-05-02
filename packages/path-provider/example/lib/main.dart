@@ -46,7 +46,9 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget _buildTempDirectory(
       BuildContext context, AsyncSnapshot<Directory> snapshot) {
     if (snapshot.hasError) {
-      return new Text('Error: ${snapshot.error}');
+      return new Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: new Text('Error: ${snapshot.error}'));
     } else if (snapshot.hasData) {
       return new Padding(
           padding: const EdgeInsets.all(16.0),
@@ -66,7 +68,9 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget _buildAppDocumentsDirectory(
       BuildContext context, AsyncSnapshot<Directory> snapshot) {
     if (snapshot.hasError) {
-      return new Text('Error: ${snapshot.error}');
+      return new Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: new Text('Error: ${snapshot.error}'));
     } else if (snapshot.hasData) {
       return new Padding(
           padding: const EdgeInsets.all(16.0),
