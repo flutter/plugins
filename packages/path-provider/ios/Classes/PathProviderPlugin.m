@@ -1,5 +1,12 @@
 #import "PathProviderPlugin.h"
 
+NSString* GetDirectoryOfType(NSSearchPathDirectory dir) {
+  NSArray* paths = NSSearchPathForDirectoriesInDomains(dir, NSUserDomainMask, YES);
+  if (paths.count == 0)
+    return nil;
+  return paths.firstObject;
+}
+
 @implementation PathProviderPlugin {
 }
 
@@ -7,19 +14,43 @@
   self = [super init];
   if (self) {
     FlutterMethodChannel *channel = [FlutterMethodChannel
-        methodChannelWithName:@"path_provider"
+        methodChannelWithName:@"plugins.flutter.io/path_provider"
               binaryMessenger:controller];
     [channel setMethodCallHandler:^(FlutterMethodCall *call,
                                     FlutterResult result) {
-      if ([@"getPlatformVersion" isEqualToString:call.method]) {
-        result([@"iOS " stringByAppendingString:[[UIDevice currentDevice]
-                                                    systemVersion]]);
+      if ([@"getTemporaryDirectory" isEqualToString:call.method]) {
+        NSString* dirPath = [self getTemporaryDirectory];
+        if (dirPath) {
+          result(dirPath);
+        } else {
+          result([FlutterError errorWithCode:@"ERROR"
+                                     message:@"Could not find temp dir"
+                                     details:nil]);
+        }
+      } else if ([@"getApplicationDocumentsDirectory" isEqualToString:call.method]) {
+        NSString* dirPath = [self getApplicationDocumentsDirectory];
+        if (dirPath) {
+          result(dirPath);
+        } else {
+          result([FlutterError errorWithCode:@"ERROR"
+                                     message:@"Could not find app documents dir"
+                                     details:nil]);
+        }
+
       } else {
         result(FlutterMethodNotImplemented);
       }
     }];
   }
   return self;
+}
+
+- (NSString*)getTemporaryDirectory {
+  return GetDirectoryOfType(NSCachesDirectory);
+}
+
+- (NSString*)getApplicationDocumentsDirectory {
+  return GetDirectoryOfType(NSDocumentDirectory);
 }
 
 @end
