@@ -45,18 +45,16 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget _buildDirectory(
       BuildContext context, AsyncSnapshot<Directory> snapshot) {
-    Text text;
 
+    Text text = const Text('');
     if (snapshot.connectionState == ConnectionState.done) {
       if (snapshot.hasError) {
         text = new Text('Error: ${snapshot.error}');
       } else if (snapshot.hasData) {
-        text =  new Text('path: ${snapshot.data.path}');
+        text = new Text('path: ${snapshot.data.path}');
       } else {
-        text = new Text('path unavailable');
+        text = const Text('path unavailable');
       }
-    } else {
-      text = new Text('');
     }
     return new Padding(padding: const EdgeInsets.all(16.0), child: text);
   }
