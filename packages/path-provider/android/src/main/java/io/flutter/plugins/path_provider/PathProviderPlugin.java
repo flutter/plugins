@@ -30,8 +30,10 @@ public class PathProviderPlugin implements MethodCallHandler {
     switch (call.method) {
       case "getTemporaryDirectory":
         result.success(getPathProviderTemporaryDirectory());
+        break;
       case "getApplicationDocumentsDirectory":
         result.success(getPathProviderApplicationDocumentsDirectory());
+        break;
       default:
         result.notImplemented();
     }

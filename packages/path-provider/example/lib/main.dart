@@ -46,10 +46,15 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget _buildDirectory(
       BuildContext context, AsyncSnapshot<Directory> snapshot) {
     Text text;
-    if (snapshot.hasError) {
-      text = new Text('Error: ${snapshot.error}');
-    } else if (snapshot.hasData) {
-      text = new Text('path: ${snapshot.data.path}');
+
+    if (snapshot.connectionState == ConnectionState.done) {
+      if (snapshot.hasError) {
+        text = new Text('Error: ${snapshot.error}');
+      } else if (snapshot.hasData) {
+        text =  new Text('path: ${snapshot.data.path}');
+      } else {
+        text = new Text('path unavailable');
+      }
     } else {
       text = new Text('');
     }
