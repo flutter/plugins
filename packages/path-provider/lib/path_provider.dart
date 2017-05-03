@@ -7,8 +7,6 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 
-/// Returns commonly used locations on the filesystem.
-  
 const _channel = const MethodChannel('plugins.flutter.io/path_provider');
 
   /// Path to the temporary directory on the device.
@@ -27,7 +25,6 @@ const _channel = const MethodChannel('plugins.flutter.io/path_provider');
       return null;
     return new Directory(path);
   }
-
 
   /// Path to a directory where the application may place files that are private
   /// to the application and will only be cleared when the application itself
