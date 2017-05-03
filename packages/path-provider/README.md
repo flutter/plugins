@@ -12,10 +12,11 @@ To use this plugin, add path_provider as a [dependency in your pubspec.yaml file
 After importing ```'package:path_provider/path_provider.dart'``` the directories can be queried as follows
 
 ``` dart
- Directory tempDir = await getTemporaryDirectory();
- String tempPath = tempDir.path;
+Directory tempDir = await getTemporaryDirectory();
+String tempPath = tempDir.path;
 
- Directory appDocDir = await getApplicationDocumentsDirectory();
- String appDocPath = appDocDir.path;
- ```
+Directory appDocDir = await getApplicationDocumentsDirectory();
+String appDocPath = appDocDir.path;
+```
+
 Please see the example app of this plugin for a full example.
