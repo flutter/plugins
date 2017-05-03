@@ -1,0 +1,11 @@
+name: path_provider
+description: Flutter plugin for finding commonly used locations on the filesystem.
+
+flutter:
+  plugin:
+    androidPackage: io.flutter.plugins.path_provider
+    pluginClass: PathProviderPlugin
+
+dependencies:
+  flutter:
+    sdk: flutter
