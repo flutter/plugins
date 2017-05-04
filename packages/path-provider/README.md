@@ -1,6 +1,6 @@
 # path_provider
 
-Flutter plugin for finding commonly used locations on the filesystem. Supports iOS and Android.
+A Flutter plugin for finding commonly used locations on the filesystem. Supports iOS and Android.
 
 
 ## Usage
