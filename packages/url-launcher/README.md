@@ -41,10 +41,12 @@ URL schemes depend on the underlying platform and installed apps.
 
 Common schemes supported by both iOS and Android:
 
-* http:<URL> , https:<URL>
-* mailto:<email-address>
-* tel:<phone-number>
-* sms:<phone-number>
+| Scheme | Action | Example |
+|---|---|---|
+| `http:<URL>` , `https:<URL>` | `http://flutter.io` | Open URL in the default browser |
+| `mailto:<email address>` | `mailto:smith@example.org` | Open <email address> in the default email app |
+| `tel:<phone number>` | `tel:+1 555 010 999` | Make a phone call to <phone number> using the default phone app |
+| `sms:<phone number>` | `sms:5550101234` | Send an SMS message to <phone number> using the default messaging app |
 
 More details can be found here for [iOS](https://developer.apple.com/library/content/featuredarticles/iPhoneURLScheme_Reference/Introduction/Introduction.html) and [Android](https://developer.android.com/guide/components/intents-common.html)
 
