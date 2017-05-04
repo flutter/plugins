@@ -46,7 +46,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget _buildDirectory(
       BuildContext context, AsyncSnapshot<Directory> snapshot) {
 
-
     Text text = const Text('');
     if (snapshot.connectionState == ConnectionState.done) {
       if (snapshot.hasError) {
