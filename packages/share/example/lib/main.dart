@@ -6,11 +6,17 @@ import 'package:flutter/material.dart';
 import 'package:share/share.dart';
 
 void main() {
-  runApp(new MyApp());
+  runApp(new DemoApp());
 }
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+class DemoApp extends StatefulWidget {
+  @override
+  DemoAppState createState() => new DemoAppState();
+}
+
+class DemoAppState extends State<DemoApp> {
+  String text = '';
+
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
@@ -19,11 +25,29 @@ class MyApp extends StatelessWidget {
         appBar: new AppBar(
           title: const Text('Share Plugin Demo'),
         ),
-        body: new Column(
-
-        ),
+        body: new Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: new Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget> [
+              new TextField(
+                decoration: new InputDecoration(
+                  labelText: 'Share:',
+                  hintText: 'Enter some text and/or link to share',
+                ),
+                maxLines: 4,
+                onChanged: (String value) => setState(() { text = value; }),
+              ),
+              new RaisedButton(
+                child: const Text('Share'),
+                onPressed: text.isNotEmpty
+                  ? () { share(text); }
+                  : null,
+              ),
+            ],
+          ),
+        )
       ),
     );
   }
 }
-
