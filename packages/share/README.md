@@ -1,8 +1,27 @@
 # share
 
-A new flutter plugin project.
+A Flutter plugin to share content from your Flutter app via the platform's
+share dialog.
 
-## Getting Started
+Wraps the ACTION_SEND Intent on Android and UIActivityViewController
+on iOS.
 
-For help getting started with Flutter, view our online
-[documentation](http://flutter.io/).
+## Usage
+
+To use, first add `share` as a [dependency in your pubspec.yaml](https://flutter.io/platform-plugins/).
+```yaml
+dependencies:
+  flutter:
+    sdk: flutter
+  share: ^0.1.0
+```
+
+Import the library via
+```dart
+import 'package:share/share.dart';
+```
+
+Then invoke the static `share` method anywhere in your Dart code
+```dart
+share('check out my website https://example.com');
+```
