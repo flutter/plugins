@@ -5,6 +5,6 @@
 #import <Flutter/Flutter.h>
 
 @interface SharePlugin : NSObject
-- initWithFlutterViewController:
-    (FlutterViewController *)flutterViewController;
+- initWithController:
+    (FlutterViewController *)controller;
 @end

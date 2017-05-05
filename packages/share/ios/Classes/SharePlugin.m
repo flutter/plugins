@@ -8,27 +8,26 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
 
 @implementation SharePlugin
 
-- (instancetype)initWithFlutterViewController:
-    (FlutterViewController *)flutterViewController {
+- (instancetype)initWithController:
+    (FlutterViewController *)controller {
   FlutterMethodChannel *shareChannel = [FlutterMethodChannel
-      methodChannelNamed:PLATFORM_CHANNEL
-         binaryMessenger:flutterViewController
-                   codec:[FlutterStandardMethodCodec sharedInstance]];
+      methodChannelWithName:PLATFORM_CHANNEL
+            binaryMessenger:controller];
 
   [shareChannel setMethodCallHandler:^(FlutterMethodCall *call,
-                                       FlutterResultReceiver result) {
+                                       FlutterResult result) {
     if ([@"share" isEqualToString:call.method]) {
       UIActivityViewController *activityViewController =
           [[UIActivityViewController alloc] initWithActivityItems:@[call.arguments]
                                             applicationActivities:nil];
-      [flutterViewController presentViewController:activityViewController
-                                          animated:YES
-                                        completion:nil];
-      result(nil, nil);
+      [controller presentViewController:activityViewController
+                               animated:YES
+                             completion:nil];
+      result(nil);
     } else {
-      result(nil, [FlutterError errorWithCode:@"UNKNOWN_METHOD"
-                                      message:@"Unknown share method called"
-                                      details:nil]);
+      result([FlutterError errorWithCode:@"UNKNOWN_METHOD"
+                                 message:@"Unknown share method called"
+                                 details:nil]);
     }
   }];
 }
