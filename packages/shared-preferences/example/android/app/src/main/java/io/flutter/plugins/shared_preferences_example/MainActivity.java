@@ -1,4 +1,4 @@
-package com.yourcompany.shared_preferences_example;
+package io.flutter.plugins.shared_preferences_example;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;

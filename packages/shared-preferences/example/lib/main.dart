@@ -1,3 +1,7 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -39,14 +43,14 @@ class SharedPreferencesDemoState extends State<SharedPreferencesDemo> {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text("SharedPreferences Demo"),
+        title: const Text("SharedPreferences Demo"),
       ),
       body: new Center(
         child: new FutureBuilder(
           future: _prefs,
           builder: (BuildContext context, AsyncSnapshot<SharedPreferences> snapshot) {
-            if (snapshot.connectionState != ConnectionState.done)
-              return new Text('Loading...');
+            if (snapshot.connectionState == ConnectionState.waiting)
+              return const Text('Loading...');
             int counter = snapshot.requireData.getInt('counter') ?? 0;
             return new Text(
               'Button tapped $counter time${ counter == 1 ? '' : 's' }.\n\n'
