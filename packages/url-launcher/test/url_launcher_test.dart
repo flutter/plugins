@@ -20,9 +20,9 @@ void main() {
   test('canLaunch test', () async {
     await canLaunch('http://example.com/');
     expect(
-        log,
-        equals(
-            <MethodCall>[new MethodCall('canLaunch', 'http://example.com/')]));
+      log,
+      equals(<MethodCall>[new MethodCall('canLaunch', 'http://example.com/')]),
+    );
     log.clear();
   });
 

@@ -33,9 +33,9 @@ void main() {
     response = null;
     Directory directory = await getApplicationDocumentsDirectory();
     expect(
-        log,
-        equals(
-            <MethodCall>[new MethodCall('getApplicationDocumentsDirectory')]));
+      log,
+      equals(<MethodCall>[new MethodCall('getApplicationDocumentsDirectory')]),
+    );
     expect(directory, isNull);
   });
 
