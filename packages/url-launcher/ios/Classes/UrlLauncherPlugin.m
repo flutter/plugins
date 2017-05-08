@@ -35,16 +35,18 @@
 }
 
 - (void)launchURL:(NSString*)urlString result:(FlutterResult)result {
-  NSURL* url = [NSURL URLWithString:urlString];
-  UIApplication* application = [UIApplication sharedApplication];
-  if ([application respondsToSelector:@selector(openURL:options:completionHandler:)]) {
-    // iOS 10 and above
+    NSURL* url = [NSURL URLWithString:urlString];
+    UIApplication* application = [UIApplication sharedApplication];
+
+    // Using ifdef as workaround to support running with Xcode 7.0 and sdk version 9
+    // where the dynamic check fails.
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_10_0
     [application openURL:url options:@{} completionHandler: ^(BOOL success) {
       [self sendResult:success result:result url:url];
     }];
-  } else {
+#else
     [self sendResult:[application openURL:url] result:result url:url];
-  }
+#endif
 }
 
 - (void)sendResult:(BOOL)success result:(FlutterResult)result url:(NSURL*)url {
