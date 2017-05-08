@@ -17,12 +17,7 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
   [shareChannel setMethodCallHandler:^(FlutterMethodCall *call,
                                        FlutterResult result) {
     if ([@"share" isEqualToString:call.method]) {
-      UIActivityViewController *activityViewController =
-          [[UIActivityViewController alloc] initWithActivityItems:@[call.arguments]
-                                            applicationActivities:nil];
-      [controller presentViewController:activityViewController
-                               animated:YES
-                             completion:nil];
+      [self share:call.arguments withController:controller];
       result(nil);
     } else {
       result([FlutterError errorWithCode:@"UNKNOWN_METHOD"
@@ -30,6 +25,16 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
                                  details:nil]);
     }
   }];
+}
+
+
+- (void)share:(id)sharedItems withController:(FlutterViewController *)controller {
+  UIActivityViewController *activityViewController =
+      [[UIActivityViewController alloc] initWithActivityItems:@[sharedItems]
+                                        applicationActivities:nil];
+  [controller presentViewController:activityViewController
+                            animated:YES
+                          completion:nil];
 }
 
 @end

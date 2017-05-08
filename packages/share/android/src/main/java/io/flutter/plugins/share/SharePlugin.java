@@ -38,16 +38,19 @@ public class SharePlugin implements MethodChannel.MethodCallHandler {
         return;
       }
       final String text = (String) call.arguments;
-
-      Intent shareIntent = new Intent();
-      shareIntent.setAction(Intent.ACTION_SEND);
-      shareIntent.putExtra(Intent.EXTRA_TEXT, text);
-      shareIntent.setType("text/plain");
-      context.startActivity(Intent.createChooser(shareIntent, null /* dialog title optional */));
+      share(text);
       result.success(null);
     } else {
       result.error("UNKNOWN_METHOD", "Unknown share method called", null);
     }
+  }
+
+  private void share(String text) {
+    Intent shareIntent = new Intent();
+    shareIntent.setAction(Intent.ACTION_SEND);
+    shareIntent.putExtra(Intent.EXTRA_TEXT, text);
+    shareIntent.setType("text/plain");
+    context.startActivity(Intent.createChooser(shareIntent, null /* dialog title optional */));
   }
 
 }

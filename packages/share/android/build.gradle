@@ -1,4 +1,4 @@
-group 'com.yourcompany.share'
+group 'io.flutter.plugins.share'
 version '1.0-SNAPSHOT'
 
 buildscript {
