@@ -1,3 +1,7 @@
+## [0.3.5] - 2017-05-8
+
+* Workaround for failing dynamic check in Xcode 7/sdk version 9.
+
 ## [0.3.4] - 2017-05-08
 
 * Add test.
