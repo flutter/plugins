@@ -42,9 +42,9 @@
     // where the dynamic check fails.
 #if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_10_0
     [application openURL:url options:@{} completionHandler: ^(BOOL success) {
-        [self sendResult:success result:result url:url];
+      [self sendResult:success result:result url:url];
     }];
-# else
+#else
     [self sendResult:[application openURL:url] result:result url:url];
 #endif
 }
