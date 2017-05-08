@@ -1,0 +1,11 @@
+name: shared_preferences_example
+description: Demonstrates how to use the shared_preferences plugin.
+
+dependencies:
+  flutter:
+    sdk: flutter
+  shared_preferences:
+    path: ../
+
+flutter:
+  uses-material-design: true
