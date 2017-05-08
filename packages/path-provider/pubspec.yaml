@@ -1,6 +1,6 @@
 name: path_provider
 
-version: 0.1.1
+version: 0.1.2
 description: A Flutter plugin for getting commonly used locations on the filesystem.
 author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins
@@ -12,4 +12,8 @@ flutter:
 
 dependencies:
   flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
     sdk: flutter
