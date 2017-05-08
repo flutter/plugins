@@ -4,17 +4,22 @@
 
 import 'package:flutter/services.dart';
 import 'package:test/test.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 void main() {
   test('URL launcher control test', () async {
     final List<MethodCall> log = <MethodCall>[];
-  
-    SystemChannels.platform.setMockMethodCallHandler((MethodCall methodCall) async {
+    const channel = const MethodChannel('plugins.flutter.io/url_launcher');
+
+    channel.setMockMethodCallHandler((MethodCall methodCall) async {
       log.add(methodCall);
     });
 
-    await UrlLauncher.launch('http://example.com/');
+    await canLaunch('http://example.com/');
+    expect(log, equals(<MethodCall>[new MethodCall('canLaunch', 'http://example.com/')]));
+    log.clear();
 
-    expect(log, equals(<MethodCall>[new MethodCall('UrlLauncher.launch', 'http://example.com/')]));
+    await launch('http://example.com/');
+    expect(log, equals(<MethodCall>[new MethodCall('launch', 'http://example.com/')]));
   });
 }
