@@ -27,7 +27,10 @@ void main() {
 
     directory = await getApplicationDocumentsDirectory();
 
-    expect(log, equals(<MethodCall>[new MethodCall('getApplicationDocumentsDirectory')]));
+    expect(
+        log,
+        equals(
+            <MethodCall>[new MethodCall('getApplicationDocumentsDirectory')]));
     expect(directory, isNull);
 
     final String fakePath = "/foo/bar/baz";

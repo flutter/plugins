@@ -16,10 +16,14 @@ void main() {
     });
 
     await canLaunch('http://example.com/');
-    expect(log, equals(<MethodCall>[new MethodCall('canLaunch', 'http://example.com/')]));
+    expect(
+        log,
+        equals(
+            <MethodCall>[new MethodCall('canLaunch', 'http://example.com/')]));
     log.clear();
 
     await launch('http://example.com/');
-    expect(log, equals(<MethodCall>[new MethodCall('launch', 'http://example.com/')]));
+    expect(log,
+        equals(<MethodCall>[new MethodCall('launch', 'http://example.com/')]));
   });
 }
