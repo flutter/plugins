@@ -9,37 +9,47 @@ import 'package:path_provider/path_provider.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('Path provider control test', () async {
-    final List<MethodCall> log = <MethodCall>[];
-    String response;
-    const channel = const MethodChannel('plugins.flutter.io/path_provider');
+  const channel = const MethodChannel('plugins.flutter.io/path_provider');
+  final List<MethodCall> log = <MethodCall>[];
+  String response;
 
-    channel.setMockMethodCallHandler((MethodCall methodCall) async {
-      log.add(methodCall);
-      return response;
-    });
+  channel.setMockMethodCallHandler((MethodCall methodCall) async {
+    log.add(methodCall);
+    return response;
+  });
 
+  tearDown(() {
+    log.clear();
+  });
+
+  test('getTemporaryDirectory test', () async {
+    response = null;
     Directory directory = await getTemporaryDirectory();
-
     expect(log, equals(<MethodCall>[new MethodCall('getTemporaryDirectory')]));
     expect(directory, isNull);
-    log.clear();
+  });
 
-    directory = await getApplicationDocumentsDirectory();
-
+  test('getApplicationDocumentsDirectory test', () async {
+    response = null;
+    Directory directory = await getApplicationDocumentsDirectory();
     expect(
         log,
         equals(
             <MethodCall>[new MethodCall('getApplicationDocumentsDirectory')]));
     expect(directory, isNull);
+  });
 
+  test('TemporaryDirectory path test', () async {
     final String fakePath = "/foo/bar/baz";
     response = fakePath;
-
-    directory = await getTemporaryDirectory();
+    Directory directory = await getTemporaryDirectory();
     expect(directory.path, equals(fakePath));
+  });
 
-    directory = await getApplicationDocumentsDirectory();
+  test('ApplicationDocumentsDirectory path test', () async {
+    final String fakePath = "/foo/bar/baz";
+    response = fakePath;
+    Directory directory = await getApplicationDocumentsDirectory();
     expect(directory.path, equals(fakePath));
   });
 }
