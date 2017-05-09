@@ -1,3 +1,7 @@
+## [0.2.1] - 2017-05-16
+
+* Add function to determine external storage directory.
+
 ## [0.2.0] - 2017-05-10
 
 * Upgrade to new plugin registration. (https://groups.google.com/forum/#!topic/flutter-dev/zba1Ynf2OKM)
