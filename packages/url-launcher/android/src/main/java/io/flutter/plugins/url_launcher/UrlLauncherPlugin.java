@@ -4,6 +4,7 @@
 
 package io.flutter.plugins.url_launcher;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.net.Uri;
@@ -13,21 +14,22 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.MethodCall;
+import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 /**
  * UrlLauncherPlugin
  */
 public class UrlLauncherPlugin implements MethodCallHandler {
-    private FlutterActivity activity;
+    private final Activity activity;
 
-    public static UrlLauncherPlugin register(FlutterActivity activity) {
-        return new UrlLauncherPlugin(activity);
+    public static void registerWith(Registrar registrar) {
+        MethodChannel channel = new MethodChannel(registrar.messenger(), "plugins.flutter.io/url_launcher");
+        UrlLauncherPlugin instance = new UrlLauncherPlugin(registrar.activity());
+        channel.setMethodCallHandler(instance);
     }
 
-    private UrlLauncherPlugin(FlutterActivity activity) {
+    private UrlLauncherPlugin(Activity activity) {
         this.activity = activity;
-        new MethodChannel(
-                activity.getFlutterView(), "plugins.flutter.io/url_launcher").setMethodCallHandler(this);
     }
 
     @Override

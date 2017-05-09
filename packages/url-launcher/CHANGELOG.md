@@ -1,8 +1,12 @@
-## [0.3.6] - 2017-05-9
+## [0.4.0] - 2017-05-09
+
+* Upgrade to new plugin registration.
+
+## [0.3.6] - 2017-05-09
 
 * Fix workaround for failing dynamic check in Xcode 7/sdk version 9.
 
-## [0.3.5] - 2017-05-8
+## [0.3.5] - 2017-05-08
 
 * Workaround for failing dynamic check in Xcode 7/sdk version 9.
 

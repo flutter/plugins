@@ -1,15 +1,11 @@
 #include "AppDelegate.h"
-#include "PluginRegistry.h"
+#include "GeneratedPluginRegistrant.h"
 
-@implementation AppDelegate {
-  PluginRegistry *plugins;
-}
+@implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-  // Override point for customization after application launch.
-  FlutterViewController *flutterController =
-      (FlutterViewController *)self.window.rootViewController;
-  plugins = [[PluginRegistry alloc] initWithController:flutterController];
+  [GeneratedPluginRegistrant registerWithRegistry:self];
+  [super application:application didFinishLaunchingWithOptions:launchOptions];
   return YES;
 }
 
