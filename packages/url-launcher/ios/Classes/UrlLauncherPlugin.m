@@ -40,7 +40,7 @@
 
     // Using ifdef as workaround to support running with Xcode 7.0 and sdk version 9
     // where the dynamic check fails.
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_10_0
+#if __IPHONE_OS_VERSION_MIN_REQUIRED > __IPHONE_9_0
     [application openURL:url options:@{} completionHandler: ^(BOOL success) {
       [self sendResult:success result:result url:url];
     }];
