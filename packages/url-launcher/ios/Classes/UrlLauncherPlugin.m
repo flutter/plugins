@@ -4,15 +4,11 @@
 
 #import "UrlLauncherPlugin.h"
 
-@implementation UrlLauncherPlugin {
-}
-
-- (instancetype)initWithController:(FlutterViewController*)controller {
-  self = [super init];
-  if (self) {
+@implementation UrlLauncherPlugin
++ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
     FlutterMethodChannel* channel = [FlutterMethodChannel
                                      methodChannelWithName:@"plugins.flutter.io/url_launcher"
-                                     binaryMessenger:controller];
+                                     binaryMessenger:registrar.messenger];
     [channel setMethodCallHandler:^(FlutterMethodCall *call,
                                     FlutterResult result) {
       NSString* url = call.arguments;
@@ -25,16 +21,14 @@
       }
     }];
   }
-  return self;
-}
 
-- (BOOL)canLaunchURL:(NSString*)urlString {
++ (BOOL)canLaunchURL:(NSString*)urlString {
   NSURL* url = [NSURL URLWithString:urlString];
   UIApplication* application = [UIApplication sharedApplication];
   return [application canOpenURL:url];
 }
 
-- (void)launchURL:(NSString*)urlString result:(FlutterResult)result {
++ (void)launchURL:(NSString*)urlString result:(FlutterResult)result {
     NSURL* url = [NSURL URLWithString:urlString];
     UIApplication* application = [UIApplication sharedApplication];
 
@@ -49,7 +43,7 @@
 #endif
 }
 
-- (void)sendResult:(BOOL)success result:(FlutterResult)result url:(NSURL*)url {
++ (void)sendResult:(BOOL)success result:(FlutterResult)result url:(NSURL*)url {
   if (success) {
     result(nil);
   } else {
