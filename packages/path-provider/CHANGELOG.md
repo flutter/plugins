@@ -1,3 +1,7 @@
+## [0.1.3] - 2017-05-09
+
+* Upgrade Android SDK Build Tools to 25.0.3.
+
 ## [0.1.2] - 2017-05-08
 
 * Add test.
