@@ -2,7 +2,6 @@
 
 * Upgrade to new plugin registration.
 
-
 ## [0.1.3] - 2017-05-09
 
 * Upgrade Android SDK Build Tools to 25.0.3.
