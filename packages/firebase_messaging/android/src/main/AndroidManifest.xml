@@ -1,0 +1,20 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  package="io.flutter.plugins.firebase_messaging"
+  android:versionCode="1"
+  android:versionName="0.0.1">
+
+  <uses-sdk android:minSdkVersion="16" android:targetSdkVersion="21" />
+
+  <application>
+    <service android:name=".FlutterFirebaseInstanceIDService">
+      <intent-filter>
+        <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+      </intent-filter>
+    </service>
+    <service android:name=".FlutterFirebaseMessagingService">
+      <intent-filter>
+        <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+      </intent-filter>
+    </service>
+  </application>
+</manifest>
