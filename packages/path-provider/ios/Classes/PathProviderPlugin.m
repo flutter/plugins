@@ -11,15 +11,12 @@ NSString* GetDirectoryOfType(NSSearchPathDirectory dir) {
   return paths.firstObject;
 }
 
-@implementation PathProviderPlugin {
-}
+@implementation PathProviderPlugin
 
-- (instancetype)initWithController:(FlutterViewController *)controller {
-  self = [super init];
-  if (self) {
++ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
     FlutterMethodChannel *channel = [FlutterMethodChannel
         methodChannelWithName:@"plugins.flutter.io/path_provider"
-              binaryMessenger:controller];
+              binaryMessenger:registrar.messenger];
     [channel setMethodCallHandler:^(FlutterMethodCall *call,
                                     FlutterResult result) {
       if ([@"getTemporaryDirectory" isEqualToString:call.method]) {
@@ -31,14 +28,12 @@ NSString* GetDirectoryOfType(NSSearchPathDirectory dir) {
       }
     }];
   }
-  return self;
-}
 
-- (NSString*)getTemporaryDirectory {
++ (NSString*)getTemporaryDirectory {
   return GetDirectoryOfType(NSCachesDirectory);
 }
 
-- (NSString*)getApplicationDocumentsDirectory {
++ (NSString*)getApplicationDocumentsDirectory {
   return GetDirectoryOfType(NSDocumentDirectory);
 }
 

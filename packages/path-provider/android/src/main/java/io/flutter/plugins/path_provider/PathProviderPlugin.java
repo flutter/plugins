@@ -4,25 +4,29 @@
 
 package io.flutter.plugins.path_provider;
 
-import io.flutter.app.FlutterActivity;
+import android.app.Activity;
+
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.MethodCall;
+import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.util.PathUtils;
 
 
 public class PathProviderPlugin implements MethodCallHandler {
-  private FlutterActivity activity;
+  private final Activity activity;
 
-  public static PathProviderPlugin register(FlutterActivity activity) {
-    return new PathProviderPlugin(activity);
+
+  public static void registerWith(Registrar registrar) {
+    MethodChannel channel =
+            new MethodChannel(registrar.messenger(), "plugins.flutter.io/path_provider");
+    PathProviderPlugin instance = new PathProviderPlugin(registrar.activity());
+    channel.setMethodCallHandler(instance);
   }
 
-  private PathProviderPlugin(FlutterActivity activity) {
+  private PathProviderPlugin(Activity activity) {
     this.activity = activity;
-    new MethodChannel(activity.getFlutterView(), "plugins.flutter.io/path_provider").
-            setMethodCallHandler(this);
   }
 
   @Override
