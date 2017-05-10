@@ -1,22 +1,3 @@
-PODS:
-  - Flutter (1.0.0)
-  - shared_preferences (0.0.1):
-    - Flutter
+PODFILE CHECKSUM: fe68fbd35e5bc75c5acdec41319edc0cdaebd038
 
-DEPENDENCIES:
-  - Flutter (from `/Users/zarah/flutter/bin/cache/artifacts/engine/ios`)
-  - shared_preferences (from `/Users/zarah/plugins/packages/shared-preferences/ios`)
-
-EXTERNAL SOURCES:
-  Flutter:
-    :path: /Users/zarah/flutter/bin/cache/artifacts/engine/ios
-  shared_preferences:
-    :path: /Users/zarah/plugins/packages/shared-preferences/ios
-
-SPEC CHECKSUMS:
-  Flutter: d674e78c937094a75ac71dd77e921e840bea3dbf
-  shared_preferences: d114ce44d97d21b83918e945ac7afa466fa5834c
-
-PODFILE CHECKSUM: cc70c01bca487bebd110b87397f017f3b76a89f1
-
-COCOAPODS: 1.2.1
+COCOAPODS: 1.0.1
