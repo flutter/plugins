@@ -1,5 +1,7 @@
 # shared_preferences
 
+[![pub package](https://img.shields.io/pub/v/shared_preferences.svg)](https://pub.dartlang.org/packages/shared_preferences)
+
 Wraps NSUserDefaults (on iOS) and SharedPreferences (on Android), providing
 a persistent store for simple data. Data is persisted to disk automatically
 and asynchronously.

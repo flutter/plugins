@@ -1,5 +1,7 @@
 # Firebase Analytics for Flutter
 
+[![pub package](https://img.shields.io/pub/v/firebase_analytics.svg)](https://pub.dartlang.org/packages/firebase_analytics)
+
 **WARNING: this is incomplete and highly experimental**
 
 This plugin allows Flutter apps use the Firebase Analytics API from their Dart
