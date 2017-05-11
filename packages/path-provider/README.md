@@ -1,5 +1,7 @@
 # path_provider
 
+[![pub package](https://img.shields.io/pub/v/path_provider.svg)](https://pub.dartlang.org/packages/path_provider)
+
 A Flutter plugin for finding commonly used locations on the filesystem. Supports iOS and Android.
 
 
