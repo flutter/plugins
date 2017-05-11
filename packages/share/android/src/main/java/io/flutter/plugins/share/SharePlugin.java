@@ -4,7 +4,6 @@
 
 package io.flutter.plugins.share;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
@@ -15,18 +14,18 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 /** Plugin method host for presenting a share sheet via Intent */
 public class SharePlugin implements MethodChannel.MethodCallHandler {
 
-  private static final String PLATFORM_CHANNEL = "plugins.flutter.io/share";
+  private static final String CHANNEL = "plugins.flutter.io/share";
 
   public static void registerWith(Registrar registrar) {
-    MethodChannel channel =  new MethodChannel(registrar.messenger(), PLATFORM_CHANNEL);
+    MethodChannel channel =  new MethodChannel(registrar.messenger(), CHANNEL);
     SharePlugin instance = new SharePlugin(registrar.activity());
     channel.setMethodCallHandler(instance);
   }
 
   private final Context context;
 
-  private SharePlugin(Activity activity) {
-    context = activity;
+  private SharePlugin(Context context) {
+    this.context = context;
   }
 
   @Override
