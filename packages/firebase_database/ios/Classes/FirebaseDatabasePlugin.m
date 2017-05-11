@@ -9,7 +9,7 @@
 @implementation NSError (FlutterError)
 - (FlutterError *)flutterError {
   return [FlutterError
-      errorWithCode:[NSString stringWithFormat:@"Error %d", self.code]
+      errorWithCode:[NSString stringWithFormat:@"Error %ld", self.code]
             message:self.domain
             details:self.localizedDescription];
 }
@@ -24,6 +24,13 @@
                               binaryMessenger:[registrar messenger]];
   FirebaseDatabasePlugin *instance = [[FirebaseDatabasePlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
+  // TODO(jackson): stub code that should be replaced with dynamic registration.
+  [[[FIRDatabase database].reference queryLimitedToLast:10]
+      observeEventType:FIRDataEventTypeChildAdded
+             withBlock:^(FIRDataSnapshot *_Nonnull snapshot) {
+               [channel invokeMethod:@"DatabaseReference#childAdded"
+                           arguments:@[ snapshot.key, snapshot.value ]];
+             }];
 }
 
 - (instancetype)init {
@@ -32,12 +39,6 @@
     if (![FIRApp defaultApp]) {
       [FIRApp configure];
     }
-    [[[FIRDatabase database].reference queryLimitedToLast:10]
-        observeEventType:FIRDataEventTypeChildAdded
-               withBlock:^(FIRDataSnapshot *_Nonnull snapshot) {
-                 [channel invokeMethod:@"DatabaseReference#childAdded"
-                             arguments:@[ snapshot.key, snapshot.value ]];
-               }];
   }
   return self;
 }
