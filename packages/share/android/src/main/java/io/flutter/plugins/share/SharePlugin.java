@@ -4,30 +4,28 @@
 
 package io.flutter.plugins.share;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
-import io.flutter.app.FlutterActivity;
 import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
-import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.MethodCall;
+import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 /** Plugin method host for presenting a share sheet via Intent */
 public class SharePlugin implements MethodChannel.MethodCallHandler {
 
   private static final String PLATFORM_CHANNEL = "plugins.flutter.io/share";
+  private final Context context;
 
-  public static SharePlugin register(FlutterActivity flutterActivity) {
-    return new SharePlugin(flutterActivity);
+  public static void registerWith(Registrar registrar) {
+    MethodChannel channel =  new MethodChannel(registrar.messenger(), PLATFORM_CHANNEL);
+    SharePlugin instance = new SharePlugin(registrar.activity());
+    channel.setMethodCallHandler(instance);
   }
 
-  private Context context;
-
-  private SharePlugin(FlutterActivity flutterActivity) {
-    context = flutterActivity;
-    new MethodChannel(flutterActivity.getFlutterView(), PLATFORM_CHANNEL)
-        .setMethodCallHandler(this);
+  private SharePlugin(Activity activity) {
+    context = activity;
   }
 
   @Override
