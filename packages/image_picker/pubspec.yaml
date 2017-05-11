@@ -1,0 +1,11 @@
+name: image_picker
+description: Flutter plugin that shows an image picker.
+
+flutter:
+  plugin:
+    androidPackage: io.flutter.plugins.imagepicker
+    pluginClass: ImagePickerPlugin
+
+dependencies:
+  flutter:
+    sdk: flutter
