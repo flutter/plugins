@@ -4,13 +4,13 @@
 Pod::Spec.new do |s|
   s.name             = 'shared_preferences'
   s.version          = '0.0.1'
-  s.summary          = 'A new flutter plugin project.'
+  s.summary          = 'A Flutter plugin for reading and writing simple key-value pairs.'
   s.description      = <<-DESC
-A new flutter plugin project.
+A Flutter plugin for reading and writing simple key-value pairs.
                        DESC
-  s.homepage         = 'http://example.com'
+  s.homepage         = 'https://github.com/flutter/plugins/tree/master/packages/shared_preferences'
   s.license          = { :file => '../LICENSE' }
-  s.author           = { 'Your Company' => 'email@example.com' }
+  s.author           = { 'Flutter Team' => 'flutter-dev@googlegroups.com' }
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'

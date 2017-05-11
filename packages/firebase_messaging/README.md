@@ -9,7 +9,7 @@ This plugin allows Flutter apps to interact with the [Firebase Cloud Messaging (
 
 With this plugin, your Flutter app can receive and process push notifications as well as data messages on Android and iOS. Read Firebase's [About FCM Messages](https://firebase.google.com/docs/cloud-messaging/concept-options) to learn more about the differences between notification messages and data messages.
 
-Not all features of the API are implemented in the plugin yet. If something is missing feel free to send a [pull request](https://github.com/flutter/firebase_messaging/pull/new/master) or file an [issue](https://github.com/flutter/firebase_messaging/issues/new).
+Not all features of the API are implemented in the plugin yet. If something is missing feel free to send a [pull request](https://github.com/flutter/plugins/pull/new/master) or file an [issue](https://github.com/flutter/flutter/issues/new).
 
 ## Getting Started
 
