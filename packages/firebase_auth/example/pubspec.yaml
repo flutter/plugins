@@ -6,9 +6,8 @@ dependencies:
     sdk: flutter
   firebase_auth:
     path: ../
-  # TODO(jackson): Point this at pub once a stable version is published
   google_sign_in:
-    git: git://github.com/flutter/google_sign_in
+    path: ../../google_sign_in
 
 flutter:
   uses-material-design: true
