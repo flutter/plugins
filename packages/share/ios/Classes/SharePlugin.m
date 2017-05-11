@@ -31,8 +31,8 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
       [[UIActivityViewController alloc] initWithActivityItems:@[sharedItems]
                                         applicationActivities:nil];
   [controller presentViewController:activityViewController
-                            animated:YES
-                          completion:nil];
+                           animated:YES
+                         completion:nil];
 }
 
 @end

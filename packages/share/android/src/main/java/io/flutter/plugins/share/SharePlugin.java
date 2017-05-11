@@ -16,13 +16,14 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 public class SharePlugin implements MethodChannel.MethodCallHandler {
 
   private static final String PLATFORM_CHANNEL = "plugins.flutter.io/share";
-  private final Context context;
 
   public static void registerWith(Registrar registrar) {
     MethodChannel channel =  new MethodChannel(registrar.messenger(), PLATFORM_CHANNEL);
     SharePlugin instance = new SharePlugin(registrar.activity());
     channel.setMethodCallHandler(instance);
   }
+
+  private final Context context;
 
   private SharePlugin(Activity activity) {
     context = activity;
