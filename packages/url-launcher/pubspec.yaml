@@ -16,3 +16,6 @@ dependencies:
 
 dev_dependencies:
   test:
+
+environment:
+    sdk: ">=1.8.0 <2.0.0"
