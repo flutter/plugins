@@ -4,13 +4,13 @@
 Pod::Spec.new do |s|
   s.name             = 'share'
   s.version          = '0.0.1'
-  s.summary          = 'A new flutter plugin project.'
+  s.summary          = 'A Flutter plugin for sharing content from the Flutter app via the platform share sheet.'
   s.description      = <<-DESC
-A new flutter plugin project.
+A Flutter plugin for sharing content from the Flutter app via the platform share sheet.
                        DESC
-  s.homepage         = 'http://example.com'
+  s.homepage         = 'https://github.com/flutter/plugins/tree/master/packages/share'
   s.license          = { :file => '../LICENSE' }
-  s.author           = { 'Your Company' => 'email@example.com' }
+  s.author           = { 'Flutter Team' => 'flutter-dev@googlegroups.com' }
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'

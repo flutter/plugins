@@ -8,9 +8,9 @@ Pod::Spec.new do |s|
   s.description      = <<-DESC
 Firebase Cloud Messaging plugin for Flutter.
                        DESC
-  s.homepage         = 'https://github.com/flutter/firebase_messaging'
+  s.homepage         = 'https://github.com/flutter/plugins/tree/master/packages/firebase_messaging'
   s.license          = { :file => '../LICENSE' }
-  s.author           = { 'Google Inc.' => 'goderbauer@google.com' }
+  s.author           = { 'Flutter Team' => 'flutter-dev@googlegroups.com' }
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'
