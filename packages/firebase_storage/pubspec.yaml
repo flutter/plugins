@@ -1,0 +1,11 @@
+name: firebase_storage
+description: Firebase Storage plugin for Flutter.
+
+flutter:
+  plugin:
+    androidPackage: io.flutter.plugins.firebase.storage
+    pluginClass: FirebaseStoragePlugin
+
+dependencies:
+  flutter:
+    sdk: flutter
