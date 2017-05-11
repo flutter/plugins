@@ -4,13 +4,12 @@
 
 package io.flutter.plugins.shared_preferences;
 
+import android.app.Activity;
 import android.content.Context;
-import io.flutter.app.FlutterActivity;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
-import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.MethodCall;
-import io.flutter.view.FlutterView;
+import io.flutter.plugin.common.PluginRegistry;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -26,14 +25,15 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
   private final android.content.SharedPreferences preferences;
   private final android.content.SharedPreferences.Editor editor;
 
-  public static SharedPreferencesPlugin register(FlutterActivity activity) {
-    return new SharedPreferencesPlugin(activity);
+  public static void registerWith(PluginRegistry.Registrar registrar) {
+    MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL_NAME);
+    SharedPreferencesPlugin instance = new SharedPreferencesPlugin(registrar.activity());
+    channel.setMethodCallHandler(instance);
   }
 
-  private SharedPreferencesPlugin(FlutterActivity activity) {
+  private SharedPreferencesPlugin(Activity activity) {
     preferences = activity.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
     editor = preferences.edit();
-    new MethodChannel(activity.getFlutterView(), CHANNEL_NAME).setMethodCallHandler(this);
   }
 
   // Filter preferences to only those set by the flutter app.

@@ -6,16 +6,12 @@
 
 static NSString *const CHANNEL_NAME = @"plugins.flutter.io/shared_preferences";
 
-@implementation SharedPreferencesPlugin {
-  FlutterMethodChannel *_channel;
-}
+@implementation SharedPreferencesPlugin
 
-- (instancetype)initWithController:(FlutterViewController *)controller {
-  if (self = [super init]) {
-    _channel = [FlutterMethodChannel methodChannelWithName:CHANNEL_NAME
-                                           binaryMessenger:controller];
-
-    [_channel setMethodCallHandler:^(FlutterMethodCall *call,
++ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
+    FlutterMethodChannel *channel =  [FlutterMethodChannel methodChannelWithName:CHANNEL_NAME
+                                                                 binaryMessenger:registrar.messenger];
+    [channel setMethodCallHandler:^(FlutterMethodCall *call,
                                      FlutterResult result) {
       NSString *method = [call method];
       NSDictionary *arguments = [call arguments];
@@ -64,13 +60,6 @@ static NSString *const CHANNEL_NAME = @"plugins.flutter.io/shared_preferences";
         result(FlutterMethodNotImplemented);
       }
     }];
-  }
-  return self;
-}
-
-- (void)dealloc {
-  [_channel setMethodCallHandler:nil];
-  _channel = nil;
 }
 
 #pragma mark - Private
