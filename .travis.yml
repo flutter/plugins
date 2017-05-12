@@ -17,10 +17,10 @@ matrix:
         - git clone https://github.com/flutter/flutter.git --depth 1
         - ./flutter/bin/flutter doctor
         - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
-        - (cd scripts; ../flutter/bin/cache/dart-sdk/bin/pub get)
+        - ./flutter/bin/cache/dart-sdk/bin/pub global activate flutter_plugin_tools
       script:
-        - dart scripts/cli.dart format --travis --clang-format=clang-format-5.0
-        - dart scripts/cli.dart test
+        - pub global run flutter_plugin_tools format --travis --clang-format=clang-format-5.0
+        - pub global run flutter_plugin_tools test
     - os: linux
       language: android
       licenses:
@@ -58,9 +58,9 @@ matrix:
         - git clone https://github.com/flutter/flutter.git --depth 1
         - ./flutter/bin/flutter doctor
         - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
-        - (cd scripts; ../flutter/bin/cache/dart-sdk/bin/pub get)
+        - ./flutter/bin/cache/dart-sdk/bin/pub global activate flutter_plugin_tools
       script:
-        - dart scripts/cli.dart build --apk
+        - pub global run flutter_plugin_tools build --apk
     - os: osx
       language: generic
       osx_image: xcode8.3
@@ -73,9 +73,9 @@ matrix:
         - git clone https://github.com/flutter/flutter.git --depth 1
         - ./flutter/bin/flutter doctor
         - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
-        - (cd scripts; ../flutter/bin/cache/dart-sdk/bin/pub get)
+        - ./flutter/bin/cache/dart-sdk/bin/pub global activate flutter_plugin_tools
       script:
-        - dart scripts/cli.dart build --ipa
+        - pub global run flutter_plugin_tools build --ipa
 
 cache:
   directories:

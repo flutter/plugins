@@ -1,6 +1,0 @@
-name: scripts
-
-dependencies:
-  args: "^0.13.7"
-  path: "^1.4.1"
-  http: "^0.11.3+13"
