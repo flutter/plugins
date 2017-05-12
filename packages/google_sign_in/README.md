@@ -1,5 +1,7 @@
 # google_sign_in
 
+[![pub package](https://img.shields.io/pub/v/google_sign_in.svg)](https://pub.dartlang.org/packages/google_sign_in)
+
 A Flutter plugin for [Google Sign In](https://developers.google.com/identity/).
 
 Note: This is a work-in-progress, and is not fully supported by the Flutter team.
