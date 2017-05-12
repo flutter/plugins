@@ -13,11 +13,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-/** A class for running tasks in a background thread.
-  *
-  * TODO(jackson): If this class is useful for other plugins, consider including
-  * it in a shared library or in the Flutter engine
-  */
+/**
+ * A class for running tasks in a background thread.
+ *
+ * <p>TODO(jackson): If this class is useful for other plugins, consider including it in a shared
+ * library or in the Flutter engine
+ */
 public final class BackgroundTaskRunner {
 
   /**

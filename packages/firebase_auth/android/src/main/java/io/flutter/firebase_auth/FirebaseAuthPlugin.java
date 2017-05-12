@@ -6,36 +6,30 @@ package io.flutter.firebase_auth;
 
 import android.app.Activity;
 import android.support.annotation.NonNull;
-
-import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserInfo;
-
+import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.PluginRegistry;
-
 import java.util.Map;
 
-/**
- * Flutter plugin for Firebase Auth.
- */
+/** Flutter plugin for Firebase Auth. */
 public class FirebaseAuthPlugin implements MethodCallHandler {
   private final Activity activity;
   private final FirebaseAuth firebaseAuth;
 
   private static final String ERROR_REASON_EXCEPTION = "exception";
-
 
   public static void registerWith(PluginRegistry.Registrar registrar) {
     final MethodChannel channel =
@@ -66,8 +60,8 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
 
   private void handleSignInAnonymously(MethodCall call, final Result result) {
     firebaseAuth
-      .signInAnonymously()
-      .addOnCompleteListener(activity, new SignInCompleteListener(result));
+        .signInAnonymously()
+        .addOnCompleteListener(activity, new SignInCompleteListener(result));
   }
 
   private void handleSignInWithGoogle(MethodCall call, final Result result) {
@@ -76,8 +70,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     String idToken = arguments.get("idToken");
     String accessToken = arguments.get("accessToken");
     AuthCredential credential = GoogleAuthProvider.getCredential(idToken, accessToken);
-    firebaseAuth.signInWithCredential(credential)
-      .addOnCompleteListener(activity, new SignInCompleteListener(result));
+    firebaseAuth
+        .signInWithCredential(credential)
+        .addOnCompleteListener(activity, new SignInCompleteListener(result));
   }
 
   private class SignInCompleteListener implements OnCompleteListener<AuthResult> {
@@ -117,11 +112,12 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
           for (UserInfo userInfo : user.getProviderData()) {
             providerDataBuilder.add(userInfoToMap(userInfo).build());
           }
-          ImmutableMap<String, Object> userMap = userInfoToMap(user)
-              .put("isAnonymous", user.isAnonymous())
-              .put("isEmailVerified", user.isEmailVerified())
-              .put("providerData", providerDataBuilder.build())
-              .build();
+          ImmutableMap<String, Object> userMap =
+              userInfoToMap(user)
+                  .put("isAnonymous", user.isAnonymous())
+                  .put("isEmailVerified", user.isEmailVerified())
+                  .put("providerData", providerDataBuilder.build())
+                  .build();
           result.success(userMap);
         } else {
           result.success(null);

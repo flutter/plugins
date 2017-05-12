@@ -28,28 +28,24 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import io.flutter.plugin.common.MethodCall;
+import io.flutter.plugin.common.MethodChannel;
+import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
+import io.flutter.plugin.common.MethodChannel.Result;
+import io.flutter.plugin.common.PluginRegistry;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
-import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.MethodCall;
-import io.flutter.plugin.common.PluginRegistry;
-
-import java.util.HashMap;
-
-/**
- * Google sign-in plugin for Flutter.
- */
+/** Google sign-in plugin for Flutter. */
 public class GoogleSignInPlugin
     implements MethodCallHandler,
-    PluginRegistry.ActivityResultListener,
-    GoogleApiClient.ConnectionCallbacks,
-    GoogleApiClient.OnConnectionFailedListener {
+        PluginRegistry.ActivityResultListener,
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener {
 
   private Activity activity;
   private static final String CHANNEL = "plugins.flutter.io/google_sign_in";
@@ -90,20 +86,20 @@ public class GoogleSignInPlugin
 
   public static void registerWith(PluginRegistry.Registrar registrar) {
     final MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL);
-    final GoogleSignInPlugin instance = new GoogleSignInPlugin(registrar.activity(), new BackgroundTaskRunner(1), REQUEST_CODE);
+    final GoogleSignInPlugin instance =
+        new GoogleSignInPlugin(registrar.activity(), new BackgroundTaskRunner(1), REQUEST_CODE);
     registrar.addActivityResultListener(instance);
     channel.setMethodCallHandler(instance);
   }
 
   @VisibleForTesting
   private GoogleSignInPlugin(
-      Activity activity,
-      BackgroundTaskRunner backgroundTaskRunner,
-      int requestCode) {
+      Activity activity, BackgroundTaskRunner backgroundTaskRunner, int requestCode) {
     this.activity = activity;
     this.backgroundTaskRunner = backgroundTaskRunner;
     this.requestCode = requestCode;
-    activity.getApplication()
+    activity
+        .getApplication()
         .registerActivityLifecycleCallbacks(new GoogleApiClientConnectionManager());
   }
 
@@ -154,14 +150,15 @@ public class GoogleSignInPlugin
         googleApiClient = null;
       }
       GoogleSignInOptions.Builder optionsBuilder =
-          new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-              .requestEmail();
+          new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail();
       // Only requests a clientId if google-services.json was present and parsed
       // by the google-services Gradle script.
       // TODO(jackson): Perhaps we should provide a mechanism to override this
       // behavior.
-      int clientIdIdentifier = activity.getResources().getIdentifier(
-            "default_web_client_id", "string", activity.getPackageName());
+      int clientIdIdentifier =
+          activity
+              .getResources()
+              .getIdentifier("default_web_client_id", "string", activity.getPackageName());
       if (clientIdIdentifier != 0) {
         optionsBuilder.requestIdToken(activity.getString(clientIdIdentifier));
       }
@@ -196,8 +193,8 @@ public class GoogleSignInPlugin
    * <p>Only one type of operation is allowed to be executed at a time, so if there's a pending
    * operation for a method type other than the current invocation, this will report failure on the
    * specified result object. Alternatively, if there's a pending operation for the same method
-   * type, this will signal that the method is already being handled and add the specified result
-   * to the pending operation's result queue.
+   * type, this will signal that the method is already being handled and add the specified result to
+   * the pending operation's result queue.
    *
    * <p>If there's no pending operation, this method will set the pending operation to the current
    * invocation.
@@ -205,7 +202,7 @@ public class GoogleSignInPlugin
    * @param currentMethod The current invocation.
    * @param result receives the result of the current invocation.
    * @return true iff an operation is already in progress (and thus the response is already being
-   * handled).
+   *     handled).
    */
   private boolean checkAndSetPendingOperation(String currentMethod, Result result) {
     if (pendingOperation == null) {
@@ -262,9 +259,8 @@ public class GoogleSignInPlugin
   }
 
   /**
-   * Gets an OAuth access token with the scopes that were specified during {@link
-   * #init(Result, List, String) initialization} for the user with the specified email
-   * address.
+   * Gets an OAuth access token with the scopes that were specified during {@link #init(Result,
+   * List, String) initialization} for the user with the specified email address.
    */
   private void getTokens(Result result, final String email) {
     if (email == null) {
@@ -330,9 +326,7 @@ public class GoogleSignInPlugin
             });
   }
 
-  /**
-   * Signs the user out, and revokes their credentials.
-   */
+  /** Signs the user out, and revokes their credentials. */
   private void disconnect(Result result) {
     if (checkAndSetPendingOperation(METHOD_DISCONNECT, result)) {
       return;
@@ -439,24 +433,19 @@ public class GoogleSignInPlugin
 
   private class GoogleApiClientConnectionManager implements ActivityLifecycleCallbacks {
     @Override
-    public void onActivityCreated(Activity activity, Bundle bundle) {
-    }
+    public void onActivityCreated(Activity activity, Bundle bundle) {}
 
     @Override
-    public void onActivityDestroyed(Activity activity) {
-    }
+    public void onActivityDestroyed(Activity activity) {}
 
     @Override
-    public void onActivityPaused(Activity activity) {
-    }
+    public void onActivityPaused(Activity activity) {}
 
     @Override
-    public void onActivityResumed(Activity activity) {
-    }
+    public void onActivityResumed(Activity activity) {}
 
     @Override
-    public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
-    }
+    public void onActivitySaveInstanceState(Activity activity, Bundle outState) {}
 
     @Override
     public void onActivityStarted(Activity activity) {
@@ -472,5 +461,4 @@ public class GoogleSignInPlugin
       }
     }
   }
-
 }

@@ -8,10 +8,9 @@
 
 @implementation NSError (FlutterError)
 - (FlutterError *)flutterError {
-  return [FlutterError
-      errorWithCode:[NSString stringWithFormat:@"Error %ld", (long)self.code]
-            message:self.domain
-            details:self.localizedDescription];
+  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %ld", (long)self.code]
+                             message:self.domain
+                             details:self.localizedDescription];
 }
 @end
 
@@ -20,12 +19,11 @@
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
-  [FlutterMethodChannel methodChannelWithName:@"firebase_storage"
-                              binaryMessenger:[registrar messenger]];
+      [FlutterMethodChannel methodChannelWithName:@"firebase_storage"
+                                  binaryMessenger:[registrar messenger]];
   FirebaseStoragePlugin *instance = [[FirebaseStoragePlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
-
 
 - (instancetype)init {
   self = [super init];
@@ -39,11 +37,9 @@
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"StorageReference#putFile" isEqualToString:call.method]) {
-    NSData *data =
-        [NSData dataWithContentsOfFile:call.arguments[@"filename"]];
+    NSData *data = [NSData dataWithContentsOfFile:call.arguments[@"filename"]];
     NSString *path = call.arguments[@"path"];
-    FIRStorageReference *fileRef =
-        [[FIRStorage storage].reference child:path];
+    FIRStorageReference *fileRef = [[FIRStorage storage].reference child:path];
     [fileRef putData:data
             metadata:nil
           completion:^(FIRStorageMetadata *metadata, NSError *error) {

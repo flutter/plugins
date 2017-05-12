@@ -6,27 +6,21 @@ package io.flutter.plugins.firebase.storage;
 
 import android.app.Activity;
 import android.net.Uri;
-
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.OnFailureListener;
-
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-
+import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
-
-import java.util.Map;
 import java.io.File;
+import java.util.Map;
 
-/**
- * FirebaseStoragePlugin
- */
+/** FirebaseStoragePlugin */
 public class FirebaseStoragePlugin implements MethodCallHandler {
   private FirebaseStorage firebaseStorage;
 
@@ -34,7 +28,6 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
     final MethodChannel channel = new MethodChannel(registrar.messenger(), "firebase_storage");
     channel.setMethodCallHandler(new FirebaseStoragePlugin(registrar.activity()));
   }
-
 
   private FirebaseStoragePlugin(Activity activity) {
     FirebaseApp.initializeApp(activity);
@@ -50,18 +43,20 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
       File file = new File(filename);
       StorageReference ref = firebaseStorage.getReference().child(path);
       UploadTask uploadTask = ref.putFile(Uri.fromFile(file));
-      uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-        @Override
-        public void onSuccess(UploadTask.TaskSnapshot snapshot) {
-          result.success(snapshot.getDownloadUrl().toString());
-        }
-      });
-      uploadTask.addOnFailureListener(new OnFailureListener() {
-        @Override
-        public void onFailure(Exception e) {
-          result.error("upload_error", e.getMessage(), e.getStackTrace());
-        }
-      });
+      uploadTask.addOnSuccessListener(
+          new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot snapshot) {
+              result.success(snapshot.getDownloadUrl().toString());
+            }
+          });
+      uploadTask.addOnFailureListener(
+          new OnFailureListener() {
+            @Override
+            public void onFailure(Exception e) {
+              result.error("upload_error", e.getMessage(), e.getStackTrace());
+            }
+          });
     } else {
       result.notImplemented();
     }

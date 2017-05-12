@@ -2,14 +2,13 @@
 
 #import "ImagePickerPlugin.h"
 
-@interface ImagePickerPlugin () <UINavigationControllerDelegate,
-                                 UIImagePickerControllerDelegate>
+@interface ImagePickerPlugin ()<UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 @end
 
 @implementation ImagePickerPlugin {
   FlutterResult _result;
   UIImagePickerController *_imagePickerController;
-  UIViewController* _viewController;
+  UIViewController *_viewController;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -33,7 +32,6 @@
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if (_result) {
-
     _result([FlutterError errorWithCode:@"multiple_request"
                                 message:@"Cancelled by a second request"
                                 details:nil]);
@@ -45,33 +43,29 @@
     _result = result;
 
     UIAlertController *alert =
-    [UIAlertController alertControllerWithTitle:nil
-                                        message:nil
-                                 preferredStyle:UIAlertControllerStyleActionSheet];
-    UIAlertAction *camera =
-        [UIAlertAction actionWithTitle:@"Take Photo"
-                                 style:UIAlertActionStyleDefault
-                               handler:^(UIAlertAction *action) {
-                                 _imagePickerController.sourceType =
-                                     UIImagePickerControllerSourceTypeCamera;
-                                 [_viewController presentViewController:_imagePickerController
-                                                            animated:YES
-                                                          completion:nil];
-                               }];
-    UIAlertAction *library =
-        [UIAlertAction actionWithTitle:@"Choose Photo"
-                                 style:UIAlertActionStyleDefault
-                               handler:^(UIAlertAction *action) {
-                                 _imagePickerController.sourceType =
-                                     UIImagePickerControllerSourceTypePhotoLibrary;
-                                 [_viewController presentViewController:_imagePickerController
-                                                            animated:YES
-                                                          completion:nil];
-                               }];
+        [UIAlertController alertControllerWithTitle:nil
+                                            message:nil
+                                     preferredStyle:UIAlertControllerStyleActionSheet];
+    UIAlertAction *camera = [UIAlertAction
+        actionWithTitle:@"Take Photo"
+                  style:UIAlertActionStyleDefault
+                handler:^(UIAlertAction *action) {
+                  _imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
+                  [_viewController presentViewController:_imagePickerController
+                                                animated:YES
+                                              completion:nil];
+                }];
+    UIAlertAction *library = [UIAlertAction
+        actionWithTitle:@"Choose Photo"
+                  style:UIAlertActionStyleDefault
+                handler:^(UIAlertAction *action) {
+                  _imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+                  [_viewController presentViewController:_imagePickerController
+                                                animated:YES
+                                              completion:nil];
+                }];
     UIAlertAction *cancel =
-        [UIAlertAction actionWithTitle:@"Cancel"
-                                 style:UIAlertActionStyleCancel
-                               handler:nil];
+        [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
     [alert addAction:camera];
     [alert addAction:library];
     [alert addAction:cancel];
@@ -91,7 +85,7 @@
   if (image == nil) {
     image = [info objectForKey:UIImagePickerControllerCropRect];
   }
-  image = [self normalizedImage: image];
+  image = [self normalizedImage:image];
   NSData *data = UIImageJPEGRepresentation(image, 1.0);
   NSString *tmpDirectory = NSTemporaryDirectory();
   NSString *guid = [[NSProcessInfo processInfo] globallyUniqueString];
@@ -99,9 +93,7 @@
   // directory.
   NSString *tmpFile = [NSString stringWithFormat:@"image_picker_%@.jpg", guid];
   NSString *tmpPath = [tmpDirectory stringByAppendingPathComponent:tmpFile];
-  if ([[NSFileManager defaultManager] createFileAtPath:tmpPath
-                                              contents:data
-                                            attributes:nil]) {
+  if ([[NSFileManager defaultManager] createFileAtPath:tmpPath contents:data attributes:nil]) {
     _result(tmpPath);
   } else {
     _result([FlutterError errorWithCode:@"create_error"
@@ -116,7 +108,7 @@
 // will not be orientated correctly as is. To avoid that, we rotate the actual
 // image data.
 // TODO(goderbauer): investigate how to preserve EXIF data.
-- (UIImage *)normalizedImage: (UIImage *)image {
+- (UIImage *)normalizedImage:(UIImage *)image {
   if (image.imageOrientation == UIImageOrientationUp) return image;
 
   UIGraphicsBeginImageContextWithOptions(image.size, NO, image.scale);

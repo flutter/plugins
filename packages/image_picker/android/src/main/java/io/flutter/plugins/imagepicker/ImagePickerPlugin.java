@@ -2,22 +2,20 @@ package io.flutter.plugins.imagepicker;
 
 import android.app.Activity;
 import android.content.Intent;
-import io.flutter.plugin.common.PluginRegistry;
-import io.flutter.plugin.common.PluginRegistry.ActivityResultListener;
-import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
-import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.MethodCall;
 import com.esafirm.imagepicker.features.ImagePicker;
 import com.esafirm.imagepicker.features.camera.DefaultCameraModule;
 import com.esafirm.imagepicker.features.camera.OnImageReadyListener;
 import com.esafirm.imagepicker.model.Image;
+import io.flutter.plugin.common.MethodCall;
+import io.flutter.plugin.common.MethodChannel;
+import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
+import io.flutter.plugin.common.MethodChannel.Result;
+import io.flutter.plugin.common.PluginRegistry;
+import io.flutter.plugin.common.PluginRegistry.ActivityResultListener;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Location Plugin
- */
+/** Location Plugin */
 public class ImagePickerPlugin implements MethodCallHandler, ActivityResultListener {
   private static String TAG = "flutter";
   private static final String CHANNEL = "image_picker";
@@ -51,9 +49,7 @@ public class ImagePickerPlugin implements MethodCallHandler, ActivityResultListe
     }
     pendingResult = result;
     if (call.method.equals("pickImage")) {
-      ImagePicker.create(activity)
-          .single()
-          .start(REQUEST_CODE_PICK);
+      ImagePicker.create(activity).single().start(REQUEST_CODE_PICK);
     } else if (call.method.equals("captureImage")) {
       activity.startActivityForResult(cameraModule.getCameraIntent(activity), REQUEST_CODE_CAMERA);
     } else {
@@ -75,12 +71,15 @@ public class ImagePickerPlugin implements MethodCallHandler, ActivityResultListe
     }
     if (requestCode == REQUEST_CODE_CAMERA) {
       if (resultCode == Activity.RESULT_OK && data != null)
-        cameraModule.getImage(activity, data, new OnImageReadyListener() {
-          @Override
-          public void onImageReady(List<Image> images) {
-            handleResult(images.get(0));
-          }
-        });
+        cameraModule.getImage(
+            activity,
+            data,
+            new OnImageReadyListener() {
+              @Override
+              public void onImageReady(List<Image> images) {
+                handleResult(images.get(0));
+              }
+            });
       return true;
     }
     return false;
