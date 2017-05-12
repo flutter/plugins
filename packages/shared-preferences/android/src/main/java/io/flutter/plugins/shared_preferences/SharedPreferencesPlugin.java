@@ -6,18 +6,16 @@ package io.flutter.plugins.shared_preferences;
 
 import android.app.Activity;
 import android.content.Context;
+import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
-import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.PluginRegistry;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-/**
- * SharedPreferencesPlugin
- */
+/** SharedPreferencesPlugin */
 public class SharedPreferencesPlugin implements MethodCallHandler {
   private static final String SHARED_PREFERENCES_NAME = "FlutterSharedPreferences";
   private static final String CHANNEL_NAME = "plugins.flutter.io/shared_preferences";

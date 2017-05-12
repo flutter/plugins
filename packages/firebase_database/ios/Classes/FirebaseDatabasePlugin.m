@@ -8,10 +8,9 @@
 
 @implementation NSError (FlutterError)
 - (FlutterError *)flutterError {
-  return [FlutterError
-      errorWithCode:[NSString stringWithFormat:@"Error %ld", self.code]
-            message:self.domain
-            details:self.localizedDescription];
+  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %ld", self.code]
+                             message:self.domain
+                             details:self.localizedDescription];
 }
 @end
 
@@ -20,8 +19,8 @@
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
-  [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/firebase_database"
-                              binaryMessenger:[registrar messenger]];
+      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/firebase_database"
+                                  binaryMessenger:[registrar messenger]];
   FirebaseDatabasePlugin *instance = [[FirebaseDatabasePlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
   // TODO(jackson): stub code that should be replaced with dynamic registration.
@@ -46,11 +45,9 @@
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"DatabaseReference#set" isEqualToString:call.method]) {
     NSDictionary *data = call.arguments[0];
-    FIRDatabaseReference *ref =
-        [[FIRDatabase database].reference childByAutoId];
+    FIRDatabaseReference *ref = [[FIRDatabase database].reference childByAutoId];
     [ref updateChildValues:data
-        withCompletionBlock:^(NSError *_Nullable error,
-                              FIRDatabaseReference *_Nonnull ref) {
+        withCompletionBlock:^(NSError *_Nullable error, FIRDatabaseReference *_Nonnull ref) {
           if (error != nil) {
             result(error.flutterError);
           } else {

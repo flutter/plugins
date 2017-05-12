@@ -4,23 +4,18 @@
 
 package io.flutter.firebase_analytics;
 
-import java.util.Map;
-
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.analytics.FirebaseAnalytics;
-
 import android.app.Activity;
 import android.os.Bundle;
-
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.analytics.FirebaseAnalytics;
+import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.PluginRegistry;
+import java.util.Map;
 
-/**
- * Flutter plugin for Firebase Analytics.
- */
+/** Flutter plugin for Firebase Analytics. */
 public class FirebaseAnalyticsPlugin implements MethodCallHandler {
   private final Activity activity;
   private final FirebaseAnalytics firebaseAnalytics;
@@ -72,7 +67,8 @@ public class FirebaseAnalyticsPlugin implements MethodCallHandler {
     final String eventName = (String) arguments.get("name");
 
     @SuppressWarnings("unchecked")
-    final Bundle parameterBundle = createBundleFromMap((Map<String, Object>) arguments.get("parameters"));
+    final Bundle parameterBundle =
+        createBundleFromMap((Map<String, Object>) arguments.get("parameters"));
     firebaseAnalytics.logEvent(eventName, parameterBundle);
     result.success(null);
   }
@@ -139,7 +135,8 @@ public class FirebaseAnalyticsPlugin implements MethodCallHandler {
       } else if (value instanceof Boolean) {
         bundle.putBoolean(key, (Boolean) value);
       } else {
-        throw new IllegalArgumentException("Unsupported value type: " + value.getClass().getCanonicalName());
+        throw new IllegalArgumentException(
+            "Unsupported value type: " + value.getClass().getCanonicalName());
       }
     }
     return bundle;

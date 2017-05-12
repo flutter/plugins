@@ -11,8 +11,8 @@
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
-  [FlutterMethodChannel methodChannelWithName:@"firebase_analytics"
-                              binaryMessenger:[registrar messenger]];
+      [FlutterMethodChannel methodChannelWithName:@"firebase_analytics"
+                                  binaryMessenger:[registrar messenger]];
   FirebaseAnalyticsPlugin *instance = [[FirebaseAnalyticsPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
@@ -33,11 +33,9 @@
     id parameterMap = call.arguments[@"parameters"];
 
     if (parameterMap != [NSNull null]) {
-      [FIRAnalytics logEventWithName:eventName
-                    parameters:parameterMap];
+      [FIRAnalytics logEventWithName:eventName parameters:parameterMap];
     } else {
-      [FIRAnalytics logEventWithName:eventName
-                    parameters:nil];
+      [FIRAnalytics logEventWithName:eventName parameters:nil];
     }
 
     result(nil);

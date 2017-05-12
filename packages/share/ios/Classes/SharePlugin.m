@@ -9,30 +9,28 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
 @implementation SharePlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
-    FlutterMethodChannel *shareChannel = [FlutterMethodChannel
-                                          methodChannelWithName:PLATFORM_CHANNEL
-                                          binaryMessenger:registrar.messenger];
+  FlutterMethodChannel *shareChannel =
+      [FlutterMethodChannel methodChannelWithName:PLATFORM_CHANNEL
+                                  binaryMessenger:registrar.messenger];
 
-    [shareChannel setMethodCallHandler:^(FlutterMethodCall *call,
-                                         FlutterResult result) {
-      if ([@"share" isEqualToString:call.method]) {
-        [self share:call.arguments withController:[UIApplication sharedApplication].keyWindow.rootViewController];
-        result(nil);
-      } else {
-        result([FlutterError errorWithCode:@"UNKNOWN_METHOD"
-                                   message:@"Unknown share method called"
-                                   details:nil]);
-      }
-    }];
+  [shareChannel setMethodCallHandler:^(FlutterMethodCall *call, FlutterResult result) {
+    if ([@"share" isEqualToString:call.method]) {
+      [self share:call.arguments
+          withController:[UIApplication sharedApplication].keyWindow.rootViewController];
+      result(nil);
+    } else {
+      result([FlutterError errorWithCode:@"UNKNOWN_METHOD"
+                                 message:@"Unknown share method called"
+                                 details:nil]);
+    }
+  }];
 }
 
 + (void)share:(id)sharedItems withController:(UIViewController *)controller {
   UIActivityViewController *activityViewController =
-      [[UIActivityViewController alloc] initWithActivityItems:@[sharedItems]
+      [[UIActivityViewController alloc] initWithActivityItems:@[ sharedItems ]
                                         applicationActivities:nil];
-  [controller presentViewController:activityViewController
-                           animated:YES
-                         completion:nil];
+  [controller presentViewController:activityViewController animated:YES completion:nil];
 }
 
 @end

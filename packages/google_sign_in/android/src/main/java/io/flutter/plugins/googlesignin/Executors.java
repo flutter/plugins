@@ -8,11 +8,12 @@ import android.os.Handler;
 import android.os.Looper;
 import java.util.concurrent.Executor;
 
-/** Factory and utility methods for {@code Executor}.
-  *
-  * TODO(jackson): If this class is useful for other plugins, consider including
-  * it in a shared library or in the Flutter engine
-  */
+/**
+ * Factory and utility methods for {@code Executor}.
+ *
+ * <p>TODO(jackson): If this class is useful for other plugins, consider including it in a shared
+ * library or in the Flutter engine
+ */
 public final class Executors {
 
   private static final class UiThreadExecutor implements Executor {

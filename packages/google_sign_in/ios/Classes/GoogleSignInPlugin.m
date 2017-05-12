@@ -5,11 +5,11 @@
 #import "GoogleSignInPlugin.h"
 #import <Google/SignIn.h>
 
-@interface NSError(FlutterError)
-@property (readonly, nonatomic) FlutterError *flutterError;
+@interface NSError (FlutterError)
+@property(readonly, nonatomic) FlutterError *flutterError;
 @end
 
-@implementation NSError(FlutterError)
+@implementation NSError (FlutterError)
 - (FlutterError *)flutterError {
   return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %ld", (long)self.code]
                              message:self.domain
@@ -21,16 +21,16 @@
 @end
 
 @implementation GoogleSignInPlugin {
-  NSMutableArray<FlutterResult>* _accountRequests;
+  NSMutableArray<FlutterResult> *_accountRequests;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
-  [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/google_sign_in"
-                              binaryMessenger:[registrar messenger]];
+      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/google_sign_in"
+                                  binaryMessenger:[registrar messenger]];
   // TODO(goderbauer): cast is workaround for https://github.com/flutter/flutter/issues/9961.
   UIViewController *viewController = (UIViewController *)registrar.messenger;
-  GoogleSignInPlugin *instance = [[GoogleSignInPlugin alloc] initWithViewController: viewController];
+  GoogleSignInPlugin *instance = [[GoogleSignInPlugin alloc] initWithViewController:viewController];
   [registrar addApplicationDelegate:instance];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
@@ -61,12 +61,11 @@
   } else if ([call.method isEqualToString:@"getTokens"]) {
     GIDGoogleUser *currentUser = [GIDSignIn sharedInstance].currentUser;
     GIDAuthentication *auth = currentUser.authentication;
-    [auth getTokensWithHandler:^void(GIDAuthentication* authentication,
-                                     NSError* error) {
+    [auth getTokensWithHandler:^void(GIDAuthentication *authentication, NSError *error) {
       result(error != nil ? error.flutterError : @{
-                                                   @"idToken": authentication.idToken,
-                                                   @"accessToken": authentication.accessToken,
-                                                   });
+        @"idToken" : authentication.idToken,
+        @"accessToken" : authentication.accessToken,
+      });
     }];
   } else if ([call.method isEqualToString:@"signOut"]) {
     [[GIDSignIn sharedInstance] signOut];
@@ -79,18 +78,18 @@
   }
 }
 
-- (BOOL)application:(UIApplication*)application
-            openURL:(NSURL*)url
-  sourceApplication:(NSString*)sourceApplication
-         annotation:(id)annotation {
+- (BOOL)application:(UIApplication *)application
+              openURL:(NSURL *)url
+    sourceApplication:(NSString *)sourceApplication
+           annotation:(id)annotation {
   return [[GIDSignIn sharedInstance] handleURL:url
-                            sourceApplication:sourceApplication
-                                  annotation:annotation];
+                             sourceApplication:sourceApplication
+                                    annotation:annotation];
 }
 
-- (void)signIn:(GIDSignIn*)signIn
-didSignInForUser:(GIDGoogleUser*)user
-     withError:(NSError*)error {
+- (void)signIn:(GIDSignIn *)signIn
+    didSignInForUser:(GIDGoogleUser *)user
+           withError:(NSError *)error {
   if (error != nil) {
     if (error.code == -4) {
       // Occurs when silent sign-in is not possible, return an empty user in this case
@@ -99,30 +98,28 @@ didSignInForUser:(GIDGoogleUser*)user
       [self respondWithAccount:nil error:error];
     }
   } else {
-    NSURL* photoUrl;
+    NSURL *photoUrl;
     if (user.profile.hasImage) {
       // Placeholder that will be replaced by on the Dart side based on screen size
       photoUrl = [user.profile imageURLWithDimension:1337];
     }
     [self respondWithAccount:@{
-                               @"displayName" : user.profile.name ?: [NSNull null],
-                               @"email" : user.profile.email ?: [NSNull null],
-                               @"id" : user.userID ?: [NSNull null],
-                               @"photoUrl" : [photoUrl absoluteString] ?: [NSNull null],
-                               }
+      @"displayName" : user.profile.name ?: [NSNull null],
+      @"email" : user.profile.email ?: [NSNull null],
+      @"id" : user.userID ?: [NSNull null],
+      @"photoUrl" : [photoUrl absoluteString] ?: [NSNull null],
+    }
                        error:nil];
   }
 }
 
 - (void)signIn:(GIDSignIn *)signIn
-didDisconnectWithUser:(GIDGoogleUser *)user
-     withError:(NSError *)error {
+    didDisconnectWithUser:(GIDGoogleUser *)user
+                withError:(NSError *)error {
   [self respondWithAccount:@{} error:nil];
 }
 
-- (void)respondWithAccount:(id)account
-                     error:(NSError *)error
-{
+- (void)respondWithAccount:(id)account error:(NSError *)error {
   NSArray<FlutterResult> *requests = _accountRequests;
   _accountRequests = [[NSMutableArray alloc] init];
   for (FlutterResult accountRequest in requests) {
