@@ -1,0 +1,82 @@
+matrix:
+  include:
+    - os: linux
+      jdk: oraclejdk8
+      sudo: false
+      addons:
+        apt:
+          # Flutter depends on /usr/lib/x86_64-linux-gnu/libstdc++.so.6 version GLIBCXX_3.4.18
+          sources:
+            - ubuntu-toolchain-r-test # if we don't specify this, the libstdc++6 we get is the wrong version
+            - llvm-toolchain-precise # for clang-format-5.0
+          packages:
+            - libstdc++6
+            - fonts-droid
+            - clang-format-5.0
+      before_script:
+        - git clone https://github.com/flutter/flutter.git --depth 1
+        - ./flutter/bin/flutter doctor
+        - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
+        - ./flutter/bin/cache/dart-sdk/bin/pub global activate flutter_plugin_tools
+      script:
+        - pub global run flutter_plugin_tools format --travis --clang-format=clang-format-5.0
+        - pub global run flutter_plugin_tools test
+    - os: linux
+      language: android
+      licenses:
+        - 'android-sdk-preview-license-.+'
+        - 'android-sdk-license-.+'
+        - 'google-gdk-license-.+'
+      android:
+        components:
+          - tools
+          - platform-tools
+          - build-tools-25.0.3
+          - android-25
+          - sys-img-armeabi-v7a-google_apis-25
+          - extra-android-m2repository
+          - extra-google-m2repository
+          - extra-google-android-support
+      jdk: oraclejdk8
+      sudo: false
+      addons:
+        apt:
+          # Flutter depends on /usr/lib/x86_64-linux-gnu/libstdc++.so.6 version GLIBCXX_3.4.18
+          sources:
+            - ubuntu-toolchain-r-test # if we don't specify this, the libstdc++6 we get is the wrong version
+          packages:
+            - libstdc++6
+            - fonts-droid
+      before_script:
+        - wget http://services.gradle.org/distributions/gradle-3.5-bin.zip
+        - unzip -qq gradle-3.5-bin.zip
+        - export GRADLE_HOME=$PWD/gradle-3.5
+        - export PATH=$GRADLE_HOME/bin:$PATH
+        - gradle -v
+        - android list targets
+        - echo no | android create avd --force -n test -t android-25 --abi armeabi-v7a --tag google_apis
+        - git clone https://github.com/flutter/flutter.git --depth 1
+        - ./flutter/bin/flutter doctor
+        - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
+        - ./flutter/bin/cache/dart-sdk/bin/pub global activate flutter_plugin_tools
+      script:
+        - pub global run flutter_plugin_tools build --apk
+    - os: osx
+      language: generic
+      osx_image: xcode8.3
+      before_script:
+        - pip install six
+        - brew update
+        - brew install --HEAD libimobiledevice
+        - brew install ideviceinstaller
+        - brew install ios-deploy
+        - git clone https://github.com/flutter/flutter.git --depth 1
+        - ./flutter/bin/flutter doctor
+        - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
+        - ./flutter/bin/cache/dart-sdk/bin/pub global activate flutter_plugin_tools
+      script:
+        - pub global run flutter_plugin_tools build --ipa
+
+cache:
+  directories:
+    - $HOME/.pub-cache

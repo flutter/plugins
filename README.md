@@ -1,5 +1,7 @@
 # Flutter plugins
 
+[![Build Status](https://travis-ci.org/flutter/plugins.svg?branch=master)](https://travis-ci.org/flutter/plugins)
+
 This repo is a companion repo to the main [flutter
 repo](https://github.com/flutter/flutter). It contains the source code for
 Flutter first-party plugins. Check the `packages` directory for all plugins.
