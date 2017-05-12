@@ -1,6 +1,5 @@
 # Firebase Cloud Messaging for Flutter
 
-[![Build Status](https://travis-ci.org/flutter/firebase_messaging.svg?branch=master)](https://travis-ci.org/flutter/firebase_messaging)
 [![pub package](https://img.shields.io/pub/v/firebase_messaging.svg)](https://pub.dartlang.org/packages/firebase_messaging)
 
 **WARNING: This is incomplete and experimental.**
