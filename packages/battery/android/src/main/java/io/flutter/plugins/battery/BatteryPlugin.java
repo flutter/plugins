@@ -9,27 +9,24 @@ import android.content.IntentFilter;
 import android.os.BatteryManager;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
-
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.EventChannel.EventSink;
 import io.flutter.plugin.common.EventChannel.StreamHandler;
+import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.PluginRegistry;
 
-/**
- * BatteryPlugin
- */
+/** BatteryPlugin */
 public class BatteryPlugin implements MethodCallHandler, StreamHandler {
 
-  /**
-   * Plugin registration.
-   */
+  /** Plugin registration. */
   public static void registerWith(PluginRegistry.Registrar registrar) {
-    final MethodChannel methodChannel = new MethodChannel(registrar.messenger(), "plugins.flutter.io/battery");
-    final EventChannel eventChannel = new EventChannel(registrar.messenger(), "plugins.flutter.io/charging");
+    final MethodChannel methodChannel =
+        new MethodChannel(registrar.messenger(), "plugins.flutter.io/battery");
+    final EventChannel eventChannel =
+        new EventChannel(registrar.messenger(), "plugins.flutter.io/charging");
     final BatteryPlugin instance = new BatteryPlugin(registrar.activity());
     eventChannel.setStreamHandler(instance);
     methodChannel.setMethodCallHandler(instance);
@@ -57,12 +54,11 @@ public class BatteryPlugin implements MethodCallHandler, StreamHandler {
     }
   }
 
-
   @Override
   public void onListen(Object arguments, EventSink events) {
     chargingStateChangeReceiver = createChargingStateChangeReceiver(events);
     activity.registerReceiver(
-            chargingStateChangeReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        chargingStateChangeReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
   }
 
   @Override
@@ -74,13 +70,16 @@ public class BatteryPlugin implements MethodCallHandler, StreamHandler {
   private int getBatteryLevel() {
     int batteryLevel = -1;
     if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
-      BatteryManager batteryManager = (BatteryManager) activity.getSystemService(activity.BATTERY_SERVICE);
+      BatteryManager batteryManager =
+          (BatteryManager) activity.getSystemService(activity.BATTERY_SERVICE);
       batteryLevel = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
     } else {
-      Intent intent = new ContextWrapper(activity.getApplicationContext()).
-              registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-      batteryLevel = (intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1) * 100) /
-              intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+      Intent intent =
+          new ContextWrapper(activity.getApplicationContext())
+              .registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+      batteryLevel =
+          (intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1) * 100)
+              / intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
     }
 
     return batteryLevel;
@@ -92,7 +91,7 @@ public class BatteryPlugin implements MethodCallHandler, StreamHandler {
       public void onReceive(Context context, Intent intent) {
         int status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
 
-        switch(status) {
+        switch (status) {
           case BatteryManager.BATTERY_STATUS_CHARGING:
             events.success("charging");
             break;
@@ -109,5 +108,4 @@ public class BatteryPlugin implements MethodCallHandler, StreamHandler {
       }
     };
   }
-
 }

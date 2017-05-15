@@ -1,6 +1,6 @@
 #import "BatteryPlugin.h"
 
-@interface BatteryPlugin()<FlutterStreamHandler>
+@interface BatteryPlugin ()<FlutterStreamHandler>
 @end
 
 @implementation BatteryPlugin {
@@ -10,16 +10,15 @@
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   BatteryPlugin* instance = [[BatteryPlugin alloc] init];
 
-  FlutterMethodChannel* channel = [FlutterMethodChannel
-      methodChannelWithName:@"plugins.flutter.io/battery"
-            binaryMessenger:[registrar messenger]];
+  FlutterMethodChannel* channel =
+      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/battery"
+                                  binaryMessenger:[registrar messenger]];
 
   [registrar addMethodCallDelegate:instance channel:channel];
-  FlutterEventChannel* chargingChannel = [FlutterEventChannel
-                                          eventChannelWithName:@"plugins.flutter.io/charging"
-                                          binaryMessenger:[registrar messenger]];
+  FlutterEventChannel* chargingChannel =
+      [FlutterEventChannel eventChannelWithName:@"plugins.flutter.io/charging"
+                                binaryMessenger:[registrar messenger]];
   [chargingChannel setStreamHandler:instance];
-
 }
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
@@ -73,19 +72,16 @@
   }
 }
 
-- (FlutterError*)onListenWithArguments:(id)arguments
-                             eventSink:(FlutterEventSink)eventSink {
+- (FlutterError*)onListenWithArguments:(id)arguments eventSink:(FlutterEventSink)eventSink {
   _eventSink = eventSink;
   [[UIDevice currentDevice] setBatteryMonitoringEnabled:YES];
   [self sendBatteryStateEvent];
-  [[NSNotificationCenter defaultCenter]
-   addObserver:self
-   selector:@selector(onBatteryStateDidChange:)
-   name:UIDeviceBatteryStateDidChangeNotification
-   object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(onBatteryStateDidChange:)
+                                               name:UIDeviceBatteryStateDidChangeNotification
+                                             object:nil];
   return nil;
 }
-
 
 - (FlutterError*)onCancelWithArguments:(id)arguments {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
