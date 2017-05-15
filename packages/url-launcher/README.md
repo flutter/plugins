@@ -43,7 +43,7 @@ URL schemes depend on the underlying platform and installed apps.
 
 Common schemes supported by both iOS and Android:
 
-| Scheme | Action | Example |
+| Scheme | Example | Action |
 |---|---|---|
 | `http:<URL>` , `https:<URL>` | `http://flutter.io` | Open URL in the default browser |
 | `mailto:<email address>` | `mailto:smith@example.org` | Open <email address> in the default email app |

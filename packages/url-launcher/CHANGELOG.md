@@ -1,3 +1,7 @@
+## [0.4.2] - 2017-05-15
+
+* Change to README.md.
+
 ## [0.4.1] - 2017-05-09
 
 * Upgrade Android SDK Build Tools to 25.0.3.
