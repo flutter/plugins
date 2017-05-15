@@ -1,0 +1,16 @@
+name: battery
+description: A new flutter plugin project.
+
+flutter:
+  plugin:
+    androidPackage: io.flutter.plugins.battery
+    pluginClass: BatteryPlugin
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+   test: "^0.12.20+13"
+   mockito: "^2.0.2"
+   async: "^1.13.2"
