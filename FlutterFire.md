@@ -26,7 +26,7 @@ that enable Flutter Apps to use one or more [Firebase](https://firebase.google.c
 [database_code]: https://github.com/flutter/plugins/tree/master/packages/firebase_database
 
 [messaging_pub]: https://pub.dartlang.org/packages/firebase_messaging
-[messaging_product]: https://firebase.google.com/products/messaging/
+[messaging_product]: https://firebase.google.com/products/cloud-messaging/
 [messaging_code]: https://github.com/flutter/plugins/tree/master/packages/firebase_messaging
 
 [storage_pub]: https://pub.dartlang.org/packages/firebase_storage
