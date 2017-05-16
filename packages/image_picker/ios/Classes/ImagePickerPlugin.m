@@ -46,24 +46,16 @@
         [UIAlertController alertControllerWithTitle:nil
                                             message:nil
                                      preferredStyle:UIAlertControllerStyleActionSheet];
-    UIAlertAction *camera = [UIAlertAction
-        actionWithTitle:@"Take Photo"
-                  style:UIAlertActionStyleDefault
-                handler:^(UIAlertAction *action) {
-                  _imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
-                  [_viewController presentViewController:_imagePickerController
-                                                animated:YES
-                                              completion:nil];
-                }];
-    UIAlertAction *library = [UIAlertAction
-        actionWithTitle:@"Choose Photo"
-                  style:UIAlertActionStyleDefault
-                handler:^(UIAlertAction *action) {
-                  _imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-                  [_viewController presentViewController:_imagePickerController
-                                                animated:YES
-                                              completion:nil];
-                }];
+    UIAlertAction *camera = [UIAlertAction actionWithTitle:@"Take Photo"
+                                                     style:UIAlertActionStyleDefault
+                                                   handler:^(UIAlertAction *action) {
+                                                     [self showCamera];
+                                                   }];
+    UIAlertAction *library = [UIAlertAction actionWithTitle:@"Choose Photo"
+                                                      style:UIAlertActionStyleDefault
+                                                    handler:^(UIAlertAction *action) {
+                                                      [self showPhotoLibrary];
+                                                    }];
     UIAlertAction *cancel =
         [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
     [alert addAction:camera];
@@ -73,6 +65,26 @@
   } else {
     result(FlutterMethodNotImplemented);
   }
+}
+
+- (void)showCamera {
+  // Camera is not available on simulators
+  if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+    _imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
+    [_viewController presentViewController:_imagePickerController animated:YES completion:nil];
+  } else {
+    [[[UIAlertView alloc] initWithTitle:@"Error"
+                                message:@"Camera not available."
+                               delegate:nil
+                      cancelButtonTitle:@"OK"
+                      otherButtonTitles:nil] show];
+  }
+}
+
+- (void)showPhotoLibrary {
+  // No need to check if SourceType is available. It always is.
+  _imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+  [_viewController presentViewController:_imagePickerController animated:YES completion:nil];
 }
 
 - (void)imagePickerController:(UIImagePickerController *)picker
