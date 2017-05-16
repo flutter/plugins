@@ -60,7 +60,7 @@ matrix:
         - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
         - ./flutter/bin/cache/dart-sdk/bin/pub global activate flutter_plugin_tools
       script:
-        - pub global run flutter_plugin_tools build --apk
+        - pub global run flutter_plugin_tools build-examples --apk
     - os: osx
       language: generic
       osx_image: xcode8.3
@@ -75,7 +75,7 @@ matrix:
         - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
         - ./flutter/bin/cache/dart-sdk/bin/pub global activate flutter_plugin_tools
       script:
-        - pub global run flutter_plugin_tools build --ipa
+        - pub global run flutter_plugin_tools build-examples --ipa
 
 cache:
   directories:
