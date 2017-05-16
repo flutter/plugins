@@ -5,7 +5,7 @@
 A Flutter plugin to access various information about the battery of the device the app is running on.
 
 ## Usage
-To use this plugin, add battery as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
+To use this plugin, add `battery` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
 
 ### Example
 

@@ -2,28 +2,18 @@
 
 [![pub package](https://img.shields.io/pub/v/firebase_messaging.svg)](https://pub.dartlang.org/packages/firebase_messaging)
 
-**WARNING: This is incomplete and experimental.**
-
-This plugin allows Flutter apps to interact with the [Firebase Cloud Messaging (FCM) API](https://firebase.google.com/docs/cloud-messaging/) from  Dart code.
+A Flutter plugin to use the [Firebase Cloud Messaging (FCM) API](https://firebase.google.com/docs/cloud-messaging/).
 
 With this plugin, your Flutter app can receive and process push notifications as well as data messages on Android and iOS. Read Firebase's [About FCM Messages](https://firebase.google.com/docs/cloud-messaging/concept-options) to learn more about the differences between notification messages and data messages.
 
-Not all features of the API are implemented in the plugin yet. If something is missing feel free to send a [pull request](https://github.com/flutter/plugins/pull/new/master) or file an [issue](https://github.com/flutter/flutter/issues/new).
+*Note*: This plugin is still under development, and some APIs might not be available yet. [Feedback](https://github.com/flutter/flutter/issues) and [Pull Requests](https://github.com/flutter/plugins/pulls) are most welcome!
+
+## Usage
+To use this plugin, add `firebase_messaging` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
 
 ## Getting Started
 
-Check out the `example` directory for a sample app that uses this plugin. To learn more about Flutter plugins in general, view our [online documentation](https://flutter.io/platform-plugins).
-
-### Add the Plugin
-
-Open the `pubspec.yaml` file of your app and under `dependencies` add a line for this plugin:
-
-```yaml
-dependencies:
-  firebase_messaging: <version you want to depend on>
-```
-
-You can find the most recent version of the plugin on [pub](https://pub.dartlang.org/packages/firebase_messaging).
+Check out the `example` directory for a sample app using Firebase Cloud Messaging.
 
 ### Android Integration
 
