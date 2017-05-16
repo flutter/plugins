@@ -1,3 +1,7 @@
+## [0.2.1+1] - 2017-05-16
+
+* Updated README
+
 ## [0.2.1] - 2017-05-16
 
 * Add function to determine external storage directory.

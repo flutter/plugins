@@ -1,3 +1,7 @@
+## 0.0.2+1
+
+* Updated README
+
 ## 0.0.2
 
 * Fix crash when trying to access camera on a device without camera (e.g. the Simulator)
