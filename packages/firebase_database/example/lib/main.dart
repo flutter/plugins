@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_database/ui/firebase_animated_list.dart';
 
 void main() {
   runApp(new MyApp());
@@ -61,11 +62,29 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: new AppBar(
         title: new Text('Flutter Database Example'),
       ),
-      body: new Center(
-        child: new Text(
-          'Button tapped $_counter time${ _counter == 1 ? '' : 's' }.\n\n'
-          'This includes all devices, ever.',
-        ),
+      body: new Column(
+        children: <Widget>[
+          new Flexible(
+            child: new Center(
+              child: new Text(
+                'Button tapped $_counter time${ _counter == 1 ? '' : 's' }.\n\n'
+                'This includes all devices, ever.',
+              ),
+            ),
+          ),
+          new Flexible(
+            child: new FirebaseAnimatedList(
+              query: _reference,
+              itemBuilder: (context, snapshot, animation) {
+                return new SizeTransition(
+                  sizeFactor: animation,
+                  child: new Text(snapshot.value.toString()),
+                );
+              },
+            ),
+          ),
+
+        ],
       ),
       floatingActionButton: new FloatingActionButton(
         onPressed: _increment,
