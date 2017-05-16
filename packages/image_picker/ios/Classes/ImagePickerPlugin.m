@@ -82,7 +82,7 @@
 }
 
 - (void)showPhotoLibrary {
-  // No need to check if SourceType is available. It allways is.
+  // No need to check if SourceType is available. It always is.
   _imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
   [_viewController presentViewController:_imagePickerController animated:YES completion:nil];
 }
