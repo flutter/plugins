@@ -1,0 +1,13 @@
+name: firebase_database_example
+description: Demonstrates how to use the firebase_database plugin.
+
+dependencies:
+  flutter:
+    sdk: flutter
+  firebase_auth:
+    path: ../../firebase_auth
+  firebase_database:
+    path: ../
+
+flutter:
+  uses-material-design: true
