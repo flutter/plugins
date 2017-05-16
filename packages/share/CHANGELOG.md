@@ -1,3 +1,8 @@
+## [0.2.1] - 2017-05-16
+
+* Updated README
+* Bumped buildToolsVersion to 25.0.3
+
 ## [0.2.0] - 2017-05-11
 
 * Upgrade to new plugin registration. (https://groups.google.com/forum/#!topic/flutter-dev/zba1Ynf2OKM)
