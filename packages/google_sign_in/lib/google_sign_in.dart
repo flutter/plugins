@@ -114,6 +114,10 @@ class GoogleSignIn {
   Future<Null> _initialization;
 
   Future<GoogleSignInAccount> _callMethod(String method) async {
+    if (_currentUser != null) {
+      // We have already been signed in. Don't try to sign in again.
+      return _currentUser;
+    }
     if (_initialization == null) {
       _initialization = _channel.invokeMethod(
         "init",
