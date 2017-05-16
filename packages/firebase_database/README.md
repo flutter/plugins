@@ -4,6 +4,8 @@
 
 A Flutter plugin to use the [Firebase Realtime Database API](https://firebase.google.com/products/database/).
 
+*Note*: This plugin is still under development, and some APIs might not be available yet. [Feedback welcome](https://github.com/flutter/flutter/issues) and [Pull Requests](https://github.com/flutter/plugins/pulls) are most welcome!
+
 ## Usage
 To use this plugin, add `firebase_database` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
 
