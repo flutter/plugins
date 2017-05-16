@@ -4,8 +4,8 @@
 
 A Flutter wrapper for the native image picker.
 
-
-Note: This is a work-in-progress, and is not fully supported by the Flutter team.
+## Usage
+To use this plugin, add `image_picker` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
 
 ## Issues and feedback
 

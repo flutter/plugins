@@ -1,4 +1,4 @@
-# share
+# Share plugin
 
 [![pub package](https://img.shields.io/pub/v/share.svg)](https://pub.dartlang.org/packages/share)
 
@@ -9,21 +9,16 @@ Wraps the ACTION_SEND Intent on Android and UIActivityViewController
 on iOS.
 
 ## Usage
+To use this plugin, add `share` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
 
-To use, first add `share` as a [dependency in your pubspec.yaml](https://flutter.io/platform-plugins/).
-```yaml
-dependencies:
-  flutter:
-    sdk: flutter
-  share: ^0.1.0
-```
+## Example
 
 Import the library via
-```dart
+``` dart
 import 'package:share/share.dart';
 ```
 
 Then invoke the static `share` method anywhere in your Dart code
-```dart
+``` dart
 share('check out my website https://example.com');
 ```

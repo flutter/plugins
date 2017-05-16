@@ -1,4 +1,4 @@
-# shared_preferences
+# Shared preferences plugin
 
 [![pub package](https://img.shields.io/pub/v/shared_preferences.svg)](https://pub.dartlang.org/packages/shared_preferences)
 
@@ -7,7 +7,7 @@ a persistent store for simple data. Data is persisted to disk automatically
 and asynchronously.
 
 ## Usage
-To use this plugin, add shared_preferences as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
+To use this plugin, add `shared_preferences` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
 
 ### Example
 

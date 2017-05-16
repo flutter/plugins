@@ -5,7 +5,7 @@
 A Flutter plugin for launching a URL in the mobile platform. Supports iOS and Android.
 
 ## Usage
-To use this plugin, add url_launcher as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
+To use this plugin, add `url_launcher` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
 
 ### Example
 

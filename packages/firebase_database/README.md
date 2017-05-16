@@ -1,10 +1,12 @@
-# firebase_database
+# Firebase Realtime Database for Flutter
 
 [![pub package](https://img.shields.io/pub/v/firebase_database.svg)](https://pub.dartlang.org/packages/firebase_database)
 
-A new flutter plugin project.
+A Flutter plugin to use the [Firebase Realtime Database API](https://firebase.google.com/products/database/).
+
+## Usage
+To use this plugin, add `firebase_database` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
 
 ## Getting Started
 
-For help getting started with Flutter, view our online
-[documentation](http://flutter.io/).
+See the `example` directory for a complete sample app using Firebase Realtime Database.
