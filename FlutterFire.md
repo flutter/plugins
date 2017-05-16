@@ -1,9 +1,16 @@
 # FlutterFire
 
 FlutterFire is a set of [Flutter plugins](https://flutter.io/platform-plugins/)
-that enable Flutter Apps to use one or more [Firebase](https://firebase.google.com/) services.
+that enable Flutter apps to use one or more [Firebase](https://firebase.google.com/) services.
 
-## Supported Firebase Products
+[Flutter](https://flutter.io) is a new mobile app SDK to help developers and
+designers build modern mobile apps for iOS and Android.
+  
+*Note*: These plugins are part of the [Flutter open source project](https://github.com/flutter). 
+The plugins are still under development, and some APIs might not be available yet. 
+[Feedback](https://github.com/flutter/flutter/issues) and [Pull Requests](https://github.com/flutter/plugins/pulls) are most welcome!
+ 
+## Available FlutterFire plugins
 
 | Plugin | Firebase feature | Source code |
 |---|---|---|
