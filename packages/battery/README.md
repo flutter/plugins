@@ -16,11 +16,11 @@ import 'package:battery/battery.dart';
 // Instantiate it
 var battery = new Battery();
 
-// Access current battery level:
-battery.batteryLevel
+// Access current battery level
+print(battery.batteryLevel);
 
 // Be informed when the state (full, charging, discharging) changes
 _battery.onBatteryStateChanged.listen((BatteryState state) {
   // Do something with new state
-}
+});
 ```
