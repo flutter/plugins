@@ -4,7 +4,8 @@ description: Demonstrates how to use the firebase_database plugin.
 dependencies:
   flutter:
     sdk: flutter
-  firebase_auth: ^0.0.1
+  firebase_auth:
+    path: ../../firebase_auth
   firebase_database:
     path: ../
 
