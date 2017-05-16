@@ -5,6 +5,7 @@
 package io.flutter.plugins.path_provider;
 
 import android.app.Activity;
+import android.os.Environment;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -35,6 +36,9 @@ public class PathProviderPlugin implements MethodCallHandler {
       case "getApplicationDocumentsDirectory":
         result.success(getPathProviderApplicationDocumentsDirectory());
         break;
+      case "getStorageDirectory":
+        result.success(getPathProviderStorageDirectory());
+        break;
       default:
         result.notImplemented();
     }
@@ -46,5 +50,9 @@ public class PathProviderPlugin implements MethodCallHandler {
 
   private String getPathProviderApplicationDocumentsDirectory() {
     return PathUtils.getDataDirectory(activity);
+  }
+
+  private String getPathProviderStorageDirectory() {
+    return Environment.getExternalStorageDirectory().getAbsolutePath();
   }
 }

@@ -40,3 +40,20 @@ const _channel = const MethodChannel('plugins.flutter.io/path_provider');
       return null;
     return new Directory(path);
   }
+
+  /// Path to a directory where the application may access top level storage.
+  /// The current operating system should be determined before issuing this
+  /// function call, as this functionality is only available on Android.
+  ///
+  /// On iOS, this function throws an UnsupportedError as it is not possible
+  /// to access outside the app's sandbox.
+  ///
+  /// On Android this returns getExternalStorageDirectory.
+  Future<Directory> getExternalStorageDirectory() async {
+    if (Platform.isIOS)
+      throw new UnsupportedError("Functionality not available on iOS");
+    final String path = await _channel.invokeMethod('getStorageDirectory');
+    if (path == null)
+      return null;
+    return new Directory(path);
+  }

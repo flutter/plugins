@@ -36,6 +36,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   Future<Directory> _tempDirectory;
   Future<Directory> _appDocumentsDirectory;
+  Future<Directory> _externalDocumentsDirectory;
 
   void _requestTempDirectory() {
     setState(() {
@@ -62,6 +63,12 @@ class _MyHomePageState extends State<MyHomePage> {
   void _requestAppDocumentsDirectory() {
     setState(() {
       _appDocumentsDirectory = getApplicationDocumentsDirectory();
+    });
+  }
+
+  void _requestExternalStorageDirectory() {
+    setState(() {
+      _externalDocumentsDirectory = getExternalStorageDirectory();
     });
   }
 
@@ -104,6 +111,25 @@ class _MyHomePageState extends State<MyHomePage> {
             new Expanded(
               child: new FutureBuilder<Directory>(
                   future: _appDocumentsDirectory, builder: _buildDirectory),
+            ),
+            new Column(
+              children : <Widget>[
+                new Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: new RaisedButton(
+                    child: new Text('${Platform.isIOS ?
+                                    "External directories are unavailable " +
+                                    "on iOS":
+                                    "Get External Storage Directory" }'),
+                    onPressed: Platform.isIOS ? null :
+                      _requestExternalStorageDirectory,
+                  ),
+                ),
+              ]
+            ),
+            new Expanded(
+              child: new FutureBuilder<Directory>(
+               future: _externalDocumentsDirectory, builder: _buildDirectory),
             ),
           ],
         ),
