@@ -64,8 +64,6 @@
   }
 }
 
-#pragma mark FlutterStreamHandler impl
-
 - (int)getBatteryLevel {
   UIDevice* device = UIDevice.currentDevice;
   device.batteryMonitoringEnabled = YES;
@@ -75,6 +73,8 @@
     return ((int)(device.batteryLevel * 100));
   }
 }
+
+#pragma mark FlutterStreamHandler impl
 
 - (FlutterError*)onListenWithArguments:(id)arguments eventSink:(FlutterEventSink)eventSink {
   _eventSink = eventSink;

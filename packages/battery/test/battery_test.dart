@@ -27,7 +27,7 @@ void main() {
     expect(await battery.batteryLevel, 42);
   });
 
-  group('battery sate', () {
+  group('battery state', () {
     StreamController<String> controller;
 
     setUp(() {

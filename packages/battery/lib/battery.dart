@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:meta/meta.dart' show visibleForTesting;
 
 /// Indicates the current battery state.
 enum BatteryState { full, charging, discharging }
@@ -17,6 +18,7 @@ class Battery {
     return _instance;
   }
 
+  @visibleForTesting
   Battery.private(this._methodChannel, this._eventChannel);
 
   static Battery _instance;
