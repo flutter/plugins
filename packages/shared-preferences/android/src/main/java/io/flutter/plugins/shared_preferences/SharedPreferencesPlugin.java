@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /** SharedPreferencesPlugin */
 public class SharedPreferencesPlugin implements MethodCallHandler {
@@ -86,10 +87,11 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
           }
         } else if (value instanceof Set) {
           // This only happens for previous usage of setStringSet. The app expects a list.
-          value = new ArrayList<>((Set<?>) value));
+          List<String> listValue = new ArrayList<>((Set) value);
           // Let's migrate the value too while we are at it.
           editor.remove(key);
-          editor.putString(key, LIST_IDENTIFIER + encodeList(value)).apply();
+          editor.putString(key, LIST_IDENTIFIER + encodeList(listValue)).apply();
+          value = listValue;
         }
         filteredPrefs.put(key, value);
       }
