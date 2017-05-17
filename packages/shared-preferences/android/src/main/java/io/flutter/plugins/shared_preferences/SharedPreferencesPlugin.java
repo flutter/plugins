@@ -12,7 +12,6 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.PluginRegistry;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -46,7 +45,7 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
       if (key.startsWith("flutter.")) {
         Object value = allPrefs.get(key);
         if (value instanceof String && ((String) value).endsWith(LIST_IDENTIFIER)) {
-          String [] pieces = ((String) value).split(LIST_DELIMITER);
+          String[] pieces = ((String) value).split(LIST_DELIMITER);
           List<String> listValue = new ArrayList<>();
           for (int i = 0; i < pieces.length - 1; i++) {
             listValue.add(pieces[i]);
