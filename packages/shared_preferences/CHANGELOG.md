@@ -1,3 +1,7 @@
+## [0.2.1] - 2017-05-17
+
+* Support arbitrary length integers for setInt.
+
 ## [0.2.0+1] - 2017-05-16
 
 * Updated README
