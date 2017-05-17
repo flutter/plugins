@@ -16,6 +16,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +29,8 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
   private static final String CHANNEL_NAME = "plugins.flutter.io/shared_preferences";
 
   // Fun fact: The following is a base64 encoding of the string "This is the prefix for a list."
-  private static final String LIST_IDENTIFIER = "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBhIGxpc3Qu";
+  private static final String LIST_IDENTIFIER =    "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBhIGxpc3Qu";
+  private static final String BIG_INTEGER_PREFIX = "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBCaWdJbnRlZ2Vy";
 
   private final android.content.SharedPreferences preferences;
   private final android.content.SharedPreferences.Editor editor;
@@ -84,6 +86,9 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
           String stringValue = (String) value;
           if (stringValue.startsWith(LIST_IDENTIFIER)) {
             value = decodeList(stringValue.substring(LIST_IDENTIFIER.length()));
+          } else if (stringValue.startsWith(BIG_INTEGER_PREFIX)) {
+            String encoded = stringValue.substring(BIG_INTEGER_PREFIX.length());
+            value = new BigInteger(encoded, Character.MAX_RADIX);
           }
         } else if (value instanceof Set) {
           // This only happens for previous usage of setStringSet. The app expects a list.
@@ -113,7 +118,14 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
           result.success(null);
           break;
         case "setInt":
-          editor.putInt(key, (int) call.argument("value")).apply();
+          Number value = call.argument("value");
+          if (value instanceof BigInteger) {
+            BigInteger integerValue = (BigInteger) value;
+            editor.putString(key, BIG_INTEGER_PREFIX + integerValue.toString(Character.MAX_RADIX));
+          } else {
+            editor.putLong(key, value.longValue());
+          }
+          editor.apply();
           result.success(null);
           break;
         case "setString":
