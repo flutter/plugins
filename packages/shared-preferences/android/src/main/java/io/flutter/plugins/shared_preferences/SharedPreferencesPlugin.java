@@ -10,6 +10,7 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.PluginRegistry;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -19,6 +20,8 @@ import java.util.Map;
 public class SharedPreferencesPlugin implements MethodCallHandler {
   private static final String SHARED_PREFERENCES_NAME = "FlutterSharedPreferences";
   private static final String CHANNEL_NAME = "plugins.flutter.io/shared_preferences";
+
+  private static final String BIG_INTEGER_PREFIX = "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBCaWdJbnRlZ2Vy";
 
   private final android.content.SharedPreferences preferences;
   private final android.content.SharedPreferences.Editor editor;
@@ -40,7 +43,15 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
     Map<String, Object> filteredPrefs = new HashMap<>();
     for (String key : allPrefs.keySet()) {
       if (key.startsWith("flutter.")) {
-        filteredPrefs.put(key, allPrefs.get(key));
+        Object value = allPrefs.get(key);
+        if (value instanceof String) {
+          String stringValue = (String) value;
+          if (stringValue.startsWith(BIG_INTEGER_PREFIX)) {
+            String encoded = stringValue.substring(BIG_INTEGER_PREFIX.length());
+            value = new BigInteger(encoded, Character.MAX_RADIX);
+          }
+        }
+        filteredPrefs.put(key, value);
       }
     }
     return filteredPrefs;
@@ -59,7 +70,14 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
         result.success(null);
         break;
       case "setInt":
-        editor.putInt(key, (int) call.argument("value")).apply();
+        Number value = call.argument("value");
+        if (value instanceof BigInteger) {
+          BigInteger integerValue = (BigInteger) value;
+          editor.putString(key, BIG_INTEGER_PREFIX + integerValue.toString(Character.MAX_RADIX));
+        } else {
+          editor.putLong(key, value.longValue());
+        }
+        editor.apply();
         result.success(null);
         break;
       case "setString":
