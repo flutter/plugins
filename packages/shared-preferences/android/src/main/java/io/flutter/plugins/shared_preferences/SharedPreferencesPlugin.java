@@ -20,6 +20,9 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
   private static final String SHARED_PREFERENCES_NAME = "FlutterSharedPreferences";
   private static final String CHANNEL_NAME = "plugins.flutter.io/shared_preferences";
 
+  private static final String LIST_IDENTIFIER = "<<<LIST>>>";
+  private static final String LIST_DELIMITER = ",";
+
   private final android.content.SharedPreferences preferences;
   private final android.content.SharedPreferences.Editor editor;
 
@@ -40,7 +43,17 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
     Map<String, Object> filteredPrefs = new HashMap<>();
     for (String key : allPrefs.keySet()) {
       if (key.startsWith("flutter.")) {
-        filteredPrefs.put(key, allPrefs.get(key));
+        Object value = allPrefs.get(key);
+        if (value instanceof String && ((String) value).endsWith(LIST_IDENTIFIER)) {
+          String [] pieces = value.split(LIST_DELIMITER);
+          List<String> listValue = new ArrayList<>();
+          for (int i = 0; i < pieces.length - 1; i++) {
+            listValue.add(pieces[i]);
+          }
+          filteredPrefs.put(key, listValue);
+        } else {
+          filteredPrefs.put(key, value);
+        }
       }
     }
     return filteredPrefs;
@@ -66,8 +79,15 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
         editor.putString(key, (String) call.argument("value")).apply();
         result.success(null);
         break;
-      case "setStringSet":
-        editor.putStringSet(key, new HashSet<>((List<String>) call.argument("value"))).apply();
+      case "setStringList":
+        List<String> value = call.argument("value");
+        StringBuffer result = new StringBuffer();
+        for (String piece : value) {
+          result.append(piece);
+          result.append(LIST_DELIMITER);
+        }
+        result.append(LIST_IDENTIFIER);
+        editor.putString(key, result.toString()).apply();
         result.success(null);
         break;
       case "commit":
