@@ -10,6 +10,7 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.PluginRegistry;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -45,7 +46,7 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
       if (key.startsWith("flutter.")) {
         Object value = allPrefs.get(key);
         if (value instanceof String && ((String) value).endsWith(LIST_IDENTIFIER)) {
-          String [] pieces = value.split(LIST_DELIMITER);
+          String [] pieces = ((String) value).split(LIST_DELIMITER);
           List<String> listValue = new ArrayList<>();
           for (int i = 0; i < pieces.length - 1; i++) {
             listValue.add(pieces[i]);
@@ -81,13 +82,13 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
         break;
       case "setStringList":
         List<String> value = call.argument("value");
-        StringBuffer result = new StringBuffer();
+        StringBuffer buffer = new StringBuffer();
         for (String piece : value) {
-          result.append(piece);
-          result.append(LIST_DELIMITER);
+          buffer.append(piece);
+          buffer.append(LIST_DELIMITER);
         }
-        result.append(LIST_IDENTIFIER);
-        editor.putString(key, result.toString()).apply();
+        buffer.append(LIST_IDENTIFIER);
+        editor.putString(key, buffer.toString()).apply();
         result.success(null);
         break;
       case "commit":
