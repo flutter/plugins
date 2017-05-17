@@ -59,7 +59,11 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
         result.success(null);
         break;
       case "setInt":
-        editor.putInt(key, (int) call.argument("value")).apply();
+        // According to platform-channels readme, ints can come as java.lang.Integer
+        // java.lang.Long or (if larger than 64 bits) java.math.BigInteger. We handle
+        // the first two easily by casting to long. Clients won't store larger than
+        // 64 bits here, will they?...
+        editor.putLong(key, (long) call.argument("value")).apply();
         result.success(null);
         break;
       case "setString":

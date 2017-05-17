@@ -25,7 +25,10 @@ static NSString *const CHANNEL_NAME = @"plugins.flutter.io/shared_preferences";
     } else if ([method isEqualToString:@"setInt"]) {
       NSString *key = arguments[@"key"];
       NSNumber *value = arguments[@"value"];
-      [[NSUserDefaults standardUserDefaults] setInteger:value.intValue forKey:key];
+      // int type in Dart can come to native side in a variety of forms
+      // It is best to store it as is and send it back when needed.
+      // Platform channel will handle the conversion.
+      [[NSUserDefaults standardUserDefaults] setValue:value forKey:key];
       result(nil);
     } else if ([method isEqualToString:@"setDouble"]) {
       NSString *key = arguments[@"key"];
