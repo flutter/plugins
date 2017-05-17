@@ -6,10 +6,16 @@ package io.flutter.plugins.shared_preferences;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Base64;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.PluginRegistry;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,8 +26,8 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
   private static final String SHARED_PREFERENCES_NAME = "FlutterSharedPreferences";
   private static final String CHANNEL_NAME = "plugins.flutter.io/shared_preferences";
 
-  private static final String LIST_IDENTIFIER = "<<<LIST>>>";
-  private static final String LIST_DELIMITER = ",";
+  // Fun fact: The following is a base64 encoding of the string "This is the prefix for a list."
+  private static final String LIST_IDENTIFIER = "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBhIGxpc3Qu";
 
   private final android.content.SharedPreferences preferences;
   private final android.content.SharedPreferences.Editor editor;
@@ -37,23 +43,55 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
     editor = preferences.edit();
   }
 
+  private List<String> decodeList(String encodedList) throws IOException {
+    ObjectInputStream stream = null;
+    try {
+      stream = new ObjectInputStream(new ByteArrayInputStream(Base64.decode(encodedList, 0)));
+      return (List<String>) stream.readObject();
+    } catch (ClassNotFoundException e) {
+      throw new IOException(e);
+    } finally {
+      if (stream != null) {
+        stream.close();
+      }
+    }
+  }
+
+  private String encodeList(List<String> list) throws IOException {
+    ObjectOutputStream stream = null;
+    try {
+      ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+      stream = new ObjectOutputStream(byteStream);
+      stream.writeObject(list);
+      stream.flush();
+      return Base64.encodeToString(byteStream.toByteArray(), 0);
+    } finally {
+      if (stream != null) {
+        stream.close();
+      }
+    }
+  }
+
   // Filter preferences to only those set by the flutter app.
-  private Map<String, Object> getAllPrefs() {
+  private Map<String, Object> getAllPrefs() throws IOException {
     Map<String, ?> allPrefs = preferences.getAll();
     Map<String, Object> filteredPrefs = new HashMap<>();
     for (String key : allPrefs.keySet()) {
       if (key.startsWith("flutter.")) {
         Object value = allPrefs.get(key);
-        if (value instanceof String && ((String) value).endsWith(LIST_IDENTIFIER)) {
-          String[] pieces = ((String) value).split(LIST_DELIMITER);
-          List<String> listValue = new ArrayList<>();
-          for (int i = 0; i < pieces.length - 1; i++) {
-            listValue.add(pieces[i]);
+        if (value instanceof String) {
+          String stringValue = (String) value;
+          if (stringValue.startsWith(LIST_IDENTIFIER)) {
+            value = decodeList(stringValue.substring(LIST_IDENTIFIER.length()));
           }
-          filteredPrefs.put(key, listValue);
-        } else {
-          filteredPrefs.put(key, value);
+        } else if (value instanceof Set) {
+          // This only happens for previous usage of setStringSet. The app expects a list.
+          value = new ArrayList<>((Set<?>) value));
+          // Let's migrate the value too while we are at it.
+          editor.remove(key);
+          editor.putString(key, LIST_IDENTIFIER + encodeList(value)).apply();
         }
+        filteredPrefs.put(key, value);
       }
     }
     return filteredPrefs;
@@ -62,49 +100,47 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
   @Override
   public void onMethodCall(MethodCall call, MethodChannel.Result result) {
     String key = call.argument("key");
-    switch (call.method) {
-      case "setBool":
-        editor.putBoolean(key, (boolean) call.argument("value")).apply();
-        result.success(null);
-        break;
-      case "setDouble":
-        editor.putFloat(key, (float) call.argument("value")).apply();
-        result.success(null);
-        break;
-      case "setInt":
-        editor.putInt(key, (int) call.argument("value")).apply();
-        result.success(null);
-        break;
-      case "setString":
-        editor.putString(key, (String) call.argument("value")).apply();
-        result.success(null);
-        break;
-      case "setStringList":
-        List<String> value = call.argument("value");
-        StringBuffer buffer = new StringBuffer();
-        for (String piece : value) {
-          buffer.append(piece);
-          buffer.append(LIST_DELIMITER);
-        }
-        buffer.append(LIST_IDENTIFIER);
-        editor.putString(key, buffer.toString()).apply();
-        result.success(null);
-        break;
-      case "commit":
-        result.success(editor.commit());
-        break;
-      case "getAll":
-        result.success(getAllPrefs());
-        break;
-      case "clear":
-        for (String keyToDelete : getAllPrefs().keySet()) {
-          editor.remove(keyToDelete);
-        }
-        result.success(editor.commit());
-        break;
-      default:
-        result.notImplemented();
-        break;
+    try {
+      switch (call.method) {
+        case "setBool":
+          editor.putBoolean(key, (boolean) call.argument("value")).apply();
+          result.success(null);
+          break;
+        case "setDouble":
+          editor.putFloat(key, (float) call.argument("value")).apply();
+          result.success(null);
+          break;
+        case "setInt":
+          editor.putInt(key, (int) call.argument("value")).apply();
+          result.success(null);
+          break;
+        case "setString":
+          editor.putString(key, (String) call.argument("value")).apply();
+          result.success(null);
+          break;
+        case "setStringList":
+          List<String> value = call.argument("value");
+          editor.putString(key, LIST_IDENTIFIER + encodeList(value)).apply();
+          result.success(null);
+          break;
+        case "commit":
+          result.success(editor.commit());
+          break;
+        case "getAll":
+          result.success(getAllPrefs());
+          break;
+        case "clear":
+          for (String keyToDelete : getAllPrefs().keySet()) {
+            editor.remove(keyToDelete);
+          }
+          result.success(editor.commit());
+          break;
+        default:
+          result.notImplemented();
+          break;
+      }
+    } catch (IOException e) {
+      result.error("IOException encountered", call.method, e);
     }
   }
 }
