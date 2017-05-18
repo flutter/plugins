@@ -5,19 +5,10 @@
 part of firebase_database;
 
 enum _EventType {
-  /// fired when a new child node is added to a location
   childAdded,
-
-  // fired when a child node is removed from a location
   childRemoved,
-
-  // fired when a child node at a location changes
   childChanged,
-
-  // fired when a child node moves relative to the other child nodes at a location
   childMoved,
-
-  // fired when any data changes at a location and, recursively, any children
   value
 }
 
@@ -26,7 +17,6 @@ enum _EventType {
 class Event {
   Map<String, dynamic> _data;
   Event._(this._data) : snapshot = new DataSnapshot._(_data['snapshot']);
-
 
   final DataSnapshot snapshot;
   String get previousSiblingKey => _data['previousSiblingKey'];

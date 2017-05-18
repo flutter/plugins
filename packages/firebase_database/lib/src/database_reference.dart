@@ -22,7 +22,7 @@ class DatabaseReference extends Query {
   DatabaseReference child(String path) {
     return new DatabaseReference._(
       _database,
-      (new List<String>.from(_pathComponents)..addAll(path.split("/")))
+      (new List<String>.from(_pathComponents)..addAll(path.split('/')))
     );
   }
 
@@ -74,7 +74,7 @@ class DatabaseReference extends Query {
   /// child location will be deleted.
   Future<Null> set(dynamic value) async {
     await _database._channel.invokeMethod(
-      "DatabaseReference#set",
+      'DatabaseReference#set',
       { 'path': path, 'value': value },
     );
   }

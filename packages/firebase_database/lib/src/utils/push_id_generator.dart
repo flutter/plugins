@@ -4,10 +4,10 @@
 
 import 'dart:math';
 
-/// Utility class for generating Firebase child node keys
+/// Utility class for generating Firebase child node keys.
 ///
 /// Since the Flutter plugin API is asynchronous, there's no way for us
-/// to use the native SDK to generate node key synchronously and we
+/// to use the native SDK to generate the node key synchronously and we
 /// have to do it ourselves if we want to be able to reference the
 /// newly-created node synchronously.
 ///
@@ -15,8 +15,8 @@ import 'dart:math';
 /// https://firebase.googleblog.com/2015/02/the-2120-ways-to-ensure-unique_68.html
 class PushIdGenerator {
 
-  static final String PUSH_CHARS =
-      "-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz";
+  static const String PUSH_CHARS =
+      '-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz';
 
   static final Random _random = new Random();
 

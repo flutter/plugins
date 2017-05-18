@@ -7,7 +7,7 @@ part of firebase_database;
 /// Represents a query over the data at a particular location.
 class Query {
   Query._(this._database, this._pathComponents)
-    : path = _pathComponents.join("/");
+    : path = _pathComponents.join('/');
 
   final FirebaseDatabase _database;
   final List<String> _pathComponents;
@@ -21,7 +21,7 @@ class Query {
     controller = new StreamController<Event>.broadcast(
       onListen: () async {
         _handle = _database._channel.invokeMethod(
-          "Query#observe",
+          'Query#observe',
           { 'path': path, 'eventType': eventType.toString() },
         );
         _handle.then((int handle) {
@@ -31,7 +31,7 @@ class Query {
       onCancel: () async {
         int handle = await _handle;
         await _database._channel.invokeMethod(
-          "Query#removeObserver",
+          'Query#removeObserver',
           { 'handle': handle },
         );
         FirebaseDatabase._observers.remove(handle);
@@ -52,7 +52,7 @@ class Query {
   /// Fires when children are changed.
   Stream<Event> get onChildChanged => _observe(_EventType.childChanged);
 
-  /// Fires when children are moved
+  /// Fires when children are moved.
   Stream<Event> get onChildMoved => _observe(_EventType.childMoved);
 
   /// Fires the data at this location is updated. `previousChildKey` is null.

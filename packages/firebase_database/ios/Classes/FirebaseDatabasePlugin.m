@@ -68,11 +68,11 @@ FIRDataEventType parseEventType(NSString *eventTypeString) {
                   result:(FlutterResult)result {
   void (^defaultCompletionBlock)(NSError *, FIRDatabaseReference *) =
       ^(NSError *error, FIRDatabaseReference *ref) {
-    result(error.flutterError);
-  };
+        result(error.flutterError);
+      };
   if ([@"DatabaseReference#set" isEqualToString:call.method]) {
-     [getReference(call.arguments) setValue:call.arguments[@"value"]
-                        withCompletionBlock:defaultCompletionBlock];
+    [getReference(call.arguments) setValue:call.arguments[@"value"]
+                       withCompletionBlock:defaultCompletionBlock];
   } else if ([@"Query#observe" isEqualToString:call.method]) {
     FIRDataEventType eventType = parseEventType(call.arguments[@"eventType"]);
     __block FIRDatabaseHandle handle = [getReference(call.arguments)

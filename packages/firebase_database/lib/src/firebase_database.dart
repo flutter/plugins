@@ -17,7 +17,7 @@ class FirebaseDatabase {
     _channel.setMethodCallHandler((MethodCall call) {
       if (call.method == 'Event') {
         Event event = new Event._(call.arguments);
-        _observers[call.arguments["handle"]].add(event);
+        _observers[call.arguments['handle']].add(event);
       }
     });
   }

@@ -50,7 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
       });
     });
     _messagesSubscription = _messagesRef.onChildAdded.listen((Event event) {
-      print("Child added: ${event.snapshot.value}");
+      print('Child added: ${event.snapshot.value}');
     });
   }
 
@@ -68,7 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
       _counter = (snapshot.value ?? 0) + 1;
     });
     _counterRef.set(_counter);
-    _messagesRef.push().set({ _kTestKey: "$_kTestValue $_counter" });
+    _messagesRef.push().set({ _kTestKey: '$_kTestValue $_counter' });
   }
 
   @override
