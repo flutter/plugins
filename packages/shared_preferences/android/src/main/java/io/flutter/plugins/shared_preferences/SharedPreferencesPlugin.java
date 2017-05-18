@@ -29,7 +29,7 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
   private static final String CHANNEL_NAME = "plugins.flutter.io/shared_preferences";
 
   // Fun fact: The following is a base64 encoding of the string "This is the prefix for a list."
-  private static final String LIST_IDENTIFIER =    "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBhIGxpc3Qu";
+  private static final String LIST_IDENTIFIER = "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBhIGxpc3Qu";
   private static final String BIG_INTEGER_PREFIX = "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBCaWdJbnRlZ2Vy";
 
   private final android.content.SharedPreferences preferences;
