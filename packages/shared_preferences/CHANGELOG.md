@@ -1,3 +1,8 @@
+## [0.2.2] - 2017-05-17
+
+* BREAKING CHANGE: setStringSet API changed to setStringList and plugin now supports
+  ordered storage.
+
 ## [0.2.1] - 2017-05-17
 
 * Support arbitrary length integers for setInt.

@@ -40,7 +40,7 @@ static NSString *const CHANNEL_NAME = @"plugins.flutter.io/shared_preferences";
       NSString *value = arguments[@"value"];
       [[NSUserDefaults standardUserDefaults] setValue:value forKey:key];
       result(nil);
-    } else if ([method isEqualToString:@"setStringSet"]) {
+    } else if ([method isEqualToString:@"setStringList"]) {
       NSString *key = arguments[@"key"];
       NSArray *value = arguments[@"value"];
       [[NSUserDefaults standardUserDefaults] setValue:value forKey:key];

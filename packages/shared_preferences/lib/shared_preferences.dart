@@ -59,10 +59,7 @@ class SharedPreferences {
 
   /// Reads a set of string values from persistent storage,
   /// throwing an exception if it's not a string set.
-  Set<String> getStringSet(String key) {
-    List<String> stringList = _preferenceCache[key] as List<String>;
-    return stringList != null ? stringList.toSet() : null;
-  }
+  List<String> getStringList(String key) => _preferenceCache[key] as List<String>;
 
   /// Saves a boolean [value] to persistent storage in the background.
   void setBool(String key, bool value) => _setValue('Bool', key, value);
@@ -78,8 +75,8 @@ class SharedPreferences {
   void setString(String key, String value) => _setValue('String', key, value);
 
   /// Saves a set of string [value] to persistent storage in the background.
-  void setStringSet(String key, Set<String> value) =>
-      _setValue('StringSet', key, value.toList(growable: false));
+  void setStringList(String key, List<String> value) =>
+      _setValue('StringList', key, value);
 
   void _setValue(String valueType, String key, Object value) {
     _preferenceCache[key] = value;
