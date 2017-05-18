@@ -8,18 +8,16 @@
 
 @implementation NSError (FlutterError)
 - (FlutterError *)flutterError {
-  return [FlutterError
-      errorWithCode:[NSString stringWithFormat:@"Error %ld", self.code]
-            message:self.domain
-            details:self.localizedDescription];
+  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %ld", self.code]
+                             message:self.domain
+                             details:self.localizedDescription];
 }
 @end
 
 FIRDatabaseReference *getReference(NSDictionary *arguments) {
   NSString *path = arguments[@"path"];
   FIRDatabaseReference *ref = [FIRDatabase database].reference;
-  if ([path length] > 0)
-    ref = [ref child:path];
+  if ([path length] > 0) ref = [ref child:path];
   return ref;
 }
 
@@ -46,9 +44,9 @@ FIRDataEventType parseEventType(NSString *eventTypeString) {
 @implementation FirebaseDatabasePlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
-  FlutterMethodChannel *channel = [FlutterMethodChannel
-      methodChannelWithName:@"plugins.flutter.io/firebase_database"
-            binaryMessenger:[registrar messenger]];
+  FlutterMethodChannel *channel =
+      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/firebase_database"
+                                  binaryMessenger:[registrar messenger]];
   FirebaseDatabasePlugin *instance = [[FirebaseDatabasePlugin alloc] init];
   instance.channel = channel;
   [registrar addMethodCallDelegate:instance channel:channel];
@@ -64,8 +62,7 @@ FIRDataEventType parseEventType(NSString *eventTypeString) {
   return self;
 }
 
-- (void)handleMethodCall:(FlutterMethodCall *)call
-                  result:(FlutterResult)result {
+- (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   void (^defaultCompletionBlock)(NSError *, FIRDatabaseReference *) =
       ^(NSError *error, FIRDatabaseReference *ref) {
         result(error.flutterError);
@@ -77,18 +74,16 @@ FIRDataEventType parseEventType(NSString *eventTypeString) {
     FIRDataEventType eventType = parseEventType(call.arguments[@"eventType"]);
     __block FIRDatabaseHandle handle = [getReference(call.arguments)
                       observeEventType:eventType
-        andPreviousSiblingKeyWithBlock:^(FIRDataSnapshot *snapshot,
-                                         NSString *previousSiblingKey) {
-          [self.channel
-              invokeMethod:@"Event"
-                 arguments:@{
-                   @"handle" : [NSNumber numberWithUnsignedInteger:handle],
-                   @"snapshot" : @{
-                     @"key" : snapshot.key ?: [NSNull null],
-                     @"value" : snapshot.value ?: [NSNull null],
-                   },
-                   @"previousSiblingKey" : previousSiblingKey ?: [NSNull null],
-                 }];
+        andPreviousSiblingKeyWithBlock:^(FIRDataSnapshot *snapshot, NSString *previousSiblingKey) {
+          [self.channel invokeMethod:@"Event"
+                           arguments:@{
+                             @"handle" : [NSNumber numberWithUnsignedInteger:handle],
+                             @"snapshot" : @{
+                               @"key" : snapshot.key ?: [NSNull null],
+                               @"value" : snapshot.value ?: [NSNull null],
+                             },
+                             @"previousSiblingKey" : previousSiblingKey ?: [NSNull null],
+                           }];
         }];
     result([NSNumber numberWithUnsignedInteger:handle]);
   } else if ([@"Query#removeObserver" isEqualToString:call.method]) {
