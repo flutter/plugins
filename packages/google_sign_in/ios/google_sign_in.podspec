@@ -12,7 +12,7 @@ Enables Google Sign-In in Flutter apps.
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Flutter Team' => 'flutter-dev@googlegroups.com' }
   s.source           = { :path => '.' }
-  s.source_files = '**/*.m'
+  s.source_files = '**/*'
   s.public_header_files = '**/*.h'
   s.dependency 'Flutter'
   s.dependency 'Google/SignIn', '~> 3.0'

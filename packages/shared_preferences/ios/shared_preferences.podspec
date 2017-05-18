@@ -12,7 +12,7 @@ A Flutter plugin for reading and writing simple key-value pairs.
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Flutter Team' => 'flutter-dev@googlegroups.com' }
   s.source           = { :path => '.' }
-  s.source_files = '**/*.m'
+  s.source_files = '**/*'
   s.public_header_files = '**/*.h'
   s.dependency 'Flutter'
   
