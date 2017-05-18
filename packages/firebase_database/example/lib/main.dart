@@ -103,6 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
               key: new ValueKey<bool>(_anchorToBottom),
               query: _messagesRef,
               reverse: _anchorToBottom,
+              sort: _anchorToBottom ? (a, b) => b.key.compareTo(a.key) : null,
               itemBuilder: (context, snapshot, animation) {
                 return new SizeTransition(
                   sizeFactor: animation,
