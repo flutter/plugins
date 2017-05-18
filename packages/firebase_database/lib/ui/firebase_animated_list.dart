@@ -3,7 +3,10 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:collection';
 import '../firebase_database.dart';
+import 'firebase_list.dart';
+import 'firebase_sorted_list.dart';
 import 'package:flutter/material.dart';
 
 typedef Widget FirebaseAnimatedListItemBuilder(
@@ -19,6 +22,7 @@ class FirebaseAnimatedList extends StatefulWidget {
     Key key,
     @required this.query,
     @required this.itemBuilder,
+    this.sort,
     this.defaultChild,
     this.scrollDirection: Axis.vertical,
     this.reverse: false,
@@ -35,6 +39,11 @@ class FirebaseAnimatedList extends StatefulWidget {
   /// A Firebase query to use to populate the animated list
   final Query query;
 
+  /// Optional function used to compare snapshots when sorting the list
+  ///
+  /// The default is to sort the snapshots by key.
+  final Comparator<DataSnapshot> sort;
+
   /// A widget to display while the query is loading. Defaults to an empty
   /// Container().
   final Widget defaultChild;
@@ -43,11 +52,8 @@ class FirebaseAnimatedList extends StatefulWidget {
   ///
   /// List items are only built when they're scrolled into view.
   ///
-  /// The [AnimatedListItemBuilder] index parameter indicates the item's
-  /// posiition in the list. The value of the index parameter will be between 0 and
-  /// [initialItemCount] plus the total number of items that have been inserted
-  /// with [AnimatedListState.insertItem] and less the total number of items
-  /// that have been removed with [AnimatedList.removeItem].
+  /// The [DataSnapshot] parameter indicates the snapshot that should be used
+  /// to build the item.
   ///
   /// Implementations of this callback should assume that [AnimatedList.removeItem]
   /// removes an item immediately.
@@ -125,38 +131,66 @@ class FirebaseAnimatedList extends StatefulWidget {
 }
 
 class FirebaseAnimatedListState extends State<FirebaseAnimatedList> {
-  GlobalKey<AnimatedListState> _animatedListKey = new GlobalKey<AnimatedListState>();
-  _ListModel _model;
-  bool _dataAvailable = false;
+  final GlobalKey<AnimatedListState> _animatedListKey = new GlobalKey<AnimatedListState>();
+  List<DataSnapshot> _model;
+  bool _loaded = false;
 
-  @override initState() {
-    super.initState();
-    _model = new _ListModel(
-      query: widget.query,
-      onValue: _onValue,
-      onChildAdded: _onChildAdded,
-      onChildRemoved: _onChildRemoved,
-    );
-  }
-
-  void _onValue() {
-    setState(() {
-      _dataAvailable = true;
-    });
+  @override
+  void didChangeDependencies() {
+    if (widget.sort != null) {
+      _model = new FirebaseSortedList(
+        query: widget.query,
+        comparator: widget.sort,
+        onChildAdded: _onChildAdded,
+        onChildRemoved: _onChildRemoved,
+        onChildChanged: _onChildChanged,
+        onValue: _onValue,
+      );
+    } else {
+      _model = new FirebaseList(
+        query: widget.query,
+        onChildAdded: _onChildAdded,
+        onChildRemoved: _onChildRemoved,
+        onChildChanged: _onChildChanged,
+        onChildMoved: _onChildMoved,
+        onValue: _onValue,
+      );
+    }
+    super.didChangeDependencies();
   }
 
   void _onChildAdded(int index, DataSnapshot snapshot) {
+    if (!_loaded)
+      return;  // AnimatedList is not created yet
     _animatedListKey.currentState.insertItem(index, duration: widget.duration);
   }
 
   void _onChildRemoved(int index, DataSnapshot snapshot) {
+    // The child should have already been removed from the model by now
+    assert(index >= _model.length || _model[index].key != snapshot.key);
     _animatedListKey.currentState.removeItem(
       index,
-      (BuildContext context, int index, Animation<double> animation) {
-        return new widget.itemBuilder(context, snapshot, animation);
+      (BuildContext context, Animation<double> animation) {
+        return widget.itemBuilder(context, snapshot, animation);
       },
       duration: widget.duration,
     );
+  }
+
+  // No animation, just update contents
+  void _onChildChanged(int index, DataSnapshot snapshot) {
+    setState(() {});
+  }
+
+  // No animation, just update contents
+  void _onChildMoved(int fromIndex, int toIndex, DataSnapshot snapshot) {
+    setState(() {});
+  }
+
+  void _onValue(_) {
+    setState(() {
+      _loaded = true;
+    });
   }
 
   Widget _buildItem(BuildContext context, int index, Animation<double> animation) {
@@ -165,8 +199,8 @@ class FirebaseAnimatedListState extends State<FirebaseAnimatedList> {
 
   @override
   Widget build(BuildContext context) {
-    if (!_dataAvailable)
-      return defaultChild ?? new Container();
+    if (!_loaded)
+      return widget.defaultChild ?? new Container();
     return new AnimatedList(
       key: _animatedListKey,
       itemBuilder: _buildItem,
@@ -184,53 +218,5 @@ class FirebaseAnimatedListState extends State<FirebaseAnimatedList> {
   @override void dispose() {
     _model.dispose();
     super.dispose();
-  }
-}
-
-typedef void _ChildCallback(int index, DataSnapshot snapshot);
-
-// Wrapper around an array that is bound to a query that notifies on changes.
-// TODO(jackson): Refactor this into a public class supporting more use cases.
-class _ListModel {
-  _ListModel({
-    @required this.query,
-    @required VoidCallback this.onValue,
-    @required _ChildCallback this.onChildAdded,
-    @required _ChildCallback this.onChildRemoved,
-  }) {
-    _subscriptions = [
-      query.onChildAdded.listen(_onChildAdded),
-      // TODO(jackson): Add support for more types of data events
-      //      query.onChildRemoved.listen(_onChildRemoved),
-      //      query.onValue.listen(_onValue),
-    ];
-    // For now, pretend all the data is loaded immediately.
-    onValue();
-  }
-
-  final Query query;
-  final VoidCallback onValue;
-  final _ChildCallback onChildAdded;
-  final _ChildCallback onChildRemoved;
-
-  final List<DataSnapshot> _items = <DataSnapshot>[];
-  List<StreamSubscription<Event>> _subscriptions;
-
-  // TODO(jackson): Find the correct position in the array to insert into
-  void _onChildAdded(Event event)
-  {
-    _items.insert(0, event.snapshot);
-    onChildAdded(0, event.snapshot);
-  }
-
-  int get length => _items.length;
-  DataSnapshot operator [](int index) => _items[index];
-  int indexOf(DataSnapshot item) => _items.indexOf(item);
-
-  void dispose() {
-    assert(_subscriptions != null);
-    for (StreamSubscription<Event> subscription in _subscriptions)
-      subscription.cancel();
-    _subscriptions = null;
   }
 }
