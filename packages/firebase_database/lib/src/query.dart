@@ -11,6 +11,8 @@ class Query {
 
   final FirebaseDatabase _database;
   final List<String> _pathComponents;
+
+  /// Slash-delimited path representing the database location of this query.
   final String path;
 
   Stream<Event> _observe(_EventType eventType) {
@@ -38,14 +40,21 @@ class Query {
     return controller.stream;
   }
 
-  Future<DataSnapshot> once() async {
-    Event event = await _observe(_EventType.value).first;
-    return event.snapshot;
-  }
+  /// Gets a single value event.
+  Future<DataSnapshot> once() async => (await onValue.first).snapshot;
 
+  /// Fires when children are added.
   Stream<Event> get onChildAdded => _observe(_EventType.childAdded);
+
+  /// Fires when children are removed. `previousChildKey` is null.
   Stream<Event> get onChildRemoved => _observe(_EventType.childRemoved);
+
+  /// Fires when children are changed.
   Stream<Event> get onChildChanged => _observe(_EventType.childChanged);
+
+  /// Fires when children are moved
   Stream<Event> get onChildMoved => _observe(_EventType.childMoved);
+
+  /// Fires the data at this location is updated. `previousChildKey` is null.
   Stream<Event> get onValue => _observe(_EventType.value);
 }

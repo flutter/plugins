@@ -4,6 +4,9 @@
 
 part of firebase_database;
 
+/// The entry point for accessing a Firebase Database. You can get an instance
+/// by calling `FirebaseDatabase.instance`. To access a location in the database and
+/// read or write data, use `reference()`.
 class FirebaseDatabase {
   final MethodChannel _channel;
 
@@ -26,6 +29,10 @@ class FirebaseDatabase {
   }
 
   static FirebaseDatabase _instance = new FirebaseDatabase();
+
+  // Gets the instance of FirebaseDatabase for the default Firebase app.
   static FirebaseDatabase get instance => _instance;
+
+  /// Gets a DatabaseReference for the root of your Firebase Database.
   DatabaseReference reference() => new DatabaseReference._(this, <String>[]);
 }

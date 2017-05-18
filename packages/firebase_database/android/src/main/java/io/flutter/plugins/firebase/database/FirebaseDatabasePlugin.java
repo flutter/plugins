@@ -2,18 +2,17 @@ package io.flutter.plugins.firebase.database;
 
 import android.util.SparseArray;
 import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /** FirebaseDatabasePlugin */
@@ -28,8 +27,7 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
 
   // Handles are ints used as indexes into the sparse array of active observers
   private int nextHandle = 0;
-  private final SparseArray<EventObserver> observers =
-      new SparseArray<EventObserver>();
+  private final SparseArray<EventObserver> observers = new SparseArray<EventObserver>();
 
   public static void registerWith(PluginRegistry.Registrar registrar) {
     final MethodChannel channel =
@@ -45,8 +43,7 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
     @SuppressWarnings("unchecked")
     String path = (String) arguments.get("path");
     DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
-    if (path != null)
-      reference = reference.child(path);
+    if (path != null) reference = reference.child(path);
     return reference;
   }
 
@@ -60,8 +57,7 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
     @Override
     public void onComplete(DatabaseError error, DatabaseReference ref) {
       if (error != null) {
-        result.error(String.valueOf(error.getCode()), error.getMessage(),
-            error.getDetails());
+        result.error(String.valueOf(error.getCode()), error.getMessage(), error.getDetails());
       } else {
         result.success(null);
       }
@@ -77,8 +73,7 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
       this.handle = handle;
     }
 
-    private void sendEvent(String eventType, DataSnapshot snapshot,
-        String previousChildName) {
+    private void sendEvent(String eventType, DataSnapshot snapshot, String previousChildName) {
       if (eventType.equals(requestedEventType)) {
         Map<String, Object> arguments = new HashMap<String, Object>();
         Map<String, Object> snapshotMap = new HashMap<String, Object>();
@@ -125,13 +120,8 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
   public void onMethodCall(MethodCall call, final Result result) {
     Map<String, ?> arguments = (Map<String, ?>) call.arguments;
     if (call.method.equals("DatabaseReference#set")) {
-      Map values = (Map) arguments.get("values");
-      getReference(arguments)
-        .updateChildren(values, new DefaultCompletionListener(result));
-    } else if (call.method.equals("DatabaseReference#setValue")) {
       Object value = arguments.get("value");
-      getReference(arguments)
-        .setValue(value, new DefaultCompletionListener(result));
+      getReference(arguments).setValue(value, new DefaultCompletionListener(result));
     } else if (call.method.equals("Query#observe")) {
       String eventType = (String) arguments.get("eventType");
       int handle = nextHandle++;

@@ -67,7 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _counter = (snapshot.value ?? 0) + 1;
     });
-    _counterRef.setValue(_counter);
+    _counterRef.set(_counter);
     _messagesRef.push().set({ _kTestKey: "$_kTestValue $_counter" });
   }
 

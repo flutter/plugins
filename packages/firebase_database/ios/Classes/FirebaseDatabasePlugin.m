@@ -71,10 +71,6 @@ FIRDataEventType parseEventType(NSString *eventTypeString) {
     result(error.flutterError);
   };
   if ([@"DatabaseReference#set" isEqualToString:call.method]) {
-    NSDictionary *values = call.arguments[@"values"];
-    [getReference(call.arguments) updateChildValues:values
-        withCompletionBlock:defaultCompletionBlock];
-  } else if ([@"DatabaseReference#setValue" isEqualToString:call.method]) {
      [getReference(call.arguments) setValue:call.arguments[@"value"]
                         withCompletionBlock:defaultCompletionBlock];
   } else if ([@"Query#observe" isEqualToString:call.method]) {
