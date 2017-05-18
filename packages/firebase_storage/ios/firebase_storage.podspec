@@ -12,8 +12,8 @@ Firebase Storage plugin for Flutter.
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Flutter Team' => 'flutter-dev@googlegroups.com' }
   s.source           = { :path => '.' }
-  s.source_files = 'Classes/**/*'
-  s.public_header_files = 'Classes/**/*.h'
+  s.source_files = '**/*.m'
+  s.public_header_files = '**/*.h'
   s.ios.deployment_target = '6.0'
   s.dependency 'Flutter'
   s.dependency 'Firebase/Storage'
