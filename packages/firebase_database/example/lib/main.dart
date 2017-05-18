@@ -28,12 +28,15 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => new _MyHomePageState();
 }
 
-const String kTestString = "Hello world!";
-
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-  final DatabaseReference _reference = FirebaseDatabase.instance.reference();
-  StreamSubscription _childAdded;
+  int _counter;
+  final DatabaseReference _counterRef = FirebaseDatabase.instance.reference()
+      .child('counter');
+  final DatabaseReference _messagesRef = FirebaseDatabase.instance.reference()
+      .child('messages');
+  StreamSubscription _counterSubscription;
+  StreamSubscription _messagesSubscription;
+  bool _anchorToBottom = false;
 
   String _kTestKey = 'Hello';
   String _kTestValue = 'world!';
@@ -41,23 +44,31 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    _childAdded = _reference.onChildAdded.listen((Event event) {
-      assert(event.snapshot.value[_kTestKey] == _kTestValue);
-      print("Child added: ${event.snapshot.value}");
+    _counterSubscription = _counterRef.onValue.listen((Event event) {
       setState(() {
-        _counter++;
+        _counter = event.snapshot.value ?? 0;
       });
+    });
+    _messagesSubscription = _messagesRef.onChildAdded.listen((Event event) {
+      print('Child added: ${event.snapshot.value}');
     });
   }
 
   @override dispose() {
     super.dispose();
-    _childAdded.cancel();
+    _messagesSubscription.cancel();
+    _counterSubscription.cancel();
   }
 
   _increment() async {
     await FirebaseAuth.instance.signInAnonymously();
-    _reference.push().set({ _kTestKey: _kTestValue });
+    // TODO(jackson): This illustrates a case where transactions are needed
+    DataSnapshot snapshot = await _counterRef.once();
+    setState(() {
+      _counter = (snapshot.value ?? 0) + 1;
+    });
+    _counterRef.set(_counter);
+    _messagesRef.push().set({ _kTestKey: '$_kTestValue $_counter' });
   }
 
   @override
@@ -76,9 +87,22 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
           ),
+          new ListTile(
+            leading: new Checkbox(
+              onChanged: (bool value) {
+                 setState(() {
+                   _anchorToBottom = value;
+                });
+              },
+              value: _anchorToBottom,
+            ),
+            title: new Text('Anchor to bottom'),
+          ),
           new Flexible(
             child: new FirebaseAnimatedList(
-              query: _reference,
+              key: new ValueKey<bool>(_anchorToBottom),
+              query: _messagesRef,
+              reverse: _anchorToBottom,
               itemBuilder: (context, snapshot, animation) {
                 return new SizeTransition(
                   sizeFactor: animation,

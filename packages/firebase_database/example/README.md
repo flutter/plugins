@@ -1,4 +1,4 @@
-# firebase_storage_example
+# firebase_database_example
 
 Demonstrates how to use the firebase_database plugin.
 
