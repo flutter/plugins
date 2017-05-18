@@ -118,12 +118,12 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
           result.success(null);
           break;
         case "setInt":
-          Number value = call.argument("value");
-          if (value instanceof BigInteger) {
-            BigInteger integerValue = (BigInteger) value;
+          Number number = call.argument("value");
+          if (number instanceof BigInteger) {
+            BigInteger integerValue = (BigInteger) number;
             editor.putString(key, BIG_INTEGER_PREFIX + integerValue.toString(Character.MAX_RADIX));
           } else {
-            editor.putLong(key, value.longValue());
+            editor.putLong(key, number.longValue());
           }
           editor.apply();
           result.success(null);
@@ -133,8 +133,8 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
           result.success(null);
           break;
         case "setStringList":
-          List<String> value = call.argument("value");
-          editor.putString(key, LIST_IDENTIFIER + encodeList(value)).apply();
+          List<String> list = call.argument("value");
+          editor.putString(key, LIST_IDENTIFIER + encodeList(list)).apply();
           result.success(null);
           break;
         case "commit":
