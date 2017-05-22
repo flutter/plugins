@@ -53,6 +53,14 @@ You'll need to add this to the main dictionary of your application's Info.plist:
 
 ## Usage
 
+### Add the package
+You'll have to add the plugin to the `pubspec.yaml` file. 
+
+- Goto the pub site for the plugin: [Click here for the pub site for the google_sign_in plugin.](https://pub.dartlang.org/packages/google_sign_in)
+- Then click on the installing tab. This will provide the package declaration for the `pubspec.yaml` file.
+- Copy the `google_sign_in` dependency and paste it in your pubspec.yaml file under dependencies. 
+
+### Import the library 
 Add the following import to your Dart code:
 
 ```
