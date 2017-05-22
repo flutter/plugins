@@ -62,21 +62,29 @@ import 'package:google_sign_in/google_sign_in.dart';
 Initialize GoogleSignIn with the scopes you want:
 
 ```
-GoogleSignIn.initialize(
-    scopes: [
-      'email',
-      'https://www.googleapis.com/auth/contacts.readonly',
-    ],
+GoogleSignIn _googleSignIn = new GoogleSignIn(
+  scopes: [
+    'email',
+    'https://www.googleapis.com/auth/contacts.readonly',
+  ],
 );
 ```
 
-You can now use the `GoogleSignIn` class to authenticate in your Dart code, e.g.
+You can now use the `GoogleSignIn` class to authenticate in your Dart code, e.g. 
 
 ```
-GoogleSignInAccount account = await (await GoogleSignIn.instance).signIn();
+Future<Null> _handleSignIn() async {
+  try {
+    await _googleSignIn.signIn();
+  } catch (error) {
+    print(error);
+  }
+}
 ```
 
-See google_sign_in.dart for more API details.
+See more on how to wire it up the [example Google sign application here](https://github.com/flutter/plugins/blob/master/packages/google_sign_in/example/lib/main.dart).
+
+See [google_sign_in.dart](https://github.com/flutter/plugins/blob/master/packages/google_sign_in/lib/google_sign_in.dart) for more API details.
 
 ## Issues and feedback
 
