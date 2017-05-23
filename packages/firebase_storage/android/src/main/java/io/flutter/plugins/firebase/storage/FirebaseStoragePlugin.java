@@ -21,6 +21,7 @@ import java.io.File;
 import java.util.Map;
 
 /** FirebaseStoragePlugin */
+@SuppressWarnings("unchecked")
 public class FirebaseStoragePlugin implements MethodCallHandler {
   private FirebaseStorage firebaseStorage;
 

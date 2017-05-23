@@ -1,3 +1,7 @@
+## 0.0.3
+
+* Suppress unchecked warnings
+
 ## 0.0.2
 
 * Bumped buildToolsVersion to 25.0.3

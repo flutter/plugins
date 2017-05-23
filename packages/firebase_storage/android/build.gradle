@@ -15,6 +15,12 @@ allprojects {
     repositories {
         jcenter()
     }
+
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+        }
+    }
 }
 
 apply plugin: 'com.android.library'
