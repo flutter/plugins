@@ -18,7 +18,7 @@ manager](https://console.developers.google.com/). For example, if you
 want to mimic the behavior of the Google Sign-In sample app, you'll need to
 enable the [Google People API](https://developers.google.com/people/).
 
-# iOS integration
+## iOS integration
 
 To access Google Sign-In, you'll need to make sure to [register your
 application](https://developers.google.com/mobile/add?platform=ios). Add
