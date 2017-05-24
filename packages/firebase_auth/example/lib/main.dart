@@ -9,8 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-final FirebaseAuth auth = FirebaseAuth.instance;
-final GoogleSignIn googleSignIn = new GoogleSignIn();
+final FirebaseAuth _auth = FirebaseAuth.instance;
+final GoogleSignIn _googleSignIn = new GoogleSignIn();
 
 void main() {
   runApp(new MyApp());
@@ -39,9 +39,9 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<String> _message = new Future<String>.value('');
 
   Future<String> _testSignInAnonymously() async {
-    FirebaseUser user = await auth.signInAnonymously();
+    FirebaseUser user = await _auth.signInAnonymously();
     assert(user != null);
-    assert(user == auth.currentUser);
+    assert(user == _auth.currentUser);
     assert(user.isAnonymous);
     assert(!user.isEmailVerified);
     if (Platform.isIOS) {
@@ -60,9 +60,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<String> _testSignInWithGoogle() async {
-    GoogleSignInAccount googleUser = await googleSignIn.signIn();
+    GoogleSignInAccount googleUser = await _googleSignIn.signIn();
     GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-    FirebaseUser user = await auth.signInWithGoogle(
+    FirebaseUser user = await _auth.signInWithGoogle(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
     );
