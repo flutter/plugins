@@ -56,11 +56,11 @@ class FirebaseSortedList extends ListBase<DataSnapshot> with StreamSubscriberMix
   final List<DataSnapshot> _snapshots = <DataSnapshot>[];
   int get length => _snapshots.length;
   set length(int value) {
-    _snapshots.length = value;
+    throw new UnsupportedError("List cannot be modified.");
   }
   DataSnapshot operator [](int index) => _snapshots[index];
   void operator []=(int index, DataSnapshot value) {
-    _snapshots[index] = value;
+    throw new UnsupportedError("List cannot be modified.");
   }
 
   void _onChildAdded(Event event) {
