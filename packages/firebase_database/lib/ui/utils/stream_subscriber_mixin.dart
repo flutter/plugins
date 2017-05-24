@@ -10,9 +10,10 @@ abstract class StreamSubscriberMixin<T> {
   List<StreamSubscription<T>> _subscriptions = <StreamSubscription<T>>[];
 
   /// Listens to a stream and saves it to the list of subscriptions.
-  void listen<T>(Stream<T> stream, void onData(T data)) {
-    if (stream != null)
+  void listen(Stream<T> stream, void onData(T data)) {
+    if (stream != null) {
       _subscriptions.add(stream.listen(onData));
+    }
   }
 
   /// Cancels all streams that were previously added with listen().

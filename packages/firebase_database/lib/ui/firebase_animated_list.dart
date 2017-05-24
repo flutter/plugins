@@ -2,12 +2,12 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'dart:async';
-import 'dart:collection';
+import 'package:flutter/material.dart';
+import 'package:meta/meta.dart';
+
 import '../firebase_database.dart';
 import 'firebase_list.dart';
 import 'firebase_sorted_list.dart';
-import 'package:flutter/material.dart';
 
 typedef Widget FirebaseAnimatedListItemBuilder(
   BuildContext context,
@@ -213,10 +213,5 @@ class FirebaseAnimatedListState extends State<FirebaseAnimatedList> {
       shrinkWrap: widget.shrinkWrap,
       padding: widget.padding,
     );
-  }
-
-  @override void dispose() {
-    _model.dispose();
-    super.dispose();
   }
 }

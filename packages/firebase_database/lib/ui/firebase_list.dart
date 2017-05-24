@@ -2,10 +2,12 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'dart:async';
 import 'dart:collection';
+
 import '../firebase_database.dart' show DataSnapshot, Event, Query;
 import 'utils/stream_subscriber_mixin.dart';
+
+import 'package:meta/meta.dart';
 
 typedef void ChildCallback(int index, DataSnapshot snapshot);
 typedef void ChildMovedCallback(int fromIndex, int toIndex, DataSnapshot snapshot);
@@ -47,9 +49,16 @@ class FirebaseList extends ListBase<DataSnapshot> with StreamSubscriberMixin<Eve
   /// Called when the data of the list has finished loading
   final ValueCallback onValue;
 
+  // ListBase implementation
   final List<DataSnapshot> _snapshots = <DataSnapshot>[];
   int get length => _snapshots.length;
+  set length(int value) {
+    throw new UnsupportedError("List cannot be modified.");
+  }
   DataSnapshot operator [](int index) => _snapshots[index];
+  void operator []=(int index, DataSnapshot value) {
+    throw new UnsupportedError("List cannot be modified.");
+  }
 
   int _indexForKey(String key) {
     assert(key != null);

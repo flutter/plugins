@@ -2,11 +2,13 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'dart:async';
 import 'dart:collection';
+
+import 'package:meta/meta.dart';
+
 import '../firebase_database.dart' show DataSnapshot, Event, Query;
+import 'firebase_list.dart' show ChildCallback, ValueCallback;
 import 'utils/stream_subscriber_mixin.dart';
-import 'firebase_list.dart' show ChildCallback, ChildMovedCallback, ValueCallback;
 
 /// Sorts the results of `query` on the client side using to the `comparator`.
 ///
@@ -47,16 +49,19 @@ class FirebaseSortedList extends ListBase<DataSnapshot> with StreamSubscriberMix
   /// Called when the child has changed
   final ChildCallback onChildChanged;
 
-  /// Called when the child has moved
-  final ChildMovedCallback onChildMoved;
-
   /// Called when the data of the list has finished loading
   final ValueCallback onValue;
 
   // ListBase implementation
   final List<DataSnapshot> _snapshots = <DataSnapshot>[];
   int get length => _snapshots.length;
+  set length(int value) {
+    throw new UnsupportedError("List cannot be modified.");
+  }
   DataSnapshot operator [](int index) => _snapshots[index];
+  void operator []=(int index, DataSnapshot value) {
+    throw new UnsupportedError("List cannot be modified.");
+  }
 
   void _onChildAdded(Event event) {
     _snapshots.add(event.snapshot);
@@ -69,7 +74,7 @@ class FirebaseSortedList extends ListBase<DataSnapshot> with StreamSubscriberMix
       return snapshot.key == event.snapshot.key;
     });
     int index = _snapshots.indexOf(snapshot);
-    _snapshots.removeAt(snapshot);
+    _snapshots.removeAt(index);
     onChildRemoved(index, snapshot);
   }
 
