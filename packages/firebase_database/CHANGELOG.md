@@ -1,3 +1,7 @@
+## 0.0.5
+
+* Fixed analyzer warnings
+
 ## 0.0.4
 
 * Removed stub code and replaced it with support for more event types, paths, auth
