@@ -114,7 +114,7 @@ class GoogleSignIn {
   Future<Null> _initialization;
 
   Future<GoogleSignInAccount> _callMethod(String method) async {
-    if (_currentUser != null) {
+    if (_currentUser != null && method != 'disconnect' && method != 'signOut') {
       // We have already been signed in. Don't try to sign in again.
       return _currentUser;
     }
