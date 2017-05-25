@@ -86,6 +86,40 @@ class FirebaseAuth {
     return _currentUser;
   }
 
+  Future<FirebaseUser> createUserWithEmailAndPassword({
+    @required String email,
+    @required String password,
+  }) async {
+    assert(email != null);
+    assert(password != null);
+    Map<String, dynamic> data = await _channel.invokeMethod(
+      'createUserWithEmailAndPassword',
+      <String, String>{
+        'email': email,
+        'password': password,
+      },
+    );
+    _currentUser = new FirebaseUser._(data);
+    return _currentUser;
+  }
+
+  Future<FirebaseUser> signInWithEmailAndPassword({
+    @required String email,
+    @required String password,
+  }) async {
+    assert(email != null);
+    assert(password != null);
+    Map<String, dynamic> data = await _channel.invokeMethod(
+      'signInWithEmailAndPassword',
+      <String, String>{
+        'email': email,
+        'password': password,
+      },
+    );
+    _currentUser = new FirebaseUser._(data);
+    return _currentUser;
+  }
+
   Future<FirebaseUser> signInWithGoogle({
     @required String idToken,
     @required String accessToken,
@@ -101,6 +135,11 @@ class FirebaseAuth {
     );
     _currentUser = new FirebaseUser._(data);
     return _currentUser;
+  }
+
+  Future<Null> signOut() async {
+    await _channel.invokeMethod("signOut");
+    _currentUser = null;
   }
 
   FirebaseUser _currentUser;

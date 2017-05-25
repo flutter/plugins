@@ -1,3 +1,7 @@
+## 0.0.3
+
+* Added support for createUserWithEmailAndPassword, signInWithEmailAndPassword, and signOut Firebase methods
+
 ## 0.0.2+1
 
 * Updated README.md
