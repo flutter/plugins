@@ -79,3 +79,6 @@ class DatabaseReference extends Query {
     );
   }
 }
+class ServerValue {
+  static const timestamp = const {'.sv' : 'timestamp'};
+}
