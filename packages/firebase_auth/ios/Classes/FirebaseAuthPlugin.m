@@ -59,6 +59,31 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
                               completion:^(FIRUser *user, NSError *error) {
                                 [self sendResult:result forUser:user error:error];
                               }];
+  } else if ([@"createUserWithEmailAndPassword" isEqualToString:call.method]) {
+    NSString *email = call.arguments[@"email"];
+    NSString *password = call.arguments[@"password"];
+    [[FIRAuth auth] createUserWithEmail:email
+                               password:password
+                             completion:^(FIRUser *user, NSError *error) {
+                               [self sendResult:result forUser:user error:error];
+                             }];
+  } else if ([@"signInWithEmailAndPassword" isEqualToString:call.method]) {
+    NSString *email = call.arguments[@"email"];
+    NSString *password = call.arguments[@"password"];
+    [[FIRAuth auth] signInWithEmail:email
+                           password:password
+                         completion:^(FIRUser *user, NSError *error) {
+                           [self sendResult:result forUser:user error:error];
+                         }];
+  } else if ([@"signOut" isEqualToString:call.method]) {
+    NSError *signOutError;
+    BOOL status = [[FIRAuth auth] signOut:&signOutError];
+    if (!status) {
+      NSLog(@"Error signing out: %@", signOutError);
+      [self sendResult:result forUser:nil error:signOutError];
+    } else {
+      [self sendResult:result forUser:nil error:nil];
+    }
   } else {
     result(FlutterMethodNotImplemented);
   }

@@ -49,8 +49,17 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       case "signInAnonymously":
         handleSignInAnonymously(call, result);
         break;
+      case "createUserWithEmailAndPassword":
+        handleCreateUserWithEmailAndPassword(call, result);
+        break;
+      case "signInWithEmailAndPassword":
+        handleSignInWithEmailAndPassword(call, result);
+        break;
       case "signInWithGoogle":
         handleSignInWithGoogle(call, result);
+        break;
+      case "signOut":
+        handleSignOut(call, result);
         break;
       default:
         result.notImplemented();
@@ -64,6 +73,28 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         .addOnCompleteListener(activity, new SignInCompleteListener(result));
   }
 
+  private void handleCreateUserWithEmailAndPassword(MethodCall call, final Result result) {
+    @SuppressWarnings("unchecked")
+    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    String email = arguments.get("email");
+    String password = arguments.get("password");
+
+    firebaseAuth
+        .createUserWithEmailAndPassword(email, password)
+        .addOnCompleteListener(activity, new SignInCompleteListener(result));
+  }
+
+  private void handleSignInWithEmailAndPassword(MethodCall call, final Result result) {
+    @SuppressWarnings("unchecked")
+    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    String email = arguments.get("email");
+    String password = arguments.get("password");
+
+    firebaseAuth
+        .signInWithEmailAndPassword(email, password)
+        .addOnCompleteListener(activity, new SignInCompleteListener(result));
+  }
+
   private void handleSignInWithGoogle(MethodCall call, final Result result) {
     @SuppressWarnings("unchecked")
     Map<String, String> arguments = (Map<String, String>) call.arguments;
@@ -73,6 +104,11 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     firebaseAuth
         .signInWithCredential(credential)
         .addOnCompleteListener(activity, new SignInCompleteListener(result));
+  }
+
+  private void handleSignOut(MethodCall call, final Result result) {
+    firebaseAuth.signOut();
+    result.success(null);
   }
 
   private class SignInCompleteListener implements OnCompleteListener<AuthResult> {
