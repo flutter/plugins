@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-@Skip('TODO(goderbauer): fix tests, https://github.com/flutter/flutter/issues/10050')
+
 import 'dart:async';
 
 import 'package:mockito/mockito.dart';
@@ -31,23 +31,23 @@ void main() {
       googleSignIn = new GoogleSignIn.private(channel: mockChannel);
     });
 
-    test('signInSilently', () async {
-      await googleSignIn.signIn();
-      expect(invokedMethods, ['init', 'signInSilently']);
-    });
-
-    test('setUserId', () async {
+    test('signIn', () async {
       await googleSignIn.signIn();
       expect(invokedMethods, ['init', 'signIn']);
     });
 
+    test('signInSilently', () async {
+      await googleSignIn.signInSilently();
+      expect(invokedMethods, ['init', 'signInSilently']);
+    });
+
     test('signOut', () async {
-      await googleSignIn.signIn();
+      await googleSignIn.signOut();
       expect(invokedMethods, ['init', 'signOut']);
     });
 
     test('disconnect', () async {
-      await googleSignIn.signIn();
+      await googleSignIn.disconnect();
       expect(invokedMethods, ['init', 'disconnect']);
     });
   });
