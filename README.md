@@ -13,6 +13,15 @@ about plugins, and how to use them, see
 These plugins are also available on
 [pub](https://pub.dartlang.org/flutter/plugins).
 
+## Search for plugins
+
+The plugin list below lists some of the plugins available, try searching the [pub flutter plugins](https://pub.dartlang.org/flutter/plugins) for more native platform plugins.
+
+## Build your own plugin
+
+If you don't find the feature you want to interact with on the native platform, you can easily build it. 
+Get started with the [native platform plugin instructions](https://flutter.io/platform-plugins/).
+
 ## Issues
 
 Please file any issues, bugs, or feature requests in the main [flutter
