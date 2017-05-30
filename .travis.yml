@@ -2,7 +2,6 @@ matrix:
   include:
     # Job 1) Run analyzer
     - os: linux
-      jdk: oraclejdk8
       sudo: false
       addons:
         apt:
