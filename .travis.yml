@@ -1,5 +1,24 @@
 matrix:
   include:
+    # Job 1) Run analyzer
+    - os: linux
+      sudo: false
+      addons:
+        apt:
+          # Flutter depends on /usr/lib/x86_64-linux-gnu/libstdc++.so.6 version GLIBCXX_3.4.18
+          sources:
+            - ubuntu-toolchain-r-test # if we don't specify this, the libstdc++6 we get is the wrong version
+          packages:
+            - libstdc++6
+            - fonts-droid
+      before_script:
+        - git clone https://github.com/flutter/flutter.git --depth 1
+        - ./flutter/bin/flutter doctor
+        - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
+        - ./flutter/bin/cache/dart-sdk/bin/pub global activate flutter_plugin_tools
+      script:
+        - pub global run flutter_plugin_tools analyze
+    # Job 2) Check format and run tests
     - os: linux
       jdk: oraclejdk8
       sudo: false
@@ -21,6 +40,7 @@ matrix:
       script:
         - pub global run flutter_plugin_tools format --travis --clang-format=clang-format-5.0
         - pub global run flutter_plugin_tools test
+    # Job 3) Build example APKs
     - os: linux
       language: android
       licenses:
@@ -61,6 +81,7 @@ matrix:
         - ./flutter/bin/cache/dart-sdk/bin/pub global activate flutter_plugin_tools
       script:
         - pub global run flutter_plugin_tools build-examples --apk
+    # Job 4) Build example IPAs
     - os: osx
       language: generic
       osx_image: xcode8.3

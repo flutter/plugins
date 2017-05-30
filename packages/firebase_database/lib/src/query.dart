@@ -17,7 +17,8 @@ class Query {
 
   Stream<Event> _observe(_EventType eventType) {
     Future<int> _handle;
-    StreamController<Event> controller;
+    // TODO(collinjackson): fix close_sinks analyzer warning.
+    StreamController<Event> controller; // ignore: close_sinks
     controller = new StreamController<Event>.broadcast(
       onListen: () async {
         _handle = _database._channel.invokeMethod(
