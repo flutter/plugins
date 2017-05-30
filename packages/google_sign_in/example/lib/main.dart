@@ -50,7 +50,8 @@ class SignInDemoState extends State<SignInDemo> {
       _contactText = "Loading contact info...";
     });
     http.Response response = await http.get(
-        'https://people.googleapis.com/v1/people/me/connections',
+        'https://people.googleapis.com/v1/people/me/connections' +
+            '?requestMask.includeField=person.names',
         headers: await _currentUser.authHeaders,
     );
     if (response.statusCode != 200) {
