@@ -1,3 +1,10 @@
+## 0.0.6
+
+* Various APIs added to FirebaseDatabase and Query
+* Added removal and priority to DatabaseReference
+* Improved documentation
+* Added unit tests
+
 ## 0.0.5
 
 * Fixed analyzer warnings
