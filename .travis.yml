@@ -2,6 +2,8 @@ matrix:
   include:
     # Job 1) Run analyzer
     - os: linux
+      env:
+        - SHARD=Analyze
       sudo: false
       addons:
         apt:
@@ -20,6 +22,8 @@ matrix:
         - pub global run flutter_plugin_tools analyze
     # Job 2) Check format and run tests
     - os: linux
+      env:
+        - SHARD=Format+Test
       jdk: oraclejdk8
       sudo: false
       addons:
@@ -42,6 +46,8 @@ matrix:
         - pub global run flutter_plugin_tools test
     # Job 3) Build example APKs
     - os: linux
+      env:
+        - SHARD=Build-example-APKs
       language: android
       licenses:
         - 'android-sdk-preview-license-.+'
@@ -83,6 +89,8 @@ matrix:
         - pub global run flutter_plugin_tools build-examples --apk
     # Job 4) Build example IPAs
     - os: osx
+      env:
+        - SHARD=Build-example-IPAs
       language: generic
       osx_image: xcode8.3
       before_script:
