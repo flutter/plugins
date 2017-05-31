@@ -128,7 +128,7 @@ class GoogleSignIn {
       );
     }
     await _initialization;
-    Map<String, dynamic> response = await _channel.invokeMethod(method);
+    Map<String, dynamic> response = await _channel.invokeMethod(method,null);
     _currentUser = response != null ? new GoogleSignInAccount._(this, response) : null;
     _streamController.add(_currentUser);
     return _currentUser;
