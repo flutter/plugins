@@ -1,0 +1,13 @@
+name: callback
+description: Flutter plugin for allowing native layer to define arbitrary callbacks that dart layer can trigger.
+author: Flutter Team <flutter-dev@googlegroups.com>
+version: 0.0.1
+
+flutter:
+  plugin:
+    androidPackage: io.flutter.plugins.callback
+    pluginClass: CallbackPlugin
+
+dependencies:
+  flutter:
+    sdk: flutter
