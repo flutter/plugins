@@ -40,7 +40,6 @@ class GoogleSignInAccount {
     assert(id != null);
   }
 
-
   Future<GoogleSignInAuthentication> get authentication async {
     if (_googleSignIn.currentUser != this) {
       throw new StateError('User is no longer signed in.');
@@ -52,8 +51,7 @@ class GoogleSignInAccount {
     );
     // On Android, there isn't an API for refreshing the idToken, so re-use
     // the one we obtained on login.
-    if (response['idToken'] == null)
-      response['idToken'] = _idToken;
+    if (response['idToken'] == null) response['idToken'] = _idToken;
     return new GoogleSignInAuthentication._(response);
   }
 
@@ -96,28 +94,24 @@ class GoogleSignIn {
   /// The [hostedDomain] argument specifies a hosted domain restriction. By
   /// setting this, sign in will be restricted to accounts of the user in the
   /// specified domain. By default, the list of accounts will not be restricted.
-  GoogleSignIn({ this.scopes, this.hostedDomain })
-    : _channel = const MethodChannel('plugins.flutter.io/google_sign_in');
+  GoogleSignIn({this.scopes, this.hostedDomain})
+      : _channel = const MethodChannel('plugins.flutter.io/google_sign_in');
 
   @visibleForTesting
-  GoogleSignIn.private({ this.scopes, this.hostedDomain, MethodChannel channel })
-    : _channel = channel;
+  GoogleSignIn.private({this.scopes, this.hostedDomain, MethodChannel channel})
+      : _channel = channel;
 
   StreamController<GoogleSignInAccount> _streamController =
-  new StreamController<GoogleSignInAccount>.broadcast();
+      new StreamController<GoogleSignInAccount>.broadcast();
 
   /// Subscribe to this stream to be notified when the current user changes
   Stream<GoogleSignInAccount> get onCurrentUserChanged =>
-  _streamController.stream;
+      _streamController.stream;
 
   // Future that completes when we've finished calling init on the native side
   Future<Null> _initialization;
 
   Future<GoogleSignInAccount> _callMethod(String method) async {
-    if (_currentUser != null) {
-      // We have already been signed in. Don't try to sign in again.
-      return _currentUser;
-    }
     if (_initialization == null) {
       _initialization = _channel.invokeMethod(
         "init",
@@ -129,7 +123,9 @@ class GoogleSignIn {
     }
     await _initialization;
     Map<String, dynamic> response = await _channel.invokeMethod(method);
-    _currentUser = response != null ? new GoogleSignInAccount._(this, response) : null;
+    _currentUser = response != null && response.isNotEmpty
+        ? new GoogleSignInAccount._(this, response)
+        : null;
     _streamController.add(_currentUser);
     return _currentUser;
   }
@@ -138,18 +134,42 @@ class GoogleSignIn {
   GoogleSignInAccount _currentUser;
   GoogleSignInAccount get currentUser => _currentUser;
 
+  /// Completers used for memoization of signIn and signOut processes.
+  Completer<GoogleSignInAccount> _signInCompleter;
+  Completer<GoogleSignInAccount> _signOutCompleter;
+
   /// Attempts to sign in a previously authenticated user without interaction.
-  Future<GoogleSignInAccount> signInSilently() => _callMethod('signInSilently');
+  Future<GoogleSignInAccount> signInSilently() =>
+      _signInWithMethod('signInSilently');
 
   /// Starts the sign-in process.
-  Future<GoogleSignInAccount> signIn() => _callMethod('signIn');
+  Future<GoogleSignInAccount> signIn() => _signInWithMethod('signIn');
+
+  Future<GoogleSignInAccount> _signInWithMethod(String method) {
+    if (_currentUser != null) return new Future.value(_currentUser);
+    if (_signInCompleter != null) return _signInCompleter.future;
+    _signInCompleter = new Completer();
+    _signInCompleter.complete(_callMethod(method).whenComplete(() {
+      _signInCompleter = null;
+    }));
+    return _signInCompleter.future;
+  }
 
   /// Marks current user as being in the signed out state.
-  Future<GoogleSignInAccount> signOut() => _callMethod('signOut');
+  Future<GoogleSignInAccount> signOut() => _signOutWithMethod('signOut');
 
   /// Disconnects the current user from the app and revokes previous
   /// authentication.
-  Future<GoogleSignInAccount> disconnect() => _callMethod('disconnect');
+  Future<GoogleSignInAccount> disconnect() => _signOutWithMethod('disconnect');
+
+  Future<GoogleSignInAccount> _signOutWithMethod(String method) {
+    if (_signOutCompleter != null) return _signOutCompleter.future;
+    _signOutCompleter = new Completer();
+    _signOutCompleter.complete(_callMethod(method).whenComplete(() {
+      _signOutCompleter = null;
+    }));
+    return _signOutCompleter.future;
+  }
 }
 
 /// Builds a CircleAvatar profile image of the appropriate resolution
@@ -177,7 +197,8 @@ class GoogleUserCircleAvatar extends StatelessWidget {
       host: profileUri.host,
       pathSegments: pathSegments,
       query: "sz=${size.round()}",
-    ).toString();
+    )
+        .toString();
   }
 
   Widget _buildClippedImage(BuildContext context, BoxConstraints constraints) {
@@ -185,8 +206,7 @@ class GoogleUserCircleAvatar extends StatelessWidget {
     String url = _sizedProfileImageUrl(
       MediaQuery.of(context).devicePixelRatio * constraints.maxWidth,
     );
-    if (url == null)
-      return new Container();
+    if (url == null) return new Container();
     return new ClipOval(
       child: new Image(
         image: new NetworkImage(url),
