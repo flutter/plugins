@@ -114,10 +114,6 @@ class GoogleSignIn {
   Future<Null> _initialization;
 
   Future<GoogleSignInAccount> _callMethod(String method) async {
-    if (_currentUser != null) {
-      // We have already been signed in. Don't try to sign in again.
-      return _currentUser;
-    }
     if (_initialization == null) {
       _initialization = _channel.invokeMethod(
         "init",
@@ -139,10 +135,12 @@ class GoogleSignIn {
   GoogleSignInAccount get currentUser => _currentUser;
 
   /// Attempts to sign in a previously authenticated user without interaction.
-  Future<GoogleSignInAccount> signInSilently() => _callMethod('signInSilently');
+  /// No-op if there is already a signed-in user.
+  Future<GoogleSignInAccount> signInSilently() => _currentUser ?? _callMethod('signInSilently');
 
   /// Starts the sign-in process.
-  Future<GoogleSignInAccount> signIn() => _callMethod('signIn');
+  /// No-op if there is already a signed-in user.
+  Future<GoogleSignInAccount> signIn() => _currentUser ?? _callMethod('signIn');
 
   /// Marks current user as being in the signed out state.
   Future<GoogleSignInAccount> signOut() => _callMethod('signOut');
