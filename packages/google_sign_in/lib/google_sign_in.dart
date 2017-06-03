@@ -130,46 +130,41 @@ class GoogleSignIn {
     return _currentUser;
   }
 
-  /// The currently signed in account, or null if the user is signed out
-  GoogleSignInAccount _currentUser;
-  GoogleSignInAccount get currentUser => _currentUser;
+  /// Protects method calls from concurrent execution.
+  Future<GoogleSignInAccount> _guardMethodCall(String method) {
+    var currentCallFuture = _currentCalls[method];
+    if (currentCallFuture != null) return currentCallFuture;
+    assert(
+        _currentCalls.isEmpty,
+        'Concurrent calls to different methods are not allowed. '
+        'Tried to call "$method", already called "${_currentCalls.keys.first}".');
+    currentCallFuture = _callMethod(method).whenComplete(() {
+      _currentCalls.remove(method);
+    });
+    _currentCalls[method] = currentCallFuture;
+    return currentCallFuture;
+  }
 
-  /// Completers used for memoization of signIn and signOut processes.
-  Completer<GoogleSignInAccount> _signInCompleter;
-  Completer<GoogleSignInAccount> _signOutCompleter;
+  /// The currently signed in account, or null if the user is signed out.
+  GoogleSignInAccount get currentUser => _currentUser;
+  GoogleSignInAccount _currentUser;
+
+  /// Map of method names to Futures of currently executing method calls.
+  Map<String, Future> _currentCalls = {};
 
   /// Attempts to sign in a previously authenticated user without interaction.
   Future<GoogleSignInAccount> signInSilently() =>
-      _signInWithMethod('signInSilently');
+      _guardMethodCall('signInSilently');
 
   /// Starts the sign-in process.
-  Future<GoogleSignInAccount> signIn() => _signInWithMethod('signIn');
-
-  Future<GoogleSignInAccount> _signInWithMethod(String method) {
-    if (_currentUser != null) return new Future.value(_currentUser);
-    if (_signInCompleter != null) return _signInCompleter.future;
-    _signInCompleter = new Completer();
-    _signInCompleter.complete(_callMethod(method).whenComplete(() {
-      _signInCompleter = null;
-    }));
-    return _signInCompleter.future;
-  }
+  Future<GoogleSignInAccount> signIn() => _guardMethodCall('signIn');
 
   /// Marks current user as being in the signed out state.
-  Future<GoogleSignInAccount> signOut() => _signOutWithMethod('signOut');
+  Future<GoogleSignInAccount> signOut() => _guardMethodCall('signOut');
 
   /// Disconnects the current user from the app and revokes previous
   /// authentication.
-  Future<GoogleSignInAccount> disconnect() => _signOutWithMethod('disconnect');
-
-  Future<GoogleSignInAccount> _signOutWithMethod(String method) {
-    if (_signOutCompleter != null) return _signOutCompleter.future;
-    _signOutCompleter = new Completer();
-    _signOutCompleter.complete(_callMethod(method).whenComplete(() {
-      _signOutCompleter = null;
-    }));
-    return _signOutCompleter.future;
-  }
+  Future<GoogleSignInAccount> disconnect() => _guardMethodCall('disconnect');
 }
 
 /// Builds a CircleAvatar profile image of the appropriate resolution

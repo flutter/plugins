@@ -73,32 +73,23 @@ void main() {
       expect(googleSignIn.currentUser, isNull);
     });
 
-    test('concurrent signIn', () async {
+    test('concurrent method call', () async {
       var futures = [
         googleSignIn.signInSilently(),
         googleSignIn.signInSilently(),
-        googleSignIn.signIn()
       ];
+      expect(futures.first, futures.last);
       var users = await Future.wait(futures);
       expect(invokedMethods, ['init', 'signInSilently']);
       expect(googleSignIn.currentUser, isNotNull);
-      expect(users, [
-        googleSignIn.currentUser,
-        googleSignIn.currentUser,
-        googleSignIn.currentUser
-      ]);
+      expect(users, [googleSignIn.currentUser, googleSignIn.currentUser]);
     });
 
-    test('concurrent signOut', () async {
-      var futures = [
-        googleSignIn.signOut(),
-        googleSignIn.signOut(),
-        googleSignIn.disconnect()
-      ];
-      var users = await Future.wait(futures);
-      expect(invokedMethods, ['init', 'signOut']);
-      expect(googleSignIn.currentUser, isNull);
-      expect(users, [null, null, null]);
+    test('concurrent call of different methods', () async {
+      expect(() {
+        googleSignIn.signInSilently();
+        googleSignIn.signIn();
+      }, throwsA(new isInstanceOf<AssertionError>()));
     });
   });
 }
