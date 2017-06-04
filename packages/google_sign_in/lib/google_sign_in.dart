@@ -125,7 +125,8 @@ class GoogleSignIn {
     }
     await _initialization;
     Map<String, dynamic> response = await _channel.invokeMethod(method);
-    _currentUser = response != null ? new GoogleSignInAccount._(this, response) : null;
+    _currentUser = (response != null && !response.isEmpty)
+        ? new GoogleSignInAccount._(this, response) : null;
     _streamController.add(_currentUser);
     return _currentUser;
   }
@@ -135,12 +136,14 @@ class GoogleSignIn {
   GoogleSignInAccount get currentUser => _currentUser;
 
   /// Attempts to sign in a previously authenticated user without interaction.
-  /// No-op if there is already a signed-in user.
-  Future<GoogleSignInAccount> signInSilently() => _currentUser ?? _callMethod('signInSilently');
+  ///
+  /// If there is already a signed-in user, returns it.
+  Future<GoogleSignInAccount> signInSilently() async => _currentUser ?? _callMethod('signInSilently');
 
   /// Starts the sign-in process.
-  /// No-op if there is already a signed-in user.
-  Future<GoogleSignInAccount> signIn() => _currentUser ?? _callMethod('signIn');
+  ///
+  /// If there is already a signed-in user, returns it.
+  Future<GoogleSignInAccount> signIn() async => _currentUser ?? _callMethod('signIn');
 
   /// Marks current user as being in the signed out state.
   Future<GoogleSignInAccount> signOut() => _callMethod('signOut');
