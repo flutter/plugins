@@ -1,4 +1,8 @@
-## [0.2.3+1] - 2017-06-04
+## [0.2.4+1] - 2017-06-05
+
+* Fixed typo in changelog
+
+## [0.2.4] - 2017-06-04
 
 * Added setMockInitialValues
 * Added a test
