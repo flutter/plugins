@@ -1,4 +1,4 @@
-package io.flutter.plugins.firebase_auth_example;
+package io.flutter.plugins.firebaseauthexample;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;

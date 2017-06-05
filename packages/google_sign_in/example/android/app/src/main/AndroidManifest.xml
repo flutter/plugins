@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="io.flutter.plugins.google_sign_in_example"
+    package="io.flutter.plugins.googlesigninexample"
     android:versionCode="1"
     android:versionName="0.0.1">
 

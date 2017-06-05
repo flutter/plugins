@@ -61,7 +61,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:3401408244:android:fc026014a0a3ac30",
         "android_client_info": {
-          "package_name": "io.flutter.plugins.firebase_messaging_example"
+          "package_name": "io.flutter.plugins.firebasemessagingexample"
         }
       },
       "oauth_client": [

@@ -7,7 +7,7 @@ version: 0.0.3+1
 
 flutter:
   plugin:
-    androidPackage: io.flutter.firebase_auth
+    androidPackage: io.flutter.firebaseauth
     pluginClass: FirebaseAuthPlugin
 
 dependencies:

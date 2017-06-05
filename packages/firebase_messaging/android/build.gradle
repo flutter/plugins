@@ -1,4 +1,4 @@
-group 'io.flutter.plugins.firebase_messaging'
+group 'io.flutter.plugins.firebasemessaging'
 version '1.0-SNAPSHOT'
 
 buildscript {

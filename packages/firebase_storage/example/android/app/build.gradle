@@ -23,7 +23,7 @@ android {
     }
 
     defaultConfig {
-        applicationId 'io.flutter.plugins.firebase_storage_example'
+        applicationId 'io.flutter.plugins.firebasestorageexample'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 

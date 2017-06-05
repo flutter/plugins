@@ -1,4 +1,4 @@
-package io.flutter.plugins.url_launcher_example;
+package io.flutter.plugins.urllauncherexample;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;

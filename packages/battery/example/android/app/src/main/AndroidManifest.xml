@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="io.flutter.plugins.battery_example"
+    package="io.flutter.plugins.batteryexample"
     android:versionCode="1"
     android:versionName="0.0.1">
 

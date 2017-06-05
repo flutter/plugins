@@ -1,4 +1,4 @@
-package io.flutter.plugins.firebase_storage_example;
+package io.flutter.plugins.firebasestorageexample;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;

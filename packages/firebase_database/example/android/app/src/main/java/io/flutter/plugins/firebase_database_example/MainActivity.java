@@ -1,4 +1,4 @@
-package io.flutter.plugins.firebase_database_example;
+package io.flutter.plugins.firebasedatabaseexample;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;
