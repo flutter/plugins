@@ -121,22 +121,16 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
     Map<String, Object> arguments = (Map<String, Object>) call.arguments;
     switch (call.method) {
       case "FirebaseDatabase#goOnline":
-        {
-          FirebaseDatabase.getInstance().goOnline();
-          break;
-        }
+        FirebaseDatabase.getInstance().goOnline();
+        break;
 
       case "FirebaseDatabase#goOffline":
-        {
-          FirebaseDatabase.getInstance().goOffline();
-          break;
-        }
+        FirebaseDatabase.getInstance().goOffline();
+        break;
 
       case "FirebaseDatabase#purgeOutstandingWrites":
-        {
-          FirebaseDatabase.getInstance().purgeOutstandingWrites();
-          break;
-        }
+        FirebaseDatabase.getInstance().purgeOutstandingWrites();
+        break;
 
       case "FirebaseDatabase#setPersistenceEnabled":
         {
