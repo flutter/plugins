@@ -118,38 +118,95 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
   @SuppressWarnings("unchecked")
   @Override
   public void onMethodCall(MethodCall call, final Result result) {
-    Map<String, ?> arguments = (Map<String, ?>) call.arguments;
-    if (call.method.equals("DatabaseReference#set")) {
-      Object value = arguments.get("value");
-      getReference(arguments).setValue(value, new DefaultCompletionListener(result));
-    } else if (call.method.equals("Query#observe")) {
-      String eventType = (String) arguments.get("eventType");
-      int handle = nextHandle++;
-      EventObserver observer = new EventObserver(eventType, handle);
-      observers.put(handle, observer);
-      if (eventType.equals(EVENT_TYPE_VALUE)) {
-        getReference(arguments).addValueEventListener(observer);
-      } else {
-        getReference(arguments).addChildEventListener(observer);
-      }
-      result.success(handle);
-    } else if (call.method.equals("Query#removeObserver")) {
-      DatabaseReference reference = getReference(arguments);
-      int handle = (Integer) arguments.get("handle");
-      EventObserver observer = observers.get(handle);
-      if (observer != null) {
-        if (observer.requestedEventType.equals(EVENT_TYPE_VALUE)) {
-          reference.removeEventListener((ValueEventListener) observer);
-        } else {
-          reference.removeEventListener((ChildEventListener) observer);
+    Map<String, Object> arguments = (Map<String, Object>) call.arguments;
+    switch (call.method) {
+      case "FirebaseDatabase#goOnline":
+        FirebaseDatabase.getInstance().goOnline();
+        break;
+
+      case "FirebaseDatabase#goOffline":
+        FirebaseDatabase.getInstance().goOffline();
+        break;
+
+      case "FirebaseDatabase#purgeOutstandingWrites":
+        FirebaseDatabase.getInstance().purgeOutstandingWrites();
+        break;
+
+      case "FirebaseDatabase#setPersistenceEnabled":
+        {
+          boolean isEnabled = (boolean) arguments.get("enabled");
+          FirebaseDatabase.getInstance().setPersistenceEnabled(isEnabled);
+          break;
         }
-        observers.delete(handle);
-        result.success(null);
-      } else {
-        result.error("unknown_handle", "removeObserver called on an unknown handle", null);
-      }
-    } else {
-      result.notImplemented();
+
+      case "FirebaseDatabase#setPersistenceCacheSizeBytes":
+        {
+          long cacheSize = (long) arguments.get("cacheSize");
+          FirebaseDatabase.getInstance().setPersistenceCacheSizeBytes(cacheSize);
+          break;
+        }
+
+      case "DatabaseReference#set":
+        {
+          Object value = arguments.get("value");
+          Object priority = arguments.get("priority");
+          DatabaseReference reference = getReference(arguments);
+          if (priority != null) {
+            reference.setValue(value, priority, new DefaultCompletionListener(result));
+          } else {
+            reference.setValue(value, new DefaultCompletionListener(result));
+          }
+          break;
+        }
+
+      case "DatabaseReference#setPriority":
+        {
+          Object priority = arguments.get("priority");
+          DatabaseReference reference = getReference(arguments);
+          reference.setPriority(priority, new DefaultCompletionListener(result));
+          break;
+        }
+
+      case "Query#observe":
+        {
+          String eventType = (String) arguments.get("eventType");
+          int handle = nextHandle++;
+          EventObserver observer = new EventObserver(eventType, handle);
+          observers.put(handle, observer);
+          if (eventType.equals(EVENT_TYPE_VALUE)) {
+            getReference(arguments).addValueEventListener(observer);
+          } else {
+            getReference(arguments).addChildEventListener(observer);
+          }
+          result.success(handle);
+          break;
+        }
+
+      case "Query#removeObserver":
+        {
+          DatabaseReference reference = getReference(arguments);
+          int handle = (Integer) arguments.get("handle");
+          EventObserver observer = observers.get(handle);
+          if (observer != null) {
+            if (observer.requestedEventType.equals(EVENT_TYPE_VALUE)) {
+              reference.removeEventListener((ValueEventListener) observer);
+            } else {
+              reference.removeEventListener((ChildEventListener) observer);
+            }
+            observers.delete(handle);
+            result.success(null);
+            break;
+          } else {
+            result.error("unknown_handle", "removeObserver called on an unknown handle", null);
+            break;
+          }
+        }
+
+      default:
+        {
+          result.notImplemented();
+          break;
+        }
     }
   }
 }
