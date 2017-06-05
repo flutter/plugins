@@ -1,3 +1,9 @@
+## [0.2.3+1] - 2017-06-04
+
+* Added setMockInitialValues
+* Added a test
+* Updated README
+
 ## [0.2.3] - 2017-06-02
 
 * Suppress warning about unchecked operations when compiling for Android
