@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package io.flutter.plugins.firebase_messaging;
+package io.flutter.plugins.firebasemessaging;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,7 +12,7 @@ import com.google.firebase.iid.FirebaseInstanceIdService;
 
 public class FlutterFirebaseInstanceIDService extends FirebaseInstanceIdService {
 
-  public static final String ACTION_TOKEN = "io.flutter.plugins.firebase_messaging.TOKEN";
+  public static final String ACTION_TOKEN = "io.flutter.plugins.firebasemessaging.TOKEN";
   public static final String EXTRA_TOKEN = "token";
 
   public static void broadcastToken(Context context) {

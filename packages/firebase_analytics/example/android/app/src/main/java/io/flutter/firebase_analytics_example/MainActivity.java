@@ -1,4 +1,4 @@
-package io.flutter.firebase_analytics_example;
+package io.flutter.firebaseanalyticsexample;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;

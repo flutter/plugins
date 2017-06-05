@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package io.flutter.plugins.firebase_messaging;
+package io.flutter.plugins.firebasemessaging;
 
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
@@ -12,7 +12,7 @@ import com.google.firebase.messaging.RemoteMessage;
 public class FlutterFirebaseMessagingService extends FirebaseMessagingService {
 
   public static final String ACTION_REMOTE_MESSAGE =
-      "io.flutter.plugins.firebase_messaging.NOTIFICATION";
+      "io.flutter.plugins.firebasemessaging.NOTIFICATION";
   public static final String EXTRA_REMOTE_MESSAGE = "notification";
 
   /**

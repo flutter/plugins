@@ -7,7 +7,7 @@ homepage: https://github.com/flutter/plugins/tree/master/packages/path_provider
 
 flutter:
   plugin:
-    androidPackage: io.flutter.plugins.path_provider
+    androidPackage: io.flutter.plugins.pathprovider
     pluginClass: PathProviderPlugin
 
 dependencies:

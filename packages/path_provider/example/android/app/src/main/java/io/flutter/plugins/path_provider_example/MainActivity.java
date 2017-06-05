@@ -1,4 +1,4 @@
-package io.flutter.plugins.path_provider_example;
+package io.flutter.plugins.pathproviderexample;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;

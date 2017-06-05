@@ -1,4 +1,4 @@
-package io.flutter.plugins.google_sign_in_example;
+package io.flutter.plugins.googlesigninexample;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;

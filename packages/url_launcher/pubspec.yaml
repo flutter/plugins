@@ -7,7 +7,7 @@ homepage: https://github.com/flutter/plugins/tree/master/packages/url_launcher
 
 flutter:
   plugin:
-    androidPackage: io.flutter.plugins.url_launcher
+    androidPackage: io.flutter.plugins.urllauncher
     pluginClass: UrlLauncherPlugin
 
 dependencies:

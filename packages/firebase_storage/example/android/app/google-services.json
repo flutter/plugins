@@ -61,7 +61,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:297855924061:android:92efa9a0df6f077f",
         "android_client_info": {
-          "package_name": "io.flutter.plugins.firebase_storage_example"
+          "package_name": "io.flutter.plugins.firebasestorageexample"
         }
       },
       "oauth_client": [

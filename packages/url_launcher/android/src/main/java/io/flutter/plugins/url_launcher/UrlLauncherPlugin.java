@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package io.flutter.plugins.url_launcher;
+package io.flutter.plugins.urllauncher;
 
 import android.app.Activity;
 import android.content.ComponentName;

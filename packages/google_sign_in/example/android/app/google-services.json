@@ -164,7 +164,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:861823949799:android:24b94c3718c846a6",
         "android_client_info": {
-          "package_name": "io.flutter.plugins.google_sign_in_example"
+          "package_name": "io.flutter.plugins.googlesigninexample"
         }
       },
       "oauth_client": [
@@ -172,7 +172,7 @@
           "client_id": "861823949799-19gil347tgrk0l0k694196i1m1uef404.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "io.flutter.plugins.google_sign_in_example",
+            "package_name": "io.flutter.plugins.googlesigninexample",
             "certificate_hash": "c3adef7e7773e40e777d5c236dbba7461cbea5f0"
           }
         },
