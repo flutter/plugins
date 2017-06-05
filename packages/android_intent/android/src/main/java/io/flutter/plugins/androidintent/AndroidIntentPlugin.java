@@ -1,4 +1,8 @@
-package io.flutter.plugins.android_intent;
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package io.flutter.plugins.androidintent;
 
 import android.app.Activity;
 import android.content.Context;
@@ -6,25 +10,22 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import java.util.Map;
 
-/**
- * AndroidIntentPlugin
- */
+/** AndroidIntentPlugin */
 @SuppressWarnings("unchecked")
 public class AndroidIntentPlugin implements MethodCallHandler {
   private final Context context;
 
-  /**
-   * Plugin registration.
-   */
+  /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
-    final MethodChannel channel = new MethodChannel(registrar.messenger(), "android_intent");
+    final MethodChannel channel =
+        new MethodChannel(registrar.messenger(), "plugins.flutter.io/android_intent");
     channel.setMethodCallHandler(new AndroidIntentPlugin(registrar.activity()));
   }
 

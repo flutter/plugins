@@ -1,7 +1,6 @@
-package io.flutter.plugins.android_intent_example;
+package io.flutter.plugins.androidintentexample;
 
 import android.os.Bundle;
-
 import io.flutter.app.FlutterActivity;
 import io.flutter.plugins.GeneratedPluginRegistrant;
 
