@@ -69,7 +69,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:297855924061:android:92efa9a0df6f077f",
         "android_client_info": {
-          "package_name": "io.flutter.plugins.firebase_storage_example"
+          "package_name": "io.flutter.plugins.firebasestorageexample"
         }
       },
       "oauth_client": [
@@ -100,7 +100,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:297855924061:android:db912bec12847bd9",
         "android_client_info": {
-          "package_name": "io.flutter.plugins.firebase_database_example"
+          "package_name": "io.flutter.plugins.firebasedatabaseexample"
         }
       },
       "oauth_client": [

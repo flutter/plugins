@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="io.flutter.plugins.url_launcher"
+  package="io.flutter.plugins.urllauncher"
   android:versionCode="1"
   android:versionName="0.0.1">
 

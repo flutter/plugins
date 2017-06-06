@@ -5,6 +5,7 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:meta/meta.dart';
 
 const MethodChannel _kChannel =
     const MethodChannel('plugins.flutter.io/shared_preferences');
@@ -102,5 +103,16 @@ class SharedPreferences {
   Future<bool> clear() async {
     _preferenceCache.clear();
     return await _kChannel.invokeMethod('clear');
+  }
+
+  /// Initializes the shared preferences with mock values for testing.
+  @visibleForTesting
+  static void setMockInitialValues(Map<String, dynamic> values) {
+    _kChannel.setMockMethodCallHandler((MethodCall methodCall) async {
+      if (methodCall.method == 'getAll') {
+        return values;
+      }
+      return null;
+    });
   }
 }

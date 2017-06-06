@@ -3,13 +3,10 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-
+import 'package:flutter/services.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
-
-import 'package:flutter/services.dart';
-
-import 'package:google_sign_in/google_sign_in.dart';
 
 void main() {
   Map userData = {
@@ -28,8 +25,7 @@ void main() {
 
   group('$GoogleSignIn', () {
     GoogleSignIn googleSignIn;
-
-    List<String> invokedMethods = <String>[];
+    List<String> invokedMethods;
 
     setUp(() {
       MockPlatformChannel mockChannel = new MockPlatformChannel();
@@ -68,6 +64,11 @@ void main() {
     });
 
     test('disconnect', () async {
+      await googleSignIn.disconnect();
+      expect(invokedMethods, ['init', 'disconnect']);
+    });
+
+    test('disconnect; empty response as on iOS', () async {
       await googleSignIn.disconnect();
       expect(invokedMethods, ['init', 'disconnect']);
       expect(googleSignIn.currentUser, isNull);

@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="io.flutter.plugins.url_launcher_example"
+    package="io.flutter.plugins.urllauncherexample"
     android:versionCode="1"
     android:versionName="0.0.1">
 
@@ -17,7 +17,7 @@
          additional functionality it is fine to subclass or reimplement
          FlutterApplication and put your custom class here. -->
     <application android:name="io.flutter.app.FlutterApplication" android:label="url_launcher_example" android:icon="@mipmap/ic_launcher">
-        <activity android:name="io.flutter.plugins.url_launcher_example.MainActivity"
+        <activity android:name="io.flutter.plugins.urllauncherexample.MainActivity"
                   android:launchMode="singleTop"
                   android:theme="@android:style/Theme.Black.NoTitleBar"
                   android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection"
