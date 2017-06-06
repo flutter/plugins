@@ -15,19 +15,21 @@ void main() {
     "photoUrl": "https://lh5.googleusercontent.com/photo.jpg",
     "displayName": "John Doe",
   };
-  Map methodResponses = {
+  Map defaultResponses = {
     'init': null,
     'signInSilently': userData,
     'signIn': userData,
     'signOut': null,
-    'disconnect': {},
+    'disconnect': null,
   };
 
   group('$GoogleSignIn', () {
     GoogleSignIn googleSignIn;
     List<String> invokedMethods;
+    Map responses;
 
     setUp(() {
+      responses = new Map.from(defaultResponses);
       MockPlatformChannel mockChannel = new MockPlatformChannel();
 
       invokedMethods = <String>[];
@@ -35,7 +37,7 @@ void main() {
       dynamic answer(Invocation invocation) {
         final method = invocation.positionalArguments[0];
         invokedMethods.add(method);
-        final response = methodResponses[method];
+        final response = responses[method];
         return new Future.value(response);
       }
 
@@ -63,34 +65,66 @@ void main() {
       expect(googleSignIn.currentUser, isNull);
     });
 
-    test('disconnect', () async {
-      await googleSignIn.disconnect();
-      expect(invokedMethods, ['init', 'disconnect']);
-    });
-
-    test('disconnect; empty response as on iOS', () async {
+    test('disconnect; null response', () async {
       await googleSignIn.disconnect();
       expect(invokedMethods, ['init', 'disconnect']);
       expect(googleSignIn.currentUser, isNull);
     });
 
-    test('concurrent method call', () async {
+    test('disconnect; empty response as on iOS', () async {
+      responses['disconnect'] = {};
+      await googleSignIn.disconnect();
+      expect(invokedMethods, ['init', 'disconnect']);
+      expect(googleSignIn.currentUser, isNull);
+    });
+
+    test('concurrent calls of the same method', () async {
       var futures = [
         googleSignIn.signInSilently(),
         googleSignIn.signInSilently(),
       ];
-      expect(futures.first, futures.last);
+      expect(futures.first, same(futures.last),
+          reason: 'Must return the same Future');
       var users = await Future.wait(futures);
       expect(invokedMethods, ['init', 'signInSilently']);
       expect(googleSignIn.currentUser, isNotNull);
       expect(users, [googleSignIn.currentUser, googleSignIn.currentUser]);
+
+      invokedMethods = <String>[];
+      var freshUser = await googleSignIn.signInSilently();
+      expect(invokedMethods, ['signInSilently']);
+      expect(freshUser, isNot(users.first), reason: 'Must refresh user');
     });
 
-    test('concurrent call of different methods', () async {
-      expect(() {
-        googleSignIn.signInSilently();
-        googleSignIn.signIn();
-      }, throwsA(new isInstanceOf<AssertionError>()));
+    test('concurrent calls after error succeed', () async {
+      responses['signInSilently'] = {'error': 'Not a user'};
+      expect(googleSignIn.signInSilently(),
+          throwsA(new isInstanceOf<AssertionError>()));
+      expect(googleSignIn.signIn(), completion(isNotNull));
+    });
+
+    test('concurrent calls of different methods', () async {
+      var futures = [
+        googleSignIn.signInSilently(),
+        googleSignIn.signIn(),
+      ];
+      expect(futures.first, isNot(futures.last));
+      var users = await Future.wait(futures);
+      expect(invokedMethods, ['init', 'signInSilently', 'signIn']);
+      expect(users.first, isNot(users.last));
+      expect(googleSignIn.currentUser, users.last);
+    });
+
+    test('queue of many concurrent calls', () async {
+      var futures = [
+        googleSignIn.signInSilently(),
+        googleSignIn.signOut(),
+        googleSignIn.signIn(),
+        googleSignIn.disconnect(),
+      ];
+      await Future.wait(futures);
+      expect(invokedMethods,
+          ['init', 'signInSilently', 'signOut', 'signIn', 'disconnect']);
     });
   });
 }

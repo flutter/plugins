@@ -130,41 +130,57 @@ class GoogleSignIn {
     return _currentUser;
   }
 
-  /// Protects method calls from concurrent execution.
-  Future<GoogleSignInAccount> _guardMethodCall(String method) {
-    var currentCallFuture = _currentCalls[method];
-    if (currentCallFuture != null) return currentCallFuture;
-    assert(
-        _currentCalls.isEmpty,
-        'Concurrent calls to different methods are not allowed. '
-        'Tried to call "$method", already called "${_currentCalls.keys.first}".');
-    currentCallFuture = _callMethod(method).whenComplete(() {
-      _currentCalls.remove(method);
+  /// Keeps track of the most recently scheduled method call.
+  Completer _lastMethodCompleter;
+  String _lastMethodName;
+
+  /// Adds call to [method] in a queue for execution.
+  ///
+  /// At most one in flight call is allowed to prevent concurrent (out of order)
+  /// updates to [currentUser] and [onCurrentUserChanged].
+  Future<GoogleSignInAccount> _addMethodCall(String method) {
+    if (_lastMethodCompleter == null) {
+      _lastMethodName = method;
+      _lastMethodCompleter = new Completer<GoogleSignInAccount>();
+      _callMethod(method).then(_lastMethodCompleter.complete,
+          onError: _lastMethodCompleter.completeError);
+      return _lastMethodCompleter.future;
+    }
+
+    // Return the same Future for consecutive calls to the same method.
+    if (_lastMethodName == method && !_lastMethodCompleter.isCompleted) {
+      return _lastMethodCompleter.future;
+    }
+
+    var completer = new Completer<GoogleSignInAccount>();
+    _lastMethodCompleter.future.whenComplete(() {
+      _callMethod(method)
+          .then(completer.complete, onError: completer.completeError);
+    }).catchError((_) {
+      // Ignore if previous call completed with an error.
     });
-    _currentCalls[method] = currentCallFuture;
-    return currentCallFuture;
+    _lastMethodCompleter = completer;
+    _lastMethodName = method;
+    return _lastMethodCompleter.future;
   }
 
   /// The currently signed in account, or null if the user is signed out.
   GoogleSignInAccount get currentUser => _currentUser;
   GoogleSignInAccount _currentUser;
 
-  /// Map of method names to Futures of currently executing method calls.
-  Map<String, Future> _currentCalls = {};
-
   /// Attempts to sign in a previously authenticated user without interaction.
   Future<GoogleSignInAccount> signInSilently() =>
-      _guardMethodCall('signInSilently');
+      _addMethodCall('signInSilently');
 
   /// Starts the sign-in process.
-  Future<GoogleSignInAccount> signIn() => _guardMethodCall('signIn');
+  Future<GoogleSignInAccount> signIn() => _addMethodCall('signIn');
 
   /// Marks current user as being in the signed out state.
-  Future<GoogleSignInAccount> signOut() => _guardMethodCall('signOut');
+  Future<GoogleSignInAccount> signOut() => _addMethodCall('signOut');
 
   /// Disconnects the current user from the app and revokes previous
   /// authentication.
-  Future<GoogleSignInAccount> disconnect() => _guardMethodCall('disconnect');
+  Future<GoogleSignInAccount> disconnect() => _addMethodCall('disconnect');
 }
 
 /// Builds a CircleAvatar profile image of the appropriate resolution
