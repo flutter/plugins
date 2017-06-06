@@ -1,3 +1,7 @@
+## 0.0.4
+
+* Added `google_sign_in` as a dependency to make package analyze properly.
+
 ## 0.0.3+1
 
 * Updated README.md
