@@ -1,19 +1,22 @@
 # Android Intent Plugin for Flutter
 
 This plugin allows Flutter apps to launch arbitrary intents when the platform
-is Android.
+is Android. If the plugin is invoked on iOS, it will crash your app. In checked
+mode, we assert that the platform should be Android.
 
 Use it by specifying action, category, data and extra arguments for the intent.
 It does not support returning the result of the launched activity. Sample usage:
 
 ```
-AndroidIntent intent = new AndroidIntent(
-    action: 'action_view',
-    data: 'https://play.google.com/store/apps/details?'
-        'id=com.google.android.apps.myapp',
-    arguments: {'authAccount': currentUserEmail},
-);
-await intent.launch();
+if (platform.isAndroid) {
+  AndroidIntent intent = new AndroidIntent(
+      action: 'action_view',
+      data: 'https://play.google.com/store/apps/details?'
+          'id=com.google.android.apps.myapp',
+      arguments: {'authAccount': currentUserEmail},
+  );
+  await intent.launch();
+}
 ```
 
 See documentation on the AndroidIntent class for details on each parameter.

@@ -1,5 +1,7 @@
 name: android_intent
 description: A plugin for launching Intents on Android.
+author: Flutter Team <flutter-dev@googlegroups.com>
+homepage: https://github.com/flutter/plugins/tree/master/packages/android_intent
 version: 0.0.1
 
 flutter:
@@ -11,3 +13,6 @@ dependencies:
   flutter:
     sdk: flutter
   platform: ^2.0.0
+
+environment:
+  sdk: ">=1.8.0 <2.0.0"

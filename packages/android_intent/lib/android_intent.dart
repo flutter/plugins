@@ -22,18 +22,21 @@ class AndroidIntent {
   /// intent.
   /// [arguments] is the map that will be converted into an extras bundle and
   /// passed to the intent.
-  AndroidIntent(
+  const AndroidIntent(
       {@required this.action,
       this.category,
       this.data,
       this.arguments,
       Platform platform})
-      : _channel = new MethodChannel(kChannelName),
-        _platform = platform ?? new LocalPlatform();
+      : assert(action != null),
+        _channel = const MethodChannel(kChannelName),
+        _platform = platform ?? const LocalPlatform();
 
   /// Launch the intent.
+  ///
+  /// This works only on Android platforms. Please guard the call so that your
+  /// iOS app does not crash. Checked mode will throw an assert exception.
   Future<Null> launch() async {
-    assert(action != null);
     assert(_platform.isAndroid);
     Map<String, dynamic> args = <String, dynamic>{'action': action};
     if (category != null) args['category'] = category;
