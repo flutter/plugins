@@ -1,0 +1,14 @@
+name: package_info
+description: A new flutter plugin project.
+version: 0.0.1
+author:
+homepage:
+
+flutter:
+  plugin:
+    androidPackage: io.flutter.plugins.packageinfo
+    pluginClass: PackageInfoPlugin
+
+dependencies:
+  flutter:
+    sdk: flutter
