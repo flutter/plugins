@@ -6,7 +6,6 @@ import 'dart:async';
 
 import 'package:flutter/services.dart' show MethodChannel;
 import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
 
 class GoogleSignInAuthentication {
   final Map<String, String> _data;
