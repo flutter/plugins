@@ -169,10 +169,23 @@ class GoogleSignIn {
   GoogleSignInAccount _currentUser;
 
   /// Attempts to sign in a previously authenticated user without interaction.
+  ///
+  /// Authentication flow is triggered only by the first call to this method,
+  /// any consequent calls resolve to the same user instance or `null`. When
+  /// `null` is returned this means no previously authenticated user exists
+  /// and interactive [signIn] is required.
+  ///
+  /// Authentication can be re-initiated only after [signOut] or [disconnect].
   Future<GoogleSignInAccount> signInSilently() =>
       _addMethodCall('signInSilently');
 
   /// Starts the sign-in process.
+  ///
+  /// Interactive sign-in flow is triggered only be the first call to this method,
+  /// any consequent calls resolve to the same user instance or `null`. When
+  /// `null` is returned this means user didn't complete authentication process.
+  ///
+  /// Authentication can be re-initiated only after [signOut] or [disconnect].
   Future<GoogleSignInAccount> signIn() => _addMethodCall('signIn');
 
   /// Marks current user as being in the signed out state.
