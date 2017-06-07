@@ -97,10 +97,6 @@ class GoogleSignIn {
   GoogleSignIn({this.scopes, this.hostedDomain})
       : _channel = const MethodChannel('plugins.flutter.io/google_sign_in');
 
-  @visibleForTesting
-  GoogleSignIn.private({this.scopes, this.hostedDomain, MethodChannel channel})
-      : _channel = channel;
-
   StreamController<GoogleSignInAccount> _streamController =
       new StreamController<GoogleSignInAccount>.broadcast();
 
@@ -131,8 +127,7 @@ class GoogleSignIn {
   }
 
   /// Keeps track of the most recently scheduled method call.
-  Completer _lastMethodCompleter;
-  String _lastMethodName;
+  _MethodCompleter _lastMethodCompleter;
 
   /// Adds call to [method] in a queue for execution.
   ///
@@ -140,27 +135,32 @@ class GoogleSignIn {
   /// updates to [currentUser] and [onCurrentUserChanged].
   Future<GoogleSignInAccount> _addMethodCall(String method) {
     if (_lastMethodCompleter == null) {
-      _lastMethodName = method;
-      _lastMethodCompleter = new Completer<GoogleSignInAccount>();
-      _callMethod(method).then(_lastMethodCompleter.complete,
-          onError: _lastMethodCompleter.completeError);
+      _lastMethodCompleter = new _MethodCompleter(method);
+      _lastMethodCompleter.complete(_callMethod(method));
       return _lastMethodCompleter.future;
     }
 
     // Return the same Future for consecutive calls to the same method.
-    if (_lastMethodName == method && !_lastMethodCompleter.isCompleted) {
+    if (_lastMethodCompleter.method == method &&
+        !_lastMethodCompleter.isCompleted) {
       return _lastMethodCompleter.future;
     }
 
-    var completer = new Completer<GoogleSignInAccount>();
+    var completer = new _MethodCompleter(method);
     _lastMethodCompleter.future.whenComplete(() {
-      _callMethod(method)
-          .then(completer.complete, onError: completer.completeError);
+      // If after the last completed call currentUser is not null and requested
+      // method is a sign in method, re-use the same authenticated user
+      // instead of making extra call to the native side.
+      const signInMethods = const ['signIn', 'signInSilently'];
+      if (signInMethods.contains(method) && _currentUser != null) {
+        completer.complete(_currentUser);
+      } else {
+        completer.complete(_callMethod(method));
+      }
     }).catchError((_) {
       // Ignore if previous call completed with an error.
     });
     _lastMethodCompleter = completer;
-    _lastMethodName = method;
     return _lastMethodCompleter.future;
   }
 
@@ -224,4 +224,21 @@ class GoogleUserCircleAvatar extends StatelessWidget {
       ),
     );
   }
+}
+
+class _MethodCompleter {
+  final String method;
+  final Completer<GoogleSignInAccount> _completer = new Completer();
+
+  _MethodCompleter(this.method);
+
+  void complete(FutureOr<GoogleSignInAccount> value) {
+    if (value is Future<GoogleSignInAccount>) {
+      value.then(_completer.complete, onError: _completer.completeError);
+    } else
+      _completer.complete(value);
+  }
+
+  bool get isCompleted => _completer.isCompleted;
+  Future<GoogleSignInAccount> get future => _completer.future;
 }

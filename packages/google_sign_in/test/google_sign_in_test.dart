@@ -5,77 +5,97 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
 void main() {
-  Map userData = {
-    "email": "john.doe@gmail.com",
-    "id": "8162538176523816253123",
-    "photoUrl": "https://lh5.googleusercontent.com/photo.jpg",
-    "displayName": "John Doe",
-  };
-  Map defaultResponses = {
-    'init': null,
-    'signInSilently': userData,
-    'signIn': userData,
-    'signOut': null,
-    'disconnect': null,
-  };
-
   group('$GoogleSignIn', () {
-    GoogleSignIn googleSignIn;
-    List<String> invokedMethods;
+    const MethodChannel channel = const MethodChannel(
+      'plugins.flutter.io/google_sign_in',
+    );
+
+    const Map kUserData = const {
+      "email": "john.doe@gmail.com",
+      "id": "8162538176523816253123",
+      "photoUrl": "https://lh5.googleusercontent.com/photo.jpg",
+      "displayName": "John Doe",
+    };
+
+    const Map kDefaultResponses = const {
+      'init': null,
+      'signInSilently': kUserData,
+      'signIn': kUserData,
+      'signOut': null,
+      'disconnect': null,
+    };
+
+    final List<MethodCall> log = <MethodCall>[];
     Map responses;
+    GoogleSignIn googleSignIn;
 
     setUp(() {
-      responses = new Map.from(defaultResponses);
-      MockPlatformChannel mockChannel = new MockPlatformChannel();
-
-      invokedMethods = <String>[];
-
-      dynamic answer(Invocation invocation) {
-        final method = invocation.positionalArguments[0];
-        invokedMethods.add(method);
-        final response = responses[method];
-        return new Future.value(response);
-      }
-
-      when(mockChannel.invokeMethod(typed(any), typed(any))).thenAnswer(answer);
-      when(mockChannel.invokeMethod(typed(any))).thenAnswer(answer);
-
-      googleSignIn = new GoogleSignIn.private(channel: mockChannel);
+      responses = new Map.from(kDefaultResponses);
+      channel.setMockMethodCallHandler((MethodCall methodCall) {
+        log.add(methodCall);
+        return new Future.value(responses[methodCall.method]);
+      });
+      googleSignIn = new GoogleSignIn();
+      log.clear();
     });
 
     test('signInSilently', () async {
       await googleSignIn.signInSilently();
-      expect(invokedMethods, ['init', 'signInSilently']);
       expect(googleSignIn.currentUser, isNotNull);
+      expect(
+          log,
+          equals(<MethodCall>[
+            new MethodCall('init', {'scopes': [], 'hostedDomain': null}),
+            new MethodCall('signInSilently'),
+          ]));
     });
 
     test('signIn', () async {
       await googleSignIn.signIn();
-      expect(invokedMethods, ['init', 'signIn']);
       expect(googleSignIn.currentUser, isNotNull);
+      expect(
+          log,
+          equals(<MethodCall>[
+            new MethodCall('init', {'scopes': [], 'hostedDomain': null}),
+            new MethodCall('signIn'),
+          ]));
     });
 
     test('signOut', () async {
       await googleSignIn.signOut();
-      expect(invokedMethods, ['init', 'signOut']);
       expect(googleSignIn.currentUser, isNull);
+      expect(
+          log,
+          equals(<MethodCall>[
+            new MethodCall('init', {'scopes': [], 'hostedDomain': null}),
+            new MethodCall('signOut'),
+          ]));
     });
 
     test('disconnect; null response', () async {
       await googleSignIn.disconnect();
-      expect(invokedMethods, ['init', 'disconnect']);
       expect(googleSignIn.currentUser, isNull);
+      expect(
+          log,
+          equals(<MethodCall>[
+            new MethodCall('init', {'scopes': [], 'hostedDomain': null}),
+            new MethodCall('disconnect'),
+          ]));
     });
 
     test('disconnect; empty response as on iOS', () async {
       responses['disconnect'] = {};
       await googleSignIn.disconnect();
-      expect(invokedMethods, ['init', 'disconnect']);
       expect(googleSignIn.currentUser, isNull);
+      expect(
+          log,
+          equals(<MethodCall>[
+            new MethodCall('init', {'scopes': [], 'hostedDomain': null}),
+            new MethodCall('disconnect'),
+          ]));
     });
 
     test('concurrent calls of the same method', () async {
@@ -86,14 +106,19 @@ void main() {
       expect(futures.first, same(futures.last),
           reason: 'Must return the same Future');
       var users = await Future.wait(futures);
-      expect(invokedMethods, ['init', 'signInSilently']);
       expect(googleSignIn.currentUser, isNotNull);
       expect(users, [googleSignIn.currentUser, googleSignIn.currentUser]);
+      expect(
+          log,
+          equals(<MethodCall>[
+            new MethodCall('init', {'scopes': [], 'hostedDomain': null}),
+            new MethodCall('signInSilently'),
+          ]));
 
-      invokedMethods = <String>[];
+      log.clear();
       var freshUser = await googleSignIn.signInSilently();
-      expect(invokedMethods, ['signInSilently']);
-      expect(freshUser, isNot(users.first), reason: 'Must refresh user');
+      expect(freshUser, users.first, reason: 'Must return the same user');
+      expect(log, isEmpty);
     });
 
     test('concurrent calls after error succeed', () async {
@@ -103,15 +128,20 @@ void main() {
       expect(googleSignIn.signIn(), completion(isNotNull));
     });
 
-    test('concurrent calls of different methods', () async {
+    test('concurrent calls of different signIn methods', () async {
       var futures = [
         googleSignIn.signInSilently(),
         googleSignIn.signIn(),
       ];
       expect(futures.first, isNot(futures.last));
       var users = await Future.wait(futures);
-      expect(invokedMethods, ['init', 'signInSilently', 'signIn']);
-      expect(users.first, isNot(users.last));
+      expect(
+          log,
+          equals(<MethodCall>[
+            new MethodCall('init', {'scopes': [], 'hostedDomain': null}),
+            new MethodCall('signInSilently'),
+          ]));
+      expect(users.first, users.last, reason: 'Must return the same user');
       expect(googleSignIn.currentUser, users.last);
     });
 
@@ -123,10 +153,15 @@ void main() {
         googleSignIn.disconnect(),
       ];
       await Future.wait(futures);
-      expect(invokedMethods,
-          ['init', 'signInSilently', 'signOut', 'signIn', 'disconnect']);
+      expect(
+          log,
+          equals(<MethodCall>[
+            new MethodCall('init', {'scopes': [], 'hostedDomain': null}),
+            new MethodCall('signInSilently'),
+            new MethodCall('signOut'),
+            new MethodCall('signIn'),
+            new MethodCall('disconnect'),
+          ]));
     });
   });
 }
-
-class MockPlatformChannel extends Mock implements MethodChannel {}
