@@ -247,8 +247,9 @@ class _MethodCompleter {
   void complete(FutureOr<GoogleSignInAccount> value) {
     if (value is Future<GoogleSignInAccount>) {
       value.then(_completer.complete, onError: _completer.completeError);
-    } else
+    } else {
       _completer.complete(value);
+    }
   }
 
   bool get isCompleted => _completer.isCompleted;
