@@ -37,9 +37,10 @@ class UserInfo {
 class FirebaseUser extends UserInfo {
   final List<UserInfo> providerData;
   FirebaseUser._(Map<String, dynamic> data)
-    : providerData = data['providerData']
-        .map((Map<String, dynamic> info) => new UserInfo._(info)).toList(),
-      super._(data);
+      : providerData = data['providerData']
+            .map((Map<String, dynamic> info) => new UserInfo._(info))
+            .toList(),
+        super._(data);
 
   // Returns true if the user is anonymous; that is, the user account was
   // created with signInAnonymously() and has not been linked to another
@@ -80,7 +81,8 @@ class FirebaseAuth {
   /// FIRAuthErrorCodeOperationNotAllowed - Indicates that anonymous accounts are not enabled. Enable them in the Auth section of the Firebase console.
   /// See FIRAuthErrors for a list of error codes that are common to all API methods.
   Future<FirebaseUser> signInAnonymously() async {
-    final Map<String, dynamic> data = await _channel.invokeMethod('signInAnonymously');
+    final Map<String, dynamic> data =
+        await _channel.invokeMethod('signInAnonymously');
     _currentUser = new FirebaseUser._(data);
     return _currentUser;
   }

@@ -25,22 +25,24 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     Widget body;
     if (const LocalPlatform().isAndroid) {
       body = new GestureDetector(
-        child: const Center(child:
-          const Text('Click here to launch play store with New York Times app.')),
-        onTap: () {
+          child: const Center(
+              child: const Text(
+                  'Click here to launch play store with New York Times app.')),
+          onTap: () {
             final AndroidIntent intent = const AndroidIntent(
-              action: 'action_view',
-              data: 'https://play.google.com/store/apps/details?id=com.nytimes.android');
+                action: 'action_view',
+                data:
+                    'https://play.google.com/store/apps/details?id=com.nytimes.android');
             intent.launch();
-        });
+          });
     } else {
-      body = const Center(child: const Text('This plugin only works with Android'));
+      body = const Center(
+          child: const Text('This plugin only works with Android'));
     }
     return new Scaffold(
       appBar: new AppBar(

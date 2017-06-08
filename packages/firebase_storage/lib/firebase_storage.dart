@@ -22,12 +22,14 @@ class StorageReference {
   final List<String> _pathComponents;
 
   StorageReference child(String path) {
-    final List<String> childPath = new List<String>.from(_pathComponents)..addAll(path.split("/"));
+    final List<String> childPath = new List<String>.from(_pathComponents)
+      ..addAll(path.split("/"));
     return new StorageReference._(childPath);
   }
 
   StorageUploadTask put(File file) {
-    final StorageUploadTask task = new StorageUploadTask._(file, _pathComponents.join("/"));
+    final StorageUploadTask task =
+        new StorageUploadTask._(file, _pathComponents.join("/"));
     task._start();
     return task;
   }
@@ -38,22 +40,24 @@ class StorageUploadTask {
   final File file;
   final String path;
 
-  Completer<UploadTaskSnapshot> _completer = new Completer<UploadTaskSnapshot>();
+  Completer<UploadTaskSnapshot> _completer =
+      new Completer<UploadTaskSnapshot>();
   Future<UploadTaskSnapshot> get future => _completer.future;
 
   Future<Null> _start() async {
     final String downloadUrl = await FirebaseStorage._channel.invokeMethod(
-        "StorageReference#putFile",
-        <String, String>{
-          'filename': file.absolute.path,
-          'path': path,
-        },
+      "StorageReference#putFile",
+      <String, String>{
+        'filename': file.absolute.path,
+        'path': path,
+      },
     );
-    _completer.complete(new UploadTaskSnapshot(downloadUrl: Uri.parse(downloadUrl)));
+    _completer
+        .complete(new UploadTaskSnapshot(downloadUrl: Uri.parse(downloadUrl)));
   }
 }
 
 class UploadTaskSnapshot {
-  UploadTaskSnapshot({ this.downloadUrl });
+  UploadTaskSnapshot({this.downloadUrl});
   final Uri downloadUrl;
 }

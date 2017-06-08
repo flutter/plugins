@@ -14,7 +14,11 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 void main() {
   group('filterOutNulls', () {
     test('filters out null values', () {
-      final Map<String, dynamic> original = <String, dynamic>{'a': 1, 'b': null, 'c': 'd'};
+      final Map<String, dynamic> original = <String, dynamic>{
+        'a': 1,
+        'b': null,
+        'c': 'd'
+      };
       final Map<String, dynamic> filtered = filterOutNulls(original);
 
       expect(filtered, isNot(same(original)));
@@ -35,7 +39,8 @@ void main() {
       invokedMethod = null;
       arguments = null;
 
-      when(mockChannel.invokeMethod(any, any)).thenAnswer((Invocation invocation) {
+      when(mockChannel.invokeMethod(any, any))
+          .thenAnswer((Invocation invocation) {
         invokedMethod = invocation.positionalArguments[0];
         arguments = invocation.positionalArguments[1];
       });
@@ -50,7 +55,9 @@ void main() {
     });
 
     test('setCurrentScreen', () async {
-      await analytics.setCurrentScreen(screenName: 'test-screen-name', screenClassOverride: 'test-class-override');
+      await analytics.setCurrentScreen(
+          screenName: 'test-screen-name',
+          screenClassOverride: 'test-class-override');
       expect(invokedMethod, 'setCurrentScreen');
       expect(arguments, <String, String>{
         'screenName': 'test-screen-name',
@@ -69,15 +76,21 @@ void main() {
 
     test('setUserProperty rejects invalid names', () async {
       // invalid character
-      expect(analytics.setUserProperty(name: 'test-name', value: 'test-value'), throwsArgumentError);
+      expect(analytics.setUserProperty(name: 'test-name', value: 'test-value'),
+          throwsArgumentError);
       // non-alpha first character
-      expect(analytics.setUserProperty(name: '0test', value: 'test-value'), throwsArgumentError);
+      expect(analytics.setUserProperty(name: '0test', value: 'test-value'),
+          throwsArgumentError);
       // null
-      expect(analytics.setUserProperty(name: null, value: 'test-value'), throwsArgumentError);
+      expect(analytics.setUserProperty(name: null, value: 'test-value'),
+          throwsArgumentError);
       // blank
-      expect(analytics.setUserProperty(name: '', value: 'test-value'), throwsArgumentError);
+      expect(analytics.setUserProperty(name: '', value: 'test-value'),
+          throwsArgumentError);
       // reserved prefix
-      expect(analytics.setUserProperty(name: 'firebase_test', value: 'test-value'), throwsArgumentError);
+      expect(
+          analytics.setUserProperty(name: 'firebase_test', value: 'test-value'),
+          throwsArgumentError);
     });
 
     test('setAnalyticsCollectionEnabled', () async {
@@ -111,7 +124,8 @@ void main() {
       name = null;
       parameters = null;
 
-      when(mockChannel.invokeMethod('logEvent', any)).thenAnswer((Invocation invocation) {
+      when(mockChannel.invokeMethod('logEvent', any))
+          .thenAnswer((Invocation invocation) {
         final Map<String, dynamic> args = invocation.positionalArguments[1];
         name = args['name'];
         parameters = args['parameters'];
@@ -125,7 +139,8 @@ void main() {
     });
 
     test('logEvent log events', () async {
-      await analytics.logEvent(name: 'test-event', parameters: <String, dynamic>{'a': 'b'});
+      await analytics.logEvent(
+          name: 'test-event', parameters: <String, dynamic>{'a': 'b'});
       expect(name, 'test-event');
       expect(parameters, <String, dynamic>{'a': 'b'});
     });
@@ -147,114 +162,149 @@ void main() {
 
     smokeTest('add_payment_info', () => analytics.logAddPaymentInfo());
 
-    smokeTest('add_to_cart', () => analytics.logAddToCart(
-      itemId: 'test-id',
-      itemName: 'test-name',
-      itemCategory: 'test-category',
-      quantity: 5,
-    ));
+    smokeTest(
+        'add_to_cart',
+        () => analytics.logAddToCart(
+              itemId: 'test-id',
+              itemName: 'test-name',
+              itemCategory: 'test-category',
+              quantity: 5,
+            ));
 
-    smokeTest('add_to_wishlist', () => analytics.logAddToWishlist(
-      itemId: 'test-id',
-      itemName: 'test-name',
-      itemCategory: 'test-category',
-      quantity: 5,
-    ));
+    smokeTest(
+        'add_to_wishlist',
+        () => analytics.logAddToWishlist(
+              itemId: 'test-id',
+              itemName: 'test-name',
+              itemCategory: 'test-category',
+              quantity: 5,
+            ));
 
     smokeTest('app_open', () => analytics.logAppOpen());
 
     smokeTest('begin_checkout', () => analytics.logBeginCheckout());
 
-    smokeTest('campaign_details', () => analytics.logCampaignDetails(
-      source: 'test-source',
-      medium: 'test-medium',
-      campaign: 'test-campaign',
-    ));
+    smokeTest(
+        'campaign_details',
+        () => analytics.logCampaignDetails(
+              source: 'test-source',
+              medium: 'test-medium',
+              campaign: 'test-campaign',
+            ));
 
-    smokeTest('earn_virtual_currency', () => analytics.logEarnVirtualCurrency(
-      virtualCurrencyName: 'bitcoin',
-      value: 34,
-    ));
+    smokeTest(
+        'earn_virtual_currency',
+        () => analytics.logEarnVirtualCurrency(
+              virtualCurrencyName: 'bitcoin',
+              value: 34,
+            ));
 
     smokeTest('ecommerce_purchase', () => analytics.logEcommercePurchase());
 
     smokeTest('generate_lead', () => analytics.logGenerateLead());
 
-    smokeTest('join_group', () => analytics.logJoinGroup(
-      groupId: 'test-group-id',
-    ));
+    smokeTest(
+        'join_group',
+        () => analytics.logJoinGroup(
+              groupId: 'test-group-id',
+            ));
 
-    smokeTest('level_up', () => analytics.logLevelUp(
-      level: 56,
-    ));
+    smokeTest(
+        'level_up',
+        () => analytics.logLevelUp(
+              level: 56,
+            ));
 
     smokeTest('login', () => analytics.logLogin());
 
-    smokeTest('post_score', () => analytics.logPostScore(
-      score: 34,
-    ));
+    smokeTest(
+        'post_score',
+        () => analytics.logPostScore(
+              score: 34,
+            ));
 
-    smokeTest('present_offer', () => analytics.logPresentOffer(
-      itemId: 'test-id',
-      itemName: 'test-name',
-      itemCategory: 'test-category',
-      quantity: 5,
-    ));
+    smokeTest(
+        'present_offer',
+        () => analytics.logPresentOffer(
+              itemId: 'test-id',
+              itemName: 'test-name',
+              itemCategory: 'test-category',
+              quantity: 5,
+            ));
 
     smokeTest('purchase_refund', () => analytics.logPurchaseRefund());
 
-    smokeTest('search', () => analytics.logSearch(
-      searchTerm: 'test search term',
-    ));
+    smokeTest(
+        'search',
+        () => analytics.logSearch(
+              searchTerm: 'test search term',
+            ));
 
-    smokeTest('select_content', () => analytics.logSelectContent(
-      contentType: 'test content type',
-      itemId: 'test item id',
-    ));
+    smokeTest(
+        'select_content',
+        () => analytics.logSelectContent(
+              contentType: 'test content type',
+              itemId: 'test item id',
+            ));
 
-    smokeTest('share', () => analytics.logShare(
-      contentType: 'test content type',
-      itemId: 'test item id',
-    ));
+    smokeTest(
+        'share',
+        () => analytics.logShare(
+              contentType: 'test content type',
+              itemId: 'test item id',
+            ));
 
-    smokeTest('sign_up', () => analytics.logSignUp(
-      signUpMethod: 'test sign-up method',
-    ));
+    smokeTest(
+        'sign_up',
+        () => analytics.logSignUp(
+              signUpMethod: 'test sign-up method',
+            ));
 
-    smokeTest('spend_virtual_currency', () => analytics.logSpendVirtualCurrency(
-      itemName: 'test-item-name',
-      virtualCurrencyName: 'bitcoin',
-      value: 345,
-    ));
+    smokeTest(
+        'spend_virtual_currency',
+        () => analytics.logSpendVirtualCurrency(
+              itemName: 'test-item-name',
+              virtualCurrencyName: 'bitcoin',
+              value: 345,
+            ));
 
     smokeTest('tutorial_begin', () => analytics.logTutorialBegin());
 
     smokeTest('tutorial_complete', () => analytics.logTutorialComplete());
 
-    smokeTest('unlock_achievement', () => analytics.logUnlockAchievement(
-      id: 'firebase analytics api coverage',
-    ));
+    smokeTest(
+        'unlock_achievement',
+        () => analytics.logUnlockAchievement(
+              id: 'firebase analytics api coverage',
+            ));
 
-    smokeTest('view_item', () => analytics.logViewItem(
-      itemId: 'test-id',
-      itemName: 'test-name',
-      itemCategory: 'test-category',
-    ));
+    smokeTest(
+        'view_item',
+        () => analytics.logViewItem(
+              itemId: 'test-id',
+              itemName: 'test-name',
+              itemCategory: 'test-category',
+            ));
 
-    smokeTest('view_item_list', () => analytics.logViewItemList(
-      itemCategory: 'test-category',
-    ));
+    smokeTest(
+        'view_item_list',
+        () => analytics.logViewItemList(
+              itemCategory: 'test-category',
+            ));
 
-    smokeTest('view_search_results', () => analytics.logViewSearchResults(
-      searchTerm: 'test search term',
-    ));
+    smokeTest(
+        'view_search_results',
+        () => analytics.logViewSearchResults(
+              searchTerm: 'test search term',
+            ));
 
-    void testRequiresValueAndCurrencyTogether(String methodName, Future<Null> testFn()) {
+    void testRequiresValueAndCurrencyTogether(
+        String methodName, Future<Null> testFn()) {
       test('$methodName requires value and currency together', () async {
         try {
           testFn();
           fail('Expected ArgumentError');
-        } on ArgumentError catch(error) {
+        } on ArgumentError catch (error) {
           expect(error.message, valueAndCurrencyMustBeTogetherError);
         }
       });
@@ -325,4 +375,4 @@ void main() {
   });
 }
 
-class MockPlatformChannel extends Mock implements MethodChannel { }
+class MockPlatformChannel extends Mock implements MethodChannel {}

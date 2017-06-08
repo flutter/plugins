@@ -283,7 +283,9 @@ class _MyHomePageState extends State<MyHomePage> {
             child: const Text('Test setUserProperty'),
             onPressed: _testSetUserProperty,
           ),
-          new Text(_message, style: const TextStyle(color: const Color.fromARGB(255, 0, 155, 0))),
+          new Text(_message,
+              style:
+                  const TextStyle(color: const Color.fromARGB(255, 0, 155, 0))),
         ],
       ),
     );

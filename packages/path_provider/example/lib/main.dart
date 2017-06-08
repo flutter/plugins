@@ -46,7 +46,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget _buildDirectory(
       BuildContext context, AsyncSnapshot<Directory> snapshot) {
-
     Text text = const Text('');
     if (snapshot.connectionState == ConnectionState.done) {
       if (snapshot.hasError) {
@@ -112,24 +111,23 @@ class _MyHomePageState extends State<MyHomePage> {
               child: new FutureBuilder<Directory>(
                   future: _appDocumentsDirectory, builder: _buildDirectory),
             ),
-            new Column(
-              children : <Widget>[
-                new Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: new RaisedButton(
-                    child: new Text('${Platform.isIOS ?
+            new Column(children: <Widget>[
+              new Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: new RaisedButton(
+                  child: new Text('${Platform.isIOS ?
                                     "External directories are unavailable " 
                                     "on iOS":
                                     "Get External Storage Directory" }'),
-                    onPressed: Platform.isIOS ? null :
-                      _requestExternalStorageDirectory,
-                  ),
+                  onPressed:
+                      Platform.isIOS ? null : _requestExternalStorageDirectory,
                 ),
-              ]
-            ),
+              ),
+            ]),
             new Expanded(
               child: new FutureBuilder<Directory>(
-               future: _externalDocumentsDirectory, builder: _buildDirectory),
+                  future: _externalDocumentsDirectory,
+                  builder: _buildDirectory),
             ),
           ],
         ),

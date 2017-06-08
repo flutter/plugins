@@ -9,7 +9,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:test/test.dart';
 
 void main() {
-  const MethodChannel channel = const MethodChannel('plugins.flutter.io/path_provider');
+  const MethodChannel channel =
+      const MethodChannel('plugins.flutter.io/path_provider');
   final List<MethodCall> log = <MethodCall>[];
   String response;
 
@@ -25,7 +26,8 @@ void main() {
   test('getTemporaryDirectory test', () async {
     response = null;
     final Directory directory = await getTemporaryDirectory();
-    expect(log, equals(<MethodCall>[const MethodCall('getTemporaryDirectory')]));
+    expect(
+        log, equals(<MethodCall>[const MethodCall('getTemporaryDirectory')]));
     expect(directory, isNull);
   });
 
@@ -34,7 +36,8 @@ void main() {
     final Directory directory = await getApplicationDocumentsDirectory();
     expect(
       log,
-      equals(<MethodCall>[const MethodCall('getApplicationDocumentsDirectory')]),
+      equals(
+          <MethodCall>[const MethodCall('getApplicationDocumentsDirectory')]),
     );
     expect(directory, isNull);
   });

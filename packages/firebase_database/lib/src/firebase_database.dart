@@ -12,7 +12,8 @@ class FirebaseDatabase {
     'plugins.flutter.io/firebase_database',
   );
 
-  static final Map<int, StreamController<Event>> _observers = <int, StreamController<Event>>{};
+  static final Map<int, StreamController<Event>> _observers =
+      <int, StreamController<Event>>{};
 
   FirebaseDatabase._() {
     _channel.setMethodCallHandler((MethodCall call) {
@@ -46,7 +47,7 @@ class FirebaseDatabase {
   Future<Null> setPersistenceEnabled(bool enabled) {
     return _channel.invokeMethod(
       "FirebaseDatabase#setPersistenceEnabled",
-      <String, dynamic>{ 'enabled': enabled },
+      <String, dynamic>{'enabled': enabled},
     );
   }
 
@@ -63,7 +64,7 @@ class FirebaseDatabase {
   Future<Null> setPersistenceCacheSizeBytes(int cacheSize) {
     return _channel.invokeMethod(
       "FirebaseDatabase#setPersistenceCacheSizeBytes",
-      <String, dynamic>{ 'cacheSize': cacheSize },
+      <String, dynamic>{'cacheSize': cacheSize},
     );
   }
 

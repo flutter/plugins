@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
 }
 
 class SharedPreferencesDemo extends StatefulWidget {
-  SharedPreferencesDemo({ Key key }) : super(key: key);
+  SharedPreferencesDemo({Key key}) : super(key: key);
 
   @override
   SharedPreferencesDemoState createState() => new SharedPreferencesDemoState();
@@ -46,19 +46,19 @@ class SharedPreferencesDemoState extends State<SharedPreferencesDemo> {
         title: const Text("SharedPreferences Demo"),
       ),
       body: new Center(
-        child: new FutureBuilder<SharedPreferences>(
-          future: _prefs,
-          builder: (BuildContext context, AsyncSnapshot<SharedPreferences> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting)
-              return const Text('Loading...');
-            final int counter = snapshot.requireData.getInt('counter') ?? 0;
-            return new Text( // ignore: prefer_const_constructors
-              'Button tapped $counter time${ counter == 1 ? '' : 's' }.\n\n'
-              'This should persist across restarts.',
-            );
-          }
-        )
-      ),
+          child: new FutureBuilder<SharedPreferences>(
+              future: _prefs,
+              builder: (BuildContext context,
+                  AsyncSnapshot<SharedPreferences> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting)
+                  return const Text('Loading...');
+                final int counter = snapshot.requireData.getInt('counter') ?? 0;
+                return new Text(
+                  // ignore: prefer_const_constructors
+                  'Button tapped $counter time${ counter == 1 ? '' : 's' }.\n\n'
+                      'This should persist across restarts.',
+                );
+              })),
       floatingActionButton: new FloatingActionButton(
         onPressed: _incrementCounter,
         tooltip: 'Increment',

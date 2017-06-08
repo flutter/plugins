@@ -7,7 +7,8 @@ import 'package:test/test.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 void main() {
-  const MethodChannel channel = const MethodChannel('plugins.flutter.io/url_launcher');
+  const MethodChannel channel =
+      const MethodChannel('plugins.flutter.io/url_launcher');
   final List<MethodCall> log = <MethodCall>[];
   channel.setMockMethodCallHandler((MethodCall methodCall) async {
     log.add(methodCall);
@@ -21,14 +22,17 @@ void main() {
     await canLaunch('http://example.com/');
     expect(
       log,
-      equals(<MethodCall>[const MethodCall('canLaunch', 'http://example.com/')]),
+      equals(
+          <MethodCall>[const MethodCall('canLaunch', 'http://example.com/')]),
     );
     log.clear();
   });
 
   test('launch test', () async {
     await launch('http://example.com/');
-    expect(log,
-        equals(<MethodCall>[const MethodCall('launch', 'http://example.com/')]));
+    expect(
+        log,
+        equals(
+            <MethodCall>[const MethodCall('launch', 'http://example.com/')]));
   });
 }

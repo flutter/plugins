@@ -41,17 +41,15 @@ class _MyHomePageState extends State<MyHomePage> {
         title: const Text('Image Picker Example'),
       ),
       body: new Center(
-        child: new FutureBuilder<File>(
-          future: _imageFile,
-          builder: (BuildContext context, AsyncSnapshot<File> snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              return new Image.file(snapshot.data);
-            } else {
-              return const Text('You have not yet picked an image.');
-            }
-          }
-        )
-      ),
+          child: new FutureBuilder<File>(
+              future: _imageFile,
+              builder: (BuildContext context, AsyncSnapshot<File> snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  return new Image.file(snapshot.data);
+                } else {
+                  return const Text('You have not yet picked an image.');
+                }
+              })),
       floatingActionButton: new FloatingActionButton(
         onPressed: () {
           setState(() {

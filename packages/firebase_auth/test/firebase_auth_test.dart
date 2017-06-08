@@ -22,7 +22,8 @@ void main() {
     setUp(() {
       final MockPlatformChannel mockChannel = new MockPlatformChannel();
 
-      when(mockChannel.invokeMethod('signInAnonymously')).thenAnswer((Invocation invocation) {
+      when(mockChannel.invokeMethod('signInAnonymously'))
+          .thenAnswer((Invocation invocation) {
         return <String, dynamic>{
           'isAnonymous': true,
           'isEmailVerified': false,
@@ -58,4 +59,4 @@ void main() {
   });
 }
 
-class MockPlatformChannel extends Mock implements MethodChannel { }
+class MockPlatformChannel extends Mock implements MethodChannel {}
