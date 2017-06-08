@@ -3,10 +3,13 @@
 This plugin allows Flutter apps to discover network connectivity and configure
 themselves accordingly. It can distinguish between cellular vs wifi connection.
 
+> Note that on Android, this does not guarantee connection to Internet. For instance,
+the app might have wifi access but it might be a VPN or a hotel Wifi with no access.
+
 Sample usage:
 
 ```dart
-var connectivityResult = await checkConnectivity();
+var connectivityResult = await Connectivity.checkConnectivity();
 if (connectivityResult == ConnectivityResult.mobile) {
   // I am connected to a mobile network.
 } else if (connectivityResult == ConnectivityResult.wifi) {
