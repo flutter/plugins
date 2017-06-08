@@ -18,41 +18,39 @@ manager](https://console.developers.google.com/). For example, if you
 want to mimic the behavior of the Google Sign-In sample app, you'll need to
 enable the [Google People API](https://developers.google.com/people/).
 
-# iOS integration
+## iOS integration
 
-To access Google Sign-In, you'll need to make sure to [register your
-application](https://developers.google.com/mobile/add?platform=ios). Add
-the generated GoogleService-Info.plist to root of your Runner project in Xcode,
-so that the Google Sign-In framework can determine your client id.
-
-You'll need to add this to the main dictionary of your application's Info.plist:
+1. [First register your application](https://developers.google.com/mobile/add?platform=ios).
+2. Open Xcode. You'll have to paste this into Xcode to properly register `GoogleServices-Info.plist`.
+3. Copy and paste the generated `GoogleServices-Info.plist` file into `[my_project]/ios/Runner/GoogleServices-Info.plist`.
+4. A dialog will show up and ask you to select the targets, select the `Runner` target.  
+5. Then add the `CFBundleURLTypes` attributes below into the `[my_project]/ios/Runner/Info.plist` file.  
 
 ```
-        <key>CFBundleURLTypes</key>
-        <array>
-                <dict>
-                        <key>CFBundleTypeRole</key>
-                        <string>Editor</string>
-                        <key>CFBundleURLSchemes</key>
-                        <array>
-                                <!-- bundle id, for example: -->
-                                <string>com.yourcompany.myapp</string>
-                        </array>
-                </dict>
-                <dict>
-                        <key>CFBundleTypeRole</key>
-                        <string>Editor</string>
-                        <key>CFBundleURLSchemes</key>
-                        <array>
-                                <!-- reverse url of your client id, for example: -->
-        <string>com.googleusercontent.apps.861823949799-11qfr04mrfh2mndp3el2vgc0e357a2t6</string>
-                        </array>
-                </dict>
-        </array>
+<!-- Put me in the [my_project]/ios/Runner/Info.plist file -->
+<!-- Google Sign-in Section -->
+<key>CFBundleURLTypes</key>
+<array>
+	<dict>
+		<key>CFBundleTypeRole</key>
+		<string>Editor</string>
+		<key>CFBundleURLSchemes</key>
+		<array>
+			<!-- TODO Replace this value: -->
+			<!-- Copied from GoogleServices-Info.plist key REVERSE_CLIENT_ID -->
+			<string>com.googleusercontent.apps.861823949799-vc35cprkp249096uujjn0vvnmcvjppkn</string>
+		</array>
+	</dict>
+</array>
+<!-- End of the Google Sign-in Section -->
 ```
 
 ## Usage
 
+### Import the package
+To use this plugin, follow the [plugin installation instructions](https://pub.dartlang.org/packages/google_sign_in#-pkg-tab-installing).
+
+### Use the plugin
 Add the following import to your Dart code:
 
 ```

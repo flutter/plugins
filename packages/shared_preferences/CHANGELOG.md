@@ -1,3 +1,17 @@
+## [0.2.4+1] - 2017-06-05
+
+* Fixed typo in changelog
+
+## [0.2.4] - 2017-06-04
+
+* Added setMockInitialValues
+* Added a test
+* Updated README
+
+## [0.2.3] - 2017-06-02
+
+* Suppress warning about unchecked operations when compiling for Android
+
 ## [0.2.2] - 2017-05-17
 
 * BREAKING CHANGE: setStringSet API changed to setStringList and plugin now supports

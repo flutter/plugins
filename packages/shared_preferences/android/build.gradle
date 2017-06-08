@@ -1,4 +1,4 @@
-group 'io.flutter.plugins.shared_preferences'
+group 'io.flutter.plugins.sharedpreferences'
 version '1.0-SNAPSHOT'
 
 buildscript {

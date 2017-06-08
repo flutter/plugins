@@ -14,7 +14,7 @@ part of firebase_database;
 /// `DatabaseReference`s (ie. `child`).
 class DatabaseReference extends Query {
   DatabaseReference._(FirebaseDatabase database, List<String> pathComponents)
-    : super._(database, pathComponents);
+    : super._(database: database, pathComponents: pathComponents);
 
   /// Gets a DatabaseReference for the location at the specified relative
   /// path. The relative path can either be a simple child key (e.g. ‘fred’) or
@@ -60,7 +60,7 @@ class DatabaseReference extends Query {
     return new DatabaseReference._(_database, childPath);
   }
 
-  /// Write data to this Firebase Database location.
+  /// Write `value` to the location with the specified `priority` if applicable.
   ///
   /// This will overwrite any data at this location and all child locations.
   ///
@@ -72,12 +72,53 @@ class DatabaseReference extends Query {
   ///
   /// Passing null for the new value means all data at this location or any
   /// child location will be deleted.
-  Future<Null> set(dynamic value) async {
-    await _database._channel.invokeMethod(
+  Future<Null> set(dynamic value, { dynamic priority }) {
+    return _database._channel.invokeMethod(
       'DatabaseReference#set',
-      { 'path': path, 'value': value },
+      { 'path': path, 'value': value, 'priority': priority },
     );
   }
+
+  /// Sets a priority for the data at this Firebase Database location.
+  ///
+  /// Priorities can be used to provide a custom ordering for the children at a
+  /// location (if no priorities are specified, the children are ordered by
+  /// key).
+  ///
+  /// You cannot set a priority on an empty location. For this reason
+  /// set() should be used when setting initial data with a specific priority
+  /// and setPriority() should be used when updating the priority of existing
+  /// data.
+  ///
+  /// Children are sorted based on this priority using the following rules:
+  ///
+  /// Children with no priority come first. Children with a number as their
+  /// priority come next. They are sorted numerically by priority (small to
+  /// large). Children with a string as their priority come last. They are
+  /// sorted lexicographically by priority. Whenever two children have the same
+  /// priority (including no priority), they are sorted by key. Numeric keys
+  /// come first (sorted numerically), followed by the remaining keys (sorted
+  /// lexicographically).
+
+  /// Note that priorities are parsed and ordered as IEEE 754 double-precision
+  /// floating-point numbers. Keys are always stored as strings and are treated
+  /// as numbers only when they can be parsed as a 32-bit integer
+  Future<Null> setPriority(dynamic priority) async {
+    return _database._channel.invokeMethod(
+      'DatabaseReference#setPriority',
+      { 'path': path, 'priority': priority },
+    );
+  }
+
+  /// Remove the data at this Firebase Database location. Any data at child
+  /// locations will also be deleted.
+  ///
+  /// The effect of the delete will be visible immediately and the corresponding
+  /// events will be triggered. Synchronization of the delete to the Firebase
+  /// Database servers will also be started.
+  ///
+  /// remove() is equivalent to calling set(null)
+  Future<Null> remove() => set(null);
 }
 class ServerValue {
   static const timestamp = const {'.sv' : 'timestamp'};

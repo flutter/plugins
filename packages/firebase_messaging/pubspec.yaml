@@ -7,7 +7,7 @@ version: 0.0.3
 
 flutter:
   plugin:
-    androidPackage: io.flutter.plugins.firebase_messaging
+    androidPackage: io.flutter.plugins.firebasemessaging
     pluginClass: FirebaseMessagingPlugin
 
 dependencies:

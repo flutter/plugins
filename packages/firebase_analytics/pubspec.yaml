@@ -7,7 +7,7 @@ version: 0.0.2
 
 flutter:
   plugin:
-    androidPackage: io.flutter.firebase_analytics
+    androidPackage: io.flutter.firebaseanalytics
     pluginClass: FirebaseAnalyticsPlugin
 
 dependencies:

@@ -9,7 +9,7 @@ enum _EventType {
   childRemoved,
   childChanged,
   childMoved,
-  value
+  value,
 }
 
 /// `Event` encapsulates a DataSnapshot and possibly also the key of its
