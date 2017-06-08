@@ -14,14 +14,17 @@ const MethodChannel _kChannel =
 /// a persistent store for simple data. Data is persisted to disk automatically
 /// and asynchronously. Use commit() to be notified when a save is successful.
 class SharedPreferences {
+
+  SharedPreferences._(this._preferenceCache);
+
   static const String _prefix = 'flutter.';
   static SharedPreferences _instance;
   static Future<SharedPreferences> getInstance() async {
     if (_instance == null) {
-      Map<String, Object> fromSystem = await _kChannel.invokeMethod('getAll');
+      final Map<String, Object> fromSystem = await _kChannel.invokeMethod('getAll');
       assert(fromSystem != null);
       // Strip the flutter. prefix from the returned preferences.
-      Map<String, Object> preferencesMap = {};
+      final Map<String, Object> preferencesMap = <String, Object>{};
       for (String key in fromSystem.keys) {
         preferencesMap[key.substring(_prefix.length)] = fromSystem[key];
       }
@@ -40,27 +43,25 @@ class SharedPreferences {
   /// in sync since the setter method might fail for any reason.
   final Map<String, Object> _preferenceCache;
 
-  SharedPreferences._(this._preferenceCache);
-
   /// Reads a value from persistent storage, throwing an exception if it's not a
   /// bool
-  bool getBool(String key) => _preferenceCache[key] as bool;
+  bool getBool(String key) => _preferenceCache[key];
 
   /// Reads a value from persistent storage, throwing an exception if it's not
   /// an int
-  int getInt(String key) => _preferenceCache[key] as int;
+  int getInt(String key) => _preferenceCache[key];
 
   /// Reads a value from persistent storage, throwing an exception if it's not a
   /// double
-  double getDouble(String key) => _preferenceCache[key] as double;
+  double getDouble(String key) => _preferenceCache[key];
 
   /// Reads a value from persistent storage, throwing an exception if it's not a
   /// String
-  String getString(String key) => _preferenceCache[key] as String;
+  String getString(String key) => _preferenceCache[key];
 
   /// Reads a set of string values from persistent storage,
   /// throwing an exception if it's not a string set.
-  List<String> getStringList(String key) => _preferenceCache[key] as List<String>;
+  List<String> getStringList(String key) => _preferenceCache[key];
 
   /// Saves a boolean [value] to persistent storage in the background.
   void setBool(String key, bool value) => _setValue('Bool', key, value);
@@ -82,7 +83,7 @@ class SharedPreferences {
   void _setValue(String valueType, String key, Object value) {
     _preferenceCache[key] = value;
     // Set the value in the background.
-    _kChannel.invokeMethod('set$valueType', {
+    _kChannel.invokeMethod('set$valueType', <String, dynamic>{
       'key': '$_prefix$key',
       'value': value,
     });

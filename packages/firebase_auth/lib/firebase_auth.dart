@@ -35,12 +35,11 @@ class UserInfo {
 
 /// Represents a user.
 class FirebaseUser extends UserInfo {
-  final Map<String, dynamic> _data;
   final List<UserInfo> providerData;
-  FirebaseUser._(this._data)
-    : providerData = (_data['providerData'] as List<Map<String, dynamic>>)
+  FirebaseUser._(Map<String, dynamic> data)
+    : providerData = data['providerData']
         .map((Map<String, dynamic> info) => new UserInfo._(info)).toList(),
-      super._(_data);
+      super._(data);
 
   // Returns true if the user is anonymous; that is, the user account was
   // created with signInAnonymously() and has not been linked to another
@@ -81,7 +80,7 @@ class FirebaseAuth {
   /// FIRAuthErrorCodeOperationNotAllowed - Indicates that anonymous accounts are not enabled. Enable them in the Auth section of the Firebase console.
   /// See FIRAuthErrors for a list of error codes that are common to all API methods.
   Future<FirebaseUser> signInAnonymously() async {
-    Map<String, dynamic> data = await _channel.invokeMethod('signInAnonymously');
+    final Map<String, dynamic> data = await _channel.invokeMethod('signInAnonymously');
     _currentUser = new FirebaseUser._(data);
     return _currentUser;
   }
@@ -92,7 +91,7 @@ class FirebaseAuth {
   }) async {
     assert(email != null);
     assert(password != null);
-    Map<String, dynamic> data = await _channel.invokeMethod(
+    final Map<String, dynamic> data = await _channel.invokeMethod(
       'createUserWithEmailAndPassword',
       <String, String>{
         'email': email,
@@ -109,7 +108,7 @@ class FirebaseAuth {
   }) async {
     assert(email != null);
     assert(password != null);
-    Map<String, dynamic> data = await _channel.invokeMethod(
+    final Map<String, dynamic> data = await _channel.invokeMethod(
       'signInWithEmailAndPassword',
       <String, String>{
         'email': email,
@@ -126,7 +125,7 @@ class FirebaseAuth {
   }) async {
     assert(idToken != null);
     assert(accessToken != null);
-    Map<String, dynamic> data = await _channel.invokeMethod(
+    final Map<String, dynamic> data = await _channel.invokeMethod(
       'signInWithGoogle',
       <String, String>{
         'idToken': idToken,

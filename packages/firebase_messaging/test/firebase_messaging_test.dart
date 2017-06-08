@@ -23,14 +23,14 @@ void main() {
   test('requestNotificationPermissions on ios with default permissions', () {
     firebaseMessaging.requestNotificationPermissions();
     verify(mockChannel.invokeMethod('requestNotificationPermissions',
-        {'sound': true, 'badge': true, 'alert': true}));
+        <String, bool>{'sound': true, 'badge': true, 'alert': true}));
   });
 
   test('requestNotificationPermissions on ios with custom permissions', () {
     firebaseMessaging.requestNotificationPermissions(
         const IosNotificationSettings(sound: false));
     verify(mockChannel.invokeMethod('requestNotificationPermissions',
-        {'sound': false, 'badge': true, 'alert': true}));
+        <String, bool>{'sound': false, 'badge': true, 'alert': true}));
   });
 
   test('requestNotificationPermissions on android', () {
@@ -57,10 +57,10 @@ void main() {
 
   test('incoming token', () async {
     firebaseMessaging.configure();
-    dynamic handler =
+    final dynamic handler =
         verify(mockChannel.setMethodCallHandler(captureAny)).captured.single;
-    String token1 = 'I am a super secret token';
-    String token2 = 'I am the new token in town';
+    final String token1 = 'I am a super secret token';
+    final String token2 = 'I am the new token in town';
     Future<String> tokenFromStream = firebaseMessaging.onTokenRefresh.first;
     await handler(new MethodCall('onToken', token1));
 
@@ -76,9 +76,9 @@ void main() {
 
   test('incoming iOS settings', () async {
     firebaseMessaging.configure();
-    dynamic handler =
+    final dynamic handler =
         verify(mockChannel.setMethodCallHandler(captureAny)).captured.single;
-    IosNotificationSettings iosSettings = new IosNotificationSettings();
+    IosNotificationSettings iosSettings = const IosNotificationSettings();
 
     Future<IosNotificationSettings> iosSettingsFromStream =
         firebaseMessaging.onIosSettingsRegistered.first;
@@ -86,7 +86,7 @@ void main() {
         new MethodCall('onIosSettingsRegistered', iosSettings.toMap()));
     expect((await iosSettingsFromStream).toMap(), iosSettings.toMap());
 
-    iosSettings = new IosNotificationSettings(sound: false);
+    iosSettings = const IosNotificationSettings(sound: false);
     iosSettingsFromStream = firebaseMessaging.onIosSettingsRegistered.first;
     await handler(
         new MethodCall('onIosSettingsRegistered', iosSettings.toMap()));
@@ -94,23 +94,23 @@ void main() {
   });
 
   test('incoming messages', () async {
-    Completer onMessage = new Completer();
-    Completer onLaunch = new Completer();
-    Completer onResume = new Completer();
+    final Completer<dynamic> onMessage = new Completer<dynamic>();
+    final Completer<dynamic> onLaunch = new Completer<dynamic>();
+    final Completer<dynamic> onResume = new Completer<dynamic>();
 
-    firebaseMessaging.configure(onMessage: (m) {
+    firebaseMessaging.configure(onMessage: (dynamic m) {
       onMessage.complete(m);
-    }, onLaunch: (m) {
+    }, onLaunch: (dynamic m) {
       onLaunch.complete(m);
-    }, onResume: (m) {
+    }, onResume: (dynamic m) {
       onResume.complete(m);
     });
-    dynamic handler =
+    final dynamic handler =
         verify(mockChannel.setMethodCallHandler(captureAny)).captured.single;
 
-    Object onMessageMessage = new Object();
-    Object onLaunchMessage = new Object();
-    Object onResumeMessage = new Object();
+    final Object onMessageMessage = new Object();
+    final Object onLaunchMessage = new Object();
+    final Object onResumeMessage = new Object();
 
     await handler(new MethodCall('onMessage', onMessageMessage));
     expect(await onMessage.future, onMessageMessage);

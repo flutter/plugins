@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 import 'package:platform/platform.dart';
 
-typedef Future MessageHandler(Map<String, dynamic> message);
+typedef Future<dynamic> MessageHandler(Map<String, dynamic> message);
 
 /// Implementation of the Firebase Cloud Messaging API for Flutter.
 ///
@@ -23,7 +23,7 @@ class FirebaseMessaging {
         _platform = platform;
 
   static final FirebaseMessaging _instance = new FirebaseMessaging.private(
-      const MethodChannel('firebase_messaging'), new LocalPlatform());
+      const MethodChannel('firebase_messaging'), const LocalPlatform());
 
   final MethodChannel _channel;
   final Platform _platform;
@@ -79,7 +79,7 @@ class FirebaseMessaging {
 
   /// Returns the FCM token.
   Future<String> getToken() {
-    return _token != null ? new Future.value(_token) : onTokenRefresh.first;
+    return _token != null ? new Future<String>.value(_token) : onTokenRefresh.first;
   }
 
   /// Subscribe to topic in background.
@@ -98,7 +98,7 @@ class FirebaseMessaging {
   Future<Null> _handleMethod(MethodCall call) async {
     switch (call.method) {
       case "onToken":
-        String token = call.arguments;
+        final String token = call.arguments;
         if (_token != token) {
           _token = token;
           _tokenStreamController.add(_token);

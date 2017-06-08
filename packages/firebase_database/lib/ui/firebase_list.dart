@@ -4,10 +4,10 @@
 
 import 'dart:collection';
 
+import 'package:meta/meta.dart';
+
 import '../firebase_database.dart' show DataSnapshot, Event, Query;
 import 'utils/stream_subscriber_mixin.dart';
-
-import 'package:meta/meta.dart';
 
 typedef void ChildCallback(int index, DataSnapshot snapshot);
 typedef void ChildMovedCallback(int fromIndex, int toIndex, DataSnapshot snapshot);
@@ -51,11 +51,19 @@ class FirebaseList extends ListBase<DataSnapshot> with StreamSubscriberMixin<Eve
 
   // ListBase implementation
   final List<DataSnapshot> _snapshots = <DataSnapshot>[];
+
+  @override
   int get length => _snapshots.length;
+
+  @override
   set length(int value) {
     throw new UnsupportedError("List cannot be modified.");
   }
+
+  @override
   DataSnapshot operator [](int index) => _snapshots[index];
+
+  @override
   void operator []=(int index, DataSnapshot value) {
     throw new UnsupportedError("List cannot be modified.");
   }
@@ -81,24 +89,24 @@ class FirebaseList extends ListBase<DataSnapshot> with StreamSubscriberMixin<Eve
   }
 
   void _onChildRemoved(Event event) {
-    int index = _indexForKey(event.snapshot.key);
+    final int index = _indexForKey(event.snapshot.key);
     _snapshots.removeAt(index);
     onChildRemoved(index, event.snapshot);
   }
 
   void _onChildChanged(Event event) {
-    int index = _indexForKey(event.snapshot.key);
+    final int index = _indexForKey(event.snapshot.key);
     _snapshots[index] = event.snapshot;
     onChildChanged(index, event.snapshot);
   }
 
   void _onChildMoved(Event event) {
-    int fromIndex = _indexForKey(event.snapshot.key);
-    _snapshots.remove(fromIndex);
+    final int fromIndex = _indexForKey(event.snapshot.key);
+    _snapshots.removeAt(fromIndex);
 
     int toIndex = 0;
     if (event.previousSiblingKey != null) {
-      int prevIndex = _indexForKey(event.previousSiblingKey);
+      final int prevIndex = _indexForKey(event.previousSiblingKey);
       if (prevIndex != null) {
         toIndex = prevIndex + 1;
       }

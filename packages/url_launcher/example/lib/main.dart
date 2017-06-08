@@ -69,14 +69,14 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             new Row(
               mainAxisSize: MainAxisSize.min,
-              children: [
-                new Padding(
-                  padding: new EdgeInsets.all(16.0),
-                  child: new Text('https://flutter.io'),
+              children: <Widget>[
+                const Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: const Text('https://flutter.io'),
                 ),
                 new RaisedButton(
                   onPressed: _launchUrl,
-                  child: new Text('Go'),
+                  child: const Text('Go'),
                 ),
               ],
             ),

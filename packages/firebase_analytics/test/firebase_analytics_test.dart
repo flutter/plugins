@@ -19,7 +19,7 @@ void main() {
 
       expect(filtered, isNot(same(original)));
       expect(original, <String, dynamic>{'a': 1, 'b': null, 'c': 'd'});
-      expect(filtered, {'a': 1, 'c': 'd'});
+      expect(filtered, <String, dynamic>{'a': 1, 'c': 'd'});
     });
   });
 
@@ -30,7 +30,7 @@ void main() {
     dynamic arguments;
 
     setUp(() {
-      MockPlatformChannel mockChannel = new MockPlatformChannel();
+      final MockPlatformChannel mockChannel = new MockPlatformChannel();
 
       invokedMethod = null;
       arguments = null;
@@ -106,16 +106,16 @@ void main() {
     Map<String, dynamic> parameters;
 
     setUp(() {
-      MockPlatformChannel mockChannel = new MockPlatformChannel();
+      final MockPlatformChannel mockChannel = new MockPlatformChannel();
 
       name = null;
       parameters = null;
 
       when(mockChannel.invokeMethod('logEvent', any)).thenAnswer((Invocation invocation) {
-        Map<String, dynamic> args = invocation.positionalArguments[1];
+        final Map<String, dynamic> args = invocation.positionalArguments[1];
         name = args['name'];
         parameters = args['parameters'];
-        expect(args.keys, unorderedEquals(['name', 'parameters']));
+        expect(args.keys, unorderedEquals(<String>['name', 'parameters']));
       });
 
       when(mockChannel.invokeMethod(isNot('logEvent') as dynamic, any))

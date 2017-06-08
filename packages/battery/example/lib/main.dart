@@ -37,10 +37,10 @@ class _MyHomePageState extends State<MyHomePage> {
   Battery _battery = new Battery();
 
   BatteryState _batteryState;
-  StreamSubscription _batteryStateSubscription;
+  StreamSubscription<BatteryState> _batteryStateSubscription;
 
   @override
-  initState() {
+  void initState() {
     super.initState();
     _batteryStateSubscription =
         _battery.onBatteryStateChanged.listen((BatteryState state) {
@@ -54,7 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text('Plugin example app'),
+        title: const Text('Plugin example app'),
       ),
       body: new Center(
         child: new Text('$_batteryState'),
@@ -62,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: new FloatingActionButton(
         child: const Icon(Icons.battery_unknown),
         onPressed: () async {
-          showDialog(
+          showDialog<Null>(
             context: context,
             child: new AlertDialog(
               content: new Text('Battery: ${await _battery.batteryLevel}%'),

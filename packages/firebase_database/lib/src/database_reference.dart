@@ -55,8 +55,8 @@ class DatabaseReference extends Query {
   /// client-generated timestamp so that the resulting list will be
   /// chronologically-sorted.
   DatabaseReference push() {
-    String key = PushIdGenerator.generatePushChildName();
-    List<String> childPath = new List<String>.from(_pathComponents)..add(key);
+    final String key = PushIdGenerator.generatePushChildName();
+    final List<String> childPath = new List<String>.from(_pathComponents)..add(key);
     return new DatabaseReference._(_database, childPath);
   }
 
@@ -75,7 +75,7 @@ class DatabaseReference extends Query {
   Future<Null> set(dynamic value, { dynamic priority }) {
     return _database._channel.invokeMethod(
       'DatabaseReference#set',
-      { 'path': path, 'value': value, 'priority': priority },
+      <String, dynamic>{ 'path': path, 'value': value, 'priority': priority },
     );
   }
 
@@ -106,7 +106,7 @@ class DatabaseReference extends Query {
   Future<Null> setPriority(dynamic priority) async {
     return _database._channel.invokeMethod(
       'DatabaseReference#setPriority',
-      { 'path': path, 'priority': priority },
+      <String, dynamic>{ 'path': path, 'priority': priority },
     );
   }
 
@@ -121,5 +121,5 @@ class DatabaseReference extends Query {
   Future<Null> remove() => set(null);
 }
 class ServerValue {
-  static const timestamp = const {'.sv' : 'timestamp'};
+  static const Map<String, String> timestamp = const <String, String>{'.sv' : 'timestamp'};
 }

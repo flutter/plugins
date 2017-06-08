@@ -37,8 +37,8 @@ void main() {
       await database.setPersistenceEnabled(false);
       await database.setPersistenceEnabled(true);
       expect(log, equals(<MethodCall>[
-        new MethodCall('FirebaseDatabase#setPersistenceEnabled', { 'enabled': false }),
-        new MethodCall('FirebaseDatabase#setPersistenceEnabled', { 'enabled': true }),
+        new MethodCall('FirebaseDatabase#setPersistenceEnabled', <String, dynamic>{ 'enabled': false }),
+        new MethodCall('FirebaseDatabase#setPersistenceEnabled', <String, dynamic>{ 'enabled': true }),
       ]));
     });
 
@@ -47,7 +47,7 @@ void main() {
       expect(log, equals(<MethodCall>[
         new MethodCall(
           'FirebaseDatabase#setPersistenceCacheSizeBytes',
-          { 'cacheSize': 42 },
+          <String, dynamic>{ 'cacheSize': 42 },
         ),
       ]));
     });
@@ -55,49 +55,49 @@ void main() {
     test('goOnline', () async {
       await database.goOnline();
       expect(log, equals(<MethodCall>[
-        new MethodCall('FirebaseDatabase#goOnline'),
+        const MethodCall('FirebaseDatabase#goOnline'),
       ]));
     });
 
     test('goOffline', () async {
       await database.goOffline();
       expect(log, equals(<MethodCall>[
-        new MethodCall('FirebaseDatabase#goOffline'),
+        const MethodCall('FirebaseDatabase#goOffline'),
       ]));
     });
 
     test('purgeOutstandingWrites', () async {
       await database.purgeOutstandingWrites();
       expect(log, equals(<MethodCall>[
-        new MethodCall('FirebaseDatabase#purgeOutstandingWrites'),
+        const MethodCall('FirebaseDatabase#purgeOutstandingWrites'),
       ]));
     });
 
     group('$DatabaseReference', () {
       test('set', () async {
-        dynamic value = {'hello': 'world'};
-        int priority = 42;
+        final dynamic value = <String, dynamic>{'hello': 'world'};
+        final int priority = 42;
         await database.reference().child('foo').set(value);
         await database.reference().child('bar').set(value, priority: priority);
         expect(log, equals(<MethodCall>[
           new MethodCall(
             'DatabaseReference#set',
-            { 'path': 'foo', 'value': value, 'priority': null },
+            <String, dynamic>{ 'path': 'foo', 'value': value, 'priority': null },
           ),
           new MethodCall(
             'DatabaseReference#set',
-            { 'path': 'bar', 'value': value, 'priority': priority },
+            <String, dynamic>{ 'path': 'bar', 'value': value, 'priority': priority },
           ),
         ]));
       });
 
       test('setPriority', () async {
-        int priority = 42;
+        final int priority = 42;
         await database.reference().child('foo').setPriority(priority);
         expect(log, equals(<MethodCall>[
           new MethodCall(
             'DatabaseReference#setPriority',
-            { 'path': 'foo', 'priority': priority },
+            <String, dynamic>{ 'path': 'foo', 'priority': priority },
           ),
         ]));
       });
@@ -106,25 +106,25 @@ void main() {
     group('$Query', () {
       // TODO(jackson): Write more tests for queries
       test('observing', () async {
-        Query query = database.reference().child('foo').orderByChild('bar');
-        StreamSubscription subscription = query.onValue.listen((_) {});
+        final Query query = database.reference().child('foo').orderByChild('bar');
+        final StreamSubscription<Event> subscription = query.onValue.listen((_) {});
         await query.keepSynced(true);
         subscription.cancel();
-        Map expectedParameters = <String, dynamic>{
+        final Map<String, dynamic> expectedParameters = <String, dynamic>{
           'orderBy': 'child',
           'orderByChildKey': 'bar',
         };
         expect(log, equals(<MethodCall>[
           new MethodCall(
             'Query#observe',
-            { 'path': 'foo',
+            <String, dynamic>{ 'path': 'foo',
               'parameters': expectedParameters,
               'eventType': '_EventType.value'
             },
           ),
           new MethodCall(
             'Query#keepSynced',
-            { 'path': 'foo', 'parameters': expectedParameters, 'value': true},
+            <String, dynamic>{ 'path': 'foo', 'parameters': expectedParameters, 'value': true},
           ),
         ]));
       });

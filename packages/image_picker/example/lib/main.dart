@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:io';
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -38,16 +38,16 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text('Image Picker Example'),
+        title: const Text('Image Picker Example'),
       ),
       body: new Center(
-        child: new FutureBuilder(
+        child: new FutureBuilder<File>(
           future: _imageFile,
           builder: (BuildContext context, AsyncSnapshot<File> snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
               return new Image.file(snapshot.data);
             } else {
-              return new Text('You have not yet picked an image.');
+              return const Text('You have not yet picked an image.');
             }
           }
         )

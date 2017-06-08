@@ -42,7 +42,7 @@ class AndroidIntent {
   /// iOS app does not crash. Checked mode will throw an assert exception.
   Future<Null> launch() async {
     assert(_platform.isAndroid);
-    Map<String, dynamic> args = <String, dynamic>{'action': action};
+    final Map<String, dynamic> args = <String, dynamic>{'action': action};
     if (category != null) args['category'] = category;
     if (data != null) args['data'] = data;
     if (arguments != null) args['arguments'] = arguments;

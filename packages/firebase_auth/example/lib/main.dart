@@ -39,14 +39,14 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<String> _message = new Future<String>.value('');
 
   Future<String> _testSignInAnonymously() async {
-    FirebaseUser user = await _auth.signInAnonymously();
+    final FirebaseUser user = await _auth.signInAnonymously();
     assert(user != null);
     assert(user == _auth.currentUser);
     assert(user.isAnonymous);
     assert(!user.isEmailVerified);
     if (Platform.isIOS) {
       // Anonymous auth doesn't show up as a provider on iOS
-      assert(user.providerData.length == 0);
+      assert(user.providerData.isEmpty);
     } else if (Platform.isAndroid) {
       // Anonymous auth does show up as a provider on Android
       assert(user.providerData.length == 1);
@@ -60,9 +60,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<String> _testSignInWithGoogle() async {
-    GoogleSignInAccount googleUser = await _googleSignIn.signIn();
-    GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-    FirebaseUser user = await _auth.signInWithGoogle(
+    final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
+    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+    final FirebaseUser user = await _auth.signInWithGoogle(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
     );
@@ -96,7 +96,7 @@ class _MyHomePageState extends State<MyHomePage> {
               });
             }
           ),
-          new FutureBuilder(
+          new FutureBuilder<String>(
             future: _message,
             builder: (_, AsyncSnapshot<String> snapshot) {
               return new Text(

@@ -13,7 +13,7 @@ class ImagePicker {
 
   // Returns the URL of the picked image
   static Future<File> pickImage() async {
-    String path = await _channel.invokeMethod('pickImage');
+    final String path = await _channel.invokeMethod('pickImage');
     return new File(path);
   }
 }

@@ -31,7 +31,7 @@ class DemoAppState extends State<DemoApp> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget> [
               new TextField(
-                decoration: new InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Share:',
                   hintText: 'Enter some text and/or link to share',
                 ),

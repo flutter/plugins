@@ -13,9 +13,9 @@ enum BatteryState { full, charging, discharging }
 class Battery {
   factory Battery() {
     if (_instance == null) {
-      MethodChannel methodChannel =
+      final MethodChannel methodChannel =
           const MethodChannel('plugins.flutter.io/battery');
-      EventChannel eventChannel =
+      final EventChannel eventChannel =
           const EventChannel('plugins.flutter.io/charging');
       _instance = new Battery.private(methodChannel, eventChannel);
     }

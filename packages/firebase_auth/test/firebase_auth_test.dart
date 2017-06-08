@@ -20,14 +20,14 @@ void main() {
     const String kMockEmail = 'test@example.com';
 
     setUp(() {
-      MockPlatformChannel mockChannel = new MockPlatformChannel();
+      final MockPlatformChannel mockChannel = new MockPlatformChannel();
 
       when(mockChannel.invokeMethod('signInAnonymously')).thenAnswer((Invocation invocation) {
         return <String, dynamic>{
           'isAnonymous': true,
           'isEmailVerified': false,
           'providerData': <Map<String, String>>[
-            {
+            <String, String>{
               'providerId': kMockProviderId,
               'uid': kMockUid,
               'displayName': kMockDisplayName,
@@ -42,13 +42,13 @@ void main() {
     });
 
     test('signInAnonymously', () async {
-      FirebaseUser user = await auth.signInAnonymously();
+      final FirebaseUser user = await auth.signInAnonymously();
       expect(user, isNotNull);
       expect(user, auth.currentUser);
       expect(user.isAnonymous, isTrue);
       expect(user.isEmailVerified, isFalse);
       expect(user.providerData.length, 1);
-      UserInfo userInfo = user.providerData[0];
+      final UserInfo userInfo = user.providerData[0];
       expect(userInfo.providerId, kMockProviderId);
       expect(userInfo.uid, kMockUid);
       expect(userInfo.displayName, kMockDisplayName);

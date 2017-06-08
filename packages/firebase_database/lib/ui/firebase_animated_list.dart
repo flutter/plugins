@@ -187,7 +187,7 @@ class FirebaseAnimatedListState extends State<FirebaseAnimatedList> {
     setState(() {});
   }
 
-  void _onValue(_) {
+  void _onValue(DataSnapshot _) {
     setState(() {
       _loaded = true;
     });

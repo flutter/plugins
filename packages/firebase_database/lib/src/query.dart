@@ -12,7 +12,7 @@ class Query {
     Map<String, dynamic> parameters
   }): _database = database,
     _pathComponents = pathComponents,
-    _parameters = parameters ?? new Map<String, dynamic>.unmodifiable({}),
+    _parameters = parameters ?? new Map<String, dynamic>.unmodifiable(<String, dynamic>{}),
     assert(database != null);
 
   final FirebaseDatabase _database;
@@ -33,7 +33,7 @@ class Query {
   }
 
   Map<String, dynamic> buildArguments() {
-    return new Map<String, dynamic>.from(_parameters)..addAll({
+    return new Map<String, dynamic>.from(_parameters)..addAll(<String, dynamic>{
       'path': path,
     });
   }
@@ -46,7 +46,7 @@ class Query {
     controller = new StreamController<Event>.broadcast(
       onListen: () {
         _handle = _database._channel.invokeMethod(
-          'Query#observe', {
+          'Query#observe', <String, dynamic>{
             'path': path,
             'parameters': _parameters,
             'eventType': eventType.toString(),
@@ -60,7 +60,7 @@ class Query {
         _handle.then((int handle) async {
           await _database._channel.invokeMethod(
             'Query#removeObserver',
-            { 'handle': handle },
+            <String, dynamic>{ 'handle': handle },
           );
           FirebaseDatabase._observers.remove(handle);
         });
@@ -93,7 +93,7 @@ class Query {
   /// than or equal to the given key.
   Query startAt(dynamic value, { String key }) {
     assert(!_parameters.containsKey('startAt'));
-    return _copyWithParameters({ 'startAt': value, 'startAtKey': key});
+    return _copyWithParameters(<String, dynamic>{ 'startAt': value, 'startAtKey': key});
   }
 
   /// Create a query constrained to only return child nodes with a value less
@@ -102,7 +102,7 @@ class Query {
   /// than or equal to the given key.
   Query endAt(dynamic value, { String key }) {
     assert(!_parameters.containsKey('endAt'));
-    return _copyWithParameters({ 'endAt': value, 'endAtKey': key});
+    return _copyWithParameters(<String, dynamic>{ 'endAt': value, 'endAtKey': key});
   }
 
   /// Create a query constrained to only return child nodes with the given
@@ -111,19 +111,19 @@ class Query {
   /// If a key is provided, there is at most one such child as names are unique.
   Query equalTo(dynamic value, { String key }) {
     assert(!_parameters.containsKey('equalTo'));
-    return _copyWithParameters({ 'equalTo': value, 'equalToKey': key });
+    return _copyWithParameters(<String, dynamic>{ 'equalTo': value, 'equalToKey': key });
   }
 
   /// Create a query with limit and anchor it to the start of the window.
   Query limitToFirst(int limit) {
     assert(!_parameters.containsKey('limitToFirst'));
-    return _copyWithParameters({ 'limitToFirst': limit });
+    return _copyWithParameters(<String, dynamic>{ 'limitToFirst': limit });
   }
 
   /// Create a query with limit and anchor it to the end of the window.
   Query limitToLast(int limit) {
     assert(!_parameters.containsKey('limitToLast'));
-    return _copyWithParameters({ 'limitToLast': limit });
+    return _copyWithParameters(<String, dynamic>{ 'limitToLast': limit });
   }
 
   /// Generate a view of the data sorted by values of a particular child key.
@@ -132,7 +132,7 @@ class Query {
   Query orderByChild(String key) {
     assert(key != null);
     assert(!_parameters.containsKey('orderBy'));
-    return _copyWithParameters({ 'orderBy': 'child', 'orderByChildKey': key });
+    return _copyWithParameters(<String, dynamic>{ 'orderBy': 'child', 'orderByChildKey': key });
   }
 
   /// Generate a view of the data sorted by key.
@@ -140,7 +140,7 @@ class Query {
   /// Intended to be used in combination with startAt(), endAt(), or equalTo().
   Query orderByKey() {
     assert(!_parameters.containsKey('orderBy'));
-    return _copyWithParameters({ 'orderBy': 'key' });
+    return _copyWithParameters(<String, dynamic>{ 'orderBy': 'key' });
   }
 
   /// Generate a view of the data sorted by value.
@@ -148,7 +148,7 @@ class Query {
   /// Intended to be used in combination with startAt(), endAt(), or equalTo().
   Query orderByValue() {
     assert(!_parameters.containsKey('orderBy'));
-    return _copyWithParameters({ 'orderBy': 'value' });
+    return _copyWithParameters(<String, dynamic>{ 'orderBy': 'value' });
   }
 
   /// Generate a view of the data sorted by priority.
@@ -156,7 +156,7 @@ class Query {
   /// Intended to be used in combination with startAt(), endAt(), or equalTo().
   Query orderByPriority() {
     assert(!_parameters.containsKey('orderBy'));
-    return _copyWithParameters({ 'orderBy': 'priority' });
+    return _copyWithParameters(<String, dynamic>{ 'orderBy': 'priority' });
   }
 
   /// Obtains a DatabaseReference corresponding to this query's location.
@@ -169,7 +169,7 @@ class Query {
   Future<Null> keepSynced(bool value) {
     return _database._channel.invokeMethod(
       'Query#keepSynced',
-      { 'path': path, 'parameters': _parameters, 'value': value },
+      <String, dynamic>{ 'path': path, 'parameters': _parameters, 'value': value },
     );
   }
 }

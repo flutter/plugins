@@ -26,17 +26,17 @@ class PushIdGenerator {
 
   static String generatePushChildName() {
     int now = new DateTime.now().millisecondsSinceEpoch;
-    bool duplicateTime = (now == _lastPushTime);
+    final bool duplicateTime = (now == _lastPushTime);
     _lastPushTime = now;
 
-    List<String> timeStampChars = new List<String>(8);
+    final List<String> timeStampChars = new List<String>(8);
     for (int i = 7; i >= 0; i--) {
       timeStampChars[i] = PUSH_CHARS[now % 64];
       now = (now / 64).floor();
     }
     assert(now == 0);
 
-    StringBuffer result = new StringBuffer(timeStampChars.join());
+    final StringBuffer result = new StringBuffer(timeStampChars.join());
 
     if (!duplicateTime) {
       for (int i = 0; i < 12; i++) {
