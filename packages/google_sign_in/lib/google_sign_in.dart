@@ -134,14 +134,8 @@ class GoogleSignIn {
   /// updates to [currentUser] and [onCurrentUserChanged].
   Future<GoogleSignInAccount> _addMethodCall(String method) {
     if (_lastMethodCompleter == null) {
-      _lastMethodCompleter = new _MethodCompleter(method);
-      _lastMethodCompleter.complete(_callMethod(method));
-      return _lastMethodCompleter.future;
-    }
-
-    // Return the same Future for consecutive calls to the same method.
-    if (_lastMethodCompleter.method == method &&
-        !_lastMethodCompleter.isCompleted) {
+      _lastMethodCompleter = new _MethodCompleter(method)
+        ..complete(_callMethod(method));
       return _lastMethodCompleter.future;
     }
 
@@ -150,8 +144,8 @@ class GoogleSignIn {
       // If after the last completed call currentUser is not null and requested
       // method is a sign in method, re-use the same authenticated user
       // instead of making extra call to the native side.
-      const signInMethods = const ['signIn', 'signInSilently'];
-      if (signInMethods.contains(method) && _currentUser != null) {
+      const kSignInMethods = const ['signIn', 'signInSilently'];
+      if (kSignInMethods.contains(method) && _currentUser != null) {
         completer.complete(_currentUser);
       } else {
         completer.complete(_callMethod(method));
@@ -169,22 +163,28 @@ class GoogleSignIn {
 
   /// Attempts to sign in a previously authenticated user without interaction.
   ///
-  /// Authentication flow is triggered only by the first call to this method,
-  /// any consequent calls resolve to the same user instance or `null`. When
-  /// `null` is returned this means no previously authenticated user exists
-  /// and interactive [signIn] is required.
+  /// Returned Future resolves to an instance of [GoogleSignInAccount] for a
+  /// successful sign in or `null` if there is no previously authenticated user.
+  /// Use [signIn] method to trigger interactive sign in process.
   ///
-  /// Authentication can be re-initiated only after [signOut] or [disconnect].
+  /// Authentication process is triggered only if there is no currently signed in
+  /// user (that is when `currentUser == null`), otherwise this method returns
+  /// a Future which resolves to the same user instance.
+  ///
+  /// Re-authentication can be triggered only after [signOut] or [disconnect].
   Future<GoogleSignInAccount> signInSilently() =>
       _addMethodCall('signInSilently');
 
-  /// Starts the sign-in process.
+  /// Starts the interactive sign-in process.
   ///
-  /// Interactive sign-in flow is triggered only be the first call to this method,
-  /// any consequent calls resolve to the same user instance or `null`. When
-  /// `null` is returned this means user didn't complete authentication process.
+  /// Returned Future resolves to an instance of [GoogleSignInAccount] for a
+  /// successful sign in or `null` in case sign in process was aborted.
   ///
-  /// Authentication can be re-initiated only after [signOut] or [disconnect].
+  /// Authentication process is triggered only if there is no currently signed in
+  /// user (that is when `currentUser == null`), otherwise this method returns
+  /// a Future which resolves to the same user instance.
+  ///
+  /// Re-authentication can be triggered only after [signOut] or [disconnect].
   Future<GoogleSignInAccount> signIn() => _addMethodCall('signIn');
 
   /// Marks current user as being in the signed out state.

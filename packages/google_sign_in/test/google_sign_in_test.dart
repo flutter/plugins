@@ -98,13 +98,13 @@ void main() {
           ]));
     });
 
-    test('concurrent calls of the same method', () async {
+    test('concurrent calls of the same method trigger sign in once', () async {
       var futures = [
         googleSignIn.signInSilently(),
         googleSignIn.signInSilently(),
       ];
-      expect(futures.first, same(futures.last),
-          reason: 'Must return the same Future');
+      expect(futures.first, isNot(futures.last),
+          reason: 'Must return new Future');
       var users = await Future.wait(futures);
       expect(googleSignIn.currentUser, isNotNull);
       expect(users, [googleSignIn.currentUser, googleSignIn.currentUser]);
@@ -114,18 +114,20 @@ void main() {
             new MethodCall('init', {'scopes': [], 'hostedDomain': null}),
             new MethodCall('signInSilently'),
           ]));
-
-      log.clear();
-      var freshUser = await googleSignIn.signInSilently();
-      expect(freshUser, users.first, reason: 'Must return the same user');
-      expect(log, isEmpty);
     });
 
-    test('concurrent calls after error succeed', () async {
+    test('can sign in after previously failed attempt', () async {
       responses['signInSilently'] = {'error': 'Not a user'};
       expect(googleSignIn.signInSilently(),
           throwsA(new isInstanceOf<AssertionError>()));
-      expect(googleSignIn.signIn(), completion(isNotNull));
+      expect(await googleSignIn.signIn(), isNotNull);
+      expect(
+          log,
+          equals(<MethodCall>[
+            new MethodCall('init', {'scopes': [], 'hostedDomain': null}),
+            new MethodCall('signInSilently'),
+            new MethodCall('signIn'),
+          ]));
     });
 
     test('concurrent calls of different signIn methods', () async {
@@ -143,6 +145,32 @@ void main() {
           ]));
       expect(users.first, users.last, reason: 'Must return the same user');
       expect(googleSignIn.currentUser, users.last);
+    });
+
+    test('can sign in after aborted flow', () async {
+      responses['signIn'] = null;
+      expect(await googleSignIn.signIn(), isNull);
+      responses['signIn'] = kUserData;
+      expect(await googleSignIn.signIn(), isNotNull);
+    });
+
+    test('signOut/disconnect methods always trigger native calls', () async {
+      var futures = [
+        googleSignIn.signOut(),
+        googleSignIn.signOut(),
+        googleSignIn.disconnect(),
+        googleSignIn.disconnect(),
+      ];
+      await Future.wait(futures);
+      expect(
+          log,
+          equals(<MethodCall>[
+            new MethodCall('init', {'scopes': [], 'hostedDomain': null}),
+            new MethodCall('signOut'),
+            new MethodCall('signOut'),
+            new MethodCall('disconnect'),
+            new MethodCall('disconnect'),
+          ]));
     });
 
     test('queue of many concurrent calls', () async {
