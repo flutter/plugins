@@ -113,7 +113,9 @@ class _PushMessagingExampleState extends State<PushMessagingExample> {
                 }),
           ],
         )).then((bool shouldNavigate) {
-      if (shouldNavigate == true) _navigateToItemDetail(message);
+      if (shouldNavigate == true) {
+        _navigateToItemDetail(message);
+      }
     });
   }
 
@@ -121,7 +123,9 @@ class _PushMessagingExampleState extends State<PushMessagingExample> {
     final Item item = _itemForMessage(message);
     // Clear away dialogs
     Navigator.popUntil(context, (Route<dynamic> route) => route is PageRoute);
-    if (!item.route.isCurrent) Navigator.push(context, item.route);
+    if (!item.route.isCurrent) {
+      Navigator.push(context, item.route);
+    }
   }
 
   @override

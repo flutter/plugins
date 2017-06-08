@@ -43,9 +43,15 @@ class AndroidIntent {
   Future<Null> launch() async {
     assert(_platform.isAndroid);
     final Map<String, dynamic> args = <String, dynamic>{'action': action};
-    if (category != null) args['category'] = category;
-    if (data != null) args['data'] = data;
-    if (arguments != null) args['arguments'] = arguments;
+    if (category != null) {
+      args['category'] = category;
+    }
+    if (data != null) {
+      args['data'] = data;
+    }
+    if (arguments != null) {
+      args['arguments'] = arguments;
+    }
     await _channel.invokeMethod('launch', args);
   }
 }

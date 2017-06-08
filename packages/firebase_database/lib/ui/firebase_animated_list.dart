@@ -162,7 +162,9 @@ class FirebaseAnimatedListState extends State<FirebaseAnimatedList> {
   }
 
   void _onChildAdded(int index, DataSnapshot snapshot) {
-    if (!_loaded) return; // AnimatedList is not created yet
+    if (!_loaded) {
+      return; // AnimatedList is not created yet
+    }
     _animatedListKey.currentState.insertItem(index, duration: widget.duration);
   }
 
@@ -201,7 +203,9 @@ class FirebaseAnimatedListState extends State<FirebaseAnimatedList> {
 
   @override
   Widget build(BuildContext context) {
-    if (!_loaded) return widget.defaultChild ?? new Container();
+    if (!_loaded) {
+      return widget.defaultChild ?? new Container();
+    }
     return new AnimatedList(
       key: _animatedListKey,
       itemBuilder: _buildItem,
