@@ -79,7 +79,9 @@ class FirebaseMessaging {
 
   /// Returns the FCM token.
   Future<String> getToken() {
-    return _token != null ? new Future<String>.value(_token) : onTokenRefresh.first;
+    return _token != null
+        ? new Future<String>.value(_token)
+        : onTokenRefresh.first;
   }
 
   /// Subscribe to topic in background.

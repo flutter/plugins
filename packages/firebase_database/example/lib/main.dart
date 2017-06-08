@@ -30,10 +30,10 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter;
-  final DatabaseReference _counterRef = FirebaseDatabase.instance.reference()
-      .child('counter');
-  final DatabaseReference _messagesRef = FirebaseDatabase.instance.reference()
-      .child('messages');
+  final DatabaseReference _counterRef =
+      FirebaseDatabase.instance.reference().child('counter');
+  final DatabaseReference _messagesRef =
+      FirebaseDatabase.instance.reference().child('messages');
   StreamSubscription<Event> _counterSubscription;
   StreamSubscription<Event> _messagesSubscription;
   bool _anchorToBottom = false;
@@ -69,7 +69,9 @@ class _MyHomePageState extends State<MyHomePage> {
       _counter = (snapshot.value ?? 0) + 1;
     });
     _counterRef.set(_counter);
-    _messagesRef.push().set(<String, String>{ _kTestKey: '$_kTestValue $_counter' });
+    _messagesRef
+        .push()
+        .set(<String, String>{_kTestKey: '$_kTestValue $_counter'});
   }
 
   @override
@@ -82,17 +84,18 @@ class _MyHomePageState extends State<MyHomePage> {
         children: <Widget>[
           new Flexible(
             child: new Center(
-              child: new Text( // ignore: prefer_const_constructors
+              child: new Text(
+                // ignore: prefer_const_constructors
                 'Button tapped $_counter time${ _counter == 1 ? '' : 's' }.\n\n'
-                'This includes all devices, ever.',
+                    'This includes all devices, ever.',
               ),
             ),
           ),
           new ListTile(
             leading: new Checkbox(
               onChanged: (bool value) {
-                 setState(() {
-                   _anchorToBottom = value;
+                setState(() {
+                  _anchorToBottom = value;
                 });
               },
               value: _anchorToBottom,
@@ -104,8 +107,11 @@ class _MyHomePageState extends State<MyHomePage> {
               key: new ValueKey<bool>(_anchorToBottom),
               query: _messagesRef,
               reverse: _anchorToBottom,
-              sort: _anchorToBottom ? (DataSnapshot a, DataSnapshot b) => b.key.compareTo(a.key) : null,
-              itemBuilder: (BuildContext context, DataSnapshot snapshot, Animation<double> animation) {
+              sort: _anchorToBottom
+                  ? (DataSnapshot a, DataSnapshot b) => b.key.compareTo(a.key)
+                  : null,
+              itemBuilder: (BuildContext context, DataSnapshot snapshot,
+                  Animation<double> animation) {
                 return new SizeTransition(
                   sizeFactor: animation,
                   child: new Text(snapshot.value.toString()),
@@ -113,7 +119,6 @@ class _MyHomePageState extends State<MyHomePage> {
               },
             ),
           ),
-
         ],
       ),
       floatingActionButton: new FloatingActionButton(

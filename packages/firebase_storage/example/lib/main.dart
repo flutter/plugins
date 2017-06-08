@@ -40,7 +40,8 @@ class _MyHomePageState extends State<MyHomePage> {
     file.writeAsString(kTestString);
     assert(await file.readAsString() == kTestString);
     final String rand = "${new Random().nextInt(10000)}";
-    final StorageReference ref = FirebaseStorage.instance.ref().child("foo$rand.txt");
+    final StorageReference ref =
+        FirebaseStorage.instance.ref().child("foo$rand.txt");
     final StorageUploadTask uploadTask = ref.put(file);
     final Uri downloadUrl = (await uploadTask.future).downloadUrl;
     final http.Response downloadData = await http.get(downloadUrl);
@@ -59,12 +60,13 @@ class _MyHomePageState extends State<MyHomePage> {
         child: new Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            _fileContents == null ?
-            const Text('Press the button to upload a file') :
-            new Text(
-              'Success!\n\nFile contents: "$_fileContents"',
-              style: const TextStyle(color: const Color.fromARGB(255, 0, 155, 0)),
-            )
+            _fileContents == null
+                ? const Text('Press the button to upload a file')
+                : new Text(
+                    'Success!\n\nFile contents: "$_fileContents"',
+                    style: const TextStyle(
+                        color: const Color.fromARGB(255, 0, 155, 0)),
+                  )
           ],
         ),
       ),

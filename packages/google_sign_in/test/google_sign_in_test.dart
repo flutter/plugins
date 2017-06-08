@@ -48,7 +48,8 @@ void main() {
       expect(
           log,
           equals(<MethodCall>[
-            new MethodCall('init', <String, dynamic>{'scopes': <String>[], 'hostedDomain': null}),
+            new MethodCall('init',
+                <String, dynamic>{'scopes': <String>[], 'hostedDomain': null}),
             const MethodCall('signInSilently'),
           ]));
     });
@@ -59,7 +60,8 @@ void main() {
       expect(
           log,
           equals(<MethodCall>[
-            new MethodCall('init', <String, dynamic>{'scopes': <String>[], 'hostedDomain': null}),
+            new MethodCall('init',
+                <String, dynamic>{'scopes': <String>[], 'hostedDomain': null}),
             const MethodCall('signIn'),
           ]));
     });
@@ -70,7 +72,8 @@ void main() {
       expect(
           log,
           equals(<MethodCall>[
-            new MethodCall('init', <String, dynamic>{'scopes': <String>[], 'hostedDomain': null}),
+            new MethodCall('init',
+                <String, dynamic>{'scopes': <String>[], 'hostedDomain': null}),
             const MethodCall('signOut'),
           ]));
     });
@@ -81,7 +84,8 @@ void main() {
       expect(
           log,
           equals(<MethodCall>[
-            new MethodCall('init', <String, dynamic>{'scopes': <String>[], 'hostedDomain': null}),
+            new MethodCall('init',
+                <String, dynamic>{'scopes': <String>[], 'hostedDomain': null}),
             const MethodCall('disconnect'),
           ]));
     });
@@ -93,13 +97,15 @@ void main() {
       expect(
           log,
           equals(<MethodCall>[
-            new MethodCall('init', <String, dynamic>{'scopes': <String>[], 'hostedDomain': null}),
+            new MethodCall('init',
+                <String, dynamic>{'scopes': <String>[], 'hostedDomain': null}),
             const MethodCall('disconnect'),
           ]));
     });
 
     test('concurrent calls of the same method trigger sign in once', () async {
-      final List<Future<GoogleSignInAccount>> futures = <Future<GoogleSignInAccount>>[
+      final List<Future<GoogleSignInAccount>> futures =
+          <Future<GoogleSignInAccount>>[
         googleSignIn.signInSilently(),
         googleSignIn.signInSilently(),
       ];
@@ -107,11 +113,15 @@ void main() {
           reason: 'Must return new Future');
       final List<GoogleSignInAccount> users = await Future.wait(futures);
       expect(googleSignIn.currentUser, isNotNull);
-      expect(users, <GoogleSignInAccount>[googleSignIn.currentUser, googleSignIn.currentUser]);
+      expect(users, <GoogleSignInAccount>[
+        googleSignIn.currentUser,
+        googleSignIn.currentUser
+      ]);
       expect(
           log,
           equals(<MethodCall>[
-            new MethodCall('init', <String, dynamic>{'scopes': <String>[], 'hostedDomain': null}),
+            new MethodCall('init',
+                <String, dynamic>{'scopes': <String>[], 'hostedDomain': null}),
             const MethodCall('signInSilently'),
           ]));
     });
@@ -124,14 +134,16 @@ void main() {
       expect(
           log,
           equals(<MethodCall>[
-            new MethodCall('init', <String, dynamic>{'scopes': <String>[], 'hostedDomain': null}),
+            new MethodCall('init',
+                <String, dynamic>{'scopes': <String>[], 'hostedDomain': null}),
             const MethodCall('signInSilently'),
             const MethodCall('signIn'),
           ]));
     });
 
     test('concurrent calls of different signIn methods', () async {
-      final List<Future<GoogleSignInAccount>> futures = <Future<GoogleSignInAccount>>[
+      final List<Future<GoogleSignInAccount>> futures =
+          <Future<GoogleSignInAccount>>[
         googleSignIn.signInSilently(),
         googleSignIn.signIn(),
       ];
@@ -140,7 +152,8 @@ void main() {
       expect(
           log,
           equals(<MethodCall>[
-            new MethodCall('init', <String, dynamic>{'scopes': <String>[], 'hostedDomain': null}),
+            new MethodCall('init',
+                <String, dynamic>{'scopes': <String>[], 'hostedDomain': null}),
             const MethodCall('signInSilently'),
           ]));
       expect(users.first, users.last, reason: 'Must return the same user');
@@ -155,7 +168,8 @@ void main() {
     });
 
     test('signOut/disconnect methods always trigger native calls', () async {
-      final List<Future<GoogleSignInAccount>> futures = <Future<GoogleSignInAccount>>[
+      final List<Future<GoogleSignInAccount>> futures =
+          <Future<GoogleSignInAccount>>[
         googleSignIn.signOut(),
         googleSignIn.signOut(),
         googleSignIn.disconnect(),
@@ -165,7 +179,8 @@ void main() {
       expect(
           log,
           equals(<MethodCall>[
-            new MethodCall('init', <String, dynamic>{'scopes': <String>[], 'hostedDomain': null}),
+            new MethodCall('init',
+                <String, dynamic>{'scopes': <String>[], 'hostedDomain': null}),
             const MethodCall('signOut'),
             const MethodCall('signOut'),
             const MethodCall('disconnect'),
@@ -174,7 +189,8 @@ void main() {
     });
 
     test('queue of many concurrent calls', () async {
-      final List<Future<GoogleSignInAccount>> futures = <Future<GoogleSignInAccount>>[
+      final List<Future<GoogleSignInAccount>> futures =
+          <Future<GoogleSignInAccount>>[
         googleSignIn.signInSilently(),
         googleSignIn.signOut(),
         googleSignIn.signIn(),
@@ -184,7 +200,8 @@ void main() {
       expect(
           log,
           equals(<MethodCall>[
-            new MethodCall('init', <String, dynamic>{'scopes': <String>[], 'hostedDomain': null}),
+            new MethodCall('init',
+                <String, dynamic>{'scopes': <String>[], 'hostedDomain': null}),
             const MethodCall('signInSilently'),
             const MethodCall('signOut'),
             const MethodCall('signIn'),

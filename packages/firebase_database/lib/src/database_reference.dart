@@ -14,28 +14,23 @@ part of firebase_database;
 /// `DatabaseReference`s (ie. `child`).
 class DatabaseReference extends Query {
   DatabaseReference._(FirebaseDatabase database, List<String> pathComponents)
-    : super._(database: database, pathComponents: pathComponents);
+      : super._(database: database, pathComponents: pathComponents);
 
   /// Gets a DatabaseReference for the location at the specified relative
   /// path. The relative path can either be a simple child key (e.g. ‘fred’) or
   /// a deeper slash-separated path (e.g. ‘fred/name/first’).
   DatabaseReference child(String path) {
-    return new DatabaseReference._(
-      _database,
-      (new List<String>.from(_pathComponents)..addAll(path.split('/')))
-    );
+    return new DatabaseReference._(_database,
+        (new List<String>.from(_pathComponents)..addAll(path.split('/'))));
   }
 
   /// Gets a DatabaseReference for the parent location. If this instance
   /// refers to the root of your Firebase Database, it has no parent, and
   /// therefore parent() will return null.
   DatabaseReference parent() {
-    if (_pathComponents.isEmpty)
-      return null;
+    if (_pathComponents.isEmpty) return null;
     return new DatabaseReference._(
-      _database,
-      (new List<String>.from(_pathComponents)..removeLast())
-    );
+        _database, (new List<String>.from(_pathComponents)..removeLast()));
   }
 
   /// Gets a FIRDatabaseReference for the root location.
@@ -56,7 +51,8 @@ class DatabaseReference extends Query {
   /// chronologically-sorted.
   DatabaseReference push() {
     final String key = PushIdGenerator.generatePushChildName();
-    final List<String> childPath = new List<String>.from(_pathComponents)..add(key);
+    final List<String> childPath = new List<String>.from(_pathComponents)
+      ..add(key);
     return new DatabaseReference._(_database, childPath);
   }
 
@@ -72,10 +68,10 @@ class DatabaseReference extends Query {
   ///
   /// Passing null for the new value means all data at this location or any
   /// child location will be deleted.
-  Future<Null> set(dynamic value, { dynamic priority }) {
+  Future<Null> set(dynamic value, {dynamic priority}) {
     return _database._channel.invokeMethod(
       'DatabaseReference#set',
-      <String, dynamic>{ 'path': path, 'value': value, 'priority': priority },
+      <String, dynamic>{'path': path, 'value': value, 'priority': priority},
     );
   }
 
@@ -106,7 +102,7 @@ class DatabaseReference extends Query {
   Future<Null> setPriority(dynamic priority) async {
     return _database._channel.invokeMethod(
       'DatabaseReference#setPriority',
-      <String, dynamic>{ 'path': path, 'priority': priority },
+      <String, dynamic>{'path': path, 'priority': priority},
     );
   }
 
@@ -120,6 +116,9 @@ class DatabaseReference extends Query {
   /// remove() is equivalent to calling set(null)
   Future<Null> remove() => set(null);
 }
+
 class ServerValue {
-  static const Map<String, String> timestamp = const <String, String>{'.sv' : 'timestamp'};
+  static const Map<String, String> timestamp = const <String, String>{
+    '.sv': 'timestamp'
+  };
 }

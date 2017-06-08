@@ -44,7 +44,8 @@ class GoogleSignInAccount {
       throw new StateError('User is no longer signed in.');
     }
 
-    final Map<String, String> response = await _googleSignIn._channel.invokeMethod(
+    final Map<String, String> response =
+        await _googleSignIn._channel.invokeMethod(
       'getTokens',
       <String, dynamic>{'email': email},
     );
@@ -144,7 +145,10 @@ class GoogleSignIn {
       // If after the last completed call currentUser is not null and requested
       // method is a sign in method, re-use the same authenticated user
       // instead of making extra call to the native side.
-      const List<String> kSignInMethods = const <String>['signIn', 'signInSilently'];
+      const List<String> kSignInMethods = const <String>[
+        'signIn',
+        'signInSilently'
+      ];
       if (kSignInMethods.contains(method) && _currentUser != null) {
         completer.complete(_currentUser);
       } else {
@@ -214,7 +218,8 @@ class GoogleUserCircleAvatar extends StatelessWidget {
   String _sizedProfileImageUrl(double size) {
     if (_primaryProfileImageUrl == null) return null;
     final Uri profileUri = Uri.parse(_primaryProfileImageUrl);
-    final List<String> pathSegments = new List<String>.from(profileUri.pathSegments);
+    final List<String> pathSegments =
+        new List<String>.from(profileUri.pathSegments);
     pathSegments.remove("s1337"); // placeholder value added by iOS plugin
     return new Uri(
       scheme: profileUri.scheme,
@@ -241,7 +246,8 @@ class GoogleUserCircleAvatar extends StatelessWidget {
 
 class _MethodCompleter {
   final String method;
-  final Completer<GoogleSignInAccount> _completer = new Completer<GoogleSignInAccount>();
+  final Completer<GoogleSignInAccount> _completer =
+      new Completer<GoogleSignInAccount>();
 
   _MethodCompleter(this.method);
 

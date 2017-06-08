@@ -10,11 +10,13 @@ import '../firebase_database.dart' show DataSnapshot, Event, Query;
 import 'utils/stream_subscriber_mixin.dart';
 
 typedef void ChildCallback(int index, DataSnapshot snapshot);
-typedef void ChildMovedCallback(int fromIndex, int toIndex, DataSnapshot snapshot);
+typedef void ChildMovedCallback(
+    int fromIndex, int toIndex, DataSnapshot snapshot);
 typedef void ValueCallback(DataSnapshot snapshot);
 
 /// Sorts the results of `query` on the client side using `DataSnapshot.key`.
-class FirebaseList extends ListBase<DataSnapshot> with StreamSubscriberMixin<Event> {
+class FirebaseList extends ListBase<DataSnapshot>
+    with StreamSubscriberMixin<Event> {
   FirebaseList({
     @required this.query,
     this.onChildAdded,
@@ -119,4 +121,3 @@ class FirebaseList extends ListBase<DataSnapshot> with StreamSubscriberMixin<Eve
     onValue(event.snapshot);
   }
 }
-

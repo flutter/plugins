@@ -14,14 +14,14 @@ const MethodChannel _kChannel =
 /// a persistent store for simple data. Data is persisted to disk automatically
 /// and asynchronously. Use commit() to be notified when a save is successful.
 class SharedPreferences {
-
   SharedPreferences._(this._preferenceCache);
 
   static const String _prefix = 'flutter.';
   static SharedPreferences _instance;
   static Future<SharedPreferences> getInstance() async {
     if (_instance == null) {
-      final Map<String, Object> fromSystem = await _kChannel.invokeMethod('getAll');
+      final Map<String, Object> fromSystem =
+          await _kChannel.invokeMethod('getAll');
       assert(fromSystem != null);
       // Strip the flutter. prefix from the returned preferences.
       final Map<String, Object> preferencesMap = <String, Object>{};

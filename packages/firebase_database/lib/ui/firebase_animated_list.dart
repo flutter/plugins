@@ -32,7 +32,8 @@ class FirebaseAnimatedList extends StatefulWidget {
     this.shrinkWrap: false,
     this.padding,
     this.duration: const Duration(milliseconds: 300),
-  }) : super(key: key) {
+  })
+      : super(key: key) {
     assert(itemBuilder != null);
   }
 
@@ -131,7 +132,8 @@ class FirebaseAnimatedList extends StatefulWidget {
 }
 
 class FirebaseAnimatedListState extends State<FirebaseAnimatedList> {
-  final GlobalKey<AnimatedListState> _animatedListKey = new GlobalKey<AnimatedListState>();
+  final GlobalKey<AnimatedListState> _animatedListKey =
+      new GlobalKey<AnimatedListState>();
   List<DataSnapshot> _model;
   bool _loaded = false;
 
@@ -160,8 +162,7 @@ class FirebaseAnimatedListState extends State<FirebaseAnimatedList> {
   }
 
   void _onChildAdded(int index, DataSnapshot snapshot) {
-    if (!_loaded)
-      return;  // AnimatedList is not created yet
+    if (!_loaded) return; // AnimatedList is not created yet
     _animatedListKey.currentState.insertItem(index, duration: widget.duration);
   }
 
@@ -193,14 +194,14 @@ class FirebaseAnimatedListState extends State<FirebaseAnimatedList> {
     });
   }
 
-  Widget _buildItem(BuildContext context, int index, Animation<double> animation) {
+  Widget _buildItem(
+      BuildContext context, int index, Animation<double> animation) {
     return widget.itemBuilder(context, _model[index], animation);
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!_loaded)
-      return widget.defaultChild ?? new Container();
+    if (!_loaded) return widget.defaultChild ?? new Container();
     return new AnimatedList(
       key: _animatedListKey,
       itemBuilder: _buildItem,

@@ -61,7 +61,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<String> _testSignInWithGoogle() async {
     final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
-    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
     final FirebaseUser user = await _auth.signInWithGoogle(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
@@ -81,30 +82,26 @@ class _MyHomePageState extends State<MyHomePage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           new MaterialButton(
-            child: const Text('Test signInAnonymously'),
-            onPressed: () {
-              setState(() {
-                _message = _testSignInAnonymously();
-              });
-            }
-          ),
+              child: const Text('Test signInAnonymously'),
+              onPressed: () {
+                setState(() {
+                  _message = _testSignInAnonymously();
+                });
+              }),
           new MaterialButton(
-            child: const Text('Test signInWithGoogle'),
-            onPressed: () {
-              setState(() {
-                _message = _testSignInWithGoogle();
-              });
-            }
-          ),
+              child: const Text('Test signInWithGoogle'),
+              onPressed: () {
+                setState(() {
+                  _message = _testSignInWithGoogle();
+                });
+              }),
           new FutureBuilder<String>(
-            future: _message,
-            builder: (_, AsyncSnapshot<String> snapshot) {
-              return new Text(
-                snapshot.data ?? '',
-                style: const TextStyle(color: const Color.fromARGB(255, 0, 155, 0))
-              );
-            }
-          ),
+              future: _message,
+              builder: (_, AsyncSnapshot<String> snapshot) {
+                return new Text(snapshot.data ?? '',
+                    style: const TextStyle(
+                        color: const Color.fromARGB(255, 0, 155, 0)));
+              }),
         ],
       ),
     );

@@ -6,7 +6,8 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
-const MethodChannel _channel = const MethodChannel('plugins.flutter.io/url_launcher');
+const MethodChannel _channel =
+    const MethodChannel('plugins.flutter.io/url_launcher');
 
 /// Parses the specified URL string and delegates handling of it to the
 /// underlying platform.
@@ -24,8 +25,7 @@ Future<Null> launch(String urlString) {
 /// Checks whether the specified URL can be handled by some app installed on the
 /// device.
 Future<bool> canLaunch(String urlString) async {
-  if (urlString == null)
-    return false;
+  if (urlString == null) return false;
   return await _channel.invokeMethod(
     'canLaunch',
     urlString,

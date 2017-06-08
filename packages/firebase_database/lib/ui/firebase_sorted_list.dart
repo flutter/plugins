@@ -17,7 +17,8 @@ import 'utils/stream_subscriber_mixin.dart';
 // We can be smarter about how we handle insertion and keep the list always
 // sorted. See example here:
 // https://github.com/firebase/FirebaseUI-iOS/blob/master/FirebaseDatabaseUI/FUISortedArray.m
-class FirebaseSortedList extends ListBase<DataSnapshot> with StreamSubscriberMixin<Event> {
+class FirebaseSortedList extends ListBase<DataSnapshot>
+    with StreamSubscriberMixin<Event> {
   FirebaseSortedList({
     @required this.query,
     @required this.comparator,
@@ -78,7 +79,8 @@ class FirebaseSortedList extends ListBase<DataSnapshot> with StreamSubscriberMix
   }
 
   void _onChildRemoved(Event event) {
-    final DataSnapshot snapshot = _snapshots.firstWhere((DataSnapshot snapshot) {
+    final DataSnapshot snapshot =
+        _snapshots.firstWhere((DataSnapshot snapshot) {
       return snapshot.key == event.snapshot.key;
     });
     final int index = _snapshots.indexOf(snapshot);
@@ -87,7 +89,8 @@ class FirebaseSortedList extends ListBase<DataSnapshot> with StreamSubscriberMix
   }
 
   void _onChildChanged(Event event) {
-    final DataSnapshot snapshot = _snapshots.firstWhere((DataSnapshot snapshot) {
+    final DataSnapshot snapshot =
+        _snapshots.firstWhere((DataSnapshot snapshot) {
       return snapshot.key == event.snapshot.key;
     });
     final int index = _snapshots.indexOf(snapshot);
