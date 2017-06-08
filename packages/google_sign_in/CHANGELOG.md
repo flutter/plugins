@@ -1,3 +1,7 @@
+## 0.0.4
+
+* Prevent race conditions when GoogleSignIn methods are called concurrently (#94)
+
 ## 0.0.3
 
 * Fix signOut and disconnect (they were silently ignored)
