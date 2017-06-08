@@ -53,8 +53,8 @@ class SharedPreferencesDemoState extends State<SharedPreferencesDemo> {
                 if (snapshot.connectionState == ConnectionState.waiting)
                   return const Text('Loading...');
                 final int counter = snapshot.requireData.getInt('counter') ?? 0;
+                // ignore: prefer_const_constructors
                 return new Text(
-                  // ignore: prefer_const_constructors
                   'Button tapped $counter time${ counter == 1 ? '' : 's' }.\n\n'
                       'This should persist across restarts.',
                 );

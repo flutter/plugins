@@ -51,7 +51,9 @@ class GoogleSignInAccount {
     );
     // On Android, there isn't an API for refreshing the idToken, so re-use
     // the one we obtained on login.
-    if (response['idToken'] == null) response['idToken'] = _idToken;
+    if (response['idToken'] == null) {
+      response['idToken'] = _idToken;
+    }
     return new GoogleSignInAuthentication._(response);
   }
 
@@ -216,7 +218,9 @@ class GoogleUserCircleAvatar extends StatelessWidget {
   /// where NN is the max width/height of the image, and "c" indicates we
   /// want the image cropped.
   String _sizedProfileImageUrl(double size) {
-    if (_primaryProfileImageUrl == null) return null;
+    if (_primaryProfileImageUrl == null) {
+      return null;
+    }
     final Uri profileUri = Uri.parse(_primaryProfileImageUrl);
     final List<String> pathSegments =
         new List<String>.from(profileUri.pathSegments);
@@ -235,7 +239,9 @@ class GoogleUserCircleAvatar extends StatelessWidget {
     final String url = _sizedProfileImageUrl(
       MediaQuery.of(context).devicePixelRatio * constraints.maxWidth,
     );
-    if (url == null) return new Container();
+    if (url == null) {
+      return new Container();
+    }
     return new ClipOval(
       child: new Image(
         image: new NetworkImage(url),

@@ -84,8 +84,8 @@ class _MyHomePageState extends State<MyHomePage> {
         children: <Widget>[
           new Flexible(
             child: new Center(
+              // ignore: prefer_const_constructors
               child: new Text(
-                // ignore: prefer_const_constructors
                 'Button tapped $_counter time${ _counter == 1 ? '' : 's' }.\n\n'
                     'This includes all devices, ever.',
               ),

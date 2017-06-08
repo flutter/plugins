@@ -28,7 +28,9 @@ class DatabaseReference extends Query {
   /// refers to the root of your Firebase Database, it has no parent, and
   /// therefore parent() will return null.
   DatabaseReference parent() {
-    if (_pathComponents.isEmpty) return null;
+    if (_pathComponents.isEmpty) {
+      return null;
+    }
     return new DatabaseReference._(
         _database, (new List<String>.from(_pathComponents)..removeLast()));
   }

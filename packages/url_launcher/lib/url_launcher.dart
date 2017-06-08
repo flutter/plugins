@@ -25,7 +25,9 @@ Future<Null> launch(String urlString) {
 /// Checks whether the specified URL can be handled by some app installed on the
 /// device.
 Future<bool> canLaunch(String urlString) async {
-  if (urlString == null) return false;
+  if (urlString == null) {
+    return false;
+  }
   return await _channel.invokeMethod(
     'canLaunch',
     urlString,

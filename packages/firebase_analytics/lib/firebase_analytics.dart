@@ -67,7 +67,9 @@ class FirebaseAnalytics {
   ///
   /// [1]: https://www.google.com/policies/privacy/
   Future<Null> setUserId(String id) async {
-    if (id == null) throw new ArgumentError.notNull('id');
+    if (id == null) {
+      throw new ArgumentError.notNull('id');
+    }
 
     await _channel.invokeMethod('setUserId', id);
   }
@@ -91,7 +93,9 @@ class FirebaseAnalytics {
   /// https://firebase.google.com/docs/reference/ios/firebaseanalytics/api/reference/Classes/FIRAnalytics#setscreennamescreenclass
   Future<Null> setCurrentScreen(
       {@required String screenName, String screenClassOverride}) async {
-    if (screenName == null) throw new ArgumentError.notNull('screenName');
+    if (screenName == null) {
+      throw new ArgumentError.notNull('screenName');
+    }
 
     await _channel.invokeMethod('setCurrentScreen', <String, String>{
       'screenName': screenName,
@@ -113,7 +117,9 @@ class FirebaseAnalytics {
   /// user property names.
   Future<Null> setUserProperty(
       {@required String name, @required String value}) async {
-    if (name == null) throw new ArgumentError.notNull('name');
+    if (name == null) {
+      throw new ArgumentError.notNull('name');
+    }
 
     if (name.isEmpty ||
         name.length > 24 ||
@@ -781,7 +787,9 @@ class FirebaseAnalyticsAndroid {
   ///
   /// This setting is persisted across app sessions. By default it is enabled.
   Future<Null> setAnalyticsCollectionEnabled(bool enabled) async {
-    if (enabled == null) throw new ArgumentError.notNull('enabled');
+    if (enabled == null) {
+      throw new ArgumentError.notNull('enabled');
+    }
 
     await _channel.invokeMethod('setAnalyticsCollectionEnabled', enabled);
   }
@@ -790,7 +798,9 @@ class FirebaseAnalyticsAndroid {
   ///
   /// The default value is 10000 (10 seconds).
   Future<Null> setMinimumSessionDuration(int milliseconds) async {
-    if (milliseconds == null) throw new ArgumentError.notNull('milliseconds');
+    if (milliseconds == null) {
+      throw new ArgumentError.notNull('milliseconds');
+    }
 
     await _channel.invokeMethod('setMinimumSessionDuration', milliseconds);
   }
@@ -799,7 +809,9 @@ class FirebaseAnalyticsAndroid {
   ///
   /// The default value is 1800000 (30 minutes).
   Future<Null> setSessionTimeoutDuration(int milliseconds) async {
-    if (milliseconds == null) throw new ArgumentError.notNull('milliseconds');
+    if (milliseconds == null) {
+      throw new ArgumentError.notNull('milliseconds');
+    }
 
     await _channel.invokeMethod('setSessionTimeoutDuration', milliseconds);
   }
@@ -811,7 +823,9 @@ class FirebaseAnalyticsAndroid {
 Map<String, dynamic> filterOutNulls(Map<String, dynamic> parameters) {
   final Map<String, dynamic> filtered = <String, dynamic>{};
   parameters.forEach((String key, dynamic value) {
-    if (value != null) filtered[key] = value;
+    if (value != null) {
+      filtered[key] = value;
+    }
   });
   return filtered;
 }
