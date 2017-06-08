@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
@@ -16,14 +17,17 @@ const MethodChannel _kChannel =
 class SharedPreferences {
   static const String _prefix = 'flutter.';
   static SharedPreferences _instance;
+
   static Future<SharedPreferences> getInstance() async {
     if (_instance == null) {
       Map<String, Object> fromSystem = await _kChannel.invokeMethod('getAll');
       assert(fromSystem != null);
-      // Strip the flutter. prefix from the returned preferences.
+      // Strip the flutter. prefix from the returned preferences, and only keep
+      // the ones that had it to begin with.
       Map<String, Object> preferencesMap = {};
       for (String key in fromSystem.keys) {
-        preferencesMap[key.substring(_prefix.length)] = fromSystem[key];
+        if (key.startsWith(_prefix))
+          preferencesMap[key.substring(_prefix.length)] = fromSystem[key];
       }
       _instance = new SharedPreferences._(preferencesMap);
     }
@@ -60,7 +64,17 @@ class SharedPreferences {
 
   /// Reads a set of string values from persistent storage,
   /// throwing an exception if it's not a string set.
-  List<String> getStringList(String key) => _preferenceCache[key] as List<String>;
+  List<String> getStringList(String key) =>
+      _preferenceCache[key] as List<String>;
+
+  /// Gets a JSON-encoded preference string and returns it as an Object. See
+  /// [JSON.decode] and [JsonDecoder] documentation for what happens when the
+  /// string is not a valid JSON string, and how to use the reviver.  Returns
+  /// null if the given key does not exist.
+  Object getObject(String key, {reviver(var key, var value)}) {
+    if (_preferenceCache[key] == null) return null;
+    return JSON.decode(getString(key), reviver: reviver);
+  }
 
   /// Saves a boolean [value] to persistent storage in the background.
   void setBool(String key, bool value) => _setValue('Bool', key, value);
@@ -75,9 +89,16 @@ class SharedPreferences {
   /// Saves a string [value] to persistent storage in the background.
   void setString(String key, String value) => _setValue('String', key, value);
 
-  /// Saves a set of string [value] to persistent storage in the background.
+  /// Saves a list of strings [value] to persistent storage in the background.
   void setStringList(String key, List<String> value) =>
       _setValue('StringList', key, value);
+
+  /// Saves the given Object as a JSON-encoded string in the platform's
+  /// persistent store.  See the [JSON.encode] and [JsonEncoder] documentation
+  /// for what happens if the values in the map are not encodable in JSON, or
+  /// how to make a custom object be JSON-encodable using toEncodable.
+  void setObject(String key, Object value, {toEncodable(object)}) =>
+      setString(key, JSON.encode(value, toEncodable: toEncodable));
 
   void _setValue(String valueType, String key, Object value) {
     _preferenceCache[key] = value;
@@ -95,9 +116,7 @@ class SharedPreferences {
   /// ensure the preferences have been modified in memory. Commit is necessary
   /// only if you need to be absolutely sure that the data is in persistent
   /// storage before taking some other action.
-  Future<bool> commit() async {
-    return await _kChannel.invokeMethod('commit');
-  }
+  Future<bool> commit() async => await _kChannel.invokeMethod('commit');
 
   /// Completes with true once the user preferences for the app has been cleared.
   Future<bool> clear() async {
