@@ -1,3 +1,7 @@
+## 0.0.7
+
+* Added `firebase_auth` as a dependency to make package analyze properly.
+
 ## 0.0.6
 
 * Various APIs added to FirebaseDatabase and Query
