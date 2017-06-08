@@ -22,12 +22,12 @@ class StorageReference {
   final List<String> _pathComponents;
 
   StorageReference child(String path) {
-    List<String> childPath = new List<String>.from(_pathComponents)..addAll(path.split("/"));
+    final List<String> childPath = new List<String>.from(_pathComponents)..addAll(path.split("/"));
     return new StorageReference._(childPath);
   }
 
   StorageUploadTask put(File file) {
-    StorageUploadTask task = new StorageUploadTask._(file, _pathComponents.join("/"));
+    final StorageUploadTask task = new StorageUploadTask._(file, _pathComponents.join("/"));
     task._start();
     return task;
   }
@@ -42,7 +42,7 @@ class StorageUploadTask {
   Future<UploadTaskSnapshot> get future => _completer.future;
 
   Future<Null> _start() async {
-    String downloadUrl = await FirebaseStorage._channel.invokeMethod(
+    final String downloadUrl = await FirebaseStorage._channel.invokeMethod(
         "StorageReference#putFile",
         <String, String>{
           'filename': file.absolute.path,

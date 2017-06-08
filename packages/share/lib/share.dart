@@ -6,7 +6,7 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
-const _kChannel = const MethodChannel('plugins.flutter.io/share');
+const MethodChannel _kChannel = const MethodChannel('plugins.flutter.io/share');
 
 /// Summons the platform's share sheet to share text.
 ///

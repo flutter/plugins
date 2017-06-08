@@ -23,7 +23,7 @@ void main() {
 
   test('batteryLevel', () async {
     when(methodChannel.invokeMethod('getBatteryLevel'))
-        .thenReturn(new Future.value(42));
+        .thenReturn(new Future<int>.value(42));
     expect(await battery.batteryLevel, 42);
   });
 
@@ -47,7 +47,7 @@ void main() {
     });
 
     test('receive values', () async {
-      StreamQueue<BatteryState> queue =
+      final StreamQueue<BatteryState> queue =
           new StreamQueue<BatteryState>(battery.onBatteryStateChanged);
 
       controller.add("full");

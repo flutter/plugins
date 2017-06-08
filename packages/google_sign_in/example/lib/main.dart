@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 GoogleSignIn _googleSignIn = new GoogleSignIn(
-  scopes: [
+  scopes: <String>[
     'email',
     'https://www.googleapis.com/auth/contacts.readonly',
   ],
@@ -52,21 +52,21 @@ class SignInDemoState extends State<SignInDemo> {
     setState(() {
       _contactText = "Loading contact info...";
     });
-    http.Response response = await http.get(
-        'https://people.googleapis.com/v1/people/me/connections' +
+    final http.Response response = await http.get(
+        'https://people.googleapis.com/v1/people/me/connections'
             '?requestMask.includeField=person.names',
         headers: await _currentUser.authHeaders,
     );
     if (response.statusCode != 200) {
       setState(() {
-        _contactText = "People API gave a ${response.statusCode} " +
+        _contactText = "People API gave a ${response.statusCode} "
             "response. Check logs for details.";
       });
       print('People API ${response.statusCode} response: ${response.body}');
       return;
     }
-    Map<String, dynamic> data = JSON.decode(response.body);
-    String namedContact = _pickFirstNamedContact(data);
+    final Map<String, dynamic> data = JSON.decode(response.body);
+    final String namedContact = _pickFirstNamedContact(data);
     setState(() {
       if (namedContact != null) {
         _contactText = "I see you know $namedContact!";
@@ -77,13 +77,13 @@ class SignInDemoState extends State<SignInDemo> {
   }
 
   String _pickFirstNamedContact(Map<String, dynamic> data) {
-    List<Map<String, dynamic>> connections = data['connections'];
-    Map<String, dynamic> contact = connections?.firstWhere(
+    final List<Map<String, dynamic>> connections = data['connections'];
+    final Map<String, dynamic> contact = connections?.firstWhere(
             (Map<String, dynamic> contact) => contact['names'] != null,
         orElse: () => null,
     );
     if (contact != null) {
-      Map<String, dynamic> name = contact['names'].firstWhere(
+      final Map<String, dynamic> name = contact['names'].firstWhere(
               (Map<String, dynamic> name) => name['displayName'] != null,
           orElse: () => null,
       );
@@ -116,14 +116,14 @@ class SignInDemoState extends State<SignInDemo> {
                 title: new Text(_currentUser.displayName),
                 subtitle: new Text(_currentUser.email),
             ),
-            new Text("Signed in successfully."),
+            const Text("Signed in successfully."),
             new Text(_contactText),
             new RaisedButton(
-                child: new Text('SIGN OUT'),
+                child: const Text('SIGN OUT'),
                 onPressed: _handleSignOut,
             ),
             new RaisedButton(
-                child: new Text('REFRESH'),
+                child: const Text('REFRESH'),
                 onPressed: _handleGetContact,
             ),
           ],
@@ -132,9 +132,9 @@ class SignInDemoState extends State<SignInDemo> {
       return new Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
-            new Text("You are not currently signed in."),
+            const Text("You are not currently signed in."),
             new RaisedButton(
-                child: new Text('SIGN IN'),
+                child: const Text('SIGN IN'),
                 onPressed: _handleSignIn,
             ),
           ],
@@ -142,10 +142,11 @@ class SignInDemoState extends State<SignInDemo> {
     }
   }
 
+  @override
   Widget build(BuildContext context) {
     return new Scaffold(
         appBar: new AppBar(
-            title: new Text('Google Sign In'),
+            title: const Text('Google Sign In'),
         ),
         body: new ConstrainedBox(
             constraints: const BoxConstraints.expand(),

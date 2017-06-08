@@ -44,7 +44,7 @@ class GoogleSignInAccount {
       throw new StateError('User is no longer signed in.');
     }
 
-    Map<String, String> response = await _googleSignIn._channel.invokeMethod(
+    final Map<String, String> response = await _googleSignIn._channel.invokeMethod(
       'getTokens',
       <String, dynamic>{'email': email},
     );
@@ -55,7 +55,7 @@ class GoogleSignInAccount {
   }
 
   Future<Map<String, String>> get authHeaders async {
-    String token = (await authentication).accessToken;
+    final String token = (await authentication).accessToken;
     return <String, String>{
       "Authorization": "Bearer $token",
       "X-Goog-AuthUser": "0",
@@ -64,7 +64,7 @@ class GoogleSignInAccount {
 
   @override
   String toString() {
-    Map<String, dynamic> data = <String, dynamic>{
+    final Map<String, dynamic> data = <String, dynamic>{
       'displayName': displayName,
       'email': email,
       'id': id,
@@ -111,13 +111,13 @@ class GoogleSignIn {
       _initialization = _channel.invokeMethod(
         "init",
         <String, dynamic>{
-          'scopes': scopes ?? [],
+          'scopes': scopes ?? <String>[],
           'hostedDomain': hostedDomain,
         },
       );
     }
     await _initialization;
-    Map<String, dynamic> response = await _channel.invokeMethod(method);
+    final Map<String, dynamic> response = await _channel.invokeMethod(method);
     _currentUser = (response != null && response.isNotEmpty)
         ? new GoogleSignInAccount._(this, response)
         : null;
@@ -139,18 +139,18 @@ class GoogleSignIn {
       return _lastMethodCompleter.future;
     }
 
-    var completer = new _MethodCompleter(method);
+    final _MethodCompleter completer = new _MethodCompleter(method);
     _lastMethodCompleter.future.whenComplete(() {
       // If after the last completed call currentUser is not null and requested
       // method is a sign in method, re-use the same authenticated user
       // instead of making extra call to the native side.
-      const kSignInMethods = const ['signIn', 'signInSilently'];
+      const List<String> kSignInMethods = const <String>['signIn', 'signInSilently'];
       if (kSignInMethods.contains(method) && _currentUser != null) {
         completer.complete(_currentUser);
       } else {
         completer.complete(_callMethod(method));
       }
-    }).catchError((_) {
+    }).catchError((dynamic _) {
       // Ignore if previous call completed with an error.
     });
     _lastMethodCompleter = completer;
@@ -200,6 +200,7 @@ class GoogleUserCircleAvatar extends StatelessWidget {
   const GoogleUserCircleAvatar(this._primaryProfileImageUrl);
   final String _primaryProfileImageUrl;
 
+  @override
   Widget build(BuildContext context) {
     return new CircleAvatar(
       child: new LayoutBuilder(builder: _buildClippedImage),
@@ -212,8 +213,8 @@ class GoogleUserCircleAvatar extends StatelessWidget {
   /// want the image cropped.
   String _sizedProfileImageUrl(double size) {
     if (_primaryProfileImageUrl == null) return null;
-    Uri profileUri = Uri.parse(_primaryProfileImageUrl);
-    List<String> pathSegments = new List<String>.from(profileUri.pathSegments);
+    final Uri profileUri = Uri.parse(_primaryProfileImageUrl);
+    final List<String> pathSegments = new List<String>.from(profileUri.pathSegments);
     pathSegments.remove("s1337"); // placeholder value added by iOS plugin
     return new Uri(
       scheme: profileUri.scheme,
@@ -226,7 +227,7 @@ class GoogleUserCircleAvatar extends StatelessWidget {
 
   Widget _buildClippedImage(BuildContext context, BoxConstraints constraints) {
     assert(constraints.maxWidth == constraints.maxHeight);
-    String url = _sizedProfileImageUrl(
+    final String url = _sizedProfileImageUrl(
       MediaQuery.of(context).devicePixelRatio * constraints.maxWidth,
     );
     if (url == null) return new Container();
@@ -240,7 +241,7 @@ class GoogleUserCircleAvatar extends StatelessWidget {
 
 class _MethodCompleter {
   final String method;
-  final Completer<GoogleSignInAccount> _completer = new Completer();
+  final Completer<GoogleSignInAccount> _completer = new Completer<GoogleSignInAccount>();
 
   _MethodCompleter(this.method);
 

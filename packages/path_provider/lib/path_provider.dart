@@ -7,7 +7,7 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 
-const _channel = const MethodChannel('plugins.flutter.io/path_provider');
+const MethodChannel _channel = const MethodChannel('plugins.flutter.io/path_provider');
 
   /// Path to the temporary directory on the device.
   ///

@@ -16,7 +16,7 @@ void main() {
       'plugins.flutter.io/shared_preferences',
     );
 
-    const kTestValues = const <String, dynamic>{
+    const Map<String, dynamic> kTestValues = const <String, dynamic>{
       'flutter.String': 'hello world',
       'flutter.bool': true,
       'flutter.int': 42,
@@ -24,7 +24,7 @@ void main() {
       'flutter.List': const <String>['foo', 'bar'],
     };
 
-    const kTestValues2 = const <String, dynamic>{
+    const Map<String, dynamic> kTestValues2 = const <String, dynamic>{
       'flutter.String': 'goodbye world',
       'flutter.bool': false,
       'flutter.int': 1337,
@@ -53,7 +53,7 @@ void main() {
       expect(sharedPreferences.getInt('int'), kTestValues['flutter.int']);
       expect(sharedPreferences.getDouble('double'), kTestValues['flutter.double']);
       expect(sharedPreferences.getStringList('List'), kTestValues['flutter.List']);
-      expect(log, equals([]));
+      expect(log, equals(<MethodCall>[]));
     });
 
     test('writing', () async {
@@ -67,30 +67,30 @@ void main() {
       expect(sharedPreferences.getInt('int'), kTestValues2['flutter.int']);
       expect(sharedPreferences.getDouble('double'), kTestValues2['flutter.double']);
       expect(sharedPreferences.getStringList('List'), kTestValues2['flutter.List']);
-      expect(log, equals([]));
+      expect(log, equals(<MethodCall>[]));
       await sharedPreferences.commit();
       expect(log, equals(<MethodCall>[
         new MethodCall(
           'setString',
-          { 'key': 'flutter.String', 'value': kTestValues2['flutter.String'] }
+          <String, dynamic>{ 'key': 'flutter.String', 'value': kTestValues2['flutter.String'] }
         ),
         new MethodCall(
           'setBool',
-          { 'key': 'flutter.bool', 'value': kTestValues2['flutter.bool'] }
+            <String, dynamic>{ 'key': 'flutter.bool', 'value': kTestValues2['flutter.bool'] }
         ),
         new MethodCall(
           'setInt',
-          { 'key': 'flutter.int', 'value': kTestValues2['flutter.int'] }
+            <String, dynamic>{ 'key': 'flutter.int', 'value': kTestValues2['flutter.int'] }
         ),
         new MethodCall(
           'setDouble',
-          { 'key': 'flutter.double', 'value': kTestValues2['flutter.double'] }
+            <String, dynamic>{ 'key': 'flutter.double', 'value': kTestValues2['flutter.double'] }
         ),
         new MethodCall(
           'setStringList',
-          { 'key': 'flutter.List', 'value': kTestValues2['flutter.List'] }
+            <String, dynamic>{ 'key': 'flutter.List', 'value': kTestValues2['flutter.List'] }
         ),
-        new MethodCall('commit'),
+        const MethodCall('commit'),
       ]));
     });
 
@@ -101,7 +101,7 @@ void main() {
       expect(sharedPreferences.getInt('int'), null);
       expect(sharedPreferences.getDouble('double'), null);
       expect(sharedPreferences.getStringList('List'), null);
-      expect(log, equals(<MethodCall>[new MethodCall('clear')]));
+      expect(log, equals(<MethodCall>[const MethodCall('clear')]));
     });
 
     test('mocking', () async {

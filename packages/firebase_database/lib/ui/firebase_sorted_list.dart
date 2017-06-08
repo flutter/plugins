@@ -54,11 +54,19 @@ class FirebaseSortedList extends ListBase<DataSnapshot> with StreamSubscriberMix
 
   // ListBase implementation
   final List<DataSnapshot> _snapshots = <DataSnapshot>[];
+
+  @override
   int get length => _snapshots.length;
+
+  @override
   set length(int value) {
     throw new UnsupportedError("List cannot be modified.");
   }
+
+  @override
   DataSnapshot operator [](int index) => _snapshots[index];
+
+  @override
   void operator []=(int index, DataSnapshot value) {
     throw new UnsupportedError("List cannot be modified.");
   }
@@ -70,19 +78,19 @@ class FirebaseSortedList extends ListBase<DataSnapshot> with StreamSubscriberMix
   }
 
   void _onChildRemoved(Event event) {
-    DataSnapshot snapshot = _snapshots.firstWhere((DataSnapshot snapshot) {
+    final DataSnapshot snapshot = _snapshots.firstWhere((DataSnapshot snapshot) {
       return snapshot.key == event.snapshot.key;
     });
-    int index = _snapshots.indexOf(snapshot);
+    final int index = _snapshots.indexOf(snapshot);
     _snapshots.removeAt(index);
     onChildRemoved(index, snapshot);
   }
 
   void _onChildChanged(Event event) {
-    DataSnapshot snapshot = _snapshots.firstWhere((DataSnapshot snapshot) {
+    final DataSnapshot snapshot = _snapshots.firstWhere((DataSnapshot snapshot) {
       return snapshot.key == event.snapshot.key;
     });
-    int index = _snapshots.indexOf(snapshot);
+    final int index = _snapshots.indexOf(snapshot);
     this[index] = event.snapshot;
     onChildChanged(index, event.snapshot);
   }

@@ -32,8 +32,8 @@ class SharedPreferencesDemoState extends State<SharedPreferencesDemo> {
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
   Future<Null> _incrementCounter() async {
-    SharedPreferences prefs = await _prefs;
-    int counter = (prefs.getInt('counter') ?? 0) + 1;
+    final SharedPreferences prefs = await _prefs;
+    final int counter = (prefs.getInt('counter') ?? 0) + 1;
     setState(() {
       prefs.setInt("counter", counter);
     });
@@ -46,13 +46,13 @@ class SharedPreferencesDemoState extends State<SharedPreferencesDemo> {
         title: const Text("SharedPreferences Demo"),
       ),
       body: new Center(
-        child: new FutureBuilder(
+        child: new FutureBuilder<SharedPreferences>(
           future: _prefs,
           builder: (BuildContext context, AsyncSnapshot<SharedPreferences> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting)
               return const Text('Loading...');
-            int counter = snapshot.requireData.getInt('counter') ?? 0;
-            return new Text(
+            final int counter = snapshot.requireData.getInt('counter') ?? 0;
+            return new Text( // ignore: prefer_const_constructors
               'Button tapped $counter time${ counter == 1 ? '' : 's' }.\n\n'
               'This should persist across restarts.',
             );

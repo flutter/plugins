@@ -34,8 +34,8 @@ class _MyHomePageState extends State<MyHomePage> {
       .child('counter');
   final DatabaseReference _messagesRef = FirebaseDatabase.instance.reference()
       .child('messages');
-  StreamSubscription _counterSubscription;
-  StreamSubscription _messagesSubscription;
+  StreamSubscription<Event> _counterSubscription;
+  StreamSubscription<Event> _messagesSubscription;
   bool _anchorToBottom = false;
 
   String _kTestKey = 'Hello';
@@ -54,34 +54,35 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  @override dispose() {
+  @override
+  void dispose() {
     super.dispose();
     _messagesSubscription.cancel();
     _counterSubscription.cancel();
   }
 
-  _increment() async {
+  Future<Null> _increment() async {
     await FirebaseAuth.instance.signInAnonymously();
     // TODO(jackson): This illustrates a case where transactions are needed
-    DataSnapshot snapshot = await _counterRef.once();
+    final DataSnapshot snapshot = await _counterRef.once();
     setState(() {
       _counter = (snapshot.value ?? 0) + 1;
     });
     _counterRef.set(_counter);
-    _messagesRef.push().set({ _kTestKey: '$_kTestValue $_counter' });
+    _messagesRef.push().set(<String, String>{ _kTestKey: '$_kTestValue $_counter' });
   }
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text('Flutter Database Example'),
+        title: const Text('Flutter Database Example'),
       ),
       body: new Column(
         children: <Widget>[
           new Flexible(
             child: new Center(
-              child: new Text(
+              child: new Text( // ignore: prefer_const_constructors
                 'Button tapped $_counter time${ _counter == 1 ? '' : 's' }.\n\n'
                 'This includes all devices, ever.',
               ),
@@ -96,15 +97,15 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               value: _anchorToBottom,
             ),
-            title: new Text('Anchor to bottom'),
+            title: const Text('Anchor to bottom'),
           ),
           new Flexible(
             child: new FirebaseAnimatedList(
               key: new ValueKey<bool>(_anchorToBottom),
               query: _messagesRef,
               reverse: _anchorToBottom,
-              sort: _anchorToBottom ? (a, b) => b.key.compareTo(a.key) : null,
-              itemBuilder: (context, snapshot, animation) {
+              sort: _anchorToBottom ? (DataSnapshot a, DataSnapshot b) => b.key.compareTo(a.key) : null,
+              itemBuilder: (BuildContext context, DataSnapshot snapshot, Animation<double> animation) {
                 return new SizeTransition(
                   sizeFactor: animation,
                   child: new Text(snapshot.value.toString()),

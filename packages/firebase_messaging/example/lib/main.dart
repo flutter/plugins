@@ -9,8 +9,8 @@ import 'package:flutter/material.dart';
 
 final Map<String, Item> _items = <String, Item>{};
 Item _itemForMessage(Map<String, dynamic> message) {
-  String itemId = message['id'];
-  Item item = _items.putIfAbsent(itemId, () => new Item(itemId: itemId))
+  final String itemId = message['id'];
+  final Item item = _items.putIfAbsent(itemId, () => new Item(itemId: itemId))
     ..status = message['status'];
   return item;
 }
@@ -29,12 +29,12 @@ class Item {
     _controller.add(this);
   }
 
-  static final Map<String, Route> routes = <String, Route>{};
-  Route get route {
-    String routeName = '/detail/$itemId';
+  static final Map<String, Route<Null>> routes = <String, Route<Null>>{};
+  Route<Null> get route {
+    final String routeName = '/detail/$itemId';
     return routes.putIfAbsent(
       routeName,
-      () => new MaterialPageRoute(
+      () => new MaterialPageRoute<Null>(
             settings: new RouteSettings(name: routeName),
             builder: (BuildContext context) => new DetailPage(itemId),
           ),
@@ -51,7 +51,7 @@ class DetailPage extends StatefulWidget {
 
 class _DetailPageState extends State<DetailPage> {
   Item _item;
-  StreamSubscription _subscription;
+  StreamSubscription<Item> _subscription;
 
   @override
   void initState() {
@@ -68,6 +68,7 @@ class _DetailPageState extends State<DetailPage> {
     });
   }
 
+  @override
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
@@ -94,19 +95,19 @@ class _PushMessagingExampleState extends State<PushMessagingExample> {
       new TextEditingController(text: 'topic');
 
   Future<Null> _showItemDialog(Map<String, dynamic> message) async {
-    Item item = _itemForMessage(message);
-    showDialog(
+    final Item item = _itemForMessage(message);
+    showDialog<Null>(
         context: context,
         child: new AlertDialog(
           content: new Text("Item ${item.itemId} has been updated"),
           actions: <Widget>[
             new FlatButton(
-                child: new Text('CLOSE'),
+                child: const Text('CLOSE'),
                 onPressed: () {
                   Navigator.pop(context, false);
                 }),
             new FlatButton(
-                child: new Text('SHOW'),
+                child: const Text('SHOW'),
                 onPressed: () {
                   Navigator.pop(context, true);
                 }),
@@ -117,7 +118,7 @@ class _PushMessagingExampleState extends State<PushMessagingExample> {
   }
 
   Future<Null> _navigateToItemDetail(Map<String, dynamic> message) async {
-    Item item = _itemForMessage(message);
+    final Item item = _itemForMessage(message);
     // Clear away dialogs
     Navigator.popUntil(context, (Route<dynamic> route) => route is PageRoute);
     if (!item.route.isCurrent) Navigator.push(context, item.route);
@@ -159,7 +160,7 @@ class _PushMessagingExampleState extends State<PushMessagingExample> {
   Widget build(BuildContext context) {
     return new Scaffold(
         appBar: new AppBar(
-          title: new Text('Push Messaging Demo'),
+          title: const Text('Push Messaging Demo'),
         ),
         // For testing -- simulate a message being received
         floatingActionButton: new FloatingActionButton(
@@ -172,22 +173,22 @@ class _PushMessagingExampleState extends State<PushMessagingExample> {
         ),
         body: new Material(
           child: new Column(
-            children: [
+            children: <Widget>[
               new Center(
                 child: new Text(_homeScreenText),
               ),
-              new Row(children: [
+              new Row(children: <Widget>[
                 new Expanded(
                   child: new TextField(
                       controller: _topicController,
                       onChanged: (String v) {
                         setState(() {
-                          _topicButtonsDisabled = v.length == 0;
+                          _topicButtonsDisabled = v.isEmpty;
                         });
                       }),
                 ),
                 new FlatButton(
-                  child: new Text("subscribe"),
+                  child: const Text("subscribe"),
                   onPressed: _topicButtonsDisabled
                       ? null
                       : () {
@@ -197,7 +198,7 @@ class _PushMessagingExampleState extends State<PushMessagingExample> {
                         },
                 ),
                 new FlatButton(
-                  child: new Text("unsubscribe"),
+                  child: const Text("unsubscribe"),
                   onPressed: _topicButtonsDisabled
                       ? null
                       : () {
