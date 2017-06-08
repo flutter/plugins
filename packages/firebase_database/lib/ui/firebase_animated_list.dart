@@ -2,12 +2,15 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 import '../firebase_database.dart';
 import 'firebase_list.dart';
-import 'firebase_sorted_list.dart';
+import 'client_sorted_list.dart';
+import 'server_sorted_list.dart';
 
 typedef Widget FirebaseAnimatedListItemBuilder(
   BuildContext context,
@@ -54,9 +57,6 @@ class FirebaseAnimatedList extends StatefulWidget {
   ///
   /// The [DataSnapshot] parameter indicates the snapshot that should be used
   /// to build the item.
-  ///
-  /// Implementations of this callback should assume that [AnimatedList.removeItem]
-  /// removes an item immediately.
   final FirebaseAnimatedListItemBuilder itemBuilder;
 
   /// The axis along which the scroll view scrolls.
@@ -132,40 +132,57 @@ class FirebaseAnimatedList extends StatefulWidget {
 
 class FirebaseAnimatedListState extends State<FirebaseAnimatedList> {
   final GlobalKey<AnimatedListState> _animatedListKey = new GlobalKey<AnimatedListState>();
-  List<DataSnapshot> _model;
-  bool _loaded = false;
+  FirebaseList _model;
 
   @override
-  void didChangeDependencies() {
+  void initState() {
+    _model = createModel();
+    super.initState();
+  }
+  
+  @override
+  void didUpdateWidget(FirebaseAnimatedList other) {
+    if (other.query != widget.query || other.sort != widget.sort) {
+      _model.dispose();
+      setState(() {
+        _model = createModel();
+      });
+    }
+  }
+  
+  @override
+  void dispose() {
+    _model.dispose();
+  }
+
+  FirebaseList createModel() {
     if (widget.sort != null) {
-      _model = new FirebaseSortedList(
+      return new ClientSortedList(
         query: widget.query,
         comparator: widget.sort,
         onChildAdded: _onChildAdded,
         onChildRemoved: _onChildRemoved,
         onChildChanged: _onChildChanged,
-        onValue: _onValue,
       );
     } else {
-      _model = new FirebaseList(
+      return new ServerSortedList(
         query: widget.query,
         onChildAdded: _onChildAdded,
         onChildRemoved: _onChildRemoved,
         onChildChanged: _onChildChanged,
         onChildMoved: _onChildMoved,
-        onValue: _onValue,
       );
     }
-    super.didChangeDependencies();
   }
 
   void _onChildAdded(int index, DataSnapshot snapshot) {
-    if (!_loaded)
-      return;  // AnimatedList is not created yet
+    assert(_model != null);
+    assert(index >= 0 && index < _model.length);
     _animatedListKey.currentState.insertItem(index, duration: widget.duration);
   }
 
   void _onChildRemoved(int index, DataSnapshot snapshot) {
+    assert(_model != null);
     // The child should have already been removed from the model by now
     assert(index >= _model.length || _model[index].key != snapshot.key);
     _animatedListKey.currentState.removeItem(
@@ -187,31 +204,30 @@ class FirebaseAnimatedListState extends State<FirebaseAnimatedList> {
     setState(() {});
   }
 
-  void _onValue(_) {
-    setState(() {
-      _loaded = true;
-    });
-  }
-
-  Widget _buildItem(BuildContext context, int index, Animation<double> animation) {
-    return widget.itemBuilder(context, _model[index], animation);
-  }
-
   @override
   Widget build(BuildContext context) {
-    if (!_loaded)
-      return widget.defaultChild ?? new Container();
-    return new AnimatedList(
-      key: _animatedListKey,
-      itemBuilder: _buildItem,
-      initialItemCount: _model.length,
-      scrollDirection: widget.scrollDirection,
-      reverse: widget.reverse,
-      controller: widget.controller,
-      primary: widget.primary,
-      physics: widget.physics,
-      shrinkWrap: widget.shrinkWrap,
-      padding: widget.padding,
+    return new FutureBuilder(
+      future: _model.loaded,
+      builder: (BuildContext context, AsyncSnapshot<FirebaseList> model) {
+        if (!model.hasData)
+          return widget.defaultChild ?? new Container();
+        return new AnimatedList(
+          key: _animatedListKey,
+          itemBuilder: (
+            BuildContext context,
+            int index,
+            Animation<double> animation
+          ) => widget.itemBuilder(context, _model[index], animation),
+          initialItemCount: model.data.length,
+          scrollDirection: widget.scrollDirection,
+          reverse: widget.reverse,
+          controller: widget.controller,
+          primary: widget.primary,
+          physics: widget.physics,
+          shrinkWrap: widget.shrinkWrap,
+          padding: widget.padding,
+        );
+      },
     );
   }
 }
