@@ -1,0 +1,11 @@
+name: connectivity_example
+description: Demonstrates how to use the connectivity plugin.
+
+dependencies:
+  flutter:
+    sdk: flutter
+  connectivity:
+    path: ../
+
+flutter:
+  uses-material-design: true
