@@ -7,15 +7,13 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 
 /// Provides information about the current application package.
-class PackageInfo {
-  static const MethodChannel _kChannel =
-      const MethodChannel('plugins.flutter.io/package_info');
+const MethodChannel _kChannel =
+    const MethodChannel('plugins.flutter.io/package_info');
 
-  /// Returns the CFBundleShortVersionString on iOS or versionsName on Android
-  static Future<String> getVersion() async =>
-      await _kChannel.invokeMethod('getVersion');
+/// Returns the `CFBundleShortVersionString` on iOS or `versionName` on Android
+Future<String> get version async =>
+    await _kChannel.invokeMethod('getVersion');
 
-  /// Returns the CFBundleVersion on iOS or versionCode on Android
-  static Future<String> getBuildNumber() async =>
-      await _kChannel.invokeMethod('getBuildNumber');
-}
+/// Returns the `CFBundleVersion` on iOS or `versionCode` on Android
+Future<String> get buildNumber async =>
+    await _kChannel.invokeMethod('getBuildNumber');

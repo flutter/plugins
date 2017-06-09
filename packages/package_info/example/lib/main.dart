@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:package_info/package_info.dart';
+import 'package:package_info/package_info.dart' as package_info;
 
 void main() {
   runApp(new MyApp());
@@ -43,7 +43,7 @@ class _MyHomePageState extends State<MyHomePage> {
     String version;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      version = await PackageInfo.getVersion();
+      version = await package_info.version;
     } on PlatformException {
       version = 'Failed to get version.';
     }
