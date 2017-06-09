@@ -18,7 +18,7 @@ const MethodChannel _channel =
 
 /// Checks the connection status of the device.
 Future<ConnectivityResult> checkConnectivity() async {
-  String result = await _channel.invokeMethod('check');
+  final String result = await _channel.invokeMethod('check');
   switch (result) {
     case 'wifi':
       return ConnectivityResult.wifi;
