@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:convert';
-
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
@@ -24,7 +22,6 @@ void main() {
       'flutter.int': 42,
       'flutter.double': 3.14159,
       'flutter.List': const <String>['foo', 'bar'],
-      'flutter.Object': '{"foo":"baz","bar":42}',
     };
 
     const kTestValues2 = const <String, dynamic>{
@@ -33,7 +30,6 @@ void main() {
       'flutter.int': 1337,
       'flutter.double': 2.71828,
       'flutter.List': const <String>['baz', 'quox'],
-      'flutter.Object': const <String, Object>{"hello": 1.618, "world": 0.42},
     };
 
     final List<MethodCall> log = <MethodCall>[];
@@ -61,8 +57,6 @@ void main() {
       expect(sharedPreferences.getInt('int'), kTestValues['flutter.int']);
       expect(sharedPreferences.getDouble('double'), kTestValues['flutter.double']);
       expect(sharedPreferences.getStringList('List'), kTestValues['flutter.List']);
-      expect(sharedPreferences.getObject('Object'),
-          JSON.decode(kTestValues['flutter.Object']));
       expect(log, equals([]));
     });
 
@@ -72,13 +66,11 @@ void main() {
       sharedPreferences.setInt('int', kTestValues2['flutter.int']);
       sharedPreferences.setDouble('double', kTestValues2['flutter.double']);
       sharedPreferences.setStringList('List', kTestValues2['flutter.List']);
-      sharedPreferences.setObject('Object', kTestValues2['flutter.Object']);
       expect(sharedPreferences.getString('String'), kTestValues2['flutter.String']);
       expect(sharedPreferences.getBool('bool'), kTestValues2['flutter.bool']);
       expect(sharedPreferences.getInt('int'), kTestValues2['flutter.int']);
       expect(sharedPreferences.getDouble('double'), kTestValues2['flutter.double']);
       expect(sharedPreferences.getStringList('List'), kTestValues2['flutter.List']);
-      expect(sharedPreferences.getObject('Object'), kTestValues2['flutter.Object']);
       expect(log, equals([]));
       await sharedPreferences.commit();
       expect(log, equals(<MethodCall>[
@@ -102,11 +94,6 @@ void main() {
           'setStringList',
           { 'key': 'flutter.List', 'value': kTestValues2['flutter.List'] }
         ),
-        new MethodCall(
-          'setString',
-          { 'key': 'flutter.Object', 'value':
-            JSON.encode(kTestValues2['flutter.Object']) }
-        ),
         new MethodCall('commit'),
       ]));
     });
@@ -118,7 +105,6 @@ void main() {
       expect(sharedPreferences.getInt('int'), null);
       expect(sharedPreferences.getDouble('double'), null);
       expect(sharedPreferences.getStringList('List'), null);
-      expect(sharedPreferences.getStringList('Object'), null);
       expect(log, equals(<MethodCall>[new MethodCall('clear')]));
     });
 
