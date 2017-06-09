@@ -42,20 +42,6 @@ quick action.
 
 TBD. No support yet.
 
-## iOS integration
-
-Finally, you need to handle the quick actions (also in your App Delegate) by
-delegating the call to the plugin itself.
-
-```objectivec
-- (void)application:(UIApplication *)application
-    performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem
-               completionHandler:(void (^)(BOOL succeeded))completionHandler {
-
-  [[QuickActionsPlugin sharedInstance] performActionForShortcutItem:shortcutItem];
-}
-```
-
 ## Getting Started
 
 For help getting started with Flutter, view our online

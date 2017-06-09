@@ -1,8 +1,8 @@
 name: quick_actions
 description: A new flutter plugin project.
 version: 0.0.1
-author:
-homepage:
+author: Flutter Team <flutter-dev@googlegroups.com>
+homepage: https://github.com/flutter/plugins/tree/master/packages/quick_actions
 
 flutter:
   plugin:

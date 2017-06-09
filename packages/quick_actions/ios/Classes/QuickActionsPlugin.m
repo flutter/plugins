@@ -38,9 +38,12 @@ static NSString *const CHANNEL_NAME = @"plugins.flutter.io/quick_actions";
   self.channel = nil;
 }
 
-- (void)performActionForShortcutItem:(UIApplicationShortcutItem *)item {
-  [self.channel invokeMethod:@"launch" arguments:item.type];
-}
+- (BOOL)application:(UIApplication *)application
+performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem
+  completionHandler:(void (^)(BOOL succeeded))completionHandler {
+    [self.channel invokeMethod:@"launch" arguments:shortcutItem.type];
+    return YES;
+  }
 
 #pragma mark Private functions
 
