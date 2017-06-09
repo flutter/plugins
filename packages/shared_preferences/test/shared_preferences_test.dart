@@ -46,6 +46,10 @@ void main() {
       log.clear();
     });
 
+    tearDown(() {
+      sharedPreferences.clear();
+    });
+
     test('reading', () async {
       expect(
           sharedPreferences.getString('String'), kTestValues['flutter.String']);

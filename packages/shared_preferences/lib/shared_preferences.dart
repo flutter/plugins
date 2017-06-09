@@ -26,6 +26,7 @@ class SharedPreferences {
       // Strip the flutter. prefix from the returned preferences.
       final Map<String, Object> preferencesMap = <String, Object>{};
       for (String key in fromSystem.keys) {
+        assert(key.startsWith(_prefix));
         preferencesMap[key.substring(_prefix.length)] = fromSystem[key];
       }
       _instance = new SharedPreferences._(preferencesMap);
@@ -76,7 +77,7 @@ class SharedPreferences {
   /// Saves a string [value] to persistent storage in the background.
   void setString(String key, String value) => _setValue('String', key, value);
 
-  /// Saves a set of string [value] to persistent storage in the background.
+  /// Saves a list of strings [value] to persistent storage in the background.
   void setStringList(String key, List<String> value) =>
       _setValue('StringList', key, value);
 
@@ -96,9 +97,7 @@ class SharedPreferences {
   /// ensure the preferences have been modified in memory. Commit is necessary
   /// only if you need to be absolutely sure that the data is in persistent
   /// storage before taking some other action.
-  Future<bool> commit() async {
-    return await _kChannel.invokeMethod('commit');
-  }
+  Future<bool> commit() async => await _kChannel.invokeMethod('commit');
 
   /// Completes with true once the user preferences for the app has been cleared.
   Future<bool> clear() async {
