@@ -11,8 +11,7 @@ const MethodChannel _kChannel =
     const MethodChannel('plugins.flutter.io/package_info');
 
 /// Returns the `CFBundleShortVersionString` on iOS or `versionName` on Android
-Future<String> get version async =>
-    await _kChannel.invokeMethod('getVersion');
+Future<String> get version async => await _kChannel.invokeMethod('getVersion');
 
 /// Returns the `CFBundleVersion` on iOS or `versionCode` on Android
 Future<String> get buildNumber async =>

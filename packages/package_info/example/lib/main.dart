@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:package_info/package_info.dart' as package_info;
@@ -37,13 +39,13 @@ class _MyHomePageState extends State<MyHomePage> {
   String _version = 'Unknown';
 
   @override
-  initState() {
+  void initState() {
     super.initState();
     initPackageState();
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
-  initPackageState() async {
+  Future<Null> initPackageState() async {
     String version;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
@@ -55,8 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling
     // setState to update our non-existent appearance.
-    if (!mounted)
-      return;
+    if (!mounted) return;
 
     setState(() {
       _version = version;
