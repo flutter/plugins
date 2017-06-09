@@ -57,7 +57,9 @@ class _MyHomePageState extends State<MyHomePage> {
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling
     // setState to update our non-existent appearance.
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
 
     setState(() {
       _version = version;
@@ -68,7 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text('Plugin example app'),
+        title: const Text('Plugin example app'),
       ),
       body: new Center(child: new Text('App version is: $_version\n')),
     );
