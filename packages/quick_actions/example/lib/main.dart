@@ -43,7 +43,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
 
     quickActions.setShortcutItems(<ShortcutItem>[
-      new quickActions.ShortcutItem(type: 'action_main', localizedTitle: 'Main view', icon: 'icon_main'),
+      new ShortcutItem(type: 'action_main', localizedTitle: 'Main view', icon: 'AppIcon'),
     ]);
   }
 
