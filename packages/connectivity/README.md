@@ -9,7 +9,9 @@ the app might have wifi access but it might be a VPN or a hotel Wifi with no acc
 Sample usage:
 
 ```dart
-var connectivityResult = await Connectivity.checkConnectivity();
+import 'package:connectivity/connectivity.dart' as connectivity;
+
+var connectivityResult = await connectivity.checkConnectivity();
 if (connectivityResult == ConnectivityResult.mobile) {
   // I am connected to a mobile network.
 } else if (connectivityResult == ConnectivityResult.wifi) {
