@@ -39,11 +39,11 @@ static NSString *const CHANNEL_NAME = @"plugins.flutter.io/quick_actions";
 }
 
 - (BOOL)application:(UIApplication *)application
-performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem
-  completionHandler:(void (^)(BOOL succeeded))completionHandler {
-    [self.channel invokeMethod:@"launch" arguments:shortcutItem.type];
-    return YES;
-  }
+    performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem
+               completionHandler:(void (^)(BOOL succeeded))completionHandler {
+  [self.channel invokeMethod:@"launch" arguments:shortcutItem.type];
+  return YES;
+}
 
 #pragma mark Private functions
 

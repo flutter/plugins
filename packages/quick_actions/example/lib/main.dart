@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:quick_actions/quick_actions.dart';
 
 void main() {
@@ -34,12 +33,11 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String _platformVersion = 'Unknown';
 
   @override
-  initState() {
+  void initState() {
     super.initState();
-    var quickActions = const QuickActions();
+    final quickActions = const QuickActions();
     quickActions.initialize((shortcutType) {
       if (shortcutType == 'action_main') {
         print('The user tapped on the "Main view" action.');
@@ -47,7 +45,8 @@ class _MyHomePageState extends State<MyHomePage> {
     });
 
     quickActions.setShortcutItems(<ShortcutItem>[
-      new ShortcutItem(type: 'action_main', localizedTitle: 'Main view', icon: 'AppIcon'),
+      new ShortcutItem(
+          type: 'action_main', localizedTitle: 'Main view', icon: 'AppIcon'),
     ]);
   }
 
@@ -55,11 +54,12 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text('Plugin example app'),
+        title: const Text('Plugin example app'),
       ),
-      body: new Center(child: new Text('On home screen, long press the icon to '
-      'get Main view action. Tapping on that action should print '
-      'a message to the log.')),
+      body: new Center(
+          child: const Text('On home screen, long press the icon to '
+              'get Main view action. Tapping on that action should print '
+              'a message to the log.')),
     );
   }
 }

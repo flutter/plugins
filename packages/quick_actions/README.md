@@ -7,7 +7,8 @@ Quick actions refer to the [eponymous
 concept](https://developer.apple.com/ios/human-interface-guidelines/extensions/home-screen-actions)
 on iOS and to the [App
 Shortcuts](https://developer.android.com/guide/topics/ui/shortcuts.html) APIs on
-Android (introduced in Android 7.1 / API level 25).
+Android (introduced in Android 7.1 / API level 25). It is safe to run this plugin
+with earlier versions of Android as it will produce a noop.
 
 ## Usage in Dart
 
@@ -35,12 +36,8 @@ quickActions.setShortcutItems(<ShortcutItem>[
 
 Please note, that the `type` argument should be unique within your application
 (among all the registered shortcut items). The optional `icon` should be the
-name of the native resource (say, xcassets) that the app will display for the
+name of the native resource (xcassets on iOS or drawable on Android) that the app will display for the
 quick action.
-
-## Android integration
-
-TBD. No support yet.
 
 ## Getting Started
 

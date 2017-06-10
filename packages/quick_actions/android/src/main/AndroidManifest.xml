@@ -3,5 +3,8 @@
   android:versionCode="1"
   android:versionName="0.0.1">
 
-  <uses-sdk android:minSdkVersion="16" android:targetSdkVersion="21" />
+  <uses-sdk android:minSdkVersion="16" android:targetSdkVersion="25" />
+  <application>
+    <activity android:name=".QuickActionsPlugin$ShortcutHandlerActivity" android:exported="false"/>
+  </application>
 </manifest>
