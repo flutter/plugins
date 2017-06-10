@@ -33,19 +33,18 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   @override
   void initState() {
     super.initState();
-    final quickActions = const QuickActions();
-    quickActions.initialize((shortcutType) {
+    final QuickActions quickActions = const QuickActions();
+    quickActions.initialize((String shortcutType) {
       if (shortcutType == 'action_main') {
         print('The user tapped on the "Main view" action.');
       }
     });
 
     quickActions.setShortcutItems(<ShortcutItem>[
-      new ShortcutItem(
+      const ShortcutItem(
           type: 'action_main', localizedTitle: 'Main view', icon: 'AppIcon'),
     ]);
   }
@@ -56,7 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: new AppBar(
         title: const Text('Plugin example app'),
       ),
-      body: new Center(
+      body: const Center(
           child: const Text('On home screen, long press the icon to '
               'get Main view action. Tapping on that action should print '
               'a message to the log.')),
