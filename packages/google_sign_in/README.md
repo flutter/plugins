@@ -48,7 +48,7 @@ enable the [Google People API](https://developers.google.com/people/).
 ## Usage
 
 ### Import the package
-To use this plugin, follow the [plugin installation instructions](https://pub.dartlang.org/packages/google_sign_in#-pkg-tab-installing).
+To use this plugin, follow the [plugin installation instructions](https://pub.dartlang.org/packages/google_sign_in#pub-pkg-tab-installing).
 
 ### Use the plugin
 Add the following import to your Dart code:
