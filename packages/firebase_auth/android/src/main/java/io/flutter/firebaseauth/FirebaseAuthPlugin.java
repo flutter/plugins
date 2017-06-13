@@ -61,6 +61,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       case "signOut":
         handleSignOut(call, result);
         break;
+      case "getToken":
+        handleGetToken(call, result);
+        break;
       default:
         result.notImplemented();
         break;
@@ -109,6 +112,24 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
   private void handleSignOut(MethodCall call, final Result result) {
     firebaseAuth.signOut();
     result.success(null);
+  }
+
+  private void handleGetToken(MethodCall call, final Result result) {
+    bool refresh = call.arguments.get("refresh");
+    firebaseAuth
+        .getCurrentUser()
+        .getToken(refresh)
+        .addOnCompleteListener(
+            new OnCompleteListener<GetTokenResult>() {
+              public void onComplete(@NonNull Task<GetTokenResult> task) {
+                if (task.isSuccessful()) {
+                  String idToken = task.getResult().getToken();
+                  result.success(idToken);
+                } else {
+                  result.error(ERROR_REASON_EXCEPTION, task.getException().getMessage(), null);
+                }
+              }
+            });
   }
 
   private class SignInCompleteListener implements OnCompleteListener<AuthResult> {
