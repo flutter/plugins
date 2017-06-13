@@ -1,3 +1,12 @@
+## 0.0.5
+
+* Require the use of `support-v4` library on Android. This is an API change in
+  that plugin users will need their activity class to be an instance of
+  `android.support.v4.app.FragmentActivity`. Flutter framework provides such
+  an activity out of the box: `io.flutter.app.FlutterFragmentActivity`
+* Ignore "Broken pipe" errors affecting iOS simulator
+* Update to non-deprecated `application:openURL:options:` on iOS
+
 ## 0.0.4
 
 * Prevent race conditions when GoogleSignIn methods are called concurrently (#94)
