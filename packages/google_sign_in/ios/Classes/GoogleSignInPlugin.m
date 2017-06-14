@@ -93,10 +93,9 @@
 #pragma mark - <GIDSignInUIDelegate> protocol
 
 - (void)signIn:(GIDSignIn *)signIn presentViewController:(UIViewController *)viewController {
-  [[UIApplication sharedApplication].delegate.window.rootViewController
-   presentViewController:viewController
-   animated:YES
-   completion:nil];
+  UIViewController *rootViewController =
+      [UIApplication sharedApplication].delegate.window.rootViewController;
+  [viewController presentViewController:viewController animated:YES completion:nil];
 }
 
 - (void)signIn:(GIDSignIn *)signIn dismissViewController:(UIViewController *)viewController {
