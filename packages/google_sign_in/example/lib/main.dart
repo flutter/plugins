@@ -8,6 +8,7 @@ import 'dart:convert' show JSON;
 import "package:http/http.dart" as http;
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:google_sign_in/google_sign_in_ui.dart';
 
 GoogleSignIn _googleSignIn = new GoogleSignIn(
   scopes: <String>[
@@ -133,8 +134,7 @@ class SignInDemoState extends State<SignInDemo> {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
           const Text("You are not currently signed in."),
-          new RaisedButton(
-            child: const Text('SIGN IN'),
+          new GoogleSignInButton(
             onPressed: _handleSignIn,
           ),
         ],
