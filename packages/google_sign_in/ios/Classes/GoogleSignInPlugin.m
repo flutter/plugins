@@ -33,13 +33,14 @@
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
-- (void)signIn:(GIDSignIn *)signIn presentViewController:(UIViewController *)viewController
-{
-  [[UIApplication sharedApplication].delegate.window.rootViewController presentViewController:viewController animated:YES completion:nil];
+- (void)signIn:(GIDSignIn *)signIn presentViewController:(UIViewController *)viewController {
+  [[UIApplication sharedApplication].delegate.window.rootViewController
+      presentViewController:viewController
+                   animated:YES
+                 completion:nil];
 }
 
-- (void)signIn:(GIDSignIn *)signIn dismissViewController:(UIViewController *)viewController
-{
+- (void)signIn:(GIDSignIn *)signIn dismissViewController:(UIViewController *)viewController {
   [viewController dismissViewControllerAnimated:YES completion:nil];
 }
 
