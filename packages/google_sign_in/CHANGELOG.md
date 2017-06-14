@@ -1,3 +1,7 @@
+## 0.0.6
+
+* Fix crash on iOS when signing in caused by nil uiDelegate
+
 ## 0.0.5
 
 * Require the use of `support-v4` library on Android. This is an API change in

@@ -28,18 +28,17 @@
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/google_sign_in"
                                   binaryMessenger:[registrar messenger]];
-  UIViewController *viewController = [UIApplication sharedApplication].keyWindow.rootViewController;
-  GoogleSignInPlugin *instance = [[GoogleSignInPlugin alloc] initWithViewController:viewController];
+  GoogleSignInPlugin *instance = [[GoogleSignInPlugin alloc] init];
   [registrar addApplicationDelegate:instance];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
-- (instancetype)initWithViewController:(UIViewController *)viewController {
+- (instancetype)init {
   self = [super init];
   if (self) {
     _accountRequests = [[NSMutableArray alloc] init];
     [GIDSignIn sharedInstance].delegate = self;
-    [GIDSignIn sharedInstance].uiDelegate = (id)viewController;
+    [GIDSignIn sharedInstance].uiDelegate = self;
 
     // On the iOS simulator, we get "Broken pipe" errors after sign-in for some
     // unknown reason. We can avoid crashing the app by ignoring them.
@@ -89,6 +88,18 @@
   return [[GIDSignIn sharedInstance] handleURL:url
                              sourceApplication:sourceApplication
                                     annotation:annotation];
+}
+
+#pragma mark - <GIDSignInUIDelegate> protocol
+
+- (void)signIn:(GIDSignIn *)signIn presentViewController:(UIViewController *)viewController {
+  UIViewController *rootViewController =
+      [UIApplication sharedApplication].delegate.window.rootViewController;
+  [rootViewController presentViewController:viewController animated:YES completion:nil];
+}
+
+- (void)signIn:(GIDSignIn *)signIn dismissViewController:(UIViewController *)viewController {
+  [viewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - <GIDSignInDelegate> protocol
