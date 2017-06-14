@@ -28,7 +28,8 @@
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/google_sign_in"
                                   binaryMessenger:[registrar messenger]];
-  UIViewController *viewController = [UIApplication sharedApplication].keyWindow.rootViewController;
+  // TODO(goderbauer): cast is workaround for https://github.com/flutter/flutter/issues/9961
+  UIViewController *viewController = (UIViewController *)registrar.messenger;
   GoogleSignInPlugin *instance = [[GoogleSignInPlugin alloc] initWithViewController:viewController];
   [registrar addApplicationDelegate:instance];
   [registrar addMethodCallDelegate:instance channel:channel];
