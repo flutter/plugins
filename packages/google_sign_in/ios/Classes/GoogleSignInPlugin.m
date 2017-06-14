@@ -95,7 +95,7 @@
 - (void)signIn:(GIDSignIn *)signIn presentViewController:(UIViewController *)viewController {
   UIViewController *rootViewController =
       [UIApplication sharedApplication].delegate.window.rootViewController;
-  [viewController presentViewController:viewController animated:YES completion:nil];
+  [rootViewController presentViewController:viewController animated:YES completion:nil];
 }
 
 - (void)signIn:(GIDSignIn *)signIn dismissViewController:(UIViewController *)viewController {
