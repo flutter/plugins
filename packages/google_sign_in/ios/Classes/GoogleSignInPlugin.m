@@ -33,11 +33,22 @@
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
+- (void)signIn:(GIDSignIn *)signIn presentViewController:(UIViewController *)viewController
+{
+  [[UIApplication sharedApplication].delegate.window.rootViewController presentViewController:viewController animated:YES completion:nil];
+}
+
+- (void)signIn:(GIDSignIn *)signIn dismissViewController:(UIViewController *)viewController
+{
+  [viewController dismissViewControllerAnimated:YES completion:nil];
+}
+
 - (instancetype)init {
   self = [super init];
   if (self) {
     _accountRequests = [[NSMutableArray alloc] init];
     [GIDSignIn sharedInstance].delegate = self;
+    [GIDSignIn sharedInstance].uiDelegate = self;
 
     // On the iOS simulator, we get "Broken pipe" errors after sign-in for some
     // unknown reason. We can avoid crashing the app by ignoring them.
@@ -54,8 +65,6 @@
     [[GGLContext sharedInstance] configureWithError:&error];
     [GIDSignIn sharedInstance].scopes = call.arguments[@"scopes"];
     [GIDSignIn sharedInstance].hostedDomain = call.arguments[@"hostedDomain"];
-    UIViewController *viewController = [UIApplication sharedApplication].keyWindow.rootViewController;
-    [GIDSignIn sharedInstance].uiDelegate = viewController;
     result(error.flutterError);
   } else if ([call.method isEqualToString:@"signInSilently"]) {
     [_accountRequests insertObject:result atIndex:0];
