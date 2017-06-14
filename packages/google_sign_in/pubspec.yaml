@@ -9,6 +9,27 @@ flutter:
   plugin:
     androidPackage: io.flutter.plugins.googlesignin
     pluginClass: GoogleSignInPlugin
+  fonts:
+    - family: Roboto
+      fonts:
+        - asset: resources/fonts/Roboto-Medium.ttf
+  assets:
+    - resources/google_signin_buttons/btn_google_dark_disabled.png
+    - resources/google_signin_buttons/btn_google_dark_focus.png
+    - resources/google_signin_buttons/btn_google_dark_normal.png
+    - resources/google_signin_buttons/btn_google_dark_pressed.png
+    - resources/google_signin_buttons/btn_google_light_disabled.png
+    - resources/google_signin_buttons/btn_google_light_focus.png
+    - resources/google_signin_buttons/btn_google_light_normal.png
+    - resources/google_signin_buttons/btn_google_light_pressed.png
+    - resources/google_signin_buttons/btn_google_signin_dark_disabled.png
+    - resources/google_signin_buttons/btn_google_signin_dark_focus.png
+    - resources/google_signin_buttons/btn_google_signin_dark_normal.png
+    - resources/google_signin_buttons/btn_google_signin_dark_pressed.png
+    - resources/google_signin_buttons/btn_google_signin_light_disabled.png
+    - resources/google_signin_buttons/btn_google_signin_light_focus.png
+    - resources/google_signin_buttons/btn_google_signin_light_normal.png
+    - resources/google_signin_buttons/btn_google_signin_light_pressed.png
 
 dependencies:
   flutter:
