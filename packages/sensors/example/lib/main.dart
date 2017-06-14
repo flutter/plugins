@@ -37,17 +37,17 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   List<double> _accelerometerValues;
   List<double> _gyroscopeValues;
-  List<StreamSubscription> _streamSubscriptions = <StreamSubscription>[];
+  var _streamSubscriptions = <StreamSubscription>[];
 
   @override
   Widget build(BuildContext context) {
-    List<String> accelerometer =
+    final accelerometer =
         _accelerometerValues?.map((double v) => v.toStringAsFixed(1))?.toList();
-    List<String> gyroscope =
+    final gyroscope =
         _gyroscopeValues?.map((double v) => v.toStringAsFixed(1))?.toList();
-    int _snakeRows = 20;
-    int _snakeColumns = 20;
-    double _snakeOffsetSize = 10.0;
+    final _snakeRows = 20;
+    final _snakeColumns = 20;
+    final _snakeOffsetSize = 10.0;
 
     return new Scaffold(
       appBar: new AppBar(
@@ -78,7 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 new Text('Accelerometer: $accelerometer'),
               ],
             ),
-            padding: new EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16.0),
           ),
           new Padding(
             child: new Row(
@@ -87,7 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 new Text('Gyroscope: $gyroscope'),
               ],
             ),
-            padding: new EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16.0),
           ),
         ],
       ),

@@ -9,9 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:sensors/sensors.dart';
 
 class Snake extends StatefulWidget {
-  int rows;
-  int columns;
-  double offsetSize;
+  final int rows;
+  final int columns;
+  final double offsetSize;
   Snake({this.rows = 20, this.columns = 20, this.offsetSize = 10.0});
 
   @override
@@ -27,16 +27,16 @@ class SnakeBoardPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    Paint blackLine = new Paint()..color = Colors.black;
-    Paint blackFilled = new Paint()
+    final blackLine = new Paint()..color = Colors.black;
+    final blackFilled = new Paint()
       ..color = Colors.black
       ..style = PaintingStyle.fill;
     canvas.drawRect(
         new Rect.fromPoints(Offset.zero, size.bottomLeft(Offset.zero)),
         blackLine);
     for (math.Point<int> p in state.body) {
-      Offset a = new Offset(offsetSize * p.x, offsetSize * p.y);
-      Offset b = new Offset(offsetSize * (p.x + 1), offsetSize * (p.y + 1));
+      final a = new Offset(offsetSize * p.x, offsetSize * p.y);
+      final b = new Offset(offsetSize * (p.x + 1), offsetSize * (p.y + 1));
 
       canvas.drawRect(new Rect.fromPoints(a, b), blackFilled);
     }
@@ -79,7 +79,7 @@ class SnakeState extends State<Snake> {
   }
 
   void _step() {
-    math.Point<int> newDirection = accelerometerValues == null
+    final math.Point<int> newDirection = accelerometerValues == null
         ? null
         : accelerometerValues[0].abs() < 1.0 &&
                 accelerometerValues[1].abs() < 1.0
@@ -99,15 +99,16 @@ class GameState {
     snakeLength = math.max(rows, columns) - 5;
   }
 
-  List<math.Point<int>> body = <math.Point<int>>[new math.Point<int>(0, 0)];
-  math.Point<int> direction = new math.Point<int>(1, 0);
+  var body = <math.Point<int>>[const math.Point<int>(0, 0)];
+  var direction = const math.Point<int>(1, 0);
 
   void step(math.Point<int> newDirection) {
-    math.Point<int> next = body.last + direction;
+    var next = body.last + direction;
     next = new math.Point<int>(next.x % columns, next.y % rows);
 
     body.add(next);
-    if (body.length > snakeLength) body.removeAt(0);
+    if (body.length > snakeLength)
+      body.removeAt(0);
     direction = newDirection ?? direction;
   }
 }
