@@ -11,8 +11,10 @@ const EventChannel _gyroscopeEventChannel =
 class AccelerometerEvent {
   /// Acceleration force along the x axis (including gravity) measured in m/s^2.
   double x;
+
   /// Acceleration force along the y axis (including gravity) measured in m/s^2.
   double y;
+
   /// Acceleration force along the z axis (including gravity) measured in m/s^2.
   double z;
 
@@ -22,8 +24,10 @@ class AccelerometerEvent {
 class GyroscopeEvent {
   /// Rate of rotation around the x axis measured in rad/s.
   double x;
+
   /// Rate of rotation around the y axis measured in rad/s.
   double y;
+
   /// Rate of rotation around the z axis measured in rad/s.
   double z;
 
@@ -45,7 +49,8 @@ Stream<GyroscopeEvent> _gyroscopeEvents;
 Stream<AccelerometerEvent> get accelerometerEvents {
   if (_accelerometerEvents == null) {
     _accelerometerEvents = _accelerometerEventChannel
-        .receiveBroadcastStream().map(_listToAccelerometerEvent);
+        .receiveBroadcastStream()
+        .map(_listToAccelerometerEvent);
   }
   return _accelerometerEvents;
 }
@@ -54,7 +59,8 @@ Stream<AccelerometerEvent> get accelerometerEvents {
 Stream<GyroscopeEvent> get gyroscopeEvents {
   if (_gyroscopeEvents == null) {
     _gyroscopeEvents = _gyroscopeEventChannel
-        .receiveBroadcastStream().map(_listToGyroscopeEvent);
+        .receiveBroadcastStream()
+        .map(_listToGyroscopeEvent);
   }
   return _gyroscopeEvents;
 }
