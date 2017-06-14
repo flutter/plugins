@@ -33,17 +33,6 @@
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
-- (void)signIn:(GIDSignIn *)signIn presentViewController:(UIViewController *)viewController {
-  [[UIApplication sharedApplication].delegate.window.rootViewController
-      presentViewController:viewController
-                   animated:YES
-                 completion:nil];
-}
-
-- (void)signIn:(GIDSignIn *)signIn dismissViewController:(UIViewController *)viewController {
-  [viewController dismissViewControllerAnimated:YES completion:nil];
-}
-
 - (instancetype)init {
   self = [super init];
   if (self) {
@@ -99,6 +88,19 @@
   return [[GIDSignIn sharedInstance] handleURL:url
                              sourceApplication:sourceApplication
                                     annotation:annotation];
+}
+
+#pragma mark - <GIDSignInUIDelegate> protocol
+
+- (void)signIn:(GIDSignIn *)signIn presentViewController:(UIViewController *)viewController {
+  [[UIApplication sharedApplication].delegate.window.rootViewController
+   presentViewController:viewController
+   animated:YES
+   completion:nil];
+}
+
+- (void)signIn:(GIDSignIn *)signIn dismissViewController:(UIViewController *)viewController {
+  [viewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - <GIDSignInDelegate> protocol
