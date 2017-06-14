@@ -11,5 +11,6 @@ if [ "${FLUTTER_CHANGED_PACKAGES}" = "" ]; then
   echo "Running for all packages"
   pub global run flutter_plugin_tools "$@"
 else
+  echo "Running only for $FLUTTER_CHANGED_PACKAGES"
   pub global run flutter_plugin_tools "$@" --plugins=$FLUTTER_CHANGED_PACKAGES
 fi
