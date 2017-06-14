@@ -14,7 +14,10 @@ matrix:
             - libstdc++6
             - fonts-droid
       before_script:
-        - ./script/travis_setup.sh
+        - git clone https://github.com/flutter/flutter.git --depth 1
+        - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
+        - flutter doctor
+        - pub global activate flutter_plugin_tools
       script:
         - ./script/plugin_tools.sh analyze
     # Job 2) Check format and run tests
@@ -34,10 +37,13 @@ matrix:
             - fonts-droid
             - clang-format-5.0
       before_script:
-        - ./script/travis_setup.sh
+        - git clone https://github.com/flutter/flutter.git --depth 1
+        - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
+        - flutter doctor
+        - pub global activate flutter_plugin_tools
       script:
-        - ./script/plugin_tools format --travis --clang-format=clang-format-5.0
-        - ./script/plugin_tools test
+        - ./script/plugin_tools.sh format --travis --clang-format=clang-format-5.0
+        - ./script/plugin_tools.sh test
     # Job 3) Build example APKs
     - os: linux
       env:
@@ -75,9 +81,12 @@ matrix:
         - gradle -v
         - android list targets
         - echo no | android create avd --force -n test -t android-25 --abi armeabi-v7a --tag google_apis
-        - ./script/travis_setup.sh
+        - git clone https://github.com/flutter/flutter.git --depth 1
+        - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
+        - flutter doctor
+        - pub global activate flutter_plugin_tools
       script:
-        - ./script/plugin_tools build-examples --apk
+        - ./script/plugin_tools.sh build-examples --apk
     # Job 4) Build example IPAs
     - os: osx
       env:
@@ -90,9 +99,12 @@ matrix:
         - brew install --HEAD libimobiledevice
         - brew install ideviceinstaller
         - brew install ios-deploy
-        - ./script/travis_setup.sh
+        - git clone https://github.com/flutter/flutter.git --depth 1
+        - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
+        - flutter doctor
+        - pub global activate flutter_plugin_tools
       script:
-        - ./script/plugin_tools build-examples --ipa
+        - ./script/plugin_tools.sh build-examples --ipa
 
 cache:
   directories:
