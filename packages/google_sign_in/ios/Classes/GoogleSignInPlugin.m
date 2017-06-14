@@ -28,19 +28,16 @@
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/google_sign_in"
                                   binaryMessenger:[registrar messenger]];
-  // TODO(goderbauer): cast is workaround for https://github.com/flutter/flutter/issues/9961
-  UIViewController *viewController = (UIViewController *)registrar.messenger;
-  GoogleSignInPlugin *instance = [[GoogleSignInPlugin alloc] initWithViewController:viewController];
+  GoogleSignInPlugin *instance = [[GoogleSignInPlugin alloc] init];
   [registrar addApplicationDelegate:instance];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
-- (instancetype)initWithViewController:(UIViewController *)viewController {
+- (instancetype)init {
   self = [super init];
   if (self) {
     _accountRequests = [[NSMutableArray alloc] init];
     [GIDSignIn sharedInstance].delegate = self;
-    [GIDSignIn sharedInstance].uiDelegate = (id)viewController;
 
     // On the iOS simulator, we get "Broken pipe" errors after sign-in for some
     // unknown reason. We can avoid crashing the app by ignoring them.
@@ -57,6 +54,8 @@
     [[GGLContext sharedInstance] configureWithError:&error];
     [GIDSignIn sharedInstance].scopes = call.arguments[@"scopes"];
     [GIDSignIn sharedInstance].hostedDomain = call.arguments[@"hostedDomain"];
+    UIViewController *viewController = [UIApplication sharedApplication].keyWindow.rootViewController;
+    [GIDSignIn sharedInstance].uiDelegate = viewController;
     result(error.flutterError);
   } else if ([call.method isEqualToString:@"signInSilently"]) {
     [_accountRequests insertObject:result atIndex:0];
