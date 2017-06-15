@@ -15,6 +15,7 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserInfo;
 import io.flutter.plugin.common.MethodCall;
@@ -115,7 +116,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
   }
 
   private void handleGetToken(MethodCall call, final Result result) {
-    bool refresh = call.arguments.get("refresh");
+    @SuppressWarnings("unchecked")
+    Map<String, Boolean> arguments = (Map<String, Boolean>) call.arguments;
+    boolean refresh = arguments.get("refresh");
     firebaseAuth
         .getCurrentUser()
         .getToken(refresh)
