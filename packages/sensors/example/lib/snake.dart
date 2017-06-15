@@ -41,7 +41,8 @@ class SnakeBoardPainter extends CustomPainter {
     );
     for (math.Point<int> p in state.body) {
       final Offset a = new Offset(offsetSize * p.x, offsetSize * p.y);
-      final Offset b = new Offset(offsetSize * (p.x + 1), offsetSize * (p.y + 1));
+      final Offset b =
+          new Offset(offsetSize * (p.x + 1), offsetSize * (p.y + 1));
 
       canvas.drawRect(new Rect.fromPoints(a, b), blackFilled);
     }
@@ -86,8 +87,7 @@ class SnakeState extends State<Snake> {
   void _step() {
     final math.Point<int> newDirection = acceleration == null
         ? null
-        : acceleration.x.abs() < 1.0 &&
-                acceleration.y.abs() < 1.0
+        : acceleration.x.abs() < 1.0 && acceleration.y.abs() < 1.0
             ? null
             : (acceleration.x.abs() < acceleration.y.abs())
                 ? new math.Point<int>(0, acceleration.y.sign.toInt())
@@ -112,8 +112,7 @@ class GameState {
     next = new math.Point<int>(next.x % columns, next.y % rows);
 
     body.add(next);
-    if (body.length > snakeLength)
-      body.removeAt(0);
+    if (body.length > snakeLength) body.removeAt(0);
     direction = newDirection ?? direction;
   }
 }
