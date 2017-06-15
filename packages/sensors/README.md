@@ -11,14 +11,13 @@ To use this plugin, add `sensors` as a [dependency in your pubspec.yaml file](ht
 ### Example
 
 ``` dart
-
 import 'package:sensors/sensors.dart';
 
-accelerometerEvents.listen((List<double> values) {
- // Do something with the values;
-};)
+accelerometerEvents.listen((AccelerometerEvent event) {
+ // Do something with the event.
+});
 
-gyroscopeEvents.listen((List<double> values) {
- // Do something with the values;
-};)
+gyroscopeEvents.listen((GyroscopeEvent event) {
+ // Do something with the event.
+});
 ```

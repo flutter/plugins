@@ -25,9 +25,9 @@ class Snake extends StatefulWidget {
 
 class SnakeBoardPainter extends CustomPainter {
   GameState state;
-  double offsetSize;
+  double cellSize;
 
-  SnakeBoardPainter(this.state, this.offsetSize);
+  SnakeBoardPainter(this.state, this.cellSize);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -40,9 +40,8 @@ class SnakeBoardPainter extends CustomPainter {
       blackLine,
     );
     for (math.Point<int> p in state.body) {
-      final Offset a = new Offset(offsetSize * p.x, offsetSize * p.y);
-      final Offset b =
-          new Offset(offsetSize * (p.x + 1), offsetSize * (p.y + 1));
+      final Offset a = new Offset(cellSize * p.x, cellSize * p.y);
+      final Offset b = new Offset(cellSize * (p.x + 1), cellSize * (p.y + 1));
 
       canvas.drawRect(new Rect.fromPoints(a, b), blackFilled);
     }
@@ -55,17 +54,17 @@ class SnakeBoardPainter extends CustomPainter {
 }
 
 class SnakeState extends State<Snake> {
-  double offsetSize;
+  double cellSize;
   GameState state;
   AccelerometerEvent acceleration;
 
-  SnakeState(int rows, int columns, this.offsetSize) {
+  SnakeState(int rows, int columns, this.cellSize) {
     state = new GameState(rows, columns);
   }
 
   @override
   Widget build(BuildContext context) {
-    return new CustomPaint(painter: new SnakeBoardPainter(state, offsetSize));
+    return new CustomPaint(painter: new SnakeBoardPainter(state, cellSize));
   }
 
   @override
