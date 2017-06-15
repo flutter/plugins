@@ -84,7 +84,7 @@ class Query {
   /// Fires when children are moved.
   Stream<Event> get onChildMoved => _observe(_EventType.childMoved);
 
-  /// Fires the data at this location is updated. `previousChildKey` is null.
+  /// Fires when the data at this location is updated. `previousChildKey` is null.
   Stream<Event> get onValue => _observe(_EventType.value);
 
   /// Create a query constrained to only return child nodes with a value greater

@@ -28,22 +28,26 @@
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/google_sign_in"
                                   binaryMessenger:[registrar messenger]];
-  // TODO(goderbauer): cast is workaround for https://github.com/flutter/flutter/issues/9961.
-  UIViewController *viewController = (UIViewController *)registrar.messenger;
-  GoogleSignInPlugin *instance = [[GoogleSignInPlugin alloc] initWithViewController:viewController];
+  GoogleSignInPlugin *instance = [[GoogleSignInPlugin alloc] init];
   [registrar addApplicationDelegate:instance];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
-- (instancetype)initWithViewController:(UIViewController *)viewController {
+- (instancetype)init {
   self = [super init];
   if (self) {
     _accountRequests = [[NSMutableArray alloc] init];
     [GIDSignIn sharedInstance].delegate = self;
-    [GIDSignIn sharedInstance].uiDelegate = (id)viewController;
+    [GIDSignIn sharedInstance].uiDelegate = self;
+
+    // On the iOS simulator, we get "Broken pipe" errors after sign-in for some
+    // unknown reason. We can avoid crashing the app by ignoring them.
+    signal(SIGPIPE, SIG_IGN);
   }
   return self;
 }
+
+#pragma mark - <FlutterPlugin> protocol
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([call.method isEqualToString:@"init"]) {
@@ -78,14 +82,27 @@
   }
 }
 
-- (BOOL)application:(UIApplication *)application
-              openURL:(NSURL *)url
-    sourceApplication:(NSString *)sourceApplication
-           annotation:(id)annotation {
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary *)options {
+  NSString *sourceApplication = options[UIApplicationOpenURLOptionsSourceApplicationKey];
+  id annotation = options[UIApplicationOpenURLOptionsAnnotationKey];
   return [[GIDSignIn sharedInstance] handleURL:url
                              sourceApplication:sourceApplication
                                     annotation:annotation];
 }
+
+#pragma mark - <GIDSignInUIDelegate> protocol
+
+- (void)signIn:(GIDSignIn *)signIn presentViewController:(UIViewController *)viewController {
+  UIViewController *rootViewController =
+      [UIApplication sharedApplication].delegate.window.rootViewController;
+  [rootViewController presentViewController:viewController animated:YES completion:nil];
+}
+
+- (void)signIn:(GIDSignIn *)signIn dismissViewController:(UIViewController *)viewController {
+  [viewController dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark - <GIDSignInDelegate> protocol
 
 - (void)signIn:(GIDSignIn *)signIn
     didSignInForUser:(GIDGoogleUser *)user
@@ -118,6 +135,8 @@
                 withError:(NSError *)error {
   [self respondWithAccount:@{} error:nil];
 }
+
+#pragma mark - private methods
 
 - (void)respondWithAccount:(id)account error:(NSError *)error {
   NSArray<FlutterResult> *requests = _accountRequests;

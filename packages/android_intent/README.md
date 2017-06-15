@@ -30,7 +30,7 @@ for it in the plugin and use an action constant to refer to it. For instance:
 Feel free to add support for additional Android intents.
 
 > Note that a similar method does not currently exist for iOS. Instead, the
-([url_launcher](https://pub.dartlang.org/packages/url_launcher) plugin
+[url_launcher](https://pub.dartlang.org/packages/url_launcher) plugin
 can be used for deep linking. Url launcher can also be used for creating
 ACTION_VIEW intents for Android, however this intent plugin also allows
 clients to set extra parameters for the intent.
