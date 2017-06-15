@@ -50,6 +50,9 @@ class FirebaseUser extends UserInfo {
   /// Returns true if the user's email is verified.
   bool get isEmailVerified => _data['isEmailVerified'];
 
+  /// Obtains the id token for the current user, forcing a [refresh] if desired.
+  ///
+  /// Completes with an error if the user is signed out.
   Future<String> getToken({ bool refresh: false }) {
     return FirebaseAuth.channel.invokeMethod(
       'getToken',
