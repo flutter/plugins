@@ -35,19 +35,21 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  static const int _snakeRows = 20;
+  static const int _snakeColumns = 20;
+  static const double _snakeCellSize = 10.0;
+
   List<double> _accelerometerValues;
   List<double> _gyroscopeValues;
-  var _streamSubscriptions = <StreamSubscription>[];
+  List<StreamSubscription<dynamic>> _streamSubscriptions =
+      <StreamSubscription<dynamic>>[];
 
   @override
   Widget build(BuildContext context) {
-    final accelerometer =
+    final List<String> accelerometer =
         _accelerometerValues?.map((double v) => v.toStringAsFixed(1))?.toList();
-    final gyroscope =
+    final List<String> gyroscope =
         _gyroscopeValues?.map((double v) => v.toStringAsFixed(1))?.toList();
-    final _snakeRows = 20;
-    final _snakeColumns = 20;
-    final _snakeOffsetSize = 10.0;
 
     return new Scaffold(
       appBar: new AppBar(
@@ -62,12 +64,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 border: new Border.all(width: 1.0, color: Colors.black38),
               ),
               child: new SizedBox(
-                height: _snakeRows * _snakeOffsetSize,
-                width: _snakeColumns * _snakeOffsetSize,
+                height: _snakeRows * _snakeCellSize,
+                width: _snakeColumns * _snakeCellSize,
                 child: new Snake(
-                    rows: _snakeRows,
-                    columns: _snakeColumns,
-                    offsetSize: _snakeOffsetSize),
+                  rows: _snakeRows,
+                  columns: _snakeColumns,
+                  cellSize: _snakeCellSize,
+                ),
               ),
             ),
           ),
@@ -108,12 +111,12 @@ class _MyHomePageState extends State<MyHomePage> {
     _streamSubscriptions
         .add(accelerometerEvents.listen((AccelerometerEvent event) {
       setState(() {
-        _accelerometerValues = [event.x, event.y, event.z];
+        _accelerometerValues = <double>[event.x, event.y, event.z];
       });
     }));
     _streamSubscriptions.add(gyroscopeEvents.listen((GyroscopeEvent event) {
       setState(() {
-        _gyroscopeValues = [event.x, event.y, event.z];
+        _gyroscopeValues = <double>[event.x, event.y, event.z];
       });
     }));
   }

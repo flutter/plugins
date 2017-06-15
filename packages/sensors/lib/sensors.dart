@@ -10,26 +10,26 @@ const EventChannel _gyroscopeEventChannel =
 
 class AccelerometerEvent {
   /// Acceleration force along the x axis (including gravity) measured in m/s^2.
-  double x;
+  final double x;
 
   /// Acceleration force along the y axis (including gravity) measured in m/s^2.
-  double y;
+  final double y;
 
   /// Acceleration force along the z axis (including gravity) measured in m/s^2.
-  double z;
+  final double z;
 
   AccelerometerEvent(this.x, this.y, this.z);
 }
 
 class GyroscopeEvent {
   /// Rate of rotation around the x axis measured in rad/s.
-  double x;
+  final double x;
 
   /// Rate of rotation around the y axis measured in rad/s.
-  double y;
+  final double y;
 
   /// Rate of rotation around the z axis measured in rad/s.
-  double z;
+  final double z;
 
   GyroscopeEvent(this.x, this.y, this.z);
 }

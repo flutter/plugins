@@ -11,12 +11,16 @@ import 'package:sensors/sensors.dart';
 class Snake extends StatefulWidget {
   final int rows;
   final int columns;
-  final double offsetSize;
-  Snake({this.rows = 20, this.columns = 20, this.offsetSize = 10.0});
+  final double cellSize;
+  Snake({this.rows = 20, this.columns = 20, this.cellSize = 10.0}) {
+    assert(10 <= rows);
+    assert(10 <= columns);
+    assert(5.0 <= cellSize);
+  }
 
   @override
   State<StatefulWidget> createState() =>
-      new SnakeState(rows, columns, offsetSize);
+      new SnakeState(rows, columns, cellSize);
 }
 
 class SnakeBoardPainter extends CustomPainter {
@@ -27,16 +31,17 @@ class SnakeBoardPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final blackLine = new Paint()..color = Colors.black;
-    final blackFilled = new Paint()
+    final Paint blackLine = new Paint()..color = Colors.black;
+    final Paint blackFilled = new Paint()
       ..color = Colors.black
       ..style = PaintingStyle.fill;
     canvas.drawRect(
-        new Rect.fromPoints(Offset.zero, size.bottomLeft(Offset.zero)),
-        blackLine);
+      new Rect.fromPoints(Offset.zero, size.bottomLeft(Offset.zero)),
+      blackLine,
+    );
     for (math.Point<int> p in state.body) {
-      final a = new Offset(offsetSize * p.x, offsetSize * p.y);
-      final b = new Offset(offsetSize * (p.x + 1), offsetSize * (p.y + 1));
+      final Offset a = new Offset(offsetSize * p.x, offsetSize * p.y);
+      final Offset b = new Offset(offsetSize * (p.x + 1), offsetSize * (p.y + 1));
 
       canvas.drawRect(new Rect.fromPoints(a, b), blackFilled);
     }
@@ -51,7 +56,7 @@ class SnakeBoardPainter extends CustomPainter {
 class SnakeState extends State<Snake> {
   double offsetSize;
   GameState state;
-  List<double> accelerometerValues;
+  AccelerometerEvent acceleration;
 
   SnakeState(int rows, int columns, this.offsetSize) {
     state = new GameState(rows, columns);
@@ -67,7 +72,7 @@ class SnakeState extends State<Snake> {
     super.initState();
     accelerometerEvents.listen((AccelerometerEvent event) {
       setState(() {
-        accelerometerValues = [event.x, event.y, event.z];
+        acceleration = event;
       });
     });
 
@@ -79,14 +84,14 @@ class SnakeState extends State<Snake> {
   }
 
   void _step() {
-    final math.Point<int> newDirection = accelerometerValues == null
+    final math.Point<int> newDirection = acceleration == null
         ? null
-        : accelerometerValues[0].abs() < 1.0 &&
-                accelerometerValues[1].abs() < 1.0
+        : acceleration.x.abs() < 1.0 &&
+                acceleration.y.abs() < 1.0
             ? null
-            : (accelerometerValues[0].abs() < accelerometerValues[1].abs())
-                ? new math.Point<int>(0, accelerometerValues[1].sign.toInt())
-                : new math.Point<int>(-accelerometerValues[0].sign.toInt(), 0);
+            : (acceleration.x.abs() < acceleration.y.abs())
+                ? new math.Point<int>(0, acceleration.y.sign.toInt())
+                : new math.Point<int>(-acceleration.x.sign.toInt(), 0);
     state.step(newDirection);
   }
 }
@@ -96,14 +101,14 @@ class GameState {
   int columns;
   int snakeLength;
   GameState(this.rows, this.columns) {
-    snakeLength = math.max(rows, columns) - 5;
+    snakeLength = math.min(rows, columns) - 5;
   }
 
-  var body = <math.Point<int>>[const math.Point<int>(0, 0)];
-  var direction = const math.Point<int>(1, 0);
+  List<math.Point<int>> body = <math.Point<int>>[const math.Point<int>(0, 0)];
+  math.Point<int> direction = const math.Point<int>(1, 0);
 
   void step(math.Point<int> newDirection) {
-    var next = body.last + direction;
+    math.Point<int> next = body.last + direction;
     next = new math.Point<int>(next.x % columns, next.y % rows);
 
     body.add(next);

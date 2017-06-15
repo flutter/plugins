@@ -51,7 +51,7 @@ void _initMotionManager() {
                                                   [NSNumber
                                                       numberWithDouble:-acceleration.z * GRAVITY],
                                                   nil];
-     
+
                              eventSink(accelerationValues);
                            }];
   return nil;
