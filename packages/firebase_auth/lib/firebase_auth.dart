@@ -54,7 +54,9 @@ class FirebaseUser extends UserInfo {
   ///
   /// Completes with an error if the user is signed out.
   Future<String> getToken({bool refresh: false}) {
-    return FirebaseAuth.channel.invokeMethod('getToken', {'refresh': refresh});
+    return FirebaseAuth.channel.invokeMethod('getToken', <String, bool>{
+      'refresh': refresh,
+    });
   }
 
   @override

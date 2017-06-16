@@ -10,8 +10,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 void main() {
   group('$FirebaseAuth', () {
-    FirebaseAuth auth = FirebaseAuth.instance;
-    List<MethodCall> log = <MethodCall>[];
+    final FirebaseAuth auth = FirebaseAuth.instance;
+    final List<MethodCall> log = <MethodCall>[];
 
     const String kMockProviderId = 'firebase';
     const String kMockUid = '12345';
@@ -35,7 +35,7 @@ void main() {
               'isAnonymous': true,
               'isEmailVerified': false,
               'providerData': <Map<String, String>>[
-                {
+                <String, String>{
                   'providerId': kMockProviderId,
                   'uid': kMockUid,
                   'displayName': kMockDisplayName,
@@ -69,10 +69,10 @@ void main() {
       expect(await user.getToken(refresh: true), equals(kMockIdToken));
       expect(
         log,
-        equals([
-          new MethodCall('signInAnonymously'),
-          new MethodCall('getToken', {'refresh': false}),
-          new MethodCall('getToken', {'refresh': true}),
+        equals(<MethodCall>[
+          const MethodCall('signInAnonymously'),
+          const MethodCall('getToken', const <String, bool>{'refresh': false}),
+          const MethodCall('getToken', const <String, bool>{'refresh': true}),
         ]),
       );
     });
@@ -85,8 +85,8 @@ void main() {
       verifyUser(user);
       expect(
         log,
-        equals([
-          new MethodCall('createUserWithEmailAndPassword', {
+        equals(<MethodCall>[
+          new MethodCall('createUserWithEmailAndPassword', <String, String>{
             'email': kMockEmail,
             'password': kMockPassword,
           })
@@ -102,8 +102,8 @@ void main() {
       verifyUser(user);
       expect(
         log,
-        equals([
-          new MethodCall('signInWithEmailAndPassword', {
+        equals(<MethodCall>[
+          new MethodCall('signInWithEmailAndPassword', <String, String>{
             'email': kMockEmail,
             'password': kMockPassword,
           })
@@ -119,8 +119,8 @@ void main() {
       verifyUser(user);
       expect(
         log,
-        equals([
-          new MethodCall('signInWithGoogle', {
+        equals(<MethodCall>[
+          new MethodCall('signInWithGoogle', <String, String>{
             'idToken': kMockIdToken,
             'accessToken': kMockAccessToken,
           })
