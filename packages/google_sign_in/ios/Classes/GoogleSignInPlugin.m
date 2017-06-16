@@ -52,7 +52,12 @@
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([call.method isEqualToString:@"init"]) {
     NSError *error;
-    [[GGLContext sharedInstance] configureWithError:&error];
+    NSString *clientId = call.arguments[@"clientId"];
+    if (clientId && ![clientId isEqual:[NSNull null]]) {
+      [GIDSignIn sharedInstance].clientID = call.arguments[@"clientId"];
+    } else {
+      [[GGLContext sharedInstance] configureWithError:&error];
+    }
     [GIDSignIn sharedInstance].scopes = call.arguments[@"scopes"];
     [GIDSignIn sharedInstance].hostedDomain = call.arguments[@"hostedDomain"];
     result(error.flutterError);

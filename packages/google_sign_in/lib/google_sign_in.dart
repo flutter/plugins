@@ -3,12 +3,15 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:ui' show hashValues;
 
 import 'package:flutter/services.dart' show MethodChannel;
 import 'package:flutter/material.dart';
+import 'package:meta/meta.dart' show visibleForTesting;
 
 class GoogleSignInAuthentication {
   final Map<String, String> _data;
+
   GoogleSignInAuthentication._(this._data);
 
   /// An OpenID Connect ID token that identifies the user.
@@ -45,7 +48,7 @@ class GoogleSignInAccount {
     }
 
     final Map<String, String> response =
-        await _googleSignIn._channel.invokeMethod(
+        await GoogleSignIn.channel.invokeMethod(
       'getTokens',
       <String, dynamic>{'email': email},
     );
@@ -66,6 +69,21 @@ class GoogleSignInAccount {
   }
 
   @override
+  bool operator ==(dynamic other) {
+    if (identical(this, other)) return true;
+    if (other is! GoogleSignInAccount) return false;
+    final GoogleSignInAccount otherAccount = other;
+    return displayName == otherAccount.displayName &&
+        email == otherAccount.email &&
+        id == otherAccount.id &&
+        photoUrl == otherAccount.photoUrl &&
+        _idToken == otherAccount._idToken;
+  }
+
+  @override
+  int get hashCode => hashValues(displayName, email, id, photoUrl, _idToken);
+
+  @override
   String toString() {
     final Map<String, dynamic> data = <String, dynamic>{
       'displayName': displayName,
@@ -79,13 +97,24 @@ class GoogleSignInAccount {
 
 /// GoogleSignIn allows you to authenticate Google users.
 class GoogleSignIn {
-  final MethodChannel _channel;
+  /// The [MethodChannel] over which this class communicates.
+  @visibleForTesting
+  static const MethodChannel channel =
+      const MethodChannel('plugins.flutter.io/google_sign_in');
 
   /// The list of [scopes] are OAuth scope codes requested when signing in.
   final List<String> scopes;
 
   /// Domain to restrict sign-in to.
   final String hostedDomain;
+
+  /// The ID that was assigned to your app when it was registered with Google.
+  ///
+  /// This value can be found in the
+  /// [Google API console](console.developers.google.com).
+  ///
+  /// This field is optional, as it will be automatically deduced if it's unset.
+  final String clientId;
 
   /// Initializes global sign-in configuration settings.
   ///
@@ -96,35 +125,43 @@ class GoogleSignIn {
   /// The [hostedDomain] argument specifies a hosted domain restriction. By
   /// setting this, sign in will be restricted to accounts of the user in the
   /// specified domain. By default, the list of accounts will not be restricted.
-  GoogleSignIn({this.scopes, this.hostedDomain})
-      : _channel = const MethodChannel('plugins.flutter.io/google_sign_in');
+  ///
+  /// The [clientId] argument specifies the ID that was assigned to your app
+  /// when it was registered with Google. It is optional; if unspecified, it
+  /// will be deduced based on your project's metadata (e.g.
+  /// `GoogleServices-Info.plist` on iOS).
+  GoogleSignIn({this.scopes, this.hostedDomain, this.clientId});
 
-  StreamController<GoogleSignInAccount> _streamController =
+  StreamController<GoogleSignInAccount> _currentUserController =
       new StreamController<GoogleSignInAccount>.broadcast();
 
-  /// Subscribe to this stream to be notified when the current user changes
+  /// Subscribe to this stream to be notified when the current user changes.
   Stream<GoogleSignInAccount> get onCurrentUserChanged =>
-      _streamController.stream;
+      _currentUserController.stream;
 
-  // Future that completes when we've finished calling init on the native side
+  // Future that completes when we've finished calling `init` on the native side
   Future<Null> _initialization;
 
   Future<GoogleSignInAccount> _callMethod(String method) async {
     if (_initialization == null) {
-      _initialization = _channel.invokeMethod(
-        "init",
-        <String, dynamic>{
-          'scopes': scopes ?? <String>[],
-          'hostedDomain': hostedDomain,
-        },
-      );
+      _initialization = channel.invokeMethod("init", <String, dynamic>{
+        'scopes': scopes ?? <String>[],
+        'hostedDomain': hostedDomain,
+        'clientId': clientId,
+      });
     }
     await _initialization;
-    final Map<String, dynamic> response = await _channel.invokeMethod(method);
-    _currentUser = (response != null && response.isNotEmpty)
+    final Map<String, dynamic> response = await channel.invokeMethod(method);
+    return _setCurrentUser(response != null && response.isNotEmpty
         ? new GoogleSignInAccount._(this, response)
-        : null;
-    _streamController.add(_currentUser);
+        : null);
+  }
+
+  GoogleSignInAccount _setCurrentUser(GoogleSignInAccount currentUser) {
+    if (currentUser != _currentUser) {
+      _currentUser = currentUser;
+      _currentUserController.add(_currentUser);
+    }
     return _currentUser;
   }
 
