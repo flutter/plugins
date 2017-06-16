@@ -7,9 +7,7 @@ import 'dart:ui' show hashValues;
 
 import 'package:flutter/services.dart' show MethodChannel;
 import 'package:flutter/material.dart';
-
-const MethodChannel _kChannel =
-    const MethodChannel('plugins.flutter.io/google_sign_in');
+import 'package:meta/meta.dart' show visibleForTesting;
 
 class GoogleSignInAuthentication {
   final Map<String, String> _data;
@@ -49,7 +47,8 @@ class GoogleSignInAccount {
       throw new StateError('User is no longer signed in.');
     }
 
-    final Map<String, String> response = await _kChannel.invokeMethod(
+    final Map<String, String> response =
+        await GoogleSignIn.channel.invokeMethod(
       'getTokens',
       <String, dynamic>{'email': email},
     );
@@ -98,6 +97,11 @@ class GoogleSignInAccount {
 
 /// GoogleSignIn allows you to authenticate Google users.
 class GoogleSignIn {
+  /// The [MethodChannel] over which this class communicates.
+  @visibleForTesting
+  static const MethodChannel channel =
+      const MethodChannel('plugins.flutter.io/google_sign_in');
+
   /// The list of [scopes] are OAuth scope codes requested when signing in.
   final List<String> scopes;
 
@@ -140,14 +144,14 @@ class GoogleSignIn {
 
   Future<GoogleSignInAccount> _callMethod(String method) async {
     if (_initialization == null) {
-      _initialization = _kChannel.invokeMethod("init", <String, dynamic>{
+      _initialization = channel.invokeMethod("init", <String, dynamic>{
         'scopes': scopes ?? <String>[],
         'hostedDomain': hostedDomain,
         'clientId': clientId,
       });
     }
     await _initialization;
-    final Map<String, dynamic> response = await _kChannel.invokeMethod(method);
+    final Map<String, dynamic> response = await channel.invokeMethod(method);
     return _setCurrentUser(response != null && response.isNotEmpty
         ? new GoogleSignInAccount._(this, response)
         : null);
