@@ -1,3 +1,7 @@
+## 0.0.3
+
+* Fix for crash on iPad when showing the Camera/Gallery selection dialog
+
 ## 0.0.2+2
 
 * Updated README

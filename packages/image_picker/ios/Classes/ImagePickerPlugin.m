@@ -46,10 +46,12 @@
     _imagePickerController.delegate = self;
     _result = result;
 
+    UIAlertControllerStyle style = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad
+                                       ? UIAlertControllerStyleAlert
+                                       : UIAlertControllerStyleActionSheet;
+
     UIAlertController *alert =
-        [UIAlertController alertControllerWithTitle:nil
-                                            message:nil
-                                     preferredStyle:UIAlertControllerStyleActionSheet];
+        [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:style];
     UIAlertAction *camera = [UIAlertAction actionWithTitle:@"Take Photo"
                                                      style:UIAlertActionStyleDefault
                                                    handler:^(UIAlertAction *action) {
