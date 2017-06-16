@@ -26,7 +26,7 @@ void main() {
       log.clear();
       FirebaseAuth.channel.setMockMethodCallHandler((MethodCall call) async {
         log.add(call);
-        switch(call.method) {
+        switch (call.method) {
           case "getToken":
             return kMockIdToken;
             break;
@@ -48,7 +48,7 @@ void main() {
         }
       });
     });
-      void verifyUser(FirebaseUser user) {
+    void verifyUser(FirebaseUser user) {
       expect(user, isNotNull);
       expect(user, auth.currentUser);
       expect(user.isAnonymous, isTrue);
@@ -60,18 +60,21 @@ void main() {
       expect(userInfo.displayName, kMockDisplayName);
       expect(userInfo.photoUrl, kMockPhotoUrl);
       expect(userInfo.email, kMockEmail);
-      }
+    }
 
     test('signInAnonymously', () async {
       final FirebaseUser user = await auth.signInAnonymously();
       verifyUser(user);
       expect(await user.getToken(), equals(kMockIdToken));
       expect(await user.getToken(refresh: true), equals(kMockIdToken));
-      expect(log, equals([
-        new MethodCall('signInAnonymously'),
-        new MethodCall('getToken', { 'refresh': false }),
-        new MethodCall('getToken', { 'refresh': true }),
-      ]));
+      expect(
+        log,
+        equals([
+          new MethodCall('signInAnonymously'),
+          new MethodCall('getToken', {'refresh': false}),
+          new MethodCall('getToken', {'refresh': true}),
+        ]),
+      );
     });
 
     test('createUserWithEmailAndPassword', () async {
@@ -80,12 +83,15 @@ void main() {
         password: kMockPassword,
       );
       verifyUser(user);
-      expect(log, equals([
-        new MethodCall('createUserWithEmailAndPassword', {
-          'email': kMockEmail,
-          'password': kMockPassword,
-        })
-      ]));
+      expect(
+        log,
+        equals([
+          new MethodCall('createUserWithEmailAndPassword', {
+            'email': kMockEmail,
+            'password': kMockPassword,
+          })
+        ]),
+      );
     });
 
     test('signInWithEmailAndPassword', () async {
@@ -94,12 +100,15 @@ void main() {
         password: kMockPassword,
       );
       verifyUser(user);
-      expect(log, equals([
-        new MethodCall('signInWithEmailAndPassword', {
-          'email': kMockEmail,
-          'password': kMockPassword,
-        })
-      ]));
+      expect(
+        log,
+        equals([
+          new MethodCall('signInWithEmailAndPassword', {
+            'email': kMockEmail,
+            'password': kMockPassword,
+          })
+        ]),
+      );
     });
 
     test('signInWithGoogle', () async {
@@ -108,12 +117,15 @@ void main() {
         accessToken: kMockAccessToken,
       );
       verifyUser(user);
-      expect(log, equals([
-        new MethodCall('signInWithGoogle', {
-          'idToken': kMockIdToken,
-          'accessToken': kMockAccessToken,
-        })
-      ]));
+      expect(
+        log,
+        equals([
+          new MethodCall('signInWithGoogle', {
+            'idToken': kMockIdToken,
+            'accessToken': kMockAccessToken,
+          })
+        ]),
+      );
     });
   });
 }
