@@ -48,8 +48,11 @@ void main() {
       expect(
           log,
           equals(<MethodCall>[
-            new MethodCall('init',
-                <String, dynamic>{'scopes': <String>[], 'hostedDomain': null}),
+            new MethodCall('init', <String, dynamic>{
+              'scopes': <String>[],
+              'hostedDomain': null,
+              'clientId': null,
+            }),
             const MethodCall('signInSilently'),
           ]));
     });
@@ -60,8 +63,11 @@ void main() {
       expect(
           log,
           equals(<MethodCall>[
-            new MethodCall('init',
-                <String, dynamic>{'scopes': <String>[], 'hostedDomain': null}),
+            new MethodCall('init', <String, dynamic>{
+              'scopes': <String>[],
+              'hostedDomain': null,
+              'clientId': null,
+            }),
             const MethodCall('signIn'),
           ]));
     });
@@ -72,8 +78,11 @@ void main() {
       expect(
           log,
           equals(<MethodCall>[
-            new MethodCall('init',
-                <String, dynamic>{'scopes': <String>[], 'hostedDomain': null}),
+            new MethodCall('init', <String, dynamic>{
+              'scopes': <String>[],
+              'hostedDomain': null,
+              'clientId': null,
+            }),
             const MethodCall('signOut'),
           ]));
     });
@@ -84,8 +93,11 @@ void main() {
       expect(
           log,
           equals(<MethodCall>[
-            new MethodCall('init',
-                <String, dynamic>{'scopes': <String>[], 'hostedDomain': null}),
+            new MethodCall('init', <String, dynamic>{
+              'scopes': <String>[],
+              'hostedDomain': null,
+              'clientId': null,
+            }),
             const MethodCall('disconnect'),
           ]));
     });
@@ -97,8 +109,11 @@ void main() {
       expect(
           log,
           equals(<MethodCall>[
-            new MethodCall('init',
-                <String, dynamic>{'scopes': <String>[], 'hostedDomain': null}),
+            new MethodCall('init', <String, dynamic>{
+              'scopes': <String>[],
+              'hostedDomain': null,
+              'clientId': null,
+            }),
             const MethodCall('disconnect'),
           ]));
     });
@@ -120,8 +135,11 @@ void main() {
       expect(
           log,
           equals(<MethodCall>[
-            new MethodCall('init',
-                <String, dynamic>{'scopes': <String>[], 'hostedDomain': null}),
+            new MethodCall('init', <String, dynamic>{
+              'scopes': <String>[],
+              'hostedDomain': null,
+              'clientId': null,
+            }),
             const MethodCall('signInSilently'),
           ]));
     });
@@ -134,8 +152,11 @@ void main() {
       expect(
           log,
           equals(<MethodCall>[
-            new MethodCall('init',
-                <String, dynamic>{'scopes': <String>[], 'hostedDomain': null}),
+            new MethodCall('init', <String, dynamic>{
+              'scopes': <String>[],
+              'hostedDomain': null,
+              'clientId': null,
+            }),
             const MethodCall('signInSilently'),
             const MethodCall('signIn'),
           ]));
@@ -152,8 +173,11 @@ void main() {
       expect(
           log,
           equals(<MethodCall>[
-            new MethodCall('init',
-                <String, dynamic>{'scopes': <String>[], 'hostedDomain': null}),
+            new MethodCall('init', <String, dynamic>{
+              'scopes': <String>[],
+              'hostedDomain': null,
+              'clientId': null,
+            }),
             const MethodCall('signInSilently'),
           ]));
       expect(users.first, users.last, reason: 'Must return the same user');
@@ -179,8 +203,11 @@ void main() {
       expect(
           log,
           equals(<MethodCall>[
-            new MethodCall('init',
-                <String, dynamic>{'scopes': <String>[], 'hostedDomain': null}),
+            new MethodCall('init', <String, dynamic>{
+              'scopes': <String>[],
+              'hostedDomain': null,
+              'clientId': null,
+            }),
             const MethodCall('signOut'),
             const MethodCall('signOut'),
             const MethodCall('disconnect'),
@@ -200,8 +227,11 @@ void main() {
       expect(
           log,
           equals(<MethodCall>[
-            new MethodCall('init',
-                <String, dynamic>{'scopes': <String>[], 'hostedDomain': null}),
+            new MethodCall('init', <String, dynamic>{
+              'scopes': <String>[],
+              'hostedDomain': null,
+              'clientId': null,
+            }),
             const MethodCall('signInSilently'),
             const MethodCall('signOut'),
             const MethodCall('signIn'),
