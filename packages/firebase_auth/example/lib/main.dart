@@ -44,6 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
     assert(user == _auth.currentUser);
     assert(user.isAnonymous);
     assert(!user.isEmailVerified);
+    assert(await user.getToken() != null);
     if (Platform.isIOS) {
       // Anonymous auth doesn't show up as a provider on iOS
       assert(user.providerData.isEmpty);
@@ -69,6 +70,8 @@ class _MyHomePageState extends State<MyHomePage> {
     );
     assert(user.email != null);
     assert(user.displayName != null);
+    assert(!user.isAnonymous);
+    assert(await user.getToken() != null);
     return 'signInWithGoogle succeeded: $user';
   }
 
