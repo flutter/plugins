@@ -59,7 +59,6 @@ matrix:
           - platform-tools
           - build-tools-25.0.3
           - android-25
-          - sys-img-armeabi-v7a-google_apis-25
           - extra-android-m2repository
           - extra-google-m2repository
           - extra-google-android-support
@@ -80,7 +79,6 @@ matrix:
         - export PATH=$GRADLE_HOME/bin:$PATH
         - gradle -v
         - android list targets
-        - echo no | android create avd --force -n test -t android-25 --abi armeabi-v7a --tag google_apis
         - git clone https://github.com/flutter/flutter.git --depth 1
         - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
         - flutter doctor
