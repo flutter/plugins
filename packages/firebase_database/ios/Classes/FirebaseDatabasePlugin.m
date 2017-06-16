@@ -114,10 +114,10 @@ FIRDataEventType parseEventType(NSString *eventTypeString) {
   } else if ([@"FirebaseDatabase#purgeOutstandingWrites" isEqualToString:call.method]) {
     [[FIRDatabase database] purgeOutstandingWrites];
   } else if ([@"FirebaseDatabase#setPersistenceEnabled" isEqualToString:call.method]) {
-    NSNumber *value = call.arguments[@"value"];
+    NSNumber *value = call.arguments[@"enabled"];
     [FIRDatabase database].persistenceEnabled = value.boolValue;
   } else if ([@"FirebaseDatabase#setPersistenceCacheSizeBytes" isEqualToString:call.method]) {
-    NSNumber *value = call.arguments[@"value"];
+    NSNumber *value = call.arguments[@"cacheSize"];
     [FIRDatabase database].persistenceCacheSizeBytes = value.unsignedIntegerValue;
   } else if ([@"DatabaseReference#set" isEqualToString:call.method]) {
     [getReference(call.arguments) setValue:call.arguments[@"value"]

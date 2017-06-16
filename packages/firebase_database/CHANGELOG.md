@@ -1,3 +1,7 @@
+## 0.0.7
+
+* Fixed offline persistence on iOS
+
 ## 0.0.6
 
 * Various APIs added to FirebaseDatabase and Query
