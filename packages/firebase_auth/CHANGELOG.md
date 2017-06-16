@@ -1,3 +1,7 @@
+## 0.0.4
+
+* Add method getToken() to FirebaseUser
+
 ## 0.0.3+1
 
 * Updated README.md
