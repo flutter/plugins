@@ -130,7 +130,7 @@ class GoogleSignIn {
   /// when it was registered with Google. It is optional; if unspecified, it
   /// will be deduced based on your project's metadata (e.g.
   /// `GoogleServices-Info.plist` on iOS).
-  GoogleSignIn({this.scopes, this.hostedDomain, this.clientId});
+  const GoogleSignIn({this.scopes, this.hostedDomain, this.clientId});
 
   StreamController<GoogleSignInAccount> _currentUserController =
       new StreamController<GoogleSignInAccount>.broadcast();
