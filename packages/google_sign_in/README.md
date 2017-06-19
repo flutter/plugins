@@ -22,7 +22,7 @@ enable the [Google People API](https://developers.google.com/people/).
 
 1. [First register your application](https://developers.google.com/mobile/add?platform=ios).
 2. Open Xcode. You'll have to paste this into Xcode to properly register `GoogleServices-Info.plist`.
-3. Copy and paste the generated `GoogleServices-Info.plist` file into `[my_project]/ios/Runner/GoogleServices-Info.plist`.
+3. Select `GoogleServices-Info.plist` from the file manager and drag that file into the `Runner` directory, `[my_project]/ios/Runner/GoogleServices-Info.plist`.
 4. A dialog will show up and ask you to select the targets, select the `Runner` target.  
 5. Then add the `CFBundleURLTypes` attributes below into the `[my_project]/ios/Runner/Info.plist` file.  
 
