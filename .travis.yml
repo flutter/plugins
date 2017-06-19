@@ -79,6 +79,7 @@ matrix:
         - export PATH=$GRADLE_HOME/bin:$PATH
         - gradle -v
         - android list targets
+        - sdkmanager --list
         - git clone https://github.com/flutter/flutter.git --depth 1
         - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
         - flutter doctor
