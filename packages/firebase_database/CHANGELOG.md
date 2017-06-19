@@ -1,3 +1,7 @@
+## 0.0.9
+
+* Updated to Firebase SDK Version 11.0.1
+
 ## 0.0.8
 
 * Added missing offline persistence and query functionality on Android

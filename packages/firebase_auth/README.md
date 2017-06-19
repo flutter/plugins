@@ -25,7 +25,7 @@ dependencies {
   // Example existing classpath
   classpath 'com.android.tools.build:gradle:2.2.3'
   // Add the google services classpath
-  classpath 'com.google.gms:google-services:3.0.0'
+  classpath 'com.google.gms:google-services:3.1.0'
 }
 ```
 
@@ -35,15 +35,15 @@ dependencies {
 apply plugin: 'com.google.gms.google-services'
 ```
 
-*Note:* If this section is not completed you will get an error like this: 
+*Note:* If this section is not completed you will get an error like this:
 ```
-java.lang.IllegalStateException: 
-Default FirebaseApp is not initialized in this process [package name]. 
+java.lang.IllegalStateException:
+Default FirebaseApp is not initialized in this process [package name].
 Make sure to call FirebaseApp.initializeApp(Context) first.
 ```
 
-*Note:* When you are debugging on android, use a device or AVD with Google Play services. 
-Otherwise you will not be able to authenticate. 
+*Note:* When you are debugging on android, use a device or AVD with Google Play services.
+Otherwise you will not be able to authenticate.
 
 ### Use the plugin
 
@@ -57,7 +57,7 @@ Initialize `FirebaseAuth`:
 final FirebaseAuth _auth = FirebaseAuth.instance;
 ```
 
-You can now use the Firebase `_auth` to authenticate in your Dart code, e.g. 
+You can now use the Firebase `_auth` to authenticate in your Dart code, e.g.
 ```
 Future<Null> _handleSignIn() async {
   try {
@@ -76,7 +76,7 @@ Future<Null> _handleSignIn() async {
 
 ## Example
 
-See the [example application](https://github.com/flutter/plugins/tree/master/packages/firebase_auth/example) source 
+See the [example application](https://github.com/flutter/plugins/tree/master/packages/firebase_auth/example) source
 for a complete sample app using the Firebase authentication.
 
 ## Issues and feedback
