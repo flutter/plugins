@@ -71,12 +71,9 @@ GoogleSignIn _googleSignIn = new GoogleSignIn(
 You can now use the `GoogleSignIn` class to authenticate in your Dart code, e.g. 
 
 ```
-Future<Null> _handleSignIn() async {
-  try {
-    await _googleSignIn.signIn();
-  } catch (error) {
-    print(error);
-  }
+Future<GoogleSignInAccount> _handleGoogleSignIn() async {
+  await _googleSignIn.signIn();
+  return _googleSignIn.currentUser;
 }
 ```
 

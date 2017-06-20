@@ -5,9 +5,10 @@
 import 'dart:async';
 import 'dart:convert' show JSON;
 
-import "package:http/http.dart" as http;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import "package:http/http.dart" as http;
 
 GoogleSignIn _googleSignIn = new GoogleSignIn(
   scopes: <String>[
@@ -31,6 +32,8 @@ class SignInDemo extends StatefulWidget {
 }
 
 class SignInDemoState extends State<SignInDemo> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
   GoogleSignInAccount _currentUser;
   String _contactText;
 
@@ -79,12 +82,12 @@ class SignInDemoState extends State<SignInDemo> {
   String _pickFirstNamedContact(Map<String, dynamic> data) {
     final List<Map<String, dynamic>> connections = data['connections'];
     final Map<String, dynamic> contact = connections?.firstWhere(
-      (Map<String, dynamic> contact) => contact['names'] != null,
+          (Map<String, dynamic> contact) => contact['names'] != null,
       orElse: () => null,
     );
     if (contact != null) {
       final Map<String, dynamic> name = contact['names'].firstWhere(
-        (Map<String, dynamic> name) => name['displayName'] != null,
+            (Map<String, dynamic> name) => name['displayName'] != null,
         orElse: () => null,
       );
       if (name != null) {
@@ -94,16 +97,43 @@ class SignInDemoState extends State<SignInDemo> {
     return null;
   }
 
-  Future<Null> _handleSignIn() async {
-    try {
-      await _googleSignIn.signIn();
-    } catch (error) {
-      print(error);
-    }
+  void _handleSignIn() {
+    _handleGoogleSignIn()
+        .then((GoogleSignInAccount user) => _afterSignIn)
+        .catchError((dynamic error) => _onSignInError);
   }
 
-  Future<Null> _handleSignOut() async {
+  Future<GoogleSignInAccount> _handleGoogleSignIn() async {
+    await _googleSignIn.signIn();
+    return _googleSignIn.currentUser;
+  }
+
+  Future<Null> _handleGoogleSignOut() async {
     _googleSignIn.disconnect();
+  }
+
+  void _afterSignIn(GoogleSignInAccount user) {
+    _scaffoldKey.currentState.showSnackBar(new SnackBar(
+        content: new Text("You're signed in " + user.displayName)),
+    );
+  }
+
+  void _onSignInError(dynamic error) {
+    print(error);
+
+    if (error is PlatformException &&
+        error.details.toString().contains('canceled')) {
+      print("User canceled sign in");
+      return;
+    }
+
+    showDialog(
+      context: context,
+      child: new AlertDialog(
+        title: new Text("Sign in Error"),
+        content: new Text("There was an error, try again."),
+      ),
+    );
   }
 
   Widget _buildBody() {
@@ -120,7 +150,7 @@ class SignInDemoState extends State<SignInDemo> {
           new Text(_contactText),
           new RaisedButton(
             child: const Text('SIGN OUT'),
-            onPressed: _handleSignOut,
+            onPressed: _handleGoogleSignOut,
           ),
           new RaisedButton(
             child: const Text('REFRESH'),
@@ -145,6 +175,7 @@ class SignInDemoState extends State<SignInDemo> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
+        key: _scaffoldKey,
         appBar: new AppBar(
           title: const Text('Google Sign In'),
         ),
