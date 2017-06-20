@@ -3,7 +3,12 @@
 // BSD-style license that can be found in the LICENSE file.
 
 #import "GoogleSignInPlugin.h"
-#import <Google/SignIn.h>
+#import <GoogleSignIn/GoogleSignIn.h>
+
+// The key within `GoogleService-Info.plist` used to hold the application's
+// client id.  See https://developers.google.com/identity/sign-in/ios/start
+// for more info.
+static NSString *const kClientIdKey = @"CLIENT_ID";
 
 @interface NSError (FlutterError)
 @property(readonly, nonatomic) FlutterError *flutterError;
@@ -11,7 +16,7 @@
 
 @implementation NSError (FlutterError)
 - (FlutterError *)flutterError {
-  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %ld", (long)self.code]
+  return [FlutterError errorWithCode:[NSString stringWithFormat:@"%ld", (long)self.code]
                              message:self.domain
                              details:self.localizedDescription];
 }
@@ -51,16 +56,18 @@
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([call.method isEqualToString:@"init"]) {
-    NSError *error;
-    NSString *clientId = call.arguments[@"clientId"];
-    if (clientId && ![clientId isEqual:[NSNull null]]) {
-      [GIDSignIn sharedInstance].clientID = call.arguments[@"clientId"];
+    NSString *path = [[NSBundle mainBundle] pathForResource:@"GoogleService-Info" ofType:@"plist"];
+    if (path) {
+      NSMutableDictionary *plist = [[NSMutableDictionary alloc] initWithContentsOfFile:path];
+      [GIDSignIn sharedInstance].clientID = plist[kClientIdKey];
+      [GIDSignIn sharedInstance].scopes = call.arguments[@"scopes"];
+      [GIDSignIn sharedInstance].hostedDomain = call.arguments[@"hostedDomain"];
+      result(nil);
     } else {
-      [[GGLContext sharedInstance] configureWithError:&error];
+      result([FlutterError errorWithCode:@"missing-config"
+                                 message:@"GoogleService-Info.plist file not found"
+                                 details:nil]);
     }
-    [GIDSignIn sharedInstance].scopes = call.arguments[@"scopes"];
-    [GIDSignIn sharedInstance].hostedDomain = call.arguments[@"hostedDomain"];
-    result(error.flutterError);
   } else if ([call.method isEqualToString:@"signInSilently"]) {
     [_accountRequests insertObject:result atIndex:0];
     [[GIDSignIn sharedInstance] signInSilently];

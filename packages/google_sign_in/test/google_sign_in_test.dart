@@ -51,7 +51,6 @@ void main() {
             new MethodCall('init', <String, dynamic>{
               'scopes': <String>[],
               'hostedDomain': null,
-              'clientId': null,
             }),
             const MethodCall('signInSilently'),
           ]));
@@ -66,7 +65,6 @@ void main() {
             new MethodCall('init', <String, dynamic>{
               'scopes': <String>[],
               'hostedDomain': null,
-              'clientId': null,
             }),
             const MethodCall('signIn'),
           ]));
@@ -81,7 +79,6 @@ void main() {
             new MethodCall('init', <String, dynamic>{
               'scopes': <String>[],
               'hostedDomain': null,
-              'clientId': null,
             }),
             const MethodCall('signOut'),
           ]));
@@ -96,7 +93,6 @@ void main() {
             new MethodCall('init', <String, dynamic>{
               'scopes': <String>[],
               'hostedDomain': null,
-              'clientId': null,
             }),
             const MethodCall('disconnect'),
           ]));
@@ -112,7 +108,6 @@ void main() {
             new MethodCall('init', <String, dynamic>{
               'scopes': <String>[],
               'hostedDomain': null,
-              'clientId': null,
             }),
             const MethodCall('disconnect'),
           ]));
@@ -138,7 +133,6 @@ void main() {
             new MethodCall('init', <String, dynamic>{
               'scopes': <String>[],
               'hostedDomain': null,
-              'clientId': null,
             }),
             const MethodCall('signInSilently'),
           ]));
@@ -155,7 +149,6 @@ void main() {
             new MethodCall('init', <String, dynamic>{
               'scopes': <String>[],
               'hostedDomain': null,
-              'clientId': null,
             }),
             const MethodCall('signInSilently'),
             const MethodCall('signIn'),
@@ -176,7 +169,6 @@ void main() {
             new MethodCall('init', <String, dynamic>{
               'scopes': <String>[],
               'hostedDomain': null,
-              'clientId': null,
             }),
             const MethodCall('signInSilently'),
           ]));
@@ -206,7 +198,6 @@ void main() {
             new MethodCall('init', <String, dynamic>{
               'scopes': <String>[],
               'hostedDomain': null,
-              'clientId': null,
             }),
             const MethodCall('signOut'),
             const MethodCall('signOut'),
@@ -230,7 +221,6 @@ void main() {
             new MethodCall('init', <String, dynamic>{
               'scopes': <String>[],
               'hostedDomain': null,
-              'clientId': null,
             }),
             const MethodCall('signInSilently'),
             const MethodCall('signOut'),

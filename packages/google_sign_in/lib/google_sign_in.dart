@@ -108,14 +108,6 @@ class GoogleSignIn {
   /// Domain to restrict sign-in to.
   final String hostedDomain;
 
-  /// The ID that was assigned to your app when it was registered with Google.
-  ///
-  /// This value can be found in the
-  /// [Google API console](console.developers.google.com).
-  ///
-  /// This field is optional, as it will be automatically deduced if it's unset.
-  final String clientId;
-
   /// Initializes global sign-in configuration settings.
   ///
   /// The list of [scopes] are OAuth scope codes to request when signing in.
@@ -125,12 +117,7 @@ class GoogleSignIn {
   /// The [hostedDomain] argument specifies a hosted domain restriction. By
   /// setting this, sign in will be restricted to accounts of the user in the
   /// specified domain. By default, the list of accounts will not be restricted.
-  ///
-  /// The [clientId] argument specifies the ID that was assigned to your app
-  /// when it was registered with Google. It is optional; if unspecified, it
-  /// will be deduced based on your project's metadata (e.g.
-  /// `GoogleServices-Info.plist` on iOS).
-  GoogleSignIn({this.scopes, this.hostedDomain, this.clientId});
+  GoogleSignIn({this.scopes, this.hostedDomain});
 
   StreamController<GoogleSignInAccount> _currentUserController =
       new StreamController<GoogleSignInAccount>.broadcast();
@@ -147,7 +134,6 @@ class GoogleSignIn {
       _initialization = channel.invokeMethod("init", <String, dynamic>{
         'scopes': scopes ?? <String>[],
         'hostedDomain': hostedDomain,
-        'clientId': clientId,
       });
     }
     await _initialization;
