@@ -105,7 +105,6 @@ id roundDoubles(id value) {
   return value;
 }
 
-
 @interface FirebaseDatabasePlugin ()
 @property(nonatomic, retain) FlutterMethodChannel *channel;
 @end
