@@ -56,8 +56,7 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
     Query query = getReference(arguments);
     @SuppressWarnings("unchecked")
     Map<String, Object> parameters = (Map<String, Object>) arguments.get("parameters");
-    if (parameters == null)
-      return query;
+    if (parameters == null) return query;
     Object orderBy = parameters.get("orderBy");
     if ("child".equals(orderBy)) {
       query = query.orderByChild((String) parameters.get("orderByChildKey"));
