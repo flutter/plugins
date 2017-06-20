@@ -53,7 +53,7 @@ class FirebaseDatabase {
   Future<bool> setPersistenceEnabled(bool enabled) {
     return _channel.invokeMethod(
       'FirebaseDatabase#setPersistenceEnabled',
-      <String, bool>{'enabled': enabled},
+      enabled,
     );
   }
 
@@ -77,7 +77,7 @@ class FirebaseDatabase {
   Future<bool> setPersistenceCacheSizeBytes(int cacheSize) {
     return _channel.invokeMethod(
       'FirebaseDatabase#setPersistenceCacheSizeBytes',
-      <String, int>{'cacheSize': cacheSize},
+      cacheSize,
     );
   }
 

@@ -43,14 +43,8 @@ void main() {
       expect(
         log,
         equals(<MethodCall>[
-          new MethodCall(
-            'FirebaseDatabase#setPersistenceEnabled',
-            <String, bool>{'enabled': false},
-          ),
-          new MethodCall(
-            'FirebaseDatabase#setPersistenceEnabled',
-            <String, bool>{'enabled': true},
-          ),
+          const MethodCall('FirebaseDatabase#setPersistenceEnabled', false),
+          const MethodCall('FirebaseDatabase#setPersistenceEnabled', true),
         ]),
       );
     });
@@ -60,10 +54,7 @@ void main() {
       expect(
         log,
         equals(<MethodCall>[
-          new MethodCall(
-            'FirebaseDatabase#setPersistenceCacheSizeBytes',
-            <String, int>{'cacheSize': 42},
-          ),
+          const MethodCall('FirebaseDatabase#setPersistenceCacheSizeBytes', 42),
         ]),
       );
     });

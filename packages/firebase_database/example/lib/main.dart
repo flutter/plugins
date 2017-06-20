@@ -45,6 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     FirebaseDatabase.instance.setPersistenceEnabled(true);
+    FirebaseDatabase.instance.setPersistenceCacheSizeBytes(10000000);
     _counterRef.keepSynced(true);
     _counterSubscription = _counterRef.onValue.listen((Event event) {
       setState(() {
