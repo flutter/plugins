@@ -5,13 +5,18 @@
 #import "GoogleSignInPlugin.h"
 #import <GoogleSignIn/GoogleSignIn.h>
 
+// The key within `GoogleService-Info.plist` used to hold the application's
+// client id.  See https://developers.google.com/identity/sign-in/ios/start
+// for more info.
+static NSString *const kClientIdKey = @"CLIENT_ID";
+
 @interface NSError (FlutterError)
 @property(readonly, nonatomic) FlutterError *flutterError;
 @end
 
 @implementation NSError (FlutterError)
 - (FlutterError *)flutterError {
-  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %ld", (long)self.code]
+  return [FlutterError errorWithCode:[NSString stringWithFormat:@"%ld", (long)self.code]
                              message:self.domain
                              details:self.localizedDescription];
 }
@@ -52,11 +57,17 @@
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([call.method isEqualToString:@"init"]) {
     NSString *path = [[NSBundle mainBundle] pathForResource:@"GoogleService-Info" ofType:@"plist"];
-    NSMutableDictionary *plist = [[NSMutableDictionary alloc] initWithContentsOfFile:path];
-    [GIDSignIn sharedInstance].clientID = plist[@"CLIENT_ID"];
-    [GIDSignIn sharedInstance].scopes = call.arguments[@"scopes"];
-    [GIDSignIn sharedInstance].hostedDomain = call.arguments[@"hostedDomain"];
-    result(nil);
+    if (path) {
+      NSMutableDictionary *plist = [[NSMutableDictionary alloc] initWithContentsOfFile:path];
+      [GIDSignIn sharedInstance].clientID = plist[kClientIdKey];
+      [GIDSignIn sharedInstance].scopes = call.arguments[@"scopes"];
+      [GIDSignIn sharedInstance].hostedDomain = call.arguments[@"hostedDomain"];
+      result(nil);
+    } else {
+      result([FlutterError errorWithCode:@"missing-config"
+                                 message:@"GoogleService-Info.plist file not found"
+                                 details:nil]);
+    }
   } else if ([call.method isEqualToString:@"signInSilently"]) {
     [_accountRequests insertObject:result atIndex:0];
     [[GIDSignIn sharedInstance] signInSilently];
