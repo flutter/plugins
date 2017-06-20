@@ -51,7 +51,9 @@ class _MyHomePageState extends State<MyHomePage> {
         _counter = event.snapshot.value ?? 0;
       });
     });
-    _messagesSubscription = _messagesRef.onChildAdded.listen((Event event) {
+    _messagesSubscription = _messagesRef
+      .limitToLast(10)
+      .onChildAdded.listen((Event event) {
       print('Child added: ${event.snapshot.value}');
     });
   }
