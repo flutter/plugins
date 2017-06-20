@@ -3,7 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 #import "GoogleSignInPlugin.h"
-#import <Google/SignIn.h>
+#import <GoogleSignIn/GoogleSignIn.h>
 
 @interface NSError (FlutterError)
 @property(readonly, nonatomic) FlutterError *flutterError;
@@ -51,16 +51,12 @@
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([call.method isEqualToString:@"init"]) {
-    NSError *error;
-    NSString *clientId = call.arguments[@"clientId"];
-    if (clientId && ![clientId isEqual:[NSNull null]]) {
-      [GIDSignIn sharedInstance].clientID = call.arguments[@"clientId"];
-    } else {
-      [[GGLContext sharedInstance] configureWithError:&error];
-    }
+    NSString *path = [[NSBundle mainBundle] pathForResource:@"GoogleService-Info" ofType:@"plist"];
+    NSMutableDictionary *plist = [[NSMutableDictionary alloc] initWithContentsOfFile:path];
+    [GIDSignIn sharedInstance].clientID = plist[@"CLIENT_ID"];
     [GIDSignIn sharedInstance].scopes = call.arguments[@"scopes"];
     [GIDSignIn sharedInstance].hostedDomain = call.arguments[@"hostedDomain"];
-    result(error.flutterError);
+    result(nil);
   } else if ([call.method isEqualToString:@"signInSilently"]) {
     [_accountRequests insertObject:result atIndex:0];
     [[GIDSignIn sharedInstance] signInSilently];
