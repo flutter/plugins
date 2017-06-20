@@ -1,3 +1,10 @@
+## 0.0.8
+
+* Added missing offline persistence and query functionality on Android
+* Fixed startAt query behavior on iOS
+* Persistence methods no longer throw errors on failure, return false instead
+* Updates to docs and tests
+
 ## 0.0.7
 
 * Fixed offline persistence on iOS

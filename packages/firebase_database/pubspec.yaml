@@ -3,7 +3,7 @@ name: firebase_database
 description: Firebase Database plugin for Flutter.
 author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/firebase_database
-version: 0.0.7
+version: 0.0.8
 
 flutter:
   plugin:
@@ -16,7 +16,6 @@ dependencies:
   meta: "^1.0.5"
 
 dev_dependencies:
-  mockito: ^2.0.2
   test: 0.12.21
 
 environment:
