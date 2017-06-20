@@ -1,3 +1,18 @@
+## 0.1.0
+
+* Updated to Firebase SDK Version 11.0.1
+* **Breaking Change**: You need to add a maven section with the "https://maven.google.com" endpoint to the repository section of your `android/build.gradle`. For example:
+```gradle
+allprojects {
+    repositories {
+        jcenter()
+        maven {                              // NEW
+            url "https://maven.google.com"   // NEW
+        }                                    // NEW
+    }
+}
+```
+
 ## 0.0.4
 
 * Add method getToken() to FirebaseUser
