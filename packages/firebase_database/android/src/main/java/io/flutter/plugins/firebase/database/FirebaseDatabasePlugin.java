@@ -56,6 +56,8 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
     Query query = getReference(arguments);
     @SuppressWarnings("unchecked")
     Map<String, Object> parameters = (Map<String, Object>) arguments.get("parameters");
+    if (parameters == null)
+      return query;
     Object orderBy = parameters.get("orderBy");
     if ("child".equals(orderBy)) {
       query = query.orderByChild((String) parameters.get("orderByChildKey"));
@@ -73,8 +75,10 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
         query = query.startAt((Boolean) startAt, startAtKey);
       } else if (startAt instanceof String) {
         query = query.startAt((String) startAt, startAtKey);
-      } else {
-        query = query.startAt((Double) startAt, startAtKey);
+      } else if (startAt instanceof Double) {
+        query = query.endAt((Double) startAt);
+      } else if (startAt instanceof Integer) {
+        query = query.startAt((int) startAt);
       }
     }
     if (parameters.containsKey("endAt")) {
@@ -84,25 +88,29 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
         query = query.endAt((Boolean) endAt, endAtKey);
       } else if (endAt instanceof String) {
         query = query.endAt((String) endAt, endAtKey);
-      } else {
-        query = query.endAt((Double) endAt, endAtKey);
+      } else if (endAt instanceof Double) {
+        query = query.endAt((Double) endAt);
+      } else if (endAt instanceof Integer) {
+        query = query.endAt((int) endAt);
       }
     }
-    if (arguments.containsKey("equalTo")) {
-      Object equalTo = arguments.get("equalTo");
+    if (parameters.containsKey("equalTo")) {
+      Object equalTo = parameters.get("equalTo");
       if (equalTo instanceof Boolean) {
         query = query.equalTo((Boolean) equalTo);
       } else if (equalTo instanceof String) {
         query = query.equalTo((String) equalTo);
-      } else {
+      } else if (equalTo instanceof Double) {
         query = query.equalTo((Double) equalTo);
+      } else if (equalTo instanceof Integer) {
+        query = query.equalTo((int) equalTo);
       }
     }
-    if (arguments.containsKey("limitToFirst")) {
-      query = query.limitToFirst((int) arguments.get("limitToFirst"));
+    if (parameters.containsKey("limitToFirst")) {
+      query = query.limitToFirst((int) parameters.get("limitToFirst"));
     }
-    if (arguments.containsKey("limitToLast")) {
-      query = query.limitToLast((int) arguments.get("limitToLast"));
+    if (parameters.containsKey("limitToLast")) {
+      query = query.limitToLast((int) parameters.get("limitToLast"));
     }
     return query;
   }

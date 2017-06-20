@@ -93,6 +93,7 @@ class Query {
   /// than or equal to the given key.
   Query startAt(dynamic value, { String key }) {
     assert(!_parameters.containsKey('startAt'));
+    assert(value is String || value is bool || value is double || value is int);
     return _copyWithParameters(
       <String, dynamic>{ 'startAt': value, 'startAtKey': key },
     );
@@ -104,6 +105,7 @@ class Query {
   /// than or equal to the given key.
   Query endAt(dynamic value, { String key }) {
     assert(!_parameters.containsKey('endAt'));
+    assert(value is String || value is bool || value is double || value is int);
     return _copyWithParameters(
       <String, dynamic>{ 'endAt': value, 'endAtKey': key },
     );
@@ -115,6 +117,7 @@ class Query {
   /// If a key is provided, there is at most one such child as names are unique.
   Query equalTo(dynamic value, { String key }) {
     assert(!_parameters.containsKey('equalTo'));
+    assert(value is String || value is bool || value is double || value is int);
     return _copyWithParameters(
       <String, dynamic>{ 'equalTo': value, 'equalToKey': key },
     );
