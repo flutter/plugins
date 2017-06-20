@@ -93,7 +93,10 @@ class Query {
   /// than or equal to the given key.
   Query startAt(dynamic value, { String key }) {
     assert(!_parameters.containsKey('startAt'));
-    return _copyWithParameters(<String, dynamic>{ 'startAt': value, 'startAtKey': key});
+    assert(value is String || value is bool || value is double || value is int);
+    return _copyWithParameters(
+      <String, dynamic>{ 'startAt': value, 'startAtKey': key },
+    );
   }
 
   /// Create a query constrained to only return child nodes with a value less
@@ -102,7 +105,10 @@ class Query {
   /// than or equal to the given key.
   Query endAt(dynamic value, { String key }) {
     assert(!_parameters.containsKey('endAt'));
-    return _copyWithParameters(<String, dynamic>{ 'endAt': value, 'endAtKey': key});
+    assert(value is String || value is bool || value is double || value is int);
+    return _copyWithParameters(
+      <String, dynamic>{ 'endAt': value, 'endAtKey': key },
+    );
   }
 
   /// Create a query constrained to only return child nodes with the given
@@ -111,7 +117,10 @@ class Query {
   /// If a key is provided, there is at most one such child as names are unique.
   Query equalTo(dynamic value, { String key }) {
     assert(!_parameters.containsKey('equalTo'));
-    return _copyWithParameters(<String, dynamic>{ 'equalTo': value, 'equalToKey': key });
+    assert(value is String || value is bool || value is double || value is int);
+    return _copyWithParameters(
+      <String, dynamic>{ 'equalTo': value, 'equalToKey': key },
+    );
   }
 
   /// Create a query with limit and anchor it to the start of the window.
@@ -128,16 +137,20 @@ class Query {
 
   /// Generate a view of the data sorted by values of a particular child key.
   ///
-  /// Intended to be used in combination with startAt(), endAt(), or equalTo().
+  /// Intended to be used in combination with [startAt], [endAt], or
+  /// [equalTo].
   Query orderByChild(String key) {
     assert(key != null);
     assert(!_parameters.containsKey('orderBy'));
-    return _copyWithParameters(<String, dynamic>{ 'orderBy': 'child', 'orderByChildKey': key });
+    return _copyWithParameters(
+      <String, dynamic>{ 'orderBy': 'child', 'orderByChildKey': key },
+    );
   }
 
   /// Generate a view of the data sorted by key.
   ///
-  /// Intended to be used in combination with startAt(), endAt(), or equalTo().
+  /// Intended to be used in combination with [startAt], [endAt], or
+  /// [equalTo].
   Query orderByKey() {
     assert(!_parameters.containsKey('orderBy'));
     return _copyWithParameters(<String, dynamic>{ 'orderBy': 'key' });
@@ -145,7 +158,8 @@ class Query {
 
   /// Generate a view of the data sorted by value.
   ///
-  /// Intended to be used in combination with startAt(), endAt(), or equalTo().
+  /// Intended to be used in combination with [startAt], [endAt], or
+  /// [equalTo].
   Query orderByValue() {
     assert(!_parameters.containsKey('orderBy'));
     return _copyWithParameters(<String, dynamic>{ 'orderBy': 'value' });
@@ -153,7 +167,8 @@ class Query {
 
   /// Generate a view of the data sorted by priority.
   ///
-  /// Intended to be used in combination with startAt(), endAt(), or equalTo().
+  /// Intended to be used in combination with [startAt], [endAt], or
+  /// [equalTo].
   Query orderByPriority() {
     assert(!_parameters.containsKey('orderBy'));
     return _copyWithParameters(<String, dynamic>{ 'orderBy': 'priority' });

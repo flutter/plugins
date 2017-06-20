@@ -97,10 +97,10 @@ class DatabaseReference extends Query {
   /// priority (including no priority), they are sorted by key. Numeric keys
   /// come first (sorted numerically), followed by the remaining keys (sorted
   /// lexicographically).
-
+  ///
   /// Note that priorities are parsed and ordered as IEEE 754 double-precision
   /// floating-point numbers. Keys are always stored as strings and are treated
-  /// as numbers only when they can be parsed as a 32-bit integer
+  /// as numbers only when they can be parsed as a 32-bit integer.
   Future<Null> setPriority(dynamic priority) async {
     return _database._channel.invokeMethod(
       'DatabaseReference#setPriority',

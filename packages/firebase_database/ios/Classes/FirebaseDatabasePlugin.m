@@ -40,7 +40,7 @@ FIRDatabaseQuery *getQuery(NSDictionary *arguments) {
   }
   id startAt = parameters[@"startAt"];
   if (startAt) {
-    query = [query queryStartingAtValue:startAt childKey:parameters[@"endAtKey"]];
+    query = [query queryStartingAtValue:startAt childKey:parameters[@"startAtKey"]];
   }
   id endAt = parameters[@"endAt"];
   if (endAt) {
@@ -109,16 +109,39 @@ FIRDataEventType parseEventType(NSString *eventTypeString) {
       };
   if ([@"FirebaseDatabase#goOnline" isEqualToString:call.method]) {
     [[FIRDatabase database] goOnline];
+    result(nil);
   } else if ([@"FirebaseDatabase#goOffline" isEqualToString:call.method]) {
     [[FIRDatabase database] goOffline];
+    result(nil);
   } else if ([@"FirebaseDatabase#purgeOutstandingWrites" isEqualToString:call.method]) {
     [[FIRDatabase database] purgeOutstandingWrites];
+    result(nil);
   } else if ([@"FirebaseDatabase#setPersistenceEnabled" isEqualToString:call.method]) {
-    NSNumber *value = call.arguments[@"enabled"];
-    [FIRDatabase database].persistenceEnabled = value.boolValue;
+    NSNumber *value = call.arguments;
+    @try {
+      [FIRDatabase database].persistenceEnabled = value.boolValue;
+      result([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+      if ([@"FIRDatabaseAlreadyInUse" isEqualToString:exception.name]) {
+        // Database is already in use, e.g. after hot reload/restart.
+        result([NSNumber numberWithBool:NO]);
+      } else {
+        @throw;
+      }
+    }
   } else if ([@"FirebaseDatabase#setPersistenceCacheSizeBytes" isEqualToString:call.method]) {
-    NSNumber *value = call.arguments[@"cacheSize"];
-    [FIRDatabase database].persistenceCacheSizeBytes = value.unsignedIntegerValue;
+    NSNumber *value = call.arguments;
+    @try {
+      [FIRDatabase database].persistenceCacheSizeBytes = value.unsignedIntegerValue;
+      result([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+      if ([@"FIRDatabaseAlreadyInUse" isEqualToString:exception.name]) {
+        // Database is already in use, e.g. after hot reload/restart.
+        result([NSNumber numberWithBool:NO]);
+      } else {
+        @throw;
+      }
+    }
   } else if ([@"DatabaseReference#set" isEqualToString:call.method]) {
     [getReference(call.arguments) setValue:call.arguments[@"value"]
                                andPriority:call.arguments[@"priority"]

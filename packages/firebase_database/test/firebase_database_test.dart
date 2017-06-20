@@ -4,7 +4,6 @@
 
 import 'dart:async';
 
-import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
 import 'package:flutter/services.dart';
@@ -24,64 +23,70 @@ void main() {
     setUp(() async {
       channel.setMockMethodCallHandler((MethodCall methodCall) async {
         log.add(methodCall);
-        if (methodCall.method == 'Query#observe') {
-          return mockHandleId++;
+        switch (methodCall.method) {
+          case 'Query#observe':
+            return mockHandleId++;
+          case 'FirebaseDatabase#setPersistenceEnabled':
+            return true;
+          case 'FirebaseDatabase#setPersistenceCacheSizeBytes':
+            return true;
+          default:
+            return null;
         }
-        return null;
       });
       log.clear();
     });
 
     test('setPersistenceEnabled', () async {
-      await database.setPersistenceEnabled(false);
-      await database.setPersistenceEnabled(true);
+      expect(await database.setPersistenceEnabled(false), true);
+      expect(await database.setPersistenceEnabled(true), true);
       expect(
-          log,
-          equals(<MethodCall>[
-            new MethodCall('FirebaseDatabase#setPersistenceEnabled',
-                <String, dynamic>{'enabled': false}),
-            new MethodCall('FirebaseDatabase#setPersistenceEnabled',
-                <String, dynamic>{'enabled': true}),
-          ]));
+        log,
+        equals(<MethodCall>[
+          const MethodCall('FirebaseDatabase#setPersistenceEnabled', false),
+          const MethodCall('FirebaseDatabase#setPersistenceEnabled', true),
+        ]),
+      );
     });
 
     test('setPersistentCacheSizeBytes', () async {
-      await database.setPersistenceCacheSizeBytes(42);
+      expect(await database.setPersistenceCacheSizeBytes(42), true);
       expect(
-          log,
-          equals(<MethodCall>[
-            new MethodCall(
-              'FirebaseDatabase#setPersistenceCacheSizeBytes',
-              <String, dynamic>{'cacheSize': 42},
-            ),
-          ]));
+        log,
+        equals(<MethodCall>[
+          const MethodCall('FirebaseDatabase#setPersistenceCacheSizeBytes', 42),
+        ]),
+      );
     });
 
     test('goOnline', () async {
       await database.goOnline();
       expect(
-          log,
-          equals(<MethodCall>[
-            const MethodCall('FirebaseDatabase#goOnline'),
-          ]));
+        log,
+        equals(<MethodCall>[
+          const MethodCall('FirebaseDatabase#goOnline'),
+        ]),
+      );
     });
 
     test('goOffline', () async {
       await database.goOffline();
       expect(
-          log,
-          equals(<MethodCall>[
-            const MethodCall('FirebaseDatabase#goOffline'),
-          ]));
+        log,
+        equals(<MethodCall>[
+          const MethodCall('FirebaseDatabase#goOffline'),
+        ]),
+      );
     });
 
     test('purgeOutstandingWrites', () async {
       await database.purgeOutstandingWrites();
       expect(
-          log,
-          equals(<MethodCall>[
-            const MethodCall('FirebaseDatabase#purgeOutstandingWrites'),
-          ]));
+        log,
+        equals(<MethodCall>[
+          const MethodCall('FirebaseDatabase#purgeOutstandingWrites'),
+        ]),
+      );
     });
 
     group('$DatabaseReference', () {
@@ -91,25 +96,26 @@ void main() {
         await database.reference().child('foo').set(value);
         await database.reference().child('bar').set(value, priority: priority);
         expect(
-            log,
-            equals(<MethodCall>[
-              new MethodCall(
-                'DatabaseReference#set',
-                <String, dynamic>{
-                  'path': 'foo',
-                  'value': value,
-                  'priority': null
-                },
-              ),
-              new MethodCall(
-                'DatabaseReference#set',
-                <String, dynamic>{
-                  'path': 'bar',
-                  'value': value,
-                  'priority': priority
-                },
-              ),
-            ]));
+          log,
+          equals(<MethodCall>[
+            new MethodCall(
+              'DatabaseReference#set',
+              <String, dynamic>{
+                'path': 'foo',
+                'value': value,
+                'priority': null
+              },
+            ),
+            new MethodCall(
+              'DatabaseReference#set',
+              <String, dynamic>{
+                'path': 'bar',
+                'value': value,
+                'priority': priority
+              },
+            ),
+          ]),
+        );
       });
 
       test('setPriority', () async {
@@ -163,5 +169,3 @@ void main() {
     });
   });
 }
-
-class MockPlatformChannel extends Mock implements MethodChannel {}

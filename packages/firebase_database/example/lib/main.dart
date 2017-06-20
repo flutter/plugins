@@ -44,12 +44,16 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    FirebaseDatabase.instance.setPersistenceEnabled(true);
+    FirebaseDatabase.instance.setPersistenceCacheSizeBytes(10000000);
+    _counterRef.keepSynced(true);
     _counterSubscription = _counterRef.onValue.listen((Event event) {
       setState(() {
         _counter = event.snapshot.value ?? 0;
       });
     });
-    _messagesSubscription = _messagesRef.onChildAdded.listen((Event event) {
+    _messagesSubscription =
+        _messagesRef.limitToLast(10).onChildAdded.listen((Event event) {
       print('Child added: ${event.snapshot.value}');
     });
   }
