@@ -134,8 +134,8 @@ class Query {
 
   /// Generate a view of the data sorted by values of a particular child key.
   ///
-  /// Intended to be used in combination with [startAt()], [endAt()], or
-  /// [equalTo()].
+  /// Intended to be used in combination with [startAt], [endAt], or
+  /// [equalTo].
   Query orderByChild(String key) {
     assert(key != null);
     assert(!_parameters.containsKey('orderBy'));
@@ -146,8 +146,8 @@ class Query {
 
   /// Generate a view of the data sorted by key.
   ///
-  /// Intended to be used in combination with [startAt()], [endAt()], or
-  /// [equalTo()].
+  /// Intended to be used in combination with [startAt], [endAt], or
+  /// [equalTo].
   Query orderByKey() {
     assert(!_parameters.containsKey('orderBy'));
     return _copyWithParameters(<String, dynamic>{ 'orderBy': 'key' });
@@ -155,8 +155,8 @@ class Query {
 
   /// Generate a view of the data sorted by value.
   ///
-  /// Intended to be used in combination with [startAt()], [endAt()], or
-  /// [equalTo()].
+  /// Intended to be used in combination with [startAt], [endAt], or
+  /// [equalTo].
   Query orderByValue() {
     assert(!_parameters.containsKey('orderBy'));
     return _copyWithParameters(<String, dynamic>{ 'orderBy': 'value' });
@@ -164,8 +164,8 @@ class Query {
 
   /// Generate a view of the data sorted by priority.
   ///
-  /// Intended to be used in combination with [startAt()], [endAt()], or
-  /// [equalTo()].
+  /// Intended to be used in combination with [startAt], [endAt], or
+  /// [equalTo].
   Query orderByPriority() {
     assert(!_parameters.containsKey('orderBy'));
     return _copyWithParameters(<String, dynamic>{ 'orderBy': 'priority' });

@@ -35,7 +35,7 @@ class FirebaseDatabase {
   /// Attempts to sets the database persistence to [enabled].
   ///
   /// This property must be set before calling methods on database references
-  /// and only needs to be called once per application. The returned `Future`
+  /// and only needs to be called once per application. The returned [Future]
   /// will complete with `true` if the operation was successful or `false` if
   /// the persistence could not be set (because database references have
   /// already been created).
@@ -66,7 +66,7 @@ class FirebaseDatabase {
   /// the cache size.
   ///
   /// This property must be set before calling methods on database references
-  /// and only needs to be called once per application. The returned `Future`
+  /// and only needs to be called once per application. The returned [Future]
   /// will complete with `true` if the operation was successful or `false` if
   /// the value could not be set (because database references have already been
   /// created).
