@@ -130,14 +130,19 @@ class GoogleSignIn {
   Future<Null> _initialization;
 
   Future<GoogleSignInAccount> _callMethod(String method) async {
+    print('<<< $method');
     if (_initialization == null) {
       _initialization = channel.invokeMethod("init", <String, dynamic>{
         'scopes': scopes ?? <String>[],
         'hostedDomain': hostedDomain,
+      })..catchError((dynamic _) {
+        // Invalidate initialization if it errored out.
+        _initialization = null;
       });
     }
     await _initialization;
     final Map<String, dynamic> response = await channel.invokeMethod(method);
+    print('>>> $response');
     return _setCurrentUser(response != null && response.isNotEmpty
         ? new GoogleSignInAccount._(this, response)
         : null);
@@ -201,8 +206,11 @@ class GoogleSignIn {
   /// a Future which resolves to the same user instance.
   ///
   /// Re-authentication can be triggered only after [signOut] or [disconnect].
-  Future<GoogleSignInAccount> signInSilently() =>
-      _addMethodCall('signInSilently');
+  Future<GoogleSignInAccount> signInSilently() {
+    return _addMethodCall('signInSilently').catchError((dynamic _) {
+      // ignore, we promised to be silent.
+    });
+  }
 
   /// Starts the interactive sign-in process.
   ///
