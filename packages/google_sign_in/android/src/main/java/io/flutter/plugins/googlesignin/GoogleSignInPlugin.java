@@ -57,7 +57,6 @@ public class GoogleSignInPlugin
 
   private static final String ERROR_REASON_EXCEPTION = "exception";
   private static final String ERROR_REASON_STATUS = "status";
-  private static final String ERROR_REASON_CANCELED = "canceled";
   private static final String ERROR_REASON_OPERATION_IN_PROGRESS = "operation_in_progress";
   private static final String ERROR_REASON_CONNECTION_FAILED = "connection_failed";
 
@@ -398,7 +397,8 @@ public class GoogleSignInPlugin
     }
 
     if (resultCode != Activity.RESULT_OK) {
-      finishWithError(ERROR_REASON_CANCELED, String.valueOf(resultCode));
+      // User cancelled so we return a null auth object.
+      finishWithSuccess(null);
       return true;
     }
 
