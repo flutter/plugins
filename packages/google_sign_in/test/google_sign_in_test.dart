@@ -238,7 +238,6 @@ void main() {
     test('can sign in after init failed before', () async {
       int initCount = 0;
       channel.setMockMethodCallHandler((MethodCall methodCall) {
-        print(methodCall.method);
         if (methodCall.method == 'init') {
           initCount++;
           if (initCount == 1) {

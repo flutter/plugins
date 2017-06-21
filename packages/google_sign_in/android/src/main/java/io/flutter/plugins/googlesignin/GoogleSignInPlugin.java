@@ -52,6 +52,7 @@ public class GoogleSignInPlugin
         GoogleApiClient.OnConnectionFailedListener {
 
   private static final int REQUEST_CODE = 53293;
+  private static final int REQUEST_CODE_RESOLVE_ERROR = 1001;
 
   private static final String CHANNEL_NAME = "plugins.flutter.io/google_sign_in";
 
@@ -71,8 +72,6 @@ public class GoogleSignInPlugin
   private static final String METHOD_GET_TOKENS = "getTokens";
   private static final String METHOD_SIGN_OUT = "signOut";
   private static final String METHOD_DISCONNECT = "disconnect";
-  // Request code to use when launching the resolution activity
-  private static final int REQUEST_RESOLVE_ERROR = 1001;
 
   private static final class PendingOperation {
 
@@ -89,8 +88,7 @@ public class GoogleSignInPlugin
   private final BackgroundTaskRunner backgroundTaskRunner;
   private final int requestCode;
 
-  // Bool to track whether the app is already resolving an error
-  private boolean resolvingError = false;
+  private boolean resolvingError = false; // Whether we are currently resolving a sign-in error
   private GoogleApiClient googleApiClient;
   private List<String> requestedScopes;
   private PendingOperation pendingOperation;
@@ -376,13 +374,12 @@ public class GoogleSignInPlugin
   @Override
   public void onConnectionFailed(@NonNull final ConnectionResult result) {
     if (resolvingError) {
-      Log.w(TAG, "failed");
       // Already attempting to resolve an error.
       return;
     } else if (result.hasResolution()) {
       try {
         resolvingError = true;
-        result.startResolutionForResult(activity, REQUEST_RESOLVE_ERROR);
+        result.startResolutionForResult(activity, REQUEST_CODE_RESOLVE_ERROR);
       } catch (SendIntentException e) {
         // There was an error with the resolution intent. Try again.
         googleApiClient.connect();
@@ -393,7 +390,7 @@ public class GoogleSignInPlugin
           .showErrorDialogFragment(
               activity,
               result.getErrorCode(),
-              REQUEST_RESOLVE_ERROR,
+              REQUEST_CODE_RESOLVE_ERROR,
               new DialogInterface.OnCancelListener() {
                 public void onCancel(DialogInterface dialog) {
                   if (pendingOperation != null && pendingOperation.method.equals(METHOD_INIT)) {
@@ -414,7 +411,7 @@ public class GoogleSignInPlugin
 
   @Override
   public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
-    if (requestCode == REQUEST_RESOLVE_ERROR) {
+    if (requestCode == REQUEST_CODE_RESOLVE_ERROR) {
       // Deal with result of `onConnectionFailed` error resolution.
       resolvingError = false;
       if (resultCode == Activity.RESULT_OK) {
