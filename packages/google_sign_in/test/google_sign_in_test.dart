@@ -247,7 +247,8 @@ void main() {
         }
         return responses[methodCall.method];
       });
-      expect(googleSignIn.signIn(), throwsA(const isInstanceOf<PlatformException>()));
+      expect(googleSignIn.signIn(),
+          throwsA(const isInstanceOf<PlatformException>()));
       expect(await googleSignIn.signIn(), isNotNull);
     });
   });

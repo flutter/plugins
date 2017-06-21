@@ -7,8 +7,6 @@ package io.flutter.plugins.googlesignin;
 import android.accounts.Account;
 import android.app.Activity;
 import android.app.Application.ActivityLifecycleCallbacks;
-import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
@@ -32,8 +30,6 @@ import com.google.android.gms.common.api.Status;
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-
-import io.flutter.app.FlutterActivity;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -67,6 +63,8 @@ public class GoogleSignInPlugin
   private static final String ERROR_REASON_OPERATION_IN_PROGRESS = "operation_in_progress";
   private static final String ERROR_REASON_CONNECTION_FAILED = "connection_failed";
 
+  private static final String STATE_RESOLVING_ERROR = "resolving_error";
+
   private static final String METHOD_INIT = "init";
   private static final String METHOD_SIGN_IN_SILENTLY = "signInSilently";
   private static final String METHOD_SIGN_IN = "signIn";
@@ -75,8 +73,6 @@ public class GoogleSignInPlugin
   private static final String METHOD_DISCONNECT = "disconnect";
   // Request code to use when launching the resolution activity
   private static final int REQUEST_RESOLVE_ERROR = 1001;
-  // Unique tag for the error dialog fragment
-  private static final String DIALOG_ERROR = "dialog_error";
 
   private static final class PendingOperation {
 
@@ -121,7 +117,6 @@ public class GoogleSignInPlugin
 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
-    Log.w(TAG, call.method);
     switch (call.method) {
       case METHOD_INIT:
         List<String> requestedScopes = call.argument("scopes");
@@ -163,7 +158,6 @@ public class GoogleSignInPlugin
     try {
       if (googleApiClient != null) {
         // This can happen if the scopes change, or a full restart hot reload
-        googleApiClient.disconnect();
         googleApiClient = null;
       }
       GoogleSignInOptions.Builder optionsBuilder =
@@ -380,8 +374,9 @@ public class GoogleSignInPlugin
    * properly initialize this listener.
    */
   @Override
-  public void onConnectionFailed(@NonNull ConnectionResult result) {
+  public void onConnectionFailed(@NonNull final ConnectionResult result) {
     if (resolvingError) {
+      Log.w(TAG, "failed");
       // Already attempting to resolve an error.
       return;
     } else if (result.hasResolution()) {
@@ -393,26 +388,22 @@ public class GoogleSignInPlugin
         googleApiClient.connect();
       }
     } else {
-      showErrorDialog(result);
       resolvingError = true;
+      GoogleApiAvailability.getInstance()
+          .showErrorDialogFragment(
+              activity,
+              result.getErrorCode(),
+              REQUEST_RESOLVE_ERROR,
+              new DialogInterface.OnCancelListener() {
+                public void onCancel(DialogInterface dialog) {
+                  if (pendingOperation != null && pendingOperation.method.equals(METHOD_INIT)) {
+                    finishWithError(
+                        ERROR_REASON_CONNECTION_FAILED, String.valueOf(result.getErrorCode()));
+                  }
+                  resolvingError = false;
+                }
+              });
     }
-  }
-
-  /* Creates a dialog for an error message */
-  private void showErrorDialog(ConnectionResult result) {
-    ErrorDialogFragment dialogFragment = new ErrorDialogFragment();
-    Bundle args = new Bundle();
-    args.putInt(DIALOG_ERROR, result.getErrorCode());
-    dialogFragment.setArguments(args);
-    dialogFragment.show(activity.getFragmentManager(), "errordialog");
-  }
-
-  private void onErrorDialogCancelled(int resultCode){
-    if (pendingOperation != null && pendingOperation.method.equals(METHOD_INIT)) {
-      finishWithError(ERROR_REASON_CONNECTION_FAILED, String.valueOf(resultCode));
-    }
-    resolvingError = false;
-    Log.w(TAG, "cancelled");
   }
 
   @Override
@@ -428,8 +419,7 @@ public class GoogleSignInPlugin
       resolvingError = false;
       if (resultCode == Activity.RESULT_OK) {
         // Make sure the app is not already connected or attempting to connect
-        if (!googleApiClient.isConnecting() &&
-            !googleApiClient.isConnected()) {
+        if (!googleApiClient.isConnecting() && !googleApiClient.isConnected()) {
           googleApiClient.connect();
         }
       } else if (pendingOperation != null && pendingOperation.method.equals(METHOD_INIT)) {
@@ -493,7 +483,9 @@ public class GoogleSignInPlugin
 
   private class GoogleApiClientConnectionManager implements ActivityLifecycleCallbacks {
     @Override
-    public void onActivityCreated(Activity activity, Bundle bundle) {}
+    public void onActivityCreated(Activity activity, Bundle bundle) {
+      resolvingError = bundle != null && bundle.getBoolean(STATE_RESOLVING_ERROR, false);
+    }
 
     @Override
     public void onActivityDestroyed(Activity activity) {}
@@ -505,11 +497,15 @@ public class GoogleSignInPlugin
     public void onActivityResumed(Activity activity) {}
 
     @Override
-    public void onActivitySaveInstanceState(Activity activity, Bundle outState) {}
+    public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+      outState.putBoolean(STATE_RESOLVING_ERROR, GoogleSignInPlugin.this.resolvingError);
+    }
 
     @Override
     public void onActivityStarted(Activity activity) {
-      if (activity == GoogleSignInPlugin.this.activity && googleApiClient != null) {
+      if (!resolvingError
+          && activity == GoogleSignInPlugin.this.activity
+          && googleApiClient != null) {
         googleApiClient.connect();
       }
     }
@@ -519,26 +515,6 @@ public class GoogleSignInPlugin
       if (activity == GoogleSignInPlugin.this.activity && googleApiClient != null) {
         googleApiClient.disconnect();
       }
-    }
-  }
-
-  /* A fragment to display an error dialog */
-  public static class ErrorDialogFragment extends DialogFragment {
-    public ErrorDialogFragment() { }
-
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-      // Get the error code and retrieve the appropriate dialog
-      int errorCode = getArguments().getInt(DIALOG_ERROR);
-      return GoogleApiAvailability.getInstance().getErrorDialog(
-          getActivity(), errorCode, REQUEST_RESOLVE_ERROR);
-    }
-
-    @Override
-    public void onCancel(final DialogInterface dialog) {
-      FlutterActivity flutterActivity = (FlutterActivity)getActivity();
-      GoogleSignInPlugin plugin = flutterActivity.valuePublishedByPlugin(GoogleSignInPlugin.class.getCanonicalName());
-      plugin.onErrorDialogCancelled(getArguments().getInt(DIALOG_ERROR));
     }
   }
 }

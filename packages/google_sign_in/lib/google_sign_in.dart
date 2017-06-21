@@ -130,19 +130,18 @@ class GoogleSignIn {
   Future<Null> _initialization;
 
   Future<GoogleSignInAccount> _callMethod(String method) async {
-    print('<<< $method');
     if (_initialization == null) {
       _initialization = channel.invokeMethod("init", <String, dynamic>{
         'scopes': scopes ?? <String>[],
         'hostedDomain': hostedDomain,
-      })..catchError((dynamic _) {
-        // Invalidate initialization if it errored out.
-        _initialization = null;
-      });
+      })
+        ..catchError((dynamic _) {
+          // Invalidate initialization if it errored out.
+          _initialization = null;
+        });
     }
     await _initialization;
     final Map<String, dynamic> response = await channel.invokeMethod(method);
-    print('>>> $response');
     return _setCurrentUser(response != null && response.isNotEmpty
         ? new GoogleSignInAccount._(this, response)
         : null);
