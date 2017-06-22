@@ -109,7 +109,7 @@ String get goToSettings => Intl.message('Go to settings',
         'and iOS side. Maximum 30 characters.');
 
 String get androidGoToSettingsDescription => Intl.message(
-    'Fingerprint is not set up on your device.\n\nGo to '
+    'Fingerprint is not set up on your device. Go to '
     '\'Settings > Security\' to add your fingerprint.',
     desc: 'Message advising the user to go to the settings and configure '
         'fingerprint on their device. It shows in a dialog on Android side.');

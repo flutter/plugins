@@ -1,6 +1,7 @@
 // Copyright 2017 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,32 +17,23 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
+  String _authorized = 'Not Authorized';
 
-  @override
-  initState() {
-    super.initState();
-    initPlatformState();
-  }
-
-  // Platform messages are asynchronous, so we initialize in an async method.
-  initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
+  Future<Null> _authenticate() async {
+    LocalAuthentication auth = new LocalAuthentication();
+    bool authenticated = false;
     try {
-      platformVersion = await LocalAuth.platformVersion;
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
+     authenticated = await auth.authenticateWithBiometrics(
+      localizedReason: 'Scan your fingerprint to authenticate',
+      useErrorDialogs: true);
+    } on PlatformException catch(e) {
+      print(e);
     }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
     if (!mounted)
       return;
 
     setState(() {
-      _platformVersion = platformVersion;
+      _authorized = authenticated ? 'Authorized' : 'Not Authorized';
     });
   }
 
@@ -52,10 +44,16 @@ class _MyAppState extends State<MyApp> {
         appBar: new AppBar(
           title: new Text('Plugin example app'),
         ),
-        body: new Center(
-          child: new Text('Running on: $_platformVersion\n'),
-        ),
-      ),
-    );
+        body: new ConstrainedBox(
+          constraints: const BoxConstraints.expand(),
+          child: new Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+            new Text('Current State: $_authorized\n'),
+            new RaisedButton(
+              child: const Text('Authenticate'),
+              onPressed: _authenticate,
+        )])),
+    ));
   }
 }
