@@ -29,7 +29,7 @@ class AndroidAuthMessages {
   });
 
   Map<String, String> get args {
-    return {
+    return <String, String>{
       'fingerprintHint': fingerprintHint ?? androidFingerprintHint,
       'fingerprintNotRecognized':
           fingerprintNotRecognized ?? androidFingerprintNotRecognized,
@@ -62,7 +62,7 @@ class IOSAuthMessages {
   });
 
   Map<String, String> get args {
-    return {
+    return <String, String>{
       'lockOut': lockOut ?? iOSLockOut,
       'goToSetting': goToSettingsButton ?? goToSettings,
       'goToSettingDescriptionIOS':

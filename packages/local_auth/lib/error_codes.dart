@@ -7,13 +7,13 @@
 
 /// Indicates that the user has not yet configured a passcode (iOS) or
 /// PIN/pattern/password (Android) on the device.
-const passcodeNotSet = 'PasscodeNotSet';
+const String passcodeNotSet = 'PasscodeNotSet';
 
 /// Indicates the user has not enrolled any fingerprints on the device.
-const notEnrolled = 'NotEnrolled';
+const String notEnrolled = 'NotEnrolled';
 
 /// Indicates the device does not have a Touch ID/fingerprint scanner.
-const notAvailable = 'NotAvailable';
+const String notAvailable = 'NotAvailable';
 
 /// Indicates the device operating system is not iOS or Android.
-const otherOperatingSystem = 'OtherOperatingSystem';
+const String otherOperatingSystem = 'OtherOperatingSystem';

@@ -20,17 +20,16 @@ class _MyAppState extends State<MyApp> {
   String _authorized = 'Not Authorized';
 
   Future<Null> _authenticate() async {
-    LocalAuthentication auth = new LocalAuthentication();
+    final LocalAuthentication auth = new LocalAuthentication();
     bool authenticated = false;
     try {
-     authenticated = await auth.authenticateWithBiometrics(
-      localizedReason: 'Scan your fingerprint to authenticate',
-      useErrorDialogs: true);
-    } on PlatformException catch(e) {
+      authenticated = await auth.authenticateWithBiometrics(
+          localizedReason: 'Scan your fingerprint to authenticate',
+          useErrorDialogs: true);
+    } on PlatformException catch (e) {
       print(e);
     }
-    if (!mounted)
-      return;
+    if (!mounted) return;
 
     setState(() {
       _authorized = authenticated ? 'Authorized' : 'Not Authorized';
@@ -40,20 +39,21 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-      home: new Scaffold(
-        appBar: new AppBar(
-          title: new Text('Plugin example app'),
-        ),
-        body: new ConstrainedBox(
+        home: new Scaffold(
+      appBar: new AppBar(
+        title: const Text('Plugin example app'),
+      ),
+      body: new ConstrainedBox(
           constraints: const BoxConstraints.expand(),
           child: new Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget>[
-            new Text('Current State: $_authorized\n'),
-            new RaisedButton(
-              child: const Text('Authenticate'),
-              onPressed: _authenticate,
-        )])),
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                new Text('Current State: $_authorized\n'),
+                new RaisedButton(
+                  child: const Text('Authenticate'),
+                  onPressed: _authenticate,
+                )
+              ])),
     ));
   }
 }

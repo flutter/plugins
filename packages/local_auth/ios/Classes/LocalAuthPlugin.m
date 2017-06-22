@@ -6,15 +6,15 @@
 #import "LocalAuthPlugin.h"
 
 @implementation LocalAuthPlugin
-+ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  FlutterMethodChannel* channel = [FlutterMethodChannel
-      methodChannelWithName:@"plugins.flutter.io/local_auth"
-            binaryMessenger:[registrar messenger]];
-  LocalAuthPlugin* instance = [[LocalAuthPlugin alloc] init];
++ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
+  FlutterMethodChannel *channel =
+      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/local_auth"
+                                  binaryMessenger:[registrar messenger]];
+  LocalAuthPlugin *instance = [[LocalAuthPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
-- (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
+- (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"authenticateWithBiometrics" isEqualToString:call.method]) {
     [self authenticateWithBiometrics:call.arguments withFlutterResult:result];
   } else {
@@ -53,8 +53,9 @@
                 }];
     [alert addAction:additionalAction];
   }
-  [[UIApplication sharedApplication].delegate.window.rootViewController
-      presentViewController:alert animated:YES completion:nil];
+  [[UIApplication sharedApplication].delegate.window.rootViewController presentViewController:alert
+                                                                                     animated:YES
+                                                                                   completion:nil];
 }
 
 - (void)authenticateWithBiometrics:(NSDictionary *)arguments
@@ -90,8 +91,8 @@
 }
 
 - (void)handleErrors:(NSError *)authError
-    flutterArguments:(NSDictionary *)arguments
-   withFlutterResult:(FlutterResult)result {
+     flutterArguments:(NSDictionary *)arguments
+    withFlutterResult:(FlutterResult)result {
   NSString *errorCode = @"NotAvailable";
   switch (authError.code) {
     case LAErrorPasscodeNotSet:

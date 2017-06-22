@@ -5,27 +5,23 @@
 package io.flutter.plugins.localauth;
 
 import android.app.Activity;
-import java.util.concurrent.atomic.AtomicBoolean;
+import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.plugins.localauth.AuthenticationHelper.AuthCompletionHandler;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * LocalAuthPlugin
- */
+/** LocalAuthPlugin */
 public class LocalAuthPlugin implements MethodCallHandler {
   private final Activity activity;
   private final AtomicBoolean authInProgress = new AtomicBoolean(false);
 
-  /**
-   * Plugin registration.
-   */
+  /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
-    final MethodChannel channel = new MethodChannel(registrar.messenger(),
-    "plugins.flutter.io/local_auth");
+    final MethodChannel channel =
+        new MethodChannel(registrar.messenger(), "plugins.flutter.io/local_auth");
     channel.setMethodCallHandler(new LocalAuthPlugin(registrar.activity()));
   }
 
