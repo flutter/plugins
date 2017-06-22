@@ -51,7 +51,7 @@ FIRDatabaseQuery *getQuery(NSDictionary *arguments) {
   if (endAt) {
     id endAtKey = parameters[@"endAtKey"];
     if (endAtKey) {
-      query = [query queryEndingAtValue:endAt childKey:parameters[@"endAtKey"]];
+      query = [query queryEndingAtValue:endAt childKey:endAtKey];
     } else {
       query = [query queryEndingAtValue:endAt];
     }

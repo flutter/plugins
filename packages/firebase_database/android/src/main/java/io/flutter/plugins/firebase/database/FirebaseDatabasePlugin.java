@@ -75,8 +75,6 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
           query = query.startAt((Boolean) startAt, startAtKey);
         } else if (startAt instanceof String) {
           query = query.startAt((String) startAt, startAtKey);
-        } else if (startAt instanceof Integer) {
-          query = query.startAt((int) startAt, startAtKey);
         } else {
           query = query.startAt(((Number) startAt).doubleValue(), startAtKey);
         }
@@ -85,8 +83,6 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
           query = query.startAt((Boolean) startAt);
         } else if (startAt instanceof String) {
           query = query.startAt((String) startAt);
-        } else if (startAt instanceof Integer) {
-          query = query.startAt((int) startAt);
         } else {
           query = query.startAt(((Number) startAt).doubleValue());
         }
