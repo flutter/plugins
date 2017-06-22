@@ -32,6 +32,8 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter;
   final DatabaseReference _counterRef =
       FirebaseDatabase.instance.reference().child('counter');
+  final DatabaseReference _updateRef =
+  FirebaseDatabase.instance.reference().child('updateNode');
   final DatabaseReference _messagesRef =
       FirebaseDatabase.instance.reference().child('messages');
   StreamSubscription<Event> _counterSubscription;
@@ -41,9 +43,21 @@ class _MyHomePageState extends State<MyHomePage> {
   String _kTestKey = 'Hello';
   String _kTestValue = 'world!';
 
+  int _updateCount = 0 ;
+
   @override
   void initState() {
+    print ("initializing state++++++++++++++++++++++++");
     super.initState();
+    FirebaseDatabase.instance.reference().once().then((DataSnapshot snapshot){
+      print("snapshot is +++++++");
+      print(snapshot);
+      if(snapshot.value["updateNode"] == null){
+        print("setting update++++++++++++++++++");
+        FirebaseDatabase.instance.reference().child("/updateNode").set( {"updateCount" : 1});
+      }
+    }
+    );
     _counterSubscription = _counterRef.onValue.listen((Event event) {
       setState(() {
         _counter = event.snapshot.value ?? 0;
@@ -51,6 +65,16 @@ class _MyHomePageState extends State<MyHomePage> {
     });
     _messagesSubscription = _messagesRef.onChildAdded.listen((Event event) {
       print('Child added: ${event.snapshot.value}');
+    });
+    _updateRef.onValue.listen((Event event){
+      print("snapshot is ----------------------");
+      setState(() {
+        print("Snapshot is");
+        print(event.snapshot);
+        if (event.snapshot.value != null) {
+          _updateCount = event.snapshot.value["updateCount"];
+        }
+      });
     });
   }
 
@@ -85,12 +109,23 @@ class _MyHomePageState extends State<MyHomePage> {
           new Flexible(
             child: new Center(
               // ignore: prefer_const_constructors
-              child: new Text(
+              child: new Column(
+              children:[new Text(
                 'Button tapped $_counter time${ _counter == 1 ? '' : 's' }.\n\n'
                     'This includes all devices, ever.',
               ),
+              new Row(
+                children: <Widget>[
+                  new Text(_updateCount.toString()),
+                  new RaisedButton(onPressed: (){
+                    int count = _updateCount + 1;
+                    _updateRef.update(<String,dynamic>{"updateCount": count});
+                  },
+                  child: new Text("Update"),)
+                ],
+              )],
             ),
-          ),
+          )),
           new ListTile(
             leading: new Checkbox(
               onChanged: (bool value) {

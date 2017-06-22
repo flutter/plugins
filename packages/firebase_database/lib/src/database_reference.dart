@@ -77,6 +77,13 @@ class DatabaseReference extends Query {
     );
   }
 
+  Future<Null> update(Map<String,dynamic> value) {
+    return _database._channel.invokeMethod(
+      'DatabaseReference#update',
+      <String, dynamic>{'path': path, 'value': value},
+    );
+  }
+
   /// Sets a priority for the data at this Firebase Database location.
   ///
   /// Priorities can be used to provide a custom ordering for the children at a

@@ -123,6 +123,9 @@ FIRDataEventType parseEventType(NSString *eventTypeString) {
     [getReference(call.arguments) setValue:call.arguments[@"value"]
                                andPriority:call.arguments[@"priority"]
                        withCompletionBlock:defaultCompletionBlock];
+  } else if ([@"DatabaseReference#update" isEqualToString:call.method]) {
+    [getReference(call.arguments) updateChildValues:call.arguments[@"value"]
+                       withCompletionBlock:defaultCompletionBlock];
   } else if ([@"DatabaseReference#setPriority" isEqualToString:call.method]) {
     [getReference(call.arguments) setPriority:call.arguments[@"priority"]
                           withCompletionBlock:defaultCompletionBlock];
