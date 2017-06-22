@@ -94,9 +94,9 @@ class Query {
   Query startAt(dynamic value, { String key }) {
     assert(!_parameters.containsKey('startAt'));
     assert(value is String || value is bool || value is double || value is int);
-    return _copyWithParameters(
-      <String, dynamic>{ 'startAt': value, 'startAtKey': key },
-    );
+    final Map<String, dynamic> parameters = <String, dynamic>{ 'startAt': value };
+    if (key != null) parameters['startAtKey'] = key;
+    return _copyWithParameters(parameters);
   }
 
   /// Create a query constrained to only return child nodes with a value less
@@ -106,9 +106,9 @@ class Query {
   Query endAt(dynamic value, { String key }) {
     assert(!_parameters.containsKey('endAt'));
     assert(value is String || value is bool || value is double || value is int);
-    return _copyWithParameters(
-      <String, dynamic>{ 'endAt': value, 'endAtKey': key },
-    );
+    final Map<String, dynamic> parameters = <String, dynamic>{ 'endAt': value };
+    if (key != null) parameters['endAtKey'] = key;
+    return _copyWithParameters(parameters);
   }
 
   /// Create a query constrained to only return child nodes with the given
