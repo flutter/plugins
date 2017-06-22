@@ -8,7 +8,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('$GoogleSignIn', () {
+  group('GoogleSignIn', () {
     const MethodChannel channel = const MethodChannel(
       'plugins.flutter.io/google_sign_in',
     );
@@ -140,8 +140,7 @@ void main() {
 
     test('can sign in after previously failed attempt', () async {
       responses['signInSilently'] = <String, dynamic>{'error': 'Not a user'};
-      expect(googleSignIn.signInSilently(),
-          throwsA(const isInstanceOf<AssertionError>()));
+      expect(await googleSignIn.signInSilently(), isNull);
       expect(await googleSignIn.signIn(), isNotNull);
       expect(
           log,
@@ -227,6 +226,29 @@ void main() {
             const MethodCall('signIn'),
             const MethodCall('disconnect'),
           ]));
+    });
+
+    test('signInSilently does not throw on error', () async {
+      channel.setMockMethodCallHandler((MethodCall methodCall) {
+        throw "I am an error";
+      });
+      expect(await googleSignIn.signInSilently(), isNull); // should not throw
+    });
+
+    test('can sign in after init failed before', () async {
+      int initCount = 0;
+      channel.setMockMethodCallHandler((MethodCall methodCall) {
+        if (methodCall.method == 'init') {
+          initCount++;
+          if (initCount == 1) {
+            throw "First init fails";
+          }
+        }
+        return responses[methodCall.method];
+      });
+      expect(googleSignIn.signIn(),
+          throwsA(const isInstanceOf<PlatformException>()));
+      expect(await googleSignIn.signIn(), isNotNull);
     });
   });
 }

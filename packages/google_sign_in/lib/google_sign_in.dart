@@ -134,7 +134,11 @@ class GoogleSignIn {
       _initialization = channel.invokeMethod("init", <String, dynamic>{
         'scopes': scopes ?? <String>[],
         'hostedDomain': hostedDomain,
-      });
+      })
+        ..catchError((dynamic _) {
+          // Invalidate initialization if it errored out.
+          _initialization = null;
+        });
     }
     await _initialization;
     final Map<String, dynamic> response = await channel.invokeMethod(method);
@@ -201,8 +205,12 @@ class GoogleSignIn {
   /// a Future which resolves to the same user instance.
   ///
   /// Re-authentication can be triggered only after [signOut] or [disconnect].
-  Future<GoogleSignInAccount> signInSilently() =>
-      _addMethodCall('signInSilently');
+  Future<GoogleSignInAccount> signInSilently() {
+    return _addMethodCall('signInSilently').catchError((dynamic _) {
+      // ignore, we promised to be silent.
+      // TODO(goderbauer): revisit when the native side throws less aggressively.
+    });
+  }
 
   /// Starts the interactive sign-in process.
   ///

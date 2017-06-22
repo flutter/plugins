@@ -1,3 +1,9 @@
+## 0.2.1
+
+* Plugin can (once again) be used in apps that extend `FlutterActivity`
+* `signInSilently` is guaranteed to never throw
+* A failed sign-in (caused by a failing `init` step) will no longer block subsequent sign-in attempts
+
 ## 0.2.0
 
 * Updated dependencies
