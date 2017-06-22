@@ -96,8 +96,6 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
           query = query.endAt((Boolean) endAt, endAtKey);
         } else if (endAt instanceof String) {
           query = query.endAt((String) endAt, endAtKey);
-        } else if (endAt instanceof Integer) {
-          query = query.endAt((int) endAt, endAtKey);
         } else {
           query = query.endAt(((Number) endAt).doubleValue(), endAtKey);
         }
@@ -106,8 +104,6 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
           query = query.endAt((Boolean) endAt);
         } else if (endAt instanceof String) {
           query = query.endAt((String) endAt);
-        } else if (endAt instanceof Integer) {
-          query = query.endAt((int) endAt);
         } else {
           query = query.endAt(((Number) endAt).doubleValue());
         }
@@ -119,8 +115,6 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
         query = query.equalTo((Boolean) equalTo);
       } else if (equalTo instanceof String) {
         query = query.equalTo((String) equalTo);
-      } else if (equalTo instanceof Integer) {
-        query = query.equalTo((int) equalTo);
       } else {
         query = query.equalTo(((Number) equalTo).doubleValue());
       }
