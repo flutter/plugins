@@ -122,49 +122,63 @@ void main() {
         final int priority = 42;
         await database.reference().child('foo').setPriority(priority);
         expect(
-            log,
-            equals(<MethodCall>[
-              new MethodCall(
-                'DatabaseReference#setPriority',
-                <String, dynamic>{'path': 'foo', 'priority': priority},
-              ),
-            ]));
+          log,
+          equals(<MethodCall>[
+            new MethodCall(
+              'DatabaseReference#setPriority',
+              <String, dynamic>{'path': 'foo', 'priority': priority},
+            ),
+          ]),
+        );
       });
     });
 
     group('$Query', () {
       // TODO(jackson): Write more tests for queries
       test('observing', () async {
-        final Query query =
-            database.reference().child('foo').orderByChild('bar');
+        final int startAt = 42;
+        final String path = 'foo';
+        final String childKey = 'bar';
+        final bool endAt = true;
+        final String endAtKey = 'baz';
+        final Query query = database
+            .reference()
+            .child(path)
+            .orderByChild(childKey)
+            .startAt(startAt)
+            .endAt(endAt, key: endAtKey);
         final StreamSubscription<Event> subscription =
             query.onValue.listen((_) {});
         await query.keepSynced(true);
         subscription.cancel();
         final Map<String, dynamic> expectedParameters = <String, dynamic>{
           'orderBy': 'child',
-          'orderByChildKey': 'bar',
+          'orderByChildKey': childKey,
+          'startAt': startAt,
+          'endAt': endAt,
+          'endAtKey': endAtKey,
         };
         expect(
-            log,
-            equals(<MethodCall>[
-              new MethodCall(
-                'Query#observe',
-                <String, dynamic>{
-                  'path': 'foo',
-                  'parameters': expectedParameters,
-                  'eventType': '_EventType.value'
-                },
-              ),
-              new MethodCall(
-                'Query#keepSynced',
-                <String, dynamic>{
-                  'path': 'foo',
-                  'parameters': expectedParameters,
-                  'value': true
-                },
-              ),
-            ]));
+          log,
+          equals(<MethodCall>[
+            new MethodCall(
+              'Query#observe',
+              <String, dynamic>{
+                'path': path,
+                'parameters': expectedParameters,
+                'eventType': '_EventType.value'
+              },
+            ),
+            new MethodCall(
+              'Query#keepSynced',
+              <String, dynamic>{
+                'path': path,
+                'parameters': expectedParameters,
+                'value': true
+              },
+            ),
+          ]),
+        );
       });
     });
   });

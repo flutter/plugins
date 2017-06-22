@@ -1,3 +1,7 @@
+## 0.0.11
+
+* Fixes startAt/endAt on iOS when used without a key
+
 ## 0.0.10
 
 * Added workaround for inconsistent numeric types when using keepSynced on iOS
