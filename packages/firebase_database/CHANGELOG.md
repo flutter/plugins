@@ -1,3 +1,8 @@
+## 0.0.10
+
+* Added workaround for inconsistent numeric types when using keepSynced on iOS
+* Bug fixes to Query handling
+
 ## 0.0.9
 
 * Updated to Firebase SDK Version 11.0.1
