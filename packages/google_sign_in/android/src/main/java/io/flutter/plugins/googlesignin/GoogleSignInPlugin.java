@@ -99,7 +99,6 @@ public class GoogleSignInPlugin
     final GoogleSignInPlugin instance =
         new GoogleSignInPlugin(activity, new BackgroundTaskRunner(1), REQUEST_CODE);
     registrar.addActivityResultListener(instance);
-    registrar.publish(instance);
     channel.setMethodCallHandler(instance);
   }
 
@@ -381,8 +380,8 @@ public class GoogleSignInPlugin
         resolvingError = true;
         result.startResolutionForResult(activity, REQUEST_CODE_RESOLVE_ERROR);
       } catch (SendIntentException e) {
-        // There was an error with the resolution intent. Try again.
-        googleApiClient.connect();
+        resolvingError = false;
+        finishWithError(ERROR_REASON_CONNECTION_FAILED, String.valueOf(result.getErrorCode()));
       }
     } else {
       resolvingError = true;
@@ -495,7 +494,7 @@ public class GoogleSignInPlugin
 
     @Override
     public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
-      outState.putBoolean(STATE_RESOLVING_ERROR, GoogleSignInPlugin.this.resolvingError);
+      outState.putBoolean(STATE_RESOLVING_ERROR, resolvingError);
     }
 
     @Override

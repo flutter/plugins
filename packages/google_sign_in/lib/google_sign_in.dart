@@ -208,6 +208,7 @@ class GoogleSignIn {
   Future<GoogleSignInAccount> signInSilently() {
     return _addMethodCall('signInSilently').catchError((dynamic _) {
       // ignore, we promised to be silent.
+      // TODO(goderbauer): revisit when the native side throws less aggressively.
     });
   }
 
