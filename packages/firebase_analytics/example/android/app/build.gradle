@@ -24,6 +24,7 @@ android {
 
     defaultConfig {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        applicationId "io.flutter.firebaseanalyticsexample"
     }
 
     buildTypes {
@@ -40,7 +41,7 @@ flutter {
 }
 
 dependencies {
-    compile 'com.google.firebase:firebase-core:10.0.1'
+    compile 'com.google.firebase:firebase-core:11.0.1'
 }
 
 apply plugin: 'com.google.gms.google-services'

@@ -50,6 +50,15 @@ class FirebaseUser extends UserInfo {
   /// Returns true if the user's email is verified.
   bool get isEmailVerified => _data['isEmailVerified'];
 
+  /// Obtains the id token for the current user, forcing a [refresh] if desired.
+  ///
+  /// Completes with an error if the user is signed out.
+  Future<String> getToken({bool refresh: false}) {
+    return FirebaseAuth.channel.invokeMethod('getToken', <String, bool>{
+      'refresh': refresh,
+    });
+  }
+
   @override
   String toString() {
     return '$runtimeType($_data)';
@@ -57,19 +66,17 @@ class FirebaseUser extends UserInfo {
 }
 
 class FirebaseAuth {
-  final MethodChannel _channel;
+  @visibleForTesting
+  static const MethodChannel channel = const MethodChannel(
+    'plugins.flutter.io/firebase_auth',
+  );
 
   /// Provides an instance of this class corresponding to the default app.
   ///
   /// TODO(jackson): Support for non-default apps.
-  static FirebaseAuth instance = new FirebaseAuth.private(
-    const MethodChannel('plugins.flutter.io/firebase_auth'),
-  );
+  static FirebaseAuth instance = new FirebaseAuth._();
 
-  /// We don't want people to extend this class, but implementing its interface,
-  /// e.g. in tests, is OK.
-  @visibleForTesting
-  FirebaseAuth.private(this._channel);
+  FirebaseAuth._();
 
   /// Asynchronously creates and becomes an anonymous user.
   ///
@@ -82,7 +89,7 @@ class FirebaseAuth {
   /// See FIRAuthErrors for a list of error codes that are common to all API methods.
   Future<FirebaseUser> signInAnonymously() async {
     final Map<String, dynamic> data =
-        await _channel.invokeMethod('signInAnonymously');
+        await channel.invokeMethod('signInAnonymously');
     _currentUser = new FirebaseUser._(data);
     return _currentUser;
   }
@@ -93,7 +100,7 @@ class FirebaseAuth {
   }) async {
     assert(email != null);
     assert(password != null);
-    final Map<String, dynamic> data = await _channel.invokeMethod(
+    final Map<String, dynamic> data = await channel.invokeMethod(
       'createUserWithEmailAndPassword',
       <String, String>{
         'email': email,
@@ -110,7 +117,7 @@ class FirebaseAuth {
   }) async {
     assert(email != null);
     assert(password != null);
-    final Map<String, dynamic> data = await _channel.invokeMethod(
+    final Map<String, dynamic> data = await channel.invokeMethod(
       'signInWithEmailAndPassword',
       <String, String>{
         'email': email,
@@ -127,7 +134,7 @@ class FirebaseAuth {
   }) async {
     assert(idToken != null);
     assert(accessToken != null);
-    final Map<String, dynamic> data = await _channel.invokeMethod(
+    final Map<String, dynamic> data = await channel.invokeMethod(
       'signInWithGoogle',
       <String, String>{
         'idToken': idToken,
@@ -139,7 +146,7 @@ class FirebaseAuth {
   }
 
   Future<Null> signOut() async {
-    await _channel.invokeMethod("signOut");
+    await channel.invokeMethod("signOut");
     _currentUser = null;
   }
 

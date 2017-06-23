@@ -88,6 +88,12 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
     } else {
       [self sendResult:result forUser:nil error:nil];
     }
+  } else if ([@"getToken" isEqualToString:call.method]) {
+    [[FIRAuth auth].currentUser
+        getTokenForcingRefresh:YES
+                    completion:^(NSString *_Nullable token, NSError *_Nullable error) {
+                      result(error != nil ? error.flutterError : token);
+                    }];
   } else {
     result(FlutterMethodNotImplemented);
   }

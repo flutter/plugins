@@ -15,6 +15,7 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserInfo;
 import io.flutter.plugin.common.MethodCall;
@@ -60,6 +61,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         break;
       case "signOut":
         handleSignOut(call, result);
+        break;
+      case "getToken":
+        handleGetToken(call, result);
         break;
       default:
         result.notImplemented();
@@ -109,6 +113,26 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
   private void handleSignOut(MethodCall call, final Result result) {
     firebaseAuth.signOut();
     result.success(null);
+  }
+
+  private void handleGetToken(MethodCall call, final Result result) {
+    @SuppressWarnings("unchecked")
+    Map<String, Boolean> arguments = (Map<String, Boolean>) call.arguments;
+    boolean refresh = arguments.get("refresh");
+    firebaseAuth
+        .getCurrentUser()
+        .getToken(refresh)
+        .addOnCompleteListener(
+            new OnCompleteListener<GetTokenResult>() {
+              public void onComplete(@NonNull Task<GetTokenResult> task) {
+                if (task.isSuccessful()) {
+                  String idToken = task.getResult().getToken();
+                  result.success(idToken);
+                } else {
+                  result.error(ERROR_REASON_EXCEPTION, task.getException().getMessage(), null);
+                }
+              }
+            });
   }
 
   private class SignInCompleteListener implements OnCompleteListener<AuthResult> {

@@ -1,3 +1,7 @@
+## 0.0.4
+
+* Updated to Firebase SDK Version 11.0.1
+
 ## 0.0.3
 
 * Suppress unchecked warnings
