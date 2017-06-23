@@ -16,7 +16,7 @@ static NSString *const kClientIdKey = @"CLIENT_ID";
 
 @implementation NSError (FlutterError)
 - (FlutterError *)flutterError {
-  return [FlutterError errorWithCode:[NSString stringWithFormat:@"%ld", (long)self.code]
+  return [FlutterError errorWithCode:@"exception"
                              message:self.domain
                              details:self.localizedDescription];
 }
@@ -120,8 +120,9 @@ static NSString *const kClientIdKey = @"CLIENT_ID";
     didSignInForUser:(GIDGoogleUser *)user
            withError:(NSError *)error {
   if (error != nil) {
-    if (error.code == -4) {
-      // Occurs when silent sign-in is not possible, return an empty user in this case
+    if (error.code == -4 || error.code == -5) {
+      // Occurs when silent sign-in is not possible or user has cancelled sign in,
+      // return an empty user in this case
       [self respondWithAccount:nil error:nil];
     } else {
       [self respondWithAccount:nil error:error];
