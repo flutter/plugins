@@ -434,6 +434,11 @@ public class GoogleSignInPlugin
       return false;
     }
 
+    if (data == null) {
+      finishWithError(ERROR_REASON_STATUS, "No intent data: " + resultCode);
+      return true;
+    }
+
     onSignInResult(Auth.GoogleSignInApi.getSignInResultFromIntent(data));
     return true;
   }
@@ -453,6 +458,8 @@ public class GoogleSignInPlugin
       finishWithSuccess(response);
     } else if (result.getStatus().getStatusCode() == CommonStatusCodes.SIGN_IN_REQUIRED
         || result.getStatus().getStatusCode() == GoogleSignInStatusCodes.SIGN_IN_CANCELLED) {
+      // This isn't an error from the caller's (Dart's) perspective; this just
+      // means that the user didn't sign in.
       finishWithSuccess(null);
     } else {
       finishWithError(ERROR_REASON_STATUS, result.getStatus().toString());
