@@ -19,6 +19,7 @@ import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.CommonStatusCodes;
@@ -60,7 +61,6 @@ public class GoogleSignInPlugin
 
   private static final String ERROR_REASON_EXCEPTION = "exception";
   private static final String ERROR_REASON_STATUS = "status";
-  private static final String ERROR_REASON_CANCELED = "canceled";
   private static final String ERROR_REASON_OPERATION_IN_PROGRESS = "operation_in_progress";
   private static final String ERROR_REASON_CONNECTION_FAILED = "connection_failed";
 
@@ -434,8 +434,8 @@ public class GoogleSignInPlugin
       return false;
     }
 
-    if (resultCode != Activity.RESULT_OK) {
-      finishWithError(ERROR_REASON_CANCELED, String.valueOf(resultCode));
+    if (data == null) {
+      finishWithError(ERROR_REASON_STATUS, "No intent data: " + resultCode);
       return true;
     }
 
@@ -456,7 +456,10 @@ public class GoogleSignInPlugin
         response.put("photoUrl", photoUrl.toString());
       }
       finishWithSuccess(response);
-    } else if (result.getStatus().getStatusCode() == CommonStatusCodes.SIGN_IN_REQUIRED) {
+    } else if (result.getStatus().getStatusCode() == CommonStatusCodes.SIGN_IN_REQUIRED
+        || result.getStatus().getStatusCode() == GoogleSignInStatusCodes.SIGN_IN_CANCELLED) {
+      // This isn't an error from the caller's (Dart's) perspective; this just
+      // means that the user didn't sign in.
       finishWithSuccess(null);
     } else {
       finishWithError(ERROR_REASON_STATUS, result.getStatus().toString());
