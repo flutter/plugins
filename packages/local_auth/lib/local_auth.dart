@@ -21,9 +21,16 @@ class LocalAuthentication {
   /// Returns a [Future] holding true, if the user successfully authenticated,
   /// false otherwise.
   ///
-  /// Pass useErrorDialogs = false if you don't want to use default error
-  /// dialogs. In that case, errors that can be handled by plugin will be
-  /// returned to your application.
+  /// [localizedReason] is the message to show to user while prompting them
+  /// for authentication. This is typically along the lines of: 'Please scan
+  /// your finger to access MyApp.'
+  ///
+  /// useErrorDialogs = true means the system will attempt to handle user
+  /// fixable issues encountered while authenticating. For instance, if
+  /// fingerprint reader exists on the phone but there's no fingerprint
+  /// registered, the plugin will attempt to take the user to settings to add
+  /// one. Anything that is not user fixable, such as no biometric sensor on
+  /// device, will be returned as a [PlatformException].
   ///
   /// Construct [AndroidAuthStrings] and [IOSAuthStrings] if you want to
   /// customize messages in the dialogs.
