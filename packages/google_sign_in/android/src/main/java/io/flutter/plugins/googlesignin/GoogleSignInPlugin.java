@@ -391,6 +391,7 @@ public class GoogleSignInPlugin
               result.getErrorCode(),
               REQUEST_CODE_RESOLVE_ERROR,
               new DialogInterface.OnCancelListener() {
+                @Override
                 public void onCancel(DialogInterface dialog) {
                   if (pendingOperation != null && pendingOperation.method.equals(METHOD_INIT)) {
                     finishWithError(
