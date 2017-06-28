@@ -14,7 +14,7 @@ AndroidOSBuild _cachedAndroidOSBuild;
 /// Information derived from `android.os.Build`.
 ///
 /// See: https://developer.android.com/reference/android/os/Build.html
-Future<AndroidOSBuild> get androidOSBuild async => _cachedAndroidOSBuild ?? await _kChannel.invokeMethod('getAndroidOSBuild');
+Future<AndroidOSBuild> get androidOSBuild async => _cachedAndroidOSBuild ?? AndroidOSBuild._fromJson(await _kChannel.invokeMethod('getAndroidOSBuild'));
 
 /// Information derived from `android.os.Build`.
 ///
@@ -97,6 +97,30 @@ class AndroidOSBuild {
 
   /// The type of build, like "user" or "eng".
   final String type;
+
+  /// Deserializes from the JSON message received from [_kChannel].
+  static AndroidOSBuild _fromJson(Map<String, Object> json) {
+    return new AndroidOSBuild._(
+      version: AndroidBuildVersion._fromJson(json['version']),
+      board: json['board'],
+      bootloader: json['bootloader'],
+      brand: json['brand'],
+      device: json['device'],
+      display: json['display'],
+      fingerprint: json['fingerprint'],
+      hardware: json['hardware'],
+      host: json['host'],
+      id: json['id'],
+      manufacturer: json['manufacturer'],
+      model: json['model'],
+      product: json['product'],
+      supported32BitAbis: json['supported32BitAbis'],
+      supported64BitAbis: json['supported64BitAbis'],
+      supportedAbis: json['supportedAbis'],
+      tags: json['tags'],
+      type: json['type'],
+    );
+  }
 }
 
 /// Version values of the current Android operating system build derived from
@@ -104,7 +128,7 @@ class AndroidOSBuild {
 ///
 /// See: https://developer.android.com/reference/android/os/Build.VERSION.html
 class AndroidBuildVersion {
-  AndroidBuildVersion({
+  AndroidBuildVersion._({
     this.baseOS,
     this.codename,
     this.incremental,
@@ -134,4 +158,17 @@ class AndroidBuildVersion {
 
   /// The user-visible security patch level.
   final String securityPatch;
+
+  /// Deserializes from the JSON message received from [_kChannel].
+  static AndroidBuildVersion _fromJson(Map<String, Object> json) {
+    return new AndroidBuildVersion._(
+      baseOS: json['baseOS'],
+      codename: json['codename'],
+      incremental: json['incremental'],
+      previewSdkInt: json['previewSdkInt'],
+      release: json['release'],
+      sdkInt: json['sdkInt'],
+      securityPatch: json['securityPatch'],
+    );
+  }
 }
