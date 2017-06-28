@@ -16,6 +16,14 @@ AndroidOSBuild _cachedAndroidOSBuild;
 /// See: https://developer.android.com/reference/android/os/Build.html
 Future<AndroidOSBuild> get androidOSBuild async => _cachedAndroidOSBuild ?? AndroidOSBuild._fromJson(await _kChannel.invokeMethod('getAndroidOSBuild'));
 
+/// This information does not change from call to call. Cache it.
+IosDeviceInfo _cachedIosDeviceInfo;
+
+/// Information derived from `UIDevice`.
+///
+/// See: https://developer.apple.com/documentation/uikit/uidevice
+Future<IosDeviceInfo> get iosDeviceInfo async => _cachedIosDeviceInfo ?? IosDeviceInfo._fromJson(await _kChannel.invokeMethod('getIosDeviceInfo'));
+
 /// Information derived from `android.os.Build`.
 ///
 /// See: https://developer.android.com/reference/android/os/Build.html
@@ -169,6 +177,50 @@ class AndroidBuildVersion {
       release: json['release'],
       sdkInt: json['sdkInt'],
       securityPatch: json['securityPatch'],
+    );
+  }
+}
+
+/// Information derived from `UIDevice`.
+///
+/// See: https://developer.apple.com/documentation/uikit/uidevice
+class IosDeviceInfo {
+  IosDeviceInfo._({
+    this.name,
+    this.systemName,
+    this.systemVersion,
+    this.model,
+    this.localizedModel,
+    this.identifierForVendor,
+  });
+
+  /// Device name.
+  final String name;
+
+  /// The name of the current operating system.
+  final String systemName;
+
+  /// The current operating system version.
+  final String systemVersion;
+
+  /// Device model.
+  final String model;
+
+  /// Localized name of the device model.
+  final String localizedModel;
+
+  /// Unique UUID value identifying the current device.
+  final String identifierForVendor;
+
+  /// Deserializes from the JSON message received from [_kChannel].
+  static IosDeviceInfo _fromJson(Map<String, Object> json) {
+    return new IosDeviceInfo._(
+      name: json['name'],
+      systemName: json['systemName'],
+      systemVersion: json['systemVersion'],
+      model: json['model'],
+      localizedModel: json['localizedModel'],
+      identifierForVendor: json['identifierForVendor'],
     );
   }
 }

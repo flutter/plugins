@@ -6,7 +6,12 @@ import 'package:flutter/services.dart';
 import 'package:device_info/device_info.dart';
 
 void main() {
-  runApp(new MyApp());
+  runZoned(() {
+    runApp(new MyApp());
+  }, onError: (dynamic error, dynamic stack) {
+    print(error);
+    print(stack);
+  });
 }
 
 class MyApp extends StatefulWidget {
@@ -30,7 +35,7 @@ class _MyAppState extends State<MyApp> {
       if (Platform.isAndroid) {
         deviceData = _readAndroidBuildData(await androidOSBuild);
       } else if (Platform.isIOS) {
-        throw 'not implemented';
+        deviceData = _readIosDeviceInfo(await iosDeviceInfo);
       }
     } on PlatformException {
       deviceData = <String, dynamic>{ 'Error:': 'Failed to get platform version.' };
@@ -70,6 +75,17 @@ class _MyAppState extends State<MyApp> {
       'supportedAbis': build.supportedAbis,
       'tags': build.tags,
       'type': build.type,
+    };
+  }
+
+  Map<String, dynamic> _readIosDeviceInfo(IosDeviceInfo data) {
+    return <String, dynamic>{
+      'name': data.name,
+      'systemName': data.systemName,
+      'systemVersion': data.systemVersion,
+      'model': data.model,
+      'localizedModel': data.localizedModel,
+      'identifierForVendor': data.identifierForVendor,
     };
   }
 
