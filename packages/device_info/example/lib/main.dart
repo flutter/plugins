@@ -1,3 +1,7 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'dart:async';
 
 import 'dart:io';
@@ -38,11 +42,12 @@ class _MyAppState extends State<MyApp> {
         deviceData = _readIosDeviceInfo(await iosDeviceInfo);
       }
     } on PlatformException {
-      deviceData = <String, dynamic>{ 'Error:': 'Failed to get platform version.' };
+      deviceData = <String, dynamic>{
+        'Error:': 'Failed to get platform version.'
+      };
     }
 
-    if (!mounted)
-      return;
+    if (!mounted) return;
 
     setState(() {
       _deviceData = deviceData;
@@ -94,35 +99,34 @@ class _MyAppState extends State<MyApp> {
     return new MaterialApp(
       home: new Scaffold(
         appBar: new AppBar(
-          title: new Text(Platform.isAndroid ? 'Android Device Info' : 'iOS Device Info'),
+          title: new Text(
+              Platform.isAndroid ? 'Android Device Info' : 'iOS Device Info'),
         ),
         body: new ListView(
           shrinkWrap: true,
-          children: _deviceData
-            .keys
-            .map((String property) {
-              return new Row(
-                children: <Widget>[
-                  new Container(
-                    padding: const EdgeInsets.all(10.0),
-                    child: new Text(
-                      property,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
+          children: _deviceData.keys.map((String property) {
+            return new Row(
+              children: <Widget>[
+                new Container(
+                  padding: const EdgeInsets.all(10.0),
+                  child: new Text(
+                    property,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                  new Expanded(child: new Container(
-                    padding: const EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
-                    child: new Text(
-                      '${_deviceData[property]}',
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  )),
-                ],
-              );
-            })
-            .toList(),
+                ),
+                new Expanded(
+                    child: new Container(
+                  padding: const EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
+                  child: new Text(
+                    '${_deviceData[property]}',
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                )),
+              ],
+            );
+          }).toList(),
         ),
       ),
     );

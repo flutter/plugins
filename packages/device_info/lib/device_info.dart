@@ -6,7 +6,8 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
-const MethodChannel _kChannel = const MethodChannel('plugins.flutter.io/device_info');
+const MethodChannel _kChannel =
+    const MethodChannel('plugins.flutter.io/device_info');
 
 /// This information does not change from call to call. Cache it.
 AndroidOSBuild _cachedAndroidOSBuild;
@@ -14,7 +15,9 @@ AndroidOSBuild _cachedAndroidOSBuild;
 /// Information derived from `android.os.Build`.
 ///
 /// See: https://developer.android.com/reference/android/os/Build.html
-Future<AndroidOSBuild> get androidOSBuild async => _cachedAndroidOSBuild ?? AndroidOSBuild._fromJson(await _kChannel.invokeMethod('getAndroidOSBuild'));
+Future<AndroidOSBuild> get androidOSBuild async =>
+    _cachedAndroidOSBuild ??
+    AndroidOSBuild._fromJson(await _kChannel.invokeMethod('getAndroidOSBuild'));
 
 /// This information does not change from call to call. Cache it.
 IosDeviceInfo _cachedIosDeviceInfo;
@@ -22,7 +25,9 @@ IosDeviceInfo _cachedIosDeviceInfo;
 /// Information derived from `UIDevice`.
 ///
 /// See: https://developer.apple.com/documentation/uikit/uidevice
-Future<IosDeviceInfo> get iosDeviceInfo async => _cachedIosDeviceInfo ?? IosDeviceInfo._fromJson(await _kChannel.invokeMethod('getIosDeviceInfo'));
+Future<IosDeviceInfo> get iosDeviceInfo async =>
+    _cachedIosDeviceInfo ??
+    IosDeviceInfo._fromJson(await _kChannel.invokeMethod('getIosDeviceInfo'));
 
 /// Information derived from `android.os.Build`.
 ///

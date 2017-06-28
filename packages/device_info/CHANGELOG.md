@@ -1,3 +1,3 @@
-## [0.0.1] - TODO: Add release date.
+## 0.0.1 - June 28, 2017
 
-* TODO: Describe initial release.
+* Implements platform-specific device/OS properties

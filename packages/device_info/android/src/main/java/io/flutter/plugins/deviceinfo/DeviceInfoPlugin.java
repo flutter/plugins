@@ -1,33 +1,31 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.deviceinfo;
 
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
+import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * DeviceInfoPlugin
- */
+/** DeviceInfoPlugin */
 public class DeviceInfoPlugin implements MethodCallHandler {
 
-  /**
-   * Substitute for missing values.
-   */
-  static private final String[] EMPTY_STRING_LIST = new String[]{};
+  /** Substitute for missing values. */
+  private static final String[] EMPTY_STRING_LIST = new String[] {};
 
-  /**
-   * Plugin registration.
-   */
+  /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
-    final MethodChannel channel = new MethodChannel(registrar.messenger(), "plugins.flutter.io/device_info");
+    final MethodChannel channel =
+        new MethodChannel(registrar.messenger(), "plugins.flutter.io/device_info");
     channel.setMethodCallHandler(new DeviceInfoPlugin());
   }
 
