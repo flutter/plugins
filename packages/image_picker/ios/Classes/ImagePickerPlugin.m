@@ -68,6 +68,11 @@
     [alert addAction:library];
     [alert addAction:cancel];
     [_viewController presentViewController:alert animated:YES completion:nil];
+  }
+  else if([@"store" isEqualToString:call.method]) {
+    _result = result;
+    NSString *filePath = call.arguments;
+    [self storeFile:filePath];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -135,5 +140,18 @@
   UIGraphicsEndImageContext();
   return normalizedImage;
 }
+
+- (void)storeFile:(NSString *)filePath {
+  NSData *data = [[NSData alloc] initWithContentsOfFile:filePath];
+  UIImage *image = [UIImage imageWithData:data];
+  UIImageWriteToSavedPhotosAlbum(image, nil, @selector(storeComplete), nil);
+}
+
+- (void)storeComplete:(UIImage *)image
+    didFinishSavingWithError:(NSError *)error
+                 contextInfo:(void *)contextInfo {
+                   NSLog(@"storeComplete");
+                   _result([NSNumber numberWithBool:TRUE]);
+                 }
 
 @end

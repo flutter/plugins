@@ -15,4 +15,9 @@ class ImagePicker {
     final String path = await _channel.invokeMethod('pickImage');
     return new File(path);
   }
+
+  static Future<bool> store(String path) async {
+    bool flag = await _channel.invokeMethod('store', path);
+    return flag;
+  }
 }
