@@ -1,4 +1,4 @@
-package com.yourcompany.deviceinfoexample;
+package io.flutter.plugins.deviceinfoexample;
 
 import android.os.Bundle;
 
