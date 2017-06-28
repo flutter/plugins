@@ -29,6 +29,9 @@ public class DeviceInfoPlugin implements MethodCallHandler {
     channel.setMethodCallHandler(new DeviceInfoPlugin());
   }
 
+  /** Do not allow direct instantiation. */
+  private DeviceInfoPlugin() {}
+
   @Override
   public void onMethodCall(MethodCall call, Result result) {
     if (call.method.equals("getAndroidOSBuild")) {

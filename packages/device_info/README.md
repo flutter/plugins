@@ -1,7 +1,7 @@
 # device_info
 
 This Flutter plugin provides an API for querying information about the device
-a Flutter application is running on.
+on which a Flutter application is running.
 
 # Usage
 
