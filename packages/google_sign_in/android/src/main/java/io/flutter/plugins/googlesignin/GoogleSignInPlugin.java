@@ -117,7 +117,6 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 
     private static final String ERROR_REASON_EXCEPTION = "exception";
     private static final String ERROR_REASON_STATUS = "status";
-    private static final String ERROR_REASON_OPERATION_IN_PROGRESS = "operation_in_progress";
     private static final String ERROR_REASON_CONNECTION_FAILED = "connection_failed";
 
     private static final String STATE_RESOLVING_ERROR = "resolving_error";
@@ -334,7 +333,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
       pendingOperation = null;
     }
 
-    private class PendingOperation {
+    private static class PendingOperation {
       final String method;
       final Result result;
 
