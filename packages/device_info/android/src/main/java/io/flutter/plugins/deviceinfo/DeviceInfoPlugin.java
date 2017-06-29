@@ -34,7 +34,7 @@ public class DeviceInfoPlugin implements MethodCallHandler {
 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
-    if (call.method.equals("getAndroidOSBuild")) {
+    if (call.method.equals("getAndroidDeviceInfo")) {
       Map<String, Object> build = new HashMap<>();
       build.put("board", Build.BOARD);
       build.put("bootloader", Build.BOOTLOADER);

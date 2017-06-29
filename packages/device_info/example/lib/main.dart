@@ -24,6 +24,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  static final DeviceInfoPlugin deviceInfoPlugin = new DeviceInfoPlugin();
   Map<String, dynamic> _deviceData = <String, dynamic>{};
 
   @override
@@ -37,9 +38,9 @@ class _MyAppState extends State<MyApp> {
 
     try {
       if (Platform.isAndroid) {
-        deviceData = _readAndroidBuildData(await androidOSBuild);
+        deviceData = _readAndroidBuildData(await deviceInfoPlugin.androidInfo);
       } else if (Platform.isIOS) {
-        deviceData = _readIosDeviceInfo(await iosDeviceInfo);
+        deviceData = _readIosDeviceInfo(await deviceInfoPlugin.iosInfo);
       }
     } on PlatformException {
       deviceData = <String, dynamic>{
@@ -54,7 +55,7 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  Map<String, dynamic> _readAndroidBuildData(AndroidOSBuild build) {
+  Map<String, dynamic> _readAndroidBuildData(AndroidDeviceInfo build) {
     return <String, dynamic>{
       'version.securityPatch': build.version.securityPatch,
       'version.sdkInt': build.version.sdkInt,

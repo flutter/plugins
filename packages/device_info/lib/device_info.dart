@@ -6,34 +6,41 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
-const MethodChannel _kChannel =
-    const MethodChannel('plugins.flutter.io/device_info');
+/// Provides device and operating system information.
+class DeviceInfoPlugin {
+  /// Channel used to communicate to native code.
+  static const MethodChannel channel =
+      const MethodChannel('plugins.flutter.io/device_info');
 
-/// This information does not change from call to call. Cache it.
-AndroidOSBuild _cachedAndroidOSBuild;
+  DeviceInfoPlugin();
+
+  /// This information does not change from call to call. Cache it.
+  AndroidDeviceInfo _cachedAndroidDeviceInfo;
+
+  /// Information derived from `android.os.Build`.
+  ///
+  /// See: https://developer.android.com/reference/android/os/Build.html
+  Future<AndroidDeviceInfo> get androidInfo async =>
+      _cachedAndroidDeviceInfo ??
+      AndroidDeviceInfo
+          ._fromJson(await channel.invokeMethod('getAndroidDeviceInfo'));
+
+  /// This information does not change from call to call. Cache it.
+  IosDeviceInfo _cachedIosDeviceInfo;
+
+  /// Information derived from `UIDevice`.
+  ///
+  /// See: https://developer.apple.com/documentation/uikit/uidevice
+  Future<IosDeviceInfo> get iosInfo async =>
+      _cachedIosDeviceInfo ??
+      IosDeviceInfo._fromJson(await channel.invokeMethod('getIosDeviceInfo'));
+}
 
 /// Information derived from `android.os.Build`.
 ///
 /// See: https://developer.android.com/reference/android/os/Build.html
-Future<AndroidOSBuild> get androidOSBuild async =>
-    _cachedAndroidOSBuild ??
-    AndroidOSBuild._fromJson(await _kChannel.invokeMethod('getAndroidOSBuild'));
-
-/// This information does not change from call to call. Cache it.
-IosDeviceInfo _cachedIosDeviceInfo;
-
-/// Information derived from `UIDevice`.
-///
-/// See: https://developer.apple.com/documentation/uikit/uidevice
-Future<IosDeviceInfo> get iosDeviceInfo async =>
-    _cachedIosDeviceInfo ??
-    IosDeviceInfo._fromJson(await _kChannel.invokeMethod('getIosDeviceInfo'));
-
-/// Information derived from `android.os.Build`.
-///
-/// See: https://developer.android.com/reference/android/os/Build.html
-class AndroidOSBuild {
-  AndroidOSBuild._({
+class AndroidDeviceInfo {
+  AndroidDeviceInfo._({
     this.version,
     this.board,
     this.bootloader,
@@ -57,7 +64,7 @@ class AndroidOSBuild {
         supported64BitAbis = new List<String>.unmodifiable(supported64BitAbis),
         supportedAbis = new List<String>.unmodifiable(supportedAbis);
 
-  /// Android operating system version values.
+  /// Android operating system version values derived from `android.os.Build.VERSION`.
   final AndroidBuildVersion version;
 
   /// The name of the underlying board, like "goldfish".
@@ -112,8 +119,8 @@ class AndroidOSBuild {
   final String type;
 
   /// Deserializes from the JSON message received from [_kChannel].
-  static AndroidOSBuild _fromJson(Map<String, Object> json) {
-    return new AndroidOSBuild._(
+  static AndroidDeviceInfo _fromJson(Map<String, Object> json) {
+    return new AndroidDeviceInfo._(
       version: AndroidBuildVersion._fromJson(json['version']),
       board: json['board'],
       bootloader: json['bootloader'],
