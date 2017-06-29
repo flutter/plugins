@@ -155,10 +155,6 @@ public class GoogleSignInPlugin implements MethodCallHandler {
       checkAndSetPendingOperation(METHOD_INIT, result);
 
       try {
-        if (googleApiClient != null) {
-          // This can happen if the scopes change, or a full restart or hot reload
-          googleApiClient = null;
-        }
         GoogleSignInOptions.Builder optionsBuilder =
             new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail();
         // Only requests a clientId if google-services.json was present and parsed
