@@ -16,7 +16,6 @@ Firebase Admob plugin for Flutter.
   s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'
   s.dependency 'Firebase/Core'
-  s.dependency 'Firebase/Admob'
 
   s.ios.deployment_target = '8.0'
 end

@@ -11,7 +11,7 @@ flutter:
 
 dependencies:
   meta: ^1.0.4
-  platform: ^2.1.0
+  platform: ^2.0.0
   flutter:
     sdk: flutter
 
