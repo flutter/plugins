@@ -10,8 +10,14 @@
 }
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
-  if ([@"getPlatformVersion" isEqualToString:call.method]) {
-    result([@"iOS " stringByAppendingString:[[UIDevice currentDevice] systemVersion]]);
+  if ([call.method isEqualToString:@"loadBannerAd"]) {
+      NSLog(@"loadBannerAd not implemented");
+  } else if ([call.method isEqualToString:@"loadInterstitialAd"]) {
+      NSLog(@"loadInterstitialAd not implemented");
+  } else if ([call.method isEqualToString:@"showAd"]) {
+      NSLog(@"showAd not implemented");
+  } else if ([call.method isEqualToString:@"disposeAd"]) {
+      NSLog(@"disposeAd not implemented");
   } else {
     result(FlutterMethodNotImplemented);
   }
