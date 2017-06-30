@@ -6,8 +6,12 @@ import 'dart:async';
 import 'dart:ui' show hashValues;
 
 import 'package:flutter/services.dart' show MethodChannel;
-import 'package:flutter/material.dart';
 import 'package:meta/meta.dart' show visibleForTesting;
+
+import 'src/common.dart';
+
+export 'src/common.dart';
+export 'widgets.dart';
 
 class GoogleSignInAuthentication {
   final Map<String, String> _data;
@@ -24,7 +28,7 @@ class GoogleSignInAuthentication {
   String toString() => 'GoogleSignInAuthentication:$_data';
 }
 
-class GoogleSignInAccount {
+class GoogleSignInAccount implements GoogleIdentity {
   final String displayName;
   final String email;
   final String id;
@@ -230,55 +234,6 @@ class GoogleSignIn {
   /// Disconnects the current user from the app and revokes previous
   /// authentication.
   Future<GoogleSignInAccount> disconnect() => _addMethodCall('disconnect');
-}
-
-/// Builds a CircleAvatar profile image of the appropriate resolution
-class GoogleUserCircleAvatar extends StatelessWidget {
-  const GoogleUserCircleAvatar(this._primaryProfileImageUrl);
-  final String _primaryProfileImageUrl;
-
-  @override
-  Widget build(BuildContext context) {
-    return new CircleAvatar(
-      child: new LayoutBuilder(builder: _buildClippedImage),
-    );
-  }
-
-  /// Adds sizing information to the URL, inserted as the last
-  /// directory before the image filename. The format is "/sNN-c/",
-  /// where NN is the max width/height of the image, and "c" indicates we
-  /// want the image cropped.
-  String _sizedProfileImageUrl(double size) {
-    if (_primaryProfileImageUrl == null) {
-      return null;
-    }
-    final Uri profileUri = Uri.parse(_primaryProfileImageUrl);
-    final List<String> pathSegments =
-        new List<String>.from(profileUri.pathSegments);
-    pathSegments.remove("s1337"); // placeholder value added by iOS plugin
-    return new Uri(
-      scheme: profileUri.scheme,
-      host: profileUri.host,
-      pathSegments: pathSegments,
-      query: "sz=${size.round()}",
-    )
-        .toString();
-  }
-
-  Widget _buildClippedImage(BuildContext context, BoxConstraints constraints) {
-    assert(constraints.maxWidth == constraints.maxHeight);
-    final String url = _sizedProfileImageUrl(
-      MediaQuery.of(context).devicePixelRatio * constraints.maxWidth,
-    );
-    if (url == null) {
-      return new Container();
-    }
-    return new ClipOval(
-      child: new Image(
-        image: new NetworkImage(url),
-      ),
-    );
-  }
 }
 
 class _MethodCompleter {
