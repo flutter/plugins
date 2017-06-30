@@ -21,8 +21,7 @@ class DeviceInfoPlugin {
   ///
   /// See: https://developer.android.com/reference/android/os/Build.html
   Future<AndroidDeviceInfo> get androidInfo async =>
-      _cachedAndroidDeviceInfo ??
-      AndroidDeviceInfo
+      _cachedAndroidDeviceInfo ??= AndroidDeviceInfo
           ._fromJson(await channel.invokeMethod('getAndroidDeviceInfo'));
 
   /// This information does not change from call to call. Cache it.
@@ -31,8 +30,7 @@ class DeviceInfoPlugin {
   /// Information derived from `UIDevice`.
   ///
   /// See: https://developer.apple.com/documentation/uikit/uidevice
-  Future<IosDeviceInfo> get iosInfo async =>
-      _cachedIosDeviceInfo ??
+  Future<IosDeviceInfo> get iosInfo async => _cachedIosDeviceInfo ??=
       IosDeviceInfo._fromJson(await channel.invokeMethod('getIosDeviceInfo'));
 }
 
