@@ -61,7 +61,6 @@ linter:
     - always_declare_return_types
     # - always_put_control_body_on_new_line
     - always_require_non_null_named_parameters
-    - always_specify_types
     - annotate_overrides
     # - avoid_annotating_with_dynamic # not yet tested
     - avoid_as
