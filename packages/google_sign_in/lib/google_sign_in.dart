@@ -29,13 +29,6 @@ class GoogleSignInAuthentication {
 }
 
 class GoogleSignInAccount implements GoogleIdentity {
-  final String displayName;
-  final String email;
-  final String id;
-  final String photoUrl;
-  final String _idToken;
-  final GoogleSignIn _googleSignIn;
-
   GoogleSignInAccount._(this._googleSignIn, Map<String, dynamic> data)
       : displayName = data['displayName'],
         email = data['email'],
@@ -45,6 +38,21 @@ class GoogleSignInAccount implements GoogleIdentity {
     assert(displayName != null);
     assert(id != null);
   }
+
+  @override
+  final String displayName;
+
+  @override
+  final String email;
+
+  @override
+  final String id;
+
+  @override
+  final String photoUrl;
+
+  final String _idToken;
+  final GoogleSignIn _googleSignIn;
 
   Future<GoogleSignInAuthentication> get authentication async {
     if (_googleSignIn.currentUser != this) {

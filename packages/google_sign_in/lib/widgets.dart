@@ -39,7 +39,7 @@ class GoogleUserCircleAvatar extends StatelessWidget {
   /// Adds sizing information to the URL, inserted as the last path segment
   /// before the image filename. The format is described in [sizeDirective].
   String _sizedProfileImageUrl(double size) {
-    String photoUrl = identity.photoUrl ?? placeholderPhotoUrl;
+    final String photoUrl = identity.photoUrl ?? placeholderPhotoUrl;
     assert(photoUrl != null);
     final Uri profileUri = Uri.parse(photoUrl);
     final List<String> pathSegments =
