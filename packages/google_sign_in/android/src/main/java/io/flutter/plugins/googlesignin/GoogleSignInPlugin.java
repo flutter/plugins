@@ -311,13 +311,16 @@ public class GoogleSignInPlugin implements MethodCallHandler {
         GoogleSignInAccount account = result.getSignInAccount();
         currentAccount = account;
         Map<String, Object> response = new HashMap<>();
-        response.put("displayName", account.getDisplayName());
         response.put("email", account.getEmail());
         response.put("id", account.getId());
-        response.put("idToken", account.getIdToken());
-        Uri photoUrl = account.getPhotoUrl();
-        if (photoUrl != null) {
-          response.put("photoUrl", photoUrl.toString());
+        if (account.getIdToken() != null) {
+          response.put("idToken", account.getIdToken());
+        }
+        if (account.getDisplayName() != null) {
+          response.put("displayName", account.getDisplayName());
+        }
+        if (account.getPhotoUrl() != null) {
+          response.put("photoUrl", account.getPhotoUrl().toString());
         }
         finishWithSuccess(response);
       } else if (result.getStatus().getStatusCode() == CommonStatusCodes.SIGN_IN_REQUIRED

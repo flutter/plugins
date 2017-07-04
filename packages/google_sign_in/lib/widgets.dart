@@ -80,9 +80,11 @@ class GoogleUserCircleAvatar extends StatelessWidget {
     assert(constraints.maxWidth == constraints.maxHeight);
 
     String photoUrl = identity.photoUrl ?? placeholderPhotoUrl;
-    if (photoUrl == null && identity.displayName != null) {
+    if (photoUrl == null &&
+        identity.displayName != null &&
+        identity.displayName.startsWith(new RegExp(r'[A-Z][a-z]'))) {
       // Display the user's initials rather than a profile photo.
-      return new Text(identity.displayName[0]);
+      return new Text(identity.displayName[0].toUpperCase());
     }
 
     // Add a sizing directive to the profile photo URL if we have one.
