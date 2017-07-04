@@ -22,6 +22,7 @@ class GoogleUserCircleAvatar extends StatelessWidget {
   const GoogleUserCircleAvatar({
     @required this.identity,
     this.placeholderPhotoUrl,
+    this.backgroundColor,
   }) : assert(identity != null);
 
   /// A regular expression that matches against the "size directive" path
@@ -31,12 +32,28 @@ class GoogleUserCircleAvatar extends StatelessWidget {
   /// image, and "`c`" indicates we want the image cropped.
   static final RegExp sizeDirective = new RegExp(r'^s[0-9]{1,5}(-c)?$');
 
+  /// The Google user's identity; guaranteed to be non-null.
   final GoogleIdentity identity;
+
+  /// The color with which to fill the circle. Changing the background color
+  /// will cause the avatar to animate to the new color.
+  ///
+  /// If a background color is not specified, the theme's primary color is used.
+  final Color backgroundColor;
+
+  /// The URL of a photo to use if the user's [identity] does not specify a
+  /// `photoUrl`.
+  ///
+  /// If this is `null` and the user's [identity] does not contain a photo URL,
+  /// then this widget will attempt to display the user's first initial as
+  /// determined from the identity's [displayName] field. If that is `null` a
+  /// default (generic) Google profile photo will be displayed.
   final String placeholderPhotoUrl;
 
   @override
   Widget build(BuildContext context) {
     return new CircleAvatar(
+      backgroundColor: backgroundColor,
       child: new LayoutBuilder(builder: _buildClippedImage),
     );
   }
@@ -65,7 +82,7 @@ class GoogleUserCircleAvatar extends StatelessWidget {
     String photoUrl = identity.photoUrl ?? placeholderPhotoUrl;
     if (photoUrl == null && identity.displayName != null) {
       // Display the user's initials rather than a profile photo.
-      return new Text(identity.displayName.substring(0, 1));
+      return new Text(identity.displayName[0]);
     }
 
     // Add a sizing directive to the profile photo URL if we have one.
