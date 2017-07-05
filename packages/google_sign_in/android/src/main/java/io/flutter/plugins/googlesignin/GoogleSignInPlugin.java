@@ -10,7 +10,6 @@ import android.app.Application.ActivityLifecycleCallbacks;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -129,11 +128,17 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     private GoogleApiClient googleApiClient;
     private List<String> requestedScopes;
     private PendingOperation pendingOperation;
+    private volatile GoogleSignInAccount currentAccount;
 
     public Delegate(PluginRegistry.Registrar registrar) {
       activity = registrar.activity();
       activity.getApplication().registerActivityLifecycleCallbacks(handler);
       registrar.addActivityResultListener(handler);
+    }
+
+    /** Returns the most recently signed-in account, or null if there was none. */
+    public GoogleSignInAccount getCurrentAccount() {
+      return currentAccount;
     }
 
     private void checkAndSetPendingOperation(String method, Result result) {
@@ -303,14 +308,14 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     private void onSignInResult(GoogleSignInResult result) {
       if (result.isSuccess()) {
         GoogleSignInAccount account = result.getSignInAccount();
+        currentAccount = account;
         Map<String, Object> response = new HashMap<>();
-        response.put("displayName", account.getDisplayName());
         response.put("email", account.getEmail());
         response.put("id", account.getId());
         response.put("idToken", account.getIdToken());
-        Uri photoUrl = account.getPhotoUrl();
-        if (photoUrl != null) {
-          response.put("photoUrl", photoUrl.toString());
+        response.put("displayName", account.getDisplayName());
+        if (account.getPhotoUrl() != null) {
+          response.put("photoUrl", account.getPhotoUrl().toString());
         }
         finishWithSuccess(response);
       } else if (result.getStatus().getStatusCode() == CommonStatusCodes.SIGN_IN_REQUIRED

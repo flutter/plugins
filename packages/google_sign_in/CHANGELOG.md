@@ -1,3 +1,11 @@
+## 0.3.0
+
+* Add a new `GoogleIdentity` interface, implemented by `GoogleSignInAccount`.
+* Move `GoogleUserCircleAvatar` to "widgets" library (exported by
+  base library for backwards compatibility) and make it take an instance
+  of `GoogleIdentity`, thus allowing it to be used by other packages that
+  provide implementations of `GoogleIdentity`.
+
 ## 0.2.1
 
 * Plugin can (once again) be used in apps that extend `FlutterActivity`
