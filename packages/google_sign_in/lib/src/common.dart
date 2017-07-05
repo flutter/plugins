@@ -11,6 +11,7 @@ abstract class GoogleIdentity {
   /// _Important_: Do not use this returned Google ID to communicate the
   /// currently signed in user to your backend server. Instead, send an ID token
   /// which can be securely validated on the server.
+  /// `GoogleSignInAccount.authentication.idToken` provides such an ID token.
   String get id;
 
   /// The email address of the signed in user.
@@ -21,6 +22,7 @@ abstract class GoogleIdentity {
   /// _Important_: Do not use this returned email address to communicate the
   /// currently signed in user to your backend server. Instead, send an ID token
   /// which can be securely validated on the server.
+  /// `GoogleSignInAccount.authentication.idToken` provides such an ID token.
   String get email;
 
   /// The display name of the signed in user.
