@@ -10,7 +10,6 @@ import android.app.Application.ActivityLifecycleCallbacks;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -313,12 +312,8 @@ public class GoogleSignInPlugin implements MethodCallHandler {
         Map<String, Object> response = new HashMap<>();
         response.put("email", account.getEmail());
         response.put("id", account.getId());
-        if (account.getIdToken() != null) {
-          response.put("idToken", account.getIdToken());
-        }
-        if (account.getDisplayName() != null) {
-          response.put("displayName", account.getDisplayName());
-        }
+        response.put("idToken", account.getIdToken());
+        response.put("displayName", account.getDisplayName());
         if (account.getPhotoUrl() != null) {
           response.put("photoUrl", account.getPhotoUrl().toString());
         }
