@@ -19,6 +19,9 @@ class AccelerometerEvent {
   final double z;
 
   AccelerometerEvent(this.x, this.y, this.z);
+
+  @override
+  String toString() => '[AccelerometerEvent (x: $x, y: $y, z: $z)]';
 }
 
 class GyroscopeEvent {
@@ -32,6 +35,9 @@ class GyroscopeEvent {
   final double z;
 
   GyroscopeEvent(this.x, this.y, this.z);
+
+  @override
+  String toString() => '[GyroscopeEvent (x: $x, y: $y, z: $z)]';
 }
 
 AccelerometerEvent _listToAccelerometerEvent(List<double> list) {
