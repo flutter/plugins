@@ -1,3 +1,7 @@
+## 0.3.1
+
+* Updated to Firebase SDK to always use latest patch version for 11.0.x builds
+
 ## 0.3.0
 
 * Add a new `GoogleIdentity` interface, implemented by `GoogleSignInAccount`.

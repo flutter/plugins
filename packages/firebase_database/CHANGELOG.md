@@ -1,3 +1,8 @@
+## 0.0.12
+
+* Updated to Firebase SDK to always use latest patch version for 11.0.x builds
+
+
 ## 0.0.11
 
 * Fixes startAt/endAt on iOS when used without a key

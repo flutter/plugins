@@ -35,6 +35,6 @@ android {
 }
 
 dependencies {
-    compile 'com.google.android.gms:play-services-auth:11.0.1'
+    compile 'com.google.android.gms:play-services-auth:11.0.+'
     compile 'com.google.guava:guava:20.0'
 }

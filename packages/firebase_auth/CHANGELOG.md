@@ -1,3 +1,8 @@
+## 0.1.1
+
+* Updated to Firebase SDK to always use latest patch version for 11.0.x builds
+
+
 ## 0.1.0
 
 * Updated to Firebase SDK Version 11.0.1
