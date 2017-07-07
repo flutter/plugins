@@ -1,6 +1,6 @@
 ## 0.3.1
 
-* Updated to Firebase SDK to always use latest patch version for 11.0.x builds
+* Updated GMS to always use latest patch version for 11.0.x builds
 
 ## 0.3.0
 
