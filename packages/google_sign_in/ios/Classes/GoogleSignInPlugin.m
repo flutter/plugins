@@ -68,11 +68,13 @@ static NSString *const kClientIdKey = @"CLIENT_ID";
                                  details:nil]);
     }
   } else if ([call.method isEqualToString:@"signInSilently"]) {
-    [self setAccountRequest:result];
-    [[GIDSignIn sharedInstance] signInSilently];
+    if ([self setAccountRequest:result]) {
+      [[GIDSignIn sharedInstance] signInSilently];
+    }
   } else if ([call.method isEqualToString:@"signIn"]) {
-    [self setAccountRequest:result];
-    [[GIDSignIn sharedInstance] signIn];
+    if ([self setAccountRequest:result]) {
+      [[GIDSignIn sharedInstance] signIn];
+    }
   } else if ([call.method isEqualToString:@"getTokens"]) {
     GIDGoogleUser *currentUser = [GIDSignIn sharedInstance].currentUser;
     GIDAuthentication *auth = currentUser.authentication;
@@ -86,20 +88,23 @@ static NSString *const kClientIdKey = @"CLIENT_ID";
     [[GIDSignIn sharedInstance] signOut];
     result(nil);
   } else if ([call.method isEqualToString:@"disconnect"]) {
-    [self setAccountRequest:result];
-    [[GIDSignIn sharedInstance] disconnect];
+    if ([self setAccountRequest:result]) {
+      [[GIDSignIn sharedInstance] disconnect];
+    }
   } else {
     result(FlutterMethodNotImplemented);
   }
 }
 
-- (void)setAccountRequest:(FlutterResult)request {
+- (BOOL)setAccountRequest:(FlutterResult)request {
   if (_accountRequest != nil) {
     request([FlutterError errorWithCode:@"concurrent-requests"
                                 message:@"Concurrent requests to account signin"
                                 details:nil]);
+    return NO;
   }
   _accountRequest = request;
+  return YES;
 }
 
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary *)options {
