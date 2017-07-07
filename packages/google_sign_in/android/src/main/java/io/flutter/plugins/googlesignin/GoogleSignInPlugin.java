@@ -231,6 +231,8 @@ public class GoogleSignInPlugin implements MethodCallHandler {
      * user with the specified email address.
      */
     public void getTokens(final Result result, final String email) {
+      // TODO(issue/11107): Add back the checkAndSetPendingOperation once getTokens is properly
+      // gated from Dart code. Change result.success/error calls below to use finishWith()
       if (email == null) {
         result.error(ERROR_REASON_EXCEPTION, "Email is null", null);
         return;
