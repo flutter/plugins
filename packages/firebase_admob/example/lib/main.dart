@@ -32,6 +32,7 @@ class _MyAppState extends State<MyApp> {
     contentUrl: 'http://foo.com/bar.html',
     birthday: new DateTime.now(),
     childDirected: true,
+    gender: "male",
   );
 
   BannerAd _bannerAd;
@@ -40,6 +41,7 @@ class _MyAppState extends State<MyApp> {
   BannerAd createBannerAd() {
     return new BannerAd(
       unitId: bannerAdUnitId,
+      targetingInfo: targetingInfo,
       listener: (MobileAdEvent event) {
         print("BannerAd event $event");
       },
