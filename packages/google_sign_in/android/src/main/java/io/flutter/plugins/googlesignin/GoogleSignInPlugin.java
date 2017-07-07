@@ -231,7 +231,6 @@ public class GoogleSignInPlugin implements MethodCallHandler {
      * user with the specified email address.
      */
     public void getTokens(Result result, final String email) {
-      checkAndSetPendingOperation(METHOD_GET_TOKENS, result);
       if (email == null) {
         result.error(ERROR_REASON_EXCEPTION, "Email is null", null);
         return;
