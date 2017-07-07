@@ -26,7 +26,7 @@ static NSString *const kClientIdKey = @"CLIENT_ID";
 @end
 
 @implementation GoogleSignInPlugin {
-  NSMutableArray<FlutterResult> *_accountRequests;
+  FlutterResult _accountRequest;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -41,7 +41,6 @@ static NSString *const kClientIdKey = @"CLIENT_ID";
 - (instancetype)init {
   self = [super init];
   if (self) {
-    _accountRequests = [[NSMutableArray alloc] init];
     [GIDSignIn sharedInstance].delegate = self;
     [GIDSignIn sharedInstance].uiDelegate = self;
 
@@ -69,11 +68,13 @@ static NSString *const kClientIdKey = @"CLIENT_ID";
                                  details:nil]);
     }
   } else if ([call.method isEqualToString:@"signInSilently"]) {
-    [_accountRequests insertObject:result atIndex:0];
-    [[GIDSignIn sharedInstance] signInSilently];
+    if ([self setAccountRequest:result]) {
+      [[GIDSignIn sharedInstance] signInSilently];
+    }
   } else if ([call.method isEqualToString:@"signIn"]) {
-    [_accountRequests insertObject:result atIndex:0];
-    [[GIDSignIn sharedInstance] signIn];
+    if ([self setAccountRequest:result]) {
+      [[GIDSignIn sharedInstance] signIn];
+    }
   } else if ([call.method isEqualToString:@"getTokens"]) {
     GIDGoogleUser *currentUser = [GIDSignIn sharedInstance].currentUser;
     GIDAuthentication *auth = currentUser.authentication;
@@ -87,11 +88,23 @@ static NSString *const kClientIdKey = @"CLIENT_ID";
     [[GIDSignIn sharedInstance] signOut];
     result(nil);
   } else if ([call.method isEqualToString:@"disconnect"]) {
-    [_accountRequests insertObject:result atIndex:0];
-    [[GIDSignIn sharedInstance] disconnect];
+    if ([self setAccountRequest:result]) {
+      [[GIDSignIn sharedInstance] disconnect];
+    }
   } else {
     result(FlutterMethodNotImplemented);
   }
+}
+
+- (BOOL)setAccountRequest:(FlutterResult)request {
+  if (_accountRequest != nil) {
+    request([FlutterError errorWithCode:@"concurrent-requests"
+                                message:@"Concurrent requests to account signin"
+                                details:nil]);
+    return NO;
+  }
+  _accountRequest = request;
+  return YES;
 }
 
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary *)options {
@@ -153,11 +166,9 @@ static NSString *const kClientIdKey = @"CLIENT_ID";
 #pragma mark - private methods
 
 - (void)respondWithAccount:(id)account error:(NSError *)error {
-  NSArray<FlutterResult> *requests = _accountRequests;
-  _accountRequests = [[NSMutableArray alloc] init];
-  for (FlutterResult accountRequest in requests) {
-    accountRequest(error != nil ? error.flutterError : account);
-  }
+  FlutterResult result = _accountRequest;
+  _accountRequest = nil;
+  result(error != nil ? error.flutterError : account);
 }
 
 @end
