@@ -30,7 +30,7 @@ android {
         disable 'InvalidPackage'
     }
     dependencies {
-        compile 'com.google.firebase:firebase-auth:11.0.1'
-        compile 'com.google.firebase:firebase-analytics:11.0.1'
+        compile 'com.google.firebase:firebase-auth:11.0.+'
+        compile 'com.google.firebase:firebase-analytics:11.0.+'
     }
 }

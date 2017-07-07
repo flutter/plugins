@@ -3,7 +3,7 @@ name: google_sign_in
 description: Google Sign-In plugin for Flutter.
 author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/google_sign_in
-version: 0.3.0
+version: 0.3.1
 
 flutter:
   plugin:
