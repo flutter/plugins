@@ -38,7 +38,7 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
   InterstitialAd interstitial;
 
   public static void registerWith(Registrar registrar) {
-    final MethodChannel channel = new MethodChannel(registrar.messenger(), "firebase_admob");
+    final MethodChannel channel = new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_admob");
     channel.setMethodCallHandler(new FirebaseAdMobPlugin(registrar.activity(), channel));
   }
 

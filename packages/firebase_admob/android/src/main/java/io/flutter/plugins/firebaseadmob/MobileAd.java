@@ -38,7 +38,7 @@ abstract class MobileAd extends AdListener {
     CREATED,
     LOADING,
     FAILED,
-    PENDING, // Will be shown when status is changed to LOADED.
+    PENDING, // The ad will be shown when status is changed to LOADED.
     LOADED,
   }
 
@@ -60,7 +60,7 @@ abstract class MobileAd extends AdListener {
     return (ad != null) ? (Interstitial)ad : new Interstitial(id, activity, channel);
   }
 
-  static MobileAd getAdForId(Integer id) { // TBD: int id
+  static MobileAd getAdForId(Integer id) {
     return allAds.get(id);
   }
 

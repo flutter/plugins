@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:firebase_admob/firebase_admob.dart';
 
 // A placeholder AdMob App Id for testing.
@@ -36,7 +33,7 @@ class _MyAppState extends State<MyApp> {
   );
 
   BannerAd _bannerAd;
-  InterstitialAd _interstitial;
+  InterstitialAd _interstitialAd;
 
   BannerAd createBannerAd() {
     return new BannerAd(
@@ -77,7 +74,7 @@ class _MyAppState extends State<MyApp> {
     return new MaterialApp(
       home: new Scaffold(
         appBar: new AppBar(
-          title: new Text('AdMob Plugin example app'),
+          title: const Text('AdMob Plugin example app'),
         ),
         body: new Center(
           child: new Column(
@@ -85,7 +82,7 @@ class _MyAppState extends State<MyApp> {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               new RaisedButton(
-                child: new Text('SHOW BANNER'),
+                child: const Text('SHOW BANNER'),
                 onPressed: () {
                   _bannerAd ??= createBannerAd();
                   _bannerAd
@@ -94,17 +91,17 @@ class _MyAppState extends State<MyApp> {
                 }
               ),
               new RaisedButton(
-                child: new Text('REMOVE BANNER'),
+                child: const Text('REMOVE BANNER'),
                 onPressed: () {
                   _bannerAd?.dispose();
                   _bannerAd = null;
                 }
               ),
               new RaisedButton(
-                child: new Text('SHOW INTERSTITIAL'),
+                child: const Text('SHOW INTERSTITIAL'),
                 onPressed: () {
-                  _interstitial?.dispose();
-                  _interstitial = createInterstitialAd()
+                  _interstitialAd?.dispose();
+                  _interstitialAd = createInterstitialAd()
                     ..load()
                     ..show();
                 },

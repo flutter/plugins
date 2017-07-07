@@ -28,7 +28,7 @@
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   FirebaseAdMobPlugin* instance = [[FirebaseAdMobPlugin alloc] init];
   instance.channel = [FlutterMethodChannel
-      methodChannelWithName:@"firebase_admob"
+      methodChannelWithName:@"plugins.flutter.io/firebase_admob"
             binaryMessenger:[registrar messenger]];
   [registrar addMethodCallDelegate:instance channel:instance.channel];
 }

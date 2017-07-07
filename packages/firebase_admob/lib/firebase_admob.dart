@@ -6,7 +6,6 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
-import 'package:platform/platform.dart';
 
 enum MobileAdEvent {
   loaded,
@@ -72,7 +71,7 @@ class MobileAdTargetingInfo {
 abstract class MobileAd {
   static final Map<int, MobileAd> _allAds = <int, MobileAd>{};
 
-  MobileAd({ this.unitId, this.targetingInfo, this.listener }) {
+  MobileAd({ @required this.unitId, this.targetingInfo, this.listener }) {
     assert(unitId != null && unitId.isNotEmpty);
     assert(_allAds[id] == null);
     _allAds[id] = this;
@@ -130,6 +129,19 @@ class InterstitialAd extends MobileAd {
 }
 
 class FirebaseAdMob {
+  @visibleForTesting
+  FirebaseAdMob.private(MethodChannel channel) : _channel = channel {
+    _channel.setMethodCallHandler(_handleMethod);
+  }
+
+  static final FirebaseAdMob _instance = new FirebaseAdMob.private(
+    const MethodChannel('plugins.flutter.io/firebase_admob'),
+  );
+
+  static FirebaseAdMob get instance => _instance;
+
+  final MethodChannel _channel;
+
   static const Map<String, MobileAdEvent> _methodToEvent = const <String, MobileAdEvent> {
     'onAdLoaded': MobileAdEvent.loaded,
     'onAdFailedToLoad': MobileAdEvent.failedToLoad,
@@ -140,23 +152,9 @@ class FirebaseAdMob {
     'onAdClosed': MobileAdEvent.closed,
   };
 
-  static final FirebaseAdMob _instance = new FirebaseAdMob.private(
-    const MethodChannel('firebase_admob'),
-    const LocalPlatform(),
-  );
-
-  static FirebaseAdMob get instance => _instance;
-
-  @visibleForTesting
-  FirebaseAdMob.private(MethodChannel channel, Platform platform)
-      : _channel = channel, _platform = platform {
-    _channel.setMethodCallHandler(_handleMethod);
-  }
-
-  final MethodChannel _channel;
-  final Platform _platform;
-
-  Future<bool> initialize({ String appId, String trackingId, bool analyticsEnabled }) {
+  Future<bool> initialize({ @required String appId, String trackingId, bool analyticsEnabled: false }) {
+    assert(appId != null && appId.isNotEmpty);
+    assert(analyticsEnabled != null);
     return _channel.invokeMethod("initialize", <String, dynamic>{
       'appId': appId,
       'trackingId': trackingId,
