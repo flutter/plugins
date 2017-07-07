@@ -55,7 +55,7 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
           new OnFailureListener() {
             @Override
             public void onFailure(Exception e) {
-              result.error("upload_error", e.getMessage(), e.getStackTrace());
+              result.error("upload_error", e.getMessage(), null);
             }
           });
     } else {
