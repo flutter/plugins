@@ -230,7 +230,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
      * Gets an OAuth access token with the scopes that were specified during initialization for the
      * user with the specified email address.
      */
-    public void getTokens(Result result, final String email) {
+    public void getTokens(final Result result, final String email) {
       if (email == null) {
         result.error(ERROR_REASON_EXCEPTION, "Email is null", null);
         return;
@@ -253,18 +253,18 @@ public class GoogleSignInPlugin implements MethodCallHandler {
             public void run(Future<String> tokenFuture) {
               try {
                 String token = tokenFuture.get();
-                HashMap<String, String> result = new HashMap<>();
-                result.put("accessToken", token);
+                HashMap<String, String> tokenResult = new HashMap<>();
+                tokenResult.put("accessToken", token);
                 // TODO(jackson): If we had a way to get the current user at this
                 // point, we could use that to obtain an up-to-date idToken here
                 // instead of the value we cached during sign in. At least, that's
                 // how it works on iOS.
-                finishWithSuccess(result);
+                result.success(tokenResult);
               } catch (ExecutionException e) {
                 Log.e(TAG, "Exception getting access token", e);
-                finishWithError(ERROR_REASON_EXCEPTION, e.getCause().getMessage());
+                result.error(ERROR_REASON_EXCEPTION, e.getCause().getMessage(), null);
               } catch (InterruptedException e) {
-                finishWithError(ERROR_REASON_EXCEPTION, e.getMessage());
+                result.error(ERROR_REASON_EXCEPTION, e.getMessage(), null);
                 Thread.currentThread().interrupt();
               }
             }
