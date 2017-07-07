@@ -1,6 +1,7 @@
 ## 0.0.5
 
 * Updated to Firebase SDK to always use latest patch version for 11.0.x builds
+* Fix crash when encountering upload failure
 
 ## 0.0.4
 
