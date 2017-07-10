@@ -19,8 +19,8 @@
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"image_picker"
                                   binaryMessenger:[registrar messenger]];
-  // TODO(goderbauer): cast is workaround for https://github.com/flutter/flutter/issues/9961.
-  UIViewController *viewController = (UIViewController *)registrar.messenger;
+  UIViewController *viewController =
+      [UIApplication sharedApplication].delegate.window.rootViewController;
   ImagePickerPlugin *instance = [[ImagePickerPlugin alloc] initWithViewController:viewController];
   [registrar addMethodCallDelegate:instance channel:channel];
 }

@@ -1,0 +1,9 @@
+<resources>
+  <!-- Fingerprint dialog theme. -->
+  <style name="AlertDialogCustom" parent="@android:style/Theme.Material.Dialog.Alert">
+    <item name="android:background">#FFFFFFFF</item>
+    <item name="android:textStyle">bold</item>
+    <item name="android:textSize">14sp</item>
+    <item name="android:colorAccent">#FF009688</item>
+  </style>
+</resources>

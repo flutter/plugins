@@ -40,11 +40,21 @@ FIRDatabaseQuery *getQuery(NSDictionary *arguments) {
   }
   id startAt = parameters[@"startAt"];
   if (startAt) {
-    query = [query queryStartingAtValue:startAt childKey:parameters[@"startAtKey"]];
+    id startAtKey = parameters[@"startAtKey"];
+    if (startAtKey) {
+      query = [query queryStartingAtValue:startAt childKey:startAtKey];
+    } else {
+      query = [query queryStartingAtValue:startAt];
+    }
   }
   id endAt = parameters[@"endAt"];
   if (endAt) {
-    query = [query queryEndingAtValue:endAt childKey:parameters[@"endAtKey"]];
+    id endAtKey = parameters[@"endAtKey"];
+    if (endAtKey) {
+      query = [query queryEndingAtValue:endAt childKey:endAtKey];
+    } else {
+      query = [query queryEndingAtValue:endAt];
+    }
   }
   id equalTo = parameters[@"equalTo"];
   if (equalTo) {

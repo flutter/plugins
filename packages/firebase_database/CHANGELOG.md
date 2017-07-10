@@ -1,3 +1,16 @@
+## 0.0.12
+
+* Updated to Firebase SDK to always use latest patch version for 11.0.x builds
+
+## 0.0.11
+
+* Fixes startAt/endAt on iOS when used without a key
+
+## 0.0.10
+
+* Added workaround for inconsistent numeric types when using keepSynced on iOS
+* Bug fixes to Query handling
+
 ## 0.0.9
 
 * Updated to Firebase SDK Version 11.0.1

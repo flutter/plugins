@@ -1,3 +1,21 @@
+## 0.3.1
+
+* Updated GMS to always use latest patch version for 11.0.x builds
+
+## 0.3.0
+
+* Add a new `GoogleIdentity` interface, implemented by `GoogleSignInAccount`.
+* Move `GoogleUserCircleAvatar` to "widgets" library (exported by
+  base library for backwards compatibility) and make it take an instance
+  of `GoogleIdentity`, thus allowing it to be used by other packages that
+  provide implementations of `GoogleIdentity`.
+
+## 0.2.1
+
+* Plugin can (once again) be used in apps that extend `FlutterActivity`
+* `signInSilently` is guaranteed to never throw
+* A failed sign-in (caused by a failing `init` step) will no longer block subsequent sign-in attempts
+
 ## 0.2.0
 
 * Updated dependencies
