@@ -120,7 +120,7 @@ void main() {
       test('update', () async {
         final dynamic value = <String, dynamic>{'hello': 'world' };
         await database.reference().child("foo").update(value);
-        expect(log, equals([
+        expect(log, equals(<MethodCall>[
           new MethodCall(
               "DatabaseReference#update",
               <String, dynamic>{
