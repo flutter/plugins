@@ -118,20 +118,14 @@ void main() {
         );
       });
       test('update', () async {
-        final dynamic value = <String, dynamic>{'hello': 'world' };
+        final dynamic value = <String, dynamic>{'hello': 'world'};
         await database.reference().child("foo").update(value);
-        expect(log, equals(<MethodCall>[
-          new MethodCall(
-              "DatabaseReference#update",
-              <String, dynamic>{
-                'path' : 'foo',
-                'value' : value
-              }
-
-          )
-        ])
-        );
-
+        expect(
+            log,
+            equals(<MethodCall>[
+              new MethodCall("DatabaseReference#update",
+                  <String, dynamic>{'path': 'foo', 'value': value})
+            ]));
       });
 
       test('setPriority', () async {
