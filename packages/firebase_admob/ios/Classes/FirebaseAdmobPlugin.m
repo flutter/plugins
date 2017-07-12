@@ -47,7 +47,7 @@
   self.channel = nil;
 }
 
-- (void)handleInitialize:(FlutterMethodCall*)call result:(FlutterResult)result {
+- (void)callInitialize:(FlutterMethodCall*)call result:(FlutterResult)result {
   NSString *appId = (NSString *)call.arguments[@"appId"];
   if (appId == nil || [appId length] == 0) {
     result([FlutterError errorWithCode: @"no_app_id"
@@ -105,7 +105,7 @@
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
   if ([call.method isEqualToString:@"initialize"]) {
-    [self handleInitialize:call result:result];
+    [self callInitialize:call result:result];
     return;
   }
 

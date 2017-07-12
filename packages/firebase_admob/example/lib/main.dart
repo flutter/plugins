@@ -29,7 +29,7 @@ class _MyAppState extends State<MyApp> {
     contentUrl: 'http://foo.com/bar.html',
     birthday: new DateTime.now(),
     childDirected: true,
-    gender: "male",
+    gender: MobileAdGender.male,
   );
 
   BannerAd _bannerAd;

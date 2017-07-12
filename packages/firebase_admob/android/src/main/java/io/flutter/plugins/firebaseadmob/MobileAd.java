@@ -80,12 +80,12 @@ abstract class MobileAd extends AdListener {
     if (value == null)
       return null;
     if (!(value instanceof String)) {
-      Log.w(TAG, "targeting info " + key + ": expected a String, ad id=" + id);
+      Log.w(TAG, "targeting info " + key + ": expected a String, mobileAdId=" + id);
       return null;
     }
     String stringValue = (String)value;
     if (stringValue.isEmpty()) {
-      Log.w(TAG, "targeting info " + key + ": expected a non-empty String, ad id=" + id);
+      Log.w(TAG, "targeting info " + key + ": expected a non-empty String, mobileAdId=" + id);
       return null;
     }
     return stringValue;
@@ -95,17 +95,27 @@ abstract class MobileAd extends AdListener {
     if (value == null)
       return null;
     if (!(value instanceof Boolean)) {
-      Log.w(TAG, "targeting info " + key + ": expected a boolean, ad id=" + id);
+      Log.w(TAG, "targeting info " + key + ": expected a boolean, mobileAdId=" + id);
       return null;
     }
     return (Boolean)value;
+  }
+
+  private Integer getTargetingInfoInteger(String key, Object value) {
+    if (value == null)
+      return null;
+    if (!(value instanceof Integer)) {
+      Log.w(TAG, "targeting info " + key + ": expected an integer, mobileAdId=" + id);
+      return null;
+    }
+    return (Integer)value;
   }
 
   private ArrayList getTargetingInfoArrayList(String key, Object value) {
     if (value == null)
       return null;
     if (!(value instanceof ArrayList)) {
-      Log.w(TAG, "targeting info " + key + ": expected an ArrayList, ad id=" + id);
+      Log.w(TAG, "targeting info " + key + ": expected an ArrayList, mobileAdId=" + id);
       return null;
     }
     return (ArrayList)value;
@@ -141,21 +151,22 @@ abstract class MobileAd extends AdListener {
     Object birthday = info.get("birthday");
     if (birthday != null) {
       if (!(birthday instanceof Long))
-        Log.w(TAG, "targeting info birthday: expected a long integer, ad id=" + id);
+        Log.w(TAG, "targeting info birthday: expected a long integer, mobileAdId=" + id);
       else
         builder.setBirthday(new Date((Long)birthday));
     }
 
-    String gender = getTargetingInfoString("gender", info.get("gender"));
+    Integer gender = getTargetingInfoInteger("gender", info.get("gender"));
     if (gender != null) {
-      if (gender.compareToIgnoreCase("male") == 0)
-        builder.setGender(AdRequest.GENDER_MALE);
-      else if (gender.compareToIgnoreCase("female") == 0)
-        builder.setGender(AdRequest.GENDER_FEMALE);
-      else if (gender.compareToIgnoreCase("unknown") == 0)
-        builder.setGender(AdRequest.GENDER_UNKNOWN);
-      else
-        Log.w(TAG, "targeting info gender: not one of male, female, or unknown");
+      switch(gender.intValue()) {
+        case 0: // MobileAdGender.unknown
+        case 1: // MobileAdGender.male
+        case 2: // MobileAdGender.female
+          builder.setGender(gender.intValue());
+          break;
+        default:
+          Log.w(TAG, "targeting info gender: invalid value, mobileAdId=" + id);
+      }
     }
 
     Boolean designedForFamilies = getTargetingInfoBoolean("designedForFamilies", info.get("designedForFamilies"));

@@ -149,16 +149,21 @@ static void logWarning(NSString* format, ...){
     }
   }
 
-  NSString* gender = [self targetingInfoStringForKey:@"gender" info:targetingInfo];
-  if (gender != nil) {
-    if ([gender caseInsensitiveCompare:@"male"] == NSOrderedSame) {
-      request.gender = kGADGenderMale;
-    } else if ([gender caseInsensitiveCompare:@"female"] == NSOrderedSame) {
-      request.gender = kGADGenderFemale;
-    } else if ([gender caseInsensitiveCompare:@"unknown"] == NSOrderedSame) {
-      request.gender = kGADGenderUnknown;
+  NSObject* gender = targetingInfo[@"gender"];
+  if (gender != NULL) {
+    if (![gender isKindOfClass:[NSNumber class]]) {
+      logWarning(@"targeting info gender: expected an integer (MobileAd %@)", self);
     } else {
-      logWarning(@"targeting info gender: not one of male, female, or unknown (MobileAd %@)", self);
+      int genderValue = ((NSNumber *)gender).intValue;
+      switch(genderValue) {
+        case 0: // MobileAdGender.unknown
+        case 1: // MobileAdGender.male
+        case 2: // MobileAdGender.female
+          request.gender = genderValue;
+          break;
+        default:
+          logWarning(@"targeting info gender: not one of 0, 1, or 2 (MobileAd %@)", self);
+      }
     }
   }
 
