@@ -29,7 +29,7 @@ instructions will pop up to let the user set up fingerprint. If the user clicks
 Use the exported APIs to trigger local authentication with default dialogs:
 
 ```dart
-LocalAuthentication localAuth = new LocalAuthentication();
+var localAuth = new LocalAuthentication();
 bool didAuthenticate =
     await localAuth.authenticateWithBiometrics(
     localizedReason: 'Please authenticate to show account balance');
