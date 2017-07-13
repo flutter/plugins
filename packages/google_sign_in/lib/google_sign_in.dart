@@ -9,7 +9,6 @@ import 'package:flutter/services.dart' show MethodChannel;
 import 'package:meta/meta.dart' show visibleForTesting;
 
 import 'src/common.dart';
-
 export 'src/common.dart';
 export 'widgets.dart';
 
