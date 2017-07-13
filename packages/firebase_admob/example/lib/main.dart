@@ -82,21 +82,19 @@ class _MyAppState extends State<MyApp> {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               new RaisedButton(
-                child: const Text('SHOW BANNER'),
-                onPressed: () {
-                  _bannerAd ??= createBannerAd();
-                  _bannerAd
-                    ..load()
-                    ..show();
-                }
-              ),
+                  child: const Text('SHOW BANNER'),
+                  onPressed: () {
+                    _bannerAd ??= createBannerAd();
+                    _bannerAd
+                      ..load()
+                      ..show();
+                  }),
               new RaisedButton(
-                child: const Text('REMOVE BANNER'),
-                onPressed: () {
-                  _bannerAd?.dispose();
-                  _bannerAd = null;
-                }
-              ),
+                  child: const Text('REMOVE BANNER'),
+                  onPressed: () {
+                    _bannerAd?.dispose();
+                    _bannerAd = null;
+                  }),
               new RaisedButton(
                 child: const Text('SHOW INTERSTITIAL'),
                 onPressed: () {

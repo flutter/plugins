@@ -5,28 +5,16 @@
 package io.flutter.plugins.firebaseadmob;
 
 import android.app.Activity;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
-
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
-import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.FirebaseApp;
-
+import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
-
 import java.util.Map;
-import java.util.HashMap;
 
 public class FirebaseAdMobPlugin implements MethodCallHandler {
   private static final String TAG = "flutter";
@@ -38,7 +26,8 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
   InterstitialAd interstitial;
 
   public static void registerWith(Registrar registrar) {
-    final MethodChannel channel = new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_admob");
+    final MethodChannel channel =
+        new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_admob");
     channel.setMethodCallHandler(new FirebaseAdMobPlugin(registrar.activity(), channel));
   }
 
@@ -62,8 +51,7 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
     if (ad.status != MobileAd.Status.CREATED) {
       if (ad.status == MobileAd.Status.FAILED)
         result.error("load_failed_ad", "cannot reload a failed ad, id=" + ad.id, null);
-      else
-        result.success(Boolean.TRUE); // The ad was already loaded.
+      else result.success(Boolean.TRUE); // The ad was already loaded.
       return;
     }
 
@@ -107,16 +95,19 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
 
     Integer id = call.argument("id");
     if (id == null) {
-      result.error("no_id", "all FirebaseAdMobPlugin method calls must specify an integer mobile ad id", null);
+      result.error(
+          "no_id",
+          "all FirebaseAdMobPlugin method calls must specify an integer mobile ad id",
+          null);
       return;
     }
 
-    switch(call.method) {
+    switch (call.method) {
       case "loadBannerAd":
-          callLoadAd(MobileAd.createBanner(id, activity, channel), call, result);
+        callLoadAd(MobileAd.createBanner(id, activity, channel), call, result);
         break;
       case "loadInterstitialAd":
-          callLoadAd(MobileAd.createInterstitial(id, activity, channel), call, result);
+        callLoadAd(MobileAd.createInterstitial(id, activity, channel), call, result);
         break;
       case "showAd":
         callShowAd(id, call, result);

@@ -9,7 +9,7 @@ typedef enum : NSUInteger {
   CREATED,
   LOADING,
   FAILED,
-  PENDING, // Will be shown when status is changed to LOADED.
+  PENDING,  // Will be shown when status is changed to LOADED.
   LOADED,
 } MobileAdStatus;
 

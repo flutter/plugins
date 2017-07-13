@@ -67,14 +67,11 @@ class MobileAdTargetingInfo {
     }
     if (contentUrl != null && contentUrl.isNotEmpty)
       json['contentUrl'] = contentUrl;
-    if (birthday != null)
-      json['birthday'] = birthday.millisecondsSinceEpoch;
-    if (gender != null)
-      json['gender'] = gender.index;
+    if (birthday != null) json['birthday'] = birthday.millisecondsSinceEpoch;
+    if (gender != null) json['gender'] = gender.index;
     if (designedForFamilies != null)
       json['designedForFamilies'] = designedForFamilies;
-    if (childDirected != null)
-      json['childDirected'] = childDirected;
+    if (childDirected != null) json['childDirected'] = childDirected;
     if (testDevices != null && testDevices.isNotEmpty) {
       assert(testDevices.every((String s) => s != null && s.isNotEmpty));
       json['testDevices'] = testDevices;
@@ -95,7 +92,7 @@ abstract class MobileAd {
   static final Map<int, MobileAd> _allAds = <int, MobileAd>{};
 
   /// Default constructor, used by subclasses.
-  MobileAd({ @required this.unitId, this.targetingInfo, this.listener }) {
+  MobileAd({@required this.unitId, this.targetingInfo, this.listener}) {
     assert(unitId != null && unitId.isNotEmpty);
     assert(_allAds[id] == null);
     _allAds[id] = this;
@@ -161,7 +158,8 @@ class BannerAd extends MobileAd {
     @required String unitId,
     MobileAdTargetingInfo targetingInfo,
     MobileAdListener listener,
-  }) : super(unitId: unitId, targetingInfo: targetingInfo, listener: listener);
+  })
+      : super(unitId: unitId, targetingInfo: targetingInfo, listener: listener);
 
   @override
   Future<bool> load() => _doLoad("loadBannerAd");
@@ -176,7 +174,8 @@ class InterstitialAd extends MobileAd {
     String unitId,
     MobileAdTargetingInfo targetingInfo,
     MobileAdListener listener,
-  }) : super(unitId: unitId, targetingInfo: targetingInfo, listener: listener);
+  })
+      : super(unitId: unitId, targetingInfo: targetingInfo, listener: listener);
 
   @override
   Future<bool> load() => _doLoad("loadInterstitialAd");
@@ -217,7 +216,8 @@ class FirebaseAdMob {
 
   final MethodChannel _channel;
 
-  static const Map<String, MobileAdEvent> _methodToEvent = const <String, MobileAdEvent> {
+  static const Map<String, MobileAdEvent> _methodToEvent =
+      const <String, MobileAdEvent>{
     'onAdLoaded': MobileAdEvent.loaded,
     'onAdFailedToLoad': MobileAdEvent.failedToLoad,
     'onAdClicked': MobileAdEvent.clicked,
@@ -230,7 +230,10 @@ class FirebaseAdMob {
   /// Initialize this plugin for the AdMob app specified by `appId`.
   ///
   /// For testing one can use `ca-app-pub-3940256099942544~3347511713` for the `appId`.
-  Future<bool> initialize({ @required String appId, String trackingId, bool analyticsEnabled: false }) {
+  Future<bool> initialize(
+      {@required String appId,
+      String trackingId,
+      bool analyticsEnabled: false}) {
     assert(appId != null && appId.isNotEmpty);
     assert(analyticsEnabled != null);
     return _channel.invokeMethod("initialize", <String, dynamic>{
@@ -247,8 +250,7 @@ class FirebaseAdMob {
     if (id != null && MobileAd._allAds[id] != null) {
       final MobileAd ad = MobileAd._allAds[id];
       final MobileAdEvent event = _methodToEvent[call.method];
-      if (event != null && ad.listener != null)
-        ad.listener(event);
+      if (event != null && ad.listener != null) ad.listener(event);
     }
 
     return new Future<Null>(null);

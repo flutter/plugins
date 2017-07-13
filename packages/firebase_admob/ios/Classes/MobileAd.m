@@ -2,25 +2,24 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-#import "FirebaseAdmobPlugin.h"
 #import "MobileAd.h"
+#import "FirebaseAdmobPlugin.h"
 
-static NSMutableDictionary* allAds = nil;
-static NSDictionary* statusToString = nil;
+static NSMutableDictionary *allAds = nil;
+static NSDictionary *statusToString = nil;
 
-static void logWarning(NSString* format, ...){
+static void logWarning(NSString *format, ...) {
   va_list args;
   va_start(args, format);
-  NSString* message = [[NSString alloc] initWithFormat:format arguments:args];
+  NSString *message = [[NSString alloc] initWithFormat:format arguments:args];
   va_end(args);
   NSLog(@"FirebaseAdMobPlugin <Warning> %@", message);
 }
 
-
 @implementation MobileAd
-  NSNumber* _mobileAdId;
-  FlutterMethodChannel* _channel;
-  MobileAdStatus _status;
+NSNumber *_mobileAdId;
+FlutterMethodChannel *_channel;
+MobileAdStatus _status;
 
 + (void)initialize {
   if (allAds == nil) {
@@ -29,11 +28,11 @@ static void logWarning(NSString* format, ...){
 
   if (statusToString == nil) {
     statusToString = @{
-      @(CREATED): @"CREATED",
-      @(LOADING): @"LOADING",
-      @(FAILED): @"FAILED",
-      @(PENDING): @"PENDING",
-      @(LOADED): @"LOADED"
+      @(CREATED) : @"CREATED",
+      @(LOADING) : @"LOADING",
+      @(FAILED) : @"FAILED",
+      @(PENDING) : @"PENDING",
+      @(LOADED) : @"LOADED"
     };
   }
 }
@@ -74,7 +73,7 @@ static void logWarning(NSString* format, ...){
 }
 
 - (void)dispose {
-  [allAds removeObjectForKey: _mobileAdId];
+  [allAds removeObjectForKey:_mobileAdId];
 }
 
 - (NSArray *)targetingInfoArrayForKey:(NSString *)key info:(NSDictionary *)info {
@@ -98,7 +97,7 @@ static void logWarning(NSString* format, ...){
     logWarning(@"targeting info %@: expected a string (MobileAd %@)", key, self);
     return nil;
   }
-  NSString* stringValue = (NSString *)value;
+  NSString *stringValue = (NSString *)value;
   if ([stringValue length] == 0) {
     logWarning(@"targeting info %@: expected a non-empty string (MobileAd %@)", key, self);
     return nil;
@@ -134,31 +133,32 @@ static void logWarning(NSString* format, ...){
     request.keywords = keywords;
   }
 
-  NSString* contentURL = [self targetingInfoStringForKey:@"contentUrl" info:targetingInfo];
+  NSString *contentURL = [self targetingInfoStringForKey:@"contentUrl" info:targetingInfo];
   if (contentURL != nil) {
     request.contentURL = contentURL;
   }
 
-  NSObject* birthday = targetingInfo[@"birthday"];
+  NSObject *birthday = targetingInfo[@"birthday"];
   if (birthday != NULL) {
     if (![birthday isKindOfClass:[NSNumber class]]) {
       logWarning(@"targeting info birthday: expected a long integer (MobileAd %@)", self);
     } else {
       // Incoming time value is milliseconds since the epoch, NSDate uses seconds.
-      request.birthday = [NSDate dateWithTimeIntervalSince1970: ((NSNumber *)birthday).longValue / 1000.0];
+      request.birthday =
+          [NSDate dateWithTimeIntervalSince1970:((NSNumber *)birthday).longValue / 1000.0];
     }
   }
 
-  NSObject* gender = targetingInfo[@"gender"];
+  NSObject *gender = targetingInfo[@"gender"];
   if (gender != NULL) {
     if (![gender isKindOfClass:[NSNumber class]]) {
       logWarning(@"targeting info gender: expected an integer (MobileAd %@)", self);
     } else {
       int genderValue = ((NSNumber *)gender).intValue;
-      switch(genderValue) {
-        case 0: // MobileAdGender.unknown
-        case 1: // MobileAdGender.male
-        case 2: // MobileAdGender.female
+      switch (genderValue) {
+        case 0:  // MobileAdGender.unknown
+        case 1:  // MobileAdGender.male
+        case 2:  // MobileAdGender.female
           request.gender = genderValue;
           break;
         default:
@@ -167,12 +167,12 @@ static void logWarning(NSString* format, ...){
     }
   }
 
-  NSNumber* childDirected = [self targetingInfoBoolForKey:@"childDirected" info:targetingInfo];
+  NSNumber *childDirected = [self targetingInfoBoolForKey:@"childDirected" info:targetingInfo];
   if (childDirected != nil) {
-    [request tagForChildDirectedTreatment: childDirected.boolValue];
+    [request tagForChildDirectedTreatment:childDirected.boolValue];
   }
 
-  NSString* requestAgent = [self targetingInfoStringForKey:@"requestAgent" info:targetingInfo];
+  NSString *requestAgent = [self targetingInfoStringForKey:@"requestAgent" info:targetingInfo];
   if (requestAgent != nil) {
     request.requestAgent = requestAgent;
   }
@@ -181,29 +181,28 @@ static void logWarning(NSString* format, ...){
 }
 
 - (NSDictionary *)argumentsMap {
-  return @{ @"id": _mobileAdId };
+  return @{@"id" : _mobileAdId};
 }
 
 - (NSString *)description {
-  NSString *statusString = (NSString *)statusToString[[NSNumber numberWithInt: _status]];
-  return [NSString stringWithFormat:@"%@ %@ mobileAdId:%@", super.description, statusString, _mobileAdId];
+  NSString *statusString = (NSString *)statusToString[[NSNumber numberWithInt:_status]];
+  return [NSString
+      stringWithFormat:@"%@ %@ mobileAdId:%@", super.description, statusString, _mobileAdId];
 }
 @end
 
-
 @implementation BannerAd
-  GADBannerView* _banner;
+GADBannerView *_banner;
 
 + (instancetype)withId:(NSNumber *)mobileAdId channel:(FlutterMethodChannel *)channel {
-  MobileAd* ad = [MobileAd getAdForId:mobileAdId];
+  MobileAd *ad = [MobileAd getAdForId:mobileAdId];
   return ad != nil ? (BannerAd *)ad : [[BannerAd alloc] initWithId:mobileAdId channel:channel];
 }
 
 - (void)loadWithUnitId:(NSString *)unitId targetingInfo:(NSDictionary *)targetingInfo {
-  if (_status != CREATED)
-    return;
+  if (_status != CREATED) return;
   _status = LOADING;
-  _banner = [[GADBannerView alloc] initWithAdSize: kGADAdSizeBanner];
+  _banner = [[GADBannerView alloc] initWithAdSize:kGADAdSizeBanner];
   _banner.delegate = self;
   _banner.adUnitID = unitId;
   _banner.rootViewController = [MobileAd rootViewController];
@@ -215,13 +214,12 @@ static void logWarning(NSString* format, ...){
     _status = PENDING;
     return;
   }
-  if (_status != LOADED)
-    return;
+  if (_status != LOADED) return;
 
   UIView *screen = [MobileAd rootViewController].view;
   CGFloat x = screen.frame.size.width / 2 - _banner.frame.size.width / 2;
   CGFloat y = screen.frame.size.height - _banner.frame.size.height;
-  _banner.frame = (CGRect){ {x, y}, _banner.frame.size };
+  _banner.frame = (CGRect){{x, y}, _banner.frame.size};
   [screen addSubview:_banner];
 }
 
@@ -229,12 +227,12 @@ static void logWarning(NSString* format, ...){
   bool statusWasPending = _status == PENDING;
   _status = LOADED;
   [_channel invokeMethod:@"onAdLoaded" arguments:[self argumentsMap]];
-  if (statusWasPending)
-    [self show];
+  if (statusWasPending) [self show];
 }
 
 - (void)adView:(GADBannerView *)adView didFailToReceiveAdWithError:(GADRequestError *)error {
-  logWarning(@"adView:didFailToReceiveAdWithError: %@ (MobileAd %@)", [error localizedDescription], self);
+  logWarning(@"adView:didFailToReceiveAdWithError: %@ (MobileAd %@)", [error localizedDescription],
+             self);
   [_channel invokeMethod:@"onAdFailedToLoad" arguments:[self argumentsMap]];
 }
 
@@ -255,8 +253,7 @@ static void logWarning(NSString* format, ...){
 }
 
 - (void)dispose {
-  if (_banner.superview)
-    [_banner removeFromSuperview];
+  if (_banner.superview) [_banner removeFromSuperview];
   _banner = nil;
   [super dispose];
 }
@@ -266,18 +263,17 @@ static void logWarning(NSString* format, ...){
 }
 @end
 
-
 @implementation InterstitialAd
-  GADInterstitial* _interstitial;
+GADInterstitial *_interstitial;
 
 + (instancetype)withId:(NSNumber *)mobileAdId channel:(FlutterMethodChannel *)channel {
-  MobileAd* ad = [MobileAd getAdForId:mobileAdId];
-  return ad != nil ? (InterstitialAd *)ad : [[InterstitialAd alloc] initWithId:mobileAdId channel:channel];
+  MobileAd *ad = [MobileAd getAdForId:mobileAdId];
+  return ad != nil ? (InterstitialAd *)ad
+                   : [[InterstitialAd alloc] initWithId:mobileAdId channel:channel];
 }
 
 - (void)loadWithUnitId:(NSString *)unitId targetingInfo:(NSDictionary *)targetingInfo {
-  if (_status != CREATED)
-    return;
+  if (_status != CREATED) return;
   _status = LOADING;
 
   _interstitial = [[GADInterstitial alloc] initWithAdUnitID:unitId];
@@ -290,8 +286,7 @@ static void logWarning(NSString* format, ...){
     _status = PENDING;
     return;
   }
-  if (_status != LOADED)
-    return;
+  if (_status != LOADED) return;
 
   [_interstitial presentFromRootViewController:[MobileAd rootViewController]];
 }
@@ -300,12 +295,12 @@ static void logWarning(NSString* format, ...){
   bool statusWasPending = _status == PENDING;
   _status = LOADED;
   [_channel invokeMethod:@"onAdLoaded" arguments:[self argumentsMap]];
-  if (statusWasPending)
-    [self show];
+  if (statusWasPending) [self show];
 }
 
 - (void)interstitial:(GADInterstitial *)ad didFailToReceiveAdWithError:(GADRequestError *)error {
-  logWarning(@"interstitial:didFailToReceiveAdWithError: %@ (MobileAd %@)", [error localizedDescription], self);
+  logWarning(@"interstitial:didFailToReceiveAdWithError: %@ (MobileAd %@)",
+             [error localizedDescription], self);
   [_channel invokeMethod:@"onAdFailedToLoad" arguments:[self argumentsMap]];
 }
 
@@ -326,7 +321,7 @@ static void logWarning(NSString* format, ...){
 }
 
 - (void)dispose {
-   // It is not possible to hide/remove/destroy an AdMob interstitial Ad.
+  // It is not possible to hide/remove/destroy an AdMob interstitial Ad.
   _interstitial = nil;
   [super dispose];
 }
