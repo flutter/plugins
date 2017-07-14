@@ -1,12 +1,10 @@
 # Firestore Plugin for Flutter
 
-Experimental Firestore plugin for Firebase
-
-For Flutter plugins for other Firebase products, see [FlutterFire.md](https://github.com/flutter/plugins/blob/master/FlutterFire.md).
-
-*Note*: This plugin is still under development, and some APIs might not be available yet. [Feedback](https://github.com/flutter/flutter/issues) and [Pull Requests](https://github.com/flutter/plugins/pulls) are most welcome!
+Confidential Material: This page is confidential. Do not share or discuss until authorized to do so.
 
 Contact jackson@google.com for more information about this plugin.
+
+For Flutter plugins for other Firebase products, see [FlutterFire.md](https://github.com/flutter/plugins/blob/master/FlutterFire.md).
 
 ## Usage
 To use this plugin, add `firestore` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
