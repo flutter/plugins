@@ -5,6 +5,7 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:google_sign_in/testing.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -16,6 +17,7 @@ void main() {
     const Map<String, String> kUserData = const <String, String>{
       "email": "john.doe@gmail.com",
       "id": "8162538176523816253123",
+      'idToken': '123456',
       "photoUrl": "https://lh5.googleusercontent.com/photo.jpg",
       "displayName": "John Doe",
     };
@@ -249,6 +251,15 @@ void main() {
       expect(googleSignIn.signIn(),
           throwsA(const isInstanceOf<PlatformException>()));
       expect(await googleSignIn.signIn(), isNotNull);
+    });
+
+    test('can sign in with fake backend', () async {
+      FakeSignInBackend fakeSignInHandler = new FakeSignInBackend();
+      fakeSignInHandler.setUser(kUserData);
+      channel.setMockMethodCallHandler(fakeSignInHandler.handleMethodCall);
+      googleSignIn = new GoogleSignIn();
+      await googleSignIn.signIn();
+      expect(googleSignIn.currentUser, isNotNull);
     });
   });
 }
