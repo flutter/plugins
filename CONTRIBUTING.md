@@ -45,7 +45,7 @@ Contributing code
 We gladly accept contributions via GitHub pull requests.
 
 Please peruse our
-[style guides](https://github.com/flutter/flutter/wiki/Style-guide-for-Flutter-repo) and
+[style guide](https://github.com/flutter/flutter/wiki/Style-guide-for-Flutter-repo) and
 [design principles](https://flutter.io/design-principles/) before
 working on anything non-trivial. These guidelines are intended to
 keep the code consistent and avoid common pitfalls.
@@ -72,7 +72,7 @@ changes to the `master` branch using one of the following methods:
 
 * Wait for one of the project maintainers to submit it for you.
 * Click the green "Merge pull request" button on the GitHub UI of your pull
-  request (requires commit access)
+  request (requires commit access).
 
 You must complete the
 [Contributor License Agreement](https://cla.developers.google.com/clas).
