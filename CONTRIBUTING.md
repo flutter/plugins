@@ -21,7 +21,8 @@ Getting the code and configuring your environment
    a new machine, make sure you've updated your fork so that you don't use stale
    configuration options from long ago.
  * If you haven't configured your machine with an SSH key that's known to github, then
-   follow the directions here: https://help.github.com/articles/generating-ssh-keys/.
+   follow [GitHub's directions](https://help.github.com/articles/generating-ssh-keys/)
+   to generate an SSH key.
  * `git clone git@github.com:<your_name_here>/plugins.git`
  * `cd plugins`
  * `git remote add upstream git@github.com:flutter/plugins.git` (So that you
