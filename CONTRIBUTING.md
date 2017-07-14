@@ -8,7 +8,7 @@ _See also: [Flutter's code of conduct](https://flutter.io/design-principles/#cod
 Things you will need
 --------------------
 
- * Linux, Mac OS X, or Windows
+ * Linux, Mac OS X, or Windows.
  * git (used for source version control).
  * An ssh client (used to authenticate with GitHub).
 
