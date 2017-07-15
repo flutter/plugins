@@ -48,7 +48,7 @@ String defaultNameExtractor(RouteSettings settings) => settings.name;
 /// You can also track screen views within your [PageRoute] by implementing
 /// [PageRouteAware] and subscribing it to [FirebaseAnalyticsObserver]. See the
 /// [PageRouteObserver] docs for an example.
-class FirebaseAnalyticsObserver extends PageRouteObserver {
+class FirebaseAnalyticsObserver extends RouteObserver<PageRoute<dynamic>> {
   final FirebaseAnalytics analytics;
   final ScreenNameExtractor nameExtractor;
 

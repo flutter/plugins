@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
-
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
@@ -23,8 +21,8 @@ void main() {
     });
 
     test('setCurrentScreen on route pop', () {
-      PageRoute<dynamic> route = new MockPageRoute();
-      PageRoute<dynamic> previousRoute = new MockPageRoute();
+      final PageRoute<dynamic> route = new MockPageRoute();
+      final PageRoute<dynamic> previousRoute = new MockPageRoute();
       when(previousRoute.settings)
           .thenReturn(const RouteSettings(name: 'previousRoute'));
 
@@ -34,8 +32,8 @@ void main() {
     });
 
     test('setCurrentScreen on route push', () {
-      PageRoute<dynamic> route = new MockPageRoute();
-      PageRoute<dynamic> previousRoute = new MockPageRoute();
+      final PageRoute<dynamic> route = new MockPageRoute();
+      final PageRoute<dynamic> previousRoute = new MockPageRoute();
       when(route.settings).thenReturn(const RouteSettings(name: 'route'));
 
       observer.didPush(route, previousRoute);
@@ -48,8 +46,8 @@ void main() {
         analytics: analytics,
         nameExtractor: (RouteSettings settings) => 'foo',
       );
-      PageRoute<dynamic> route = new MockPageRoute();
-      PageRoute<dynamic> previousRoute = new MockPageRoute();
+      final PageRoute<dynamic> route = new MockPageRoute();
+      final PageRoute<dynamic> previousRoute = new MockPageRoute();
 
       observer.didPush(route, previousRoute);
 

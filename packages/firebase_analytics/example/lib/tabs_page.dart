@@ -17,7 +17,7 @@ class TabsPage extends StatefulWidget {
 }
 
 class _TabsPageState extends State<TabsPage>
-    with SingleTickerProviderStateMixin, PageRouteAware {
+    with SingleTickerProviderStateMixin, RouteAware {
   _TabsPageState(this.observer);
 
   final FirebaseAnalyticsObserver observer;
