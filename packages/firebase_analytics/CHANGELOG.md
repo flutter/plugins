@@ -2,6 +2,10 @@
 
 * Added `FirebaseAnalyticsObserver` (a `NavigatorObserver`) to automatically log `PageRoute` transitions
 
+## 0.0.5
+
+* Support for long parameter values on Android
+
 ## 0.0.4
 
 * Updated to Firebase SDK to always use latest patch version for 11.0.x builds
