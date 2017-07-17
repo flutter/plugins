@@ -9,7 +9,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:google_sign_in/testing.dart';
 import 'package:test/test.dart';
 
-
 void main() {
   group('GoogleSignIn', () {
     const MethodChannel channel = const MethodChannel(
@@ -118,7 +117,7 @@ void main() {
 
     test('concurrent calls of the same method trigger sign in once', () async {
       final List<Future<GoogleSignInAccount>> futures =
-      <Future<GoogleSignInAccount>>[
+          <Future<GoogleSignInAccount>>[
         googleSignIn.signInSilently(),
         googleSignIn.signInSilently(),
       ];
@@ -159,7 +158,7 @@ void main() {
 
     test('concurrent calls of different signIn methods', () async {
       final List<Future<GoogleSignInAccount>> futures =
-      <Future<GoogleSignInAccount>>[
+          <Future<GoogleSignInAccount>>[
         googleSignIn.signInSilently(),
         googleSignIn.signIn(),
       ];
@@ -187,7 +186,7 @@ void main() {
 
     test('signOut/disconnect methods always trigger native calls', () async {
       final List<Future<GoogleSignInAccount>> futures =
-      <Future<GoogleSignInAccount>>[
+          <Future<GoogleSignInAccount>>[
         googleSignIn.signOut(),
         googleSignIn.signOut(),
         googleSignIn.disconnect(),
@@ -210,7 +209,7 @@ void main() {
 
     test('queue of many concurrent calls', () async {
       final List<Future<GoogleSignInAccount>> futures =
-      <Future<GoogleSignInAccount>>[
+          <Future<GoogleSignInAccount>>[
         googleSignIn.signInSilently(),
         googleSignIn.signOut(),
         googleSignIn.signIn(),
@@ -270,9 +269,8 @@ void main() {
     GoogleSignIn googleSignIn;
 
     setUp(() {
-      channel.setMockMethodCallHandler((new FakeSignInBackend()
-        ..setUser(kUserData))
-        .handleMethodCall);
+      channel.setMockMethodCallHandler(
+          (new FakeSignInBackend()..setUser(kUserData)).handleMethodCall);
       googleSignIn = new GoogleSignIn();
     });
 
@@ -282,7 +280,8 @@ void main() {
 
     test('can sign in', () async {
       await googleSignIn.signIn();
-      expect(googleSignIn.currentUser.toString(), equals('GoogleSignInAccount:$kUserData'));
+      expect(googleSignIn.currentUser.toString(),
+          equals('GoogleSignInAccount:$kUserData'));
     });
 
     test('can sign out', () async {

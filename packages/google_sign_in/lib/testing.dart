@@ -21,7 +21,7 @@ class FakeSignInBackend {
   Future<dynamic> handleMethodCall(MethodCall methodCall) async {
     switch (methodCall.method) {
       case 'init':
-      // do nothing
+        // do nothing
         return null;
       case 'getTokens':
         return <String, String>{'idToken': _currentUser['idToken']};
