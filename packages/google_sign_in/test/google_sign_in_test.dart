@@ -4,9 +4,12 @@
 
 import 'dart:async';
 import 'package:flutter/services.dart';
+import 'package:flutter/services.dart' show MethodChannel;
+import 'package:meta/meta.dart' show visibleForTesting;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:google_sign_in/testing.dart';
 import 'package:test/test.dart';
+
 
 void main() {
   group('GoogleSignIn', () {
@@ -17,7 +20,6 @@ void main() {
     const Map<String, String> kUserData = const <String, String>{
       "email": "john.doe@gmail.com",
       "id": "8162538176523816253123",
-      'idToken': '123456',
       "photoUrl": "https://lh5.googleusercontent.com/photo.jpg",
       "displayName": "John Doe",
     };
@@ -117,7 +119,7 @@ void main() {
 
     test('concurrent calls of the same method trigger sign in once', () async {
       final List<Future<GoogleSignInAccount>> futures =
-          <Future<GoogleSignInAccount>>[
+      <Future<GoogleSignInAccount>>[
         googleSignIn.signInSilently(),
         googleSignIn.signInSilently(),
       ];
@@ -158,7 +160,7 @@ void main() {
 
     test('concurrent calls of different signIn methods', () async {
       final List<Future<GoogleSignInAccount>> futures =
-          <Future<GoogleSignInAccount>>[
+      <Future<GoogleSignInAccount>>[
         googleSignIn.signInSilently(),
         googleSignIn.signIn(),
       ];
@@ -186,7 +188,7 @@ void main() {
 
     test('signOut/disconnect methods always trigger native calls', () async {
       final List<Future<GoogleSignInAccount>> futures =
-          <Future<GoogleSignInAccount>>[
+      <Future<GoogleSignInAccount>>[
         googleSignIn.signOut(),
         googleSignIn.signOut(),
         googleSignIn.disconnect(),
@@ -209,7 +211,7 @@ void main() {
 
     test('queue of many concurrent calls', () async {
       final List<Future<GoogleSignInAccount>> futures =
-          <Future<GoogleSignInAccount>>[
+      <Future<GoogleSignInAccount>>[
         googleSignIn.signInSilently(),
         googleSignIn.signOut(),
         googleSignIn.signIn(),
@@ -252,14 +254,42 @@ void main() {
           throwsA(const isInstanceOf<PlatformException>()));
       expect(await googleSignIn.signIn(), isNotNull);
     });
+  });
 
-    test('can sign in with fake backend', () async {
+  group('GoogleSignIn with fake backend', () {
+    const MethodChannel channel = const MethodChannel(
+      'plugins.flutter.io/google_sign_in',
+    );
+
+    const Map<String, String> kUserData = const <String, String>{
+      "email": "john.doe@gmail.com",
+      "id": "8162538176523816253123",
+      'idToken': '123456',
+      "photoUrl": "https://lh5.googleusercontent.com/photo.jpg",
+      "displayName": "John Doe",
+    };
+
+    GoogleSignIn googleSignIn;
+
+    setUp(() {
       FakeSignInBackend fakeSignInHandler = new FakeSignInBackend();
       fakeSignInHandler.setUser(kUserData);
       channel.setMockMethodCallHandler(fakeSignInHandler.handleMethodCall);
       googleSignIn = new GoogleSignIn();
+    });
+
+    test('user starts as null', () async {
+      expect(googleSignIn.currentUser, isNull);
+    });
+
+    test('can sign in', () async {
       await googleSignIn.signIn();
       expect(googleSignIn.currentUser, isNotNull);
+    });
+
+    test('can sign out', () async {
+      await googleSignIn.disconnect();
+      expect(googleSignIn.currentUser, isNull);
     });
   });
 }

@@ -8,7 +8,9 @@ import 'dart:ui' show hashValues;
 import 'package:flutter/services.dart' show MethodChannel;
 import 'package:meta/meta.dart' show visibleForTesting;
 
+
 import 'src/common.dart';
+
 export 'src/common.dart';
 export 'widgets.dart';
 
@@ -259,5 +261,6 @@ class _MethodCompleter {
   }
 
   bool get isCompleted => _completer.isCompleted;
+
   Future<GoogleSignInAccount> get future => _completer.future;
 }
