@@ -262,19 +262,18 @@ void main() {
     );
 
     const Map<String, String> kUserData = const <String, String>{
+      "displayName": "John Doe",
       "email": "john.doe@gmail.com",
       "id": "8162538176523816253123",
-      'idToken': '123456',
       "photoUrl": "https://lh5.googleusercontent.com/photo.jpg",
-      "displayName": "John Doe",
     };
 
     GoogleSignIn googleSignIn;
 
     setUp(() {
-      FakeSignInBackend fakeSignInHandler = new FakeSignInBackend();
-      fakeSignInHandler.setUser(kUserData);
-      channel.setMockMethodCallHandler(fakeSignInHandler.handleMethodCall);
+      channel.setMockMethodCallHandler((new FakeSignInBackend()
+        ..setUser(kUserData))
+        .handleMethodCall);
       googleSignIn = new GoogleSignIn();
     });
 
@@ -284,7 +283,7 @@ void main() {
 
     test('can sign in', () async {
       await googleSignIn.signIn();
-      expect(googleSignIn.currentUser, isNotNull);
+      expect(googleSignIn.currentUser.toString(), equals('GoogleSignInAccount:$kUserData'));
     });
 
     test('can sign out', () async {
