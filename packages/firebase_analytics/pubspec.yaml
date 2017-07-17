@@ -3,7 +3,7 @@ name: firebase_analytics
 description: Firebase Analytics plugin for Flutter.
 author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/firebase_analytics
-version: 0.0.5
+version: 0.1.0
 
 flutter:
   plugin:

@@ -1,3 +1,7 @@
+## 0.1.0
+
+* Added `FirebaseAnalyticsObserver` (a `NavigatorObserver`) to automatically log `PageRoute` transitions
+
 ## 0.0.5
 
 * Support for long parameter values on Android

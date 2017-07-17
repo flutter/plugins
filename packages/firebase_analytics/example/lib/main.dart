@@ -6,12 +6,19 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_analytics/observer.dart';
+
+import 'tabs_page.dart';
 
 void main() {
   runApp(new MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  static FirebaseAnalytics analytics = new FirebaseAnalytics();
+  static FirebaseAnalyticsObserver observer =
+      new FirebaseAnalyticsObserver(analytics: analytics);
+
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
@@ -19,23 +26,34 @@ class MyApp extends StatelessWidget {
       theme: new ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: new MyHomePage(title: 'Firebase Analytics Demo'),
+      navigatorObservers: <NavigatorObserver>[observer],
+      home: new MyHomePage(
+        title: 'Firebase Analytics Demo',
+        analytics: analytics,
+        observer: observer,
+      ),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key key, this.title, this.analytics, this.observer})
+      : super(key: key);
 
   final String title;
+  final FirebaseAnalytics analytics;
+  final FirebaseAnalyticsObserver observer;
 
   @override
-  _MyHomePageState createState() => new _MyHomePageState();
+  _MyHomePageState createState() => new _MyHomePageState(analytics, observer);
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  _MyHomePageState(this.analytics, this.observer);
+
+  final FirebaseAnalyticsObserver observer;
+  final FirebaseAnalytics analytics;
   String _message = '';
-  final FirebaseAnalytics analytics = new FirebaseAnalytics();
 
   void setMessage(String message) {
     setState(() {
@@ -297,6 +315,15 @@ class _MyHomePageState extends State<MyHomePage> {
                   const TextStyle(color: const Color.fromARGB(255, 0, 155, 0))),
         ],
       ),
+      floatingActionButton: new FloatingActionButton(
+          child: new Icon(Icons.tab),
+          onPressed: () {
+            Navigator.of(context).push(new MaterialPageRoute<TabsPage>(
+                settings: const RouteSettings(name: TabsPage.routeName),
+                builder: (BuildContext context) {
+                  return new TabsPage(observer);
+                }));
+          }),
     );
   }
 }
