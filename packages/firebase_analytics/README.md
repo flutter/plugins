@@ -29,7 +29,7 @@ MaterialApp(
 ```
 
 You can also track transitions within your `PageRoute` (e.g. when the user switches from one tab to another) by
-implementing `PageRouteAware` and subscribing it to `FirebaseAnalyticsObserver`. See examples/lib/tabs_page.dart
+implementing `RouteAware` and subscribing it to `FirebaseAnalyticsObserver`. See examples/lib/tabs_page.dart
 for an example of how to wire that up.
 
 ## Getting Started
