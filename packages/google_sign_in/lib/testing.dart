@@ -9,7 +9,7 @@ class FakeSignInBackend {
   Map<String, String> _currentUser = <String, String>{};
 
   void setUser(Map<String, String> userData) {
-    _currentUser = {
+    _currentUser = <String, String>{
       'displayName': userData['displayName'],
       'email': userData['email'],
       'id': userData['id'],

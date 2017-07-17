@@ -5,7 +5,6 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter/services.dart' show MethodChannel;
-import 'package:meta/meta.dart' show visibleForTesting;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:google_sign_in/testing.dart';
 import 'package:test/test.dart';
