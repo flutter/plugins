@@ -276,7 +276,7 @@ void main() {
     test('can sign in and sign out', () async {
       await googleSignIn.signIn();
 
-      GoogleSignInAccount user = googleSignIn.currentUser;
+      final GoogleSignInAccount user = googleSignIn.currentUser;
 
       expect(user.displayName, equals(kUserData.displayName));
       expect(user.email, equals(kUserData.email));

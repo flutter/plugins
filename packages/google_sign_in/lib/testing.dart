@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'package:google_sign_in/testing.dart' show MethodCall;
+import 'package:flutter/services.dart' show MethodCall;
 
 /// A fake backend that can be used to test components that require a valid
 /// [GoogleSignInAccount].
