@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'package:flutter/services.dart';
 
 /// A fake backend that can be used to test components that require a valid
 /// [GoogleSignInAccount].
@@ -30,7 +29,7 @@ class FakeSignInBackend {
   Future<dynamic> handleMethodCall(MethodCall methodCall) async {
     switch (methodCall.method) {
       case 'init':
-        // do nothing
+      // do nothing
         return null;
       case 'getTokens':
         return <String, String>{'': user.accessToken};
@@ -64,11 +63,12 @@ class FakeUser {
   final String idToken;
   final String accessToken;
 
-  Map<String, String> get _asMap => <String, String>{
-    'id': id,
-    'email': email,
-    'displayName': displayName,
-    'photoUrl': photoUrl,
-    'idToken': idToken,
-  };
+  Map<String, String> get _asMap =>
+      <String, String>{
+        'id': id,
+        'email': email,
+        'displayName': displayName,
+        'photoUrl': photoUrl,
+        'idToken': idToken,
+      };
 }

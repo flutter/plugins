@@ -254,7 +254,6 @@ void main() {
   });
 
   group('GoogleSignIn with fake backend', () {
-
     const FakeUser kUserData = const FakeUser(
       id: "8162538176523816253123",
       displayName: "John Doe",
