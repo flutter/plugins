@@ -5,33 +5,70 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
 
+/// A fake backend that can be used to test components that require a valid
+/// [GoogleSignInAccount].
+///
+/// GoogleSignIn googleSignIn;
+/// FakeSignInBackend fakeSignInBackend;
+///
+/// setUp(() {
+///   googleSignIn = new GoogleSignIn();
+///   fakeSignInBackend = new FakeSignInBackend();
+///   fakeSignInBackend.user = new FakeUser(
+///     id: 123,
+///     email: 'jdoe@example.org',
+///   );
+///   googleSignIn.channel.setMockMethodCallHandler(
+///       fakeSignInBackend.handleMethodCall);
+/// });
+///
 class FakeSignInBackend {
-  Map<String, String> _currentUser = <String, String>{};
+  FakeUser user;
 
-  void setUser(Map<String, String> userData) {
-    _currentUser = <String, String>{
-      'displayName': userData['displayName'],
-      'email': userData['email'],
-      'id': userData['id'],
-      'photoUrl': userData['photoUrl'],
-      'idToken': userData['idToken']
-    };
-  }
-
+  /// Handles method calls that would normally be sent to the native backend.
+  /// Returns with the expected values based on the current [user].
   Future<dynamic> handleMethodCall(MethodCall methodCall) async {
     switch (methodCall.method) {
       case 'init':
         // do nothing
         return null;
       case 'getTokens':
-        return <String, String>{'idToken': _currentUser['idToken']};
+        return <String, String>{'': user.accessToken};
       case 'signIn':
-        return _currentUser;
+        return user._asMap;
       case 'signInSilently':
-        return _currentUser;
+        return user._asMap;
       case 'disconnect':
-        _currentUser = <String, String>{};
-        return _currentUser;
+        user = null;
+        return <String, String>{};
     }
   }
+}
+
+/// Represents a fake user that can be used with the [FakeSignInBackend] to
+/// obtain a [GoogleSignInAccount] and simulate authentication.
+class FakeUser {
+  const FakeUser({
+    this.id,
+    this.email,
+    this.displayName,
+    this.photoUrl,
+    this.idToken,
+    this.accessToken,
+  });
+
+  final String id;
+  final String email;
+  final String displayName;
+  final String photoUrl;
+  final String idToken;
+  final String accessToken;
+
+  Map<String, String> get _asMap => <String, String>{
+    'id': id,
+    'email': email,
+    'displayName': displayName,
+    'photoUrl': photoUrl,
+    'idToken': idToken,
+  };
 }

@@ -4,7 +4,6 @@
 
 import 'dart:async';
 import 'package:flutter/services.dart';
-import 'package:flutter/services.dart' show MethodChannel;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:google_sign_in/testing.dart';
 import 'package:test/test.dart';
@@ -255,22 +254,19 @@ void main() {
   });
 
   group('GoogleSignIn with fake backend', () {
-    const MethodChannel channel = const MethodChannel(
-      'plugins.flutter.io/google_sign_in',
-    );
 
-    const Map<String, String> kUserData = const <String, String>{
-      "displayName": "John Doe",
-      "email": "john.doe@gmail.com",
-      "id": "8162538176523816253123",
-      "photoUrl": "https://lh5.googleusercontent.com/photo.jpg",
-    };
+    const FakeUser kUserData = const FakeUser(
+      id: "8162538176523816253123",
+      displayName: "John Doe",
+      email: "john.doe@gmail.com",
+      photoUrl: "https://lh5.googleusercontent.com/photo.jpg",
+    );
 
     GoogleSignIn googleSignIn;
 
     setUp(() {
-      channel.setMockMethodCallHandler(
-          (new FakeSignInBackend()..setUser(kUserData)).handleMethodCall);
+      GoogleSignIn.channel.setMockMethodCallHandler(
+          (new FakeSignInBackend()..user = kUserData).handleMethodCall);
       googleSignIn = new GoogleSignIn();
     });
 
@@ -278,13 +274,21 @@ void main() {
       expect(googleSignIn.currentUser, isNull);
     });
 
-    test('can sign in', () async {
+    test('can sign in and sign out', () async {
       await googleSignIn.signIn();
-      expect(googleSignIn.currentUser.toString(),
-          equals('GoogleSignInAccount:$kUserData'));
+
+      GoogleSignInAccount user = googleSignIn.currentUser;
+
+      expect(user.displayName, equals(kUserData.displayName));
+      expect(user.email, equals(kUserData.email));
+      expect(user.id, equals(kUserData.id));
+      expect(user.photoUrl, equals(kUserData.photoUrl));
+
+      await googleSignIn.disconnect();
+      expect(googleSignIn.currentUser, isNull);
     });
 
-    test('can sign out', () async {
+    test('', () async {
       await googleSignIn.disconnect();
       expect(googleSignIn.currentUser, isNull);
     });
