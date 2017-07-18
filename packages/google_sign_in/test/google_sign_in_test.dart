@@ -5,6 +5,7 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:google_sign_in/testing.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -249,6 +250,46 @@ void main() {
       expect(googleSignIn.signIn(),
           throwsA(const isInstanceOf<PlatformException>()));
       expect(await googleSignIn.signIn(), isNotNull);
+    });
+  });
+
+  group('GoogleSignIn with fake backend', () {
+    const FakeUser kUserData = const FakeUser(
+      id: "8162538176523816253123",
+      displayName: "John Doe",
+      email: "john.doe@gmail.com",
+      photoUrl: "https://lh5.googleusercontent.com/photo.jpg",
+    );
+
+    GoogleSignIn googleSignIn;
+
+    setUp(() {
+      GoogleSignIn.channel.setMockMethodCallHandler(
+          (new FakeSignInBackend()..user = kUserData).handleMethodCall);
+      googleSignIn = new GoogleSignIn();
+    });
+
+    test('user starts as null', () async {
+      expect(googleSignIn.currentUser, isNull);
+    });
+
+    test('can sign in and sign out', () async {
+      await googleSignIn.signIn();
+
+      final GoogleSignInAccount user = googleSignIn.currentUser;
+
+      expect(user.displayName, equals(kUserData.displayName));
+      expect(user.email, equals(kUserData.email));
+      expect(user.id, equals(kUserData.id));
+      expect(user.photoUrl, equals(kUserData.photoUrl));
+
+      await googleSignIn.disconnect();
+      expect(googleSignIn.currentUser, isNull);
+    });
+
+    test('disconnect when signout already succeeds', () async {
+      await googleSignIn.disconnect();
+      expect(googleSignIn.currentUser, isNull);
     });
   });
 }
