@@ -287,7 +287,7 @@ void main() {
       expect(googleSignIn.currentUser, isNull);
     });
 
-    test('', () async {
+    test('disconnect when signout already succeeds', () async {
       await googleSignIn.disconnect();
       expect(googleSignIn.currentUser, isNull);
     });

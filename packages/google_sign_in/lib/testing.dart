@@ -3,9 +3,12 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'package:google_sign_in/testing.dart' show MethodCall;
 
 /// A fake backend that can be used to test components that require a valid
 /// [GoogleSignInAccount].
+///
+/// Example usage:
 ///
 /// GoogleSignIn googleSignIn;
 /// FakeSignInBackend fakeSignInBackend;
@@ -29,10 +32,13 @@ class FakeSignInBackend {
   Future<dynamic> handleMethodCall(MethodCall methodCall) async {
     switch (methodCall.method) {
       case 'init':
-      // do nothing
+        // do nothing
         return null;
       case 'getTokens':
-        return <String, String>{'': user.accessToken};
+        return <String, String>{
+          'idToken': user.idToken,
+          'accessToken': user.accessToken
+        };
       case 'signIn':
         return user._asMap;
       case 'signInSilently':
@@ -63,8 +69,7 @@ class FakeUser {
   final String idToken;
   final String accessToken;
 
-  Map<String, String> get _asMap =>
-      <String, String>{
+  Map<String, String> get _asMap => <String, String>{
         'id': id,
         'email': email,
         'displayName': displayName,
