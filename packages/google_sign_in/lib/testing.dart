@@ -27,6 +27,11 @@ import 'package:flutter/services.dart' show MethodCall;
 /// ```
 ///
 class FakeSignInBackend {
+  /// A [FakeUser] object.
+  ///
+  /// This does not represent the signed-in user, but rather an object that will
+  /// be returned when [GoogleSignIn.signIn] or [GoogleSignIn.signInSilently] is
+  /// called.
   FakeUser user;
 
   /// Handles method calls that would normally be sent to the native backend.
@@ -46,7 +51,6 @@ class FakeSignInBackend {
       case 'signInSilently':
         return user._asMap;
       case 'signOut':
-        user = null;
         return <String, String>{};
       case 'disconnect':
         return <String, String>{};
@@ -56,10 +60,6 @@ class FakeSignInBackend {
 
 /// Represents a fake user that can be used with the [FakeSignInBackend] to
 /// obtain a [GoogleSignInAccount] and simulate authentication.
-///
-/// This does not represent the signed-in user, but rather an object that will
-/// be returned when [GoogleSignIn.signIn] or [GoogleSignIn.signInSilently] is
-/// called.
 ///
 class FakeUser {
   const FakeUser({
