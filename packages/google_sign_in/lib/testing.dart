@@ -10,6 +10,7 @@ import 'package:flutter/services.dart' show MethodCall;
 ///
 /// Example usage:
 ///
+/// ```
 /// GoogleSignIn googleSignIn;
 /// FakeSignInBackend fakeSignInBackend;
 ///
@@ -23,6 +24,7 @@ import 'package:flutter/services.dart' show MethodCall;
 ///   googleSignIn.channel.setMockMethodCallHandler(
 ///       fakeSignInBackend.handleMethodCall);
 /// });
+/// ```
 ///
 class FakeSignInBackend {
   FakeUser user;
