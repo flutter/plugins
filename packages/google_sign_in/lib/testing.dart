@@ -37,14 +37,16 @@ class FakeSignInBackend {
       case 'getTokens':
         return <String, String>{
           'idToken': user.idToken,
-          'accessToken': user.accessToken
+          'accessToken': user.accessToken,
         };
       case 'signIn':
         return user._asMap;
       case 'signInSilently':
         return user._asMap;
-      case 'disconnect':
+      case 'signOut':
         user = null;
+        return <String, String>{};
+      case 'disconnect':
         return <String, String>{};
     }
   }
@@ -52,6 +54,11 @@ class FakeSignInBackend {
 
 /// Represents a fake user that can be used with the [FakeSignInBackend] to
 /// obtain a [GoogleSignInAccount] and simulate authentication.
+///
+/// This does not represent the signed-in user, but rather an object that will
+/// be returned when [GoogleSignIn.signIn] or [GoogleSignIn.signInSilently] is
+/// called.
+///
 class FakeUser {
   const FakeUser({
     this.id,
