@@ -125,7 +125,7 @@ void main() {
           equals(<MethodCall>[
             new MethodCall(
               'DatabaseReference#update',
-               <String, dynamic>{'path': 'foo', 'value': value},
+              <String, dynamic>{'path': 'foo', 'value': value},
             ),
           ]),
         );
