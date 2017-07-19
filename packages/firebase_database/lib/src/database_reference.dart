@@ -77,7 +77,7 @@ class DatabaseReference extends Query {
     );
   }
 
-  ///Update the node with the `value`
+  /// Update the node with the `value`
   Future<Null> update(Map<String, dynamic> value) {
     return _database._channel.invokeMethod(
       'DatabaseReference#update',
