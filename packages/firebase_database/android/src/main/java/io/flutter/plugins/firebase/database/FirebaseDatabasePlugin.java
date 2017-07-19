@@ -260,6 +260,15 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
           break;
         }
 
+      case "DatabaseReference#update":
+        {
+          Map<String, Object> arguments = call.arguments();
+          Map value = (Map) arguments.get("value");
+          DatabaseReference reference = getReference(arguments);
+          reference.updateChildren(value, new DefaultCompletionListener(result));
+          break;
+        }
+
       case "DatabaseReference#setPriority":
         {
           Map<String, Object> arguments = call.arguments();
