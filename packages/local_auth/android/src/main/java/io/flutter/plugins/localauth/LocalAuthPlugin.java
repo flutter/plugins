@@ -19,10 +19,12 @@ public class LocalAuthPlugin implements MethodCallHandler {
   private final AtomicBoolean authInProgress = new AtomicBoolean(false);
 
   /** Plugin registration. */
-  public static void registerWith(Registrar registrar) {
+  public static LocalAuthPlugin registerWith(Registrar registrar) {
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/local_auth");
-    channel.setMethodCallHandler(new LocalAuthPlugin(registrar.activity()));
+    final LocalAuthPlugin instance = new LocalAuthPlugin(registrar.activity());
+    channel.setMethodCallHandler(instance);
+    return instance;
   }
 
   private LocalAuthPlugin(Activity activity) {

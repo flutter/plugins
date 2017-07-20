@@ -56,10 +56,11 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 
   private final Delegate delegate;
 
-  public static void registerWith(PluginRegistry.Registrar registrar) {
+  public static GoogleSignInPlugin registerWith(PluginRegistry.Registrar registrar) {
     final MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL_NAME);
     final GoogleSignInPlugin instance = new GoogleSignInPlugin(registrar);
     channel.setMethodCallHandler(instance);
+    return instance;
   }
 
   private GoogleSignInPlugin(PluginRegistry.Registrar registrar) {

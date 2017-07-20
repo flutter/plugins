@@ -32,10 +32,12 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
 
   private static final String ERROR_REASON_EXCEPTION = "exception";
 
-  public static void registerWith(PluginRegistry.Registrar registrar) {
+  public static FirebaseAuthPlugin registerWith(PluginRegistry.Registrar registrar) {
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_auth");
-    channel.setMethodCallHandler(new FirebaseAuthPlugin(registrar.activity()));
+    final FirebaseAuthPlugin instance = new FirebaseAuthPlugin(registrar.activity());
+    channel.setMethodCallHandler(instance);
+    return instance;
   }
 
   private FirebaseAuthPlugin(Activity activity) {

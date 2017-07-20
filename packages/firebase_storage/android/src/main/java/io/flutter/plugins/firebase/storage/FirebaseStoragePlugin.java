@@ -25,9 +25,11 @@ import java.util.Map;
 public class FirebaseStoragePlugin implements MethodCallHandler {
   private FirebaseStorage firebaseStorage;
 
-  public static void registerWith(Registrar registrar) {
+  public static FirebaseStoragePlugin registerWith(Registrar registrar) {
     final MethodChannel channel = new MethodChannel(registrar.messenger(), "firebase_storage");
-    channel.setMethodCallHandler(new FirebaseStoragePlugin(registrar.activity()));
+    final FirebaseStoragePlugin instance = new FirebaseStoragePlugin(registrar.activity());
+    channel.setMethodCallHandler(instance);
+    return instance;
   }
 
   private FirebaseStoragePlugin(Activity activity) {
