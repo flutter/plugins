@@ -37,12 +37,14 @@ public class QuickActionsPlugin implements MethodCallHandler {
   }
 
   /** Plugin registration. */
-  public static void registerWith(Registrar registrar) {
+  public static QuickActionsPlugin registerWith(Registrar registrar) {
     if (channel != null) {
       throw new IllegalStateException("You should not call registerWith more than once.");
     }
     channel = new MethodChannel(registrar.messenger(), "plugins.flutter.io/quick_actions");
-    channel.setMethodCallHandler(new QuickActionsPlugin(registrar.activity()));
+    final QuickActionsPlugin instance = new QuickActionsPlugin(registrar.activity());
+    channel.setMethodCallHandler(instance);
+    return instance;
   }
 
   @Override

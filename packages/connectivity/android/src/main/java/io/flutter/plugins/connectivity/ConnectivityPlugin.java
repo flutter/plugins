@@ -19,10 +19,12 @@ public class ConnectivityPlugin implements MethodCallHandler {
   private final ConnectivityManager manager;
 
   /** Plugin registration. */
-  public static void registerWith(Registrar registrar) {
+  public static ConnectivityPlugin registerWith(Registrar registrar) {
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/connectivity");
-    channel.setMethodCallHandler(new ConnectivityPlugin(registrar.activity()));
+    final ConnectivityPlugin instance = new ConnectivityPlugin(registrar.activity());
+    channel.setMethodCallHandler(instance);
+    return instance;
   }
 
   private ConnectivityPlugin(Activity activity) {

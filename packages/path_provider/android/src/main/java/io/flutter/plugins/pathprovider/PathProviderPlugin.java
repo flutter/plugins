@@ -17,10 +17,11 @@ public class PathProviderPlugin implements MethodCallHandler {
   private final Activity activity;
 
   public static void registerWith(Registrar registrar) {
-    MethodChannel channel =
+    final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/path_provider");
-    PathProviderPlugin instance = new PathProviderPlugin(registrar.activity());
+    final PathProviderPlugin instance = new PathProviderPlugin(registrar.activity());
     channel.setMethodCallHandler(instance);
+    return instance;
   }
 
   private PathProviderPlugin(Activity activity) {

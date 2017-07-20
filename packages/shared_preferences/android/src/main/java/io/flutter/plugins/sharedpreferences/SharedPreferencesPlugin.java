@@ -36,10 +36,11 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
   private final android.content.SharedPreferences preferences;
   private final android.content.SharedPreferences.Editor editor;
 
-  public static void registerWith(PluginRegistry.Registrar registrar) {
-    MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL_NAME);
-    SharedPreferencesPlugin instance = new SharedPreferencesPlugin(registrar.activity());
+  public static SharedPreferencesPlugin registerWith(PluginRegistry.Registrar registrar) {
+    final MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL_NAME);
+    final SharedPreferencesPlugin instance = new SharedPreferencesPlugin(registrar.activity());
     channel.setMethodCallHandler(instance);
+    return instance;
   }
 
   private SharedPreferencesPlugin(Activity activity) {

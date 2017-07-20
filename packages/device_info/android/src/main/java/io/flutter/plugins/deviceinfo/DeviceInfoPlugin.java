@@ -23,10 +23,12 @@ public class DeviceInfoPlugin implements MethodCallHandler {
   private static final String[] EMPTY_STRING_LIST = new String[] {};
 
   /** Plugin registration. */
-  public static void registerWith(Registrar registrar) {
+  public static DeviceInfoPlugin registerWith(Registrar registrar) {
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/device_info");
-    channel.setMethodCallHandler(new DeviceInfoPlugin());
+    final DeviceInfoPlugin instance = new DeviceInfoPlugin();
+    channel.setMethodCallHandler(instance);
+    return instance;
   }
 
   /** Do not allow direct instantiation. */

@@ -18,7 +18,7 @@ public class SensorsPlugin implements EventChannel.StreamHandler {
   private static final String GYROSCOPE_CHANNEL_NAME = "plugins.flutter.io/gyroscope";
 
   /** Plugin registration. */
-  public static void registerWith(Registrar registrar) {
+  public static SensorsPlugin registerWith(Registrar registrar) {
     final EventChannel accelerometerChannel =
         new EventChannel(registrar.messenger(), ACCELEROMETER_CHANNEL_NAME);
     accelerometerChannel.setStreamHandler(
@@ -26,8 +26,14 @@ public class SensorsPlugin implements EventChannel.StreamHandler {
 
     final EventChannel gyroscopeChannel =
         new EventChannel(registrar.messenger(), GYROSCOPE_CHANNEL_NAME);
-    gyroscopeChannel.setStreamHandler(
-        new SensorsPlugin(registrar.activity(), Sensor.TYPE_GYROSCOPE));
+    // To fit with the general plugin pattern this method needs to return an instance of the
+    // registered plugin. Neither version of the plugin requires any further initialization
+    // so just return this version. If further initialization will be needed in the future,
+    // this plugin should be split into two classes with separate registerWith methods.
+    final SensorsPlugin instance = new SensorsPlugin(registrar.activity(), Sensor.TYPE_GYROSCOPE);
+    gyroscopeChannel.setStreamHandler(instance);
+      
+    return instance;
   }
 
   private SensorEventListener sensorEventListener;

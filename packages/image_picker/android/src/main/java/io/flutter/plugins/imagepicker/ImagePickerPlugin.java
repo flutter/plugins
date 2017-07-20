@@ -34,11 +34,12 @@ public class ImagePickerPlugin implements MethodCallHandler, ActivityResultListe
   // Pending method call to obtain an image
   private Result pendingResult;
 
-  public static void registerWith(PluginRegistry.Registrar registrar) {
+  public static ImagePickerPlugin registerWith(PluginRegistry.Registrar registrar) {
     final MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL);
     final ImagePickerPlugin instance = new ImagePickerPlugin(registrar.activity());
     registrar.addActivityResultListener(instance);
     channel.setMethodCallHandler(instance);
+    return instance;
   }
 
   private ImagePickerPlugin(Activity activity) {
