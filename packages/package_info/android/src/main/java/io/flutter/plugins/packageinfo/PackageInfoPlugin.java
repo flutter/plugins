@@ -19,7 +19,7 @@ public class PackageInfoPlugin implements MethodCallHandler {
   private final Context context;
 
   /** Plugin registration. */
-  public static void registerWith(Registrar registrar) {
+  public static PackageInfoPlugin registerWith(Registrar registrar) {
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/package_info");
     final PackageInfoPlugin instance = new PackageInfoPlugin(registrar.activity());
