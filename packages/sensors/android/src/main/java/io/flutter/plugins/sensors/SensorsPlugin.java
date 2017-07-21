@@ -32,7 +32,7 @@ public class SensorsPlugin implements EventChannel.StreamHandler {
     // this plugin should be split into two classes with separate registerWith methods.
     final SensorsPlugin instance = new SensorsPlugin(registrar.activity(), Sensor.TYPE_GYROSCOPE);
     gyroscopeChannel.setStreamHandler(instance);
-      
+
     return instance;
   }
 
