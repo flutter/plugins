@@ -62,6 +62,17 @@ void main() {
       expect(userInfo.email, kMockEmail);
     }
 
+    test('getCurrentUser', () async {
+      final FirebaseUser user = await auth.getCurrentUser();
+      verifyUser(user);
+      expect(
+        log,
+        equals(<MethodCall>[
+          const MethodCall('getCurrentUser'),
+        ]),
+      );
+    });
+
     test('signInAnonymously', () async {
       final FirebaseUser user = await auth.signInAnonymously();
       verifyUser(user);
