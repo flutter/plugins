@@ -75,18 +75,18 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
   }
 
   private void handleGetCurrentUser(MethodCall call, final Result result) {
-    final FirebaseAuth.AuthStateListener listener =
-        new FirebaseAuth.AuthStateListener() {
-          @Override
-          public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-            firebaseAuth.removeAuthStateListener(this);
-            FirebaseUser user = firebaseAuth.getCurrentUser();
-            ImmutableMap<String, Object> userMap = mapFromUser(user);
-            result.success(userMap);
-          }
-        };
+    final FirebaseAuth.AuthStateListener listener = new FirebaseAuth.AuthStateListener() {
+      @Override
+      public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+        firebaseAuth.removeAuthStateListener(this);
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        ImmutableMap<String, Object> userMap = mapFromUser(user);
+        result.success(userMap);
+      }
+    };
 
-    firebaseAuth.addAuthStateListener(listener);
+    firebaseAuth
+        .addAuthStateListener(listener);
   }
 
   private void handleSignInAnonymously(MethodCall call, final Result result) {
