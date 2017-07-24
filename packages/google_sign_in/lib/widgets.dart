@@ -23,7 +23,8 @@ class GoogleUserCircleAvatar extends StatelessWidget {
     @required this.identity,
     this.placeholderPhotoUrl,
     this.backgroundColor,
-  }) : assert(identity != null);
+  })
+      : assert(identity != null);
 
   /// A regular expression that matches against the "size directive" path
   /// segment of Google profile image URLs.
@@ -88,14 +89,16 @@ class GoogleUserCircleAvatar extends StatelessWidget {
     }
 
     // Add a sizing directive to the profile photo URL if we have one.
-    final double size = MediaQuery.of(context).devicePixelRatio * constraints.maxWidth;
+    final double size =
+        MediaQuery.of(context).devicePixelRatio * constraints.maxWidth;
     if (photoUrl != null) {
       photoUrl = _sizedProfileImageUrl(photoUrl, size);
     }
 
     // If the user has no profile photo and no display name, fall back to
     // the default profile photo as a last resort.
-    photoUrl ??= 'https://lh3.googleusercontent.com/a/default-user=s${size.round()}-c';
+    photoUrl ??=
+        'https://lh3.googleusercontent.com/a/default-user=s${size.round()}-c';
 
     return new ClipOval(
       child: new Image(
