@@ -23,7 +23,7 @@ FirebaseAnalytics analytics = new FirebaseAnalytics();
 MaterialApp(
   home: new MyAppHome(),
   navigatorObservers: [
-    new FirebaseAnalyticsPageRouteObserver(analytics: analytics),
+    new FirebaseAnalyticsObserver(analytics: analytics),
   ],
 );
 ```
