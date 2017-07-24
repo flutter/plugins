@@ -181,7 +181,7 @@ MobileAdStatus _status;
 }
 
 - (NSDictionary *)argumentsMap {
-  return @{ @"id" : _mobileAdId };
+  return @{@"id" : _mobileAdId};
 }
 
 - (NSString *)description {
