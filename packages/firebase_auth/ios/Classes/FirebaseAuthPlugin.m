@@ -63,6 +63,14 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
                               completion:^(FIRUser *user, NSError *error) {
                                 [self sendResult:result forUser:user error:error];
                               }];
+  } else if ([@"signInWithFacebook" isEqualToString:call.method]) {
+    NSString *tokenString = call.arguments[@"tokenString"];
+    FIRAuthCredential *credential = [FIRFacebookAuthProvider
+        credentialWithAccessToken:tokenString];
+    [[FIRAuth auth] signInWithCredential:credential
+        completion:^(FIRUser *user, NSError *error) {
+          [self sendResult:result forUser:user error:error];
+        }];
   } else if ([@"createUserWithEmailAndPassword" isEqualToString:call.method]) {
     NSString *email = call.arguments[@"email"];
     NSString *password = call.arguments[@"password"];

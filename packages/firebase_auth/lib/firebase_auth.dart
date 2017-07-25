@@ -128,6 +128,20 @@ class FirebaseAuth {
     return _currentUser;
   }
 
+  Future<FirebaseUser> signInWithFacebook({
+    @required String tokenString
+  }) async {
+    assert(tokenString != null);
+    final Map<String, dynamic> data = await channel.invokeMethod(
+      'signInWithFacebook',
+      <String, String>{
+        'tokenString': tokenString,
+      }
+    );
+    _currentUser = new FirebaseUser._(data);
+    return _currentUser;
+  }
+
   Future<FirebaseUser> signInWithGoogle({
     @required String idToken,
     @required String accessToken,
