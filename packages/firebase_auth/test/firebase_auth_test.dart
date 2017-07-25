@@ -127,5 +127,20 @@ void main() {
         ]),
       );
     });
+
+    test('signInWithFacebook', () async {
+      final FirebaseUser user = await auth.signInWithFacebook(
+        accessToken: kMockAccessToken,
+      );
+      verifyUser(user);
+      expect(
+        log,
+        equals(<MethodCall>[
+          new MethodCall('signInWithFacebook', <String, String>{
+            'accessToken': kMockAccessToken,
+          })
+        ]),
+      );
+    });
   });
 }
