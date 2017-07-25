@@ -116,7 +116,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
   private void handleSignInWithFacebook(MethodCall call, final Result result) {
     @SuppressWarnings("unchecked")
     Map<String, String> arguments = (Map<String, String>) call.arguments;
-    String tokenString = arguments.get("accessToken");
+    String accessToken = arguments.get("accessToken");
     AuthCredential credential = FacebookAuthProvider.getCredential(accessToken);
     firebaseAuth
         .signInWithCredential(credential)
