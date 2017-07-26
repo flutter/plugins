@@ -2,9 +2,8 @@
 
 [![pub package](https://img.shields.io/pub/v/image_picker.svg)](https://pub.dartlang.org/packages/image_picker)
 
-A Flutter wrapper for the native image picker.
-
-This enables picking images from the image library, or to take new pictures with the camera.
+A Flutter plugin for iOS and Android for picking images from the image library,
+and taking new pictures with the camera.
 
 *Note*: This plugin is still under development, and some APIs might not be available yet. [Feedback welcome](https://github.com/flutter/flutter/issues) and [Pull Requests](https://github.com/flutter/plugins/pulls) are most welcome!
 
