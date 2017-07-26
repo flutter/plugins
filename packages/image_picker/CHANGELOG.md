@@ -1,3 +1,7 @@
+## 0.1.0+1
+
+* Updated readme and description in pubspec.yaml
+
 ## 0.1.0
 
 * Updated dependencies
