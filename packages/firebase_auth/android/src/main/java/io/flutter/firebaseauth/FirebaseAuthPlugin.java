@@ -13,12 +13,12 @@ import com.google.common.collect.ImmutableMap;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserInfo;
-import com.google.firebase.auth.FacebookAuthProvider;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -110,8 +110,8 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     String accessToken = arguments.get("accessToken");
     AuthCredential credential = GoogleAuthProvider.getCredential(idToken, accessToken);
     firebaseAuth
-            .signInWithCredential(credential)
-            .addOnCompleteListener(activity, new SignInCompleteListener(result));
+        .signInWithCredential(credential)
+        .addOnCompleteListener(activity, new SignInCompleteListener(result));
   }
 
   private void handleSignInWithFacebook(MethodCall call, final Result result) {
