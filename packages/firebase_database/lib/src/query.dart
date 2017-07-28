@@ -63,7 +63,11 @@ class Query {
         _handle.then((int handle) async {
           await _database._channel.invokeMethod(
             'Query#removeObserver',
-            <String, dynamic>{'handle': handle},
+            <String, dynamic>{
+              'path': path,
+              'parameters': _parameters,
+              'handle': handle,
+            },
           );
           FirebaseDatabase._observers.remove(handle);
         });
