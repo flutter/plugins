@@ -283,6 +283,7 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
           Map<String, Object> arguments = call.arguments();
           boolean value = (Boolean) arguments.get("value");
           getQuery(arguments).keepSynced(value);
+          result.success(null);
           break;
         }
 
