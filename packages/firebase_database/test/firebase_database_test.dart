@@ -3,13 +3,10 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:math' show min;
-
-import 'package:test/test.dart';
-
-import 'package:flutter/services.dart';
 
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/services.dart';
+import 'package:test/test.dart';
 
 void main() {
   group('$FirebaseDatabase', () {
