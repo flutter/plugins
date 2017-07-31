@@ -1,3 +1,8 @@
+## 0.1.1
+
+* Updated Gradle repositories declaration to avoid the need for manual configuration
+  in the consuming app.
+
 ## 0.1.0+1
 
 * Updated readme and description in pubspec.yaml
