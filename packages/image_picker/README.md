@@ -10,17 +10,6 @@ and taking new pictures with the camera.
 ## Usage
 To use this plugin, add `image_picker` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
 
-Next, to make the app build for android, open the file `android/build.gradle`, and add the `jitpack.io` line shown below:
-
-```
-allprojects {
-   repositories {
-       jcenter()
-       maven { url "https://jitpack.io" }    // Enable getting dependencies from jitpack.io.
-   }
-}
-```
-
 ### Example
 
 ``` dart
