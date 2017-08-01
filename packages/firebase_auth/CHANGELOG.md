@@ -1,3 +1,7 @@
+## 0.1.2
+
+* Added support for signInWithFacebook
+
 ## 0.1.1
 
 * Updated to Firebase SDK to always use latest patch version for 11.0.x builds
