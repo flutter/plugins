@@ -20,9 +20,11 @@ public class FirebaseAnalyticsPlugin implements MethodCallHandler {
   private final Activity activity;
   private final FirebaseAnalytics firebaseAnalytics;
 
-  public static void registerWith(PluginRegistry.Registrar registrar) {
+  public static FirebaseAnalyticsPlugin registerWith(PluginRegistry.Registrar registrar) {
     final MethodChannel channel = new MethodChannel(registrar.messenger(), "firebase_analytics");
-    channel.setMethodCallHandler(new FirebaseAnalyticsPlugin(registrar.activity()));
+    final FirebaseAnalyticsPlugin instance = new FirebaseAnalyticsPlugin(registrar.activity());
+    channel.setMethodCallHandler(instance);
+    return instance;
   }
 
   private FirebaseAnalyticsPlugin(Activity activity) {

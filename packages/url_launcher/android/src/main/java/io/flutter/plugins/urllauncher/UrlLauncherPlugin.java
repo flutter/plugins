@@ -18,11 +18,12 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 public class UrlLauncherPlugin implements MethodCallHandler {
   private final Activity activity;
 
-  public static void registerWith(Registrar registrar) {
-    MethodChannel channel =
+  public static UrlLauncherPlugin registerWith(Registrar registrar) {
+    final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/url_launcher");
-    UrlLauncherPlugin instance = new UrlLauncherPlugin(registrar.activity());
+    final UrlLauncherPlugin instance = new UrlLauncherPlugin(registrar.activity());
     channel.setMethodCallHandler(instance);
+    return instance;
   }
 
   private UrlLauncherPlugin(Activity activity) {

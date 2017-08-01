@@ -26,7 +26,7 @@ import io.flutter.plugin.common.PluginRegistry;
 public class BatteryPlugin implements MethodCallHandler, StreamHandler {
 
   /** Plugin registration. */
-  public static void registerWith(PluginRegistry.Registrar registrar) {
+  public static BatteryPlugin registerWith(PluginRegistry.Registrar registrar) {
     final MethodChannel methodChannel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/battery");
     final EventChannel eventChannel =
@@ -34,6 +34,7 @@ public class BatteryPlugin implements MethodCallHandler, StreamHandler {
     final BatteryPlugin instance = new BatteryPlugin(registrar.activity());
     eventChannel.setStreamHandler(instance);
     methodChannel.setMethodCallHandler(instance);
+    return instance;
   }
 
   BatteryPlugin(Activity activity) {

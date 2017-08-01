@@ -23,10 +23,12 @@ public class AndroidIntentPlugin implements MethodCallHandler {
   private final Context context;
 
   /** Plugin registration. */
-  public static void registerWith(Registrar registrar) {
+  public static AndroidIntentPlugin registerWith(Registrar registrar) {
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/android_intent");
-    channel.setMethodCallHandler(new AndroidIntentPlugin(registrar.activity()));
+    final AndroidIntentPlugin instance = new AndroidIntentPlugin(registrar.activity());
+    channel.setMethodCallHandler(instance);
+    return instance;
   }
 
   private AndroidIntentPlugin(Activity activity) {

@@ -15,10 +15,11 @@ public class SharePlugin implements MethodChannel.MethodCallHandler {
 
   private static final String CHANNEL = "plugins.flutter.io/share";
 
-  public static void registerWith(Registrar registrar) {
-    MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL);
-    SharePlugin instance = new SharePlugin(registrar.activity());
+  public static SharePlugin registerWith(Registrar registrar) {
+    final MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL);
+    final SharePlugin instance = new SharePlugin(registrar.activity());
     channel.setMethodCallHandler(instance);
+    return instance;
   }
 
   private final Context context;

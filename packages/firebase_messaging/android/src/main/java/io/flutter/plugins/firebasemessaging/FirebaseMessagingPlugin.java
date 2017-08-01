@@ -31,12 +31,13 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
 
   private static final String CLICK_ACTION_VALUE = "FLUTTER_NOTIFICATION_CLICK";
 
-  public static void registerWith(Registrar registrar) {
+  public static FirebaseMessagingPlugin registerWith(Registrar registrar) {
     final MethodChannel channel = new MethodChannel(registrar.messenger(), "firebase_messaging");
     final FirebaseMessagingPlugin plugin =
         new FirebaseMessagingPlugin(registrar.activity(), channel);
     registrar.addNewIntentListener(plugin);
     channel.setMethodCallHandler(plugin);
+    return plugin;
   }
 
   private FirebaseMessagingPlugin(Activity activity, MethodChannel channel) {

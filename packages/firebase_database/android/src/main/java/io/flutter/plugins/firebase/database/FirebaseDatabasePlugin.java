@@ -35,10 +35,12 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
   private int nextHandle = 0;
   private final SparseArray<EventObserver> observers = new SparseArray<>();
 
-  public static void registerWith(PluginRegistry.Registrar registrar) {
+  public static FirebaseDatabasePlugin registerWith(PluginRegistry.Registrar registrar) {
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_database");
-    channel.setMethodCallHandler(new FirebaseDatabasePlugin(channel));
+    final FirebaseDatabasePlugin instance = new FirebaseDatabasePlugin(channel);
+    channel.setMethodCallHandler(instance);
+    return instance;
   }
 
   private FirebaseDatabasePlugin(MethodChannel channel) {
