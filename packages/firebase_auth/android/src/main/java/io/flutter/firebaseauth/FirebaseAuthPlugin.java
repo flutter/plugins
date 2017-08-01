@@ -61,7 +61,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         handleSignInWithGoogle(call, result);
         break;
       case "signInWithFacebook":
-        handleSignInWithGoogle(call, result);
+        handleSignInWithFacebook(call, result);
         break;
       case "signOut":
         handleSignOut(call, result);
