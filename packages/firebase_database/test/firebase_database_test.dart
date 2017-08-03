@@ -4,11 +4,9 @@
 
 import 'dart:async';
 
-import 'package:test/test.dart';
-
-import 'package:flutter/services.dart';
-
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/services.dart';
+import 'package:test/test.dart';
 
 void main() {
   group('$FirebaseDatabase', () {
@@ -148,7 +146,25 @@ void main() {
 
     group('$Query', () {
       // TODO(jackson): Write more tests for queries
-      test('observing', () async {
+      test('keepSynced, simple query', () async {
+        final String path = 'foo';
+        final Query query = database.reference().child(path);
+        await query.keepSynced(true);
+        expect(
+          log,
+          equals(<MethodCall>[
+            new MethodCall(
+              'Query#keepSynced',
+              <String, dynamic>{
+                'path': path,
+                'parameters': <String, dynamic>{},
+                'value': true
+              },
+            ),
+          ]),
+        );
+      });
+      test('keepSynced, complex query', () async {
         final int startAt = 42;
         final String path = 'foo';
         final String childKey = 'bar';
@@ -160,10 +176,7 @@ void main() {
             .orderByChild(childKey)
             .startAt(startAt)
             .endAt(endAt, key: endAtKey);
-        final StreamSubscription<Event> subscription =
-            query.onValue.listen((_) {});
-        await query.keepSynced(true);
-        subscription.cancel();
+        await query.keepSynced(false);
         final Map<String, dynamic> expectedParameters = <String, dynamic>{
           'orderBy': 'child',
           'orderByChildKey': childKey,
@@ -175,19 +188,73 @@ void main() {
           log,
           equals(<MethodCall>[
             new MethodCall(
-              'Query#observe',
-              <String, dynamic>{
-                'path': path,
-                'parameters': expectedParameters,
-                'eventType': '_EventType.value'
-              },
-            ),
-            new MethodCall(
               'Query#keepSynced',
               <String, dynamic>{
                 'path': path,
                 'parameters': expectedParameters,
-                'value': true
+                'value': false
+              },
+            ),
+          ]),
+        );
+      });
+      test('observing value events', () async {
+        mockHandleId = 87;
+        final String path = 'foo';
+        final Query query = database.reference().child(path);
+        Future<Null> simulateEvent(String value) async {
+          await BinaryMessages.handlePlatformMessage(
+            channel.name,
+            channel.codec.encodeMethodCall(
+              new MethodCall('Event', <String, dynamic>{
+                'handle': 87,
+                'snapshot': <String, dynamic>{
+                  'key': path,
+                  'value': value,
+                },
+              }),
+            ),
+            (_) {},
+          );
+        }
+
+        final AsyncQueue<Event> events = new AsyncQueue<Event>();
+
+        // Subscribe and allow subscription to complete.
+        final StreamSubscription<Event> subscription =
+            query.onValue.listen(events.add);
+        await new Future<Null>.delayed(const Duration(seconds: 0));
+
+        await simulateEvent('1');
+        await simulateEvent('2');
+        final Event event1 = await events.remove();
+        final Event event2 = await events.remove();
+        expect(event1.snapshot.key, path);
+        expect(event1.snapshot.value, '1');
+        expect(event2.snapshot.key, path);
+        expect(event2.snapshot.value, '2');
+
+        // Cancel subscription and allow cancellation to complete.
+        subscription.cancel();
+        await new Future<Null>.delayed(const Duration(seconds: 0));
+
+        expect(
+          log,
+          equals(<MethodCall>[
+            new MethodCall(
+              'Query#observe',
+              <String, dynamic>{
+                'path': path,
+                'parameters': <String, dynamic>{},
+                'eventType': '_EventType.value'
+              },
+            ),
+            new MethodCall(
+              'Query#removeObserver',
+              <String, dynamic>{
+                'path': path,
+                'parameters': <String, dynamic>{},
+                'handle': 87,
               },
             ),
           ]),
@@ -195,4 +262,28 @@ void main() {
       });
     });
   });
+}
+
+/// Queue whose remove operation is asynchronous, awaiting a corresponding add.
+class AsyncQueue<T> {
+  Map<int, Completer<T>> _completers = <int, Completer<T>>{};
+  int _nextToRemove = 0;
+  int _nextToAdd = 0;
+
+  void add(T element) {
+    _completer(_nextToAdd++).complete(element);
+  }
+
+  Future<T> remove() {
+    final Future<T> result = _completer(_nextToRemove++).future;
+    return result;
+  }
+
+  Completer<T> _completer(int index) {
+    if (_completers.containsKey(index)) {
+      return _completers.remove(index);
+    } else {
+      return _completers[index] = new Completer<T>();
+    }
+  }
 }

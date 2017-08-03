@@ -13,6 +13,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
@@ -58,6 +59,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         break;
       case "signInWithGoogle":
         handleSignInWithGoogle(call, result);
+        break;
+      case "signInWithFacebook":
+        handleSignInWithFacebook(call, result);
         break;
       case "signOut":
         handleSignOut(call, result);
@@ -105,6 +109,16 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     String idToken = arguments.get("idToken");
     String accessToken = arguments.get("accessToken");
     AuthCredential credential = GoogleAuthProvider.getCredential(idToken, accessToken);
+    firebaseAuth
+        .signInWithCredential(credential)
+        .addOnCompleteListener(activity, new SignInCompleteListener(result));
+  }
+
+  private void handleSignInWithFacebook(MethodCall call, final Result result) {
+    @SuppressWarnings("unchecked")
+    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    String accessToken = arguments.get("accessToken");
+    AuthCredential credential = FacebookAuthProvider.getCredential(accessToken);
     firebaseAuth
         .signInWithCredential(credential)
         .addOnCompleteListener(activity, new SignInCompleteListener(result));
