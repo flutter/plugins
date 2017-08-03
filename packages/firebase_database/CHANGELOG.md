@@ -1,3 +1,7 @@
+## 0.0.13
+
+* Fix FirebaseSortedList to show data changes.
+
 ## 0.0.12
 
 * Updated to Firebase SDK to always use latest patch version for 11.0.x builds
