@@ -1,3 +1,7 @@
+## 0.0.14
+
+* Fix FirebaseSortedList to show data changes.
+
 ## 0.0.13
 
 * Fixed lingering value/child listeners.
