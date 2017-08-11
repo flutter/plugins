@@ -46,7 +46,7 @@ class SharedPreferences {
 
   /// Reads all values from cache
   Map<String, Object> getAll() {
-    final result = <String, Object>{};
+    final Map<String, Object> result = {};
     result.addAll(_preferenceCache);
     return result;
   }
