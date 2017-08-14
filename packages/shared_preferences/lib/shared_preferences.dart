@@ -45,7 +45,7 @@ class SharedPreferences {
   final Map<String, Object> _preferenceCache;
 
   /// Reads all values from cache
-  Map<String, Object> getAll() => new Map.from(_preferenceCache);
+  Map<String, Object> getAll() => new Map<String, Object>.from(_preferenceCache);
 
   /// Reads a value from persistent storage, throwing an exception if it's not a
   /// bool
