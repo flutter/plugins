@@ -44,6 +44,9 @@ class SharedPreferences {
   /// in sync since the setter method might fail for any reason.
   final Map<String, Object> _preferenceCache;
 
+  /// Reads all values from cache
+  Map<String, Object> getAll() => new Map<String, Object>.from(_preferenceCache);
+
   /// Reads a value from persistent storage, throwing an exception if it's not a
   /// bool
   bool getBool(String key) => _preferenceCache[key];
