@@ -1,19 +1,27 @@
 # device_info
 
-This Flutter plugin provides an API for querying information about the device
-on which a Flutter application is running.
+Get current device information from within the Flutter application.
 
 # Usage
 
-Import `package:device_info` and use the provided top-level functions.
+Import `package:device_info/device_info.dart`, instantiate `DeviceInfoPlugin`
+and use the Android and iOS getters to get platform-specific device
+information.
 
 Example:
 
 ```dart
-import 'package:device_info';
+import 'package:device_info/device_info.dart';
 
-var androidOSBuild = await androidOSBuild;
+DeviceInfoPlugin deviceInfo = new DeviceInfoPlugin();
+AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+print('Running on ${androidInfo.model}');  // e.g. "Moto G (4)"
+
+IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+print('Running on ${iosInfo.model}');  // e.g. "iPhone 6"
 ```
+
+You will find links to the API docs on the [pub page](https://pub.dartlang.org/packages/device_info).
 
 ## Getting Started
 
