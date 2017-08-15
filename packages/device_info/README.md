@@ -5,7 +5,8 @@ Get current device information from within the Flutter application.
 # Usage
 
 Import `package:device_info/device_info.dart`, instantiate `DeviceInfoPlugin`
-and use Android and iOS getters to get platform-specific device information.
+and use the Android and iOS getters to get platform-specific device
+information.
 
 Example:
 
