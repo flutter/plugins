@@ -94,7 +94,7 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
                          }];
   } else if ([@"signOut" isEqualToString:call.method]) {
     NSError *signOutError;
-    BOOL status = [auth signOut:&signOutError];
+    BOOL status = [[FIRAuth auth] signOut:&signOutError];
     if (!status) {
       NSLog(@"Error signing out: %@", signOutError);
       [self sendResult:result forUser:nil error:signOutError];
