@@ -51,8 +51,8 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"getCurrentUser" isEqualToString:call.method]) {
-    id __block listener =
-        [[FIRAuth auth] addAuthStateDidChangeListener:^(FIRAuth *_Nonnull auth, FIRUser *_Nullable user) {
+    id __block listener = [[FIRAuth auth]
+        addAuthStateDidChangeListener:^(FIRAuth *_Nonnull auth, FIRUser *_Nullable user) {
           [self sendResult:result forUser:user error:nil];
           [auth removeAuthStateDidChangeListener:listener];
         }];
@@ -80,18 +80,18 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
     NSString *email = call.arguments[@"email"];
     NSString *password = call.arguments[@"password"];
     [[FIRAuth auth] createUserWithEmail:email
-                     password:password
-                   completion:^(FIRUser *user, NSError *error) {
-                     [self sendResult:result forUser:user error:error];
-                   }];
+                               password:password
+                             completion:^(FIRUser *user, NSError *error) {
+                               [self sendResult:result forUser:user error:error];
+                             }];
   } else if ([@"signInWithEmailAndPassword" isEqualToString:call.method]) {
     NSString *email = call.arguments[@"email"];
     NSString *password = call.arguments[@"password"];
     [[FIRAuth auth] signInWithEmail:email
-                 password:password
-               completion:^(FIRUser *user, NSError *error) {
-                 [self sendResult:result forUser:user error:error];
-               }];
+                           password:password
+                         completion:^(FIRUser *user, NSError *error) {
+                           [self sendResult:result forUser:user error:error];
+                         }];
   } else if ([@"signOut" isEqualToString:call.method]) {
     NSError *signOutError;
     BOOL status = [auth signOut:&signOutError];
