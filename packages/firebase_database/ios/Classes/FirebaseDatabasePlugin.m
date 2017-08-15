@@ -212,7 +212,8 @@ id roundDoubles(id value) {
     result(nil);
   } else if ([@"Query#keepSynced" isEqualToString:call.method]) {
     NSNumber *value = call.arguments[@"value"];
-    [getQuery(call.arguments) keepSynced:value];
+    [getQuery(call.arguments) keepSynced:value.boolValue];
+    result(nil);
   } else {
     result(FlutterMethodNotImplemented);
   }

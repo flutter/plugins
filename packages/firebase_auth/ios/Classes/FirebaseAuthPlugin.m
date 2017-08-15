@@ -50,16 +50,14 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
-  FIRAuth *auth = [FIRAuth auth];
-
   if ([@"getCurrentUser" isEqualToString:call.method]) {
     id __block listener =
-        [auth addAuthStateDidChangeListener:^(FIRAuth *_Nonnull auth, FIRUser *_Nullable user) {
+        [[FIRAuth auth] addAuthStateDidChangeListener:^(FIRAuth *_Nonnull auth, FIRUser *_Nullable user) {
           [self sendResult:result forUser:user error:nil];
           [auth removeAuthStateDidChangeListener:listener];
         }];
   } else if ([@"signInAnonymously" isEqualToString:call.method]) {
-    [auth signInAnonymouslyWithCompletion:^(FIRUser *user, NSError *error) {
+    [[FIRAuth auth] signInAnonymouslyWithCompletion:^(FIRUser *user, NSError *error) {
       [self sendResult:result forUser:user error:error];
     }];
   } else if ([@"signInWithGoogle" isEqualToString:call.method]) {
@@ -67,14 +65,21 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
     NSString *accessToken = call.arguments[@"accessToken"];
     FIRAuthCredential *credential =
         [FIRGoogleAuthProvider credentialWithIDToken:idToken accessToken:accessToken];
-    [auth signInWithCredential:credential
-                    completion:^(FIRUser *user, NSError *error) {
-                      [self sendResult:result forUser:user error:error];
-                    }];
+    [[FIRAuth auth] signInWithCredential:credential
+                              completion:^(FIRUser *user, NSError *error) {
+                                [self sendResult:result forUser:user error:error];
+                              }];
+  } else if ([@"signInWithFacebook" isEqualToString:call.method]) {
+    NSString *accessToken = call.arguments[@"accessToken"];
+    FIRAuthCredential *credential = [FIRFacebookAuthProvider credentialWithAccessToken:accessToken];
+    [[FIRAuth auth] signInWithCredential:credential
+                              completion:^(FIRUser *user, NSError *error) {
+                                [self sendResult:result forUser:user error:error];
+                              }];
   } else if ([@"createUserWithEmailAndPassword" isEqualToString:call.method]) {
     NSString *email = call.arguments[@"email"];
     NSString *password = call.arguments[@"password"];
-    [auth createUserWithEmail:email
+    [[FIRAuth auth] createUserWithEmail:email
                      password:password
                    completion:^(FIRUser *user, NSError *error) {
                      [self sendResult:result forUser:user error:error];
@@ -82,7 +87,7 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
   } else if ([@"signInWithEmailAndPassword" isEqualToString:call.method]) {
     NSString *email = call.arguments[@"email"];
     NSString *password = call.arguments[@"password"];
-    [auth signInWithEmail:email
+    [[FIRAuth auth] signInWithEmail:email
                  password:password
                completion:^(FIRUser *user, NSError *error) {
                  [self sendResult:result forUser:user error:error];
@@ -97,7 +102,7 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
       [self sendResult:result forUser:nil error:nil];
     }
   } else if ([@"getToken" isEqualToString:call.method]) {
-    [auth.currentUser
+    [[FIRAuth auth].currentUser
         getTokenForcingRefresh:YES
                     completion:^(NSString *_Nullable token, NSError *_Nullable error) {
                       result(error != nil ? error.flutterError : token);
