@@ -48,6 +48,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
   @Override
   public void onMethodCall(MethodCall call, Result result) {
     switch (call.method) {
+      case "currentUser":
+        handleCurrentUser(call, result);
+        break;
       case "signInAnonymously":
         handleSignInAnonymously(call, result);
         break;
@@ -73,6 +76,21 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         result.notImplemented();
         break;
     }
+  }
+
+  private void handleCurrentUser(MethodCall call, final Result result) {
+    final FirebaseAuth.AuthStateListener listener =
+        new FirebaseAuth.AuthStateListener() {
+          @Override
+          public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+            firebaseAuth.removeAuthStateListener(this);
+            FirebaseUser user = firebaseAuth.getCurrentUser();
+            ImmutableMap<String, Object> userMap = mapFromUser(user);
+            result.success(userMap);
+          }
+        };
+
+    firebaseAuth.addAuthStateListener(listener);
   }
 
   private void handleSignInAnonymously(MethodCall call, final Result result) {
@@ -156,23 +174,6 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       this.result = result;
     }
 
-    private ImmutableMap.Builder<String, Object> userInfoToMap(UserInfo userInfo) {
-      ImmutableMap.Builder<String, Object> builder =
-          ImmutableMap.<String, Object>builder()
-              .put("providerId", userInfo.getProviderId())
-              .put("uid", userInfo.getUid());
-      if (userInfo.getDisplayName() != null) {
-        builder.put("displayName", userInfo.getDisplayName());
-      }
-      if (userInfo.getPhotoUrl() != null) {
-        builder.put("photoUrl", userInfo.getPhotoUrl().toString());
-      }
-      if (userInfo.getEmail() != null) {
-        builder.put("email", userInfo.getEmail());
-      }
-      return builder;
-    }
-
     @Override
     public void onComplete(@NonNull Task<AuthResult> task) {
       if (!task.isSuccessful()) {
@@ -180,23 +181,45 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         result.error(ERROR_REASON_EXCEPTION, e.getMessage(), null);
       } else {
         FirebaseUser user = task.getResult().getUser();
-        if (user != null) {
-          ImmutableList.Builder<ImmutableMap<String, Object>> providerDataBuilder =
-              ImmutableList.<ImmutableMap<String, Object>>builder();
-          for (UserInfo userInfo : user.getProviderData()) {
-            providerDataBuilder.add(userInfoToMap(userInfo).build());
-          }
-          ImmutableMap<String, Object> userMap =
-              userInfoToMap(user)
-                  .put("isAnonymous", user.isAnonymous())
-                  .put("isEmailVerified", user.isEmailVerified())
-                  .put("providerData", providerDataBuilder.build())
-                  .build();
-          result.success(userMap);
-        } else {
-          result.success(null);
-        }
+        ImmutableMap<String, Object> userMap = mapFromUser(user);
+        result.success(userMap);
       }
+    }
+  }
+
+  private ImmutableMap.Builder<String, Object> userInfoToMap(UserInfo userInfo) {
+    ImmutableMap.Builder<String, Object> builder =
+        ImmutableMap.<String, Object>builder()
+            .put("providerId", userInfo.getProviderId())
+            .put("uid", userInfo.getUid());
+    if (userInfo.getDisplayName() != null) {
+      builder.put("displayName", userInfo.getDisplayName());
+    }
+    if (userInfo.getPhotoUrl() != null) {
+      builder.put("photoUrl", userInfo.getPhotoUrl().toString());
+    }
+    if (userInfo.getEmail() != null) {
+      builder.put("email", userInfo.getEmail());
+    }
+    return builder;
+  }
+
+  private ImmutableMap<String, Object> mapFromUser(FirebaseUser user) {
+    if (user != null) {
+      ImmutableList.Builder<ImmutableMap<String, Object>> providerDataBuilder =
+          ImmutableList.<ImmutableMap<String, Object>>builder();
+      for (UserInfo userInfo : user.getProviderData()) {
+        providerDataBuilder.add(userInfoToMap(userInfo).build());
+      }
+      ImmutableMap<String, Object> userMap =
+          userInfoToMap(user)
+              .put("isAnonymous", user.isAnonymous())
+              .put("isEmailVerified", user.isEmailVerified())
+              .put("providerData", providerDataBuilder.build())
+              .build();
+      return userMap;
+    } else {
+      return null;
     }
   }
 }

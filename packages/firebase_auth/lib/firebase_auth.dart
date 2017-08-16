@@ -4,12 +4,13 @@
 
 import 'dart:async';
 
-import 'package:meta/meta.dart';
 import 'package:flutter/services.dart';
+import 'package:meta/meta.dart';
 
 /// Represents user data returned from an identity provider.
 class UserInfo {
   final Map<String, dynamic> _data;
+
   UserInfo._(this._data);
 
   /// The provider identifier.
@@ -36,6 +37,7 @@ class UserInfo {
 /// Represents a user.
 class FirebaseUser extends UserInfo {
   final List<UserInfo> providerData;
+
   FirebaseUser._(Map<String, dynamic> data)
       : providerData = data['providerData']
             .map((Map<String, dynamic> info) => new UserInfo._(info))
@@ -90,8 +92,8 @@ class FirebaseAuth {
   Future<FirebaseUser> signInAnonymously() async {
     final Map<String, dynamic> data =
         await channel.invokeMethod('signInAnonymously');
-    _currentUser = new FirebaseUser._(data);
-    return _currentUser;
+    final FirebaseUser currentUser = new FirebaseUser._(data);
+    return currentUser;
   }
 
   Future<FirebaseUser> createUserWithEmailAndPassword({
@@ -107,8 +109,8 @@ class FirebaseAuth {
         'password': password,
       },
     );
-    _currentUser = new FirebaseUser._(data);
-    return _currentUser;
+    final FirebaseUser currentUser = new FirebaseUser._(data);
+    return currentUser;
   }
 
   Future<FirebaseUser> signInWithEmailAndPassword({
@@ -124,8 +126,8 @@ class FirebaseAuth {
         'password': password,
       },
     );
-    _currentUser = new FirebaseUser._(data);
-    return _currentUser;
+    final FirebaseUser currentUser = new FirebaseUser._(data);
+    return currentUser;
   }
 
   Future<FirebaseUser> signInWithFacebook(
@@ -135,8 +137,8 @@ class FirebaseAuth {
         await channel.invokeMethod('signInWithFacebook', <String, String>{
       'accessToken': accessToken,
     });
-    _currentUser = new FirebaseUser._(data);
-    return _currentUser;
+    final FirebaseUser currentUser = new FirebaseUser._(data);
+    return currentUser;
   }
 
   Future<FirebaseUser> signInWithGoogle({
@@ -152,17 +154,19 @@ class FirebaseAuth {
         'accessToken': accessToken,
       },
     );
-    _currentUser = new FirebaseUser._(data);
-    return _currentUser;
+    final FirebaseUser currentUser = new FirebaseUser._(data);
+    return currentUser;
   }
 
   Future<Null> signOut() async {
-    await channel.invokeMethod("signOut");
-    _currentUser = null;
+    return await channel.invokeMethod("signOut");
   }
 
-  FirebaseUser _currentUser;
-
-  /// Synchronously gets the cached current user, or `null` if there is none.
-  FirebaseUser get currentUser => _currentUser;
+  /// Asynchronously gets current user, or `null` if there is none.
+  Future<FirebaseUser> currentUser() async {
+    final Map<String, dynamic> data = await channel.invokeMethod("currentUser");
+    final FirebaseUser currentUser =
+        data == null ? null : new FirebaseUser._(data);
+    return currentUser;
+  }
 }
