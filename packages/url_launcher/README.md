@@ -60,7 +60,7 @@ For example, a tablet may not have a cellular radio and thus no support for
 launching a URL using the `sms` scheme, or a device may not have an email app
 and thus no support for launching a URL using the `email` scheme.
 
-We recommend checking which URL are supported using the
+We recommend checking which URL schemes are supported using the
 [`canLaunch`](https://www.dartdocs.org/documentation/url_launcher/latest/url_launcher/canLaunch.html)
 method prior to calling `launch`. If the `canLaunch` method returns false, as a
 best practice we suggest adjusting the application UI so that the unsupported
