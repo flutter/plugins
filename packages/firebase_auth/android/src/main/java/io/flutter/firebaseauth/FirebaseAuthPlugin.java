@@ -48,8 +48,8 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
   @Override
   public void onMethodCall(MethodCall call, Result result) {
     switch (call.method) {
-      case "getCurrentUser":
-        handleGetCurrentUser(call, result);
+      case "currentUser":
+        handleCurrentUser(call, result);
         break;
       case "signInAnonymously":
         handleSignInAnonymously(call, result);
@@ -78,7 +78,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     }
   }
 
-  private void handleGetCurrentUser(MethodCall call, final Result result) {
+  private void handleCurrentUser(MethodCall call, final Result result) {
     final FirebaseAuth.AuthStateListener listener =
         new FirebaseAuth.AuthStateListener() {
           @Override

@@ -50,7 +50,6 @@ void main() {
     });
     void verifyUser(FirebaseUser user) {
       expect(user, isNotNull);
-      expect(user, auth.currentUser);
       expect(user.isAnonymous, isTrue);
       expect(user.isEmailVerified, isFalse);
       expect(user.providerData.length, 1);
@@ -62,13 +61,13 @@ void main() {
       expect(userInfo.email, kMockEmail);
     }
 
-    test('getCurrentUser', () async {
-      final FirebaseUser user = await auth.getCurrentUser();
+    test('currentUser', () async {
+      final FirebaseUser user = await auth.currentUser();
       verifyUser(user);
       expect(
         log,
         equals(<MethodCall>[
-          const MethodCall('getCurrentUser'),
+          const MethodCall('currentUser'),
         ]),
       );
     });

@@ -50,7 +50,7 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
-  if ([@"getCurrentUser" isEqualToString:call.method]) {
+  if ([@"currentUser" isEqualToString:call.method]) {
     id __block listener = [[FIRAuth auth]
         addAuthStateDidChangeListener:^(FIRAuth *_Nonnull auth, FIRUser *_Nullable user) {
           [self sendResult:result forUser:user error:nil];

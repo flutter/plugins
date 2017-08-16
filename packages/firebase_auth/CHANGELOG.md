@@ -1,3 +1,7 @@
+## 0.2.0
+
+* **Breaking Change**: Method currentUser is async now.
+
 ## 0.1.2
 
 * Added support for signInWithFacebook

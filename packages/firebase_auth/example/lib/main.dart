@@ -41,7 +41,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<String> _testSignInAnonymously() async {
     final FirebaseUser user = await _auth.signInAnonymously();
     assert(user != null);
-    assert(user == _auth.currentUser);
     assert(user.isAnonymous);
     assert(!user.isEmailVerified);
     assert(await user.getToken() != null);
@@ -57,6 +56,10 @@ class _MyHomePageState extends State<MyHomePage> {
       assert(user.providerData[0].photoUrl == null);
       assert(user.providerData[0].email == null);
     }
+
+    final FirebaseUser currentUser = await _auth.currentUser();
+    assert(user.uid == currentUser.uid);
+
     return 'signInAnonymously succeeded: $user';
   }
 
@@ -72,6 +75,10 @@ class _MyHomePageState extends State<MyHomePage> {
     assert(user.displayName != null);
     assert(!user.isAnonymous);
     assert(await user.getToken() != null);
+
+    final FirebaseUser currentUser = await _auth.currentUser();
+    assert(user.uid == currentUser.uid);
+
     return 'signInWithGoogle succeeded: $user';
   }
 
