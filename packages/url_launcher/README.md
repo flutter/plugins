@@ -56,9 +56,9 @@ More details can be found here for [iOS](https://developer.apple.com/library/con
 ## Handling missing URL receivers
 
 A particular mobile device may not be able to receive all supported URL schemes.
-For example, a tablet may not have cellular support and thus not support
-launching a URL using the `sms` scheme, and a device may not have an email app
-and thus not launching a URL using the `email` scheme.
+For example, a tablet may not have a cellular radio and thus no support for
+launching a URL using the `sms` scheme, or a device may not have an email app
+and thus no support for launching a URL using the `email` scheme.
 
 We recommend checking which URL are supported using the
 [`canLaunch`](https://www.dartdocs.org/documentation/url_launcher/latest/url_launcher/canLaunch.html)
