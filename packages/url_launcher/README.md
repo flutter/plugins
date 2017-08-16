@@ -47,7 +47,7 @@ Common schemes supported by both iOS and Android:
 | Scheme | Example | Action |
 |---|---|---|
 | `http:<URL>` , `https:<URL>` | `http://flutter.io` | Open URL in the default browser |
-| `mailto:<email address>?subject=<subject>&body<body>` | `mailto:smith@example.org?subject=News&body=New%20Flutter%20plugin` | Create email to <email address> in the default email app |
+| `mailto:<email address>?subject=<subject>&body=<body>` | `mailto:smith@example.org?subject=News&body=New%20Flutter%20plugin` | Create email to <email address> in the default email app |
 | `tel:<phone number>` | `tel:+1 555 010 999` | Make a phone call to <phone number> using the default phone app |
 | `sms:<phone number>` | `sms:5550101234` | Send an SMS message to <phone number> using the default messaging app |
 
