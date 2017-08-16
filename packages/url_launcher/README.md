@@ -46,10 +46,10 @@ Common schemes supported by both iOS and Android:
 
 | Scheme | Action |
 |---|---|
-| `http:<URL>` , `https:<URL>` <br> e.g.: `http://flutter.io` | Open URL in the default browser |
-| `mailto:<email address>?subject=<subject>&body=<body>` <br> e.g.: `mailto:smith@example.org?subject=News&body=New%20plugin` | Create email to <email address> in the default email app |
-| `tel:<phone number>` <br> e.g.: `tel:+1 555 010 999` | Make a phone call to <phone number> using the default phone app |
-| `sms:<phone number>` <br> e.g.: `sms:5550101234` | Send an SMS message to <phone number> using the default messaging app |
+| `http:<URL>` , `https:<URL>`, e.g. `http://flutter.io` | Open URL in the default browser |
+| `mailto:<email address>?subject=<subject>&body=<body>`, e.g. `mailto:smith@example.org?subject=News&body=New%20plugin` | Create email to <email address> in the default email app |
+| `tel:<phone number>`, e.g. `tel:+1 555 010 999` | Make a phone call to <phone number> using the default phone app |
+| `sms:<phone number>`, e.g. `sms:5550101234` | Send an SMS message to <phone number> using the default messaging app |
 
 More details can be found here for [iOS](https://developer.apple.com/library/content/featuredarticles/iPhoneURLScheme_Reference/Introduction/Introduction.html) and [Android](https://developer.android.com/guide/components/intents-common.html)
 
