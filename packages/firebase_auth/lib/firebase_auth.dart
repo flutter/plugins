@@ -170,6 +170,12 @@ class FirebaseAuth {
     return currentUser;
   }
 
+  /// Links email account with current user and returns [Future<FirebaseUser>]
+  /// basically current user with addtional email infomation
+  ///
+  /// throws [PlatformException] when
+  /// 1. email address is already used
+  /// 2. wrong email and password provided
   Future<FirebaseUser> linkWithEmailAndPassword({
     @required String email,
     @required String password,
