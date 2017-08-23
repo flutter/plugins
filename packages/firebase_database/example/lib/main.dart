@@ -118,7 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   Animation<double> animation, int index) {
                 return new SizeTransition(
                   sizeFactor: animation,
-                  child: new Text(snapshot.value.toString()),
+                  child: new Text("$index: ${snapshot.value.toString()}"),
                 );
               },
             ),
