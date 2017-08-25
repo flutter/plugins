@@ -1,0 +1,14 @@
+name: fble
+description: A new flutter plugin project.
+version: 0.0.1
+author:
+homepage:
+
+flutter:
+  plugin:
+    androidPackage: io.flutter.plugins.fble
+    pluginClass: FblePlugin
+
+dependencies:
+  flutter:
+    sdk: flutter
