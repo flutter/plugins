@@ -1,10 +1,21 @@
 # fble
 
-A new flutter plugin project.
+A Flutter plugin for Bluetooth Low Energy.
 
-## Getting Started
+This plugin allows Flutter mobile apps to scan for peripheral devices and
+receive advertisement packets.
 
-For help getting started with Flutter, view our online
-[documentation](http://flutter.io/).
+Bi-directional communication is planned but has not been implemented yet.
 
-For help on editing plugin code, view the [documentation](https://flutter.io/platform-plugins/#edit-code).
+## Usage
+
+To use this plugin, add `fble` as a dependency in your `pubspec.yaml` file.
+
+The first step is to call `Fble.localAdapters` to obtain a list of all
+Bluetooth adapters on the device. There is often only one device returned.
+
+Then call `adapter.startScan` with appropriate filters to initiate the scan.
+The method `startScan` returns a `Stream<ScanResult>`. Subscribe to this
+stream to receive advertisements.
+
+See [example/lib/main.dart](example/lib/main.dart) for a demo.
