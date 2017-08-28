@@ -53,14 +53,14 @@ Ads can be created with a `MobileAdEvent` listener. The listener
 can be used to detect when the ad has actually finished loading
 (or failed to load at all).
 
-## Limitiations
+## Limitations
 
 This is just an initial version of the plugin. There are still some limitiations:
 
 - Banner ads always appear at the bottom of the screen, they can't be positioned or animated into view.
 - It's not possible to specify a banner ad's size.
 - There's no support for rewarded video ads or native ads
-- The existing tests pretty rudimentary.
+- The existing tests are fairly rudimentary.
 - There is no API doc
 - The example should demonstrate how to show gate a route push with an interstitial ad
 
