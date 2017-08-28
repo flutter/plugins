@@ -1,4 +1,4 @@
-## 0.0.15
+## 0.1.0
 
 * **Breaking Change**: Added current list index to the type signature of itemBuilder for FirebaseAnimatedList.
 
