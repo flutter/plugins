@@ -81,15 +81,13 @@ public class FblePlugin implements MethodCallHandler {
   public static void registerWith(Registrar registrar) {
     AdvertisementParser parser = new AdvertisementParser();
     FblePlugin myself = new FblePlugin(registrar, parser);
-    MethodChannel methodChannel = new MethodChannel(registrar.messenger(), "fble");
+    MethodChannel methodChannel = new MethodChannel(registrar.messenger(), METHOD_NAMESPACE);
     methodChannel.setMethodCallHandler(myself);
   }
 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
-    if (call.method.equals("getPlatformVersion")) {
-      result.success("Android " + android.os.Build.VERSION.RELEASE);
-    } else if (GET_LOCAL_ADAPTERS.equals(call.method)) {
+    if (GET_LOCAL_ADAPTERS.equals(call.method)) {
       getLocalAdapters(call, result);
     } else if (START_SCAN.equals(call.method)) {
       startScan(call, result);

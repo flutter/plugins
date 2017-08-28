@@ -130,7 +130,7 @@ typedef void (^ScanResultCallback)(ProtosScanResult*);
 @implementation FblePlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel = [FlutterMethodChannel
-      methodChannelWithName:@"fble"
+      methodChannelWithName:kMethodNamespace
             binaryMessenger:[registrar messenger]];
   FblePlugin *instance = [[FblePlugin alloc] initWithRegistrar:registrar];
   [registrar addMethodCallDelegate:instance channel:channel];
@@ -151,9 +151,7 @@ typedef void (^ScanResultCallback)(ProtosScanResult*);
 }
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
-  if ([@"getPlatformVersion" isEqualToString:call.method]) {
-    result([@"iOS " stringByAppendingString:[[UIDevice currentDevice] systemVersion]]);
-  } else if ([kGetLocalAdapters isEqualToString:call.method]) {
+  if ([kGetLocalAdapters isEqualToString:call.method]) {
     [self getLocalAdapters:call result:result];
   } else if ([kStartScan isEqualToString:call.method]) {
     [self startScan:call result:result];
