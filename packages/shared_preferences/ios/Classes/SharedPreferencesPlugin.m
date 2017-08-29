@@ -23,8 +23,7 @@ static NSString *const CHANNEL_NAME = @"plugins.flutter.io/shared_preferences";
       if ([[NSNull null] isEqual:value])
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
       else
-        [[NSUserDefaults standardUserDefaults] setValue:value forKey:key];
-      [[NSUserDefaults standardUserDefaults] setBool:value.boolValue forKey:key];
+        [[NSUserDefaults standardUserDefaults] setBool:value.boolValue forKey:key];
       result(nil);
     } else if ([method isEqualToString:@"setInt"]) {
       NSString *key = arguments[@"key"];
