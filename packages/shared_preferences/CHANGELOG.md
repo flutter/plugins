@@ -1,3 +1,7 @@
+## [0.2.5] - 2017-08-29
+
+* Fixed crash when setting null values on iOS
+
 ## [0.2.4+1] - 2017-06-05
 
 * Fixed typo in changelog
