@@ -20,10 +20,7 @@ static NSString *const CHANNEL_NAME = @"plugins.flutter.io/shared_preferences";
     } else if ([method isEqualToString:@"setBool"]) {
       NSString *key = arguments[@"key"];
       NSNumber *value = arguments[@"value"];
-      if ([[NSNull null] isEqual:value])
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
-      else
-        [[NSUserDefaults standardUserDefaults] setBool:value.boolValue forKey:key];
+      [[NSUserDefaults standardUserDefaults] setBool:value.boolValue forKey:key];
       result(nil);
     } else if ([method isEqualToString:@"setInt"]) {
       NSString *key = arguments[@"key"];
@@ -31,37 +28,28 @@ static NSString *const CHANNEL_NAME = @"plugins.flutter.io/shared_preferences";
       // int type in Dart can come to native side in a variety of forms
       // It is best to store it as is and send it back when needed.
       // Platform channel will handle the conversion.
-      if ([[NSNull null] isEqual:value])
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
-      else
-        [[NSUserDefaults standardUserDefaults] setValue:value forKey:key];
+      [[NSUserDefaults standardUserDefaults] setValue:value forKey:key];
       result(nil);
     } else if ([method isEqualToString:@"setDouble"]) {
       NSString *key = arguments[@"key"];
       NSNumber *value = arguments[@"value"];
-      if ([[NSNull null] isEqual:value])
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
-      else
-        [[NSUserDefaults standardUserDefaults] setDouble:value.doubleValue forKey:key];
+      [[NSUserDefaults standardUserDefaults] setDouble:value.doubleValue forKey:key];
       result(nil);
     } else if ([method isEqualToString:@"setString"]) {
       NSString *key = arguments[@"key"];
       NSString *value = arguments[@"value"];
-      if ([[NSNull null] isEqual:value])
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
-      else
-        [[NSUserDefaults standardUserDefaults] setValue:value forKey:key];
+      [[NSUserDefaults standardUserDefaults] setValue:value forKey:key];
       result(nil);
     } else if ([method isEqualToString:@"setStringList"]) {
       NSString *key = arguments[@"key"];
       NSArray *value = arguments[@"value"];
-      if ([[NSNull null] isEqual:value])
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
-      else
-        [[NSUserDefaults standardUserDefaults] setValue:value forKey:key];
+      [[NSUserDefaults standardUserDefaults] setValue:value forKey:key];
       result(nil);
     } else if ([method isEqualToString:@"commit"]) {
       result([NSNumber numberWithBool:[[NSUserDefaults standardUserDefaults] synchronize]]);
+    } else if ([method isEqualToString:@"remove"]) {
+      [[NSUserDefaults standardUserDefaults] removeObjectForKey:arguments[@"key"]];
+      result(nil);
     } else if ([method isEqualToString:@"clear"]) {
       NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
       for (NSString *key in getAllPrefs()) {

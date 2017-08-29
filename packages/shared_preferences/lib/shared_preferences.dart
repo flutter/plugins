@@ -84,7 +84,8 @@ class SharedPreferences {
   void _setValue(String valueType, String key, Object value) {
     _preferenceCache[key] = value;
     // Set the value in the background.
-    _kChannel.invokeMethod('set$valueType', <String, dynamic>{
+    String method = (value == null) ? 'remove' : 'set$valueType';
+    _kChannel.invokeMethod(method, <String, dynamic>{
       'key': '$_prefix$key',
       'value': value,
     });

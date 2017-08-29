@@ -111,56 +111,31 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
     try {
       switch (call.method) {
         case "setBool":
-          Boolean boolValue = call.argument("value");
-          if (boolValue == null) {
-            editor.remove(key);
-          } else {
-            editor.putBoolean(key, boolValue);
-          }
-          editor.apply();
+          editor.putBoolean(key, (boolean) call.argument("value")).apply();
           result.success(null);
           break;
         case "setDouble":
-          Float floatValue = call.argument("value");
-          if (floatValue == null) {
-            editor.remove(key);
-          } else {
-            editor.putFloat(key, floatValue);
-          }
-          editor.apply();
+          editor.putFloat(key, (float) call.argument("value")).apply();
           result.success(null);
           break;
         case "setInt":
-          Number numberValue = call.argument("value");
-          if (numberValue == null) {
-            editor.remove(key);
-          } else if (numberValue instanceof BigInteger) {
-            BigInteger integerValue = (BigInteger) numberValue;
+          Number number = call.argument("value");
+          if (number instanceof BigInteger) {
+            BigInteger integerValue = (BigInteger) number;
             editor.putString(key, BIG_INTEGER_PREFIX + integerValue.toString(Character.MAX_RADIX));
           } else {
-            editor.putLong(key, numberValue.longValue());
+            editor.putLong(key, number.longValue());
           }
           editor.apply();
           result.success(null);
           break;
         case "setString":
-          String stringValue = call.argument("value");
-          if (stringValue == null) {
-            editor.remove(key);
-          } else {
-            editor.putString(key, stringValue);
-          }
-          editor.apply();
+          editor.putString(key, (String) call.argument("value")).apply();
           result.success(null);
           break;
         case "setStringList":
-          List<String> listValue = call.argument("value");
-          if (listValue == null) {
-            editor.remove(key);
-          } else {
-            editor.putString(key, LIST_IDENTIFIER + encodeList(listValue));
-          }
-          editor.apply();
+          List<String> list = call.argument("value");
+          editor.putString(key, LIST_IDENTIFIER + encodeList(list)).apply();
           result.success(null);
           break;
         case "commit":
@@ -168,6 +143,10 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
           break;
         case "getAll":
           result.success(getAllPrefs());
+          break;
+        case "remove":
+          editor.remove(key).apply();
+          result.success(null);
           break;
         case "clear":
           for (String keyToDelete : getAllPrefs().keySet()) {
