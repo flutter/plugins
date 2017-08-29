@@ -115,10 +115,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   ? (DataSnapshot a, DataSnapshot b) => b.key.compareTo(a.key)
                   : null,
               itemBuilder: (BuildContext context, DataSnapshot snapshot,
-                  Animation<double> animation) {
+                  Animation<double> animation, int index) {
                 return new SizeTransition(
                   sizeFactor: animation,
-                  child: new Text(snapshot.value.toString()),
+                  child: new Text("$index: ${snapshot.value.toString()}"),
                 );
               },
             ),

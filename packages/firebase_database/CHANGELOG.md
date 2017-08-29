@@ -1,3 +1,7 @@
+## 0.1.0
+
+* **Breaking Change**: Added current list index to the type signature of itemBuilder for FirebaseAnimatedList.
+
 ## 0.0.14
 
 * Fix FirebaseSortedList to show data changes.
