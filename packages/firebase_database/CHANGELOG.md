@@ -1,3 +1,7 @@
+## 0.1.1
+
+* Add RTDB transaction support.
+
 ## 0.1.0+1
 
 * Aligned author name with rest of repo.

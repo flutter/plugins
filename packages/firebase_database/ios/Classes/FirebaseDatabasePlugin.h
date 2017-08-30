@@ -5,4 +5,6 @@
 #import <Flutter/Flutter.h>
 
 @interface FirebaseDatabasePlugin : NSObject<FlutterPlugin>
+@property NSMutableDictionary *semas;
+@property NSMutableDictionary *updatedSnapshots;
 @end

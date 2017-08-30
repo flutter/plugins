@@ -125,10 +125,46 @@ class DatabaseReference extends Query {
   ///
   /// remove() is equivalent to calling set(null)
   Future<Null> remove() => set(null);
+
+  /// Determine the next transaction key to be used. The length of the
+  /// transactions map is used to ensure uniqueness of keys.
+  int getNextTransactionKey() {
+    return FirebaseDatabase._transactions.length;
+  }
+
+  /// Performs an optimistic-concurrency transactional update to the data at
+  /// this Firebase Database location.
+  Future<Null> runTransaction(TransactionHandler transactionHandler) {
+    final int transactionKey = getNextTransactionKey();
+    FirebaseDatabase._transactions[transactionKey] = transactionHandler;
+    return _database._channel.invokeMethod(
+        'DatabaseReference#runTransaction', <String, dynamic>{
+      'path': path,
+      'transactionKey': transactionKey
+    }).then((Map<String, dynamic> result) {
+      final DataSnapshot dataSnapshot = new DataSnapshot._(result);
+      return transactionHandler.doTransaction(dataSnapshot);
+    }).then((DataSnapshot dataSnapshot) {
+      return _database._channel.invokeMethod(
+          'DatabaseReference#finishDoTransaction', <String, dynamic>{
+        'updatedDataSnapshot': dataSnapshot.value,
+        'transactionKey': transactionKey
+      });
+    });
+  }
 }
 
 class ServerValue {
   static const Map<String, String> timestamp = const <String, String>{
     '.sv': 'timestamp'
   };
+}
+
+/// TransactionHandler requires the implementation of functions to handle a
+/// Firebase Database transaction.
+abstract class TransactionHandler {
+  Future<DataSnapshot> doTransaction(DataSnapshot dataSnapshot);
+
+  void onComplete(
+      DatabaseError error, bool committed, DataSnapshot dataSnapshot);
 }

@@ -78,6 +78,10 @@ class _MyHomePageState extends State<MyHomePage> {
         .set(<String, String>{_kTestKey: '$_kTestValue $_counter'});
   }
 
+  void _updateInTransaction() {
+    _messagesRef.runTransaction(new DemoTransactionHandler());
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -94,6 +98,12 @@ class _MyHomePageState extends State<MyHomePage> {
                     'This includes all devices, ever.',
               ),
             ),
+          ),
+          new RaisedButton(
+            child: const Text('UPDATE IN TRANSACTION'),
+            onPressed: () {
+              _updateInTransaction();
+            },
           ),
           new ListTile(
             leading: new Checkbox(
@@ -131,5 +141,36 @@ class _MyHomePageState extends State<MyHomePage> {
         child: new Icon(Icons.add),
       ),
     );
+  }
+}
+
+class DemoTransactionHandler extends TransactionHandler {
+  @override
+  Future<DataSnapshot> doTransaction(DataSnapshot dataSnapshot) {
+    if (dataSnapshot != null && dataSnapshot.value != null) {
+      // Update snapshot here.
+      print('snapshot received by doTransaction: ${dataSnapshot.value}');
+      final Map<String, dynamic> snapshots = dataSnapshot.value;
+      snapshots.forEach((String key, Map<String, String> value) {
+        if (value['Hello'].endsWith(' updated')) {
+          value['Hello'] = value['Hello'].replaceAll(' updated', '');
+        } else {
+          value['Hello'] = value['Hello'] + ' updated';
+        }
+      });
+      print('snapshot after doTransaction: ${dataSnapshot.value}');
+    }
+    return new Future<DataSnapshot>(() => dataSnapshot);
+  }
+
+  @override
+  void onComplete(
+      DatabaseError error, bool committed, DataSnapshot dataSnapshot) {
+    // Implement onComplete
+    print('transaction complete:');
+    print('error : $error');
+    print('committed: $committed');
+    print('snapshot value: ${dataSnapshot.key}');
+    print('snapshot value: ${dataSnapshot.value}');
   }
 }
