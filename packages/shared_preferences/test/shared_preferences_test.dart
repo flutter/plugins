@@ -115,15 +115,19 @@ void main() {
         ..setStringList(key, null)
         ..remove(key);
       await sharedPreferences.commit();
-      expect(log, equals(new List<MethodCall>.filled(
-          6,
-          const MethodCall(
-            'remove',
-            const <String, dynamic>{ 'key': 'flutter.$key' },
-          ),
-          growable: true
-        )..add(const MethodCall('commit')),
-      ));
+      expect(
+        log,
+        equals(
+          new List<MethodCall>.filled(
+            6,
+            const MethodCall(
+              'remove',
+              const <String, dynamic>{'key': 'flutter.$key'},
+            ),
+            growable: true,
+          )..add(const MethodCall('commit')),
+        ),
+      );
     });
 
     test('clearing', () async {
