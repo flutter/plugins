@@ -1,3 +1,8 @@
+## [0.2.5] - 2017-08-29
+
+* Fixed crashes when setting null values. They now cause the key to be removed.
+* Added remove() method
+
 ## [0.2.4+1] - 2017-06-05
 
 * Fixed typo in changelog
