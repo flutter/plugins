@@ -89,7 +89,8 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     String password = arguments.get("password");
 
     AuthCredential credential = EmailAuthProvider.getCredential(email, password);
-    firebaseAuth.getCurrentUser()
+    firebaseAuth
+        .getCurrentUser()
         .linkWithCredential(credential)
         .addOnCompleteListener(activity, new SignInCompleteListener(result));
   }
