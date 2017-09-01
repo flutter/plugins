@@ -104,8 +104,8 @@ void main() {
       );
     });
 
-    test('signInWithEmailAndPassword', () async {
-      final FirebaseUser user = await auth.signInWithEmailAndPassword(
+    test('linkWithEmailAndPassword', () async {
+      final FirebaseUser user = await auth.linkWithEmailAndPassword(
         email: kMockEmail,
         password: kMockPassword,
       );
@@ -113,7 +113,7 @@ void main() {
       expect(
         log,
         equals(<MethodCall>[
-          new MethodCall('signInWithEmailAndPassword', <String, String>{
+          new MethodCall('linkWithEmailAndPassword', <String, String>{
             'email': kMockEmail,
             'password': kMockPassword,
           })
@@ -148,6 +148,23 @@ void main() {
         equals(<MethodCall>[
           new MethodCall('signInWithFacebook', <String, String>{
             'accessToken': kMockAccessToken,
+          })
+        ]),
+      );
+    });
+
+    test('linkWithEmailAndPassword', () async {
+      final FirebaseUser user = await auth.linkWithEmailAndPassword(
+        email: kMockEmail,
+        password: kMockPassword,
+      );
+      verifyUser(user);
+      expect(
+        log,
+        equals(<MethodCall>[
+          new MethodCall('linkWithEmailAndPassword', <String, String>{
+            'email': kMockEmail,
+            'password': kMockPassword,
           })
         ]),
       );
