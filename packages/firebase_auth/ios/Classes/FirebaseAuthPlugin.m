@@ -110,10 +110,8 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
   } else if ([@"linkWithEmailAndPassword" isEqualToString:call.method]) {
     NSString *email = call.arguments[@"email"];
     NSString *password = call.arguments[@"password"];
-
     FIRAuthCredential *credential =
         [FIREmailPasswordAuthProvider credentialWithEmail:email password:password];
-      
     [[FIRAuth auth].currentUser linkWithCredential:credential
                                         completion:^(FIRUser *user, NSError *error) {
                                           [self sendResult:result forUser:user error:error];

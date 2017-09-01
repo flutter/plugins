@@ -192,5 +192,4 @@ class FirebaseAuth {
     final FirebaseUser currentUser = new FirebaseUser._(data);
     return currentUser;
   }
-
 }
