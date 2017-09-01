@@ -1,3 +1,7 @@
+## 0.2.1
+
+* Added support for linkWithEmailAndPassword
+
 ## 0.2.0
 
 * **Breaking Change**: Method currentUser is async now.
