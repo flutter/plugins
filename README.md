@@ -4,7 +4,8 @@
 
 This repo is a companion repo to the main [flutter
 repo](https://github.com/flutter/flutter). It contains the source code for
-Flutter first-party plugins. Check the `packages` directory for all plugins.
+Flutter first-party plugins (i.e., plugins developed by the core Flutter team).
+Check the `packages` directory for all plugins.
 
 Flutter plugins enable access to platform-specific APIs. For more information
 about plugins, and how to use them, see
@@ -12,6 +13,25 @@ about plugins, and how to use them, see
 
 These plugins are also available on
 [pub](https://pub.dartlang.org/flutter/plugins).
+
+## Issues
+
+Please file any issues, bugs, or feature requests in the [main flutter
+repo](https://github.com/flutter/flutter/issues/new).
+
+## Contributing
+
+If you wish to contribute a new plugin to the Flutter ecosystem, please
+see the documentation for [developing packages](https://flutter.io/developing-packages/) and
+[platform channels](https://flutter.io/platform-channels/). You can store 
+your plugin source code in any GitHub repository (the present repo is only
+intended for plugins developed by the core Flutter team). Once your plugin
+is ready you can [publish](https://flutter.io/developing-packages/#publish)
+to the [pub repository](https://pub.dartlang.org/).
+
+If you wish to contribute a change to any of the existing plugins in this repo,
+please review our [contribution guide](https://github.com/flutter/plugins/blob/master/CONTRIBUTING.md),
+and send a [pull request](https://github.com/flutter/plugins/pulls).
 
 ## Plugins
 These are the available plugins in this repository. 
@@ -41,8 +61,3 @@ These are the available plugins in this repository.
 | [firebase_storage](./packages/firebase_storage/) | [![pub package](https://img.shields.io/pub/v/firebase_storage.svg)](https://pub.dartlang.org/packages/firebase_storage) |
 
 Learn more about [FlutterFire](https://github.com/flutter/plugins/blob/master/FlutterFire.md).
-
-## Issues
-
-Please file any issues, bugs, or feature requests in the main [flutter
-repo](https://github.com/flutter/flutter/issues/new).
