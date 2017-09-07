@@ -7,7 +7,6 @@ package io.flutter.plugins.firebase.storage;
 import android.app.Activity;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -61,19 +60,19 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
     StorageReference ref = firebaseStorage.getReference().child(path);
     UploadTask uploadTask = ref.putFile(Uri.fromFile(file));
     uploadTask.addOnSuccessListener(
-            new OnSuccessListener<UploadTask.TaskSnapshot>() {
-              @Override
-              public void onSuccess(UploadTask.TaskSnapshot snapshot) {
-                result.success(snapshot.getDownloadUrl().toString());
-              }
-            });
+        new OnSuccessListener<UploadTask.TaskSnapshot>() {
+          @Override
+          public void onSuccess(UploadTask.TaskSnapshot snapshot) {
+            result.success(snapshot.getDownloadUrl().toString());
+          }
+        });
     uploadTask.addOnFailureListener(
-            new OnFailureListener() {
-              @Override
-              public void onFailure(Exception e) {
-                result.error("upload_error", e.getMessage(), null);
-              }
-            });
+        new OnFailureListener() {
+          @Override
+          public void onFailure(Exception e) {
+            result.error("upload_error", e.getMessage(), null);
+          }
+        });
   }
 
   private void getData(MethodCall call, final Result result) {
@@ -83,18 +82,18 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
     StorageReference ref = firebaseStorage.getReference().child(path);
     Task<byte[]> downloadTask = ref.getBytes(maxSize);
     downloadTask.addOnSuccessListener(
-            new OnSuccessListener<byte[]>() {
-              @Override
-              public void onSuccess(byte[] bytes) {
-                result.success(bytes);
-              }
-            });
+        new OnSuccessListener<byte[]>() {
+          @Override
+          public void onSuccess(byte[] bytes) {
+            result.success(bytes);
+          }
+        });
     downloadTask.addOnFailureListener(
-            new OnFailureListener() {
-              @Override
-              public void onFailure(@NonNull Exception e) {
-                result.error("download_error", e.getMessage(), null);
-              }
-            });
+        new OnFailureListener() {
+          @Override
+          public void onFailure(@NonNull Exception e) {
+            result.error("download_error", e.getMessage(), null);
+          }
+        });
   }
 }
