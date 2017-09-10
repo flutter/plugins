@@ -67,19 +67,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<Null> _increment() async {
     await FirebaseAuth.instance.signInAnonymously();
-    // TODO(jackson): This illustrates a case where transactions are needed
-    final DataSnapshot snapshot = await _counterRef.once();
-    setState(() {
-      _counter = (snapshot.value ?? 0) + 1;
-    });
-    _counterRef.set(_counter);
-    _messagesRef
-        .push()
-        .set(<String, String>{_kTestKey: '$_kTestValue $_counter'});
-  }
-
-  void _updateInTransaction() {
-    _messagesRef.runTransaction(new DemoTransactionHandler());
+    // Increment counter in transaction.
+    await _counterRef.runTransaction(new TransactionHandler((DataSnapshot dataSnapshot) {
+      dataSnapshot.value = dataSnapshot.value + 1;
+      return new Future<DataSnapshot>(() => dataSnapshot);
+    }, (DatabaseError error, bool committed, DataSnapshot dataSnapshot) {
+      _messagesRef
+          .push()
+          .set(<String, String>{_kTestKey: '$_kTestValue ${dataSnapshot.value}'});
+    }));
   }
 
   @override
@@ -98,12 +94,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     'This includes all devices, ever.',
               ),
             ),
-          ),
-          new RaisedButton(
-            child: const Text('UPDATE IN TRANSACTION'),
-            onPressed: () {
-              _updateInTransaction();
-            },
           ),
           new ListTile(
             leading: new Checkbox(
@@ -141,36 +131,5 @@ class _MyHomePageState extends State<MyHomePage> {
         child: new Icon(Icons.add),
       ),
     );
-  }
-}
-
-class DemoTransactionHandler extends TransactionHandler {
-  @override
-  Future<DataSnapshot> doTransaction(DataSnapshot dataSnapshot) {
-    if (dataSnapshot != null && dataSnapshot.value != null) {
-      // Update snapshot here.
-      print('snapshot received by doTransaction: ${dataSnapshot.value}');
-      final Map<String, dynamic> snapshots = dataSnapshot.value;
-      snapshots.forEach((String key, Map<String, String> value) {
-        if (value['Hello'].endsWith(' updated')) {
-          value['Hello'] = value['Hello'].replaceAll(' updated', '');
-        } else {
-          value['Hello'] = value['Hello'] + ' updated';
-        }
-      });
-      print('snapshot after doTransaction: ${dataSnapshot.value}');
-    }
-    return new Future<DataSnapshot>(() => dataSnapshot);
-  }
-
-  @override
-  void onComplete(
-      DatabaseError error, bool committed, DataSnapshot dataSnapshot) {
-    // Implement onComplete
-    print('transaction complete:');
-    print('error : $error');
-    print('committed: $committed');
-    print('snapshot value: ${dataSnapshot.key}');
-    print('snapshot value: ${dataSnapshot.value}');
   }
 }

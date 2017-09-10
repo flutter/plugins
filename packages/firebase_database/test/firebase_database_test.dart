@@ -152,24 +152,20 @@ void main() {
         await database
             .reference()
             .child('foo')
-            .runTransaction(new MockTransactionHandler());
+            .runTransaction(new MockTransactionHandler._());
         expect(
             log,
             equals(<MethodCall>[
               new MethodCall('DatabaseReference#runTransaction',
-                  <String, dynamic>{'path': 'foo', 'transactionKey': 0}),
-              new MethodCall(
-                  'DatabaseReference#finishDoTransaction', <String, dynamic>{
-                'updatedDataSnapshot': <String, dynamic>{
-                  'fakeKey': 'fakeValue'
-                },
-                'transactionKey': 0
-              })
+                  <String, dynamic>{'path': 'foo', 'transactionKey': 0,
+                    'transactionTimeout': 5000000000}),
             ]));
-        expect(FirebaseDatabase.transactions.length, equals(1));
-        FirebaseDatabase.transactions[0].onComplete(null, false, null);
-        expect(FirebaseDatabase.transactions.length, equals(0));
+        expect(
+            database.reference().child('foo')
+                .runTransaction(new MockTransactionHandler._(), -1),
+            throwsA(const isInstanceOf<ArgumentError>()));
       });
+      // TODO(arthurthompson): Write tests for DoTransaction.
     });
 
     group('$Query', () {
@@ -317,16 +313,14 @@ class AsyncQueue<T> {
 }
 
 class MockTransactionHandler extends TransactionHandler {
-  @override
-  Future<DataSnapshot> doTransaction(DataSnapshot dataSnapshot) {
-    // Return same snapshot that is passed in.
-    return new Future<DataSnapshot>(() => dataSnapshot);
-  }
+  MockTransactionHandler._() : super(null, null) {
+    doTransaction = (DataSnapshot dataSnapshot) {
+      // Leave snapshot unchanged.
+      return new Future<DataSnapshot>(() => dataSnapshot);
+    };
 
-  @override
-  void onComplete(
-      DatabaseError error, bool committed, DataSnapshot dataSnapshot) {
-    // Remove all existing transactions.
-    FirebaseDatabase.transactions.clear();
+    onComplete = (DatabaseError databaseError, bool committed, DataSnapshot dataSnapshot) {
+      print('Transaction Complete');
+    };
   }
 }

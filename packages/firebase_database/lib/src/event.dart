@@ -33,6 +33,9 @@ class DataSnapshot {
 
   /// Returns the contents of this data snapshot as native types.
   dynamic get value => _data['value'];
+  /// Sets the contents of this data snapshot.
+          set value(dynamic newValue) => _data['value'] = newValue;
+
 }
 
 /// A DatabaseError contains code, message and details of a Firebase Database
@@ -42,9 +45,12 @@ class DatabaseError {
   Map<String, dynamic> _data;
   DatabaseError._(this._data);
 
+  /// One of the defined status codes, depending on the error.
   int get code => _data['code'];
 
+  /// A human-readable description of the error.
   String get message => _data['message'];
 
+  /// Human-readable details on the error and additional information.
   String get details => _data['details'];
 }

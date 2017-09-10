@@ -13,6 +13,9 @@ part of firebase_database;
 /// (ie. `onChildAdded`), write data (ie. `setValue`), and to create new
 /// `DatabaseReference`s (ie. `child`).
 class DatabaseReference extends Query {
+  /// Default transaction timeout, 5 seconds in nanoseconds.
+  static const int _transactionTimeout = 5 * 1000000000;
+
   DatabaseReference._(FirebaseDatabase database, List<String> pathComponents)
       : super._(database: database, pathComponents: pathComponents);
 
@@ -126,31 +129,45 @@ class DatabaseReference extends Query {
   /// remove() is equivalent to calling set(null)
   Future<Null> remove() => set(null);
 
-  /// Determine the next transaction key to be used. The length of the
-  /// transactions map is used to ensure uniqueness of keys.
-  int getNextTransactionKey() {
-    return FirebaseDatabase._transactions.length;
+  /// Determine the next transaction key to be used. 0 is used if there are
+  /// no existing keys, otherwise the last key is incremented by 1.
+  int _getNextTransactionKey() {
+    if (FirebaseDatabase._transactions.isEmpty) {
+      return 0;
+    }
+    final int lastKey = FirebaseDatabase._transactions.keys.last;
+    return lastKey + 1;
   }
 
   /// Performs an optimistic-concurrency transactional update to the data at
   /// this Firebase Database location.
-  Future<Null> runTransaction(TransactionHandler transactionHandler) {
-    final int transactionKey = getNextTransactionKey();
+  Future<Null> runTransaction(TransactionHandler transactionHandler,
+      [int transactionTimeout = _transactionTimeout]) async {
+    if (transactionTimeout < 0) {
+      throw new ArgumentError('Transaction timeout ($transactionTimeout) cannot be less than zero.');
+    }
+    final int transactionKey = _getNextTransactionKey();
     FirebaseDatabase._transactions[transactionKey] = transactionHandler;
-    return _database._channel.invokeMethod(
-        'DatabaseReference#runTransaction', <String, dynamic>{
+
+    final Map<String, dynamic> completion = await _database._channel
+        .invokeMethod('DatabaseReference#runTransaction', <String, dynamic> {
       'path': path,
-      'transactionKey': transactionKey
-    }).then((Map<String, dynamic> result) {
-      final DataSnapshot dataSnapshot = new DataSnapshot._(result);
-      return transactionHandler.doTransaction(dataSnapshot);
-    }).then((DataSnapshot dataSnapshot) {
-      return _database._channel.invokeMethod(
-          'DatabaseReference#finishDoTransaction', <String, dynamic>{
-        'updatedDataSnapshot': dataSnapshot.value,
-        'transactionKey': transactionKey
-      });
+      'transactionKey': transactionKey,
+      'transactionTimeout': transactionTimeout
     });
+
+    final DatabaseError databaseError = completion['error'] != null
+        ? new DatabaseError._(completion['error'])
+        : null;
+    final bool committed = completion['committed'];
+    final DataSnapshot dataSnapshot = completion['snapshot'] != null
+        ? new DataSnapshot._(completion['snapshot'])
+        : null;
+
+    // Remove the transaction
+    FirebaseDatabase._transactions.remove(transactionKey);
+
+    transactionHandler.onComplete(databaseError, committed, dataSnapshot);
   }
 }
 
@@ -160,11 +177,15 @@ class ServerValue {
   };
 }
 
+typedef Future<DataSnapshot> DoTransaction(DataSnapshot dataSnapshot);
+typedef void OnComplete(DatabaseError error, bool committed,
+    DataSnapshot dataSnapshot);
+
 /// TransactionHandler requires the implementation of functions to handle a
 /// Firebase Database transaction.
-abstract class TransactionHandler {
-  Future<DataSnapshot> doTransaction(DataSnapshot dataSnapshot);
+class TransactionHandler {
+  DoTransaction doTransaction;
+  OnComplete onComplete;
 
-  void onComplete(
-      DatabaseError error, bool committed, DataSnapshot dataSnapshot);
+  TransactionHandler(this.doTransaction, this.onComplete);
 }

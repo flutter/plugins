@@ -23,17 +23,15 @@ class FirebaseDatabase {
       if (call.method == 'Event') {
         final Event event = new Event._(call.arguments);
         _observers[call.arguments['handle']].add(event);
-      } else if (call.method == 'TransactionComplete') {
-        final DatabaseError databaseError = call.arguments['error'] != null
-            ? new DatabaseError._(call.arguments['error'])
-            : null;
-        final bool committed = call.arguments['committed'];
-        final DataSnapshot dataSnapshot = call.arguments['snapshot'] != null
-            ? new DataSnapshot._(call.arguments['snapshot'])
-            : null;
+      } else if (call.method == 'DoTransaction') {
         _transactions[call.arguments['transactionKey']]
-            .onComplete(databaseError, committed, dataSnapshot);
-        _transactions.remove(_transactions[call.arguments['transactionKey']]);
+            .doTransaction(new DataSnapshot._(call.arguments['snapshot']))
+            .then((DataSnapshot dataSnapshot) {
+          _channel.invokeMethod('DatabaseReference#finishDoTransaction', <String, dynamic>{
+            'updatedDataSnapshot': dataSnapshot.value,
+            'transactionKey': call.arguments['transactionKey']
+          });
+        });
       }
     });
   }
@@ -42,8 +40,6 @@ class FirebaseDatabase {
 
   /// Gets the instance of FirebaseDatabase for the default Firebase app.
   static FirebaseDatabase get instance => _instance;
-
-  static Map<int, TransactionHandler> get transactions => _transactions;
 
   /// Gets a DatabaseReference for the root of your Firebase Database.
   DatabaseReference reference() => new DatabaseReference._(this, <String>[]);

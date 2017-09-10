@@ -27,11 +27,13 @@ import io.flutter.plugin.common.PluginRegistry;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /** FirebaseDatabasePlugin */
 public class FirebaseDatabasePlugin implements MethodCallHandler {
 
-  private static final String TAG = "AndroidRtdbPlugin";
+  private static final String TAG = "FirebaseDatabasePlugin";
 
   private final MethodChannel channel;
   private static final String EVENT_TYPE_CHILD_ADDED = "_EventType.childAdded";
@@ -65,14 +67,14 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
     return reference;
   }
 
-  /**
-   * Retrieve the transaction key from method call arguments.
-   *
-   * @param arguments Method call arguments
-   * @return Transaction key retrieved from method call arguments.
-   */
+  // Retrieve the transaction key from method call arguments.
   private int getTransactionKey(Map<String, Object> arguments) {
-    return Integer.parseInt((String) arguments.get("transactionKey"));
+    return (int) arguments.get("transactionKey");
+  }
+
+  // Retrieve the transaction timeout from method call arguments.
+  private long getTransactionTimeout(Map<String, Object> arguments) {
+    return (long) arguments.get("transactionTimeout");
   }
 
   private Query getQuery(Map<String, Object> arguments) {
@@ -303,16 +305,7 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
 
       case "DatabaseReference#runTransaction":
         {
-          // Tasks are used to allow native execution of doTransaction to wait while Snapshot is
-          // processed by logic on the dart side.
-          TaskCompletionSource<Map<String, Object>> updateMutableDataTCS =
-              new TaskCompletionSource<>();
-          final Task<Map<String, Object>> updateMutableDataTCSTask = updateMutableDataTCS.getTask();
           final Map<String, Object> arguments = call.arguments();
-
-          // Add transaction task to array for later retrieval.
-          transactionTasks.put(getTransactionKey(arguments), updateMutableDataTCS);
-
           DatabaseReference reference = getReference(arguments);
 
           // Initiate native transaction.
@@ -320,21 +313,44 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
               new Transaction.Handler() {
                 @Override
                 public Transaction.Result doTransaction(MutableData mutableData) {
+                  // Handle null value case.
+                  if (mutableData.getValue() == null) {
+                    return Transaction.success(mutableData);
+                  }
+
+                  // Tasks are used to allow native execution of doTransaction to wait while Snapshot is
+                  // processed by logic on the dart side.
+                  final TaskCompletionSource<Map<String, Object>> updateMutableDataTCS =
+                          new TaskCompletionSource<>();
+                  final Task<Map<String, Object>> updateMutableDataTCSTask = updateMutableDataTCS.getTask();
+
+
+                  // Add transaction task to array for later retrieval.
+                  transactionTasks.append(getTransactionKey(arguments), updateMutableDataTCS);
+
+                  Map<String, Object> doTransactionMap = new HashMap<>();
+                  doTransactionMap.put("transactionKey", getTransactionKey(arguments));
+
                   Map<String, Object> snapshotMap = new HashMap<>();
                   snapshotMap.put("key", mutableData.getKey());
                   snapshotMap.put("value", mutableData.getValue());
+                  doTransactionMap.put("snapshot", snapshotMap);
 
                   // Return snapshot to dart side for update.
-                  result.success(snapshotMap);
+                  channel.invokeMethod("DoTransaction", doTransactionMap);
 
                   try {
                     // Wait for updated snapshot from the dart side.
-                    Map<String, Object> updatedSnapshotMap = Tasks.await(updateMutableDataTCSTask);
+                    Map<String, Object> updatedSnapshotMap = Tasks.await(updateMutableDataTCSTask,
+                            getTransactionTimeout(arguments), TimeUnit.NANOSECONDS);
                     // Set value of MutableData to value returned from the dart side.
                     mutableData.setValue(updatedSnapshotMap.get("updatedDataSnapshot"));
-                  } catch (ExecutionException | InterruptedException e) {
+                  } catch (ExecutionException | InterruptedException | TimeoutException e) {
                     Log.e(TAG, "Unable to commit Snapshot update. Transaction should be retried.");
                     Log.e(TAG, e.toString());
+                    if (e instanceof TimeoutException) {
+                      Log.e(TAG, "Transaction timed out.");
+                    }
                     return Transaction.abort();
                   }
                   return Transaction.success(mutableData);
@@ -359,8 +375,12 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
                     snapshotMap.put("value", dataSnapshot.getValue());
                     completionMap.put("snapshot", snapshotMap);
                   }
-                  // Invoke transaction complete on the dart side.
-                  channel.invokeMethod("TransactionComplete", completionMap);
+
+                  // Remove Task from SparseArray.
+                  transactionTasks.remove(getTransactionKey(arguments));
+
+                  // Invoke transaction completion on the dart side.
+                  result.success(completionMap);
                 }
               });
           break;
