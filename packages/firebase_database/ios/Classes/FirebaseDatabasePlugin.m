@@ -208,62 +208,62 @@ id roundDoubles(id value) {
     [getReference(call.arguments) setPriority:call.arguments[@"priority"]
                           withCompletionBlock:defaultCompletionBlock];
   } else if ([@"DatabaseReference#runTransaction" isEqualToString:call.method]) {
-    [getReference(call.arguments)
-        runTransactionBlock:^FIRTransactionResult *_Nonnull(FIRMutableData *_Nonnull currentData) {
-          // Handle null value case.
-          if (!currentData.value) {
-            return [FIRTransactionResult successWithValue:currentData];
-          }
+    [getReference(call.arguments) runTransactionBlock:^FIRTransactionResult *_Nonnull(
+                                      FIRMutableData *_Nonnull currentData) {
+      // Handle null value case.
+      if (!currentData.value) {
+        return [FIRTransactionResult successWithValue:currentData];
+      }
 
-          // Create semaphore to allow native side to wait while snapshot
-          // updates occur on the dart side.
-          dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+      // Create semaphore to allow native side to wait while snapshot
+      // updates occur on the dart side.
+      dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
 
-          // Add semaphore to dictionary so it can be retrieved later.
-          [[self transactionSemaphores] setObject:semaphore forKey:getTransactionKey(call.arguments)];
+      // Add semaphore to dictionary so it can be retrieved later.
+      [[self transactionSemaphores] setObject:semaphore forKey:getTransactionKey(call.arguments)];
 
+      [self.channel
+          invokeMethod:@"DoTransaction"
+             arguments:@{
+               @"transactionKey" : getTransactionKey(call.arguments),
+               @"snapshot" :
+                   @{@"key" : currentData.key ?: [NSNull null], @"value" : currentData.value}
+             }];
 
-          [self.channel invokeMethod:@"DoTransaction" arguments:@{
-                                                                  @"transactionKey": getTransactionKey(call.arguments),
-                                                                  @"snapshot": @{
-                                                                      @"key" : currentData.key ?: [NSNull null],
-                                                                      @"value" : currentData.value
-                                                                      }
-                                                                  }];
+      // Wait while dart side updates the snapshot.
+      long result = dispatch_semaphore_wait(
+          semaphore, dispatch_time(DISPATCH_TIME_NOW, getTransactionTimeout(call.arguments)));
 
-          // Wait while dart side updates the snapshot.
-          long result = dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, getTransactionTimeout(call.arguments)));
+      if (result == 0) {
+        // Set FIRMutableData value to value returned from the dart side.
+        currentData.value = [self.updatedSnapshots
+            objectForKey:getTransactionKey(call.arguments)][@"updatedDataSnapshot"];
+      } else {
+        NSLog(@"Transaction timed out.");
+        return [FIRTransactionResult abort];
+      }
 
-          if (result == 0) {
-            // Set FIRMutableData value to value returned from the dart side.
-            currentData.value = [self.updatedSnapshots
-                                 objectForKey:getTransactionKey(call.arguments)][@"updatedDataSnapshot"];
-          } else {
-            NSLog(@"Transaction timed out.");
-            return [FIRTransactionResult abort];
-          }
+      // Remove semaphore from dictionary.
+      [[self transactionSemaphores] removeObjectForKey:getTransactionKey(call.arguments)];
 
-          // Remove semaphore from dictionary.
-          [[self transactionSemaphores] removeObjectForKey:getTransactionKey(call.arguments)];
-
-          return [FIRTransactionResult successWithValue:currentData];
-        }
+      return [FIRTransactionResult successWithValue:currentData];
+    }
         andCompletionBlock:^(NSError *_Nullable error, BOOL committed,
                              FIRDataSnapshot *_Nullable snapshot) {
           // Invoke transaction completion on the dart side.
           result(@{
-                   @"transactionKey" : getTransactionKey(call.arguments),
-                   @"error" : error ? error.flutterError : [NSNull null],
-                   @"committed" : [NSNumber numberWithBool:committed],
-                   @"snapshot" :
-                     @{@"key" : snapshot.key ?: [NSNull null], @"value" : snapshot.value}
-                   });
+            @"transactionKey" : getTransactionKey(call.arguments),
+            @"error" : error ? error.flutterError : [NSNull null],
+            @"committed" : [NSNumber numberWithBool:committed],
+            @"snapshot" : @{@"key" : snapshot.key ?: [NSNull null], @"value" : snapshot.value}
+          });
         }];
   } else if ([@"DatabaseReference#finishDoTransaction" isEqualToString:call.method]) {
     // Return the updated snapshot from the dart side to the native side. The
     // runTransactionBlock method completes after this method is called.
     [[self updatedSnapshots] setObject:call.arguments forKey:getTransactionKey(call.arguments)];
-    dispatch_semaphore_t semaphore = [[self transactionSemaphores] objectForKey:getTransactionKey(call.arguments)];
+    dispatch_semaphore_t semaphore =
+        [[self transactionSemaphores] objectForKey:getTransactionKey(call.arguments)];
     dispatch_semaphore_signal(semaphore);
   } else if ([@"Query#observe" isEqualToString:call.method]) {
     FIRDataEventType eventType = parseEventType(call.arguments[@"eventType"]);

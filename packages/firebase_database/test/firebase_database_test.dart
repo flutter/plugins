@@ -156,12 +156,17 @@ void main() {
         expect(
             log,
             equals(<MethodCall>[
-              new MethodCall('DatabaseReference#runTransaction',
-                  <String, dynamic>{'path': 'foo', 'transactionKey': 0,
-                    'transactionTimeout': 5000000000}),
+              new MethodCall(
+                  'DatabaseReference#runTransaction', <String, dynamic>{
+                'path': 'foo',
+                'transactionKey': 0,
+                'transactionTimeout': 5000000000
+              }),
             ]));
         expect(
-            database.reference().child('foo')
+            database
+                .reference()
+                .child('foo')
                 .runTransaction(new MockTransactionHandler._(), -1),
             throwsA(const isInstanceOf<ArgumentError>()));
       });
@@ -319,7 +324,8 @@ class MockTransactionHandler extends TransactionHandler {
       return new Future<DataSnapshot>(() => dataSnapshot);
     };
 
-    onComplete = (DatabaseError databaseError, bool committed, DataSnapshot dataSnapshot) {
+    onComplete = (DatabaseError databaseError, bool committed,
+        DataSnapshot dataSnapshot) {
       print('Transaction Complete');
     };
   }

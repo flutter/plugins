@@ -144,13 +144,14 @@ class DatabaseReference extends Query {
   Future<Null> runTransaction(TransactionHandler transactionHandler,
       [int transactionTimeout = _transactionTimeout]) async {
     if (transactionTimeout < 0) {
-      throw new ArgumentError('Transaction timeout ($transactionTimeout) cannot be less than zero.');
+      throw new ArgumentError(
+          'Transaction timeout ($transactionTimeout) cannot be less than zero.');
     }
     final int transactionKey = _getNextTransactionKey();
     FirebaseDatabase._transactions[transactionKey] = transactionHandler;
 
     final Map<String, dynamic> completion = await _database._channel
-        .invokeMethod('DatabaseReference#runTransaction', <String, dynamic> {
+        .invokeMethod('DatabaseReference#runTransaction', <String, dynamic>{
       'path': path,
       'transactionKey': transactionKey,
       'transactionTimeout': transactionTimeout
@@ -178,8 +179,8 @@ class ServerValue {
 }
 
 typedef Future<DataSnapshot> DoTransaction(DataSnapshot dataSnapshot);
-typedef void OnComplete(DatabaseError error, bool committed,
-    DataSnapshot dataSnapshot);
+typedef void OnComplete(
+    DatabaseError error, bool committed, DataSnapshot dataSnapshot);
 
 /// TransactionHandler requires the implementation of functions to handle a
 /// Firebase Database transaction.

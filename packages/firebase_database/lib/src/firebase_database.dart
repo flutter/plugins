@@ -27,7 +27,8 @@ class FirebaseDatabase {
         _transactions[call.arguments['transactionKey']]
             .doTransaction(new DataSnapshot._(call.arguments['snapshot']))
             .then((DataSnapshot dataSnapshot) {
-          _channel.invokeMethod('DatabaseReference#finishDoTransaction', <String, dynamic>{
+          _channel.invokeMethod(
+              'DatabaseReference#finishDoTransaction', <String, dynamic>{
             'updatedDataSnapshot': dataSnapshot.value,
             'transactionKey': call.arguments['transactionKey']
           });

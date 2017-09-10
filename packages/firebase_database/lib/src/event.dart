@@ -33,9 +33,9 @@ class DataSnapshot {
 
   /// Returns the contents of this data snapshot as native types.
   dynamic get value => _data['value'];
-  /// Sets the contents of this data snapshot.
-          set value(dynamic newValue) => _data['value'] = newValue;
 
+  /// Sets the contents of this data snapshot.
+  set value(dynamic newValue) => _data['value'] = newValue;
 }
 
 /// A DatabaseError contains code, message and details of a Firebase Database

@@ -321,9 +321,9 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
                   // Tasks are used to allow native execution of doTransaction to wait while Snapshot is
                   // processed by logic on the dart side.
                   final TaskCompletionSource<Map<String, Object>> updateMutableDataTCS =
-                          new TaskCompletionSource<>();
-                  final Task<Map<String, Object>> updateMutableDataTCSTask = updateMutableDataTCS.getTask();
-
+                      new TaskCompletionSource<>();
+                  final Task<Map<String, Object>> updateMutableDataTCSTask =
+                      updateMutableDataTCS.getTask();
 
                   // Add transaction task to array for later retrieval.
                   transactionTasks.append(getTransactionKey(arguments), updateMutableDataTCS);
@@ -341,8 +341,11 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
 
                   try {
                     // Wait for updated snapshot from the dart side.
-                    Map<String, Object> updatedSnapshotMap = Tasks.await(updateMutableDataTCSTask,
-                            getTransactionTimeout(arguments), TimeUnit.NANOSECONDS);
+                    Map<String, Object> updatedSnapshotMap =
+                        Tasks.await(
+                            updateMutableDataTCSTask,
+                            getTransactionTimeout(arguments),
+                            TimeUnit.NANOSECONDS);
                     // Set value of MutableData to value returned from the dart side.
                     mutableData.setValue(updatedSnapshotMap.get("updatedDataSnapshot"));
                   } catch (ExecutionException | InterruptedException | TimeoutException e) {
