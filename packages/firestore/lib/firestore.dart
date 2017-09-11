@@ -11,7 +11,9 @@ import 'package:meta/meta.dart';
 
 import 'src/utils/push_id_generator.dart';
 
-part 'src/database_reference.dart';
-part 'src/event.dart';
-part 'src/firebase_database.dart';
+part 'src/collection_reference.dart';
+part 'src/document_snapshot.dart';
+part 'src/document_reference.dart';
+part 'src/firestore.dart';
 part 'src/query.dart';
+part 'src/query_snapshot.dart';

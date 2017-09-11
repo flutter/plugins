@@ -29,7 +29,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   QuerySnapshot _messagesSnapshot;
-  final CollectionReference _messagesRef = CollectionReference.instance
+  final CollectionReference _messagesRef = Firestore.instance
     .reference()
     .child('messages');
   StreamSubscription<Event> _messagesSubscription;

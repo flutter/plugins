@@ -7,15 +7,15 @@ part of firestore;
 /// Represents a query over the data at a particular location.
 class Query {
   Query._({
-    @required FirebaseDatabase database,
+    @required Firestore firestore,
     @required List<String> pathComponents,
     Map<String, dynamic> parameters
-  }): _database = database,
+  }): _firestore = firestore,
     _pathComponents = pathComponents,
     _parameters = parameters ?? new Map<String, dynamic>.unmodifiable(<String, dynamic>{}),
-    assert(database != null);
+    assert(firestore != null);
 
-  final FirebaseDatabase _database;
+  final Firestore _firestore;
   final List<String> _pathComponents;
   final Map<String, dynamic> _parameters;
 
@@ -24,7 +24,7 @@ class Query {
 
   Query _copyWithParameters(Map<String, dynamic> parameters) {
     return new Query._(
-      database: _database,
+      firestore: _firestore,
       pathComponents: _pathComponents,
       parameters: new Map<String, dynamic>.unmodifiable(
         new Map<String, dynamic>.from(_parameters)..addAll(parameters),
@@ -38,54 +38,35 @@ class Query {
     });
   }
 
-  Stream<Event> _observe(_EventType eventType) {
+  Stream<QuerySnapshot> _observe() {
     Future<int> _handle;
     // It's fine to let the StreamController be garbage collected once all the
     // subscribers have cancelled; this analyzer warning is safe to ignore.
-    StreamController<Event> controller; // ignore: close_sinks
-    controller = new StreamController<Event>.broadcast(
+    StreamController<QuerySnapshot> controller; // ignore: close_sinks
+    controller = new StreamController<QuerySnapshot>.broadcast(
       onListen: () {
-        _handle = _database._channel.invokeMethod(
-          'Query#observe', <String, dynamic>{
+        _handle = _firestore._channel.invokeMethod(
+          'Query#addQueryObserver', <String, dynamic>{
             'path': path,
             'parameters': _parameters,
-            'eventType': eventType.toString(),
           },
         );
         _handle.then((int handle) {
-          FirebaseDatabase._observers[handle] = controller;
+          Firestore._queryObservers[handle] = controller;
         });
       },
       onCancel: () {
         _handle.then((int handle) async {
-          await _database._channel.invokeMethod(
-            'Query#removeObserver',
+          await _firestore._channel.invokeMethod(
+            'Query#removeQueryObserver',
             <String, dynamic>{ 'handle': handle },
           );
-          FirebaseDatabase._observers.remove(handle);
+          Firestore._queryObservers.remove(handle);
         });
       },
     );
     return controller.stream;
   }
-
-  /// Listens for a single value event and then stops listening.
-  Future<DataSnapshot> once() async => (await onValue.first).snapshot;
-
-  /// Fires when children are added.
-  Stream<Event> get onChildAdded => _observe(_EventType.childAdded);
-
-  /// Fires when children are removed. `previousChildKey` is null.
-  Stream<Event> get onChildRemoved => _observe(_EventType.childRemoved);
-
-  /// Fires when children are changed.
-  Stream<Event> get onChildChanged => _observe(_EventType.childChanged);
-
-  /// Fires when children are moved.
-  Stream<Event> get onChildMoved => _observe(_EventType.childMoved);
-
-  /// Fires when the data at this location is updated. `previousChildKey` is null.
-  Stream<Event> get onValue => _observe(_EventType.value);
 
   /// Create a query constrained to only return child nodes with a value greater
   /// than or equal to the given value, using the given orderBy directive or
@@ -174,17 +155,6 @@ class Query {
     return _copyWithParameters(<String, dynamic>{ 'orderBy': 'priority' });
   }
 
-  /// Obtains a DatabaseReference corresponding to this query's location.
-  DatabaseReference reference() => new DatabaseReference._(_database, _pathComponents);
-
-  /// By calling keepSynced(true) on a location, the data for that location will
-  /// automatically be downloaded and kept in sync, even when no listeners are
-  /// attached for that location. Additionally, while a location is kept synced,
-  /// it will not be evicted from the persistent disk cache.
-  Future<Null> keepSynced(bool value) {
-    return _database._channel.invokeMethod(
-      'Query#keepSynced',
-      <String, dynamic>{ 'path': path, 'parameters': _parameters, 'value': value },
-    );
-  }
+  /// Obtains a CollectionReference corresponding to this query's location.
+  CollectionReference reference() => new CollectionReference._(_firestore, _pathComponents);
 }
