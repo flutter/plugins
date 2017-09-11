@@ -107,6 +107,15 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
                     completion:^(NSString *_Nullable token, NSError *_Nullable error) {
                       result(error != nil ? error.flutterError : token);
                     }];
+  } else if ([@"linkWithEmailAndPassword" isEqualToString:call.method]) {
+    NSString *email = call.arguments[@"email"];
+    NSString *password = call.arguments[@"password"];
+    FIRAuthCredential *credential =
+        [FIREmailPasswordAuthProvider credentialWithEmail:email password:password];
+    [[FIRAuth auth].currentUser linkWithCredential:credential
+                                        completion:^(FIRUser *user, NSError *error) {
+                                          [self sendResult:result forUser:user error:error];
+                                        }];
   } else {
     result(FlutterMethodNotImplemented);
   }
