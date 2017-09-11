@@ -4,7 +4,7 @@ description: Demonstrates how to use the firestore plugin.
 dependencies:
   flutter:
     sdk: flutter
-  firestore:
+  firebase_firestore:
     path: ../
 
 flutter:

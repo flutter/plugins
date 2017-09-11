@@ -3,7 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:firestore/firestore.dart';
+import 'package:firebase_firestore/firestore.dart';
 
 void main() {
   runApp(new MyApp());

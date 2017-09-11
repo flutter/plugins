@@ -1,4 +1,4 @@
-name: firestore
+name: firebase_firestore
 
 description: Firestore plugin for Flutter.
 author: Flutter Team <flutter-dev@googlegroups.com>
