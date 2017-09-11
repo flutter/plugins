@@ -10,7 +10,8 @@ For Flutter plugins for other Firebase products, see [FlutterFire.md](https://gi
 
 To use this plugin, add `firestore` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
 
-You will need to unzip the prerelease Firestore SDK into sdk/android (for Android) and sdk/ios (for iOS).
+You will need to unzip the prerelease Firestore Android SDK into `$HOME/.m2/repository` and ensure that `mavenLocal()` is included
+in your app's `build.gradle`, after `jcenter()`.
 
 ## Getting Started
 
