@@ -1,3 +1,7 @@
+## 0.2.2
+
+* Remove dependency on FirebaseUI
+
 ## 0.2.1
 
 * Added support for linkWithEmailAndPassword
