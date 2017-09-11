@@ -29,9 +29,9 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   QuerySnapshot _messagesSnapshot;
-  Firestore firestore = Firestore.instance;
-  final CollectionReference _messagesRef = firestore.collection('messages');
-  StreamSubscription<Event> _messagesSubscription;
+  final CollectionReference _messagesRef = Firestore.instance
+    .collection('messages');
+  StreamSubscription<QuerySnapshot> _messagesSubscription;
 
   @override
   void initState() {
