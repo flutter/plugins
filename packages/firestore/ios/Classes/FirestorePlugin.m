@@ -5,6 +5,7 @@
 #import "FirestorePlugin.h"
 
 #import <Firebase/Firebase.h>
+#import <Firestore/Firestore.h>
 
 @interface NSError (FlutterError)
 @property(readonly, nonatomic) FlutterError *flutterError;
@@ -146,7 +147,9 @@ id roundDoubles(id value) {
         result(error.flutterError);
       };
   if ([@"FirebaseFirestore#goOnline" isEqualToString:call.method]) {
-    [[FIRDatabase database] goOnline];
+    FIRFirestoreSettings *settings = [[FIRFirestoreSettings alloc] init];
+    settings.persistenceEnabled = YES;
+    [FIRFirestore firestore].settings = settings;
     result(nil);
   } else if ([@"FirebaseDatabase#goOffline" isEqualToString:call.method]) {
     [[FIRDatabase database] goOffline];
