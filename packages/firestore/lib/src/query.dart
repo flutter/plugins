@@ -46,7 +46,7 @@ class Query {
     controller = new StreamController<QuerySnapshot>.broadcast(
       onListen: () {
         _handle = _firestore._channel.invokeMethod(
-          'Query#addQueryObserver', <String, dynamic>{
+          'Query#addSnapshotListener', <String, dynamic>{
             'path': path,
             'parameters': _parameters,
           },
@@ -58,7 +58,7 @@ class Query {
       onCancel: () {
         _handle.then((int handle) async {
           await _firestore._channel.invokeMethod(
-            'Query#removeQueryObserver',
+            'Query#removeListener',
             <String, dynamic>{ 'handle': handle },
           );
           Firestore._queryObservers.remove(handle);

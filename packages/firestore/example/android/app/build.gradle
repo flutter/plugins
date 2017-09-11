@@ -23,7 +23,7 @@ android {
     }
 
     defaultConfig {
-        applicationId 'io.flutter.plugins.firebasedatabaseexample'
+        applicationId 'io.flutter.plugins.firebase.firestoreexample'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 

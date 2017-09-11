@@ -19,108 +19,20 @@
 }
 @end
 
-FIRDatabaseReference *getReference(NSDictionary *arguments) {
-  NSString *path = arguments[@"path"];
-  FIRDatabaseReference *ref = [FIRDatabase database].reference;
-  if ([path length] > 0) ref = [ref child:path];
-  return ref;
-}
-
-FIRDatabaseQuery *getQuery(NSDictionary *arguments) {
-  FIRDatabaseQuery *query = getReference(arguments);
-  NSDictionary *parameters = arguments[@"parameters"];
-  NSString *orderBy = parameters[@"orderBy"];
-  if ([orderBy isEqualToString:@"child"]) {
-    query = [query queryOrderedByChild:parameters[@"orderByChildKey"]];
-  } else if ([orderBy isEqualToString:@"key"]) {
-    query = [query queryOrderedByKey];
-  } else if ([orderBy isEqualToString:@"value"]) {
-    query = [query queryOrderedByValue];
-  } else if ([orderBy isEqualToString:@"priority"]) {
-    query = [query queryOrderedByPriority];
-  }
-  id startAt = parameters[@"startAt"];
-  if (startAt) {
-    id startAtKey = parameters[@"startAtKey"];
-    if (startAtKey) {
-      query = [query queryStartingAtValue:startAt childKey:startAtKey];
-    } else {
-      query = [query queryStartingAtValue:startAt];
-    }
-  }
-  id endAt = parameters[@"endAt"];
-  if (endAt) {
-    id endAtKey = parameters[@"endAtKey"];
-    if (endAtKey) {
-      query = [query queryEndingAtValue:endAt childKey:endAtKey];
-    } else {
-      query = [query queryEndingAtValue:endAt];
-    }
-  }
-  id equalTo = parameters[@"equalTo"];
-  if (equalTo) {
-    query = [query queryEqualToValue:equalTo];
-  }
-  NSNumber *limitToFirst = parameters[@"limitToFirst"];
-  if (limitToFirst) {
-    query = [query queryLimitedToFirst:limitToFirst.intValue];
-  }
-  NSNumber *limitToLast = parameters[@"limitToLast"];
-  if (limitToLast) {
-    query = [query queryLimitedToLast:limitToLast.intValue];
-  }
+FIRQuery *getQuery(NSDictionary *arguments) {
+  FIRQuery *query = [[FIRFirestore firestore] collectionWithPath:arguments[@"path"]];
+  // TODO(jackson): Implement query parameters
   return query;
-}
-
-FIRDataEventType parseEventType(NSString *eventTypeString) {
-  if ([@"_EventType.childAdded" isEqual:eventTypeString]) {
-    return FIRDataEventTypeChildAdded;
-  } else if ([@"_EventType.childRemoved" isEqual:eventTypeString]) {
-    return FIRDataEventTypeChildRemoved;
-  } else if ([@"_EventType.childChanged" isEqual:eventTypeString]) {
-    return FIRDataEventTypeChildChanged;
-  } else if ([@"_EventType.childMoved" isEqual:eventTypeString]) {
-    return FIRDataEventTypeChildMoved;
-  } else if ([@"_EventType.value" isEqual:eventTypeString]) {
-    return FIRDataEventTypeValue;
-  }
-  assert(false);
-  return 0;
-}
-
-id roundDoubles(id value) {
-  // Workaround for https://github.com/firebase/firebase-ios-sdk/issues/91
-  // The Firebase iOS SDK sometimes returns doubles when ints were stored.
-  // We detect doubles that can be converted to ints without loss of precision
-  // and convert them.
-  if ([value isKindOfClass:[NSNumber class]]) {
-    CFNumberType type = CFNumberGetType((CFNumberRef)value);
-    if (type == kCFNumberDoubleType || type == kCFNumberFloatType) {
-      if ((double)(long long)[value doubleValue] == [value doubleValue]) {
-        return [NSNumber numberWithLongLong:(long long)[value doubleValue]];
-      }
-    }
-  } else if ([value isKindOfClass:[NSArray class]]) {
-    NSMutableArray *result = [NSMutableArray arrayWithCapacity:[value count]];
-    [value enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-      [result addObject:roundDoubles(obj)];
-    }];
-    return result;
-  } else if ([value isKindOfClass:[NSDictionary class]]) {
-    NSMutableDictionary *result = [NSMutableDictionary dictionaryWithCapacity:[value count]];
-    [value enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-      result[key] = roundDoubles(obj);
-    }];
-    return result;
-  }
-  return value;
 }
 
 @interface FirestorePlugin ()
 @property(nonatomic, retain) FlutterMethodChannel *channel;
 @end
 
-@implementation FirestorePlugin
+@implementation FirestorePlugin {
+  NSMutableDictionary<NSNumber *, id<FIRListenerRegistration>> *_listeners;
+  int _nextListenerHandle;
+}
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
@@ -137,82 +49,38 @@ id roundDoubles(id value) {
     if (![FIRApp defaultApp]) {
       [FIRApp configure];
     }
+    _listeners = [NSMutableDictionary<NSNumber *, id<FIRListenerRegistration>> dictionary];
+    _nextListenerHandle = 0;
   }
   return self;
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
-  void (^defaultCompletionBlock)(NSError *, FIRDatabaseReference *) =
-      ^(NSError *error, FIRDatabaseReference *ref) {
+  void (^defaultCompletionBlock)(NSError *) = ^(NSError *error) {
         result(error.flutterError);
       };
-  if ([@"FirebaseFirestore#goOnline" isEqualToString:call.method]) {
-    FIRFirestoreSettings *settings = [[FIRFirestoreSettings alloc] init];
-    settings.persistenceEnabled = YES;
-    [FIRFirestore firestore].settings = settings;
-    result(nil);
-  } else if ([@"FirebaseDatabase#goOffline" isEqualToString:call.method]) {
-    [[FIRDatabase database] goOffline];
-    result(nil);
-  } else if ([@"FirebaseDatabase#purgeOutstandingWrites" isEqualToString:call.method]) {
-    [[FIRDatabase database] purgeOutstandingWrites];
-    result(nil);
-  } else if ([@"FirebaseDatabase#setPersistenceEnabled" isEqualToString:call.method]) {
-    NSNumber *value = call.arguments;
-    @try {
-      [FIRDatabase database].persistenceEnabled = value.boolValue;
-      result([NSNumber numberWithBool:YES]);
-    } @catch (NSException *exception) {
-      if ([@"FIRDatabaseAlreadyInUse" isEqualToString:exception.name]) {
-        // Database is already in use, e.g. after hot reload/restart.
-        result([NSNumber numberWithBool:NO]);
-      } else {
-        @throw;
+  if ([@"DocumentReference#setData" isEqualToString:call.method]) {
+    NSString *path = call.arguments[@"path"];
+    FIRDocumentReference *reference = [[FIRFirestore firestore] documentWithPath:path];
+    [reference setData:call.arguments[@"data"] completion:defaultCompletionBlock];
+  } else if ([@"Query#addSnapshotListener" isEqualToString:call.method]) {
+    __block NSNumber *handle = [NSNumber numberWithInt:_nextListenerHandle++];
+    id<FIRListenerRegistration> listener =
+        [getQuery(call.arguments) addSnapshotListener:^(FIRQuerySnapshot * _Nullable snapshot, NSError * _Nullable error) {
+      NSMutableArray *documents = [NSMutableArray array];
+      for (FIRDocumentSnapshot *document in snapshot.documents) {
+        [documents addObject:document.data];
       }
-    }
-  } else if ([@"FirebaseDatabase#setPersistenceCacheSizeBytes" isEqualToString:call.method]) {
-    NSNumber *value = call.arguments;
-    @try {
-      [FIRDatabase database].persistenceCacheSizeBytes = value.unsignedIntegerValue;
-      result([NSNumber numberWithBool:YES]);
-    } @catch (NSException *exception) {
-      if ([@"FIRDatabaseAlreadyInUse" isEqualToString:exception.name]) {
-        // Database is already in use, e.g. after hot reload/restart.
-        result([NSNumber numberWithBool:NO]);
-      } else {
-        @throw;
-      }
-    }
-  } else if ([@"DatabaseReference#set" isEqualToString:call.method]) {
-    [getReference(call.arguments) setValue:call.arguments[@"value"]
-                               andPriority:call.arguments[@"priority"]
-                       withCompletionBlock:defaultCompletionBlock];
-  } else if ([@"DatabaseReference#setPriority" isEqualToString:call.method]) {
-    [getReference(call.arguments) setPriority:call.arguments[@"priority"]
-                          withCompletionBlock:defaultCompletionBlock];
-  } else if ([@"Query#observe" isEqualToString:call.method]) {
-    FIRDataEventType eventType = parseEventType(call.arguments[@"eventType"]);
-    __block FIRDatabaseHandle handle = [getQuery(call.arguments)
-                      observeEventType:eventType
-        andPreviousSiblingKeyWithBlock:^(FIRDataSnapshot *snapshot, NSString *previousSiblingKey) {
-          [self.channel invokeMethod:@"Event"
-                           arguments:@{
-                             @"handle" : [NSNumber numberWithUnsignedInteger:handle],
-                             @"snapshot" : @{
-                               @"key" : snapshot.key ?: [NSNull null],
-                               @"value" : roundDoubles(snapshot.value) ?: [NSNull null],
-                             },
-                             @"previousSiblingKey" : previousSiblingKey ?: [NSNull null],
-                           }];
-        }];
-    result([NSNumber numberWithUnsignedInteger:handle]);
-  } else if ([@"Query#removeObserver" isEqualToString:call.method]) {
-    FIRDatabaseHandle handle = [call.arguments[@"handle"] unsignedIntegerValue];
-    [getQuery(call.arguments) removeObserverWithHandle:handle];
+      [self.channel invokeMethod:@"QuerySnapshot"
+                       arguments:@{ @"handle" : handle, @"documents" : documents }];
+    }];
+    _listeners[handle] = listener;
+    result(handle);
+  } else if ([@"Query#removeListener" isEqualToString:call.method]) {
+    NSNumber *handle = call.arguments[@"handle"];
+    [[_listeners objectForKey:handle] remove];
+    [_listeners removeObjectForKey:handle];
     result(nil);
-  } else if ([@"Query#keepSynced" isEqualToString:call.method]) {
-    NSNumber *value = call.arguments[@"value"];
-    [getQuery(call.arguments) keepSynced:value];
   } else {
     result(FlutterMethodNotImplemented);
   }

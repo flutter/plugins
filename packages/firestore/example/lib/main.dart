@@ -28,28 +28,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  QuerySnapshot _messagesSnapshot;
   final CollectionReference _messagesRef = Firestore.instance
     .collection('messages');
-  StreamSubscription<QuerySnapshot> _messagesSubscription;
-
-  @override
-  void initState() {
-    super.initState();
-    _messagesSubscription = _messagesRef.snapshots.listen(
-      (QuerySnapshot snapshot) {
-        setState(() {
-          _messagesSnapshot = snapshot;
-        });
-      },
-    );
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _messagesSubscription.cancel();
-  }
 
   Future<Null> _addMessage() async {
     FirebaseUser user = await FirebaseAuth.instance.signInAnonymously();
@@ -65,14 +45,24 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: new AppBar(
         title: const Text('Firestore Example'),
       ),
-      body: new ListView.builder(
-        itemBuilder: (BuildContext context, int index) {
-          DocumentSnapshot document = _messagesSnapshot.documents[index];
-          return new ListTile(
-            leading: new CircleAvatar(
-              child: new Text(document['author'].substring(0, 2)),
-            ),
-            title: new Text(document['message']),
+      body: new StreamBuilder(
+        stream: _messagesRef.snapshots,
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (!snapshot.hasData)
+            return new Center(child: new Text('Loading...'));
+          final List<DocumentSnapshot> documents = snapshot.data.documents;
+          return new ListView.builder(
+            itemBuilder: (BuildContext context, int index) {
+              if (index >= documents.length)
+                return null;
+              DocumentSnapshot document = documents[index];
+              return new ListTile(
+                leading: new CircleAvatar(
+                  child: new Text(document['author'].substring(0, 2)),
+                ),
+                title: new Text(document['message']),
+              );
+            },
           );
         },
       ),
