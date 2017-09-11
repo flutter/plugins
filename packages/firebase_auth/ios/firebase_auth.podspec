@@ -18,7 +18,5 @@ Firebase Auth plugin for Flutter.
   s.dependency 'Flutter'
   s.dependency 'Firebase/Auth'
   s.dependency 'Firebase/Core'
-  s.dependency 'FirebaseUI/Auth', '~> 3.0'
-  s.dependency 'FirebaseUI/Google'
   s.dependency 'Google/SignIn'
 end
