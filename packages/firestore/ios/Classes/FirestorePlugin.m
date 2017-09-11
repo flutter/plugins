@@ -123,7 +123,7 @@ id roundDoubles(id value) {
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
-      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/firebase_database"
+      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/firebase_firestore"
                                   binaryMessenger:[registrar messenger]];
   FirestorePlugin *instance = [[FirestorePlugin alloc] init];
   instance.channel = channel;
@@ -145,7 +145,7 @@ id roundDoubles(id value) {
       ^(NSError *error, FIRDatabaseReference *ref) {
         result(error.flutterError);
       };
-  if ([@"FirebaseDatabase#goOnline" isEqualToString:call.method]) {
+  if ([@"FirebaseFirestore#goOnline" isEqualToString:call.method]) {
     [[FIRDatabase database] goOnline];
     result(nil);
   } else if ([@"FirebaseDatabase#goOffline" isEqualToString:call.method]) {

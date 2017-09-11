@@ -17,5 +17,8 @@ Firestore plugin for Flutter.
   s.ios.deployment_target = '6.0'
   s.dependency 'Flutter'
   s.dependency 'Firebase/Database'
+  s.dependency 'Firebase/Core'
+  s.dependency 'Firebase/Auth'
+  s.dependency 'Firestore', :podspec => 'https://storage.googleapis.com/firebase-preview-drop/ios/firestore/0.6.4/Firestore.podspec.json'
 end
 

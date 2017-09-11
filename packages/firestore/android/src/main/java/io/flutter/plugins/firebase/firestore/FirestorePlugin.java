@@ -13,6 +13,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -37,7 +39,7 @@ public class FirestorePlugin implements MethodCallHandler {
 
   public static void registerWith(PluginRegistry.Registrar registrar) {
     final MethodChannel channel =
-        new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_database");
+        new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_firestore");
     channel.setMethodCallHandler(new FirestorePlugin(channel));
   }
 
@@ -199,9 +201,12 @@ public class FirestorePlugin implements MethodCallHandler {
   @Override
   public void onMethodCall(MethodCall call, final Result result) {
     switch (call.method) {
-      case "FirebaseDatabase#goOnline":
+      case "FirebaseFirestore#goOnline":
         {
-          FirebaseDatabase.getInstance().goOnline();
+          FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                  .setPersistenceEnabled(true)
+                  .build();
+          FirebaseFirestore.getInstance().setFirestoreSettings(settings);
           result.success(null);
           break;
         }

@@ -4,6 +4,7 @@ version '1.0-SNAPSHOT'
 buildscript {
     repositories {
         jcenter()
+        mavenLocal()
     }
 
     dependencies {
@@ -14,6 +15,7 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
+        mavenLocal()
     }
 }
 
@@ -33,5 +35,6 @@ android {
         compile 'com.google.firebase:firebase-core:11.0.+'
         compile 'com.google.firebase:firebase-auth:11.0.+'
         compile 'com.google.firebase:firebase-database:11.0.+'
+        compile 'com.google.firebase:firebase-firestore:11.0.8'
     }
 }

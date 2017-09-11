@@ -9,7 +9,7 @@ part of firestore;
 /// and read or write data, use `reference()`.
 class FirebaseDatabase {
   final MethodChannel _channel = const MethodChannel(
-    'plugins.flutter.io/firebase_database',
+    'plugins.flutter.io/firebase_firestore',
   );
 
   static final Map<int, StreamController<Event>> _observers =
@@ -84,7 +84,7 @@ class FirebaseDatabase {
   /// Resumes our connection to the Firebase Database backend after a previous
   /// [goOffline] call.
   Future<Null> goOnline() {
-    return _channel.invokeMethod('FirebaseDatabase#goOnline');
+    return _channel.invokeMethod('FirebaseFirestore#goOnline');
   }
 
   /// Shuts down our connection to the Firebase Database backend until

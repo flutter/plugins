@@ -37,6 +37,12 @@ class _MyHomePageState extends State<MyHomePage> {
           new Text('Coming soon!'),
         ],
       ),
+      floatingActionButton: new FloatingActionButton(
+        child: new Icon(Icons.network_wifi),
+        onPressed: () {
+          FirebaseDatabase.instance.goOnline();
+        },
+      ),
     );
   }
 }
