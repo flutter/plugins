@@ -25,7 +25,7 @@ void main() {
       channel.setMockMethodCallHandler((MethodCall methodCall) async {
         log.add(methodCall);
         switch(methodCall.method) {
-          case 'Query#addQueryObserver':
+          case 'Query#addSnapshotListener':
             return mockHandleId++;
           case 'DocumentReference#setData':
             return true;
@@ -46,14 +46,14 @@ void main() {
         log,
         equals(<MethodCall>[
           new MethodCall(
-              'Query#addQueryObserver',
+              'Query#addSnapshotListener',
               <String, dynamic> {
                 'path': 'foo',
                 'parameters': {}
               }
           ),
           new MethodCall(
-              'Query#removeQueryObserver',
+              'Query#removeListener',
               <String, dynamic> {
                 'handle': 0
               }
