@@ -1,3 +1,7 @@
+## 0.2.3
+
+* Remove dependency on Google/SignIn
+
 ## 0.2.2
 
 * Remove dependency on FirebaseUI
