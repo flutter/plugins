@@ -34,9 +34,6 @@ class _MyHomePageState extends State<MyHomePage> {
     .child('messages');
   StreamSubscription<Event> _messagesSubscription;
 
-  String _kTestKey = 'Hello';
-  String _kTestValue = 'world!';
-
   @override
   void initState() {
     super.initState();
@@ -57,9 +54,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<Null> _addMessage() async {
     FirebaseUser user = await FirebaseAuth.instance.signInAnonymously();
-    _messagesRef
-      .document()
-      .setData(<String, String>{_kTestKey: _kTestValue});
+    _messagesRef.document().setData(<String, String>{
+      'author': user.uid,
+      'message': 'Hello world!',
+    });
   }
 
   @override
@@ -72,7 +70,10 @@ class _MyHomePageState extends State<MyHomePage> {
         itemBuilder: (BuildContext context, int index) {
           DocumentSnapshot document = _messagesSnapshot.documents[index];
           return new ListTile(
-            title: new Text(document[_kTestKey]),
+            leading: new CircleAvatar(
+              child: new Text(document['author'].substring(0, 2)),
+            ),
+            title: new Text(document['message']),
           );
         },
       ),
