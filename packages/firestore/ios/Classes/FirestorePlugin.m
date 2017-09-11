@@ -76,6 +76,16 @@ FIRQuery *getQuery(NSDictionary *arguments) {
     }];
     _listeners[handle] = listener;
     result(handle);
+  } else if ([@"Query#addDocumentListener" isEqualToString:call.method]) {
+    __block NSNumber *handle = [NSNumber numberWithInt:_nextListenerHandle++];
+    FIRDocumentReference *reference = [[FIRFirestore firestore] documentWithPath:call.arguments[@"path"]];
+    id<FIRListenerRegistration> listener =
+    [reference addSnapshotListener:^(FIRDocumentSnapshot *snapshot, NSError * _Nullable error) {
+      [self.channel invokeMethod:@"DocumentSnapshot"
+                       arguments:@{ @"handle" : handle, @"data" : snapshot.data }];
+    }];
+    _listeners[handle] = listener;
+    result(handle);
   } else if ([@"Query#removeListener" isEqualToString:call.method]) {
     NSNumber *handle = call.arguments[@"handle"];
     [[_listeners objectForKey:handle] remove];

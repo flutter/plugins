@@ -22,10 +22,13 @@ void main() {
     final CollectionReference collectionReference = firestore.collection('foo');
 
     setUp(() async {
+      mockHandleId = 0;
       channel.setMockMethodCallHandler((MethodCall methodCall) async {
         log.add(methodCall);
         switch(methodCall.method) {
           case 'Query#addSnapshotListener':
+            return mockHandleId++;
+          case 'Query#addDocumentListener':
             return mockHandleId++;
           case 'DocumentReference#setData':
             return true;
@@ -36,48 +39,76 @@ void main() {
       log.clear();
     });
 
-    // TODO(arthurthompson): make group for CollectionsReference
-    test('listen', () async {
-      final StreamSubscription<QuerySnapshot> subscription =
-          collectionReference.snapshots.listen((QuerySnapshot querySnapshot) {});
-      subscription.cancel();
-      await new Future.delayed(Duration.ZERO);
-      expect(
-        log,
-        equals(<MethodCall>[
-          new MethodCall(
+    group('CollectionsReference', () {
+      test('listen', () async {
+        final StreamSubscription<QuerySnapshot> subscription =
+        collectionReference.snapshots.listen((QuerySnapshot querySnapshot) {});
+        subscription.cancel();
+        await new Future.delayed(Duration.ZERO);
+        expect(
+          log,
+          equals(<MethodCall>[
+            new MethodCall(
               'Query#addSnapshotListener',
               <String, dynamic> {
                 'path': 'foo',
                 'parameters': {}
-              }
-          ),
-          new MethodCall(
+              },
+            ),
+            new MethodCall(
               'Query#removeListener',
               <String, dynamic> {
                 'handle': 0
-              }
-          )
-        ])
-      );
+              },
+            ),
+          ]),
+        );
+      });
     });
 
-    test('set', () async {
-      await collectionReference.document('bar').setData(<String, String>{'bazKey': 'quxValue'});
-      expect(
-        log,
-        equals(<MethodCall>[
-          new MethodCall(
-            'DocumentReference#setData',
-            <String, dynamic> {
-              'path': 'foo/bar',
-              'data': {
-                'bazKey': 'quxValue'
-              }
-            }
-          )
-        ])
-      );
+    group('DocumentReference', () {
+      test('listen', () async {
+        final StreamSubscription<DocumentSnapshot> subscription =
+        Firestore.instance.document('foo').snapshots.listen(
+          (DocumentSnapshot querySnapshot) {},
+        );
+        subscription.cancel();
+        await new Future.delayed(Duration.ZERO);
+        expect(
+          log,
+          equals(<MethodCall>[
+            new MethodCall(
+              'Query#addDocumentListener',
+              <String, dynamic> {
+                'path': 'foo',
+              },
+            ),
+            new MethodCall(
+              'Query#removeListener',
+              <String, dynamic> {
+                'handle': 0
+              },
+            )
+          ]),
+        );
+      });
+      test('set', () async {
+        await collectionReference.document('bar').setData(<String, String>{'bazKey': 'quxValue'});
+        expect(
+          log,
+          equals(<MethodCall>[
+            new MethodCall(
+              'DocumentReference#setData',
+              <String, dynamic> {
+                'path': 'foo/bar',
+                'data': {
+                  'bazKey': 'quxValue'
+                }
+              },
+            ),
+          ]),
+        );
+      });
     });
   });
 }
