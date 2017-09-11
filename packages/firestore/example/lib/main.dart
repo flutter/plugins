@@ -2,7 +2,10 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_firestore/firestore.dart';
 
 void main() {
@@ -25,6 +28,39 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  QuerySnapshot _messagesSnapshot;
+  final CollectionReference _messagesRef = CollectionReference.instance
+    .reference()
+    .child('messages');
+  StreamSubscription<Event> _messagesSubscription;
+
+  String _kTestKey = 'Hello';
+  String _kTestValue = 'world!';
+
+  @override
+  void initState() {
+    super.initState();
+    _messagesSubscription = _messagesRef.onSnapshot.listen(
+      (QuerySnapshot snapshot) {
+        setState(() {
+          _messagesSnapshot = snapshot;
+        });
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _messagesSubscription.cancel();
+  }
+
+  Future<Null> _addMessage() async {
+    FirebaseUser user = await FirebaseAuth.instance.signInAnonymously();
+    _messagesRef
+      .document()
+      .setData(<String, String>{_kTestKey: _kTestValue});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,16 +68,18 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: new AppBar(
         title: const Text('Firestore Example'),
       ),
-      body: new Column(
-        children: <Widget>[
-          new Text('Coming soon!'),
-        ],
+      body: new ListView.builder(
+        itemBuilder: (BuildContext context, int index) {
+          DocumentSnapshot document = _messagesSnapshot.documents[index];
+          return new ListTile(
+            title: new Text(document[_kTestKey]),
+          );
+        },
       ),
       floatingActionButton: new FloatingActionButton(
-        child: new Icon(Icons.network_wifi),
-        onPressed: () {
-          FirebaseDatabase.instance.goOnline();
-        },
+        onPressed: _addMessage,
+        tooltip: 'Increment',
+        child: new Icon(Icons.add),
       ),
     );
   }
