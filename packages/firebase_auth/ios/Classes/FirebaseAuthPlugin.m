@@ -122,6 +122,20 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
               [self sendResult:nil forUser:nil error:error];
           }
       }];
+  } else if ([@"sendPasswordResetEmail" isEqualToString:call.method]) {
+      NSString *email = call.arguments[@"email"];
+      [[FIRAuth auth] sendPasswordResetWithEmail:email completion:^(NSError *_Nullable error) {
+          if (error != nil) {
+              [self sendResult:nil forUser:nil error:error];
+          }
+      }];
+  }  else if ([@"updatePassword" isEqualToString:call.method]) {
+      NSString *password = call.arguments[@"password"];
+      [[FIRAuth auth].currentUser updatePassword:password completion:^(NSError *_Nullable error) {
+          if (error != nil) {
+              [self sendResult:nil forUser:nil error:error];
+          }
+      }];
   } else {
     result(FlutterMethodNotImplemented);
   }
