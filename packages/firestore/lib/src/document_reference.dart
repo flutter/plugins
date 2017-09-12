@@ -29,6 +29,8 @@ class DocumentReference {
     );
   }
 
+  /// Notifies of documents at this location
+  // TODO(jackson): Reduce code duplication with [Query]
   Stream<DocumentSnapshot> get snapshots {
     Future<int> _handle;
     // It's fine to let the StreamController be garbage collected once all the
