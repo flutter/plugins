@@ -14,7 +14,7 @@ class UserInfo {
   UserInfo._(this._data);
 
   /// The provider identifier.
-  String get providerId => _data['providerId'];
+  String get providerId => _data['providerId'] as String;
 
   /// The provider’s user ID for the user.
   String get uid => _data['uid'];
@@ -194,6 +194,17 @@ class FirebaseAuth {
   }
 
   Future<Null> sendEmailVerification() async {
-    return await channel.invokeMethod("sendEmailVerification");
+    return await channel.invokeMethod("sendEmailVerification") as Future<Null>;
+  }
+
+  Future<Null> sendPasswordResetEmail(@required String email) async {
+    assert(email != null);
+
+    return await channel.invokeMethod("sendPasswordResetEmail", <String,String>{ "email" : email }) as Future<Null>;
+  }
+
+  Future<Null> updatePassword(@required String password) async {
+    assert(password != null);
+    return await channel.invokeMethod("updatePassword", <String,String>{ "password" : password }) as Future<Null>;
   }
 }
