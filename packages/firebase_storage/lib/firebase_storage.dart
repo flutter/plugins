@@ -4,6 +4,7 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
 
@@ -32,6 +33,16 @@ class StorageReference {
         new StorageUploadTask._(file, _pathComponents.join("/"));
     task._start();
     return task;
+  }
+
+  Future<Uint8List> getData(int maxSize) {
+    return FirebaseStorage._channel.invokeMethod(
+      "StorageReference#getData",
+      <String, dynamic>{
+        'maxSize': maxSize,
+        'path': _pathComponents.join("/"),
+      },
+    );
   }
 }
 
