@@ -28,4 +28,33 @@ class DocumentReference {
       <String, dynamic>{'path': path, 'data': data},
     );
   }
+
+  Stream<DocumentSnapshot> get snapshots {
+    Future<int> _handle;
+    // It's fine to let the StreamController be garbage collected once all the
+    // subscribers have cancelled; this analyzer warning is safe to ignore.
+    StreamController<DocumentSnapshot> controller; // ignore: close_sinks
+    controller = new StreamController<DocumentSnapshot>.broadcast(
+      onListen: () {
+        _handle = _firestore._channel.invokeMethod(
+          'Query#addDocumentListener', <String, dynamic>{
+          'path': path,
+        },
+        );
+        _handle.then((int handle) {
+          Firestore._documentObservers[handle] = controller;
+        });
+      },
+      onCancel: () {
+        _handle.then((int handle) async {
+          await _firestore._channel.invokeMethod(
+            'Query#removeListener',
+            <String, dynamic>{ 'handle': handle },
+          );
+          Firestore._queryObservers.remove(handle);
+        });
+      },
+    );
+    return controller.stream;
+  }
 }

@@ -67,12 +67,29 @@ FIRQuery *getQuery(NSDictionary *arguments) {
     __block NSNumber *handle = [NSNumber numberWithInt:_nextListenerHandle++];
     id<FIRListenerRegistration> listener =
         [getQuery(call.arguments) addSnapshotListener:^(FIRQuerySnapshot * _Nullable snapshot, NSError * _Nullable error) {
+      if (error)
+        result(error.flutterError);
       NSMutableArray *documents = [NSMutableArray array];
       for (FIRDocumentSnapshot *document in snapshot.documents) {
         [documents addObject:document.data];
       }
       [self.channel invokeMethod:@"QuerySnapshot"
                        arguments:@{ @"handle" : handle, @"documents" : documents }];
+    }];
+    _listeners[handle] = listener;
+    result(handle);
+  } else if ([@"Query#addDocumentListener" isEqualToString:call.method]) {
+    __block NSNumber *handle = [NSNumber numberWithInt:_nextListenerHandle++];
+    FIRDocumentReference *reference = [[FIRFirestore firestore] documentWithPath:call.arguments[@"path"]];
+    id<FIRListenerRegistration> listener =
+    [reference addSnapshotListener:^(FIRDocumentSnapshot *snapshot, NSError * _Nullable error) {
+      if (error)
+        result(error.flutterError);
+      [self.channel invokeMethod:@"DocumentSnapshot"
+                       arguments:@{
+                                    @"handle" : handle,
+                                    @"data" : snapshot.exists ? snapshot.data : [NSNull null],
+                                  }];
     }];
     _listeners[handle] = listener;
     result(handle);
