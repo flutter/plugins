@@ -67,6 +67,8 @@ FIRQuery *getQuery(NSDictionary *arguments) {
     __block NSNumber *handle = [NSNumber numberWithInt:_nextListenerHandle++];
     id<FIRListenerRegistration> listener =
         [getQuery(call.arguments) addSnapshotListener:^(FIRQuerySnapshot * _Nullable snapshot, NSError * _Nullable error) {
+      if (error)
+        result(error.flutterError);
       NSMutableArray *documents = [NSMutableArray array];
       for (FIRDocumentSnapshot *document in snapshot.documents) {
         [documents addObject:document.data];
@@ -81,8 +83,13 @@ FIRQuery *getQuery(NSDictionary *arguments) {
     FIRDocumentReference *reference = [[FIRFirestore firestore] documentWithPath:call.arguments[@"path"]];
     id<FIRListenerRegistration> listener =
     [reference addSnapshotListener:^(FIRDocumentSnapshot *snapshot, NSError * _Nullable error) {
+      if (error)
+        result(error.flutterError);
       [self.channel invokeMethod:@"DocumentSnapshot"
-                       arguments:@{ @"handle" : handle, @"data" : snapshot.data }];
+                       arguments:@{
+                                    @"handle" : handle,
+                                    @"data" : snapshot.exists ? snapshot.data : [NSNull null],
+                                  }];
     }];
     _listeners[handle] = listener;
     result(handle);

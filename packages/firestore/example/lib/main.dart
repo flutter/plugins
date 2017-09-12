@@ -7,33 +7,26 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_firestore/firestore.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 void main() {
-  runApp(new MyApp());
+  runApp(new MaterialApp(title: 'Firestore Example', home: new MyHomePage()));
 }
 
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return new MaterialApp(
-      title: 'Firestore Example',
-      home: new MyHomePage(),
-    );
-  }
-}
+final GoogleSignIn googleSignIn = new GoogleSignIn();
 
-class MyHomePage extends StatefulWidget {
-  @override
-  _MyHomePageState createState() => new _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  final CollectionReference _messagesRef = Firestore.instance
-    .collection('messages');
+class MyHomePage extends StatelessWidget {
+  CollectionReference get messages => Firestore.instance.collection('messages');
 
   Future<Null> _addMessage() async {
+    final GoogleSignInAccount account = await googleSignIn.signIn();
+    if (account == null)
+      return;
     FirebaseUser user = await FirebaseAuth.instance.signInAnonymously();
-    _messagesRef.document().setData(<String, String>{
+    await Firestore.instance.document("users/${user.uid}").setData({
+      'photoUrl': account.photoUrl,
+    });
+    await messages.document().setData(<String, String>{
       'author': user.uid,
       'message': 'Hello world!',
     });
@@ -46,19 +39,29 @@ class _MyHomePageState extends State<MyHomePage> {
         title: const Text('Firestore Example'),
       ),
       body: new StreamBuilder(
-        stream: _messagesRef.snapshots,
+        stream: messages.snapshots,
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (!snapshot.hasData)
             return new Center(child: new Text('Loading...'));
           final List<DocumentSnapshot> documents = snapshot.data.documents;
           return new ListView.builder(
+            reverse: true,
             itemBuilder: (BuildContext context, int index) {
               if (index >= documents.length)
                 return null;
-              DocumentSnapshot document = documents[index];
+              final DocumentSnapshot document = documents[documents.length - index - 1];
+              final String author = document['author'];
               return new ListTile(
-                leading: new CircleAvatar(
-                  child: new Text(document['author'].substring(0, 2)),
+                leading: new StreamBuilder(
+                  stream: Firestore.instance.document("users/$author").snapshots,
+                  builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> user) {
+                    Map<String, String> data = user.data?.data;
+                    if (data == null)
+                      return new CircleAvatar();
+                    return new CircleAvatar(
+                      backgroundImage: new NetworkImage(user.data.data['photoUrl']),
+                    );
+                  },
                 ),
                 title: new Text(document['message']),
               );
