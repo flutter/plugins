@@ -59,7 +59,7 @@ public class FblePlugin implements MethodCallHandler {
   private static final String GET_LOCAL_ADAPTERS = "getLocalAdapters";
   private static final String START_SCAN = "startScan";
   private static final String STOP_SCAN = "stopScan";
-  private static final String NAMESPACE = "io.flutter.plugin.fble";
+  private static final String NAMESPACE = "io.flutter.plugins.fble";
   private static final String METHOD_NAMESPACE = NAMESPACE + ".method";
   private static final String EVENT_NAMESPACE = NAMESPACE + ".event";
 
