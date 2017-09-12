@@ -38,3 +38,7 @@ android {
         compile 'com.google.firebase:firebase-auth:11.0.+'
     }
 }
+
+dependencies {
+    provided files('tmplib/flutter.jar')
+}

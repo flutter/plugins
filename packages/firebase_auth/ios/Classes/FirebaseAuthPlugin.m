@@ -108,15 +108,20 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
                       result(error != nil ? error.flutterError : token);
                     }];
   } else if ([@"linkWithEmailAndPassword" isEqualToString:call.method]) {
-      NSString *email = call.arguments[@"email"];
-      NSString *password = call.arguments[@"password"];
-
-      FIRAuthCredential *credential = [FIREmailPasswordAuthProvider credentialWithEmail:email password:password];
-      
-      [[FIRAuth auth].currentUser linkWithCredential:credential
-                           completion:^(FIRUser *user, NSError *error) {
-                               [self sendResult:result forUser:user error:error];
-                           }];
+    NSString *email = call.arguments[@"email"];
+    NSString *password = call.arguments[@"password"];
+    FIRAuthCredential *credential =
+        [FIREmailPasswordAuthProvider credentialWithEmail:email password:password];
+    [[FIRAuth auth].currentUser linkWithCredential:credential
+                                        completion:^(FIRUser *user, NSError *error) {
+                                          [self sendResult:result forUser:user error:error];
+                                        }];
+  } else if ([@"sendEmailVerification" isEqualToString:call.method]) {
+      [[FIRAuth auth].currentUser sendEmailVerificationWithCompletion:^(NSError *_Nullable error) {
+          if (error != nil) {
+              [self sendResult:nil forUser:nil error:error];
+          }
+      }];
   } else {
     result(FlutterMethodNotImplemented);
   }

@@ -193,4 +193,7 @@ class FirebaseAuth {
     return currentUser;
   }
 
+  Future<Null> sendEmailVerification() async {
+    return await channel.invokeMethod("sendEmailVerification");
+  }
 }

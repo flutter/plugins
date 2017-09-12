@@ -76,6 +76,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       case "linkWithEmailAndPassword":
         handleLinkWithEmailAndPassword(call, result);
         break;
+      case "sendEmailVerification":
+        handleSendEmailVerification(call, result);
+        break;
       default:
         result.notImplemented();
         break;
@@ -181,6 +184,24 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
                 }
               }
             });
+  }
+
+  private void handleSendEmailVerification(MethodCall call, final Result result) {
+    firebaseAuth
+        .getCurrentUser()
+        .sendEmailVerification()
+        .addOnCompleteListener(
+            new OnCompleteListener<Void>() {
+              @Override
+              public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                  //result.success("");
+                } else {
+                  result.error(ERROR_REASON_EXCEPTION, task.getException().getMessage(), null);
+                }
+              }
+            }
+        );
   }
 
   private class SignInCompleteListener implements OnCompleteListener<AuthResult> {
