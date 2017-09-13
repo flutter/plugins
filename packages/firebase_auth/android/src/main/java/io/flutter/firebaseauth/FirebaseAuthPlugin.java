@@ -204,7 +204,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
               @Override
               public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
-                  //result.success("");
+                  result.success(null);
                 } else {
                   result.error(ERROR_REASON_EXCEPTION, task.getException().getMessage(), null);
                 }
@@ -224,7 +224,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
               @Override
               public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
-                  result.success("");
+                  result.success(null);
                 } else {
                   result.error(ERROR_REASON_EXCEPTION, task.getException().getMessage(), null);
                 }
@@ -245,7 +245,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
               @Override
               public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
-                  result.success("");
+                  result.success(null);
                 } else {
                   result.error(ERROR_REASON_EXCEPTION, task.getException().getMessage(), null);
                 }
@@ -263,7 +263,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
               @Override
               public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
-                  result.success("");
+                  result.success(null);
                 } else {
                   result.error(ERROR_REASON_EXCEPTION, task.getException().getMessage(), null);
                 }

@@ -123,6 +123,9 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
           } else {
               result(@"");
           }
+          else {
+              result(nil);
+          }
       }];
   } else if ([@"sendPasswordResetEmail" isEqualToString:call.method]) {
       NSString *email = call.arguments[@"email"];
@@ -131,6 +134,9 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
               [self sendResult:nil forUser:nil error:error];
           } else {
               result(@"");
+          }
+          else {
+              result(nil);
           }
       }];
   }  else if ([@"updatePassword" isEqualToString:call.method]) {
@@ -141,6 +147,9 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
           } else {
               result(@"");
           }
+          else {
+              result(nil);
+          }
       }];
   } else if ([@"userReload" isEqualToString:call.method]) {
       [[FIRAuth auth].currentUser reloadWithCompletion:^(NSError *_Nullable error) {
@@ -148,6 +157,9 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
               [self sendResult:nil forUser:nil error:error];
           } else {
               result(@"");
+          }
+          else {
+              result(nil);
           }
       }];
   } else {
