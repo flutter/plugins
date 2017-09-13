@@ -1,0 +1,19 @@
+name: fble
+description: Flutter plugin for Bluetooth Low Energy.
+version: 0.0.1
+author: Flutter Team <flutter-dev@googlegroups.com>
+homepage: https://github.com/flutter/plugins/tree/master/packages/fble
+
+flutter:
+  plugin:
+    androidPackage: io.flutter.plugins.fble
+    pluginClass: FblePlugin
+
+dependencies:
+  collection:
+  flutter:
+    sdk: flutter
+  protobuf: '^0.5.0'
+
+dev_dependencies:
+  test:

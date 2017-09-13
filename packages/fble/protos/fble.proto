@@ -1,0 +1,71 @@
+// Copyright 2017, the Flutter project authors. All rights reserved.
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are
+// met:
+//
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above
+//       copyright notice, this list of conditions and the following
+//       disclaimer in the documentation and/or other materials provided
+//       with the distribution.
+//     * Neither the name of Google Inc. nor the names of its
+//       contributors may be used to endorse or promote products derived
+//       from this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+syntax = "proto3";
+
+option java_package = "io.flutter.plugins.fble";
+option java_outer_classname = "Protos";
+option objc_class_prefix = "Protos";
+
+message GetLocalAdaptersResponse {
+  enum Platform {
+    ANDROID = 0;
+    IOS = 1;
+  };
+  // The platform.
+  Platform platform = 1;
+  // All usable adapters.
+  repeated LocalAdapter adapters = 2;
+};
+
+message LocalAdapter {
+  string opaque_id = 1;
+}
+
+// The advertisement data are different in Android and iOS. Instead of defining
+// the data structure in Dart code, we define it in proto so that it can be used
+// in both Java and Obj-C.
+message AdvertisementData {
+  string local_name = 1;
+  bytes manufacturer_data = 2;
+  map<string, bytes> service_data = 3;  // Map of service UUIDs to their data.
+  int32 tx_power_level = 4;
+  bool connectable = 5;
+}
+
+message StartScanRequest {
+  string adapter_id = 1;
+  int32 android_scan_mode = 2;
+  repeated string service_uuids = 3;
+}
+
+message ScanResult {
+  string remote_id = 1;  // The received peer's ID.
+  string name = 2;  // The peer's name.
+  int32 rssi = 3;
+  AdvertisementData advertisement_data = 4;
+}
