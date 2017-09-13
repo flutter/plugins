@@ -120,6 +120,8 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
       [[FIRAuth auth].currentUser sendEmailVerificationWithCompletion:^(NSError *_Nullable error) {
           if (error != nil) {
               [self sendResult:nil forUser:nil error:error];
+          } else {
+              result(@"");
           }
       }];
   } else if ([@"sendPasswordResetEmail" isEqualToString:call.method]) {
@@ -127,6 +129,8 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
       [[FIRAuth auth] sendPasswordResetWithEmail:email completion:^(NSError *_Nullable error) {
           if (error != nil) {
               [self sendResult:nil forUser:nil error:error];
+          } else {
+              result(@"");
           }
       }];
   }  else if ([@"updatePassword" isEqualToString:call.method]) {
@@ -134,12 +138,16 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
       [[FIRAuth auth].currentUser updatePassword:password completion:^(NSError *_Nullable error) {
           if (error != nil) {
               [self sendResult:nil forUser:nil error:error];
+          } else {
+              result(@"");
           }
       }];
   } else if ([@"userReload" isEqualToString:call.method]) {
       [[FIRAuth auth].currentUser reloadWithCompletion:^(NSError *_Nullable error) {
           if (error != nil) {
               [self sendResult:nil forUser:nil error:error];
+          } else {
+              result(@"");
           }
       }];
   } else {
