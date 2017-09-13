@@ -121,9 +121,6 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
           if (error != nil) {
               [self sendResult:nil forUser:nil error:error];
           } else {
-              result(@"");
-          }
-          else {
               result(nil);
           }
       }];
@@ -133,32 +130,36 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
           if (error != nil) {
               [self sendResult:nil forUser:nil error:error];
           } else {
-              result(@"");
-          }
-          else {
               result(nil);
           }
       }];
   }  else if ([@"updatePassword" isEqualToString:call.method]) {
-      NSString *password = call.arguments[@"password"];
-      [[FIRAuth auth].currentUser updatePassword:password completion:^(NSError *_Nullable error) {
-          if (error != nil) {
+      NSString *currentPassword = call.arguments[@"currentPassword"];
+      NSString *newPassword = call.arguments[@"newPassword"];
+      FIRUser *user = [FIRAuth auth].currentUser;
+      NSString *email = user.email;
+      FIRAuthCredential *credential =
+      [FIREmailPasswordAuthProvider credentialWithEmail:email password:currentPassword];
+      [user reauthenticateWithCredential:credential completion:^(NSError * _Nullable error) {
+          if (error) {
               [self sendResult:nil forUser:nil error:error];
-          } else {
-              result(@"");
           }
           else {
-              result(nil);
+              [user updatePassword:newPassword completion:^(NSError * _Nullable error) {
+                  if (error != nil) {
+                      [self sendResult:nil forUser:nil error:error];
+                  } else {
+                      result(nil);
+                  }
+              }];
           }
       }];
   } else if ([@"userReload" isEqualToString:call.method]) {
       [[FIRAuth auth].currentUser reloadWithCompletion:^(NSError *_Nullable error) {
           if (error != nil) {
               [self sendResult:nil forUser:nil error:error];
+
           } else {
-              result(@"");
-          }
-          else {
               result(nil);
           }
       }];

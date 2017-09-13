@@ -204,11 +204,18 @@ class FirebaseAuth {
   Future<Null> sendPasswordResetEmail(@required String email) async {
     assert(email != null);
 
-    return await channel.invokeMethod("sendPasswordResetEmail", <String,String>{ "email" : email }) as Future<Null>;
+    return await channel.invokeMethod(
+            "sendPasswordResetEmail", <String, String>{"email": email})
+        as Future<Null>;
   }
 
-  Future<Null> updatePassword(@required String password) async {
-    assert(password != null);
-    return await channel.invokeMethod("updatePassword", <String,String>{ "password" : password }) as Future<Null>;
+  Future<Null> updatePassword(
+      @required String currentPassword, @required String newPassword) async {
+    assert(currentPassword != null);
+    assert(newPassword != null);
+    return await channel.invokeMethod("updatePassword", <String, String>{
+      "currentPassword": currentPassword,
+      "newPassword": newPassword
+    }) as Future<Null>;
   }
 }
