@@ -136,6 +136,12 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
               [self sendResult:nil forUser:nil error:error];
           }
       }];
+  } else if ([@"userReload" isEqualToString:call.method]) {
+      [[FIRAuth auth].currentUser reloadWithCompletion:^(NSError *_Nullable error) {
+          if (error != nil) {
+              [self sendResult:nil forUser:nil error:error];
+          }
+      }];
   } else {
     result(FlutterMethodNotImplemented);
   }

@@ -61,6 +61,10 @@ class FirebaseUser extends UserInfo {
     });
   }
 
+  Future<Null> reload() {
+    return FirebaseAuth.channel.invokeMethod('userReload') as Future<Null>;
+  }
+
   @override
   String toString() {
     return '$runtimeType($_data)';

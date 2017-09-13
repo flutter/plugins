@@ -85,6 +85,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       case "updatePassword":
         handleUpdatePassword(call, result);
         break;
+      case "userReload":
+        handleUserReload(call, result);
+        break;
       default:
         result.notImplemented();
         break;
@@ -237,6 +240,24 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     firebaseAuth
         .getCurrentUser()
         .updatePassword(password)
+        .addOnCompleteListener(
+            new OnCompleteListener<Void>() {
+              @Override
+              public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                  //result.success("");
+                } else {
+                  result.error(ERROR_REASON_EXCEPTION, task.getException().getMessage(), null);
+                }
+              }
+            }
+        );
+  }
+
+  private void handleUserReload(MethodCall call, final Result result) {
+    firebaseAuth
+        .getCurrentUser()
+        .reload()
         .addOnCompleteListener(
             new OnCompleteListener<Void>() {
               @Override
