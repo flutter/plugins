@@ -31,11 +31,13 @@ import java.util.Map;
 public class FirebaseAuthPlugin implements MethodCallHandler {
   private final Activity activity;
   private final FirebaseAuth firebaseAuth;
+  private FirebaseAuth.AuthStateListener authListener;
+  private static MethodChannel channel;
 
   private static final String ERROR_REASON_EXCEPTION = "exception";
 
   public static void registerWith(PluginRegistry.Registrar registrar) {
-    final MethodChannel channel =
+    channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_auth");
     channel.setMethodCallHandler(new FirebaseAuthPlugin(registrar.activity()));
   }
@@ -64,6 +66,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       case "signInWithGoogle":
         handleSignInWithGoogle(call, result);
         break;
+      case "signInWithCustomToken":
+        handleSignInWithCustomToken(call, result);
+        break;
       case "signInWithFacebook":
         handleSignInWithFacebook(call, result);
         break;
@@ -75,6 +80,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         break;
       case "linkWithEmailAndPassword":
         handleLinkWithEmailAndPassword(call, result);
+        break;
+      case "listenAuthState":
+        handleListenAuthState(call, result);
         break;
       default:
         result.notImplemented();
@@ -159,6 +167,15 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         .addOnCompleteListener(activity, new SignInCompleteListener(result));
   }
 
+  private void handleSignInWithCustomToken(MethodCall call, final Result result) {
+    @SuppressWarnings("unchecked")
+    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    String token = arguments.get("token");
+    firebaseAuth
+            .signInWithCustomToken(token)
+            .addOnCompleteListener(activity, new SignInCompleteListener(result));
+  }
+
   private void handleSignOut(MethodCall call, final Result result) {
     firebaseAuth.signOut();
     result.success(null);
@@ -182,6 +199,18 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
                 }
               }
             });
+  }
+
+  private void handleListenAuthState(MethodCall call, final Result result) {
+    if (authListener == null) {
+      authListener = new FirebaseAuth.AuthStateListener() {
+        @Override
+        public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+          channel.invokeMethod("onAuthStateChanged", null);
+        }
+      };
+    }
+    result.success(null);
   }
 
   private class SignInCompleteListener implements OnCompleteListener<AuthResult> {

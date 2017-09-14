@@ -73,12 +73,18 @@ class FirebaseAuth {
     'plugins.flutter.io/firebase_auth',
   );
 
+  StreamController<Null> _onAuthStateChanged;
+
   /// Provides an instance of this class corresponding to the default app.
   ///
   /// TODO(jackson): Support for non-default apps.
   static FirebaseAuth instance = new FirebaseAuth._();
 
-  FirebaseAuth._();
+  FirebaseAuth._() {
+    channel.setMethodCallHandler(_callHandler);
+  }
+
+  Stream<Null> get onAuthStateChanged => _onAuthStateChanged.stream;
 
   /// Asynchronously creates and becomes an anonymous user.
   ///
@@ -158,6 +164,27 @@ class FirebaseAuth {
     return currentUser;
   }
 
+  Future<FirebaseUser> signInWithCustomToken({@required String token}) async {
+    assert(token != null);
+    final Map<String, dynamic> data = await channel.invokeMethod(
+      'signInWithCustomToken',
+      <String, String>{
+        'token': token,
+      },
+    );
+    final FirebaseUser currentUser = new FirebaseUser._(data);
+    return currentUser;
+  }
+
+  Future<Null> startListeningAuthState() {
+    _onAuthStateChanged ??= new StreamController<Null>.broadcast();
+    return channel.invokeMethod('listenAuthState');
+  }
+
+  void dispose() {
+    _onAuthStateChanged?.close();
+  }
+
   Future<Null> signOut() async {
     return await channel.invokeMethod("signOut");
   }
@@ -191,5 +218,13 @@ class FirebaseAuth {
     );
     final FirebaseUser currentUser = new FirebaseUser._(data);
     return currentUser;
+  }
+
+  void _callHandler(MethodCall call) {
+    switch (call.method) {
+      case "onAuthStateChanged":
+        _onAuthStateChanged.add(null);
+        break;
+    }
   }
 }
