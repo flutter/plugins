@@ -37,8 +37,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
   private static final String ERROR_REASON_EXCEPTION = "exception";
 
   public static void registerWith(PluginRegistry.Registrar registrar) {
-    channel =
-        new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_auth");
+    channel = new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_auth");
     channel.setMethodCallHandler(new FirebaseAuthPlugin(registrar.activity()));
   }
 
@@ -175,8 +174,8 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     Map<String, String> arguments = (Map<String, String>) call.arguments;
     String token = arguments.get("token");
     firebaseAuth
-            .signInWithCustomToken(token)
-            .addOnCompleteListener(activity, new SignInCompleteListener(result));
+        .signInWithCustomToken(token)
+        .addOnCompleteListener(activity, new SignInCompleteListener(result));
   }
 
   private void handleSignOut(MethodCall call, final Result result) {
@@ -206,12 +205,13 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
 
   private void handleStartListeningAuthState(MethodCall call, final Result result) {
     if (mAuthStateListener == null) {
-      mAuthStateListener = new FirebaseAuth.AuthStateListener() {
-        @Override
-        public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-          channel.invokeMethod("onAuthStateChanged", null);
-        }
-      };
+      mAuthStateListener =
+          new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+              channel.invokeMethod("onAuthStateChanged", null);
+            }
+          };
       FirebaseAuth.getInstance().addAuthStateListener(mAuthStateListener);
     }
     result.success(null);
