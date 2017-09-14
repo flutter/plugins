@@ -178,10 +178,11 @@ class FirebaseAuth {
 
   Future<Null> startListeningAuthState() {
     _onAuthStateChanged ??= new StreamController<Null>.broadcast();
-    return channel.invokeMethod('listenAuthState');
+    return channel.invokeMethod('startListeningAuthState');
   }
 
   void dispose() {
+    channel.invokeMethod("stopListeningAuthState");
     _onAuthStateChanged?.close();
   }
 
@@ -220,11 +221,12 @@ class FirebaseAuth {
     return currentUser;
   }
 
-  void _callHandler(MethodCall call) {
+  Future<Null> _callHandler(MethodCall call) async {
     switch (call.method) {
       case "onAuthStateChanged":
         _onAuthStateChanged.add(null);
         break;
     }
+    return null;
   }
 }

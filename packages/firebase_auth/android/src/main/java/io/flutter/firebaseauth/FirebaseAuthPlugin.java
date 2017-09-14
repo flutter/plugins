@@ -31,7 +31,7 @@ import java.util.Map;
 public class FirebaseAuthPlugin implements MethodCallHandler {
   private final Activity activity;
   private final FirebaseAuth firebaseAuth;
-  private FirebaseAuth.AuthStateListener authListener;
+  private FirebaseAuth.AuthStateListener mAuthStateListener;
   private static MethodChannel channel;
 
   private static final String ERROR_REASON_EXCEPTION = "exception";
@@ -81,8 +81,11 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       case "linkWithEmailAndPassword":
         handleLinkWithEmailAndPassword(call, result);
         break;
-      case "listenAuthState":
-        handleListenAuthState(call, result);
+      case "startListeningAuthState":
+        handleStartListeningAuthState(call, result);
+        break;
+      case "stopListeningAuthState":
+        handleStopListeningAuthState(call, result);
         break;
       default:
         result.notImplemented();
@@ -201,14 +204,22 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
             });
   }
 
-  private void handleListenAuthState(MethodCall call, final Result result) {
-    if (authListener == null) {
-      authListener = new FirebaseAuth.AuthStateListener() {
+  private void handleStartListeningAuthState(MethodCall call, final Result result) {
+    if (mAuthStateListener == null) {
+      mAuthStateListener = new FirebaseAuth.AuthStateListener() {
         @Override
         public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
           channel.invokeMethod("onAuthStateChanged", null);
         }
       };
+      FirebaseAuth.getInstance().addAuthStateListener(mAuthStateListener);
+    }
+    result.success(null);
+  }
+
+  private void handleStopListeningAuthState(MethodCall call, final Result result) {
+    if (mAuthStateListener != null) {
+      FirebaseAuth.getInstance().removeAuthStateListener(mAuthStateListener);
     }
     result.success(null);
   }
