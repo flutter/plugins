@@ -1,3 +1,7 @@
+## 0.2.3+1
+
+* Aligned author name with rest of repo.
+
 ## 0.2.3
 
 * Remove dependency on Google/SignIn
