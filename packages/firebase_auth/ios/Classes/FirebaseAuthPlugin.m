@@ -119,7 +119,7 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
   } else if ([@"sendEmailVerification" isEqualToString:call.method]) {
       [[FIRAuth auth].currentUser sendEmailVerificationWithCompletion:^(NSError *_Nullable error) {
           if (error != nil) {
-              [self sendResult:nil forUser:nil error:error];
+              [self sendResult:result forUser:nil error:error];
           } else {
               result(nil);
           }
@@ -128,7 +128,7 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
       NSString *email = call.arguments[@"email"];
       [[FIRAuth auth] sendPasswordResetWithEmail:email completion:^(NSError *_Nullable error) {
           if (error != nil) {
-              [self sendResult:nil forUser:nil error:error];
+              [self sendResult:result forUser:nil error:error];
           } else {
               result(nil);
           }
@@ -142,12 +142,12 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
       [FIREmailPasswordAuthProvider credentialWithEmail:email password:currentPassword];
       [user reauthenticateWithCredential:credential completion:^(NSError * _Nullable error) {
           if (error) {
-              [self sendResult:nil forUser:nil error:error];
+              [self sendResult:result forUser:nil error:error];
           }
           else {
               [user updatePassword:newPassword completion:^(NSError * _Nullable error) {
                   if (error != nil) {
-                      [self sendResult:nil forUser:nil error:error];
+                      [self sendResult:result forUser:nil error:error];
                   } else {
                       result(nil);
                   }
@@ -157,7 +157,7 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
   } else if ([@"userReload" isEqualToString:call.method]) {
       [[FIRAuth auth].currentUser reloadWithCompletion:^(NSError *_Nullable error) {
           if (error != nil) {
-              [self sendResult:nil forUser:nil error:error];
+              [self sendResult:result forUser:nil error:error];
 
           } else {
               result(nil);
