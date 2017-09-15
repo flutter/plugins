@@ -159,9 +159,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     String accessToken = arguments.get("accessToken");
     AuthCredential credential = GoogleAuthProvider.getCredential(idToken, accessToken);
     firebaseAuth
-            .getCurrentUser()
-            .linkWithCredential(credential)
-            .addOnCompleteListener(activity, new SignInCompleteListener(result));
+        .getCurrentUser()
+        .linkWithCredential(credential)
+        .addOnCompleteListener(activity, new SignInCompleteListener(result));
   }
 
   private void handleSignInWithFacebook(MethodCall call, final Result result) {
