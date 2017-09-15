@@ -1,3 +1,7 @@
+## 0.0.6
+
+* Added StorageReference getData function to download files into memory.
+
 ## 0.0.5+1
 
 * Aligned author name with rest of repo.

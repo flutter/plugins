@@ -4,6 +4,7 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
 
@@ -27,11 +28,24 @@ class StorageReference {
     return new StorageReference._(childPath);
   }
 
+  /// Asynchronously uploads a file to the currently specified StorageReference, without additional metadata.
   StorageUploadTask put(File file) {
     final StorageUploadTask task =
         new StorageUploadTask._(file, _pathComponents.join("/"));
     task._start();
     return task;
+  }
+
+  /// Asynchronously downloads the object at the StorageReference to a list in memory.
+  /// A list of the provided max size will be allocated.
+  Future<Uint8List> getData(int maxSize) {
+    return FirebaseStorage._channel.invokeMethod(
+      "StorageReference#getData",
+      <String, dynamic>{
+        'maxSize': maxSize,
+        'path': _pathComponents.join("/"),
+      },
+    );
   }
 }
 
