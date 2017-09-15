@@ -1,3 +1,7 @@
+## 0.2.5+1
+
+* Aligned author name with rest of repo.
+
 ## [0.2.5] - 2017-08-29
 
 * Fixed crashes when setting null values. They now cause the key to be removed.
