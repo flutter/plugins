@@ -18,8 +18,8 @@ void main() {
       setUp(() {
         channel.setMockMethodCallHandler((MethodCall methodCall) {
           log.add(methodCall);
-          return new Future<dynamic>.value(
-              new Uint8List.fromList([1, 2, 3, 4]));
+          return new Future<Uint8List>.value(
+              new Uint8List.fromList(<int>[1, 2, 3, 4]));
         });
         ref = FirebaseStorage.instance
             .ref()
@@ -43,7 +43,7 @@ void main() {
 
       test('returns correct result', () async {
         expect(await ref.getData(10),
-            equals(new Uint8List.fromList([1, 2, 3, 4])));
+            equals(new Uint8List.fromList(<int>[1, 2, 3, 4])));
       });
     });
   });
