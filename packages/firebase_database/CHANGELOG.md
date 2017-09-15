@@ -1,3 +1,7 @@
+## 0.1.0+1
+
+* Aligned author name with rest of repo.
+
 ## 0.1.0
 
 * **Breaking Change**: Added current list index to the type signature of itemBuilder for FirebaseAnimatedList.

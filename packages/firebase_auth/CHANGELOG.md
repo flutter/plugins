@@ -1,3 +1,19 @@
+## 0.2.3+1
+
+* Aligned author name with rest of repo.
+
+## 0.2.3
+
+* Remove dependency on Google/SignIn
+
+## 0.2.2
+
+* Remove dependency on FirebaseUI
+
+## 0.2.1
+
+* Added support for linkWithEmailAndPassword
+
 ## 0.2.0
 
 * **Breaking Change**: Method currentUser is async now.
