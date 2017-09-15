@@ -1,3 +1,7 @@
+## 0.0.6
+
+* Added StorageReference getData function to download files into memory.
+
 ## 0.0.5
 
 * Updated to Firebase SDK to always use latest patch version for 11.0.x builds
