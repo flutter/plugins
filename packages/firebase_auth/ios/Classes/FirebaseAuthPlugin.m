@@ -116,6 +116,15 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
                                         completion:^(FIRUser *user, NSError *error) {
                                           [self sendResult:result forUser:user error:error];
                                         }];
+  } else if ([@"linkWithGoogleCredential" isEqualToString:call.method]) {
+    NSString *idToken = call.arguments[@"idToken"];
+    NSString *accessToken = call.arguments[@"accessToken"];
+    FIRAuthCredential *credential =
+        [FIRGoogleAuthProvider credentialWithIDToken:idToken accessToken:accessToken];
+    [[FIRAuth auth].currentUser linkWithCredential:credential
+                                        completion:^(FIRUser *user, NSError *error) {
+                                          [self sendResult:result forUser:user error:error];
+                                        }];
   } else {
     result(FlutterMethodNotImplemented);
   }
