@@ -74,8 +74,9 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
       NetworkInfo info = manager.getActiveNetworkInfo();
       if (info != null && info.isConnected()) {
         result.success(getNetworkType(info.getType()));
+      } else {
+        result.success("none");
       }
-      result.success("none");
     } else {
       result.notImplemented();
     }
