@@ -10,13 +10,13 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *shareChannel =
-      [FlutterMethodChannel methodChannelWithName:PLATFORM_CHANNEL
-                                  binaryMessenger:registrar.messenger];
-
+  [FlutterMethodChannel methodChannelWithName:PLATFORM_CHANNEL
+                              binaryMessenger:registrar.messenger];
+  
   [shareChannel setMethodCallHandler:^(FlutterMethodCall *call, FlutterResult result) {
     if ([@"share" isEqualToString:call.method]) {
-      [self share:call.arguments
-          withController:[UIApplication sharedApplication].keyWindow.rootViewController];
+      [self share:call
+   withController:[UIApplication sharedApplication].keyWindow.rootViewController];
       result(nil);
     } else {
       result([FlutterError errorWithCode:@"UNKNOWN_METHOD"
@@ -26,11 +26,22 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
   }];
 }
 
-+ (void)share:(id)sharedItems withController:(UIViewController *)controller {
++ (void)share:(FlutterMethodCall *)call withController:(UIViewController *)controller {
   UIActivityViewController *activityViewController =
-      [[UIActivityViewController alloc] initWithActivityItems:@[ sharedItems ]
-                                        applicationActivities:nil];
+  [[UIActivityViewController alloc] initWithActivityItems:@[ call.arguments[@"text"] ]
+                                    applicationActivities:nil];
   [controller presentViewController:activityViewController animated:YES completion:nil];
+  UIPopoverPresentationController *popContronller = [activityViewController popoverPresentationController];
+  if (popContronller != nil) {
+    NSNumber *x = call.arguments[@"tapX"];
+    NSNumber *y = call.arguments[@"tapY"];
+    if ((x != nil) && (y != nil)) {
+      popContronller.sourceRect = CGRectMake(x.floatValue, y.floatValue, 0, 0);
+    }
+    else {
+      popContronller.sourceRect = CGRectZero;
+    }
+  }
+  popContronller.sourceView = controller.view;
 }
-
 @end
