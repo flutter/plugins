@@ -1,4 +1,4 @@
-## 0.0.2
+## 0.1.0
 
 * Breaking API change: Have a Connectivity class instead of a top level function
 * Introduce ability to listen for network state changes
