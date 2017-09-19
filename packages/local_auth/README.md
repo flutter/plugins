@@ -100,7 +100,7 @@ Update your project's `AndroidManifest.xml` file to include the
 
 You can set the `stickyAuth` option on the plugin to true so that plugin does not
 return failure if the app is put to background by the system. This might happen
-if the user receives a phone call before he gets a chance to authenticate. With
+if the user receives a phone call before they get a chance to authenticate. With
 `stickyAuth` set to false, this would result in plugin returning failure result
 to the Dart app. If set to true, the plugin will retry authenticating when the
 app resumes.

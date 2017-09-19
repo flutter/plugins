@@ -80,6 +80,7 @@ class AuthenticationHelper extends FingerprintManagerCompat.AuthenticationCallba
    * authentication to the user.
    */
   private AlertDialog fingerprintDialog;
+
   private CancellationSignal cancellationSignal;
 
   AuthenticationHelper(
