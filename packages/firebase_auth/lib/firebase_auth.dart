@@ -84,6 +84,10 @@ class FirebaseAuth {
     channel.setMethodCallHandler(_callHandler);
   }
 
+  /// Receive Event each time the user signIn or signOut
+  ///
+  /// Need to call [startListeningAuthState] to receive event
+  /// then call [dispose] when done.
   Stream<Null> get onAuthStateChanged => _onAuthStateChanged.stream;
 
   /// Asynchronously creates and becomes an anonymous user.
@@ -176,11 +180,15 @@ class FirebaseAuth {
     return currentUser;
   }
 
+  /// Start receiving changes about AuthState
+  /// See [onAuthStateChanged]
   Future<Null> startListeningAuthState() {
     _onAuthStateChanged ??= new StreamController<Null>.broadcast();
     return channel.invokeMethod('startListeningAuthState');
   }
 
+  /// Call [stopListeningAuthState] method on native side
+  /// and close [onAuthStateChanged]
   void dispose() {
     channel.invokeMethod("stopListeningAuthState");
     _onAuthStateChanged?.close();
