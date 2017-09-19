@@ -29,6 +29,7 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
 }
 
 @implementation FirebaseAuthPlugin {
+  FIRAuthStateDidChangeListenerHandle authStateChangeListener;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -36,6 +37,7 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/firebase_auth"
                                   binaryMessenger:[registrar messenger]];
   FirebaseAuthPlugin *instance = [[FirebaseAuthPlugin alloc] init];
+  instance.channel = channel;
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
@@ -116,6 +118,24 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
                                         completion:^(FIRUser *user, NSError *error) {
                                           [self sendResult:result forUser:user error:error];
                                         }];
+  } else if ([@"signInWithCustomToken" isEqualToString:call.method]) {
+    NSString *token = call.arguments[@"token"];
+    [[FIRAuth auth] signInWithCustomToken:token
+                               completion:^(FIRUser *user, NSError *error) {
+                                 [self sendResult:result forUser:user error:error];
+                               }];
+
+  } else if ([@"startListeningAuthState" isEqualToString:call.method]) {
+    if (authStateChangeListener) {
+      authStateChangeListener = [[FIRAuth auth]
+          addAuthStateDidChangeListener:^(FIRAuth *_Nonnull auth, FIRUser *_Nullable user) {
+            [self.channel invokeMethod:@"onAuthStateChanged" arguments:nil];
+          }];
+    }
+  } else if ([@"stopListeningAuthState" isEqualToString:call.method]) {
+    if (authStateChangeListener) {
+      [[FIRAuth auth] removeAuthStateDidChangeListener:authStateChangeListener];
+    }
   } else {
     result(FlutterMethodNotImplemented);
   }
