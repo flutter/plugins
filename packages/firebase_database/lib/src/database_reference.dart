@@ -125,6 +125,10 @@ class DatabaseReference extends Query {
   ///
   /// remove() is equivalent to calling set(null)
   Future<Null> remove() => set(null);
+
+  OnDisconnect onDisconnect() {
+    return new OnDisconnect._(_database, this);
+  }
 }
 
 class ServerValue {

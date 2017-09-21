@@ -11,6 +11,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseException;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.OnDisconnect;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import io.flutter.plugin.common.MethodCall;
@@ -275,6 +276,40 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
           Object priority = arguments.get("priority");
           DatabaseReference reference = getReference(arguments);
           reference.setPriority(priority, new DefaultCompletionListener(result));
+          break;
+        }
+
+      case "OnDisconnect#set":
+        {
+          Map<String, Object> arguments = call.arguments();
+          Object value = arguments.get("value");
+          Object priority = arguments.get("priority");
+          DatabaseReference reference = getReference(arguments);
+          OnDisconnect onDisconnect = reference.onDisconnect();
+          if (priority != null) {
+            onDisconnect.setValue(value, (double)priority, new DefaultCompletionListener(result));
+          } else {
+            onDisconnect.setValue(value, new DefaultCompletionListener(result));
+          }
+          break;
+        }
+
+      case "OnDisconnect#update":
+        {
+          Map<String, Object> arguments = call.arguments();
+          Map value = (Map) arguments.get("value");
+          DatabaseReference reference = getReference(arguments);
+          OnDisconnect onDisconnect = reference.onDisconnect();
+          onDisconnect.updateChildren(value, new DefaultCompletionListener(result));
+          break;
+        }
+
+      case "OnDisconnect#cancel":
+        {
+          Map<String, Object> arguments = call.arguments();
+          DatabaseReference reference = getReference(arguments);
+          OnDisconnect onDisconnect = reference.onDisconnect();
+          onDisconnect.cancel(new DefaultCompletionListener(result));
           break;
         }
 
