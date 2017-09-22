@@ -31,7 +31,17 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
 @implementation FirebaseAuthPlugin {
 }
 
++ (void)signOutIfFirstLaunch {
+  static NSString *hasLaunchedKey = @"firebase_auth_plugin.hasLaunchedKey";
+  bool hasLaunched = [[NSUserDefaults standardUserDefaults] boolForKey:hasLaunchedKey];
+  if (!hasLaunched) {
+    [[FIRAuth auth] signOut:nil];
+    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:hasLaunchedKey];
+  }
+}
+
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
+  [FirebaseAuthPlugin signOutIfFirstLaunch];
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/firebase_auth"
                                   binaryMessenger:[registrar messenger]];
