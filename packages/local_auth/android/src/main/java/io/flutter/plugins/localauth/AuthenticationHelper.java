@@ -73,7 +73,6 @@ class AuthenticationHelper extends FingerprintManagerCompat.AuthenticationCallba
   private final AuthCompletionHandler completionHandler;
   private final KeyguardManager keyguardManager;
   private final FingerprintManagerCompat fingerprintManager;
-  private final CancellationSignal cancellationSignal;
   private final MethodCall call;
 
   /**
@@ -82,12 +81,13 @@ class AuthenticationHelper extends FingerprintManagerCompat.AuthenticationCallba
    */
   private AlertDialog fingerprintDialog;
 
+  private CancellationSignal cancellationSignal;
+
   AuthenticationHelper(
       Activity activity, MethodCall call, AuthCompletionHandler completionHandler) {
     this.activity = activity;
     this.completionHandler = completionHandler;
     this.call = call;
-    this.cancellationSignal = new CancellationSignal();
     this.keyguardManager = (KeyguardManager) activity.getSystemService(Context.KEYGUARD_SERVICE);
     this.fingerprintManager = FingerprintManagerCompat.from(activity);
   }
@@ -112,11 +112,22 @@ class AuthenticationHelper extends FingerprintManagerCompat.AuthenticationCallba
     }
   }
 
-  /** Starts the fingerprint listener and shows the fingerprint dialog. */
   private void start() {
     activity.getApplication().registerActivityLifecycleCallbacks(this);
+    resume();
+  }
+
+  private void resume() {
+    cancellationSignal = new CancellationSignal();
     showFingerprintDialog();
     fingerprintManager.authenticate(null, 0, cancellationSignal, this, null);
+  }
+
+  private void pause() {
+    cancellationSignal.cancel();
+    if (fingerprintDialog != null && fingerprintDialog.isShowing()) {
+      fingerprintDialog.dismiss();
+    }
   }
 
   /**
@@ -125,10 +136,7 @@ class AuthenticationHelper extends FingerprintManagerCompat.AuthenticationCallba
    * @param success If the authentication was successful.
    */
   private void stop(boolean success) {
-    cancellationSignal.cancel();
-    if (fingerprintDialog != null && fingerprintDialog.isShowing()) {
-      fingerprintDialog.dismiss();
-    }
+    pause();
     activity.getApplication().unregisterActivityLifecycleCallbacks(this);
     if (success) {
       completionHandler.onSuccess();
@@ -143,7 +151,18 @@ class AuthenticationHelper extends FingerprintManagerCompat.AuthenticationCallba
    */
   @Override
   public void onActivityPaused(Activity activity) {
-    stop(false);
+    if (call.argument("stickyAuth")) {
+      pause();
+    } else {
+      stop(false);
+    }
+  }
+
+  @Override
+  public void onActivityResumed(Activity activity) {
+    if (call.argument("stickyAuth")) {
+      resume();
+    }
   }
 
   @Override
@@ -260,9 +279,6 @@ class AuthenticationHelper extends FingerprintManagerCompat.AuthenticationCallba
 
   @Override
   public void onActivityStarted(Activity activity) {}
-
-  @Override
-  public void onActivityResumed(Activity activity) {}
 
   @Override
   public void onActivityStopped(Activity activity) {}

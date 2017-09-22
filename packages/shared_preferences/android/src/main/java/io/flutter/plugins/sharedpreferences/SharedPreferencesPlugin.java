@@ -144,6 +144,10 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
         case "getAll":
           result.success(getAllPrefs());
           break;
+        case "remove":
+          editor.remove(key).apply();
+          result.success(null);
+          break;
         case "clear":
           for (String keyToDelete : getAllPrefs().keySet()) {
             editor.remove(keyToDelete);

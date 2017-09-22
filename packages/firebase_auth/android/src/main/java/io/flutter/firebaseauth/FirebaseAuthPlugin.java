@@ -13,6 +13,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -72,10 +73,26 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       case "getToken":
         handleGetToken(call, result);
         break;
+      case "linkWithEmailAndPassword":
+        handleLinkWithEmailAndPassword(call, result);
+        break;
       default:
         result.notImplemented();
         break;
     }
+  }
+
+  private void handleLinkWithEmailAndPassword(MethodCall call, Result result) {
+    @SuppressWarnings("unchecked")
+    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    String email = arguments.get("email");
+    String password = arguments.get("password");
+
+    AuthCredential credential = EmailAuthProvider.getCredential(email, password);
+    firebaseAuth
+        .getCurrentUser()
+        .linkWithCredential(credential)
+        .addOnCompleteListener(activity, new SignInCompleteListener(result));
   }
 
   private void handleCurrentUser(MethodCall call, final Result result) {

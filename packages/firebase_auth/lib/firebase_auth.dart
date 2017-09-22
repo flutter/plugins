@@ -169,4 +169,27 @@ class FirebaseAuth {
         data == null ? null : new FirebaseUser._(data);
     return currentUser;
   }
+
+  /// Links email account with current user and returns [Future<FirebaseUser>]
+  /// basically current user with addtional email infomation
+  ///
+  /// throws [PlatformException] when
+  /// 1. email address is already used
+  /// 2. wrong email and password provided
+  Future<FirebaseUser> linkWithEmailAndPassword({
+    @required String email,
+    @required String password,
+  }) async {
+    assert(email != null);
+    assert(password != null);
+    final Map<String, dynamic> data = await channel.invokeMethod(
+      'linkWithEmailAndPassword',
+      <String, String>{
+        'email': email,
+        'password': password,
+      },
+    );
+    final FirebaseUser currentUser = new FirebaseUser._(data);
+    return currentUser;
+  }
 }
