@@ -24,20 +24,20 @@
       @"model" : [device model],
       @"localizedModel" : [device localizedModel],
       @"identifierForVendor" : [[device identifierForVendor] UUIDString],
-      @"isPhysicalDevice": [self isDevicePhysical],
+      @"isPhysicalDevice" : [self isDevicePhysical],
     });
   } else {
     result(FlutterMethodNotImplemented);
   }
 }
 
-//return value is false if code is run on a simulator
-- (NSString*)isDevicePhysical{
-  #if TARGET_OS_SIMULATOR
+// return value is false if code is run on a simulator
+- (NSString*)isDevicePhysical {
+#if TARGET_OS_SIMULATOR
   NSString* isPhysicalDevice = @"false";
-  #else
+#else
   NSString* isPhysicalDevice = @"true";
-  #endif
+#endif
 
   return isPhysicalDevice;
 }
