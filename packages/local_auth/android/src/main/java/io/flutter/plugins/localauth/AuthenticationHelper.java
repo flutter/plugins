@@ -124,7 +124,9 @@ class AuthenticationHelper extends FingerprintManagerCompat.AuthenticationCallba
   }
 
   private void pause() {
-    cancellationSignal.cancel();
+    if (cancellationSignal != null) {
+      cancellationSignal.cancel();
+    }
     if (fingerprintDialog != null && fingerprintDialog.isShowing()) {
       fingerprintDialog.dismiss();
     }
