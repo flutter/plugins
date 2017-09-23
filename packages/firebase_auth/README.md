@@ -23,7 +23,7 @@ Enable the Google services by configuring the Gradle scripts as such.
 ```
 dependencies {
   // Example existing classpath
-  classpath 'com.android.tools.build:gradle:2.2.3'
+  classpath 'com.android.tools.build:gradle:2.3.3'
   // Add the google services classpath
   classpath 'com.google.gms:google-services:3.1.0'
 }
