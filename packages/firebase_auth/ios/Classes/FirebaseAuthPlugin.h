@@ -7,5 +7,4 @@
 #import "Firebase/Firebase.h"
 
 @interface FirebaseAuthPlugin : NSObject<FlutterPlugin>
-@property(nonatomic, retain) FlutterMethodChannel *channel;
 @end

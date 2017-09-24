@@ -73,7 +73,9 @@ class FirebaseAuth {
     'plugins.flutter.io/firebase_auth',
   );
 
-  StreamController<Null> _onAuthStateChanged;
+  final List<StreamController<FirebaseUser>> _authStateChangedController =
+      <StreamController<FirebaseUser>>[];
+  int _counter = 0;
 
   /// Provides an instance of this class corresponding to the default app.
   ///
@@ -84,11 +86,18 @@ class FirebaseAuth {
     channel.setMethodCallHandler(_callHandler);
   }
 
-  /// Receive Event each time the user signIn or signOut
-  ///
-  /// Need to call [startListeningAuthState] to receive event
-  /// then call [dispose] when done.
-  Stream<Null> get onAuthStateChanged => _onAuthStateChanged.stream;
+  /// Receive [FirebaseUser] each time the user signIn or signOut
+  Stream<FirebaseUser> get onAuthStateChanged {
+    final int id = _counter++;
+
+    _authStateChangedController
+        .add(new StreamController<FirebaseUser>.broadcast(onListen: () {
+      channel.invokeMethod('startListeningAuthState', <String, int>{"id": id});
+    }, onCancel: () {
+      channel.invokeMethod("stopListeningAuthState", <String, int>{"id": id});
+    }));
+    return _authStateChangedController[id].stream;
+  }
 
   /// Asynchronously creates and becomes an anonymous user.
   ///
@@ -180,20 +189,6 @@ class FirebaseAuth {
     return currentUser;
   }
 
-  /// Start receiving changes about AuthState
-  /// See [onAuthStateChanged]
-  Future<Null> startListeningAuthState() {
-    _onAuthStateChanged ??= new StreamController<Null>.broadcast();
-    return channel.invokeMethod('startListeningAuthState');
-  }
-
-  /// Call [stopListeningAuthState] method on native side
-  /// and close [onAuthStateChanged]
-  void dispose() {
-    channel.invokeMethod("stopListeningAuthState");
-    _onAuthStateChanged?.close();
-  }
-
   Future<Null> signOut() async {
     return await channel.invokeMethod("signOut");
   }
@@ -232,9 +227,19 @@ class FirebaseAuth {
   Future<Null> _callHandler(MethodCall call) async {
     switch (call.method) {
       case "onAuthStateChanged":
-        _onAuthStateChanged.add(null);
+        _onAuthStageChangedHandler(call);
         break;
     }
     return null;
+  }
+
+  void _onAuthStageChangedHandler(MethodCall call) {
+    final Map<String, dynamic> data = call.arguments;
+    final FirebaseUser currentUser = new FirebaseUser._(data);
+    _authStateChangedController
+        .where((StreamController<FirebaseUser> ctrl) => !ctrl.isClosed)
+        .forEach((StreamController<FirebaseUser> ctrl) {
+      ctrl.add(currentUser);
+    });
   }
 }

@@ -28,9 +28,12 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
   };
 }
 
-@implementation FirebaseAuthPlugin {
-  FIRAuthStateDidChangeListenerHandle authStateChangeListener;
-}
+@interface FirebaseAuthPlugin ()
+@property(nonatomic, retain) NSMutableDictionary *authStateChangeListener;
+@property(nonatomic, retain) FlutterMethodChannel *channel;
+@end
+
+@implementation FirebaseAuthPlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
@@ -38,6 +41,7 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
                                   binaryMessenger:[registrar messenger]];
   FirebaseAuthPlugin *instance = [[FirebaseAuthPlugin alloc] init];
   instance.channel = channel;
+  instance.authStateChangeListener = [[NSMutableDictionary alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
@@ -126,16 +130,23 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
                                }];
 
   } else if ([@"startListeningAuthState" isEqualToString:call.method]) {
-    if (authStateChangeListener) {
-      authStateChangeListener = [[FIRAuth auth]
-          addAuthStateDidChangeListener:^(FIRAuth *_Nonnull auth, FIRUser *_Nullable user) {
-            [self.channel invokeMethod:@"onAuthStateChanged" arguments:nil];
-          }];
-    }
+    NSNumber *identifier = [NSNumber numberWithInteger:call.arguments[@"id"]];
+
+    FIRAuthStateDidChangeListenerHandle listener = [[FIRAuth auth]
+        addAuthStateDidChangeListener:^(FIRAuth *_Nonnull auth, FIRUser *_Nullable user) {
+          [self.channel invokeMethod:@"onAuthStateChanged" arguments:nil];
+        }];
+    [self.authStateChangeListener setObject:listener forKey:identifier];
+    result(nil);
   } else if ([@"stopListeningAuthState" isEqualToString:call.method]) {
-    if (authStateChangeListener) {
-      [[FIRAuth auth] removeAuthStateDidChangeListener:authStateChangeListener];
+    NSNumber *identifier = [NSNumber numberWithInteger:call.arguments[@"id"]];
+
+    FIRAuthStateDidChangeListenerHandle listener = self.authStateChangeListener[identifier];
+    if (listener) {
+      [[FIRAuth auth] removeAuthStateDidChangeListener:self.authStateChangeListener];
+      [self.authStateChangeListener removeObjectForKey:identifier];
     }
+    result(nil);
   } else {
     result(FlutterMethodNotImplemented);
   }

@@ -6,6 +6,7 @@ package io.flutter.firebaseauth;
 
 import android.app.Activity;
 import android.support.annotation.NonNull;
+import android.util.SparseArray;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.common.collect.ImmutableList;
@@ -31,18 +32,21 @@ import java.util.Map;
 public class FirebaseAuthPlugin implements MethodCallHandler {
   private final Activity activity;
   private final FirebaseAuth firebaseAuth;
-  private FirebaseAuth.AuthStateListener mAuthStateListener;
-  private static MethodChannel channel;
+  private final SparseArray<FirebaseAuth.AuthStateListener> mAuthStateListeners =
+      new SparseArray<>();
+  private final MethodChannel channel;
 
   private static final String ERROR_REASON_EXCEPTION = "exception";
 
   public static void registerWith(PluginRegistry.Registrar registrar) {
-    channel = new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_auth");
-    channel.setMethodCallHandler(new FirebaseAuthPlugin(registrar.activity()));
+    MethodChannel channel =
+        new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_auth");
+    channel.setMethodCallHandler(new FirebaseAuthPlugin(registrar.activity(), channel));
   }
 
-  private FirebaseAuthPlugin(Activity activity) {
+  private FirebaseAuthPlugin(Activity activity, MethodChannel channel) {
     this.activity = activity;
+    this.channel = channel;
     FirebaseApp.initializeApp(activity);
     this.firebaseAuth = FirebaseAuth.getInstance();
   }
@@ -170,8 +174,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
   }
 
   private void handleSignInWithCustomToken(MethodCall call, final Result result) {
-    @SuppressWarnings("unchecked")
-    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    Map<String, String> arguments = call.arguments();
     String token = arguments.get("token");
     firebaseAuth
         .signInWithCustomToken(token)
@@ -204,22 +207,31 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
   }
 
   private void handleStartListeningAuthState(MethodCall call, final Result result) {
-    if (mAuthStateListener == null) {
-      mAuthStateListener =
-          new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-              channel.invokeMethod("onAuthStateChanged", null);
-            }
-          };
-      FirebaseAuth.getInstance().addAuthStateListener(mAuthStateListener);
-    }
+    Map<String, Integer> arguments = call.arguments();
+    Integer id = arguments.get("id");
+
+    FirebaseAuth.AuthStateListener listener =
+        new FirebaseAuth.AuthStateListener() {
+          @Override
+          public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+            FirebaseUser user = firebaseAuth.getCurrentUser();
+            ImmutableMap<String, Object> userMap = mapFromUser(user);
+            channel.invokeMethod("onAuthStateChanged", userMap);
+          }
+        };
+    FirebaseAuth.getInstance().addAuthStateListener(listener);
+    mAuthStateListeners.append(id, listener);
     result.success(null);
   }
 
   private void handleStopListeningAuthState(MethodCall call, final Result result) {
-    if (mAuthStateListener != null) {
-      FirebaseAuth.getInstance().removeAuthStateListener(mAuthStateListener);
+    Map<String, Integer> arguments = call.arguments();
+    Integer id = arguments.get("id");
+
+    FirebaseAuth.AuthStateListener listener = mAuthStateListeners.get(id);
+    if (listener != null) {
+      FirebaseAuth.getInstance().removeAuthStateListener(listener);
+      mAuthStateListeners.removeAt(id);
     }
     result.success(null);
   }
