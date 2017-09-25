@@ -13,7 +13,7 @@ dependencies:
   flutter:
     sdk: flutter
   meta: ^1.0.5
-  intl: '>=0.14.0 <0.15.0'
+  intl: ^0.15.1
 
 environment:
   sdk: ">=1.8.0 <2.0.0"
