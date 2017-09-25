@@ -235,7 +235,8 @@ class FirebaseAuth {
 
   void _onAuthStageChangedHandler(MethodCall call) {
     final Map<String, dynamic> data = call.arguments;
-    final FirebaseUser currentUser = new FirebaseUser._(data);
+    final FirebaseUser currentUser =
+        data != null ? new FirebaseUser._(data) : null;
     _authStateChangedController
         .where((StreamController<FirebaseUser> ctrl) => !ctrl.isClosed)
         .forEach((StreamController<FirebaseUser> ctrl) {
