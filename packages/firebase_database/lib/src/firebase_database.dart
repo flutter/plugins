@@ -24,15 +24,15 @@ class FirebaseDatabase {
         final Event event = new Event._(call.arguments);
         _observers[call.arguments['handle']].add(event);
       } else if (call.method == 'DoTransaction') {
-        _transactions[call.arguments['transactionKey']]
-            .doTransaction(new DataSnapshot._(call.arguments['snapshot']))
-            .then((DataSnapshot dataSnapshot) {
-          _channel.invokeMethod(
-              'DatabaseReference#finishDoTransaction', <String, dynamic>{
-            'updatedDataSnapshot': dataSnapshot.value,
-            'transactionKey': call.arguments['transactionKey']
-          });
+        final MutableData mutableData =
+            new MutableData._(call.arguments['snapshot']);
+        return _transactions[call.arguments['transactionKey']](mutableData)
+            .then<Map<String, dynamic>>((MutableData updated) {
+          return <String, dynamic>{'value': updated.value};
         });
+      } else {
+        throw new MissingPluginException(
+            '${call.method} method not implemented on the Dart side.');
       }
     });
   }

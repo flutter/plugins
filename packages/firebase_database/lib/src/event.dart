@@ -25,7 +25,7 @@ class Event {
 /// A DataSnapshot contains data from a Firebase Database location.
 /// Any time you read Firebase data, you receive the data as a DataSnapshot.
 class DataSnapshot {
-  Map<String, dynamic> _data;
+  final Map<String, dynamic> _data;
   DataSnapshot._(this._data);
 
   /// The key of the location that generated this DataSnapshot.
@@ -33,8 +33,18 @@ class DataSnapshot {
 
   /// Returns the contents of this data snapshot as native types.
   dynamic get value => _data['value'];
+}
 
-  /// Sets the contents of this data snapshot.
+class MutableData {
+  final Map<String, dynamic> _data;
+  MutableData._(this._data);
+
+  /// The key of the location that generated this DataSnapshot.
+  String get key => _data['key'];
+
+  /// Returns the contents of this data snapshot as native types.
+  dynamic get value => _data['value'];
+
   set value(dynamic newValue) => _data['value'] = newValue;
 }
 

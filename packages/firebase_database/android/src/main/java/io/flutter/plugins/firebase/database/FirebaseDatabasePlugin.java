@@ -45,10 +45,6 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
   // Handles are ints used as indexes into the sparse array of active observers
   private int nextHandle = 0;
   private final SparseArray<EventObserver> observers = new SparseArray<>();
-  // Array containing transaction tasks. Used to retrieve a existing transaction from different
-  // channel invocations.
-  private final SparseArray<TaskCompletionSource<Map<String, Object>>> transactionTasks =
-      new SparseArray<>();
 
   public static void registerWith(PluginRegistry.Registrar registrar) {
     final MethodChannel channel =
@@ -65,16 +61,6 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
     DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
     if (path != null) reference = reference.child(path);
     return reference;
-  }
-
-  // Retrieve the transaction key from method call arguments.
-  private int getTransactionKey(Map<String, Object> arguments) {
-    return (int) arguments.get("transactionKey");
-  }
-
-  // Retrieve the transaction timeout from method call arguments.
-  private long getTransactionTimeout(Map<String, Object> arguments) {
-    return (long) arguments.get("transactionTimeout");
   }
 
   private Query getQuery(Map<String, Object> arguments) {
@@ -222,7 +208,7 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
   }
 
   @Override
-  public void onMethodCall(MethodCall call, final Result result) {
+  public void onMethodCall(final MethodCall call, final Result result) {
     switch (call.method) {
       case "FirebaseDatabase#goOnline":
         {
@@ -306,53 +292,72 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
       case "DatabaseReference#runTransaction":
         {
           final Map<String, Object> arguments = call.arguments();
-          DatabaseReference reference = getReference(arguments);
+          final DatabaseReference reference = getReference(arguments);
 
           // Initiate native transaction.
           reference.runTransaction(
               new Transaction.Handler() {
                 @Override
                 public Transaction.Result doTransaction(MutableData mutableData) {
-                  // Handle null value case.
-                  if (mutableData.getValue() == null) {
-                    return Transaction.success(mutableData);
-                  }
-
                   // Tasks are used to allow native execution of doTransaction to wait while Snapshot is
-                  // processed by logic on the dart side.
+                  // processed by logic on the Dart side.
                   final TaskCompletionSource<Map<String, Object>> updateMutableDataTCS =
                       new TaskCompletionSource<>();
                   final Task<Map<String, Object>> updateMutableDataTCSTask =
                       updateMutableDataTCS.getTask();
 
-                  // Add transaction task to array for later retrieval.
-                  transactionTasks.append(getTransactionKey(arguments), updateMutableDataTCS);
-
                   Map<String, Object> doTransactionMap = new HashMap<>();
-                  doTransactionMap.put("transactionKey", getTransactionKey(arguments));
+                  doTransactionMap.put("transactionKey", arguments.get("transactionKey"));
 
-                  Map<String, Object> snapshotMap = new HashMap<>();
+                  final Map<String, Object> snapshotMap = new HashMap<>();
                   snapshotMap.put("key", mutableData.getKey());
                   snapshotMap.put("value", mutableData.getValue());
                   doTransactionMap.put("snapshot", snapshotMap);
 
-                  // Return snapshot to dart side for update.
-                  channel.invokeMethod("DoTransaction", doTransactionMap);
+                  // Return snapshot to Dart side for update.
+                  channel.invokeMethod(
+                      "DoTransaction",
+                      doTransactionMap,
+                      new MethodChannel.Result() {
+                        @Override
+                        @SuppressWarnings("unchecked")
+                        public void success(Object result) {
+                          updateMutableDataTCS.setResult((Map<String, Object>) result);
+                        }
+
+                        @Override
+                        public void error(
+                            String errorCode, String errorMessage, Object errorDetails) {
+                          String exceptionMessage =
+                              "Error code: "
+                                  + errorCode
+                                  + "\nError message: "
+                                  + errorMessage
+                                  + "\nError details: "
+                                  + errorDetails;
+                          updateMutableDataTCS.setException(new Exception(exceptionMessage));
+                        }
+
+                        @Override
+                        public void notImplemented() {
+                          updateMutableDataTCS.setException(
+                              new Exception("DoTransaction not implemented on Dart side."));
+                        }
+                      });
 
                   try {
-                    // Wait for updated snapshot from the dart side.
+                    // Wait for updated snapshot from the Dart side.
                     Map<String, Object> updatedSnapshotMap =
                         Tasks.await(
                             updateMutableDataTCSTask,
-                            getTransactionTimeout(arguments),
-                            TimeUnit.NANOSECONDS);
-                    // Set value of MutableData to value returned from the dart side.
-                    mutableData.setValue(updatedSnapshotMap.get("updatedDataSnapshot"));
+                            (int) arguments.get("transactionTimeout"),
+                            TimeUnit.MILLISECONDS);
+                    // Set value of MutableData to value returned from the Dart side.
+                    mutableData.setValue(updatedSnapshotMap.get("value"));
                   } catch (ExecutionException | InterruptedException | TimeoutException e) {
-                    Log.e(TAG, "Unable to commit Snapshot update. Transaction should be retried.");
-                    Log.e(TAG, e.toString());
+                    Log.e(TAG, "Unable to commit Snapshot update. Transaction failed.", e);
                     if (e instanceof TimeoutException) {
-                      Log.e(TAG, "Transaction timed out.");
+                      Log.e(TAG, "Transaction at " + reference.toString() + " timed out.");
                     }
                     return Transaction.abort();
                   }
@@ -363,7 +368,7 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
                 public void onComplete(
                     DatabaseError databaseError, boolean committed, DataSnapshot dataSnapshot) {
                   Map<String, Object> completionMap = new HashMap<>();
-                  completionMap.put("transactionKey", getTransactionKey(arguments));
+                  completionMap.put("transactionKey", arguments.get("transactionKey"));
                   if (databaseError != null) {
                     Map<String, Object> errorMap = new HashMap<>();
                     errorMap.put("code", databaseError.getCode());
@@ -379,22 +384,10 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
                     completionMap.put("snapshot", snapshotMap);
                   }
 
-                  // Remove Task from SparseArray.
-                  transactionTasks.remove(getTransactionKey(arguments));
-
-                  // Invoke transaction completion on the dart side.
+                  // Invoke transaction completion on the Dart side.
                   result.success(completionMap);
                 }
               });
-          break;
-        }
-
-        // This case returns the updated snapshot from the dart side to the native side. The
-        // doTransaction method completes after this method is called.
-      case "DatabaseReference#finishDoTransaction":
-        {
-          Map<String, Object> arguments = call.arguments();
-          transactionTasks.get(getTransactionKey(arguments)).setResult(arguments);
           break;
         }
 

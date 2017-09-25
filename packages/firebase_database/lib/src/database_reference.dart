@@ -13,9 +13,6 @@ part of firebase_database;
 /// (ie. `onChildAdded`), write data (ie. `setValue`), and to create new
 /// `DatabaseReference`s (ie. `child`).
 class DatabaseReference extends Query {
-  /// Default transaction timeout, 5 seconds in nanoseconds.
-  static const int _transactionTimeout = 5 * 1000000000;
-
   DatabaseReference._(FirebaseDatabase database, List<String> pathComponents)
       : super._(database: database, pathComponents: pathComponents);
 
@@ -129,46 +126,47 @@ class DatabaseReference extends Query {
   /// remove() is equivalent to calling set(null)
   Future<Null> remove() => set(null);
 
-  /// Determine the next transaction key to be used. 0 is used if there are
-  /// no existing keys, otherwise the last key is incremented by 1.
-  int _getNextTransactionKey() {
-    if (FirebaseDatabase._transactions.isEmpty) {
-      return 0;
-    }
-    final int lastKey = FirebaseDatabase._transactions.keys.last;
-    return lastKey + 1;
-  }
-
   /// Performs an optimistic-concurrency transactional update to the data at
   /// this Firebase Database location.
-  Future<Null> runTransaction(TransactionHandler transactionHandler,
-      [int transactionTimeout = _transactionTimeout]) async {
-    if (transactionTimeout < 0) {
-      throw new ArgumentError(
-          'Transaction timeout ($transactionTimeout) cannot be less than zero.');
+  Future<TransactionResult> runTransaction(
+      TransactionHandler transactionHandler,
+      [Duration transactionTimeout]) async {
+    if (transactionTimeout == null) {
+      transactionTimeout = new Duration(seconds: 5);
     }
-    final int transactionKey = _getNextTransactionKey();
+
+    assert(transactionTimeout.inMilliseconds > 0,
+        'Transaction timeout must be more than 0 milliseconds.');
+
+    final Completer<TransactionResult> completer =
+        new Completer<TransactionResult>();
+
+    final int transactionKey = FirebaseDatabase._transactions.isEmpty
+        ? 0
+        : FirebaseDatabase._transactions.keys.last + 1;
+
     FirebaseDatabase._transactions[transactionKey] = transactionHandler;
 
-    final Map<String, dynamic> completion = await _database._channel
+    _database._channel
         .invokeMethod('DatabaseReference#runTransaction', <String, dynamic>{
       'path': path,
       'transactionKey': transactionKey,
-      'transactionTimeout': transactionTimeout
+      'transactionTimeout': transactionTimeout.inMilliseconds
+    }).then((Map<String, dynamic> result) {
+      final DatabaseError databaseError =
+          result['error'] != null ? new DatabaseError._(result['error']) : null;
+      final bool committed = result['committed'];
+      final DataSnapshot dataSnapshot = result['snapshot'] != null
+          ? new DataSnapshot._(result['snapshot'])
+          : null;
+
+      FirebaseDatabase._transactions.remove(transactionKey);
+
+      completer.complete(
+          new TransactionResult._(databaseError, committed, dataSnapshot));
     });
 
-    final DatabaseError databaseError = completion['error'] != null
-        ? new DatabaseError._(completion['error'])
-        : null;
-    final bool committed = completion['committed'];
-    final DataSnapshot dataSnapshot = completion['snapshot'] != null
-        ? new DataSnapshot._(completion['snapshot'])
-        : null;
-
-    // Remove the transaction
-    FirebaseDatabase._transactions.remove(transactionKey);
-
-    transactionHandler.onComplete(databaseError, committed, dataSnapshot);
+    return completer.future;
   }
 }
 
@@ -178,15 +176,11 @@ class ServerValue {
   };
 }
 
-typedef Future<DataSnapshot> DoTransaction(DataSnapshot dataSnapshot);
-typedef void OnComplete(
-    DatabaseError error, bool committed, DataSnapshot dataSnapshot);
+typedef Future<MutableData> TransactionHandler(MutableData mutableData);
 
-/// TransactionHandler requires the implementation of functions to handle a
-/// Firebase Database transaction.
-class TransactionHandler {
-  DoTransaction doTransaction;
-  OnComplete onComplete;
-
-  TransactionHandler(this.doTransaction, this.onComplete);
+class TransactionResult {
+  const TransactionResult._(this.error, this.committed, this.dataSnapshot);
+  final DatabaseError error;
+  final bool committed;
+  final DataSnapshot dataSnapshot;
 }

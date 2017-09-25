@@ -152,7 +152,9 @@ void main() {
         await database
             .reference()
             .child('foo')
-            .runTransaction(new MockTransactionHandler._());
+            .runTransaction((MutableData mutableData) {
+          return new Future<MutableData>(() => mutableData);
+        });
         expect(
             log,
             equals(<MethodCall>[
@@ -160,17 +162,14 @@ void main() {
                   'DatabaseReference#runTransaction', <String, dynamic>{
                 'path': 'foo',
                 'transactionKey': 0,
-                'transactionTimeout': 5000000000
+                'transactionTimeout': 5000
               }),
             ]));
         expect(
-            database
-                .reference()
-                .child('foo')
-                .runTransaction(new MockTransactionHandler._(), -1),
-            throwsA(const isInstanceOf<ArgumentError>()));
+            database.reference().child('foo').runTransaction(
+                (MutableData mutableData) {}, const Duration(milliseconds: 0)),
+            throwsA(const isInstanceOf<AssertionError>()));
       });
-      // TODO(arthurthompson): Write tests for DoTransaction.
     });
 
     group('$Query', () {
@@ -314,19 +313,5 @@ class AsyncQueue<T> {
     } else {
       return _completers[index] = new Completer<T>();
     }
-  }
-}
-
-class MockTransactionHandler extends TransactionHandler {
-  MockTransactionHandler._() : super(null, null) {
-    doTransaction = (DataSnapshot dataSnapshot) {
-      // Leave snapshot unchanged.
-      return new Future<DataSnapshot>(() => dataSnapshot);
-    };
-
-    onComplete = (DatabaseError databaseError, bool committed,
-        DataSnapshot dataSnapshot) {
-      print('Transaction Complete');
-    };
   }
 }

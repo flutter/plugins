@@ -7,8 +7,6 @@
 #import <Firebase/Firebase.h>
 
 @interface FirebaseDatabasePlugin ()
-@property NSMutableDictionary *transactionSemaphores;
-@property NSMutableDictionary *updatedSnapshots;
 @end
 
 @interface NSError (FlutterError)
@@ -28,16 +26,6 @@ FIRDatabaseReference *getReference(NSDictionary *arguments) {
   FIRDatabaseReference *ref = [FIRDatabase database].reference;
   if ([path length] > 0) ref = [ref child:path];
   return ref;
-}
-
-NSString *getTransactionKey(NSDictionary *arguments) {
-  NSString *transactionKey = arguments[@"transactionKey"];
-  return transactionKey;
-}
-
-NSInteger getTransactionTimeout(NSDictionary *arguments) {
-  NSString *transactionTimeout = arguments[@"transactionTimeout"];
-  return [transactionTimeout integerValue];
 }
 
 FIRDatabaseQuery *getQuery(NSDictionary *arguments) {
@@ -151,7 +139,6 @@ id roundDoubles(id value) {
     if (![FIRApp defaultApp]) {
       [FIRApp configure];
     }
-    self.transactionSemaphores = [NSMutableDictionary new];
     self.updatedSnapshots = [NSMutableDictionary new];
   }
   return self;
@@ -210,61 +197,66 @@ id roundDoubles(id value) {
   } else if ([@"DatabaseReference#runTransaction" isEqualToString:call.method]) {
     [getReference(call.arguments) runTransactionBlock:^FIRTransactionResult *_Nonnull(
                                       FIRMutableData *_Nonnull currentData) {
-      // Handle null value case.
-      if (!currentData.value) {
-        return [FIRTransactionResult successWithValue:currentData];
-      }
-
       // Create semaphore to allow native side to wait while snapshot
-      // updates occur on the dart side.
+      // updates occur on the Dart side.
       dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
 
-      // Add semaphore to dictionary so it can be retrieved later.
-      [[self transactionSemaphores] setObject:semaphore forKey:getTransactionKey(call.arguments)];
+      NSObject *snapshot =
+          @{@"key" : currentData.key ?: [NSNull null], @"value" : currentData.value};
 
-      [self.channel
-          invokeMethod:@"DoTransaction"
-             arguments:@{
-               @"transactionKey" : getTransactionKey(call.arguments),
-               @"snapshot" :
-                   @{@"key" : currentData.key ?: [NSNull null], @"value" : currentData.value}
-             }];
+      __block bool shouldAbort = false;
 
-      // Wait while dart side updates the snapshot.
+      [self.channel invokeMethod:@"DoTransaction"
+                       arguments:@{
+                         @"transactionKey" : call.arguments[@"transactionKey"],
+                         @"snapshot" : snapshot
+                       }
+                          result:^(id _Nullable result) {
+                            if ([result isKindOfClass:[FlutterError class]]) {
+                              FlutterError *flutterError = ((FlutterError *)result);
+                              NSLog(@"Error code: %@", flutterError.code);
+                              NSLog(@"Error message: %@", flutterError.message);
+                              NSLog(@"Error details: %@", flutterError.details);
+                              shouldAbort = true;
+                            } else if ([result isEqual:FlutterMethodNotImplemented]) {
+                              NSLog(@"DoTransaction not implemented on the Dart side.");
+                              shouldAbort = true;
+                            } else {
+                              [self.updatedSnapshots setObject:result
+                                                        forKey:call.arguments[@"transactionKey"]];
+                            }
+                            dispatch_semaphore_signal(semaphore);
+                          }];
+
+      // Wait while Dart side updates the snapshot. Incoming transactionTimeout is in milliseconds
+      // so converting to nanoseconds for use with dispatch_semaphore_wait.
       long result = dispatch_semaphore_wait(
-          semaphore, dispatch_time(DISPATCH_TIME_NOW, getTransactionTimeout(call.arguments)));
+          semaphore, dispatch_time(DISPATCH_TIME_NOW,
+                                   [call.arguments[@"transactionTimeout"] integerValue] * 1000000));
 
-      if (result == 0) {
-        // Set FIRMutableData value to value returned from the dart side.
-        currentData.value = [self.updatedSnapshots
-            objectForKey:getTransactionKey(call.arguments)][@"updatedDataSnapshot"];
+      if (result == 0 && !shouldAbort) {
+        // Set FIRMutableData value to value returned from the Dart side.
+        currentData.value =
+            [self.updatedSnapshots objectForKey:call.arguments[@"transactionKey"]][@"value"];
       } else {
-        NSLog(@"Transaction timed out.");
+        if (result != 0) {
+          NSLog(@"Transaction at %@ timed out.", [getReference(call.arguments) URL]);
+        }
         return [FIRTransactionResult abort];
       }
-
-      // Remove semaphore from dictionary.
-      [[self transactionSemaphores] removeObjectForKey:getTransactionKey(call.arguments)];
 
       return [FIRTransactionResult successWithValue:currentData];
     }
         andCompletionBlock:^(NSError *_Nullable error, BOOL committed,
                              FIRDataSnapshot *_Nullable snapshot) {
-          // Invoke transaction completion on the dart side.
+          // Invoke transaction completion on the Dart side.
           result(@{
-            @"transactionKey" : getTransactionKey(call.arguments),
-            @"error" : error ? error.flutterError : [NSNull null],
+            @"transactionKey" : call.arguments[@"transactionKey"],
+            @"error" : error.flutterError ?: [NSNull null],
             @"committed" : [NSNumber numberWithBool:committed],
             @"snapshot" : @{@"key" : snapshot.key ?: [NSNull null], @"value" : snapshot.value}
           });
         }];
-  } else if ([@"DatabaseReference#finishDoTransaction" isEqualToString:call.method]) {
-    // Return the updated snapshot from the dart side to the native side. The
-    // runTransactionBlock method completes after this method is called.
-    [[self updatedSnapshots] setObject:call.arguments forKey:getTransactionKey(call.arguments)];
-    dispatch_semaphore_t semaphore =
-        [[self transactionSemaphores] objectForKey:getTransactionKey(call.arguments)];
-    dispatch_semaphore_signal(semaphore);
   } else if ([@"Query#observe" isEqualToString:call.method]) {
     FIRDataEventType eventType = parseEventType(call.arguments[@"eventType"]);
     __block FIRDatabaseHandle handle = [getQuery(call.arguments)

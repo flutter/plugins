@@ -68,14 +68,22 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<Null> _increment() async {
     await FirebaseAuth.instance.signInAnonymously();
     // Increment counter in transaction.
-    await _counterRef
-        .runTransaction(new TransactionHandler((DataSnapshot dataSnapshot) {
-      dataSnapshot.value = dataSnapshot.value + 1;
-      return new Future<DataSnapshot>(() => dataSnapshot);
-    }, (DatabaseError error, bool committed, DataSnapshot dataSnapshot) {
-      _messagesRef.push().set(
-          <String, String>{_kTestKey: '$_kTestValue ${dataSnapshot.value}'});
-    }));
+    final TransactionResult transactionResult =
+        await _counterRef.runTransaction((MutableData mutableData) {
+      mutableData.value = mutableData.value + 1;
+      return new Future<MutableData>(() => mutableData);
+    });
+
+    if (transactionResult.committed && transactionResult.error == null) {
+      _messagesRef.push().set(<String, String>{
+        _kTestKey: '$_kTestValue ${transactionResult.dataSnapshot.value}'
+      });
+    } else {
+      print('Transaction not committed.');
+      if (transactionResult.error != null) {
+        print(transactionResult.error.message);
+      }
+    }
   }
 
   @override
