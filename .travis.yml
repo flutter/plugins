@@ -67,13 +67,14 @@ matrix:
         - export PATH=`pwd`/android-sdk/tools/bin:$PATH
         - mkdir -p /home/travis/.android # silence sdkmanager warning
         - echo 'count=0' > /home/travis/.android/repositories.cfg # silence sdkmanager warning
-        - echo y | sdkmanager "tools"
-        - echo y | sdkmanager "platform-tools"
-        - echo y | sdkmanager "build-tools;25.0.3"
-        - echo y | sdkmanager "platforms;android-25"
-        - echo y | sdkmanager "extras;android;m2repository"
-        - echo y | sdkmanager "extras;google;m2repository"
-        - echo y | sdkmanager "patcher;v4"
+        # suppressing output of sdkmanager to keep log under 4MB (travis limit)
+        - echo y | sdkmanager "tools" >/dev/null
+        - echo y | sdkmanager "platform-tools" >/dev/null
+        - echo y | sdkmanager "build-tools;25.0.3" >/dev/null
+        - echo y | sdkmanager "platforms;android-25" >/dev/null
+        - echo y | sdkmanager "extras;android;m2repository" >/dev/null
+        - echo y | sdkmanager "extras;google;m2repository" >/dev/null
+        - echo y | sdkmanager "patcher;v4" >/dev/null
         - sdkmanager --list
         - wget http://services.gradle.org/distributions/gradle-3.5-bin.zip
         - unzip -qq gradle-3.5-bin.zip
