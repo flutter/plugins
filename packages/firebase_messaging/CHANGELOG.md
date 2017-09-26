@@ -1,3 +1,7 @@
+## 0.0.5+1
+
+* Aligned author name with rest of repo.
+
 ## 0.0.5
 
 * Updated to Firebase SDK to always use latest patch version for 11.0.x builds

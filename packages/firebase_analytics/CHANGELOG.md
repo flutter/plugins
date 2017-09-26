@@ -1,3 +1,7 @@
+## 0.1.0+1
+
+* Aligned author name with rest of repo.
+
 ## 0.1.0
 
 * Added `FirebaseAnalyticsObserver` (a `NavigatorObserver`) to automatically log `PageRoute` transitions
