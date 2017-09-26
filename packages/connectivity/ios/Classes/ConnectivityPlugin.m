@@ -16,14 +16,14 @@
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   ConnectivityPlugin* instance = [[ConnectivityPlugin alloc] init];
 
-  FlutterMethodChannel* channel =
-      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/connectivity"
-                                  binaryMessenger:[registrar messenger]];
+  FlutterMethodChannel* channel = [FlutterMethodChannel
+      methodChannelWithName:@"plugins.flutter.io/connectivity"
+            binaryMessenger:[registrar messenger]];
   [registrar addMethodCallDelegate:instance channel:channel];
 
-  FlutterEventChannel* streamChannel =
-      [FlutterEventChannel eventChannelWithName:@"plugins.flutter.io/connectivity_status"
-                                binaryMessenger:[registrar messenger]];
+  FlutterEventChannel* streamChannel = [FlutterEventChannel
+      eventChannelWithName:@"plugins.flutter.io/connectivity_status"
+           binaryMessenger:[registrar messenger]];
   [streamChannel setStreamHandler:instance];
 }
 
@@ -41,10 +41,14 @@
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
   if ([call.method isEqualToString:@"check"]) {
-    // This is supposed to be quick. Another way of doing this would be to signup for network
-    // connectivity changes. However that depends on the app being in background and the code
+    // This is supposed to be quick. Another way of doing this would be to
+    // signup for network
+    // connectivity changes. However that depends on the app being in background
+    // and the code
     // gets more involved. So for now, this will do.
-    result([self statusFromReachability:[Reachability reachabilityForInternetConnection]]);
+    result(
+        [self statusFromReachability:[Reachability
+                                         reachabilityForInternetConnection]]);
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -57,12 +61,14 @@
 
 #pragma mark FlutterStreamHandler impl
 
-- (FlutterError*)onListenWithArguments:(id)arguments eventSink:(FlutterEventSink)eventSink {
+- (FlutterError*)onListenWithArguments:(id)arguments
+                             eventSink:(FlutterEventSink)eventSink {
   _eventSink = eventSink;
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(onReachabilityDidChange:)
-                                               name:kReachabilityChangedNotification
-                                             object:nil];
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(onReachabilityDidChange:)
+             name:kReachabilityChangedNotification
+           object:nil];
   [[Reachability reachabilityForInternetConnection] startNotifier];
   return nil;
 }

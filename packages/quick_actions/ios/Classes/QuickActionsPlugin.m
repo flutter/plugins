@@ -21,7 +21,8 @@ static NSString *const CHANNEL_NAME = @"plugins.flutter.io/quick_actions";
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
-- (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)handleMethodCall:(FlutterMethodCall *)call
+                  result:(FlutterResult)result {
   if ([call.method isEqualToString:@"setShortcutItems"]) {
     setShortcutItems(call.arguments);
     result(nil);
@@ -58,17 +59,20 @@ static void setShortcutItems(NSArray *items) {
   [UIApplication sharedApplication].shortcutItems = newShortcuts;
 }
 
-static UIApplicationShortcutItem *deserializeShortcutItem(NSDictionary *serialized) {
+static UIApplicationShortcutItem *deserializeShortcutItem(
+    NSDictionary *serialized) {
   UIApplicationShortcutIcon *icon =
       [serialized[@"icon"] isKindOfClass:[NSNull class]]
           ? nil
-          : [UIApplicationShortcutIcon iconWithTemplateImageName:serialized[@"icon"]];
+          : [UIApplicationShortcutIcon
+                iconWithTemplateImageName:serialized[@"icon"]];
 
-  return [[UIApplicationShortcutItem alloc] initWithType:serialized[@"type"]
-                                          localizedTitle:serialized[@"localizedTitle"]
-                                       localizedSubtitle:nil
-                                                    icon:icon
-                                                userInfo:nil];
+  return [[UIApplicationShortcutItem alloc]
+           initWithType:serialized[@"type"]
+         localizedTitle:serialized[@"localizedTitle"]
+      localizedSubtitle:nil
+                   icon:icon
+               userInfo:nil];
 }
 
 @end

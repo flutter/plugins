@@ -30,9 +30,9 @@ static NSString *const kClientIdKey = @"CLIENT_ID";
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
-  FlutterMethodChannel *channel =
-      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/google_sign_in"
-                                  binaryMessenger:[registrar messenger]];
+  FlutterMethodChannel *channel = [FlutterMethodChannel
+      methodChannelWithName:@"plugins.flutter.io/google_sign_in"
+            binaryMessenger:[registrar messenger]];
   GoogleSignInPlugin *instance = [[GoogleSignInPlugin alloc] init];
   [registrar addApplicationDelegate:instance];
   [registrar addMethodCallDelegate:instance channel:channel];
@@ -53,19 +53,24 @@ static NSString *const kClientIdKey = @"CLIENT_ID";
 
 #pragma mark - <FlutterPlugin> protocol
 
-- (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)handleMethodCall:(FlutterMethodCall *)call
+                  result:(FlutterResult)result {
   if ([call.method isEqualToString:@"init"]) {
-    NSString *path = [[NSBundle mainBundle] pathForResource:@"GoogleService-Info" ofType:@"plist"];
+    NSString *path =
+        [[NSBundle mainBundle] pathForResource:@"GoogleService-Info"
+                                        ofType:@"plist"];
     if (path) {
-      NSMutableDictionary *plist = [[NSMutableDictionary alloc] initWithContentsOfFile:path];
+      NSMutableDictionary *plist =
+          [[NSMutableDictionary alloc] initWithContentsOfFile:path];
       [GIDSignIn sharedInstance].clientID = plist[kClientIdKey];
       [GIDSignIn sharedInstance].scopes = call.arguments[@"scopes"];
       [GIDSignIn sharedInstance].hostedDomain = call.arguments[@"hostedDomain"];
       result(nil);
     } else {
-      result([FlutterError errorWithCode:@"missing-config"
-                                 message:@"GoogleService-Info.plist file not found"
-                                 details:nil]);
+      result([FlutterError
+          errorWithCode:@"missing-config"
+                message:@"GoogleService-Info.plist file not found"
+                details:nil]);
     }
   } else if ([call.method isEqualToString:@"signInSilently"]) {
     if ([self setAccountRequest:result]) {
@@ -78,7 +83,8 @@ static NSString *const kClientIdKey = @"CLIENT_ID";
   } else if ([call.method isEqualToString:@"getTokens"]) {
     GIDGoogleUser *currentUser = [GIDSignIn sharedInstance].currentUser;
     GIDAuthentication *auth = currentUser.authentication;
-    [auth getTokensWithHandler:^void(GIDAuthentication *authentication, NSError *error) {
+    [auth getTokensWithHandler:^void(GIDAuthentication *authentication,
+                                     NSError *error) {
       result(error != nil ? error.flutterError : @{
         @"idToken" : authentication.idToken,
         @"accessToken" : authentication.accessToken,
@@ -107,8 +113,11 @@ static NSString *const kClientIdKey = @"CLIENT_ID";
   return YES;
 }
 
-- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary *)options {
-  NSString *sourceApplication = options[UIApplicationOpenURLOptionsSourceApplicationKey];
+- (BOOL)application:(UIApplication *)app
+            openURL:(NSURL *)url
+            options:(NSDictionary *)options {
+  NSString *sourceApplication =
+      options[UIApplicationOpenURLOptionsSourceApplicationKey];
   id annotation = options[UIApplicationOpenURLOptionsAnnotationKey];
   return [[GIDSignIn sharedInstance] handleURL:url
                              sourceApplication:sourceApplication
@@ -117,13 +126,17 @@ static NSString *const kClientIdKey = @"CLIENT_ID";
 
 #pragma mark - <GIDSignInUIDelegate> protocol
 
-- (void)signIn:(GIDSignIn *)signIn presentViewController:(UIViewController *)viewController {
+- (void)signIn:(GIDSignIn *)signIn
+    presentViewController:(UIViewController *)viewController {
   UIViewController *rootViewController =
       [UIApplication sharedApplication].delegate.window.rootViewController;
-  [rootViewController presentViewController:viewController animated:YES completion:nil];
+  [rootViewController presentViewController:viewController
+                                   animated:YES
+                                 completion:nil];
 }
 
-- (void)signIn:(GIDSignIn *)signIn dismissViewController:(UIViewController *)viewController {
+- (void)signIn:(GIDSignIn *)signIn
+    dismissViewController:(UIViewController *)viewController {
   [viewController dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -135,7 +148,8 @@ static NSString *const kClientIdKey = @"CLIENT_ID";
   if (error != nil) {
     if (error.code == kGIDSignInErrorCodeHasNoAuthInKeychain ||
         error.code == kGIDSignInErrorCodeCanceled) {
-      // Occurs when silent sign-in is not possible or user has cancelled sign in,
+      // Occurs when silent sign-in is not possible or user has cancelled sign
+      // in,
       // return an empty user in this case
       [self respondWithAccount:nil error:nil];
     } else {
@@ -144,7 +158,8 @@ static NSString *const kClientIdKey = @"CLIENT_ID";
   } else {
     NSURL *photoUrl;
     if (user.profile.hasImage) {
-      // Placeholder that will be replaced by on the Dart side based on screen size
+      // Placeholder that will be replaced by on the Dart side based on screen
+      // size
       photoUrl = [user.profile imageURLWithDimension:1337];
     }
     [self respondWithAccount:@{

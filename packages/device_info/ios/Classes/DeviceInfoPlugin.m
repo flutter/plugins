@@ -6,9 +6,9 @@
 
 @implementation DeviceInfoPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  FlutterMethodChannel* channel =
-      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/device_info"
-                                  binaryMessenger:[registrar messenger]];
+  FlutterMethodChannel* channel = [FlutterMethodChannel
+      methodChannelWithName:@"plugins.flutter.io/device_info"
+            binaryMessenger:[registrar messenger]];
   DeviceInfoPlugin* instance = [[DeviceInfoPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
 }

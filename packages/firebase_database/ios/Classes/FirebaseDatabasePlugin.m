@@ -12,9 +12,10 @@
 
 @implementation NSError (FlutterError)
 - (FlutterError *)flutterError {
-  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %ld", self.code]
-                             message:self.domain
-                             details:self.localizedDescription];
+  return [FlutterError
+      errorWithCode:[NSString stringWithFormat:@"Error %ld", self.code]
+            message:self.domain
+            details:self.localizedDescription];
 }
 @end
 
@@ -106,7 +107,8 @@ id roundDoubles(id value) {
     }];
     return result;
   } else if ([value isKindOfClass:[NSDictionary class]]) {
-    NSMutableDictionary *result = [NSMutableDictionary dictionaryWithCapacity:[value count]];
+    NSMutableDictionary *result =
+        [NSMutableDictionary dictionaryWithCapacity:[value count]];
     [value enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
       result[key] = roundDoubles(obj);
     }];
@@ -122,9 +124,9 @@ id roundDoubles(id value) {
 @implementation FirebaseDatabasePlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
-  FlutterMethodChannel *channel =
-      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/firebase_database"
-                                  binaryMessenger:[registrar messenger]];
+  FlutterMethodChannel *channel = [FlutterMethodChannel
+      methodChannelWithName:@"plugins.flutter.io/firebase_database"
+            binaryMessenger:[registrar messenger]];
   FirebaseDatabasePlugin *instance = [[FirebaseDatabasePlugin alloc] init];
   instance.channel = channel;
   [registrar addMethodCallDelegate:instance channel:channel];
@@ -140,7 +142,8 @@ id roundDoubles(id value) {
   return self;
 }
 
-- (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)handleMethodCall:(FlutterMethodCall *)call
+                  result:(FlutterResult)result {
   void (^defaultCompletionBlock)(NSError *, FIRDatabaseReference *) =
       ^(NSError *error, FIRDatabaseReference *ref) {
         result(error.flutterError);
@@ -151,10 +154,12 @@ id roundDoubles(id value) {
   } else if ([@"FirebaseDatabase#goOffline" isEqualToString:call.method]) {
     [[FIRDatabase database] goOffline];
     result(nil);
-  } else if ([@"FirebaseDatabase#purgeOutstandingWrites" isEqualToString:call.method]) {
+  } else if ([@"FirebaseDatabase#purgeOutstandingWrites"
+                 isEqualToString:call.method]) {
     [[FIRDatabase database] purgeOutstandingWrites];
     result(nil);
-  } else if ([@"FirebaseDatabase#setPersistenceEnabled" isEqualToString:call.method]) {
+  } else if ([@"FirebaseDatabase#setPersistenceEnabled"
+                 isEqualToString:call.method]) {
     NSNumber *value = call.arguments;
     @try {
       [FIRDatabase database].persistenceEnabled = value.boolValue;
@@ -167,10 +172,12 @@ id roundDoubles(id value) {
         @throw;
       }
     }
-  } else if ([@"FirebaseDatabase#setPersistenceCacheSizeBytes" isEqualToString:call.method]) {
+  } else if ([@"FirebaseDatabase#setPersistenceCacheSizeBytes"
+                 isEqualToString:call.method]) {
     NSNumber *value = call.arguments;
     @try {
-      [FIRDatabase database].persistenceCacheSizeBytes = value.unsignedIntegerValue;
+      [FIRDatabase database].persistenceCacheSizeBytes =
+          value.unsignedIntegerValue;
       result([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
       if ([@"FIRDatabaseAlreadyInUse" isEqualToString:exception.name]) {
@@ -194,16 +201,18 @@ id roundDoubles(id value) {
     FIRDataEventType eventType = parseEventType(call.arguments[@"eventType"]);
     __block FIRDatabaseHandle handle = [getQuery(call.arguments)
                       observeEventType:eventType
-        andPreviousSiblingKeyWithBlock:^(FIRDataSnapshot *snapshot, NSString *previousSiblingKey) {
-          [self.channel invokeMethod:@"Event"
-                           arguments:@{
-                             @"handle" : [NSNumber numberWithUnsignedInteger:handle],
-                             @"snapshot" : @{
-                               @"key" : snapshot.key ?: [NSNull null],
-                               @"value" : roundDoubles(snapshot.value) ?: [NSNull null],
-                             },
-                             @"previousSiblingKey" : previousSiblingKey ?: [NSNull null],
-                           }];
+        andPreviousSiblingKeyWithBlock:^(FIRDataSnapshot *snapshot,
+                                         NSString *previousSiblingKey) {
+          [self.channel
+              invokeMethod:@"Event"
+                 arguments:@{
+                   @"handle" : [NSNumber numberWithUnsignedInteger:handle],
+                   @"snapshot" : @{
+                     @"key" : snapshot.key ?: [NSNull null],
+                     @"value" : roundDoubles(snapshot.value) ?: [NSNull null],
+                   },
+                   @"previousSiblingKey" : previousSiblingKey ?: [NSNull null],
+                 }];
         }];
     result([NSNumber numberWithUnsignedInteger:handle]);
   } else if ([@"Query#removeObserver" isEqualToString:call.method]) {

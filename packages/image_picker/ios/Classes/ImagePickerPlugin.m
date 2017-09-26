@@ -6,7 +6,8 @@
 
 #import "ImagePickerPlugin.h"
 
-@interface ImagePickerPlugin ()<UINavigationControllerDelegate, UIImagePickerControllerDelegate>
+@interface ImagePickerPlugin ()<UINavigationControllerDelegate,
+                                UIImagePickerControllerDelegate>
 @end
 
 @implementation ImagePickerPlugin {
@@ -21,7 +22,8 @@
                                   binaryMessenger:[registrar messenger]];
   UIViewController *viewController =
       [UIApplication sharedApplication].delegate.window.rootViewController;
-  ImagePickerPlugin *instance = [[ImagePickerPlugin alloc] initWithViewController:viewController];
+  ImagePickerPlugin *instance =
+      [[ImagePickerPlugin alloc] initWithViewController:viewController];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
@@ -34,7 +36,8 @@
   return self;
 }
 
-- (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)handleMethodCall:(FlutterMethodCall *)call
+                  result:(FlutterResult)result {
   if (_result) {
     _result([FlutterError errorWithCode:@"multiple_request"
                                 message:@"Cancelled by a second request"
@@ -42,28 +45,36 @@
     _result = nil;
   }
   if ([@"pickImage" isEqualToString:call.method]) {
-    _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
+    _imagePickerController.modalPresentationStyle =
+        UIModalPresentationCurrentContext;
     _imagePickerController.delegate = self;
     _result = result;
 
-    UIAlertControllerStyle style = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad
-                                       ? UIAlertControllerStyleAlert
-                                       : UIAlertControllerStyleActionSheet;
+    UIAlertControllerStyle style =
+        UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad
+            ? UIAlertControllerStyleAlert
+            : UIAlertControllerStyleActionSheet;
 
     UIAlertController *alert =
-        [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:style];
-    UIAlertAction *camera = [UIAlertAction actionWithTitle:@"Take Photo"
-                                                     style:UIAlertActionStyleDefault
-                                                   handler:^(UIAlertAction *action) {
-                                                     [self showCamera];
-                                                   }];
-    UIAlertAction *library = [UIAlertAction actionWithTitle:@"Choose Photo"
-                                                      style:UIAlertActionStyleDefault
-                                                    handler:^(UIAlertAction *action) {
-                                                      [self showPhotoLibrary];
-                                                    }];
+        [UIAlertController alertControllerWithTitle:nil
+                                            message:nil
+                                     preferredStyle:style];
+    UIAlertAction *camera =
+        [UIAlertAction actionWithTitle:@"Take Photo"
+                                 style:UIAlertActionStyleDefault
+                               handler:^(UIAlertAction *action) {
+                                 [self showCamera];
+                               }];
+    UIAlertAction *library =
+        [UIAlertAction actionWithTitle:@"Choose Photo"
+                                 style:UIAlertActionStyleDefault
+                               handler:^(UIAlertAction *action) {
+                                 [self showPhotoLibrary];
+                               }];
     UIAlertAction *cancel =
-        [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
+        [UIAlertAction actionWithTitle:@"Cancel"
+                                 style:UIAlertActionStyleCancel
+                               handler:nil];
     [alert addAction:camera];
     [alert addAction:library];
     [alert addAction:cancel];
@@ -75,9 +86,12 @@
 
 - (void)showCamera {
   // Camera is not available on simulators
-  if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+  if ([UIImagePickerController
+          isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
     _imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
-    [_viewController presentViewController:_imagePickerController animated:YES completion:nil];
+    [_viewController presentViewController:_imagePickerController
+                                  animated:YES
+                                completion:nil];
   } else {
     [[[UIAlertView alloc] initWithTitle:@"Error"
                                 message:@"Camera not available."
@@ -89,8 +103,11 @@
 
 - (void)showPhotoLibrary {
   // No need to check if SourceType is available. It always is.
-  _imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-  [_viewController presentViewController:_imagePickerController animated:YES completion:nil];
+  _imagePickerController.sourceType =
+      UIImagePickerControllerSourceTypePhotoLibrary;
+  [_viewController presentViewController:_imagePickerController
+                                animated:YES
+                              completion:nil];
 }
 
 - (void)imagePickerController:(UIImagePickerController *)picker
@@ -111,7 +128,9 @@
   // directory.
   NSString *tmpFile = [NSString stringWithFormat:@"image_picker_%@.jpg", guid];
   NSString *tmpPath = [tmpDirectory stringByAppendingPathComponent:tmpFile];
-  if ([[NSFileManager defaultManager] createFileAtPath:tmpPath contents:data attributes:nil]) {
+  if ([[NSFileManager defaultManager] createFileAtPath:tmpPath
+                                              contents:data
+                                            attributes:nil]) {
     _result(tmpPath);
   } else {
     _result([FlutterError errorWithCode:@"create_error"

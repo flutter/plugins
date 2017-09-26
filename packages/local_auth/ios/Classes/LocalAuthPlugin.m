@@ -10,15 +10,16 @@
   FlutterResult lastResult;
 }
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
-  FlutterMethodChannel *channel =
-      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/local_auth"
-                                  binaryMessenger:[registrar messenger]];
+  FlutterMethodChannel *channel = [FlutterMethodChannel
+      methodChannelWithName:@"plugins.flutter.io/local_auth"
+            binaryMessenger:[registrar messenger]];
   LocalAuthPlugin *instance = [[LocalAuthPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
   [registrar addApplicationDelegate:instance];
 }
 
-- (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)handleMethodCall:(FlutterMethodCall *)call
+                  result:(FlutterResult)result {
   if ([@"authenticateWithBiometrics" isEqualToString:call.method]) {
     [self authenticateWithBiometrics:call.arguments withFlutterResult:result];
   } else {
@@ -37,11 +38,12 @@
                                           message:message
                                    preferredStyle:UIAlertControllerStyleAlert];
 
-  UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:firstButton
-                                                          style:UIAlertActionStyleDefault
-                                                        handler:^(UIAlertAction *action) {
-                                                          result(@NO);
-                                                        }];
+  UIAlertAction *defaultAction =
+      [UIAlertAction actionWithTitle:firstButton
+                               style:UIAlertActionStyleDefault
+                             handler:^(UIAlertAction *action) {
+                               result(@NO);
+                             }];
 
   [alert addAction:defaultAction];
   if (secondButton != nil) {
@@ -50,16 +52,18 @@
                   style:UIAlertActionStyleDefault
                 handler:^(UIAlertAction *action) {
                   if (UIApplicationOpenSettingsURLString != NULL) {
-                    NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+                    NSURL *url = [NSURL
+                        URLWithString:UIApplicationOpenSettingsURLString];
                     [[UIApplication sharedApplication] openURL:url];
                     result(@NO);
                   }
                 }];
     [alert addAction:additionalAction];
   }
-  [[UIApplication sharedApplication].delegate.window.rootViewController presentViewController:alert
-                                                                                     animated:YES
-                                                                                   completion:nil];
+  [[UIApplication sharedApplication].delegate.window.rootViewController
+      presentViewController:alert
+                   animated:YES
+                 completion:nil];
 }
 
 - (void)authenticateWithBiometrics:(NSDictionary *)arguments
@@ -98,7 +102,9 @@
                         }
                       }];
   } else {
-    [self handleErrors:authError flutterArguments:arguments withFlutterResult:result];
+    [self handleErrors:authError
+         flutterArguments:arguments
+        withFlutterResult:result];
   }
 }
 
@@ -116,7 +122,8 @@
             additionalButton:arguments[@"goToSetting"]];
         return;
       }
-      errorCode = authError.code == LAErrorPasscodeNotSet ? @"PasscodeNotSet" : @"NotEnrolled";
+      errorCode = authError.code == LAErrorPasscodeNotSet ? @"PasscodeNotSet"
+                                                          : @"NotEnrolled";
       break;
     case LAErrorTouchIDLockout:
       [self alertMessage:arguments[@"lockOut"]

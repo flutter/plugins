@@ -76,14 +76,16 @@
 
 #pragma mark FlutterStreamHandler impl
 
-- (FlutterError*)onListenWithArguments:(id)arguments eventSink:(FlutterEventSink)eventSink {
+- (FlutterError*)onListenWithArguments:(id)arguments
+                             eventSink:(FlutterEventSink)eventSink {
   _eventSink = eventSink;
   [[UIDevice currentDevice] setBatteryMonitoringEnabled:YES];
   [self sendBatteryStateEvent];
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(onBatteryStateDidChange:)
-                                               name:UIDeviceBatteryStateDidChangeNotification
-                                             object:nil];
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(onBatteryStateDidChange:)
+             name:UIDeviceBatteryStateDidChangeNotification
+           object:nil];
   return nil;
 }
 

@@ -21,7 +21,8 @@
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"firebase_messaging"
                                   binaryMessenger:[registrar messenger]];
-  FirebaseMessagingPlugin *instance = [[FirebaseMessagingPlugin alloc] initWithChannel:channel];
+  FirebaseMessagingPlugin *instance =
+      [[FirebaseMessagingPlugin alloc] initWithChannel:channel];
   [registrar addApplicationDelegate:instance];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
@@ -35,15 +36,17 @@
       [FIRApp configure];
     }
     [FIRMessaging messaging].remoteMessageDelegate = self;
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(tokenRefreshNotification:)
-                                                 name:kFIRInstanceIDTokenRefreshNotification
-                                               object:nil];
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(tokenRefreshNotification:)
+               name:kFIRInstanceIDTokenRefreshNotification
+             object:nil];
   }
   return self;
 }
 
-- (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)handleMethodCall:(FlutterMethodCall *)call
+                  result:(FlutterResult)result {
   NSString *method = call.method;
   if ([@"requestNotificationPermissions" isEqualToString:method]) {
     UIUserNotificationType notificationTypes = 0;
@@ -58,8 +61,10 @@
       notificationTypes |= UIUserNotificationTypeBadge;
     }
     UIUserNotificationSettings *settings =
-        [UIUserNotificationSettings settingsForTypes:notificationTypes categories:nil];
-    [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
+        [UIUserNotificationSettings settingsForTypes:notificationTypes
+                                          categories:nil];
+    [[UIApplication sharedApplication]
+        registerUserNotificationSettings:settings];
 
     result(nil);
   } else if ([@"configure" isEqualToString:method]) {
@@ -84,7 +89,8 @@
 - (void)tokenRefreshNotification:(NSNotification *)notification {
   NSString *refreshedToken = [[FIRInstanceID instanceID] token];
 
-  // Connect to FCM since connection may have failed when attempted before having a token.
+  // Connect to FCM since connection may have failed when attempted before
+  // having a token.
   [self connectToFcm];
 
   [_channel invokeMethod:@"onToken" arguments:refreshedToken];
@@ -92,7 +98,8 @@
 
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
 // Receive data message on iOS 10 devices while app is in the foreground.
-- (void)applicationReceivedRemoteMessage:(FIRMessagingRemoteMessage *)remoteMessage {
+- (void)applicationReceivedRemoteMessage:
+    (FIRMessagingRemoteMessage *)remoteMessage {
   [self didReceiveRemoteNotification:remoteMessage.appData];
 }
 #endif
@@ -126,7 +133,8 @@
 - (BOOL)application:(UIApplication *)application
     didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
   if (launchOptions != nil) {
-    _launchNotification = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
+    _launchNotification =
+        launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
   }
   return YES;
 }
@@ -147,8 +155,10 @@
   // user dismissed the notification center without tapping anything.
   // TODO(goderbauer): Revisit this behavior once we provide an API for managing
   // the badge number, or if we add support for running Dart in the background.
-  // Setting badgeNumber to 0 is a no-op (= notifications will not be cleared) if it is already 0,
-  // therefore the next line is setting it to 1 first before clearing it again to remove all
+  // Setting badgeNumber to 0 is a no-op (= notifications will not be cleared)
+  // if it is already 0,
+  // therefore the next line is setting it to 1 first before clearing it again
+  // to remove all
   // notifications.
   application.applicationIconBadgeNumber = 1;
   application.applicationIconBadgeNumber = 0;
@@ -156,7 +166,8 @@
 
 - (bool)application:(UIApplication *)application
     didReceiveRemoteNotification:(NSDictionary *)userInfo
-          fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
+          fetchCompletionHandler:
+              (void (^)(UIBackgroundFetchResult result))completionHandler {
   [self didReceiveRemoteNotification:userInfo];
   completionHandler(UIBackgroundFetchResultNoData);
   return YES;
@@ -164,17 +175,23 @@
 
 - (void)application:(UIApplication *)application
     didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
-  [_channel invokeMethod:@"onToken" arguments:[[FIRInstanceID instanceID] token]];
+  [_channel invokeMethod:@"onToken"
+               arguments:[[FIRInstanceID instanceID] token]];
 }
 
 - (void)application:(UIApplication *)application
-    didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
+    didRegisterUserNotificationSettings:
+        (UIUserNotificationSettings *)notificationSettings {
   NSDictionary *settingsDictionary = @{
-    @"sound" : [NSNumber numberWithBool:notificationSettings.types & UIUserNotificationTypeSound],
-    @"badge" : [NSNumber numberWithBool:notificationSettings.types & UIUserNotificationTypeBadge],
-    @"alert" : [NSNumber numberWithBool:notificationSettings.types & UIUserNotificationTypeAlert],
+    @"sound" : [NSNumber numberWithBool:notificationSettings.types &
+                                        UIUserNotificationTypeSound],
+    @"badge" : [NSNumber numberWithBool:notificationSettings.types &
+                                        UIUserNotificationTypeBadge],
+    @"alert" : [NSNumber numberWithBool:notificationSettings.types &
+                                        UIUserNotificationTypeAlert],
   };
-  [_channel invokeMethod:@"onIosSettingsRegistered" arguments:settingsDictionary];
+  [_channel invokeMethod:@"onIosSettingsRegistered"
+               arguments:settingsDictionary];
 }
 
 @end

@@ -27,7 +27,8 @@
   return self;
 }
 
-- (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)handleMethodCall:(FlutterMethodCall *)call
+                  result:(FlutterResult)result {
   if ([@"logEvent" isEqualToString:call.method]) {
     NSString *eventName = call.arguments[@"name"];
     id parameterMap = call.arguments[@"parameters"];

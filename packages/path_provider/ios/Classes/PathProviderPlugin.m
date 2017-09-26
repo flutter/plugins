@@ -5,7 +5,8 @@
 #import "PathProviderPlugin.h"
 
 NSString* GetDirectoryOfType(NSSearchPathDirectory dir) {
-  NSArray* paths = NSSearchPathForDirectoriesInDomains(dir, NSUserDomainMask, YES);
+  NSArray* paths =
+      NSSearchPathForDirectoriesInDomains(dir, NSUserDomainMask, YES);
   if (paths.count == 0) return nil;
   return paths.firstObject;
 }
@@ -13,18 +14,20 @@ NSString* GetDirectoryOfType(NSSearchPathDirectory dir) {
 @implementation PathProviderPlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  FlutterMethodChannel* channel =
-      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/path_provider"
-                                  binaryMessenger:registrar.messenger];
-  [channel setMethodCallHandler:^(FlutterMethodCall* call, FlutterResult result) {
-    if ([@"getTemporaryDirectory" isEqualToString:call.method]) {
-      result([self getTemporaryDirectory]);
-    } else if ([@"getApplicationDocumentsDirectory" isEqualToString:call.method]) {
-      result([self getApplicationDocumentsDirectory]);
-    } else {
-      result(FlutterMethodNotImplemented);
-    }
-  }];
+  FlutterMethodChannel* channel = [FlutterMethodChannel
+      methodChannelWithName:@"plugins.flutter.io/path_provider"
+            binaryMessenger:registrar.messenger];
+  [channel
+      setMethodCallHandler:^(FlutterMethodCall* call, FlutterResult result) {
+        if ([@"getTemporaryDirectory" isEqualToString:call.method]) {
+          result([self getTemporaryDirectory]);
+        } else if ([@"getApplicationDocumentsDirectory"
+                       isEqualToString:call.method]) {
+          result([self getApplicationDocumentsDirectory]);
+        } else {
+          result(FlutterMethodNotImplemented);
+        }
+      }];
 }
 
 + (NSString*)getTemporaryDirectory {
