@@ -199,7 +199,8 @@ class FirebaseAuth {
   /// 1. No current user provided (user has not logged in)
   /// 2. No google credentials were found for given [idToken] and [accessToken]
   /// 3. Google account already linked with another [FirebaseUser]
-  /// See FIRAuthErrors for a list of error codes that are common to all API methods.
+  /// Detailed documentation on possible error causes can be found in [Android docs](https://firebase.google.com/docs/reference/android/com/google/firebase/auth/FirebaseUser#exceptions_4) and [iOS docs](https://firebase.google.com/docs/reference/ios/firebaseauth/api/reference/Classes/FIRUser#/c:objc(cs)FIRUser(im)linkWithCredential:completion:)
+  /// TODO: Throw custom exceptions with error codes indicating cause of exception
   Future<FirebaseUser> linkWithGoogleCredential({
     @required String idToken,
     @required String accessToken,
