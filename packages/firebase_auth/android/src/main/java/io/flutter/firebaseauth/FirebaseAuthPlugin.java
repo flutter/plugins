@@ -32,9 +32,12 @@ import java.util.Map;
 public class FirebaseAuthPlugin implements MethodCallHandler {
   private final Activity activity;
   private final FirebaseAuth firebaseAuth;
-  private final SparseArray<FirebaseAuth.AuthStateListener> mAuthStateListeners =
+  private final SparseArray<FirebaseAuth.AuthStateListener> authStateListeners =
       new SparseArray<>();
   private final MethodChannel channel;
+
+  // Handles are ints used as indexes into the sparse array of active observers
+  private int nextHandle = 0;
 
   private static final String ERROR_REASON_EXCEPTION = "exception";
 
@@ -207,33 +210,42 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
   }
 
   private void handleStartListeningAuthState(MethodCall call, final Result result) {
-    Map<String, Integer> arguments = call.arguments();
-    Integer id = arguments.get("id");
-
+    final int handle = nextHandle++;
     FirebaseAuth.AuthStateListener listener =
         new FirebaseAuth.AuthStateListener() {
           @Override
           public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
             FirebaseUser user = firebaseAuth.getCurrentUser();
             ImmutableMap<String, Object> userMap = mapFromUser(user);
-            channel.invokeMethod("onAuthStateChanged", userMap);
+            ImmutableMap.Builder<String, Object> builder =
+                ImmutableMap.<String, Object>builder().put("id", handle);
+
+            if (userMap != null) {
+              builder.put("user", userMap);
+            }
+            channel.invokeMethod("onAuthStateChanged", builder.build());
           }
         };
     FirebaseAuth.getInstance().addAuthStateListener(listener);
-    mAuthStateListeners.append(id, listener);
-    result.success(null);
+    authStateListeners.append(handle, listener);
+    result.success(handle);
   }
 
   private void handleStopListeningAuthState(MethodCall call, final Result result) {
     Map<String, Integer> arguments = call.arguments();
     Integer id = arguments.get("id");
 
-    FirebaseAuth.AuthStateListener listener = mAuthStateListeners.get(id);
+    FirebaseAuth.AuthStateListener listener = authStateListeners.get(id);
     if (listener != null) {
       FirebaseAuth.getInstance().removeAuthStateListener(listener);
-      mAuthStateListeners.removeAt(id);
+      authStateListeners.removeAt(id);
+      result.success(null);
+    } else {
+      result.error(
+          ERROR_REASON_EXCEPTION,
+          String.format("Listener with identifier '%d' not found.", id),
+          null);
     }
-    result.success(null);
   }
 
   private class SignInCompleteListener implements OnCompleteListener<AuthResult> {

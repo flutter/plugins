@@ -73,9 +73,8 @@ class FirebaseAuth {
     'plugins.flutter.io/firebase_auth',
   );
 
-  final List<StreamController<FirebaseUser>> _authStateChangedController =
-      <StreamController<FirebaseUser>>[];
-  int _counter = 0;
+  final Map<int, StreamController<FirebaseUser>> _authStateChangedControllers =
+      <int, StreamController<FirebaseUser>>{};
 
   /// Provides an instance of this class corresponding to the default app.
   ///
@@ -88,15 +87,23 @@ class FirebaseAuth {
 
   /// Receive [FirebaseUser] each time the user signIn or signOut
   Stream<FirebaseUser> get onAuthStateChanged {
-    final int id = _counter++;
+    Future<int> _handle;
 
-    _authStateChangedController
-        .add(new StreamController<FirebaseUser>.broadcast(onListen: () {
-      channel.invokeMethod('startListeningAuthState', <String, int>{"id": id});
+    StreamController<FirebaseUser> controller;
+    controller = new StreamController<FirebaseUser>.broadcast(onListen: () {
+      _handle = channel.invokeMethod('startListeningAuthState');
+      _handle.then((int handle) {
+        _authStateChangedControllers[handle] = controller;
+      });
     }, onCancel: () {
-      channel.invokeMethod("stopListeningAuthState", <String, int>{"id": id});
-    }));
-    return _authStateChangedController[id].stream;
+      _handle.then((int handle) async {
+        await channel.invokeMethod(
+            "stopListeningAuthState", <String, int>{"id": handle});
+        _authStateChangedControllers.remove(handle);
+      });
+    });
+
+    return controller.stream;
   }
 
   /// Asynchronously creates and becomes an anonymous user.
@@ -234,13 +241,11 @@ class FirebaseAuth {
   }
 
   void _onAuthStageChangedHandler(MethodCall call) {
-    final Map<String, dynamic> data = call.arguments;
+    final Map<String, dynamic> data = call.arguments["user"];
+    final int id = call.arguments["id"];
+
     final FirebaseUser currentUser =
         data != null ? new FirebaseUser._(data) : null;
-    _authStateChangedController
-        .where((StreamController<FirebaseUser> ctrl) => !ctrl.isClosed)
-        .forEach((StreamController<FirebaseUser> ctrl) {
-      ctrl.add(currentUser);
-    });
+    _authStateChangedControllers[id].add(currentUser);
   }
 }
