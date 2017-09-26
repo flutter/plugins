@@ -34,7 +34,7 @@
     if (![FIRApp defaultApp]) {
       [FIRApp configure];
     }
-    [FIRMessaging messaging].remoteMessageDelegate = self;
+    [FIRMessaging messaging].delegate = self;
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(tokenRefreshNotification:)
                                                  name:kFIRInstanceIDTokenRefreshNotification
@@ -176,5 +176,9 @@
   };
   [_channel invokeMethod:@"onIosSettingsRegistered" arguments:settingsDictionary];
 }
+
+// this function implements the FIRMessaging delegate interface
+- (void)messaging:(nonnull FIRMessaging *)messaging 
+    didRefreshRegistrationToken:(nonnull NSString *)fcmToken{}
 
 @end
