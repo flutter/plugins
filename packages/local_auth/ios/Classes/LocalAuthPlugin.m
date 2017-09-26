@@ -5,13 +5,17 @@
 
 #import "LocalAuthPlugin.h"
 
-@implementation LocalAuthPlugin
+@implementation LocalAuthPlugin {
+  NSDictionary *lastCallArgs;
+  FlutterResult lastResult;
+}
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/local_auth"
                                   binaryMessenger:[registrar messenger]];
   LocalAuthPlugin *instance = [[LocalAuthPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
+  [registrar addApplicationDelegate:instance];
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
@@ -45,7 +49,7 @@
         actionWithTitle:secondButton
                   style:UIAlertActionStyleDefault
                 handler:^(UIAlertAction *action) {
-                  if (&UIApplicationOpenSettingsURLString != NULL) {
+                  if (UIApplicationOpenSettingsURLString != NULL) {
                     NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
                     [[UIApplication sharedApplication] openURL:url];
                     result(@NO);
@@ -62,6 +66,8 @@
                  withFlutterResult:(FlutterResult)result {
   LAContext *context = [[LAContext alloc] init];
   NSError *authError = nil;
+  lastCallArgs = nil;
+  lastResult = nil;
   context.localizedFallbackTitle = @"";
 
   if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
@@ -81,6 +87,12 @@
                                    flutterArguments:arguments
                                   withFlutterResult:result];
                               return;
+                            case LAErrorSystemCancel:
+                              if ([arguments[@"stickyAuth"] boolValue]) {
+                                lastCallArgs = arguments;
+                                lastResult = result;
+                                return;
+                              }
                           }
                           result(@NO);
                         }
@@ -97,7 +109,7 @@
   switch (authError.code) {
     case LAErrorPasscodeNotSet:
     case LAErrorTouchIDNotEnrolled:
-      if (arguments[@"useErrorDialogs"]) {
+      if ([arguments[@"useErrorDialogs"] boolValue]) {
         [self alertMessage:arguments[@"goToSettingDescriptionIOS"]
                  firstButton:arguments[@"okButton"]
                flutterResult:result
@@ -116,6 +128,14 @@
   result([FlutterError errorWithCode:errorCode
                              message:authError.localizedDescription
                              details:authError.domain]);
+}
+
+#pragma mark - AppDelegate
+
+- (void)applicationDidBecomeActive:(UIApplication *)application {
+  if (lastCallArgs != nil && lastResult != nil) {
+    [self authenticateWithBiometrics:lastCallArgs withFlutterResult:lastResult];
+  }
 }
 
 @end

@@ -3,7 +3,7 @@ name: firebase_storage
 description: Firebase Storage plugin for Flutter.
 author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/firebase_storage
-version: 0.0.5+1
+version: 0.0.6
 
 flutter:
   plugin:
@@ -13,6 +13,9 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
+
+dev_dependencies:
+  test: ^0.12.24
 
 environment:
     sdk: ">=1.8.0 <2.0.0"
