@@ -179,7 +179,7 @@
 
 // this function implements the FIRMessaging delegate interface
 - (void)messaging:(nonnull FIRMessaging *)messaging
-    didRefreshRegistrationToken:(nonnull NSString *)fcmToken{
+    didRefreshRegistrationToken:(nonnull NSString *)fcmToken {
 }
 
 @end
