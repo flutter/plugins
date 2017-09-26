@@ -6,20 +6,19 @@
 
 @implementation UrlLauncherPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  FlutterMethodChannel* channel = [FlutterMethodChannel
-      methodChannelWithName:@"plugins.flutter.io/url_launcher"
-            binaryMessenger:registrar.messenger];
-  [channel
-      setMethodCallHandler:^(FlutterMethodCall* call, FlutterResult result) {
-        NSString* url = call.arguments;
-        if ([@"canLaunch" isEqualToString:call.method]) {
-          result(@([self canLaunchURL:url]));
-        } else if ([@"launch" isEqualToString:call.method]) {
-          [self launchURL:url result:result];
-        } else {
-          result(FlutterMethodNotImplemented);
-        }
-      }];
+  FlutterMethodChannel* channel =
+      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/url_launcher"
+                                  binaryMessenger:registrar.messenger];
+  [channel setMethodCallHandler:^(FlutterMethodCall* call, FlutterResult result) {
+    NSString* url = call.arguments;
+    if ([@"canLaunch" isEqualToString:call.method]) {
+      result(@([self canLaunchURL:url]));
+    } else if ([@"launch" isEqualToString:call.method]) {
+      [self launchURL:url result:result];
+    } else {
+      result(FlutterMethodNotImplemented);
+    }
+  }];
 }
 
 + (BOOL)canLaunchURL:(NSString*)urlString {
@@ -49,11 +48,9 @@
   if (success) {
     result(nil);
   } else {
-    result([FlutterError
-        errorWithCode:@"Error"
-              message:[NSString
-                          stringWithFormat:@"Error while launching %@", url]
-              details:nil]);
+    result([FlutterError errorWithCode:@"Error"
+                               message:[NSString stringWithFormat:@"Error while launching %@", url]
+                               details:nil]);
   }
 }
 

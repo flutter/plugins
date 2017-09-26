@@ -49,8 +49,7 @@ MobileAdStatus _status;
   return [UIApplication sharedApplication].delegate.window.rootViewController;
 }
 
-- (instancetype)initWithId:(NSNumber *)mobileAdId
-                   channel:(FlutterMethodChannel *)channel {
+- (instancetype)initWithId:(NSNumber *)mobileAdId channel:(FlutterMethodChannel *)channel {
   self = [super init];
   if (self) {
     _mobileAdId = mobileAdId;
@@ -65,8 +64,7 @@ MobileAdStatus _status;
   return _status;
 }
 
-- (void)loadWithUnitId:(NSString *)unitId
-         targetingInfo:(NSDictionary *)targetingInfo {
+- (void)loadWithUnitId:(NSString *)unitId targetingInfo:(NSDictionary *)targetingInfo {
   // Implemented by the Banner and Interstitial subclasses
 }
 
@@ -78,49 +76,42 @@ MobileAdStatus _status;
   [allAds removeObjectForKey:_mobileAdId];
 }
 
-- (NSArray *)targetingInfoArrayForKey:(NSString *)key
-                                 info:(NSDictionary *)info {
+- (NSArray *)targetingInfoArrayForKey:(NSString *)key info:(NSDictionary *)info {
   NSObject *value = info[key];
   if (value == NULL) {
     return nil;
   }
   if (![value isKindOfClass:[NSArray class]]) {
-    logWarning(@"targeting info %@: expected an array (MobileAd %@)", key,
-               self);
+    logWarning(@"targeting info %@: expected an array (MobileAd %@)", key, self);
     return nil;
   }
   return (NSArray *)value;
 }
 
-- (NSString *)targetingInfoStringForKey:(NSString *)key
-                                   info:(NSDictionary *)info {
+- (NSString *)targetingInfoStringForKey:(NSString *)key info:(NSDictionary *)info {
   NSObject *value = info[key];
   if (value == NULL) {
     return nil;
   }
   if (![value isKindOfClass:[NSString class]]) {
-    logWarning(@"targeting info %@: expected a string (MobileAd %@)", key,
-               self);
+    logWarning(@"targeting info %@: expected a string (MobileAd %@)", key, self);
     return nil;
   }
   NSString *stringValue = (NSString *)value;
   if ([stringValue length] == 0) {
-    logWarning(@"targeting info %@: expected a non-empty string (MobileAd %@)",
-               key, self);
+    logWarning(@"targeting info %@: expected a non-empty string (MobileAd %@)", key, self);
     return nil;
   }
   return stringValue;
 }
 
-- (NSNumber *)targetingInfoBoolForKey:(NSString *)key
-                                 info:(NSDictionary *)info {
+- (NSNumber *)targetingInfoBoolForKey:(NSString *)key info:(NSDictionary *)info {
   NSObject *value = info[key];
   if (value == NULL) {
     return nil;
   }
   if (![value isKindOfClass:[NSNumber class]]) {
-    logWarning(@"targeting info %@: expected a boolean, (MobileAd %@)", key,
-               self);
+    logWarning(@"targeting info %@: expected a boolean, (MobileAd %@)", key, self);
     return nil;
   }
   return (NSNumber *)value;
@@ -132,20 +123,17 @@ MobileAdStatus _status;
     return request;
   }
 
-  NSArray *testDevices =
-      [self targetingInfoArrayForKey:@"testDevices" info:targetingInfo];
+  NSArray *testDevices = [self targetingInfoArrayForKey:@"testDevices" info:targetingInfo];
   if (testDevices != nil) {
     request.testDevices = testDevices;
   }
 
-  NSArray *keywords =
-      [self targetingInfoArrayForKey:@"keywords" info:targetingInfo];
+  NSArray *keywords = [self targetingInfoArrayForKey:@"keywords" info:targetingInfo];
   if (keywords != nil) {
     request.keywords = keywords;
   }
 
-  NSString *contentURL =
-      [self targetingInfoStringForKey:@"contentUrl" info:targetingInfo];
+  NSString *contentURL = [self targetingInfoStringForKey:@"contentUrl" info:targetingInfo];
   if (contentURL != nil) {
     request.contentURL = contentURL;
   }
@@ -153,23 +141,19 @@ MobileAdStatus _status;
   NSObject *birthday = targetingInfo[@"birthday"];
   if (birthday != NULL) {
     if (![birthday isKindOfClass:[NSNumber class]]) {
-      logWarning(
-          @"targeting info birthday: expected a long integer (MobileAd %@)",
-          self);
+      logWarning(@"targeting info birthday: expected a long integer (MobileAd %@)", self);
     } else {
       // Incoming time value is milliseconds since the epoch, NSDate uses
       // seconds.
-      request.birthday = [NSDate
-          dateWithTimeIntervalSince1970:((NSNumber *)birthday).longValue /
-                                        1000.0];
+      request.birthday =
+          [NSDate dateWithTimeIntervalSince1970:((NSNumber *)birthday).longValue / 1000.0];
     }
   }
 
   NSObject *gender = targetingInfo[@"gender"];
   if (gender != NULL) {
     if (![gender isKindOfClass:[NSNumber class]]) {
-      logWarning(@"targeting info gender: expected an integer (MobileAd %@)",
-                 self);
+      logWarning(@"targeting info gender: expected an integer (MobileAd %@)", self);
     } else {
       int genderValue = ((NSNumber *)gender).intValue;
       switch (genderValue) {
@@ -179,21 +163,17 @@ MobileAdStatus _status;
           request.gender = genderValue;
           break;
         default:
-          logWarning(
-              @"targeting info gender: not one of 0, 1, or 2 (MobileAd %@)",
-              self);
+          logWarning(@"targeting info gender: not one of 0, 1, or 2 (MobileAd %@)", self);
       }
     }
   }
 
-  NSNumber *childDirected =
-      [self targetingInfoBoolForKey:@"childDirected" info:targetingInfo];
+  NSNumber *childDirected = [self targetingInfoBoolForKey:@"childDirected" info:targetingInfo];
   if (childDirected != nil) {
     [request tagForChildDirectedTreatment:childDirected.boolValue];
   }
 
-  NSString *requestAgent =
-      [self targetingInfoStringForKey:@"requestAgent" info:targetingInfo];
+  NSString *requestAgent = [self targetingInfoStringForKey:@"requestAgent" info:targetingInfo];
   if (requestAgent != nil) {
     request.requestAgent = requestAgent;
   }
@@ -202,29 +182,25 @@ MobileAdStatus _status;
 }
 
 - (NSDictionary *)argumentsMap {
-  return @{ @"id" : _mobileAdId };
+  return @{@"id" : _mobileAdId};
 }
 
 - (NSString *)description {
-  NSString *statusString =
-      (NSString *)statusToString[[NSNumber numberWithInt:_status]];
-  return [NSString stringWithFormat:@"%@ %@ mobileAdId:%@", super.description,
-                                    statusString, _mobileAdId];
+  NSString *statusString = (NSString *)statusToString[[NSNumber numberWithInt:_status]];
+  return [NSString
+      stringWithFormat:@"%@ %@ mobileAdId:%@", super.description, statusString, _mobileAdId];
 }
 @end
 
 @implementation BannerAd
 GADBannerView *_banner;
 
-+ (instancetype)withId:(NSNumber *)mobileAdId
-               channel:(FlutterMethodChannel *)channel {
++ (instancetype)withId:(NSNumber *)mobileAdId channel:(FlutterMethodChannel *)channel {
   MobileAd *ad = [MobileAd getAdForId:mobileAdId];
-  return ad != nil ? (BannerAd *)ad
-                   : [[BannerAd alloc] initWithId:mobileAdId channel:channel];
+  return ad != nil ? (BannerAd *)ad : [[BannerAd alloc] initWithId:mobileAdId channel:channel];
 }
 
-- (void)loadWithUnitId:(NSString *)unitId
-         targetingInfo:(NSDictionary *)targetingInfo {
+- (void)loadWithUnitId:(NSString *)unitId targetingInfo:(NSDictionary *)targetingInfo {
   if (_status != CREATED) return;
   _status = LOADING;
   _banner = [[GADBannerView alloc] initWithAdSize:kGADAdSizeBanner];
@@ -255,10 +231,9 @@ GADBannerView *_banner;
   if (statusWasPending) [self show];
 }
 
-- (void)adView:(GADBannerView *)adView
-    didFailToReceiveAdWithError:(GADRequestError *)error {
-  logWarning(@"adView:didFailToReceiveAdWithError: %@ (MobileAd %@)",
-             [error localizedDescription], self);
+- (void)adView:(GADBannerView *)adView didFailToReceiveAdWithError:(GADRequestError *)error {
+  logWarning(@"adView:didFailToReceiveAdWithError: %@ (MobileAd %@)", [error localizedDescription],
+             self);
   [_channel invokeMethod:@"onAdFailedToLoad" arguments:[self argumentsMap]];
 }
 
@@ -292,16 +267,13 @@ GADBannerView *_banner;
 @implementation InterstitialAd
 GADInterstitial *_interstitial;
 
-+ (instancetype)withId:(NSNumber *)mobileAdId
-               channel:(FlutterMethodChannel *)channel {
++ (instancetype)withId:(NSNumber *)mobileAdId channel:(FlutterMethodChannel *)channel {
   MobileAd *ad = [MobileAd getAdForId:mobileAdId];
-  return ad != nil
-             ? (InterstitialAd *)ad
-             : [[InterstitialAd alloc] initWithId:mobileAdId channel:channel];
+  return ad != nil ? (InterstitialAd *)ad
+                   : [[InterstitialAd alloc] initWithId:mobileAdId channel:channel];
 }
 
-- (void)loadWithUnitId:(NSString *)unitId
-         targetingInfo:(NSDictionary *)targetingInfo {
+- (void)loadWithUnitId:(NSString *)unitId targetingInfo:(NSDictionary *)targetingInfo {
   if (_status != CREATED) return;
   _status = LOADING;
 
@@ -327,8 +299,7 @@ GADInterstitial *_interstitial;
   if (statusWasPending) [self show];
 }
 
-- (void)interstitial:(GADInterstitial *)ad
-    didFailToReceiveAdWithError:(GADRequestError *)error {
+- (void)interstitial:(GADInterstitial *)ad didFailToReceiveAdWithError:(GADRequestError *)error {
   logWarning(@"interstitial:didFailToReceiveAdWithError: %@ (MobileAd %@)",
              [error localizedDescription], self);
   [_channel invokeMethod:@"onAdFailedToLoad" arguments:[self argumentsMap]];
@@ -357,7 +328,6 @@ GADInterstitial *_interstitial;
 }
 
 - (NSString *)description {
-  return [NSString
-      stringWithFormat:@"%@ for: %@", super.description, _interstitial];
+  return [NSString stringWithFormat:@"%@ for: %@", super.description, _interstitial];
 }
 @end

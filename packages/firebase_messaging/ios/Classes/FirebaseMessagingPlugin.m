@@ -21,8 +21,7 @@
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"firebase_messaging"
                                   binaryMessenger:[registrar messenger]];
-  FirebaseMessagingPlugin *instance =
-      [[FirebaseMessagingPlugin alloc] initWithChannel:channel];
+  FirebaseMessagingPlugin *instance = [[FirebaseMessagingPlugin alloc] initWithChannel:channel];
   [registrar addApplicationDelegate:instance];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
@@ -36,17 +35,15 @@
       [FIRApp configure];
     }
     [FIRMessaging messaging].remoteMessageDelegate = self;
-    [[NSNotificationCenter defaultCenter]
-        addObserver:self
-           selector:@selector(tokenRefreshNotification:)
-               name:kFIRInstanceIDTokenRefreshNotification
-             object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(tokenRefreshNotification:)
+                                                 name:kFIRInstanceIDTokenRefreshNotification
+                                               object:nil];
   }
   return self;
 }
 
-- (void)handleMethodCall:(FlutterMethodCall *)call
-                  result:(FlutterResult)result {
+- (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSString *method = call.method;
   if ([@"requestNotificationPermissions" isEqualToString:method]) {
     UIUserNotificationType notificationTypes = 0;
@@ -61,10 +58,8 @@
       notificationTypes |= UIUserNotificationTypeBadge;
     }
     UIUserNotificationSettings *settings =
-        [UIUserNotificationSettings settingsForTypes:notificationTypes
-                                          categories:nil];
-    [[UIApplication sharedApplication]
-        registerUserNotificationSettings:settings];
+        [UIUserNotificationSettings settingsForTypes:notificationTypes categories:nil];
+    [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
 
     result(nil);
   } else if ([@"configure" isEqualToString:method]) {
@@ -98,8 +93,7 @@
 
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
 // Receive data message on iOS 10 devices while app is in the foreground.
-- (void)applicationReceivedRemoteMessage:
-    (FIRMessagingRemoteMessage *)remoteMessage {
+- (void)applicationReceivedRemoteMessage:(FIRMessagingRemoteMessage *)remoteMessage {
   [self didReceiveRemoteNotification:remoteMessage.appData];
 }
 #endif
@@ -133,8 +127,7 @@
 - (BOOL)application:(UIApplication *)application
     didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
   if (launchOptions != nil) {
-    _launchNotification =
-        launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
+    _launchNotification = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
   }
   return YES;
 }
@@ -166,8 +159,7 @@
 
 - (bool)application:(UIApplication *)application
     didReceiveRemoteNotification:(NSDictionary *)userInfo
-          fetchCompletionHandler:
-              (void (^)(UIBackgroundFetchResult result))completionHandler {
+          fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
   [self didReceiveRemoteNotification:userInfo];
   completionHandler(UIBackgroundFetchResultNoData);
   return YES;
@@ -175,23 +167,17 @@
 
 - (void)application:(UIApplication *)application
     didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
-  [_channel invokeMethod:@"onToken"
-               arguments:[[FIRInstanceID instanceID] token]];
+  [_channel invokeMethod:@"onToken" arguments:[[FIRInstanceID instanceID] token]];
 }
 
 - (void)application:(UIApplication *)application
-    didRegisterUserNotificationSettings:
-        (UIUserNotificationSettings *)notificationSettings {
+    didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
   NSDictionary *settingsDictionary = @{
-    @"sound" : [NSNumber numberWithBool:notificationSettings.types &
-                                        UIUserNotificationTypeSound],
-    @"badge" : [NSNumber numberWithBool:notificationSettings.types &
-                                        UIUserNotificationTypeBadge],
-    @"alert" : [NSNumber numberWithBool:notificationSettings.types &
-                                        UIUserNotificationTypeAlert],
+    @"sound" : [NSNumber numberWithBool:notificationSettings.types & UIUserNotificationTypeSound],
+    @"badge" : [NSNumber numberWithBool:notificationSettings.types & UIUserNotificationTypeBadge],
+    @"alert" : [NSNumber numberWithBool:notificationSettings.types & UIUserNotificationTypeAlert],
   };
-  [_channel invokeMethod:@"onIosSettingsRegistered"
-               arguments:settingsDictionary];
+  [_channel invokeMethod:@"onIosSettingsRegistered" arguments:settingsDictionary];
 }
 
 @end

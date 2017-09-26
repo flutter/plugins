@@ -12,10 +12,9 @@
 
 @implementation NSError (FlutterError)
 - (FlutterError *)flutterError {
-  return [FlutterError
-      errorWithCode:[NSString stringWithFormat:@"Error %d", (int)self.code]
-            message:self.domain
-            details:self.localizedDescription];
+  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %d", (int)self.code]
+                             message:self.domain
+                             details:self.localizedDescription];
 }
 @end
 
@@ -37,9 +36,9 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
 @implementation FirebaseAuthPlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
-  FlutterMethodChannel *channel = [FlutterMethodChannel
-      methodChannelWithName:@"plugins.flutter.io/firebase_auth"
-            binaryMessenger:[registrar messenger]];
+  FlutterMethodChannel *channel =
+      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/firebase_auth"
+                                  binaryMessenger:[registrar messenger]];
   FirebaseAuthPlugin *instance = [[FirebaseAuthPlugin alloc] init];
   instance.channel = channel;
   instance.authStateChangeListeners = [[NSMutableDictionary alloc] init];
@@ -56,49 +55,41 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
   return self;
 }
 
-- (void)handleMethodCall:(FlutterMethodCall *)call
-                  result:(FlutterResult)result {
+- (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"currentUser" isEqualToString:call.method]) {
-    id __block listener =
-        [[FIRAuth auth] addAuthStateDidChangeListener:^(
-                            FIRAuth *_Nonnull auth, FIRUser *_Nullable user) {
+    id __block listener = [[FIRAuth auth]
+        addAuthStateDidChangeListener:^(FIRAuth *_Nonnull auth, FIRUser *_Nullable user) {
           [self sendResult:result forUser:user error:nil];
           [auth removeAuthStateDidChangeListener:listener];
         }];
   } else if ([@"signInAnonymously" isEqualToString:call.method]) {
-    [[FIRAuth auth]
-        signInAnonymouslyWithCompletion:^(FIRUser *user, NSError *error) {
-          [self sendResult:result forUser:user error:error];
-        }];
+    [[FIRAuth auth] signInAnonymouslyWithCompletion:^(FIRUser *user, NSError *error) {
+      [self sendResult:result forUser:user error:error];
+    }];
   } else if ([@"signInWithGoogle" isEqualToString:call.method]) {
     NSString *idToken = call.arguments[@"idToken"];
     NSString *accessToken = call.arguments[@"accessToken"];
     FIRAuthCredential *credential =
-        [FIRGoogleAuthProvider credentialWithIDToken:idToken
-                                         accessToken:accessToken];
-    [[FIRAuth auth]
-        signInWithCredential:credential
-                  completion:^(FIRUser *user, NSError *error) {
-                    [self sendResult:result forUser:user error:error];
-                  }];
+        [FIRGoogleAuthProvider credentialWithIDToken:idToken accessToken:accessToken];
+    [[FIRAuth auth] signInWithCredential:credential
+                              completion:^(FIRUser *user, NSError *error) {
+                                [self sendResult:result forUser:user error:error];
+                              }];
   } else if ([@"signInWithFacebook" isEqualToString:call.method]) {
     NSString *accessToken = call.arguments[@"accessToken"];
-    FIRAuthCredential *credential =
-        [FIRFacebookAuthProvider credentialWithAccessToken:accessToken];
-    [[FIRAuth auth]
-        signInWithCredential:credential
-                  completion:^(FIRUser *user, NSError *error) {
-                    [self sendResult:result forUser:user error:error];
-                  }];
+    FIRAuthCredential *credential = [FIRFacebookAuthProvider credentialWithAccessToken:accessToken];
+    [[FIRAuth auth] signInWithCredential:credential
+                              completion:^(FIRUser *user, NSError *error) {
+                                [self sendResult:result forUser:user error:error];
+                              }];
   } else if ([@"createUserWithEmailAndPassword" isEqualToString:call.method]) {
     NSString *email = call.arguments[@"email"];
     NSString *password = call.arguments[@"password"];
-    [[FIRAuth auth]
-        createUserWithEmail:email
-                   password:password
-                 completion:^(FIRUser *user, NSError *error) {
-                   [self sendResult:result forUser:user error:error];
-                 }];
+    [[FIRAuth auth] createUserWithEmail:email
+                               password:password
+                             completion:^(FIRUser *user, NSError *error) {
+                               [self sendResult:result forUser:user error:error];
+                             }];
   } else if ([@"signInWithEmailAndPassword" isEqualToString:call.method]) {
     NSString *email = call.arguments[@"email"];
     NSString *password = call.arguments[@"password"];
@@ -119,35 +110,30 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
   } else if ([@"getToken" isEqualToString:call.method]) {
     [[FIRAuth auth].currentUser
         getTokenForcingRefresh:YES
-                    completion:^(NSString *_Nullable token,
-                                 NSError *_Nullable error) {
+                    completion:^(NSString *_Nullable token, NSError *_Nullable error) {
                       result(error != nil ? error.flutterError : token);
                     }];
   } else if ([@"linkWithEmailAndPassword" isEqualToString:call.method]) {
     NSString *email = call.arguments[@"email"];
     NSString *password = call.arguments[@"password"];
     FIRAuthCredential *credential =
-        [FIREmailPasswordAuthProvider credentialWithEmail:email
-                                                 password:password];
-    [[FIRAuth auth].currentUser
-        linkWithCredential:credential
-                completion:^(FIRUser *user, NSError *error) {
-                  [self sendResult:result forUser:user error:error];
-                }];
+        [FIREmailPasswordAuthProvider credentialWithEmail:email password:password];
+    [[FIRAuth auth].currentUser linkWithCredential:credential
+                                        completion:^(FIRUser *user, NSError *error) {
+                                          [self sendResult:result forUser:user error:error];
+                                        }];
   } else if ([@"signInWithCustomToken" isEqualToString:call.method]) {
     NSString *token = call.arguments[@"token"];
-    [[FIRAuth auth]
-        signInWithCustomToken:token
-                   completion:^(FIRUser *user, NSError *error) {
-                     [self sendResult:result forUser:user error:error];
-                   }];
+    [[FIRAuth auth] signInWithCustomToken:token
+                               completion:^(FIRUser *user, NSError *error) {
+                                 [self sendResult:result forUser:user error:error];
+                               }];
 
   } else if ([@"startListeningAuthState" isEqualToString:call.method]) {
     NSNumber *identifier = [NSNumber numberWithInteger:call.arguments[@"id"]];
 
-    FIRAuthStateDidChangeListenerHandle listener =
-        [[FIRAuth auth] addAuthStateDidChangeListener:^(
-                            FIRAuth *_Nonnull auth, FIRUser *_Nullable user) {
+    FIRAuthStateDidChangeListenerHandle listener = [[FIRAuth auth]
+        addAuthStateDidChangeListener:^(FIRAuth *_Nonnull auth, FIRUser *_Nullable user) {
           [self.channel invokeMethod:@"onAuthStateChanged" arguments:nil];
         }];
     [self.authStateChangeListeners setObject:listener forKey:identifier];
@@ -155,11 +141,9 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
   } else if ([@"stopListeningAuthState" isEqualToString:call.method]) {
     NSNumber *identifier = [NSNumber numberWithInteger:call.arguments[@"id"]];
 
-    FIRAuthStateDidChangeListenerHandle listener =
-        self.authStateChangeListeners[identifier];
+    FIRAuthStateDidChangeListenerHandle listener = self.authStateChangeListeners[identifier];
     if (listener) {
-      [[FIRAuth auth]
-          removeAuthStateDidChangeListener:self.authStateChangeListeners];
+      [[FIRAuth auth] removeAuthStateDidChangeListener:self.authStateChangeListeners];
       [self.authStateChangeListeners removeObjectForKey:identifier];
     }
     result(nil);
@@ -168,9 +152,7 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
   }
 }
 
-- (void)sendResult:(FlutterResult)result
-           forUser:(FIRUser *)user
-             error:(NSError *)error {
+- (void)sendResult:(FlutterResult)result forUser:(FIRUser *)user error:(NSError *)error {
   if (error != nil) {
     result(error.flutterError);
   } else if (user == nil) {
@@ -183,8 +165,7 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
     }
     NSMutableDictionary *userData = [toDictionary(user) mutableCopy];
     userData[@"isAnonymous"] = [NSNumber numberWithBool:user.isAnonymous];
-    userData[@"isEmailVerified"] =
-        [NSNumber numberWithBool:user.isEmailVerified];
+    userData[@"isEmailVerified"] = [NSNumber numberWithBool:user.isEmailVerified];
     userData[@"providerData"] = providerData;
     result(userData);
   }

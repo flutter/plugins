@@ -17,18 +17,15 @@ typedef enum : NSUInteger {
 + (void)configureWithAppId:(NSString *)appId;
 + (MobileAd *)getAdForId:(NSNumber *)mobileAdId;
 - (MobileAdStatus)status;
-- (void)loadWithUnitId:(NSString *)unitId
-         targetingInfo:(NSDictionary *)targetingInfo;
+- (void)loadWithUnitId:(NSString *)unitId targetingInfo:(NSDictionary *)targetingInfo;
 - (void)show;
 - (void)dispose;
 @end
 
 @interface BannerAd : MobileAd<GADBannerViewDelegate>
-+ (instancetype)withId:(NSNumber *)mobileAdId
-               channel:(FlutterMethodChannel *)channel;
++ (instancetype)withId:(NSNumber *)mobileAdId channel:(FlutterMethodChannel *)channel;
 @end
 
 @interface InterstitialAd : MobileAd<GADInterstitialDelegate>
-+ (instancetype)withId:(NSNumber *)mobileAdId
-               channel:(FlutterMethodChannel *)channel;
++ (instancetype)withId:(NSNumber *)mobileAdId channel:(FlutterMethodChannel *)channel;
 @end

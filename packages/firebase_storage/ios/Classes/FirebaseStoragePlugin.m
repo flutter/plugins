@@ -12,10 +12,9 @@
 
 @implementation NSError (FlutterError)
 - (FlutterError *)flutterError {
-  return [FlutterError
-      errorWithCode:[NSString stringWithFormat:@"Error %ld", (long)self.code]
-            message:self.domain
-            details:self.localizedDescription];
+  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %ld", (long)self.code]
+                             message:self.domain
+                             details:self.localizedDescription];
 }
 @end
 
@@ -40,8 +39,7 @@
   return self;
 }
 
-- (void)handleMethodCall:(FlutterMethodCall *)call
-                  result:(FlutterResult)result {
+- (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"StorageReference#putFile" isEqualToString:call.method]) {
     [self putFile:call result:result];
   } else if ([@"StorageReference#getData" isEqualToString:call.method]) {

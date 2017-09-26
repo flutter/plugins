@@ -10,13 +10,12 @@
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   AccelerometerStreamHandler* accelerometerStreamHandler =
       [[AccelerometerStreamHandler alloc] init];
-  FlutterEventChannel* accelerometerChannel = [FlutterEventChannel
-      eventChannelWithName:@"plugins.flutter.io/accelerometer"
-           binaryMessenger:[registrar messenger]];
+  FlutterEventChannel* accelerometerChannel =
+      [FlutterEventChannel eventChannelWithName:@"plugins.flutter.io/accelerometer"
+                                binaryMessenger:[registrar messenger]];
   [accelerometerChannel setStreamHandler:accelerometerStreamHandler];
 
-  GyroscopeStreamHandler* gyroscopeStreamHandler =
-      [[GyroscopeStreamHandler alloc] init];
+  GyroscopeStreamHandler* gyroscopeStreamHandler = [[GyroscopeStreamHandler alloc] init];
   FlutterEventChannel* gyroscopeChannel =
       [FlutterEventChannel eventChannelWithName:@"plugins.flutter.io/gyroscope"
                                 binaryMessenger:[registrar messenger]];
@@ -36,29 +35,22 @@ void _initMotionManager() {
 
 @implementation AccelerometerStreamHandler
 
-- (FlutterError*)onListenWithArguments:(id)arguments
-                             eventSink:(FlutterEventSink)eventSink {
+- (FlutterError*)onListenWithArguments:(id)arguments eventSink:(FlutterEventSink)eventSink {
   _initMotionManager();
   [_motionManager
       startAccelerometerUpdatesToQueue:[[NSOperationQueue alloc] init]
-                           withHandler:^(CMAccelerometerData* accelerometerData,
-                                         NSError* error) {
-                             CMAcceleration acceleration =
-                                 accelerometerData.acceleration;
+                           withHandler:^(CMAccelerometerData* accelerometerData, NSError* error) {
+                             CMAcceleration acceleration = accelerometerData.acceleration;
                              // Multiply by gravity, and adjust sign values to
                              // align with Android.
                              NSArray* accelerationValues = [NSArray
-                                 arrayWithObjects:
-                                     [NSNumber
-                                         numberWithDouble:-acceleration.x *
-                                                          GRAVITY],
-                                     [NSNumber
-                                         numberWithDouble:-acceleration.y *
-                                                          GRAVITY],
-                                     [NSNumber
-                                         numberWithDouble:-acceleration.z *
-                                                          GRAVITY],
-                                     nil];
+                                 arrayWithObjects:[NSNumber
+                                                      numberWithDouble:-acceleration.x * GRAVITY],
+                                                  [NSNumber
+                                                      numberWithDouble:-acceleration.y * GRAVITY],
+                                                  [NSNumber
+                                                      numberWithDouble:-acceleration.z * GRAVITY],
+                                                  nil];
 
                              eventSink(accelerationValues);
                            }];
@@ -74,21 +66,16 @@ void _initMotionManager() {
 
 @implementation GyroscopeStreamHandler
 
-- (FlutterError*)onListenWithArguments:(id)arguments
-                             eventSink:(FlutterEventSink)eventSink {
+- (FlutterError*)onListenWithArguments:(id)arguments eventSink:(FlutterEventSink)eventSink {
   _initMotionManager();
   [_motionManager
       startGyroUpdatesToQueue:[[NSOperationQueue alloc] init]
                   withHandler:^(CMGyroData* gyroData, NSError* error) {
                     CMRotationRate rotationRate = gyroData.rotationRate;
-                    NSArray* gyroscopeValues = [NSArray
-                        arrayWithObjects:[NSNumber
-                                             numberWithDouble:rotationRate.x],
-                                         [NSNumber
-                                             numberWithDouble:rotationRate.y],
-                                         [NSNumber
-                                             numberWithDouble:rotationRate.z],
-                                         nil];
+                    NSArray* gyroscopeValues =
+                        [NSArray arrayWithObjects:[NSNumber numberWithDouble:rotationRate.x],
+                                                  [NSNumber numberWithDouble:rotationRate.y],
+                                                  [NSNumber numberWithDouble:rotationRate.z], nil];
                     eventSink(gyroscopeValues);
                   }];
   return nil;
