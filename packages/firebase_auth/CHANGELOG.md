@@ -1,3 +1,7 @@
+## 0.2.4
+
+Added support for changing user data
+
 ## 0.2.3+1
 
 * Aligned author name with rest of repo.

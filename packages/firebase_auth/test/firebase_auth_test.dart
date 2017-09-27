@@ -169,5 +169,23 @@ void main() {
         ]),
       );
     });
+
+    test('updateProfile', () async {
+      final UserUpdateInfo userUpdateInfo = new UserUpdateInfo();
+      userUpdateInfo.photoUrl = kMockPhotoUrl;
+      userUpdateInfo.displayName = kMockDisplayName;
+
+      await auth.updateProfile(userUpdateInfo);
+      expect(
+        log,
+        equals(<MethodCall>[
+          new MethodCall('updateProfile', <String, String>{
+            'photoUrl': kMockPhotoUrl,
+            'displayName': kMockDisplayName,
+          })
+        ]),
+      );
+    });
+
   });
 }

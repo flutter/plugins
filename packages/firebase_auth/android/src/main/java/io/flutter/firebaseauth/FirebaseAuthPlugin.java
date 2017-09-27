@@ -5,21 +5,14 @@
 package io.flutter.firebaseauth;
 
 import android.app.Activity;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.EmailAuthProvider;
-import com.google.firebase.auth.FacebookAuthProvider;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GetTokenResult;
-import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.auth.UserInfo;
+import com.google.firebase.auth.*;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -75,6 +68,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         break;
       case "linkWithEmailAndPassword":
         handleLinkWithEmailAndPassword(call, result);
+        break;
+      case "updateProfile":
+        handleUpdateProfile(call, result);
         break;
       default:
         result.notImplemented();
@@ -179,6 +175,34 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
                   result.success(idToken);
                 } else {
                   result.error(ERROR_REASON_EXCEPTION, task.getException().getMessage(), null);
+                }
+              }
+            });
+  }
+
+  private void handleUpdateProfile(MethodCall call, final Result result) {
+    @SuppressWarnings("unchecked")
+    Map<String, String> arguments = (Map<String, String>) call.arguments;
+
+    UserProfileChangeRequest.Builder builder = new UserProfileChangeRequest.Builder();
+    if (arguments.containsKey("displayName")) {
+      builder.setDisplayName(arguments.get("displayName"));
+    }
+    if (arguments.containsKey("photoUrl")) {
+      builder.setPhotoUri(Uri.parse(arguments.get("photoUrl")));
+    }
+
+    firebaseAuth
+            .getCurrentUser()
+            .updateProfile(builder.build())
+            .addOnCompleteListener(new OnCompleteListener<Void>() {
+              @Override
+              public void onComplete(@NonNull Task<Void> task) {
+                if (!task.isSuccessful()) {
+                  Exception e = task.getException();
+                  result.error(ERROR_REASON_EXCEPTION, e.getMessage(), null);
+                } else {
+                  result.success(null);
                 }
               }
             });

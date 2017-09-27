@@ -3,7 +3,7 @@ name: firebase_auth
 description: Firebase Auth plugin for Flutter.
 author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/firebase_auth
-version: 0.2.3+1
+version: 0.2.4
 
 flutter:
   plugin:
