@@ -193,9 +193,10 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     }
 
     firebaseAuth
-            .getCurrentUser()
-            .updateProfile(builder.build())
-            .addOnCompleteListener(new OnCompleteListener<Void>() {
+        .getCurrentUser()
+        .updateProfile(builder.build())
+        .addOnCompleteListener(
+            new OnCompleteListener<Void>() {
               @Override
               public void onComplete(@NonNull Task<Void> task) {
                 if (!task.isSuccessful()) {
