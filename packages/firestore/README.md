@@ -19,6 +19,32 @@ On iOS, you will need to add this to `ios/Podfile`:
   pod 'Firestore', :podspec => 'https://storage.googleapis.com/firebase-preview-drop/ios/firestore/0.6.4/Firestore.podspec.json'
 ```
 
+Creating a new DocumentReference:
+
+```dart
+    await Firestore.instance.collection('books').document().setData(<String, String>{
+      'title': title,
+      'author': author,
+    });
+```
+
+Binding a `DocumentCollection` to a `ListView`:
+
+```dart
+return new StreamBuilder(
+  stream: Firestore.instance.collection('messages').snapshots,
+  builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+    if (!snapshot.hasData)
+      return new Text('Loading...');
+    return new ListView(
+      children: snapshot.data.documents.map((DocumentSnapshot document) {
+        return new ListTile(title: new Text(document['title']));
+      }).toList(),
+    );
+  },
+);
+```
+
 ## Getting Started
 
 See the `example` directory for a complete sample app using Firestore.
