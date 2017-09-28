@@ -23,7 +23,7 @@ Adding a new `DocumentReference`:
 
 ```dart
 Firestore.instance.collection('books').document()
-  .setData({'title': 'title', 'author': 'author'});
+  .setData({ 'title': 'title', 'author': 'author' });
 ```
 
 Binding a `CollectionReference` to a `ListView`:
