@@ -22,24 +22,23 @@ On iOS, you will need to add this to `ios/Podfile`:
 Adding a new `DocumentReference`:
 
 ```dart
-    await Firestore.instance.collection('books').document().setData(<String, String>{
-      'title': title,
-      'author': author,
-    });
+Firestore.instance.collection('books').document()
+  .setData({'title': 'title', 'author': 'author'});
 ```
 
 Binding a `CollectionReference` to a `ListView`:
 
 ```dart
 class BookList extends StatelessWidget {
+  @override
   Widget build(BuildContext context) {
     return new StreamBuilder(
       stream: Firestore.instance.collection('books').snapshots,
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+      builder: (context, snapshot) {
         if (!snapshot.hasData)
           return new Text('Loading...');
         return new ListView(
-          children: snapshot.data.documents.map((DocumentSnapshot document) {
+          children: snapshot.data.documents.map((document) {
             return new ListTile(
               title: new Text(document['title']),
               subtitle: new Text(document['author']),
