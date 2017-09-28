@@ -19,7 +19,7 @@ On iOS, you will need to add this to `ios/Podfile`:
   pod 'Firestore', :podspec => 'https://storage.googleapis.com/firebase-preview-drop/ios/firestore/0.6.4/Firestore.podspec.json'
 ```
 
-Creating a new DocumentReference:
+Adding a new `DocumentReference`:
 
 ```dart
     await Firestore.instance.collection('books').document().setData(<String, String>{
