@@ -28,7 +28,7 @@ Adding a new `DocumentReference`:
     });
 ```
 
-Binding a `DocumentCollection` to a `ListView`:
+Binding a `CollectionReference` to a `ListView`:
 
 ```dart
 class BookList extends StatelessWidget {
