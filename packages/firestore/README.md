@@ -31,18 +31,25 @@ Adding a new `DocumentReference`:
 Binding a `DocumentCollection` to a `ListView`:
 
 ```dart
-return new StreamBuilder(
-  stream: Firestore.instance.collection('messages').snapshots,
-  builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-    if (!snapshot.hasData)
-      return new Text('Loading...');
-    return new ListView(
-      children: snapshot.data.documents.map((DocumentSnapshot document) {
-        return new ListTile(title: new Text(document['title']));
-      }).toList(),
+class BookList extends StatelessWidget {
+  Widget build(BuildContext context) {
+    return new StreamBuilder(
+      stream: Firestore.instance.collection('books').snapshots,
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (!snapshot.hasData)
+          return new Text('Loading...');
+        return new ListView(
+          children: snapshot.data.documents.map((DocumentSnapshot document) {
+            return new ListTile(
+              title: new Text(document['title']),
+              subtitle: new Text(document['author']),
+            );
+          }).toList(),
+        );
+      },
     );
-  },
-);
+  }
+}
 ```
 
 ## Getting Started
