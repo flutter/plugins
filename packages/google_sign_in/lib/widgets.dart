@@ -91,15 +91,20 @@ class GoogleUserCircleAvatar extends StatelessWidget {
     // Placeholder to use when there is no photo URL, and while the photo is
     // loading. Uses the first character of the display name (if it has one),
     // or the first letter of the email address if it does not.
-    final placeholderChar = [identity.displayName, identity.email, '-']
-        .firstWhere((str) => str != null && str.trimLeft().isNotEmpty)
+    final List<String> placeholderCharSources = <String>[
+      identity.displayName,
+      identity.email,
+      '-',
+    ];
+    final String placeholderChar = placeholderCharSources
+        .firstWhere((String str) => str != null && str.trimLeft().isNotEmpty)
         .trimLeft()[0]
         .toUpperCase();
-    final placeholder = new Center(
+    final Widget placeholder = new Center(
       child: new Text(placeholderChar, textAlign: TextAlign.center),
     );
 
-    final photoUrl = identity.photoUrl ?? placeholderPhotoUrl;
+    final String photoUrl = identity.photoUrl ?? placeholderPhotoUrl;
     if (photoUrl == null) {
       return placeholder;
     }
@@ -107,7 +112,7 @@ class GoogleUserCircleAvatar extends StatelessWidget {
     // Add a sizing directive to the profile photo URL.
     final double size =
         MediaQuery.of(context).devicePixelRatio * constraints.maxWidth;
-    final sizedPhotoUrl = _sizedProfileImageUrl(photoUrl, size);
+    final String sizedPhotoUrl = _sizedProfileImageUrl(photoUrl, size);
 
     // Fade the photo in over the top of the placeholder.
     return new SizedBox(
