@@ -217,7 +217,7 @@ void main() {
       expect(
         log,
         equals(<MethodCall>[
-          new MethodCall('startListeningAuthState'),
+          const MethodCall('startListeningAuthState'),
           new MethodCall(
             'stopListeningAuthState',
             <String, dynamic>{
