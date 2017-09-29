@@ -1,3 +1,8 @@
+## 0.2.4
+
+* Added support for `signInWithCustomToken`
+* Added `Stream<FirebaseUser> onAuthStateChanged` event to listen when the user change
+
 ## 0.2.3+1
 
 * Aligned author name with rest of repo.
