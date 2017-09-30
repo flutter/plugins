@@ -130,12 +130,8 @@ class DatabaseReference extends Query {
   /// this Firebase Database location.
   Future<TransactionResult> runTransaction(
       TransactionHandler transactionHandler,
-      [Duration transactionTimeout]) async {
-    if (transactionTimeout == null) {
-      transactionTimeout = new Duration(seconds: 5);
-    }
-
-    assert(transactionTimeout.inMilliseconds > 0,
+      {Duration timeout: const Duration(seconds: 5)}) async {
+    assert(timeout.inMilliseconds > 0,
         'Transaction timeout must be more than 0 milliseconds.');
 
     final Completer<TransactionResult> completer =
@@ -151,7 +147,7 @@ class DatabaseReference extends Query {
         .invokeMethod('DatabaseReference#runTransaction', <String, dynamic>{
       'path': path,
       'transactionKey': transactionKey,
-      'transactionTimeout': transactionTimeout.inMilliseconds
+      'transactionTimeout': timeout.inMilliseconds
     }).then((Map<String, dynamic> result) {
       final DatabaseError databaseError =
           result['error'] != null ? new DatabaseError._(result['error']) : null;

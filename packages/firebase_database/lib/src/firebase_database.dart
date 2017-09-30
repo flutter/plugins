@@ -19,20 +19,20 @@ class FirebaseDatabase {
       <int, TransactionHandler>{};
 
   FirebaseDatabase._() {
-    _channel.setMethodCallHandler((MethodCall call) {
+    _channel.setMethodCallHandler((MethodCall call) async {
       if (call.method == 'Event') {
         final Event event = new Event._(call.arguments);
         _observers[call.arguments['handle']].add(event);
       } else if (call.method == 'DoTransaction') {
         final MutableData mutableData =
-            new MutableData._(call.arguments['snapshot']);
-        return _transactions[call.arguments['transactionKey']](mutableData)
-            .then<Map<String, dynamic>>((MutableData updated) {
-          return <String, dynamic>{'value': updated.value};
-        });
+            new MutableData.private(call.arguments['snapshot']);
+        final MutableData updated =
+            await _transactions[call.arguments['transactionKey']](mutableData);
+        return <String, dynamic>{'value': updated.value};
       } else {
         throw new MissingPluginException(
-            '${call.method} method not implemented on the Dart side.');
+          '${call.method} method not implemented on the Dart side.',
+        );
       }
     });
   }

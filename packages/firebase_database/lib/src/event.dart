@@ -37,14 +37,14 @@ class DataSnapshot {
 
 class MutableData {
   final Map<String, dynamic> _data;
-  MutableData._(this._data);
+  @visibleForTesting
+  MutableData.private(this._data);
 
-  /// The key of the location that generated this DataSnapshot.
+  /// The key of the location that generated this MutableData.
   String get key => _data['key'];
 
-  /// Returns the contents of this data snapshot as native types.
+  /// Returns the mutable contents of this MutableData as native types.
   dynamic get value => _data['value'];
-
   set value(dynamic newValue) => _data['value'] = newValue;
 }
 

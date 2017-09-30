@@ -69,12 +69,12 @@ class _MyHomePageState extends State<MyHomePage> {
     await FirebaseAuth.instance.signInAnonymously();
     // Increment counter in transaction.
     final TransactionResult transactionResult =
-        await _counterRef.runTransaction((MutableData mutableData) {
-      mutableData.value = mutableData.value + 1;
-      return new Future<MutableData>(() => mutableData);
+        await _counterRef.runTransaction((MutableData mutableData) async {
+      mutableData.value = (mutableData.value ?? 0) + 1;
+      return mutableData;
     });
 
-    if (transactionResult.committed && transactionResult.error == null) {
+    if (transactionResult.committed) {
       _messagesRef.push().set(<String, String>{
         _kTestKey: '$_kTestValue ${transactionResult.dataSnapshot.value}'
       });
