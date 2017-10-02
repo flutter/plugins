@@ -158,6 +158,20 @@ class FirebaseAuth {
     return currentUser;
   }
 
+  Future<FirebaseUser> signInCustomToken({
+    @required String customToken,
+  }) async {
+    assert(customToken != null);
+    final Map<String, dynamic> data = await channel.invokeMethod(
+      'customToken',
+      <String, String>{
+        'customToken': customToken,
+      },
+    );
+    final FirebaseUser currentUser = new FirebaseUser._(data);
+    return currentUser;
+  }
+
   Future<Null> signOut() async {
     return await channel.invokeMethod("signOut");
   }

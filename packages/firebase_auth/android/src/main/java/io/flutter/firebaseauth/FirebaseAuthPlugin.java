@@ -67,6 +67,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       case "signInWithFacebook":
         handleSignInWithFacebook(call, result);
         break;
+      case "signInWithCustomToken":
+        handleSignInWithCustomToken(call, result);
+        break;
       case "signOut":
         handleSignOut(call, result);
         break;
@@ -156,6 +159,16 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     AuthCredential credential = FacebookAuthProvider.getCredential(accessToken);
     firebaseAuth
         .signInWithCredential(credential)
+        .addOnCompleteListener(activity, new SignInCompleteListener(result));
+  }
+
+  private void handleSignInWithCustomToken(MethodCall call, final Result result) {
+    @SuppressWarnings("unchecked")
+    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    String customToken = arguments.get("customToken");
+    
+    firebaseAuth
+        .signInWithCustomToken(customToken)
         .addOnCompleteListener(activity, new SignInCompleteListener(result));
   }
 

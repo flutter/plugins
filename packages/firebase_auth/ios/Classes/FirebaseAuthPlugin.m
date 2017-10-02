@@ -92,6 +92,12 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
                          completion:^(FIRUser *user, NSError *error) {
                            [self sendResult:result forUser:user error:error];
                          }];
+  } else if ([@"signInCustomToken" isEqualToString:call.method]) {
+    NSString *customToken = call.arguments[@"customToken"];
+    [[FIRAuth auth] signInWithCustomToken:customToken
+                         completion:^(FIRUser *user, NSError *error) {
+                           [self sendResult:result forUser:user error:error];
+                         }];
   } else if ([@"signOut" isEqualToString:call.method]) {
     NSError *signOutError;
     BOOL status = [[FIRAuth auth] signOut:&signOutError];
