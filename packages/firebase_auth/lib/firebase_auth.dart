@@ -163,7 +163,7 @@ class FirebaseAuth {
   }) async {
     assert(customToken != null);
     final Map<String, dynamic> data = await channel.invokeMethod(
-      'customToken',
+      'signInWithCustomToken',
       <String, String>{
         'customToken': customToken,
       },
