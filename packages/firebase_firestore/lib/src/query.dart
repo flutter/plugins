@@ -25,17 +25,6 @@ class Query {
   /// (relative to the root of the database).
   String get path => _pathComponents.join('/');
 
-  // TODO(jackson): Implement query parameters
-  Query _copyWithParameters(Map<String, dynamic> parameters) {
-    return new Query._(
-      firestore: _firestore,
-      pathComponents: _pathComponents,
-      parameters: new Map<String, dynamic>.unmodifiable(
-        new Map<String, dynamic>.from(_parameters)..addAll(parameters),
-      ),
-    );
-  }
-
   Map<String, dynamic> buildArguments() {
     return new Map<String, dynamic>.from(_parameters)
       ..addAll(<String, dynamic>{
