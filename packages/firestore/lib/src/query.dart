@@ -1,4 +1,4 @@
-// Copyright 2017, the Flutter project authors.  Please see the AUTHORS file
+// Copyright 2017, the Chromium project authors.  Please see the AUTHORS file
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
@@ -13,7 +13,8 @@ class Query {
   }): _firestore = firestore,
     _pathComponents = pathComponents,
     _parameters = parameters ?? new Map<String, dynamic>.unmodifiable(<String, dynamic>{}),
-    assert(firestore != null);
+    assert(firestore != null),
+    assert(pathComponents != null);
 
   final Firestore _firestore;
   final List<String> _pathComponents;

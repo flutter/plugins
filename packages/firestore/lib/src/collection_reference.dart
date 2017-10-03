@@ -1,4 +1,4 @@
-// Copyright 2017, the Flutter project authors.  Please see the AUTHORS file
+// Copyright 2017, the Chromium project authors.  Please see the AUTHORS file
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
@@ -6,7 +6,7 @@ part of firebase_firestore;
 
 /// A CollectionReference object can be used for adding documents, getting
 /// document references, and querying for documents (using the methods
-/// inherited from Query).
+/// inherited from [Query]).
 class CollectionReference extends Query {
   CollectionReference._(Firestore firestore, List<String> pathComponents)
       : super._(firestore: firestore, pathComponents: pathComponents);
@@ -22,7 +22,9 @@ class CollectionReference extends Query {
         _firestore, (new List<String>.from(_pathComponents)..removeLast()));
   }
 
-  String get key => _pathComponents.last;
+  /// A string containing the slash-separated path to this this
+  /// CollectionReference (relative to the root of the database).
+  String get path => _pathComponents.join('/');
 
   /// Returns a `DocumentReference` with the provided path.
   ///

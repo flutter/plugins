@@ -1,12 +1,12 @@
-// Copyright 2017, the Flutter project authors.  Please see the AUTHORS file
+// Copyright 2017, the Chromium project authors.  Please see the AUTHORS file
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
 part of firebase_firestore;
 
-/// The entry point for accessing a Firebase Database. You can get an instance
-/// by calling `FirebaseDatabase.instance`. To access a location in the database
-/// and read or write data, use `reference()`.
+/// The entry point for accessing a Firestore.
+///
+/// You can get an instance by calling [Firestore.instance].
 class Firestore {
   @visibleForTesting
   static const MethodChannel channel = const MethodChannel(
@@ -38,13 +38,13 @@ class Firestore {
   /// Gets the instance of Firestore for the default Firebase app.
   static Firestore get instance => _instance;
 
-  /// Gets a CollectionReference for the specified Firestore path.
+  /// Gets a [CollectionReference] for the specified Firestore path.
   CollectionReference collection(String path) {
     assert(path != null);
     return new CollectionReference._(this, path.split('/'));
   }
 
-  /// Gets a DocumentReference for the specified Firestore path.
+  /// Gets a [DocumentReference] for the specified Firestore path.
   DocumentReference document(String path) {
     assert(path != null);
     return new DocumentReference._(this, path.split('/'));
