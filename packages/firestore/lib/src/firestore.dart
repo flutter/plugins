@@ -8,7 +8,8 @@ part of firestore;
 /// by calling `FirebaseDatabase.instance`. To access a location in the database
 /// and read or write data, use `reference()`.
 class Firestore {
-  final MethodChannel _channel = const MethodChannel(
+  @visibleForTesting
+  static const MethodChannel channel = const MethodChannel(
     'plugins.flutter.io/firebase_firestore',
   );
 
@@ -19,11 +20,9 @@ class Firestore {
       <int, StreamController<DocumentSnapshot>>{};
 
   Firestore._() {
-    _channel.setMethodCallHandler((MethodCall call) {
+    channel.setMethodCallHandler((MethodCall call) {
       if (call.method == 'QuerySnapshot') {
-        final QuerySnapshot snapshot = new QuerySnapshot._(
-          call.arguments['documents'],
-        );
+        final QuerySnapshot snapshot = new QuerySnapshot._(call.arguments);
         _queryObservers[call.arguments['handle']].add(snapshot);
       } else if (call.method == 'DocumentSnapshot') {
         final DocumentSnapshot snapshot = new DocumentSnapshot._(

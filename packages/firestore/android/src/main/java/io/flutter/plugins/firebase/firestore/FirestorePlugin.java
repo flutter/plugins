@@ -8,6 +8,7 @@ import android.util.Log;
 import android.util.SparseArray;
 
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -102,6 +103,29 @@ public class FirestorePlugin implements MethodCallHandler {
         documents.add(document.getData());
       }
       arguments.put("documents", documents);
+
+      List<Map<String, Object>> documentChanges = new ArrayList<>();
+      for(DocumentChange documentChange: querySnapshot.getDocumentChanges()) {
+        Map<String, Object> change = new HashMap<>();
+        String type;
+        switch (documentChange.getType()) {
+          case DocumentChange.Type.ADDED:
+            type = "DocumentChange.added";
+            break;
+          case DocumentChange.Type.MODIFIED:
+            type = "DocumentChange.modified";
+            break;
+          case DocumentChange.Type.REMOVED:
+            type = "DocumentChange.removed";
+            break;
+        }
+        change.put("type", type);
+        change.put("oldIndex", change.getOldIndex());
+        change.put("newIndex", change.getNewIndex());
+        change.put("document", change.getDocument().getData());
+        documentChanges.add(change);
+      }
+      arguments.put("documents", documentChanges);
 
       channel.invokeMethod("QuerySnapshot", arguments);
     }

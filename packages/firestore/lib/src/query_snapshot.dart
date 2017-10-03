@@ -10,8 +10,14 @@ class QuerySnapshot {
   /// Gets a list of all the documents included in this snapshot
   final List<DocumentSnapshot> documents;
 
-  QuerySnapshot._(List<Map<String, dynamic>> data)
-    : documents = new List.generate(data.length, (int index) {
-    return new DocumentSnapshot._(data[index]);
+  /// An array of the documents that changed since the last snapshot. If this
+  /// is the first snapshot, all documents will be in the list as Added changes.
+  final List<DocumentChange> documentChanges;
+
+  QuerySnapshot._(Map<String, List<Map<String, dynamic>>> data)
+    : documents = new List.generate(data['documents'].length, (int index) {
+    return new DocumentSnapshot._(data['documents'][index]);
+  }), documentChanges = new List.generate(data['documentChanges'].length, (int index) {
+    return new DocumentChange._(data['documentChanges'][index]);
   });
 }

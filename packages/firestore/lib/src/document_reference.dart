@@ -23,7 +23,7 @@ class DocumentReference {
   String get path => _pathComponents.join('/');
 
   Future<Null> setData(Map<String, dynamic> data) {
-    return _firestore._channel.invokeMethod(
+    return Firestore.channel.invokeMethod(
       'DocumentReference#setData',
       <String, dynamic>{'path': path, 'data': data},
     );
@@ -38,7 +38,7 @@ class DocumentReference {
     StreamController<DocumentSnapshot> controller; // ignore: close_sinks
     controller = new StreamController<DocumentSnapshot>.broadcast(
       onListen: () {
-        _handle = _firestore._channel.invokeMethod(
+        _handle = Firestore.channel.invokeMethod(
           'Query#addDocumentListener', <String, dynamic>{
           'path': path,
         },
@@ -49,7 +49,7 @@ class DocumentReference {
       },
       onCancel: () {
         _handle.then((int handle) async {
-          await _firestore._channel.invokeMethod(
+          await Firestore.channel.invokeMethod(
             'Query#removeListener',
             <String, dynamic>{ 'handle': handle },
           );

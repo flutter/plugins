@@ -73,8 +73,29 @@ FIRQuery *getQuery(NSDictionary *arguments) {
       for (FIRDocumentSnapshot *document in snapshot.documents) {
         [documents addObject:document.data];
       }
+      NSMutableArray *documentChanges = [NSMutableArray array];
+      for (FIRDocumentChange *documentChange in snapshot.documentChanges) {
+        NSString *type;
+        switch(documentChange.type) {
+          case FIRDocumentChangeTypeAdded:
+            type = @"DocumentChange.added";
+            break;
+          case FIRDocumentChangeTypeModified:
+            type = @"DocumentChange.modified";
+            break;
+          case FIRDocumentChangeTypeRemoved:
+            type = @"DocumentChange.removed";
+            break;
+        }
+        [documentChanges addObject:@{
+          @"type": type,
+          @"document": documentChange.document.data,
+          @"oldIndex": [NSNumber numberWithUnsignedInteger:documentChange.oldIndex],
+          @"newIndex": [NSNumber numberWithUnsignedInteger:documentChange.newIndex],
+        }];
+      }
       [self.channel invokeMethod:@"QuerySnapshot"
-                       arguments:@{ @"handle" : handle, @"documents" : documents }];
+                       arguments:@{ @"handle" : handle, @"documents" : documents, @"documentChanges" : documentChanges }];
     }];
     _listeners[handle] = listener;
     result(handle);

@@ -47,7 +47,7 @@ class Query {
     StreamController<QuerySnapshot> controller; // ignore: close_sinks
     controller = new StreamController<QuerySnapshot>.broadcast(
       onListen: () {
-        _handle = _firestore._channel.invokeMethod(
+        _handle = Firestore.channel.invokeMethod(
           'Query#addSnapshotListener', <String, dynamic>{
             'path': path,
             'parameters': _parameters,
@@ -59,7 +59,7 @@ class Query {
       },
       onCancel: () {
         _handle.then((int handle) async {
-          await _firestore._channel.invokeMethod(
+          await Firestore.channel.invokeMethod(
             'Query#removeListener',
             <String, dynamic>{ 'handle': handle },
           );
