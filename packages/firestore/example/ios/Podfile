@@ -10,7 +10,6 @@ target 'Runner' do
 
   # Flutter Pods
   pod 'Flutter', :path => ENV['FLUTTER_FRAMEWORK_DIR']
-  pod 'Firestore', :podspec => 'https://storage.googleapis.com/firebase-preview-drop/ios/firestore/0.6.4/Firestore.podspec.json'
 
   if File.exists? '../.flutter-plugins'
     flutter_root = File.expand_path('..')
