@@ -5,7 +5,6 @@
 #import "FirestorePlugin.h"
 
 #import <Firebase/Firebase.h>
-#import <Firestore/Firestore.h>
 
 @interface NSError (FlutterError)
 @property(readonly, nonatomic) FlutterError *flutterError;
