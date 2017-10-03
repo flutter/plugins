@@ -1,3 +1,7 @@
+## 0.1.0
+
+* Change GMS dependency to 11.+
+
 ## 0.0.5+1
 
 * Aligned author name with rest of repo.
