@@ -22,7 +22,6 @@ class Firestore {
   Firestore._() {
     channel.setMethodCallHandler((MethodCall call) {
       if (call.method == 'QuerySnapshot') {
-        print('HEY!! ${call.method} ${call.arguments}');
         final QuerySnapshot snapshot = new QuerySnapshot._(call.arguments);
         _queryObservers[call.arguments['handle']].add(snapshot);
       } else if (call.method == 'DocumentSnapshot') {

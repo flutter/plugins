@@ -77,13 +77,13 @@ FIRQuery *getQuery(NSDictionary *arguments) {
         NSString *type;
         switch(documentChange.type) {
           case FIRDocumentChangeTypeAdded:
-            type = @"DocumentChange.added";
+            type = @"DocumentChangeType.added";
             break;
           case FIRDocumentChangeTypeModified:
-            type = @"DocumentChange.modified";
+            type = @"DocumentChangeType.modified";
             break;
           case FIRDocumentChangeTypeRemoved:
-            type = @"DocumentChange.removed";
+            type = @"DocumentChangeType.removed";
             break;
         }
         [documentChanges addObject:@{
