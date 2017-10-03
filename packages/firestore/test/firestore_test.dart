@@ -8,7 +8,7 @@ import 'package:test/test.dart';
 
 import 'package:flutter/services.dart';
 
-import 'package:firebase_firestore/firestore.dart';
+import 'package:firebase_firestore/firebase_firestore.dart';
 
 void main() {
   group('$Firestore', () {
@@ -62,7 +62,7 @@ void main() {
         );
         final Map<String, dynamic> document = <String, dynamic>{ 'baz': 'quox' };
         final Map<String, dynamic> documentChange = <String, dynamic>{
-          'type': 'DocumentChange.added',
+          'type': DocumentChangeType.added.toString(),
           'document': document,
           'oldIndex': -1,
           'newIndex': -1,
@@ -79,6 +79,7 @@ void main() {
               ),
             (_) {},
         );
+        await new Future<Null>.delayed(Duration.ZERO);
         expect(snapshot.documents.length, equals(1));
         expect(snapshot.documentChanges.length, equals(1));
         expect(snapshot.documents[0].data, equals(document));

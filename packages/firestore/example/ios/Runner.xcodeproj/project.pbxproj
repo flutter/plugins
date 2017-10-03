@@ -248,9 +248,9 @@
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-Runner/Pods-Runner-resources.sh",
-				"${PODS_ROOT}/GoogleAuthUtilities/Frameworks/frameworks/GoogleAuthUtilities.framework/Resources/GTMOAuth2ViewTouch.xib",
+				"${PODS_ROOT}/GTMOAuth2/Source/Touch/GTMOAuth2ViewTouch.xib",
 				"${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle",
-				$PODS_CONFIGURATION_BUILD_DIR/gRPC/gRPCCertificates.bundle,
+				"$PODS_CONFIGURATION_BUILD_DIR/gRPC/gRPCCertificates.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (

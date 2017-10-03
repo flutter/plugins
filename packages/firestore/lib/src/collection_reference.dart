@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-part of firestore;
+part of firebase_firestore;
 
 /// A CollectionReference object can be used for adding documents, getting
 /// document references, and querying for documents (using the methods

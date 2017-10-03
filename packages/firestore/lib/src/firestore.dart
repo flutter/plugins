@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-part of firestore;
+part of firebase_firestore;
 
 /// The entry point for accessing a Firebase Database. You can get an instance
 /// by calling `FirebaseDatabase.instance`. To access a location in the database
@@ -22,6 +22,7 @@ class Firestore {
   Firestore._() {
     channel.setMethodCallHandler((MethodCall call) {
       if (call.method == 'QuerySnapshot') {
+        print('HEY!! ${call.method} ${call.arguments}');
         final QuerySnapshot snapshot = new QuerySnapshot._(call.arguments);
         _queryObservers[call.arguments['handle']].add(snapshot);
       } else if (call.method == 'DocumentSnapshot') {
