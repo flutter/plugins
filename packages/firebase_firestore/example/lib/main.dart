@@ -14,10 +14,10 @@ void main() {
 class BookList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new StreamBuilder(
+    return new StreamBuilder<QuerySnapshot>(
       stream: Firestore.instance.collection('books').snapshots,
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) return new Text('Loading...');
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (!snapshot.hasData) return const Text('Loading...');
         return new ListView(
           children: snapshot.data.documents.map((DocumentSnapshot document) {
             return new ListTile(

@@ -14,11 +14,11 @@ class QuerySnapshot {
   final List<DocumentChange> documentChanges;
 
   QuerySnapshot._(Map<String, List<Map<String, dynamic>>> data)
-      : documents = new List.generate(data['documents'].length, (int index) {
+      : documents = new List<DocumentSnapshot>.generate(data['documents'].length, (int index) {
           return new DocumentSnapshot._(data['documents'][index]);
         }),
         documentChanges =
-            new List.generate(data['documentChanges'].length, (int index) {
+            new List<DocumentChange>.generate(data['documentChanges'].length, (int index) {
           return new DocumentChange._(data['documentChanges'][index]);
         });
 }

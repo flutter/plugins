@@ -21,9 +21,11 @@ class Query {
   final List<String> _pathComponents;
   final Map<String, dynamic> _parameters;
 
-  /// Slash-delimited path representing the database location of this query.
+  /// A string containing the slash-separated path to this this Query
+  /// (relative to the root of the database).
   String get path => _pathComponents.join('/');
 
+  // TODO(jackson): Implement query parameters
   Query _copyWithParameters(Map<String, dynamic> parameters) {
     return new Query._(
       firestore: _firestore,

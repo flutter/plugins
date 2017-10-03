@@ -22,10 +22,6 @@ class CollectionReference extends Query {
         _firestore, (new List<String>.from(_pathComponents)..removeLast()));
   }
 
-  /// A string containing the slash-separated path to this this
-  /// CollectionReference (relative to the root of the database).
-  String get path => _pathComponents.join('/');
-
   /// Returns a `DocumentReference` with the provided path.
   ///
   /// If no [path] is provided, an auto-generated ID is used.
