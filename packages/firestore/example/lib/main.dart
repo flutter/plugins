@@ -22,12 +22,12 @@ class MyHomePage extends StatelessWidget {
     final GoogleSignInAccount account = await googleSignIn.signIn();
     if (account == null)
       return;
-    GoogleSignInAuthentication googleAuth = await account.authentication;
-    FirebaseUser user = await FirebaseAuth.instance.signInWithGoogle(
+    final GoogleSignInAuthentication googleAuth = await account.authentication;
+    final FirebaseUser user = await FirebaseAuth.instance.signInWithGoogle(
         idToken: googleAuth.idToken,
         accessToken: googleAuth.accessToken,
     );
-    await Firestore.instance.document("users/${user.uid}").setData({
+    await Firestore.instance.document("users/${user.uid}").setData(<String, String>{
       'photoUrl': account.photoUrl,
     });
     await messages.document().setData(<String, String>{
@@ -42,11 +42,11 @@ class MyHomePage extends StatelessWidget {
       appBar: new AppBar(
         title: const Text('Firestore Example'),
       ),
-      body: new StreamBuilder(
+      body: new StreamBuilder<QuerySnapshot>(
         stream: messages.snapshots,
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (!snapshot.hasData)
-            return new Center(child: new Text('Loading...'));
+            return new Center(child: const Text('Loading...'));
           final List<DocumentSnapshot> documents = snapshot.data.documents;
           return new ListView.builder(
             reverse: true,
@@ -56,12 +56,12 @@ class MyHomePage extends StatelessWidget {
               final DocumentSnapshot document = documents[documents.length - index - 1];
               final String author = document['author'];
               return new ListTile(
-                leading: new StreamBuilder(
+                leading: new StreamBuilder<DocumentSnapshot>(
                   stream: Firestore.instance.document("users/$author").snapshots,
                   builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> user) {
-                    Map<String, String> data = user.data?.data;
+                    final Map<String, String> data = user.data?.data;
                     if (data == null)
-                      return new CircleAvatar();
+                      return const CircleAvatar();
                     return new CircleAvatar(
                       backgroundImage: new NetworkImage(user.data.data['photoUrl']),
                     );
