@@ -107,22 +107,22 @@ public class FirestorePlugin implements MethodCallHandler {
       List<Map<String, Object>> documentChanges = new ArrayList<>();
       for(DocumentChange documentChange: querySnapshot.getDocumentChanges()) {
         Map<String, Object> change = new HashMap<>();
-        String type;
+        String type = null;
         switch (documentChange.getType()) {
-          case DocumentChange.Type.ADDED:
+          case ADDED:
             type = "DocumentChange.added";
             break;
-          case DocumentChange.Type.MODIFIED:
+          case MODIFIED:
             type = "DocumentChange.modified";
             break;
-          case DocumentChange.Type.REMOVED:
+          case REMOVED:
             type = "DocumentChange.removed";
             break;
         }
         change.put("type", type);
-        change.put("oldIndex", change.getOldIndex());
-        change.put("newIndex", change.getNewIndex());
-        change.put("document", change.getDocument().getData());
+        change.put("oldIndex", documentChange.getOldIndex());
+        change.put("newIndex", documentChange.getNewIndex());
+        change.put("document", documentChange.getDocument().getData());
         documentChanges.add(change);
       }
       arguments.put("documents", documentChanges);
