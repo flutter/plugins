@@ -41,12 +41,9 @@ void main() {
 
     group('CollectionsReference', () {
       test('listen', () async {
-        QuerySnapshot snapshot;
-        final int handleId = mockHandleId;
         final StreamSubscription<QuerySnapshot> subscription =
-        collectionReference.snapshots.listen((QuerySnapshot querySnapshot) {
-          snapshot = querySnapshot;
-        });
+        collectionReference.snapshots.listen((QuerySnapshot querySnapshot) {});
+        subscription.cancel();
         await new Future<Null>.delayed(Duration.ZERO);
         expect(
           log,
@@ -58,45 +55,10 @@ void main() {
                 'parameters': <String, dynamic>{}
               },
             ),
-          ]),
-        );
-        final Map<String, dynamic> document = <String, dynamic>{ 'baz': 'quox' };
-        final Map<String, dynamic> documentChange = <String, dynamic>{
-          'type': DocumentChangeType.added.toString(),
-          'document': document,
-          'oldIndex': -1,
-          'newIndex': -1,
-        };
-        await BinaryMessages.handlePlatformMessage(
-            Firestore.channel.name,
-            Firestore.channel.codec.encodeMethodCall(
-              new MethodCall('QuerySnapshot',
-                <String, dynamic>{
-                  'id': handleId,
-                  'documents': <Map>[ document ],
-                  'documentChanges': <Map>[ documentChange ],
-                }),
-              ),
-            (_) {},
-        );
-        await new Future<Null>.delayed(Duration.ZERO);
-        expect(snapshot.documents.length, equals(1));
-        expect(snapshot.documentChanges.length, equals(1));
-        expect(snapshot.documents[0].data, equals(document));
-        expect(snapshot.documentChanges[0].type.toString(), equals(documentChange['type']));
-        expect(snapshot.documentChanges[0].document.data, equals(documentChange['document']));
-        expect(snapshot.documentChanges[0].oldIndex, equals(documentChange['oldIndex']));
-        expect(snapshot.documentChanges[0].newIndex, equals(documentChange['newIndex']));
-        log.clear();
-        subscription.cancel();
-        await new Future<Null>.delayed(Duration.ZERO);
-        expect(
-          log,
-          equals(<MethodCall>[
             new MethodCall(
               'Query#removeListener',
               <String, dynamic> {
-                'handle': handleId
+                'handle': 0
               },
             ),
           ]),
@@ -108,7 +70,7 @@ void main() {
       test('listen', () async {
         final StreamSubscription<DocumentSnapshot> subscription =
         Firestore.instance.document('foo').snapshots.listen(
-          (DocumentSnapshot querySnapshot) {},
+              (DocumentSnapshot querySnapshot) {},
         );
         subscription.cancel();
         await new Future<Null>.delayed(Duration.ZERO);
@@ -139,7 +101,7 @@ void main() {
               'DocumentReference#setData',
               <String, dynamic> {
                 'path': 'foo/bar',
-                'data': {
+                'data': <String, String>{
                   'bazKey': 'quxValue'
                 }
               },
