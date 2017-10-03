@@ -1,0 +1,11 @@
+name: firebase_admob_example
+description: Demonstrates how to use the firebase_admob plugin.
+
+dependencies:
+  flutter:
+    sdk: flutter
+  firebase_admob:
+    path: ../
+
+flutter:
+  uses-material-design: true

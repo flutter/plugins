@@ -1,0 +1,12 @@
+name: sensors_example
+description: Demonstrates how to use the sensors plugin.
+
+dependencies:
+  flutter:
+    sdk: flutter
+  sensors:
+    path: ../
+
+flutter:
+
+  uses-material-design: true

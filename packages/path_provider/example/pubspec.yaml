@@ -1,0 +1,11 @@
+name: path_provider_example
+description: Demonstrates how to use the path_provider plugin.
+
+dependencies:
+  flutter:
+    sdk: flutter
+  path_provider:
+    path: ../
+
+flutter:
+  uses-material-design: true

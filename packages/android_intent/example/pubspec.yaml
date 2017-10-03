@@ -1,0 +1,12 @@
+name: android_intent_example
+description: Demonstrates how to use the android_intent plugin.
+
+dependencies:
+  flutter:
+    sdk: flutter
+  android_intent:
+    path: ../
+
+# The following section is specific to Flutter.
+flutter:
+  uses-material-design: true

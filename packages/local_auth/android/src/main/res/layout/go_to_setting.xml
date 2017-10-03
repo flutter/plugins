@@ -1,0 +1,26 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="24dp"
+    android:paddingRight="24dp"
+    android:gravity="center_vertical"
+    android:orientation="vertical">
+  <TextView
+      android:id="@+id/fingerprint_required"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:paddingTop="24dp"
+      android:paddingBottom="20dp"
+      android:gravity="center_vertical"
+      android:textColor="@color/black_text"
+      style="@android:style/TextAppearance.DeviceDefault.Medium"
+      android:textSize="@dimen/huge_text_size"/>
+  <TextView
+      android:id="@+id/go_to_setting_description"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:paddingBottom="28dp"
+      android:textColor="@color/grey_text"
+      android:textStyle="normal"
+      android:textSize="@dimen/medium_text_size"/>
+</LinearLayout>

@@ -1,0 +1,93 @@
+{
+  "project_info": {
+    "project_number": "3401408244",
+    "firebase_url": "https://test-project-cloud-messaging.firebaseio.com",
+    "project_id": "test-project-cloud-messaging",
+    "storage_bucket": "test-project-cloud-messaging.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:3401408244:android:5920de3503a2d18c",
+        "android_client_info": {
+          "package_name": "com.google.firebase.quickstart.fcm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "3401408244-s01tdnd5guf3vrrn4n780j22sm20gob8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.google.firebase.quickstart.fcm",
+            "certificate_hash": "a647cb35cdac21e3a26f2b5697c5b789cde3b5a0"
+          }
+        },
+        {
+          "client_id": "3401408244-m5m1eph6d37rrp71hj33hcttffmmeat0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBMV3_n5xWH-rzyxsUWbvPPo7-_ZgESSOo"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "3401408244-kpa4vjuab7s8gjut5gjdf3hku8gbdp1c.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "io.flutter.plugins.firebase-messaging"
+              }
+            },
+            {
+              "client_id": "3401408244-m5m1eph6d37rrp71hj33hcttffmmeat0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:3401408244:android:fc026014a0a3ac30",
+        "android_client_info": {
+          "package_name": "io.flutter.plugins.firebasemessagingexample"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "3401408244-m5m1eph6d37rrp71hj33hcttffmmeat0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBMV3_n5xWH-rzyxsUWbvPPo7-_ZgESSOo"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

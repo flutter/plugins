@@ -1,0 +1,11 @@
+name: share_example
+description: Demonstrates how to use the share plugin.
+
+dependencies:
+  flutter:
+    sdk: flutter
+  share:
+    path: ../
+
+flutter:
+  uses-material-design: true

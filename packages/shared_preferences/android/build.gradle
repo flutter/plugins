@@ -1,0 +1,40 @@
+group 'io.flutter.plugins.sharedpreferences'
+version '1.0-SNAPSHOT'
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.3.0'
+    }
+}
+
+rootProject.allprojects {
+    repositories {
+        jcenter()
+    }
+}
+
+allprojects {
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+        }
+    }
+}
+
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion '25.0.3'
+
+    defaultConfig {
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    lintOptions {
+        disable 'InvalidPackage'
+    }
+}

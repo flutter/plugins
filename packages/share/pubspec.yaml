@@ -1,0 +1,17 @@
+name: share
+version: 0.2.1
+description: A Flutter plugin for sharing content from the Flutter app via the platform share sheet.
+author: Flutter Team <flutter-dev@googlegroups.com>
+homepage: https://github.com/flutter/plugins/tree/master/packages/share
+
+flutter:
+  plugin:
+    androidPackage: io.flutter.plugins.share
+    pluginClass: SharePlugin
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+environment:
+    sdk: ">=1.8.0 <2.0.0"

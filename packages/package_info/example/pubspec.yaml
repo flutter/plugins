@@ -1,0 +1,11 @@
+name: package_info_example
+description: Demonstrates how to use the package_info plugin.
+
+dependencies:
+  flutter:
+    sdk: flutter
+  package_info:
+    path: ../
+
+flutter:
+  uses-material-design: true
