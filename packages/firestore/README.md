@@ -15,7 +15,7 @@ To use this plugin:
 ## Usage
 
 ```dart
-import 'package:firebase_firestore/firestore.dart';
+import 'package:firebase_firestore/firebase_firestore.dart';
 ```
 
 Adding a new `DocumentReference`:
