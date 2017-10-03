@@ -17,7 +17,7 @@ To use this plugin:
 ## Usage
 
 ```dart
-import 'package:firebase_firestore/firestore.dart';
+import 'package:firebase_firestore/firebase_firestore.dart';
 ```
 
 Adding a new `DocumentReference`:
@@ -36,8 +36,7 @@ class BookList extends StatelessWidget {
     return new StreamBuilder(
       stream: Firestore.instance.collection('books').snapshots,
       builder: (context, snapshot) {
-        if (!snapshot.hasData)
-          return new Text('Loading...');
+        if (!snapshot.hasData) return new Text('Loading...');
         return new ListView(
           children: snapshot.data.documents.map((document) {
             return new ListTile(
