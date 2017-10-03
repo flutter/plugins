@@ -6,8 +6,6 @@ dependencies:
     sdk: flutter
   firebase_firestore:
     path: ../
-  firebase_auth: 0.2.3
-  google_sign_in: 0.3.1
 
 flutter:
   uses-material-design: true
