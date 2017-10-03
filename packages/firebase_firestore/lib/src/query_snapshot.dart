@@ -6,7 +6,6 @@ part of firebase_firestore;
 
 /// A QuerySnapshot contains zero or more DocumentSnapshot objects.
 class QuerySnapshot {
-
   /// Gets a list of all the documents included in this snapshot
   final List<DocumentSnapshot> documents;
 
@@ -15,9 +14,11 @@ class QuerySnapshot {
   final List<DocumentChange> documentChanges;
 
   QuerySnapshot._(Map<String, List<Map<String, dynamic>>> data)
-    : documents = new List.generate(data['documents'].length, (int index) {
-    return new DocumentSnapshot._(data['documents'][index]);
-  }), documentChanges = new List.generate(data['documentChanges'].length, (int index) {
-    return new DocumentChange._(data['documentChanges'][index]);
-  });
+      : documents = new List.generate(data['documents'].length, (int index) {
+          return new DocumentSnapshot._(data['documents'][index]);
+        }),
+        documentChanges =
+            new List.generate(data['documentChanges'].length, (int index) {
+          return new DocumentChange._(data['documentChanges'][index]);
+        });
 }

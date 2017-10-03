@@ -4,9 +4,7 @@
 
 package io.flutter.plugins.firebase.firestore;
 
-import android.util.Log;
 import android.util.SparseArray;
-
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
@@ -17,13 +15,11 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
-
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,6 +42,7 @@ public class FirestorePlugin implements MethodCallHandler {
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_firestore");
     channel.setMethodCallHandler(new FirestorePlugin(channel));
   }
+
   private FirestorePlugin(MethodChannel channel) {
     this.channel = channel;
   }
@@ -71,7 +68,6 @@ public class FirestorePlugin implements MethodCallHandler {
       this.handle = handle;
     }
 
-
     @Override
     public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
       Map<String, Object> arguments = new HashMap<>();
@@ -92,20 +88,19 @@ public class FirestorePlugin implements MethodCallHandler {
       this.handle = handle;
     }
 
-
     @Override
     public void onEvent(QuerySnapshot querySnapshot, FirebaseFirestoreException e) {
       Map<String, Object> arguments = new HashMap<>();
       arguments.put("handle", handle);
 
       List<Map<String, Object>> documents = new ArrayList<>();
-      for(DocumentSnapshot document: querySnapshot.getDocuments()) {
+      for (DocumentSnapshot document : querySnapshot.getDocuments()) {
         documents.add(document.getData());
       }
       arguments.put("documents", documents);
 
       List<Map<String, Object>> documentChanges = new ArrayList<>();
-      for(DocumentChange documentChange: querySnapshot.getDocumentChanges()) {
+      for (DocumentChange documentChange : querySnapshot.getDocumentChanges()) {
         Map<String, Object> change = new HashMap<>();
         String type = null;
         switch (documentChange.getType()) {
@@ -150,7 +145,8 @@ public class FirestorePlugin implements MethodCallHandler {
           int handle = nextHandle++;
           DocumentObserver observer = new DocumentObserver(handle);
           documentObservers.put(handle, observer);
-          listenerRegistrations.put(handle, getDocumentReference(arguments).addSnapshotListener(observer));
+          listenerRegistrations.put(
+              handle, getDocumentReference(arguments).addSnapshotListener(observer));
           result.success(handle);
         }
       case "Query#removeListener":

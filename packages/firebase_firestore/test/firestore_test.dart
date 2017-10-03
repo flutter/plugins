@@ -25,7 +25,7 @@ void main() {
       mockHandleId = 0;
       channel.setMockMethodCallHandler((MethodCall methodCall) async {
         log.add(methodCall);
-        switch(methodCall.method) {
+        switch (methodCall.method) {
           case 'Query#addSnapshotListener':
             return mockHandleId++;
           case 'Query#addDocumentListener':
@@ -42,7 +42,8 @@ void main() {
     group('CollectionsReference', () {
       test('listen', () async {
         final StreamSubscription<QuerySnapshot> subscription =
-        collectionReference.snapshots.listen((QuerySnapshot querySnapshot) {});
+            collectionReference.snapshots
+                .listen((QuerySnapshot querySnapshot) {});
         subscription.cancel();
         await new Future<Null>.delayed(Duration.ZERO);
         expect(
@@ -50,16 +51,14 @@ void main() {
           equals(<MethodCall>[
             new MethodCall(
               'Query#addSnapshotListener',
-              <String, dynamic> {
+              <String, dynamic>{
                 'path': 'foo',
                 'parameters': <String, dynamic>{}
               },
             ),
             new MethodCall(
               'Query#removeListener',
-              <String, dynamic> {
-                'handle': 0
-              },
+              <String, dynamic>{'handle': 0},
             ),
           ]),
         );
@@ -69,9 +68,9 @@ void main() {
     group('DocumentReference', () {
       test('listen', () async {
         final StreamSubscription<DocumentSnapshot> subscription =
-        Firestore.instance.document('foo').snapshots.listen(
-              (DocumentSnapshot querySnapshot) {},
-        );
+            Firestore.instance.document('foo').snapshots.listen(
+                  (DocumentSnapshot querySnapshot) {},
+                );
         subscription.cancel();
         await new Future<Null>.delayed(Duration.ZERO);
         expect(
@@ -79,31 +78,29 @@ void main() {
           equals(<MethodCall>[
             new MethodCall(
               'Query#addDocumentListener',
-              <String, dynamic> {
+              <String, dynamic>{
                 'path': 'foo',
               },
             ),
             new MethodCall(
               'Query#removeListener',
-              <String, dynamic> {
-                'handle': 0
-              },
+              <String, dynamic>{'handle': 0},
             )
           ]),
         );
       });
       test('set', () async {
-        await collectionReference.document('bar').setData(<String, String>{'bazKey': 'quxValue'});
+        await collectionReference
+            .document('bar')
+            .setData(<String, String>{'bazKey': 'quxValue'});
         expect(
           log,
           equals(<MethodCall>[
             new MethodCall(
               'DocumentReference#setData',
-              <String, dynamic> {
+              <String, dynamic>{
                 'path': 'foo/bar',
-                'data': <String, String>{
-                  'bazKey': 'quxValue'
-                }
+                'data': <String, String>{'bazKey': 'quxValue'}
               },
             ),
           ]),

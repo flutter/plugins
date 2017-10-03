@@ -56,61 +56,64 @@ FIRQuery *getQuery(NSDictionary *arguments) {
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   void (^defaultCompletionBlock)(NSError *) = ^(NSError *error) {
-        result(error.flutterError);
-      };
+    result(error.flutterError);
+  };
   if ([@"DocumentReference#setData" isEqualToString:call.method]) {
     NSString *path = call.arguments[@"path"];
     FIRDocumentReference *reference = [[FIRFirestore firestore] documentWithPath:path];
     [reference setData:call.arguments[@"data"] completion:defaultCompletionBlock];
   } else if ([@"Query#addSnapshotListener" isEqualToString:call.method]) {
     __block NSNumber *handle = [NSNumber numberWithInt:_nextListenerHandle++];
-    id<FIRListenerRegistration> listener =
-        [getQuery(call.arguments) addSnapshotListener:^(FIRQuerySnapshot * _Nullable snapshot, NSError * _Nullable error) {
-      if (error)
-        result(error.flutterError);
-      NSMutableArray *documents = [NSMutableArray array];
-      for (FIRDocumentSnapshot *document in snapshot.documents) {
-        [documents addObject:document.data];
-      }
-      NSMutableArray *documentChanges = [NSMutableArray array];
-      for (FIRDocumentChange *documentChange in snapshot.documentChanges) {
-        NSString *type;
-        switch(documentChange.type) {
-          case FIRDocumentChangeTypeAdded:
-            type = @"DocumentChangeType.added";
-            break;
-          case FIRDocumentChangeTypeModified:
-            type = @"DocumentChangeType.modified";
-            break;
-          case FIRDocumentChangeTypeRemoved:
-            type = @"DocumentChangeType.removed";
-            break;
-        }
-        [documentChanges addObject:@{
-          @"type": type,
-          @"document": documentChange.document.data,
-          @"oldIndex": [NSNumber numberWithUnsignedInteger:documentChange.oldIndex],
-          @"newIndex": [NSNumber numberWithUnsignedInteger:documentChange.newIndex],
+    id<FIRListenerRegistration> listener = [getQuery(call.arguments)
+        addSnapshotListener:^(FIRQuerySnapshot *_Nullable snapshot, NSError *_Nullable error) {
+          if (error) result(error.flutterError);
+          NSMutableArray *documents = [NSMutableArray array];
+          for (FIRDocumentSnapshot *document in snapshot.documents) {
+            [documents addObject:document.data];
+          }
+          NSMutableArray *documentChanges = [NSMutableArray array];
+          for (FIRDocumentChange *documentChange in snapshot.documentChanges) {
+            NSString *type;
+            switch (documentChange.type) {
+              case FIRDocumentChangeTypeAdded:
+                type = @"DocumentChangeType.added";
+                break;
+              case FIRDocumentChangeTypeModified:
+                type = @"DocumentChangeType.modified";
+                break;
+              case FIRDocumentChangeTypeRemoved:
+                type = @"DocumentChangeType.removed";
+                break;
+            }
+            [documentChanges addObject:@{
+              @"type" : type,
+              @"document" : documentChange.document.data,
+              @"oldIndex" : [NSNumber numberWithUnsignedInteger:documentChange.oldIndex],
+              @"newIndex" : [NSNumber numberWithUnsignedInteger:documentChange.newIndex],
+            }];
+          }
+          [self.channel invokeMethod:@"QuerySnapshot"
+                           arguments:@{
+                             @"handle" : handle,
+                             @"documents" : documents,
+                             @"documentChanges" : documentChanges
+                           }];
         }];
-      }
-      [self.channel invokeMethod:@"QuerySnapshot"
-                       arguments:@{ @"handle" : handle, @"documents" : documents, @"documentChanges" : documentChanges }];
-    }];
     _listeners[handle] = listener;
     result(handle);
   } else if ([@"Query#addDocumentListener" isEqualToString:call.method]) {
     __block NSNumber *handle = [NSNumber numberWithInt:_nextListenerHandle++];
-    FIRDocumentReference *reference = [[FIRFirestore firestore] documentWithPath:call.arguments[@"path"]];
+    FIRDocumentReference *reference =
+        [[FIRFirestore firestore] documentWithPath:call.arguments[@"path"]];
     id<FIRListenerRegistration> listener =
-    [reference addSnapshotListener:^(FIRDocumentSnapshot *snapshot, NSError * _Nullable error) {
-      if (error)
-        result(error.flutterError);
-      [self.channel invokeMethod:@"DocumentSnapshot"
-                       arguments:@{
-                                    @"handle" : handle,
-                                    @"data" : snapshot.exists ? snapshot.data : [NSNull null],
-                                  }];
-    }];
+        [reference addSnapshotListener:^(FIRDocumentSnapshot *snapshot, NSError *_Nullable error) {
+          if (error) result(error.flutterError);
+          [self.channel invokeMethod:@"DocumentSnapshot"
+                           arguments:@{
+                             @"handle" : handle,
+                             @"data" : snapshot.exists ? snapshot.data : [NSNull null],
+                           }];
+        }];
     _listeners[handle] = listener;
     result(handle);
   } else if ([@"Query#removeListener" isEqualToString:call.method]) {

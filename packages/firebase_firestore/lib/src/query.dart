@@ -6,15 +6,16 @@ part of firebase_firestore;
 
 /// Represents a query over the data at a particular location.
 class Query {
-  Query._({
-    @required Firestore firestore,
-    @required List<String> pathComponents,
-    Map<String, dynamic> parameters
-  }): _firestore = firestore,
-    _pathComponents = pathComponents,
-    _parameters = parameters ?? new Map<String, dynamic>.unmodifiable(<String, dynamic>{}),
-    assert(firestore != null),
-    assert(pathComponents != null);
+  Query._(
+      {@required Firestore firestore,
+      @required List<String> pathComponents,
+      Map<String, dynamic> parameters})
+      : _firestore = firestore,
+        _pathComponents = pathComponents,
+        _parameters = parameters ??
+            new Map<String, dynamic>.unmodifiable(<String, dynamic>{}),
+        assert(firestore != null),
+        assert(pathComponents != null);
 
   final Firestore _firestore;
   final List<String> _pathComponents;
@@ -34,9 +35,10 @@ class Query {
   }
 
   Map<String, dynamic> buildArguments() {
-    return new Map<String, dynamic>.from(_parameters)..addAll(<String, dynamic>{
-      'path': path,
-    });
+    return new Map<String, dynamic>.from(_parameters)
+      ..addAll(<String, dynamic>{
+        'path': path,
+      });
   }
 
   /// Notifies of query results at this location
@@ -49,7 +51,8 @@ class Query {
     controller = new StreamController<QuerySnapshot>.broadcast(
       onListen: () {
         _handle = Firestore.channel.invokeMethod(
-          'Query#addSnapshotListener', <String, dynamic>{
+          'Query#addSnapshotListener',
+          <String, dynamic>{
             'path': path,
             'parameters': _parameters,
           },
@@ -62,7 +65,7 @@ class Query {
         _handle.then((int handle) async {
           await Firestore.channel.invokeMethod(
             'Query#removeListener',
-            <String, dynamic>{ 'handle': handle },
+            <String, dynamic>{'handle': handle},
           );
           Firestore._queryObservers.remove(handle);
         });
@@ -72,5 +75,6 @@ class Query {
   }
 
   /// Obtains a CollectionReference corresponding to this query's location.
-  CollectionReference reference() => new CollectionReference._(_firestore, _pathComponents);
+  CollectionReference reference() =>
+      new CollectionReference._(_firestore, _pathComponents);
 }

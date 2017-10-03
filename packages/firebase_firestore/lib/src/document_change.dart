@@ -23,14 +23,13 @@ enum DocumentChangeType {
 /// It contains the document affected and the type of change that occurred
 /// (added, modified, or removed).
 class DocumentChange {
-
   DocumentChange._(Map<String, dynamic> data)
-    : oldIndex = data['oldIndex'],
-      newIndex = data['newIndex'],
-      document = new DocumentSnapshot._(data['document']),
-      type = DocumentChangeType.values.firstWhere((DocumentChangeType type) {
-        return type.toString() == data['type'];
-      });
+      : oldIndex = data['oldIndex'],
+        newIndex = data['newIndex'],
+        document = new DocumentSnapshot._(data['document']),
+        type = DocumentChangeType.values.firstWhere((DocumentChangeType type) {
+          return type.toString() == data['type'];
+        });
 
   /// The type of change that occurred (added, modified, or removed).
   final DocumentChangeType type;
@@ -51,5 +50,4 @@ class DocumentChange {
 
   /// The document affected by this change.
   final DocumentSnapshot document;
-
 }

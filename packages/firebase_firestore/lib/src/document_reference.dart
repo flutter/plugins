@@ -12,9 +12,9 @@ part of firebase_firestore;
 /// to a subcollection.
 class DocumentReference {
   DocumentReference._(Firestore firestore, List<String> pathComponents)
-    : _firestore = firestore,
-      _pathComponents = pathComponents,
-      assert(firestore != null);
+      : _firestore = firestore,
+        _pathComponents = pathComponents,
+        assert(firestore != null);
 
   final Firestore _firestore;
   final List<String> _pathComponents;
@@ -39,9 +39,10 @@ class DocumentReference {
     controller = new StreamController<DocumentSnapshot>.broadcast(
       onListen: () {
         _handle = Firestore.channel.invokeMethod(
-          'Query#addDocumentListener', <String, dynamic>{
-          'path': path,
-        },
+          'Query#addDocumentListener',
+          <String, dynamic>{
+            'path': path,
+          },
         );
         _handle.then((int handle) {
           Firestore._documentObservers[handle] = controller;
@@ -51,7 +52,7 @@ class DocumentReference {
         _handle.then((int handle) async {
           await Firestore.channel.invokeMethod(
             'Query#removeListener',
-            <String, dynamic>{ 'handle': handle },
+            <String, dynamic>{'handle': handle},
           );
           Firestore._queryObservers.remove(handle);
         });

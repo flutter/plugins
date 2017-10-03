@@ -34,8 +34,10 @@ class MyHomePage extends StatelessWidget {
   CollectionReference get messages => Firestore.instance.collection('messages');
 
   Future<Null> _addMessage() async {
-    Firestore.instance.collection('books').document()
-      .setData(<String, String>{ 'message': 'Hello world!' });
+    Firestore.instance
+        .collection('books')
+        .document()
+        .setData(<String, String>{'message': 'Hello world!'});
   }
 
   @override
