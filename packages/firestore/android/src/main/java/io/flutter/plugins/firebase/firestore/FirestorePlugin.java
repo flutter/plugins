@@ -4,7 +4,9 @@
 
 package io.flutter.plugins.firebase.firestore;
 
+import android.util.Log;
 import android.util.SparseArray;
+
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -29,11 +31,13 @@ import java.util.Map;
 /** FirebaseDatabasePlugin */
 public class FirestorePlugin implements MethodCallHandler {
 
+  public static final String TAG = "FirestorePlugin";
   private final MethodChannel channel;
 
   // Handles are ints used as indexes into the sparse array of active observers
   private int nextHandle = 0;
   private final SparseArray<EventObserver> observers = new SparseArray<>();
+  private final SparseArray<DocumentObserver> documentObservers = new SparseArray<>();
   private final SparseArray<ListenerRegistration> listenerRegistrations = new SparseArray<>();
 
   public static void registerWith(PluginRegistry.Registrar registrar) {
@@ -57,6 +61,27 @@ public class FirestorePlugin implements MethodCallHandler {
 
   private Query getQuery(Map<String, Object> arguments) {
     return getCollectionReference(arguments);
+  }
+
+  private class DocumentObserver implements EventListener<DocumentSnapshot> {
+    private int handle;
+
+    DocumentObserver(int handle) {
+      this.handle = handle;
+    }
+
+
+    @Override
+    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+      Map<String, Object> arguments = new HashMap<>();
+      arguments.put("handle", handle);
+      if (documentSnapshot.exists()) {
+        arguments.put("data", documentSnapshot.getData());
+      } else {
+        arguments.put("data", null);
+      }
+      channel.invokeMethod("DocumentSnapshot", arguments);
+    }
   }
 
   private class EventObserver implements EventListener<QuerySnapshot> {
@@ -95,9 +120,19 @@ public class FirestorePlugin implements MethodCallHandler {
           result.success(handle);
           break;
         }
+      case "Query#addDocumentListener":
+        {
+          Map<String, Object> arguments = call.arguments();
+          int handle = nextHandle++;
+          DocumentObserver observer = new DocumentObserver(handle);
+          documentObservers.put(handle, observer);
+          listenerRegistrations.put(handle, getDocumentReference(arguments).addSnapshotListener(observer));
+          result.success(handle);
+        }
       case "Query#removeListener":
         {
           Map<String, Object> arguments = call.arguments();
+          // TODO(arthurthompson): find out why removeListener is sometimes called without handle.
           int handle = (Integer) arguments.get("handle");
           listenerRegistrations.get(handle).remove();
           listenerRegistrations.remove(handle);
@@ -110,6 +145,7 @@ public class FirestorePlugin implements MethodCallHandler {
           Map<String, Object> arguments = call.arguments();
           DocumentReference documentReference = getDocumentReference(arguments);
           documentReference.set(arguments.get("data"));
+          result.success(null);
           break;
         }
       default:

@@ -22,7 +22,11 @@ class MyHomePage extends StatelessWidget {
     final GoogleSignInAccount account = await googleSignIn.signIn();
     if (account == null)
       return;
-    FirebaseUser user = await FirebaseAuth.instance.signInAnonymously();
+    GoogleSignInAuthentication googleAuth = await account.authentication;
+    FirebaseUser user = await FirebaseAuth.instance.signInWithGoogle(
+        idToken: googleAuth.idToken,
+        accessToken: googleAuth.accessToken,
+    );
     await Firestore.instance.document("users/${user.uid}").setData({
       'photoUrl': account.photoUrl,
     });
