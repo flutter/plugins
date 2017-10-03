@@ -29,7 +29,7 @@ The plugins are still under development, and some APIs might not be available ye
 [auth_product]: https://firebase.google.com/products/auth/
 [auth_code]: https://github.com/flutter/plugins/tree/master/packages/firebase_auth
 
-[firestore_pub]: https://pub.dartlang.org/packages/firebase_database
+[firestore_pub]: https://pub.dartlang.org/packages/firebase_firestore
 [firestore_product]: https://firebase.google.com/docs/firestore
 [firestore_code]: https://github.com/flutter/plugins/tree/master/packages/firebase_firestore
 
