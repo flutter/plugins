@@ -36,17 +36,17 @@ class DocumentChange {
   final DocumentChangeType type;
 
   /// The index of the changed document in the result set immediately prior to
-  /// this DocumentChange (i.e. supposing that all prior DocumentChange objects
+  /// this [DocumentChange] (i.e. supposing that all prior DocumentChange objects
   /// have been applied).
   ///
-  /// -1 for DocumentChangeType.added events.
+  /// 1 for [DocumentChangeType.added] events.
   final int oldIndex;
 
   /// The index of the changed document in the result set immediately after this
-  /// DocumentChange (i.e. supposing that all prior DocumentChange objects
-  /// and the current DocumentChange object have been applied).
+  /// DocumentChange (i.e. supposing that all prior [DocumentChange] objects
+  /// and the current [DocumentChange] object have been applied).
   ///
-  /// -1 for DocumentChangeType.removed events.
+  /// -1 for [DocumentChangeType.removed] events.
   final int newIndex;
 
   /// The document affected by this change.

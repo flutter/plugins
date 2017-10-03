@@ -110,13 +110,13 @@ public class FirestorePlugin implements MethodCallHandler {
         String type = null;
         switch (documentChange.getType()) {
           case ADDED:
-            type = "DocumentChange.added";
+            type = "DocumentChangeType.added";
             break;
           case MODIFIED:
-            type = "DocumentChange.modified";
+            type = "DocumentChangeType.modified";
             break;
           case REMOVED:
-            type = "DocumentChange.removed";
+            type = "DocumentChangeType.removed";
             break;
         }
         change.put("type", type);
@@ -125,7 +125,7 @@ public class FirestorePlugin implements MethodCallHandler {
         change.put("document", documentChange.getDocument().getData());
         documentChanges.add(change);
       }
-      arguments.put("documents", documentChanges);
+      arguments.put("documentChanges", documentChanges);
 
       channel.invokeMethod("QuerySnapshot", arguments);
     }
