@@ -27,7 +27,7 @@ void main() {
       FirebaseAuth.channel.setMockMethodCallHandler((MethodCall call) async {
         log.add(call);
         switch (call.method) {
-          case "getToken":
+          case "getIdToken":
             return kMockIdToken;
             break;
           default:
@@ -75,14 +75,15 @@ void main() {
     test('signInAnonymously', () async {
       final FirebaseUser user = await auth.signInAnonymously();
       verifyUser(user);
-      expect(await user.getToken(), equals(kMockIdToken));
-      expect(await user.getToken(refresh: true), equals(kMockIdToken));
+      expect(await user.getIdToken(), equals(kMockIdToken));
+      expect(await user.getIdToken(refresh: true), equals(kMockIdToken));
       expect(
         log,
         equals(<MethodCall>[
           const MethodCall('signInAnonymously'),
-          const MethodCall('getToken', const <String, bool>{'refresh': false}),
-          const MethodCall('getToken', const <String, bool>{'refresh': true}),
+          const MethodCall(
+              'getIdToken', const <String, bool>{'refresh': false}),
+          const MethodCall('getIdToken', const <String, bool>{'refresh': true}),
         ]),
       );
     });
