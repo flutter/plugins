@@ -117,16 +117,17 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
                                           [self sendResult:result forUser:user error:error];
                                         }];
   } else if ([@"updateProfile" isEqualToString:call.method]) {
-        FIRUserProfileChangeRequest *changeRequest = [[FIRAuth auth].currentUser profileChangeRequest];
-        if (call.arguments[@"displayName"]) {
-            changeRequest.displayName = call.arguments[@"displayName"];
-        }
-        if (call.arguments[@"photoUrl"]) {
-            changeRequest.photoURL = call.arguments[@"photoUrl"];
-        }
-        [changeRequest commitChangesWithCompletion:^(NSError *error) {
-            [self sendResult:result forUser:nil error:error];
-        }];
+    FIRUserProfileChangeRequest *changeRequest =
+        [[FIRAuth auth].currentUser profileChangeRequest];
+    if (call.arguments[@"displayName"]) {
+      changeRequest.displayName = call.arguments[@"displayName"];
+    }
+    if (call.arguments[@"photoUrl"]) {
+      changeRequest.photoURL = call.arguments[@"photoUrl"];
+    }
+    [changeRequest commitChangesWithCompletion:^(NSError *error) {
+      [self sendResult:result forUser:nil error:error];
+    }];
   } else {
     result(FlutterMethodNotImplemented);
   }
