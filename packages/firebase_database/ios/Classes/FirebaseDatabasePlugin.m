@@ -40,11 +40,21 @@ FIRDatabaseQuery *getQuery(NSDictionary *arguments) {
   }
   id startAt = parameters[@"startAt"];
   if (startAt) {
-    query = [query queryStartingAtValue:startAt childKey:parameters[@"endAtKey"]];
+    id startAtKey = parameters[@"startAtKey"];
+    if (startAtKey) {
+      query = [query queryStartingAtValue:startAt childKey:startAtKey];
+    } else {
+      query = [query queryStartingAtValue:startAt];
+    }
   }
   id endAt = parameters[@"endAt"];
   if (endAt) {
-    query = [query queryEndingAtValue:endAt childKey:parameters[@"endAtKey"]];
+    id endAtKey = parameters[@"endAtKey"];
+    if (endAtKey) {
+      query = [query queryEndingAtValue:endAt childKey:endAtKey];
+    } else {
+      query = [query queryEndingAtValue:endAt];
+    }
   }
   id equalTo = parameters[@"equalTo"];
   if (equalTo) {
@@ -75,6 +85,34 @@ FIRDataEventType parseEventType(NSString *eventTypeString) {
   }
   assert(false);
   return 0;
+}
+
+id roundDoubles(id value) {
+  // Workaround for https://github.com/firebase/firebase-ios-sdk/issues/91
+  // The Firebase iOS SDK sometimes returns doubles when ints were stored.
+  // We detect doubles that can be converted to ints without loss of precision
+  // and convert them.
+  if ([value isKindOfClass:[NSNumber class]]) {
+    CFNumberType type = CFNumberGetType((CFNumberRef)value);
+    if (type == kCFNumberDoubleType || type == kCFNumberFloatType) {
+      if ((double)(long long)[value doubleValue] == [value doubleValue]) {
+        return [NSNumber numberWithLongLong:(long long)[value doubleValue]];
+      }
+    }
+  } else if ([value isKindOfClass:[NSArray class]]) {
+    NSMutableArray *result = [NSMutableArray arrayWithCapacity:[value count]];
+    [value enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+      [result addObject:roundDoubles(obj)];
+    }];
+    return result;
+  } else if ([value isKindOfClass:[NSDictionary class]]) {
+    NSMutableDictionary *result = [NSMutableDictionary dictionaryWithCapacity:[value count]];
+    [value enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+      result[key] = roundDoubles(obj);
+    }];
+    return result;
+  }
+  return value;
 }
 
 @interface FirebaseDatabasePlugin ()
@@ -109,20 +147,46 @@ FIRDataEventType parseEventType(NSString *eventTypeString) {
       };
   if ([@"FirebaseDatabase#goOnline" isEqualToString:call.method]) {
     [[FIRDatabase database] goOnline];
+    result(nil);
   } else if ([@"FirebaseDatabase#goOffline" isEqualToString:call.method]) {
     [[FIRDatabase database] goOffline];
+    result(nil);
   } else if ([@"FirebaseDatabase#purgeOutstandingWrites" isEqualToString:call.method]) {
     [[FIRDatabase database] purgeOutstandingWrites];
+    result(nil);
   } else if ([@"FirebaseDatabase#setPersistenceEnabled" isEqualToString:call.method]) {
-    NSNumber *value = call.arguments[@"value"];
-    [FIRDatabase database].persistenceEnabled = value.boolValue;
+    NSNumber *value = call.arguments;
+    @try {
+      [FIRDatabase database].persistenceEnabled = value.boolValue;
+      result([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+      if ([@"FIRDatabaseAlreadyInUse" isEqualToString:exception.name]) {
+        // Database is already in use, e.g. after hot reload/restart.
+        result([NSNumber numberWithBool:NO]);
+      } else {
+        @throw;
+      }
+    }
   } else if ([@"FirebaseDatabase#setPersistenceCacheSizeBytes" isEqualToString:call.method]) {
-    NSNumber *value = call.arguments[@"value"];
-    [FIRDatabase database].persistenceCacheSizeBytes = value.unsignedIntegerValue;
+    NSNumber *value = call.arguments;
+    @try {
+      [FIRDatabase database].persistenceCacheSizeBytes = value.unsignedIntegerValue;
+      result([NSNumber numberWithBool:YES]);
+    } @catch (NSException *exception) {
+      if ([@"FIRDatabaseAlreadyInUse" isEqualToString:exception.name]) {
+        // Database is already in use, e.g. after hot reload/restart.
+        result([NSNumber numberWithBool:NO]);
+      } else {
+        @throw;
+      }
+    }
   } else if ([@"DatabaseReference#set" isEqualToString:call.method]) {
     [getReference(call.arguments) setValue:call.arguments[@"value"]
                                andPriority:call.arguments[@"priority"]
                        withCompletionBlock:defaultCompletionBlock];
+  } else if ([@"DatabaseReference#update" isEqualToString:call.method]) {
+    [getReference(call.arguments) updateChildValues:call.arguments[@"value"]
+                                withCompletionBlock:defaultCompletionBlock];
   } else if ([@"DatabaseReference#setPriority" isEqualToString:call.method]) {
     [getReference(call.arguments) setPriority:call.arguments[@"priority"]
                           withCompletionBlock:defaultCompletionBlock];
@@ -136,7 +200,7 @@ FIRDataEventType parseEventType(NSString *eventTypeString) {
                              @"handle" : [NSNumber numberWithUnsignedInteger:handle],
                              @"snapshot" : @{
                                @"key" : snapshot.key ?: [NSNull null],
-                               @"value" : snapshot.value ?: [NSNull null],
+                               @"value" : roundDoubles(snapshot.value) ?: [NSNull null],
                              },
                              @"previousSiblingKey" : previousSiblingKey ?: [NSNull null],
                            }];
@@ -148,7 +212,8 @@ FIRDataEventType parseEventType(NSString *eventTypeString) {
     result(nil);
   } else if ([@"Query#keepSynced" isEqualToString:call.method]) {
     NSNumber *value = call.arguments[@"value"];
-    [getQuery(call.arguments) keepSynced:value];
+    [getQuery(call.arguments) keepSynced:value.boolValue];
+    result(nil);
   } else {
     result(FlutterMethodNotImplemented);
   }

@@ -13,13 +13,39 @@ import 'package:flutter/services.dart';
 /// None: Device not connected to any network
 enum ConnectivityResult { wifi, mobile, none }
 
-const MethodChannel _channel =
+const MethodChannel _methodChannel =
     const MethodChannel('plugins.flutter.io/connectivity');
 
-/// Checks the connection status of the device.
-Future<ConnectivityResult> checkConnectivity() async {
-  final String result = await _channel.invokeMethod('check');
-  switch (result) {
+const EventChannel _eventChannel =
+    const EventChannel('plugins.flutter.io/connectivity_status');
+
+class Connectivity {
+  Stream<ConnectivityResult> _onConnectivityChanged;
+
+  /// Fires whenever the connectivity state changes.
+  Stream<ConnectivityResult> get onConnectivityChanged {
+    if (_onConnectivityChanged == null) {
+      _onConnectivityChanged = _eventChannel
+          .receiveBroadcastStream()
+          .map(_stringToConnectivityResult);
+    }
+    return _onConnectivityChanged;
+  }
+
+  /// Checks the connection status of the device.
+  ///
+  /// Do not use the result of this function to decide whether you can reliably
+  /// make a network request. It only gives you the radio status.
+  ///
+  /// Instead listen for connectivity changes via [onConnectivityChanged] stream.
+  Future<ConnectivityResult> checkConnectivity() async {
+    final String result = await _methodChannel.invokeMethod('check');
+    return _stringToConnectivityResult(result);
+  }
+}
+
+ConnectivityResult _stringToConnectivityResult(String state) {
+  switch (state) {
     case 'wifi':
       return ConnectivityResult.wifi;
     case 'mobile':

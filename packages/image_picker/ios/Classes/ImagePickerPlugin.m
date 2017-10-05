@@ -19,8 +19,8 @@
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"image_picker"
                                   binaryMessenger:[registrar messenger]];
-  // TODO(goderbauer): cast is workaround for https://github.com/flutter/flutter/issues/9961.
-  UIViewController *viewController = (UIViewController *)registrar.messenger;
+  UIViewController *viewController =
+      [UIApplication sharedApplication].delegate.window.rootViewController;
   ImagePickerPlugin *instance = [[ImagePickerPlugin alloc] initWithViewController:viewController];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
@@ -46,10 +46,12 @@
     _imagePickerController.delegate = self;
     _result = result;
 
+    UIAlertControllerStyle style = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad
+                                       ? UIAlertControllerStyleAlert
+                                       : UIAlertControllerStyleActionSheet;
+
     UIAlertController *alert =
-        [UIAlertController alertControllerWithTitle:nil
-                                            message:nil
-                                     preferredStyle:UIAlertControllerStyleActionSheet];
+        [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:style];
     UIAlertAction *camera = [UIAlertAction actionWithTitle:@"Take Photo"
                                                      style:UIAlertActionStyleDefault
                                                    handler:^(UIAlertAction *action) {
@@ -97,9 +99,6 @@
   UIImage *image = [info objectForKey:UIImagePickerControllerEditedImage];
   if (image == nil) {
     image = [info objectForKey:UIImagePickerControllerOriginalImage];
-  }
-  if (image == nil) {
-    image = [info objectForKey:UIImagePickerControllerCropRect];
   }
   image = [self normalizedImage:image];
   NSData *data = UIImageJPEGRepresentation(image, 1.0);

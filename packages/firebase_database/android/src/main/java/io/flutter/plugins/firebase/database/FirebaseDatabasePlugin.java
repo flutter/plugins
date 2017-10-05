@@ -8,8 +8,10 @@ import android.util.SparseArray;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseException;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -31,7 +33,7 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
 
   // Handles are ints used as indexes into the sparse array of active observers
   private int nextHandle = 0;
-  private final SparseArray<EventObserver> observers = new SparseArray<EventObserver>();
+  private final SparseArray<EventObserver> observers = new SparseArray<>();
 
   public static void registerWith(PluginRegistry.Registrar registrar) {
     final MethodChannel channel =
@@ -43,12 +45,87 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
     this.channel = channel;
   }
 
-  private static DatabaseReference getReference(Map<String, ?> arguments) {
-    @SuppressWarnings("unchecked")
+  private DatabaseReference getReference(Map<String, Object> arguments) {
     String path = (String) arguments.get("path");
     DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
     if (path != null) reference = reference.child(path);
     return reference;
+  }
+
+  private Query getQuery(Map<String, Object> arguments) {
+    Query query = getReference(arguments);
+    @SuppressWarnings("unchecked")
+    Map<String, Object> parameters = (Map<String, Object>) arguments.get("parameters");
+    if (parameters == null) return query;
+    Object orderBy = parameters.get("orderBy");
+    if ("child".equals(orderBy)) {
+      query = query.orderByChild((String) parameters.get("orderByChildKey"));
+    } else if ("key".equals(orderBy)) {
+      query = query.orderByKey();
+    } else if ("value".equals(orderBy)) {
+      query = query.orderByValue();
+    } else if ("priority".equals(orderBy)) {
+      query = query.orderByPriority();
+    }
+    if (parameters.containsKey("startAt")) {
+      Object startAt = parameters.get("startAt");
+      if (parameters.containsKey("startAtKey")) {
+        String startAtKey = (String) parameters.get("startAtKey");
+        if (startAt instanceof Boolean) {
+          query = query.startAt((Boolean) startAt, startAtKey);
+        } else if (startAt instanceof String) {
+          query = query.startAt((String) startAt, startAtKey);
+        } else {
+          query = query.startAt(((Number) startAt).doubleValue(), startAtKey);
+        }
+      } else {
+        if (startAt instanceof Boolean) {
+          query = query.startAt((Boolean) startAt);
+        } else if (startAt instanceof String) {
+          query = query.startAt((String) startAt);
+        } else {
+          query = query.startAt(((Number) startAt).doubleValue());
+        }
+      }
+    }
+    if (parameters.containsKey("endAt")) {
+      Object endAt = parameters.get("endAt");
+      if (parameters.containsKey("endAtKey")) {
+        String endAtKey = (String) parameters.get("endAtKey");
+        if (endAt instanceof Boolean) {
+          query = query.endAt((Boolean) endAt, endAtKey);
+        } else if (endAt instanceof String) {
+          query = query.endAt((String) endAt, endAtKey);
+        } else {
+          query = query.endAt(((Number) endAt).doubleValue(), endAtKey);
+        }
+      } else {
+        if (endAt instanceof Boolean) {
+          query = query.endAt((Boolean) endAt);
+        } else if (endAt instanceof String) {
+          query = query.endAt((String) endAt);
+        } else {
+          query = query.endAt(((Number) endAt).doubleValue());
+        }
+      }
+    }
+    if (parameters.containsKey("equalTo")) {
+      Object equalTo = parameters.get("equalTo");
+      if (equalTo instanceof Boolean) {
+        query = query.equalTo((Boolean) equalTo);
+      } else if (equalTo instanceof String) {
+        query = query.equalTo((String) equalTo);
+      } else {
+        query = query.equalTo(((Number) equalTo).doubleValue());
+      }
+    }
+    if (parameters.containsKey("limitToFirst")) {
+      query = query.limitToFirst((int) parameters.get("limitToFirst"));
+    }
+    if (parameters.containsKey("limitToLast")) {
+      query = query.limitToLast((int) parameters.get("limitToLast"));
+    }
+    return query;
   }
 
   private class DefaultCompletionListener implements DatabaseReference.CompletionListener {
@@ -79,8 +156,8 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
 
     private void sendEvent(String eventType, DataSnapshot snapshot, String previousChildName) {
       if (eventType.equals(requestedEventType)) {
-        Map<String, Object> arguments = new HashMap<String, Object>();
-        Map<String, Object> snapshotMap = new HashMap<String, Object>();
+        Map<String, Object> arguments = new HashMap<>();
+        Map<String, Object> snapshotMap = new HashMap<>();
         snapshotMap.put("key", snapshot.getKey());
         snapshotMap.put("value", snapshot.getValue());
         arguments.put("handle", handle);
@@ -119,39 +196,59 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
     }
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public void onMethodCall(MethodCall call, final Result result) {
-    Map<String, Object> arguments = (Map<String, Object>) call.arguments;
     switch (call.method) {
       case "FirebaseDatabase#goOnline":
-        FirebaseDatabase.getInstance().goOnline();
-        break;
+        {
+          FirebaseDatabase.getInstance().goOnline();
+          result.success(null);
+          break;
+        }
 
       case "FirebaseDatabase#goOffline":
-        FirebaseDatabase.getInstance().goOffline();
-        break;
+        {
+          FirebaseDatabase.getInstance().goOffline();
+          result.success(null);
+          break;
+        }
 
       case "FirebaseDatabase#purgeOutstandingWrites":
-        FirebaseDatabase.getInstance().purgeOutstandingWrites();
-        break;
+        {
+          FirebaseDatabase.getInstance().purgeOutstandingWrites();
+          result.success(null);
+          break;
+        }
 
       case "FirebaseDatabase#setPersistenceEnabled":
         {
-          boolean isEnabled = (boolean) arguments.get("enabled");
-          FirebaseDatabase.getInstance().setPersistenceEnabled(isEnabled);
+          Boolean isEnabled = (Boolean) call.arguments;
+          try {
+            FirebaseDatabase.getInstance().setPersistenceEnabled(isEnabled);
+            result.success(true);
+          } catch (DatabaseException e) {
+            // Database is already in use, e.g. after hot reload/restart.
+            result.success(false);
+          }
           break;
         }
 
       case "FirebaseDatabase#setPersistenceCacheSizeBytes":
         {
-          long cacheSize = (long) arguments.get("cacheSize");
-          FirebaseDatabase.getInstance().setPersistenceCacheSizeBytes(cacheSize);
+          long cacheSize = (Integer) call.arguments;
+          try {
+            FirebaseDatabase.getInstance().setPersistenceCacheSizeBytes(cacheSize);
+            result.success(true);
+          } catch (DatabaseException e) {
+            // Database is already in use, e.g. after hot reload/restart.
+            result.success(false);
+          }
           break;
         }
 
       case "DatabaseReference#set":
         {
+          Map<String, Object> arguments = call.arguments();
           Object value = arguments.get("value");
           Object priority = arguments.get("priority");
           DatabaseReference reference = getReference(arguments);
@@ -163,24 +260,44 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
           break;
         }
 
+      case "DatabaseReference#update":
+        {
+          Map<String, Object> arguments = call.arguments();
+          Map value = (Map) arguments.get("value");
+          DatabaseReference reference = getReference(arguments);
+          reference.updateChildren(value, new DefaultCompletionListener(result));
+          break;
+        }
+
       case "DatabaseReference#setPriority":
         {
+          Map<String, Object> arguments = call.arguments();
           Object priority = arguments.get("priority");
           DatabaseReference reference = getReference(arguments);
           reference.setPriority(priority, new DefaultCompletionListener(result));
           break;
         }
 
+      case "Query#keepSynced":
+        {
+          Map<String, Object> arguments = call.arguments();
+          boolean value = (Boolean) arguments.get("value");
+          getQuery(arguments).keepSynced(value);
+          result.success(null);
+          break;
+        }
+
       case "Query#observe":
         {
+          Map<String, Object> arguments = call.arguments();
           String eventType = (String) arguments.get("eventType");
           int handle = nextHandle++;
           EventObserver observer = new EventObserver(eventType, handle);
           observers.put(handle, observer);
           if (eventType.equals(EVENT_TYPE_VALUE)) {
-            getReference(arguments).addValueEventListener(observer);
+            getQuery(arguments).addValueEventListener(observer);
           } else {
-            getReference(arguments).addChildEventListener(observer);
+            getQuery(arguments).addChildEventListener(observer);
           }
           result.success(handle);
           break;
@@ -188,14 +305,15 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
 
       case "Query#removeObserver":
         {
-          DatabaseReference reference = getReference(arguments);
+          Map<String, Object> arguments = call.arguments();
+          Query query = getQuery(arguments);
           int handle = (Integer) arguments.get("handle");
           EventObserver observer = observers.get(handle);
           if (observer != null) {
             if (observer.requestedEventType.equals(EVENT_TYPE_VALUE)) {
-              reference.removeEventListener((ValueEventListener) observer);
+              query.removeEventListener((ValueEventListener) observer);
             } else {
-              reference.removeEventListener((ChildEventListener) observer);
+              query.removeEventListener((ChildEventListener) observer);
             }
             observers.delete(handle);
             result.success(null);

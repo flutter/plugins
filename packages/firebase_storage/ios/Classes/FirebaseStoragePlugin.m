@@ -41,24 +41,51 @@
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"StorageReference#putFile" isEqualToString:call.method]) {
-    NSData *data = [NSData dataWithContentsOfFile:call.arguments[@"filename"]];
-    NSString *path = call.arguments[@"path"];
-    FIRStorageReference *fileRef = [[FIRStorage storage].reference child:path];
-    [fileRef putData:data
-            metadata:nil
-          completion:^(FIRStorageMetadata *metadata, NSError *error) {
-            if (error != nil) {
-              result(error.flutterError);
-            } else {
-              // Metadata contains file metadata such as size,
-              // content-type, and download URL.
-              NSURL *downloadURL = metadata.downloadURL;
-              result(downloadURL.absoluteString);
-            }
-          }];
+    [self putFile:call result:result];
+  } else if ([@"StorageReference#getData" isEqualToString:call.method]) {
+    [self getData:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
+}
+
+- (void)putFile:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSData *data = [NSData dataWithContentsOfFile:call.arguments[@"filename"]];
+  NSString *path = call.arguments[@"path"];
+  FIRStorageReference *fileRef = [[FIRStorage storage].reference child:path];
+  [fileRef putData:data
+          metadata:nil
+        completion:^(FIRStorageMetadata *metadata, NSError *error) {
+          if (error != nil) {
+            result(error.flutterError);
+          } else {
+            // Metadata contains file metadata such as size,
+            // content-type, and download URL.
+            NSURL *downloadURL = metadata.downloadURL;
+            result(downloadURL.absoluteString);
+          }
+        }];
+}
+
+- (void)getData:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSNumber *maxSize = call.arguments[@"maxSize"];
+  NSString *path = call.arguments[@"path"];
+  FIRStorageReference *ref = [[FIRStorage storage].reference child:path];
+  [ref dataWithMaxSize:[maxSize longLongValue]
+            completion:^(NSData *_Nullable data, NSError *_Nullable error) {
+              if (error != nil) {
+                result(error.flutterError);
+                return;
+              }
+              if (data == nil) {
+                result(nil);
+                return;
+              }
+
+              FlutterStandardTypedData *dartData =
+                  [FlutterStandardTypedData typedDataWithBytes:data];
+              result(dartData);
+            }];
 }
 
 @end

@@ -105,6 +105,31 @@ void main() {
           ]));
     });
 
+    test('removing', () async {
+      const String key = 'testKey';
+      sharedPreferences
+        ..setString(key, null)
+        ..setBool(key, null)
+        ..setInt(key, null)
+        ..setDouble(key, null)
+        ..setStringList(key, null)
+        ..remove(key);
+      await sharedPreferences.commit();
+      expect(
+        log,
+        equals(
+          new List<MethodCall>.filled(
+            6,
+            const MethodCall(
+              'remove',
+              const <String, dynamic>{'key': 'flutter.$key'},
+            ),
+            growable: true,
+          )..add(const MethodCall('commit')),
+        ),
+      );
+    });
+
     test('clearing', () async {
       await sharedPreferences.clear();
       expect(sharedPreferences.getString('String'), null);

@@ -11,11 +11,13 @@ buildscript {
     }
 }
 
-allprojects {
+rootProject.allprojects {
     repositories {
         jcenter()
     }
+}
 
+allprojects {
     gradle.projectsEvaluated {
         tasks.withType(JavaCompile) {
             options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
@@ -36,7 +38,7 @@ android {
         disable 'InvalidPackage'
     }
     dependencies {
-        compile 'com.google.firebase:firebase-core:10.2.1'
-        compile 'com.google.firebase:firebase-storage:10.2.1'
+        compile 'com.google.firebase:firebase-core:11.0.+'
+        compile 'com.google.firebase:firebase-storage:11.0.+'
     }
 }

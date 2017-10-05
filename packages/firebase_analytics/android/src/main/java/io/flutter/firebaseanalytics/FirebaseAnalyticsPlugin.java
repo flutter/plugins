@@ -130,6 +130,8 @@ public class FirebaseAnalyticsPlugin implements MethodCallHandler {
         bundle.putString(key, (String) value);
       } else if (value instanceof Integer) {
         bundle.putInt(key, (Integer) value);
+      } else if (value instanceof Long) {
+        bundle.putLong(key, (Long) value);
       } else if (value instanceof Double) {
         bundle.putDouble(key, (Double) value);
       } else if (value instanceof Boolean) {

@@ -32,52 +32,65 @@ class FirebaseDatabase {
   /// Gets a DatabaseReference for the root of your Firebase Database.
   DatabaseReference reference() => new DatabaseReference._(this, <String>[]);
 
+  /// Attempts to sets the database persistence to [enabled].
+  ///
+  /// This property must be set before calling methods on database references
+  /// and only needs to be called once per application. The returned [Future]
+  /// will complete with `true` if the operation was successful or `false` if
+  /// the persistence could not be set (because database references have
+  /// already been created).
+  ///
   /// The Firebase Database client will cache synchronized data and keep track
   /// of all writes you’ve initiated while your application is running. It
   /// seamlessly handles intermittent network connections and re-sends write
   /// operations when the network connection is restored.
   ///
   /// However by default your write operations and cached data are only stored
-  /// in-memory and will be lost when your app restarts. By setting this value
-  /// to YES, the data will be persisted to on-device (disk) storage and will
+  /// in-memory and will be lost when your app restarts. By setting [enabled]
+  /// to `true`, the data will be persisted to on-device (disk) storage and will
   /// thus be available again when the app is restarted (even when there is no
-  /// network connectivity at that time). Note that this property must be set
-  /// before creating your first Database reference and only needs to be called
-  /// once per application.
-  Future<Null> setPersistenceEnabled(bool enabled) {
+  /// network connectivity at that time).
+  Future<bool> setPersistenceEnabled(bool enabled) {
     return _channel.invokeMethod(
-      "FirebaseDatabase#setPersistenceEnabled",
-      <String, dynamic>{'enabled': enabled},
+      'FirebaseDatabase#setPersistenceEnabled',
+      enabled,
     );
   }
 
+  /// Attempts to set the size of the persistence cache.
+  ///
   /// By default the Firebase Database client will use up to 10MB of disk space
   /// to cache data. If the cache grows beyond this size, the client will start
   /// removing data that hasn’t been recently used. If you find that your
   /// application caches too little or too much data, call this method to change
-  /// the cache size. This property must be set before creating your first
-  /// FIRDatabaseReference and only needs to be called once per application.
+  /// the cache size.
+  ///
+  /// This property must be set before calling methods on database references
+  /// and only needs to be called once per application. The returned [Future]
+  /// will complete with `true` if the operation was successful or `false` if
+  /// the value could not be set (because database references have already been
+  /// created).
   ///
   /// Note that the specified cache size is only an approximation and the size
   /// on disk may temporarily exceed it at times. Cache sizes smaller than 1 MB
   /// or greater than 100 MB are not supported.
-  Future<Null> setPersistenceCacheSizeBytes(int cacheSize) {
+  Future<bool> setPersistenceCacheSizeBytes(int cacheSize) {
     return _channel.invokeMethod(
-      "FirebaseDatabase#setPersistenceCacheSizeBytes",
-      <String, dynamic>{'cacheSize': cacheSize},
+      'FirebaseDatabase#setPersistenceCacheSizeBytes',
+      cacheSize,
     );
   }
 
   /// Resumes our connection to the Firebase Database backend after a previous
-  /// goOffline call.
+  /// [goOffline] call.
   Future<Null> goOnline() {
-    return _channel.invokeMethod("FirebaseDatabase#goOnline");
+    return _channel.invokeMethod('FirebaseDatabase#goOnline');
   }
 
-  /// Shuts down our connection to the Firebase Database backend until goOnline
-  /// is called.
+  /// Shuts down our connection to the Firebase Database backend until
+  /// [goOnline] is called.
   Future<Null> goOffline() {
-    return _channel.invokeMethod("FirebaseDatabase#goOffline");
+    return _channel.invokeMethod('FirebaseDatabase#goOffline');
   }
 
   /// The Firebase Database client automatically queues writes and sends them to
@@ -91,6 +104,6 @@ class FirebaseDatabase {
   /// affected event listeners, and the client will not (re-)send them to the
   /// Firebase Database backend.
   Future<Null> purgeOutstandingWrites() {
-    return _channel.invokeMethod("FirebaseDatabase#purgeOutstandingWrites");
+    return _channel.invokeMethod('FirebaseDatabase#purgeOutstandingWrites');
   }
 }

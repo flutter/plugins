@@ -3,7 +3,12 @@
 // BSD-style license that can be found in the LICENSE file.
 
 #import "GoogleSignInPlugin.h"
-#import <Google/SignIn.h>
+#import <GoogleSignIn/GoogleSignIn.h>
+
+// The key within `GoogleService-Info.plist` used to hold the application's
+// client id.  See https://developers.google.com/identity/sign-in/ios/start
+// for more info.
+static NSString *const kClientIdKey = @"CLIENT_ID";
 
 @interface NSError (FlutterError)
 @property(readonly, nonatomic) FlutterError *flutterError;
@@ -11,7 +16,7 @@
 
 @implementation NSError (FlutterError)
 - (FlutterError *)flutterError {
-  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %ld", (long)self.code]
+  return [FlutterError errorWithCode:@"exception"
                              message:self.domain
                              details:self.localizedDescription];
 }
@@ -21,25 +26,23 @@
 @end
 
 @implementation GoogleSignInPlugin {
-  NSMutableArray<FlutterResult> *_accountRequests;
+  FlutterResult _accountRequest;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/google_sign_in"
                                   binaryMessenger:[registrar messenger]];
-  UIViewController *viewController = [UIApplication sharedApplication].keyWindow.rootViewController;
-  GoogleSignInPlugin *instance = [[GoogleSignInPlugin alloc] initWithViewController:viewController];
+  GoogleSignInPlugin *instance = [[GoogleSignInPlugin alloc] init];
   [registrar addApplicationDelegate:instance];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
-- (instancetype)initWithViewController:(UIViewController *)viewController {
+- (instancetype)init {
   self = [super init];
   if (self) {
-    _accountRequests = [[NSMutableArray alloc] init];
     [GIDSignIn sharedInstance].delegate = self;
-    [GIDSignIn sharedInstance].uiDelegate = (id)viewController;
+    [GIDSignIn sharedInstance].uiDelegate = self;
 
     // On the iOS simulator, we get "Broken pipe" errors after sign-in for some
     // unknown reason. We can avoid crashing the app by ignoring them.
@@ -52,17 +55,26 @@
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([call.method isEqualToString:@"init"]) {
-    NSError *error;
-    [[GGLContext sharedInstance] configureWithError:&error];
-    [GIDSignIn sharedInstance].scopes = call.arguments[@"scopes"];
-    [GIDSignIn sharedInstance].hostedDomain = call.arguments[@"hostedDomain"];
-    result(error.flutterError);
+    NSString *path = [[NSBundle mainBundle] pathForResource:@"GoogleService-Info" ofType:@"plist"];
+    if (path) {
+      NSMutableDictionary *plist = [[NSMutableDictionary alloc] initWithContentsOfFile:path];
+      [GIDSignIn sharedInstance].clientID = plist[kClientIdKey];
+      [GIDSignIn sharedInstance].scopes = call.arguments[@"scopes"];
+      [GIDSignIn sharedInstance].hostedDomain = call.arguments[@"hostedDomain"];
+      result(nil);
+    } else {
+      result([FlutterError errorWithCode:@"missing-config"
+                                 message:@"GoogleService-Info.plist file not found"
+                                 details:nil]);
+    }
   } else if ([call.method isEqualToString:@"signInSilently"]) {
-    [_accountRequests insertObject:result atIndex:0];
-    [[GIDSignIn sharedInstance] signInSilently];
+    if ([self setAccountRequest:result]) {
+      [[GIDSignIn sharedInstance] signInSilently];
+    }
   } else if ([call.method isEqualToString:@"signIn"]) {
-    [_accountRequests insertObject:result atIndex:0];
-    [[GIDSignIn sharedInstance] signIn];
+    if ([self setAccountRequest:result]) {
+      [[GIDSignIn sharedInstance] signIn];
+    }
   } else if ([call.method isEqualToString:@"getTokens"]) {
     GIDGoogleUser *currentUser = [GIDSignIn sharedInstance].currentUser;
     GIDAuthentication *auth = currentUser.authentication;
@@ -76,11 +88,23 @@
     [[GIDSignIn sharedInstance] signOut];
     result(nil);
   } else if ([call.method isEqualToString:@"disconnect"]) {
-    [_accountRequests insertObject:result atIndex:0];
-    [[GIDSignIn sharedInstance] disconnect];
+    if ([self setAccountRequest:result]) {
+      [[GIDSignIn sharedInstance] disconnect];
+    }
   } else {
     result(FlutterMethodNotImplemented);
   }
+}
+
+- (BOOL)setAccountRequest:(FlutterResult)request {
+  if (_accountRequest != nil) {
+    request([FlutterError errorWithCode:@"concurrent-requests"
+                                message:@"Concurrent requests to account signin"
+                                details:nil]);
+    return NO;
+  }
+  _accountRequest = request;
+  return YES;
 }
 
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary *)options {
@@ -91,14 +115,28 @@
                                     annotation:annotation];
 }
 
+#pragma mark - <GIDSignInUIDelegate> protocol
+
+- (void)signIn:(GIDSignIn *)signIn presentViewController:(UIViewController *)viewController {
+  UIViewController *rootViewController =
+      [UIApplication sharedApplication].delegate.window.rootViewController;
+  [rootViewController presentViewController:viewController animated:YES completion:nil];
+}
+
+- (void)signIn:(GIDSignIn *)signIn dismissViewController:(UIViewController *)viewController {
+  [viewController dismissViewControllerAnimated:YES completion:nil];
+}
+
 #pragma mark - <GIDSignInDelegate> protocol
 
 - (void)signIn:(GIDSignIn *)signIn
     didSignInForUser:(GIDGoogleUser *)user
            withError:(NSError *)error {
   if (error != nil) {
-    if (error.code == -4) {
-      // Occurs when silent sign-in is not possible, return an empty user in this case
+    if (error.code == kGIDSignInErrorCodeHasNoAuthInKeychain ||
+        error.code == kGIDSignInErrorCodeCanceled) {
+      // Occurs when silent sign-in is not possible or user has cancelled sign in,
+      // return an empty user in this case
       [self respondWithAccount:nil error:nil];
     } else {
       [self respondWithAccount:nil error:error];
@@ -128,11 +166,9 @@
 #pragma mark - private methods
 
 - (void)respondWithAccount:(id)account error:(NSError *)error {
-  NSArray<FlutterResult> *requests = _accountRequests;
-  _accountRequests = [[NSMutableArray alloc] init];
-  for (FlutterResult accountRequest in requests) {
-    accountRequest(error != nil ? error.flutterError : account);
-  }
+  FlutterResult result = _accountRequest;
+  _accountRequest = nil;
+  result(error != nil ? error.flutterError : account);
 }
 
 @end

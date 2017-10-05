@@ -3,12 +3,19 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:ui' show hashValues;
 
 import 'package:flutter/services.dart' show MethodChannel;
-import 'package:flutter/material.dart';
+import 'package:meta/meta.dart' show visibleForTesting;
+
+import 'src/common.dart';
+
+export 'src/common.dart';
+export 'widgets.dart';
 
 class GoogleSignInAuthentication {
   final Map<String, String> _data;
+
   GoogleSignInAuthentication._(this._data);
 
   /// An OpenID Connect ID token that identifies the user.
@@ -21,14 +28,7 @@ class GoogleSignInAuthentication {
   String toString() => 'GoogleSignInAuthentication:$_data';
 }
 
-class GoogleSignInAccount {
-  final String displayName;
-  final String email;
-  final String id;
-  final String photoUrl;
-  final String _idToken;
-  final GoogleSignIn _googleSignIn;
-
+class GoogleSignInAccount implements GoogleIdentity {
   GoogleSignInAccount._(this._googleSignIn, Map<String, dynamic> data)
       : displayName = data['displayName'],
         email = data['email'],
@@ -39,13 +39,28 @@ class GoogleSignInAccount {
     assert(id != null);
   }
 
+  @override
+  final String displayName;
+
+  @override
+  final String email;
+
+  @override
+  final String id;
+
+  @override
+  final String photoUrl;
+
+  final String _idToken;
+  final GoogleSignIn _googleSignIn;
+
   Future<GoogleSignInAuthentication> get authentication async {
     if (_googleSignIn.currentUser != this) {
       throw new StateError('User is no longer signed in.');
     }
 
     final Map<String, String> response =
-        await _googleSignIn._channel.invokeMethod(
+        await GoogleSignIn.channel.invokeMethod(
       'getTokens',
       <String, dynamic>{'email': email},
     );
@@ -66,6 +81,21 @@ class GoogleSignInAccount {
   }
 
   @override
+  bool operator ==(dynamic other) {
+    if (identical(this, other)) return true;
+    if (other is! GoogleSignInAccount) return false;
+    final GoogleSignInAccount otherAccount = other;
+    return displayName == otherAccount.displayName &&
+        email == otherAccount.email &&
+        id == otherAccount.id &&
+        photoUrl == otherAccount.photoUrl &&
+        _idToken == otherAccount._idToken;
+  }
+
+  @override
+  int get hashCode => hashValues(displayName, email, id, photoUrl, _idToken);
+
+  @override
   String toString() {
     final Map<String, dynamic> data = <String, dynamic>{
       'displayName': displayName,
@@ -79,7 +109,10 @@ class GoogleSignInAccount {
 
 /// GoogleSignIn allows you to authenticate Google users.
 class GoogleSignIn {
-  final MethodChannel _channel;
+  /// The [MethodChannel] over which this class communicates.
+  @visibleForTesting
+  static const MethodChannel channel =
+      const MethodChannel('plugins.flutter.io/google_sign_in');
 
   /// The list of [scopes] are OAuth scope codes requested when signing in.
   final List<String> scopes;
@@ -96,35 +129,41 @@ class GoogleSignIn {
   /// The [hostedDomain] argument specifies a hosted domain restriction. By
   /// setting this, sign in will be restricted to accounts of the user in the
   /// specified domain. By default, the list of accounts will not be restricted.
-  GoogleSignIn({this.scopes, this.hostedDomain})
-      : _channel = const MethodChannel('plugins.flutter.io/google_sign_in');
+  GoogleSignIn({this.scopes, this.hostedDomain});
 
-  StreamController<GoogleSignInAccount> _streamController =
+  StreamController<GoogleSignInAccount> _currentUserController =
       new StreamController<GoogleSignInAccount>.broadcast();
 
-  /// Subscribe to this stream to be notified when the current user changes
+  /// Subscribe to this stream to be notified when the current user changes.
   Stream<GoogleSignInAccount> get onCurrentUserChanged =>
-      _streamController.stream;
+      _currentUserController.stream;
 
-  // Future that completes when we've finished calling init on the native side
+  // Future that completes when we've finished calling `init` on the native side
   Future<Null> _initialization;
 
   Future<GoogleSignInAccount> _callMethod(String method) async {
     if (_initialization == null) {
-      _initialization = _channel.invokeMethod(
-        "init",
-        <String, dynamic>{
-          'scopes': scopes ?? <String>[],
-          'hostedDomain': hostedDomain,
-        },
-      );
+      _initialization = channel.invokeMethod("init", <String, dynamic>{
+        'scopes': scopes ?? <String>[],
+        'hostedDomain': hostedDomain,
+      })
+        ..catchError((dynamic _) {
+          // Invalidate initialization if it errored out.
+          _initialization = null;
+        });
     }
     await _initialization;
-    final Map<String, dynamic> response = await _channel.invokeMethod(method);
-    _currentUser = (response != null && response.isNotEmpty)
+    final Map<String, dynamic> response = await channel.invokeMethod(method);
+    return _setCurrentUser(response != null && response.isNotEmpty
         ? new GoogleSignInAccount._(this, response)
-        : null;
-    _streamController.add(_currentUser);
+        : null);
+  }
+
+  GoogleSignInAccount _setCurrentUser(GoogleSignInAccount currentUser) {
+    if (currentUser != _currentUser) {
+      _currentUser = currentUser;
+      _currentUserController.add(_currentUser);
+    }
     return _currentUser;
   }
 
@@ -178,8 +217,12 @@ class GoogleSignIn {
   /// a Future which resolves to the same user instance.
   ///
   /// Re-authentication can be triggered only after [signOut] or [disconnect].
-  Future<GoogleSignInAccount> signInSilently() =>
-      _addMethodCall('signInSilently');
+  Future<GoogleSignInAccount> signInSilently() {
+    return _addMethodCall('signInSilently').catchError((dynamic _) {
+      // ignore, we promised to be silent.
+      // TODO(goderbauer): revisit when the native side throws less aggressively.
+    });
+  }
 
   /// Starts the interactive sign-in process.
   ///
@@ -199,55 +242,6 @@ class GoogleSignIn {
   /// Disconnects the current user from the app and revokes previous
   /// authentication.
   Future<GoogleSignInAccount> disconnect() => _addMethodCall('disconnect');
-}
-
-/// Builds a CircleAvatar profile image of the appropriate resolution
-class GoogleUserCircleAvatar extends StatelessWidget {
-  const GoogleUserCircleAvatar(this._primaryProfileImageUrl);
-  final String _primaryProfileImageUrl;
-
-  @override
-  Widget build(BuildContext context) {
-    return new CircleAvatar(
-      child: new LayoutBuilder(builder: _buildClippedImage),
-    );
-  }
-
-  /// Adds sizing information to the URL, inserted as the last
-  /// directory before the image filename. The format is "/sNN-c/",
-  /// where NN is the max width/height of the image, and "c" indicates we
-  /// want the image cropped.
-  String _sizedProfileImageUrl(double size) {
-    if (_primaryProfileImageUrl == null) {
-      return null;
-    }
-    final Uri profileUri = Uri.parse(_primaryProfileImageUrl);
-    final List<String> pathSegments =
-        new List<String>.from(profileUri.pathSegments);
-    pathSegments.remove("s1337"); // placeholder value added by iOS plugin
-    return new Uri(
-      scheme: profileUri.scheme,
-      host: profileUri.host,
-      pathSegments: pathSegments,
-      query: "sz=${size.round()}",
-    )
-        .toString();
-  }
-
-  Widget _buildClippedImage(BuildContext context, BoxConstraints constraints) {
-    assert(constraints.maxWidth == constraints.maxHeight);
-    final String url = _sizedProfileImageUrl(
-      MediaQuery.of(context).devicePixelRatio * constraints.maxWidth,
-    );
-    if (url == null) {
-      return new Container();
-    }
-    return new ClipOval(
-      child: new Image(
-        image: new NetworkImage(url),
-      ),
-    );
-  }
 }
 
 class _MethodCompleter {

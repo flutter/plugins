@@ -13,8 +13,11 @@ import com.google.common.collect.ImmutableMap;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.EmailAuthProvider;
+import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserInfo;
 import io.flutter.plugin.common.MethodCall;
@@ -46,6 +49,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
   @Override
   public void onMethodCall(MethodCall call, Result result) {
     switch (call.method) {
+      case "currentUser":
+        handleCurrentUser(call, result);
+        break;
       case "signInAnonymously":
         handleSignInAnonymously(call, result);
         break;
@@ -58,13 +64,50 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       case "signInWithGoogle":
         handleSignInWithGoogle(call, result);
         break;
+      case "signInWithFacebook":
+        handleSignInWithFacebook(call, result);
+        break;
       case "signOut":
         handleSignOut(call, result);
+        break;
+      case "getToken":
+        handleGetToken(call, result);
+        break;
+      case "linkWithEmailAndPassword":
+        handleLinkWithEmailAndPassword(call, result);
         break;
       default:
         result.notImplemented();
         break;
     }
+  }
+
+  private void handleLinkWithEmailAndPassword(MethodCall call, Result result) {
+    @SuppressWarnings("unchecked")
+    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    String email = arguments.get("email");
+    String password = arguments.get("password");
+
+    AuthCredential credential = EmailAuthProvider.getCredential(email, password);
+    firebaseAuth
+        .getCurrentUser()
+        .linkWithCredential(credential)
+        .addOnCompleteListener(activity, new SignInCompleteListener(result));
+  }
+
+  private void handleCurrentUser(MethodCall call, final Result result) {
+    final FirebaseAuth.AuthStateListener listener =
+        new FirebaseAuth.AuthStateListener() {
+          @Override
+          public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+            firebaseAuth.removeAuthStateListener(this);
+            FirebaseUser user = firebaseAuth.getCurrentUser();
+            ImmutableMap<String, Object> userMap = mapFromUser(user);
+            result.success(userMap);
+          }
+        };
+
+    firebaseAuth.addAuthStateListener(listener);
   }
 
   private void handleSignInAnonymously(MethodCall call, final Result result) {
@@ -106,9 +149,39 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         .addOnCompleteListener(activity, new SignInCompleteListener(result));
   }
 
+  private void handleSignInWithFacebook(MethodCall call, final Result result) {
+    @SuppressWarnings("unchecked")
+    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    String accessToken = arguments.get("accessToken");
+    AuthCredential credential = FacebookAuthProvider.getCredential(accessToken);
+    firebaseAuth
+        .signInWithCredential(credential)
+        .addOnCompleteListener(activity, new SignInCompleteListener(result));
+  }
+
   private void handleSignOut(MethodCall call, final Result result) {
     firebaseAuth.signOut();
     result.success(null);
+  }
+
+  private void handleGetToken(MethodCall call, final Result result) {
+    @SuppressWarnings("unchecked")
+    Map<String, Boolean> arguments = (Map<String, Boolean>) call.arguments;
+    boolean refresh = arguments.get("refresh");
+    firebaseAuth
+        .getCurrentUser()
+        .getToken(refresh)
+        .addOnCompleteListener(
+            new OnCompleteListener<GetTokenResult>() {
+              public void onComplete(@NonNull Task<GetTokenResult> task) {
+                if (task.isSuccessful()) {
+                  String idToken = task.getResult().getToken();
+                  result.success(idToken);
+                } else {
+                  result.error(ERROR_REASON_EXCEPTION, task.getException().getMessage(), null);
+                }
+              }
+            });
   }
 
   private class SignInCompleteListener implements OnCompleteListener<AuthResult> {
@@ -118,23 +191,6 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       this.result = result;
     }
 
-    private ImmutableMap.Builder<String, Object> userInfoToMap(UserInfo userInfo) {
-      ImmutableMap.Builder<String, Object> builder =
-          ImmutableMap.<String, Object>builder()
-              .put("providerId", userInfo.getProviderId())
-              .put("uid", userInfo.getUid());
-      if (userInfo.getDisplayName() != null) {
-        builder.put("displayName", userInfo.getDisplayName());
-      }
-      if (userInfo.getPhotoUrl() != null) {
-        builder.put("photoUrl", userInfo.getPhotoUrl().toString());
-      }
-      if (userInfo.getEmail() != null) {
-        builder.put("email", userInfo.getEmail());
-      }
-      return builder;
-    }
-
     @Override
     public void onComplete(@NonNull Task<AuthResult> task) {
       if (!task.isSuccessful()) {
@@ -142,23 +198,45 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         result.error(ERROR_REASON_EXCEPTION, e.getMessage(), null);
       } else {
         FirebaseUser user = task.getResult().getUser();
-        if (user != null) {
-          ImmutableList.Builder<ImmutableMap<String, Object>> providerDataBuilder =
-              ImmutableList.<ImmutableMap<String, Object>>builder();
-          for (UserInfo userInfo : user.getProviderData()) {
-            providerDataBuilder.add(userInfoToMap(userInfo).build());
-          }
-          ImmutableMap<String, Object> userMap =
-              userInfoToMap(user)
-                  .put("isAnonymous", user.isAnonymous())
-                  .put("isEmailVerified", user.isEmailVerified())
-                  .put("providerData", providerDataBuilder.build())
-                  .build();
-          result.success(userMap);
-        } else {
-          result.success(null);
-        }
+        ImmutableMap<String, Object> userMap = mapFromUser(user);
+        result.success(userMap);
       }
+    }
+  }
+
+  private ImmutableMap.Builder<String, Object> userInfoToMap(UserInfo userInfo) {
+    ImmutableMap.Builder<String, Object> builder =
+        ImmutableMap.<String, Object>builder()
+            .put("providerId", userInfo.getProviderId())
+            .put("uid", userInfo.getUid());
+    if (userInfo.getDisplayName() != null) {
+      builder.put("displayName", userInfo.getDisplayName());
+    }
+    if (userInfo.getPhotoUrl() != null) {
+      builder.put("photoUrl", userInfo.getPhotoUrl().toString());
+    }
+    if (userInfo.getEmail() != null) {
+      builder.put("email", userInfo.getEmail());
+    }
+    return builder;
+  }
+
+  private ImmutableMap<String, Object> mapFromUser(FirebaseUser user) {
+    if (user != null) {
+      ImmutableList.Builder<ImmutableMap<String, Object>> providerDataBuilder =
+          ImmutableList.<ImmutableMap<String, Object>>builder();
+      for (UserInfo userInfo : user.getProviderData()) {
+        providerDataBuilder.add(userInfoToMap(userInfo).build());
+      }
+      ImmutableMap<String, Object> userMap =
+          userInfoToMap(user)
+              .put("isAnonymous", user.isAnonymous())
+              .put("isEmailVerified", user.isEmailVerified())
+              .put("providerData", providerDataBuilder.build())
+              .build();
+      return userMap;
+    } else {
+      return null;
     }
   }
 }

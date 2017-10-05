@@ -50,7 +50,13 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
-  if ([@"signInAnonymously" isEqualToString:call.method]) {
+  if ([@"currentUser" isEqualToString:call.method]) {
+    id __block listener = [[FIRAuth auth]
+        addAuthStateDidChangeListener:^(FIRAuth *_Nonnull auth, FIRUser *_Nullable user) {
+          [self sendResult:result forUser:user error:nil];
+          [auth removeAuthStateDidChangeListener:listener];
+        }];
+  } else if ([@"signInAnonymously" isEqualToString:call.method]) {
     [[FIRAuth auth] signInAnonymouslyWithCompletion:^(FIRUser *user, NSError *error) {
       [self sendResult:result forUser:user error:error];
     }];
@@ -59,6 +65,13 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
     NSString *accessToken = call.arguments[@"accessToken"];
     FIRAuthCredential *credential =
         [FIRGoogleAuthProvider credentialWithIDToken:idToken accessToken:accessToken];
+    [[FIRAuth auth] signInWithCredential:credential
+                              completion:^(FIRUser *user, NSError *error) {
+                                [self sendResult:result forUser:user error:error];
+                              }];
+  } else if ([@"signInWithFacebook" isEqualToString:call.method]) {
+    NSString *accessToken = call.arguments[@"accessToken"];
+    FIRAuthCredential *credential = [FIRFacebookAuthProvider credentialWithAccessToken:accessToken];
     [[FIRAuth auth] signInWithCredential:credential
                               completion:^(FIRUser *user, NSError *error) {
                                 [self sendResult:result forUser:user error:error];
@@ -88,6 +101,21 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
     } else {
       [self sendResult:result forUser:nil error:nil];
     }
+  } else if ([@"getToken" isEqualToString:call.method]) {
+    [[FIRAuth auth].currentUser
+        getTokenForcingRefresh:YES
+                    completion:^(NSString *_Nullable token, NSError *_Nullable error) {
+                      result(error != nil ? error.flutterError : token);
+                    }];
+  } else if ([@"linkWithEmailAndPassword" isEqualToString:call.method]) {
+    NSString *email = call.arguments[@"email"];
+    NSString *password = call.arguments[@"password"];
+    FIRAuthCredential *credential =
+        [FIREmailPasswordAuthProvider credentialWithEmail:email password:password];
+    [[FIRAuth auth].currentUser linkWithCredential:credential
+                                        completion:^(FIRUser *user, NSError *error) {
+                                          [self sendResult:result forUser:user error:error];
+                                        }];
   } else {
     result(FlutterMethodNotImplemented);
   }

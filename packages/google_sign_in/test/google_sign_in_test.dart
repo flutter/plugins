@@ -5,10 +5,11 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:google_sign_in/testing.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('$GoogleSignIn', () {
+  group('GoogleSignIn', () {
     const MethodChannel channel = const MethodChannel(
       'plugins.flutter.io/google_sign_in',
     );
@@ -48,8 +49,10 @@ void main() {
       expect(
           log,
           equals(<MethodCall>[
-            new MethodCall('init',
-                <String, dynamic>{'scopes': <String>[], 'hostedDomain': null}),
+            new MethodCall('init', <String, dynamic>{
+              'scopes': <String>[],
+              'hostedDomain': null,
+            }),
             const MethodCall('signInSilently'),
           ]));
     });
@@ -60,8 +63,10 @@ void main() {
       expect(
           log,
           equals(<MethodCall>[
-            new MethodCall('init',
-                <String, dynamic>{'scopes': <String>[], 'hostedDomain': null}),
+            new MethodCall('init', <String, dynamic>{
+              'scopes': <String>[],
+              'hostedDomain': null,
+            }),
             const MethodCall('signIn'),
           ]));
     });
@@ -72,8 +77,10 @@ void main() {
       expect(
           log,
           equals(<MethodCall>[
-            new MethodCall('init',
-                <String, dynamic>{'scopes': <String>[], 'hostedDomain': null}),
+            new MethodCall('init', <String, dynamic>{
+              'scopes': <String>[],
+              'hostedDomain': null,
+            }),
             const MethodCall('signOut'),
           ]));
     });
@@ -84,8 +91,10 @@ void main() {
       expect(
           log,
           equals(<MethodCall>[
-            new MethodCall('init',
-                <String, dynamic>{'scopes': <String>[], 'hostedDomain': null}),
+            new MethodCall('init', <String, dynamic>{
+              'scopes': <String>[],
+              'hostedDomain': null,
+            }),
             const MethodCall('disconnect'),
           ]));
     });
@@ -97,8 +106,10 @@ void main() {
       expect(
           log,
           equals(<MethodCall>[
-            new MethodCall('init',
-                <String, dynamic>{'scopes': <String>[], 'hostedDomain': null}),
+            new MethodCall('init', <String, dynamic>{
+              'scopes': <String>[],
+              'hostedDomain': null,
+            }),
             const MethodCall('disconnect'),
           ]));
     });
@@ -120,22 +131,25 @@ void main() {
       expect(
           log,
           equals(<MethodCall>[
-            new MethodCall('init',
-                <String, dynamic>{'scopes': <String>[], 'hostedDomain': null}),
+            new MethodCall('init', <String, dynamic>{
+              'scopes': <String>[],
+              'hostedDomain': null,
+            }),
             const MethodCall('signInSilently'),
           ]));
     });
 
     test('can sign in after previously failed attempt', () async {
       responses['signInSilently'] = <String, dynamic>{'error': 'Not a user'};
-      expect(googleSignIn.signInSilently(),
-          throwsA(const isInstanceOf<AssertionError>()));
+      expect(await googleSignIn.signInSilently(), isNull);
       expect(await googleSignIn.signIn(), isNotNull);
       expect(
           log,
           equals(<MethodCall>[
-            new MethodCall('init',
-                <String, dynamic>{'scopes': <String>[], 'hostedDomain': null}),
+            new MethodCall('init', <String, dynamic>{
+              'scopes': <String>[],
+              'hostedDomain': null,
+            }),
             const MethodCall('signInSilently'),
             const MethodCall('signIn'),
           ]));
@@ -152,8 +166,10 @@ void main() {
       expect(
           log,
           equals(<MethodCall>[
-            new MethodCall('init',
-                <String, dynamic>{'scopes': <String>[], 'hostedDomain': null}),
+            new MethodCall('init', <String, dynamic>{
+              'scopes': <String>[],
+              'hostedDomain': null,
+            }),
             const MethodCall('signInSilently'),
           ]));
       expect(users.first, users.last, reason: 'Must return the same user');
@@ -179,8 +195,10 @@ void main() {
       expect(
           log,
           equals(<MethodCall>[
-            new MethodCall('init',
-                <String, dynamic>{'scopes': <String>[], 'hostedDomain': null}),
+            new MethodCall('init', <String, dynamic>{
+              'scopes': <String>[],
+              'hostedDomain': null,
+            }),
             const MethodCall('signOut'),
             const MethodCall('signOut'),
             const MethodCall('disconnect'),
@@ -200,13 +218,78 @@ void main() {
       expect(
           log,
           equals(<MethodCall>[
-            new MethodCall('init',
-                <String, dynamic>{'scopes': <String>[], 'hostedDomain': null}),
+            new MethodCall('init', <String, dynamic>{
+              'scopes': <String>[],
+              'hostedDomain': null,
+            }),
             const MethodCall('signInSilently'),
             const MethodCall('signOut'),
             const MethodCall('signIn'),
             const MethodCall('disconnect'),
           ]));
+    });
+
+    test('signInSilently does not throw on error', () async {
+      channel.setMockMethodCallHandler((MethodCall methodCall) {
+        throw "I am an error";
+      });
+      expect(await googleSignIn.signInSilently(), isNull); // should not throw
+    });
+
+    test('can sign in after init failed before', () async {
+      int initCount = 0;
+      channel.setMockMethodCallHandler((MethodCall methodCall) {
+        if (methodCall.method == 'init') {
+          initCount++;
+          if (initCount == 1) {
+            throw "First init fails";
+          }
+        }
+        return responses[methodCall.method];
+      });
+      expect(googleSignIn.signIn(),
+          throwsA(const isInstanceOf<PlatformException>()));
+      expect(await googleSignIn.signIn(), isNotNull);
+    });
+  });
+
+  group('GoogleSignIn with fake backend', () {
+    const FakeUser kUserData = const FakeUser(
+      id: "8162538176523816253123",
+      displayName: "John Doe",
+      email: "john.doe@gmail.com",
+      photoUrl: "https://lh5.googleusercontent.com/photo.jpg",
+    );
+
+    GoogleSignIn googleSignIn;
+
+    setUp(() {
+      GoogleSignIn.channel.setMockMethodCallHandler(
+          (new FakeSignInBackend()..user = kUserData).handleMethodCall);
+      googleSignIn = new GoogleSignIn();
+    });
+
+    test('user starts as null', () async {
+      expect(googleSignIn.currentUser, isNull);
+    });
+
+    test('can sign in and sign out', () async {
+      await googleSignIn.signIn();
+
+      final GoogleSignInAccount user = googleSignIn.currentUser;
+
+      expect(user.displayName, equals(kUserData.displayName));
+      expect(user.email, equals(kUserData.email));
+      expect(user.id, equals(kUserData.id));
+      expect(user.photoUrl, equals(kUserData.photoUrl));
+
+      await googleSignIn.disconnect();
+      expect(googleSignIn.currentUser, isNull);
+    });
+
+    test('disconnect when signout already succeeds', () async {
+      await googleSignIn.disconnect();
+      expect(googleSignIn.currentUser, isNull);
     });
   });
 }

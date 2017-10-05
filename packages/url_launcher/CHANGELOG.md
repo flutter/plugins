@@ -1,3 +1,11 @@
+## 0.4.2+5
+
+* Aligned author name with rest of repo.
+
+## [0.4.2+2], [0.4.2+3], [0.4.2+4] - 2017-08-16
+
+* Updated README
+
 ## [0.4.2+1] - 2017-05-16
 
 * Updated README

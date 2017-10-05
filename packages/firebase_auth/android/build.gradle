@@ -11,9 +11,12 @@ buildscript {
     }
 }
 
-allprojects {
+rootProject.allprojects {
     repositories {
         jcenter()
+        maven {
+            url "https://maven.google.com"
+        }
     }
 }
 
@@ -31,7 +34,7 @@ android {
     }
     dependencies {
         compile 'com.google.guava:guava:20.0'
-        compile 'com.google.firebase:firebase-core:10.2.1'
-        compile 'com.google.firebase:firebase-auth:10.2.1'
+        compile 'com.google.firebase:firebase-core:11.0.+'
+        compile 'com.google.firebase:firebase-auth:11.0.+'
     }
 }
