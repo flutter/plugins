@@ -148,7 +148,7 @@
   [_channel invokeMethod:@"onIosSettingsRegistered" arguments:settingsDictionary];
 }
 
-//this method replaces the deprecated 'tokenRefreshNotification' method
+// this method replaces the deprecated 'tokenRefreshNotification' method
 - (void)messaging:(nonnull FIRMessaging *)messaging
     didRefreshRegistrationToken:(nonnull NSString *)fcmToken {
   [_channel invokeMethod:@"onToken" arguments:fcmToken];
