@@ -79,8 +79,10 @@ public class DeviceInfoPlugin implements MethodCallHandler {
     }
   }
 
-  //simple emulator detection based on the flutter tools detection
-  //and a couple of legacy detection systems
+  /**
+   *   A simple emulator-detection based on the flutter tools detection
+   *   logic and a couple of legacy detection systems
+   */
   private boolean isEmulator() {
     return (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic"))
         || Build.FINGERPRINT.startsWith("generic")

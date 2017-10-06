@@ -117,7 +117,7 @@ class AndroidDeviceInfo {
   /// The type of build, like "user" or "eng".
   final String type;
 
-  ///false, if device is being simulated/emulated
+  /// `false` if the application is running in an emulator, `true` otherwise.
   final bool isPhysicalDevice;
 
   /// Deserializes from the JSON message received from [_kChannel].
@@ -141,7 +141,7 @@ class AndroidDeviceInfo {
       supportedAbis: json['supportedAbis'],
       tags: json['tags'],
       type: json['type'],
-      isPhysicalDevice: json['isPhysicalDevice'].toString() == 'true',
+      isPhysicalDevice: json['isPhysicalDevice'] == 'true',
     );
   }
 }
@@ -228,7 +228,7 @@ class IosDeviceInfo {
   /// Unique UUID value identifying the current device.
   final String identifierForVendor;
 
-  ///false, if device is being simulated/emulated
+  /// `false` if the application is running in a simulator, `true` otherwise.
   final bool isPhysicalDevice;
 
   /// Deserializes from the JSON message received from [_kChannel].
