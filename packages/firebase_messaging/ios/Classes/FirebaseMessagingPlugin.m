@@ -28,6 +28,7 @@
 
 - (instancetype)initWithChannel:(FlutterMethodChannel *)channel {
   self = [super init];
+
   if (self) {
     _channel = channel;
     _resumingFromBackground = NO;
@@ -35,10 +36,6 @@
       [FIRApp configure];
     }
     [FIRMessaging messaging].delegate = self;
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(tokenRefreshNotification:)
-                                                 name:kFIRInstanceIDTokenRefreshNotification
-                                               object:nil];
   }
   return self;
 }
@@ -81,37 +78,12 @@
   }
 }
 
-- (void)tokenRefreshNotification:(NSNotification *)notification {
-  NSString *refreshedToken = [[FIRInstanceID instanceID] token];
-
-  // Connect to FCM since connection may have failed when attempted before having a token.
-  [self connectToFcm];
-
-  [_channel invokeMethod:@"onToken" arguments:refreshedToken];
-}
-
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
 // Receive data message on iOS 10 devices while app is in the foreground.
 - (void)applicationReceivedRemoteMessage:(FIRMessagingRemoteMessage *)remoteMessage {
   [self didReceiveRemoteNotification:remoteMessage.appData];
 }
 #endif
-
-- (void)connectToFcm {
-  // Won't connect since there is no token
-  if (![[FIRInstanceID instanceID] token]) {
-    return;
-  }
-
-  // Disconnect previous FCM connection if it exists.
-  [[FIRMessaging messaging] disconnect];
-
-  [[FIRMessaging messaging] connectWithCompletion:^(NSError *_Nullable error) {
-    if (error != nil) {
-      NSLog(@"Unable to connect to FCM. %@", error);
-    }
-  }];
-}
 
 - (void)didReceiveRemoteNotification:(NSDictionary *)userInfo {
   if (_resumingFromBackground) {
@@ -138,7 +110,6 @@
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
   _resumingFromBackground = NO;
-  [self connectToFcm];
   // Clears push notifications from the notification center, with the
   // side effect of resetting the badge count. We need to clear notifications
   // because otherwise the user could tap notifications in the notification
@@ -177,9 +148,10 @@
   [_channel invokeMethod:@"onIosSettingsRegistered" arguments:settingsDictionary];
 }
 
-// this function implements the FIRMessaging delegate interface
+//this method replaces the deprecated 'tokenRefreshNotification' method
 - (void)messaging:(nonnull FIRMessaging *)messaging
     didRefreshRegistrationToken:(nonnull NSString *)fcmToken {
+  [_channel invokeMethod:@"onToken" arguments:fcmToken];
 }
 
 @end
