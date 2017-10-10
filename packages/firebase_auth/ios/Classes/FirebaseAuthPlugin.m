@@ -101,17 +101,17 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
     } else {
       [self sendResult:result forUser:nil error:nil];
     }
-  } else if ([@"getToken" isEqualToString:call.method]) {
+  } else if ([@"getIdToken" isEqualToString:call.method]) {
     [[FIRAuth auth].currentUser
-        getTokenForcingRefresh:YES
-                    completion:^(NSString *_Nullable token, NSError *_Nullable error) {
-                      result(error != nil ? error.flutterError : token);
-                    }];
+        getIDTokenForcingRefresh:YES
+                      completion:^(NSString *_Nullable token, NSError *_Nullable error) {
+                        result(error != nil ? error.flutterError : token);
+                      }];
   } else if ([@"linkWithEmailAndPassword" isEqualToString:call.method]) {
     NSString *email = call.arguments[@"email"];
     NSString *password = call.arguments[@"password"];
     FIRAuthCredential *credential =
-        [FIREmailPasswordAuthProvider credentialWithEmail:email password:password];
+        [FIREmailAuthProvider credentialWithEmail:email password:password];
     [[FIRAuth auth].currentUser linkWithCredential:credential
                                         completion:^(FIRUser *user, NSError *error) {
                                           [self sendResult:result forUser:user error:error];
