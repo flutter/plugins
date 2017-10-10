@@ -57,6 +57,7 @@ class AndroidDeviceInfo {
     List<String> supportedAbis,
     this.tags,
     this.type,
+    this.isPhysicalDevice,
   })
       : supported32BitAbis = new List<String>.unmodifiable(supported32BitAbis),
         supported64BitAbis = new List<String>.unmodifiable(supported64BitAbis),
@@ -116,6 +117,9 @@ class AndroidDeviceInfo {
   /// The type of build, like "user" or "eng".
   final String type;
 
+  /// `false` if the application is running in an emulator, `true` otherwise.
+  final bool isPhysicalDevice;
+
   /// Deserializes from the JSON message received from [_kChannel].
   static AndroidDeviceInfo _fromJson(Map<String, Object> json) {
     return new AndroidDeviceInfo._(
@@ -137,6 +141,7 @@ class AndroidDeviceInfo {
       supportedAbis: json['supportedAbis'],
       tags: json['tags'],
       type: json['type'],
+      isPhysicalDevice: json['isPhysicalDevice'] == 'true',
     );
   }
 }
@@ -202,6 +207,7 @@ class IosDeviceInfo {
     this.model,
     this.localizedModel,
     this.identifierForVendor,
+    this.isPhysicalDevice,
   });
 
   /// Device name.
@@ -222,6 +228,9 @@ class IosDeviceInfo {
   /// Unique UUID value identifying the current device.
   final String identifierForVendor;
 
+  /// `false` if the application is running in a simulator, `true` otherwise.
+  final bool isPhysicalDevice;
+
   /// Deserializes from the JSON message received from [_kChannel].
   static IosDeviceInfo _fromJson(Map<String, Object> json) {
     return new IosDeviceInfo._(
@@ -231,6 +240,7 @@ class IosDeviceInfo {
       model: json['model'],
       localizedModel: json['localizedModel'],
       identifierForVendor: json['identifierForVendor'],
+      isPhysicalDevice: json['isPhysicalDevice'] == 'true',
     );
   }
 }

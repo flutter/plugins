@@ -28,14 +28,23 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
   };
 }
 
-@implementation FirebaseAuthPlugin {
-}
+@interface FirebaseAuthPlugin ()
+@property(nonatomic, retain) NSMutableDictionary *authStateChangeListeners;
+@property(nonatomic, retain) FlutterMethodChannel *channel;
+@end
+
+@implementation FirebaseAuthPlugin
+
+// Handles are ints used as indexes into the NSMutableDictionary of active observers
+int nextHandle = 0;
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/firebase_auth"
                                   binaryMessenger:[registrar messenger]];
   FirebaseAuthPlugin *instance = [[FirebaseAuthPlugin alloc] init];
+  instance.channel = channel;
+  instance.authStateChangeListeners = [[NSMutableDictionary alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
@@ -116,9 +125,59 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
                                         completion:^(FIRUser *user, NSError *error) {
                                           [self sendResult:result forUser:user error:error];
                                         }];
+  } else if ([@"signInWithCustomToken" isEqualToString:call.method]) {
+    NSString *token = call.arguments[@"token"];
+    [[FIRAuth auth] signInWithCustomToken:token
+                               completion:^(FIRUser *user, NSError *error) {
+                                 [self sendResult:result forUser:user error:error];
+                               }];
+
+  } else if ([@"startListeningAuthState" isEqualToString:call.method]) {
+    NSNumber *identifier = [NSNumber numberWithInteger:nextHandle++];
+
+    FIRAuthStateDidChangeListenerHandle listener = [[FIRAuth auth]
+        addAuthStateDidChangeListener:^(FIRAuth *_Nonnull auth, FIRUser *_Nullable user) {
+          NSMutableDictionary *response = [[NSMutableDictionary alloc] init];
+          response[@"id"] = identifier;
+          if (user) {
+            response[@"user"] = [self dictionaryFromUser:user];
+          }
+          [self.channel invokeMethod:@"onAuthStateChanged" arguments:response];
+        }];
+    [self.authStateChangeListeners setObject:listener forKey:identifier];
+    result(identifier);
+  } else if ([@"stopListeningAuthState" isEqualToString:call.method]) {
+    NSNumber *identifier =
+        [NSNumber numberWithInteger:[call.arguments[@"id"] unsignedIntegerValue]];
+
+    FIRAuthStateDidChangeListenerHandle listener = self.authStateChangeListeners[identifier];
+    if (listener) {
+      [[FIRAuth auth] removeAuthStateDidChangeListener:self.authStateChangeListeners];
+      [self.authStateChangeListeners removeObjectForKey:identifier];
+      result(nil);
+    } else {
+      result([FlutterError
+          errorWithCode:@"not_found"
+                message:[NSString stringWithFormat:@"Listener with identifier '%d' not found.",
+                                                   identifier.intValue]
+                details:nil]);
+    }
   } else {
     result(FlutterMethodNotImplemented);
   }
+}
+
+- (NSMutableDictionary *)dictionaryFromUser:(FIRUser *)user {
+  NSMutableArray<NSDictionary<NSString *, NSString *> *> *providerData =
+      [NSMutableArray arrayWithCapacity:user.providerData.count];
+  for (id<FIRUserInfo> userInfo in user.providerData) {
+    [providerData addObject:toDictionary(userInfo)];
+  }
+  NSMutableDictionary *userData = [toDictionary(user) mutableCopy];
+  userData[@"isAnonymous"] = [NSNumber numberWithBool:user.isAnonymous];
+  userData[@"isEmailVerified"] = [NSNumber numberWithBool:user.isEmailVerified];
+  userData[@"providerData"] = providerData;
+  return userData;
 }
 
 - (void)sendResult:(FlutterResult)result forUser:(FIRUser *)user error:(NSError *)error {
@@ -127,16 +186,7 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
   } else if (user == nil) {
     result(nil);
   } else {
-    NSMutableArray<NSDictionary<NSString *, NSString *> *> *providerData =
-        [NSMutableArray arrayWithCapacity:user.providerData.count];
-    for (id<FIRUserInfo> userInfo in user.providerData) {
-      [providerData addObject:toDictionary(userInfo)];
-    }
-    NSMutableDictionary *userData = [toDictionary(user) mutableCopy];
-    userData[@"isAnonymous"] = [NSNumber numberWithBool:user.isAnonymous];
-    userData[@"isEmailVerified"] = [NSNumber numberWithBool:user.isEmailVerified];
-    userData[@"providerData"] = providerData;
-    result(userData);
+    result([self dictionaryFromUser:user]);
   }
 }
 

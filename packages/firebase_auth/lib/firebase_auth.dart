@@ -73,12 +73,38 @@ class FirebaseAuth {
     'plugins.flutter.io/firebase_auth',
   );
 
+  final Map<int, StreamController<FirebaseUser>> _authStateChangedControllers =
+      <int, StreamController<FirebaseUser>>{};
+
   /// Provides an instance of this class corresponding to the default app.
   ///
   /// TODO(jackson): Support for non-default apps.
   static FirebaseAuth instance = new FirebaseAuth._();
 
-  FirebaseAuth._();
+  FirebaseAuth._() {
+    channel.setMethodCallHandler(_callHandler);
+  }
+
+  /// Receive [FirebaseUser] each time the user signIn or signOut
+  Stream<FirebaseUser> get onAuthStateChanged {
+    Future<int> _handle;
+
+    StreamController<FirebaseUser> controller;
+    controller = new StreamController<FirebaseUser>.broadcast(onListen: () {
+      _handle = channel.invokeMethod('startListeningAuthState');
+      _handle.then((int handle) {
+        _authStateChangedControllers[handle] = controller;
+      });
+    }, onCancel: () {
+      _handle.then((int handle) async {
+        await channel.invokeMethod(
+            "stopListeningAuthState", <String, int>{"id": handle});
+        _authStateChangedControllers.remove(handle);
+      });
+    });
+
+    return controller.stream;
+  }
 
   /// Asynchronously creates and becomes an anonymous user.
   ///
@@ -158,6 +184,18 @@ class FirebaseAuth {
     return currentUser;
   }
 
+  Future<FirebaseUser> signInWithCustomToken({@required String token}) async {
+    assert(token != null);
+    final Map<String, dynamic> data = await channel.invokeMethod(
+      'signInWithCustomToken',
+      <String, String>{
+        'token': token,
+      },
+    );
+    final FirebaseUser currentUser = new FirebaseUser._(data);
+    return currentUser;
+  }
+
   Future<Null> signOut() async {
     return await channel.invokeMethod("signOut");
   }
@@ -191,5 +229,23 @@ class FirebaseAuth {
     );
     final FirebaseUser currentUser = new FirebaseUser._(data);
     return currentUser;
+  }
+
+  Future<Null> _callHandler(MethodCall call) async {
+    switch (call.method) {
+      case "onAuthStateChanged":
+        _onAuthStageChangedHandler(call);
+        break;
+    }
+    return null;
+  }
+
+  void _onAuthStageChangedHandler(MethodCall call) {
+    final Map<String, dynamic> data = call.arguments["user"];
+    final int id = call.arguments["id"];
+
+    final FirebaseUser currentUser =
+        data != null ? new FirebaseUser._(data) : null;
+    _authStateChangedControllers[id].add(currentUser);
   }
 }
