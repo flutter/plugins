@@ -134,6 +134,23 @@ void main() {
       );
     });
 
+    test('linkWithGoogleCredential', () async {
+      final FirebaseUser user = await auth.linkWithGoogleCredential(
+        idToken: kMockIdToken,
+        accessToken: kMockAccessToken,
+      );
+      verifyUser(user);
+      expect(
+        log,
+        equals(<MethodCall>[
+          new MethodCall('linkWithGoogleCredential', <String, String>{
+            'idToken': kMockIdToken,
+            'accessToken': kMockAccessToken,
+          })
+        ]),
+      );
+    });
+
     test('signInWithFacebook', () async {
       final FirebaseUser user = await auth.signInWithFacebook(
         accessToken: kMockAccessToken,

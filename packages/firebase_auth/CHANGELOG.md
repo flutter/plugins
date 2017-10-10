@@ -1,3 +1,7 @@
+## 0.2.5
+
+* Added support for linkWithCredential with Google credential
+
 ## 0.2.4
 
 * Added support for `signInWithCustomToken`
