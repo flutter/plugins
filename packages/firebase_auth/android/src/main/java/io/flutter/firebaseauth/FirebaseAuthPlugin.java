@@ -89,6 +89,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         break;
       case "linkWithGoogleCredential":
         handleLinkWithGoogleCredential(call, result);
+        break;
       case "startListeningAuthState":
         handleStartListeningAuthState(call, result);
         break;
