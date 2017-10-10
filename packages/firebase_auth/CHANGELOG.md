@@ -1,3 +1,7 @@
+## 0.3.0
+
+* **Breaking Change**: Method FirebaseUser getToken was renamed to getIdToken.
+
 ## 0.2.3+1
 
 * Aligned author name with rest of repo.
