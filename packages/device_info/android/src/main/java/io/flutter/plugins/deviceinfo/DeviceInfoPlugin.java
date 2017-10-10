@@ -59,6 +59,7 @@ public class DeviceInfoPlugin implements MethodCallHandler {
       }
       build.put("tags", Build.TAGS);
       build.put("type", Build.TYPE);
+      build.put("isPhysicalDevice", !isEmulator());
 
       Map<String, Object> version = new HashMap<>();
       if (VERSION.SDK_INT >= VERSION_CODES.M) {
@@ -76,5 +77,28 @@ public class DeviceInfoPlugin implements MethodCallHandler {
     } else {
       result.notImplemented();
     }
+  }
+
+  /**
+   * A simple emulator-detection based on the flutter tools detection logic and a couple of legacy
+   * detection systems
+   */
+  private boolean isEmulator() {
+    return (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic"))
+        || Build.FINGERPRINT.startsWith("generic")
+        || Build.FINGERPRINT.startsWith("unknown")
+        || Build.HARDWARE.contains("goldfish")
+        || Build.HARDWARE.contains("ranchu")
+        || Build.MODEL.contains("google_sdk")
+        || Build.MODEL.contains("Emulator")
+        || Build.MODEL.contains("Android SDK built for x86")
+        || Build.MANUFACTURER.contains("Genymotion")
+        || Build.PRODUCT.contains("sdk_google")
+        || Build.PRODUCT.contains("google_sdk")
+        || Build.PRODUCT.contains("sdk")
+        || Build.PRODUCT.contains("sdk_x86")
+        || Build.PRODUCT.contains("vbox86p")
+        || Build.PRODUCT.contains("emulator")
+        || Build.PRODUCT.contains("simulator");
   }
 }

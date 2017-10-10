@@ -41,8 +41,10 @@
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
   if ([call.method isEqualToString:@"check"]) {
-    // This is supposed to be quick. Another way of doing this would be to signup for network
-    // connectivity changes. However that depends on the app being in background and the code
+    // This is supposed to be quick. Another way of doing this would be to
+    // signup for network
+    // connectivity changes. However that depends on the app being in background
+    // and the code
     // gets more involved. So for now, this will do.
     result([self statusFromReachability:[Reachability reachabilityForInternetConnection]]);
   } else {
