@@ -1,3 +1,8 @@
+## 1.0.0
+
+* Make GoogleUserCircleAvatar fade profile image over the top of placeholder
+* Bump to released version
+
 ## 0.3.1
 
 * Updated GMS to always use latest patch version for 11.0.x builds
