@@ -1,3 +1,10 @@
+## 0.0.6
+
+In FirebaseMessagingPlugin.m:
+* moved logic from 'tokenRefreshNotification' to 'didRefreshRegistrationToken'
+* removed 'tokenRefreshNotification' as well as observer registration
+* removed 'connectToFcm' method and related calls
+
 ## 0.0.5+1
 
 * Aligned author name with rest of repo.
