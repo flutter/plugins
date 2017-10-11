@@ -6,6 +6,8 @@ package io.flutter.firebaseauth;
 
 import android.app.Activity;
 import android.support.annotation.NonNull;
+import android.util.Log;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.common.collect.ImmutableList;
@@ -20,12 +22,14 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserInfo;
+
+import java.util.Map;
+
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
-import java.util.Map;
 
 /** Flutter plugin for Firebase Auth. */
 public class FirebaseAuthPlugin implements MethodCallHandler {
@@ -111,10 +115,15 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         new FirebaseAuth.AuthStateListener() {
           @Override
           public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-            firebaseAuth.removeAuthStateListener(this);
-            FirebaseUser user = firebaseAuth.getCurrentUser();
-            ImmutableMap<String, Object> userMap = mapFromUser(user);
-            result.success(userMap);
+            try {
+              firebaseAuth.removeAuthStateListener(this);
+              FirebaseUser user = firebaseAuth.getCurrentUser();
+              ImmutableMap<String, Object> userMap = mapFromUser(user);
+              result.success(userMap);
+            } catch (IllegalStateException e) {
+              // don't call result.error because exception means result has already been called
+              Log.d("FirebaseAuthPlugin", "Exception in handleCurrentUser", e);
+            }
           }
         };
 
