@@ -1,6 +1,11 @@
-## 0.4.0
+## 1.1.0
 
 * Change GMS dependency to 11.+
+
+## 1.0.0
+
+* Make GoogleUserCircleAvatar fade profile image over the top of placeholder
+* Bump to released version
 
 ## 0.3.1
 

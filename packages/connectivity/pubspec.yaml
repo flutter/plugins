@@ -1,6 +1,6 @@
 name: connectivity
 description: Allows developers to discover the state of the network connectivity.
-version: 0.0.1+1
+version: 0.1.0
 author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/connectivity
 

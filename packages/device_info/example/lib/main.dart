@@ -81,6 +81,7 @@ class _MyAppState extends State<MyApp> {
       'supportedAbis': build.supportedAbis,
       'tags': build.tags,
       'type': build.type,
+      'isPhysicalDevice': build.isPhysicalDevice,
     };
   }
 
@@ -92,6 +93,7 @@ class _MyAppState extends State<MyApp> {
       'model': data.model,
       'localizedModel': data.localizedModel,
       'identifierForVendor': data.identifierForVendor,
+      'isPhysicalDevice': data.isPhysicalDevice,
     };
   }
 

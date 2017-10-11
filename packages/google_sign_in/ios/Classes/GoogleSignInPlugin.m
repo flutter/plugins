@@ -135,7 +135,8 @@ static NSString *const kClientIdKey = @"CLIENT_ID";
   if (error != nil) {
     if (error.code == kGIDSignInErrorCodeHasNoAuthInKeychain ||
         error.code == kGIDSignInErrorCodeCanceled) {
-      // Occurs when silent sign-in is not possible or user has cancelled sign in,
+      // Occurs when silent sign-in is not possible or user has cancelled sign
+      // in,
       // return an empty user in this case
       [self respondWithAccount:nil error:nil];
     } else {
@@ -144,7 +145,8 @@ static NSString *const kClientIdKey = @"CLIENT_ID";
   } else {
     NSURL *photoUrl;
     if (user.profile.hasImage) {
-      // Placeholder that will be replaced by on the Dart side based on screen size
+      // Placeholder that will be replaced by on the Dart side based on screen
+      // size
       photoUrl = [user.profile imageURLWithDimension:1337];
     }
     [self respondWithAccount:@{

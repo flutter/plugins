@@ -73,12 +73,38 @@ class FirebaseAuth {
     'plugins.flutter.io/firebase_auth',
   );
 
+  final Map<int, StreamController<FirebaseUser>> _authStateChangedControllers =
+      <int, StreamController<FirebaseUser>>{};
+
   /// Provides an instance of this class corresponding to the default app.
   ///
   /// TODO(jackson): Support for non-default apps.
   static FirebaseAuth instance = new FirebaseAuth._();
 
-  FirebaseAuth._();
+  FirebaseAuth._() {
+    channel.setMethodCallHandler(_callHandler);
+  }
+
+  /// Receive [FirebaseUser] each time the user signIn or signOut
+  Stream<FirebaseUser> get onAuthStateChanged {
+    Future<int> _handle;
+
+    StreamController<FirebaseUser> controller;
+    controller = new StreamController<FirebaseUser>.broadcast(onListen: () {
+      _handle = channel.invokeMethod('startListeningAuthState');
+      _handle.then((int handle) {
+        _authStateChangedControllers[handle] = controller;
+      });
+    }, onCancel: () {
+      _handle.then((int handle) async {
+        await channel.invokeMethod(
+            "stopListeningAuthState", <String, int>{"id": handle});
+        _authStateChangedControllers.remove(handle);
+      });
+    });
+
+    return controller.stream;
+  }
 
   /// Asynchronously creates and becomes an anonymous user.
   ///
@@ -158,6 +184,18 @@ class FirebaseAuth {
     return currentUser;
   }
 
+  Future<FirebaseUser> signInWithCustomToken({@required String token}) async {
+    assert(token != null);
+    final Map<String, dynamic> data = await channel.invokeMethod(
+      'signInWithCustomToken',
+      <String, String>{
+        'token': token,
+      },
+    );
+    final FirebaseUser currentUser = new FirebaseUser._(data);
+    return currentUser;
+  }
+
   Future<Null> signOut() async {
     return await channel.invokeMethod("signOut");
   }
@@ -191,5 +229,48 @@ class FirebaseAuth {
     );
     final FirebaseUser currentUser = new FirebaseUser._(data);
     return currentUser;
+  }
+
+  /// Links google account with current user and returns [Future<FirebaseUser>]
+  ///
+  /// throws [PlatformException] when
+  /// 1. No current user provided (user has not logged in)
+  /// 2. No google credentials were found for given [idToken] and [accessToken]
+  /// 3. Google account already linked with another [FirebaseUser]
+  /// Detailed documentation on possible error causes can be found in [Android docs](https://firebase.google.com/docs/reference/android/com/google/firebase/auth/FirebaseUser#exceptions_4) and [iOS docs](https://firebase.google.com/docs/reference/ios/firebaseauth/api/reference/Classes/FIRUser#/c:objc(cs)FIRUser(im)linkWithCredential:completion:)
+  /// TODO: Throw custom exceptions with error codes indicating cause of exception
+  Future<FirebaseUser> linkWithGoogleCredential({
+    @required String idToken,
+    @required String accessToken,
+  }) async {
+    assert(idToken != null);
+    assert(accessToken != null);
+    final Map<String, dynamic> data = await channel.invokeMethod(
+      'linkWithGoogleCredential',
+      <String, String>{
+        'idToken': idToken,
+        'accessToken': accessToken,
+      },
+    );
+    final FirebaseUser currentUser = new FirebaseUser._(data);
+    return currentUser;
+  }
+
+  Future<Null> _callHandler(MethodCall call) async {
+    switch (call.method) {
+      case "onAuthStateChanged":
+        _onAuthStageChangedHandler(call);
+        break;
+    }
+    return null;
+  }
+
+  void _onAuthStageChangedHandler(MethodCall call) {
+    final Map<String, dynamic> data = call.arguments["user"];
+    final int id = call.arguments["id"];
+
+    final FirebaseUser currentUser =
+        data != null ? new FirebaseUser._(data) : null;
+    _authStateChangedControllers[id].add(currentUser);
   }
 }

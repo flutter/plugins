@@ -119,7 +119,8 @@
   NSNumber *mobileAdId = (NSNumber *)call.arguments[@"id"];
   if (mobileAdId == nil) {
     NSString *message =
-        @"all FirebaseAdMobPlugin method calls must specify an integer mobile ad id";
+        @"all FirebaseAdMobPlugin method calls must specify an "
+        @"integer mobile ad id";
     result([FlutterError errorWithCode:@"no_id" message:message details:nil]);
     return;
   }
