@@ -100,9 +100,6 @@
   if (image == nil) {
     image = [info objectForKey:UIImagePickerControllerOriginalImage];
   }
-  if (image == nil) {
-    image = [info objectForKey:UIImagePickerControllerCropRect];
-  }
   image = [self normalizedImage:image];
   NSData *data = UIImageJPEGRepresentation(image, 1.0);
   NSString *tmpDirectory = NSTemporaryDirectory();
