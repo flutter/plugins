@@ -43,15 +43,10 @@ void _initMotionManager() {
                              CMAcceleration acceleration = accelerometerData.acceleration;
                              // Multiply by gravity, and adjust sign values to
                              // align with Android.
-                             NSArray* accelerationValues = [NSArray
-                                 arrayWithObjects:[NSNumber
-                                                      numberWithDouble:-acceleration.x * GRAVITY],
-                                                  [NSNumber
-                                                      numberWithDouble:-acceleration.y * GRAVITY],
-                                                  [NSNumber
-                                                      numberWithDouble:-acceleration.z * GRAVITY],
-                                                  nil];
-
+                             NSArray* accelerationValues = @[
+                               @(-acceleration.x * GRAVITY), @(-acceleration.y * GRAVITY),
+                               @(-acceleration.z * GRAVITY)
+                             ];
                              eventSink(accelerationValues);
                            }];
   return nil;
@@ -68,16 +63,13 @@ void _initMotionManager() {
 
 - (FlutterError*)onListenWithArguments:(id)arguments eventSink:(FlutterEventSink)eventSink {
   _initMotionManager();
-  [_motionManager
-      startGyroUpdatesToQueue:[[NSOperationQueue alloc] init]
-                  withHandler:^(CMGyroData* gyroData, NSError* error) {
-                    CMRotationRate rotationRate = gyroData.rotationRate;
-                    NSArray* gyroscopeValues =
-                        [NSArray arrayWithObjects:[NSNumber numberWithDouble:rotationRate.x],
-                                                  [NSNumber numberWithDouble:rotationRate.y],
-                                                  [NSNumber numberWithDouble:rotationRate.z], nil];
-                    eventSink(gyroscopeValues);
-                  }];
+  [_motionManager startGyroUpdatesToQueue:[[NSOperationQueue alloc] init]
+                              withHandler:^(CMGyroData* gyroData, NSError* error) {
+                                CMRotationRate rotationRate = gyroData.rotationRate;
+                                NSArray* gyroscopeValues =
+                                    @[ @(rotationRate.x), @(rotationRate.y), @(rotationRate.z) ];
+                                eventSink(gyroscopeValues);
+                              }];
   return nil;
 }
 

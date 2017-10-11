@@ -231,6 +231,31 @@ class FirebaseAuth {
     return currentUser;
   }
 
+  /// Links google account with current user and returns [Future<FirebaseUser>]
+  ///
+  /// throws [PlatformException] when
+  /// 1. No current user provided (user has not logged in)
+  /// 2. No google credentials were found for given [idToken] and [accessToken]
+  /// 3. Google account already linked with another [FirebaseUser]
+  /// Detailed documentation on possible error causes can be found in [Android docs](https://firebase.google.com/docs/reference/android/com/google/firebase/auth/FirebaseUser#exceptions_4) and [iOS docs](https://firebase.google.com/docs/reference/ios/firebaseauth/api/reference/Classes/FIRUser#/c:objc(cs)FIRUser(im)linkWithCredential:completion:)
+  /// TODO: Throw custom exceptions with error codes indicating cause of exception
+  Future<FirebaseUser> linkWithGoogleCredential({
+    @required String idToken,
+    @required String accessToken,
+  }) async {
+    assert(idToken != null);
+    assert(accessToken != null);
+    final Map<String, dynamic> data = await channel.invokeMethod(
+      'linkWithGoogleCredential',
+      <String, String>{
+        'idToken': idToken,
+        'accessToken': accessToken,
+      },
+    );
+    final FirebaseUser currentUser = new FirebaseUser._(data);
+    return currentUser;
+  }
+
   Future<Null> _callHandler(MethodCall call) async {
     switch (call.method) {
       case "onAuthStateChanged":
