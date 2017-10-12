@@ -61,3 +61,9 @@ class FieldValue {
 
   static FieldValue get serverTimestamp => const FieldValue._(1);
 }
+
+class GeoPoint {
+  final double latitude;
+  final double longitude;
+  const GeoPoint(this.latitude, this.longitude);
+}
