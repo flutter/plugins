@@ -51,3 +51,13 @@ class Firestore {
     return new DocumentReference._(this, path.split('/'));
   }
 }
+
+class FieldValue {
+  final int type;
+
+  const FieldValue._(this.type);
+
+  static FieldValue get delete => const FieldValue._(0);
+
+  static FieldValue get serverTimestamp => const FieldValue._(1);
+}
