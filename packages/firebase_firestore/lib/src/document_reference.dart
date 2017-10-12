@@ -36,6 +36,14 @@ class DocumentReference {
     );
   }
 
+  /// Gets a [CollectionReference] for the specified Firestore path.
+  CollectionReference collection(String path) {
+    List<String> childPath;
+    childPath = new List<String>.from(_pathComponents)
+      ..addAll(path.split(('/')));
+    return new CollectionReference._(_firestore, childPath);
+  }
+
   /// Notifies of documents at this location
   // TODO(jackson): Reduce code duplication with [Query]
   Stream<DocumentSnapshot> get snapshots {
