@@ -39,6 +39,15 @@ class CollectionReference extends Query {
     }
     return new DocumentReference._(_firestore, childPath);
   }
+
+  /// Adds a new document to this collection with the specified data,
+  /// assigning it a document ID automatically.
+  Future<Null> add(Map<String, dynamic> data) {
+    return Firestore.channel.invokeMethod(
+      'CollectionReference#add',
+      <String, dynamic>{'path': path, 'data': data},
+    );
+  }
 }
 
 class ServerValue {

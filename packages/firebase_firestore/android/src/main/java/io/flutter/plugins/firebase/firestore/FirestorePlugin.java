@@ -39,7 +39,7 @@ public class FirestorePlugin implements MethodCallHandler {
 
   public static void registerWith(PluginRegistry.Registrar registrar) {
     final MethodChannel channel =
-        new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_firestore");
+        new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_firestore", FirestoreMethodCodec.INSTANCE);
     channel.setMethodCallHandler(new FirestorePlugin(channel));
   }
 
@@ -157,6 +157,14 @@ public class FirestorePlugin implements MethodCallHandler {
           listenerRegistrations.get(handle).remove();
           listenerRegistrations.remove(handle);
           observers.remove(handle);
+          result.success(null);
+          break;
+        }
+      case "CollectionReference#add":
+        {
+          Map<String, Object> arguments = call.arguments();
+          CollectionReference collectionReference = getCollectionReference(arguments);
+          collectionReference.add(arguments.get("data"));
           result.success(null);
           break;
         }

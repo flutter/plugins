@@ -5,9 +5,12 @@
 library firebase_firestore;
 
 import 'dart:async';
+import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
+import 'package:flutter/foundation.dart' show ReadBuffer, WriteBuffer, required;
 
 import 'src/utils/push_id_generator.dart';
 
@@ -18,3 +21,4 @@ part 'src/document_reference.dart';
 part 'src/firestore.dart';
 part 'src/query.dart';
 part 'src/query_snapshot.dart';
+part 'src/firestore_codecs.dart';

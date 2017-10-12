@@ -22,6 +22,9 @@ class DocumentReference {
   /// Slash-delimited path representing the database location of this query.
   String get path => _pathComponents.join('/');
 
+  /// Returns the last segment of the path as the document id
+  String get id => _pathComponents.last;
+
   Future<Null> setData(Map<String, dynamic> data) {
     return Firestore.channel.invokeMethod(
       'DocumentReference#setData',
