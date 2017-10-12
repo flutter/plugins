@@ -1,3 +1,7 @@
+## 0.3.0
+
+* Change GMS dependency to 11.+
+
 ## 0.2.5
 
 * Added support for linkWithCredential with Google credential
