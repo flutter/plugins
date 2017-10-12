@@ -172,7 +172,8 @@ public class FirestorePlugin implements MethodCallHandler {
         {
           Map<String, Object> arguments = call.arguments();
           DocumentReference documentReference = getDocumentReference(arguments);
-          documentReference.set(arguments.get("data"));
+          Map<String, Object> data = (Map<String, Object>) arguments.get("data");
+          documentReference.set(data);
           result.success(null);
           break;
         }

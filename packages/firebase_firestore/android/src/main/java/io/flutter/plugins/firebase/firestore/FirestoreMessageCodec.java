@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Date;
 import io.flutter.plugin.common.*;
+import com.google.firebase.firestore.FieldValue;
 
 /**
  * MessageCodec using the Flutter firestore binary encoding.
@@ -36,7 +37,7 @@ import io.flutter.plugin.common.*;
  *     <li>Lists of supported values</li>
  *     <li>Maps with supported keys and values</li>
  *     <li>Date</li>
- *     <li>FieldValue - delete() or serverTimestamp()</li>
+ *     <li>FieldValue: 0 -> delete(), 1 -> serverTimestamp()</li>
  *     <li>GeoPoint</li>
  *     <li>Reference</li>
  * </ul>
@@ -56,7 +57,7 @@ import io.flutter.plugin.common.*;
  *     <li>List: List</li>
  *     <li>Map: Map</li>
  *     <li>DateTime</li>
- *     <li>FieldValue - delete() or serverTimestamp()</li>
+ *     <li>FieldValue: 0 -> delete(), 1 -> serverTimestamp()</li>
  *     <li>GeoPoint</li>
  *     <li>Reference</li>
  * </ul>
@@ -385,6 +386,20 @@ public final class FirestoreMessageCodec implements MessageCodec<Object> {
             case DATE_TIME: {
                 final long microseconds = buffer.getLong();
                 result = new Date(microseconds/1000);
+                break;
+            }
+            case FIELD_VALUE: {
+                final int type = buffer.getInt();
+                switch(type) {
+                    case 0:
+                        result = FieldValue.delete();
+                        break;
+                    case 1:
+                        result = FieldValue.serverTimestamp();
+                        break;
+                    default:
+                        throw new IllegalArgumentException("FieldValue Message corrupted");
+                }
                 break;
             }
             default:
