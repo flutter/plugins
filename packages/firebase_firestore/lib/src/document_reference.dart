@@ -29,6 +29,13 @@ class DocumentReference {
     );
   }
 
+  Future<Null> update(Map<String, dynamic> data) {
+    return Firestore.channel.invokeMethod(
+      'DocumentReference#update',
+      <String, dynamic>{'path': path, 'data': data},
+    );
+  }
+
   /// Notifies of documents at this location
   // TODO(jackson): Reduce code duplication with [Query]
   Stream<DocumentSnapshot> get snapshots {
