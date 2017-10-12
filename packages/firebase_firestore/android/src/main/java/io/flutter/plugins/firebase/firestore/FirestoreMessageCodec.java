@@ -17,6 +17,7 @@ import java.util.Map.Entry;
 import java.util.Date;
 import io.flutter.plugin.common.*;
 import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.GeoPoint;
 
 /**
  * MessageCodec using the Flutter firestore binary encoding.
@@ -266,6 +267,12 @@ public final class FirestoreMessageCodec implements MessageCodec<Object> {
             final Date date = (Date) value;
             final long milliseconds = date.getTime();
             writeLong(stream, milliseconds*1000);
+        } else if (value instanceof GeoPoint) {
+            stream.write(GEO_POINT);
+            writeAlignment(stream, 8);
+            final GeoPoint g = (GeoPoint) value;
+            writeDouble(stream, g.getLatitude());
+            writeDouble(stream, g.getLongitude());
         } else {
             throw new IllegalArgumentException("Unsupported value: " + value);
         }
@@ -400,6 +407,13 @@ public final class FirestoreMessageCodec implements MessageCodec<Object> {
                     default:
                         throw new IllegalArgumentException("FieldValue Message corrupted");
                 }
+                break;
+            }
+            case GEO_POINT: {
+                readAlignment(buffer, 8);
+                final double latitude = buffer.getDouble();
+                final double longitude = buffer.getDouble();
+                result = new GeoPoint(latitude, longitude);
                 break;
             }
             default:

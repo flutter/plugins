@@ -11,8 +11,9 @@ part of firebase_firestore;
 ///  * [Uint8List]s, [Int32List]s, [Int64List]s, [Float64List]s
 ///  * [List]s of supported values
 ///  * [Map]s from supported values to supported values
-///  * [DateTime]s from supported values to supported values
-///  * [FieldValue]s from supported values to supported values
+///  * [DateTime]s
+///  * [FieldValue]s
+///  * [GeoPoint]s
 ///
 /// On Android, messages are represented as follows:
 ///
@@ -32,6 +33,7 @@ part of firebase_firestore;
 ///  * [Map]\: `java.util.HashMap`
 ///  * [Date]\: `java.util.Date`
 ///  * [FieldValue]\: `firestore.FieldValue: 0 -> delete, 1 -> serverTimestamp`
+///  * [GeoPoint]s `firestore.GeoPoint`
 ///
 /// On iOS, messages are represented as follows:
 ///
@@ -104,6 +106,7 @@ class FirestoreMessageCodec implements MessageCodec<dynamic> {
   static const int _kMap = 13;
   static const int _kDateTime = 14;
   static const int _kFieldValue = 15;
+  static const int _kGeoPoint = 16;
 
 
   /// Creates a [MessageCodec] using the Flutter standard binary encoding.
@@ -203,6 +206,10 @@ class FirestoreMessageCodec implements MessageCodec<dynamic> {
     } else if (value is FieldValue) {
       buffer.putUint8(_kFieldValue);
       buffer.putInt32(value.type);
+    } else if (value is GeoPoint) {
+      buffer.putUint8(_kGeoPoint);
+      buffer.putFloat64(value.latitude);
+      buffer.putFloat64(value.longitude);
     } else {
       throw new ArgumentError.value(value);
     }
@@ -283,6 +290,11 @@ class FirestoreMessageCodec implements MessageCodec<dynamic> {
       case _kDateTime:
         final int microseconds = buffer.getInt64();
         result = new DateTime.fromMicrosecondsSinceEpoch(microseconds);
+        break;
+      case _kGeoPoint:
+        final double latitude = buffer.getFloat64();
+        final double longitude = buffer.getFloat64();
+        result = new GeoPoint(latitude, longitude);
         break;
       default: throw const FormatException('Message corrupted');
     }
