@@ -58,7 +58,36 @@ public class FirestorePlugin implements MethodCallHandler {
   }
 
   private Query getQuery(Map<String, Object> arguments) {
-    return getCollectionReference(arguments);
+    Query query = getCollectionReference(arguments);
+    Map<String, Object> parameters = (Map<String, Object>) arguments.get("parameters");
+    if (parameters == null) return query;
+    for (Map.Entry<String, Object> entry : parameters.entrySet())
+    {
+      String param = entry.getKey();
+      Object value = entry.getValue();
+      if (param.equals("orderBy")) {
+        List args = (List) value;
+        String field = (String) args.get(0);
+        Boolean descending = (Boolean) args.get(1);
+        query = query.orderBy(field, descending ? Query.Direction.DESCENDING : Query.Direction.ASCENDING);
+      } else if (param.startsWith("where")) {
+        String[] args = param.split("-", 3);
+        String operator = args[1];
+        String field = args[2];
+        if ("<".equals(operator)) {
+          query = query.whereLessThan(field, value);
+        } else if ("<=".equals(operator)) {
+          query = query.whereLessThanOrEqualTo(field, value);
+        } else if ("==".equals(operator)) {
+          query = query.whereEqualTo(field, value);
+        } else if (">".equals(operator)) {
+          query = query.whereGreaterThan(field, value);
+        } else if (">=".equals(operator)) {
+          query = query.whereGreaterThanOrEqualTo(field, value);
+        }
+      }
+    }
+    return query;
   }
 
   private class DocumentObserver implements EventListener<DocumentSnapshot> {

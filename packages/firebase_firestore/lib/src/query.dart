@@ -81,13 +81,14 @@ class Query {
 
   /// Creates a new query where the results are sorted by the specified field,
   /// in descending or ascending order.
-  Query orderBy(String field) {
+  Query orderBy(String field, {bool descending = false}) {
     assert(!_parameters.containsKey('orderBy'));
-    return _copyWithParameters(<String, dynamic>{'orderBy': field});
+    return _copyWithParameters(<String, dynamic>{'orderBy': [field, descending]});
   }
 
   /// Creates a new query that returns only documents that include the specified
   /// fields and where the values satisfy the constraints provided.
+  /// [operator]: The operation string (e.g "<", "<=", "==", ">", ">=").
   Query where(String field, String operator, dynamic value) {
     final key = 'where-$operator-$field';
     assert(!_parameters.containsKey(key));
