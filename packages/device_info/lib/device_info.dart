@@ -208,6 +208,7 @@ class IosDeviceInfo {
     this.localizedModel,
     this.identifierForVendor,
     this.isPhysicalDevice,
+    this.utsname,
   });
 
   /// Device name.
@@ -231,6 +232,8 @@ class IosDeviceInfo {
   /// `false` if the application is running in a simulator, `true` otherwise.
   final bool isPhysicalDevice;
 
+  final IosUtsname utsname;
+
   /// Deserializes from the JSON message received from [_kChannel].
   static IosDeviceInfo _fromJson(Map<String, Object> json) {
     return new IosDeviceInfo._(
@@ -241,6 +244,29 @@ class IosDeviceInfo {
       localizedModel: json['localizedModel'],
       identifierForVendor: json['identifierForVendor'],
       isPhysicalDevice: json['isPhysicalDevice'] == 'true',
+      utsname: new IosUtsname._(
+        sysname: json['utsname.sysname'],
+        nodename: json['utsname.nodename'],
+        release: json['utsname.release'],
+        version: json['utsname.version'],
+        machine: json['utsname.machine'],
+      ),
     );
   }
+}
+
+class IosUtsname {
+  IosUtsname._({
+    this.sysname,
+    this.nodename,
+    this.release,
+    this.version,
+    this.machine,
+  });
+
+  final String sysname;
+  final String nodename;
+  final String release;
+  final String version;
+  final String machine;
 }
