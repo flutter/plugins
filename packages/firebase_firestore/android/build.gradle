@@ -1,4 +1,4 @@
-group 'io.flutter.plugins.firebase.database'
+group 'io.flutter.plugins.firebase.firestore'
 version '1.0-SNAPSHOT'
 
 buildscript {
