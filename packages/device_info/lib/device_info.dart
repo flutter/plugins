@@ -255,6 +255,7 @@ class IosDeviceInfo {
   }
 }
 
+/// Information derived from `utsname`.
 class IosUtsname {
   IosUtsname._({
     this.sysname,
@@ -264,9 +265,18 @@ class IosUtsname {
     this.machine,
   });
 
+  /// OS name.
   final String sysname;
+
+  /// Network node name.
   final String nodename;
+
+  /// Release level.
   final String release;
+
+  /// Version level.
   final String version;
+
+  /// Hardware type.
   final String machine;
 }
