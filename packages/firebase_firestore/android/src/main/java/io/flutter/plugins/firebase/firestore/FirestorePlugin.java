@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import android.util.Log;
 
 /** FirebaseDatabasePlugin */
 public class FirestorePlugin implements MethodCallHandler {
@@ -99,6 +100,16 @@ public class FirestorePlugin implements MethodCallHandler {
 
     @Override
     public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+      if (e != null) {
+        Log.w(TAG, "Listen failed.", e);
+        return;
+      }
+
+      if (documentSnapshot == null || !documentSnapshot.exists()) {
+        Log.d(TAG, "Current data: null");
+        return;
+      }
+
       Map<String, Object> arguments = new HashMap<>();
       arguments.put("handle", handle);
       if (documentSnapshot.exists()) {
@@ -119,6 +130,11 @@ public class FirestorePlugin implements MethodCallHandler {
 
     @Override
     public void onEvent(QuerySnapshot querySnapshot, FirebaseFirestoreException e) {
+      if (e != null) {
+        Log.w(TAG, "Listen failed.", e);
+        return;
+      }
+
       Map<String, Object> arguments = new HashMap<>();
       arguments.put("handle", handle);
 

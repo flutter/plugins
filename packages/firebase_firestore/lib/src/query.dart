@@ -89,7 +89,7 @@ class Query {
   /// Creates a new query that returns only documents that include the specified
   /// fields and where the values satisfy the constraints provided.
   /// [operator]: The operation string (e.g "<", "<=", "==", ">", ">=").
-  /// Example: ...collection('cities').where('population', '>=', 500).where('population', '<=', 10000)
+  /// Example: .collection('cities').where('population', '>=', 500).where('population', '<=', 10000)
   Query where(String field, String operator, dynamic value) {
     final key = 'where-$operator-$field';
     assert(!_parameters.containsKey(key));
