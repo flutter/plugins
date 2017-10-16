@@ -141,7 +141,7 @@ class AndroidDeviceInfo {
       supportedAbis: json['supportedAbis'],
       tags: json['tags'],
       type: json['type'],
-      isPhysicalDevice: json['isPhysicalDevice'] == 'true',
+      isPhysicalDevice: json['isPhysicalDevice'],
     );
   }
 }
