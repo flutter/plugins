@@ -94,10 +94,13 @@ public class FirestorePlugin implements MethodCallHandler {
       arguments.put("handle", handle);
 
       List<Map<String, Object>> documents = new ArrayList<>();
+      List<String> references = new ArrayList<>();
       for (DocumentSnapshot document : querySnapshot.getDocuments()) {
         documents.add(document.getData());
+        references.add(document.getReference().getPath());
       }
       arguments.put("documents", documents);
+      arguments.put("references", references);
 
       List<Map<String, Object>> documentChanges = new ArrayList<>();
       for (DocumentChange documentChange : querySnapshot.getDocumentChanges()) {
