@@ -1,5 +1,4 @@
-
-## 0.1.0
+## 0.0.7
 
 * Change GMS dependency to 11.+
 
