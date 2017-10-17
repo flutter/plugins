@@ -1,3 +1,7 @@
+## 0.3.1
+
+* Change GMS dependency to 11.+
+
 ## 0.3.0
 
 * **Breaking Change**: Method FirebaseUser getToken was renamed to getIdToken.
