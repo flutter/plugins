@@ -1,3 +1,7 @@
+## 0.0.5+2
+
+* Fixed README example for "click_action"
+
 ## 0.0.5+1
 
 * Aligned author name with rest of repo.
