@@ -4,14 +4,20 @@
 
 package io.flutter.plugins.firebase.database;
 
+import android.util.Log;
 import android.util.SparseArray;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseException;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -20,9 +26,14 @@ import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /** FirebaseDatabasePlugin */
 public class FirebaseDatabasePlugin implements MethodCallHandler {
+
+  private static final String TAG = "FirebaseDatabasePlugin";
 
   private final MethodChannel channel;
   private static final String EVENT_TYPE_CHILD_ADDED = "_EventType.childAdded";
@@ -197,7 +208,7 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
   }
 
   @Override
-  public void onMethodCall(MethodCall call, final Result result) {
+  public void onMethodCall(final MethodCall call, final Result result) {
     switch (call.method) {
       case "FirebaseDatabase#goOnline":
         {
@@ -275,6 +286,108 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
           Object priority = arguments.get("priority");
           DatabaseReference reference = getReference(arguments);
           reference.setPriority(priority, new DefaultCompletionListener(result));
+          break;
+        }
+
+      case "DatabaseReference#runTransaction":
+        {
+          final Map<String, Object> arguments = call.arguments();
+          final DatabaseReference reference = getReference(arguments);
+
+          // Initiate native transaction.
+          reference.runTransaction(
+              new Transaction.Handler() {
+                @Override
+                public Transaction.Result doTransaction(MutableData mutableData) {
+                  // Tasks are used to allow native execution of doTransaction to wait while Snapshot is
+                  // processed by logic on the Dart side.
+                  final TaskCompletionSource<Map<String, Object>> updateMutableDataTCS =
+                      new TaskCompletionSource<>();
+                  final Task<Map<String, Object>> updateMutableDataTCSTask =
+                      updateMutableDataTCS.getTask();
+
+                  Map<String, Object> doTransactionMap = new HashMap<>();
+                  doTransactionMap.put("transactionKey", arguments.get("transactionKey"));
+
+                  final Map<String, Object> snapshotMap = new HashMap<>();
+                  snapshotMap.put("key", mutableData.getKey());
+                  snapshotMap.put("value", mutableData.getValue());
+                  doTransactionMap.put("snapshot", snapshotMap);
+
+                  // Return snapshot to Dart side for update.
+                  channel.invokeMethod(
+                      "DoTransaction",
+                      doTransactionMap,
+                      new MethodChannel.Result() {
+                        @Override
+                        @SuppressWarnings("unchecked")
+                        public void success(Object result) {
+                          updateMutableDataTCS.setResult((Map<String, Object>) result);
+                        }
+
+                        @Override
+                        public void error(
+                            String errorCode, String errorMessage, Object errorDetails) {
+                          String exceptionMessage =
+                              "Error code: "
+                                  + errorCode
+                                  + "\nError message: "
+                                  + errorMessage
+                                  + "\nError details: "
+                                  + errorDetails;
+                          updateMutableDataTCS.setException(new Exception(exceptionMessage));
+                        }
+
+                        @Override
+                        public void notImplemented() {
+                          updateMutableDataTCS.setException(
+                              new Exception("DoTransaction not implemented on Dart side."));
+                        }
+                      });
+
+                  try {
+                    // Wait for updated snapshot from the Dart side.
+                    Map<String, Object> updatedSnapshotMap =
+                        Tasks.await(
+                            updateMutableDataTCSTask,
+                            (int) arguments.get("transactionTimeout"),
+                            TimeUnit.MILLISECONDS);
+                    // Set value of MutableData to value returned from the Dart side.
+                    mutableData.setValue(updatedSnapshotMap.get("value"));
+                  } catch (ExecutionException | InterruptedException | TimeoutException e) {
+                    Log.e(TAG, "Unable to commit Snapshot update. Transaction failed.", e);
+                    if (e instanceof TimeoutException) {
+                      Log.e(TAG, "Transaction at " + reference.toString() + " timed out.");
+                    }
+                    return Transaction.abort();
+                  }
+                  return Transaction.success(mutableData);
+                }
+
+                @Override
+                public void onComplete(
+                    DatabaseError databaseError, boolean committed, DataSnapshot dataSnapshot) {
+                  Map<String, Object> completionMap = new HashMap<>();
+                  completionMap.put("transactionKey", arguments.get("transactionKey"));
+                  if (databaseError != null) {
+                    Map<String, Object> errorMap = new HashMap<>();
+                    errorMap.put("code", databaseError.getCode());
+                    errorMap.put("message", databaseError.getMessage());
+                    errorMap.put("details", databaseError.getDetails());
+                    completionMap.put("error", errorMap);
+                  }
+                  completionMap.put("committed", committed);
+                  if (dataSnapshot != null) {
+                    Map<String, Object> snapshotMap = new HashMap<>();
+                    snapshotMap.put("key", dataSnapshot.getKey());
+                    snapshotMap.put("value", dataSnapshot.getValue());
+                    completionMap.put("snapshot", snapshotMap);
+                  }
+
+                  // Invoke transaction completion on the Dart side.
+                  result.success(completionMap);
+                }
+              });
           break;
         }
 
