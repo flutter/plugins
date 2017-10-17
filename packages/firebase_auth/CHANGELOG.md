@@ -1,3 +1,7 @@
+## 0.3.0
+
+* **Breaking Change**: Method FirebaseUser getToken was renamed to getIdToken.
+
 ## 0.2.5
 
 * Added support for linkWithCredential with Google credential

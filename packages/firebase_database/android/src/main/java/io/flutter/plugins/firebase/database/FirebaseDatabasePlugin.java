@@ -274,7 +274,8 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
       case "DatabaseReference#update":
         {
           Map<String, Object> arguments = call.arguments();
-          Map value = (Map) arguments.get("value");
+          @SuppressWarnings("unchecked")
+          Map<String, Object> value = (Map<String, Object>) arguments.get("value");
           DatabaseReference reference = getReference(arguments);
           reference.updateChildren(value, new DefaultCompletionListener(result));
           break;

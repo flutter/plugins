@@ -81,7 +81,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       case "signOut":
         handleSignOut(call, result);
         break;
-      case "getToken":
+      case "getIdToken":
         handleGetToken(call, result);
         break;
       case "linkWithEmailAndPassword":
@@ -210,7 +210,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     boolean refresh = arguments.get("refresh");
     firebaseAuth
         .getCurrentUser()
-        .getToken(refresh)
+        .getIdToken(refresh)
         .addOnCompleteListener(
             new OnCompleteListener<GetTokenResult>() {
               public void onComplete(@NonNull Task<GetTokenResult> task) {
