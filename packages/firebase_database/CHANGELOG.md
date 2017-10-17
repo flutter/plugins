@@ -1,3 +1,7 @@
+## 0.1.2
+
+* Change GMS dependency to 11.+
+
 ## 0.1.1
 
 * Add RTDB transaction support.

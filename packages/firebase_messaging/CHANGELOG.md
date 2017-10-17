@@ -1,3 +1,7 @@
+## 0.0.6
+
+* Change GMS dependency to 11.+
+
 ## 0.0.5+2
 
 * Fixed README example for "click_action"

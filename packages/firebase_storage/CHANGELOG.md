@@ -1,3 +1,8 @@
+
+## 0.1.0
+
+* Change GMS dependency to 11.+
+
 ## 0.0.6
 
 * Added StorageReference getData function to download files into memory.
