@@ -1,14 +1,18 @@
+## 1.0.0
+
+* iOS plugin presents a Safari view controller instead of switching to the Safari app.
+
 ## 0.4.2+5
 
 * Aligned author name with rest of repo.
 
 ## [0.4.2+2], [0.4.2+3], [0.4.2+4] - 2017-08-16
 
-* Updated README
+* Updated README.
 
 ## [0.4.2+1] - 2017-05-16
 
-* Updated README
+* Updated README.
 
 ## [0.4.2] - 2017-05-15
 
@@ -36,7 +40,7 @@
 
 ## [0.3.3] - 2017-05-05
 
-* Change to buildToolsVersion
+* Change to buildToolsVersion.
 
 ## [0.3.2] - 2017-05-04
 
@@ -56,7 +60,7 @@
 
 ## [0.1.1] - 2017-04-21
 
-* Change to README.md
+* Change to README.md.
 
 ## [0.1.0] - 2017-04-20
 
