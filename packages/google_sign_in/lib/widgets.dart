@@ -39,7 +39,7 @@ class GoogleUserCircleAvatar extends StatelessWidget {
   /// The Google user's identity; guaranteed to be non-null.
   final GoogleIdentity identity;
 
-  /// The color of the text.
+  /// The color of the text to be displayed if photo is not available.
   ///
   /// If a foreground color is not specified, the theme's text color is used.
   final Color foregroundColor;
