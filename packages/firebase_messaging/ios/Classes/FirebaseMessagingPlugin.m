@@ -104,7 +104,6 @@
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
-  [[FIRMessaging messaging] disconnect];
   _resumingFromBackground = YES;
 }
 
