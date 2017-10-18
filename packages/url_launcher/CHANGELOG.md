@@ -1,4 +1,4 @@
-## 0.4.3
+## 1.0.0
 
 * iOS plugin presents a Safari view controller instead of switching to the Safari app.
 

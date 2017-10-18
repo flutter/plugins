@@ -48,7 +48,7 @@
   UrlLaunchSession *_currentSession;
 }
 
-+ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
++ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/url_launcher"
                                   binaryMessenger:registrar.messenger];
