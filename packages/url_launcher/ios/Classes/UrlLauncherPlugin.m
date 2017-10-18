@@ -28,11 +28,10 @@
   if (didLoadSuccessfully) {
     _flutterResult(nil);
   } else {
-    _flutterResult(
-      [FlutterError errorWithCode:@"Error"
-                          message:[NSString stringWithFormat:@"Error while launching %@", _url]
-                          details:nil]
-    );
+    _flutterResult([FlutterError
+        errorWithCode:@"Error"
+              message:[NSString stringWithFormat:@"Error while launching %@", _url]
+              details:nil]);
   }
 }
 
@@ -50,7 +49,7 @@
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  FlutterMethodChannel* channel =
+  FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/url_launcher"
                                   binaryMessenger:registrar.messenger];
   UIViewController *viewController =
@@ -68,7 +67,7 @@
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
-  NSString* url = call.arguments;
+  NSString *url = call.arguments;
   if ([@"canLaunch" isEqualToString:call.method]) {
     result(@([self canLaunchURL:url]));
   } else if ([@"launch" isEqualToString:call.method]) {
@@ -78,14 +77,14 @@
   }
 }
 
-- (BOOL)canLaunchURL:(NSString*)urlString {
-  NSURL* url = [NSURL URLWithString:urlString];
-  UIApplication* application = [UIApplication sharedApplication];
+- (BOOL)canLaunchURL:(NSString *)urlString {
+  NSURL *url = [NSURL URLWithString:urlString];
+  UIApplication *application = [UIApplication sharedApplication];
   return [application canOpenURL:url];
 }
 
-- (void)launchURL:(NSString*)urlString result:(FlutterResult)result {
-  NSURL* url = [NSURL URLWithString:urlString];
+- (void)launchURL:(NSString *)urlString result:(FlutterResult)result {
+  NSURL *url = [NSURL URLWithString:urlString];
 
   SFSafariViewController *safari = [[SFSafariViewController alloc] initWithURL:url];
   _currentSession = [[UrlLaunchSession alloc] initWithUrl:url withFlutterResult:result];
