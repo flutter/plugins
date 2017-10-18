@@ -81,11 +81,14 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       case "signOut":
         handleSignOut(call, result);
         break;
-      case "getToken":
+      case "getIdToken":
         handleGetToken(call, result);
         break;
       case "linkWithEmailAndPassword":
         handleLinkWithEmailAndPassword(call, result);
+        break;
+      case "linkWithGoogleCredential":
+        handleLinkWithGoogleCredential(call, result);
         break;
       case "startListeningAuthState":
         handleStartListeningAuthState(call, result);
@@ -166,6 +169,18 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         .addOnCompleteListener(activity, new SignInCompleteListener(result));
   }
 
+  private void handleLinkWithGoogleCredential(MethodCall call, final Result result) {
+    @SuppressWarnings("unchecked")
+    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    String idToken = arguments.get("idToken");
+    String accessToken = arguments.get("accessToken");
+    AuthCredential credential = GoogleAuthProvider.getCredential(idToken, accessToken);
+    firebaseAuth
+        .getCurrentUser()
+        .linkWithCredential(credential)
+        .addOnCompleteListener(activity, new SignInCompleteListener(result));
+  }
+
   private void handleSignInWithFacebook(MethodCall call, final Result result) {
     @SuppressWarnings("unchecked")
     Map<String, String> arguments = (Map<String, String>) call.arguments;
@@ -195,7 +210,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     boolean refresh = arguments.get("refresh");
     firebaseAuth
         .getCurrentUser()
-        .getToken(refresh)
+        .getIdToken(refresh)
         .addOnCompleteListener(
             new OnCompleteListener<GetTokenResult>() {
               public void onComplete(@NonNull Task<GetTokenResult> task) {

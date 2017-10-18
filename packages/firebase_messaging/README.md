@@ -78,7 +78,7 @@ For testing purposes, the simplest way to send a notification is via the [Fireba
 Alternatively, a notification or data message can be sent from a terminal:
 
 ```shell
-DATA='{"notification": {"click_action": "FLUTTER_NOTIFICATION_CLICK", "body": "this is a body","title": "this is a title"}, "priority": "high", "data": {"id": "1", "status": "done"}, "to": "<FCM TOKEN>"}'
+DATA='{"notification": {"body": "this is a body","title": "this is a title"}, "priority": "high", "data": {"click_action": "FLUTTER_NOTIFICATION_CLICK", "id": "1", "status": "done"}, "to": "<FCM TOKEN>"}'
 curl https://fcm.googleapis.com/fcm/send -H "Content-Type:application/json" -X POST -d "$DATA" -H "Authorization: key=<FCM SERVER KEY>"
 ```
 

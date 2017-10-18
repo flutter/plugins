@@ -1,3 +1,7 @@
+## 1.0.1
+
+* Change GMS dependency to 11.+
+
 ## 1.0.0
 
 * Make GoogleUserCircleAvatar fade profile image over the top of placeholder
