@@ -11,6 +11,7 @@
 
 @implementation ImagePickerPlugin {
   FlutterResult _result;
+  NSDictionary *_arguments;
   UIImagePickerController *_imagePickerController;
   UIViewController *_viewController;
 }
@@ -45,6 +46,7 @@
     _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
     _imagePickerController.delegate = self;
     _result = result;
+    _arguments = call.arguments;
 
     UIAlertControllerStyle style = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad
                                        ? UIAlertControllerStyleAlert
@@ -101,6 +103,14 @@
     image = [info objectForKey:UIImagePickerControllerOriginalImage];
   }
   image = [self normalizedImage:image];
+
+  NSNumber *width = [_arguments objectForKey:@"width"];
+  NSNumber *height = [_arguments objectForKey:@"height"];
+
+  if (width != (id)[NSNull null] || height != (id)[NSNull null]) {
+    image = [self scaledImage:image width:width height:height];
+  }
+
   NSData *data = UIImageJPEGRepresentation(image, 1.0);
   NSString *tmpDirectory = NSTemporaryDirectory();
   NSString *guid = [[NSProcessInfo processInfo] globallyUniqueString];
@@ -116,6 +126,7 @@
                                 details:nil]);
   }
   _result = nil;
+  _arguments = nil;
 }
 
 // The way we save images to the tmp dir currently throws away all EXIF data
@@ -131,6 +142,22 @@
   UIImage *normalizedImage = UIGraphicsGetImageFromCurrentImageContext();
   UIGraphicsEndImageContext();
   return normalizedImage;
+}
+
+- (UIImage *)scaledImage:(UIImage *)image width:(NSNumber*)width height:(NSNumber*)height {
+  double originalWidth = image.size.width;
+  double originalHeight = image.size.height;
+
+  double finalWidth = width != (id)[NSNull null]? [width doubleValue] : originalWidth;
+  double finalHeight = height != (id)[NSNull null]? [height doubleValue] : originalHeight;
+
+  UIGraphicsBeginImageContextWithOptions(CGSizeMake(finalWidth, finalHeight), NO, 1.0);
+  [image drawInRect:CGRectMake(0, 0, finalWidth, finalHeight)];
+
+  UIImage *scaledImage = UIGraphicsGetImageFromCurrentImageContext();
+  UIGraphicsEndImageContext();
+
+  return scaledImage;
 }
 
 @end
