@@ -1,4 +1,4 @@
-## 0.0.2+1 - Oct 18, 2017
+## 0.0.2+2 - Oct 18, 2017
 
 * Fixed broke type comparison
 
