@@ -1,3 +1,7 @@
+## 1.0.2
+
+* Support setting foregroundColor in the avatar.
+
 ## 1.0.1
 
 * Change GMS dependency to 11.+

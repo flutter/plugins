@@ -24,6 +24,7 @@ class GoogleUserCircleAvatar extends StatelessWidget {
   const GoogleUserCircleAvatar({
     @required this.identity,
     this.placeholderPhotoUrl,
+    this.foregroundColor,
     this.backgroundColor,
   })
       : assert(identity != null);
@@ -37,6 +38,11 @@ class GoogleUserCircleAvatar extends StatelessWidget {
 
   /// The Google user's identity; guaranteed to be non-null.
   final GoogleIdentity identity;
+
+  /// The color of the text to be displayed if photo is not available.
+  ///
+  /// If a foreground color is not specified, the theme's text color is used.
+  final Color foregroundColor;
 
   /// The color with which to fill the circle. Changing the background color
   /// will cause the avatar to animate to the new color.
@@ -57,6 +63,7 @@ class GoogleUserCircleAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     return new CircleAvatar(
       backgroundColor: backgroundColor,
+      foregroundColor: foregroundColor,
       child: new LayoutBuilder(builder: _buildClippedImage),
     );
   }
