@@ -1,6 +1,6 @@
 name: device_info
 description: Provides detailed information about the device the Flutter app is running on.
-version: 0.0.1
+version: 0.0.2
 author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/device_info
 
