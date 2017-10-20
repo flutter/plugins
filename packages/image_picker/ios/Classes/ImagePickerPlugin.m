@@ -104,11 +104,11 @@
   }
   image = [self normalizedImage:image];
 
-  NSNumber *width = [_arguments objectForKey:@"width"];
-  NSNumber *height = [_arguments objectForKey:@"height"];
+  NSNumber *maxWidth = [_arguments objectForKey:@"maxWidth"];
+  NSNumber *maxHeight = [_arguments objectForKey:@"maxHeight"];
 
-  if (width != (id)[NSNull null] || height != (id)[NSNull null]) {
-    image = [self scaledImage:image width:width height:height];
+  if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
+    image = [self scaledImage:image maxWidth:maxWidth maxHeight:maxHeight];
   }
 
   NSData *data = UIImageJPEGRepresentation(image, 1.0);
@@ -144,12 +144,12 @@
   return normalizedImage;
 }
 
-- (UIImage *)scaledImage:(UIImage *)image width:(NSNumber*)width height:(NSNumber*)height {
+- (UIImage *)scaledImage:(UIImage *)image maxWidth:(NSNumber*)maxWidth maxHeight:(NSNumber*)maxHeight {
   double originalWidth = image.size.width;
   double originalHeight = image.size.height;
 
-  double finalWidth = width != (id)[NSNull null]? [width doubleValue] : originalWidth;
-  double finalHeight = height != (id)[NSNull null]? [height doubleValue] : originalHeight;
+  double finalWidth = maxWidth != (id)[NSNull null]? MIN([maxWidth doubleValue], originalWidth) : originalWidth;
+  double finalHeight = maxHeight != (id)[NSNull null]? MIN([maxHeight doubleValue], originalHeight) : originalHeight;
 
   UIGraphicsBeginImageContextWithOptions(CGSizeMake(finalWidth, finalHeight), NO, 1.0);
   [image drawInRect:CGRectMake(0, 0, finalWidth, finalHeight)];

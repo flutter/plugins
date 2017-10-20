@@ -20,11 +20,11 @@ void main() {
     group('#pickImage', () {
       test('passes the width and height arguments correctly', () async {
         await ImagePicker.pickImage();
-        await ImagePicker.pickImage(desiredWidth: 10.0);
-        await ImagePicker.pickImage(desiredHeight: 10.0);
+        await ImagePicker.pickImage(maxWidth: 10.0);
+        await ImagePicker.pickImage(maxHeight: 10.0);
         await ImagePicker.pickImage(
-          desiredWidth: 10.0,
-          desiredHeight: 20.0,
+          maxWidth: 10.0,
+          maxHeight: 20.0,
         );
 
         expect(
@@ -32,20 +32,20 @@ void main() {
           equals(
             <MethodCall>[
               const MethodCall('pickImage', const <String, double>{
-                'width': null,
-                'height': null,
+                'maxWidth': null,
+                'maxHeight': null,
               }),
               const MethodCall('pickImage', const <String, double>{
-                'width': 10.0,
-                'height': null,
+                'maxWidth': 10.0,
+                'maxHeight': null,
               }),
               const MethodCall('pickImage', const <String, double>{
-                'width': null,
-                'height': 10.0,
+                'maxWidth': null,
+                'maxHeight': 10.0,
               }),
               const MethodCall('pickImage', const <String, double>{
-                'width': 10.0,
-                'height': 20.0,
+                'maxWidth': 10.0,
+                'maxHeight': 20.0,
               }),
             ],
           ),
@@ -53,8 +53,8 @@ void main() {
       });
 
       test('does not accept a negative width or height argument', () {
-        expect(ImagePicker.pickImage(desiredWidth: -1.0), throwsArgumentError);
-        expect(ImagePicker.pickImage(desiredHeight: -1.0), throwsArgumentError);
+        expect(ImagePicker.pickImage(maxWidth: -1.0), throwsArgumentError);
+        expect(ImagePicker.pickImage(maxHeight: -1.0), throwsArgumentError);
       });
     });
   });

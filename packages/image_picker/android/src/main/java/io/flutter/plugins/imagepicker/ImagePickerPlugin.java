@@ -106,15 +106,15 @@ public class ImagePickerPlugin implements MethodCallHandler, ActivityResultListe
 
   private void handleResult(Image image) {
     if (pendingResult != null) {
-      Double requestedWidth = methodCall.argument("width");
-      Double requestedHeight = methodCall.argument("height");
-      boolean shouldScale = requestedWidth != null || requestedHeight != null;
+      Double maxWidth = methodCall.argument("maxWidth");
+      Double maxHeight = methodCall.argument("maxHeight");
+      boolean shouldScale = maxWidth != null || maxHeight != null;
 
       if (!shouldScale) {
         pendingResult.success(image.getPath());
       } else {
         try {
-          File imageFile = scaleImage(image, requestedWidth, requestedHeight);
+          File imageFile = scaleImage(image, maxWidth, maxHeight);
           pendingResult.success(imageFile.getPath());
         } catch (IOException e) {
           throw new RuntimeException(e);
@@ -128,13 +128,13 @@ public class ImagePickerPlugin implements MethodCallHandler, ActivityResultListe
     }
   }
 
-  private File scaleImage(Image image, Double requestedWidth, Double requestedHeight) throws IOException {
+  private File scaleImage(Image image, Double maxWidth, Double maxHeight) throws IOException {
     Bitmap bmp = BitmapFactory.decodeFile(image.getPath());
     int originalWidth = bmp.getWidth();
     int originalHeight = bmp.getHeight();
 
-    int finalWidth = requestedWidth != null? requestedWidth.intValue() : originalWidth;
-    int finalHeight = requestedHeight != null? requestedHeight.intValue() : originalHeight;
+    int finalWidth = maxWidth != null? Math.min(maxWidth.intValue(), originalWidth) : originalWidth;
+    int finalHeight = maxHeight != null? Math.min(maxHeight.intValue(), originalHeight) : originalHeight;
 
     Bitmap scaledBmp = Bitmap.createScaledBitmap(bmp, finalWidth, finalHeight, false);
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();

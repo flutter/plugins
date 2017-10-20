@@ -17,22 +17,23 @@ class ImagePicker {
   /// * pick an image from the gallery
   /// * take a photo using the device camera.
   ///
-  /// If specified, image will be resized to [desiredWidth] and [desiredHeight].
-  static Future<File> pickImage(
-      {double desiredWidth, double desiredHeight}) async {
-    if (desiredWidth != null && desiredWidth < 0) {
-      throw new ArgumentError.value(desiredWidth, 'width can\'t be negative');
+  /// If specified, the image will be at most [maxWidth] wide and
+  /// [maxHeight] tall. Otherwise the image will be returned at it's
+  /// original width and height.
+  static Future<File> pickImage({double maxWidth, double maxHeight}) async {
+    if (maxWidth != null && maxWidth < 0) {
+      throw new ArgumentError.value(maxWidth, 'maxWidth can\'t be negative');
     }
 
-    if (desiredHeight != null && desiredHeight < 0) {
-      throw new ArgumentError.value(desiredHeight, 'height can\'t be negative');
+    if (maxHeight != null && maxHeight < 0) {
+      throw new ArgumentError.value(maxHeight, 'maxHeight can\'t be negative');
     }
 
     final String path = await _channel.invokeMethod(
       'pickImage',
       <String, double>{
-        'width': desiredWidth,
-        'height': desiredHeight,
+        'maxWidth': maxWidth,
+        'maxHeight': maxHeight,
       },
     );
 
