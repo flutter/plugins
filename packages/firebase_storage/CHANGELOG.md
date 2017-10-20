@@ -1,3 +1,7 @@
+## 0.0.8
+
+* Added StorageReference deleteFile function to remove files from Firebase.
+
 ## 0.0.7
 
 * Change GMS dependency to 11.+

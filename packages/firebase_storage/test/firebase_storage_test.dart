@@ -51,5 +51,35 @@ void main() {
             equals(new Uint8List.fromList(<int>[1, 2, 3, 4])));
       });
     });
+    
+    group('deleteFile', () {
+      const MethodChannel channel = const MethodChannel(
+        'firebase_storage',
+      );
+
+      final List<MethodCall> log = <MethodCall>[];
+
+      StorageReference ref;
+
+      setUp(() {
+        channel.setMockMethodCallHandler((MethodCall methodCall) {
+          log.add(methodCall);
+          return new Future<bool>.value(true);
+        });
+        ref = FirebaseStorage.instance.ref().child('image.jpg');
+      });
+
+      test('invokes correct method', () async {
+        await ref.delete().future;
+
+        expect(
+            log,
+            equals(<MethodCall>[
+              new MethodCall('StorageReference#deleteFile', <String, dynamic>{
+                'path': 'image.jpg',
+              }),
+            ]));
+      });
+    });
   });
 }
