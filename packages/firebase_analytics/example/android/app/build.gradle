@@ -41,7 +41,6 @@ flutter {
 }
 
 dependencies {
-    compile 'com.google.firebase:firebase-core:11.0.+'
 }
 
 apply plugin: 'com.google.gms.google-services'
