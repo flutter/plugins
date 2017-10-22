@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
 import com.esafirm.imagepicker.features.ImagePicker;
 import com.esafirm.imagepicker.features.camera.DefaultCameraModule;
@@ -129,13 +130,45 @@ public class ImagePickerPlugin implements MethodCallHandler, ActivityResultListe
 
   private File scaleImage(Image image, Double maxWidth, Double maxHeight) throws IOException {
     Bitmap bmp = BitmapFactory.decodeFile(image.getPath());
-    int originalWidth = bmp.getWidth();
-    int originalHeight = bmp.getHeight();
+    double originalWidth = bmp.getWidth() * 1.0;
+    double originalHeight = bmp.getHeight() * 1.0;
 
-    int finalWidth = maxWidth != null? Math.min(maxWidth.intValue(), originalWidth) : originalWidth;
-    int finalHeight = maxHeight != null? Math.min(maxHeight.intValue(), originalHeight) : originalHeight;
+    boolean hasMaxWidth = maxWidth != null;
+    boolean hasMaxHeight = maxHeight != null;
 
-    Bitmap scaledBmp = Bitmap.createScaledBitmap(bmp, finalWidth, finalHeight, false);
+    Double width = hasMaxWidth? Math.min(originalWidth, maxWidth) : originalWidth;
+    Double height = hasMaxHeight? Math.min(originalHeight, maxHeight) : originalHeight;
+
+    boolean shouldDownscaleWidth = hasMaxWidth && maxWidth < originalWidth;
+    boolean shouldDownscaleHeight = hasMaxHeight && maxHeight < originalHeight;
+    boolean shouldDownscale = shouldDownscaleWidth || shouldDownscaleHeight;
+
+    if (shouldDownscale) {
+      double downscaledWidth = (height / originalHeight) * originalWidth;
+      double downscaledHeight = (width / originalWidth) * originalHeight;
+
+      if (width < height) {
+        if (!hasMaxWidth) {
+          width = downscaledWidth;
+        } else {
+          height = downscaledHeight;
+        }
+      } else if (height < width) {
+        if (!hasMaxHeight) {
+          height = downscaledHeight;
+        } else {
+          width = downscaledWidth;
+        }
+      } else {
+        if (originalWidth < originalHeight) {
+          width = downscaledWidth;
+        } else if (originalHeight < originalWidth) {
+          height = downscaledHeight;
+        }
+      }
+    }
+
+    Bitmap scaledBmp = Bitmap.createScaledBitmap(bmp, width.intValue(), height.intValue(), false);
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     scaledBmp.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
 
