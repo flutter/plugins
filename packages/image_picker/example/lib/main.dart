@@ -53,7 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: new FloatingActionButton(
         onPressed: () {
           setState(() {
-            _imageFile = ImagePicker.pickImage(maxWidth: 300.0, maxHeight: 300.0);
+            _imageFile = ImagePicker.pickImage();
           });
         },
         tooltip: 'Pick Image',
