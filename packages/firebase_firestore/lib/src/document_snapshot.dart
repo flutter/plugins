@@ -12,7 +12,7 @@ part of firebase_firestore;
 class DocumentSnapshot {
   /// Represents the document's reference
   final String path;
-  
+
   /// Contains all the data of this snapshot
   final Map<String, dynamic> data;
 
