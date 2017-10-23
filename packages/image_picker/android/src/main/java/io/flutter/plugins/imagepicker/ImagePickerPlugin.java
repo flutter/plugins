@@ -8,26 +8,22 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.Log;
-
 import com.esafirm.imagepicker.features.ImagePicker;
 import com.esafirm.imagepicker.features.camera.DefaultCameraModule;
 import com.esafirm.imagepicker.features.camera.OnImageReadyListener;
 import com.esafirm.imagepicker.model.Image;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.common.PluginRegistry.ActivityResultListener;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /** Location Plugin */
 public class ImagePickerPlugin implements MethodCallHandler, ActivityResultListener {
@@ -136,8 +132,8 @@ public class ImagePickerPlugin implements MethodCallHandler, ActivityResultListe
     boolean hasMaxWidth = maxWidth != null;
     boolean hasMaxHeight = maxHeight != null;
 
-    Double width = hasMaxWidth? Math.min(originalWidth, maxWidth) : originalWidth;
-    Double height = hasMaxHeight? Math.min(originalHeight, maxHeight) : originalHeight;
+    Double width = hasMaxWidth ? Math.min(originalWidth, maxWidth) : originalWidth;
+    Double height = hasMaxHeight ? Math.min(originalHeight, maxHeight) : originalHeight;
 
     boolean shouldDownscaleWidth = hasMaxWidth && maxWidth < originalWidth;
     boolean shouldDownscaleHeight = hasMaxHeight && maxHeight < originalHeight;

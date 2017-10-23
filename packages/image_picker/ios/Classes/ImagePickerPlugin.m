@@ -144,24 +144,26 @@
   return normalizedImage;
 }
 
-- (UIImage *)scaledImage:(UIImage *)image maxWidth:(NSNumber*)maxWidth maxHeight:(NSNumber*)maxHeight {
+- (UIImage *)scaledImage:(UIImage *)image
+                maxWidth:(NSNumber *)maxWidth
+               maxHeight:(NSNumber *)maxHeight {
   double originalWidth = image.size.width;
   double originalHeight = image.size.height;
-    
+
   bool hasMaxWidth = maxWidth != (id)[NSNull null];
   bool hasMaxHeight = maxHeight != (id)[NSNull null];
 
-  double width = hasMaxWidth? MIN([maxWidth doubleValue], originalWidth) : originalWidth;
-  double height = hasMaxHeight? MIN([maxHeight doubleValue], originalHeight) : originalHeight;
-    
+  double width = hasMaxWidth ? MIN([maxWidth doubleValue], originalWidth) : originalWidth;
+  double height = hasMaxHeight ? MIN([maxHeight doubleValue], originalHeight) : originalHeight;
+
   bool shouldDownscaleWidth = hasMaxWidth && [maxWidth doubleValue] < originalWidth;
   bool shouldDownscaleHeight = hasMaxHeight && [maxHeight doubleValue] < originalHeight;
   bool shouldDownscale = shouldDownscaleWidth || shouldDownscaleHeight;
-    
+
   if (shouldDownscale) {
     double downscaledWidth = (height / originalHeight) * originalWidth;
     double downscaledHeight = (width / originalWidth) * originalHeight;
-        
+
     if (width < height) {
       if (!hasMaxWidth) {
         width = downscaledWidth;
