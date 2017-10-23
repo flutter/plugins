@@ -233,7 +233,7 @@ class IosDeviceInfo {
   final bool isPhysicalDevice;
 
   /// Operating system information derived from `sys/utsname.h`.
-  final IosUtsname utsname;
+  final IosUTSName utsname;
 
   /// Deserializes from the JSON message received from [_kChannel].
   static IosDeviceInfo _fromJson(Map<String, dynamic> json) {
@@ -245,15 +245,15 @@ class IosDeviceInfo {
       localizedModel: json['localizedModel'],
       identifierForVendor: json['identifierForVendor'],
       isPhysicalDevice: json['isPhysicalDevice'] == 'true',
-      utsname: IosUtsname._fromJson(json['utsname']),
+      utsname: IosUTSName._fromJson(json['utsname']),
     );
   }
 }
 
 /// Information derived from `utsname`.
 /// See http://pubs.opengroup.org/onlinepubs/7908799/xsh/sysutsname.h.html for details.
-class IosUtsname {
-  IosUtsname._({
+class IosUTSName {
+  IosUTSName._({
     this.sysname,
     this.nodename,
     this.release,
@@ -277,8 +277,8 @@ class IosUtsname {
   final String machine;
 
   /// Deserializes from the JSON message received from [_kChannel].
-  static IosUtsname _fromJson(Map<String, dynamic> json) {
-    return new IosUtsname._(
+  static IosUTSName _fromJson(Map<String, dynamic> json) {
+    return new IosUTSName._(
         sysname: json['sysname'],
         nodename: json['nodename'],
         release: json['release'],
