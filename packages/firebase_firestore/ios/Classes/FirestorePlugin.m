@@ -67,8 +67,10 @@ FIRQuery *getQuery(NSDictionary *arguments) {
     id<FIRListenerRegistration> listener = [getQuery(call.arguments)
         addSnapshotListener:^(FIRQuerySnapshot *_Nullable snapshot, NSError *_Nullable error) {
           if (error) result(error.flutterError);
+          NSMutableArray *paths = [NSMutableArray array];
           NSMutableArray *documents = [NSMutableArray array];
           for (FIRDocumentSnapshot *document in snapshot.documents) {
+            [paths addObject:document.reference.path];
             [documents addObject:document.data];
           }
           NSMutableArray *documentChanges = [NSMutableArray array];
@@ -88,6 +90,7 @@ FIRQuery *getQuery(NSDictionary *arguments) {
             [documentChanges addObject:@{
               @"type" : type,
               @"document" : documentChange.document.data,
+              @"path" : documentChange.document.reference.path,
               @"oldIndex" : [NSNumber numberWithUnsignedInteger:documentChange.oldIndex],
               @"newIndex" : [NSNumber numberWithUnsignedInteger:documentChange.newIndex],
             }];
@@ -95,6 +98,7 @@ FIRQuery *getQuery(NSDictionary *arguments) {
           [self.channel invokeMethod:@"QuerySnapshot"
                            arguments:@{
                              @"handle" : handle,
+                             @"paths" : paths,
                              @"documents" : documents,
                              @"documentChanges" : documentChanges
                            }];
@@ -111,6 +115,7 @@ FIRQuery *getQuery(NSDictionary *arguments) {
           [self.channel invokeMethod:@"DocumentSnapshot"
                            arguments:@{
                              @"handle" : handle,
+                             @"path" : snapshot.reference.path,
                              @"data" : snapshot.exists ? snapshot.data : [NSNull null],
                            }];
         }];
