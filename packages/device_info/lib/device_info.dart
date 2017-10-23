@@ -232,6 +232,7 @@ class IosDeviceInfo {
   /// `false` if the application is running in a simulator, `true` otherwise.
   final bool isPhysicalDevice;
 
+  /// Operating system information derived from `sys/utsname.h`.
   final IosUtsname utsname;
 
   /// Deserializes from the JSON message received from [_kChannel].
@@ -256,6 +257,7 @@ class IosDeviceInfo {
 }
 
 /// Information derived from `utsname`.
+/// See http://pubs.opengroup.org/onlinepubs/7908799/xsh/sysutsname.h.html for details.
 class IosUtsname {
   IosUtsname._({
     this.sysname,
@@ -265,7 +267,7 @@ class IosUtsname {
     this.machine,
   });
 
-  /// OS name.
+  /// Operating system name.
   final String sysname;
 
   /// Network node name.
@@ -277,6 +279,6 @@ class IosUtsname {
   /// Version level.
   final String version;
 
-  /// Hardware type.
+  /// Hardware type (e.g. 'iPhone7,1' for iPhone 6 Plus).
   final String machine;
 }
