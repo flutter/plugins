@@ -279,11 +279,11 @@ class IosUTSName {
   /// Deserializes from the JSON message received from [_kChannel].
   static IosUTSName _fromJson(Map<String, dynamic> json) {
     return new IosUTSName._(
-        sysname: json['sysname'],
-        nodename: json['nodename'],
-        release: json['release'],
-        version: json['version'],
-        machine: json['machine'],
+      sysname: json['sysname'],
+      nodename: json['nodename'],
+      release: json['release'],
+      version: json['version'],
+      machine: json['machine'],
     );
   }
 }
