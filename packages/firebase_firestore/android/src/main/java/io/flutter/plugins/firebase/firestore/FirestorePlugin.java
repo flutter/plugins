@@ -123,7 +123,7 @@ public class FirestorePlugin implements MethodCallHandler {
         change.put("oldIndex", documentChange.getOldIndex());
         change.put("newIndex", documentChange.getNewIndex());
         change.put("document", documentChange.getDocument().getData());
-        change.put("reference", documentChange.getDocument().getReference().getPath());
+        change.put("path", documentChange.getDocument().getReference().getPath());
         documentChanges.add(change);
       }
       arguments.put("documentChanges", documentChanges);
