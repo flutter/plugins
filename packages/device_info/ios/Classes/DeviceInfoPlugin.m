@@ -28,11 +28,13 @@
       @"localizedModel" : [device localizedModel],
       @"identifierForVendor" : [[device identifierForVendor] UUIDString],
       @"isPhysicalDevice" : [self isDevicePhysical],
-      @"utsname.sysname" : @(un.sysname),
-      @"utsname.nodename" : @(un.nodename),
-      @"utsname.release" : @(un.release),
-      @"utsname.version" : @(un.version),
-      @"utsname.machine" : @(un.machine),
+      @"utsname" : @{
+        @"sysname" : @(un.sysname),
+        @"nodename" : @(un.nodename),
+        @"release" : @(un.release),
+        @"version" : @(un.version),
+        @"machine" : @(un.machine),
+      }
     });
   } else {
     result(FlutterMethodNotImplemented);

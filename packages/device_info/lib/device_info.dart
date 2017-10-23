@@ -236,7 +236,7 @@ class IosDeviceInfo {
   final IosUtsname utsname;
 
   /// Deserializes from the JSON message received from [_kChannel].
-  static IosDeviceInfo _fromJson(Map<String, Object> json) {
+  static IosDeviceInfo _fromJson(Map<String, dynamic> json) {
     return new IosDeviceInfo._(
       name: json['name'],
       systemName: json['systemName'],
@@ -245,13 +245,7 @@ class IosDeviceInfo {
       localizedModel: json['localizedModel'],
       identifierForVendor: json['identifierForVendor'],
       isPhysicalDevice: json['isPhysicalDevice'] == 'true',
-      utsname: new IosUtsname._(
-        sysname: json['utsname.sysname'],
-        nodename: json['utsname.nodename'],
-        release: json['utsname.release'],
-        version: json['utsname.version'],
-        machine: json['utsname.machine'],
-      ),
+      utsname: IosUtsname._fromJson(json['utsname']),
     );
   }
 }
@@ -281,4 +275,15 @@ class IosUtsname {
 
   /// Hardware type (e.g. 'iPhone7,1' for iPhone 6 Plus).
   final String machine;
+
+  /// Deserializes from the JSON message received from [_kChannel].
+  static IosUtsname _fromJson(Map<String, dynamic> json) {
+    return new IosUtsname._(
+        sysname: json['sysname'],
+        nodename: json['nodename'],
+        release: json['release'],
+        version: json['version'],
+        machine: json['machine'],
+    );
+  }
 }
