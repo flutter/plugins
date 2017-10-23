@@ -74,10 +74,10 @@ public class FirestorePlugin implements MethodCallHandler {
       arguments.put("handle", handle);
       if (documentSnapshot.exists()) {
         arguments.put("data", documentSnapshot.getData());
-        arguments.put("reference", documentSnapshot.getReference().getPath());
+        arguments.put("path", documentSnapshot.getReference().getPath());
       } else {
         arguments.put("data", null);
-        arguments.put("reference", documentSnapshot.getReference().getPath());
+        arguments.put("path", documentSnapshot.getReference().getPath());
       }
       channel.invokeMethod("DocumentSnapshot", arguments);
     }
@@ -95,14 +95,14 @@ public class FirestorePlugin implements MethodCallHandler {
       Map<String, Object> arguments = new HashMap<>();
       arguments.put("handle", handle);
 
+      List<String> paths = new ArrayList<>();
       List<Map<String, Object>> documents = new ArrayList<>();
-      List<String> references = new ArrayList<>();
       for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+        paths.add(document.getReference().getPath());
         documents.add(document.getData());
-        references.add(document.getReference().getPath());
       }
+      arguments.put("paths", paths);
       arguments.put("documents", documents);
-      arguments.put("references", references);
 
       List<Map<String, Object>> documentChanges = new ArrayList<>();
       for (DocumentChange documentChange : querySnapshot.getDocumentChanges()) {

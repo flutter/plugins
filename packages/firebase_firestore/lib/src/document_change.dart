@@ -27,8 +27,8 @@ class DocumentChange {
       : oldIndex = data['oldIndex'],
         newIndex = data['newIndex'],
         document = new DocumentSnapshot._(
+          data['path'],
           data['document'],
-          data['reference'],
         ),
         type = DocumentChangeType.values.firstWhere((DocumentChangeType type) {
           return type.toString() == data['type'];

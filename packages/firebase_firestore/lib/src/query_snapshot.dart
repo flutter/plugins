@@ -17,8 +17,8 @@ class QuerySnapshot {
       : documents = new List<DocumentSnapshot>.generate(
             data['documents'].length, (int index) {
           return new DocumentSnapshot._(
+            data['paths'][index],
             data['documents'][index],
-            data['references'][index],
           );
         }),
         documentChanges = new List<DocumentChange>.generate(
