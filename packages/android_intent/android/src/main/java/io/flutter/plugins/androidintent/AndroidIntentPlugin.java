@@ -58,6 +58,12 @@ public class AndroidIntentPlugin implements MethodCallHandler {
         bundle.putDouble(key, (Double) value);
       } else if (value instanceof Long) {
         bundle.putLong(key, (Long) value);
+      } else if (value instanceof int[]) {
+        bundle.putIntArray(key, (int[]) value);
+      } else if (value instanceof long[]) {
+        bundle.putLongArray(key, (long[]) value);
+      } else if (value instanceof double[]) {
+        bundle.putDoubleArray(key, (double[]) value);
       } else {
         throw new UnsupportedOperationException("Unsupported type " + value);
       }
