@@ -86,7 +86,7 @@ public class AndroidIntentPlugin implements MethodCallHandler {
     }
     ArrayList list = (ArrayList) value;
     for (Object o : list) {
-      if (!(o == null || type.isInstance(o))) {
+      if (!type.isInstance(o)) {
         return false;
       }
     }
