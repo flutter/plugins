@@ -6,7 +6,6 @@
 
 * Fixed broke type comparison
 * Added "isPhysicaldevice" field, detecting emulators/simulators
->>>>>>> upstream/master
 
 ## 0.0.1 - June 28, 2017
 
