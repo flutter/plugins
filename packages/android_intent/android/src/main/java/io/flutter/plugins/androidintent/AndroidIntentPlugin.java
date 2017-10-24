@@ -44,6 +44,7 @@ public class AndroidIntentPlugin implements MethodCallHandler {
     }
   }
 
+  @SuppressWarnings("unchecked") 
   private Bundle convertArguments(Map<String, ?> arguments) {
     Bundle bundle = new Bundle();
     for (String key : arguments.keySet()) {
@@ -70,6 +71,8 @@ public class AndroidIntentPlugin implements MethodCallHandler {
         bundle.putIntegerArrayList(key, (ArrayList<Integer>) value);
       } else if (isTypedArrayList(value, String.class)) {
         bundle.putStringArrayList(key, (ArrayList<String>) value);
+      } else if (isStringKeyedMap(value)) {
+        bundle.putAll(key, convertArguments((Map<String, ?>) value));
       } else {
         throw new UnsupportedOperationException("Unsupported type " + value);
       }
@@ -89,6 +92,19 @@ public class AndroidIntentPlugin implements MethodCallHandler {
     }
     // We don't want to make claims about the element type of empty lists.
     return !list.isEmpty();
+  }
+  
+  private boolean isStringKeyedMap(Object value) {
+    if (!(value instanceof Map)) {
+      return false;
+    }
+    Map map = (Map) value;
+    for (Object key : map.keySet()) {
+      if (!(key == null || key instanceof String)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   @Override
