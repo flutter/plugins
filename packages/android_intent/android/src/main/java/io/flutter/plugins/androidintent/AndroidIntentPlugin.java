@@ -66,11 +66,29 @@ public class AndroidIntentPlugin implements MethodCallHandler {
         bundle.putLongArray(key, (long[]) value);
       } else if (value instanceof double[]) {
         bundle.putDoubleArray(key, (double[]) value);
+      } else if (isTypedArrayList(value, Integer.class)) {
+        bundle.putIntegerArrayList(key, (ArrayList<Integer>) value);
+      } else if (isTypedArrayList(value, String.class)) {
+        bundle.putStringArrayList(key, (ArrayList<String>) value);
       } else {
         throw new UnsupportedOperationException("Unsupported type " + value);
       }
     }
     return bundle;
+  }
+  
+  private boolean isTypedArrayList(Object value, Class<?> type) {
+    if (!(value instanceof ArrayList)) {
+      return false;
+    }
+    ArrayList list = (ArrayList) value;
+    for (Object o : list) {
+      if (!(o == null || type.isInstance(o))) {
+        return false;
+      }
+    }
+    // We don't want to make claims about the element type of empty lists.
+    return !list.isEmpty();
   }
 
   @Override
