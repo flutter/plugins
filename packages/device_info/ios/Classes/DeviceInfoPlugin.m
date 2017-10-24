@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "DeviceInfoPlugin.h"
+#import <sys/utsname.h>
 
 @implementation DeviceInfoPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
@@ -16,6 +17,8 @@
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
   if ([@"getIosDeviceInfo" isEqualToString:call.method]) {
     UIDevice* device = [UIDevice currentDevice];
+    struct utsname un;
+    uname(&un);
 
     result(@{
       @"name" : [device name],
@@ -25,6 +28,13 @@
       @"localizedModel" : [device localizedModel],
       @"identifierForVendor" : [[device identifierForVendor] UUIDString],
       @"isPhysicalDevice" : [self isDevicePhysical],
+      @"utsname" : @{
+        @"sysname" : @(un.sysname),
+        @"nodename" : @(un.nodename),
+        @"release" : @(un.release),
+        @"version" : @(un.version),
+        @"machine" : @(un.machine),
+      }
     });
   } else {
     result(FlutterMethodNotImplemented);
