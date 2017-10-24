@@ -58,6 +58,8 @@ public class AndroidIntentPlugin implements MethodCallHandler {
         bundle.putDouble(key, (Double) value);
       } else if (value instanceof Long) {
         bundle.putLong(key, (Long) value);
+      } else if (value instanceof byte[]) {
+        bundle.putByteArray(key, (byte[]) value);
       } else if (value instanceof int[]) {
         bundle.putIntArray(key, (int[]) value);
       } else if (value instanceof long[]) {
