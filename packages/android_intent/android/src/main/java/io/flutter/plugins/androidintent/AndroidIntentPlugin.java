@@ -15,6 +15,7 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
+import java.util.ArrayList;
 import java.util.Map;
 
 /** AndroidIntentPlugin */
@@ -72,7 +73,7 @@ public class AndroidIntentPlugin implements MethodCallHandler {
       } else if (isTypedArrayList(value, String.class)) {
         bundle.putStringArrayList(key, (ArrayList<String>) value);
       } else if (isStringKeyedMap(value)) {
-        bundle.putAll(key, convertArguments((Map<String, ?>) value));
+        bundle.putBundle(key, convertArguments((Map<String, ?>) value));
       } else {
         throw new UnsupportedOperationException("Unsupported type " + value);
       }
