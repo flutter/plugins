@@ -45,7 +45,6 @@ public class AndroidIntentPlugin implements MethodCallHandler {
     }
   }
 
-  @SuppressWarnings("unchecked") 
   private Bundle convertArguments(Map<String, ?> arguments) {
     Bundle bundle = new Bundle();
     for (String key : arguments.keySet()) {
@@ -80,7 +79,7 @@ public class AndroidIntentPlugin implements MethodCallHandler {
     }
     return bundle;
   }
-  
+
   private boolean isTypedArrayList(Object value, Class<?> type) {
     if (!(value instanceof ArrayList)) {
       return false;
@@ -94,7 +93,7 @@ public class AndroidIntentPlugin implements MethodCallHandler {
     // We don't want to make claims about the element type of empty lists.
     return !list.isEmpty();
   }
-  
+
   private boolean isStringKeyedMap(Object value) {
     if (!(value instanceof Map)) {
       return false;
