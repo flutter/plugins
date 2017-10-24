@@ -28,7 +28,7 @@ class MyHomePage extends StatelessWidget {
   void _createAlarm() {
     final AndroidIntent intent = const AndroidIntent(
       action: 'android.intent.action.SET_ALARM',
-      arguments: const {
+      arguments: const <String, dynamic>{
         'android.intent.extra.alarm.DAYS': const <int>[2, 3, 4, 5, 6],
         'android.intent.extra.alarm.HOUR': 21,
         'android.intent.extra.alarm.MINUTES': 30,
