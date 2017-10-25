@@ -86,12 +86,11 @@ public class AndroidIntentPlugin implements MethodCallHandler {
     }
     ArrayList list = (ArrayList) value;
     for (Object o : list) {
-      if (!type.isInstance(o)) {
+      if (!(o == null || type.isInstance(o))) {
         return false;
       }
     }
-    // We don't want to make claims about the element type of empty lists.
-    return !list.isEmpty();
+    return true;
   }
 
   private boolean isStringKeyedMap(Object value) {
