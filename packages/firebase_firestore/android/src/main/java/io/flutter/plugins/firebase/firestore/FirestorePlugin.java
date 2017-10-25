@@ -231,6 +231,14 @@ public class FirestorePlugin implements MethodCallHandler {
           result.success(null);
           break;
         }
+      case "DocumentReference#delete":
+        {
+          Map<String, Object> arguments = call.arguments();
+          DocumentReference documentReference = getDocumentReference(arguments);
+          documentReference.delete();
+          result.success(null);
+          break;
+        }
       default:
         {
           result.notImplemented();

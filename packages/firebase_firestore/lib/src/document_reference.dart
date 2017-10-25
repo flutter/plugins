@@ -39,6 +39,13 @@ class DocumentReference {
     );
   }
 
+  Future<Null> delete() {
+    return Firestore.channel.invokeMethod(
+      'DocumentReference#delete',
+      <String, dynamic>{'path': path},
+    );
+  }
+
   /// Gets a [CollectionReference] for the specified Firestore path.
   CollectionReference collection(String path) {
     List<String> childPath;
