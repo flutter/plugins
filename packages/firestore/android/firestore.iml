@@ -22,6 +22,22 @@
         <option name="PROJECT_TYPE" value="1" />
       </configuration>
     </facet>
+    <facet type="kotlin-language" name="Kotlin">
+      <configuration version="3" platform="JVM 1.8" useProjectSettings="false">
+        <compilerSettings />
+        <compilerArguments>
+          <option name="jvmTarget" value="1.8" />
+          <option name="languageVersion" value="1.1" />
+          <option name="apiVersion" value="1.1" />
+          <option name="pluginOptions">
+            <array />
+          </option>
+          <option name="pluginClasspaths">
+            <array />
+          </option>
+        </compilerArguments>
+      </configuration>
+    </facet>
   </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_7" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/build/intermediates/classes/debug" />
@@ -85,9 +101,26 @@
     </content>
     <orderEntry type="jdk" jdkName="Android API 25 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="flutter" level="project" />
+    <orderEntry type="library" exported="" name="okio-1.6.0" level="project" />
+    <orderEntry type="library" exported="" name="firebase-firestore-11.4.2" level="project" />
     <orderEntry type="library" exported="" name="kotlin-stdlib-1.1.2-4" level="project" />
     <orderEntry type="library" exported="" name="annotations-13.0" level="project" />
+    <orderEntry type="library" exported="" name="play-services-tasks-license-11.4.2" level="project" />
     <orderEntry type="library" exported="" name="kotlin-stdlib-jre7-1.1.2-4" level="project" />
+    <orderEntry type="library" exported="" name="okhttp-2.7.2" level="project" />
+    <orderEntry type="library" exported="" name="support-core-ui-25.4.0" level="project" />
+    <orderEntry type="library" exported="" name="flutter" level="project" />
+    <orderEntry type="library" exported="" name="guava-20.0" level="project" />
+    <orderEntry type="library" exported="" name="support-v4-25.4.0" level="project" />
+    <orderEntry type="library" exported="" name="support-media-compat-25.4.0" level="project" />
+    <orderEntry type="library" exported="" name="firebase-common-license-11.4.2" level="project" />
+    <orderEntry type="library" exported="" name="play-services-basement-11.4.2" level="project" />
+    <orderEntry type="library" exported="" name="play-services-basement-license-11.4.2" level="project" />
+    <orderEntry type="library" exported="" name="support-compat-25.4.0" level="project" />
+    <orderEntry type="library" exported="" name="support-core-utils-25.4.0" level="project" />
+    <orderEntry type="library" exported="" name="support-fragment-25.4.0" level="project" />
+    <orderEntry type="library" exported="" name="firebase-common-11.4.2" level="project" />
+    <orderEntry type="library" exported="" name="support-annotations-25.2.0" level="project" />
+    <orderEntry type="library" exported="" name="play-services-tasks-11.4.2" level="project" />
   </component>
 </module>

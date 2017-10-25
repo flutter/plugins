@@ -1,4 +1,4 @@
-group 'com.yourcompany.firestore'
+group 'com.chq.firestore'
 version '1.0-SNAPSHOT'
 
 buildscript {
