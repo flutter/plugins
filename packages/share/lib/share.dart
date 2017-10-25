@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:flutter/services.dart';
 
@@ -16,7 +17,12 @@ const MethodChannel _kChannel = const MethodChannel('plugins.flutter.io/share');
 ///
 /// May throw [PlatformException] or [FormatException]
 /// from [MethodChannel].
-Future<Null> share(String text) {
+Future<Null> share(String text, {Offset tapCoordinate}) {
   assert(text != null && text.isNotEmpty);
-  return _kChannel.invokeMethod('share', text);
+  Map args = <String, dynamic>{'text' : text};
+  if (tapCoordinate != null) {
+    args['tapX'] = tapCoordinate.dx;
+    args['tapY'] = tapCoordinate.dy;
+  }
+  return _kChannel.invokeMethod('share', args) as Future<Null>;
 }

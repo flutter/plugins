@@ -14,7 +14,7 @@ class UserInfo {
   UserInfo._(this._data);
 
   /// The provider identifier.
-  String get providerId => _data['providerId'];
+  String get providerId => _data['providerId'] as String;
 
   /// The provider’s user ID for the user.
   String get uid => _data['uid'];
@@ -59,6 +59,10 @@ class FirebaseUser extends UserInfo {
     return FirebaseAuth.channel.invokeMethod('getIdToken', <String, bool>{
       'refresh': refresh,
     });
+  }
+
+  Future<Null> reload() {
+    return FirebaseAuth.channel.invokeMethod('userReload') as Future<Null>;
   }
 
   @override
@@ -231,6 +235,29 @@ class FirebaseAuth {
     return currentUser;
   }
 
+  Future<Null> sendEmailVerification() async {
+    return await channel.invokeMethod("sendEmailVerification") as Future<Null>;
+  }
+
+  Future<Null> sendPasswordResetEmail(@required String email) async {
+    assert(email != null);
+
+    return await channel.invokeMethod(
+            "sendPasswordResetEmail", <String, String>{"email": email})
+        as Future<Null>;
+  }
+
+  Future<Null> updatePassword(
+      @required String currentPassword, @required String newPassword) async {
+    assert(currentPassword != null);
+    assert(newPassword != null);
+    return await channel.invokeMethod("updatePassword", <String, String>{
+      "currentPassword": currentPassword,
+      "newPassword": newPassword
+    }) as Future<Null>;
+  }
+
+  
   /// Links google account with current user and returns [Future<FirebaseUser>]
   ///
   /// throws [PlatformException] when
