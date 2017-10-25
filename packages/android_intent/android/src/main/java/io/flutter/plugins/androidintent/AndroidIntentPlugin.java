@@ -15,6 +15,7 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
+import java.util.ArrayList;
 import java.util.Map;
 
 /** AndroidIntentPlugin */
@@ -58,11 +59,51 @@ public class AndroidIntentPlugin implements MethodCallHandler {
         bundle.putDouble(key, (Double) value);
       } else if (value instanceof Long) {
         bundle.putLong(key, (Long) value);
+      } else if (value instanceof byte[]) {
+        bundle.putByteArray(key, (byte[]) value);
+      } else if (value instanceof int[]) {
+        bundle.putIntArray(key, (int[]) value);
+      } else if (value instanceof long[]) {
+        bundle.putLongArray(key, (long[]) value);
+      } else if (value instanceof double[]) {
+        bundle.putDoubleArray(key, (double[]) value);
+      } else if (isTypedArrayList(value, Integer.class)) {
+        bundle.putIntegerArrayList(key, (ArrayList<Integer>) value);
+      } else if (isTypedArrayList(value, String.class)) {
+        bundle.putStringArrayList(key, (ArrayList<String>) value);
+      } else if (isStringKeyedMap(value)) {
+        bundle.putBundle(key, convertArguments((Map<String, ?>) value));
       } else {
         throw new UnsupportedOperationException("Unsupported type " + value);
       }
     }
     return bundle;
+  }
+
+  private boolean isTypedArrayList(Object value, Class<?> type) {
+    if (!(value instanceof ArrayList)) {
+      return false;
+    }
+    ArrayList list = (ArrayList) value;
+    for (Object o : list) {
+      if (!(o == null || type.isInstance(o))) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private boolean isStringKeyedMap(Object value) {
+    if (!(value instanceof Map)) {
+      return false;
+    }
+    Map map = (Map) value;
+    for (Object key : map.keySet()) {
+      if (!(key == null || key instanceof String)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   @Override

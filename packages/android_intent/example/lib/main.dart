@@ -25,30 +25,36 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatelessWidget {
+  void _createAlarm() {
+    final AndroidIntent intent = const AndroidIntent(
+      action: 'android.intent.action.SET_ALARM',
+      arguments: const <String, dynamic>{
+        'android.intent.extra.alarm.DAYS': const <int>[2, 3, 4, 5, 6],
+        'android.intent.extra.alarm.HOUR': 21,
+        'android.intent.extra.alarm.MINUTES': 30,
+        'android.intent.extra.alarm.SKIP_UI': true,
+        'android.intent.extra.alarm.MESSAGE': 'Create a Flutter app',
+      },
+    );
+    intent.launch();
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget body;
     if (const LocalPlatform().isAndroid) {
-      body = new GestureDetector(
-          child: const Center(
-              child: const Text(
-                  'Click here to launch play store with New York Times app.')),
-          onTap: () {
-            final AndroidIntent intent = const AndroidIntent(
-                action: 'action_view',
-                data:
-                    'https://play.google.com/store/apps/details?id=com.nytimes.android');
-            intent.launch();
-          });
+      body = new InkWell(
+        child: const Text('Tap here to set an alarm\non weekdays at 9:30pm.'),
+        onTap: _createAlarm,
+      );
     } else {
-      body = const Center(
-          child: const Text('This plugin only works with Android'));
+      body = const Text('This plugin only works with Android');
     }
     return new Scaffold(
       appBar: new AppBar(
         title: const Text('Plugin example app'),
       ),
-      body: body,
+      body: new Center(child: body),
     );
   }
 }
