@@ -11,6 +11,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
+
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
@@ -32,6 +34,7 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
   private static final String CLICK_ACTION_VALUE = "FLUTTER_NOTIFICATION_CLICK";
 
   public static void registerWith(Registrar registrar) {
+    Log.d("FBM", "register");
     final MethodChannel channel = new MethodChannel(registrar.messenger(), "firebase_messaging");
     final FirebaseMessagingPlugin plugin =
         new FirebaseMessagingPlugin(registrar.activity(), channel);
@@ -40,6 +43,7 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
   }
 
   private FirebaseMessagingPlugin(Activity activity, MethodChannel channel) {
+    Log.d("FBM", "init");
     this.activity = activity;
     this.channel = channel;
     FirebaseApp.initializeApp(activity);
@@ -55,6 +59,7 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
   @Override
   public void onReceive(Context context, Intent intent) {
     String action = intent.getAction();
+    Log.d("FBM", "receive, action: " + action);
     if (action.equals(FlutterFirebaseInstanceIDService.ACTION_TOKEN)) {
       String token = intent.getStringExtra(FlutterFirebaseInstanceIDService.EXTRA_TOKEN);
       channel.invokeMethod("onToken", token);
@@ -67,6 +72,7 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
+    Log.d("FBM", "call");
     if ("configure".equals(call.method)) {
       FlutterFirebaseInstanceIDService.broadcastToken(activity);
       sendMessageFromIntent("onLaunch", activity.getIntent());
@@ -91,6 +97,7 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
 
   /** @return true if intent contained a message to send. */
   private boolean sendMessageFromIntent(String method, Intent intent) {
+    Log.d("FBM", "send message method: " + method + ", action: " + intent.getAction());
     if (CLICK_ACTION_VALUE.equals(intent.getAction())
         || CLICK_ACTION_VALUE.equals(intent.getStringExtra("click_action"))) {
       Map<String, String> message = new HashMap<>();

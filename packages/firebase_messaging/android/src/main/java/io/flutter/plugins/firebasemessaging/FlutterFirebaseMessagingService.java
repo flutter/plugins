@@ -6,6 +6,8 @@ package io.flutter.plugins.firebasemessaging;
 
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
+
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -22,6 +24,7 @@ public class FlutterFirebaseMessagingService extends FirebaseMessagingService {
    */
   @Override
   public void onMessageReceived(RemoteMessage remoteMessage) {
+    Log.d("FBM", "received: " + remoteMessage);
     Intent intent = new Intent(ACTION_REMOTE_MESSAGE);
     intent.putExtra(EXTRA_REMOTE_MESSAGE, remoteMessage);
     LocalBroadcastManager.getInstance(this).sendBroadcast(intent);

@@ -62,6 +62,7 @@ class FirebaseMessaging {
     MessageHandler onLaunch,
     MessageHandler onResume,
   }) {
+    print('FBM configure');
     _onMessage = onMessage;
     _onLaunch = onLaunch;
     _onResume = onResume;

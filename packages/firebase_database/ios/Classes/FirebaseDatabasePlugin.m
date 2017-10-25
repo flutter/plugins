@@ -141,6 +141,7 @@ id roundDoubles(id value) {
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
+  @try{
   void (^defaultCompletionBlock)(NSError *, FIRDatabaseReference *) =
       ^(NSError *error, FIRDatabaseReference *ref) {
         result(error.flutterError);
@@ -216,6 +217,10 @@ id roundDoubles(id value) {
     result(nil);
   } else {
     result(FlutterMethodNotImplemented);
+  }
+  }
+  @catch (NSException *e) {
+    result([FlutterError errorWithCode:e.name message:e.reason details:nil]);
   }
 }
 
