@@ -14,7 +14,7 @@ dependencies:
 # The following section is specific to Flutter.
 flutter:
   plugin:
-    androidPackage: com.yourcompany.firestore
+    androidPackage: com.chq.firestore
     pluginClass: FirestorePlugin
 
   # To add assets to your plugin package, add an assets section, like this:
