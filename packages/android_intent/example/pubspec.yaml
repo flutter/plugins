@@ -6,6 +6,7 @@ dependencies:
     sdk: flutter
   android_intent:
     path: ../
+  material_icons_font: ^0.1.1
 
 # The following section is specific to Flutter.
 flutter:

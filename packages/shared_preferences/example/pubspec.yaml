@@ -6,6 +6,7 @@ dependencies:
     sdk: flutter
   shared_preferences:
     path: ../
+  material_icons_font: ^0.1.1
 
 flutter:
   uses-material-design: true
