@@ -15,3 +15,5 @@ GeneratedPluginRegistrant.java
 packages/firestore/android/build
 packages/firestore/example/build
 packages/firestore/example/android/.gradle
+
+packages/firestore/example/android/local\.properties

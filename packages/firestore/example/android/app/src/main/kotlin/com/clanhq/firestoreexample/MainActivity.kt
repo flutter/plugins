@@ -1,4 +1,4 @@
-package com.yourcompany.firestoreexample
+package com.clanhq.firestoreexample
 
 import android.os.Bundle
 
