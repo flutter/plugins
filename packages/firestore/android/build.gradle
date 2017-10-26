@@ -11,7 +11,7 @@ buildscript {
 
     dependencies {
         classpath 'com.android.tools.build:gradle:2.3.3'
-        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.1.2-4'
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.1.51'
     }
 }
 
@@ -45,8 +45,8 @@ android {
         disable 'InvalidPackage'
     }
     dependencies {
-        compile 'com.google.firebase:firebase-firestore:11.+'
-        compile 'com.google.firebase:firebase-core:11.+'
+        compile 'com.google.firebase:firebase-firestore:11.4.2'
+        compile 'com.google.firebase:firebase-core:11.4.2'
     }
 }
 

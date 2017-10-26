@@ -1,4 +1,4 @@
-package com.chq.firestore
+package com.clanhq.firestore
 
 import android.util.SparseArray
 import com.google.android.gms.tasks.Task

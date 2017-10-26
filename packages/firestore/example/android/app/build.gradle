@@ -56,3 +56,4 @@ dependencies {
     androidTestCompile 'com.android.support.test:rules:0.5'
     compile 'org.jetbrains.kotlin:kotlin-stdlib-jre7:1.1.2-4'
 }
+apply plugin: 'com.google.gms.google-services'

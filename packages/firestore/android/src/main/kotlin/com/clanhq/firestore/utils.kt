@@ -1,4 +1,4 @@
-package com.chq.firestore
+package com.clanhq.firestore
 
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.DocumentSnapshot
