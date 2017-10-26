@@ -1,6 +1,7 @@
 package com.clanhq.firestore
 
 import android.util.SparseArray
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.*
@@ -84,6 +85,37 @@ class FirestorePlugin internal constructor(private val channel: MethodChannel) :
                     if (endAtId != null) resultErrorForDocumentId(result, endAtId)
                 }
             }
+            "Query#getSnapshot" -> {
+                val arguments = call.arguments<Map<String, Any>>()
+                val path = arguments["path"] as String
+
+                val parameters = arguments["parameters"] as Map<*, *>?
+
+                val limit = parameters?.get("limit") as? Int
+                val orderBy = parameters?.get("orderBy") as? String
+                val descending = parameters?.get("descending") as? Boolean
+                val startAtId = parameters?.get("startAtId") as? String
+
+                val startAtTask: Task<DocumentSnapshot?> =
+                        if (startAtId != null) getDocumentReference("$path/$startAtId").get()
+                        else Tasks.forResult(null)
+
+                startAtTask.addOnCompleteListener {
+                    val startAtSnap: DocumentSnapshot? = startAtTask.result
+                    val query = getQuery(path = path, limit = limit, orderBy = orderBy,
+                            descending = descending, startAt = startAtSnap, endAt = null)
+
+                    query.get().addOnCompleteListener { task ->
+                        val querySnapshot = task.result
+                        val documents = querySnapshot.documents.map(::documentSnapshotToMap)
+                        val resultArguments = HashMap<String, Any>()
+                        resultArguments.put("documents", documents)
+                        resultArguments.put("documentChanges", HashMap<String, Any>())
+                        result.success(resultArguments)
+                    }
+                }
+            }
+
             "Query#addDocumentListener" -> {
                 val arguments = call.arguments<Map<String, Any>>()
                 val handle = nextHandle++
