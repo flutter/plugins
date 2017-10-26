@@ -30,17 +30,17 @@ class FirestorePlugin internal constructor(private val channel: MethodChannel) :
     override fun onMethodCall(call: MethodCall, result: Result): Unit {
         when (call.method) {
             "DocumentReference#setData" -> {
-                val arguments = call.arguments<Map<String, Any>>()
+                val arguments = call.arguments<Map<String, Any?>>()
                 val documentReference = getDocumentReference(arguments["path"] as String)
                 val data = arguments["data"] as Map<*, *>
 
-                val newValues = HashMap<String, Any>()
+                val newValues = HashMap<String, Any?>()
 
                 data.entries.forEach {
                     if (it.value == ".sv") {
                         newValues[it.key as String] = FieldValue.serverTimestamp()
                     } else {
-                        newValues[it.key as String] = it.value as Any
+                        newValues[it.key as String] = it.value
                     }
                 }
                 documentReference.set(newValues)
