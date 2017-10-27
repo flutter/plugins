@@ -1,3 +1,7 @@
+## 0.0.2
+
+* Add path property to DocumentSnapshot
+
 ## 0.0.1+1
 
 * Update project homepage

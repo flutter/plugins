@@ -26,7 +26,10 @@ class DocumentChange {
   DocumentChange._(Map<String, dynamic> data)
       : oldIndex = data['oldIndex'],
         newIndex = data['newIndex'],
-        document = new DocumentSnapshot._(data['document']),
+        document = new DocumentSnapshot._(
+          data['path'],
+          data['document'],
+        ),
         type = DocumentChangeType.values.firstWhere((DocumentChangeType type) {
           return type.toString() == data['type'];
         });
