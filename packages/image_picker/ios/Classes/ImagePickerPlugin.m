@@ -11,6 +11,7 @@
 
 @implementation ImagePickerPlugin {
   FlutterResult _result;
+  NSDictionary *_arguments;
   UIImagePickerController *_imagePickerController;
   UIViewController *_viewController;
 }
@@ -45,6 +46,7 @@
     _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
     _imagePickerController.delegate = self;
     _result = result;
+    _arguments = call.arguments;
 
     UIAlertControllerStyle style = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad
                                        ? UIAlertControllerStyleAlert
@@ -101,6 +103,14 @@
     image = [info objectForKey:UIImagePickerControllerOriginalImage];
   }
   image = [self normalizedImage:image];
+
+  NSNumber *maxWidth = [_arguments objectForKey:@"maxWidth"];
+  NSNumber *maxHeight = [_arguments objectForKey:@"maxHeight"];
+
+  if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
+    image = [self scaledImage:image maxWidth:maxWidth maxHeight:maxHeight];
+  }
+
   NSData *data = UIImageJPEGRepresentation(image, 1.0);
   NSString *tmpDirectory = NSTemporaryDirectory();
   NSString *guid = [[NSProcessInfo processInfo] globallyUniqueString];
@@ -116,6 +126,7 @@
                                 details:nil]);
   }
   _result = nil;
+  _arguments = nil;
 }
 
 // The way we save images to the tmp dir currently throws away all EXIF data
@@ -131,6 +142,56 @@
   UIImage *normalizedImage = UIGraphicsGetImageFromCurrentImageContext();
   UIGraphicsEndImageContext();
   return normalizedImage;
+}
+
+- (UIImage *)scaledImage:(UIImage *)image
+                maxWidth:(NSNumber *)maxWidth
+               maxHeight:(NSNumber *)maxHeight {
+  double originalWidth = image.size.width;
+  double originalHeight = image.size.height;
+
+  bool hasMaxWidth = maxWidth != (id)[NSNull null];
+  bool hasMaxHeight = maxHeight != (id)[NSNull null];
+
+  double width = hasMaxWidth ? MIN([maxWidth doubleValue], originalWidth) : originalWidth;
+  double height = hasMaxHeight ? MIN([maxHeight doubleValue], originalHeight) : originalHeight;
+
+  bool shouldDownscaleWidth = hasMaxWidth && [maxWidth doubleValue] < originalWidth;
+  bool shouldDownscaleHeight = hasMaxHeight && [maxHeight doubleValue] < originalHeight;
+  bool shouldDownscale = shouldDownscaleWidth || shouldDownscaleHeight;
+
+  if (shouldDownscale) {
+    double downscaledWidth = (height / originalHeight) * originalWidth;
+    double downscaledHeight = (width / originalWidth) * originalHeight;
+
+    if (width < height) {
+      if (!hasMaxWidth) {
+        width = downscaledWidth;
+      } else {
+        height = downscaledHeight;
+      }
+    } else if (height < width) {
+      if (!hasMaxHeight) {
+        height = downscaledHeight;
+      } else {
+        width = downscaledWidth;
+      }
+    } else {
+      if (originalWidth < originalHeight) {
+        width = downscaledWidth;
+      } else if (originalHeight < originalWidth) {
+        height = downscaledHeight;
+      }
+    }
+  }
+
+  UIGraphicsBeginImageContextWithOptions(CGSizeMake(width, height), NO, 1.0);
+  [image drawInRect:CGRectMake(0, 0, width, height)];
+
+  UIImage *scaledImage = UIGraphicsGetImageFromCurrentImageContext();
+  UIGraphicsEndImageContext();
+
+  return scaledImage;
 }
 
 @end
