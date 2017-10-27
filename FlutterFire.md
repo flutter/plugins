@@ -17,7 +17,7 @@ The plugins are still under development, and some APIs might not be available ye
 | [firebase_analytics][analytics_pub] | [Firebase Analytics][analytics_product] | [`packages/firebase_analytics`][analytics_code] |
 | [firebase_auth][auth_pub] | [Firebase Authentication][auth_product] | [`packages/firebase_auth`][auth_code] |
 | [firebase_database][database_pub] | [Firebase Realtime Database][database_product] | [`packages/firebase_database`][database_code] |
-| [firebase_firestore][firestore_pub] | [Cloud Firestore][firestore_product] | [`packages/firebase_firestore`][firestore_code] |
+| [cloud_firestore][firestore_pub] | [Cloud Firestore][firestore_product] | [`packages/cloud_firestore`][firestore_code] |
 | [firebase_messaging][messaging_pub] | [Firebase Cloud Messaging][messaging_product] | [`packages/firebase_messaging`][messaging_code] |
 | [firebase_storage][storage_pub] | [Firebase Cloud Storage][storage_product] | [`packages/firebase_storage`][storage_code] |
 
@@ -29,9 +29,9 @@ The plugins are still under development, and some APIs might not be available ye
 [auth_product]: https://firebase.google.com/products/auth/
 [auth_code]: https://github.com/flutter/plugins/tree/master/packages/firebase_auth
 
-[firestore_pub]: https://pub.dartlang.org/packages/firebase_firestore
+[firestore_pub]: https://pub.dartlang.org/packages/cloud_firestore
 [firestore_product]: https://firebase.google.com/products/firestore/
-[firestore_code]: https://github.com/flutter/plugins/tree/master/packages/firebase_firestore
+[firestore_code]: https://github.com/flutter/plugins/tree/master/packages/cloud_firestore
 
 [database_pub]: https://pub.dartlang.org/packages/firebase_database
 [database_product]: https://firebase.google.com/products/database/
