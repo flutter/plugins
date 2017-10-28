@@ -18,6 +18,7 @@ void main() {
     final Firestore firestore = Firestore.instance;
     final List<MethodCall> log = <MethodCall>[];
     final CollectionReference collectionReference = firestore.collection('foo');
+    const Map<String, dynamic> kMockDocumentSnapshotData = const <String, dynamic>{'1': 2};
 
     setUp(() async {
       mockHandleId = 0;
@@ -25,9 +26,41 @@ void main() {
         log.add(methodCall);
         switch (methodCall.method) {
           case 'Query#addSnapshotListener':
-            return mockHandleId++;
+            final int handle = mockHandleId++;
+            BinaryMessages.handlePlatformMessage(
+              channel.name,
+              channel.codec.encodeMethodCall(
+                new MethodCall('QuerySnapshot', <String, dynamic>{
+                  'handle': handle,
+                  'paths': <String>["${methodCall.arguments['path']}/0"],
+                  'documents': <dynamic>[kMockDocumentSnapshotData],
+                  'documentChanges': <dynamic>[
+                    <String, dynamic>{
+                      'oldIndex': -1,
+                      'newIndex': 0,
+                      'type': 'DocumentChangeType.added',
+                      'document': kMockDocumentSnapshotData,
+                    },
+                  ],
+                }),
+              ),
+              (_) {},
+            );
+            return handle;
           case 'Query#addDocumentListener':
-            return mockHandleId++;
+            final int handle = mockHandleId++;
+            BinaryMessages.handlePlatformMessage(
+              channel.name,
+              channel.codec.encodeMethodCall(
+                new MethodCall('DocumentSnapshot', <String, dynamic>{
+                  'handle': handle,
+                  'path': methodCall.arguments['path'],
+                  'data': kMockDocumentSnapshotData,
+                }),
+              ),
+                  (_) {},
+            );
+            return handle;
           case 'DocumentReference#setData':
             return true;
           default:
@@ -39,10 +72,12 @@ void main() {
 
     group('CollectionsReference', () {
       test('listen', () async {
-        final StreamSubscription<QuerySnapshot> subscription =
-            collectionReference.snapshots
-                .listen((QuerySnapshot querySnapshot) {});
-        subscription.cancel();
+        QuerySnapshot snapshot = await collectionReference.snapshots.first;
+        DocumentSnapshot document = snapshot.documents[0];
+        expect(document.documentID, equals('0'));
+        expect(document.reference.path, equals('foo/0'));
+        expect(document.data, equals(kMockDocumentSnapshotData));
+        // Flush the async removeListener call
         await new Future<Null>.delayed(Duration.ZERO);
         expect(log, <Matcher>[
           isMethodCall(
@@ -150,11 +185,12 @@ void main() {
 
     group('DocumentReference', () {
       test('listen', () async {
-        final StreamSubscription<DocumentSnapshot> subscription =
-            Firestore.instance.document('foo').snapshots.listen(
-                  (DocumentSnapshot querySnapshot) {},
-                );
-        subscription.cancel();
+        final DocumentSnapshot snapshot =
+            await Firestore.instance.document('path/to/foo').snapshots.first;
+        expect(snapshot.documentID, equals('foo'));
+        expect(snapshot.reference.path, equals('path/to/foo'));
+        expect(snapshot.data, equals(kMockDocumentSnapshotData));
+        // Flush the async removeListener call
         await new Future<Null>.delayed(Duration.ZERO);
         expect(
           log,
@@ -162,7 +198,7 @@ void main() {
             isMethodCall(
               'Query#addDocumentListener',
               arguments: <String, dynamic>{
-                'path': 'foo',
+                'path': 'path/to/foo',
               },
             ),
             isMethodCall(

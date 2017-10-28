@@ -22,12 +22,13 @@ class Firestore {
   Firestore._() {
     channel.setMethodCallHandler((MethodCall call) {
       if (call.method == 'QuerySnapshot') {
-        final QuerySnapshot snapshot = new QuerySnapshot._(call.arguments);
+        final QuerySnapshot snapshot = new QuerySnapshot._(call.arguments, this);
         _queryObservers[call.arguments['handle']].add(snapshot);
       } else if (call.method == 'DocumentSnapshot') {
         final DocumentSnapshot snapshot = new DocumentSnapshot._(
           call.arguments['path'],
           call.arguments['data'],
+          this,
         );
         _documentObservers[call.arguments['handle']].add(snapshot);
       }
