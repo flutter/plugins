@@ -57,11 +57,11 @@ class Firestore {
     if ((startAtId != null) || startAfterId != null || limit != null) {
       assert(orderBy != null);
     }
-    startAtId ??= startAfterId;
+
     Map<String, dynamic> parameters = <String, dynamic>{
       'orderBy': orderBy,
       'startAtId': startAtId,
-//      'startAfterId': startAfterId, //TODO
+      'startAfterId': startAfterId,
       'limit': limit,
       'descending': descending
     };
