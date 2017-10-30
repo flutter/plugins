@@ -1,5 +1,6 @@
 package com.clanhq.firestore
 
+import android.util.Log
 import android.util.SparseArray
 import com.google.android.gms.tasks.Continuation
 import com.google.android.gms.tasks.Task
@@ -72,24 +73,29 @@ class FirestorePlugin internal constructor(private val channel: MethodChannel) :
 
                 getQueryParameters(path, arguments["parameters"] as Map<*, *>?).addOnCompleteListener {
                     val qp: QueryParameters = it.result
+                    Log.d("TAG", "/////////////////3")
 
                     val query = getQuery(path = path, limit = qp.limit, orderBy = qp.orderBy,
                             descending = qp.descending, startAt = qp.startAtSnap,
                             startAfter = qp.startAfterSnap, endAt = null)
 
                     query.get().addOnCompleteListener { task ->
+                        Log.d("TAG", "/////////////////4")
                         val querySnapshot = task.result
                         val documents = querySnapshot.documents.map(::documentSnapshotToMap)
                         val resultArguments = HashMap<String, Any>()
                         resultArguments.put("documents", documents)
                         resultArguments.put("documentChanges", HashMap<String, Any>())
                         result.success(resultArguments)
+                        Log.d("TAG", "/////////////////5")
                     }.addOnFailureListener {
+                        Log.d("E", "/////////////////2")
                         if (qp.startAtId != null) resultErrorForDocumentId(result, qp.startAtId)
                         else if (qp.startAfterId != null) resultErrorForDocumentId(result, qp.startAfterId)
                     }
 
                 }.addOnFailureListener {
+                    Log.d("TAG", "/////////////////111111")
                     resultErrorForArguments(result, arguments)
                 }
             }
@@ -201,7 +207,7 @@ class FirestorePlugin internal constructor(private val channel: MethodChannel) :
         if (orderBy != null && descending == null) query = query.orderBy(orderBy)
 
         if (startAt != null) query = query.startAt(startAt)
-        if (startAfter != null) query = query.startAfter(startAt)
+        if (startAfter != null) query = query.startAfter(startAfter)
         if (endAt != null) query = query.endAt(endAt)
 
         return query
@@ -220,8 +226,9 @@ fun getQueryParameters(path: String, parameters: Map<*, *>?): Task<QueryParamete
     val orderBy = parameters?.get("orderBy") as? String
     val descending = parameters?.get("descending") as? Boolean
     val startAtId = parameters?.get("startAtId") as? String
-    val startAfterId = parameters?.get("startAtId") as? String
+    val startAfterId = parameters?.get("startAfterId") as? String
     val endAtId = parameters?.get("endAtId") as? String
+    Log.d("TAG", "/////////////////1")
 
     val startAtTask: Task<DocumentSnapshot?> =
             if (startAtId != null) getDocumentReference("$path/$startAtId").get()
@@ -235,16 +242,19 @@ fun getQueryParameters(path: String, parameters: Map<*, *>?): Task<QueryParamete
             if (endAtId != null) getDocumentReference("$path/$endAtId").get()
             else Tasks.forResult(null)
 
-    val x: Task<Void> = Tasks.whenAll(startAtTask, startAfterTask)
+    val x: Task<Void> = Tasks.whenAll(startAtTask, startAfterTask, endAtTask)
 
     val y = Continuation<Void, QueryParameters> {
         val startAtSnap: DocumentSnapshot? = startAtTask.result
         val startAfterSnap: DocumentSnapshot? = startAfterTask.result
         val endAtSnap: DocumentSnapshot? = endAtTask.result
+        Log.d("TAG", "/////////////////2")
+
 
         QueryParameters(limit, orderBy, descending, startAtId, startAtSnap, startAfterId, startAfterSnap, endAtId, endAtSnap)
     }
 
+    Log.d("TAG", "/////////////////1.3")
     return x.continueWith(y)
 }
 
