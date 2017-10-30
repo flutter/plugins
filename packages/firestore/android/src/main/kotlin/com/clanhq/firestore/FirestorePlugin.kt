@@ -1,7 +1,6 @@
 package com.clanhq.firestore
 
 import android.util.SparseArray
-import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.*
@@ -52,66 +51,53 @@ class FirestorePlugin internal constructor(private val channel: MethodChannel) :
                 val arguments = call.arguments<Map<String, Any>>()
                 val path = arguments["path"] as String
 
-                val parameters = arguments["parameters"] as Map<*, *>?
-
-                val limit = parameters?.get("limit") as? Int
-                val orderBy = parameters?.get("orderBy") as? String
-                val descending = parameters?.get("descending") as? Boolean
-                val startAtId = parameters?.get("startAtId") as? String
-                val startAfterId = parameters?.get("startAtId") as? String
-                val endAtId = parameters?.get("endAtId") as? String
+                val qp : QueryParameters = getQueryParameters(arguments["parameters"] as Map<*, *>?)
 
                 val startAtTask: Task<DocumentSnapshot?> =
-                        if (startAtId != null) getDocumentReference("$path/$startAtId").get()
+                        if (qp.startAtId != null) getDocumentReference("$path/$qp.startAtId").get()
                         else Tasks.forResult(null)
 
                 val endAtTask: Task<DocumentSnapshot?> =
-                        if (endAtId != null) getDocumentReference("$path/$endAtId").get()
+                        if (qp.endAtId != null) getDocumentReference("$path/$qp.endAtId").get()
                         else Tasks.forResult(null)
 
                 Tasks.whenAll(startAtTask, endAtTask).addOnSuccessListener {
                     val startAtSnap: DocumentSnapshot? = startAtTask.result
                     val endAtSnap: DocumentSnapshot? = endAtTask.result
 
-                    if (startAtId != null && startAtSnap != null && !startAtSnap.exists()) {
-                        resultErrorForDocumentId(result, startAtId)
-                    } else if (endAtId != null && endAtSnap != null && !endAtSnap.exists()) {
-                        resultErrorForDocumentId(result, endAtId)
+                    if (qp.startAtId != null && startAtSnap != null && !startAtSnap.exists()) {
+                        resultErrorForDocumentId(result, qp.startAtId)
+                    } else if (qp.endAtId != null && endAtSnap != null && !endAtSnap.exists()) {
+                        resultErrorForDocumentId(result, qp.endAtId)
                     } else {
-                        registerSnapshotListener(result, path, limit = limit, orderBy = orderBy, descending = descending, startAt = startAtSnap, endAt = endAtSnap)
+                        registerSnapshotListener(result, path, limit = qp.limit, orderBy = qp.orderBy, descending = qp.descending, startAt = startAtSnap, endAt = endAtSnap)
                     }
 
                 }.addOnFailureListener {
-                    if (startAtId != null) resultErrorForDocumentId(result, startAtId)
-                    else if (endAtId != null) resultErrorForDocumentId(result, endAtId)
+                    if (qp.startAtId != null) resultErrorForDocumentId(result, qp.startAtId)
+                    else if (qp.endAtId != null) resultErrorForDocumentId(result, qp.endAtId)
                 }
             }
             "Query#getSnapshot" -> {
                 val arguments = call.arguments<Map<String, Any>>()
                 val path = arguments["path"] as String
 
-                val parameters = arguments["parameters"] as Map<*, *>?
-
-                val limit = parameters?.get("limit") as? Int
-                val orderBy = parameters?.get("orderBy") as? String
-                val descending = parameters?.get("descending") as? Boolean
-                val startAtId = parameters?.get("startAtId") as? String
-                val startAfterId = parameters?.get("startAfterId") as? String
+                val qp : QueryParameters = getQueryParameters(arguments["parameters"] as Map<*, *>?)
 
                 val startAtTask: Task<DocumentSnapshot?> =
-                        if (startAtId != null) getDocumentReference("$path/$startAtId").get()
+                        if (qp.startAtId != null) getDocumentReference("$path/$qp.startAtId").get()
                         else Tasks.forResult(null)
 
                 val startAfterTask: Task<DocumentSnapshot?> =
-                        if (startAfterId != null) getDocumentReference("$path/$startAfterId").get()
+                        if (qp.startAfterId != null) getDocumentReference("$path/$qp.startAfterId").get()
                         else Tasks.forResult(null)
 
 
                 Tasks.whenAll(startAtTask, startAfterTask).addOnCompleteListener {
                     val startAtSnap: DocumentSnapshot? = startAtTask.result
                     val startAfterSnap: DocumentSnapshot? = startAfterTask.result
-                    val query = getQuery(path = path, limit = limit, orderBy = orderBy,
-                            descending = descending, startAt = startAtSnap,
+                    val query = getQuery(path = path, limit = qp.limit, orderBy = qp.orderBy,
+                            descending = qp.descending, startAt = startAtSnap,
                             startAfter = startAfterSnap, endAt = null)
 
                     query.get().addOnCompleteListener { task ->
@@ -122,8 +108,8 @@ class FirestorePlugin internal constructor(private val channel: MethodChannel) :
                         resultArguments.put("documentChanges", HashMap<String, Any>())
                         result.success(resultArguments)
                     }.addOnFailureListener {
-                        if (startAtId != null) resultErrorForDocumentId(result, startAtId)
-                        else if (startAfterId != null) resultErrorForDocumentId(result, startAfterId)
+                        if (qp.startAtId != null) resultErrorForDocumentId(result, qp.startAtId)
+                        else if (qp.startAfterId != null) resultErrorForDocumentId(result, qp.startAfterId)
                     }
                 }
             }
@@ -245,4 +231,19 @@ class FirestorePlugin internal constructor(private val channel: MethodChannel) :
     private fun getCollectionReference(path: String): CollectionReference = FirebaseFirestore.getInstance().collection(path)
 
     private fun getDocumentReference(path: String): DocumentReference = FirebaseFirestore.getInstance().document(path)
+}
+
+fun getQueryParameters(parameters: Map<*, *>?): QueryParameters {
+    val limit = parameters?.get("limit") as? Int
+    val orderBy = parameters?.get("orderBy") as? String
+    val descending = parameters?.get("descending") as? Boolean
+    val startAtId = parameters?.get("startAtId") as? String
+    val startAfterId = parameters?.get("startAtId") as? String
+    val endAtId = parameters?.get("endAtId") as? String
+
+    return QueryParameters(limit, orderBy, descending, startAtId, startAfterId, endAtId)
+}
+
+data class QueryParameters(val limit: Int?, val orderBy: String?, val descending: Boolean?, val startAtId: String?, val startAfterId: String?, val endAtId: String?) {
+
 }
