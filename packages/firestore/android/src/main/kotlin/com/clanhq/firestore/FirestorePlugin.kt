@@ -63,7 +63,7 @@ class FirestorePlugin internal constructor(private val channel: MethodChannel) :
                         registerSnapshotListener(result, path, limit = qp.limit, orderBy = qp.orderBy, descending = qp.descending, startAt = qp.startAtSnap, endAt = qp.endAtSnap)
                     }
                 }.addOnFailureListener {
-                    resultErrorForDocumentId(result, "ERROR")
+                    resultErrorForArguments(result, arguments)
                 }
             }
             "Query#getSnapshot" -> {
@@ -89,6 +89,8 @@ class FirestorePlugin internal constructor(private val channel: MethodChannel) :
                         else if (qp.startAfterId != null) resultErrorForDocumentId(result, qp.startAfterId)
                     }
 
+                }.addOnFailureListener {
+                    resultErrorForArguments(result, arguments)
                 }
             }
 
@@ -206,6 +208,7 @@ class FirestorePlugin internal constructor(private val channel: MethodChannel) :
     }
 
     private fun resultErrorForDocumentId(result: Result, id: String) = result.error("ERR", "Error retrieving document with ID $id", null)
+    private fun resultErrorForArguments(result: Result, arguments: Map<String, Any>) = result.error("ERR", "Error for arguments $arguments", null)
 
 }
 
