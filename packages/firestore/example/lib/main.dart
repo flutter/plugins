@@ -42,7 +42,7 @@ class MyHomePage extends StatelessWidget {
     ref.setData(<String, String>{
       'message': 'Hello world!',
       'id': ref.path.split("/").last,
-      // 'timestamp': ServerValue.timestamp,
+       'timestamp': ServerValue.timestamp,
     });
   }
 }
@@ -76,9 +76,9 @@ class _BookListState extends State<BookList> {
     );
     _bookSub = Firestore.instance
         .collection('books', parameters: <String, dynamic>{
-          //"startAtId": "-KwvsbUPmlKxVPTLnYJG",
+          "startAtId": "-KwvsbUPmlKxVPTLnYJG",
           "limit": 12,
-          //"endAtId": "-Kwvs_BSnxFwXmRR-Vtb",
+          "endAtId": "-Kwvs_BSnxFwXmRR-Vtb",
           "orderBy": "id",
           "descending": true,
         })

@@ -53,8 +53,9 @@ class FirestorePlugin internal constructor(private val channel: MethodChannel) :
                 val arguments = call.arguments<Map<String, Any>>()
                 val path = arguments["path"] as String
 
-                getQueryParameters(path, arguments["parameters"] as Map<*, *>?).addOnCompleteListener {
-                    val qp: QueryParameters = it.result
+                val queryParameterTask = getQueryParameters(path, arguments["parameters"] as Map<*, *>?)
+                queryParameterTask.addOnSuccessListener {
+                    val qp: QueryParameters = it
 
                     if (qp.startAtId != null && qp.startAtSnap != null && !qp.startAtSnap.exists()) {
                         resultErrorForDocumentId(result, qp.startAtId)
@@ -63,17 +64,18 @@ class FirestorePlugin internal constructor(private val channel: MethodChannel) :
                     } else {
                         registerSnapshotListener(result, path, limit = qp.limit, orderBy = qp.orderBy, descending = qp.descending, startAt = qp.startAtSnap, endAt = qp.endAtSnap)
                     }
-                }.addOnFailureListener {
+                }
+                queryParameterTask.addOnFailureListener {
                     resultErrorForArguments(result, arguments)
                 }
             }
             "Query#getSnapshot" -> {
                 val arguments = call.arguments<Map<String, Any>>()
                 val path = arguments["path"] as String
+                val queryParameterTask = getQueryParameters(path, arguments["parameters"] as Map<*, *>?)
 
-                getQueryParameters(path, arguments["parameters"] as Map<*, *>?).addOnCompleteListener {
-                    val qp: QueryParameters = it.result
-                    Log.d("TAG", "/////////////////3")
+                queryParameterTask.addOnSuccessListener {
+                    val qp: QueryParameters = it
 
                     val query = getQuery(path = path, limit = qp.limit, orderBy = qp.orderBy,
                             descending = qp.descending, startAt = qp.startAtSnap,
@@ -94,8 +96,8 @@ class FirestorePlugin internal constructor(private val channel: MethodChannel) :
                         else if (qp.startAfterId != null) resultErrorForDocumentId(result, qp.startAfterId)
                     }
 
-                }.addOnFailureListener {
-                    Log.d("TAG", "/////////////////111111")
+                }
+                queryParameterTask.addOnFailureListener {
                     resultErrorForArguments(result, arguments)
                 }
             }
