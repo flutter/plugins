@@ -26,7 +26,7 @@ class Firestore {
         _queryObservers[call.arguments['handle']].add(snapshot);
       } else if (call.method == 'DocumentSnapshot') {
         final DocumentSnapshot snapshot = new DocumentSnapshot._(
-          call.arguments['data'],
+          call.arguments,
         );
         _documentObservers[call.arguments['handle']].add(snapshot);
       }

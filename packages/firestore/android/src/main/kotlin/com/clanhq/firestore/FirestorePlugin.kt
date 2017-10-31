@@ -159,6 +159,7 @@ class FirestorePlugin internal constructor(private val channel: MethodChannel) :
             arguments.put("handle", handle)
             if (documentSnapshot.exists()) {
                 arguments["data"] = documentSnapshot.data
+                arguments["id"] = documentSnapshot.id
             }
             channel.invokeMethod("DocumentSnapshot", arguments)
         }
