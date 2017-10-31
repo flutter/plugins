@@ -153,8 +153,10 @@ class FirestorePlugin internal constructor(private val channel: MethodChannel) :
         result.success(handle)
     }
 
-    private inner class DocumentObserver internal constructor(private val handle: Int) : EventListener<DocumentSnapshot> {
-        override fun onEvent(documentSnapshot: DocumentSnapshot, e: FirebaseFirestoreException?) {
+    private inner class DocumentObserver internal constructor(private val handle: Int) : EventListener<DocumentSnapshot?> {
+        override fun onEvent(documentSnapshot: DocumentSnapshot?, e: FirebaseFirestoreException?) {
+            if(documentSnapshot == null) return
+
             val arguments =
                     if (documentSnapshot.exists()) documentSnapshotToMap(documentSnapshot)
                     else HashMap<String, Any>()
@@ -164,9 +166,10 @@ class FirestorePlugin internal constructor(private val channel: MethodChannel) :
     }
 
 
-    private inner class QueryObserver internal constructor(private val handle: Int) : EventListener<QuerySnapshot> {
+    private inner class QueryObserver internal constructor(private val handle: Int) : EventListener<QuerySnapshot?> {
+        override fun onEvent(querySnapshot: QuerySnapshot?, e: FirebaseFirestoreException?) {
+            if(querySnapshot == null) return
 
-        override fun onEvent(querySnapshot: QuerySnapshot, e: FirebaseFirestoreException?) {
             val arguments = HashMap<String, Any>()
             arguments.put("handle", handle)
 
