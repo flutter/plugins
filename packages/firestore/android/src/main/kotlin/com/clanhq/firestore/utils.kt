@@ -7,7 +7,7 @@ import java.util.*
 /**
  * Created by philipp on 10/20/17.
  */
-fun documentSnapshotToMap(it: DocumentSnapshot): Map<String, Any> {
+fun documentSnapshotToMap(it: DocumentSnapshot): HashMap<String, Any> {
     val m = HashMap<String, Any>()
 
     val cleandata: HashMap<String, Any> = HashMap()

@@ -155,12 +155,10 @@ class FirestorePlugin internal constructor(private val channel: MethodChannel) :
 
     private inner class DocumentObserver internal constructor(private val handle: Int) : EventListener<DocumentSnapshot> {
         override fun onEvent(documentSnapshot: DocumentSnapshot, e: FirebaseFirestoreException?) {
-            val arguments = HashMap<String, Any>()
+            val arguments =
+                    if (documentSnapshot.exists()) documentSnapshotToMap(documentSnapshot)
+                    else HashMap<String, Any>()
             arguments.put("handle", handle)
-            if (documentSnapshot.exists()) {
-                arguments["data"] = documentSnapshot.data
-                arguments["id"] = documentSnapshot.id
-            }
             channel.invokeMethod("DocumentSnapshot", arguments)
         }
     }
