@@ -17,7 +17,7 @@ const MethodChannel _channel =
 /// (and cleaning up) files or directories within this directory. This
 /// directory is scoped to the calling application.
 ///
-/// On iOS, this uses the `NSTemporaryDirectory` API.
+/// On iOS, this uses the `NSCachesDirectory` API.
 ///
 /// On Android, this uses the `getCacheDir` API on the context.
 Future<Directory> getTemporaryDirectory() async {

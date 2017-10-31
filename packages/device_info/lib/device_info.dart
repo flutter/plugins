@@ -57,6 +57,7 @@ class AndroidDeviceInfo {
     List<String> supportedAbis,
     this.tags,
     this.type,
+    this.isPhysicalDevice,
   })
       : supported32BitAbis = new List<String>.unmodifiable(supported32BitAbis),
         supported64BitAbis = new List<String>.unmodifiable(supported64BitAbis),
@@ -116,6 +117,9 @@ class AndroidDeviceInfo {
   /// The type of build, like "user" or "eng".
   final String type;
 
+  /// `false` if the application is running in an emulator, `true` otherwise.
+  final bool isPhysicalDevice;
+
   /// Deserializes from the JSON message received from [_kChannel].
   static AndroidDeviceInfo _fromJson(Map<String, Object> json) {
     return new AndroidDeviceInfo._(
@@ -137,6 +141,7 @@ class AndroidDeviceInfo {
       supportedAbis: json['supportedAbis'],
       tags: json['tags'],
       type: json['type'],
+      isPhysicalDevice: json['isPhysicalDevice'],
     );
   }
 }
@@ -202,6 +207,8 @@ class IosDeviceInfo {
     this.model,
     this.localizedModel,
     this.identifierForVendor,
+    this.isPhysicalDevice,
+    this.utsname,
   });
 
   /// Device name.
@@ -222,8 +229,14 @@ class IosDeviceInfo {
   /// Unique UUID value identifying the current device.
   final String identifierForVendor;
 
+  /// `false` if the application is running in a simulator, `true` otherwise.
+  final bool isPhysicalDevice;
+
+  /// Operating system information derived from `sys/utsname.h`.
+  final IosUtsname utsname;
+
   /// Deserializes from the JSON message received from [_kChannel].
-  static IosDeviceInfo _fromJson(Map<String, Object> json) {
+  static IosDeviceInfo _fromJson(Map<String, dynamic> json) {
     return new IosDeviceInfo._(
       name: json['name'],
       systemName: json['systemName'],
@@ -231,6 +244,46 @@ class IosDeviceInfo {
       model: json['model'],
       localizedModel: json['localizedModel'],
       identifierForVendor: json['identifierForVendor'],
+      isPhysicalDevice: json['isPhysicalDevice'] == 'true',
+      utsname: IosUtsname._fromJson(json['utsname']),
+    );
+  }
+}
+
+/// Information derived from `utsname`.
+/// See http://pubs.opengroup.org/onlinepubs/7908799/xsh/sysutsname.h.html for details.
+class IosUtsname {
+  IosUtsname._({
+    this.sysname,
+    this.nodename,
+    this.release,
+    this.version,
+    this.machine,
+  });
+
+  /// Operating system name.
+  final String sysname;
+
+  /// Network node name.
+  final String nodename;
+
+  /// Release level.
+  final String release;
+
+  /// Version level.
+  final String version;
+
+  /// Hardware type (e.g. 'iPhone7,1' for iPhone 6 Plus).
+  final String machine;
+
+  /// Deserializes from the JSON message received from [_kChannel].
+  static IosUtsname _fromJson(Map<String, dynamic> json) {
+    return new IosUtsname._(
+      sysname: json['sysname'],
+      nodename: json['nodename'],
+      release: json['release'],
+      version: json['version'],
+      machine: json['machine'],
     );
   }
 }

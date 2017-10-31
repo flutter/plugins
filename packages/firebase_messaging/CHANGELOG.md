@@ -1,3 +1,23 @@
+## 0.0.7
+
+In FirebaseMessagingPlugin.m:
+* moved logic from 'tokenRefreshNotification' to 'didRefreshRegistrationToken'
+* removed 'tokenRefreshNotification' as well as observer registration
+* removed 'connectToFcm' method and related calls
+* removed unnecessary FIRMessaging disconnect
+
+## 0.0.6
+
+* Change GMS dependency to 11.+
+
+## 0.0.5+2
+
+* Fixed README example for "click_action"
+
+## 0.0.5+1
+
+* Aligned author name with rest of repo.
+
 ## 0.0.5
 
 * Updated to Firebase SDK to always use latest patch version for 11.0.x builds

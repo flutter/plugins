@@ -47,6 +47,9 @@ static NSString *const CHANNEL_NAME = @"plugins.flutter.io/shared_preferences";
       result(nil);
     } else if ([method isEqualToString:@"commit"]) {
       result([NSNumber numberWithBool:[[NSUserDefaults standardUserDefaults] synchronize]]);
+    } else if ([method isEqualToString:@"remove"]) {
+      [[NSUserDefaults standardUserDefaults] removeObjectForKey:arguments[@"key"]];
+      result(nil);
     } else if ([method isEqualToString:@"clear"]) {
       NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
       for (NSString *key in getAllPrefs()) {

@@ -143,7 +143,8 @@ MobileAdStatus _status;
     if (![birthday isKindOfClass:[NSNumber class]]) {
       logWarning(@"targeting info birthday: expected a long integer (MobileAd %@)", self);
     } else {
-      // Incoming time value is milliseconds since the epoch, NSDate uses seconds.
+      // Incoming time value is milliseconds since the epoch, NSDate uses
+      // seconds.
       request.birthday =
           [NSDate dateWithTimeIntervalSince1970:((NSNumber *)birthday).longValue / 1000.0];
     }

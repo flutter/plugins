@@ -1,3 +1,27 @@
+## 0.1.2
+
+* Change GMS dependency to 11.+
+
+## 0.1.1
+
+* Add RTDB transaction support.
+
+## 0.1.0+1
+
+* Aligned author name with rest of repo.
+
+## 0.1.0
+
+* **Breaking Change**: Added current list index to the type signature of itemBuilder for FirebaseAnimatedList.
+
+## 0.0.14
+
+* Fix FirebaseSortedList to show data changes.
+
+## 0.0.13
+
+* Fixed lingering value/child listeners.
+
 ## 0.0.12
 
 * Updated to Firebase SDK to always use latest patch version for 11.0.x builds

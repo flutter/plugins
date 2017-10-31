@@ -1,3 +1,16 @@
+## 0.1.2
+
+* Added optional maxWidth and maxHeight arguments to pickImage.
+
+## 0.1.1
+
+* Updated Gradle repositories declaration to avoid the need for manual configuration
+  in the consuming app.
+
+## 0.1.0+1
+
+* Updated readme and description in pubspec.yaml
+
 ## 0.1.0
 
 * Updated dependencies

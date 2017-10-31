@@ -1,3 +1,16 @@
+## 1.0.2
+
+* Support setting foregroundColor in the avatar.
+
+## 1.0.1
+
+* Change GMS dependency to 11.+
+
+## 1.0.0
+
+* Make GoogleUserCircleAvatar fade profile image over the top of placeholder
+* Bump to released version
+
 ## 0.3.1
 
 * Updated GMS to always use latest patch version for 11.0.x builds

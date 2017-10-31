@@ -11,7 +11,7 @@ buildscript {
     }
 }
 
-allprojects {
+rootProject.allprojects {
     repositories {
         jcenter()
         maven {
@@ -35,6 +35,6 @@ android {
 }
 
 dependencies {
-    compile 'com.google.android.gms:play-services-auth:11.0.+'
+    compile 'com.google.android.gms:play-services-auth:11.+'
     compile 'com.google.guava:guava:20.0'
 }

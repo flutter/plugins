@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'dart:typed_data';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -22,8 +24,10 @@ class GoogleUserCircleAvatar extends StatelessWidget {
   const GoogleUserCircleAvatar({
     @required this.identity,
     this.placeholderPhotoUrl,
+    this.foregroundColor,
     this.backgroundColor,
-  }) : assert(identity != null);
+  })
+      : assert(identity != null);
 
   /// A regular expression that matches against the "size directive" path
   /// segment of Google profile image URLs.
@@ -34,6 +38,11 @@ class GoogleUserCircleAvatar extends StatelessWidget {
 
   /// The Google user's identity; guaranteed to be non-null.
   final GoogleIdentity identity;
+
+  /// The color of the text to be displayed if photo is not available.
+  ///
+  /// If a foreground color is not specified, the theme's text color is used.
+  final Color foregroundColor;
 
   /// The color with which to fill the circle. Changing the background color
   /// will cause the avatar to animate to the new color.
@@ -54,14 +63,21 @@ class GoogleUserCircleAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     return new CircleAvatar(
       backgroundColor: backgroundColor,
+      foregroundColor: foregroundColor,
       child: new LayoutBuilder(builder: _buildClippedImage),
     );
   }
 
   /// Adds sizing information to [photoUrl], inserted as the last path segment
   /// before the image filename. The format is described in [sizeDirective].
+  ///
+  /// Falls back to the default profile photo if [photoUrl] is [null].
   static String _sizedProfileImageUrl(String photoUrl, double size) {
-    assert(photoUrl != null);
+    if (photoUrl == null) {
+      // If the user has no profile photo and no display name, fall back to
+      // the default profile photo as a last resort.
+      return 'https://lh3.googleusercontent.com/a/default-user=s${size.round()}-c';
+    }
     final Uri profileUri = Uri.parse(photoUrl);
     final List<String> pathSegments =
         new List<String>.from(profileUri.pathSegments);
@@ -79,28 +95,46 @@ class GoogleUserCircleAvatar extends StatelessWidget {
   Widget _buildClippedImage(BuildContext context, BoxConstraints constraints) {
     assert(constraints.maxWidth == constraints.maxHeight);
 
-    String photoUrl = identity.photoUrl ?? placeholderPhotoUrl;
-    if (photoUrl == null &&
-        identity.displayName != null &&
-        identity.displayName.startsWith(new RegExp(r'[A-Z][a-z]'))) {
-      // Display the user's initials rather than a profile photo.
-      return new Text(identity.displayName[0].toUpperCase());
-    }
-
-    // Add a sizing directive to the profile photo URL if we have one.
-    final double size = MediaQuery.of(context).devicePixelRatio * constraints.maxWidth;
-    if (photoUrl != null) {
-      photoUrl = _sizedProfileImageUrl(photoUrl, size);
-    }
-
-    // If the user has no profile photo and no display name, fall back to
-    // the default profile photo as a last resort.
-    photoUrl ??= 'https://lh3.googleusercontent.com/a/default-user=s${size.round()}-c';
-
-    return new ClipOval(
-      child: new Image(
-        image: new NetworkImage(photoUrl),
-      ),
+    // Placeholder to use when there is no photo URL, and while the photo is
+    // loading. Uses the first character of the display name (if it has one),
+    // or the first letter of the email address if it does not.
+    final List<String> placeholderCharSources = <String>[
+      identity.displayName,
+      identity.email,
+      '-',
+    ];
+    final String placeholderChar = placeholderCharSources
+        .firstWhere((String str) => str != null && str.trimLeft().isNotEmpty)
+        .trimLeft()[0]
+        .toUpperCase();
+    final Widget placeholder = new Center(
+      child: new Text(placeholderChar, textAlign: TextAlign.center),
     );
+
+    final String photoUrl = identity.photoUrl ?? placeholderPhotoUrl;
+    if (photoUrl == null) {
+      return placeholder;
+    }
+
+    // Add a sizing directive to the profile photo URL.
+    final double size =
+        MediaQuery.of(context).devicePixelRatio * constraints.maxWidth;
+    final String sizedPhotoUrl = _sizedProfileImageUrl(photoUrl, size);
+
+    // Fade the photo in over the top of the placeholder.
+    return new SizedBox(
+        width: size,
+        height: size,
+        child: new ClipOval(
+          child: new Stack(fit: StackFit.expand, children: <Widget>[
+            placeholder,
+            new FadeInImage.memoryNetwork(
+              // This creates a transparent placeholder image, so that
+              // [placeholder] shows through.
+              placeholder: new Uint8List((size.round() * size.round())),
+              image: sizedPhotoUrl,
+            )
+          ]),
+        ));
   }
 }
