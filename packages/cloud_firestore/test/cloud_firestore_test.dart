@@ -106,6 +106,18 @@ void main() {
           ]),
         );
       });
+      test('delete', () async {
+        await collectionReference.document('bar').delete();
+        expect(
+          log,
+          equals(<MethodCall>[
+            new MethodCall(
+              'DocumentReference#delete',
+              <String, dynamic>{'path': 'foo/bar'},
+            ),
+          ]),
+        );
+      });
     });
   });
 }
