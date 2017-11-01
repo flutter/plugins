@@ -62,6 +62,10 @@ FIRQuery *getQuery(NSDictionary *arguments) {
     NSString *path = call.arguments[@"path"];
     FIRDocumentReference *reference = [[FIRFirestore firestore] documentWithPath:path];
     [reference setData:call.arguments[@"data"] completion:defaultCompletionBlock];
+  } else if ([@"DocumentReference#delete" isEqualToString:call.method]) {
+    NSString *path = call.arguments[@"path"];
+    FIRDocumentReference *reference = [[FIRFirestore firestore] documentWithPath:path];
+    [reference deleteDocumentWithCompletion:defaultCompletionBlock];
   } else if ([@"Query#addSnapshotListener" isEqualToString:call.method]) {
     __block NSNumber *handle = [NSNumber numberWithInt:_nextListenerHandle++];
     id<FIRListenerRegistration> listener = [getQuery(call.arguments)

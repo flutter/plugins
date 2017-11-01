@@ -29,6 +29,13 @@ class DocumentReference {
     );
   }
 
+  Future<Null> delete() {
+    return Firestore.channel.invokeMethod(
+      'DocumentReference#delete',
+      <String, dynamic>{'path': path},
+    );
+  }
+
   /// Notifies of documents at this location
   // TODO(jackson): Reduce code duplication with [Query]
   Stream<DocumentSnapshot> get snapshots {
