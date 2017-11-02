@@ -52,7 +52,6 @@ FIRQuery *getQuery(NSDictionary *arguments) {
     } else {
       // Not implemented.
     }
-
   }
   return query;
 }

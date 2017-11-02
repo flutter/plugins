@@ -57,7 +57,38 @@ public class CloudFirestorePlugin implements MethodCallHandler {
   }
 
   private Query getQuery(Map<String, Object> arguments) {
-    return getCollectionReference(arguments);
+    Query query =  getCollectionReference(arguments);
+    @SuppressWarnings("unchecked")
+    Map<String, Object> parameters = (Map<String, Object>) arguments.get("parameters");
+    if (parameters == null) return query;
+    for (Map.Entry<String, Object> entry: parameters.entrySet()) {
+      String key = entry.getKey();
+      Object value = entry.getValue();
+      if (key.startsWith("where==:")) {
+        String field = key.replace("where==:", "");
+        query = query.whereEqualTo(field, value);
+      } else if (key.startsWith("where<:")) {
+        String field = key.replace("where<:", "");
+        query = query.whereLessThan(field, value);
+      } else if (key.startsWith("where<=:")) {
+        String field = key.replace("where<=:", "");
+        query = query.whereLessThanOrEqualTo(field, value);
+      } else if (key.startsWith("where>:")) {
+        String field = key.replace("where>:", "");
+        query = query.whereGreaterThan(field, value);
+      } else if (key.startsWith("where>=:")) {
+        String field = key.replace("where>=:", "");
+        query = query.whereGreaterThanOrEqualTo(field, value);
+      } else if (key.startsWith("orderBy:")) {
+        String field = key.replace("orderBy:", "");
+        Boolean descending = (Boolean) value;
+        Query.Direction direction = descending
+          ? Query.Direction.DESCENDING
+          : Query.Direction.ASCENDING;
+        query = query.orderBy(field, direction);
+      }
+    }
+    return query;
   }
 
   private class DocumentObserver implements EventListener<DocumentSnapshot> {
@@ -91,6 +122,10 @@ public class CloudFirestorePlugin implements MethodCallHandler {
 
     @Override
     public void onEvent(QuerySnapshot querySnapshot, FirebaseFirestoreException e) {
+      if (e != null) {
+        // TODO: send error
+        System.out.println(e);
+      }
       Map<String, Object> arguments = new HashMap<>();
       arguments.put("handle", handle);
 
