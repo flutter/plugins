@@ -48,6 +48,22 @@ class FirestorePlugin internal constructor(private val channel: MethodChannel) :
 
                 result.success(null)
             }
+            "DocumentReference#getSnapshot" -> {
+                val arguments = call.arguments<Map<String, Any?>>()
+                val documentReference = getDocumentReference(arguments["path"] as String)
+
+                documentReference.get().addOnCompleteListener { task ->
+                    val documentSnapshot: DocumentSnapshot = task.result
+
+                    val resultArguments =
+                            if (documentSnapshot.exists()) documentSnapshotToMap(documentSnapshot)
+                            else HashMap<String, Any>()
+
+                    result.success(resultArguments)
+                }.addOnFailureListener {
+                    resultErrorForArguments(result, arguments)
+                }
+            }
             "Query#addSnapshotListener" -> {
                 val arguments = call.arguments<Map<String, Any>>()
                 val path = arguments["path"] as String
@@ -214,7 +230,7 @@ class FirestorePlugin internal constructor(private val channel: MethodChannel) :
     }
 
     private fun resultErrorForDocumentId(result: Result, id: String) = result.error("ERR", "Error retrieving document with ID $id", null)
-    private fun resultErrorForArguments(result: Result, arguments: Map<String, Any>) = result.error("ERR", "Error for arguments $arguments", null)
+    private fun resultErrorForArguments(result: Result, arguments: Map<String, Any?>) = result.error("ERR", "Error for arguments $arguments", null)
 
 }
 

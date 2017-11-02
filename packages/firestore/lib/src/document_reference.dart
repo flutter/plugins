@@ -31,6 +31,17 @@ class DocumentReference {
     );
   }
 
+  Future<DocumentSnapshot> getSnapshot() async {
+    final Map<String, List<Map<String, dynamic>>> data =
+        await Firestore.channel.invokeMethod(
+      'DocumentReference#getSnapshot',
+      <String, dynamic>{
+        'path': path,
+      },
+    );
+    return new DocumentSnapshot._(data);
+  }
+
   /// Notifies of documents at this location
   // TODO(jackson): Reduce code duplication with [Query]
   Stream<DocumentSnapshot> get snapshots {
