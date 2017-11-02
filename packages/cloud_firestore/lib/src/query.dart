@@ -25,6 +25,16 @@ class Query {
   /// (relative to the root of the database).
   String get path => _pathComponents.join('/');
 
+  Query _copyWithParameters(Map<String, dynamic> parameters) {
+    return new Query._(
+      firestore: _firestore,
+      pathComponents: _pathComponents,
+      parameters: new Map<String, dynamic>.unmodifiable(
+        new Map<String, dynamic>.from(_parameters)..addAll(parameters),
+      ),
+    );
+  }
+
   Map<String, dynamic> buildArguments() {
     return new Map<String, dynamic>.from(_parameters)
       ..addAll(<String, dynamic>{
@@ -68,4 +78,24 @@ class Query {
   /// Obtains a CollectionReference corresponding to this query's location.
   CollectionReference reference() =>
       new CollectionReference._(_firestore, _pathComponents);
+
+  /// Creates and returns a new [Query] with additional filter on specified
+  /// [field].
+  ///
+  /// Only documents satisfying provided condition are included in the result
+  /// set. [operator] can be one of `==`, `<`, `<=`, `>`, `>=`.
+  Query where(String field, String operator, dynamic value) {
+    assert(const <String>['>', '<', '==', '>=', '<='].contains(operator));
+    final String key = 'where$operator:$field';
+    assert(!_parameters.containsKey(key));
+    return _copyWithParameters(<String, dynamic>{key: value});
+  }
+
+  /// Creates and returns a new [Query] that's additionally sorted by the specified
+  /// [field].
+  Query orderBy(String field, {bool descending: false}) {
+    final String key = "orderBy:$field";
+    assert(!_parameters.containsKey(key));
+    return _copyWithParameters(<String, dynamic>{key: descending});
+  }
 }

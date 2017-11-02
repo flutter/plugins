@@ -20,7 +20,40 @@
 
 FIRQuery *getQuery(NSDictionary *arguments) {
   FIRQuery *query = [[FIRFirestore firestore] collectionWithPath:arguments[@"path"]];
-  // TODO(jackson): Implement query parameters
+  NSDictionary *parameters = arguments[@"parameters"];
+  for (id key in parameters) {
+    NSString *keyString = key;
+    if ([keyString hasPrefix:@"where==:"]) {
+      NSString *field = [keyString stringByReplacingOccurrencesOfString:@"where==:"
+                                                             withString:@""];
+      query = [query queryWhereField:field isEqualTo:parameters[key]];
+    } else if ([keyString hasPrefix:@"where<:"]) {
+      NSString *field = [keyString stringByReplacingOccurrencesOfString:@"where<:"
+                                                             withString:@""];
+      query = [query queryWhereField:field isLessThan:parameters[key]];
+    } else if ([keyString hasPrefix:@"where<=:"]) {
+      NSString *field = [keyString stringByReplacingOccurrencesOfString:@"where<=:"
+                                                             withString:@""];
+      query = [query queryWhereField:field isLessThanOrEqualTo:parameters[key]];
+    } else if ([keyString hasPrefix:@"where>:"]) {
+      NSString *field = [keyString stringByReplacingOccurrencesOfString:@"where>:"
+                                                             withString:@""];
+      query = [query queryWhereField:field isGreaterThan:parameters[key]];
+    } else if ([keyString hasPrefix:@"where>=:"]) {
+      NSString *field = [keyString stringByReplacingOccurrencesOfString:@"where>=:"
+                                                             withString:@""];
+      query = [query queryWhereField:field isGreaterThanOrEqualTo:parameters[key]];
+    } else if ([keyString hasPrefix:@"orderBy:"]) {
+      NSString *field = [keyString stringByReplacingOccurrencesOfString:@"orderBy:"
+                                                             withString:@""];
+      NSNumber *val = parameters[key];
+      BOOL desc = [val boolValue];
+      query = [query queryOrderedByField:field descending:desc];
+    } else {
+      // Not implemented.
+    }
+
+  }
   return query;
 }
 

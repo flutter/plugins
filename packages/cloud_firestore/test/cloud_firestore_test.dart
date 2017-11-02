@@ -63,6 +63,60 @@ void main() {
           ]),
         );
       });
+      test('where', () async {
+        final StreamSubscription<QuerySnapshot> subscription =
+            collectionReference
+                .where('createdAt', '<', 100)
+                .snapshots
+                .listen((QuerySnapshot querySnapshot) {});
+        subscription.cancel();
+        await new Future<Null>.delayed(Duration.ZERO);
+        expect(
+          log,
+          equals(<MethodCall>[
+            new MethodCall(
+              'Query#addSnapshotListener',
+              <String, dynamic>{
+                'path': 'foo',
+                'parameters': <String, dynamic>{
+                  'where<:createdAt': 100,
+                }
+              },
+            ),
+            new MethodCall(
+              'Query#removeListener',
+              <String, dynamic>{'handle': 0},
+            ),
+          ]),
+        );
+      });
+      test('orderBy', () async {
+        final StreamSubscription<QuerySnapshot> subscription =
+            collectionReference
+                .orderBy('createdAt')
+                .snapshots
+                .listen((QuerySnapshot querySnapshot) {});
+        subscription.cancel();
+        await new Future<Null>.delayed(Duration.ZERO);
+        expect(
+          log,
+          equals(<MethodCall>[
+            new MethodCall(
+              'Query#addSnapshotListener',
+              <String, dynamic>{
+                'path': 'foo',
+                'parameters': <String, dynamic>{
+                  'orderBy:createdAt': false,
+                }
+              },
+            ),
+            new MethodCall(
+              'Query#removeListener',
+              <String, dynamic>{'handle': 0},
+            ),
+          ]),
+        );
+      });
     });
 
     group('DocumentReference', () {
