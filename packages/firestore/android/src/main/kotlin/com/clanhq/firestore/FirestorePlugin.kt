@@ -51,7 +51,6 @@ class FirestorePlugin internal constructor(private val channel: MethodChannel) :
             "DocumentReference#getSnapshot" -> {
                 val arguments = call.arguments<Map<String, Any?>>()
                 val documentReference = getDocumentReference(arguments["path"] as String)
-
                 documentReference.get().addOnCompleteListener { task ->
                     val documentSnapshot: DocumentSnapshot = task.result
 
@@ -60,6 +59,15 @@ class FirestorePlugin internal constructor(private val channel: MethodChannel) :
                             else HashMap<String, Any>()
 
                     result.success(resultArguments)
+                }.addOnFailureListener {
+                    resultErrorForArguments(result, arguments)
+                }
+            }
+            "DocumentReference#delete" -> {
+                val arguments = call.arguments<Map<String, Any?>>()
+                val documentReference = getDocumentReference(arguments["path"] as String)
+                documentReference.delete().addOnCompleteListener { task ->
+                    result.success(null)
                 }.addOnFailureListener {
                     resultErrorForArguments(result, arguments)
                 }

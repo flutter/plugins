@@ -31,6 +31,9 @@ class DocumentReference {
     );
   }
 
+  Future<Null> delete() => Firestore.channel.invokeMethod(
+      'DocumentReference#delete', <String, dynamic>{'path': path});
+
   Future<DocumentSnapshot> getSnapshot() async {
     final Map<String, List<Map<String, dynamic>>> data =
         await Firestore.channel.invokeMethod(
