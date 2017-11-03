@@ -181,10 +181,6 @@ int nextHandle = 0;
                                                    identifier.intValue]
                 details:nil]);
     }
-        getTokenForcingRefresh:YES
-                    completion:^(NSString *_Nullable token, NSError *_Nullable error) {
-                      result(error != nil ? error.flutterError : token);
-                    }];
   } else if ([@"sendEmailVerification" isEqualToString:call.method]) {
       [[FIRAuth auth].currentUser sendEmailVerificationWithCompletion:^(NSError *_Nullable error) {
           if (error != nil) {
