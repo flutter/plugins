@@ -7,6 +7,7 @@ package io.flutter.firebaseauth;
 import android.app.Activity;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.util.SparseArray;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.common.collect.ImmutableList;
@@ -24,17 +25,24 @@ import java.util.Map;
 public class FirebaseAuthPlugin implements MethodCallHandler {
   private final Activity activity;
   private final FirebaseAuth firebaseAuth;
+  private final SparseArray<FirebaseAuth.AuthStateListener> authStateListeners =
+      new SparseArray<>();
+  private final MethodChannel channel;
+
+  // Handles are ints used as indexes into the sparse array of active observers
+  private int nextHandle = 0;
 
   private static final String ERROR_REASON_EXCEPTION = "exception";
 
   public static void registerWith(PluginRegistry.Registrar registrar) {
-    final MethodChannel channel =
+    MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_auth");
-    channel.setMethodCallHandler(new FirebaseAuthPlugin(registrar.activity()));
+    channel.setMethodCallHandler(new FirebaseAuthPlugin(registrar.activity(), channel));
   }
 
-  private FirebaseAuthPlugin(Activity activity) {
+  private FirebaseAuthPlugin(Activity activity, MethodChannel channel) {
     this.activity = activity;
+    this.channel = channel;
     FirebaseApp.initializeApp(activity);
     this.firebaseAuth = FirebaseAuth.getInstance();
   }
@@ -57,13 +65,16 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       case "signInWithGoogle":
         handleSignInWithGoogle(call, result);
         break;
+      case "signInWithCustomToken":
+        handleSignInWithCustomToken(call, result);
+        break;
       case "signInWithFacebook":
         handleSignInWithFacebook(call, result);
         break;
       case "signOut":
         handleSignOut(call, result);
         break;
-      case "getToken":
+      case "getIdToken":
         handleGetToken(call, result);
         break;
       case "linkWithEmailAndPassword":
@@ -71,6 +82,15 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         break;
       case "updateProfile":
         handleUpdateProfile(call, result);
+        break;
+      case "linkWithGoogleCredential":
+        handleLinkWithGoogleCredential(call, result);
+        break;
+      case "startListeningAuthState":
+        handleStartListeningAuthState(call, result);
+        break;
+      case "stopListeningAuthState":
+        handleStopListeningAuthState(call, result);
         break;
       default:
         result.notImplemented();
@@ -145,6 +165,18 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         .addOnCompleteListener(activity, new SignInCompleteListener(result));
   }
 
+  private void handleLinkWithGoogleCredential(MethodCall call, final Result result) {
+    @SuppressWarnings("unchecked")
+    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    String idToken = arguments.get("idToken");
+    String accessToken = arguments.get("accessToken");
+    AuthCredential credential = GoogleAuthProvider.getCredential(idToken, accessToken);
+    firebaseAuth
+        .getCurrentUser()
+        .linkWithCredential(credential)
+        .addOnCompleteListener(activity, new SignInCompleteListener(result));
+  }
+
   private void handleSignInWithFacebook(MethodCall call, final Result result) {
     @SuppressWarnings("unchecked")
     Map<String, String> arguments = (Map<String, String>) call.arguments;
@@ -152,6 +184,14 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     AuthCredential credential = FacebookAuthProvider.getCredential(accessToken);
     firebaseAuth
         .signInWithCredential(credential)
+        .addOnCompleteListener(activity, new SignInCompleteListener(result));
+  }
+
+  private void handleSignInWithCustomToken(MethodCall call, final Result result) {
+    Map<String, String> arguments = call.arguments();
+    String token = arguments.get("token");
+    firebaseAuth
+        .signInWithCustomToken(token)
         .addOnCompleteListener(activity, new SignInCompleteListener(result));
   }
 
@@ -166,7 +206,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     boolean refresh = arguments.get("refresh");
     firebaseAuth
         .getCurrentUser()
-        .getToken(refresh)
+        .getIdToken(refresh)
         .addOnCompleteListener(
             new OnCompleteListener<GetTokenResult>() {
               public void onComplete(@NonNull Task<GetTokenResult> task) {
@@ -207,6 +247,44 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
                 }
               }
             });
+
+  private void handleStartListeningAuthState(MethodCall call, final Result result) {
+    final int handle = nextHandle++;
+    FirebaseAuth.AuthStateListener listener =
+        new FirebaseAuth.AuthStateListener() {
+          @Override
+          public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+            FirebaseUser user = firebaseAuth.getCurrentUser();
+            ImmutableMap<String, Object> userMap = mapFromUser(user);
+            ImmutableMap.Builder<String, Object> builder =
+                ImmutableMap.<String, Object>builder().put("id", handle);
+
+            if (userMap != null) {
+              builder.put("user", userMap);
+            }
+            channel.invokeMethod("onAuthStateChanged", builder.build());
+          }
+        };
+    FirebaseAuth.getInstance().addAuthStateListener(listener);
+    authStateListeners.append(handle, listener);
+    result.success(handle);
+  }
+
+  private void handleStopListeningAuthState(MethodCall call, final Result result) {
+    Map<String, Integer> arguments = call.arguments();
+    Integer id = arguments.get("id");
+
+    FirebaseAuth.AuthStateListener listener = authStateListeners.get(id);
+    if (listener != null) {
+      FirebaseAuth.getInstance().removeAuthStateListener(listener);
+      authStateListeners.removeAt(id);
+      result.success(null);
+    } else {
+      result.error(
+          ERROR_REASON_EXCEPTION,
+          String.format("Listener with identifier '%d' not found.", id),
+          null);
+    }
   }
 
   private class SignInCompleteListener implements OnCompleteListener<AuthResult> {

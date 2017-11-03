@@ -28,6 +28,41 @@ void main() {
             return true;
           case 'FirebaseDatabase#setPersistenceCacheSizeBytes':
             return true;
+          case 'DatabaseReference#runTransaction':
+            Map<String, dynamic> updatedValue;
+            Future<Null> simulateEvent(
+                int transactionKey, final MutableData mutableData) async {
+              await BinaryMessages.handlePlatformMessage(
+                channel.name,
+                channel.codec.encodeMethodCall(
+                    new MethodCall('DoTransaction', <String, dynamic>{
+                  'transactionKey': transactionKey,
+                  'snapshot': <String, dynamic>{
+                    'key': mutableData.key,
+                    'value': mutableData.value,
+                  },
+                })),
+                (_) {
+                  updatedValue = channel.codec.decodeEnvelope(_)['value'];
+                },
+              );
+            }
+
+            await simulateEvent(
+                0,
+                new MutableData.private(<String, dynamic>{
+                  'key': 'fakeKey',
+                  'value': <String, dynamic>{'fakeKey': 'fakeValue'},
+                }));
+
+            return <String, dynamic>{
+              'error': null,
+              'committed': true,
+              'snapshot': <String, dynamic>{
+                'key': 'fakeKey',
+                'value': updatedValue,
+              }
+            };
           default:
             return null;
         }
@@ -140,6 +175,40 @@ void main() {
               <String, dynamic>{'path': 'foo', 'priority': priority},
             ),
           ]),
+        );
+      });
+
+      test('runTransaction', () async {
+        final TransactionResult transactionResult = await database
+            .reference()
+            .child('foo')
+            .runTransaction((MutableData mutableData) {
+          return new Future<MutableData>(() {
+            mutableData.value['fakeKey'] =
+                'updated ' + mutableData.value['fakeKey'];
+            return mutableData;
+          });
+        });
+        expect(
+          log,
+          equals(<MethodCall>[
+            new MethodCall(
+                'DatabaseReference#runTransaction', <String, dynamic>{
+              'path': 'foo',
+              'transactionKey': 0,
+              'transactionTimeout': 5000
+            }),
+          ]),
+        );
+        expect(transactionResult.committed, equals(true));
+        expect(transactionResult.dataSnapshot.value,
+            equals(<String, dynamic>{'fakeKey': 'updated fakeValue'}));
+        expect(
+          database.reference().child('foo').runTransaction(
+                (MutableData mutableData) {},
+                timeout: const Duration(milliseconds: 0),
+              ),
+          throwsA(const isInstanceOf<AssertionError>()),
         );
       });
     });

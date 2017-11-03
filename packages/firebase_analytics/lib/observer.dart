@@ -40,7 +40,7 @@ String defaultNameExtractor(RouteSettings settings) => settings.name;
 /// MaterialApp(
 ///   home: new MyAppHome(),
 ///   navigatorObservers: [
-///     new FirebaseAnalyticsPageRouteObserver(analytics: service.analytics),
+///     new FirebaseAnalyticsObserver(analytics: service.analytics),
 ///   ],
 /// );
 /// ```
