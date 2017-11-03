@@ -117,8 +117,7 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
                                           [self sendResult:result forUser:user error:error];
                                         }];
   } else if ([@"updateProfile" isEqualToString:call.method]) {
-    FIRUserProfileChangeRequest *changeRequest =
-        [[FIRAuth auth].currentUser profileChangeRequest];
+    FIRUserProfileChangeRequest *changeRequest = [[FIRAuth auth].currentUser profileChangeRequest];
     if (call.arguments[@"displayName"]) {
       changeRequest.displayName = call.arguments[@"displayName"];
     }
