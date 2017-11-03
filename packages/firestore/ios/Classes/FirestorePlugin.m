@@ -32,7 +32,7 @@ typedef void (^FIRQueryBlock)(FIRQuery *_Nullable query,
 @end
 
 @interface FIRDocumentSnapshot (Flutter)
-- (NSDictionary<NSString *, id> *)flutterSnapshot:(NSNumber *)handle;
+- (NSDictionary<NSString *, id> *)flutterSnapshotWithHandle:(NSNumber *)handle;
 @end
 
 @interface FIRCollectionReference (Flutter)
@@ -93,7 +93,19 @@ typedef void (^FIRQueryBlock)(FIRQuery *_Nullable query,
     FIRDocumentReference *reference = [[FIRFirestore firestore] documentWithPath:path];
     NSDictionary *data = [FirestorePlugin replaceServerTimestamps:call.arguments[@"data"]];
     [reference setData:data completion:defaultCompletionBlock];
-  } else if ([@"Query#addSnapshotListener" isEqualToString:call.method]) {
+  } else if ([@"DocumentReference#getSnapshot" isEqualToString:call.method]) {
+      FIRDocumentReference *reference = [[FIRFirestore firestore] documentWithPath:path];
+      [reference getDocumentWithCompletion:^(FIRDocumentSnapshot * _Nullable snapshot, NSError * _Nullable error) {
+          if (error != nil) result(error.flutterError);
+          else if (snapshot != nil) result([snapshot flutterSnapshotWithHandle:nil]);
+          else result(@{});
+      }];
+  } else if ([@"DocumentReference#delete" isEqualToString:call.method]) {
+      FIRDocumentReference *reference = [[FIRFirestore firestore] documentWithPath:path];
+      [reference deleteDocumentWithCompletion:^(NSError * _Nullable error) {
+          defaultCompletionBlock(error);
+      }];
+  } else if ([@"DocumentReference#addSnapshotListener" isEqualToString:call.method]) {
     [self getQueryForPath:path withParamaters:parameters completion:^(FIRQuery * _Nullable query, NSError * _Nullable error) {
       if (error != nil) {
         result(error.flutterError);
@@ -123,7 +135,7 @@ typedef void (^FIRQueryBlock)(FIRQuery *_Nullable query,
           if (querySnap != nil) {
             NSMutableArray *documents = [NSMutableArray array];
             for (FIRDocumentSnapshot *document in querySnap.documents) {
-              [documents addObject:[document flutterSnapshot:nil]];
+              [documents addObject:[document flutterSnapshotWithHandle:nil]];
             }
             NSMutableDictionary *resultArguments = [NSMutableDictionary dictionary];
             resultArguments[@"documents"] = documents;
@@ -174,13 +186,13 @@ typedef void (^FIRQueryBlock)(FIRQuery *_Nullable query,
     if (snapshot == nil) return;
     NSMutableArray *documents = [NSMutableArray array];
     for (FIRDocumentSnapshot *document in snapshot.documents) {
-      [documents addObject:[document flutterSnapshot:nil]];
+      [documents addObject:[document flutterSnapshotWithHandle:nil]];
     }
     NSMutableArray *documentChanges = [NSMutableArray array];
     for (FIRDocumentChange *documentChange in snapshot.documentChanges) {
       [documentChanges addObject:@{
                                    @"type" : @(documentChange.type),
-                                   @"document" : [documentChange.document flutterSnapshot:nil],
+                                   @"document" : [documentChange.document flutterSnapshotWithHandle:nil],
                                    @"oldIndex" : [NSNumber numberWithUnsignedInteger:documentChange.oldIndex],
                                    @"newIndex" : [NSNumber numberWithUnsignedInteger:documentChange.newIndex],
                                    }];
@@ -200,7 +212,7 @@ typedef void (^FIRQueryBlock)(FIRQuery *_Nullable query,
       NSLog(@"[FirestorePlugin] Error in document observer: %@", error.debugDescription);
     }
     if (snapshot == nil) return;
-    NSDictionary *document = snapshot.exists ? [snapshot flutterSnapshot:handle] : nil;
+    NSDictionary *document = snapshot.exists ? [snapshot flutterSnapshotWithHandle:handle] : nil;
     [self.channel invokeMethod:@"DocumentSnapshot"
                      arguments:document];
   };
@@ -209,7 +221,7 @@ typedef void (^FIRQueryBlock)(FIRQuery *_Nullable query,
 @end
 
 @implementation FIRDocumentSnapshot (Flutter)
-- (NSDictionary<NSString *, id> *)flutterSnapshot:(NSNumber *)handle {
+- (NSDictionary<NSString *, id> *)flutterSnapshotWithHandle:(NSNumber *)handle {
   NSMutableDictionary *cleaned = self.data.mutableCopy;
   for (NSString *key in self.data) {
     id value = self.data[key];
