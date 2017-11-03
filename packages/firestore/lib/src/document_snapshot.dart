@@ -18,6 +18,8 @@ class DocumentSnapshot {
       : this.data = map["data"],
         this.id = map["id"];
 
+  bool get hasData => data != null;
+
   /// Reads individual values from the snapshot
   dynamic operator [](String key) => data[key];
 }
