@@ -105,7 +105,7 @@ typedef void (^FIRQueryBlock)(FIRQuery *_Nullable query,
       [reference deleteDocumentWithCompletion:^(NSError * _Nullable error) {
           defaultCompletionBlock(error);
       }];
-  } else if ([@"DocumentReference#addSnapshotListener" isEqualToString:call.method]) {
+  } else if ([@"Query#addSnapshotListener" isEqualToString:call.method]) {
     [self getQueryForPath:path withParamaters:parameters completion:^(FIRQuery * _Nullable query, NSError * _Nullable error) {
       if (error != nil) {
         result(error.flutterError);
@@ -222,6 +222,7 @@ typedef void (^FIRQueryBlock)(FIRQuery *_Nullable query,
 
 @implementation FIRDocumentSnapshot (Flutter)
 - (NSDictionary<NSString *, id> *)flutterSnapshotWithHandle:(NSNumber *)handle {
+  if (!self.exists) return @{};
   NSMutableDictionary *cleaned = self.data.mutableCopy;
   for (NSString *key in self.data) {
     id value = self.data[key];
