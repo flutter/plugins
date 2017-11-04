@@ -61,33 +61,31 @@ public class CloudFirestorePlugin implements MethodCallHandler {
     @SuppressWarnings("unchecked")
     Map<String, Object> parameters = (Map<String, Object>) arguments.get("parameters");
     if (parameters == null) return query;
-    for (Map.Entry<String, Object> entry : parameters.entrySet()) {
-      String key = entry.getKey();
-      Object value = entry.getValue();
-      if (key.startsWith("where==:")) {
-        String field = key.replace("where==:", "");
-        query = query.whereEqualTo(field, value);
-      } else if (key.startsWith("where<:")) {
-        String field = key.replace("where<:", "");
-        query = query.whereLessThan(field, value);
-      } else if (key.startsWith("where<=:")) {
-        String field = key.replace("where<=:", "");
-        query = query.whereLessThanOrEqualTo(field, value);
-      } else if (key.startsWith("where>:")) {
-        String field = key.replace("where>:", "");
-        query = query.whereGreaterThan(field, value);
-      } else if (key.startsWith("where>=:")) {
-        String field = key.replace("where>=:", "");
-        query = query.whereGreaterThanOrEqualTo(field, value);
-      } else if (key.startsWith("orderBy:")) {
-        String field = key.replace("orderBy:", "");
-        Boolean descending = (Boolean) value;
-        Query.Direction direction =
-            descending ? Query.Direction.DESCENDING : Query.Direction.ASCENDING;
-        query = query.orderBy(field, direction);
+    List<List<Object>> whereConditions = (List<List<Object>>) parameters.get("where");
+    for (List<Object> condition : whereConditions) {
+      String fieldName = (String) condition.get(0);
+      String operator = (String) condition.get(1);
+      Object value = condition.get(2);
+      if ("==".equals(operator)) {
+        query = query.whereEqualTo(fieldName, value);
+      } else if ("<".equals(operator)) {
+        query = query.whereLessThan(fieldName, value);
+      } else if ("<=".equals(operator)) {
+        query = query.whereLessThanOrEqualTo(fieldName, value);
+      } else if (">".equals(operator)) {
+        query = query.whereGreaterThan(fieldName, value);
+      } else if (">=".equals(operator)) {
+        query = query.whereGreaterThanOrEqualTo(fieldName, value);
+      } else {
+        // Invalid operator.
       }
     }
-    return query;
+    List<Object> orderBy = (List<Object>) parameters.get("orderBy");
+    if (orderBy == null) return query;
+    String orderByFieldName = (String) orderBy.get(0);
+    Boolean descending = (Boolean) orderBy.get(1);
+    Query.Direction direction = descending ? Query.Direction.DESCENDING : Query.Direction.ASCENDING;
+    return query.orderBy(orderByFieldName, direction);
   }
 
   private class DocumentObserver implements EventListener<DocumentSnapshot> {
