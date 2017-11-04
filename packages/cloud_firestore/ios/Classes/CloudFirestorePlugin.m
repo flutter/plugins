@@ -21,37 +21,32 @@
 FIRQuery *getQuery(NSDictionary *arguments) {
   FIRQuery *query = [[FIRFirestore firestore] collectionWithPath:arguments[@"path"]];
   NSDictionary *parameters = arguments[@"parameters"];
-  for (id key in parameters) {
-    NSString *keyString = key;
-    if ([keyString hasPrefix:@"where==:"]) {
-      NSString *field = [keyString stringByReplacingOccurrencesOfString:@"where==:"
-                                                             withString:@""];
-      query = [query queryWhereField:field isEqualTo:parameters[key]];
-    } else if ([keyString hasPrefix:@"where<:"]) {
-      NSString *field = [keyString stringByReplacingOccurrencesOfString:@"where<:"
-                                                             withString:@""];
-      query = [query queryWhereField:field isLessThan:parameters[key]];
-    } else if ([keyString hasPrefix:@"where<=:"]) {
-      NSString *field = [keyString stringByReplacingOccurrencesOfString:@"where<=:"
-                                                             withString:@""];
-      query = [query queryWhereField:field isLessThanOrEqualTo:parameters[key]];
-    } else if ([keyString hasPrefix:@"where>:"]) {
-      NSString *field = [keyString stringByReplacingOccurrencesOfString:@"where>:"
-                                                             withString:@""];
-      query = [query queryWhereField:field isGreaterThan:parameters[key]];
-    } else if ([keyString hasPrefix:@"where>=:"]) {
-      NSString *field = [keyString stringByReplacingOccurrencesOfString:@"where>=:"
-                                                             withString:@""];
-      query = [query queryWhereField:field isGreaterThanOrEqualTo:parameters[key]];
-    } else if ([keyString hasPrefix:@"orderBy:"]) {
-      NSString *field = [keyString stringByReplacingOccurrencesOfString:@"orderBy:"
-                                                             withString:@""];
-      NSNumber *val = parameters[key];
-      BOOL desc = [val boolValue];
-      query = [query queryOrderedByField:field descending:desc];
+  NSArray *whereConditions = parameters[@"where"];
+  for (id item in whereConditions) {
+    NSArray *condition = item;
+    NSString *fieldName = condition[0];
+    NSString *op = condition[1];
+    id value = condition[2];
+    if ([op isEqualToString:@"=="]) {
+      query = [query queryWhereField:fieldName isEqualTo:value];
+    } else if ([op isEqualToString:@"<"]) {
+      query = [query queryWhereField:fieldName isLessThan:value];
+    } else if ([op isEqualToString:@"<="]) {
+      query = [query queryWhereField:fieldName isLessThanOrEqualTo:value];
+    } else if ([op isEqualToString:@">"]) {
+      query = [query queryWhereField:fieldName isGreaterThan:value];
+    } else if ([op isEqualToString:@">="]) {
+      query = [query queryWhereField:fieldName isGreaterThanOrEqualTo:value];
     } else {
-      // Not implemented.
+      // Unsupported operator
     }
+  }
+  id orderBy = parameters[@"orderBy"];
+  if (orderBy) {
+    NSArray *orderByParameters = orderBy;
+    NSString *fieldName = orderByParameters[0];
+    NSNumber *descending = orderByParameters[1];
+    query = [query queryOrderedByField:fieldName descending:[descending boolValue]];
   }
   return query;
 }

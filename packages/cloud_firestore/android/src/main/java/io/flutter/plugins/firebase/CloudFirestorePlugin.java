@@ -57,11 +57,11 @@ public class CloudFirestorePlugin implements MethodCallHandler {
   }
 
   private Query getQuery(Map<String, Object> arguments) {
-    Query query =  getCollectionReference(arguments);
+    Query query = getCollectionReference(arguments);
     @SuppressWarnings("unchecked")
     Map<String, Object> parameters = (Map<String, Object>) arguments.get("parameters");
     if (parameters == null) return query;
-    for (Map.Entry<String, Object> entry: parameters.entrySet()) {
+    for (Map.Entry<String, Object> entry : parameters.entrySet()) {
       String key = entry.getKey();
       Object value = entry.getValue();
       if (key.startsWith("where==:")) {
@@ -82,9 +82,8 @@ public class CloudFirestorePlugin implements MethodCallHandler {
       } else if (key.startsWith("orderBy:")) {
         String field = key.replace("orderBy:", "");
         Boolean descending = (Boolean) value;
-        Query.Direction direction = descending
-          ? Query.Direction.DESCENDING
-          : Query.Direction.ASCENDING;
+        Query.Direction direction =
+            descending ? Query.Direction.DESCENDING : Query.Direction.ASCENDING;
         query = query.orderBy(field, direction);
       }
     }

@@ -66,7 +66,7 @@ void main() {
       test('where', () async {
         final StreamSubscription<QuerySnapshot> subscription =
             collectionReference
-                .where('createdAt', '<', 100)
+                .where('createdAt', isLessThan: 100)
                 .snapshots
                 .listen((QuerySnapshot querySnapshot) {});
         subscription.cancel();
