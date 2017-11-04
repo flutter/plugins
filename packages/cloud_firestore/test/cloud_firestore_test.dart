@@ -53,7 +53,9 @@ void main() {
               'Query#addSnapshotListener',
               <String, dynamic>{
                 'path': 'foo',
-                'parameters': <String, dynamic>{}
+                'parameters': <String, dynamic>{
+                  'where': <List<dynamic>>[],
+                }
               },
             ),
             new MethodCall(
@@ -79,7 +81,9 @@ void main() {
               <String, dynamic>{
                 'path': 'foo',
                 'parameters': <String, dynamic>{
-                  'where<:createdAt': 100,
+                  'where': <List<dynamic>>[
+                    <dynamic>['createdAt', '<', 100],
+                  ],
                 }
               },
             ),
@@ -106,7 +110,8 @@ void main() {
               <String, dynamic>{
                 'path': 'foo',
                 'parameters': <String, dynamic>{
-                  'orderBy:createdAt': false,
+                  'where': <List<dynamic>>[],
+                  'orderBy': <dynamic>['createdAt', false],
                 }
               },
             ),
