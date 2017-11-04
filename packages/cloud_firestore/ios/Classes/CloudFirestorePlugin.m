@@ -95,7 +95,15 @@ FIRQuery *getQuery(NSDictionary *arguments) {
     [reference deleteDocumentWithCompletion:defaultCompletionBlock];
   } else if ([@"Query#addSnapshotListener" isEqualToString:call.method]) {
     __block NSNumber *handle = [NSNumber numberWithInt:_nextListenerHandle++];
-    id<FIRListenerRegistration> listener = [getQuery(call.arguments)
+    FIRQuery *query;
+    @try {
+      query = getQuery(call.arguments);
+    } @catch (NSException *exception) {
+      result([FlutterError errorWithCode:@"invalid_query"
+                                 message:[exception name]
+                                 details:[exception reason]]);
+    }
+    id<FIRListenerRegistration> listener = [query
         addSnapshotListener:^(FIRQuerySnapshot *_Nullable snapshot, NSError *_Nullable error) {
           if (error) result(error.flutterError);
           NSMutableArray *paths = [NSMutableArray array];
