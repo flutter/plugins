@@ -117,13 +117,15 @@ String get androidGoToSettingsDescription => Intl.message(
 String get iOSLockOut => Intl.message(
     'Biometric authentication is disabled. Please lock and unlock your screen to '
     'enable it.',
-    desc: 'Message advising the user to re-enable biometrics on their device. It '
+    desc:
+        'Message advising the user to re-enable biometrics on their device. It '
         'shows in a dialog on iOS side.');
 
 String get iOSGoToSettingsDescription => Intl.message(
     'Biometric authentication is not set up on your device. Please either enable '
     'Touch ID or Face ID on your phone.',
-    desc: 'Message advising the user to go to the settings and configure Biometrics '
+    desc:
+        'Message advising the user to go to the settings and configure Biometrics '
         'for their device. It shows in a dialog on iOS side.');
 
 String get iOSOkButton => Intl.message('OK',
