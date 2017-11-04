@@ -1,3 +1,7 @@
+## [0.0.2+1]
+
+* Update messaging to support Face ID.
+
 ## [0.0.2]
 
 * Support stickyAuth mode.
