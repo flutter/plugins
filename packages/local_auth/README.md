@@ -84,7 +84,21 @@ try {
 }
 ```
 
-## Android integration
+## iOS Integration
+
+Note that this plugin works with both TouchID and FaceID. However, to use the latter,
+you need to also add:
+
+```
+<key>NSFaceIDUsageDescription</key>
+<string>Why is my app authenticating using face id?</string>
+```
+
+to your Info.plist file. Failure to do so results in a dialog that tells the user your
+app has not been updated to use TouchID.
+
+
+## Android Integration
 
 Update your project's `AndroidManifest.xml` file to include the
 `USE_FINGERPRINT` permissions:
