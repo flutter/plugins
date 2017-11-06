@@ -247,8 +247,8 @@ typedef void (^FIRQueryBlock)(FIRQuery *_Nullable query,
   NSNumber *descending = parameters[@"descending"];
   BOOL desc = (descending != nil) ? descending.boolValue : false;
   FIRQuery *query = self;
-  if (orderBy != nil) query = [query queryOrderedByField:orderBy descending:desc];
-  if (limit != nil) query = [query queryLimitedTo:limit.integerValue];
+  if (orderBy.notNull) query = [query queryOrderedByField:orderBy descending:desc];
+  if (limit.notNull) query = [query queryLimitedTo:limit.integerValue];
   return query;
 }
 
