@@ -38,6 +38,13 @@ class Firestore {
   /// Gets the instance of Firestore for the default Firebase app.
   static Firestore get instance => _instance;
 
+  static void setPersistenceEnabled(bool enabled) {
+    Firestore.channel.invokeMethod(
+      'Firestore#setPersistenceEnabled',
+      <String, dynamic>{'enabled': enabled},
+    );
+  }
+
   /// Gets a [CollectionReference] for the specified Firestore path.
   CollectionReference collection(String path,
       {Map<String, dynamic> parameters}) {

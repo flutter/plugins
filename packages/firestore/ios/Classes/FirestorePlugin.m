@@ -89,7 +89,13 @@ typedef void (^FIRQueryBlock)(FIRQuery *_Nullable query,
   };
   NSString *path = call.arguments[@"path"];
   NSDictionary *parameters = call.arguments[@"parameters"];
-  if ([@"DocumentReference#setData" isEqualToString:call.method]) {
+  if ([@"Firestore#setPersistenceEnabled" isEqualToString:call.method]) {
+    NSNumber *enabled = call.arguments[@"enabled"];
+    FIRFirestoreSettings *settings = [[FIRFirestoreSettings alloc] init];
+    settings.persistenceEnabled = enabled.boolValue;
+    [FIRFirestore firestore].settings = settings;
+    result(nil);
+  } else if ([@"DocumentReference#setData" isEqualToString:call.method]) {
     FIRDocumentReference *reference = [[FIRFirestore firestore] documentWithPath:path];
     NSDictionary *data = [FirestorePlugin replaceServerTimestamps:call.arguments[@"data"]];
     [reference setData:data completion:defaultCompletionBlock];

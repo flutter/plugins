@@ -12,6 +12,9 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
 import java.util.*
+import com.google.firebase.firestore.FirebaseFirestoreSettings
+
+
 
 class FirestorePlugin internal constructor(private val channel: MethodChannel) : MethodCallHandler {
     private var nextHandle = 0
@@ -30,6 +33,15 @@ class FirestorePlugin internal constructor(private val channel: MethodChannel) :
 
     override fun onMethodCall(call: MethodCall, result: Result): Unit {
         when (call.method) {
+            "Firestore#setPersistenceEnabled" -> {
+                val arguments = call.arguments<Map<String, Any?>>()
+                val enabled = arguments["enabled"] as Boolean
+                val settings = FirebaseFirestoreSettings.Builder()
+                        .setPersistenceEnabled(enabled)
+                        .build()
+                FirebaseFirestore.getInstance().setFirestoreSettings(settings)
+                result.success(null)
+            }
             "DocumentReference#setData" -> {
                 val arguments = call.arguments<Map<String, Any?>>()
                 val documentReference = getDocumentReference(arguments["path"] as String)
