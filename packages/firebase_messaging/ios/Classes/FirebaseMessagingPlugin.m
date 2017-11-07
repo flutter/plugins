@@ -6,8 +6,10 @@
 
 #import "Firebase/Firebase.h"
 
+#import <UserNotifications/UserNotifications.h>
+
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
-@interface FirebaseMessagingPlugin ()<FIRMessagingDelegate>
+@interface FirebaseMessagingPlugin ()<FIRMessagingDelegate, UNUserNotificationCenterDelegate>
 @end
 #endif
 
@@ -36,6 +38,9 @@
       [FIRApp configure];
     }
     [FIRMessaging messaging].delegate = self;
+#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+      [UNUserNotificationCenter currentNotificationCenter].delegate = self;
+#endif
   }
   return self;
 }
@@ -152,6 +157,19 @@
 - (void)messaging:(nonnull FIRMessaging *)messaging
     didRefreshRegistrationToken:(nonnull NSString *)fcmToken {
   [_channel invokeMethod:@"onToken" arguments:fcmToken];
+}
+
+#pragma mark - UNUserNotificationCenterDelegate
+
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler {
+    completionHandler(UNNotificationPresentationOptionAlert | UNNotificationPresentationOptionSound);
+}
+
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler {
+    if ([response.actionIdentifier isEqualToString:UNNotificationDefaultActionIdentifier]) {
+        [_channel invokeMethod:@"onLaunch" arguments:response.notification.request.content.userInfo];
+    }
+    completionHandler();
 }
 
 @end
