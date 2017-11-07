@@ -100,22 +100,25 @@ class FirestorePlugin internal constructor(private val channel: MethodChannel) :
                 queryParameterTask.addOnSuccessListener {
                     val qp: QueryParameters = it
 
-                    val query = getQuery(path = path, limit = qp.limit, orderBy = qp.orderBy,
-                            descending = qp.descending, startAt = qp.startAtSnap,
-                            startAfter = qp.startAfterSnap, endAt = null)
+                    try {
+                        val query = getQuery(path = path, limit = qp.limit, orderBy = qp.orderBy,
+                                descending = qp.descending, startAt = qp.startAtSnap,
+                                startAfter = qp.startAfterSnap, endAt = null)
 
-                    query.get().addOnCompleteListener { task ->
-                        val querySnapshot = task.result
-                        val documents = querySnapshot.documents.map(::documentSnapshotToMap)
-                        val resultArguments = HashMap<String, Any>()
-                        resultArguments.put("documents", documents)
-                        resultArguments.put("documentChanges", HashMap<String, Any>())
-                        result.success(resultArguments)
-                    }.addOnFailureListener {
-                        if (qp.startAtId != null) resultErrorForDocumentId(result, qp.startAtId)
-                        else if (qp.startAfterId != null) resultErrorForDocumentId(result, qp.startAfterId)
+                        query.get().addOnCompleteListener { task ->
+                            val querySnapshot = task.result
+                            val documents = querySnapshot.documents.map(::documentSnapshotToMap)
+                            val resultArguments = HashMap<String, Any>()
+                            resultArguments.put("documents", documents)
+                            resultArguments.put("documentChanges", HashMap<String, Any>())
+                            result.success(resultArguments)
+                        }.addOnFailureListener {
+                            if (qp.startAtId != null) resultErrorForDocumentId(result, qp.startAtId)
+                            else if (qp.startAfterId != null) resultErrorForDocumentId(result, qp.startAfterId)
+                        }
+                    } catch (e: Throwable) {
+                        result.error("ERR", e.message, null);
                     }
-
                 }
                 queryParameterTask.addOnFailureListener {
                     resultErrorForArguments(result, arguments)
@@ -179,7 +182,7 @@ class FirestorePlugin internal constructor(private val channel: MethodChannel) :
 
     private inner class DocumentObserver internal constructor(private val handle: Int) : EventListener<DocumentSnapshot?> {
         override fun onEvent(documentSnapshot: DocumentSnapshot?, e: FirebaseFirestoreException?) {
-            if(documentSnapshot == null) return
+            if (documentSnapshot == null) return
 
             val arguments =
                     if (documentSnapshot.exists()) documentSnapshotToMap(documentSnapshot)
@@ -192,7 +195,7 @@ class FirestorePlugin internal constructor(private val channel: MethodChannel) :
 
     private inner class QueryObserver internal constructor(private val handle: Int) : EventListener<QuerySnapshot?> {
         override fun onEvent(querySnapshot: QuerySnapshot?, e: FirebaseFirestoreException?) {
-            if(querySnapshot == null) return
+            if (querySnapshot == null) return
 
             val arguments = HashMap<String, Any>()
             arguments.put("handle", handle)
