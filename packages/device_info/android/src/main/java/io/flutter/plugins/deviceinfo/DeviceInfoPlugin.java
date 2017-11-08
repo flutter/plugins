@@ -53,9 +53,9 @@ public class DeviceInfoPlugin implements MethodCallHandler {
         build.put("supported64BitAbis", Arrays.asList(Build.SUPPORTED_64_BIT_ABIS));
         build.put("supportedAbis", Arrays.asList(Build.SUPPORTED_ABIS));
       } else {
-        build.put("supported32BitAbis", EMPTY_STRING_LIST);
-        build.put("supported64BitAbis", EMPTY_STRING_LIST);
-        build.put("supportedAbis", EMPTY_STRING_LIST);
+        build.put("supported32BitAbis", Arrays.asList(EMPTY_STRING_LIST));
+        build.put("supported64BitAbis", Arrays.asList(EMPTY_STRING_LIST));
+        build.put("supportedAbis", Arrays.asList(EMPTY_STRING_LIST));
       }
       build.put("tags", Build.TAGS);
       build.put("type", Build.TYPE);
