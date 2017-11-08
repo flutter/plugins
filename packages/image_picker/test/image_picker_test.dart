@@ -17,7 +17,7 @@ void main() {
     });
 
     group('#pickImage', () {
-      test('ImageSource.any is the default image source', () async {
+      test('ImageSource.askUser is the default image source', () async {
         await ImagePicker.pickImage();
 
         expect(
