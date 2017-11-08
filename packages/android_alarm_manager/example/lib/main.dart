@@ -20,7 +20,10 @@ void printGoodbye() {
   print("[$now] Goodbye, world! isolate=$isolateId function='$printGoodbye'");
 }
 
+bool oneShotFired = false;
+
 void printOneShot() {
+  oneShotFired = true;
   final DateTime now = new DateTime.now();
   final int isolateId = Isolate.current.hashCode;
   print("[$now] Hello, once! isolate=$isolateId function='$printOneShot'");
@@ -30,12 +33,17 @@ Future<Null> main() async {
   final int helloAlarmID = 0;
   final int goodbyeAlarmID = 1;
   final int oneShotID = 2;
+  final DateTime now = new DateTime.now();
+  final int isolateId = Isolate.current.hashCode;
+  print("[$now] Hello, main()! isolate=$isolateId function='$main'");
   runApp(const Center(
       child: const Text('Hello, world!', textDirection: TextDirection.ltr)));
   await AndroidAlarmManager.periodic(
       const Duration(minutes: 1), helloAlarmID, printHello);
   await AndroidAlarmManager.periodic(
       const Duration(minutes: 1), goodbyeAlarmID, printGoodbye);
-  await AndroidAlarmManager.oneShot(
-      const Duration(minutes: 1), oneShotID, printOneShot);
+  if (!oneShotFired) {
+    await AndroidAlarmManager.oneShot(
+        const Duration(minutes: 1), oneShotID, printOneShot);
+  }
 }
