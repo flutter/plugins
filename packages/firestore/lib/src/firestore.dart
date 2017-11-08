@@ -59,18 +59,31 @@ class Firestore {
     return new DocumentReference._(this, path.split('/'));
   }
 
-  Query query(String path, {String orderBy, String startAtId, String startAfterId, int limit, bool descending}) {
+  Query query(String path,
+      {String orderBy,
+      int limit,
+      bool descending,
+      String startAtId,
+      String startAfterId,
+      String endAtId,
+      String endBeforeId}) {
     assert(path != null);
-    if ((startAtId != null) || startAfterId != null || limit != null) {
+    if ((startAtId != null) ||
+        startAfterId != null ||
+        endAtId != null ||
+        endBeforeId != null ||
+        limit != null) {
       assert(orderBy != null);
     }
 
     Map<String, dynamic> parameters = <String, dynamic>{
       'orderBy': orderBy,
+      'limit': limit,
+      'descending': descending,
       'startAtId': startAtId,
       'startAfterId': startAfterId,
-      'limit': limit,
-      'descending': descending
+      'endAtId' : endAtId,
+      'endBeforeId' : endBeforeId
     };
     return new Query._(
         firestore: this,

@@ -40,6 +40,7 @@ typedef void (^FIRQueryBlock)(FIRQuery *_Nullable query,
 - (void)queryStartingAtId:(NSString *)documentId withParameters:(NSDictionary *)parameters completion:(FIRQueryBlock)completion;
 - (void)queryStartingAfterId:(NSString *)documentId withParameters:(NSDictionary *)parameters completion:(FIRQueryBlock)completion;
 - (void)queryEndingAtId:(NSString *)documentId withParameters:(NSDictionary *)parameters completion:(FIRQueryBlock)completion;
+- (void)queryEndingBeforeId:(NSString *)documentId withParameters:(NSDictionary *)parameters completion:(FIRQueryBlock)completion;
 @end
 
 @interface FirestorePlugin ()
@@ -169,6 +170,7 @@ typedef void (^FIRQueryBlock)(FIRQuery *_Nullable query,
   NSString *startAtId = parameters[@"startAtId"];
   NSString *startAfterId = parameters[@"startAfterId"];
   NSString *endAtId = parameters[@"endAtId"];
+  NSString *endBeforeId = parameters[@"endBeforeId"];
   FIRCollectionReference *collectionReference = [[FIRFirestore firestore] collectionWithPath:path];
   if (startAtId.notNull) {
     [collectionReference queryStartingAtId:startAtId withParameters:parameters completion:completion];
@@ -178,6 +180,9 @@ typedef void (^FIRQueryBlock)(FIRQuery *_Nullable query,
   }
   else if (endAtId.notNull) {
     [collectionReference queryEndingAtId:endAtId withParameters:parameters completion:completion];
+  }
+  else if (endBeforeId.notNull) {
+    [collectionReference queryEndingBeforeId:endBeforeId withParameters:parameters completion:completion];
   }
   else {
     completion([collectionReference queryWithParameters:parameters], nil);
@@ -276,6 +281,13 @@ typedef void (^FIRQueryBlock)(FIRQuery *_Nullable query,
   [[self documentWithPath:documentId] getDocumentWithCompletion:^(FIRDocumentSnapshot * _Nullable snapshot, NSError * _Nullable error) {
     if (error != nil) completion(nil, error);
     else completion([[self queryWithParameters:parameters] queryEndingAtDocument:snapshot], nil);
+  }];
+}
+
+- (void)queryEndingBeforeId:(NSString *)documentId withParameters:(NSDictionary *)parameters completion:(FIRQueryBlock)completion {
+  [[self documentWithPath:documentId] getDocumentWithCompletion:^(FIRDocumentSnapshot * _Nullable snapshot, NSError * _Nullable error) {
+    if (error != nil) completion(nil, error);
+    else completion([[self queryWithParameters:parameters] queryEndingBeforeDocument:snapshot], nil);
   }];
 }
 @end
