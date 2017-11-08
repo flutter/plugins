@@ -7,6 +7,12 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 
+enum ImageSource {
+  askUser,
+  camera,
+  gallery,
+}
+
 class ImagePicker {
   static const MethodChannel _channel = const MethodChannel('image_picker');
 
@@ -20,7 +26,13 @@ class ImagePicker {
   /// If specified, the image will be at most [maxWidth] wide and
   /// [maxHeight] tall. Otherwise the image will be returned at it's
   /// original width and height.
-  static Future<File> pickImage({double maxWidth, double maxHeight}) async {
+  static Future<File> pickImage({
+    ImageSource source = ImageSource.askUser,
+    double maxWidth,
+    double maxHeight,
+  }) async {
+    assert(source != null);
+
     if (maxWidth != null && maxWidth < 0) {
       throw new ArgumentError.value(maxWidth, 'maxWidth can\'t be negative');
     }
@@ -31,7 +43,8 @@ class ImagePicker {
 
     final String path = await _channel.invokeMethod(
       'pickImage',
-      <String, double>{
+      <String, dynamic>{
+        'source': source.index,
         'maxWidth': maxWidth,
         'maxHeight': maxHeight,
       },
