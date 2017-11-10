@@ -16,7 +16,8 @@ dependencies:
   meta: "^1.0.5"
 
 dev_dependencies:
-  test: 0.12.24+8
+  flutter_test:
+    sdk: flutter
 
 environment:
     sdk: ">=1.8.0 <2.0.0-dev.infinity"

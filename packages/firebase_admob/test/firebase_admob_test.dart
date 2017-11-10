@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'package:flutter/services.dart';
+
 import 'package:firebase_admob/firebase_admob.dart';
-import 'package:test/test.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('FirebaseAdMob', () {
@@ -40,15 +41,13 @@ void main() {
       log.clear();
 
       expect(await admob.initialize(appId: appId), true);
-      expect(
-          log,
-          equals(<MethodCall>[
-            new MethodCall('initialize', <String, dynamic>{
-              'appId': appId,
-              'trackingId': null,
-              'analyticsEnabled': false,
-            }),
-          ]));
+      expect(log, <Matcher>[
+        isMethodCall('initialize', arguments: <String, dynamic>{
+          'appId': appId,
+          'trackingId': null,
+          'analyticsEnabled': false,
+        }),
+      ]);
     });
 
     test('banner', () async {
@@ -63,21 +62,19 @@ void main() {
       expect(await banner.show(), true);
       expect(await banner.dispose(), true);
 
-      expect(
-          log,
-          equals(<MethodCall>[
-            new MethodCall('loadBannerAd', <String, dynamic>{
-              'id': id,
-              'unitId': bannerAdUnitId,
-              'targetingInfo': null,
-            }),
-            new MethodCall('showAd', <String, dynamic>{
-              'id': id,
-            }),
-            new MethodCall('disposeAd', <String, dynamic>{
-              'id': id,
-            }),
-          ]));
+      expect(log, <Matcher>[
+        isMethodCall('loadBannerAd', arguments: <String, dynamic>{
+          'id': id,
+          'unitId': bannerAdUnitId,
+          'targetingInfo': null,
+        }),
+        isMethodCall('showAd', arguments: <String, dynamic>{
+          'id': id,
+        }),
+        isMethodCall('disposeAd', arguments: <String, dynamic>{
+          'id': id,
+        }),
+      ]);
     });
 
     test('interstitial', () async {
@@ -92,21 +89,19 @@ void main() {
       expect(await interstitial.show(), true);
       expect(await interstitial.dispose(), true);
 
-      expect(
-          log,
-          equals(<MethodCall>[
-            new MethodCall('loadInterstitialAd', <String, dynamic>{
-              'id': id,
-              'unitId': interstitialAdUnitId,
-              'targetingInfo': null,
-            }),
-            new MethodCall('showAd', <String, dynamic>{
-              'id': id,
-            }),
-            new MethodCall('disposeAd', <String, dynamic>{
-              'id': id,
-            }),
-          ]));
+      expect(log, <Matcher>[
+        isMethodCall('loadInterstitialAd', arguments: <String, dynamic>{
+          'id': id,
+          'unitId': interstitialAdUnitId,
+          'targetingInfo': null,
+        }),
+        isMethodCall('showAd', arguments: <String, dynamic>{
+          'id': id,
+        }),
+        isMethodCall('disposeAd', arguments: <String, dynamic>{
+          'id': id,
+        }),
+      ]);
     });
   });
 }
