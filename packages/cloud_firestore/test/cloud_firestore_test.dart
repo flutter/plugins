@@ -4,11 +4,9 @@
 
 import 'dart:async';
 
-import 'package:test/test.dart';
-
-import 'package:flutter/services.dart';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('$Firestore', () {
@@ -48,19 +46,19 @@ void main() {
         await new Future<Null>.delayed(Duration.ZERO);
         expect(
           log,
-          equals(<MethodCall>[
-            new MethodCall(
+          <Matcher>[
+            isMethodCall(
               'Query#addSnapshotListener',
-              <String, dynamic>{
+              arguments: <String, dynamic>{
                 'path': 'foo',
-                'parameters': <String, dynamic>{}
+                'parameters': <String, dynamic>{},
               },
             ),
-            new MethodCall(
+            isMethodCall(
               'Query#removeListener',
-              <String, dynamic>{'handle': 0},
+              arguments: <String, dynamic>{'handle': 0},
             ),
-          ]),
+          ],
         );
       });
     });
@@ -75,18 +73,18 @@ void main() {
         await new Future<Null>.delayed(Duration.ZERO);
         expect(
           log,
-          equals(<MethodCall>[
-            new MethodCall(
+          <Matcher>[
+            isMethodCall(
               'Query#addDocumentListener',
-              <String, dynamic>{
+              arguments: <String, dynamic>{
                 'path': 'foo',
               },
             ),
-            new MethodCall(
+            isMethodCall(
               'Query#removeListener',
-              <String, dynamic>{'handle': 0},
-            )
-          ]),
+              arguments: <String, dynamic>{'handle': 0},
+            ),
+          ],
         );
       });
       test('set', () async {
@@ -95,15 +93,15 @@ void main() {
             .setData(<String, String>{'bazKey': 'quxValue'});
         expect(
           log,
-          equals(<MethodCall>[
-            new MethodCall(
+          <Matcher>[
+            isMethodCall(
               'DocumentReference#setData',
-              <String, dynamic>{
+              arguments: <String, dynamic>{
                 'path': 'foo/bar',
-                'data': <String, String>{'bazKey': 'quxValue'}
+                'data': <String, String>{'bazKey': 'quxValue'},
               },
             ),
-          ]),
+          ],
         );
       });
     });

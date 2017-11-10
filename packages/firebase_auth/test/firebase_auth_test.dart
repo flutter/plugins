@@ -4,11 +4,9 @@
 
 import 'dart:async';
 
-import 'package:test/test.dart';
-
-import 'package:flutter/services.dart';
-
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 const String kMockProviderId = 'firebase';
 const String kMockUid = '12345';
@@ -62,9 +60,9 @@ void main() {
       verifyUser(user);
       expect(
         log,
-        equals(<MethodCall>[
-          const MethodCall('currentUser'),
-        ]),
+        <Matcher>[
+          isMethodCall('currentUser', arguments: null),
+        ],
       );
     });
 
@@ -75,12 +73,17 @@ void main() {
       expect(await user.getIdToken(refresh: true), equals(kMockIdToken));
       expect(
         log,
-        equals(<MethodCall>[
-          const MethodCall('signInAnonymously'),
-          const MethodCall(
-              'getIdToken', const <String, bool>{'refresh': false}),
-          const MethodCall('getIdToken', const <String, bool>{'refresh': true}),
-        ]),
+        <Matcher>[
+          isMethodCall('signInAnonymously', arguments: null),
+          isMethodCall(
+            'getIdToken',
+            arguments: <String, bool>{'refresh': false},
+          ),
+          isMethodCall(
+            'getIdToken',
+            arguments: <String, bool>{'refresh': true},
+          ),
+        ],
       );
     });
 
@@ -92,12 +95,15 @@ void main() {
       verifyUser(user);
       expect(
         log,
-        equals(<MethodCall>[
-          new MethodCall('createUserWithEmailAndPassword', <String, String>{
-            'email': kMockEmail,
-            'password': kMockPassword,
-          })
-        ]),
+        <Matcher>[
+          isMethodCall(
+            'createUserWithEmailAndPassword',
+            arguments: <String, String>{
+              'email': kMockEmail,
+              'password': kMockPassword,
+            },
+          ),
+        ],
       );
     });
 
@@ -109,12 +115,15 @@ void main() {
       verifyUser(user);
       expect(
         log,
-        equals(<MethodCall>[
-          new MethodCall('linkWithEmailAndPassword', <String, String>{
-            'email': kMockEmail,
-            'password': kMockPassword,
-          })
-        ]),
+        <Matcher>[
+          isMethodCall(
+            'linkWithEmailAndPassword',
+            arguments: <String, String>{
+              'email': kMockEmail,
+              'password': kMockPassword,
+            },
+          ),
+        ],
       );
     });
 
@@ -126,12 +135,15 @@ void main() {
       verifyUser(user);
       expect(
         log,
-        equals(<MethodCall>[
-          new MethodCall('signInWithGoogle', <String, String>{
-            'idToken': kMockIdToken,
-            'accessToken': kMockAccessToken,
-          })
-        ]),
+        <Matcher>[
+          isMethodCall(
+            'signInWithGoogle',
+            arguments: <String, String>{
+              'idToken': kMockIdToken,
+              'accessToken': kMockAccessToken,
+            },
+          ),
+        ],
       );
     });
 
@@ -143,12 +155,15 @@ void main() {
       verifyUser(user);
       expect(
         log,
-        equals(<MethodCall>[
-          new MethodCall('linkWithGoogleCredential', <String, String>{
-            'idToken': kMockIdToken,
-            'accessToken': kMockAccessToken,
-          })
-        ]),
+        <Matcher>[
+          isMethodCall(
+            'linkWithGoogleCredential',
+            arguments: <String, String>{
+              'idToken': kMockIdToken,
+              'accessToken': kMockAccessToken,
+            },
+          ),
+        ],
       );
     });
 
@@ -159,11 +174,14 @@ void main() {
       verifyUser(user);
       expect(
         log,
-        equals(<MethodCall>[
-          new MethodCall('signInWithFacebook', <String, String>{
-            'accessToken': kMockAccessToken,
-          })
-        ]),
+        <Matcher>[
+          isMethodCall(
+            'signInWithFacebook',
+            arguments: <String, String>{
+              'accessToken': kMockAccessToken,
+            },
+          ),
+        ],
       );
     });
 
@@ -175,12 +193,15 @@ void main() {
       verifyUser(user);
       expect(
         log,
-        equals(<MethodCall>[
-          new MethodCall('linkWithEmailAndPassword', <String, String>{
-            'email': kMockEmail,
-            'password': kMockPassword,
-          })
-        ]),
+        <Matcher>[
+          isMethodCall(
+            'linkWithEmailAndPassword',
+            arguments: <String, String>{
+              'email': kMockEmail,
+              'password': kMockPassword,
+            },
+          ),
+        ],
       );
     });
 
@@ -190,11 +211,11 @@ void main() {
       verifyUser(user);
       expect(
         log,
-        equals(<MethodCall>[
-          new MethodCall('signInWithCustomToken', <String, String>{
+        <Matcher>[
+          isMethodCall('signInWithCustomToken', arguments: <String, String>{
             'token': kMockCustomToken,
           })
-        ]),
+        ],
       );
     });
 
@@ -205,8 +226,10 @@ void main() {
         await BinaryMessages.handlePlatformMessage(
           FirebaseAuth.channel.name,
           FirebaseAuth.channel.codec.encodeMethodCall(
-            new MethodCall('onAuthStateChanged',
-                <String, dynamic>{'id': 42, 'user': user}),
+            new MethodCall(
+              'onAuthStateChanged',
+              <String, dynamic>{'id': 42, 'user': user},
+            ),
           ),
           (_) {},
         );
@@ -234,15 +257,15 @@ void main() {
 
       expect(
         log,
-        equals(<MethodCall>[
-          const MethodCall('startListeningAuthState'),
-          new MethodCall(
+        <Matcher>[
+          isMethodCall('startListeningAuthState', arguments: null),
+          isMethodCall(
             'stopListeningAuthState',
-            <String, dynamic>{
+            arguments: <String, dynamic>{
               'id': 42,
             },
           ),
-        ]),
+        ],
       );
     });
   });
