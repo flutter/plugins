@@ -70,6 +70,13 @@ class FirebaseList extends ListBase<DataSnapshot>
     throw new UnsupportedError("List cannot be modified.");
   }
 
+  @override
+  void clear() {
+    cancelSubscriptions();
+
+    // Do not call super.clear(), it will set the length, it's unsupported.
+  }
+
   int _indexForKey(String key) {
     assert(key != null);
     // TODO(jackson): We could binary search since the list is already sorted.
