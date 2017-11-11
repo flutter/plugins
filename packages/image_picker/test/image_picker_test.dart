@@ -26,15 +26,13 @@ void main() {
 
         expect(
           log,
-          equals(
-            <MethodCall>[
-              const MethodCall('pickImage', const <String, dynamic>{
-                'source': 0,
-                'maxWidth': null,
-                'maxHeight': null,
-              }),
-            ],
-          ),
+          <Matcher>[
+            isMethodCall('pickImage', arguments: <String, dynamic>{
+              'source': 0,
+              'maxWidth': null,
+              'maxHeight': null,
+            }),
+          ],
         );
       });
 
@@ -45,25 +43,23 @@ void main() {
 
         expect(
           log,
-          equals(
-            <MethodCall>[
-              const MethodCall('pickImage', const <String, dynamic>{
-                'source': 0,
-                'maxWidth': null,
-                'maxHeight': null,
-              }),
-              const MethodCall('pickImage', const <String, dynamic>{
-                'source': 1,
-                'maxWidth': null,
-                'maxHeight': null,
-              }),
-              const MethodCall('pickImage', const <String, dynamic>{
-                'source': 2,
-                'maxWidth': null,
-                'maxHeight': null,
-              }),
-            ],
-          ),
+          <Matcher>[
+            isMethodCall('pickImage', arguments: <String, dynamic>{
+              'source': 0,
+              'maxWidth': null,
+              'maxHeight': null,
+            }),
+            isMethodCall('pickImage', arguments: <String, dynamic>{
+              'source': 1,
+              'maxWidth': null,
+              'maxHeight': null,
+            }),
+            isMethodCall('pickImage', arguments: <String, dynamic>{
+              'source': 2,
+              'maxWidth': null,
+              'maxHeight': null,
+            }),
+          ],
         );
       });
 
@@ -79,19 +75,23 @@ void main() {
         expect(
           log,
           <Matcher>[
-            isMethodCall('pickImage', arguments: <String, double>{
+            isMethodCall('pickImage', arguments: <String, dynamic>{
+              'source': 0,
               'maxWidth': null,
               'maxHeight': null,
             }),
-            isMethodCall('pickImage', arguments: <String, double>{
+            isMethodCall('pickImage', arguments: <String, dynamic>{
+              'source': 0,
               'maxWidth': 10.0,
               'maxHeight': null,
             }),
-            isMethodCall('pickImage', arguments: <String, double>{
+            isMethodCall('pickImage', arguments: <String, dynamic>{
+              'source': 0,
               'maxWidth': null,
               'maxHeight': 10.0,
             }),
-            isMethodCall('pickImage', arguments: <String, double>{
+            isMethodCall('pickImage', arguments: <String, dynamic>{
+              'source': 0,
               'maxWidth': 10.0,
               'maxHeight': 20.0,
             }),
