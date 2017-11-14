@@ -13,7 +13,7 @@ import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
 import java.util.*
 import com.google.firebase.firestore.FirebaseFirestoreSettings
-
+import java.lang.Exception
 
 
 class FirestorePlugin internal constructor(private val channel: MethodChannel) : MethodCallHandler {
@@ -62,17 +62,20 @@ class FirestorePlugin internal constructor(private val channel: MethodChannel) :
             }
             "DocumentReference#getSnapshot" -> {
                 val arguments = call.arguments<Map<String, Any?>>()
-                val documentReference = getDocumentReference(arguments["path"] as String)
+                val path = arguments["path"] as String
+                val documentReference = getDocumentReference(path)
                 documentReference.get().addOnCompleteListener { task ->
-                    val documentSnapshot: DocumentSnapshot = task.result
+                    if (task.isSuccessful) {
+                        val documentSnapshot: DocumentSnapshot = task.result
 
-                    val resultArguments =
-                            if (documentSnapshot.exists()) documentSnapshotToMap(documentSnapshot)
-                            else HashMap<String, Any>()
+                        val resultArguments =
+                                if (documentSnapshot.exists()) documentSnapshotToMap(documentSnapshot)
+                                else HashMap<String, Any>()
 
-                    result.success(resultArguments)
-                }.addOnFailureListener {
-                    resultErrorForArguments(result, arguments)
+                        result.success(resultArguments)
+                    }
+                }.addOnFailureListener { e ->
+                    resultErrorForArguments(result, arguments, e)
                 }
             }
             "DocumentReference#delete" -> {
@@ -80,8 +83,8 @@ class FirestorePlugin internal constructor(private val channel: MethodChannel) :
                 val documentReference = getDocumentReference(arguments["path"] as String)
                 documentReference.delete().addOnCompleteListener { task ->
                     result.success(null)
-                }.addOnFailureListener {
-                    resultErrorForArguments(result, arguments)
+                }.addOnFailureListener { e ->
+                    resultErrorForArguments(result, arguments, e)
                 }
             }
             "Query#addSnapshotListener" -> {
@@ -107,8 +110,8 @@ class FirestorePlugin internal constructor(private val channel: MethodChannel) :
                                 endAt = qp.endAtSnap, endBefore = qp.endBeforeSnap)
                     }
                 }
-                queryParameterTask.addOnFailureListener {
-                    resultErrorForArguments(result, arguments)
+                queryParameterTask.addOnFailureListener { e ->
+                    resultErrorForArguments(result, arguments, e)
                 }
             }
             "Query#getSnapshot" -> {
@@ -141,8 +144,8 @@ class FirestorePlugin internal constructor(private val channel: MethodChannel) :
                         result.error("ERR", e.message, null);
                     }
                 }
-                queryParameterTask.addOnFailureListener {
-                    resultErrorForArguments(result, arguments)
+                queryParameterTask.addOnFailureListener { e ->
+                    resultErrorForArguments(result, arguments, e)
                 }
             }
 
@@ -266,7 +269,7 @@ class FirestorePlugin internal constructor(private val channel: MethodChannel) :
     }
 
     private fun resultErrorForDocumentId(result: Result, id: String) = result.error("ERR", "Error retrieving document with ID $id", null)
-    private fun resultErrorForArguments(result: Result, arguments: Map<String, Any?>) = result.error("ERR", "Error for arguments $arguments", null)
+    private fun resultErrorForArguments(result: Result, arguments: Map<String, Any?>, exception: Exception?) = result.error("ERR", "Error for arguments $arguments", exception.toString())
 
 }
 
