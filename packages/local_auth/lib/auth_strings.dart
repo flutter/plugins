@@ -115,15 +115,18 @@ String get androidGoToSettingsDescription => Intl.message(
         'fingerprint on their device. It shows in a dialog on Android side.');
 
 String get iOSLockOut => Intl.message(
-    'Touch ID is disabled. Please lock and unlock your screen to enable it.',
-    desc: 'Message advising the user to re-enable Touch ID on their device. It '
+    'Biometric authentication is disabled. Please lock and unlock your screen to '
+    'enable it.',
+    desc:
+        'Message advising the user to re-enable biometrics on their device. It '
         'shows in a dialog on iOS side.');
 
 String get iOSGoToSettingsDescription => Intl.message(
-    'Touch ID is not set up on your device. Go to \'Settings > Touch ID & '
-    'Passcode\' to add your fingerprint.',
-    desc: 'Message advising the user to go to the settings and configure Touch '
-        'ID on their device. It shows in a dialog on iOS side.');
+    'Biometric authentication is not set up on your device. Please either enable '
+    'Touch ID or Face ID on your phone.',
+    desc:
+        'Message advising the user to go to the settings and configure Biometrics '
+        'for their device. It shows in a dialog on iOS side.');
 
 String get iOSOkButton => Intl.message('OK',
     desc: 'Message showed on a button that the user can click to leave the '

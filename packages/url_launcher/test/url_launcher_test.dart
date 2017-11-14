@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/services.dart';
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 void main() {
@@ -18,21 +18,19 @@ void main() {
     log.clear();
   });
 
-  test('canLaunch test', () async {
+  test('canLaunch', () async {
     await canLaunch('http://example.com/');
     expect(
       log,
-      equals(
-          <MethodCall>[const MethodCall('canLaunch', 'http://example.com/')]),
+      <Matcher>[isMethodCall('canLaunch', arguments: 'http://example.com/')],
     );
-    log.clear();
   });
 
-  test('launch test', () async {
+  test('launch', () async {
     await launch('http://example.com/');
     expect(
-        log,
-        equals(
-            <MethodCall>[const MethodCall('launch', 'http://example.com/')]));
+      log,
+      <Matcher>[isMethodCall('launch', arguments: 'http://example.com/')],
+    );
   });
 }

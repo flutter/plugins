@@ -1,6 +1,10 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'package:flutter/services.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:test/test.dart';
 
 void main() {
   group('$ImagePicker', () {
@@ -29,26 +33,24 @@ void main() {
 
         expect(
           log,
-          equals(
-            <MethodCall>[
-              const MethodCall('pickImage', const <String, double>{
-                'maxWidth': null,
-                'maxHeight': null,
-              }),
-              const MethodCall('pickImage', const <String, double>{
-                'maxWidth': 10.0,
-                'maxHeight': null,
-              }),
-              const MethodCall('pickImage', const <String, double>{
-                'maxWidth': null,
-                'maxHeight': 10.0,
-              }),
-              const MethodCall('pickImage', const <String, double>{
-                'maxWidth': 10.0,
-                'maxHeight': 20.0,
-              }),
-            ],
-          ),
+          <Matcher>[
+            isMethodCall('pickImage', arguments: <String, double>{
+              'maxWidth': null,
+              'maxHeight': null,
+            }),
+            isMethodCall('pickImage', arguments: <String, double>{
+              'maxWidth': 10.0,
+              'maxHeight': null,
+            }),
+            isMethodCall('pickImage', arguments: <String, double>{
+              'maxWidth': null,
+              'maxHeight': 10.0,
+            }),
+            isMethodCall('pickImage', arguments: <String, double>{
+              'maxWidth': 10.0,
+              'maxHeight': 20.0,
+            }),
+          ],
         );
       });
 

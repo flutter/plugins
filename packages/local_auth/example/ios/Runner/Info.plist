@@ -45,5 +45,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+        <key>NSFaceIDUsageDescription</key>
+        <string>App needs to authenticate using faces.</string>
 </dict>
 </plist>

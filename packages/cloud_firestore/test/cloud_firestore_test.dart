@@ -4,11 +4,9 @@
 
 import 'dart:async';
 
-import 'package:test/test.dart';
-
-import 'package:flutter/services.dart';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('$Firestore', () {
@@ -46,24 +44,21 @@ void main() {
                 .listen((QuerySnapshot querySnapshot) {});
         subscription.cancel();
         await new Future<Null>.delayed(Duration.ZERO);
-        expect(
-          log,
-          equals(<MethodCall>[
-            new MethodCall(
-              'Query#addSnapshotListener',
-              <String, dynamic>{
-                'path': 'foo',
-                'parameters': <String, dynamic>{
-                  'where': <List<dynamic>>[],
-                }
-              },
-            ),
-            new MethodCall(
-              'Query#removeListener',
-              <String, dynamic>{'handle': 0},
-            ),
-          ]),
-        );
+        expect(log, <Matcher>[
+          isMethodCall(
+            'Query#addSnapshotListener',
+            arguments: <String, dynamic>{
+              'path': 'foo',
+              'parameters': <String, dynamic>{
+                'where': <List<dynamic>>[],
+              }
+            },
+          ),
+          isMethodCall(
+            'Query#removeListener',
+            arguments: <String, dynamic>{'handle': 0},
+          ),
+        ]);
       });
       test('where', () async {
         final StreamSubscription<QuerySnapshot> subscription =
@@ -75,10 +70,10 @@ void main() {
         await new Future<Null>.delayed(Duration.ZERO);
         expect(
           log,
-          equals(<MethodCall>[
-            new MethodCall(
+          equals(<Matcher>[
+            isMethodCall(
               'Query#addSnapshotListener',
-              <String, dynamic>{
+              arguments: <String, dynamic>{
                 'path': 'foo',
                 'parameters': <String, dynamic>{
                   'where': <List<dynamic>>[
@@ -87,9 +82,9 @@ void main() {
                 }
               },
             ),
-            new MethodCall(
+            isMethodCall(
               'Query#removeListener',
-              <String, dynamic>{'handle': 0},
+              arguments: <String, dynamic>{'handle': 0},
             ),
           ]),
         );
@@ -104,10 +99,10 @@ void main() {
         await new Future<Null>.delayed(Duration.ZERO);
         expect(
           log,
-          equals(<MethodCall>[
-            new MethodCall(
+          equals(<Matcher>[
+            isMethodCall(
               'Query#addSnapshotListener',
-              <String, dynamic>{
+              arguments: <String, dynamic>{
                 'path': 'foo',
                 'parameters': <String, dynamic>{
                   'where': <List<dynamic>>[],
@@ -115,9 +110,9 @@ void main() {
                 }
               },
             ),
-            new MethodCall(
+            isMethodCall(
               'Query#removeListener',
-              <String, dynamic>{'handle': 0},
+              arguments: <String, dynamic>{'handle': 0},
             ),
           ]),
         );
@@ -134,18 +129,18 @@ void main() {
         await new Future<Null>.delayed(Duration.ZERO);
         expect(
           log,
-          equals(<MethodCall>[
-            new MethodCall(
+          <Matcher>[
+            isMethodCall(
               'Query#addDocumentListener',
-              <String, dynamic>{
+              arguments: <String, dynamic>{
                 'path': 'foo',
               },
             ),
-            new MethodCall(
+            isMethodCall(
               'Query#removeListener',
-              <String, dynamic>{'handle': 0},
-            )
-          ]),
+              arguments: <String, dynamic>{'handle': 0},
+            ),
+          ],
         );
       });
       test('set', () async {
@@ -154,25 +149,25 @@ void main() {
             .setData(<String, String>{'bazKey': 'quxValue'});
         expect(
           log,
-          equals(<MethodCall>[
-            new MethodCall(
+          <Matcher>[
+            isMethodCall(
               'DocumentReference#setData',
-              <String, dynamic>{
+              arguments: <String, dynamic>{
                 'path': 'foo/bar',
-                'data': <String, String>{'bazKey': 'quxValue'}
+                'data': <String, String>{'bazKey': 'quxValue'},
               },
             ),
-          ]),
+          ],
         );
       });
       test('delete', () async {
         await collectionReference.document('bar').delete();
         expect(
           log,
-          equals(<MethodCall>[
-            new MethodCall(
+          equals(<Matcher>[
+            isMethodCall(
               'DocumentReference#delete',
-              <String, dynamic>{'path': 'foo/bar'},
+              arguments: <String, dynamic>{'path': 'foo/bar'},
             ),
           ]),
         );
