@@ -8,6 +8,8 @@ import 'package:flutter/services.dart';
 
 /// A Flutter plugin for registering Dart callbacks with the Android
 /// AlarmManager service.
+///
+/// See the example/ directory in this package for sample usage.
 class AndroidAlarmManager {
   static const String _channelName = 'plugins.flutter.io/android_alarm_manager';
   static const MethodChannel _channel =
@@ -16,10 +18,8 @@ class AndroidAlarmManager {
   /// Schedules a one-shot timer to run `callback` after time `delay`.
   ///
   /// The `callback` will run whether or not the main application is running or
-  /// in the foreground. It will run in the same process, but on a different
-  /// thread in an Isolate distinct from the main application's Isolate if there
-  /// is one, however the same Isolate may be reused and shared to run timer
-  /// callbacks.
+  /// in the foreground. It will run in the same Isolate as the main application
+  /// if one is available, otherwise a new Isolate will be created.
   ///
   /// `callback` must be a top-level function in the application's root library
   /// (that is, in the same library as the application's `main()` function).
@@ -58,10 +58,8 @@ class AndroidAlarmManager {
   /// Schedules a repeating timer to run `callback` with period `duration`.
   ///
   /// The `callback` will run whether or not the main application is running or
-  /// in the foreground. It will run in the same process, but on a different
-  /// thread in an Isolate distinct from the main application's Isolate if there
-  /// is one, however the same Isolate may be reused and shared to run timer
-  /// callbacks.
+  /// in the foreground. It will run in the same Isolate as the main application
+  /// if one is available, otherwise a new Isolate will be created.
   ///
   /// `callback` must be a top-level function in the application's root library
   /// (that is, in the same library as the application's `main()` function).

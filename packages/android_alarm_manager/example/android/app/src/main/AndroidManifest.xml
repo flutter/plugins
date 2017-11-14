@@ -37,7 +37,6 @@
         </activity>
         <service
             android:name="io.flutter.androidalarmmanager.AlarmService"
-            android:exported="false"
-            android:process=":remote"/>
+            android:exported="false"/>
     </application>
 </manifest>

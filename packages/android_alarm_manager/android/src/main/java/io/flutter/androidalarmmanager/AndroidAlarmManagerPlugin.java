@@ -12,11 +12,13 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
+import io.flutter.plugin.common.PluginRegistry.ViewDestroyListener;
+import io.flutter.view.FlutterNativeView;
 import org.json.JSONArray;
 import org.json.JSONException;
 
 /** AndroidAlarmManagerPlugin */
-public class AndroidAlarmManagerPlugin implements MethodCallHandler {
+public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroyListener {
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel =
@@ -24,7 +26,9 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler {
             registrar.messenger(),
             "plugins.flutter.io/android_alarm_manager",
             JSONMethodCodec.INSTANCE);
-    channel.setMethodCallHandler(new AndroidAlarmManagerPlugin(registrar.activity()));
+    AndroidAlarmManagerPlugin plugin = new AndroidAlarmManagerPlugin(registrar.activity());
+    channel.setMethodCallHandler(plugin);
+    registrar.addViewDestroyListener(plugin);
   }
 
   private Context mContext;
@@ -78,5 +82,10 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler {
   private void cancel(JSONArray arguments) throws JSONException {
     int requestCode = arguments.getInt(0);
     AlarmService.cancel(mContext, requestCode);
+  }
+
+  @Override
+  public boolean onViewDestroy(FlutterNativeView nativeView) {
+    return AlarmService.setSharedFlutterView(nativeView);
   }
 }
