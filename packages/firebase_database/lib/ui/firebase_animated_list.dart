@@ -48,7 +48,7 @@ class FirebaseAnimatedList extends StatefulWidget {
   final Comparator<DataSnapshot> sort;
 
   /// A widget to display while the query is loading. Defaults to an empty
-  /// Container().
+  /// [Container].
   final Widget defaultChild;
 
   /// A widget to display if the query returns as empty. Defaults to an empty
