@@ -9,6 +9,10 @@
 @interface ImagePickerPlugin ()<UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 @end
 
+static const int SOURCE_ASK_USER = 0;
+static const int SOURCE_CAMERA = 1;
+static const int SOURCE_GALLERY = 2;
+
 @implementation ImagePickerPlugin {
   FlutterResult _result;
   NSDictionary *_arguments;
@@ -42,37 +46,60 @@
                                 details:nil]);
     _result = nil;
   }
+
   if ([@"pickImage" isEqualToString:call.method]) {
     _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
     _imagePickerController.delegate = self;
+
     _result = result;
     _arguments = call.arguments;
 
-    UIAlertControllerStyle style = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad
-                                       ? UIAlertControllerStyleAlert
-                                       : UIAlertControllerStyleActionSheet;
+    int imageSource = [[_arguments objectForKey:@"source"] intValue];
 
-    UIAlertController *alert =
-        [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:style];
-    UIAlertAction *camera = [UIAlertAction actionWithTitle:@"Take Photo"
-                                                     style:UIAlertActionStyleDefault
-                                                   handler:^(UIAlertAction *action) {
-                                                     [self showCamera];
-                                                   }];
-    UIAlertAction *library = [UIAlertAction actionWithTitle:@"Choose Photo"
-                                                      style:UIAlertActionStyleDefault
-                                                    handler:^(UIAlertAction *action) {
-                                                      [self showPhotoLibrary];
-                                                    }];
-    UIAlertAction *cancel =
-        [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
-    [alert addAction:camera];
-    [alert addAction:library];
-    [alert addAction:cancel];
-    [_viewController presentViewController:alert animated:YES completion:nil];
+    switch (imageSource) {
+      case SOURCE_ASK_USER:
+        [self showImageSourceSelector];
+        break;
+      case SOURCE_CAMERA:
+        [self showCamera];
+        break;
+      case SOURCE_GALLERY:
+        [self showPhotoLibrary];
+        break;
+      default:
+        result([FlutterError errorWithCode:@"invalid_source"
+                                   message:@"Invalid image source."
+                                   details:nil]);
+        break;
+    }
   } else {
     result(FlutterMethodNotImplemented);
   }
+}
+
+- (void)showImageSourceSelector {
+  UIAlertControllerStyle style = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad
+                                     ? UIAlertControllerStyleAlert
+                                     : UIAlertControllerStyleActionSheet;
+
+  UIAlertController *alert =
+      [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:style];
+  UIAlertAction *camera = [UIAlertAction actionWithTitle:@"Take Photo"
+                                                   style:UIAlertActionStyleDefault
+                                                 handler:^(UIAlertAction *action) {
+                                                   [self showCamera];
+                                                 }];
+  UIAlertAction *library = [UIAlertAction actionWithTitle:@"Choose Photo"
+                                                    style:UIAlertActionStyleDefault
+                                                  handler:^(UIAlertAction *action) {
+                                                    [self showPhotoLibrary];
+                                                  }];
+  UIAlertAction *cancel =
+      [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
+  [alert addAction:camera];
+  [alert addAction:library];
+  [alert addAction:cancel];
+  [_viewController presentViewController:alert animated:YES completion:nil];
 }
 
 - (void)showCamera {
