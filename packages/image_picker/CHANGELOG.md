@@ -1,3 +1,7 @@
+## 0.1.3
+
+* Added optional source argument to pickImage for controlling where the image comes from.
+
 ## 0.1.2
 
 * Added optional maxWidth and maxHeight arguments to pickImage.
