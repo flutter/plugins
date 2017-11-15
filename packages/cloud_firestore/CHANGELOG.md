@@ -1,3 +1,7 @@
+## 0.0.4
+
+* Support for queries
+
 ## 0.0.3
 
 * Renamed package to cloud_firestore
