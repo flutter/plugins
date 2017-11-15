@@ -286,8 +286,24 @@ typedef void (^FIRQueryBlock)(FIRQuery *_Nullable query,
 
 - (void)queryEndingBeforeId:(NSString *)documentId withParameters:(NSDictionary *)parameters completion:(FIRQueryBlock)completion {
   [[self documentWithPath:documentId] getDocumentWithCompletion:^(FIRDocumentSnapshot * _Nullable snapshot, NSError * _Nullable error) {
-    if (error != nil) completion(nil, error);
-    else completion([[self queryWithParameters:parameters] queryEndingBeforeDocument:snapshot], nil);
+    if (snapshot.exists) {
+      NSDate *createdAt = snapshot.data[@"createdAt"];
+      if (createdAt.notNull) {
+        completion([[self queryWithParameters:parameters] queryEndingBeforeDocument:snapshot], nil);
+      }
+      else {
+        __block id<FIRListenerRegistration> listener = [[self documentWithPath:documentId] addSnapshotListener:^(FIRDocumentSnapshot * _Nullable snap, NSError * _Nullable error) {
+          NSDate *createdAt = snap.data[@"createdAt"];
+          if (createdAt.notNull) {
+            [listener remove];
+            completion([[self queryWithParameters:parameters] queryEndingBeforeDocument:snap], nil);
+          }
+        }];
+      }
+    }
+    else {
+      completion(nil, error);
+    }
   }];
 }
 @end
