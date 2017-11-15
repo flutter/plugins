@@ -1,3 +1,8 @@
+## 0.0.4
+
+* Support for where clauses
+* Support for deletion
+
 ## 0.0.3
 
 * Renamed package to cloud_firestore

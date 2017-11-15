@@ -44,21 +44,77 @@ void main() {
                 .listen((QuerySnapshot querySnapshot) {});
         subscription.cancel();
         await new Future<Null>.delayed(Duration.ZERO);
+        expect(log, <Matcher>[
+          isMethodCall(
+            'Query#addSnapshotListener',
+            arguments: <String, dynamic>{
+              'path': 'foo',
+              'parameters': <String, dynamic>{
+                'where': <List<dynamic>>[],
+              }
+            },
+          ),
+          isMethodCall(
+            'Query#removeListener',
+            arguments: <String, dynamic>{'handle': 0},
+          ),
+        ]);
+      });
+      test('where', () async {
+        final StreamSubscription<QuerySnapshot> subscription =
+            collectionReference
+                .where('createdAt', isLessThan: 100)
+                .snapshots
+                .listen((QuerySnapshot querySnapshot) {});
+        subscription.cancel();
+        await new Future<Null>.delayed(Duration.ZERO);
         expect(
           log,
-          <Matcher>[
+          equals(<Matcher>[
             isMethodCall(
               'Query#addSnapshotListener',
               arguments: <String, dynamic>{
                 'path': 'foo',
-                'parameters': <String, dynamic>{},
+                'parameters': <String, dynamic>{
+                  'where': <List<dynamic>>[
+                    <dynamic>['createdAt', '<', 100],
+                  ],
+                }
               },
             ),
             isMethodCall(
               'Query#removeListener',
               arguments: <String, dynamic>{'handle': 0},
             ),
-          ],
+          ]),
+        );
+      });
+      test('orderBy', () async {
+        final StreamSubscription<QuerySnapshot> subscription =
+            collectionReference
+                .orderBy('createdAt')
+                .snapshots
+                .listen((QuerySnapshot querySnapshot) {});
+        subscription.cancel();
+        await new Future<Null>.delayed(Duration.ZERO);
+        expect(
+          log,
+          equals(<Matcher>[
+            isMethodCall(
+              'Query#addSnapshotListener',
+              arguments: <String, dynamic>{
+                'path': 'foo',
+                'parameters': <String, dynamic>{
+                  'where': <List<dynamic>>[],
+                  'orderBy': <dynamic>['createdAt', false],
+                }
+              },
+            ),
+            isMethodCall(
+              'Query#removeListener',
+              arguments: <String, dynamic>{'handle': 0},
+            ),
+          ]),
         );
       });
     });
@@ -102,6 +158,18 @@ void main() {
               },
             ),
           ],
+        );
+      });
+      test('delete', () async {
+        await collectionReference.document('bar').delete();
+        expect(
+          log,
+          equals(<Matcher>[
+            isMethodCall(
+              'DocumentReference#delete',
+              arguments: <String, dynamic>{'path': 'foo/bar'},
+            ),
+          ]),
         );
       });
     });

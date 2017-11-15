@@ -13,7 +13,9 @@ class Query {
       : _firestore = firestore,
         _pathComponents = pathComponents,
         _parameters = parameters ??
-            new Map<String, dynamic>.unmodifiable(<String, dynamic>{}),
+            new Map<String, dynamic>.unmodifiable(<String, dynamic>{
+              'where': new List<List<dynamic>>.unmodifiable(<List<dynamic>>[]),
+            }),
         assert(firestore != null),
         assert(pathComponents != null);
 
@@ -24,6 +26,16 @@ class Query {
   /// A string containing the slash-separated path to this this Query
   /// (relative to the root of the database).
   String get path => _pathComponents.join('/');
+
+  Query _copyWithParameters(Map<String, dynamic> parameters) {
+    return new Query._(
+      firestore: _firestore,
+      pathComponents: _pathComponents,
+      parameters: new Map<String, dynamic>.unmodifiable(
+        new Map<String, dynamic>.from(_parameters)..addAll(parameters),
+      ),
+    );
+  }
 
   Map<String, dynamic> buildArguments() {
     return new Map<String, dynamic>.from(_parameters)
@@ -68,4 +80,51 @@ class Query {
   /// Obtains a CollectionReference corresponding to this query's location.
   CollectionReference reference() =>
       new CollectionReference._(_firestore, _pathComponents);
+
+  /// Creates and returns a new [Query] with additional filter on specified
+  /// [field].
+  ///
+  /// Only documents satisfying provided condition are included in the result
+  /// set.
+  Query where(
+    String field, {
+    dynamic isEqualTo,
+    dynamic isLessThan,
+    dynamic isLessThanOrEqualTo,
+    dynamic isGreaterThan,
+    dynamic isGreaterThanOrEqualTo,
+  }) {
+    final ListEquality<dynamic> equality = const ListEquality<dynamic>();
+    final List<List<dynamic>> conditions =
+        new List<List<dynamic>>.from(_parameters['where']);
+
+    void addCondition(String field, String operator, dynamic value) {
+      final List<dynamic> condition = <dynamic>[field, operator, value];
+      assert(
+          conditions
+              .where((List<dynamic> item) => equality.equals(condition, item))
+              .isEmpty,
+          'Condition $condition already exists in this query.');
+      conditions.add(condition);
+    }
+
+    if (isEqualTo != null) addCondition(field, '==', isEqualTo);
+    if (isLessThan != null) addCondition(field, '<', isLessThan);
+    if (isLessThanOrEqualTo != null)
+      addCondition(field, '<=', isLessThanOrEqualTo);
+    if (isGreaterThan != null) addCondition(field, '>', isGreaterThan);
+    if (isGreaterThanOrEqualTo != null)
+      addCondition(field, '>=', isGreaterThanOrEqualTo);
+
+    return _copyWithParameters(<String, dynamic>{'where': conditions});
+  }
+
+  /// Creates and returns a new [Query] that's additionally sorted by the specified
+  /// [field].
+  Query orderBy(String field, {bool descending: false}) {
+    assert(!_parameters.containsKey('orderBy'));
+    return _copyWithParameters(<String, dynamic>{
+      'orderBy': <dynamic>[field, descending]
+    });
+  }
 }
