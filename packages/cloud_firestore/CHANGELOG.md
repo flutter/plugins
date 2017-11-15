@@ -1,6 +1,7 @@
 ## 0.0.4
 
-* Support for queries
+* Support for where clauses
+* Support for deletion
 
 ## 0.0.3
 
