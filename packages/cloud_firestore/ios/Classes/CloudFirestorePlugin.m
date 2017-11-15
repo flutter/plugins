@@ -20,7 +20,34 @@
 
 FIRQuery *getQuery(NSDictionary *arguments) {
   FIRQuery *query = [[FIRFirestore firestore] collectionWithPath:arguments[@"path"]];
-  // TODO(jackson): Implement query parameters
+  NSDictionary *parameters = arguments[@"parameters"];
+  NSArray *whereConditions = parameters[@"where"];
+  for (id item in whereConditions) {
+    NSArray *condition = item;
+    NSString *fieldName = condition[0];
+    NSString *op = condition[1];
+    id value = condition[2];
+    if ([op isEqualToString:@"=="]) {
+      query = [query queryWhereField:fieldName isEqualTo:value];
+    } else if ([op isEqualToString:@"<"]) {
+      query = [query queryWhereField:fieldName isLessThan:value];
+    } else if ([op isEqualToString:@"<="]) {
+      query = [query queryWhereField:fieldName isLessThanOrEqualTo:value];
+    } else if ([op isEqualToString:@">"]) {
+      query = [query queryWhereField:fieldName isGreaterThan:value];
+    } else if ([op isEqualToString:@">="]) {
+      query = [query queryWhereField:fieldName isGreaterThanOrEqualTo:value];
+    } else {
+      // Unsupported operator
+    }
+  }
+  id orderBy = parameters[@"orderBy"];
+  if (orderBy) {
+    NSArray *orderByParameters = orderBy;
+    NSString *fieldName = orderByParameters[0];
+    NSNumber *descending = orderByParameters[1];
+    query = [query queryOrderedByField:fieldName descending:[descending boolValue]];
+  }
   return query;
 }
 
@@ -62,9 +89,21 @@ FIRQuery *getQuery(NSDictionary *arguments) {
     NSString *path = call.arguments[@"path"];
     FIRDocumentReference *reference = [[FIRFirestore firestore] documentWithPath:path];
     [reference setData:call.arguments[@"data"] completion:defaultCompletionBlock];
+  } else if ([@"DocumentReference#delete" isEqualToString:call.method]) {
+    NSString *path = call.arguments[@"path"];
+    FIRDocumentReference *reference = [[FIRFirestore firestore] documentWithPath:path];
+    [reference deleteDocumentWithCompletion:defaultCompletionBlock];
   } else if ([@"Query#addSnapshotListener" isEqualToString:call.method]) {
     __block NSNumber *handle = [NSNumber numberWithInt:_nextListenerHandle++];
-    id<FIRListenerRegistration> listener = [getQuery(call.arguments)
+    FIRQuery *query;
+    @try {
+      query = getQuery(call.arguments);
+    } @catch (NSException *exception) {
+      result([FlutterError errorWithCode:@"invalid_query"
+                                 message:[exception name]
+                                 details:[exception reason]]);
+    }
+    id<FIRListenerRegistration> listener = [query
         addSnapshotListener:^(FIRQuerySnapshot *_Nullable snapshot, NSError *_Nullable error) {
           if (error) result(error.flutterError);
           NSMutableArray *paths = [NSMutableArray array];

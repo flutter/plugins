@@ -57,7 +57,35 @@ public class CloudFirestorePlugin implements MethodCallHandler {
   }
 
   private Query getQuery(Map<String, Object> arguments) {
-    return getCollectionReference(arguments);
+    Query query = getCollectionReference(arguments);
+    @SuppressWarnings("unchecked")
+    Map<String, Object> parameters = (Map<String, Object>) arguments.get("parameters");
+    if (parameters == null) return query;
+    List<List<Object>> whereConditions = (List<List<Object>>) parameters.get("where");
+    for (List<Object> condition : whereConditions) {
+      String fieldName = (String) condition.get(0);
+      String operator = (String) condition.get(1);
+      Object value = condition.get(2);
+      if ("==".equals(operator)) {
+        query = query.whereEqualTo(fieldName, value);
+      } else if ("<".equals(operator)) {
+        query = query.whereLessThan(fieldName, value);
+      } else if ("<=".equals(operator)) {
+        query = query.whereLessThanOrEqualTo(fieldName, value);
+      } else if (">".equals(operator)) {
+        query = query.whereGreaterThan(fieldName, value);
+      } else if (">=".equals(operator)) {
+        query = query.whereGreaterThanOrEqualTo(fieldName, value);
+      } else {
+        // Invalid operator.
+      }
+    }
+    List<Object> orderBy = (List<Object>) parameters.get("orderBy");
+    if (orderBy == null) return query;
+    String orderByFieldName = (String) orderBy.get(0);
+    Boolean descending = (Boolean) orderBy.get(1);
+    Query.Direction direction = descending ? Query.Direction.DESCENDING : Query.Direction.ASCENDING;
+    return query.orderBy(orderByFieldName, direction);
   }
 
   private class DocumentObserver implements EventListener<DocumentSnapshot> {
@@ -91,6 +119,10 @@ public class CloudFirestorePlugin implements MethodCallHandler {
 
     @Override
     public void onEvent(QuerySnapshot querySnapshot, FirebaseFirestoreException e) {
+      if (e != null) {
+        // TODO: send error
+        System.out.println(e);
+      }
       Map<String, Object> arguments = new HashMap<>();
       arguments.put("handle", handle);
 
@@ -170,6 +202,14 @@ public class CloudFirestorePlugin implements MethodCallHandler {
           Map<String, Object> arguments = call.arguments();
           DocumentReference documentReference = getDocumentReference(arguments);
           documentReference.set(arguments.get("data"));
+          result.success(null);
+          break;
+        }
+      case "DocumentReference#delete":
+        {
+          Map<String, Object> arguments = call.arguments();
+          DocumentReference documentReference = getDocumentReference(arguments);
+          documentReference.delete();
           result.success(null);
           break;
         }

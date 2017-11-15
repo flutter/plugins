@@ -8,6 +8,7 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
+import 'package:collection/collection.dart';
 
 import 'src/utils/push_id_generator.dart';
 
