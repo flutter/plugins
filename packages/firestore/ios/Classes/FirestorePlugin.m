@@ -171,6 +171,7 @@ typedef void (^FIRQueryBlock)(FIRQuery *_Nullable query,
   NSString *startAfterId = parameters[@"startAfterId"];
   NSString *endAtId = parameters[@"endAtId"];
   NSString *endBeforeId = parameters[@"endBeforeId"];
+  NSNumber *endAtTimestamp = parameters[@"endAtTimestamp"];
   FIRCollectionReference *collectionReference = [[FIRFirestore firestore] collectionWithPath:path];
   if (startAtId.notNull) {
     [collectionReference queryStartingAtId:startAtId withParameters:parameters completion:completion];
@@ -183,6 +184,11 @@ typedef void (^FIRQueryBlock)(FIRQuery *_Nullable query,
   }
   else if (endBeforeId.notNull) {
     [collectionReference queryEndingBeforeId:endBeforeId withParameters:parameters completion:completion];
+  }
+  else if (endAtTimestamp.notNull) {
+    NSDate *timestamp = [NSDate dateWithTimeIntervalSince1970:endAtTimestamp.integerValue/1000];
+    FIRQuery *query = [[collectionReference queryWithParameters:parameters] queryEndingAtValues:@[timestamp]];
+    completion(query, nil);
   }
   else {
     completion([collectionReference queryWithParameters:parameters], nil);

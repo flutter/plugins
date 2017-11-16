@@ -107,7 +107,8 @@ class FirestorePlugin internal constructor(private val channel: MethodChannel) :
                         registerSnapshotListener(result, path, limit = qp.limit,
                                 orderBy = qp.orderBy, descending = qp.descending,
                                 startAt = qp.startAtSnap, startAfter = qp.startAfterSnap,
-                                endAt = qp.endAtSnap, endBefore = qp.endBeforeSnap)
+                                endAt = qp.endAtSnap, endBefore = qp.endBeforeSnap,
+                                endAtTimestamp = qp.endAtTimestamp)
                     }
                 }
                 queryParameterTask.addOnFailureListener { e ->
@@ -125,7 +126,8 @@ class FirestorePlugin internal constructor(private val channel: MethodChannel) :
                     try {
                         val query = getQuery(path = path, limit = qp.limit, orderBy = qp.orderBy,
                                 descending = qp.descending, startAt = qp.startAtSnap,
-                                startAfter = qp.startAfterSnap, endAt = qp.endAtSnap, endBefore = qp.endBeforeSnap)
+                                startAfter = qp.startAfterSnap, endAt = qp.endAtSnap,
+                                endBefore = qp.endBeforeSnap, endAtTimestamp = qp.endAtTimestamp)
 
                         query.get().addOnCompleteListener { task ->
                             val querySnapshot = task.result
@@ -134,11 +136,12 @@ class FirestorePlugin internal constructor(private val channel: MethodChannel) :
                             resultArguments.put("documents", documents)
                             resultArguments.put("documentChanges", HashMap<String, Any>())
                             result.success(resultArguments)
-                        }.addOnFailureListener {
+                        }.addOnFailureListener { e ->
                             if (qp.startAtId != null) resultErrorForDocumentId(result, qp.startAtId)
                             else if (qp.startAfterId != null) resultErrorForDocumentId(result, qp.startAfterId)
                             else if (qp.endAtId != null) resultErrorForDocumentId(result, qp.endAtId)
                             else if (qp.endBeforeId != null) resultErrorForDocumentId(result, qp.endBeforeId)
+                            else resultErrorForArguments(result, arguments, e)
                         }
                     } catch (e: Throwable) {
                         result.error("ERR", e.message, null);
@@ -187,7 +190,8 @@ class FirestorePlugin internal constructor(private val channel: MethodChannel) :
             startAt: DocumentSnapshot? = null,
             startAfter: DocumentSnapshot? = null,
             endAt: DocumentSnapshot? = null,
-            endBefore: DocumentSnapshot? = null
+            endBefore: DocumentSnapshot? = null,
+            endAtTimestamp: Long? = null
     ) {
         val handle = nextHandle++
         val observer = QueryObserver(handle)
@@ -199,7 +203,8 @@ class FirestorePlugin internal constructor(private val channel: MethodChannel) :
                 startAt = startAt,
                 startAfter = startAfter,
                 endAt = endAt,
-                endBefore = endBefore)
+                endBefore = endBefore,
+                endAtTimestamp = endAtTimestamp)
 
         queryObservers.put(handle, observer)
         listenerRegistrations.put(handle, query.addSnapshotListener(observer))
@@ -252,7 +257,8 @@ class FirestorePlugin internal constructor(private val channel: MethodChannel) :
             startAt: DocumentSnapshot?,
             startAfter: DocumentSnapshot?,
             endAt: DocumentSnapshot?,
-            endBefore: DocumentSnapshot?): Query {
+            endBefore: DocumentSnapshot?,
+            endAtTimestamp: Long?): Query {
 
         var query: Query = getCollectionReference(path)
 
@@ -264,6 +270,7 @@ class FirestorePlugin internal constructor(private val channel: MethodChannel) :
         if (startAfter != null) query = query.startAfter(startAfter)
         if (endAt != null) query = query.endAt(endAt)
         if (endBefore != null) query = query.endBefore(endBefore)
+        if (endAtTimestamp != null) query = query.endAt(Date(endAtTimestamp))
 
         return query
     }
@@ -284,6 +291,7 @@ fun getQueryParameters(path: String, parameters: Map<*, *>?): Task<QueryParamete
     val startAfterId = parameters?.get("startAfterId") as? String
     val endAtId = parameters?.get("endAtId") as? String
     val endBeforeId = parameters?.get("endBeforeId") as? String
+    val endAtTimestamp = parameters?.get("endAtTimestamp") as? Long
 
     val startAtTask: Task<DocumentSnapshot?> =
             if (startAtId != null) getDocumentReference("$path/$startAtId").get()
@@ -310,7 +318,7 @@ fun getQueryParameters(path: String, parameters: Map<*, *>?): Task<QueryParamete
         val endBeforeSnap: DocumentSnapshot? = endBeforeTask.result
 
         QueryParameters(limit, orderBy, descending, startAtId, startAtSnap, startAfterId,
-                startAfterSnap, endAtId, endAtSnap, endBeforeId, endBeforeSnap)
+                startAfterSnap, endAtId, endAtSnap, endBeforeId, endBeforeSnap, endAtTimestamp)
     }
     return x.continueWith(y)
 }
@@ -319,4 +327,5 @@ data class QueryParameters(val limit: Int?, val orderBy: String?, val descending
                            val startAtId: String?, val startAtSnap: DocumentSnapshot?,
                            val startAfterId: String?, val startAfterSnap: DocumentSnapshot?,
                            val endAtId: String?, val endAtSnap: DocumentSnapshot?,
-                           val endBeforeId: String?, val endBeforeSnap: DocumentSnapshot?)
+                           val endBeforeId: String?, val endBeforeSnap: DocumentSnapshot?,
+                           val endAtTimestamp: Long?)

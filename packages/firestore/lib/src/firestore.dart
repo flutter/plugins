@@ -66,12 +66,14 @@ class Firestore {
       String startAtId,
       String startAfterId,
       String endAtId,
-      String endBeforeId}) {
+      String endBeforeId,
+      int endAtTimestamp}) {
     assert(path != null);
     if ((startAtId != null) ||
         startAfterId != null ||
         endAtId != null ||
         endBeforeId != null ||
+        endAtTimestamp != null ||
         limit != null) {
       assert(orderBy != null);
     }
@@ -83,7 +85,8 @@ class Firestore {
       'startAtId': startAtId,
       'startAfterId': startAfterId,
       'endAtId' : endAtId,
-      'endBeforeId' : endBeforeId
+      'endBeforeId' : endBeforeId,
+      'endAtTimestamp' : endAtTimestamp
     };
     return new Query._(
         firestore: this,
