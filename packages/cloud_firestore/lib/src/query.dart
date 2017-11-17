@@ -23,8 +23,8 @@ class Query {
   final List<String> _pathComponents;
   final Map<String, dynamic> _parameters;
 
-  /// A string containing the slash-separated path to this this Query
-  /// (relative to the root of the database).
+  /// A string containing the slash-separated path to this Query (relative to
+  /// the root of the database).
   String get path => _pathComponents.join('/');
 
   Query _copyWithParameters(Map<String, dynamic> parameters) {
