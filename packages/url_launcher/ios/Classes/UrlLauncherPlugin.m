@@ -67,11 +67,15 @@
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
-  NSString *url = call.arguments;
+  NSString *url = call.arguments[@"url"];
   if ([@"canLaunch" isEqualToString:call.method]) {
     result(@([self canLaunchURL:url]));
   } else if ([@"launch" isEqualToString:call.method]) {
-    [self launchURL:url result:result];
+    if (call.arguments[@"useSafariVC"]) {
+      [self launchURLInVC:url result:result];
+    } else {
+      [self launchURLInBrowser:url result:result];
+    }
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -83,7 +87,24 @@
   return [application canOpenURL:url];
 }
 
-- (void)launchURL:(NSString *)urlString result:(FlutterResult)result {
+- (void)launchURLInBrowser:(NSString *)urlString result:(FlutterResult)result {
+  NSURL *url = [NSURL URLWithString:urlString];
+  UIApplication *application = [UIApplication sharedApplication];
+  [application openURL:url
+      options:@{}
+      completionHandler:^(BOOL success) {
+        if (success) {
+          result(nil);
+        } else {
+          result([FlutterError
+              errorWithCode:@"Error"
+                    message:[NSString stringWithFormat:@"Error while launching %@", url]
+                    details:nil]);
+        }
+      }];
+}
+
+- (void)launchURLInVC:(NSString *)urlString result:(FlutterResult)result {
   NSURL *url = [NSURL URLWithString:urlString];
 
   SFSafariViewController *safari = [[SFSafariViewController alloc] initWithURL:url];

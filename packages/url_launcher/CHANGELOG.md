@@ -1,3 +1,7 @@
+## 1.0.1
+
+* Support option to launch default browser in iOS.
+
 ## 1.0.0
 
 * iOS plugin presents a Safari view controller instead of switching to the Safari app.

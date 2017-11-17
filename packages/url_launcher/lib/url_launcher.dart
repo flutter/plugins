@@ -15,10 +15,15 @@ const MethodChannel _channel =
 /// The returned future completes with a [PlatformException] on invalid URLs and
 /// schemes which cannot be handled, that is when [canLaunch] would complete
 /// with false.
-Future<Null> launch(String urlString) {
+///
+/// [useSafariVC] is only used in iOS. If true, it opens the URL in the Safari
+/// view controller. If false, the URL is opened in the default browser of the
+/// phone. Set this to false, if you want to use the cookies/context of the
+/// main browser of the app (such as SSO flows).
+Future<Null> launch(String urlString, {bool useSafariVC: true}) {
   return _channel.invokeMethod(
     'launch',
-    urlString,
+    <String, Object>{'url': urlString, 'useSafariVC': useSafariVC},
   );
 }
 
@@ -30,6 +35,6 @@ Future<bool> canLaunch(String urlString) async {
   }
   return await _channel.invokeMethod(
     'canLaunch',
-    urlString,
+    <String, Object>{'url': urlString},
   );
 }

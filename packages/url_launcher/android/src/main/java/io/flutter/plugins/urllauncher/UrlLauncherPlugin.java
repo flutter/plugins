@@ -31,7 +31,7 @@ public class UrlLauncherPlugin implements MethodCallHandler {
 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
-    String url = call.arguments();
+    String url = call.argument("url");
     if (call.method.equals("canLaunch")) {
       canLaunch(url, result);
     } else if (call.method.equals("launch")) {
