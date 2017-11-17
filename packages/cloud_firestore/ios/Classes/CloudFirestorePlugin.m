@@ -130,8 +130,8 @@ FIRQuery *getQuery(NSDictionary *arguments) {
               @"type" : type,
               @"document" : documentChange.document.data,
               @"path" : documentChange.document.reference.path,
-              @"oldIndex" : [NSNumber numberWithUnsignedInteger:documentChange.oldIndex],
-              @"newIndex" : [NSNumber numberWithUnsignedInteger:documentChange.newIndex],
+              @"oldIndex" : [NSNumber numberWithInt:documentChange.oldIndex],
+              @"newIndex" : [NSNumber numberWithInt:documentChange.newIndex],
             }];
           }
           [self.channel invokeMethod:@"QuerySnapshot"
