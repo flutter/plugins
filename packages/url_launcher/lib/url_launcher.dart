@@ -16,14 +16,35 @@ const MethodChannel _channel =
 /// schemes which cannot be handled, that is when [canLaunch] would complete
 /// with false.
 ///
-/// [useSafariVC] is only used in iOS. If true, it opens the URL in the Safari
-/// view controller. If false, the URL is opened in the default browser of the
-/// phone. Set this to false, if you want to use the cookies/context of the
-/// main browser of the app (such as SSO flows).
-Future<Null> launch(String urlString, {bool useSafariVC: true}) {
+/// [forceSafariVC] is only used in iOS. If unset, the launcher opens web URLs
+/// in the safari VC, anything else is opened using the default handler on the
+/// platform. If set to true, it opens the URL in the Safari view controller.
+/// If false, the URL is opened in the default browser of the phone. Set this to
+/// false if you want to use the cookies/context of the main browser of the app
+/// (such as SSO flows).
+///
+/// [forceWebView] is an Android only setting. If null or false, the URL is
+/// always launched with the default browser on device. If set to true, the URL
+/// is launched in a webview.
+Future<Null> launch(
+  String urlString, {
+  bool forceSafariVC,
+  bool forceWebView,
+}) {
+  assert(urlString != null);
+  Uri url = Uri.parse(urlString.trimLeft());
+  bool isWebURL = url.scheme == 'http' || url.scheme == 'https';
+  if ((forceSafariVC == true || forceWebView == true) && !isWebURL) {
+    throw new PlatformException('To use webview or safariVC, you need to pass'
+        'in a web URL. This $urlString is not a web URL.');
+  }
   return _channel.invokeMethod(
     'launch',
-    <String, Object>{'url': urlString, 'useSafariVC': useSafariVC},
+    <String, Object>{
+      'url': urlString,
+      'useSafariVC': forceSafariVC ?? isWebURL,
+      'useWebView': forceWebView ?? false,
+    },
   );
 }
 

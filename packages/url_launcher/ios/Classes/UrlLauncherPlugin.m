@@ -71,7 +71,8 @@
   if ([@"canLaunch" isEqualToString:call.method]) {
     result(@([self canLaunchURL:url]));
   } else if ([@"launch" isEqualToString:call.method]) {
-    if (call.arguments[@"useSafariVC"]) {
+    NSNumber *useSafariVC = call.arguments[@"useSafariVC"];
+    if (useSafariVC.boolValue) {
       [self launchURLInVC:url result:result];
     } else {
       [self launchURLInBrowser:url result:result];
