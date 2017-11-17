@@ -31,6 +31,13 @@ class DocumentReference {
     );
   }
 
+  Future<Null> update(Map<String, dynamic> data) {
+    return Firestore.channel.invokeMethod(
+      'DocumentReference#update',
+      <String, dynamic>{'path': path, 'data': data},
+    );
+  }
+
   Future<Null> delete() => Firestore.channel.invokeMethod(
       'DocumentReference#delete', <String, dynamic>{'path': path});
 
