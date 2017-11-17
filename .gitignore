@@ -4,11 +4,10 @@
 .packages
 .pub/
 pubspec.lock
-
+ 
 Podfile.lock
 Pods/
 GeneratedPluginRegistrant.h
 GeneratedPluginRegistrant.m
-
+ 
 GeneratedPluginRegistrant.java
-

@@ -1,0 +1,9 @@
+// This is a generated file; do not edit or check into version control.
+FLUTTER_ROOT=/Users/charlie/Carnivore/flutter
+FLUTTER_APPLICATION_PATH=/Users/charlie/Carnivore/chq/plugins/packages/firestore/example
+FLUTTER_TARGET=lib/main.dart
+FLUTTER_BUILD_MODE=release
+FLUTTER_BUILD_DIR=build
+SYMROOT=${SOURCE_ROOT}/../build/ios
+FLUTTER_FRAMEWORK_DIR=/Users/charlie/Carnivore/flutter/bin/cache/artifacts/engine/ios-release
+#include "Pods/Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"

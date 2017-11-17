@@ -6,6 +6,9 @@ package io.flutter.plugins.share;
 
 import android.content.Context;
 import android.content.Intent;
+
+import java.util.Map;
+
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
@@ -30,11 +33,16 @@ public class SharePlugin implements MethodChannel.MethodCallHandler {
   @Override
   public void onMethodCall(MethodCall call, MethodChannel.Result result) {
     if (call.method.equals("share")) {
-      if (!(call.arguments instanceof String)) {
-        result.error("ARGUMENT_ERROR", "String argument expected", null);
+      if (!(call.arguments instanceof  Map)) {
+        result.error("ARGUMENT_ERROR", "Arguments map expected", null);
         return;
       }
-      final String text = (String) call.arguments;
+      Map arguments = (Map) call.arguments;
+      if (!arguments.containsKey("text") || !(arguments.get("text") instanceof String)) {
+        result.error("ARGUMENT_ERROR", "Expected string argument named 'text'", null);
+        return;
+      }
+      final String text = (String) arguments.get("text");
       share(text);
       result.success(null);
     } else {
