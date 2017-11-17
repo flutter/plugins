@@ -75,7 +75,7 @@
     if (useSafariVC.boolValue) {
       [self launchURLInVC:url result:result];
     } else {
-      [self launchURLInBrowser:url result:result];
+      [self launchURL:url result:result];
     }
   } else {
     result(FlutterMethodNotImplemented);
@@ -88,7 +88,7 @@
   return [application canOpenURL:url];
 }
 
-- (void)launchURLInBrowser:(NSString *)urlString result:(FlutterResult)result {
+- (void)launchURL:(NSString *)urlString result:(FlutterResult)result {
   NSURL *url = [NSURL URLWithString:urlString];
   UIApplication *application = [UIApplication sharedApplication];
   [application openURL:url
