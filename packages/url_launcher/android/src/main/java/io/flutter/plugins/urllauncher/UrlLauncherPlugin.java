@@ -8,6 +8,8 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
+import android.webkit.WebView;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -31,21 +33,24 @@ public class UrlLauncherPlugin implements MethodCallHandler {
 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
-    String url = call.arguments();
+    String url = call.argument("url");
     if (call.method.equals("canLaunch")) {
       canLaunch(url, result);
     } else if (call.method.equals("launch")) {
-      launchURL(url, result);
+      Intent launchIntent;
+      boolean useWebView = call.argument("useWebView");
+      if (useWebView) {
+        launchIntent = new Intent(activity, WebViewActivity.class);
+        launchIntent.putExtra("url", url);
+      } else {
+        launchIntent = new Intent(Intent.ACTION_VIEW);
+        launchIntent.setData(Uri.parse(url));
+      }
+      activity.startActivity(launchIntent);
+      result.success(null);
     } else {
       result.notImplemented();
     }
-  }
-
-  private void launchURL(String url, Result result) {
-    Intent launchIntent = new Intent(Intent.ACTION_VIEW);
-    launchIntent.setData(Uri.parse(url));
-    activity.startActivity(launchIntent);
-    result.success(null);
   }
 
   private void canLaunch(String url, Result result) {
@@ -58,5 +63,20 @@ public class UrlLauncherPlugin implements MethodCallHandler {
             && !"{com.android.fallback/com.android.fallback.Fallback}"
                 .equals(componentName.toShortString());
     result.success(canLaunch);
+  }
+
+  /*  Launches WebView activity */
+  public static class WebViewActivity extends Activity {
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      WebView webview = new WebView(this);
+      setContentView(webview);
+      // Get the Intent that started this activity and extract the string
+      Intent intent = getIntent();
+      String url = intent.getStringExtra("url");
+      webview.loadUrl(url);
+    }
   }
 }
