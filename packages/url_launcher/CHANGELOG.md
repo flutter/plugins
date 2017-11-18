@@ -1,3 +1,9 @@
+## 1.0.1
+
+* Support option to launch default browser in iOS.
+* Parse incoming url and decide on what to open based on scheme.
+* Support WebView on Android.
+
 ## 1.0.0
 
 * iOS plugin presents a Safari view controller instead of switching to the Safari app.

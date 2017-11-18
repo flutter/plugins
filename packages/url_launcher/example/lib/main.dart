@@ -35,15 +35,17 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   Future<Null> _launched;
 
-  void _launchUrl() {
-    setState(() {
-      _launched = _launch('https://flutter.io');
-    });
+  Future<Null> _launchInBrowser(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url, forceSafariVC: false, forceWebView: false);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 
-  Future<Null> _launch(String url) async {
+  Future<Null> _launchInWebViewOrVC(String url) async {
     if (await canLaunch(url)) {
-      await launch(url);
+      await launch(url, forceSafariVC: true, forceWebView: true);
     } else {
       throw 'Could not launch $url';
     }
@@ -59,6 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    const String toLaunch = 'https://flutter.io';
     return new Scaffold(
       appBar: new AppBar(
         title: new Text(widget.title),
@@ -67,19 +70,24 @@ class _MyHomePageState extends State<MyHomePage> {
         child: new Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            new Row(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                const Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: const Text('https://flutter.io'),
-                ),
-                new RaisedButton(
-                  onPressed: _launchUrl,
-                  child: const Text('Go'),
-                ),
-              ],
+            const Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: const Text(toLaunch),
             ),
+            new RaisedButton(
+              onPressed: () => setState(() {
+                    _launched = _launchInBrowser(toLaunch);
+                  }),
+              child: const Text('Launch in browser'),
+            ),
+            const Padding(padding: const EdgeInsets.all(16.0)),
+            new RaisedButton(
+              onPressed: () => setState(() {
+                    _launched = _launchInWebViewOrVC(toLaunch);
+                  }),
+              child: const Text('Launch in app'),
+            ),
+            const Padding(padding: const EdgeInsets.all(16.0)),
             new FutureBuilder<Null>(future: _launched, builder: _launchStatus),
           ],
         ),
