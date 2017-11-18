@@ -23,7 +23,7 @@ void main() {
     expect(
       log,
       <Matcher>[
-        isMethodCall('canLaunch', arguments: {
+        isMethodCall('canLaunch', arguments: <String, Object>{
           'url': 'http://example.com/',
         })
       ],
@@ -35,7 +35,7 @@ void main() {
     expect(
       log,
       <Matcher>[
-        isMethodCall('launch', arguments: {
+        isMethodCall('launch', arguments: <String, Object>{
           'url': 'http://example.com/',
           'useSafariVC': true,
           'useWebView': false,
@@ -49,7 +49,7 @@ void main() {
     expect(
       log,
       <Matcher>[
-        isMethodCall('launch', arguments: {
+        isMethodCall('launch', arguments: <String, Object>{
           'url': 'http://example.com/',
           'useSafariVC': true,
           'useWebView': false,
@@ -63,7 +63,7 @@ void main() {
     expect(
       log,
       <Matcher>[
-        isMethodCall('launch', arguments: {
+        isMethodCall('launch', arguments: <String, Object>{
           'url': 'http://example.com/',
           'useSafariVC': true,
           'useWebView': true,
@@ -77,7 +77,7 @@ void main() {
     expect(
       log,
       <Matcher>[
-        isMethodCall('launch', arguments: {
+        isMethodCall('launch', arguments: <String, Object>{
           'url': 'http://example.com/',
           'useSafariVC': false,
           'useWebView': false,
@@ -88,6 +88,6 @@ void main() {
 
   test('cannot launch a non-web in webview', () async {
     expect(() async => await launch('tel:555-555-5555', forceWebView: true),
-        throwsA(new isInstanceOf<PlatformException>()));
+        throwsA(const isInstanceOf<PlatformException>()));
   });
 }

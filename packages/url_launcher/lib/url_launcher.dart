@@ -25,15 +25,19 @@ const MethodChannel _channel =
 ///
 /// [forceWebView] is an Android only setting. If null or false, the URL is
 /// always launched with the default browser on device. If set to true, the URL
-/// is launched in a webview.
+/// is launched in a webview. Unlike iOS, browser context is shared across
+/// WebViews.
+///
+/// Note that if any of the above are set to true but the URL is not a web URL,
+/// this will throw a [PlatformException].
 Future<Null> launch(
   String urlString, {
   bool forceSafariVC,
   bool forceWebView,
 }) {
   assert(urlString != null);
-  Uri url = Uri.parse(urlString.trimLeft());
-  bool isWebURL = url.scheme == 'http' || url.scheme == 'https';
+  final Uri url = Uri.parse(urlString.trimLeft());
+  final bool isWebURL = url.scheme == 'http' || url.scheme == 'https';
   if ((forceSafariVC == true || forceWebView == true) && !isWebURL) {
     throw new PlatformException(
         code: 'NOT_A_WEB_SCHEME',
