@@ -202,7 +202,8 @@ void main() {
         );
       });
       test('getCollection', () async {
-        final CollectionReference colRef = collectionReference.document('bar').getCollection('baz');
+        final CollectionReference colRef =
+            collectionReference.document('bar').getCollection('baz');
         expect(colRef.path, 'foo/bar/baz');
       });
     });
