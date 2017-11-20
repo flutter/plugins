@@ -94,7 +94,7 @@ public class ImagePickerPlugin implements MethodCallHandler, ActivityResultListe
       if (resultCode == Activity.RESULT_OK && data != null) {
         ArrayList<Image> images = (ArrayList<Image>) ImagePicker.getImages(data);
         handleResult(images.get(0));
-      } else if(resultCode == Activity.RESULT_CANCELED){
+      } else if (resultCode == Activity.RESULT_CANCELED) {
         pendingResult = null;
         methodCall = null;
       } else {
@@ -116,10 +116,10 @@ public class ImagePickerPlugin implements MethodCallHandler, ActivityResultListe
               }
             });
         return true;
-      }else if(resultCode == Activity.RESULT_CANCELED){
+      } else if (resultCode == Activity.RESULT_CANCELED) {
         pendingResult = null;
         methodCall = null;
-      } else{
+      } else {
         pendingResult.error("PICK_ERROR", "Error taking photo", null);
         pendingResult = null;
         methodCall = null;
