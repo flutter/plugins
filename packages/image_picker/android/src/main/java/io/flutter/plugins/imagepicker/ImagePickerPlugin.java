@@ -94,14 +94,13 @@ public class ImagePickerPlugin implements MethodCallHandler, ActivityResultListe
       if (resultCode == Activity.RESULT_OK && data != null) {
         ArrayList<Image> images = (ArrayList<Image>) ImagePicker.getImages(data);
         handleResult(images.get(0));
-      } else if (resultCode == Activity.RESULT_CANCELED) {
-        pendingResult = null;
-        methodCall = null;
-      } else {
+        return true;
+      } else if (resultCode != Activity.RESULT_CANCELED) {
         pendingResult.error("PICK_ERROR", "Error picking image", null);
-        pendingResult = null;
-        methodCall = null;
       }
+
+      pendingResult = null;
+      methodCall = null;
       return true;
     }
     if (requestCode == REQUEST_CODE_CAMERA) {
@@ -116,14 +115,13 @@ public class ImagePickerPlugin implements MethodCallHandler, ActivityResultListe
               }
             });
         return true;
-      } else if (resultCode == Activity.RESULT_CANCELED) {
-        pendingResult = null;
-        methodCall = null;
-      } else {
+      } else if (resultCode != Activity.RESULT_CANCELED) {
         pendingResult.error("PICK_ERROR", "Error taking photo", null);
-        pendingResult = null;
-        methodCall = null;
       }
+
+      pendingResult = null;
+      methodCall = null;
+      return true;
     }
     return false;
   }
