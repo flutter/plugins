@@ -254,6 +254,7 @@ class FirebaseAuth {
       'updateProfile',
       userUpdateInfo._updateData,
     );
+  }
 
   /// Links google account with current user and returns [Future<FirebaseUser>]
   ///
