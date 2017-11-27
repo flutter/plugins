@@ -24,16 +24,17 @@ class VideoPlayerValue {
   final Duration position;
   final List<DurationRange> buffered;
   final bool isPlaying;
+  final bool isLooping;
+  final double volume;
   final String errorDescription;
-
-  bool get initialized => duration != null;
-  bool get isErroneous => errorDescription != null;
 
   VideoPlayerValue(
       {@required this.duration,
       this.position: const Duration(),
       this.buffered: const <DurationRange>[],
       this.isPlaying: false,
+      this.isLooping: false,
+      this.volume: 1.0,
       this.errorDescription});
 
   VideoPlayerValue.uninitialized() : this(duration: null);
@@ -41,17 +42,24 @@ class VideoPlayerValue {
   VideoPlayerValue.erroneous(String errorDescription)
       : this(duration: null, errorDescription: errorDescription);
 
+  bool get initialized => duration != null;
+  bool get isErroneous => errorDescription != null;
+
   VideoPlayerValue copyWith(
       {Duration duration,
       Duration position,
       List<DurationRange> buffered,
       bool isPlaying,
+      bool isLooping,
+      double volume,
       String errorDescription}) {
     return new VideoPlayerValue(
         duration: duration ?? this.duration,
         position: position ?? this.position,
         buffered: buffered ?? this.buffered,
         isPlaying: isPlaying ?? this.isPlaying,
+        isLooping: isLooping ?? this.isLooping,
+        volume: volume ?? this.volume,
         errorDescription: errorDescription ?? this.errorDescription);
   }
 }
@@ -59,7 +67,7 @@ class VideoPlayerValue {
 /// Controls a platform video player, and provides updates when the state is
 /// changing.
 ///
-/// Instances are created asynchronously with [create].
+/// Instances must be initialized with initialize.
 ///
 /// The video is displayed in a Flutter app by creating a [VideoPlayer] widget.
 ///
@@ -67,84 +75,113 @@ class VideoPlayerValue {
 ///
 /// After [dispose] all further calls are ignored.
 class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
-  final int _textureId;
+  int _textureId;
+  final String uri;
   Timer timer;
   bool isDisposed = false;
+  Completer<Null> _creatingCompleter;
+  StreamSubscription<Map<String, dynamic>> _eventSubscription;
 
-  VideoPlayerController._internal(int textureId)
-      : _textureId = textureId,
-        super(new VideoPlayerValue(duration: null)) {
-    new EventChannel("flutter.io/videoPlayer/videoEvents$textureId")
-        .receiveBroadcastStream()
-        .listen((event) {
+  VideoPlayerController(this.uri) : super(new VideoPlayerValue(duration: null));
+
+  Future<Null> initialize() async {
+    _creatingCompleter = new Completer<Null>();
+    final Map<String, dynamic> response = await _channel
+        .invokeMethod('create', <String, dynamic>{'dataSource': uri});
+    _textureId = response["textureId"];
+    _creatingCompleter.complete(null);
+    _eventSubscription =
+        new EventChannel("flutter.io/videoPlayer/videoEvents$_textureId")
+            .receiveBroadcastStream()
+            .listen((Map<String, dynamic> event) {
       if (event["event"] == "initialized") {
         value = value.copyWith(
             duration: new Duration(milliseconds: event["duration"]));
+        _applyLooping();
+        _applyVolume();
+        _applyPlayPause();
       } else if (event["event"] == "completed") {
         value = value.copyWith(isPlaying: false);
+        timer?.cancel();
       } else if (event["event"] == "bufferingUpdate") {
-        List<List<int>> bufferedValues = event["values"];
+        final List<List<int>> bufferedValues = event["values"];
         value = value.copyWith(
             buffered: bufferedValues
-                .map((range) => new DurationRange(
+                .map((List<int> range) => new DurationRange(
                     new Duration(milliseconds: range[0]),
                     new Duration(milliseconds: range[1])))
                 .toList());
       }
     }, onError: (PlatformException e) {
       value = new VideoPlayerValue.erroneous(e.message);
+      print("Error ${e.message}");
       timer?.cancel();
     });
   }
 
-  static Future<VideoPlayerController> create(String dataSource) async {
-    Map response =
-        await _channel.invokeMethod('create', {'dataSource': dataSource});
-    int textureId = response["textureId"];
-    return new VideoPlayerController._internal(textureId);
-  }
-
+  @override
   Future<Null> dispose() async {
-    if (isDisposed) {
-      return;
+    if (_creatingCompleter != null) {
+      await _creatingCompleter.future;
+      if (!isDisposed) {
+        timer?.cancel();
+        await _eventSubscription?.cancel();
+        await _channel.invokeMethod(
+            'dispose', <String, dynamic>{'textureId': _textureId});
+      }
     }
-    timer?.cancel();
-    await _channel.invokeMethod('dispose', {'textureId': _textureId});
     isDisposed = true;
     super.dispose();
   }
 
   Future<Null> play() async {
-    if (isDisposed) {
-      return;
-    }
-    await _channel.invokeMethod('play', {'textureId': _textureId});
-    timer = new Timer.periodic(const Duration(milliseconds: 500),
-        (Timer timer) async {
-      if (isDisposed) {
-        return;
-      }
-      Duration newPosition = await position;
-      value = value.copyWith(position: newPosition);
-    });
     value = value.copyWith(isPlaying: true);
+    await _applyPlayPause();
   }
 
-  Future<Null> setLooping(bool value) async {
-    if (isDisposed) {
-      return;
-    }
-    await _channel.invokeMethod(
-        'setLooping', {'textureId': _textureId, 'looping': value});
+  Future<Null> setLooping(bool looping) async {
+    value = value.copyWith(isLooping: looping);
+    await _applyLooping();
   }
 
   Future<Null> pause() async {
-    if (isDisposed) {
+    value = value.copyWith(isPlaying: false);
+    await _applyPlayPause();
+  }
+
+  Future<Null> _applyLooping() async {
+    if (!value.initialized || isDisposed) {
       return;
     }
-    timer?.cancel();
-    await _channel.invokeMethod('pause', {'textureId': _textureId});
-    value = value.copyWith(isPlaying: false);
+    _channel.invokeMethod('setLooping',
+        <String, dynamic>{'textureId': _textureId, 'looping': value.isLooping});
+  }
+
+  Future<Null> _applyPlayPause() async {
+    if (!value.initialized || isDisposed) {
+      return;
+    }
+    if (value.isPlaying) {
+      await _channel
+          .invokeMethod('play', <String, dynamic>{'textureId': _textureId});
+      timer = new Timer.periodic(const Duration(milliseconds: 500),
+          (Timer timer) async {
+        final Duration newPosition = await position;
+        value = value.copyWith(position: newPosition);
+      });
+    } else {
+      timer?.cancel();
+      await _channel
+          .invokeMethod('pause', <String, dynamic>{'textureId': _textureId});
+    }
+  }
+
+  Future<Null> _applyVolume() async {
+    if (!value.initialized || isDisposed) {
+      return;
+    }
+    await _channel.invokeMethod('setVolume',
+        <String, dynamic>{'textureId': _textureId, 'volume': value.volume});
   }
 
   /// The position in the current video.
@@ -153,8 +190,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       return null;
     }
     return new Duration(
-        milliseconds:
-            await _channel.invokeMethod('position', {'textureId': _textureId}));
+        milliseconds: await _channel.invokeMethod(
+            'position', <String, dynamic>{'textureId': _textureId}));
   }
 
   Future<Null> seekTo(Duration moment) async {
@@ -166,9 +203,20 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     } else if (moment < const Duration()) {
       moment = const Duration();
     }
-    await _channel.invokeMethod(
-        'seekTo', {'textureId': _textureId, 'location': moment.inMilliseconds});
+    await _channel.invokeMethod('seekTo', <String, dynamic>{
+      'textureId': _textureId,
+      'location': moment.inMilliseconds
+    });
     value = value.copyWith(position: moment);
+  }
+
+  /// Sets the audio volume of [this].
+  ///
+  /// [volume] indicates a value between 0.0 (silent) and 1.0 (full volume) on a
+  /// linear scale.
+  Future<Null> setVolume(double volume) async {
+    value = value.copyWith(volume: volume.clamp(0.0, 1.0));
+    await _applyVolume();
   }
 }
 
@@ -178,8 +226,11 @@ class VideoPlayer extends StatelessWidget {
 
   VideoPlayer(this.controller);
 
+  @override
   Widget build(BuildContext context) {
-    return new Texture(textureId: controller._textureId);
+    return controller._textureId == null
+        ? new Container()
+        : new Texture(textureId: controller._textureId);
   }
 }
 
@@ -208,6 +259,7 @@ class VideoProgressBar extends StatefulWidget {
   VideoProgressBar(this.controller, {VideoProgressColors colors})
       : colors = colors ?? new VideoProgressColors();
 
+  @override
   _VideoProgressBarState createState() {
     return new _VideoProgressBarState();
   }
@@ -215,13 +267,14 @@ class VideoProgressBar extends StatefulWidget {
 
 class _VideoProgressBarState extends State<VideoProgressBar> {
   VoidCallback listener;
-  VideoPlayerController get controller => widget.controller;
 
   _VideoProgressBarState() {
     listener = () {
       setState(() {});
     };
   }
+
+  VideoPlayerController get controller => widget.controller;
 
   @override
   void initState() {
@@ -235,6 +288,7 @@ class _VideoProgressBarState extends State<VideoProgressBar> {
     super.deactivate();
   }
 
+  @override
   Widget build(BuildContext context) {
     return new GestureDetector(
       child: (controller.value.isErroneous)
@@ -243,10 +297,10 @@ class _VideoProgressBarState extends State<VideoProgressBar> {
               painter: new ProgressBarPainter(controller.value, widget.colors)),
       onTapUp: (TapUpDetails details) {
         if (!controller.value.initialized) return;
-        RenderBox box = context.findRenderObject();
-        final tapPos = box.globalToLocal(details.globalPosition);
-        final relative = tapPos.dx / box.size.width;
-        final position = controller.value.duration * relative;
+        final RenderBox box = context.findRenderObject();
+        final Offset tapPos = box.globalToLocal(details.globalPosition);
+        final double relative = tapPos.dx / box.size.width;
+        final Duration position = controller.value.duration * relative;
         controller.seekTo(position);
       },
     );
@@ -258,26 +312,28 @@ class ProgressBarPainter extends CustomPainter {
   VideoProgressColors colors;
   ProgressBarPainter(this.value, this.colors);
 
+  @override
   bool shouldRepaint(CustomPainter painter) {
     return true;
   }
 
+  @override
   void paint(Canvas canvas, Size size) {
     canvas.drawRect(
         new Rect.fromPoints(
-            new Offset(0.0, 0.0), new Offset(size.width, size.height)),
+            const Offset(0.0, 0.0), new Offset(size.width, size.height)),
         colors.disabledPaint);
     if (!value.initialized) {
       return;
     }
-    double playedPart = value.position.inMilliseconds /
+    final double playedPart = value.position.inMilliseconds /
         value.duration.inMilliseconds *
         size.width;
     for (DurationRange range in value.buffered) {
-      double bufferedStart = range.start.inMilliseconds /
+      final double bufferedStart = range.start.inMilliseconds /
           value.duration.inMilliseconds *
           size.width;
-      double bufferedEnd =
+      final double bufferedEnd =
           range.end.inMilliseconds / value.duration.inMilliseconds * size.width;
       canvas.drawRect(
           new Rect.fromPoints(new Offset(bufferedStart, 0.0),

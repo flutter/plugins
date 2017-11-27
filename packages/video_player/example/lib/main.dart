@@ -5,8 +5,6 @@
 /// An example of using the plugin, controlling lifecycle and playback of the
 /// video.
 
-import 'dart:async';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
@@ -15,7 +13,7 @@ import 'package:video_player/video_player.dart';
 ///
 /// Toggles play/pause on tap (accompanied by a fading status icon).
 ///
-/// Plays (looping) on initialization, and pauses on deactivation.
+/// Plays (looping) on initialization, and mutes on deactivation.
 class VideoPlayPause extends StatefulWidget {
   final VideoPlayerController controller;
 
@@ -32,31 +30,32 @@ class _VideoPlayPauseState extends State<VideoPlayPause> {
       new FadeAnimation(child: new Icon(Icons.play_arrow, size: 100.0));
   VoidCallback listener;
 
-  VideoPlayerController get controller => widget.controller;
-
   _VideoPlayPauseState() {
     listener = () {
       setState(() {});
     };
   }
 
+  VideoPlayerController get controller => widget.controller;
+
   @override
   void initState() {
     super.initState();
     controller.addListener(listener);
-    if (!controller.value.isPlaying) controller.play();
+    controller.setVolume(1.0);
+    controller.play();
   }
 
   @override
   void deactivate() {
-    if (controller.value.isPlaying) controller.pause();
+    controller.setVolume(0.0);
     controller.removeListener(listener);
     super.deactivate();
   }
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> children = <Widget>[
+    final List<Widget> children = <Widget>[
       new GestureDetector(
         child: new VideoPlayer(controller),
         onTap: () {
@@ -68,23 +67,25 @@ class _VideoPlayPauseState extends State<VideoPlayPause> {
                 new FadeAnimation(child: new Icon(Icons.pause, size: 100.0));
             controller.pause();
           } else {
-            imageFadeAnim =
-                new FadeAnimation(child: new Icon(Icons.play_arrow, size: 100.0));
+            imageFadeAnim = new FadeAnimation(
+                child: new Icon(Icons.play_arrow, size: 100.0));
             controller.play();
           }
         },
       ),
       new Align(
-          alignment: Alignment.bottomCenter,
-          child: new SizedBox(
-              height: 20.0,
-              width: double.INFINITY,
-              child: new VideoProgressBar(controller))),
+        alignment: Alignment.bottomCenter,
+        child: new SizedBox(
+          height: 20.0,
+          width: double.INFINITY,
+          child: new VideoProgressBar(controller),
+        ),
+      ),
       new Center(child: imageFadeAnim),
     ];
 
     if (!controller.value.initialized) {
-      children.add(new Center(child: new CupertinoActivityIndicator()));
+      children.add(new Center(child: const CupertinoActivityIndicator()));
     }
 
     return new Stack(
@@ -112,8 +113,8 @@ class _FadeAnimationState extends State<FadeAnimation>
   @override
   void initState() {
     super.initState();
-    animationController = new AnimationController(
-        duration: widget.duration, vsync: this);
+    animationController =
+        new AnimationController(duration: widget.duration, vsync: this);
     animationController.addListener(() {
       if (mounted) {
         setState(() {});
@@ -146,55 +147,60 @@ class _FadeAnimationState extends State<FadeAnimation>
   Widget build(BuildContext context) {
     return animationController.isAnimating
         ? new Opacity(
-            opacity: 1.0 - animationController.value, child: widget.child)
+            opacity: 1.0 - animationController.value,
+            child: widget.child,
+          )
         : new Container();
   }
 }
 
 typedef Widget VideoWidgetBuilder(
-    BuildContext context, Future<VideoPlayerController> controller);
+    BuildContext context, VideoPlayerController controller);
 
 /// A widget connecting its life cycle to a [VideoPlayerController].
 class PlayerLifeCycle extends StatefulWidget {
-  final VideoWidgetBuilder videoWidgetBuilder;
+  final VideoWidgetBuilder childBuilder;
   final String uri;
 
-  PlayerLifeCycle(this.uri, this.videoWidgetBuilder);
+  PlayerLifeCycle(this.uri, this.childBuilder);
 
   @override
-  _PlayerLifeCycleState createState() =>
-      new _PlayerLifeCycleState(videoWidgetBuilder);
+  _PlayerLifeCycleState createState() => new _PlayerLifeCycleState();
 }
 
 class _PlayerLifeCycleState extends State<PlayerLifeCycle> {
-  final VideoWidgetBuilder videoWidgetBuilder;
-  Future<VideoPlayerController> video;
+  VideoPlayerController controller;
 
-  _PlayerLifeCycleState(this.videoWidgetBuilder);
+  _PlayerLifeCycleState();
 
   @override
   void initState() {
     super.initState();
-    video = VideoPlayerController.create(widget.uri);
-    video.then((VideoPlayerController controller) async {
-      if (mounted) {
-        await controller.setLooping(true);
-        controller.play();
+    controller = new VideoPlayerController(widget.uri);
+    controller.addListener(() {
+      if (controller.value.isErroneous) {
+        print(controller.value.errorDescription);
       }
     });
+    controller.initialize();
+    controller.setLooping(true);
+    controller.play();
+  }
+
+  @override
+  void deactivate() {
+    super.deactivate();
   }
 
   @override
   void dispose() {
-    video.then((VideoPlayerController videoController) {
-      videoController.dispose();
-    });
+    controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return videoWidgetBuilder(context, video);
+    return widget.childBuilder(context, controller);
   }
 }
 
@@ -228,31 +234,14 @@ Widget buildCard(String title) {
 }
 
 class VideoInListOfCards extends StatelessWidget {
-  final Future<VideoPlayerController> video;
+  final VideoPlayerController controller;
 
-  VideoInListOfCards(this.video);
+  VideoInListOfCards(this.controller);
 
   @override
   Widget build(BuildContext context) {
-    Widget displayVideo = new FutureBuilder<VideoPlayerController>(
-        future: video,
-        builder: (BuildContext context,
-            AsyncSnapshot<VideoPlayerController> snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.none:
-              return new Text('No video loaded');
-            case ConnectionState.waiting:
-              return new CupertinoActivityIndicator();
-            default:
-              if (snapshot.hasError)
-                return new Text('Error: ${snapshot.error}');
-              else
-                return new VideoPlayPause(snapshot.data);
-          }
-        });
-
     return new ListView(
-      children: [
+      children: <Widget>[
         buildCard("Item a"),
         buildCard("Item b"),
         buildCard("Item c"),
@@ -261,22 +250,22 @@ class VideoInListOfCards extends StatelessWidget {
         buildCard("Item f"),
         buildCard("Item g"),
         new Card(
-            child: new Column(children: [
+            child: new Column(children: <Widget>[
           new Column(
-            children: [
-              new ListTile(
+            children: <Widget>[
+              const ListTile(
                 leading: const Icon(Icons.cake),
-                title: new Text("Video video"),
+                title: const Text("Video video"),
               ),
               new Stack(
                   alignment: FractionalOffset.bottomRight +
-                      new FractionalOffset(-0.1, -0.1),
+                      const FractionalOffset(-0.1, -0.1),
                   children: <Widget>[
                     new Center(
                         child: new AspectRatio(
-                            aspectRatio: 3 / 2,
-                            child: displayVideo,
-                            )),
+                      aspectRatio: 3 / 2,
+                      child: new VideoPlayPause(controller),
+                    )),
                     new Image.asset('assets/flutter-mark-square-64.png'),
                   ]),
             ],
@@ -293,33 +282,16 @@ class VideoInListOfCards extends StatelessWidget {
 }
 
 class FullScreenVideo extends StatelessWidget {
-  final Future<VideoPlayerController> video;
+  final VideoPlayerController controller;
 
-  FullScreenVideo(this.video);
+  FullScreenVideo(this.controller);
 
   @override
   Widget build(BuildContext context) {
     return new Center(
       child: new AspectRatio(
         aspectRatio: 3 / 2,
-        child: new FutureBuilder(
-          future: video,
-          builder: (BuildContext context,
-              AsyncSnapshot<VideoPlayerController> snapshot) {
-            switch (snapshot.connectionState) {
-              case ConnectionState.none:
-                return new Text('No video loaded');
-              case ConnectionState.waiting:
-                return new Text('Awaiting video...');
-              default:
-                if (snapshot.hasError) {
-                  return new Text('Error: ${snapshot.error}');
-                } else {
-                  return new VideoPlayPause(snapshot.data);
-                }
-            }
-          },
-        ),
+        child: new VideoPlayPause(controller),
       ),
     );
   }
@@ -335,23 +307,23 @@ void main() {
             title: const Text('Video player example'),
             bottom: new TabBar(
               isScrollable: true,
-              tabs: [
+              tabs: <Widget>[
                 new Tab(icon: new Icon(Icons.fullscreen)),
                 new Tab(icon: new Icon(Icons.list)),
               ],
             ),
           ),
           body: new TabBarView(
-            children: [
+            children: <Widget>[
               new PlayerLifeCycle(
                 'http://www.sample-videos.com/video/mp4/720/big_buck_bunny_720p_20mb.mp4',
-                (BuildContext context, Future<VideoPlayerController> video) =>
-                    new FullScreenVideo(video),
+                (BuildContext context, VideoPlayerController controller) =>
+                    new FullScreenVideo(controller),
               ),
               new PlayerLifeCycle(
                   'http://www.sample-videos.com/video/mp4/720/big_buck_bunny_720p_20mb.mp4',
-                  (BuildContext context, Future<VideoPlayerController> video) =>
-                      new VideoInListOfCards(video)),
+                  (BuildContext context, VideoPlayerController controller) =>
+                      new VideoInListOfCards(controller)),
             ],
           ),
         ),

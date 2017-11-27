@@ -82,11 +82,10 @@ public class VideoPlayerPlugin implements MethodCallHandler {
               }
             });
             isInitialized = true;
-            updatePlayState();
-            updateLoopingState();
             sendInitialized();
           }
         });
+
         mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
           @Override
           public boolean onError(MediaPlayer mp, int what, int extra) {
@@ -113,49 +112,33 @@ public class VideoPlayerPlugin implements MethodCallHandler {
       result.success(reply);
     }
 
-    private void updatePlayState() {
-      if (!isInitialized) return;
-      if (isPlaying) {
+    void play() {
+      if (!mediaPlayer.isPlaying()) {
         mediaPlayer.start();
-      } else {
+      }
+    }
+
+    void pause() {
+      if (mediaPlayer.isPlaying()) {
         mediaPlayer.pause();
       }
     }
 
-    private void updateLoopingState() {
-      if (!isInitialized) return;
+    void setLooping(boolean value) {
       mediaPlayer.setLooping(isLooping);
     }
 
-    void play() {
-      isPlaying = true;
-      updatePlayState();
-    }
-
-    void pause() {
-      isPlaying = false;
-      updatePlayState();
-    }
-
-    void setLooping(boolean value) {
-      isLooping = value;
-      updateLoopingState();
+    void setVolume(double value) {
+      float bracketedValue = (float)Math.max(0.0, Math.min(1.0, value));
+      mediaPlayer.setVolume((float)bracketedValue, (float)bracketedValue);
     }
 
     void seekTo(int location) {
       mediaPlayer.seekTo(location);
     }
 
-    int getDuration() {
-      return mediaPlayer.getDuration();
-    }
-
     int getPosition() {
       return mediaPlayer.getCurrentPosition();
-    }
-
-    long getTextureId() {
-      return textureEntry.id();
     }
 
     private void sendInitialized() {
@@ -168,7 +151,7 @@ public class VideoPlayerPlugin implements MethodCallHandler {
     }
 
     void dispose() {
-      if (mediaPlayer.isPlaying()) {
+      if (isInitialized && mediaPlayer.isPlaying()) {
         mediaPlayer.stop();
       }
       mediaPlayer.reset();
@@ -212,7 +195,10 @@ public class VideoPlayerPlugin implements MethodCallHandler {
         return;
       }
       if (call.method.equals("setLooping")) {
-        player.setLooping((Boolean)call.argument("looping"));
+        player.setLooping((Boolean) call.argument("looping"));
+        result.success(null);
+      } else if (call.method.equals("setVolume")) {
+        player.setVolume((Double)call.argument("volume"));
         result.success(null);
       } else if (call.method.equals("play")) {
         player.play();

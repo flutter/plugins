@@ -1,7 +1,5 @@
-# Video Player
+# Launch Screen Assets
 
-A plugin for Flutter allowing playback of video using the platform's video player to play into a widget in Flutter.
+You can customize the launch screen with your own desired assets by replacing the image files in this directory.
 
-Supported by Flutter revision 257e595f349 and later.
-
-Supports both iOS and Android.
+You can also do it by opening your Flutter project's Xcode project with `open ios/Runner.xcworkspace`, selecting `Runner/Assets.xcassets` in the Project Navigator and dropping in the desired images.

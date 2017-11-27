@@ -57,7 +57,6 @@ static void *playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
   NSAssert(self, @"super init cannot be nil");
   _isInitialized = false;
   _isPlaying = false;
-  _isLooping = false;
   _disposed = false;
   _player = [[AVPlayer alloc] init];
   _player.actionAtItemEnd = AVPlayerActionAtItemEndNone;
@@ -200,6 +199,10 @@ static void *playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
     _isLooping = isLooping;
 }
 
+- (void)setVolume:(double)volume {
+    _player.volume = (volume < 0.0) ? 0.0 : ((volume > 1.0) ? 1.0 : volume);
+}
+
 - (CVPixelBufferRef)copyPixelBuffer {
   CMTime outputItemTime = [_videoOutput itemTimeForHostTime:CACurrentMediaTime()];
   if ([_videoOutput hasNewPixelBufferForItemTime:outputItemTime]) {
@@ -270,7 +273,7 @@ static void *playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
     NSString* dataSource = argsMap[@"dataSource"];
     FrameUpdater* frameUpdater =
         [[FrameUpdater alloc] initWithRegistry:_registry];
-    VideoPlayer* player =
+      VideoPlayer* player =
         [[VideoPlayer alloc] initWithURL:[NSURL URLWithString:dataSource]
                             frameUpdater:frameUpdater];
     int64_t textureId = [_registry registerTexture:player];
@@ -293,6 +296,9 @@ static void *playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
       [player dispose];
     } else if ([@"setLooping" isEqualToString:call.method]) {
         [player setIsLooping:[argsMap objectForKey:@"looping"]];
+        result(nil);
+    } else if ([@"setVolume" isEqualToString:call.method]) {
+        [player setVolume:[[argsMap objectForKey:@"volume"] doubleValue]];
         result(nil);
     } else if ([@"play" isEqualToString:call.method]) {
       [player play];

@@ -1,6 +1,8 @@
-## 0.0.2+
+## 0.0.3
 
-* Move to package to flutter/plugins github repo.
+* Made creating a VideoPlayerController a synchronous operation. Must be followed by a call to initialize().
+* Added VideoPlayerController.setVolume().
+* Moved the package to flutter/plugins github repo.
 
 ## 0.0.2
 
