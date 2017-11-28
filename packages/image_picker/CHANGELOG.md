@@ -1,3 +1,8 @@
+## 0.1.4
+
+* Bugfix: canceling image picking threw exception.
+* Bugfix: errors in plugin state management.
+
 ## 0.1.3
 
 * Added optional source argument to pickImage for controlling where the image comes from.
