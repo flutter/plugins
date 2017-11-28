@@ -4,5 +4,5 @@
 
 #import <Flutter/Flutter.h>
 
-@interface FirebaseStoragePlugin : NSObject<FlutterPlugin>
+@interface FLTFirebaseStoragePlugin : NSObject<FlutterPlugin>
 @end

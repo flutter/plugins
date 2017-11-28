@@ -15,4 +15,5 @@ dependencies:
 flutter:
   plugin:
     androidPackage: io.flutter.androidalarmmanager
-    pluginClass: AndroidAlarmManagerPlugin
+    androidClass: AndroidAlarmManagerPlugin
+    iosClass: FLTAndroidAlarmManagerPlugin

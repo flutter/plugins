@@ -6,7 +6,7 @@
 
 static NSString *const CHANNEL_NAME = @"plugins.flutter.io/shared_preferences";
 
-@implementation SharedPreferencesPlugin
+@implementation FLTSharedPreferencesPlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
