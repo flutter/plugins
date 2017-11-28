@@ -1,27 +1,58 @@
 {
   "project_info": {
-    "project_number": "297855924061",
-    "firebase_url": "https://flutterfire-cd2f7.firebaseio.com",
-    "project_id": "flutterfire-cd2f7",
-    "storage_bucket": "flutterfire-cd2f7.appspot.com"
+    "project_number": "931992176420",
+    "firebase_url": "https://socialloginflutter.firebaseio.com",
+    "project_id": "socialloginflutter",
+    "storage_bucket": "socialloginflutter.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:297855924061:android:669871c998cc21bd",
+        "mobilesdk_app_id": "1:931992176420:android:9441bad932d26629",
         "android_client_info": {
-          "package_name": "com.yourcompany.firebaseauth.example"
+          "package_name": "com.yourcompany.firebaseAuthExample"
         }
       },
       "oauth_client": [
         {
-          "client_id": "297855924061-f68m5v860ms5faiotn5mv9f50cmpacdq.apps.googleusercontent.com",
+          "client_id": "931992176420-12a38on1r2puibnrnibuun0mv9vjvdum.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyD_shO5mfO9lhy2TVWhfo1VUmARKlG4suk"
+          "current_key": "AIzaSyD-FT42z_BBzrYHltmzQzVRdwfErIxJ_ec"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:931992176420:android:bdd294e8fe6ffd9d",
+        "android_client_info": {
+          "package_name": "com.prayuta.firebaseAuthExample"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "931992176420-12a38on1r2puibnrnibuun0mv9vjvdum.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-FT42z_BBzrYHltmzQzVRdwfErIxJ_ec"
         }
       ],
       "services": {

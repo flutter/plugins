@@ -184,6 +184,32 @@ class FirebaseAuth {
     return currentUser;
   }
 
+  Future<String> signInWithPhoneNumber({
+    @required String phoneNumber,
+  })async{
+    var data = await channel.invokeMethod(
+        'signInWithPhoneNumber',
+        <String,String>{
+          'phoneNumber': phoneNumber,
+        }
+    );
+//    final FirebaseUser currentUser = new FirebaseUser._(data);
+//    print(data);
+  return data;
+  }
+
+  Future<FirebaseUser> verifyotp({
+    @required String otp,
+  })async{
+    final Map<String,dynamic> data = await channel.invokeMethod(
+        'verifyOtp',
+        <String,String>{
+          'otp': otp,
+        }
+    );
+   final FirebaseUser currentUser = new FirebaseUser._(data);
+   return currentUser;
+  }
   Future<FirebaseUser> signInWithCustomToken({@required String token}) async {
     assert(token != null);
     final Map<String, dynamic> data = await channel.invokeMethod(
@@ -274,3 +300,5 @@ class FirebaseAuth {
     _authStateChangedControllers[id].add(currentUser);
   }
 }
+
+

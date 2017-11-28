@@ -22,7 +22,7 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
   return @{
     @"providerId" : userInfo.providerID,
     @"displayName" : userInfo.displayName ?: [NSNull null],
-    @"uid" : userInfo.uid,
+    @"uid" : userInfo.uid ?: [NSNull null],
     @"photoUrl" : userInfo.photoURL.absoluteString ?: [NSNull null],
     @"email" : userInfo.email ?: [NSNull null],
   };
@@ -37,7 +37,7 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
 
 // Handles are ints used as indexes into the NSMutableDictionary of active observers
 int nextHandle = 0;
-
+NSString *_verificationid;
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/firebase_auth"
@@ -141,7 +141,50 @@ int nextHandle = 0;
                                  [self sendResult:result forUser:user error:error];
                                }];
 
-  } else if ([@"startListeningAuthState" isEqualToString:call.method]) {
+  }
+  else if ([@"signInWithPhoneNumber" isEqualToString:call.method]) {
+      NSString *phoneNumber = call.arguments[@"phoneNumber"];
+          NSLog(@"%@", phoneNumber);
+
+      [[FIRPhoneAuthProvider provider] verifyPhoneNumber:phoneNumber
+                                              completion:^(NSString * _Nullable verificationID, NSError * _Nullable error) {
+                                                  if (error) {
+                                           
+                                                      NSLog(@"%@", error);
+                                                      result(error.localizedDescription);
+                                                      return;
+                                                  }else{
+                                                      NSLog(@"%@",verificationID);
+                                                      _verificationid = verificationID;
+                                                      result(@"sentotp");
+                                                  }
+                                              }];
+      
+  }
+    else if ([@"verifyOtp" isEqualToString:call.method]) {
+        NSString *otp = call.arguments[@"otp"];
+        NSLog(@"%@", otp);
+//        NSString *verificationID = [defaults stringForKey:@"authVerificationID"];
+        FIRAuthCredential *credential = [[FIRPhoneAuthProvider provider]
+                                         credentialWithVerificationID:_verificationid
+                                         verificationCode:otp];
+        [[FIRAuth auth] signInWithCredential:credential
+                                  completion:^(FIRUser *user, NSError *error) {
+                                    //   [self sendResult:result forUser:user error:error];
+                                      if (error) {
+                                    NSLog(@"%@", error);
+                                                       [self sendResult:result forUser:user error:error];
+                                          return;
+                                      }else{
+                                                  NSLog(@"%s", "success");
+                                                          [self sendResult:result forUser:user error:error];
+                                   
+                                      }
+                                   
+                                  }];
+        
+    }
+  else if ([@"startListeningAuthState" isEqualToString:call.method]) {
     NSNumber *identifier = [NSNumber numberWithInteger:nextHandle++];
 
     FIRAuthStateDidChangeListenerHandle listener = [[FIRAuth auth]

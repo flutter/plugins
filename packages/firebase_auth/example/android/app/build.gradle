@@ -23,7 +23,8 @@ android {
     }
 
     defaultConfig {
-        applicationId 'com.yourcompany.firebaseauth.example'
+        applicationId 'com.prayuta.firebaseAuthExample'
+        multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 

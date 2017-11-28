@@ -6,8 +6,11 @@ dependencies:
     sdk: flutter
   firebase_auth:
     path: ../
+  firebase_messaging:
+    path: /Users/Siva/plugin/packages/firebase_messaging
   google_sign_in:
-    path: ../../google_sign_in
+    path: /Users/Siva/plugin/packages/google_sign_in
+
 
 flutter:
   uses-material-design: true
