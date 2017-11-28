@@ -1,3 +1,7 @@
+## 0.0.6
+
+* Support for getCollection
+
 ## 0.0.5
 
 * Support `isNull` filtering in `Query.where`
