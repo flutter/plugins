@@ -1,3 +1,10 @@
+## 0.1.0
+
+* Added reference to DocumentSnapshot
+* Breaking: removed path from DocumentSnapshot
+* Additional test coverage for reading collections and documents
+* Fixed typo in DocumentChange documentation
+
 ## 0.0.6
 
 * Support for getCollection
