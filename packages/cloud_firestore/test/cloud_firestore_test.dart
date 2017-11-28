@@ -89,6 +89,35 @@ void main() {
           ]),
         );
       });
+      test('where field isNull', () async {
+        final StreamSubscription<QuerySnapshot> subscription =
+            collectionReference
+                .where('profile', isNull: true)
+                .snapshots
+                .listen((QuerySnapshot querySnapshot) {});
+        subscription.cancel();
+        await new Future<Null>.delayed(Duration.ZERO);
+        expect(
+          log,
+          equals(<Matcher>[
+            isMethodCall(
+              'Query#addSnapshotListener',
+              arguments: <String, dynamic>{
+                'path': 'foo',
+                'parameters': <String, dynamic>{
+                  'where': <List<dynamic>>[
+                    <dynamic>['profile', '==', null],
+                  ],
+                }
+              },
+            ),
+            isMethodCall(
+              'Query#removeListener',
+              arguments: <String, dynamic>{'handle': 0},
+            ),
+          ]),
+        );
+      });
       test('orderBy', () async {
         final StreamSubscription<QuerySnapshot> subscription =
             collectionReference

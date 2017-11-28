@@ -93,6 +93,7 @@ class Query {
     dynamic isLessThanOrEqualTo,
     dynamic isGreaterThan,
     dynamic isGreaterThanOrEqualTo,
+    bool isNull,
   }) {
     final ListEquality<dynamic> equality = const ListEquality<dynamic>();
     final List<List<dynamic>> conditions =
@@ -115,6 +116,13 @@ class Query {
     if (isGreaterThan != null) addCondition(field, '>', isGreaterThan);
     if (isGreaterThanOrEqualTo != null)
       addCondition(field, '>=', isGreaterThanOrEqualTo);
+    if (isNull != null) {
+      assert(
+          isNull,
+          'isNull can only be set to true. '
+          'Use isEqualTo to filter on non-null values.');
+      addCondition(field, '==', null);
+    }
 
     return _copyWithParameters(<String, dynamic>{'where': conditions});
   }

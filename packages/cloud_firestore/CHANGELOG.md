@@ -1,3 +1,9 @@
+## 0.0.5
+
+* Support `isNull` filtering in `Query.where`
+* Fixed `DocumentChange.oldIndex` and `DocumentChange.newIndex` to be signed
+  integers (iOS)
+
 ## 0.0.4
 
 * Support for where clauses
