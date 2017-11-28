@@ -162,6 +162,14 @@ class FirebaseAnimatedListState extends State<FirebaseAnimatedList> {
     super.didChangeDependencies();
   }
 
+  @override
+  void dispose() {
+    // Cancel the Firebase stream subscriptions
+    _model.clear();
+
+    super.dispose();
+  }
+
   void _onChildAdded(int index, DataSnapshot snapshot) {
     if (!_loaded) {
       return; // AnimatedList is not created yet
