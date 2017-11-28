@@ -1,3 +1,7 @@
+## 0.1.3
+
+* Fix memory leak in FirebaseAnimatedList
+
 ## 0.1.2
 
 * Change GMS dependency to 11.+
