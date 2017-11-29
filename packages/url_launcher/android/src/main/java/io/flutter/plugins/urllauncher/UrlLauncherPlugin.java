@@ -9,7 +9,10 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.KeyEvent;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -67,16 +70,35 @@ public class UrlLauncherPlugin implements MethodCallHandler {
 
   /*  Launches WebView activity */
   public static class WebViewActivity extends Activity {
+    private WebView webview;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
-      WebView webview = new WebView(this);
+      webview = new WebView(this);
       setContentView(webview);
       // Get the Intent that started this activity and extract the string
       Intent intent = getIntent();
       String url = intent.getStringExtra("url");
       webview.loadUrl(url);
+      // Open new urls inside the webview itself.
+      webview.setWebViewClient(
+          new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+              view.loadUrl(request.getUrl().toString());
+              return false;
+            }
+          });
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+      if (keyCode == KeyEvent.KEYCODE_BACK && webview.canGoBack()) {
+        webview.goBack();
+        return true;
+      }
+      return super.onKeyDown(keyCode, event);
     }
   }
 }
