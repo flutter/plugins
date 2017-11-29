@@ -18,7 +18,8 @@ void main() {
     final Firestore firestore = Firestore.instance;
     final List<MethodCall> log = <MethodCall>[];
     final CollectionReference collectionReference = firestore.collection('foo');
-    const Map<String, dynamic> kMockDocumentSnapshotData = const <String, dynamic>{'1': 2};
+    const Map<String, dynamic> kMockDocumentSnapshotData =
+        const <String, dynamic>{'1': 2};
 
     setUp(() async {
       mockHandleId = 0;
@@ -58,7 +59,7 @@ void main() {
                   'data': kMockDocumentSnapshotData,
                 }),
               ),
-                  (_) {},
+              (_) {},
             );
             return handle;
           case 'DocumentReference#setData':
@@ -72,8 +73,9 @@ void main() {
 
     group('CollectionsReference', () {
       test('listen', () async {
-        QuerySnapshot snapshot = await collectionReference.snapshots.first;
-        DocumentSnapshot document = snapshot.documents[0];
+        final QuerySnapshot snapshot =
+            await collectionReference.snapshots.first;
+        final DocumentSnapshot document = snapshot.documents[0];
         expect(document.documentID, equals('0'));
         expect(document.reference.path, equals('foo/0'));
         expect(document.data, equals(kMockDocumentSnapshotData));
