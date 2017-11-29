@@ -32,7 +32,6 @@ public class VideoPlayerPlugin implements MethodCallHandler {
     private final EventChannel eventChannel;
     private boolean isPlaying = false;
     private boolean isInitialized = false;
-    private boolean isLooping = false;
 
     @TargetApi(21)
     VideoPlayer(
@@ -133,7 +132,7 @@ public class VideoPlayerPlugin implements MethodCallHandler {
     }
 
     void setLooping(boolean value) {
-      mediaPlayer.setLooping(isLooping);
+      mediaPlayer.setLooping(value);
     }
 
     void setVolume(double value) {
