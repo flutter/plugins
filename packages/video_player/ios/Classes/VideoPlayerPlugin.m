@@ -5,9 +5,7 @@
 #import "VideoPlayerPlugin.h"
 #import <AVFoundation/AVFoundation.h>
 
-int64_t CMTimeToMillis(CMTime time) {
-  return time.value * 1000 / time.timescale;
-}
+int64_t CMTimeToMillis(CMTime time) { return time.value * 1000 / time.timescale; }
 
 @interface FrameUpdater : NSObject
 @property(nonatomic) int64_t textureId;
@@ -18,8 +16,7 @@ int64_t CMTimeToMillis(CMTime time) {
 @implementation FrameUpdater
 - (FrameUpdater*)initWithRegistry:(NSObject<FlutterTextureRegistry>*)registry {
   NSAssert(self, @"super init cannot be nil");
-  if (self == nil)
-    return nil;
+  if (self == nil) return nil;
   _registry = registry;
   return self;
 }
@@ -39,8 +36,7 @@ int64_t CMTimeToMillis(CMTime time) {
 @property(nonatomic, readonly) bool isPlaying;
 @property(nonatomic, readonly) bool isLooping;
 @property(nonatomic, readonly) bool isInitialized;
-- (instancetype)initWithURL:(NSURL*)url
-               frameUpdater:(FrameUpdater*)frameUpdater;
+- (instancetype)initWithURL:(NSURL*)url frameUpdater:(FrameUpdater*)frameUpdater;
 - (void)play;
 - (void)pause;
 - (void)setIsLooping:(bool)isLooping;
@@ -52,8 +48,7 @@ static void* statusContext = &statusContext;
 static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
 
 @implementation VideoPlayer
-- (instancetype)initWithURL:(NSURL*)url
-               frameUpdater:(FrameUpdater*)frameUpdater {
+- (instancetype)initWithURL:(NSURL*)url frameUpdater:(FrameUpdater*)frameUpdater {
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
   _isInitialized = false;
@@ -61,56 +56,49 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
   _disposed = false;
   _player = [[AVPlayer alloc] init];
   _player.actionAtItemEnd = AVPlayerActionAtItemEndNone;
-  [[NSNotificationCenter defaultCenter]
-      addObserverForName:AVPlayerItemDidPlayToEndTimeNotification
-                  object:[_player currentItem]
-                   queue:[NSOperationQueue mainQueue]
-              usingBlock:^(NSNotification* note) {
-                if (_isLooping) {
-                  AVPlayerItem* p = [note object];
-                  [p seekToTime:kCMTimeZero];
-                } else {
-                  if (_eventSink) {
-                    _eventSink(@{@"event" : @"completed"});
-                  }
-                }
-              }];
+  [[NSNotificationCenter defaultCenter] addObserverForName:AVPlayerItemDidPlayToEndTimeNotification
+                                                    object:[_player currentItem]
+                                                     queue:[NSOperationQueue mainQueue]
+                                                usingBlock:^(NSNotification* note) {
+                                                  if (_isLooping) {
+                                                    AVPlayerItem* p = [note object];
+                                                    [p seekToTime:kCMTimeZero];
+                                                  } else {
+                                                    if (_eventSink) {
+                                                      _eventSink(@{@"event" : @"completed"});
+                                                    }
+                                                  }
+                                                }];
   NSDictionary* pixBuffAttributes = @{
     (id)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_32BGRA),
     (id)kCVPixelBufferIOSurfacePropertiesKey : @{}
   };
-  _videoOutput = [[AVPlayerItemVideoOutput alloc]
-      initWithPixelBufferAttributes:pixBuffAttributes];
+  _videoOutput = [[AVPlayerItemVideoOutput alloc] initWithPixelBufferAttributes:pixBuffAttributes];
   AVPlayerItem* item = [AVPlayerItem playerItemWithURL:url];
 
   [item addObserver:self
          forKeyPath:@"loadedTimeRanges"
-            options:NSKeyValueObservingOptionInitial |
-                    NSKeyValueObservingOptionNew
+            options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
             context:timeRangeContext];
   [item addObserver:self
          forKeyPath:@"status"
-            options:NSKeyValueObservingOptionInitial |
-                    NSKeyValueObservingOptionNew
+            options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
             context:statusContext];
   [item addObserver:self
          forKeyPath:@"playbackLikelyToKeepUp"
-            options:NSKeyValueObservingOptionInitial |
-                    NSKeyValueObservingOptionNew
+            options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
             context:playbackLikelyToKeepUpContext];
 
   AVAsset* asset = [item asset];
   void (^assetCompletionHandler)(void) = ^{
-    if ([asset statusOfValueForKey:@"tracks" error:nil] ==
-        AVKeyValueStatusLoaded) {
+    if ([asset statusOfValueForKey:@"tracks" error:nil] == AVKeyValueStatusLoaded) {
       NSArray* tracks = [asset tracksWithMediaType:AVMediaTypeVideo];
       if ([tracks count] > 0) {
         AVAssetTrack* videoTrack = [tracks objectAtIndex:0];
         void (^trackCompletionHandler)(void) = ^{
-          if (_disposed)
-            return;
-          if ([videoTrack statusOfValueForKey:@"preferredTransform"
-                                        error:nil] == AVKeyValueStatusLoaded) {
+          if (_disposed) return;
+          if ([videoTrack statusOfValueForKey:@"preferredTransform" error:nil] ==
+              AVKeyValueStatusLoaded) {
             dispatch_async(dispatch_get_main_queue(), ^{
               [item addOutput:_videoOutput];
               [_player replaceCurrentItemWithPlayerItem:item];
@@ -122,13 +110,10 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
       }
     }
   };
-  [asset loadValuesAsynchronouslyForKeys:@[ @"tracks" ]
-                       completionHandler:assetCompletionHandler];
+  [asset loadValuesAsynchronouslyForKeys:@[ @"tracks" ] completionHandler:assetCompletionHandler];
   _displayLink =
-      [CADisplayLink displayLinkWithTarget:frameUpdater
-                                  selector:@selector(onDisplayLink:)];
-  [_displayLink addToRunLoop:[NSRunLoop currentRunLoop]
-                     forMode:NSRunLoopCommonModes];
+      [CADisplayLink displayLinkWithTarget:frameUpdater selector:@selector(onDisplayLink:)];
+  [_displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
   _displayLink.paused = YES;
   return self;
 }
@@ -139,13 +124,11 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
                        context:(void*)context {
   if (context == timeRangeContext) {
     if (_eventSink != nil) {
-      NSMutableArray<NSArray<NSNumber*>*>* values =
-          [[NSMutableArray alloc] init];
+      NSMutableArray<NSArray<NSNumber*>*>* values = [[NSMutableArray alloc] init];
       for (NSValue* rangeValue in [object loadedTimeRanges]) {
         CMTimeRange range = [rangeValue CMTimeRangeValue];
         int64_t start = CMTimeToMillis(range.start);
-        [values
-            addObject:@[ @(start), @(start + CMTimeToMillis(range.duration)) ]];
+        [values addObject:@[ @(start), @(start + CMTimeToMillis(range.duration)) ]];
       }
       _eventSink(@{@"event" : @"bufferingUpdate", @"values" : values});
     }
@@ -157,8 +140,7 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
           _eventSink([FlutterError
               errorWithCode:@"VideoError"
                     message:[@"Failed to load video: "
-                                stringByAppendingString:
-                                    [item.error localizedDescription]]
+                                stringByAppendingString:[item.error localizedDescription]]
                     details:nil]);
           break;
         case AVPlayerItemStatusUnknown:
@@ -191,9 +173,7 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
 
 - (void)sendInitialized {
   if (_eventSink && _isInitialized) {
-    _eventSink(
-        @{ @"event" : @"initialized",
-           @"duration" : @([self duration]) });
+    _eventSink(@{ @"event" : @"initialized", @"duration" : @([self duration]) });
   }
 }
 
@@ -228,11 +208,9 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
 }
 
 - (CVPixelBufferRef)copyPixelBuffer {
-  CMTime outputItemTime =
-      [_videoOutput itemTimeForHostTime:CACurrentMediaTime()];
+  CMTime outputItemTime = [_videoOutput itemTimeForHostTime:CACurrentMediaTime()];
   if ([_videoOutput hasNewPixelBufferForItemTime:outputItemTime]) {
-    return [_videoOutput copyPixelBufferForItemTime:outputItemTime
-                                 itemTimeForDisplay:NULL];
+    return [_videoOutput copyPixelBufferForItemTime:outputItemTime itemTimeForDisplay:NULL];
   } else {
     return NULL;
   }
@@ -244,8 +222,7 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
 }
 
 - (FlutterError* _Nullable)onListenWithArguments:(id _Nullable)arguments
-                                       eventSink:
-                                           (nonnull FlutterEventSink)events {
+                                       eventSink:(nonnull FlutterEventSink)events {
   _eventSink = events;
   [self sendInitialized];
   return nil;
@@ -253,9 +230,7 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
 
 - (void)dispose {
   _disposed = true;
-  [[_player currentItem] removeObserver:self
-                             forKeyPath:@"status"
-                                context:statusContext];
+  [[_player currentItem] removeObserver:self forKeyPath:@"status" context:statusContext];
   [[_player currentItem] removeObserver:self
                              forKeyPath:@"loadedTimeRanges"
                                 context:timeRangeContext];
@@ -280,9 +255,8 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
   FlutterMethodChannel* channel =
       [FlutterMethodChannel methodChannelWithName:@"flutter.io/videoPlayer"
                                   binaryMessenger:[registrar messenger]];
-  VideoPlayerPlugin* instance =
-      [[VideoPlayerPlugin alloc] initWithRegistry:[registrar textures]
-                                        messenger:[registrar messenger]];
+  VideoPlayerPlugin* instance = [[VideoPlayerPlugin alloc] initWithRegistry:[registrar textures]
+                                                                  messenger:[registrar messenger]];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
@@ -306,18 +280,14 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
   } else if ([@"create" isEqualToString:call.method]) {
     NSDictionary* argsMap = call.arguments;
     NSString* dataSource = argsMap[@"dataSource"];
-    FrameUpdater* frameUpdater =
-        [[FrameUpdater alloc] initWithRegistry:_registry];
-    VideoPlayer* player =
-        [[VideoPlayer alloc] initWithURL:[NSURL URLWithString:dataSource]
-                            frameUpdater:frameUpdater];
+    FrameUpdater* frameUpdater = [[FrameUpdater alloc] initWithRegistry:_registry];
+    VideoPlayer* player = [[VideoPlayer alloc] initWithURL:[NSURL URLWithString:dataSource]
+                                              frameUpdater:frameUpdater];
     int64_t textureId = [_registry registerTexture:player];
     frameUpdater.textureId = textureId;
     FlutterEventChannel* eventChannel = [FlutterEventChannel
-        eventChannelWithName:
-            [NSString
-                stringWithFormat:@"flutter.io/videoPlayer/videoEvents%lld",
-                                 textureId]
+        eventChannelWithName:[NSString stringWithFormat:@"flutter.io/videoPlayer/videoEvents%lld",
+                                                        textureId]
              binaryMessenger:_messenger];
     [eventChannel setStreamHandler:player];
     player.eventChannel = eventChannel;
