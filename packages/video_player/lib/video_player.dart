@@ -14,9 +14,18 @@ final MethodChannel _channel = const MethodChannel('flutter.io/videoPlayer')
   ..invokeMethod("init");
 
 class DurationRange {
+  DurationRange(this.start, this.end);
+
   final Duration start;
   final Duration end;
-  DurationRange(this.start, this.end);
+
+  double startFraction(Duration duration) {
+    return start.inMilliseconds / duration.inMilliseconds;
+  }
+
+  double endFraction(Duration duration) {
+    return end.inMilliseconds / duration.inMilliseconds;
+  }
 }
 
 class VideoPlayerValue {
@@ -28,14 +37,15 @@ class VideoPlayerValue {
   final double volume;
   final String errorDescription;
 
-  VideoPlayerValue(
-      {@required this.duration,
-      this.position: const Duration(),
-      this.buffered: const <DurationRange>[],
-      this.isPlaying: false,
-      this.isLooping: false,
-      this.volume: 1.0,
-      this.errorDescription});
+  VideoPlayerValue({
+    @required this.duration,
+    this.position: const Duration(),
+    this.buffered: const <DurationRange>[],
+    this.isPlaying: false,
+    this.isLooping: false,
+    this.volume: 1.0,
+    this.errorDescription,
+  });
 
   VideoPlayerValue.uninitialized() : this(duration: null);
 
@@ -45,22 +55,24 @@ class VideoPlayerValue {
   bool get initialized => duration != null;
   bool get isErroneous => errorDescription != null;
 
-  VideoPlayerValue copyWith(
-      {Duration duration,
-      Duration position,
-      List<DurationRange> buffered,
-      bool isPlaying,
-      bool isLooping,
-      double volume,
-      String errorDescription}) {
+  VideoPlayerValue copyWith({
+    Duration duration,
+    Duration position,
+    List<DurationRange> buffered,
+    bool isPlaying,
+    bool isLooping,
+    double volume,
+    String errorDescription,
+  }) {
     return new VideoPlayerValue(
-        duration: duration ?? this.duration,
-        position: position ?? this.position,
-        buffered: buffered ?? this.buffered,
-        isPlaying: isPlaying ?? this.isPlaying,
-        isLooping: isLooping ?? this.isLooping,
-        volume: volume ?? this.volume,
-        errorDescription: errorDescription ?? this.errorDescription);
+      duration: duration ?? this.duration,
+      position: position ?? this.position,
+      buffered: buffered ?? this.buffered,
+      isPlaying: isPlaying ?? this.isPlaying,
+      isLooping: isLooping ?? this.isLooping,
+      volume: volume ?? this.volume,
+      errorDescription: errorDescription ?? this.errorDescription,
+    );
   }
 }
 
@@ -86,17 +98,25 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
   Future<Null> initialize() async {
     _creatingCompleter = new Completer<Null>();
-    final Map<String, dynamic> response = await _channel
-        .invokeMethod('create', <String, dynamic>{'dataSource': uri});
+    final Map<String, dynamic> response = await _channel.invokeMethod(
+      'create',
+      <String, dynamic>{'dataSource': uri},
+    );
     _textureId = response["textureId"];
     _creatingCompleter.complete(null);
-    _eventSubscription =
-        new EventChannel("flutter.io/videoPlayer/videoEvents$_textureId")
-            .receiveBroadcastStream()
-            .listen((Map<String, dynamic> event) {
+
+    DurationRange toDurationRange(List<int> values) {
+      return new DurationRange(
+        new Duration(milliseconds: values[0]),
+        new Duration(milliseconds: values[1]),
+      );
+    }
+
+    void eventListener(Map<String, dynamic> event) {
       if (event["event"] == "initialized") {
         value = value.copyWith(
-            duration: new Duration(milliseconds: event["duration"]));
+          duration: new Duration(milliseconds: event["duration"]),
+        );
         _applyLooping();
         _applyVolume();
         _applyPlayPause();
@@ -106,17 +126,23 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       } else if (event["event"] == "bufferingUpdate") {
         final List<List<int>> bufferedValues = event["values"];
         value = value.copyWith(
-            buffered: bufferedValues
-                .map((List<int> range) => new DurationRange(
-                    new Duration(milliseconds: range[0]),
-                    new Duration(milliseconds: range[1])))
-                .toList());
+          buffered: bufferedValues.map(toDurationRange).toList(),
+        );
       }
-    }, onError: (PlatformException e) {
+    }
+
+    void errorListener(PlatformException e) {
       value = new VideoPlayerValue.erroneous(e.message);
-      print("Error ${e.message}");
       timer?.cancel();
-    });
+    }
+
+    _eventSubscription = _eventChannelFor(_textureId)
+        .receiveBroadcastStream()
+        .listen(eventListener, onError: errorListener);
+  }
+
+  EventChannel _eventChannelFor(int textureId) {
+    return new EventChannel("flutter.io/videoPlayer/videoEvents$textureId");
   }
 
   @override
@@ -127,7 +153,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         timer?.cancel();
         await _eventSubscription?.cancel();
         await _channel.invokeMethod(
-            'dispose', <String, dynamic>{'textureId': _textureId});
+          'dispose',
+          <String, dynamic>{'textureId': _textureId},
+        );
       }
     }
     isDisposed = true;
@@ -153,8 +181,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     if (!value.initialized || isDisposed) {
       return;
     }
-    _channel.invokeMethod('setLooping',
-        <String, dynamic>{'textureId': _textureId, 'looping': value.isLooping});
+    _channel.invokeMethod(
+      'setLooping',
+      <String, dynamic>{'textureId': _textureId, 'looping': value.isLooping},
+    );
   }
 
   Future<Null> _applyPlayPause() async {
@@ -162,17 +192,23 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       return;
     }
     if (value.isPlaying) {
-      await _channel
-          .invokeMethod('play', <String, dynamic>{'textureId': _textureId});
-      timer = new Timer.periodic(const Duration(milliseconds: 500),
-          (Timer timer) async {
-        final Duration newPosition = await position;
-        value = value.copyWith(position: newPosition);
-      });
+      await _channel.invokeMethod(
+        'play',
+        <String, dynamic>{'textureId': _textureId},
+      );
+      timer = new Timer.periodic(
+        const Duration(milliseconds: 500),
+        (Timer timer) async {
+          final Duration newPosition = await position;
+          value = value.copyWith(position: newPosition);
+        },
+      );
     } else {
       timer?.cancel();
-      await _channel
-          .invokeMethod('pause', <String, dynamic>{'textureId': _textureId});
+      await _channel.invokeMethod(
+        'pause',
+        <String, dynamic>{'textureId': _textureId},
+      );
     }
   }
 
@@ -180,8 +216,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     if (!value.initialized || isDisposed) {
       return;
     }
-    await _channel.invokeMethod('setVolume',
-        <String, dynamic>{'textureId': _textureId, 'volume': value.volume});
+    await _channel.invokeMethod(
+      'setVolume',
+      <String, dynamic>{'textureId': _textureId, 'volume': value.volume},
+    );
   }
 
   /// The position in the current video.
@@ -190,8 +228,11 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       return null;
     }
     return new Duration(
-        milliseconds: await _channel.invokeMethod(
-            'position', <String, dynamic>{'textureId': _textureId}));
+      milliseconds: await _channel.invokeMethod(
+        'position',
+        <String, dynamic>{'textureId': _textureId},
+      ),
+    );
   }
 
   Future<Null> seekTo(Duration moment) async {
@@ -205,7 +246,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     }
     await _channel.invokeMethod('seekTo', <String, dynamic>{
       'textureId': _textureId,
-      'location': moment.inMilliseconds
+      'location': moment.inMilliseconds,
     });
     value = value.copyWith(position: moment);
   }
@@ -240,11 +281,12 @@ class VideoProgressColors {
   final Paint handlePaint;
   final Paint disabledPaint;
 
-  VideoProgressColors(
-      {Color playedColor: const Color.fromRGBO(255, 0, 0, 0.7),
-      Color bufferedColor: const Color.fromRGBO(30, 30, 200, 0.2),
-      Color handleColor: const Color.fromRGBO(200, 200, 200, 1.0),
-      Color disabledColor: const Color.fromRGBO(200, 200, 200, 0.5)})
+  VideoProgressColors({
+    Color playedColor: const Color.fromRGBO(255, 0, 0, 0.7),
+    Color bufferedColor: const Color.fromRGBO(30, 30, 200, 0.2),
+    Color handleColor: const Color.fromRGBO(200, 200, 200, 1.0),
+    Color disabledColor: const Color.fromRGBO(200, 200, 200, 0.5),
+  })
       : playedPaint = new Paint()..color = playedColor,
         bufferedPaint = new Paint()..color = bufferedColor,
         handlePaint = new Paint()..color = handleColor,
@@ -294,7 +336,8 @@ class _VideoProgressBarState extends State<VideoProgressBar> {
       child: (controller.value.isErroneous)
           ? new Text(controller.value.errorDescription)
           : new CustomPaint(
-              painter: new ProgressBarPainter(controller.value, widget.colors)),
+              painter: new ProgressBarPainter(controller.value, widget.colors),
+            ),
       onTapUp: (TapUpDetails details) {
         if (!controller.value.initialized) return;
         final RenderBox box = context.findRenderObject();
@@ -320,9 +363,12 @@ class ProgressBarPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     canvas.drawRect(
-        new Rect.fromPoints(
-            const Offset(0.0, 0.0), new Offset(size.width, size.height)),
-        colors.disabledPaint);
+      new Rect.fromPoints(
+        const Offset(0.0, 0.0),
+        new Offset(size.width, size.height),
+      ),
+      colors.disabledPaint,
+    );
     if (!value.initialized) {
       return;
     }
@@ -330,20 +376,24 @@ class ProgressBarPainter extends CustomPainter {
         value.duration.inMilliseconds *
         size.width;
     for (DurationRange range in value.buffered) {
-      final double bufferedStart = range.start.inMilliseconds /
-          value.duration.inMilliseconds *
-          size.width;
-      final double bufferedEnd =
-          range.end.inMilliseconds / value.duration.inMilliseconds * size.width;
+      final double start = range.startFraction(value.duration) * size.width;
+      final double end = range.endFraction(value.duration) * size.width;
       canvas.drawRect(
-          new Rect.fromPoints(new Offset(bufferedStart, 0.0),
-              new Offset(bufferedEnd, size.height)),
-          colors.bufferedPaint);
+        new Rect.fromPoints(
+          new Offset(start, 0.0),
+          new Offset(end, size.height),
+        ),
+        colors.bufferedPaint,
+      );
     }
     canvas.drawRect(
-        new Rect.fromPoints(Offset.zero, new Offset(playedPart, size.height)),
-        colors.playedPaint);
-    canvas.drawCircle(new Offset(playedPart, size.height / 2), size.height / 2,
-        colors.handlePaint);
+      new Rect.fromPoints(Offset.zero, new Offset(playedPart, size.height)),
+      colors.playedPaint,
+    );
+    canvas.drawCircle(
+      new Offset(playedPart, size.height / 2),
+      size.height / 2,
+      colors.handlePaint,
+    );
   }
 }

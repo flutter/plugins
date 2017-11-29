@@ -1,4 +1,4 @@
-group 'com.yourcompany.videoplayer'
+group 'io.flutter.videoplayer'
 version '1.0-SNAPSHOT'
 
 buildscript {
