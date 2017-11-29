@@ -21,7 +21,7 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.view.TextureRegistry;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,17 +66,13 @@ public class VideoPlayerPlugin implements MethodCallHandler {
           public void onPrepared(MediaPlayer mp) {
             mediaPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
               @Override
-              public void onBufferingUpdate(MediaPlayer mediaPlayer, int i) {
+              public void onBufferingUpdate(MediaPlayer mediaPlayer, int percent) {
                 if (eventSink != null) {
                   Map<String, Object> event = new HashMap<>();
                   event.put("event", "bufferingUpdate");
-                  List<Integer> range = new ArrayList<>();
-                  range.add(0);
-                  range.add(i * mediaPlayer.getDuration() / 100);
+                  List<Integer> range = Arrays.asList(0, percent * mediaPlayer.getDuration() / 100);
                   // iOS supports a list of buffered ranges, so here is a list with a single range.
-                  List<List<Integer>> ranges = new ArrayList<>();
-                  ranges.add(range);
-                  event.put("values", ranges);
+                  event.put("values", Arrays.asList(range));
                   eventSink.success(event);
                 }
               }
@@ -129,8 +125,8 @@ public class VideoPlayerPlugin implements MethodCallHandler {
     }
 
     void setVolume(double value) {
-      float bracketedValue = (float)Math.max(0.0, Math.min(1.0, value));
-      mediaPlayer.setVolume((float)bracketedValue, (float)bracketedValue);
+      float bracketedValue = (float) Math.max(0.0, Math.min(1.0, value));
+      mediaPlayer.setVolume(bracketedValue, bracketedValue);
     }
 
     void seekTo(int location) {
@@ -186,7 +182,8 @@ public class VideoPlayerPlugin implements MethodCallHandler {
     } else if (call.method.equals("create")) {
       TextureRegistry.SurfaceTextureEntry handle = textures.createSurfaceTexture();
       EventChannel eventChannel = new EventChannel(messenger, "flutter.io/videoPlayer/videoEvents" + handle.id());
-      videoPlayers.put(handle.id(), new VideoPlayer(eventChannel, handle, (String) call.argument("dataSource"), result));
+      VideoPlayer player = new VideoPlayer(eventChannel, handle, (String) call.argument("dataSource"), result);
+      videoPlayers.put(handle.id(), player);
     } else {
       long textureId = ((Number) call.argument("textureId")).longValue();
       VideoPlayer player = videoPlayers.get(textureId);
@@ -198,7 +195,7 @@ public class VideoPlayerPlugin implements MethodCallHandler {
         player.setLooping((Boolean) call.argument("looping"));
         result.success(null);
       } else if (call.method.equals("setVolume")) {
-        player.setVolume((Double)call.argument("volume"));
+        player.setVolume((Double) call.argument("volume"));
         result.success(null);
       } else if (call.method.equals("play")) {
         player.play();

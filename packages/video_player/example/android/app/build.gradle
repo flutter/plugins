@@ -24,7 +24,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "com.yourcompany.videoplayerexample"
+        applicationId "io.flutter.videoplayerexample"
         minSdkVersion 16
         targetSdkVersion 25
         versionCode 1
