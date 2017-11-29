@@ -100,7 +100,6 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
           if ([videoTrack statusOfValueForKey:@"preferredTransform" error:nil] ==
               AVKeyValueStatusLoaded) {
             dispatch_async(dispatch_get_main_queue(), ^{
-              [item addOutput:_videoOutput];
               [_player replaceCurrentItemWithPlayerItem:item];
             });
           }
@@ -147,6 +146,7 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
           break;
         case AVPlayerItemStatusReadyToPlay:
           _isInitialized = true;
+          [item addOutput:_videoOutput];
           [self sendInitialized];
           [self updatePlayingState];
           break;
@@ -230,6 +230,7 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
 
 - (void)dispose {
   _disposed = true;
+  [_displayLink invalidate];
   [[_player currentItem] removeObserver:self forKeyPath:@"status" context:statusContext];
   [[_player currentItem] removeObserver:self
                              forKeyPath:@"loadedTimeRanges"
