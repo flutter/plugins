@@ -1,3 +1,7 @@
+## 1.0.2
+
+* Fix handling of URLs in Android WebView.
+
 ## 1.0.1
 
 * Support option to launch default browser in iOS.
