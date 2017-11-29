@@ -72,8 +72,8 @@ void main() {
 
     group('CollectionsReference', () {
       test('listen', () async {
-        QuerySnapshot snapshot = await collectionReference.snapshots.first;
-        DocumentSnapshot document = snapshot.documents[0];
+        final QuerySnapshot snapshot = await collectionReference.snapshots.first;
+        final DocumentSnapshot document = snapshot.documents[0];
         expect(document.documentID, equals('0'));
         expect(document.reference.path, equals('foo/0'));
         expect(document.data, equals(kMockDocumentSnapshotData));
