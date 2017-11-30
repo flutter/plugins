@@ -52,6 +52,7 @@ These are the available plugins in this repository.
 | [share](./packages/share/) | [![pub package](https://img.shields.io/pub/v/share.svg)](https://pub.dartlang.org/packages/share) |
 | [shared_preferences](./packages/shared_preferences/) | [![pub package](https://img.shields.io/pub/v/shared_preferences.svg)](https://pub.dartlang.org/packages/shared_preferences) |
 | [url_launcher](./packages/url_launcher/) | [![pub package](https://img.shields.io/pub/v/url_launcher.svg)](https://pub.dartlang.org/packages/url_launcher) |
+| [video_player](./packages/video_player/) | [![pub package](https://img.shields.io/pub/v/video_player.svg)](https://pub.dartlang.org/packages/video_player) |
 | | |
 | **FlutterFire Plugins** |  |
 | [firebase_analytics](./packages/firebase_analytics/) | [![pub package](https://img.shields.io/pub/v/firebase_analytics.svg)](https://pub.dartlang.org/packages/firebase_analytics) |
