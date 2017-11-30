@@ -93,10 +93,13 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   bool isDisposed = false;
   Completer<Null> _creatingCompleter;
   StreamSubscription<Map<String, dynamic>> _eventSubscription;
+  _VideoAppLifeCycleObserver _lifeCycleObserver;
 
   VideoPlayerController(this.uri) : super(new VideoPlayerValue(duration: null));
 
   Future<Null> initialize() async {
+    _lifeCycleObserver = new _VideoAppLifeCycleObserver(this);
+    _lifeCycleObserver.initialize();
     _creatingCompleter = new Completer<Null>();
     final Map<String, dynamic> response = await _channel.invokeMethod(
       'create',
@@ -159,6 +162,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       }
     }
     isDisposed = true;
+    _lifeCycleObserver.dispose();
     super.dispose();
   }
 
@@ -258,6 +262,37 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   Future<Null> setVolume(double volume) async {
     value = value.copyWith(volume: volume.clamp(0.0, 1.0));
     await _applyVolume();
+  }
+}
+
+class _VideoAppLifeCycleObserver extends WidgetsBindingObserver {
+  bool wasPlayingBeforePause = false;
+  final VideoPlayerController controller;
+
+  _VideoAppLifeCycleObserver(this.controller);
+
+  void initialize() {
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.paused:
+        wasPlayingBeforePause = controller.value.isPlaying;
+        if (controller.value.initialized) controller.pause();
+        break;
+      case AppLifecycleState.resumed:
+        if (wasPlayingBeforePause) {
+          if (controller.value.initialized) controller.play();
+        }
+        break;
+      default:
+    }
+  }
+
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
   }
 }
 
