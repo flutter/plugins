@@ -266,10 +266,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 }
 
 class _VideoAppLifeCycleObserver extends WidgetsBindingObserver {
-  bool wasPlayingBeforePause = false;
-  final VideoPlayerController controller;
+  bool _wasPlayingBeforePause = false;
+  final VideoPlayerController _controller;
 
-  _VideoAppLifeCycleObserver(this.controller);
+  _VideoAppLifeCycleObserver(this._controller);
 
   void initialize() {
     WidgetsBinding.instance.addObserver(this);
@@ -279,12 +279,12 @@ class _VideoAppLifeCycleObserver extends WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     switch (state) {
       case AppLifecycleState.paused:
-        wasPlayingBeforePause = controller.value.isPlaying;
-        if (controller.value.initialized) controller.pause();
+        _wasPlayingBeforePause = _controller.value.isPlaying;
+        _controller.pause();
         break;
       case AppLifecycleState.resumed:
-        if (wasPlayingBeforePause) {
-          if (controller.value.initialized) controller.play();
+        if (_wasPlayingBeforePause) {
+          _controller.play();
         }
         break;
       default:
