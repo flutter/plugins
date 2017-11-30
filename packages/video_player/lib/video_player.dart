@@ -342,7 +342,6 @@ class _VideoProgressBarState extends State<VideoProgressBar> {
       controller.seekTo(position);
     }
 
-
     return new GestureDetector(
       child: (controller.value.isErroneous)
           ? new Text(controller.value.errorDescription)
@@ -350,14 +349,18 @@ class _VideoProgressBarState extends State<VideoProgressBar> {
               painter: new ProgressBarPainter(controller.value, widget.colors),
             ),
       onHorizontalDragStart: (DragStartDetails details) {
-        if (!controller.value.initialized) return;
+        if (!controller.value.initialized) {
+          return;
+        }
         _controllerWasPlaying = controller.value.isPlaying;
         if (_controllerWasPlaying) {
           controller.pause();
         }
       },
       onHorizontalDragUpdate: (DragUpdateDetails details) {
-        if (!controller.value.initialized) return;
+        if (!controller.value.initialized) {
+          return;
+        }
         seekToRelativePosition(details.globalPosition);
       },
       onHorizontalDragEnd: (DragEndDetails details) {
@@ -366,7 +369,9 @@ class _VideoProgressBarState extends State<VideoProgressBar> {
         }
       },
       onTapDown: (TapDownDetails details) {
-        if (!controller.value.initialized) return;
+        if (!controller.value.initialized) {
+          return;
+        }
         seekToRelativePosition(details.globalPosition);
       },
     );
