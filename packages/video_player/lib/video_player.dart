@@ -160,9 +160,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           <String, dynamic>{'textureId': _textureId},
         );
       }
+      _lifeCycleObserver.dispose();
     }
     isDisposed = true;
-    _lifeCycleObserver.dispose();
     super.dispose();
   }
 
