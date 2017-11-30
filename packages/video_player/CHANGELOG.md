@@ -1,3 +1,9 @@
+## 0.0.4
+
+* The player will now pause on app pause, and resume on app resume.
+* Implemented scrubbing on the progress bar.
+* Fixed a bug related to hot restart on Android.
+
 ## 0.0.3
 
 * Made creating a VideoPlayerController a synchronous operation. Must be followed by a call to initialize().
