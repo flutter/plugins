@@ -310,13 +310,13 @@ class VideoProgressBar extends StatefulWidget {
 class _VideoProgressBarState extends State<VideoProgressBar> {
   VoidCallback listener;
 
+  bool _controllerWasPlaying = false;
+
   _VideoProgressBarState() {
     listener = () {
       setState(() {});
     };
   }
-
-  bool controllerWasPlaying = false;
 
   VideoPlayerController get controller => widget.controller;
 
@@ -351,8 +351,8 @@ class _VideoProgressBarState extends State<VideoProgressBar> {
             ),
       onHorizontalDragStart: (DragStartDetails details) {
         if (!controller.value.initialized) return;
-        controllerWasPlaying = controller.value.isPlaying;
-        if (controllerWasPlaying) {
+        _controllerWasPlaying = controller.value.isPlaying;
+        if (_controllerWasPlaying) {
           controller.pause();
         }
       },
@@ -361,7 +361,7 @@ class _VideoProgressBarState extends State<VideoProgressBar> {
         seekToRelativePosition(details.globalPosition);
       },
       onHorizontalDragEnd: (DragEndDetails details) {
-        if (controllerWasPlaying) {
+        if (_controllerWasPlaying) {
           controller.play();
         }
       },
