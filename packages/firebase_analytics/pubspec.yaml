@@ -8,6 +8,7 @@ version: 0.1.1
 flutter:
   plugin:
     androidPackage: io.flutter.firebaseanalytics
+    iosPrefix: FLT
     pluginClass: FirebaseAnalyticsPlugin
 
 dependencies:

@@ -7,6 +7,7 @@ homepage: https://github.com/flutter/plugins/tree/master/packages/package_info
 flutter:
   plugin:
     androidPackage: io.flutter.plugins.packageinfo
+    iosPrefix: FLT
     pluginClass: PackageInfoPlugin
 
 dependencies:
