@@ -1,20 +1,20 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+FLTFrameUpdater// Copyright 2017 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "VideoPlayerPlugin.h"
 #import <AVFoundation/AVFoundation.h>
 
-int64_t CMTimeToMillis(CMTime time) { return time.value * 1000 / time.timescale; }
+int64_t FLTCMTimeToMillis(CMTime time) { return time.value * 1000 / time.timescale; }
 
-@interface FrameUpdater : NSObject
+@interface FLTFrameUpdater : NSObject
 @property(nonatomic) int64_t textureId;
 @property(nonatomic, readonly) NSObject<FlutterTextureRegistry>* registry;
 - (void)onDisplayLink:(CADisplayLink*)link;
 @end
 
-@implementation FrameUpdater
-- (FrameUpdater*)initWithRegistry:(NSObject<FlutterTextureRegistry>*)registry {
+@implementation FLTFrameUpdater
+- (FLTFrameUpdater*)initWithRegistry:(NSObject<FlutterTextureRegistry>*)registry {
   NSAssert(self, @"super init cannot be nil");
   if (self == nil) return nil;
   _registry = registry;
@@ -26,7 +26,7 @@ int64_t CMTimeToMillis(CMTime time) { return time.value * 1000 / time.timescale;
 }
 @end
 
-@interface VideoPlayer : NSObject<FlutterTexture, FlutterStreamHandler>
+@interface FLTVideoPlayer : NSObject<FlutterTexture, FlutterStreamHandler>
 @property(readonly, nonatomic) AVPlayer* player;
 @property(readonly, nonatomic) AVPlayerItemVideoOutput* videoOutput;
 @property(readonly, nonatomic) CADisplayLink* displayLink;
@@ -36,7 +36,7 @@ int64_t CMTimeToMillis(CMTime time) { return time.value * 1000 / time.timescale;
 @property(nonatomic, readonly) bool isPlaying;
 @property(nonatomic, readonly) bool isLooping;
 @property(nonatomic, readonly) bool isInitialized;
-- (instancetype)initWithURL:(NSURL*)url frameUpdater:(FrameUpdater*)frameUpdater;
+- (instancetype)initWithURL:(NSURL*)url frameUpdater:(FLTFrameUpdater*)frameUpdater;
 - (void)play;
 - (void)pause;
 - (void)setIsLooping:(bool)isLooping;
@@ -47,8 +47,8 @@ static void* timeRangeContext = &timeRangeContext;
 static void* statusContext = &statusContext;
 static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
 
-@implementation VideoPlayer
-- (instancetype)initWithURL:(NSURL*)url frameUpdater:(FrameUpdater*)frameUpdater {
+@implementation FLTVideoPlayer
+- (instancetype)initWithURL:(NSURL*)url frameUpdater:(FLTFrameUpdater*)frameUpdater {
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
   _isInitialized = false;
@@ -126,8 +126,8 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
       NSMutableArray<NSArray<NSNumber*>*>* values = [[NSMutableArray alloc] init];
       for (NSValue* rangeValue in [object loadedTimeRanges]) {
         CMTimeRange range = [rangeValue CMTimeRangeValue];
-        int64_t start = CMTimeToMillis(range.start);
-        [values addObject:@[ @(start), @(start + CMTimeToMillis(range.duration)) ]];
+        int64_t start = FLTCMTimeToMillis(range.start);
+        [values addObject:@[ @(start), @(start + FLTCMTimeToMillis(range.duration)) ]];
       }
       _eventSink(@{@"event" : @"bufferingUpdate", @"values" : values});
     }
@@ -188,11 +188,11 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
 }
 
 - (int64_t)position {
-  return CMTimeToMillis([_player currentTime]);
+  return FLTCMTimeToMillis([_player currentTime]);
 }
 
 - (int64_t)duration {
-  return CMTimeToMillis([[_player currentItem] duration]);
+  return FLTCMTimeToMillis([[_player currentItem] duration]);
 }
 
 - (void)seekTo:(int)location {
@@ -245,19 +245,19 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
 
 @end
 
-@interface VideoPlayerPlugin ()
+@interface FLTVideoPlayerPlugin ()
 @property(readonly, nonatomic) NSObject<FlutterTextureRegistry>* registry;
 @property(readonly, nonatomic) NSObject<FlutterBinaryMessenger>* messenger;
 @property(readonly, nonatomic) NSMutableDictionary* players;
 @end
 
-@implementation VideoPlayerPlugin
+@implementation FLTVideoPlayerPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   FlutterMethodChannel* channel =
       [FlutterMethodChannel methodChannelWithName:@"flutter.io/videoPlayer"
                                   binaryMessenger:[registrar messenger]];
-  VideoPlayerPlugin* instance = [[VideoPlayerPlugin alloc] initWithRegistry:[registrar textures]
-                                                                  messenger:[registrar messenger]];
+  FLTVideoPlayerPlugin* instance = [[FLTVideoPlayerPlugin alloc] initWithRegistry:[registrar textures]
+                                                                        messenger:[registrar messenger]];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
@@ -281,8 +281,8 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
   } else if ([@"create" isEqualToString:call.method]) {
     NSDictionary* argsMap = call.arguments;
     NSString* dataSource = argsMap[@"dataSource"];
-    FrameUpdater* frameUpdater = [[FrameUpdater alloc] initWithRegistry:_registry];
-    VideoPlayer* player = [[VideoPlayer alloc] initWithURL:[NSURL URLWithString:dataSource]
+    FLTFrameUpdater* frameUpdater = [[FLTFrameUpdater alloc] initWithRegistry:_registry];
+    FLTVideoPlayer* player = [[FLTVideoPlayer alloc] initWithURL:[NSURL URLWithString:dataSource]
                                               frameUpdater:frameUpdater];
     int64_t textureId = [_registry registerTexture:player];
     frameUpdater.textureId = textureId;
@@ -297,7 +297,7 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
   } else {
     NSDictionary* argsMap = call.arguments;
     int64_t textureId = ((NSNumber*)argsMap[@"textureId"]).unsignedIntegerValue;
-    VideoPlayer* player = _players[@(textureId)];
+    FLTVideoPlayer* player = _players[@(textureId)];
     if ([@"dispose" isEqualToString:call.method]) {
       [_registry unregisterTexture:textureId];
       [_players removeObjectForKey:@(textureId)];
