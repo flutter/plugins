@@ -49,6 +49,36 @@ See the [example's](https://github.com/flutter/plugins/tree/master/packages/andr
 [MainActivity](https://github.com/flutter/plugins/blob/master/packages/android_alarm_manager/example/android/app/src/main/java/io/flutter/androidalarmmanagerexample/MainActivity.java)
 to see an example.
 
+If alarm callbacks will need access to other Flutter plugins, including the
+alarm manager plugin itself, it is necessary to teach the background service how
+to initialize plugins. This is done by giving the `AlarmService` a callback to call
+in the application's `onCreate` method. See the example's
+[Application overrides](https://github.com/flutter/plugins/blob/master/packages/android_alarm_manager/example/android/app/src/main/java/io/flutter/androidalarmmanagerexample/Application.java).
+In particular, its `Application` class is as follows:
+
+```java
+public class Application extends FlutterApplication implements PluginRegistrantCallback {
+  @Override
+  public void onCreate() {
+    super.onCreate();
+    AlarmService.setPluginRegistrant(this);
+  }
+
+  @Override
+  public void registerWith(PluginRegistry registry) {
+    GeneratedPluginRegistrant.registerWith(registry);
+  }
+}
+```
+
+Which must be reflected in the application's `AndroidManifest.xml`. E.g.:
+
+```xml
+    <application
+        android:name=".Application"
+        ...
+```
+
 For help getting started with Flutter, view our online
 [documentation](http://flutter.io/).
 
