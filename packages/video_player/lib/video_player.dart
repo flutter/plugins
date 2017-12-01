@@ -26,6 +26,9 @@ class DurationRange {
   double endFraction(Duration duration) {
     return end.inMilliseconds / duration.inMilliseconds;
   }
+
+  @override
+  String toString() => '$runtimeType(start: $start, end: $end)';
 }
 
 class VideoPlayerValue {
@@ -73,6 +76,18 @@ class VideoPlayerValue {
       volume: volume ?? this.volume,
       errorDescription: errorDescription ?? this.errorDescription,
     );
+  }
+
+  @override
+  String toString() {
+    return '$runtimeType('
+        'duration: $duration, '
+        'position: $position, '
+        'buffered: [${buffered.join(', ')}], '
+        'isplaying: $isPlaying, '
+        'isLooping: $isLooping, '
+        'volume: $volume, '
+        'errorDescription: $errorDescription)';
   }
 }
 
