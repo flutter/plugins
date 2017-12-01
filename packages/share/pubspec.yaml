@@ -7,6 +7,7 @@ homepage: https://github.com/flutter/plugins/tree/master/packages/share
 flutter:
   plugin:
     androidPackage: io.flutter.plugins.share
+    iosPrefix: FLT
     pluginClass: SharePlugin
 
 dependencies:

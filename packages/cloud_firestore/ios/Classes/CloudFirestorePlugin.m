@@ -51,11 +51,11 @@ FIRQuery *getQuery(NSDictionary *arguments) {
   return query;
 }
 
-@interface CloudFirestorePlugin ()
+@interface FLTCloudFirestorePlugin ()
 @property(nonatomic, retain) FlutterMethodChannel *channel;
 @end
 
-@implementation CloudFirestorePlugin {
+@implementation FLTCloudFirestorePlugin {
   NSMutableDictionary<NSNumber *, id<FIRListenerRegistration>> *_listeners;
   int _nextListenerHandle;
 }
@@ -64,7 +64,7 @@ FIRQuery *getQuery(NSDictionary *arguments) {
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/cloud_firestore"
                                   binaryMessenger:[registrar messenger]];
-  CloudFirestorePlugin *instance = [[CloudFirestorePlugin alloc] init];
+  FLTCloudFirestorePlugin *instance = [[FLTCloudFirestorePlugin alloc] init];
   instance.channel = channel;
   [registrar addMethodCallDelegate:instance channel:channel];
 }

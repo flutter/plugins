@@ -4,15 +4,15 @@
 
 #import "BatteryPlugin.h"
 
-@interface BatteryPlugin ()<FlutterStreamHandler>
+@interface FLTBatteryPlugin ()<FlutterStreamHandler>
 @end
 
-@implementation BatteryPlugin {
+@implementation FLTBatteryPlugin {
   FlutterEventSink _eventSink;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  BatteryPlugin* instance = [[BatteryPlugin alloc] init];
+  FLTBatteryPlugin* instance = [[FLTBatteryPlugin alloc] init];
 
   FlutterMethodChannel* channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/battery"

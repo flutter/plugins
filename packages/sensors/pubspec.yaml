@@ -8,6 +8,7 @@ homepage: https://github.com/flutter/plugins/tree/master/packages/sensors
 flutter:
   plugin:
     androidPackage: io.flutter.plugins.sensors
+    iosPrefix: FLT
     pluginClass: SensorsPlugin
 
 dependencies:

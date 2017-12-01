@@ -4,12 +4,12 @@
 
 #import "PackageInfoPlugin.h"
 
-@implementation PackageInfoPlugin
+@implementation FLTPackageInfoPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   FlutterMethodChannel* channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/package_info"
                                   binaryMessenger:[registrar messenger]];
-  PackageInfoPlugin* instance = [[PackageInfoPlugin alloc] init];
+  FLTPackageInfoPlugin* instance = [[FLTPackageInfoPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 

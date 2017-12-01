@@ -8,6 +8,7 @@ version: 0.1.0
 flutter:
   plugin:
     androidPackage: io.flutter.plugins.firebase.cloud_firestore
+    iosPrefix: FLT
     pluginClass: CloudFirestorePlugin
 
 dependencies:

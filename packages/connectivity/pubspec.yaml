@@ -7,6 +7,7 @@ homepage: https://github.com/flutter/plugins/tree/master/packages/connectivity
 flutter:
   plugin:
     androidPackage: io.flutter.plugins.connectivity
+    iosPrefix: FLT
     pluginClass: ConnectivityPlugin
 
 dependencies:
