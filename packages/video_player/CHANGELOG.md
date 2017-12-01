@@ -1,3 +1,7 @@
+## 0.0.5
+
+* Added VideoPlayerValue.toString().
+
 ## 0.0.4
 
 * The player will now pause on app pause, and resume on app resume.
