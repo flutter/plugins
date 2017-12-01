@@ -8,6 +8,7 @@ homepage: https://github.com/flutter/plugins/tree/master/packages/shared_prefere
 flutter:
   plugin:
     androidPackage: io.flutter.plugins.sharedpreferences
+    iosPrefix: FLT
     pluginClass: SharedPreferencesPlugin
 
 dependencies:

@@ -11,21 +11,21 @@ typedef enum : NSUInteger {
   FAILED,
   PENDING,  // Will be shown when status is changed to LOADED.
   LOADED,
-} MobileAdStatus;
+} FLTMobileAdStatus;
 
-@interface MobileAd : NSObject
+@interface FLTMobileAd : NSObject
 + (void)configureWithAppId:(NSString *)appId;
-+ (MobileAd *)getAdForId:(NSNumber *)mobileAdId;
-- (MobileAdStatus)status;
++ (FLTMobileAd *)getAdForId:(NSNumber *)mobileAdId;
+- (FLTMobileAdStatus)status;
 - (void)loadWithUnitId:(NSString *)unitId targetingInfo:(NSDictionary *)targetingInfo;
 - (void)show;
 - (void)dispose;
 @end
 
-@interface BannerAd : MobileAd<GADBannerViewDelegate>
+@interface FLTBannerAd : FLTMobileAd<GADBannerViewDelegate>
 + (instancetype)withId:(NSNumber *)mobileAdId channel:(FlutterMethodChannel *)channel;
 @end
 
-@interface InterstitialAd : MobileAd<GADInterstitialDelegate>
+@interface FLTInterstitialAd : FLTMobileAd<GADInterstitialDelegate>
 + (instancetype)withId:(NSNumber *)mobileAdId channel:(FlutterMethodChannel *)channel;
 @end

@@ -8,6 +8,7 @@ version: 0.0.1+1
 flutter:
   plugin:
     androidPackage: io.flutter.plugins.battery
+    iosPrefix: FLT
     pluginClass: BatteryPlugin
 
 dependencies:

@@ -28,12 +28,12 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
   };
 }
 
-@interface FirebaseAuthPlugin ()
+@interface FLTFirebaseAuthPlugin ()
 @property(nonatomic, retain) NSMutableDictionary *authStateChangeListeners;
 @property(nonatomic, retain) FlutterMethodChannel *channel;
 @end
 
-@implementation FirebaseAuthPlugin
+@implementation FLTFirebaseAuthPlugin
 
 // Handles are ints used as indexes into the NSMutableDictionary of active observers
 int nextHandle = 0;
@@ -42,7 +42,7 @@ int nextHandle = 0;
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/firebase_auth"
                                   binaryMessenger:[registrar messenger]];
-  FirebaseAuthPlugin *instance = [[FirebaseAuthPlugin alloc] init];
+  FLTFirebaseAuthPlugin *instance = [[FLTFirebaseAuthPlugin alloc] init];
   instance.channel = channel;
   instance.authStateChangeListeners = [[NSMutableDictionary alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];

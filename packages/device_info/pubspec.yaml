@@ -7,6 +7,7 @@ homepage: https://github.com/flutter/plugins/tree/master/packages/device_info
 flutter:
   plugin:
     androidPackage: io.flutter.plugins.deviceinfo
+    iosPrefix: FLT
     pluginClass: DeviceInfoPlugin
 
 dependencies:

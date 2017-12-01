@@ -8,6 +8,7 @@ version: 0.1.4
 flutter:
   plugin:
     androidPackage: io.flutter.plugins.imagepicker
+    iosPrefix: FLT
     pluginClass: ImagePickerPlugin
 
 dependencies:

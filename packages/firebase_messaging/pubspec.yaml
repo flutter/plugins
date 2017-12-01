@@ -8,6 +8,7 @@ version: 0.0.7
 flutter:
   plugin:
     androidPackage: io.flutter.plugins.firebasemessaging
+    iosPrefix: FLT
     pluginClass: FirebaseMessagingPlugin
 
 dependencies:

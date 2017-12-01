@@ -16,3 +16,4 @@ flutter:
   plugin:
     androidPackage: io.flutter.androidalarmmanager
     pluginClass: AndroidAlarmManagerPlugin
+    iosPrefix: FLT
