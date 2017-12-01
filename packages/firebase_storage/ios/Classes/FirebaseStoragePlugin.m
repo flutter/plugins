@@ -18,7 +18,7 @@
 }
 @end
 
-@implementation FirebaseStoragePlugin {
+@implementation FLTFirebaseStoragePlugin {
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {

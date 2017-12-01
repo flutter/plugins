@@ -197,7 +197,8 @@ GADBannerView *_banner;
 
 + (instancetype)withId:(NSNumber *)mobileAdId channel:(FlutterMethodChannel *)channel {
   FLTMobileAd *ad = [FLTMobileAd getAdForId:mobileAdId];
-  return ad != nil ? (FLTBannerAd *)ad : [[FLTBannerAd alloc] initWithId:mobileAdId channel:channel];
+  return ad != nil ? (FLTBannerAd *)ad
+                   : [[FLTBannerAd alloc] initWithId:mobileAdId channel:channel];
 }
 
 - (void)loadWithUnitId:(NSString *)unitId targetingInfo:(NSDictionary *)targetingInfo {

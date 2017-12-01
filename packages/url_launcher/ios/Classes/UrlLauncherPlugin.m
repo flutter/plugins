@@ -54,7 +54,8 @@
                                   binaryMessenger:registrar.messenger];
   UIViewController *viewController =
       [UIApplication sharedApplication].delegate.window.rootViewController;
-  FLTUrlLauncherPlugin *plugin = [[FLTUrlLauncherPlugin alloc] initWithViewController:viewController];
+  FLTUrlLauncherPlugin *plugin =
+      [[FLTUrlLauncherPlugin alloc] initWithViewController:viewController];
   [registrar addMethodCallDelegate:plugin channel:channel];
 }
 

@@ -1,4 +1,4 @@
-FLTFrameUpdater// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -256,8 +256,9 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
   FlutterMethodChannel* channel =
       [FlutterMethodChannel methodChannelWithName:@"flutter.io/videoPlayer"
                                   binaryMessenger:[registrar messenger]];
-  FLTVideoPlayerPlugin* instance = [[FLTVideoPlayerPlugin alloc] initWithRegistry:[registrar textures]
-                                                                        messenger:[registrar messenger]];
+  FLTVideoPlayerPlugin* instance =
+      [[FLTVideoPlayerPlugin alloc] initWithRegistry:[registrar textures]
+                                           messenger:[registrar messenger]];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
@@ -283,7 +284,7 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
     NSString* dataSource = argsMap[@"dataSource"];
     FLTFrameUpdater* frameUpdater = [[FLTFrameUpdater alloc] initWithRegistry:_registry];
     FLTVideoPlayer* player = [[FLTVideoPlayer alloc] initWithURL:[NSURL URLWithString:dataSource]
-                                              frameUpdater:frameUpdater];
+                                                    frameUpdater:frameUpdater];
     int64_t textureId = [_registry registerTexture:player];
     frameUpdater.textureId = textureId;
     FlutterEventChannel* eventChannel = [FlutterEventChannel

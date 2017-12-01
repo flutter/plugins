@@ -21,7 +21,8 @@
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"firebase_messaging"
                                   binaryMessenger:[registrar messenger]];
-  FLTFirebaseMessagingPlugin *instance = [[FLTFirebaseMessagingPlugin alloc] initWithChannel:channel];
+  FLTFirebaseMessagingPlugin *instance =
+      [[FLTFirebaseMessagingPlugin alloc] initWithChannel:channel];
   [registrar addApplicationDelegate:instance];
   [registrar addMethodCallDelegate:instance channel:channel];
 }

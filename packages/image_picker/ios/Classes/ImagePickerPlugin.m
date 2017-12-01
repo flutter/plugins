@@ -26,7 +26,8 @@ static const int SOURCE_GALLERY = 2;
                                   binaryMessenger:[registrar messenger]];
   UIViewController *viewController =
       [UIApplication sharedApplication].delegate.window.rootViewController;
-  FLTImagePickerPlugin *instance = [[FLTImagePickerPlugin alloc] initWithViewController:viewController];
+  FLTImagePickerPlugin *instance =
+      [[FLTImagePickerPlugin alloc] initWithViewController:viewController];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
