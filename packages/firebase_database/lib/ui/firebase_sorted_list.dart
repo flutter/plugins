@@ -72,6 +72,13 @@ class FirebaseSortedList extends ListBase<DataSnapshot>
     throw new UnsupportedError("List cannot be modified.");
   }
 
+  @override
+  void clear() {
+    cancelSubscriptions();
+
+    // Do not call super.clear(), it will set the length, it's unsupported.
+  }
+
   void _onChildAdded(Event event) {
     _snapshots.add(event.snapshot);
     _snapshots.sort(comparator);
