@@ -25,12 +25,11 @@ import java.util.List;
 import java.util.Map;
 
 public class VideoPlayerPlugin implements MethodCallHandler {
-  private class VideoPlayer {
+  private static class VideoPlayer {
     private final TextureRegistry.SurfaceTextureEntry textureEntry;
     private final MediaPlayer mediaPlayer;
     private EventChannel.EventSink eventSink;
     private final EventChannel eventChannel;
-    private boolean isPlaying = false;
     private boolean isInitialized = false;
 
     @TargetApi(21)
