@@ -88,7 +88,7 @@ public class AlarmService extends Service {
     // mFlutterView and sSharedFlutterView are both null. That likely means that
     // no FlutterView has ever been created in this process before. So, we'll
     // make one, and assign it to both mFlutterView and sSharedFlutterView.
-    mFlutterView = new FlutterNativeView();
+    mFlutterView = new FlutterNativeView(this);
     sSharedFlutterView = mFlutterView;
     return;
   }
