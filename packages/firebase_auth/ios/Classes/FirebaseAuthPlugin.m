@@ -141,6 +141,16 @@ NSString *_verificationid;
                                  [self sendResult:result forUser:user error:error];
                                }];
 
+  }else if([@"deleteCurrentUser" isEqualToString:call.method]){
+      FIRUser *user = [FIRAuth auth].currentUser;
+      
+      [user deleteWithCompletion:^(NSError *_Nullable error) {
+          if (error) {
+             result(error.localizedDescription);
+          } else {
+               result(@"deleted");
+          }
+      }];
   }
   else if ([@"signInWithPhoneNumber" isEqualToString:call.method]) {
       NSString *phoneNumber = call.arguments[@"phoneNumber"];
@@ -164,13 +174,12 @@ NSString *_verificationid;
     else if ([@"verifyOtp" isEqualToString:call.method]) {
         NSString *otp = call.arguments[@"otp"];
         NSLog(@"%@", otp);
-//        NSString *verificationID = [defaults stringForKey:@"authVerificationID"];
+
         FIRAuthCredential *credential = [[FIRPhoneAuthProvider provider]
                                          credentialWithVerificationID:_verificationid
                                          verificationCode:otp];
         [[FIRAuth auth] signInWithCredential:credential
                                   completion:^(FIRUser *user, NSError *error) {
-                                    //   [self sendResult:result forUser:user error:error];
                                       if (error) {
                                     NSLog(@"%@", error);
                                                        [self sendResult:result forUser:user error:error];

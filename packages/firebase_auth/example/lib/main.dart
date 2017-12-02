@@ -184,6 +184,18 @@ new Container(height: 20.0,),
                 }
 
               }),),
+          new Center(child: new RaisedButton(
+              child: const Text('delete user'),
+              onPressed: () async{
+                try {
+                  var x =  await _auth.deletecurrentUser();
+                  alert(x);
+                }catch(exception){
+                  print(exception.toString());
+                  alert(exception.toString());
+                }
+
+              }),),
           new FutureBuilder<String>(
               future: _message,
               builder: (_, AsyncSnapshot<String> snapshot) {

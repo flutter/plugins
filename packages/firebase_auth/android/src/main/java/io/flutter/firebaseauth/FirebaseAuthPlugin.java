@@ -111,6 +111,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       case "stopListeningAuthState":
         handleStopListeningAuthState(call, result);
         break;
+        case "deleteCurrentUser":
+            handledeletecurrentuser(result);
+            break;
       default:
         result.notImplemented();
         break;
@@ -145,7 +148,23 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
 
     PhoneAuthProvider.getInstance().verifyPhoneNumber(phoneNumber,60, TimeUnit.SECONDS,this.activity,this.mCallbacks);
   }
-
+    private void handledeletecurrentuser(final Result result) {
+          @SuppressWarnings("unchecked")
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        
+        user.delete()
+        .addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    Log.d("Status", "User account deleted.");
+                      result.success("deleted");
+                }else{
+                     result.error(ERROR_REASON_EXCEPTION, task.getException().getMessage(), null);
+                }
+            }
+        });
+    }
 
 
     private void  handleverifyotp(MethodCall call, final Result result) {

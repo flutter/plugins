@@ -233,7 +233,12 @@ class FirebaseAuth {
         data == null ? null : new FirebaseUser._(data);
     return currentUser;
   }
+  /// Asynchronously gets delete current user.
+  Future<String> deletecurrentUser() async {
+  var data = await channel.invokeMethod("deleteCurrentUser");
 
+    return data;
+  }
   /// Links email account with current user and returns [Future<FirebaseUser>]
   /// basically current user with addtional email infomation
   ///
@@ -299,6 +304,9 @@ class FirebaseAuth {
         data != null ? new FirebaseUser._(data) : null;
     _authStateChangedControllers[id].add(currentUser);
   }
+
+
+
 }
 
 
