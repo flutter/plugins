@@ -1,3 +1,7 @@
+## 0.1.1
+
+* Added FLT prefix to iOS types.
+
 ## 0.1.0
 
 * Added reference to DocumentSnapshot

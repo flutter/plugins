@@ -3,7 +3,7 @@ name: cloud_firestore
 description: Cloud Firestore plugin for Flutter.
 author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/cloud_firestore
-version: 0.1.0
+version: 0.1.1
 
 flutter:
   plugin:
