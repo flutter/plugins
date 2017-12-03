@@ -1,3 +1,8 @@
+## 0.1.4
+
+* Add FLT prefix to iOS types
+* Avoid error when clearing FirebaseSortedList
+
 ## 0.1.3
 
 * Fix memory leak in FirebaseAnimatedList

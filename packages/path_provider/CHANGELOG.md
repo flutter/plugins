@@ -1,3 +1,7 @@
+## [0.2.2] - 2017-12-03
+
+* Add FLT prefix to iOS types
+
 ## [0.2.1+1] - 2017-05-16
 
 * Updated README

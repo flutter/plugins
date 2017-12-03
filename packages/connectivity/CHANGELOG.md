@@ -1,3 +1,7 @@
+## 0.1.1
+
+* Add FLT prefix to iOS types.
+
 ## 0.1.0
 
 * Breaking API change: Have a Connectivity class instead of a top level function
