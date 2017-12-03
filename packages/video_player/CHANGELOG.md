@@ -1,6 +1,7 @@
 ## 0.0.5
 
 * Added VideoPlayerValue.toString().
+* Added FLT prefix to iOS types.
 
 ## 0.0.4
 

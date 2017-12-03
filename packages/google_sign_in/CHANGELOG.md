@@ -1,3 +1,7 @@
+## 1.0.3
+
+* Add FLT prefix to iOS types
+
 ## 1.0.2
 
 * Support setting foregroundColor in the avatar.

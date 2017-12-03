@@ -1,3 +1,7 @@
+## 0.1.5
+
+* Added FLT prefix to iOS types
+
 ## 0.1.4
 
 * Bugfix: canceling image picking threw exception.

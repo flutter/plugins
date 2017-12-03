@@ -1,3 +1,7 @@
+## 1.0.3
+
+* Add FLT prefix to iOS types.
+
 ## 1.0.2
 
 * Fix handling of URLs in Android WebView.
