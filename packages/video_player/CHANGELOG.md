@@ -1,3 +1,7 @@
+## 0.0.6
+
+* Fixed a bug related to hot restart on Android.
+
 ## 0.0.5
 
 * Added VideoPlayerValue.toString().
@@ -7,7 +11,6 @@
 
 * The player will now pause on app pause, and resume on app resume.
 * Implemented scrubbing on the progress bar.
-* Fixed a bug related to hot restart on Android.
 
 ## 0.0.3
 
