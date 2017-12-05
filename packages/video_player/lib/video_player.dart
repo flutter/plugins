@@ -345,7 +345,7 @@ class _VideoScrubber extends StatefulWidget {
   _VideoScrubber({
     @required this.child,
     @required this.controller,
-    this.padding: const EdgeInsets.only(),
+    @required this.padding,
   });
 
   @override
@@ -401,6 +401,9 @@ class _VideoScrubberState extends State<_VideoScrubber> {
 }
 
 /// Displays the play/buffering status of the video controlled by [controller].
+///
+/// If [allowScrubbing] is true, this widget will detect taps and drags and
+/// seek the video accordingly.
 class VideoProgressIndicator extends StatefulWidget {
   final VideoPlayerController controller;
   final VideoProgressColors colors;
