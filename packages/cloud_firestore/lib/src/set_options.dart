@@ -10,8 +10,8 @@ part of cloud_firestore;
 /// calls on [DocumentReference] can be configured to perform granular merges
 /// instead of overwriting the target documents in their entirety.
 class SetOptions {
-  // TODO(jackson): The Android Firestore SDK supports `mergeFieldPaths` and
-  // `mergeFields`, but these options don't seem to be available yet on iOS.
+  const SetOptions._(this._data);
+  final Map<String, dynamic> _data;
 
   /// Changes the behavior of set() calls to only replace the values specified
   /// in its data argument.
@@ -19,6 +19,6 @@ class SetOptions {
     const <String, dynamic>{'merge': true},
   );
 
-  const SetOptions._(this._data);
-  final Map<String, dynamic> _data;
+  // TODO(jackson): The Android Firestore SDK supports `mergeFieldPaths` and
+  // `mergeFields`, but these options don't seem to be available yet on iOS.
 }
