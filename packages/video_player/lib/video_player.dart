@@ -411,16 +411,17 @@ class VideoProgressIndicator extends StatefulWidget {
   final bool allowScrubbing;
   final EdgeInsets padding;
 
-  VideoProgressIndicator(this.controller,
-      {VideoProgressColors colors,
-      this.allowScrubbing,
-      this.padding: const EdgeInsets.only(top: 5.0)})
+  VideoProgressIndicator(
+    this.controller, {
+    VideoProgressColors colors,
+    this.allowScrubbing,
+    this.padding: const EdgeInsets.only(top: 5.0),
+  })
       : colors = colors ?? new VideoProgressColors();
 
   @override
-  _VideoProgressIndicatorState createState() {
-    return new _VideoProgressIndicatorState();
-  }
+  _VideoProgressIndicatorState createState() =>
+      new _VideoProgressIndicatorState();
 }
 
 class _VideoProgressIndicatorState extends State<VideoProgressIndicator> {
@@ -464,7 +465,6 @@ class _VideoProgressIndicatorState extends State<VideoProgressIndicator> {
           maxBuffering = end;
         }
       }
-      controller.value.buffered.map((DurationRange range) => range.end);
 
       progressIndicator = new Stack(
         fit: StackFit.passthrough,
