@@ -222,6 +222,43 @@ void main() {
               arguments: <String, dynamic>{
                 'path': 'foo/bar',
                 'data': <String, String>{'bazKey': 'quxValue'},
+                'options': null,
+              },
+            ),
+          ],
+        );
+      });
+      test('merge set', () async {
+        await collectionReference
+            .document('bar')
+            .setData(<String, String>{'bazKey': 'quxValue'}, SetOptions.merge);
+        expect(SetOptions.merge, isNotNull);
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall(
+              'DocumentReference#setData',
+              arguments: <String, dynamic>{
+                'path': 'foo/bar',
+                'data': <String, String>{'bazKey': 'quxValue'},
+                'options': <String, bool>{'merge': true},
+              },
+            ),
+          ],
+        );
+      });
+      test('update', () async {
+        await collectionReference
+            .document('bar')
+            .updateData(<String, String>{'bazKey': 'quxValue'});
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall(
+              'DocumentReference#updateData',
+              arguments: <String, dynamic>{
+                'path': 'foo/bar',
+                'data': <String, String>{'bazKey': 'quxValue'},
               },
             ),
           ],
