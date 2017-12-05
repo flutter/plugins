@@ -340,12 +340,10 @@ class VideoProgressColors {
 class _VideoScrubber extends StatefulWidget {
   final Widget child;
   final VideoPlayerController controller;
-  final EdgeInsets padding;
 
   _VideoScrubber({
     @required this.child,
     @required this.controller,
-    @required this.padding,
   });
 
   @override
@@ -369,7 +367,7 @@ class _VideoScrubberState extends State<_VideoScrubber> {
 
     return new GestureDetector(
       behavior: HitTestBehavior.opaque,
-      child: new Padding(padding: widget.padding, child: widget.child),
+      child: widget.child,
       onHorizontalDragStart: (DragStartDetails details) {
         if (!controller.value.initialized) {
           return;
@@ -404,13 +402,19 @@ class _VideoScrubberState extends State<_VideoScrubber> {
 ///
 /// If [allowScrubbing] is true, this widget will detect taps and drags and
 /// seek the video accordingly.
+///
+/// [padding] allows to specify some extra padding around the progress indicator
+/// that will also detect the gestures.
 class VideoProgressIndicator extends StatefulWidget {
   final VideoPlayerController controller;
   final VideoProgressColors colors;
   final bool allowScrubbing;
+  final EdgeInsets padding;
 
   VideoProgressIndicator(this.controller,
-      {VideoProgressColors colors, this.allowScrubbing})
+      {VideoProgressColors colors,
+      this.allowScrubbing,
+      this.padding: const EdgeInsets.only(top: 5.0)})
       : colors = colors ?? new VideoProgressColors();
 
   @override
@@ -448,50 +452,53 @@ class _VideoProgressIndicatorState extends State<VideoProgressIndicator> {
 
   @override
   Widget build(BuildContext context) {
-    if (!controller.value.initialized) {
-      return new LinearProgressIndicator(
+    Widget progressIndicator;
+    if (controller.value.initialized) {
+      final int duration = controller.value.duration.inMilliseconds;
+      final int position = controller.value.position.inMilliseconds;
+
+      int maxBuffering = 0;
+      for (DurationRange range in controller.value.buffered) {
+        final int end = range.end.inMilliseconds;
+        if (end > maxBuffering) {
+          maxBuffering = end;
+        }
+      }
+      controller.value.buffered.map((DurationRange range) => range.end);
+
+      progressIndicator = new Stack(
+        fit: StackFit.passthrough,
+        children: <Widget>[
+          new LinearProgressIndicator(
+            value: maxBuffering / duration,
+            valueColor: new AlwaysStoppedAnimation<Color>(colors.bufferedColor),
+            backgroundColor: colors.backgroundColor,
+          ),
+          new LinearProgressIndicator(
+            value: position / duration,
+            valueColor: new AlwaysStoppedAnimation<Color>(colors.playedColor),
+            backgroundColor: Colors.transparent,
+          ),
+        ],
+      );
+    } else {
+      progressIndicator = new LinearProgressIndicator(
         value: null,
         valueColor: new AlwaysStoppedAnimation<Color>(colors.playedColor),
         backgroundColor: colors.backgroundColor,
       );
     }
-
-    final int duration = controller.value.duration.inMilliseconds;
-    final int position = controller.value.position.inMilliseconds;
-
-    int maxBuffering = 0;
-    for (DurationRange range in controller.value.buffered) {
-      final int end = range.end.inMilliseconds;
-      if (end > maxBuffering) {
-        maxBuffering = end;
-      }
-    }
-    controller.value.buffered.map((DurationRange range) => range.end);
-
-    final Widget progressIndicator = new Stack(
-      fit: StackFit.passthrough,
-      children: <Widget>[
-        new LinearProgressIndicator(
-          value: maxBuffering / duration,
-          valueColor: new AlwaysStoppedAnimation<Color>(colors.bufferedColor),
-          backgroundColor: colors.backgroundColor,
-        ),
-        new LinearProgressIndicator(
-          value: position / duration,
-          valueColor: new AlwaysStoppedAnimation<Color>(colors.playedColor),
-          backgroundColor: Colors.transparent,
-        ),
-      ],
+    final Widget paddedProgressIndicator = new Padding(
+      padding: widget.padding,
+      child: progressIndicator,
     );
-
     if (widget.allowScrubbing) {
       return new _VideoScrubber(
-        child: progressIndicator,
+        child: paddedProgressIndicator,
         controller: controller,
-        padding: const EdgeInsets.only(top: 5.0),
       );
     } else {
-      return progressIndicator;
+      return paddedProgressIndicator;
     }
   }
 }
