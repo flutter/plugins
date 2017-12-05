@@ -342,10 +342,11 @@ class _VideoScrubber extends StatefulWidget {
   final VideoPlayerController controller;
   final EdgeInsets padding;
 
-  _VideoScrubber(
-      {@required this.child,
-      @required this.controller,
-      this.padding: const EdgeInsets.only()});
+  _VideoScrubber({
+    @required this.child,
+    @required this.controller,
+    this.padding: const EdgeInsets.only(),
+  });
 
   @override
   _VideoScrubberState createState() => new _VideoScrubberState();
