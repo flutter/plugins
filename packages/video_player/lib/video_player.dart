@@ -337,12 +337,12 @@ class VideoProgressColors {
   });
 }
 
-class VideoScrubber extends StatefulWidget {
+class _VideoScrubber extends StatefulWidget {
   final Widget child;
   final VideoPlayerController controller;
   final EdgeInsets padding;
 
-  VideoScrubber(
+  _VideoScrubber(
       {@required this.child,
       @required this.controller,
       this.padding: const EdgeInsets.only()});
@@ -351,7 +351,7 @@ class VideoScrubber extends StatefulWidget {
   _VideoScrubberState createState() => new _VideoScrubberState();
 }
 
-class _VideoScrubberState extends State<VideoScrubber> {
+class _VideoScrubberState extends State<_VideoScrubber> {
   bool _controllerWasPlaying = false;
 
   VideoPlayerController get controller => widget.controller;
@@ -464,22 +464,24 @@ class _VideoProgressIndicatorState extends State<VideoProgressIndicator> {
     }
     controller.value.buffered.map((DurationRange range) => range.end);
 
-    final Widget progressIndicator =
-        new Stack(fit: StackFit.passthrough, children: <Widget>[
-      new LinearProgressIndicator(
-        value: maxBuffering / duration,
-        valueColor: new AlwaysStoppedAnimation<Color>(colors.bufferedColor),
-        backgroundColor: colors.backgroundColor,
-      ),
-      new LinearProgressIndicator(
-        value: position / duration,
-        valueColor: new AlwaysStoppedAnimation<Color>(colors.playedColor),
-        backgroundColor: Colors.transparent,
-      ),
-    ]);
+    final Widget progressIndicator = new Stack(
+      fit: StackFit.passthrough,
+      children: <Widget>[
+        new LinearProgressIndicator(
+          value: maxBuffering / duration,
+          valueColor: new AlwaysStoppedAnimation<Color>(colors.bufferedColor),
+          backgroundColor: colors.backgroundColor,
+        ),
+        new LinearProgressIndicator(
+          value: position / duration,
+          valueColor: new AlwaysStoppedAnimation<Color>(colors.playedColor),
+          backgroundColor: Colors.transparent,
+        ),
+      ],
+    );
 
     if (widget.allowScrubbing) {
-      return new VideoScrubber(
+      return new _VideoScrubber(
         child: progressIndicator,
         controller: controller,
         padding: const EdgeInsets.only(top: 5.0),
