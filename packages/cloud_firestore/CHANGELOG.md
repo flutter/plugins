@@ -1,3 +1,8 @@
+## 0.1.2
+
+* Support for `DocumentReference` update and merge writes
+* Suppress unchecked warnings and package name warnings on Android
+
 ## 0.1.1
 
 * Added FLT prefix to iOS types.
