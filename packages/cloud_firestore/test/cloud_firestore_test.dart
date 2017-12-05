@@ -18,7 +18,8 @@ void main() {
     final Firestore firestore = Firestore.instance;
     final List<MethodCall> log = <MethodCall>[];
     final CollectionReference collectionReference = firestore.collection('foo');
-    const Map<String, dynamic> kMockDocumentSnapshotData = const <String, dynamic>{'1': 2};
+    const Map<String, dynamic> kMockDocumentSnapshotData =
+        const <String, dynamic>{'1': 2};
 
     setUp(() async {
       mockHandleId = 0;
@@ -58,7 +59,7 @@ void main() {
                   'data': kMockDocumentSnapshotData,
                 }),
               ),
-                  (_) {},
+              (_) {},
             );
             return handle;
           case 'DocumentReference#setData':

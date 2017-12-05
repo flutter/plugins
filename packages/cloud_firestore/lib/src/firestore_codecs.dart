@@ -114,14 +114,12 @@ class FirestoreMessageCodec implements MessageCodec<dynamic> {
   static const int _kDocumentReference = 17;
   static const int _kCollectionReference = 18;
 
-
   /// Creates a [MessageCodec] using the Flutter standard binary encoding.
   const FirestoreMessageCodec();
 
   @override
   ByteData encodeMessage(dynamic message) {
-    if (message == null)
-      return null;
+    if (message == null) return null;
     final WriteBuffer buffer = new WriteBuffer();
     _writeValue(buffer, message);
     return buffer.done();
@@ -129,12 +127,10 @@ class FirestoreMessageCodec implements MessageCodec<dynamic> {
 
   @override
   dynamic decodeMessage(ByteData message) {
-    if (message == null)
-      return null;
+    if (message == null) return null;
     final ReadBuffer buffer = new ReadBuffer(message);
     final dynamic result = _readValue(buffer);
-    if (buffer.hasRemaining)
-      throw const FormatException('Message corrupted');
+    if (buffer.hasRemaining) throw const FormatException('Message corrupted');
     return result;
   }
 
@@ -160,7 +156,8 @@ class FirestoreMessageCodec implements MessageCodec<dynamic> {
       if (-0x7fffffff - 1 <= value && value <= 0x7fffffff) {
         buffer.putUint8(_kInt32);
         buffer.putInt32(value);
-      } else if (-0x7fffffffffffffff - 1 <= value && value <= 0x7fffffffffffffff) {
+      } else if (-0x7fffffffffffffff - 1 <= value &&
+          value <= 0x7fffffffffffffff) {
         buffer.putUint8(_kInt64);
         buffer.putInt64(value);
       } else {
@@ -242,8 +239,7 @@ class FirestoreMessageCodec implements MessageCodec<dynamic> {
   }
 
   static dynamic _readValue(ReadBuffer buffer) {
-    if (!buffer.hasRemaining)
-      throw const FormatException('Message corrupted');
+    if (!buffer.hasRemaining) throw const FormatException('Message corrupted');
     dynamic result;
     switch (buffer.getUint8()) {
       case _kNull:
@@ -322,7 +318,8 @@ class FirestoreMessageCodec implements MessageCodec<dynamic> {
         final String path = UTF8.decoder.convert(buffer.getUint8List(length));
         result = Firestore.instance.collection(path);
         break;
-      default: throw const FormatException('Message corrupted');
+      default:
+        throw const FormatException('Message corrupted');
     }
     return result;
   }
@@ -360,7 +357,6 @@ class FirestoreMethodCodec implements MethodCodec {
     return buffer.done();
   }
 
-
   @override
   MethodCall decodeMethodCall(ByteData methodCall) {
     final ReadBuffer buffer = new ReadBuffer(methodCall);
@@ -372,7 +368,6 @@ class FirestoreMethodCodec implements MethodCodec {
       throw const FormatException('Invalid method call');
   }
 
-
   @override
   ByteData encodeSuccessEnvelope(dynamic result) {
     final WriteBuffer buffer = new WriteBuffer();
@@ -381,9 +376,9 @@ class FirestoreMethodCodec implements MethodCodec {
     return buffer.done();
   }
 
-
   @override
-  ByteData encodeErrorEnvelope({@required String code, String message, dynamic details}) {
+  ByteData encodeErrorEnvelope(
+      {@required String code, String message, dynamic details}) {
     final WriteBuffer buffer = new WriteBuffer();
     buffer.putUint8(1);
     FirestoreMessageCodec._writeValue(buffer, code);
@@ -398,13 +393,15 @@ class FirestoreMethodCodec implements MethodCodec {
     if (envelope.lengthInBytes == 0)
       throw const FormatException('Expected envelope, got nothing');
     final ReadBuffer buffer = new ReadBuffer(envelope);
-    if (buffer.getUint8() == 0)
-      return FirestoreMessageCodec._readValue(buffer);
+    if (buffer.getUint8() == 0) return FirestoreMessageCodec._readValue(buffer);
     final dynamic errorCode = FirestoreMessageCodec._readValue(buffer);
     final dynamic errorMessage = FirestoreMessageCodec._readValue(buffer);
     final dynamic errorDetails = FirestoreMessageCodec._readValue(buffer);
-    if (errorCode is String && (errorMessage == null || errorMessage is String) && !buffer.hasRemaining)
-      throw new PlatformException(code: errorCode, message: errorMessage, details: errorDetails);
+    if (errorCode is String &&
+        (errorMessage == null || errorMessage is String) &&
+        !buffer.hasRemaining)
+      throw new PlatformException(
+          code: errorCode, message: errorMessage, details: errorDetails);
     else
       throw const FormatException('Invalid envelope');
   }
