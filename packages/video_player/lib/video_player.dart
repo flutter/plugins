@@ -5,7 +5,7 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 final MethodChannel _channel = const MethodChannel('flutter.io/videoPlayer')
@@ -326,61 +326,35 @@ class VideoPlayer extends StatelessWidget {
 }
 
 class VideoProgressColors {
-  final Paint playedPaint;
-  final Paint bufferedPaint;
-  final Paint handlePaint;
-  final Paint disabledPaint;
+  final Color playedColor;
+  final Color bufferedColor;
+  final Color backgroundColor;
 
   VideoProgressColors({
-    Color playedColor: const Color.fromRGBO(255, 0, 0, 0.7),
-    Color bufferedColor: const Color.fromRGBO(30, 30, 200, 0.2),
-    Color handleColor: const Color.fromRGBO(200, 200, 200, 1.0),
-    Color disabledColor: const Color.fromRGBO(200, 200, 200, 0.5),
-  })
-      : playedPaint = new Paint()..color = playedColor,
-        bufferedPaint = new Paint()..color = bufferedColor,
-        handlePaint = new Paint()..color = handleColor,
-        disabledPaint = new Paint()..color = disabledColor;
+    this.playedColor: const Color.fromRGBO(255, 0, 0, 0.7),
+    this.bufferedColor: const Color.fromRGBO(50, 50, 200, 0.2),
+    this.backgroundColor: const Color.fromRGBO(200, 200, 200, 0.5),
+  });
 }
 
-/// Displays the play/buffering status of the video controlled by [controller].
-class VideoProgressBar extends StatefulWidget {
+class VideoScrubber extends StatefulWidget {
+  final Widget child;
   final VideoPlayerController controller;
-  final VideoProgressColors colors;
+  final EdgeInsets padding;
 
-  VideoProgressBar(this.controller, {VideoProgressColors colors})
-      : colors = colors ?? new VideoProgressColors();
+  VideoScrubber(
+      {@required this.child,
+      @required this.controller,
+      this.padding: const EdgeInsets.only()});
 
   @override
-  _VideoProgressBarState createState() {
-    return new _VideoProgressBarState();
-  }
+  _VideoScrubberState createState() => new _VideoScrubberState();
 }
 
-class _VideoProgressBarState extends State<VideoProgressBar> {
-  VoidCallback listener;
-
+class _VideoScrubberState extends State<VideoScrubber> {
   bool _controllerWasPlaying = false;
 
-  _VideoProgressBarState() {
-    listener = () {
-      setState(() {});
-    };
-  }
-
   VideoPlayerController get controller => widget.controller;
-
-  @override
-  void initState() {
-    super.initState();
-    controller.addListener(listener);
-  }
-
-  @override
-  void deactivate() {
-    controller.removeListener(listener);
-    super.deactivate();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -393,11 +367,8 @@ class _VideoProgressBarState extends State<VideoProgressBar> {
     }
 
     return new GestureDetector(
-      child: (controller.value.isErroneous)
-          ? new Text(controller.value.errorDescription)
-          : new CustomPaint(
-              painter: new ProgressBarPainter(controller.value, widget.colors),
-            ),
+      behavior: HitTestBehavior.opaque,
+      child: new Padding(padding: widget.padding, child: widget.child),
       onHorizontalDragStart: (DragStartDetails details) {
         if (!controller.value.initialized) {
           return;
@@ -428,50 +399,93 @@ class _VideoProgressBarState extends State<VideoProgressBar> {
   }
 }
 
-class ProgressBarPainter extends CustomPainter {
-  VideoPlayerValue value;
-  VideoProgressColors colors;
-  ProgressBarPainter(this.value, this.colors);
+/// Displays the play/buffering status of the video controlled by [controller].
+class VideoProgressIndicator extends StatefulWidget {
+  final VideoPlayerController controller;
+  final VideoProgressColors colors;
+  final bool allowScrubbing;
+
+  VideoProgressIndicator(this.controller,
+      {VideoProgressColors colors, this.allowScrubbing})
+      : colors = colors ?? new VideoProgressColors();
 
   @override
-  bool shouldRepaint(CustomPainter painter) {
-    return true;
+  _VideoProgressIndicatorState createState() {
+    return new _VideoProgressIndicatorState();
+  }
+}
+
+class _VideoProgressIndicatorState extends State<VideoProgressIndicator> {
+  VoidCallback listener;
+
+  _VideoProgressIndicatorState() {
+    listener = () {
+      if (!mounted) {
+        return;
+      }
+      setState(() {});
+    };
+  }
+
+  VideoPlayerController get controller => widget.controller;
+  VideoProgressColors get colors => widget.colors;
+
+  @override
+  void initState() {
+    super.initState();
+    controller.addListener(listener);
   }
 
   @override
-  void paint(Canvas canvas, Size size) {
-    canvas.drawRect(
-      new Rect.fromPoints(
-        const Offset(0.0, 0.0),
-        new Offset(size.width, size.height),
-      ),
-      colors.disabledPaint,
-    );
-    if (!value.initialized) {
-      return;
-    }
-    final double playedPart = value.position.inMilliseconds /
-        value.duration.inMilliseconds *
-        size.width;
-    for (DurationRange range in value.buffered) {
-      final double start = range.startFraction(value.duration) * size.width;
-      final double end = range.endFraction(value.duration) * size.width;
-      canvas.drawRect(
-        new Rect.fromPoints(
-          new Offset(start, 0.0),
-          new Offset(end, size.height),
-        ),
-        colors.bufferedPaint,
+  void deactivate() {
+    controller.removeListener(listener);
+    super.deactivate();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!controller.value.initialized) {
+      return new LinearProgressIndicator(
+        value: null,
+        valueColor: new AlwaysStoppedAnimation<Color>(colors.playedColor),
+        backgroundColor: colors.backgroundColor,
       );
     }
-    canvas.drawRect(
-      new Rect.fromPoints(Offset.zero, new Offset(playedPart, size.height)),
-      colors.playedPaint,
-    );
-    canvas.drawCircle(
-      new Offset(playedPart, size.height / 2),
-      size.height / 2,
-      colors.handlePaint,
-    );
+
+    final int duration = controller.value.duration.inMilliseconds;
+    final int position = controller.value.position.inMilliseconds;
+
+    int maxBuffering = 0;
+    for (DurationRange range in controller.value.buffered) {
+      final int end = range.end.inMilliseconds;
+      if (end > maxBuffering) {
+        maxBuffering = end;
+      }
+    }
+    controller.value.buffered.map((DurationRange range) => range.end);
+
+    final Widget progressIndicator =
+        new Stack(fit: StackFit.passthrough, children: <Widget>[
+      new LinearProgressIndicator(
+        value: maxBuffering / duration,
+        valueColor: new AlwaysStoppedAnimation<Color>(colors.bufferedColor),
+        backgroundColor: colors.backgroundColor,
+      ),
+      new LinearProgressIndicator(
+        value: position / duration,
+        valueColor: new AlwaysStoppedAnimation<Color>(colors.playedColor),
+        backgroundColor: Colors.transparent,
+      ),
+    ]);
+
+    if (widget.allowScrubbing) {
+      return new VideoScrubber(
+        child: progressIndicator,
+        controller: controller,
+        padding: const EdgeInsets.only(top: 5.0),
+      );
+    } else {
+      return progressIndicator;
+    }
   }
 }
