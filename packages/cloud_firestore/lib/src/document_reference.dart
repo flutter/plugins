@@ -25,7 +25,7 @@ class DocumentReference {
   /// Writes to the document referred to by this [DocumentReference]. If the
   /// document does not yet exist, it will be created. If you pass [SetOptions],
   /// the provided data will be merged into an existing document.
-  Future<Null> setData(Map<String, dynamic> data, [ SetOptions options ]) {
+  Future<Null> setData(Map<String, dynamic> data, [SetOptions options]) {
     return Firestore.channel.invokeMethod(
       'DocumentReference#setData',
       <String, dynamic>{'path': path, 'data': data, 'options': options?._data},

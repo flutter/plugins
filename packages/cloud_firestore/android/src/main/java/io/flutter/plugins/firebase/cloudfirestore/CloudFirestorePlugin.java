@@ -6,9 +6,9 @@ package io.flutter.plugins.firebase.cloudfirestore;
 
 import android.support.annotation.NonNull;
 import android.util.SparseArray;
-import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
@@ -170,18 +170,20 @@ public class CloudFirestorePlugin implements MethodCallHandler {
   }
 
   private void addDefaultListeners(final String description, Task<Void> task, final Result result) {
-    task.addOnSuccessListener(new OnSuccessListener<Void>() {
-      @Override
-      public void onSuccess(Void ignored) {
-        result.success(null);
-      }
-    });
-    task.addOnFailureListener(new OnFailureListener() {
-      @Override
-      public void onFailure(@NonNull Exception e) {
-        result.error("Error performing " + description, e.getMessage(), null);
-      }
-    });
+    task.addOnSuccessListener(
+        new OnSuccessListener<Void>() {
+          @Override
+          public void onSuccess(Void ignored) {
+            result.success(null);
+          }
+        });
+    task.addOnFailureListener(
+        new OnFailureListener() {
+          @Override
+          public void onFailure(@NonNull Exception e) {
+            result.error("Error performing " + description, e.getMessage(), null);
+          }
+        });
   }
 
   @Override
@@ -234,15 +236,15 @@ public class CloudFirestorePlugin implements MethodCallHandler {
           break;
         }
       case "DocumentReference#updateData":
-      {
-        Map<String, Object> arguments = call.arguments();
-        DocumentReference documentReference = getDocumentReference(arguments);
-        @SuppressWarnings("unchecked")
-        Map<String, Object> data = (Map<String, Object>) arguments.get("data");
-        Task<Void> task = documentReference.update(data);
-        addDefaultListeners("updateData", task, result);
-        break;
-      }
+        {
+          Map<String, Object> arguments = call.arguments();
+          DocumentReference documentReference = getDocumentReference(arguments);
+          @SuppressWarnings("unchecked")
+          Map<String, Object> data = (Map<String, Object>) arguments.get("data");
+          Task<Void> task = documentReference.update(data);
+          addDefaultListeners("updateData", task, result);
+          break;
+        }
       case "DocumentReference#delete":
         {
           Map<String, Object> arguments = call.arguments();

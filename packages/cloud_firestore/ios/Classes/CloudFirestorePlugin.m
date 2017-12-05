@@ -89,8 +89,11 @@ FIRQuery *getQuery(NSDictionary *arguments) {
     NSString *path = call.arguments[@"path"];
     NSDictionary *options = call.arguments[@"options"];
     FIRDocumentReference *reference = [[FIRFirestore firestore] documentWithPath:path];
-    if (![options isEqual:[NSNull null]] && [options[@"merge"] isEqual:[NSNumber numberWithBool:YES]]) {
-      [reference setData:call.arguments[@"data"] options:[FIRSetOptions merge] completion:defaultCompletionBlock];
+    if (![options isEqual:[NSNull null]] &&
+        [options[@"merge"] isEqual:[NSNumber numberWithBool:YES]]) {
+      [reference setData:call.arguments[@"data"]
+                 options:[FIRSetOptions merge]
+              completion:defaultCompletionBlock];
     } else {
       [reference setData:call.arguments[@"data"] completion:defaultCompletionBlock];
     }

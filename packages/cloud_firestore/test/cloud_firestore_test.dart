@@ -241,7 +241,7 @@ void main() {
               arguments: <String, dynamic>{
                 'path': 'foo/bar',
                 'data': <String, String>{'bazKey': 'quxValue'},
-                'options': { 'merge': true },
+                'options': <String, bool>{'merge': true},
               },
             ),
           ],

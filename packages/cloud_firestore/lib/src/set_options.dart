@@ -16,7 +16,7 @@ class SetOptions {
   /// Changes the behavior of set() calls to only replace the values specified
   /// in its data argument.
   static const SetOptions merge = const SetOptions._(
-    const <String, dynamic>{ 'merge': true },
+    const <String, dynamic>{'merge': true},
   );
 
   const SetOptions._(this._data);
