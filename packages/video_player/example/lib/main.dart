@@ -75,21 +75,15 @@ class _VideoPlayPauseState extends State<VideoPlayPause> {
       ),
       new Align(
         alignment: Alignment.bottomCenter,
-        child: new SizedBox(
-          height: 20.0,
-          width: double.INFINITY,
-          child: new VideoProgressBar(controller),
+        child: new VideoProgressIndicator(
+          controller,
+          allowScrubbing: true,
         ),
       ),
       new Center(child: imageFadeAnim),
     ];
 
-    if (!controller.value.initialized) {
-      children.add(new Center(child: const CupertinoActivityIndicator()));
-    }
-
     return new Stack(
-      alignment: Alignment.bottomCenter,
       fit: StackFit.passthrough,
       children: children,
     );
@@ -262,10 +256,11 @@ class VideoInListOfCards extends StatelessWidget {
                       const FractionalOffset(-0.1, -0.1),
                   children: <Widget>[
                     new Center(
-                        child: new AspectRatio(
-                      aspectRatio: 3 / 2,
-                      child: new VideoPlayPause(controller),
-                    )),
+                      child: new AspectRatio(
+                        aspectRatio: 3 / 2,
+                        child: new VideoPlayPause(controller),
+                      ),
+                    ),
                     new Image.asset('assets/flutter-mark-square-64.png'),
                   ]),
             ],
