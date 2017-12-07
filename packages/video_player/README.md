@@ -4,6 +4,8 @@
 
 A Flutter plugin for iOS and Android for playing back video on a Widget surface.
 
+![The example app running in iOS](doc/demo_ipod.gif)
+
 *Note*: This plugin is still under development, and some APIs might not be available yet.
 [Feedback welcome](https://github.com/flutter/flutter/issues) and
 [Pull Requests](https://github.com/flutter/plugins/pulls) are most welcome!
