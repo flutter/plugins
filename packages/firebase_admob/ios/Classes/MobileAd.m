@@ -235,9 +235,9 @@ GADBannerView *_banner;
     _banner.frame = (CGRect){{x, y}, _banner.frame.size};
   }
 #else
-    CGFloat x = screen.frame.size.width / 2 - _banner.frame.size.width / 2;
-    CGFloat y = screen.frame.size.height - _banner.frame.size.height;
-    _banner.frame = (CGRect){{x, y}, _banner.frame.size};
+  CGFloat x = screen.frame.size.width / 2 - _banner.frame.size.width / 2;
+  CGFloat y = screen.frame.size.height - _banner.frame.size.height;
+  _banner.frame = (CGRect){{x, y}, _banner.frame.size};
 #endif
 }
 
