@@ -4,7 +4,6 @@
 
 package io.flutter.plugins.firebase.cloud_firestore;
 
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -43,7 +42,7 @@ import java.util.Map.Entry;
  *   <li>Date
  *   <li>FieldValue: 0 -> delete(), 1 -> serverTimestamp()
  *   <li>GeoPoint
- *   <li>Reference
+ *   <li>DocumentReference
  * </ul>
  *
  * <p>On the Dart side, these values are represented as follows:
@@ -63,7 +62,7 @@ import java.util.Map.Entry;
  *   <li>DateTime
  *   <li>FieldValue: 0 -> delete(), 1 -> serverTimestamp()
  *   <li>GeoPoint
- *   <li>Reference
+ *   <li>DocumentReference
  * </ul>
  */
 public final class FirestoreMessageCodec implements MessageCodec<Object> {
@@ -116,7 +115,6 @@ public final class FirestoreMessageCodec implements MessageCodec<Object> {
   private static final byte FIELD_VALUE = 15;
   private static final byte GEO_POINT = 16;
   private static final byte DOCUMENT_REFERENCE = 17;
-  private static final byte COLLECTION_REFERENCE = 18;
 
   private static void writeSize(ByteArrayOutputStream stream, int value) {
     assert 0 <= value;
@@ -279,10 +277,6 @@ public final class FirestoreMessageCodec implements MessageCodec<Object> {
       stream.write(DOCUMENT_REFERENCE);
       final DocumentReference d = (DocumentReference) value;
       writeBytes(stream, (d.getPath()).getBytes(UTF8));
-    } else if (value instanceof CollectionReference) {
-      stream.write(COLLECTION_REFERENCE);
-      final CollectionReference c = (CollectionReference) value;
-      writeBytes(stream, (c.getPath()).getBytes(UTF8));
     } else {
       throw new IllegalArgumentException("Unsupported value: " + value);
     }
@@ -442,13 +436,6 @@ public final class FirestoreMessageCodec implements MessageCodec<Object> {
           final byte[] bytes = readBytes(buffer);
           final String path = new String(bytes, UTF8);
           result = FirebaseFirestore.getInstance().document(path);
-          break;
-        }
-      case COLLECTION_REFERENCE:
-        {
-          final byte[] bytes = readBytes(buffer);
-          final String path = new String(bytes, UTF8);
-          result = FirebaseFirestore.getInstance().collection(path);
           break;
         }
       default:

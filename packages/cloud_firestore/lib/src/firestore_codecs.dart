@@ -15,7 +15,6 @@ part of cloud_firestore;
 ///  * [FieldValue]s
 ///  * [GeoPoint]s
 ///  * [DocumentReference]s
-///  * [CollectionReference]s
 ///
 /// On Android, messages are represented as follows:
 ///
@@ -37,7 +36,6 @@ part of cloud_firestore;
 ///  * [FieldValue]\: `firestore.FieldValue: 0 -> delete, 1 -> serverTimestamp`
 ///  * [GeoPoint]\: `firestore.GeoPoint`
 ///  * [DocumentReference]\: `firestore.DocumentReference`
-///  * [CollectionReference]\: `firestore.CollectionReference`
 ///
 /// On iOS, messages are represented as follows:
 ///
@@ -112,7 +110,6 @@ class FirestoreMessageCodec implements MessageCodec<dynamic> {
   static const int _kFieldValue = 15;
   static const int _kGeoPoint = 16;
   static const int _kDocumentReference = 17;
-  static const int _kCollectionReference = 18;
 
   /// Creates a [MessageCodec] using the Flutter standard binary encoding.
   const FirestoreMessageCodec();
@@ -218,11 +215,6 @@ class FirestoreMessageCodec implements MessageCodec<dynamic> {
       final List<int> bytes = UTF8.encoder.convert(value.path);
       _writeSize(buffer, bytes.length);
       buffer.putUint8List(bytes);
-    } else if (value is CollectionReference) {
-      buffer.putUint8(_kCollectionReference);
-      final List<int> bytes = UTF8.encoder.convert(value.path);
-      _writeSize(buffer, bytes.length);
-      buffer.putUint8List(bytes);
     } else {
       throw new ArgumentError.value(value);
     }
@@ -312,11 +304,6 @@ class FirestoreMessageCodec implements MessageCodec<dynamic> {
         final int length = _readSize(buffer);
         final String path = UTF8.decoder.convert(buffer.getUint8List(length));
         result = Firestore.instance.document(path);
-        break;
-      case _kCollectionReference:
-        final int length = _readSize(buffer);
-        final String path = UTF8.decoder.convert(buffer.getUint8List(length));
-        result = Firestore.instance.collection(path);
         break;
       default:
         throw const FormatException('Message corrupted');
