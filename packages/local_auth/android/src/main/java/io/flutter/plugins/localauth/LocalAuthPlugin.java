@@ -47,20 +47,23 @@ public class LocalAuthPlugin implements MethodCallHandler {
               new AuthCompletionHandler() {
                 @Override
                 public void onSuccess() {
-                  result.success(true);
-                  authInProgress.set(false);
+                  if (authInProgress.compareAndSet(true, false)) {
+                    result.success(true);
+                  }
                 }
 
                 @Override
                 public void onFailure() {
-                  result.success(false);
-                  authInProgress.set(false);
+                  if (authInProgress.compareAndSet(true, false)) {
+                    result.success(false);
+                  }
                 }
 
                 @Override
                 public void onError(String code, String error) {
-                  result.error(code, error, null);
-                  authInProgress.set(false);
+                  if (authInProgress.compareAndSet(true, false)) {
+                    result.error(code, error, null);
+                  }
                 }
               });
       authenticationHelper.authenticate();
