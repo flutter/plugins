@@ -14,12 +14,17 @@ The plugins are still under development, and some APIs might not be available ye
 
 | Plugin | Firebase feature | Source code |
 |---|---|---|
+| [firebase_admob][admob_pub] | [Firebase AdMob][admob_product] | [`packages/firebase_admob`][admob_code] |
 | [firebase_analytics][analytics_pub] | [Firebase Analytics][analytics_product] | [`packages/firebase_analytics`][analytics_code] |
 | [firebase_auth][auth_pub] | [Firebase Authentication][auth_product] | [`packages/firebase_auth`][auth_code] |
 | [firebase_database][database_pub] | [Firebase Realtime Database][database_product] | [`packages/firebase_database`][database_code] |
 | [cloud_firestore][firestore_pub] | [Cloud Firestore][firestore_product] | [`packages/cloud_firestore`][firestore_code] |
 | [firebase_messaging][messaging_pub] | [Firebase Cloud Messaging][messaging_product] | [`packages/firebase_messaging`][messaging_code] |
 | [firebase_storage][storage_pub] | [Firebase Cloud Storage][storage_product] | [`packages/firebase_storage`][storage_code] |
+
+[admob_pub]: https://pub.dartlang.org/packages/firebase_admob
+[admob_product]: https://firebase.google.com/docs/admob/
+[admob_code]: https://github.com/flutter/plugins/tree/master/packages/firebase_admob
 
 [analytics_pub]: https://pub.dartlang.org/packages/firebase_analytics
 [analytics_product]: https://firebase.google.com/products/analytics/
