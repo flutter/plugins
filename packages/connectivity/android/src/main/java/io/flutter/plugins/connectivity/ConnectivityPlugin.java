@@ -4,7 +4,6 @@
 
 package io.flutter.plugins.connectivity;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -22,7 +21,7 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 /** ConnectivityPlugin */
 public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
-  private final Activity activity;
+  private final Context context;
   private final ConnectivityManager manager;
   private BroadcastReceiver receiver;
 
@@ -32,25 +31,25 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/connectivity");
     final EventChannel eventChannel =
         new EventChannel(registrar.messenger(), "plugins.flutter.io/connectivity_status");
-    ConnectivityPlugin instance = new ConnectivityPlugin(registrar.activity());
+    ConnectivityPlugin instance = new ConnectivityPlugin(registrar.context());
     channel.setMethodCallHandler(instance);
     eventChannel.setStreamHandler(instance);
   }
 
-  private ConnectivityPlugin(Activity activity) {
-    this.activity = activity;
-    this.manager = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
+  private ConnectivityPlugin(Context context) {
+    this.context = context;
+    this.manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
   }
 
   @Override
   public void onListen(Object arguments, EventSink events) {
     receiver = createReceiver(events);
-    activity.registerReceiver(receiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+    context.registerReceiver(receiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
   }
 
   @Override
   public void onCancel(Object arguments) {
-    activity.unregisterReceiver(receiver);
+    context.unregisterReceiver(receiver);
     receiver = null;
   }
 
