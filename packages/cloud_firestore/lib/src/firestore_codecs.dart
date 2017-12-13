@@ -295,6 +295,18 @@ class FirestoreMessageCodec implements MessageCodec<dynamic> {
         final int microseconds = buffer.getInt64();
         result = new DateTime.fromMicrosecondsSinceEpoch(microseconds);
         break;
+      case _kFieldValue:
+        switch (buffer.getInt32()) {
+          case 0:
+            result = FieldValue.delete;
+            break;
+          case 1:
+            result = FieldValue.serverTimestamp;
+            break;
+          default:
+            throw const FormatException('Message corrupted/invalid FieldValue');
+        }
+        break;
       case _kGeoPoint:
         final double latitude = buffer.getFloat64();
         final double longitude = buffer.getFloat64();
