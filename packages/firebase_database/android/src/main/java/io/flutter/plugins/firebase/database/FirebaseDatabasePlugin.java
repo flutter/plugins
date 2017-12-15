@@ -179,7 +179,12 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
     }
 
     @Override
-    public void onCancelled(DatabaseError error) {}
+    public void onCancelled(DatabaseError error) {
+      Map<String, Object> arguments = new HashMap<>();
+      arguments.put("handle", handle);
+      arguments.put("error", asMap(error));
+      channel.invokeMethod("Error", arguments);
+    }
 
     @Override
     public void onChildAdded(DataSnapshot snapshot, String previousChildName) {
@@ -371,11 +376,7 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
                   Map<String, Object> completionMap = new HashMap<>();
                   completionMap.put("transactionKey", arguments.get("transactionKey"));
                   if (databaseError != null) {
-                    Map<String, Object> errorMap = new HashMap<>();
-                    errorMap.put("code", databaseError.getCode());
-                    errorMap.put("message", databaseError.getMessage());
-                    errorMap.put("details", databaseError.getDetails());
-                    completionMap.put("error", errorMap);
+                    completionMap.put("error", asMap(databaseError));
                   }
                   completionMap.put("committed", committed);
                   if (dataSnapshot != null) {
@@ -444,5 +445,13 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
           break;
         }
     }
+  }
+
+  private static Map<String, Object> asMap(DatabaseError error) {
+    Map<String, Object> map = new HashMap<>();
+    map.put("code", error.getCode());
+    map.put("message", error.getMessage());
+    map.put("details", error.getDetails());
+    return map;
   }
 }

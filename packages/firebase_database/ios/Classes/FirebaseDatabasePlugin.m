@@ -11,6 +11,7 @@
 
 @interface NSError (FlutterError)
 @property(readonly, nonatomic) FlutterError *flutterError;
+@property(readonly, nonatomic) NSDictionary *dictionary;
 @end
 
 @implementation NSError (FlutterError)
@@ -18,6 +19,14 @@
   return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %ld", self.code]
                              message:self.domain
                              details:self.localizedDescription];
+}
+
+- (NSDictionary *)dictionary {
+  return @{
+    @"code" : @(self.code),
+    @"message" : self.domain ?: [NSNull null],
+    @"details" : self.localizedDescription ?: [NSNull null],
+  };
 }
 @end
 
@@ -252,7 +261,7 @@ id roundDoubles(id value) {
           // Invoke transaction completion on the Dart side.
           result(@{
             @"transactionKey" : call.arguments[@"transactionKey"],
-            @"error" : error.flutterError ?: [NSNull null],
+            @"error" : error.dictionary ?: [NSNull null],
             @"committed" : [NSNumber numberWithBool:committed],
             @"snapshot" : @{@"key" : snapshot.key ?: [NSNull null], @"value" : snapshot.value}
           });
@@ -270,6 +279,12 @@ id roundDoubles(id value) {
                                @"value" : roundDoubles(snapshot.value) ?: [NSNull null],
                              },
                              @"previousSiblingKey" : previousSiblingKey ?: [NSNull null],
+                           }];
+        } withCancelBlock:^(NSError *error) {
+          [self.channel invokeMethod:@"Error"
+                           arguments:@{
+                             @"handle" : [NSNumber numberWithUnsignedInteger:handle],
+                             @"error" : error.dictionary,
                            }];
         }];
     result([NSNumber numberWithUnsignedInteger:handle]);
