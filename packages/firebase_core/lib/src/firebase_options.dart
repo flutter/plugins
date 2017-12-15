@@ -89,9 +89,10 @@ class FirebaseOptions {
       googleAppID = map['googleAppID'],
       databaseURL = map['databaseURL'],
       deepLinkURLScheme = map['deepLinkURLScheme'],
-      storageBucket = map['storageBucket'],
-      assert(googleAppID != null),
-      assert(GCMSenderID != null);
+      storageBucket = map['storageBucket'] {
+    assert(googleAppID != null),
+    assert(GCMSenderID != null);
+  }
 
   @override
   bool operator==(dynamic other) {
