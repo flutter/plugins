@@ -29,6 +29,12 @@ for it in the plugin and use an action constant to refer to it. For instance:
 
 Feel free to add support for additional Android intents.
 
+The Dart values supported for the arguments parameter, and their corresponding
+Android values, are listed [here](https://flutter.io/platform-channels/#codec).
+On the Android side, the arguments are used to populate an Android `Bundle`
+instance. This process currently restricts the use of lists to homogeneous lists
+of integers or strings.
+
 > Note that a similar method does not currently exist for iOS. Instead, the
 [url_launcher](https://pub.dartlang.org/packages/url_launcher) plugin
 can be used for deep linking. Url launcher can also be used for creating
