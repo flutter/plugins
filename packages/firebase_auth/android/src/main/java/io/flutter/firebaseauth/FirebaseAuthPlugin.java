@@ -250,6 +250,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
                 }
               }
             });
+  }
 
   private void handleStartListeningAuthState(MethodCall call, final Result result) {
     final int handle = nextHandle++;
