@@ -35,10 +35,10 @@ class FirebaseApp {
     String name,
     @required FirebaseOptions options
   }) {
-    FirebaseApp existingApp = _namedApps[name];
+    final FirebaseApp existingApp = _namedApps[name];
     if (existingApp != null) {
       assert(existingApp.options == options);
-      return new Future.sync(() => existingApp);
+      return new Future<FirebaseApp>.sync(() => existingApp);
     }
     assert(options.googleAppID != null);
     assert(options.gcmSenderID != null);
@@ -49,7 +49,7 @@ class FirebaseApp {
         'name': name,
         'options': options.asMap,
       }
-    ).then((_) => _namedApps[name]);
+    ).then((Null _) => _namedApps[name]);
   }
 
   /// Returns a list of all extant FirebaseApp instances, or null if there are

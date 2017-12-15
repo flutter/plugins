@@ -59,7 +59,7 @@ void main() {
         <Matcher>[
           isMethodCall(
             'FirebaseApp#configure',
-            arguments: {
+            arguments: <String, dynamic>{
               'name': name,
               'options': options.asMap,
             },

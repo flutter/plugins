@@ -8,7 +8,7 @@ class MyApp extends StatelessWidget {
   final String name = 'foo';
   final FirebaseOptions options = const FirebaseOptions(
     googleAppID: '1:297855924061:ios:c6de2b69b03a5be8',
-    GCMSenderID: '297855924061',
+    gcmSenderID: '297855924061',
   );
 
   Future<Null> _configure() async {
