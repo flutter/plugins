@@ -22,14 +22,11 @@ class FirebaseDatabase {
     _channel.setMethodCallHandler((MethodCall call) async {
       switch (call.method) {
         case 'Event':
-          print('Got Event');
           final Event event = new Event._(call.arguments);
           _observers[call.arguments['handle']].add(event);
           return null;
         case 'Error':
-          print('Got Error');
           final DatabaseError error = new DatabaseError._(call.arguments['error']);
-          print('Interpreted Error');
           _observers[call.arguments['handle']].addError(error);
           return null;
         case 'DoTransaction':
