@@ -21,7 +21,7 @@ void main() {
       name: 'testApp',
       options: const FirebaseOptions(
         googleAppID: '1:1234567890:ios:42424242424242',
-        GCMSenderID: '1234567890',
+        gcmSenderID: '1234567890',
         databaseURL: 'https://fake-database-url.firebaseio.com',
       ),
     );

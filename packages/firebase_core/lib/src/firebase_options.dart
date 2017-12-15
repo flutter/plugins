@@ -5,10 +5,42 @@
 part of firebase_core;
 
 class FirebaseOptions {
+
+  const FirebaseOptions({
+    this.apiKey,
+    this.bundleID,
+    this.clientID,
+    this.trackingID,
+    this.gcmSenderID,
+    this.projectID,
+    this.androidClientID,
+    this.googleAppID,
+    this.databaseURL,
+    this.deepLinkURLScheme,
+    this.storageBucket,
+  });
+
+  @visibleForTesting
+  FirebaseOptions.from(Map<String, String> map)
+      : apiKey = map['APIKey'],
+        bundleID = map['bundleID'],
+        clientID = map['clientID'],
+        trackingID = map['trackingID'],
+        gcmSenderID = map['GCMSenderID'],
+        projectID = map['projectID'],
+        androidClientID = map['androidClientID'],
+        googleAppID = map['googleAppID'],
+        databaseURL = map['databaseURL'],
+        deepLinkURLScheme = map['deepLinkURLScheme'],
+        storageBucket = map['storageBucket'] {
+    assert(googleAppID != null);
+    assert(gcmSenderID != null);
+  }
+
   /// An API key used for authenticating requests from your app, e.g.
   /// "AIzaSyDdVgKwhZl0sTTTLZ7iTmt1r3N2cJLnaDk", used to identify your app to
   /// Google servers.
-  final String APIKey;
+  final String apiKey;
 
   /// The iOS bundle ID for the application. Defaults to
   /// [[NSBundle mainBundle] bundleID] when not set manually or in a plist.
@@ -25,7 +57,7 @@ class FirebaseOptions {
 
   /// The Project Number from the Google Developer’s console, for example
   /// "012345678901", used to configure Google Cloud Messaging.
-  final String GCMSenderID;
+  final String gcmSenderID;
 
   /// The Project ID from the Firebase console, for example "abc-xyz-123."
   final String projectID;
@@ -46,28 +78,14 @@ class FirebaseOptions {
   /// "abc-xyz-123.storage.firebase.com."
   final String storageBucket;
 
-  const FirebaseOptions({
-    this.APIKey,
-    this.bundleID,
-    this.clientID,
-    this.trackingID,
-    this.GCMSenderID,
-    this.projectID,
-    this.androidClientID,
-    this.googleAppID,
-    this.databaseURL,
-    this.deepLinkURLScheme,
-    this.storageBucket,
-  });
-
   @visibleForTesting
   Map<String, String> get asMap {
     return <String, String>{
-      'APIKey': APIKey,
+      'APIKey': apiKey,
       'bundleID': bundleID,
       'clientID': clientID,
       'trackingID': trackingID,
-      'GCMSenderID': GCMSenderID,
+      'gcmSenderID': gcmSenderID,
       'projectID': projectID,
       'androidClientID': androidClientID,
       'googleAppID': googleAppID,
@@ -77,34 +95,17 @@ class FirebaseOptions {
     };
   }
 
-  @visibleForTesting
-  FirebaseOptions.from(Map<String, String> map)
-    : APIKey = map['APIKey'],
-      bundleID = map['bundleID'],
-      clientID = map['clientID'],
-      trackingID = map['trackingID'],
-      GCMSenderID = map['GCMSenderID'],
-      projectID = map['projectID'],
-      androidClientID = map['androidClientID'],
-      googleAppID = map['googleAppID'],
-      databaseURL = map['databaseURL'],
-      deepLinkURLScheme = map['deepLinkURLScheme'],
-      storageBucket = map['storageBucket'] {
-    assert(googleAppID != null),
-    assert(GCMSenderID != null);
-  }
-
   @override
   bool operator==(dynamic other) {
     if (identical(this, other))
       return true;
     if (other is! FirebaseOptions)
       return false;
-    return other.APIKey == APIKey
+    return other.apiKey == apiKey
        && other.bundleID == bundleID
        && other.clientID == clientID
        && other.trackingID == trackingID
-       && other.GCMSenderID == GCMSenderID
+       && other.gcmSenderID == gcmSenderID
        && other.projectID == projectID
        && other.androidClientID == androidClientID
        && other.googleAppID == googleAppID
@@ -116,11 +117,11 @@ class FirebaseOptions {
   @override
   int get hashCode {
     return hashValues(
-      APIKey,
+      apiKey,
       bundleID,
       clientID,
       trackingID,
-      GCMSenderID,
+      gcmSenderID,
       projectID,
       androidClientID,
       googleAppID,

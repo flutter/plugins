@@ -11,7 +11,7 @@ void main() {
     final List<MethodCall> log = <MethodCall>[];
     const FirebaseApp testApp = const FirebaseApp(
       name: 'foo',
-      options: const FirebaseOptions(APIKey: '12345'),
+      options: const FirebaseOptions(apiKey: '12345'),
     );
 
     setUp(() async {
@@ -36,11 +36,11 @@ void main() {
     test('configure', () async {
       final String name = 'foo';
       const FirebaseOptions options = const FirebaseOptions(
-        APIKey: 'testAPIKey',
+        apiKey: 'testAPIKey',
         bundleID: 'testBundleID',
         clientID: 'testClientID',
         trackingID: 'testTrackingID',
-        GCMSenderID: 'testGCMSenderID',
+        gcmSenderID: 'testGCMSenderID',
         projectID: 'testProjectID',
         androidClientID: 'testAndroidClientID',
         googleAppID: 'testGoogleAppID',
@@ -82,18 +82,6 @@ void main() {
       );
     });
 
-    test('delete', () async {
-      await FirebaseApp.delete();
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall(
-            'FirebaseApp#delete',
-            arguments: null,
-          ),
-        ],
-      );
-    });
   });
 
 }
