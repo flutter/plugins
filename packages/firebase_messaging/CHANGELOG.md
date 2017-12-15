@@ -1,3 +1,16 @@
+## 0.0.8
+
+* Added FLT prefix to iOS types
+* Change GMS dependency to 11.4.+
+
+## 0.0.7
+
+In FirebaseMessagingPlugin.m:
+* moved logic from 'tokenRefreshNotification' to 'didRefreshRegistrationToken'
+* removed 'tokenRefreshNotification' as well as observer registration
+* removed 'connectToFcm' method and related calls
+* removed unnecessary FIRMessaging disconnect
+
 ## 0.0.6
 
 * Change GMS dependency to 11.+

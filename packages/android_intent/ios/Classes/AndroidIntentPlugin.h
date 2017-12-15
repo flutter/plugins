@@ -4,5 +4,5 @@
 
 #import <Flutter/Flutter.h>
 
-@interface AndroidIntentPlugin : NSObject<FlutterPlugin>
+@interface FLTAndroidIntentPlugin : NSObject<FlutterPlugin>
 @end

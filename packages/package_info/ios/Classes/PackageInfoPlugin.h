@@ -4,5 +4,5 @@
 
 #import <Flutter/Flutter.h>
 
-@interface PackageInfoPlugin : NSObject<FlutterPlugin>
+@interface FLTPackageInfoPlugin : NSObject<FlutterPlugin>
 @end

@@ -1,3 +1,8 @@
+## [0.0.3]
+
+* Add FLT prefix to iOS types
+* Change GMS dependency to 11.4.+
+
 ## [0.0.2]
 
 * Change GMS dependency to 11.+

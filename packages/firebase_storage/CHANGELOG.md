@@ -1,6 +1,11 @@
-## 0.0.8
+## 0.0.9
 
 * Added StorageReference deleteFile function to remove files from Firebase.
+
+## 0.0.8
+
+* Added FLT prefix to iOS types
+* Change GMS dependency to 11.4.+
 
 ## 0.0.7
 

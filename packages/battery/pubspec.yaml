@@ -3,11 +3,12 @@ name: battery
 description: Flutter plugin for accessing information about the battery.
 author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/battery
-version: 0.0.1+1
+version: 0.0.2
 
 flutter:
   plugin:
     androidPackage: io.flutter.plugins.battery
+    iosPrefix: FLT
     pluginClass: BatteryPlugin
 
 dependencies:
@@ -16,7 +17,7 @@ dependencies:
   meta: "^1.0.5"
 
 dev_dependencies:
-   test: 0.12.21
+   test: 0.12.24+8
    mockito: "^2.0.2"
    async: "^1.13.2"
 

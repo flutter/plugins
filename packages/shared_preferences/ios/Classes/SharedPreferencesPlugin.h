@@ -4,5 +4,5 @@
 
 #import <Flutter/Flutter.h>
 
-@interface SharedPreferencesPlugin : NSObject<FlutterPlugin>
+@interface FLTSharedPreferencesPlugin : NSObject<FlutterPlugin>
 @end

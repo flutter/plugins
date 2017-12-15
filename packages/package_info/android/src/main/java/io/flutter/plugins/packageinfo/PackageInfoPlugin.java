@@ -4,7 +4,6 @@
 
 package io.flutter.plugins.packageinfo;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -22,11 +21,11 @@ public class PackageInfoPlugin implements MethodCallHandler {
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/package_info");
-    channel.setMethodCallHandler(new PackageInfoPlugin(registrar.activity()));
+    channel.setMethodCallHandler(new PackageInfoPlugin(registrar.context()));
   }
 
-  private PackageInfoPlugin(Activity activity) {
-    this.context = activity;
+  private PackageInfoPlugin(Context context) {
+    this.context = context;
   }
 
   @Override

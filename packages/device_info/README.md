@@ -18,7 +18,7 @@ AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
 print('Running on ${androidInfo.model}');  // e.g. "Moto G (4)"
 
 IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
-print('Running on ${iosInfo.model}');  // e.g. "iPhone 6"
+print('Running on ${iosInfo.utsname.machine}');  // e.g. "iPod7,1"
 ```
 
 You will find links to the API docs on the [pub page](https://pub.dartlang.org/packages/device_info).

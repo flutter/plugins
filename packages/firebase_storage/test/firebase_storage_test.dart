@@ -7,7 +7,7 @@ import 'dart:typed_data';
 
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/services.dart';
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('StorageReference', () {
@@ -36,14 +36,15 @@ void main() {
       test('invokes correct method', () async {
         await ref.getData(10);
 
-        expect(
-            log,
-            equals(<MethodCall>[
-              new MethodCall('StorageReference#getData', <String, dynamic>{
-                'maxSize': 10,
-                'path': 'avatars/large/image.jpg',
-              }),
-            ]));
+        expect(log, <Matcher>[
+          isMethodCall(
+            'StorageReference#getData',
+            arguments: <String, dynamic>{
+              'maxSize': 10,
+              'path': 'avatars/large/image.jpg',
+            },
+          ),
+        ]);
       });
 
       test('returns correct result', () async {

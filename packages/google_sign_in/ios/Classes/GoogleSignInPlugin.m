@@ -22,10 +22,10 @@ static NSString *const kClientIdKey = @"CLIENT_ID";
 }
 @end
 
-@interface GoogleSignInPlugin ()<GIDSignInDelegate, GIDSignInUIDelegate>
+@interface FLTGoogleSignInPlugin ()<GIDSignInDelegate, GIDSignInUIDelegate>
 @end
 
-@implementation GoogleSignInPlugin {
+@implementation FLTGoogleSignInPlugin {
   FlutterResult _accountRequest;
 }
 
@@ -33,7 +33,7 @@ static NSString *const kClientIdKey = @"CLIENT_ID";
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/google_sign_in"
                                   binaryMessenger:[registrar messenger]];
-  GoogleSignInPlugin *instance = [[GoogleSignInPlugin alloc] init];
+  FLTGoogleSignInPlugin *instance = [[FLTGoogleSignInPlugin alloc] init];
   [registrar addApplicationDelegate:instance];
   [registrar addMethodCallDelegate:instance channel:channel];
 }

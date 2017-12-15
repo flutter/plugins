@@ -1,3 +1,7 @@
+## 0.2.6 - 2017-12-03
+
+* Added FLT prefix to iOS types
+
 ## 0.2.5+1
 
 * Aligned author name with rest of repo.
