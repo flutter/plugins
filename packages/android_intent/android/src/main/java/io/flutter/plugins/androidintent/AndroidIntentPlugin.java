@@ -4,8 +4,6 @@
 
 package io.flutter.plugins.androidintent;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -21,17 +19,17 @@ import java.util.Map;
 /** AndroidIntentPlugin */
 @SuppressWarnings("unchecked")
 public class AndroidIntentPlugin implements MethodCallHandler {
-  private final Context context;
+  private final Registrar mRegistrar;
 
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/android_intent");
-    channel.setMethodCallHandler(new AndroidIntentPlugin(registrar.activity()));
+    channel.setMethodCallHandler(new AndroidIntentPlugin(registrar));
   }
 
-  private AndroidIntentPlugin(Activity activity) {
-    this.context = activity;
+  private AndroidIntentPlugin(Registrar registrar) {
+    this.mRegistrar = registrar;
   }
 
   private String convertAction(String action) {
@@ -111,6 +109,9 @@ public class AndroidIntentPlugin implements MethodCallHandler {
     String action = convertAction((String) call.argument("action"));
     // Build intent
     Intent intent = new Intent(action);
+    if (mRegistrar.activity() == null) {
+      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    }
     if (call.argument("category") != null) {
       intent.addCategory((String) call.argument("category"));
     }
@@ -121,7 +122,12 @@ public class AndroidIntentPlugin implements MethodCallHandler {
       intent.putExtras(convertArguments((Map) call.argument("arguments")));
     }
     Log.i("android_intent plugin", "Sending intent " + intent);
-    context.startActivity(intent);
+    if (mRegistrar.activity() != null) {
+      mRegistrar.activity().startActivity(intent);
+    } else {
+      mRegistrar.context().startActivity(intent);
+    }
+
     result.success(null);
   }
 }
