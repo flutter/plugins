@@ -5,7 +5,7 @@
 
 #import "LocalAuthPlugin.h"
 
-@implementation LocalAuthPlugin {
+@implementation FLTLocalAuthPlugin {
   NSDictionary *lastCallArgs;
   FlutterResult lastResult;
 }
@@ -13,7 +13,7 @@
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/local_auth"
                                   binaryMessenger:[registrar messenger]];
-  LocalAuthPlugin *instance = [[LocalAuthPlugin alloc] init];
+  FLTLocalAuthPlugin *instance = [[FLTLocalAuthPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
   [registrar addApplicationDelegate:instance];
 }

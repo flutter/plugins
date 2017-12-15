@@ -20,15 +20,42 @@
 
 FIRQuery *getQuery(NSDictionary *arguments) {
   FIRQuery *query = [[FIRFirestore firestore] collectionWithPath:arguments[@"path"]];
-  // TODO(jackson): Implement query parameters
+  NSDictionary *parameters = arguments[@"parameters"];
+  NSArray *whereConditions = parameters[@"where"];
+  for (id item in whereConditions) {
+    NSArray *condition = item;
+    NSString *fieldName = condition[0];
+    NSString *op = condition[1];
+    id value = condition[2];
+    if ([op isEqualToString:@"=="]) {
+      query = [query queryWhereField:fieldName isEqualTo:value];
+    } else if ([op isEqualToString:@"<"]) {
+      query = [query queryWhereField:fieldName isLessThan:value];
+    } else if ([op isEqualToString:@"<="]) {
+      query = [query queryWhereField:fieldName isLessThanOrEqualTo:value];
+    } else if ([op isEqualToString:@">"]) {
+      query = [query queryWhereField:fieldName isGreaterThan:value];
+    } else if ([op isEqualToString:@">="]) {
+      query = [query queryWhereField:fieldName isGreaterThanOrEqualTo:value];
+    } else {
+      // Unsupported operator
+    }
+  }
+  id orderBy = parameters[@"orderBy"];
+  if (orderBy) {
+    NSArray *orderByParameters = orderBy;
+    NSString *fieldName = orderByParameters[0];
+    NSNumber *descending = orderByParameters[1];
+    query = [query queryOrderedByField:fieldName descending:[descending boolValue]];
+  }
   return query;
 }
 
-@interface CloudFirestorePlugin ()
+@interface FLTCloudFirestorePlugin ()
 @property(nonatomic, retain) FlutterMethodChannel *channel;
 @end
 
-@implementation CloudFirestorePlugin {
+@implementation FLTCloudFirestorePlugin {
   NSMutableDictionary<NSNumber *, id<FIRListenerRegistration>> *_listeners;
   int _nextListenerHandle;
 }
@@ -37,7 +64,7 @@ FIRQuery *getQuery(NSDictionary *arguments) {
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/cloud_firestore"
                                   binaryMessenger:[registrar messenger]];
-  CloudFirestorePlugin *instance = [[CloudFirestorePlugin alloc] init];
+  FLTCloudFirestorePlugin *instance = [[FLTCloudFirestorePlugin alloc] init];
   instance.channel = channel;
   [registrar addMethodCallDelegate:instance channel:channel];
 }
@@ -60,11 +87,35 @@ FIRQuery *getQuery(NSDictionary *arguments) {
   };
   if ([@"DocumentReference#setData" isEqualToString:call.method]) {
     NSString *path = call.arguments[@"path"];
+    NSDictionary *options = call.arguments[@"options"];
     FIRDocumentReference *reference = [[FIRFirestore firestore] documentWithPath:path];
-    [reference setData:call.arguments[@"data"] completion:defaultCompletionBlock];
+    if (![options isEqual:[NSNull null]] &&
+        [options[@"merge"] isEqual:[NSNumber numberWithBool:YES]]) {
+      [reference setData:call.arguments[@"data"]
+                 options:[FIRSetOptions merge]
+              completion:defaultCompletionBlock];
+    } else {
+      [reference setData:call.arguments[@"data"] completion:defaultCompletionBlock];
+    }
+  } else if ([@"DocumentReference#updateData" isEqualToString:call.method]) {
+    NSString *path = call.arguments[@"path"];
+    FIRDocumentReference *reference = [[FIRFirestore firestore] documentWithPath:path];
+    [reference updateData:call.arguments[@"data"] completion:defaultCompletionBlock];
+  } else if ([@"DocumentReference#delete" isEqualToString:call.method]) {
+    NSString *path = call.arguments[@"path"];
+    FIRDocumentReference *reference = [[FIRFirestore firestore] documentWithPath:path];
+    [reference deleteDocumentWithCompletion:defaultCompletionBlock];
   } else if ([@"Query#addSnapshotListener" isEqualToString:call.method]) {
     __block NSNumber *handle = [NSNumber numberWithInt:_nextListenerHandle++];
-    id<FIRListenerRegistration> listener = [getQuery(call.arguments)
+    FIRQuery *query;
+    @try {
+      query = getQuery(call.arguments);
+    } @catch (NSException *exception) {
+      result([FlutterError errorWithCode:@"invalid_query"
+                                 message:[exception name]
+                                 details:[exception reason]]);
+    }
+    id<FIRListenerRegistration> listener = [query
         addSnapshotListener:^(FIRQuerySnapshot *_Nullable snapshot, NSError *_Nullable error) {
           if (error) result(error.flutterError);
           NSMutableArray *paths = [NSMutableArray array];
@@ -91,8 +142,8 @@ FIRQuery *getQuery(NSDictionary *arguments) {
               @"type" : type,
               @"document" : documentChange.document.data,
               @"path" : documentChange.document.reference.path,
-              @"oldIndex" : [NSNumber numberWithUnsignedInteger:documentChange.oldIndex],
-              @"newIndex" : [NSNumber numberWithUnsignedInteger:documentChange.newIndex],
+              @"oldIndex" : [NSNumber numberWithInt:documentChange.oldIndex],
+              @"newIndex" : [NSNumber numberWithInt:documentChange.newIndex],
             }];
           }
           [self.channel invokeMethod:@"QuerySnapshot"

@@ -6,7 +6,7 @@
 
 #import <Firebase/Firebase.h>
 
-@interface FirebaseDatabasePlugin ()
+@interface FLTFirebaseDatabasePlugin ()
 @end
 
 @interface NSError (FlutterError)
@@ -118,17 +118,17 @@ id roundDoubles(id value) {
   return value;
 }
 
-@interface FirebaseDatabasePlugin ()
+@interface FLTFirebaseDatabasePlugin ()
 @property(nonatomic, retain) FlutterMethodChannel *channel;
 @end
 
-@implementation FirebaseDatabasePlugin
+@implementation FLTFirebaseDatabasePlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/firebase_database"
                                   binaryMessenger:[registrar messenger]];
-  FirebaseDatabasePlugin *instance = [[FirebaseDatabasePlugin alloc] init];
+  FLTFirebaseDatabasePlugin *instance = [[FLTFirebaseDatabasePlugin alloc] init];
   instance.channel = channel;
   [registrar addMethodCallDelegate:instance channel:channel];
 }

@@ -30,7 +30,7 @@ android {
         disable 'InvalidPackage'
     }
     dependencies {
-        compile 'com.google.firebase:firebase-core:11.+'
-        compile 'com.google.firebase:firebase-ads:11.+'
+        compile 'com.google.firebase:firebase-core:11.4.+'
+        compile 'com.google.firebase:firebase-ads:11.4.+'
     }
 }

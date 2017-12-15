@@ -5,12 +5,12 @@
 #import "DeviceInfoPlugin.h"
 #import <sys/utsname.h>
 
-@implementation DeviceInfoPlugin
+@implementation FLTDeviceInfoPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   FlutterMethodChannel* channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/device_info"
                                   binaryMessenger:[registrar messenger]];
-  DeviceInfoPlugin* instance = [[DeviceInfoPlugin alloc] init];
+  FLTDeviceInfoPlugin* instance = [[FLTDeviceInfoPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 

@@ -1,6 +1,11 @@
-# 0.3.2
+## 0.3.3
 
 * Added support for changing user data
+
+## 0.3.2
+
+* Added FLT prefix to iOS types
+* Change GMS dependency to 11.4.+
 
 ## 0.3.1
 

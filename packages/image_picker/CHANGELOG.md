@@ -1,3 +1,16 @@
+## 0.1.5
+
+* Added FLT prefix to iOS types
+
+## 0.1.4
+
+* Bugfix: canceling image picking threw exception.
+* Bugfix: errors in plugin state management.
+
+## 0.1.3
+
+* Added optional source argument to pickImage for controlling where the image comes from.
+
 ## 0.1.2
 
 * Added optional maxWidth and maxHeight arguments to pickImage.

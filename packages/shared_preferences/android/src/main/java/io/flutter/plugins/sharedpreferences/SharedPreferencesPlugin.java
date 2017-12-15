@@ -115,7 +115,8 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
           result.success(null);
           break;
         case "setDouble":
-          editor.putFloat(key, (float) call.argument("value")).apply();
+          float floatValue = ((Number) call.argument("value")).floatValue();
+          editor.putFloat(key, floatValue).apply();
           result.success(null);
           break;
         case "setInt":

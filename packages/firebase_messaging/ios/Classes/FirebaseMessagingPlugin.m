@@ -7,11 +7,11 @@
 #import "Firebase/Firebase.h"
 
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
-@interface FirebaseMessagingPlugin ()<FIRMessagingDelegate>
+@interface FLTFirebaseMessagingPlugin ()<FIRMessagingDelegate>
 @end
 #endif
 
-@implementation FirebaseMessagingPlugin {
+@implementation FLTFirebaseMessagingPlugin {
   FlutterMethodChannel *_channel;
   NSDictionary *_launchNotification;
   BOOL _resumingFromBackground;
@@ -21,7 +21,8 @@
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"firebase_messaging"
                                   binaryMessenger:[registrar messenger]];
-  FirebaseMessagingPlugin *instance = [[FirebaseMessagingPlugin alloc] initWithChannel:channel];
+  FLTFirebaseMessagingPlugin *instance =
+      [[FLTFirebaseMessagingPlugin alloc] initWithChannel:channel];
   [registrar addApplicationDelegate:instance];
   [registrar addMethodCallDelegate:instance channel:channel];
 }

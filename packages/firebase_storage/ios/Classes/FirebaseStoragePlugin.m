@@ -18,14 +18,14 @@
 }
 @end
 
-@implementation FirebaseStoragePlugin {
+@implementation FLTFirebaseStoragePlugin {
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"firebase_storage"
                                   binaryMessenger:[registrar messenger]];
-  FirebaseStoragePlugin *instance = [[FirebaseStoragePlugin alloc] init];
+  FLTFirebaseStoragePlugin *instance = [[FLTFirebaseStoragePlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 

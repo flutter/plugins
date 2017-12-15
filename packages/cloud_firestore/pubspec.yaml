@@ -3,20 +3,23 @@ name: cloud_firestore
 description: Cloud Firestore plugin for Flutter.
 author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/cloud_firestore
-version: 0.0.3
+version: 0.1.2
 
 flutter:
   plugin:
-    androidPackage: io.flutter.plugins.firebase.cloud_firestore
+    androidPackage: io.flutter.plugins.firebase.cloudfirestore
+    iosPrefix: FLT
     pluginClass: CloudFirestorePlugin
 
 dependencies:
   flutter:
     sdk: flutter
   meta: "^1.0.5"
+  collection: "^1.14.3"
 
 dev_dependencies:
-  test: 0.12.24+8
+  flutter_test:
+    sdk: flutter
 
 environment:
     sdk: ">=1.8.0 <2.0.0-dev.infinity"

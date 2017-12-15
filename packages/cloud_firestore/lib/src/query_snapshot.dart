@@ -13,16 +13,22 @@ class QuerySnapshot {
   /// is the first snapshot, all documents will be in the list as Added changes.
   final List<DocumentChange> documentChanges;
 
-  QuerySnapshot._(Map<String, List<dynamic>> data)
+  final Firestore _firestore;
+
+  QuerySnapshot._(Map<String, List<dynamic>> data, this._firestore)
       : documents = new List<DocumentSnapshot>.generate(
             data['documents'].length, (int index) {
           return new DocumentSnapshot._(
             data['paths'][index],
             data['documents'][index],
+            _firestore,
           );
         }),
         documentChanges = new List<DocumentChange>.generate(
             data['documentChanges'].length, (int index) {
-          return new DocumentChange._(data['documentChanges'][index]);
+          return new DocumentChange._(
+            data['documentChanges'][index],
+            _firestore,
+          );
         });
 }

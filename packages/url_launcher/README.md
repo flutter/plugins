@@ -37,7 +37,7 @@ _launchURL() async {
 
 ## Supported URL schemes
 
-The [`launch`](https://www.dartdocs.org/documentation/url_launcher/latest/url_launcher/launch.html) method 
+The [`launch`](https://www.dartdocs.org/documentation/url_launcher/latest/url_launcher/launch.html) method
 takes a string argument containing a URL. This URL
 can be formatted using a number of different URL schemes. The supported
 URL schemes depend on the underlying platform and installed apps.
@@ -67,3 +67,9 @@ best practice we suggest adjusting the application UI so that the unsupported
 URL is never triggered; for example, if the `email` scheme is not supported, a
 UI button that would have sent email can be changed to redirect the user to a
 web page using a URL following the `http` scheme.
+
+## Browser vs In-app Handling
+By default, Android opens up a browser when handling URLs. You can pass
+forceWebView: true parameter to tell the plugin to open a WebView instead. On
+iOS, the default behavior is to open all web URLs within the app. Everything
+else is redirected to the app handler.

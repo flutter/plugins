@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1067712222741",
+    "project_id": "flutter-alarmmanager-example"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1067712222741:android:b3f895545fce0ad2",
+        "android_client_info": {
+          "package_name": "io.flutter.androidalarmmanagerexample"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1067712222741-k2jv050djreb4i551vd6q621css54tia.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "1067712222741-qfv81bdrucm5hpnjqp8157jj1bvjjlqn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "io.flutter.androidalarmmanagerexample",
+            "certificate_hash": "0f729308cc7f95a84196351d1aa788e1f9b62e9e"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkXpml3lzlhOzX-ZhOWX95TdKQFZqMkHE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

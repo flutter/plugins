@@ -6,5 +6,5 @@
 
 #import "Firebase/Firebase.h"
 
-@interface FirebaseAuthPlugin : NSObject<FlutterPlugin>
+@interface FLTFirebaseAuthPlugin : NSObject<FlutterPlugin>
 @end
