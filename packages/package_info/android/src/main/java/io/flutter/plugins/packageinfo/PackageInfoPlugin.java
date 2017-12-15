@@ -15,22 +15,23 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 /** PackageInfoPlugin */
 public class PackageInfoPlugin implements MethodCallHandler {
-  private final Context context;
+  private final Registrar mRegistrar;
 
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/package_info");
-    channel.setMethodCallHandler(new PackageInfoPlugin(registrar.context()));
+    channel.setMethodCallHandler(new PackageInfoPlugin(registrar));
   }
 
-  private PackageInfoPlugin(Context context) {
-    this.context = context;
+  private PackageInfoPlugin(Registrar registrar) {
+    this.mRegistrar = registrar;
   }
 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
     try {
+      Context context = mRegistrar.context();
       PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
       switch (call.method) {
         case "getVersion":
