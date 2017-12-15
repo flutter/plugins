@@ -52,7 +52,7 @@ void main() {
             equals(new Uint8List.fromList(<int>[1, 2, 3, 4])));
       });
     });
-    
+
     group('deleteFile', () {
       const MethodChannel channel = const MethodChannel(
         'firebase_storage',
@@ -74,12 +74,16 @@ void main() {
         await ref.delete().future;
 
         expect(
-            log,
-            equals(<MethodCall>[
-              new MethodCall('StorageReference#deleteFile', <String, dynamic>{
+          log,
+          <Matcher>[
+            isMethodCall(
+              'StorageReference#deleteFile',
+              arguments: <String, dynamic>{
                 'path': 'image.jpg',
-              }),
-            ]));
+              },
+            ),
+          ],
+        );
       });
     });
   });
