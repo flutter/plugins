@@ -39,7 +39,7 @@ class StorageReference {
   /// Asynchronously removed a file from the currently specified StorageReference, without additional metadata.
   StorageDeleteTask delete() {
     final StorageDeleteTask task =
-      new StorageDeleteTask._(_pathComponents.join("/"));
+        new StorageDeleteTask._(_pathComponents.join("/"));
     task._start();
     return task;
   }
@@ -62,8 +62,7 @@ class StorageDeleteTask {
 
   StorageDeleteTask._(this.path);
 
-  Completer<DeleteTaskResult> _completer =
-      new Completer<DeleteTaskResult>();
+  Completer<DeleteTaskResult> _completer = new Completer<DeleteTaskResult>();
 
   Future<DeleteTaskResult> get future => _completer.future;
 
@@ -71,9 +70,7 @@ class StorageDeleteTask {
     final bool result = await FirebaseStorage._channel.invokeMethod(
         "StorageReference#deleteFile", <String, String>{'path': path});
 
-      _completer
-          .complete(new DeleteTaskResult(isFailed: result));
-
+    _completer.complete(new DeleteTaskResult(isFailed: result));
   }
 }
 

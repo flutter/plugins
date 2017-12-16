@@ -93,16 +93,14 @@
 - (void)deleteData:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSString *path = call.arguments[@"path"];
   FIRStorageReference *ref = [[FIRStorage storage].reference child:path];
-  [ref deleteWithCompletion:^(NSError *error){
-  if (error != nil) {
-    result(error.flutterError);
-    return;
-  } else {
-    result(@(YES));
-  }
-}];
-
-
+  [ref deleteWithCompletion:^(NSError *error) {
+    if (error != nil) {
+      result(error.flutterError);
+      return;
+    } else {
+      result(@(YES));
+    }
+  }];
 }
 
 @end
