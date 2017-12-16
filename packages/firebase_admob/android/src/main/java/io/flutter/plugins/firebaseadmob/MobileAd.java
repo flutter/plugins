@@ -10,13 +10,15 @@ import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.view.ViewTreeObserver;
+import android.widget.FrameLayout;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 import io.flutter.plugin.common.MethodChannel;
+import io.flutter.view.FlutterView;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -47,9 +49,10 @@ abstract class MobileAd extends AdListener {
     allAds.put(id, this);
   }
 
-  static Banner createBanner(Integer id, Activity activity, MethodChannel channel) {
+  static Banner createBanner(
+      Integer id, Activity activity, FlutterView view, MethodChannel channel) {
     MobileAd ad = getAdForId(id);
-    return (ad != null) ? (Banner) ad : new Banner(id, activity, channel);
+    return (ad != null) ? (Banner) ad : new Banner(id, activity, view, channel);
   }
 
   static Interstitial createInterstitial(Integer id, Activity activity, MethodChannel channel) {
@@ -218,10 +221,13 @@ abstract class MobileAd extends AdListener {
   }
 
   static class Banner extends MobileAd {
+    private final FlutterView view;
     private AdView adView;
 
-    private Banner(Integer id, Activity activity, MethodChannel channel) {
+    private Banner(Integer id, Activity activity, FlutterView view, MethodChannel channel) {
       super(id, activity, channel);
+
+      this.view = view;
     }
 
     @Override
@@ -238,26 +244,54 @@ abstract class MobileAd extends AdListener {
       adView.loadAd(adRequestBuilder.build());
     }
 
+    private void setViewMargin(int margin) {
+      if (!(view.getParent() instanceof FrameLayout)) {
+        throw new IllegalStateException("FlutterView must be a child of a FrameLayout!");
+      }
+
+      FrameLayout.LayoutParams lastLayoutParams = (FrameLayout.LayoutParams) view.getLayoutParams();
+      lastLayoutParams.bottomMargin = margin;
+
+      view.setLayoutParams(lastLayoutParams);
+    }
+
     @Override
     void show() {
       if (status == Status.LOADING) {
         status = Status.PENDING;
         return;
       }
-      if (status != Status.LOADED) return;
 
-      if (activity.findViewById(id) == null) {
-        LinearLayout content = new LinearLayout(activity);
-        content.setId(id);
-        content.setOrientation(LinearLayout.VERTICAL);
-        content.setGravity(Gravity.BOTTOM);
-        content.addView(adView);
+      if (status != Status.LOADED || activity.findViewById(id) != null) return;
 
-        activity.addContentView(
-            content,
-            new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
-      }
+      final FrameLayout content = new FrameLayout(activity);
+      content.setId(id);
+      content.addView(
+          adView,
+          new FrameLayout.LayoutParams(
+              ViewGroup.LayoutParams.WRAP_CONTENT,
+              ViewGroup.LayoutParams.WRAP_CONTENT,
+              Gravity.BOTTOM));
+
+      activity.addContentView(
+          content,
+          new ViewGroup.LayoutParams(
+              ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+      adView
+          .getViewTreeObserver()
+          .addOnGlobalLayoutListener(
+              new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                  ViewTreeObserver viewTreeObserver = adView.getViewTreeObserver();
+                  if (!viewTreeObserver.isAlive()) return;
+
+                  viewTreeObserver.removeOnGlobalLayoutListener(this);
+
+                  setViewMargin(adView.getHeight());
+                }
+              });
     }
 
     @Override
@@ -271,6 +305,8 @@ abstract class MobileAd extends AdListener {
 
       ViewGroup contentParent = (ViewGroup) (contentView.getParent());
       contentParent.removeView(contentView);
+
+      setViewMargin(0);
     }
   }
 

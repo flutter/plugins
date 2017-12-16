@@ -14,6 +14,7 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
+import io.flutter.view.FlutterView;
 import java.util.Map;
 
 public class FirebaseAdMobPlugin implements MethodCallHandler {
@@ -21,6 +22,7 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
 
   private final Activity activity;
   private final MethodChannel channel;
+  private final FlutterView view;
 
   private LinearLayout banner;
   InterstitialAd interstitial;
@@ -28,11 +30,13 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_admob");
-    channel.setMethodCallHandler(new FirebaseAdMobPlugin(registrar.activity(), channel));
+    channel.setMethodCallHandler(
+        new FirebaseAdMobPlugin(registrar.activity(), registrar.view(), channel));
   }
 
-  private FirebaseAdMobPlugin(Activity activity, MethodChannel channel) {
+  private FirebaseAdMobPlugin(Activity activity, FlutterView view, MethodChannel channel) {
     this.activity = activity;
+    this.view = view;
     this.channel = channel;
     FirebaseApp.initializeApp(activity);
   }
@@ -104,7 +108,7 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
 
     switch (call.method) {
       case "loadBannerAd":
-        callLoadAd(MobileAd.createBanner(id, activity, channel), call, result);
+        callLoadAd(MobileAd.createBanner(id, activity, view, channel), call, result);
         break;
       case "loadInterstitialAd":
         callLoadAd(MobileAd.createInterstitial(id, activity, channel), call, result);
