@@ -6,16 +6,17 @@ import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:firebase_admob/firebase_admob.dart';
 
-// A placeholder AdMob App Id for testing. AdMob App IDs and ad unit IDs are specific
-// to a single operating system, so apps building for both Android and iOS will need
-// a set for each platform.
+// A placeholder AdMob App Id for testing. AdMob App IDs and ad unit IDs are
+// specific to a single operating system, so apps building for both Android and
+// iOS will need a set for each platform.
 const String androidAppId = 'ca-app-pub-3940256099942544~3347511713';
 const String iOSAppId = 'ca-app-pub-3940256099942544~1458002511';
 
-// These are AdMob's test ad unit IDs, which always return test ads. You're encouraged
-// to use them for testing in your own apps.
+// These are AdMob's test ad unit IDs, which always return test ads. You're
+// encouraged to use them for testing in your own apps.
 const String androidBannerAdUnitId = 'ca-app-pub-3940256099942544/6300978111';
-const String androidInterstitialAdUnitId = 'ca-app-pub-3940256099942544/1033173712';
+const String androidInterstitialAdUnitId =
+    'ca-app-pub-3940256099942544/1033173712';
 const String iOSBannerAdUnitId = 'ca-app-pub-3940256099942544/2934735716';
 const String iOSInterstitialAdUnitId = 'ca-app-pub-3940256099942544/4411468910';
 
@@ -53,7 +54,9 @@ class _MyAppState extends State<MyApp> {
 
   InterstitialAd createInterstitialAd() {
     return new InterstitialAd(
-      unitId: Platform.isAndroid ? androidInterstitialAdUnitId : iOSInterstitialAdUnitId,
+      unitId: Platform.isAndroid
+          ? androidInterstitialAdUnitId
+          : iOSInterstitialAdUnitId,
       targetingInfo: targetingInfo,
       listener: (MobileAdEvent event) {
         print("InterstitialAd event $event");
@@ -64,7 +67,8 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    FirebaseAdMob.instance.initialize(appId: Platform.isAndroid ? androidAppId : iOSAppId);
+    FirebaseAdMob.instance
+        .initialize(appId: Platform.isAndroid ? androidAppId : iOSAppId);
     _bannerAd = createBannerAd()..load();
   }
 
@@ -105,8 +109,7 @@ class _MyAppState extends State<MyApp> {
                 child: const Text('LOAD INTERSTITIAL'),
                 onPressed: () {
                   _interstitialAd?.dispose();
-                  _interstitialAd = createInterstitialAd()
-                    ..load();
+                  _interstitialAd = createInterstitialAd()..load();
                 },
               ),
               new RaisedButton(
