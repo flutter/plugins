@@ -129,6 +129,10 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
 
       @Override
       public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
+
+
+        firebaseAuth.signInWithCredential(phoneAuthCredential)
+                .addOnCompleteListener(activity, new SignInCompleteListenerforphoneauth(result));
       }
       @Override
       public void onVerificationFailed(FirebaseException e) {
@@ -354,6 +358,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         FirebaseUser user = task.getResult().getUser();
         Log.i("user", user.getUid());
         ImmutableMap<String, Object> userMap = mapFromUser(user);
+
         result.success(userMap);
       }
     }
@@ -395,5 +400,25 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     }
   }
 
+  private class SignInCompleteListenerforphoneauth implements OnCompleteListener<AuthResult> {
+    private final Result result;
 
+    SignInCompleteListenerforphoneauth(Result result) {
+      this.result = result;
+    }
+
+    @Override
+    public void onComplete(@NonNull Task<AuthResult> task) {
+      if (!task.isSuccessful()) {
+        Exception e = task.getException();
+        result.error(ERROR_REASON_EXCEPTION, e.getMessage(), null);
+      } else {
+        FirebaseUser user = task.getResult().getUser();
+        Log.i("user", user.getUid());
+        ImmutableMap<String, Object> userMap = mapFromUser(user);
+          Log.i("user", "a");
+        result.success("usercreated");
+      }
+    }
+  }
 }

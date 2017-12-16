@@ -187,7 +187,8 @@ class FirebaseAuth {
   Future<String> signInWithPhoneNumber({
     @required String phoneNumber,
   })async{
-    var data = await channel.invokeMethod(
+
+     final String data  = await channel.invokeMethod(
         'signInWithPhoneNumber',
         <String,String>{
           'phoneNumber': phoneNumber,
@@ -195,6 +196,7 @@ class FirebaseAuth {
     );
 //    final FirebaseUser currentUser = new FirebaseUser._(data);
 //    print(data);
+    print(data);
   return data;
   }
 
@@ -304,7 +306,18 @@ class FirebaseAuth {
         data != null ? new FirebaseUser._(data) : null;
     _authStateChangedControllers[id].add(currentUser);
   }
+ Future<Null> resetPassword({
+    @required String email
+  }) async {
+    assert(email != null);
 
+    final Map<String, dynamic> data = await channel.invokeMethod(
+      'resetPassword',
+      <String, String>{
+        'email': email
+      },
+    );
+  }
 
 
 }
