@@ -6,7 +6,8 @@ import 'dart:collection';
 
 import 'package:meta/meta.dart';
 
-import '../firebase_database.dart' show DatabaseError, DataSnapshot, Event, Query;
+import '../firebase_database.dart'
+    show DatabaseError, DataSnapshot, Event, Query;
 import 'firebase_list.dart' show ChildCallback, ErrorCallback, ValueCallback;
 import 'utils/stream_subscriber_mixin.dart';
 

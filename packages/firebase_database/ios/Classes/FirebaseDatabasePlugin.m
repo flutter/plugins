@@ -268,8 +268,7 @@ id roundDoubles(id value) {
         }];
   } else if ([@"Query#observe" isEqualToString:call.method]) {
     FIRDataEventType eventType = parseEventType(call.arguments[@"eventType"]);
-    __block FIRDatabaseHandle handle = [getQuery(call.arguments)
-                      observeEventType:eventType
+    __block FIRDatabaseHandle handle = [getQuery(call.arguments) observeEventType:eventType
         andPreviousSiblingKeyWithBlock:^(FIRDataSnapshot *snapshot, NSString *previousSiblingKey) {
           [self.channel invokeMethod:@"Event"
                            arguments:@{
@@ -280,7 +279,8 @@ id roundDoubles(id value) {
                              },
                              @"previousSiblingKey" : previousSiblingKey ?: [NSNull null],
                            }];
-        } withCancelBlock:^(NSError *error) {
+        }
+        withCancelBlock:^(NSError *error) {
           [self.channel invokeMethod:@"Error"
                            arguments:@{
                              @"handle" : [NSNumber numberWithUnsignedInteger:handle],

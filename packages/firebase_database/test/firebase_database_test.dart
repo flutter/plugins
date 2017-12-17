@@ -307,7 +307,8 @@ void main() {
           );
         }
 
-        final AsyncQueue<DatabaseError> errors = new AsyncQueue<DatabaseError>();
+        final AsyncQueue<DatabaseError> errors =
+            new AsyncQueue<DatabaseError>();
 
         // Subscribe and allow subscription to complete.
         final StreamSubscription<Event> subscription =

@@ -104,12 +104,14 @@ class _MyHomePageState extends State<MyHomePage> {
         children: <Widget>[
           new Flexible(
             child: new Center(
-              child: _error == null ? new Text(
-                'Button tapped $_counter time${ _counter == 1 ? '' : 's' }.\n\n'
-                    'This includes all devices, ever.',
-              ) : new Text(
-                'Error retrieving button tap count:\n${_error.message}'
-              ),
+              child: _error == null
+                  ? new Text(
+                      'Button tapped $_counter time${ _counter == 1 ? '' : 's' }.\n\n'
+                          'This includes all devices, ever.',
+                    )
+                  : new Text(
+                      'Error retrieving button tap count:\n${_error.message}',
+                    ),
             ),
           ),
           new ListTile(

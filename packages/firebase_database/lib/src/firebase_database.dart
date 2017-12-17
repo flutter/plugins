@@ -26,7 +26,8 @@ class FirebaseDatabase {
           _observers[call.arguments['handle']].add(event);
           return null;
         case 'Error':
-          final DatabaseError error = new DatabaseError._(call.arguments['error']);
+          final DatabaseError error =
+              new DatabaseError._(call.arguments['error']);
           _observers[call.arguments['handle']].addError(error);
           return null;
         case 'DoTransaction':
