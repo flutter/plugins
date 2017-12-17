@@ -36,7 +36,8 @@ android {
         disable 'InvalidPackage'
     }
     dependencies {
-        compile 'com.google.firebase:firebase-core:11.6.2'
-        compile 'com.google.firebase:firebase-ads:11.6.2'
+        // firebase-core is exposed so the google-services plugin will see it.
+        api 'com.google.firebase:firebase-core:11.6.2'
+        implementation 'com.google.firebase:firebase-ads:11.6.2'
     }
 }
