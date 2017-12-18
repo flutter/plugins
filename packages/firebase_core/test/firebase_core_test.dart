@@ -15,8 +15,8 @@ void main() {
     );
 
     setUp(() async {
-      FirebaseApp.channel.setMockMethodCallHandler((
-          MethodCall methodCall) async {
+      FirebaseApp.channel
+          .setMockMethodCallHandler((MethodCall methodCall) async {
         log.add(methodCall);
         switch (methodCall.method) {
           case 'FirebaseApp#allApps':
@@ -70,7 +70,7 @@ void main() {
 
     test('allApps', () async {
       final List<FirebaseApp> allApps = await FirebaseApp.allApps();
-      expect(allApps, equals(<FirebaseApp>[ testApp ]));
+      expect(allApps, equals(<FirebaseApp>[testApp]));
       expect(
         log,
         <Matcher>[
@@ -81,7 +81,5 @@ void main() {
         ],
       );
     });
-
   });
-
 }

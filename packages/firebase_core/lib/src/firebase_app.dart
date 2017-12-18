@@ -6,7 +6,7 @@ part of firebase_core;
 
 class FirebaseApp {
   @visibleForTesting
-  const FirebaseApp({ this.name, @required this.options });
+  const FirebaseApp({this.name, @required this.options});
 
   /// Gets the name of this app.
   ///
@@ -31,10 +31,8 @@ class FirebaseApp {
   ///
   /// If an app with that name has already been configured, asserts that the
   /// [options] haven't changed.
-  static Future<FirebaseApp> configure({
-    String name,
-    @required FirebaseOptions options
-  }) {
+  static Future<FirebaseApp> configure(
+      {String name, @required FirebaseOptions options}) {
     final FirebaseApp existingApp = _namedApps[name];
     if (existingApp != null) {
       assert(existingApp.options == options);
@@ -43,13 +41,10 @@ class FirebaseApp {
     assert(options.googleAppID != null);
     assert(options.gcmSenderID != null);
     _namedApps[name] = new FirebaseApp(name: name, options: options);
-    return channel.invokeMethod(
-      'FirebaseApp#configure',
-      <String, dynamic>{
-        'name': name,
-        'options': options.asMap,
-      }
-    ).then((Null _) => _namedApps[name]);
+    return channel.invokeMethod('FirebaseApp#configure', <String, dynamic>{
+      'name': name,
+      'options': options.asMap,
+    }).then((Null _) => _namedApps[name]);
   }
 
   /// Returns a list of all extant FirebaseApp instances, or null if there are
@@ -67,11 +62,9 @@ class FirebaseApp {
   }
 
   @override
-  bool operator==(dynamic other) {
-    if (identical(this, other))
-      return true;
-    if (other is! FirebaseApp)
-      return false;
+  bool operator ==(dynamic other) {
+    if (identical(this, other)) return true;
+    if (other is! FirebaseApp) return false;
     return other.name == name && other.options == options;
   }
 

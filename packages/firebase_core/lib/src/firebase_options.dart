@@ -5,7 +5,6 @@
 part of firebase_core;
 
 class FirebaseOptions {
-
   const FirebaseOptions({
     this.apiKey,
     this.bundleID,
@@ -18,7 +17,8 @@ class FirebaseOptions {
     this.databaseURL,
     this.deepLinkURLScheme,
     this.storageBucket,
-  }) : assert(googleAppID != null);
+  })
+      : assert(googleAppID != null);
 
   @visibleForTesting
   FirebaseOptions.from(Map<String, String> map)
@@ -113,22 +113,20 @@ class FirebaseOptions {
   }
 
   @override
-  bool operator==(dynamic other) {
-    if (identical(this, other))
-      return true;
-    if (other is! FirebaseOptions)
-      return false;
-    return other.apiKey == apiKey
-       && other.bundleID == bundleID
-       && other.clientID == clientID
-       && other.trackingID == trackingID
-       && other.gcmSenderID == gcmSenderID
-       && other.projectID == projectID
-       && other.androidClientID == androidClientID
-       && other.googleAppID == googleAppID
-       && other.databaseURL == databaseURL
-       && other.deepLinkURLScheme == deepLinkURLScheme
-       && other.storageBucket == storageBucket;
+  bool operator ==(dynamic other) {
+    if (identical(this, other)) return true;
+    if (other is! FirebaseOptions) return false;
+    return other.apiKey == apiKey &&
+        other.bundleID == bundleID &&
+        other.clientID == clientID &&
+        other.trackingID == trackingID &&
+        other.gcmSenderID == gcmSenderID &&
+        other.projectID == projectID &&
+        other.androidClientID == androidClientID &&
+        other.googleAppID == googleAppID &&
+        other.databaseURL == databaseURL &&
+        other.deepLinkURLScheme == deepLinkURLScheme &&
+        other.storageBucket == storageBucket;
   }
 
   @override

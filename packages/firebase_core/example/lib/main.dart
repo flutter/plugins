@@ -39,8 +39,10 @@ class MyApp extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              new RaisedButton(onPressed: _configure, child: const Text('initialize')),
-              new RaisedButton(onPressed: _allApps, child: const Text('allApps')),
+              new RaisedButton(
+                  onPressed: _configure, child: const Text('initialize')),
+              new RaisedButton(
+                  onPressed: _allApps, child: const Text('allApps')),
             ],
           ),
         ),
