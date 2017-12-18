@@ -13,6 +13,8 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
+
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.lang.String;
@@ -58,14 +60,21 @@ public class FirebaseCorePlugin implements MethodCallHandler {
       }
       case "FirebaseApp#allApps":
       {
-        List<FirebaseApp> apps = FirebaseApp.getApps(context);
-        List<Map<String, Object>> apps = FirebaseApp.getApps(context).stream().collect();
-                Collectors.toMap(
-                        FirebaseApp::getName, FirebaseApp::getOptions, // key = name, value = websites
-                        (oldValue, newValue) -> oldValue,       // if same key, take the old key
-                        LinkedHashMap::new                      // returns a LinkedHashMap, keep order
-                )
-        );
+        List<Map<String, Object>> apps = new ArrayList<>();
+        for (FirebaseApp app : FirebaseApp.getApps(context)) {
+          Map<String, Object> appMap = new HashMap<>();
+          map.put("name", app.getName());
+          FirebaseOptions options = app.getOptions();
+          Map<String, Options> optionsMap = new HashMap<>();
+          options.put("googleAppID", options.getApplicationId());
+          options.put("GCMSenderID", options.getGcmSenderId());
+          options.put("APIKey", options.getApiKey());
+          options.put("databaseURL", options.getDatabaseUrl());
+          options.put("storageBucket", options.getStorageBucket());
+          options.put("projectID", options.getProjectId());
+          map.put("options", options);
+          apps.add(map);
+        }
         result.success(apps);
         break;
       }
