@@ -145,7 +145,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
 
     PhoneAuthProvider.getInstance().verifyPhoneNumber(phoneNumber,60, TimeUnit.SECONDS,this.activity,this.mCallbacks);
   }
-    private void handledeletecurrentuser(final Result result) {
+    private void handleDeleteCurrentUser(final Result result) {
           @SuppressWarnings("unchecked")
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         user.delete()

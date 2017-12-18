@@ -194,9 +194,6 @@ class FirebaseAuth {
           'phoneNumber': phoneNumber,
         }
     );
-//    final FirebaseUser currentUser = new FirebaseUser._(data);
-//    print(data);
-    print(data);
   return data;
   }
 
