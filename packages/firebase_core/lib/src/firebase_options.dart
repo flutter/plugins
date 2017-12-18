@@ -18,7 +18,7 @@ class FirebaseOptions {
     this.databaseURL,
     this.deepLinkURLScheme,
     this.storageBucket,
-  });
+  }) : assert(googleAppID != null), assert(gcmSenderID != null);
 
   @visibleForTesting
   FirebaseOptions.from(Map<String, String> map)

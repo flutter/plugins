@@ -56,7 +56,7 @@ class FirebaseApp {
   /// no FirebaseApp instances.
   static Future<List<FirebaseApp>> allApps() async {
     final List<Map<String, dynamic>> result = await channel.invokeMethod(
-    'FirebaseApp#allApps',
+      'FirebaseApp#allApps',
     );
     return result?.map((Map<String, dynamic> app) {
       return new FirebaseApp(
