@@ -23,10 +23,9 @@ class FirebaseDatabase {
   /// Gets an instance of [FirebaseDatabase].
   ///
   /// If [app] is specified, its options should include a [databaseURL].
-  FirebaseDatabase({ this.app }) {
+  FirebaseDatabase({this.app}) {
     assert(this.app == null || this.app.options.databaseURL != null);
-    if (_initialized)
-      return;
+    if (_initialized) return;
     _channel.setMethodCallHandler((MethodCall call) async {
       switch (call.method) {
         case 'Event':
@@ -86,12 +85,10 @@ class FirebaseDatabase {
   /// network connectivity at that time).
   Future<bool> setPersistenceEnabled(bool enabled) {
     return _channel.invokeMethod(
-      'FirebaseDatabase#setPersistenceEnabled',
-        <String, dynamic>{
-        'app': app.name,
-        'enabled': enabled,
-      }
-    );
+        'FirebaseDatabase#setPersistenceEnabled', <String, dynamic>{
+      'app': app.name,
+      'enabled': enabled,
+    });
   }
 
   /// Attempts to set the size of the persistence cache.
@@ -113,12 +110,10 @@ class FirebaseDatabase {
   /// or greater than 100 MB are not supported.
   Future<bool> setPersistenceCacheSizeBytes(int cacheSize) {
     return _channel.invokeMethod(
-      'FirebaseDatabase#setPersistenceCacheSizeBytes',
-      <String, dynamic>{
-        'app': app.name,
-        'cacheSize': cacheSize,
-      }
-    );
+        'FirebaseDatabase#setPersistenceCacheSizeBytes', <String, dynamic>{
+      'app': app.name,
+      'cacheSize': cacheSize,
+    });
   }
 
   /// Resumes our connection to the Firebase Database backend after a previous
@@ -126,7 +121,7 @@ class FirebaseDatabase {
   Future<Null> goOnline() {
     return _channel.invokeMethod(
       'FirebaseDatabase#goOnline',
-      <String, dynamic>{ 'app': app.name },
+      <String, dynamic>{'app': app.name},
     );
   }
 
@@ -135,7 +130,7 @@ class FirebaseDatabase {
   Future<Null> goOffline() {
     return _channel.invokeMethod(
       'FirebaseDatabase#goOffline',
-      <String, dynamic>{ 'app': app.name },
+      <String, dynamic>{'app': app.name},
     );
   }
 
@@ -152,7 +147,7 @@ class FirebaseDatabase {
   Future<Null> purgeOutstandingWrites() {
     return _channel.invokeMethod(
       'FirebaseDatabase#purgeOutstandingWrites',
-      <String, dynamic>{ 'app': app.name },
+      <String, dynamic>{'app': app.name},
     );
   }
 }

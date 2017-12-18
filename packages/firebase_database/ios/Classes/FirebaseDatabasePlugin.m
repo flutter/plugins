@@ -202,17 +202,17 @@ id roundDoubles(id value) {
     }
   } else if ([@"DatabaseReference#set" isEqualToString:call.method]) {
     [getReference(database, call.arguments) setValue:call.arguments[@"value"]
-                               andPriority:call.arguments[@"priority"]
-                       withCompletionBlock:defaultCompletionBlock];
+                                         andPriority:call.arguments[@"priority"]
+                                 withCompletionBlock:defaultCompletionBlock];
   } else if ([@"DatabaseReference#update" isEqualToString:call.method]) {
     [getReference(database, call.arguments) updateChildValues:call.arguments[@"value"]
-                                withCompletionBlock:defaultCompletionBlock];
+                                          withCompletionBlock:defaultCompletionBlock];
   } else if ([@"DatabaseReference#setPriority" isEqualToString:call.method]) {
     [getReference(database, call.arguments) setPriority:call.arguments[@"priority"]
-                          withCompletionBlock:defaultCompletionBlock];
+                                    withCompletionBlock:defaultCompletionBlock];
   } else if ([@"DatabaseReference#runTransaction" isEqualToString:call.method]) {
     [getReference(database, call.arguments) runTransactionBlock:^FIRTransactionResult *_Nonnull(
-                                      FIRMutableData *_Nonnull currentData) {
+                                                FIRMutableData *_Nonnull currentData) {
       // Create semaphore to allow native side to wait while snapshot
       // updates occur on the Dart side.
       dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
