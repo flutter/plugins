@@ -6,8 +6,18 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
+
+const FirebaseApp app = const FirebaseApp(
+  name: 'db2',
+  options: const FirebaseOptions(
+    googleAppID: '1:297855924061:ios:c6de2b69b03a5be8',
+    gcmSenderID: '297855924061',
+    databaseURL: 'https://flutterfire-cd2f7.firebaseio.com',
+  ),
+);
 
 void main() {
   runApp(new MyApp());
@@ -30,10 +40,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter;
-  final DatabaseReference _counterRef =
-      FirebaseDatabase.instance.reference().child('counter');
-  final DatabaseReference _messagesRef =
-      FirebaseDatabase.instance.reference().child('messages');
+  DatabaseReference _counterRef;
+  DatabaseReference _messagesRef;
   StreamSubscription<Event> _counterSubscription;
   StreamSubscription<Event> _messagesSubscription;
   bool _anchorToBottom = false;
@@ -45,8 +53,15 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    FirebaseDatabase.instance.setPersistenceEnabled(true);
-    FirebaseDatabase.instance.setPersistenceCacheSizeBytes(10000000);
+    FirebaseApp.configure(name: app.name, options: app.options);
+    final FirebaseDatabase database = new FirebaseDatabase(app: app);
+    _counterRef = database.reference().child('counter');
+    _messagesRef = database.reference().child('messages');
+    database.reference().child('counter').once().then((DataSnapshot snapshot) {
+      print('Connected to second database and read ${snapshot.value}');
+    });
+    database.setPersistenceEnabled(true);
+    database.setPersistenceCacheSizeBytes(10000000);
     _counterRef.keepSynced(true);
     _counterSubscription = _counterRef.onValue.listen((Event event) {
       setState(() {
