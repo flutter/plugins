@@ -88,7 +88,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         handleSignInWithPhoneNumber(call,result);
         break;
       case "verifyOtp":
-          handleverifyotp(call, result);
+          handleVerifyOtp(call, result);
           break;
       case "signInWithFacebook":
         handleSignInWithFacebook(call, result);
@@ -112,7 +112,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         handleStopListeningAuthState(call, result);
         break;
         case "deleteCurrentUser":
-            handledeletecurrentuser(result);
+            handleDeleteCurrentUser(result);
             break;
       default:
         result.notImplemented();
@@ -123,28 +123,21 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     @SuppressWarnings("unchecked")
     Map<String, String> arguments = (Map<String, String>) call.arguments;
     String phoneNumber = arguments.get("phoneNumber");
-
-
-    mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+      mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
       @Override
       public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
-
-
-        firebaseAuth.signInWithCredential(phoneAuthCredential)
-                .addOnCompleteListener(activity, new SignInCompleteListenerforphoneauth(result));
+          firebaseAuth.signInWithCredential(phoneAuthCredential)
+                .addOnCompleteListener(activity, new SignInCompleteListenerForPhoneauth(result));
       }
       @Override
       public void onVerificationFailed(FirebaseException e) {
-        Log.e("onVerificationFailed", e.toString());
         result.error(ERROR_REASON_EXCEPTION, e.getMessage(), null);
-        Log.e("error", e.getMessage());
       }
 
       @Override
       public void onCodeSent(String verificationId,
                              PhoneAuthProvider.ForceResendingToken token) {
-        Log.e("onCodeSent:", verificationId);
               verficationid =verificationId;
         result.success("sentotp");
       }
@@ -155,13 +148,11 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     private void handledeletecurrentuser(final Result result) {
           @SuppressWarnings("unchecked")
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        
         user.delete()
         .addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
-                    Log.d("Status", "User account deleted.");
                       result.success("deleted");
                 }else{
                      result.error(ERROR_REASON_EXCEPTION, task.getException().getMessage(), null);
@@ -171,15 +162,13 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     }
 
 
-    private void  handleverifyotp(MethodCall call, final Result result) {
+    private void  handleVerifyOtp(MethodCall call, final Result result) {
         @SuppressWarnings("unchecked")
         Map<String, String> arguments = (Map<String, String>) call.arguments;
         String otp = arguments.get("otp");
         PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verficationid, otp);
             firebaseAuth.signInWithCredential(credential)
                     .addOnCompleteListener(activity, new SignInCompleteListener(result));
-        Log.e("otp", otp);
-        Log.e("Phoneauthotp", "hit success");
     }
   private void handleLinkWithEmailAndPassword(MethodCall call, Result result) {
     @SuppressWarnings("unchecked")
@@ -368,7 +357,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     ImmutableMap.Builder<String, Object> builder =
         ImmutableMap.<String, Object>builder()
             .put("providerId", (userInfo.getProviderId()))
-            .put("uid", (userInfo.getUid())!= null ?userInfo.getUid() : "x");
+            .put("uid", (userInfo.getUid())!= null ?userInfo.getUid() : " ");
     if (userInfo.getDisplayName() != null) {
       builder.put("displayName", userInfo.getDisplayName());
     }
@@ -400,10 +389,10 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     }
   }
 
-  private class SignInCompleteListenerforphoneauth implements OnCompleteListener<AuthResult> {
+  private class SignInCompleteListenerForPhoneauth implements OnCompleteListener<AuthResult> {
     private final Result result;
 
-    SignInCompleteListenerforphoneauth(Result result) {
+    SignInCompleteListenerForPhoneauth(Result result) {
       this.result = result;
     }
 
@@ -414,9 +403,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         result.error(ERROR_REASON_EXCEPTION, e.getMessage(), null);
       } else {
         FirebaseUser user = task.getResult().getUser();
-        Log.i("user", user.getUid());
         ImmutableMap<String, Object> userMap = mapFromUser(user);
-          Log.i("user", "a");
         result.success("usercreated");
       }
     }

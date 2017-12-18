@@ -154,17 +154,12 @@ NSString *_verificationid;
   }
   else if ([@"signInWithPhoneNumber" isEqualToString:call.method]) {
       NSString *phoneNumber = call.arguments[@"phoneNumber"];
-          NSLog(@"%@", phoneNumber);
-
       [[FIRPhoneAuthProvider provider] verifyPhoneNumber:phoneNumber
                                               completion:^(NSString * _Nullable verificationID, NSError * _Nullable error) {
                                                   if (error) {
-                                           
-                                                      NSLog(@"%@", error);
                                                       result(error.localizedDescription);
                                                       return;
                                                   }else{
-                                                      NSLog(@"%@",verificationID);
                                                       _verificationid = verificationID;
                                                       result(@"sentotp");
                                                   }
@@ -173,24 +168,20 @@ NSString *_verificationid;
   }
     else if ([@"verifyOtp" isEqualToString:call.method]) {
         NSString *otp = call.arguments[@"otp"];
-        NSLog(@"%@", otp);
 
         FIRAuthCredential *credential = [[FIRPhoneAuthProvider provider]
                                          credentialWithVerificationID:_verificationid
                                          verificationCode:otp];
         [[FIRAuth auth] signInWithCredential:credential
                                   completion:^(FIRUser *user, NSError *error) {
-                                      if (error) {
-                                    NSLog(@"%@", error);
-                                                       [self sendResult:result forUser:user error:error];
-                                          return;
-                                      }else{
-                                                  NSLog(@"%s", "success");
-                                                          [self sendResult:result forUser:user error:error];
-                                   
-                                      }
-                                   
-                                  }];
+                        if (error) {
+                            [self sendResult:result forUser:user error:error];
+                        return;
+                        }
+                        else{
+                            [self sendResult:result forUser:user error:error];
+                            }
+                            }];
         
     }
   else if ([@"startListeningAuthState" isEqualToString:call.method]) {
