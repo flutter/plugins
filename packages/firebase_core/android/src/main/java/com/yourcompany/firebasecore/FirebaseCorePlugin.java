@@ -7,13 +7,14 @@ package io.flutter.plugins.firebase.core;
 import android.content.Context;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
-import com.google.firebase.core.FirebaseApp;
+import com.google.firebase.FirebaseApp;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,17 +64,17 @@ public class FirebaseCorePlugin implements MethodCallHandler {
         List<Map<String, Object>> apps = new ArrayList<>();
         for (FirebaseApp app : FirebaseApp.getApps(context)) {
           Map<String, Object> appMap = new HashMap<>();
-          map.put("name", app.getName());
+          appMap.put("name", app.getName());
           FirebaseOptions options = app.getOptions();
-          Map<String, Options> optionsMap = new HashMap<>();
-          options.put("googleAppID", options.getApplicationId());
-          options.put("GCMSenderID", options.getGcmSenderId());
-          options.put("APIKey", options.getApiKey());
-          options.put("databaseURL", options.getDatabaseUrl());
-          options.put("storageBucket", options.getStorageBucket());
-          options.put("projectID", options.getProjectId());
-          map.put("options", options);
-          apps.add(map);
+          Map<String, String> optionsMap = new HashMap<>();
+          optionsMap.put("googleAppID", options.getApplicationId());
+          optionsMap.put("GCMSenderID", options.getGcmSenderId());
+          optionsMap.put("APIKey", options.getApiKey());
+          optionsMap.put("databaseURL", options.getDatabaseUrl());
+          optionsMap.put("storageBucket", options.getStorageBucket());
+          optionsMap.put("projectID", options.getProjectId());
+          appMap.put("options", options);
+          apps.add(appMap);
         }
         result.success(apps);
         break;
