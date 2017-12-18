@@ -11,7 +11,7 @@ void main() {
     final List<MethodCall> log = <MethodCall>[];
     const FirebaseApp testApp = const FirebaseApp(
       name: 'foo',
-      options: const FirebaseOptions(apiKey: '12345'),
+      options: const FirebaseOptions(googleAppID: '12345'),
     );
 
     setUp(() async {

@@ -11,7 +11,7 @@ class FirebaseOptions {
     this.bundleID,
     this.clientID,
     this.trackingID,
-    @required this.gcmSenderID,
+    this.gcmSenderID,
     this.projectID,
     this.androidClientID,
     @required this.googleAppID,
