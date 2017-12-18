@@ -43,16 +43,22 @@ class FirebaseOptions {
   final String apiKey;
 
   /// The iOS bundle ID for the application. Defaults to
-  /// [[NSBundle mainBundle] bundleID] when not set manually or in a plist.
+  /// `[[NSBundle mainBundle] bundleID]` when not set manually or in a plist.
+  ///
+  /// This property is used on iOS only.
   final String bundleID;
 
   /// The OAuth2 client ID for iOS application used to authenticate Google
   /// users, for example "12345.apps.googleusercontent.com", used for signing in
   /// with Google.
+  ///
+  /// This property is used on iOS only.
   final String clientID;
 
   /// The tracking ID for Google Analytics, e.g. "UA-12345678-1", used to
   /// configure Google Analytics.
+  ///
+  /// This property is used on iOS only.
   final String trackingID;
 
   /// The Project Number from the Google Developer’s console, for example
@@ -65,6 +71,8 @@ class FirebaseOptions {
   final String projectID;
 
   /// The Android client ID, for example "12345.apps.googleusercontent.com."
+  ///
+  /// This property is used on iOS only.
   final String androidClientID;
 
   /// The Google App ID that is used to uniquely identify an instance of an app.
@@ -78,6 +86,8 @@ class FirebaseOptions {
   final String databaseURL;
 
   /// The URL scheme used to set up Durable Deep Link service.
+  ///
+  /// This property is used on iOS only.
   final String deepLinkURLScheme;
 
   /// The Google Cloud Storage bucket name, e.g.
