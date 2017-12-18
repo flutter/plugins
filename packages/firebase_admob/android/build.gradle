@@ -3,22 +3,18 @@ version '1.0-SNAPSHOT'
 
 buildscript {
     repositories {
-        maven {
-            url 'https://maven.google.com'
-        }
+        google()
         jcenter()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath 'com.android.tools.build:gradle:2.3.0'
     }
 }
 
 rootProject.allprojects {
     repositories {
-        maven {
-            url 'https://maven.google.com'
-        }
+        google()
         jcenter()
     }
 }
@@ -27,7 +23,7 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 26
-    buildToolsVersion '26'
+    buildToolsVersion '26.0.3'
 
     defaultConfig {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -37,7 +33,7 @@ android {
     }
     dependencies {
         // firebase-core is exposed so the google-services plugin will see it.
-        api 'com.google.firebase:firebase-core:11.6.2'
-        implementation 'com.google.firebase:firebase-ads:11.6.2'
+        api 'com.google.firebase:firebase-core:11.4.+'
+        implementation 'com.google.firebase:firebase-ads:11.4.+'
     }
 }
