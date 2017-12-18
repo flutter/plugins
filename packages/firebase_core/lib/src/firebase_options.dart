@@ -11,10 +11,10 @@ class FirebaseOptions {
     this.bundleID,
     this.clientID,
     this.trackingID,
-    this.gcmSenderID,
+    @required this.gcmSenderID,
     this.projectID,
     this.androidClientID,
-    this.googleAppID,
+    @required this.googleAppID,
     this.databaseURL,
     this.deepLinkURLScheme,
     this.storageBucket,
@@ -57,6 +57,8 @@ class FirebaseOptions {
 
   /// The Project Number from the Google Developer’s console, for example
   /// "012345678901", used to configure Google Cloud Messaging.
+  ///
+  /// This property cannot be `null`.
   final String gcmSenderID;
 
   /// The Project ID from the Firebase console, for example "abc-xyz-123."
@@ -66,9 +68,13 @@ class FirebaseOptions {
   final String androidClientID;
 
   /// The Google App ID that is used to uniquely identify an instance of an app.
+  ///
+  /// This property cannot be `null`.
   final String googleAppID;
 
   /// The database root URL, e.g. "http://abc-xyz-123.firebaseio.com."
+  ///
+  /// This property should be set for apps that use Firebase Database.
   final String databaseURL;
 
   /// The URL scheme used to set up Durable Deep Link service.
