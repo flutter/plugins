@@ -1,7 +1,3 @@
-## 0.2.0
-
-* Support for multiple databases, new dependency on firebase_core
-
 ## 0.1.4
 
 * Add FLT prefix to iOS types

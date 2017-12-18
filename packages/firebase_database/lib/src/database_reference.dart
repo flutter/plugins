@@ -73,12 +73,7 @@ class DatabaseReference extends Query {
   Future<Null> set(dynamic value, {dynamic priority}) {
     return _database._channel.invokeMethod(
       'DatabaseReference#set',
-      <String, dynamic>{
-        'app': _database.app.name,
-        'path': path,
-        'value': value,
-        'priority': priority,
-      },
+      <String, dynamic>{'path': path, 'value': value, 'priority': priority},
     );
   }
 
@@ -86,11 +81,7 @@ class DatabaseReference extends Query {
   Future<Null> update(Map<String, dynamic> value) {
     return _database._channel.invokeMethod(
       'DatabaseReference#update',
-      <String, dynamic>{
-        'app': _database.app.name,
-        'path': path,
-        'value': value,
-      },
+      <String, dynamic>{'path': path, 'value': value},
     );
   }
 
@@ -121,11 +112,7 @@ class DatabaseReference extends Query {
   Future<Null> setPriority(dynamic priority) async {
     return _database._channel.invokeMethod(
       'DatabaseReference#setPriority',
-      <String, dynamic>{
-        'app': _database.app.name,
-        'path': path,
-        'priority': priority,
-      },
+      <String, dynamic>{'path': path, 'priority': priority},
     );
   }
 
@@ -158,7 +145,6 @@ class DatabaseReference extends Query {
 
     _database._channel
         .invokeMethod('DatabaseReference#runTransaction', <String, dynamic>{
-      'app': _database.app.name,
       'path': path,
       'transactionKey': transactionKey,
       'transactionTimeout': timeout.inMilliseconds

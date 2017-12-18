@@ -4,7 +4,6 @@
 
 import 'dart:async';
 
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -17,15 +16,7 @@ void main() {
 
     int mockHandleId = 0;
     final List<MethodCall> log = <MethodCall>[];
-    final FirebaseApp app = const FirebaseApp(
-      name: 'testApp',
-      options: const FirebaseOptions(
-        googleAppID: '1:1234567890:ios:42424242424242',
-        gcmSenderID: '1234567890',
-        databaseURL: 'https://fake-database-url.firebaseio.com',
-      ),
-    );
-    final FirebaseDatabase database = new FirebaseDatabase(app: app);
+    final FirebaseDatabase database = FirebaseDatabase.instance;
 
     setUp(() async {
       channel.setMockMethodCallHandler((MethodCall methodCall) async {
@@ -91,17 +82,11 @@ void main() {
         <Matcher>[
           isMethodCall(
             'FirebaseDatabase#setPersistenceEnabled',
-            arguments: {
-              'app': app.name,
-              'enabled': false,
-            },
+            arguments: false,
           ),
           isMethodCall(
             'FirebaseDatabase#setPersistenceEnabled',
-            arguments: {
-              'app': app.name,
-              'enabled': true,
-            },
+            arguments: true,
           ),
         ],
       );
@@ -114,10 +99,7 @@ void main() {
         <Matcher>[
           isMethodCall(
             'FirebaseDatabase#setPersistenceCacheSizeBytes',
-            arguments: {
-              'app': app.name,
-              'cacheSize': 42,
-            },
+            arguments: 42,
           ),
         ],
       );
@@ -128,12 +110,7 @@ void main() {
       expect(
         log,
         <Matcher>[
-          isMethodCall(
-            'FirebaseDatabase#goOnline',
-            arguments: {
-              'app': app.name,
-            },
-          ),
+          isMethodCall('FirebaseDatabase#goOnline', arguments: null),
         ],
       );
     });
@@ -143,12 +120,7 @@ void main() {
       expect(
         log,
         <Matcher>[
-          isMethodCall(
-            'FirebaseDatabase#goOffline',
-            arguments: {
-              'app': app.name,
-            },
-          ),
+          isMethodCall('FirebaseDatabase#goOffline', arguments: null),
         ],
       );
     });
@@ -160,9 +132,7 @@ void main() {
         <Matcher>[
           isMethodCall(
             'FirebaseDatabase#purgeOutstandingWrites',
-            arguments: {
-              'app': app.name,
-            },
+            arguments: null,
           ),
         ],
       );
@@ -180,7 +150,6 @@ void main() {
             isMethodCall(
               'DatabaseReference#set',
               arguments: <String, dynamic>{
-                'app': app.name,
                 'path': 'foo',
                 'value': value,
                 'priority': null,
@@ -189,7 +158,6 @@ void main() {
             isMethodCall(
               'DatabaseReference#set',
               arguments: <String, dynamic>{
-                'app': app.name,
                 'path': 'bar',
                 'value': value,
                 'priority': priority,
@@ -206,11 +174,7 @@ void main() {
           <Matcher>[
             isMethodCall(
               'DatabaseReference#update',
-              arguments: <String, dynamic>{
-                'app': app.name,
-                'path': 'foo',
-                'value': value,
-              },
+              arguments: <String, dynamic>{'path': 'foo', 'value': value},
             ),
           ],
         );
@@ -224,11 +188,7 @@ void main() {
           <Matcher>[
             isMethodCall(
               'DatabaseReference#setPriority',
-              arguments: <String, dynamic>{
-                'app': app.name,
-                'path': 'foo',
-                'priority': priority,
-              },
+              arguments: <String, dynamic>{'path': 'foo', 'priority': priority},
             ),
           ],
         );
@@ -251,7 +211,6 @@ void main() {
             isMethodCall(
               'DatabaseReference#runTransaction',
               arguments: <String, dynamic>{
-                'app': app.name,
                 'path': 'foo',
                 'transactionKey': 0,
                 'transactionTimeout': 5000,
@@ -284,7 +243,6 @@ void main() {
             isMethodCall(
               'Query#keepSynced',
               arguments: <String, dynamic>{
-                'app': app.name,
                 'path': path,
                 'parameters': <String, dynamic>{},
                 'value': true,
@@ -319,7 +277,6 @@ void main() {
             isMethodCall(
               'Query#keepSynced',
               arguments: <String, dynamic>{
-                'app': app.name,
                 'path': path,
                 'parameters': expectedParameters,
                 'value': false
@@ -374,7 +331,6 @@ void main() {
             isMethodCall(
               'Query#observe',
               arguments: <String, dynamic>{
-                'app': app.name,
                 'path': path,
                 'parameters': <String, dynamic>{},
                 'eventType': '_EventType.value',
@@ -383,7 +339,6 @@ void main() {
             isMethodCall(
               'Query#removeObserver',
               arguments: <String, dynamic>{
-                'app': app.name,
                 'path': path,
                 'parameters': <String, dynamic>{},
                 'handle': 87,
