@@ -1,0 +1,23 @@
+name: firebase_core
+description: Firebase Core plugin for Flutter.
+author: Flutter Team <flutter-dev@googlegroups.com>
+homepage: https://github.com/flutter/plugins/tree/master/packages/firebase_core
+version: 0.0.1
+
+flutter:
+  plugin:
+    androidPackage: io.flutter.plugins.firebase.core
+    iosPrefix: FLT
+    pluginClass: FirebaseCorePlugin
+
+dependencies:
+  flutter:
+    sdk: flutter
+  meta: "^1.0.5"
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+environment:
+    sdk: ">=1.8.0 <2.0.0"
