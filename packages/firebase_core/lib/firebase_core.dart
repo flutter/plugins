@@ -5,7 +5,7 @@
 library firebase_core;
 
 import 'dart:async';
-import 'dart:ui' show hashValues;
+import 'dart:ui' show hashValues, Platform;
 
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';

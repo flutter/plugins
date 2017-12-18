@@ -18,7 +18,7 @@ class FirebaseOptions {
     this.databaseURL,
     this.deepLinkURLScheme,
     this.storageBucket,
-  }) : assert(googleAppID != null), assert(gcmSenderID != null);
+  }) : assert(googleAppID != null);
 
   @visibleForTesting
   FirebaseOptions.from(Map<String, String> map)
@@ -34,12 +34,13 @@ class FirebaseOptions {
         deepLinkURLScheme = map['deepLinkURLScheme'],
         storageBucket = map['storageBucket'] {
     assert(googleAppID != null);
-    assert(gcmSenderID != null);
   }
 
   /// An API key used for authenticating requests from your app, e.g.
   /// "AIzaSyDdVgKwhZl0sTTTLZ7iTmt1r3N2cJLnaDk", used to identify your app to
   /// Google servers.
+  ///
+  /// This property is required on Android.
   final String apiKey;
 
   /// The iOS bundle ID for the application. Defaults to
@@ -64,7 +65,7 @@ class FirebaseOptions {
   /// The Project Number from the Google Developer’s console, for example
   /// "012345678901", used to configure Google Cloud Messaging.
   ///
-  /// This property cannot be `null`.
+  /// This property is required on iOS.
   final String gcmSenderID;
 
   /// The Project ID from the Firebase console, for example "abc-xyz-123."

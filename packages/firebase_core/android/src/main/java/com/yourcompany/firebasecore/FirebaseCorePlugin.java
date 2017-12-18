@@ -44,10 +44,10 @@ public class FirebaseCorePlugin implements MethodCallHandler {
         @SuppressWarnings("unchecked")
         Map<String, String> optionsMap = (Map<String, String>) arguments.get("options");
         FirebaseOptions options = new FirebaseOptions.Builder()
-          .setApiKey(optionsMap.get("apiKey"))
-          .setApplicationId(optionsMap.get("applicationId"))
+          .setApiKey(optionsMap.get("APIKey"))
+          .setApplicationId(optionsMap.get("googleAppID"))
           .setDatabaseUrl(optionsMap.get("databaseUrl"))
-          .setGcmSenderId(optionsMap.get("gcmSenderId"))
+          .setGcmSenderId(optionsMap.get("GCMSenderID"))
           .setProjectId(optionsMap.get("projectId"))
           .setStorageBucket(optionsMap.get("storageBucket"))
           .build();
@@ -62,8 +62,8 @@ public class FirebaseCorePlugin implements MethodCallHandler {
       case "FirebaseApp#allApps":
       {
         List<Map<String, Object>> apps = new ArrayList<>();
+        Map<String, Object> appMap = new HashMap<>();
         for (FirebaseApp app : FirebaseApp.getApps(context)) {
-          Map<String, Object> appMap = new HashMap<>();
           appMap.put("name", app.getName());
           FirebaseOptions options = app.getOptions();
           Map<String, String> optionsMap = new HashMap<>();
@@ -73,7 +73,7 @@ public class FirebaseCorePlugin implements MethodCallHandler {
           optionsMap.put("databaseURL", options.getDatabaseUrl());
           optionsMap.put("storageBucket", options.getStorageBucket());
           optionsMap.put("projectID", options.getProjectId());
-          appMap.put("options", options);
+          appMap.put("options", optionsMap);
           apps.add(appMap);
         }
         result.success(apps);
