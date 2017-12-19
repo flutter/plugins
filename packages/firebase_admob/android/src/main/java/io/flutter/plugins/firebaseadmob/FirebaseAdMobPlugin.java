@@ -19,7 +19,7 @@ import java.util.Map;
 public class FirebaseAdMobPlugin implements MethodCallHandler {
   private static final String TAG = "flutter";
 
-  private final Activity activity;
+  private final Registrar registrar;
   private final MethodChannel channel;
 
   private LinearLayout banner;
@@ -28,13 +28,13 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_admob");
-    channel.setMethodCallHandler(new FirebaseAdMobPlugin(registrar.activity(), channel));
+    channel.setMethodCallHandler(new FirebaseAdMobPlugin(registrar, channel));
   }
 
-  private FirebaseAdMobPlugin(Activity activity, MethodChannel channel) {
-    this.activity = activity;
+  private FirebaseAdMobPlugin(Registrar registrar, MethodChannel channel) {
+    this.registrar = registrar;
     this.channel = channel;
-    FirebaseApp.initializeApp(activity);
+    FirebaseApp.initializeApp(registrar.context());
   }
 
   private void callInitialize(MethodCall call, Result result) {
@@ -43,7 +43,7 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
       result.error("no_app_id", "a non-empty AdMob appId was not provided", null);
       return;
     }
-    MobileAds.initialize(activity, appId);
+    MobileAds.initialize(registrar.context(), appId);
     result.success(Boolean.TRUE);
   }
 
@@ -90,6 +90,12 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
   public void onMethodCall(MethodCall call, Result result) {
     if (call.method.equals("initialize")) {
       callInitialize(call, result);
+      return;
+    }
+
+    Activity activity = registrar.activity();
+    if (activity == null) {
+      result.error("no_activity", "firebase_admob plugin requires a foreground activity", null);
       return;
     }
 
