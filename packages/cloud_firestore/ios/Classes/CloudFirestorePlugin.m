@@ -63,7 +63,8 @@ FIRQuery *getQuery(NSDictionary *arguments) {
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/cloud_firestore"
-                                  binaryMessenger:[registrar messenger]];
+                                  binaryMessenger:[registrar messenger]
+                                            codec:[FirestoreMethodCodec sharedInstance]];
   CloudFirestorePlugin *instance = [[CloudFirestorePlugin alloc] init];
   instance.channel = channel;
   [registrar addMethodCallDelegate:instance channel:channel];

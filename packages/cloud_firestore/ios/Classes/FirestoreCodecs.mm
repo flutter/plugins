@@ -2,18 +2,106 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- TODO: Delete these personal notes.
- FlutterStandardWriter does writeValue()
- FlutterStandardReader does readValue()
- These are connected to FlutterStandardMessageCodec's encode and decode methods
- FlutterStandardMessageCodec is called by FlutterStandardMethodCodec
- FlutterStandardMethodCodec implements FlutterMethodCodec
- */
-
 #import "FirestoreCodecs.h"
 
 #import <Firebase/Firebase.h>
+
+@implementation FirestoreMethodCodec
++ (instancetype)sharedInstance {
+  static id _sharedInstance = nil;
+  if (!_sharedInstance) {
+    _sharedInstance = [FirestoreMethodCodec new];
+  }
+  return _sharedInstance;
+}
+
+- (NSData*)encodeMethodCall:(FlutterMethodCall*)call {
+  NSMutableData* data = [NSMutableData dataWithCapacity:32];
+  FirestoreWriter* writer = [FirestoreWriter writerWithData:data];
+  [writer writeValue:call.method];
+  [writer writeValue:call.arguments];
+  return data;
+}
+
+- (NSData*)encodeSuccessEnvelope:(id)result {
+  NSMutableData* data = [NSMutableData dataWithCapacity:32];
+  FirestoreWriter* writer = [FirestoreWriter writerWithData:data];
+  [writer writeByte:0];
+  [writer writeValue:result];
+  return data;
+}
+
+- (NSData*)encodeErrorEnvelope:(FlutterError*)error {
+  NSMutableData* data = [NSMutableData dataWithCapacity:32];
+  FirestoreWriter* writer = [FirestoreWriter writerWithData:data];
+  [writer writeByte:1];
+  [writer writeValue:error.code];
+  [writer writeValue:error.message];
+  [writer writeValue:error.details];
+  return data;
+}
+
+- (FlutterMethodCall*)decodeMethodCall:(NSData*)message {
+  FirestoreReader* reader = [FirestoreReader readerWithData:message];
+  id value1 = [reader readValue];
+  id value2 = [reader readValue];
+  NSAssert(![reader hasMore], @"Corrupted standard method call");
+  NSAssert([value1 isKindOfClass:[NSString class]], @"Corrupted standard method call");
+  return [FlutterMethodCall methodCallWithMethodName:value1 arguments:value2];
+}
+
+- (id)decodeEnvelope:(NSData*)envelope {
+  FirestoreReader* reader = [FirestoreReader readerWithData:envelope];
+  UInt8 flag = [reader readByte];
+  NSAssert(flag <= 1, @"Corrupted standard envelope");
+  id result;
+  switch (flag) {
+    case 0: {
+      result = [reader readValue];
+      NSAssert(![reader hasMore], @"Corrupted standard envelope");
+    } break;
+    case 1: {
+      id code = [reader readValue];
+      id message = [reader readValue];
+      id details = [reader readValue];
+      NSAssert(![reader hasMore], @"Corrupted standard envelope");
+      NSAssert([code isKindOfClass:[NSString class]], @"Invalid standard envelope");
+      NSAssert(message == nil || [message isKindOfClass:[NSString class]],
+               @"Invalid standard envelope");
+      result = [FlutterError errorWithCode:code message:message details:details];
+    } break;
+  }
+  return result;
+}
+@end
+
+@implementation FirestoreMessageCodec
++ (instancetype)sharedInstance {
+  static id _sharedInstance = nil;
+  if (!_sharedInstance) {
+    _sharedInstance = [FirestoreMessageCodec new];
+  }
+  return _sharedInstance;
+}
+
+- (NSData*)encode:(id)message {
+  if (message == nil)
+    return nil;
+  NSMutableData* data = [NSMutableData dataWithCapacity:32];
+  FirestoreWriter* writer = [FirestoreWriter writerWithData:data];
+  [writer writeValue:message];
+  return data;
+}
+
+- (id)decode:(NSData*)message {
+  if (message == nil)
+    return nil;
+  FirestoreReader* reader = [FirestoreReader readerWithData:message];
+  id value = [reader readValue];
+  NSAssert(![reader hasMore], @"Corrupted standard message");
+  return value;
+}
+@end
 
 @implementation FirestoreWriter {
   NSMutableData* _data;
