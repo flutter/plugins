@@ -71,8 +71,8 @@ Future<FirebaseUser> _handleSignIn() async {
 }
 ```
 
-Then from the sign in button onPress,
-call the `_handleSignIn` method using a future callback for both the `FirebaseUser` and possible exception.
+Then from the sign in button onPress, call the `_handleSignIn` method using a future
+callback for both the `FirebaseUser` and possible exception.
 ```
 _handleSignIn()
     .then((FirebaseUser user) => print(user))
