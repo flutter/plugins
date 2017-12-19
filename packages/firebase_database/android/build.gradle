@@ -32,8 +32,8 @@ android {
         disable 'InvalidPackage'
     }
     dependencies {
-        implementation 'com.google.firebase:firebase-core:11.+'
-        implementation 'com.google.firebase:firebase-auth:11.+'
-        implementation 'com.google.firebase:firebase-database:11.+'
+        api 'com.google.firebase:firebase-core:11.+'
+        api 'com.google.firebase:firebase-auth:11.+'
+        api 'com.google.firebase:firebase-database:11.+'
     }
 }
