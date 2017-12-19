@@ -15,18 +15,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /** LocalAuthPlugin */
 public class LocalAuthPlugin implements MethodCallHandler {
-  private final Activity activity;
+  private final Registrar registrar;
   private final AtomicBoolean authInProgress = new AtomicBoolean(false);
 
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/local_auth");
-    channel.setMethodCallHandler(new LocalAuthPlugin(registrar.activity()));
+    channel.setMethodCallHandler(new LocalAuthPlugin(registrar));
   }
 
-  private LocalAuthPlugin(Activity activity) {
-    this.activity = activity;
+  private LocalAuthPlugin(Registrar registrar) {
+    this.registrar = registrar;
   }
 
   @Override
@@ -38,6 +38,11 @@ public class LocalAuthPlugin implements MethodCallHandler {
         // this, we can try to cancel the ongoing auth and start a new one but for now, not worth
         // the complexity.
         result.error("auth_in_progress", "Authentication in progress", null);
+        return;
+      }
+      Activity activity = registrar.activity();
+      if (activity == null) {
+        result.error("no_activity", "local_auth plugin requires a foreground activity", null);
         return;
       }
       AuthenticationHelper authenticationHelper =

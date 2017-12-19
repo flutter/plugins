@@ -10,7 +10,6 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.view.Surface;
-import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -172,22 +171,24 @@ public class VideoPlayerPlugin implements MethodCallHandler {
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "flutter.io/videoPlayer");
-    channel.setMethodCallHandler(
-        new VideoPlayerPlugin(registrar.messenger(), registrar.textures()));
+    channel.setMethodCallHandler(new VideoPlayerPlugin(registrar));
   }
 
-  private VideoPlayerPlugin(BinaryMessenger messenger, TextureRegistry textures) {
-    this.textures = textures;
+  private VideoPlayerPlugin(Registrar registrar) {
+    this.registrar = registrar;
     this.videoPlayers = new HashMap<>();
-    this.messenger = messenger;
   }
 
   private final Map<Long, VideoPlayer> videoPlayers;
-  private final TextureRegistry textures;
-  private final BinaryMessenger messenger;
+  private final Registrar registrar;
 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
+    TextureRegistry textures = registrar.textures();
+    if (textures == null) {
+      result.error("no_activity", "video_player plugin requires a foreground activity", null);
+      return;
+    }
     if (call.method.equals("init")) {
       for (VideoPlayer player : videoPlayers.values()) {
         player.dispose();
@@ -196,7 +197,8 @@ public class VideoPlayerPlugin implements MethodCallHandler {
     } else if (call.method.equals("create")) {
       TextureRegistry.SurfaceTextureEntry handle = textures.createSurfaceTexture();
       EventChannel eventChannel =
-          new EventChannel(messenger, "flutter.io/videoPlayer/videoEvents" + handle.id());
+          new EventChannel(
+              registrar.messenger(), "flutter.io/videoPlayer/videoEvents" + handle.id());
       VideoPlayer player =
           new VideoPlayer(eventChannel, handle, (String) call.argument("dataSource"), result);
       videoPlayers.put(handle.id(), player);

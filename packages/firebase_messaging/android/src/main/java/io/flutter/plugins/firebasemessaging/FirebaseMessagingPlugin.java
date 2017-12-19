@@ -4,7 +4,6 @@
 
 package io.flutter.plugins.firebasemessaging;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -26,28 +25,27 @@ import java.util.Map;
 /** FirebaseMessagingPlugin */
 public class FirebaseMessagingPlugin extends BroadcastReceiver
     implements MethodCallHandler, NewIntentListener {
-  private final Activity activity;
+  private final Registrar registrar;
   private final MethodChannel channel;
 
   private static final String CLICK_ACTION_VALUE = "FLUTTER_NOTIFICATION_CLICK";
 
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel = new MethodChannel(registrar.messenger(), "firebase_messaging");
-    final FirebaseMessagingPlugin plugin =
-        new FirebaseMessagingPlugin(registrar.activity(), channel);
+    final FirebaseMessagingPlugin plugin = new FirebaseMessagingPlugin(registrar, channel);
     registrar.addNewIntentListener(plugin);
     channel.setMethodCallHandler(plugin);
   }
 
-  private FirebaseMessagingPlugin(Activity activity, MethodChannel channel) {
-    this.activity = activity;
+  private FirebaseMessagingPlugin(Registrar registrar, MethodChannel channel) {
+    this.registrar = registrar;
     this.channel = channel;
-    FirebaseApp.initializeApp(activity);
+    FirebaseApp.initializeApp(registrar.context());
 
     IntentFilter intentFilter = new IntentFilter();
     intentFilter.addAction(FlutterFirebaseInstanceIDService.ACTION_TOKEN);
     intentFilter.addAction(FlutterFirebaseMessagingService.ACTION_REMOTE_MESSAGE);
-    LocalBroadcastManager manager = LocalBroadcastManager.getInstance(activity);
+    LocalBroadcastManager manager = LocalBroadcastManager.getInstance(registrar.context());
     manager.registerReceiver(this, intentFilter);
   }
 
@@ -68,8 +66,10 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
   @Override
   public void onMethodCall(MethodCall call, Result result) {
     if ("configure".equals(call.method)) {
-      FlutterFirebaseInstanceIDService.broadcastToken(activity);
-      sendMessageFromIntent("onLaunch", activity.getIntent());
+      FlutterFirebaseInstanceIDService.broadcastToken(registrar.context());
+      if (registrar.activity() != null) {
+        sendMessageFromIntent("onLaunch", registrar.activity().getIntent());
+      }
       result.success(null);
     } else if ("subscribeToTopic".equals(call.method)) {
       String topic = call.arguments();
