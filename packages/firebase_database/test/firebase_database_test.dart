@@ -285,6 +285,48 @@ void main() {
           ],
         );
       });
+      test('observing error events', () async {
+        mockHandleId = 99;
+        const int errorCode = 12;
+        const String errorDetails = 'Some details';
+        final Query query = database.reference().child('some path');
+        Future<Null> simulateError(String errorMessage) async {
+          await BinaryMessages.handlePlatformMessage(
+            channel.name,
+            channel.codec.encodeMethodCall(
+              new MethodCall('Error', <String, dynamic>{
+                'handle': 99,
+                'error': <String, dynamic>{
+                  'code': errorCode,
+                  'message': errorMessage,
+                  'details': errorDetails,
+                },
+              }),
+            ),
+            (_) {},
+          );
+        }
+
+        final AsyncQueue<DatabaseError> errors =
+            new AsyncQueue<DatabaseError>();
+
+        // Subscribe and allow subscription to complete.
+        final StreamSubscription<Event> subscription =
+            query.onValue.listen((_) {}, onError: errors.add);
+        await new Future<Null>.delayed(const Duration(seconds: 0));
+
+        await simulateError('Bad foo');
+        await simulateError('Bad bar');
+        final DatabaseError error1 = await errors.remove();
+        final DatabaseError error2 = await errors.remove();
+        subscription.cancel();
+        expect(error1.code, errorCode);
+        expect(error1.message, 'Bad foo');
+        expect(error1.details, errorDetails);
+        expect(error2.code, errorCode);
+        expect(error2.message, 'Bad bar');
+        expect(error2.details, errorDetails);
+      });
       test('observing value events', () async {
         mockHandleId = 87;
         final String path = 'foo';
