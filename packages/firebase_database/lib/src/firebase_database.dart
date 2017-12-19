@@ -24,7 +24,7 @@ class FirebaseDatabase {
   ///
   /// If [app] is specified, its options should include a [databaseURL].
   FirebaseDatabase({this.app}) {
-    assert(this.app == null || this.app.options.databaseURL != null);
+    assert(app == null || app.options.databaseURL != null);
     if (_initialized) return;
     _channel.setMethodCallHandler((MethodCall call) async {
       switch (call.method) {

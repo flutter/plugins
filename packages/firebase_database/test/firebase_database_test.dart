@@ -91,14 +91,14 @@ void main() {
         <Matcher>[
           isMethodCall(
             'FirebaseDatabase#setPersistenceEnabled',
-            arguments: {
+            arguments: <String, dynamic>{
               'app': app.name,
               'enabled': false,
             },
           ),
           isMethodCall(
             'FirebaseDatabase#setPersistenceEnabled',
-            arguments: {
+            arguments: <String, dynamic>{
               'app': app.name,
               'enabled': true,
             },
@@ -114,7 +114,7 @@ void main() {
         <Matcher>[
           isMethodCall(
             'FirebaseDatabase#setPersistenceCacheSizeBytes',
-            arguments: {
+            arguments: <String, dynamic>{
               'app': app.name,
               'cacheSize': 42,
             },
@@ -130,7 +130,7 @@ void main() {
         <Matcher>[
           isMethodCall(
             'FirebaseDatabase#goOnline',
-            arguments: {
+            arguments: <String, dynamic>{
               'app': app.name,
             },
           ),
@@ -145,7 +145,7 @@ void main() {
         <Matcher>[
           isMethodCall(
             'FirebaseDatabase#goOffline',
-            arguments: {
+            arguments: <String, dynamic>{
               'app': app.name,
             },
           ),
@@ -160,7 +160,7 @@ void main() {
         <Matcher>[
           isMethodCall(
             'FirebaseDatabase#purgeOutstandingWrites',
-            arguments: {
+            arguments: <String, dynamic>{
               'app': app.name,
             },
           ),
