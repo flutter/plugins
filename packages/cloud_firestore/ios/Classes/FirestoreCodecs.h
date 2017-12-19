@@ -47,13 +47,13 @@ UInt8 elementSizeForFlutterStandardDataType(FlutterStandardDataType type) {
 }
 }  // namespace shell
 
-@interface FlutterStandardWriter : NSObject
+@interface FirebaseWriter : NSObject
 + (instancetype)writerWithData:(NSMutableData*)data;
 - (void)writeByte:(UInt8)value;
 - (void)writeValue:(id)value;
 @end
 
-@interface FlutterStandardReader : NSObject
+@interface FirebaseReader : NSObject
 + (instancetype)readerWithData:(NSData*)data;
 - (BOOL)hasMore;
 - (UInt8)readByte;
