@@ -152,6 +152,8 @@ public class VideoPlayerPlugin implements MethodCallHandler {
         Map<String, Object> event = new HashMap<>();
         event.put("event", "initialized");
         event.put("duration", mediaPlayer.getDuration());
+        event.put("width", mediaPlayer.getVideoWidth());
+        event.put("height", mediaPlayer.getVideoHeight());
         eventSink.success(event);
       }
     }

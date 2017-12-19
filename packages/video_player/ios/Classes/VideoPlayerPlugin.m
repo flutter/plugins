@@ -173,7 +173,13 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
 
 - (void)sendInitialized {
   if (_eventSink && _isInitialized) {
-    _eventSink(@{ @"event" : @"initialized", @"duration" : @([self duration]) });
+    CGSize size = [self.player currentItem].presentationSize;
+    _eventSink(@{
+      @"event" : @"initialized",
+      @"duration" : @([self duration]),
+      @"width" : @(size.width),
+      @"height" : @(size.height),
+    });
   }
 }
 
