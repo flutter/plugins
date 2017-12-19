@@ -275,7 +275,8 @@ id roundDoubles(id value) {
         }];
   } else if ([@"Query#observe" isEqualToString:call.method]) {
     FIRDataEventType eventType = parseEventType(call.arguments[@"eventType"]);
-    __block FIRDatabaseHandle handle = [getQuery(database, call.arguments) observeEventType:eventType
+    __block FIRDatabaseHandle handle = [getQuery(database, call.arguments)
+        observeEventType:eventType
         andPreviousSiblingKeyWithBlock:^(FIRDataSnapshot *snapshot, NSString *previousSiblingKey) {
           [self.channel invokeMethod:@"Event"
                            arguments:@{
