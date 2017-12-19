@@ -7,6 +7,6 @@
 /build
 /captures
 
-/gradle
+/gradle/wrapper/gradle-wrapper.jar
 /gradlew
 /gradlew.bat
