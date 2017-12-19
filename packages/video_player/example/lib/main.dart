@@ -303,17 +303,17 @@ class AspectRatioVideoState extends State<AspectRatioVideo> {
 
   @override
   Widget build(BuildContext context) {
-    return new Center(
-      child: initialized
-          ? new Center(
-              child: new AspectRatio(
-                aspectRatio:
-                    controller.value.size.width / controller.value.size.height,
-                child: new VideoPlayPause(controller),
-              ),
-            )
-          : new Container(),
-    );
+    if (initialized) {
+      final Size size = controller.value.size;
+      return new Center(
+        child: new AspectRatio(
+          aspectRatio: size.width / size.height,
+          child: new VideoPlayPause(controller),
+        ),
+      );
+    } else {
+      return new Container();
+    }
   }
 }
 
