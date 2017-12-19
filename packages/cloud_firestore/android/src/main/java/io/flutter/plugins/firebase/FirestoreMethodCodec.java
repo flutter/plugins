@@ -10,7 +10,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 /**
- * A {@link MethodCodec} using the Flutter standard binary encoding.
+ * A {@link MethodCodec} using an extended version of the Flutter standard binary encoding.
  *
  * <p>This codec is guaranteed to be compatible with the corresponding <a
  * href="https://www.dartdocs.org/documentation/cloud_firestore/latest/cloud_firestore/FirestoreMethodCodec-class.html">FirestoreMethodCodec</a>

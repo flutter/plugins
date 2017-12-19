@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * MessageCodec using the Flutter firestore binary encoding.
+ * MessageCodec using an extended version of the Flutter standard binary encoding.
  *
  * <p>This codec is guaranteed to be compatible with the corresponding <a
  * href="https://www.dartdocs.org/documentation/cloud_firestore/latest/cloud_firestore/FirestoreMessageCodec-class.html">FirestoreMessageCodec</a>
