@@ -25,7 +25,7 @@ import java.util.Map.Entry;
  * MessageCodec using the Flutter firestore binary encoding.
  *
  * <p>This codec is guaranteed to be compatible with the corresponding <a
- * href="https://docs.flutter.io/flutter/services/FirestoreMessageCodec-class.html">FirestoreMessageCodec</a>
+ * href="https://www.dartdocs.org/documentation/cloud_firestore/latest/cloud_firestore/FirestoreMessageCodec-class.html">FirestoreMessageCodec</a>
  * on the Dart side. These parts of the Flutter SDK are evolved synchronously.
  *
  * <p>Supported messages are acyclic values of these forms:
