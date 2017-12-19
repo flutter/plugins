@@ -1,3 +1,8 @@
+## 0.0.7
+
+* Added access to the video size.
+* Made the VideoProgressIndicator render using a LinearProgressIndicator.
+
 ## 0.0.6
 
 * Fixed a bug related to hot restart on Android.
