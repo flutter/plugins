@@ -32,7 +32,7 @@ part of cloud_firestore;
 ///  * [Float64List]\: `double[]`
 ///  * [List]\: `java.util.ArrayList`
 ///  * [Map]\: `java.util.HashMap`
-///  * [Date]\: `java.util.Date`
+///  * [DateTime]\: `java.util.Date`
 ///  * [FieldValue]\: `firestore.FieldValue: 0 -> delete, 1 -> serverTimestamp`
 ///  * [GeoPoint]\: `firestore.GeoPoint`
 ///  * [DocumentReference]\: `firestore.DocumentReference`
@@ -51,6 +51,10 @@ part of cloud_firestore;
 ///    `FlutterStandardTypedData`
 ///  * [List]\: `NSArray`
 ///  * [Map]\: `NSDictionary`
+///  * [Date]\: `NSDate`
+///  * [FieldValue]\: `FIRFieldValue`
+///  * [GeoPoint]\: `FIRGeoPoint`
+///  * [DocumentReference]\: `FIRDocumentReference`
 class FirestoreMessageCodec implements MessageCodec<dynamic> {
   // The codec serializes messages as outlined below. This format must
   // match the Android and iOS counterparts.
@@ -92,6 +96,12 @@ class FirestoreMessageCodec implements MessageCodec<dynamic> {
   // * Maps are encoded by first encoding their length in the expanding format,
   //   then follows the recursive encoding of each key/value pair, including the
   //   type byte for both (Maps are assumed to be heterogeneous).
+  // * DateTimes are encoded using an Int64 representation of 
+  //   microsecondsSinceEpoch.
+  // * FieldValues are encoded as an int 0 or 1, for delete() and serverTimestamp,
+  //   respectively.
+  // * GeoPoints are encoded as two double separate values.
+  // * DocumentReferences are encoded as a UTF8 string, using path.
   static const int _kNull = 0;
   static const int _kTrue = 1;
   static const int _kFalse = 2;
