@@ -40,6 +40,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   String _kTestKey = 'Hello';
   String _kTestValue = 'world!';
+  DatabaseError _error;
 
   @override
   void initState() {
@@ -49,12 +50,19 @@ class _MyHomePageState extends State<MyHomePage> {
     _counterRef.keepSynced(true);
     _counterSubscription = _counterRef.onValue.listen((Event event) {
       setState(() {
+        _error = null;
         _counter = event.snapshot.value ?? 0;
+      });
+    }, onError: (DatabaseError error) {
+      setState(() {
+        _error = error;
       });
     });
     _messagesSubscription =
         _messagesRef.limitToLast(10).onChildAdded.listen((Event event) {
       print('Child added: ${event.snapshot.value}');
+    }, onError: (DatabaseError error) {
+      print('Error: ${error.code} ${error.message}');
     });
   }
 
@@ -96,11 +104,14 @@ class _MyHomePageState extends State<MyHomePage> {
         children: <Widget>[
           new Flexible(
             child: new Center(
-              // ignore: prefer_const_constructors
-              child: new Text(
-                'Button tapped $_counter time${ _counter == 1 ? '' : 's' }.\n\n'
-                    'This includes all devices, ever.',
-              ),
+              child: _error == null
+                  ? new Text(
+                      'Button tapped $_counter time${ _counter == 1 ? '' : 's' }.\n\n'
+                          'This includes all devices, ever.',
+                    )
+                  : new Text(
+                      'Error retrieving button tap count:\n${_error.message}',
+                    ),
             ),
           ),
           new ListTile(
