@@ -228,6 +228,19 @@
     SInt64 n = [seconds longValue];
     [self writeByte:FirestoreFieldDateTime];
     [_data appendBytes:(UInt8*)&n length:8];
+  } else if ([value isKindOfClass:[FIRFieldValue]]) {
+    if ([value isKindOfClass:[FSTDeleteFieldValue]]) {
+      SInt32 n = 0;
+      [self writeByte:FirestoreFieldFieldValue];
+      [_data appendBytes:(UInt8*)&n length:4];
+    } else if ([value isKindOfClass:[FSTServerTimestampFieldValue]]) {
+      SInt32 n = 1;
+      [self writeByte:FirestoreFieldFieldValue];
+      [_data appendBytes:(UInt8*)&n length:4];
+    } else {
+      NSLog(@"Unsupported FieldValue: %@", value);
+      NSAssert(NO, @"Unsupported value for Firestore codec");
+    }
   } else if ([value isKindOfClass:[FIRGeoPoint class]]) {
     FIRGeoPoint* geopoint = value;
     Float64 latitude = [geopoint latitude];
@@ -243,7 +256,7 @@
     [self writeUTF8:path];
   } else {
     NSLog(@"Unsupported value: %@ of type %@", value, [value class]);
-    NSAssert(NO, @"Unsupported value for standard codec");
+    NSAssert(NO, @"Unsupported value for Firestore codec");
   }
 }
 
