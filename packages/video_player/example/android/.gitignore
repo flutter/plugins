@@ -7,3 +7,7 @@
 /build
 /captures
 GeneratedPluginRegistrant.java
+
+/gradle/wrapper/gradle-wrapper.jar
+/gradlew
+/gradlew.bat
