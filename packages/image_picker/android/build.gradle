@@ -3,22 +3,21 @@ version '1.0-SNAPSHOT'
 
 buildscript {
     repositories {
+        google()
         jcenter()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.0'
+        classpath 'com.android.tools.build:gradle:3.0.1'
     }
 }
 
 rootProject.allprojects {
     repositories {
+        google()
         jcenter()
         maven {
             url "https://jitpack.io"
-        }
-        maven {
-            url "https://maven.google.com"
         }
     }
 }
@@ -26,8 +25,8 @@ rootProject.allprojects {
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.3'
+    compileSdkVersion 26
+    buildToolsVersion '26.0.3'
 
     defaultConfig {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -38,8 +37,8 @@ android {
 }
 
 dependencies {
-    compile 'com.github.bumptech.glide:glide:3.7.0'
-    compile 'com.github.esafirm.android-image-picker:imagepicker:1.5.0@aar'
-    compile 'com.android.support:appcompat-v7:25.4.0'
-    compile 'com.android.support:recyclerview-v7:25.4.0'
+    api 'com.github.bumptech.glide:glide:4.0.0'
+    api 'com.github.esafirm.android-image-picker:imagepicker:1.9.2@aar'
+    api 'com.android.support:appcompat-v7:26.1.0'
+    api 'com.android.support:recyclerview-v7:26.1.0'
 }
