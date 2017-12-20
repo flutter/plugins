@@ -61,8 +61,10 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     FirebaseApp.configure(name: app.name, options: app.options);
+    // Demonstrates configuring to the database using a file
+    _counterRef = FirebaseDatabase.instance.reference().child('counter');
+    // Demonstrates configuring the database directly
     final FirebaseDatabase database = new FirebaseDatabase(app: app);
-    _counterRef = database.reference().child('counter');
     _messagesRef = database.reference().child('messages');
     database.reference().child('counter').once().then((DataSnapshot snapshot) {
       print('Connected to second database and read ${snapshot.value}');

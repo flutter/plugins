@@ -74,7 +74,7 @@ class DatabaseReference extends Query {
     return _database._channel.invokeMethod(
       'DatabaseReference#set',
       <String, dynamic>{
-        'app': _database.app.name,
+        'app': _database.app?.name,
         'path': path,
         'value': value,
         'priority': priority,
@@ -87,7 +87,7 @@ class DatabaseReference extends Query {
     return _database._channel.invokeMethod(
       'DatabaseReference#update',
       <String, dynamic>{
-        'app': _database.app.name,
+        'app': _database.app?.name,
         'path': path,
         'value': value,
       },
@@ -122,7 +122,7 @@ class DatabaseReference extends Query {
     return _database._channel.invokeMethod(
       'DatabaseReference#setPriority',
       <String, dynamic>{
-        'app': _database.app.name,
+        'app': _database.app?.name,
         'path': path,
         'priority': priority,
       },
@@ -158,7 +158,7 @@ class DatabaseReference extends Query {
 
     _database._channel
         .invokeMethod('DatabaseReference#runTransaction', <String, dynamic>{
-      'app': _database.app.name,
+      'app': _database.app?.name,
       'path': path,
       'transactionKey': transactionKey,
       'transactionTimeout': timeout.inMilliseconds

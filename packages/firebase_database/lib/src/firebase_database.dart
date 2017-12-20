@@ -86,7 +86,7 @@ class FirebaseDatabase {
   Future<bool> setPersistenceEnabled(bool enabled) {
     return _channel.invokeMethod(
         'FirebaseDatabase#setPersistenceEnabled', <String, dynamic>{
-      'app': app.name,
+      'app': app?.name,
       'enabled': enabled,
     });
   }
@@ -111,7 +111,7 @@ class FirebaseDatabase {
   Future<bool> setPersistenceCacheSizeBytes(int cacheSize) {
     return _channel.invokeMethod(
         'FirebaseDatabase#setPersistenceCacheSizeBytes', <String, dynamic>{
-      'app': app.name,
+      'app': app?.name,
       'cacheSize': cacheSize,
     });
   }
@@ -121,7 +121,7 @@ class FirebaseDatabase {
   Future<Null> goOnline() {
     return _channel.invokeMethod(
       'FirebaseDatabase#goOnline',
-      <String, dynamic>{'app': app.name},
+      <String, dynamic>{'app': app?.name},
     );
   }
 
@@ -130,7 +130,7 @@ class FirebaseDatabase {
   Future<Null> goOffline() {
     return _channel.invokeMethod(
       'FirebaseDatabase#goOffline',
-      <String, dynamic>{'app': app.name},
+      <String, dynamic>{'app': app?.name},
     );
   }
 
@@ -147,7 +147,7 @@ class FirebaseDatabase {
   Future<Null> purgeOutstandingWrites() {
     return _channel.invokeMethod(
       'FirebaseDatabase#purgeOutstandingWrites',
-      <String, dynamic>{'app': app.name},
+      <String, dynamic>{'app': app?.name},
     );
   }
 }
