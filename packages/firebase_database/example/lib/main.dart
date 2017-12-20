@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -10,11 +11,15 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 
-const FirebaseApp app = const FirebaseApp(
+final FirebaseApp app = new FirebaseApp(
   name: 'db2',
-  options: const FirebaseOptions(
+  options: Platform.isIOS ? const FirebaseOptions(
     googleAppID: '1:297855924061:ios:c6de2b69b03a5be8',
     gcmSenderID: '297855924061',
+    databaseURL: 'https://flutterfire-cd2f7.firebaseio.com',
+  ) : const FirebaseOptions(
+    googleAppID: '1:297855924061:android:669871c998cc21bd',
+    apiKey: 'AIzaSyD_shO5mfO9lhy2TVWhfo1VUmARKlG4suk',
     databaseURL: 'https://flutterfire-cd2f7.firebaseio.com',
   ),
 );
