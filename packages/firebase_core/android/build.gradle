@@ -40,6 +40,6 @@ android {
         disable 'InvalidPackage'
     }
     dependencies {
-        compile 'com.google.firebase:firebase-core:11.6.+'
+        compile 'com.google.firebase:firebase-core:11.+'
     }
 }
