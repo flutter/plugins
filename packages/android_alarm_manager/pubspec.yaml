@@ -1,6 +1,6 @@
 name: android_alarm_manager
 description: A plugin for using the AlarmManager on Android.
-version: 0.0.2
+version: 0.0.4
 author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/android_alarm_manager
 
@@ -8,10 +8,6 @@ dependencies:
   flutter:
     sdk: flutter
 
-# For information on the generic Dart part of this file, see the
-# following page: https://www.dartlang.org/tools/pub/pubspec
-
-# The following section is specific to Flutter.
 flutter:
   plugin:
     androidPackage: io.flutter.androidalarmmanager
