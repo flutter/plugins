@@ -247,7 +247,7 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
 
       case "FirebaseDatabase#setPersistenceEnabled":
         {
-          Boolean isEnabled = (Boolean) arguments.get("isEnabled");
+          Boolean isEnabled = (Boolean) arguments.get("enabled");
           try {
             database.setPersistenceEnabled(isEnabled);
             result.success(true);
