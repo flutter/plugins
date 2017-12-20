@@ -9,6 +9,7 @@ import android.util.SparseArray;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -56,15 +57,15 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
     this.channel = channel;
   }
 
-  private DatabaseReference getReference(Map<String, Object> arguments) {
+  private DatabaseReference getReference(FirebaseDatabase database, Map<String, Object> arguments) {
     String path = (String) arguments.get("path");
-    DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+    DatabaseReference reference = database.getReference();
     if (path != null) reference = reference.child(path);
     return reference;
   }
 
-  private Query getQuery(Map<String, Object> arguments) {
-    Query query = getReference(arguments);
+  private Query getQuery(FirebaseDatabase database, Map<String, Object> arguments) {
+    Query query = getReference(database, arguments);
     @SuppressWarnings("unchecked")
     Map<String, Object> parameters = (Map<String, Object>) arguments.get("parameters");
     if (parameters == null) return query;
@@ -214,33 +215,41 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
 
   @Override
   public void onMethodCall(final MethodCall call, final Result result) {
+    final Map<String, Object> arguments = call.arguments();
+    FirebaseDatabase database;
+    String appName = (String) arguments.get("app");
+    if (appName != null) {
+      database = FirebaseDatabase.getInstance(FirebaseApp.getInstance(appName));
+    } else {
+      database = FirebaseDatabase.getInstance();
+    }
     switch (call.method) {
       case "FirebaseDatabase#goOnline":
         {
-          FirebaseDatabase.getInstance().goOnline();
+          database.goOnline();
           result.success(null);
           break;
         }
 
       case "FirebaseDatabase#goOffline":
         {
-          FirebaseDatabase.getInstance().goOffline();
+          database.goOffline();
           result.success(null);
           break;
         }
 
       case "FirebaseDatabase#purgeOutstandingWrites":
         {
-          FirebaseDatabase.getInstance().purgeOutstandingWrites();
+          database.purgeOutstandingWrites();
           result.success(null);
           break;
         }
 
       case "FirebaseDatabase#setPersistenceEnabled":
         {
-          Boolean isEnabled = (Boolean) call.arguments;
+          Boolean isEnabled = (Boolean) arguments.get("enabled");
           try {
-            FirebaseDatabase.getInstance().setPersistenceEnabled(isEnabled);
+            database.setPersistenceEnabled(isEnabled);
             result.success(true);
           } catch (DatabaseException e) {
             // Database is already in use, e.g. after hot reload/restart.
@@ -251,9 +260,9 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
 
       case "FirebaseDatabase#setPersistenceCacheSizeBytes":
         {
-          long cacheSize = (Integer) call.arguments;
+          long cacheSize = (Integer) arguments.get("cacheSize");
           try {
-            FirebaseDatabase.getInstance().setPersistenceCacheSizeBytes(cacheSize);
+            database.setPersistenceCacheSizeBytes(cacheSize);
             result.success(true);
           } catch (DatabaseException e) {
             // Database is already in use, e.g. after hot reload/restart.
@@ -264,10 +273,9 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
 
       case "DatabaseReference#set":
         {
-          Map<String, Object> arguments = call.arguments();
           Object value = arguments.get("value");
           Object priority = arguments.get("priority");
-          DatabaseReference reference = getReference(arguments);
+          DatabaseReference reference = getReference(database, arguments);
           if (priority != null) {
             reference.setValue(value, priority, new DefaultCompletionListener(result));
           } else {
@@ -278,27 +286,24 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
 
       case "DatabaseReference#update":
         {
-          Map<String, Object> arguments = call.arguments();
           @SuppressWarnings("unchecked")
           Map<String, Object> value = (Map<String, Object>) arguments.get("value");
-          DatabaseReference reference = getReference(arguments);
+          DatabaseReference reference = getReference(database, arguments);
           reference.updateChildren(value, new DefaultCompletionListener(result));
           break;
         }
 
       case "DatabaseReference#setPriority":
         {
-          Map<String, Object> arguments = call.arguments();
           Object priority = arguments.get("priority");
-          DatabaseReference reference = getReference(arguments);
+          DatabaseReference reference = getReference(database, arguments);
           reference.setPriority(priority, new DefaultCompletionListener(result));
           break;
         }
 
       case "DatabaseReference#runTransaction":
         {
-          final Map<String, Object> arguments = call.arguments();
-          final DatabaseReference reference = getReference(arguments);
+          final DatabaseReference reference = getReference(database, arguments);
 
           // Initiate native transaction.
           reference.runTransaction(
@@ -395,24 +400,22 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
 
       case "Query#keepSynced":
         {
-          Map<String, Object> arguments = call.arguments();
           boolean value = (Boolean) arguments.get("value");
-          getQuery(arguments).keepSynced(value);
+          getQuery(database, arguments).keepSynced(value);
           result.success(null);
           break;
         }
 
       case "Query#observe":
         {
-          Map<String, Object> arguments = call.arguments();
           String eventType = (String) arguments.get("eventType");
           int handle = nextHandle++;
           EventObserver observer = new EventObserver(eventType, handle);
           observers.put(handle, observer);
           if (eventType.equals(EVENT_TYPE_VALUE)) {
-            getQuery(arguments).addValueEventListener(observer);
+            getQuery(database, arguments).addValueEventListener(observer);
           } else {
-            getQuery(arguments).addChildEventListener(observer);
+            getQuery(database, arguments).addChildEventListener(observer);
           }
           result.success(handle);
           break;
@@ -420,8 +423,7 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
 
       case "Query#removeObserver":
         {
-          Map<String, Object> arguments = call.arguments();
-          Query query = getQuery(arguments);
+          Query query = getQuery(database, arguments);
           int handle = (Integer) arguments.get("handle");
           EventObserver observer = observers.get(handle);
           if (observer != null) {

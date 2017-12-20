@@ -45,7 +45,7 @@ public class FirebaseCorePlugin implements MethodCallHandler {
               new FirebaseOptions.Builder()
                   .setApiKey(optionsMap.get("APIKey"))
                   .setApplicationId(optionsMap.get("googleAppID"))
-                  .setDatabaseUrl(optionsMap.get("databaseUrl"))
+                  .setDatabaseUrl(optionsMap.get("databaseURL"))
                   .setGcmSenderId(optionsMap.get("GCMSenderID"))
                   .setProjectId(optionsMap.get("projectId"))
                   .setStorageBucket(optionsMap.get("storageBucket"))

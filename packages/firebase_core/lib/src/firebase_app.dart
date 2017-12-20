@@ -39,7 +39,6 @@ class FirebaseApp {
       return new Future<FirebaseApp>.sync(() => existingApp);
     }
     assert(options.googleAppID != null);
-    assert(options.gcmSenderID != null);
     _namedApps[name] = new FirebaseApp(name: name, options: options);
     return channel.invokeMethod('FirebaseApp#configure', <String, dynamic>{
       'name': name,

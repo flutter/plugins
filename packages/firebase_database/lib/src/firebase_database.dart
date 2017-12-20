@@ -18,7 +18,14 @@ class FirebaseDatabase {
   static final Map<int, TransactionHandler> _transactions =
       <int, TransactionHandler>{};
 
-  FirebaseDatabase._() {
+  static bool _initialized = false;
+
+  /// Gets an instance of [FirebaseDatabase].
+  ///
+  /// If [app] is specified, its options should include a [databaseURL].
+  FirebaseDatabase({this.app}) {
+    assert(app == null || app.options.databaseURL != null);
+    if (_initialized) return;
     _channel.setMethodCallHandler((MethodCall call) async {
       switch (call.method) {
         case 'Event':
@@ -42,9 +49,15 @@ class FirebaseDatabase {
           );
       }
     });
+    _initialized = true;
   }
 
-  static FirebaseDatabase _instance = new FirebaseDatabase._();
+  static FirebaseDatabase _instance = new FirebaseDatabase();
+
+  /// The [FirebaseApp] instance to which this [FirebaseDatabase] belongs.
+  ///
+  /// If null, the default [FirebaseApp] is used.
+  final FirebaseApp app;
 
   /// Gets the instance of FirebaseDatabase for the default Firebase app.
   static FirebaseDatabase get instance => _instance;
@@ -72,9 +85,10 @@ class FirebaseDatabase {
   /// network connectivity at that time).
   Future<bool> setPersistenceEnabled(bool enabled) {
     return _channel.invokeMethod(
-      'FirebaseDatabase#setPersistenceEnabled',
-      enabled,
-    );
+        'FirebaseDatabase#setPersistenceEnabled', <String, dynamic>{
+      'app': app?.name,
+      'enabled': enabled,
+    });
   }
 
   /// Attempts to set the size of the persistence cache.
@@ -96,21 +110,28 @@ class FirebaseDatabase {
   /// or greater than 100 MB are not supported.
   Future<bool> setPersistenceCacheSizeBytes(int cacheSize) {
     return _channel.invokeMethod(
-      'FirebaseDatabase#setPersistenceCacheSizeBytes',
-      cacheSize,
-    );
+        'FirebaseDatabase#setPersistenceCacheSizeBytes', <String, dynamic>{
+      'app': app?.name,
+      'cacheSize': cacheSize,
+    });
   }
 
   /// Resumes our connection to the Firebase Database backend after a previous
   /// [goOffline] call.
   Future<Null> goOnline() {
-    return _channel.invokeMethod('FirebaseDatabase#goOnline');
+    return _channel.invokeMethod(
+      'FirebaseDatabase#goOnline',
+      <String, dynamic>{'app': app?.name},
+    );
   }
 
   /// Shuts down our connection to the Firebase Database backend until
   /// [goOnline] is called.
   Future<Null> goOffline() {
-    return _channel.invokeMethod('FirebaseDatabase#goOffline');
+    return _channel.invokeMethod(
+      'FirebaseDatabase#goOffline',
+      <String, dynamic>{'app': app?.name},
+    );
   }
 
   /// The Firebase Database client automatically queues writes and sends them to
@@ -124,6 +145,9 @@ class FirebaseDatabase {
   /// affected event listeners, and the client will not (re-)send them to the
   /// Firebase Database backend.
   Future<Null> purgeOutstandingWrites() {
-    return _channel.invokeMethod('FirebaseDatabase#purgeOutstandingWrites');
+    return _channel.invokeMethod(
+      'FirebaseDatabase#purgeOutstandingWrites',
+      <String, dynamic>{'app': app?.name},
+    );
   }
 }
