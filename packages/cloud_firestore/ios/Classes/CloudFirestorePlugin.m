@@ -51,11 +51,11 @@ FIRQuery *getQuery(NSDictionary *arguments) {
   return query;
 }
 
-@interface CloudFirestorePlugin ()
+@interface FLTCloudFirestorePlugin ()
 @property(nonatomic, retain) FlutterMethodChannel *channel;
 @end
 
-@implementation CloudFirestorePlugin {
+@implementation FLTCloudFirestorePlugin {
   NSMutableDictionary<NSNumber *, id<FIRListenerRegistration>> *_listeners;
   int _nextListenerHandle;
 }
@@ -64,7 +64,7 @@ FIRQuery *getQuery(NSDictionary *arguments) {
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/cloud_firestore"
                                   binaryMessenger:[registrar messenger]];
-  CloudFirestorePlugin *instance = [[CloudFirestorePlugin alloc] init];
+  FLTCloudFirestorePlugin *instance = [[FLTCloudFirestorePlugin alloc] init];
   instance.channel = channel;
   [registrar addMethodCallDelegate:instance channel:channel];
 }
@@ -87,8 +87,20 @@ FIRQuery *getQuery(NSDictionary *arguments) {
   };
   if ([@"DocumentReference#setData" isEqualToString:call.method]) {
     NSString *path = call.arguments[@"path"];
+    NSDictionary *options = call.arguments[@"options"];
     FIRDocumentReference *reference = [[FIRFirestore firestore] documentWithPath:path];
-    [reference setData:call.arguments[@"data"] completion:defaultCompletionBlock];
+    if (![options isEqual:[NSNull null]] &&
+        [options[@"merge"] isEqual:[NSNumber numberWithBool:YES]]) {
+      [reference setData:call.arguments[@"data"]
+                 options:[FIRSetOptions merge]
+              completion:defaultCompletionBlock];
+    } else {
+      [reference setData:call.arguments[@"data"] completion:defaultCompletionBlock];
+    }
+  } else if ([@"DocumentReference#updateData" isEqualToString:call.method]) {
+    NSString *path = call.arguments[@"path"];
+    FIRDocumentReference *reference = [[FIRFirestore firestore] documentWithPath:path];
+    [reference updateData:call.arguments[@"data"] completion:defaultCompletionBlock];
   } else if ([@"DocumentReference#delete" isEqualToString:call.method]) {
     NSString *path = call.arguments[@"path"];
     FIRDocumentReference *reference = [[FIRFirestore firestore] documentWithPath:path];
@@ -130,8 +142,8 @@ FIRQuery *getQuery(NSDictionary *arguments) {
               @"type" : type,
               @"document" : documentChange.document.data,
               @"path" : documentChange.document.reference.path,
-              @"oldIndex" : [NSNumber numberWithUnsignedInteger:documentChange.oldIndex],
-              @"newIndex" : [NSNumber numberWithUnsignedInteger:documentChange.newIndex],
+              @"oldIndex" : [NSNumber numberWithInt:documentChange.oldIndex],
+              @"newIndex" : [NSNumber numberWithInt:documentChange.newIndex],
             }];
           }
           [self.channel invokeMethod:@"QuerySnapshot"

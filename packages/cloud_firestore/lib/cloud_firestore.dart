@@ -19,3 +19,4 @@ part 'src/document_reference.dart';
 part 'src/firestore.dart';
 part 'src/query.dart';
 part 'src/query_snapshot.dart';
+part 'src/set_options.dart';

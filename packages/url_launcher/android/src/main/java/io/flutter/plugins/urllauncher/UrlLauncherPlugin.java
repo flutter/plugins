@@ -6,10 +6,14 @@ package io.flutter.plugins.urllauncher;
 
 import android.app.Activity;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.KeyEvent;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -18,17 +22,17 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 /** UrlLauncherPlugin */
 public class UrlLauncherPlugin implements MethodCallHandler {
-  private final Activity activity;
+  private final Registrar mRegistrar;
 
   public static void registerWith(Registrar registrar) {
     MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/url_launcher");
-    UrlLauncherPlugin instance = new UrlLauncherPlugin(registrar.activity());
+    UrlLauncherPlugin instance = new UrlLauncherPlugin(registrar);
     channel.setMethodCallHandler(instance);
   }
 
-  private UrlLauncherPlugin(Activity activity) {
-    this.activity = activity;
+  private UrlLauncherPlugin(Registrar registrar) {
+    this.mRegistrar = registrar;
   }
 
   @Override
@@ -39,14 +43,23 @@ public class UrlLauncherPlugin implements MethodCallHandler {
     } else if (call.method.equals("launch")) {
       Intent launchIntent;
       boolean useWebView = call.argument("useWebView");
+      Context context;
+      if (mRegistrar.activity() != null) {
+        context = (Context) mRegistrar.activity();
+      } else {
+        context = mRegistrar.context();
+      }
       if (useWebView) {
-        launchIntent = new Intent(activity, WebViewActivity.class);
+        launchIntent = new Intent(context, WebViewActivity.class);
         launchIntent.putExtra("url", url);
       } else {
         launchIntent = new Intent(Intent.ACTION_VIEW);
         launchIntent.setData(Uri.parse(url));
       }
-      activity.startActivity(launchIntent);
+      if (mRegistrar.activity() == null) {
+        launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      }
+      context.startActivity(launchIntent);
       result.success(null);
     } else {
       result.notImplemented();
@@ -56,7 +69,8 @@ public class UrlLauncherPlugin implements MethodCallHandler {
   private void canLaunch(String url, Result result) {
     Intent launchIntent = new Intent(Intent.ACTION_VIEW);
     launchIntent.setData(Uri.parse(url));
-    ComponentName componentName = launchIntent.resolveActivity(activity.getPackageManager());
+    ComponentName componentName =
+        launchIntent.resolveActivity(mRegistrar.context().getPackageManager());
 
     boolean canLaunch =
         componentName != null
@@ -67,16 +81,35 @@ public class UrlLauncherPlugin implements MethodCallHandler {
 
   /*  Launches WebView activity */
   public static class WebViewActivity extends Activity {
+    private WebView webview;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
-      WebView webview = new WebView(this);
+      webview = new WebView(this);
       setContentView(webview);
       // Get the Intent that started this activity and extract the string
       Intent intent = getIntent();
       String url = intent.getStringExtra("url");
       webview.loadUrl(url);
+      // Open new urls inside the webview itself.
+      webview.setWebViewClient(
+          new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+              view.loadUrl(request.getUrl().toString());
+              return false;
+            }
+          });
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+      if (keyCode == KeyEvent.KEYCODE_BACK && webview.canGoBack()) {
+        webview.goBack();
+        return true;
+      }
+      return super.onKeyDown(keyCode, event);
     }
   }
 }

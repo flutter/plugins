@@ -3,11 +3,12 @@ name: firebase_messaging
 description: Firebase Cloud Messaging plugin for Flutter applications.
 author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/firebase_messaging
-version: 0.0.7
+version: 0.1.0
 
 flutter:
   plugin:
     androidPackage: io.flutter.plugins.firebasemessaging
+    iosPrefix: FLT
     pluginClass: FirebaseMessagingPlugin
 
 dependencies:
