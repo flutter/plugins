@@ -70,9 +70,8 @@ void main() {
                 'path': 'foo/bar',
                 'data': <String, dynamic>{'key1': 'val1'}
               };
-            } else {
-              return new ArgumentError('Unknown database path');
             }
+            return new ArgumentError('Unknown database path');
           default:
             return null;
         }
