@@ -4,7 +4,6 @@
 
 package io.flutter.firebaseauth;
 
-import android.app.Activity;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.util.SparseArray;
