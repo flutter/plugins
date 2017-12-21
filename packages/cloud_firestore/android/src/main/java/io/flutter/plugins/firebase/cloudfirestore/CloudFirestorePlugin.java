@@ -208,6 +208,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
           listenerRegistrations.put(
               handle, getDocumentReference(arguments).addSnapshotListener(observer));
           result.success(handle);
+          break;
         }
       case "Query#removeListener":
         {
