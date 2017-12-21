@@ -3,16 +3,18 @@ version '1.0-SNAPSHOT'
 
 buildscript {
     repositories {
+        google()
         jcenter()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.0'
+        classpath 'com.android.tools.build:gradle:3.0.1'
     }
 }
 
 rootProject.allprojects {
     repositories {
+        google()
         jcenter()
     }
 }
@@ -20,8 +22,8 @@ rootProject.allprojects {
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.3'
+    compileSdkVersion 26
+    buildToolsVersion '26.0.3'
 
     defaultConfig {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -30,7 +32,7 @@ android {
         disable 'InvalidPackage'
     }
     dependencies {
-        compile 'com.google.firebase:firebase-core:11.4.+'
-        compile 'com.google.firebase:firebase-ads:11.4.+'
+        api 'com.google.firebase:firebase-core:[11.4.0,12.0['
+        api 'com.google.firebase:firebase-ads:[11.4.0,12.0['
     }
 }

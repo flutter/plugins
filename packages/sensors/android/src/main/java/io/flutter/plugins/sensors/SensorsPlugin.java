@@ -4,7 +4,7 @@
 
 package io.flutter.plugins.sensors;
 
-import android.app.Activity;
+import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -22,20 +22,20 @@ public class SensorsPlugin implements EventChannel.StreamHandler {
     final EventChannel accelerometerChannel =
         new EventChannel(registrar.messenger(), ACCELEROMETER_CHANNEL_NAME);
     accelerometerChannel.setStreamHandler(
-        new SensorsPlugin(registrar.activity(), Sensor.TYPE_ACCELEROMETER));
+        new SensorsPlugin(registrar.context(), Sensor.TYPE_ACCELEROMETER));
 
     final EventChannel gyroscopeChannel =
         new EventChannel(registrar.messenger(), GYROSCOPE_CHANNEL_NAME);
     gyroscopeChannel.setStreamHandler(
-        new SensorsPlugin(registrar.activity(), Sensor.TYPE_GYROSCOPE));
+        new SensorsPlugin(registrar.context(), Sensor.TYPE_GYROSCOPE));
   }
 
   private SensorEventListener sensorEventListener;
   private final SensorManager sensorManager;
   private final Sensor sensor;
 
-  private SensorsPlugin(Activity activity, int sensorType) {
-    sensorManager = (SensorManager) activity.getSystemService(activity.SENSOR_SERVICE);
+  private SensorsPlugin(Context context, int sensorType) {
+    sensorManager = (SensorManager) context.getSystemService(context.SENSOR_SERVICE);
     sensor = sensorManager.getDefaultSensor(sensorType);
   }
 
