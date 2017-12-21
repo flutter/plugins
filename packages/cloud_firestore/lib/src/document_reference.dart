@@ -42,6 +42,17 @@ class DocumentReference {
     );
   }
 
+  Future<DocumentSnapshot> get() {
+    return Firestore.channel.invokeMethod('DocumentReference#get',
+        <String, dynamic>{'path': path}).then((Map<String, dynamic> data) {
+      return new DocumentSnapshot._(
+          data['path'], data['data'], Firestore.instance);
+    }).catchError((PlatformException e) {
+      print(e);
+      return null;
+    });
+  }
+
   /// Deletes the document referred to by this [DocumentReference].
   Future<Null> delete() {
     return Firestore.channel.invokeMethod(

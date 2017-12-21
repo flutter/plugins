@@ -64,6 +64,15 @@ void main() {
             return handle;
           case 'DocumentReference#setData':
             return true;
+          case 'DocumentReference#get':
+            if (methodCall.arguments['path'] == 'foo/bar') {
+              return <String, dynamic>{
+                'path': 'foo/bar',
+                'data': <String, dynamic>{'key1': 'val1'}
+              };
+            } else {
+              return new ArgumentError('Unknown database path');
+            }
           default:
             return null;
         }
@@ -275,6 +284,26 @@ void main() {
             ),
           ]),
         );
+      });
+      test('get', () async {
+        final DocumentSnapshot snapshot =
+            await collectionReference.document('bar').get();
+        expect(
+          log,
+          equals(<Matcher>[
+            isMethodCall(
+              'DocumentReference#get',
+              arguments: <String, dynamic>{'path': 'foo/bar'},
+            ),
+          ]),
+        );
+        expect(snapshot.reference.path, equals('foo/bar'));
+        expect(snapshot.data.containsKey('key1'), equals(true));
+        expect(snapshot.data['key1'], equals('val1'));
+
+        final DocumentSnapshot wrongSnapshot =
+            await collectionReference.document('baz').get();
+        expect(null, equals(wrongSnapshot));
       });
       test('getCollection', () async {
         final CollectionReference colRef =
