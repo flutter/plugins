@@ -23,7 +23,7 @@ import java.util.Map;
 
 /** Flutter plugin for Firebase Auth. */
 public class FirebaseAuthPlugin implements MethodCallHandler {
-  private final Activity activity;
+  private final PluginRegistry.Registrar registrar;
   private final FirebaseAuth firebaseAuth;
   private final SparseArray<FirebaseAuth.AuthStateListener> authStateListeners =
       new SparseArray<>();
@@ -37,13 +37,13 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
   public static void registerWith(PluginRegistry.Registrar registrar) {
     MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_auth");
-    channel.setMethodCallHandler(new FirebaseAuthPlugin(registrar.activity(), channel));
+    channel.setMethodCallHandler(new FirebaseAuthPlugin(registrar, channel));
   }
 
-  private FirebaseAuthPlugin(Activity activity, MethodChannel channel) {
-    this.activity = activity;
+  private FirebaseAuthPlugin(PluginRegistry.Registrar registrar, MethodChannel channel) {
+    this.registrar = registrar;
     this.channel = channel;
-    FirebaseApp.initializeApp(activity);
+    FirebaseApp.initializeApp(registrar.context());
     this.firebaseAuth = FirebaseAuth.getInstance();
   }
 
@@ -108,7 +108,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     firebaseAuth
         .getCurrentUser()
         .linkWithCredential(credential)
-        .addOnCompleteListener(activity, new SignInCompleteListener(result));
+        .addOnCompleteListener(new SignInCompleteListener(result));
   }
 
   private void handleCurrentUser(MethodCall call, final Result result) {
@@ -127,9 +127,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
   }
 
   private void handleSignInAnonymously(MethodCall call, final Result result) {
-    firebaseAuth
-        .signInAnonymously()
-        .addOnCompleteListener(activity, new SignInCompleteListener(result));
+    firebaseAuth.signInAnonymously().addOnCompleteListener(new SignInCompleteListener(result));
   }
 
   private void handleCreateUserWithEmailAndPassword(MethodCall call, final Result result) {
@@ -140,7 +138,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
 
     firebaseAuth
         .createUserWithEmailAndPassword(email, password)
-        .addOnCompleteListener(activity, new SignInCompleteListener(result));
+        .addOnCompleteListener(new SignInCompleteListener(result));
   }
 
   private void handleSignInWithEmailAndPassword(MethodCall call, final Result result) {
@@ -151,7 +149,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
 
     firebaseAuth
         .signInWithEmailAndPassword(email, password)
-        .addOnCompleteListener(activity, new SignInCompleteListener(result));
+        .addOnCompleteListener(new SignInCompleteListener(result));
   }
 
   private void handleSignInWithGoogle(MethodCall call, final Result result) {
@@ -162,7 +160,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     AuthCredential credential = GoogleAuthProvider.getCredential(idToken, accessToken);
     firebaseAuth
         .signInWithCredential(credential)
-        .addOnCompleteListener(activity, new SignInCompleteListener(result));
+        .addOnCompleteListener(new SignInCompleteListener(result));
   }
 
   private void handleLinkWithGoogleCredential(MethodCall call, final Result result) {
@@ -174,7 +172,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     firebaseAuth
         .getCurrentUser()
         .linkWithCredential(credential)
-        .addOnCompleteListener(activity, new SignInCompleteListener(result));
+        .addOnCompleteListener(new SignInCompleteListener(result));
   }
 
   private void handleSignInWithFacebook(MethodCall call, final Result result) {
@@ -184,7 +182,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     AuthCredential credential = FacebookAuthProvider.getCredential(accessToken);
     firebaseAuth
         .signInWithCredential(credential)
-        .addOnCompleteListener(activity, new SignInCompleteListener(result));
+        .addOnCompleteListener(new SignInCompleteListener(result));
   }
 
   private void handleSignInWithCustomToken(MethodCall call, final Result result) {
@@ -192,7 +190,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     String token = arguments.get("token");
     firebaseAuth
         .signInWithCustomToken(token)
-        .addOnCompleteListener(activity, new SignInCompleteListener(result));
+        .addOnCompleteListener(new SignInCompleteListener(result));
   }
 
   private void handleSignOut(MethodCall call, final Result result) {

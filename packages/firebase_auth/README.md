@@ -23,9 +23,9 @@ Enable the Google services by configuring the Gradle scripts as such.
 ```
 dependencies {
   // Example existing classpath
-  classpath 'com.android.tools.build:gradle:2.3.3'
+  classpath 'com.android.tools.build:gradle:3.0.1'
   // Add the google services classpath
-  classpath 'com.google.gms:google-services:3.1.0'
+  classpath 'com.google.gms:google-services:3.1.2'
 }
 ```
 
@@ -71,8 +71,8 @@ Future<FirebaseUser> _handleSignIn() async {
 }
 ```
 
-Then from the sign in button onPress, 
-call the `_handleSignIn` method using a future callback for both the `FirebaseUser` and possible exception.
+Then from the sign in button onPress, call the `_handleSignIn` method using a future
+callback for both the `FirebaseUser` and possible exception.
 ```
 _handleSignIn()
     .then((FirebaseUser user) => print(user))

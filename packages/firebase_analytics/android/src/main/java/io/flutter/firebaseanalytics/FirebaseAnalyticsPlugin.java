@@ -17,18 +17,18 @@ import java.util.Map;
 
 /** Flutter plugin for Firebase Analytics. */
 public class FirebaseAnalyticsPlugin implements MethodCallHandler {
-  private final Activity activity;
+  private final PluginRegistry.Registrar registrar;
   private final FirebaseAnalytics firebaseAnalytics;
 
   public static void registerWith(PluginRegistry.Registrar registrar) {
     final MethodChannel channel = new MethodChannel(registrar.messenger(), "firebase_analytics");
-    channel.setMethodCallHandler(new FirebaseAnalyticsPlugin(registrar.activity()));
+    channel.setMethodCallHandler(new FirebaseAnalyticsPlugin(registrar));
   }
 
-  private FirebaseAnalyticsPlugin(Activity activity) {
-    this.activity = activity;
-    FirebaseApp.initializeApp(activity);
-    this.firebaseAnalytics = FirebaseAnalytics.getInstance(activity);
+  private FirebaseAnalyticsPlugin(PluginRegistry.Registrar registrar) {
+    this.registrar = registrar;
+    FirebaseApp.initializeApp(registrar.context());
+    this.firebaseAnalytics = FirebaseAnalytics.getInstance(registrar.context());
   }
 
   @Override
@@ -81,6 +81,11 @@ public class FirebaseAnalyticsPlugin implements MethodCallHandler {
 
   private void handleSetCurrentScreen(MethodCall call, Result result) {
     @SuppressWarnings("unchecked")
+    Activity activity = registrar.activity();
+    if (activity == null) {
+      result.error("no_activity", "handleSetCurrentScreen requires a foreground activity", null);
+      return;
+    }
     Map<String, Object> arguments = (Map<String, Object>) call.arguments;
     final String screenName = (String) arguments.get("screenName");
     final String screenClassOverride = (String) arguments.get("screenClassOverride");
