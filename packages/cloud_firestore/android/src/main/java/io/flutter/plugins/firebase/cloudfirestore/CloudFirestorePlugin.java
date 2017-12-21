@@ -250,20 +250,23 @@ public class CloudFirestorePlugin implements MethodCallHandler {
           Map<String, Object> arguments = call.arguments();
           DocumentReference documentReference = getDocumentReference(arguments);
           Task<DocumentSnapshot> task = documentReference.get();
-          task.addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-              Map<String, Object> snapshotMap = new HashMap<>();
-              snapshotMap.put("path", documentSnapshot.getReference().getPath());
-              snapshotMap.put("data", documentSnapshot.getData());
-              result.success(snapshotMap);
-            }
-          }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-              result.error("Error performing get", e.getMessage(), null);
-            }
-          });
+          task.addOnSuccessListener(
+                  new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                      Map<String, Object> snapshotMap = new HashMap<>();
+                      snapshotMap.put("path", documentSnapshot.getReference().getPath());
+                      snapshotMap.put("data", documentSnapshot.getData());
+                      result.success(snapshotMap);
+                    }
+                  })
+              .addOnFailureListener(
+                  new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                      result.error("Error performing get", e.getMessage(), null);
+                    }
+                  });
           break;
         }
       case "DocumentReference#delete":
