@@ -1,3 +1,9 @@
+## 0.1.1
+
+* Separated Load and Show for interstitials in example app
+* Added platform-specific App ID and ad unit ID values
+* Updated for gradle 4.x and API 26
+
 ## 0.1.0
 
 * **Breaking change**. Upgraded to Gradle 4.1 and Android Studio Gradle plugin
