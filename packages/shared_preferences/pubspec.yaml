@@ -1,6 +1,6 @@
 name: shared_preferences
 
-version: 0.2.6
+version: 0.3.0
 description: A Flutter plugin for reading and writing simple key-value pairs.
 author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/shared_preferences
