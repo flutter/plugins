@@ -71,7 +71,7 @@ void main() {
                 'data': <String, dynamic>{'key1': 'val1'}
               };
             }
-            return new ArgumentError('Unknown database path');
+            throw new PlatformException(code: 'UNKNOWN_PATH');
           default:
             return null;
         }
@@ -300,9 +300,11 @@ void main() {
         expect(snapshot.data.containsKey('key1'), equals(true));
         expect(snapshot.data['key1'], equals('val1'));
 
-        final DocumentSnapshot wrongSnapshot =
-            await collectionReference.document('baz').get();
-        expect(null, equals(wrongSnapshot));
+        try {
+          await collectionReference.document('baz').get();
+        } on PlatformException catch(e) {
+          expect(e.code, equals('UNKNOWN_PATH'));
+        }
       });
       test('getCollection', () async {
         final CollectionReference colRef =

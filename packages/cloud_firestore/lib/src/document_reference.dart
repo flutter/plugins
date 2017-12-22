@@ -42,15 +42,13 @@ class DocumentReference {
     );
   }
 
-  Future<DocumentSnapshot> get() {
-    return Firestore.channel.invokeMethod('DocumentReference#get',
-        <String, dynamic>{'path': path}).then((Map<String, dynamic> data) {
-      return new DocumentSnapshot._(
-          data['path'], data['data'], Firestore.instance);
-    }).catchError((PlatformException e) {
-      print(e);
-      return null;
-    });
+  /// Reads the document referenced by this [DocumentReference].
+  ///
+  /// If no document exists, the read will return null.
+  Future<DocumentSnapshot> get() async {
+    final Map<String, dynamic> data = await Firestore.channel.invokeMethod('DocumentReference#get',
+        <String, dynamic>{'path': path},);
+    return new DocumentSnapshot._(data['path'], data['data'], Firestore.instance,);
   }
 
   /// Deletes the document referred to by this [DocumentReference].
