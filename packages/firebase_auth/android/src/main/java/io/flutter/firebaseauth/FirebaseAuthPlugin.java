@@ -41,7 +41,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
   private final SparseArray<FirebaseAuth.AuthStateListener> authStateListeners =
       new SparseArray<>();
   private final MethodChannel channel;
-  private final Activity activity;
+        Activity activity;
   // Handles are ints used as indexes into the sparse array of active observers
   private int nextHandle = 0;
 
