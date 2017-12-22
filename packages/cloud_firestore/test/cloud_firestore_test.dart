@@ -302,7 +302,7 @@ void main() {
 
         try {
           await collectionReference.document('baz').get();
-        } on PlatformException catch(e) {
+        } on PlatformException catch (e) {
           expect(e.code, equals('UNKNOWN_PATH'));
         }
       });
