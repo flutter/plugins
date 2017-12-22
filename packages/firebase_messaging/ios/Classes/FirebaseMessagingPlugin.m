@@ -137,7 +137,14 @@
 
 - (void)application:(UIApplication *)application
     didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
-  [_channel invokeMethod:@"onToken" arguments:[[FIRInstanceID instanceID] token]];
+
+#ifdef DEBUG
+    [[FIRMessaging messaging] setAPNSToken:deviceToken type:FIRMessagingAPNSTokenTypeSandbox];
+#else
+    [[FIRMessaging messaging] setAPNSToken:deviceToken type:FIRMessagingAPNSTokenTypeProd];
+#endif
+
+    [_channel invokeMethod:@"onToken" arguments:[[FIRInstanceID instanceID] token]];
 }
 
 - (void)application:(UIApplication *)application
