@@ -61,23 +61,23 @@
 
 #pragma mark - Enum: CloudFirestoreField
 typedef NS_ENUM(NSInteger, CloudFirestoreField) {
-    CloudFirestoreFieldNil,
-    CloudFirestoreFieldTrue,
-    CloudFirestoreFieldFalse,
-    CloudFirestoreFieldInt32,
-    CloudFirestoreFieldInt64,
-    CloudFirestoreFieldIntHex,
-    CloudFirestoreFieldFloat64,
-    CloudFirestoreFieldString,
-    CloudFirestoreFieldUInt8Data,
-    CloudFirestoreFieldInt32Data,
-    CloudFirestoreFieldInt64Data,
-    CloudFirestoreFieldFloat64Data,
-    CloudFirestoreFieldList,
-    CloudFirestoreFieldMap,
-    CloudFirestoreFieldDateTime,
-    CloudFirestoreFieldGeoPoint,
-    CloudFirestoreFieldDocumentReference
+  CloudFirestoreFieldNil,
+  CloudFirestoreFieldTrue,
+  CloudFirestoreFieldFalse,
+  CloudFirestoreFieldInt32,
+  CloudFirestoreFieldInt64,
+  CloudFirestoreFieldIntHex,
+  CloudFirestoreFieldFloat64,
+  CloudFirestoreFieldString,
+  CloudFirestoreFieldUInt8Data,
+  CloudFirestoreFieldInt32Data,
+  CloudFirestoreFieldInt64Data,
+  CloudFirestoreFieldFloat64Data,
+  CloudFirestoreFieldList,
+  CloudFirestoreFieldMap,
+  CloudFirestoreFieldDateTime,
+  CloudFirestoreFieldGeoPoint,
+  CloudFirestoreFieldDocumentReference
 };
 
 #pragma mark - CloudFirestoreCodecHelper
