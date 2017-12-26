@@ -11,12 +11,12 @@
 
 #import "CloudFirestoreCodec.h"
 
-#pragma mark - 
-@implementation FlutterStandardMessageCodec
+#pragma mark - CloudFirestoreMessageCodec
+@implementation CloudFirestoreMessageCodec
 + (instancetype)sharedInstance {
     static id _sharedInstance = nil;
     if (!_sharedInstance) {
-        _sharedInstance = [FlutterStandardMessageCodec new];
+        _sharedInstance = [CloudFirestoreMessageCodec new];
     }
     return _sharedInstance;
 }
@@ -25,7 +25,7 @@
     if (message == nil)
         return nil;
     NSMutableData* data = [NSMutableData dataWithCapacity:32];
-    FlutterStandardWriter* writer = [FlutterStandardWriter writerWithData:data];
+    CloudFirestoreWriter* writer = [CloudFirestoreWriter writerWithData:data];
     [writer writeValue:message];
     return data;
 }
@@ -33,7 +33,7 @@
 - (id)decode:(NSData*)message {
     if (message == nil)
         return nil;
-    FlutterStandardReader* reader = [FlutterStandardReader readerWithData:message];
+    CloudFirestoreReader* reader = [CloudFirestoreReader readerWithData:message];
     id value = [reader readValue];
     NSAssert(![reader hasMore], @"Corrupted standard message");
     return value;
