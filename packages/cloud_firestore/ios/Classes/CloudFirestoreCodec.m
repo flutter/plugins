@@ -159,3 +159,145 @@
     [NSStringFromClass([number class]) isEqual:@"__NSCFBoolean"];
 }
 @end
+
+@implementation FlutterStandardReader {
+    NSData* _data;
+    NSRange _range;
+}
+
++ (instancetype)readerWithData:(NSData*)data {
+    FlutterStandardReader* reader = [[FlutterStandardReader alloc] initWithData:data];
+    [reader autorelease];
+    return reader;
+}
+
+- (instancetype)initWithData:(NSData*)data {
+    self = [super init];
+    NSAssert(self, @"Super init cannot be nil");
+    _data = [data retain];
+    _range = NSMakeRange(0, 0);
+    return self;
+}
+
+- (void)dealloc {
+    [_data release];
+    [super dealloc];
+}
+
+- (BOOL)hasMore {
+    return _range.location < _data.length;
+}
+
+- (void)readBytes:(void*)destination length:(int)length {
+    _range.length = length;
+    [_data getBytes:destination range:_range];
+    _range.location += _range.length;
+}
+
+- (UInt8)readByte {
+    UInt8 value;
+    [self readBytes:&value length:1];
+    return value;
+}
+
+- (UInt32)readSize {
+    UInt8 byte = [self readByte];
+    if (byte < 254) {
+        return (UInt32)byte;
+    } else if (byte == 254) {
+        UInt16 value;
+        [self readBytes:&value length:2];
+        return value;
+    } else {
+        UInt32 value;
+        [self readBytes:&value length:4];
+        return value;
+    }
+}
+
+- (NSData*)readData:(int)length {
+    _range.length = length;
+    NSData* data = [_data subdataWithRange:_range];
+    _range.location += _range.length;
+    return data;
+}
+
+- (NSString*)readUTF8 {
+    NSData* bytes = [self readData:[self readSize]];
+    return [[[NSString alloc] initWithData:bytes encoding:NSUTF8StringEncoding] autorelease];
+}
+
+- (void)readAlignment:(UInt8)alignment {
+    UInt8 mod = _range.location % alignment;
+    if (mod) {
+        _range.location += (alignment - mod);
+    }
+}
+
+- (FlutterStandardTypedData*)readTypedDataOfType:(FlutterStandardDataType)type {
+    UInt32 elementCount = [self readSize];
+    UInt8 elementSize = elementSizeForFlutterStandardDataType(type);
+    [self readAlignment:elementSize];
+    NSData* data = [self readData:elementCount * elementSize];
+    return [FlutterStandardTypedData typedDataWithData:data type:type];
+}
+
+- (id)readValue {
+    FlutterStandardField field = (FlutterStandardField)[self readByte];
+    switch (field) {
+        case FlutterStandardFieldNil:
+            return nil;
+        case FlutterStandardFieldTrue:
+            return @YES;
+        case FlutterStandardFieldFalse:
+            return @NO;
+        case FlutterStandardFieldInt32: {
+            SInt32 value;
+            [self readBytes:&value length:4];
+            return [NSNumber numberWithInt:value];
+        }
+        case FlutterStandardFieldInt64: {
+            SInt64 value;
+            [self readBytes:&value length:8];
+            return [NSNumber numberWithLong:value];
+        }
+        case FlutterStandardFieldFloat64: {
+            Float64 value;
+            [self readAlignment:8];
+            [self readBytes:&value length:8];
+            return [NSNumber numberWithDouble:value];
+        }
+        case FlutterStandardFieldIntHex:
+            return [FlutterStandardBigInteger bigIntegerWithHex:[self readUTF8]];
+        case FlutterStandardFieldString:
+            return [self readUTF8];
+        case FlutterStandardFieldUInt8Data:
+        case FlutterStandardFieldInt32Data:
+        case FlutterStandardFieldInt64Data:
+        case FlutterStandardFieldFloat64Data:
+            return [self readTypedDataOfType:FlutterStandardDataTypeForField(field)];
+        case FlutterStandardFieldList: {
+            UInt32 length = [self readSize];
+            NSMutableArray* array = [NSMutableArray arrayWithCapacity:length];
+            for (UInt32 i = 0; i < length; i++) {
+                id value = [self readValue];
+                [array addObject:(value == nil ? [NSNull null] : value)];
+            }
+            return array;
+        }
+        case FlutterStandardFieldMap: {
+            UInt32 size = [self readSize];
+            NSMutableDictionary* dict = [NSMutableDictionary dictionaryWithCapacity:size];
+            for (UInt32 i = 0; i < size; i++) {
+                id key = [self readValue];
+                id val = [self readValue];
+                [dict setObject:(val == nil ? [NSNull null] : val)
+                         forKey:(key == nil ? [NSNull null] : key)];
+            }
+            return dict;
+        }
+        default:
+            NSAssert(NO, @"Corrupted standard message");
+    }
+}
+@end

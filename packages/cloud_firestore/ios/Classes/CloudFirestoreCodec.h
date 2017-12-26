@@ -37,8 +37,16 @@ typedef NS_ENUM(NSInteger, CloudFirestoreField) {
 @end
 
 #pragma mark - CloudFirestoreWriter
-@interface CloudFirestoreWriter : NSObject
+@interface CloudFirestoreWriter: NSObject
 + (instancetype)writerWithData:(NSMutableData*)data;
 - (void)writeByte:(UInt8)value;
 - (void)writeValue:(id)value;
+@end
+
+#pragma mark - CloudFirestoreReader
+@interface CloudFirestoreReader: NSObject
++ (instancetype)readerWithData:(NSData*)data;
+- (BOOL)hasMore;
+- (UInt8)readByte;
+- (id)readValue;
 @end
