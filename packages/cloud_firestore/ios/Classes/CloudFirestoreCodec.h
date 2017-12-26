@@ -27,3 +27,10 @@ typedef NS_ENUM(NSInteger, CloudFirestoreField) {
     CloudFirestoreFieldList,
     CloudFirestoreFieldMap
 };
+
+#pragma mark - CloudFirestoreCodecHelper
+@interface CloudFirestoreCodecHelper: NSObject
++ (CloudFirestoreField)cloudFirestoreFieldForDataType:(FlutterStandardDataType)type;
++ (FlutterStandardDataType)flutterStandardDataTypeForField:(CloudFirestoreField)field;
++ (UInt8)elementSizeForFlutterStandardDataType:(FlutterStandardDataType)type;
+@end
