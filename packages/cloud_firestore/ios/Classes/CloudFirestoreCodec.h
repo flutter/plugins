@@ -11,6 +11,35 @@
 
 #import <Flutter/Flutter.h>
 
+/**
+ A `FlutterMessageCodec` using the Flutter standard binary encoding.
+ 
+ This codec is guaranteed to be compatible with the corresponding [FirestoreMessageCodec] in this package.
+ on the Dart side. These parts of the Flutter SDK are evolved synchronously.
+ 
+ Supported messages are acyclic values of these forms:
+ 
+ - `nil` or `NSNull`
+ - `NSNumber` (including their representation of Boolean values)
+ - `FlutterStandardBigInteger`
+ - `NSString`
+ - `FlutterStandardTypedData`
+ - `NSArray` of supported values
+ - `NSDictionary` with supported keys and values
+ 
+ On the Dart side, these values are represented as follows:
+ 
+ - `nil` or `NSNull`: null
+ - `NSNumber`: `bool`, `int`, or `double`, depending on the contained value.
+ - `FlutterStandardBigInteger`: `int`
+ - `NSString`: `String`
+ - `FlutterStandardTypedData`: `Uint8List`, `Int32List`, `Int64List`, or `Float64List`
+ - `NSArray`: `List`
+ - `NSDictionary`: `Map`
+ */
+@interface CloudFirestoreMessageCodec : NSObject<FlutterMessageCodec>
+@end
+
 #pragma mark - Enum: CloudFirestoreField
 typedef NS_ENUM(NSInteger, CloudFirestoreField) {
     CloudFirestoreFieldNil,

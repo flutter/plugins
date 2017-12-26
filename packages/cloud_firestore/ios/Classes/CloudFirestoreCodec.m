@@ -11,6 +11,35 @@
 
 #import "CloudFirestoreCodec.h"
 
+#pragma mark - 
+@implementation FlutterStandardMessageCodec
++ (instancetype)sharedInstance {
+    static id _sharedInstance = nil;
+    if (!_sharedInstance) {
+        _sharedInstance = [FlutterStandardMessageCodec new];
+    }
+    return _sharedInstance;
+}
+
+- (NSData*)encode:(id)message {
+    if (message == nil)
+        return nil;
+    NSMutableData* data = [NSMutableData dataWithCapacity:32];
+    FlutterStandardWriter* writer = [FlutterStandardWriter writerWithData:data];
+    [writer writeValue:message];
+    return data;
+}
+
+- (id)decode:(NSData*)message {
+    if (message == nil)
+        return nil;
+    FlutterStandardReader* reader = [FlutterStandardReader readerWithData:message];
+    id value = [reader readValue];
+    NSAssert(![reader hasMore], @"Corrupted standard message");
+    return value;
+}
+@end
+
 #pragma mark - CloudFirestoreCodecHelper
 @implementation CloudFirestoreCodecHelper
 + (CloudFirestoreField)cloudFirestoreFieldForDataType:(FlutterStandardDataType)type {
