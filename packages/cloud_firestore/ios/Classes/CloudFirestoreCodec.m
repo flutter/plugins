@@ -6,6 +6,7 @@
 //  cloud_firestore
 //
 //  Created by ananfang on 26/12/2017.
+//  ananfang@gmail.com
 //
 
 #import "CloudFirestoreCodec.h"
@@ -34,27 +35,20 @@
 }
 @end
 
-#pragma mark - 
-@implementation FlutterStandardWriter {
+#pragma mark - CloudFirestoreWriter
+@implementation CloudFirestoreWriter {
     NSMutableData* _data;
 }
 
 + (instancetype)writerWithData:(NSMutableData*)data {
-    FlutterStandardWriter* writer = [[FlutterStandardWriter alloc] initWithData:data];
-    [writer autorelease];
-    return writer;
+    return [[CloudFirestoreWriter alloc] initWithData:data];
 }
 
 - (instancetype)initWithData:(NSMutableData*)data {
     self = [super init];
     NSAssert(self, @"Super init cannot be nil");
-    _data = [data retain];
+    _data = data;
     return self;
-}
-
-- (void)dealloc {
-    [_data release];
-    [super dealloc];
 }
 
 - (void)writeByte:(UInt8)value {
@@ -91,64 +85,64 @@
 
 - (void)writeValue:(id)value {
     if (value == nil || value == [NSNull null]) {
-        [self writeByte:FlutterStandardFieldNil];
+        [self writeByte:CloudFirestoreFieldNil];
     } else if ([value isKindOfClass:[NSNumber class]]) {
         NSNumber* number = value;
         const char* type = [number objCType];
         if ([self isBool:number type:type]) {
             BOOL b = number.boolValue;
-            [self writeByte:(b ? FlutterStandardFieldTrue : FlutterStandardFieldFalse)];
+            [self writeByte:(b ? CloudFirestoreFieldTrue : CloudFirestoreFieldFalse)];
         } else if (strcmp(type, @encode(signed int)) == 0 || strcmp(type, @encode(signed short)) == 0 ||
                    strcmp(type, @encode(unsigned short)) == 0 ||
                    strcmp(type, @encode(signed char)) == 0 ||
                    strcmp(type, @encode(unsigned char)) == 0) {
             SInt32 n = number.intValue;
-            [self writeByte:FlutterStandardFieldInt32];
+            [self writeByte:CloudFirestoreFieldInt32];
             [_data appendBytes:(UInt8*)&n length:4];
         } else if (strcmp(type, @encode(signed long)) == 0 ||
                    strcmp(type, @encode(unsigned int)) == 0) {
             SInt64 n = number.longValue;
-            [self writeByte:FlutterStandardFieldInt64];
+            [self writeByte:CloudFirestoreFieldInt64];
             [_data appendBytes:(UInt8*)&n length:8];
         } else if (strcmp(type, @encode(double)) == 0 || strcmp(type, @encode(float)) == 0) {
             Float64 f = number.doubleValue;
-            [self writeByte:FlutterStandardFieldFloat64];
+            [self writeByte:CloudFirestoreFieldFloat64];
             [self writeAlignment:8];
             [_data appendBytes:(UInt8*)&f length:8];
         } else if (strcmp(type, @encode(unsigned long)) == 0 ||
                    strcmp(type, @encode(signed long long)) == 0 ||
                    strcmp(type, @encode(unsigned long long)) == 0) {
             NSString* hex = [NSString stringWithFormat:@"%llx", number.unsignedLongLongValue];
-            [self writeByte:FlutterStandardFieldIntHex];
+            [self writeByte:CloudFirestoreFieldIntHex];
             [self writeUTF8:hex];
         } else {
             NSLog(@"Unsupported value: %@ of type %s", value, type);
-            NSAssert(NO, @"Unsupported value for standard codec");
+            NSAssert(NO, @"Unsupported value for Firebase/Cloud Firestore codec");
         }
     } else if ([value isKindOfClass:[NSString class]]) {
         NSString* string = value;
-        [self writeByte:FlutterStandardFieldString];
+        [self writeByte:CloudFirestoreFieldString];
         [self writeUTF8:string];
     } else if ([value isKindOfClass:[FlutterStandardBigInteger class]]) {
         FlutterStandardBigInteger* bigInt = value;
-        [self writeByte:FlutterStandardFieldIntHex];
+        [self writeByte:CloudFirestoreFieldIntHex];
         [self writeUTF8:bigInt.hex];
     } else if ([value isKindOfClass:[FlutterStandardTypedData class]]) {
         FlutterStandardTypedData* typedData = value;
-        [self writeByte:FlutterStandardFieldForDataType(typedData.type)];
+        [self writeByte:[CloudFirestoreCodecHelper cloudFirestoreFieldForDataType:typedData.type]];
         [self writeSize:typedData.elementCount];
         [self writeAlignment:typedData.elementSize];
         [_data appendData:typedData.data];
     } else if ([value isKindOfClass:[NSArray class]]) {
         NSArray* array = value;
-        [self writeByte:FlutterStandardFieldList];
+        [self writeByte:CloudFirestoreFieldList];
         [self writeSize:array.count];
         for (id object in array) {
             [self writeValue:object];
         }
     } else if ([value isKindOfClass:[NSDictionary class]]) {
         NSDictionary* dict = value;
-        [self writeByte:FlutterStandardFieldMap];
+        [self writeByte:CloudFirestoreFieldMap];
         [self writeSize:dict.count];
         for (id key in dict) {
             [self writeValue:key];
@@ -156,7 +150,7 @@
         }
     } else {
         NSLog(@"Unsupported value: %@ of type %@", value, [value class]);
-        NSAssert(NO, @"Unsupported value for standard codec");
+        NSAssert(NO, @"Unsupported value for Firebase/Cloud Firestore codec");
     }
 }
 
