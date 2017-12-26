@@ -10,6 +10,7 @@
 //
 
 #import <Flutter/Flutter.h>
+#import <Firebase/Firebase.h>
 
 /**
  A `FlutterMessageCodec` using the Flutter standard binary encoding.
@@ -27,6 +28,7 @@
  - `NSArray` of supported values
  - `NSDictionary` with supported keys and values
  - `NSDate`
+ - `FIRFieldValue`
  
  On the Dart side, these values are represented as follows:
  
@@ -38,6 +40,7 @@
  - `NSArray`: `List`
  - `NSDictionary`: `Map`
  - `NSDate`: `DateTime`
+ - `FIRFieldValue`: FieldValue.delete and FieldValue.serverTimestamp
  */
 @interface CloudFirestoreMessageCodec: NSObject<FlutterMessageCodec>
 @end
@@ -70,7 +73,8 @@ typedef NS_ENUM(NSInteger, CloudFirestoreField) {
     CloudFirestoreFieldFloat64Data,
     CloudFirestoreFieldList,
     CloudFirestoreFieldMap,
-    CloudFirestoreFieldDateTime
+    CloudFirestoreFieldDateTime,
+    CloudFirestoreFieldFieldValue
 };
 
 #pragma mark - CloudFirestoreCodecHelper
