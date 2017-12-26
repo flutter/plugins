@@ -278,6 +278,14 @@
         }
         [self writeByte:CloudFirestoreFieldFieldValue];
         [_data appendBytes:(UInt8*)&fieldValue length:4];
+    } else if ([value isKindOfClass:[FIRGeoPoint class]]) {
+        FIRGeoPoint *geoPoint = value;
+        Float64 latitude = geoPoint.latitude;
+        Float64 longitude = geoPoint.longitude;
+        [self writeByte:CloudFirestoreFieldGeoPoint];
+        [self writeAlignment:8];
+        [_data appendBytes:(UInt8*)&latitude length:8];
+        [_data appendBytes:(UInt8*)&longitude length:8];
     } else {
         NSLog(@"Unsupported value: %@ of type %@", value, [value class]);
         NSAssert(NO, @"Unsupported value for Firebase/Cloud Firestore codec");
@@ -438,6 +446,15 @@
                     NSAssert(NO, @"Corrupted Firebase/Cloud Firestore message. (Wrong FieldValue: %i)", fieldValue);
                     return nil;
             }
+        }
+        case CloudFirestoreFieldGeoPoint:{
+            Float64 latitude;
+            Float64 longitude;
+            [self readAlignment:8];
+            [self readBytes:&latitude length:8];
+            [self readBytes:&longitude length:8];
+            FIRGeoPoint *geoPoint = [[FIRGeoPoint alloc] initWithLatitude:latitude longitude:longitude];
+            return geoPoint;
         }
         default:
             NSAssert(NO, @"Corrupted Firebase/Cloud Firestore message");
