@@ -37,7 +37,19 @@
  - `NSArray`: `List`
  - `NSDictionary`: `Map`
  */
-@interface CloudFirestoreMessageCodec : NSObject<FlutterMessageCodec>
+@interface CloudFirestoreMessageCodec: NSObject<FlutterMessageCodec>
+@end
+
+/**
+ A `FlutterMethodCodec` using the Flutter standard binary encoding.
+ 
+ This codec is guaranteed to be compatible with the corresponding [FirestoreMessageCodec] in this package.
+ on the Dart side. These parts of the Flutter SDK are evolved synchronously.
+ 
+ Values supported as method arguments and result payloads are those supported by
+ `CloudFirestoreMessageCodec`.
+ */
+@interface CloudFirestoreMethodCodec: NSObject<FlutterMethodCodec>
 @end
 
 #pragma mark - Enum: CloudFirestoreField
