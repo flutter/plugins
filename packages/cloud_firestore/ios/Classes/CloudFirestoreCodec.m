@@ -260,6 +260,12 @@
             [self writeValue:key];
             [self writeValue:[dict objectForKey:key]];
         }
+    } else if ([value isKindOfClass:[NSDate class]]) {
+        NSDate *date = value;
+        NSNumber *microsecondNumber = [NSNumber numberWithDouble:[date timeIntervalSince1970] * 1000 * 1000];
+        SInt64 microseconds = microsecondNumber.longValue;
+        [self writeByte:CloudFirestoreFieldDateTime];
+        [_data appendBytes:(UInt8*)&microseconds length:8];
     } else {
         NSLog(@"Unsupported value: %@ of type %@", value, [value class]);
         NSAssert(NO, @"Unsupported value for Firebase/Cloud Firestore codec");
@@ -401,6 +407,12 @@
                          forKey:(key == nil ? [NSNull null] : key)];
             }
             return dict;
+        }
+        case CloudFirestoreFieldDateTime:{
+            SInt64 microseconds;
+            [self readBytes:&microseconds length:8];
+            NSTimeInterval seconds = (NSTimeInterval)microseconds / (1000.0 * 1000.0);
+            return [NSDate dateWithTimeIntervalSince1970:seconds];
         }
         default:
             NSAssert(NO, @"Corrupted standard message");

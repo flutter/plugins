@@ -26,6 +26,7 @@
  - `FlutterStandardTypedData`
  - `NSArray` of supported values
  - `NSDictionary` with supported keys and values
+ - `NSDate`
  
  On the Dart side, these values are represented as follows:
  
@@ -36,6 +37,7 @@
  - `FlutterStandardTypedData`: `Uint8List`, `Int32List`, `Int64List`, or `Float64List`
  - `NSArray`: `List`
  - `NSDictionary`: `Map`
+ - `NSDate`: `DateTime`
  */
 @interface CloudFirestoreMessageCodec: NSObject<FlutterMessageCodec>
 @end
@@ -67,7 +69,8 @@ typedef NS_ENUM(NSInteger, CloudFirestoreField) {
     CloudFirestoreFieldInt64Data,
     CloudFirestoreFieldFloat64Data,
     CloudFirestoreFieldList,
-    CloudFirestoreFieldMap
+    CloudFirestoreFieldMap,
+    CloudFirestoreFieldDateTime
 };
 
 #pragma mark - CloudFirestoreCodecHelper
