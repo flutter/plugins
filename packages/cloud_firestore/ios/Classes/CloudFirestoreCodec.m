@@ -286,6 +286,11 @@
         [self writeAlignment:8];
         [_data appendBytes:(UInt8*)&latitude length:8];
         [_data appendBytes:(UInt8*)&longitude length:8];
+    } else if ([value isKindOfClass:[FIRDocumentReference class]]) {
+        FIRDocumentReference *documentReference = value;
+        NSString *documentPath = [documentReference path];
+        [self writeByte:CloudFirestoreFieldDocumentReference];
+        [self writeUTF8:documentPath];
     } else {
         NSLog(@"Unsupported value: %@ of type %@", value, [value class]);
         NSAssert(NO, @"Unsupported value for Firebase/Cloud Firestore codec");
@@ -453,8 +458,11 @@
             [self readAlignment:8];
             [self readBytes:&latitude length:8];
             [self readBytes:&longitude length:8];
-            FIRGeoPoint *geoPoint = [[FIRGeoPoint alloc] initWithLatitude:latitude longitude:longitude];
-            return geoPoint;
+            return [[FIRGeoPoint alloc] initWithLatitude:latitude longitude:longitude];
+        }
+        case CloudFirestoreFieldDocumentReference:{
+            NSString *documentPath = [self readUTF8];
+            return [[FIRFirestore firestore] documentWithPath:documentPath];
         }
         default:
             NSAssert(NO, @"Corrupted Firebase/Cloud Firestore message");

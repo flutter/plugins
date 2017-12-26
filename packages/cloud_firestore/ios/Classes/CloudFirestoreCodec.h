@@ -30,6 +30,7 @@
  - `NSDate`
  - `FIRFieldValue`
  - `FIRGeoPoint`
+ - `FIRDocumentReference`
  
  On the Dart side, these values are represented as follows:
  
@@ -43,6 +44,7 @@
  - `NSDate`: `DateTime`
  - `FIRFieldValue`: FieldValue.delete and FieldValue.serverTimestamp
  - `FIRGeoPoint`: `GeoPoint`
+ - `FIRDocumentReference`: `DocumentReference`
  */
 @interface CloudFirestoreMessageCodec: NSObject<FlutterMessageCodec>
 @end
@@ -77,7 +79,8 @@ typedef NS_ENUM(NSInteger, CloudFirestoreField) {
     CloudFirestoreFieldMap,
     CloudFirestoreFieldDateTime,
     CloudFirestoreFieldFieldValue,
-    CloudFirestoreFieldGeoPoint
+    CloudFirestoreFieldGeoPoint,
+    CloudFirestoreFieldDocumentReference
 };
 
 #pragma mark - CloudFirestoreCodecHelper
