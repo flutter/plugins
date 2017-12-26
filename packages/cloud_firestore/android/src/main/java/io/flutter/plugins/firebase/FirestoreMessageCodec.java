@@ -5,7 +5,6 @@
 package io.flutter.plugins.firebase.cloud_firestore;
 
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import io.flutter.plugin.common.*;
@@ -40,7 +39,6 @@ import java.util.Map.Entry;
  *   <li>Lists of supported values
  *   <li>Maps with supported keys and values
  *   <li>Date
- *   <li>FieldValue: 0 -> delete(), 1 -> serverTimestamp()
  *   <li>GeoPoint
  *   <li>DocumentReference
  * </ul>
@@ -60,7 +58,6 @@ import java.util.Map.Entry;
  *   <li>List: List
  *   <li>Map: Map
  *   <li>DateTime
- *   <li>FieldValue: 0 -> delete(), 1 -> serverTimestamp()
  *   <li>GeoPoint
  *   <li>DocumentReference
  * </ul>
@@ -112,9 +109,8 @@ public final class FirestoreMessageCodec implements MessageCodec<Object> {
   private static final byte LIST = 12;
   private static final byte MAP = 13;
   private static final byte DATE_TIME = 14;
-  private static final byte FIELD_VALUE = 15;
-  private static final byte GEO_POINT = 16;
-  private static final byte DOCUMENT_REFERENCE = 17;
+  private static final byte GEO_POINT = 15;
+  private static final byte DOCUMENT_REFERENCE = 16;
 
   private static void writeSize(ByteArrayOutputStream stream, int value) {
     assert 0 <= value;
@@ -406,21 +402,6 @@ public final class FirestoreMessageCodec implements MessageCodec<Object> {
         {
           final long microseconds = buffer.getLong();
           result = new Date(microseconds / 1000);
-          break;
-        }
-      case FIELD_VALUE:
-        {
-          final int type = buffer.getInt();
-          switch (type) {
-            case 0:
-              result = FieldValue.delete();
-              break;
-            case 1:
-              result = FieldValue.serverTimestamp();
-              break;
-            default:
-              throw new IllegalArgumentException("FieldValue Message corrupted");
-          }
           break;
         }
       case GEO_POINT:

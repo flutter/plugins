@@ -28,7 +28,6 @@
  - `NSArray` of supported values
  - `NSDictionary` with supported keys and values
  - `NSDate`
- - `FIRFieldValue`
  - `FIRGeoPoint`
  - `FIRDocumentReference`
  
@@ -42,7 +41,6 @@
  - `NSArray`: `List`
  - `NSDictionary`: `Map`
  - `NSDate`: `DateTime`
- - `FIRFieldValue`: FieldValue.delete and FieldValue.serverTimestamp
  - `FIRGeoPoint`: `GeoPoint`
  - `FIRDocumentReference`: `DocumentReference`
  */
@@ -78,7 +76,6 @@ typedef NS_ENUM(NSInteger, CloudFirestoreField) {
     CloudFirestoreFieldList,
     CloudFirestoreFieldMap,
     CloudFirestoreFieldDateTime,
-    CloudFirestoreFieldFieldValue,
     CloudFirestoreFieldGeoPoint,
     CloudFirestoreFieldDocumentReference
 };

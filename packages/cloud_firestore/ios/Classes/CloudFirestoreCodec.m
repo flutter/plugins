@@ -266,18 +266,6 @@
         SInt64 microseconds = microsecondNumber.longValue;
         [self writeByte:CloudFirestoreFieldDateTime];
         [_data appendBytes:(UInt8*)&microseconds length:8];
-    } else if ([value isKindOfClass:[FIRFieldValue class]]) {
-        SInt32 fieldValue;
-        if (value == [FIRFieldValue fieldValueForDelete]) {
-            fieldValue = 0;
-        } else if (value == [FIRFieldValue fieldValueForServerTimestamp]) {
-            fieldValue = 1;
-        } else {
-            NSLog(@"Unsupported FIRFieldValue: %@", value);
-            NSAssert(NO, @"Unsupported FieldValue: %@ for Firebase/Cloud Firestore codec", value);
-        }
-        [self writeByte:CloudFirestoreFieldFieldValue];
-        [_data appendBytes:(UInt8*)&fieldValue length:4];
     } else if ([value isKindOfClass:[FIRGeoPoint class]]) {
         FIRGeoPoint *geoPoint = value;
         Float64 latitude = geoPoint.latitude;
@@ -438,19 +426,6 @@
             [self readBytes:&microseconds length:8];
             NSTimeInterval seconds = (NSTimeInterval)microseconds / (1000.0 * 1000.0);
             return [NSDate dateWithTimeIntervalSince1970:seconds];
-        }
-        case CloudFirestoreFieldFieldValue:{
-            SInt32 fieldValue;
-            [self readBytes:&fieldValue length:4];
-            switch (fieldValue) {
-                case 0:
-                    return [FIRFieldValue fieldValueForDelete];
-                case 1:
-                    return [FIRFieldValue fieldValueForServerTimestamp];
-                default:
-                    NSAssert(NO, @"Corrupted Firebase/Cloud Firestore message. (Wrong FieldValue: %i)", fieldValue);
-                    return nil;
-            }
         }
         case CloudFirestoreFieldGeoPoint:{
             Float64 latitude;
