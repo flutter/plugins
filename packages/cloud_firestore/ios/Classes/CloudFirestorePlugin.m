@@ -5,6 +5,7 @@
 #import "CloudFirestorePlugin.h"
 
 #import <Firebase/Firebase.h>
+#import "CloudFirestoreCodec.h"
 
 @interface NSError (FlutterError)
 @property(readonly, nonatomic) FlutterError *flutterError;
@@ -64,7 +65,7 @@ FIRQuery *getQuery(NSDictionary *arguments) {
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/cloud_firestore"
                                   binaryMessenger:[registrar messenger]
-                                            codec:[FirestoreMethodCodec sharedInstance]];
+                                            codec:[CloudFirestoreMethodCodec sharedInstance]];
   CloudFirestorePlugin *instance = [[CloudFirestorePlugin alloc] init];
   instance.channel = channel;
   [registrar addMethodCallDelegate:instance channel:channel];
