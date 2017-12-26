@@ -33,6 +33,19 @@
             return 8;
     }
 }
+
++ (FlutterStandardTypedData *)typedDataWithData:(NSData *)data type:(FlutterStandardDataType)type {
+    switch (type) {
+        case FlutterStandardDataTypeUInt8:
+            return [FlutterStandardTypedData typedDataWithBytes:data];
+        case FlutterStandardDataTypeInt32:
+            return [FlutterStandardTypedData typedDataWithInt32:data];
+        case FlutterStandardDataTypeInt64:
+            return [FlutterStandardTypedData typedDataWithInt64:data];
+        case FlutterStandardDataTypeFloat64:
+            return [FlutterStandardTypedData typedDataWithFloat64:data];
+    }
+}
 @end
 
 #pragma mark - CloudFirestoreWriter
@@ -160,28 +173,22 @@
 }
 @end
 
-@implementation FlutterStandardReader {
+#pragma mark - CloudFirestoreReader
+@implementation CloudFirestoreReader {
     NSData* _data;
     NSRange _range;
 }
 
 + (instancetype)readerWithData:(NSData*)data {
-    FlutterStandardReader* reader = [[FlutterStandardReader alloc] initWithData:data];
-    [reader autorelease];
-    return reader;
+    return [[CloudFirestoreReader alloc] initWithData:data];
 }
 
 - (instancetype)initWithData:(NSData*)data {
     self = [super init];
     NSAssert(self, @"Super init cannot be nil");
-    _data = [data retain];
+    _data = data;
     _range = NSMakeRange(0, 0);
     return self;
-}
-
-- (void)dealloc {
-    [_data release];
-    [super dealloc];
 }
 
 - (BOOL)hasMore {
@@ -224,7 +231,7 @@
 
 - (NSString*)readUTF8 {
     NSData* bytes = [self readData:[self readSize]];
-    return [[[NSString alloc] initWithData:bytes encoding:NSUTF8StringEncoding] autorelease];
+    return [[NSString alloc] initWithData:bytes encoding:NSUTF8StringEncoding];
 }
 
 - (void)readAlignment:(UInt8)alignment {
@@ -236,47 +243,47 @@
 
 - (FlutterStandardTypedData*)readTypedDataOfType:(FlutterStandardDataType)type {
     UInt32 elementCount = [self readSize];
-    UInt8 elementSize = elementSizeForFlutterStandardDataType(type);
+    UInt8 elementSize = [CloudFirestoreCodecHelper elementSizeForFlutterStandardDataType:type];
     [self readAlignment:elementSize];
     NSData* data = [self readData:elementCount * elementSize];
-    return [FlutterStandardTypedData typedDataWithData:data type:type];
+    return [CloudFirestoreCodecHelper typedDataWithData:data type:type];
 }
 
 - (id)readValue {
-    FlutterStandardField field = (FlutterStandardField)[self readByte];
+    CloudFirestoreField field = (CloudFirestoreField)[self readByte];
     switch (field) {
-        case FlutterStandardFieldNil:
+        case CloudFirestoreFieldNil:
             return nil;
-        case FlutterStandardFieldTrue:
+        case CloudFirestoreFieldTrue:
             return @YES;
-        case FlutterStandardFieldFalse:
+        case CloudFirestoreFieldFalse:
             return @NO;
-        case FlutterStandardFieldInt32: {
+        case CloudFirestoreFieldInt32: {
             SInt32 value;
             [self readBytes:&value length:4];
             return [NSNumber numberWithInt:value];
         }
-        case FlutterStandardFieldInt64: {
+        case CloudFirestoreFieldInt64: {
             SInt64 value;
             [self readBytes:&value length:8];
             return [NSNumber numberWithLong:value];
         }
-        case FlutterStandardFieldFloat64: {
+        case CloudFirestoreFieldFloat64: {
             Float64 value;
             [self readAlignment:8];
             [self readBytes:&value length:8];
             return [NSNumber numberWithDouble:value];
         }
-        case FlutterStandardFieldIntHex:
+        case CloudFirestoreFieldIntHex:
             return [FlutterStandardBigInteger bigIntegerWithHex:[self readUTF8]];
-        case FlutterStandardFieldString:
+        case CloudFirestoreFieldString:
             return [self readUTF8];
-        case FlutterStandardFieldUInt8Data:
-        case FlutterStandardFieldInt32Data:
-        case FlutterStandardFieldInt64Data:
-        case FlutterStandardFieldFloat64Data:
-            return [self readTypedDataOfType:FlutterStandardDataTypeForField(field)];
-        case FlutterStandardFieldList: {
+        case CloudFirestoreFieldUInt8Data:
+        case CloudFirestoreFieldInt32Data:
+        case CloudFirestoreFieldInt64Data:
+        case CloudFirestoreFieldFloat64Data:
+            return [self readTypedDataOfType:[CloudFirestoreCodecHelper flutterStandardDataTypeForField:field]];
+        case CloudFirestoreFieldList: {
             UInt32 length = [self readSize];
             NSMutableArray* array = [NSMutableArray arrayWithCapacity:length];
             for (UInt32 i = 0; i < length; i++) {
@@ -285,7 +292,7 @@
             }
             return array;
         }
-        case FlutterStandardFieldMap: {
+        case CloudFirestoreFieldMap: {
             UInt32 size = [self readSize];
             NSMutableDictionary* dict = [NSMutableDictionary dictionaryWithCapacity:size];
             for (UInt32 i = 0; i < size; i++) {
