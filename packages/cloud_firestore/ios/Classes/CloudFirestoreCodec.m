@@ -35,24 +35,24 @@
         return nil;
     CloudFirestoreReader* reader = [CloudFirestoreReader readerWithData:message];
     id value = [reader readValue];
-    NSAssert(![reader hasMore], @"Corrupted standard message");
+    NSAssert(![reader hasMore], @"Corrupted Firebase/Cloud Firestore message");
     return value;
 }
 @end
 
-#pragma mark -
-@implementation FlutterStandardMethodCodec
+#pragma mark - CloudFirestoreMethodCodec
+@implementation CloudFirestoreMethodCodec
 + (instancetype)sharedInstance {
     static id _sharedInstance = nil;
     if (!_sharedInstance) {
-        _sharedInstance = [FlutterStandardMethodCodec new];
+        _sharedInstance = [CloudFirestoreMethodCodec new];
     }
     return _sharedInstance;
 }
 
 - (NSData*)encodeMethodCall:(FlutterMethodCall*)call {
     NSMutableData* data = [NSMutableData dataWithCapacity:32];
-    FlutterStandardWriter* writer = [FlutterStandardWriter writerWithData:data];
+    CloudFirestoreWriter* writer = [CloudFirestoreWriter writerWithData:data];
     [writer writeValue:call.method];
     [writer writeValue:call.arguments];
     return data;
@@ -60,7 +60,7 @@
 
 - (NSData*)encodeSuccessEnvelope:(id)result {
     NSMutableData* data = [NSMutableData dataWithCapacity:32];
-    FlutterStandardWriter* writer = [FlutterStandardWriter writerWithData:data];
+    CloudFirestoreWriter* writer = [CloudFirestoreWriter writerWithData:data];
     [writer writeByte:0];
     [writer writeValue:result];
     return data;
@@ -68,7 +68,7 @@
 
 - (NSData*)encodeErrorEnvelope:(FlutterError*)error {
     NSMutableData* data = [NSMutableData dataWithCapacity:32];
-    FlutterStandardWriter* writer = [FlutterStandardWriter writerWithData:data];
+    CloudFirestoreWriter* writer = [CloudFirestoreWriter writerWithData:data];
     [writer writeByte:1];
     [writer writeValue:error.code];
     [writer writeValue:error.message];
@@ -77,32 +77,32 @@
 }
 
 - (FlutterMethodCall*)decodeMethodCall:(NSData*)message {
-    FlutterStandardReader* reader = [FlutterStandardReader readerWithData:message];
+    CloudFirestoreReader* reader = [CloudFirestoreReader readerWithData:message];
     id value1 = [reader readValue];
     id value2 = [reader readValue];
-    NSAssert(![reader hasMore], @"Corrupted standard method call");
-    NSAssert([value1 isKindOfClass:[NSString class]], @"Corrupted standard method call");
+    NSAssert(![reader hasMore], @"Corrupted Firebase/Cloud Firestore method call");
+    NSAssert([value1 isKindOfClass:[NSString class]], @"Corrupted Firebase/Cloud Firestore method call");
     return [FlutterMethodCall methodCallWithMethodName:value1 arguments:value2];
 }
 
 - (id)decodeEnvelope:(NSData*)envelope {
-    FlutterStandardReader* reader = [FlutterStandardReader readerWithData:envelope];
+    CloudFirestoreReader* reader = [CloudFirestoreReader readerWithData:envelope];
     UInt8 flag = [reader readByte];
-    NSAssert(flag <= 1, @"Corrupted standard envelope");
+    NSAssert(flag <= 1, @"Corrupted Firebase/Cloud Firestore envelope");
     id result;
     switch (flag) {
         case 0: {
             result = [reader readValue];
-            NSAssert(![reader hasMore], @"Corrupted standard envelope");
+            NSAssert(![reader hasMore], @"Corrupted Firebase/Cloud Firestore envelope");
         } break;
         case 1: {
             id code = [reader readValue];
             id message = [reader readValue];
             id details = [reader readValue];
-            NSAssert(![reader hasMore], @"Corrupted standard envelope");
-            NSAssert([code isKindOfClass:[NSString class]], @"Invalid standard envelope");
+            NSAssert(![reader hasMore], @"Corrupted Firebase/Cloud Firestore envelope");
+            NSAssert([code isKindOfClass:[NSString class]], @"Invalid Firebase/Cloud Firestore envelope");
             NSAssert(message == nil || [message isKindOfClass:[NSString class]],
-                     @"Invalid standard envelope");
+                     @"Invalid Firebase/Cloud Firestore envelope");
             result = [FlutterError errorWithCode:code message:message details:details];
         } break;
     }
