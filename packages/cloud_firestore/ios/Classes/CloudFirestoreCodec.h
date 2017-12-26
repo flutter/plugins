@@ -34,3 +34,10 @@ typedef NS_ENUM(NSInteger, CloudFirestoreField) {
 + (FlutterStandardDataType)flutterStandardDataTypeForField:(CloudFirestoreField)field;
 + (UInt8)elementSizeForFlutterStandardDataType:(FlutterStandardDataType)type;
 @end
+
+#pragma mark - CloudFirestoreWriter
+@interface CloudFirestoreWriter : NSObject
++ (instancetype)writerWithData:(NSMutableData*)data;
+- (void)writeByte:(UInt8)value;
+- (void)writeValue:(id)value;
+@end
