@@ -17,8 +17,10 @@ const String iOSAppId = 'ca-app-pub-3940256099942544~1458002511';
 const String androidBannerAdUnitId = 'ca-app-pub-3940256099942544/6300978111';
 const String androidInterstitialAdUnitId =
     'ca-app-pub-3940256099942544/1033173712';
+const String androidRewardedAdUnitId = 'ca-app-pub-3940256099942544/5224354917';
 const String iOSBannerAdUnitId = 'ca-app-pub-3940256099942544/2934735716';
 const String iOSInterstitialAdUnitId = 'ca-app-pub-3940256099942544/4411468910';
+const String iOSRewardedAdUnitId = 'ca-app-pub-3940256099942544/5224354917';
 
 // You can also test with your own ad unit IDs by registering your device as a
 // test device. Check the logs for your device's ID value.
@@ -41,6 +43,7 @@ class _MyAppState extends State<MyApp> {
 
   BannerAd _bannerAd;
   InterstitialAd _interstitialAd;
+  int _coins = 0;
 
   BannerAd createBannerAd() {
     return new BannerAd(
@@ -70,6 +73,9 @@ class _MyAppState extends State<MyApp> {
     FirebaseAdMob.instance
         .initialize(appId: Platform.isAndroid ? androidAppId : iOSAppId);
     _bannerAd = createBannerAd()..load();
+    RewardedVideoAd.instance.listener = (RewardedVideoAdEvent event, [String rewardType, int rewardAmount]) {
+        print("RewardedVideoAd event $event");
+    };
   }
 
   @override
@@ -118,6 +124,21 @@ class _MyAppState extends State<MyApp> {
                   _interstitialAd?.show();
                 },
               ),
+              new RaisedButton(
+                child: const Text('LOAD REWARDED VIDEO'),
+                onPressed: () {
+                  _rewardedVideoAd.instance.load(Platform.isAndroid
+                      ? androidRewardedVideoAdUnitId
+                      : iOSRewardedVideoAdUnitId);
+                },
+              ),
+              new RaisedButton(
+                child: const Text('SHOW REWARDED VIDEO'),
+                onPressed: () {
+                  _rewardedVideoAd.instance.show();
+                },
+              ),
+              new Text("You have ${_coins} coins."),
             ].map((Widget button) {
               return new Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
