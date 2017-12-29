@@ -184,22 +184,29 @@ class FirebaseAuth {
     return currentUser;
   }
 
-  Future<String> signInWithPhoneNumber({
+  Future<FirebaseUser> signInWithPhoneNumber({
     @required String phoneNumber,
   })async{
-
-     final String data  = await channel.invokeMethod(
+try{
+  final Map<String,dynamic> data   = await channel.invokeMethod(
         'signInWithPhoneNumber',
         <String,String>{
           'phoneNumber': phoneNumber,
-        }
+        },
     );
-  return data;
+     final FirebaseUser currentUser = new FirebaseUser._(data);
+     return currentUser;}
+  catch(exception,stackTrace){
+  print(exception);
+  print(stackTrace);
+  }
   }
 
   Future<FirebaseUser> verifyotp({
     @required String otp,
   })async{
+
+    print("otpprocess initiated");
     final Map<String,dynamic> data = await channel.invokeMethod(
         'verifyOtp',
         <String,String>{

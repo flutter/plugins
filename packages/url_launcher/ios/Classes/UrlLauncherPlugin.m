@@ -6,10 +6,10 @@
 
 #import "UrlLauncherPlugin.h"
 
-@interface FLTUrlLaunchSession : NSObject<SFSafariViewControllerDelegate>
+@interface UrlLaunchSession : NSObject<SFSafariViewControllerDelegate>
 @end
 
-@implementation FLTUrlLaunchSession {
+@implementation UrlLaunchSession {
   NSURL *_url;
   FlutterResult _flutterResult;
 }
@@ -43,9 +43,9 @@
 
 @end
 
-@implementation FLTUrlLauncherPlugin {
+@implementation UrlLauncherPlugin {
   UIViewController *_viewController;
-  FLTUrlLaunchSession *_currentSession;
+  UrlLaunchSession *_currentSession;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -54,8 +54,7 @@
                                   binaryMessenger:registrar.messenger];
   UIViewController *viewController =
       [UIApplication sharedApplication].delegate.window.rootViewController;
-  FLTUrlLauncherPlugin *plugin =
-      [[FLTUrlLauncherPlugin alloc] initWithViewController:viewController];
+  UrlLauncherPlugin *plugin = [[UrlLauncherPlugin alloc] initWithViewController:viewController];
   [registrar addMethodCallDelegate:plugin channel:channel];
 }
 
@@ -110,7 +109,7 @@
   NSURL *url = [NSURL URLWithString:urlString];
 
   SFSafariViewController *safari = [[SFSafariViewController alloc] initWithURL:url];
-  _currentSession = [[FLTUrlLaunchSession alloc] initWithUrl:url withFlutterResult:result];
+  _currentSession = [[UrlLaunchSession alloc] initWithUrl:url withFlutterResult:result];
   safari.delegate = _currentSession;
   [_viewController presentViewController:safari animated:YES completion:nil];
 }

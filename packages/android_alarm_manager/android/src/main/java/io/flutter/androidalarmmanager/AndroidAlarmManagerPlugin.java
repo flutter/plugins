@@ -4,6 +4,7 @@
 
 package io.flutter.androidalarmmanager;
 
+import android.app.Activity;
 import android.content.Context;
 import io.flutter.plugin.common.JSONMethodCodec;
 import io.flutter.plugin.common.MethodCall;
@@ -25,15 +26,15 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
             registrar.messenger(),
             "plugins.flutter.io/android_alarm_manager",
             JSONMethodCodec.INSTANCE);
-    AndroidAlarmManagerPlugin plugin = new AndroidAlarmManagerPlugin(registrar.context());
+    AndroidAlarmManagerPlugin plugin = new AndroidAlarmManagerPlugin(registrar.activity());
     channel.setMethodCallHandler(plugin);
     registrar.addViewDestroyListener(plugin);
   }
 
   private Context mContext;
 
-  private AndroidAlarmManagerPlugin(Context context) {
-    this.mContext = context;
+  private AndroidAlarmManagerPlugin(Activity activity) {
+    this.mContext = activity;
   }
 
   @Override

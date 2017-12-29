@@ -15,14 +15,12 @@ import android.os.IBinder;
 import android.util.Log;
 import io.flutter.app.FlutterActivity;
 import io.flutter.app.FlutterApplication;
-import io.flutter.plugin.common.PluginRegistry.PluginRegistrantCallback;
 import io.flutter.view.FlutterMain;
 import io.flutter.view.FlutterNativeView;
 
 public class AlarmService extends Service {
   public static final String TAG = "AlarmService";
   private static FlutterNativeView sSharedFlutterView;
-  private static PluginRegistrantCallback sPluginRegistrantCallback;
 
   private FlutterNativeView mFlutterView;
   private String appBundlePath;
@@ -77,10 +75,6 @@ public class AlarmService extends Service {
     return true;
   }
 
-  public static void setPluginRegistrant(PluginRegistrantCallback callback) {
-    sPluginRegistrantCallback = callback;
-  }
-
   private void ensureFlutterView() {
     if (mFlutterView != null) {
       return;
@@ -94,12 +88,8 @@ public class AlarmService extends Service {
     // mFlutterView and sSharedFlutterView are both null. That likely means that
     // no FlutterView has ever been created in this process before. So, we'll
     // make one, and assign it to both mFlutterView and sSharedFlutterView.
-    mFlutterView = new FlutterNativeView(getApplicationContext());
+    mFlutterView = new FlutterNativeView();
     sSharedFlutterView = mFlutterView;
-
-    // If there was no FlutterNativeView before now, then we also must
-    // initialize the PluginRegistry.
-    sPluginRegistrantCallback.registerWith(mFlutterView.getPluginRegistry());
     return;
   }
 

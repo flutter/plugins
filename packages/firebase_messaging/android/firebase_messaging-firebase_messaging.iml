@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module external.linked.project.id=":firebase_messaging" external.linked.project.path="$MODULE_DIR$" external.root.project.path="D:/FlutterProjects/dailyfinance_flutter/android" external.system.id="GRADLE" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>

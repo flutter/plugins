@@ -255,8 +255,8 @@ class AuthenticationHelper extends FingerprintManagerCompat.AuthenticationCallba
         new OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
-            stop(false);
             activity.startActivity(new Intent(Settings.ACTION_SECURITY_SETTINGS));
+            stop(false);
           }
         };
     OnClickListener cancelHandler =

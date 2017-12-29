@@ -6,7 +6,7 @@
 
 static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
 
-@implementation FLTSharePlugin
+@implementation SharePlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *shareChannel =

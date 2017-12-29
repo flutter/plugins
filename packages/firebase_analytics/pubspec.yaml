@@ -3,12 +3,11 @@ name: firebase_analytics
 description: Firebase Analytics plugin for Flutter.
 author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/firebase_analytics
-version: 0.2.0
+version: 0.1.1
 
 flutter:
   plugin:
     androidPackage: io.flutter.firebaseanalytics
-    iosPrefix: FLT
     pluginClass: FirebaseAnalyticsPlugin
 
 dependencies:
