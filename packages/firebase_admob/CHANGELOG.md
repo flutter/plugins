@@ -1,3 +1,7 @@
+## 0.2.0
+
+* Added support for AdMob's rewarded video ad format.
+
 ## 0.1.1
 
 * Added platform-specific App IDs and ad unit IDs to example.
