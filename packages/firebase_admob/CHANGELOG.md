@@ -1,3 +1,8 @@
+## 0.1.1
+
+* Added platform-specific App IDs and ad unit IDs to example
+* Separated load and show functionality for interstitials in example.
+
 ## 0.1.0
 
 * **Breaking change**. Upgraded to Gradle 4.1 and Android Studio Gradle plugin
