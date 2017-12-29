@@ -6,14 +6,14 @@
 
 #import "Firebase/Firebase.h"
 
-@implementation FLTFirebaseAnalyticsPlugin {
+@implementation FirebaseAnalyticsPlugin {
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"firebase_analytics"
                                   binaryMessenger:[registrar messenger]];
-  FLTFirebaseAnalyticsPlugin *instance = [[FLTFirebaseAnalyticsPlugin alloc] init];
+  FirebaseAnalyticsPlugin *instance = [[FirebaseAnalyticsPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 

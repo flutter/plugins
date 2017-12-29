@@ -6,15 +6,15 @@
 
 #import "Reachability/Reachability.h"
 
-@interface FLTConnectivityPlugin ()<FlutterStreamHandler>
+@interface ConnectivityPlugin ()<FlutterStreamHandler>
 @end
 
-@implementation FLTConnectivityPlugin {
+@implementation ConnectivityPlugin {
   FlutterEventSink _eventSink;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  FLTConnectivityPlugin* instance = [[FLTConnectivityPlugin alloc] init];
+  ConnectivityPlugin* instance = [[ConnectivityPlugin alloc] init];
 
   FlutterMethodChannel* channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/connectivity"

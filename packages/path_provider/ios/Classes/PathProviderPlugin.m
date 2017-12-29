@@ -9,7 +9,7 @@ NSString* GetDirectoryOfType(NSSearchPathDirectory dir) {
   return paths.firstObject;
 }
 
-@implementation FLTPathProviderPlugin
+@implementation PathProviderPlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   FlutterMethodChannel* channel =

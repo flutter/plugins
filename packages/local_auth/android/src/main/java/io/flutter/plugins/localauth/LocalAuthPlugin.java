@@ -15,18 +15,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /** LocalAuthPlugin */
 public class LocalAuthPlugin implements MethodCallHandler {
-  private final Registrar registrar;
+  private final Activity activity;
   private final AtomicBoolean authInProgress = new AtomicBoolean(false);
 
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/local_auth");
-    channel.setMethodCallHandler(new LocalAuthPlugin(registrar));
+    channel.setMethodCallHandler(new LocalAuthPlugin(registrar.activity()));
   }
 
-  private LocalAuthPlugin(Registrar registrar) {
-    this.registrar = registrar;
+  private LocalAuthPlugin(Activity activity) {
+    this.activity = activity;
   }
 
   @Override
@@ -40,11 +40,6 @@ public class LocalAuthPlugin implements MethodCallHandler {
         result.error("auth_in_progress", "Authentication in progress", null);
         return;
       }
-      Activity activity = registrar.activity();
-      if (activity == null) {
-        result.error("no_activity", "local_auth plugin requires a foreground activity", null);
-        return;
-      }
       AuthenticationHelper authenticationHelper =
           new AuthenticationHelper(
               activity,
@@ -52,23 +47,20 @@ public class LocalAuthPlugin implements MethodCallHandler {
               new AuthCompletionHandler() {
                 @Override
                 public void onSuccess() {
-                  if (authInProgress.compareAndSet(true, false)) {
-                    result.success(true);
-                  }
+                  result.success(true);
+                  authInProgress.set(false);
                 }
 
                 @Override
                 public void onFailure() {
-                  if (authInProgress.compareAndSet(true, false)) {
-                    result.success(false);
-                  }
+                  result.success(false);
+                  authInProgress.set(false);
                 }
 
                 @Override
                 public void onError(String code, String error) {
-                  if (authInProgress.compareAndSet(true, false)) {
-                    result.error(code, error, null);
-                  }
+                  result.error(code, error, null);
+                  authInProgress.set(false);
                 }
               });
       authenticationHelper.authenticate();

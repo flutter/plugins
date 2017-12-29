@@ -4,13 +4,16 @@
 
 package io.flutter.firebaseauth;
 
+import android.app.Activity;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.util.SparseArray;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.EmailAuthProvider;
@@ -19,6 +22,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.auth.PhoneAuthCredential;
+import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.auth.UserInfo;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -26,10 +31,12 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
 import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
 
 /** Flutter plugin for Firebase Auth. */
 public class FirebaseAuthPlugin implements MethodCallHandler {
-  private final PluginRegistry.Registrar registrar;
+  private final Activity activity;
   private final FirebaseAuth firebaseAuth;
   private final SparseArray<FirebaseAuth.AuthStateListener> authStateListeners =
       new SparseArray<>();
@@ -39,18 +46,21 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
   private int nextHandle = 0;
 
   private static final String ERROR_REASON_EXCEPTION = "exception";
-
+    private String verficationid;
+  //mcallback varibles
+  PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks;
   public static void registerWith(PluginRegistry.Registrar registrar) {
     MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_auth");
-    channel.setMethodCallHandler(new FirebaseAuthPlugin(registrar, channel));
+    channel.setMethodCallHandler(new FirebaseAuthPlugin(registrar.activity(), channel));
   }
 
-  private FirebaseAuthPlugin(PluginRegistry.Registrar registrar, MethodChannel channel) {
-    this.registrar = registrar;
+  private FirebaseAuthPlugin(Activity activity, MethodChannel channel) {
+    this.activity = activity;
     this.channel = channel;
-    FirebaseApp.initializeApp(registrar.context());
+    FirebaseApp.initializeApp(activity);
     this.firebaseAuth = FirebaseAuth.getInstance();
+
   }
 
   @Override
@@ -74,6 +84,12 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       case "signInWithCustomToken":
         handleSignInWithCustomToken(call, result);
         break;
+      case "signInWithPhoneNumber":
+        handleSignInWithPhoneNumber(call,result);
+        break;
+      case "verifyOtp":
+          handleverifyotp(call, result);
+          break;
       case "signInWithFacebook":
         handleSignInWithFacebook(call, result);
         break;
@@ -95,12 +111,76 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       case "stopListeningAuthState":
         handleStopListeningAuthState(call, result);
         break;
+        case "deleteCurrentUser":
+            handledeletecurrentuser(result);
+            break;
       default:
         result.notImplemented();
         break;
     }
   }
+  private void handleSignInWithPhoneNumber(MethodCall call,final Result result) {
+    @SuppressWarnings("unchecked")
+    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    String phoneNumber = arguments.get("phoneNumber");
 
+
+    mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+
+      @Override
+      public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
+
+
+        firebaseAuth.signInWithCredential(phoneAuthCredential)
+                .addOnCompleteListener(activity, new SignInCompleteListener(result));
+      }
+      @Override
+      public void onVerificationFailed(FirebaseException e) {
+        Log.e("onVerificationFailed", e.toString());
+        result.error(ERROR_REASON_EXCEPTION, e.getMessage(), null);
+        Log.e("error", e.getMessage());
+      }
+
+      @Override
+      public void onCodeSent(String verificationId,
+                             PhoneAuthProvider.ForceResendingToken token) {
+        Log.e("onCodeSent:", verificationId);
+              verficationid =verificationId;
+//        result.success("sentotp");
+      }
+    };
+
+    PhoneAuthProvider.getInstance().verifyPhoneNumber(phoneNumber,60, TimeUnit.SECONDS,this.activity,this.mCallbacks);
+  }
+    private void handledeletecurrentuser(final Result result) {
+          @SuppressWarnings("unchecked")
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        
+        user.delete()
+        .addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    Log.d("Status", "User account deleted.");
+                      result.success("deleted");
+                }else{
+                     result.error(ERROR_REASON_EXCEPTION, task.getException().getMessage(), null);
+                }
+            }
+        });
+    }
+
+
+    private void  handleverifyotp(MethodCall call, final Result result) {
+        @SuppressWarnings("unchecked")
+        Map<String, String> arguments = (Map<String, String>) call.arguments;
+        String otp = arguments.get("otp");
+        PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verficationid, otp);
+            firebaseAuth.signInWithCredential(credential)
+                    .addOnCompleteListener(activity, new SignInCompleteListener(result));
+        Log.e("otp", otp);
+        Log.e("Phoneauthotp", "hit success");
+    }
   private void handleLinkWithEmailAndPassword(MethodCall call, Result result) {
     @SuppressWarnings("unchecked")
     Map<String, String> arguments = (Map<String, String>) call.arguments;
@@ -111,7 +191,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     firebaseAuth
         .getCurrentUser()
         .linkWithCredential(credential)
-        .addOnCompleteListener(new SignInCompleteListener(result));
+        .addOnCompleteListener(activity, new SignInCompleteListener(result));
   }
 
   private void handleCurrentUser(MethodCall call, final Result result) {
@@ -130,7 +210,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
   }
 
   private void handleSignInAnonymously(MethodCall call, final Result result) {
-    firebaseAuth.signInAnonymously().addOnCompleteListener(new SignInCompleteListener(result));
+    firebaseAuth
+        .signInAnonymously()
+        .addOnCompleteListener(activity, new SignInCompleteListener(result));
   }
 
   private void handleCreateUserWithEmailAndPassword(MethodCall call, final Result result) {
@@ -141,7 +223,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
 
     firebaseAuth
         .createUserWithEmailAndPassword(email, password)
-        .addOnCompleteListener(new SignInCompleteListener(result));
+        .addOnCompleteListener(activity, new SignInCompleteListener(result));
   }
 
   private void handleSignInWithEmailAndPassword(MethodCall call, final Result result) {
@@ -152,7 +234,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
 
     firebaseAuth
         .signInWithEmailAndPassword(email, password)
-        .addOnCompleteListener(new SignInCompleteListener(result));
+        .addOnCompleteListener(activity, new SignInCompleteListener(result));
   }
 
   private void handleSignInWithGoogle(MethodCall call, final Result result) {
@@ -163,7 +245,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     AuthCredential credential = GoogleAuthProvider.getCredential(idToken, accessToken);
     firebaseAuth
         .signInWithCredential(credential)
-        .addOnCompleteListener(new SignInCompleteListener(result));
+        .addOnCompleteListener(activity, new SignInCompleteListener(result));
   }
 
   private void handleLinkWithGoogleCredential(MethodCall call, final Result result) {
@@ -175,7 +257,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     firebaseAuth
         .getCurrentUser()
         .linkWithCredential(credential)
-        .addOnCompleteListener(new SignInCompleteListener(result));
+        .addOnCompleteListener(activity, new SignInCompleteListener(result));
   }
 
   private void handleSignInWithFacebook(MethodCall call, final Result result) {
@@ -185,7 +267,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     AuthCredential credential = FacebookAuthProvider.getCredential(accessToken);
     firebaseAuth
         .signInWithCredential(credential)
-        .addOnCompleteListener(new SignInCompleteListener(result));
+        .addOnCompleteListener(activity, new SignInCompleteListener(result));
   }
 
   private void handleSignInWithCustomToken(MethodCall call, final Result result) {
@@ -193,7 +275,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     String token = arguments.get("token");
     firebaseAuth
         .signInWithCustomToken(token)
-        .addOnCompleteListener(new SignInCompleteListener(result));
+        .addOnCompleteListener(activity, new SignInCompleteListener(result));
   }
 
   private void handleSignOut(MethodCall call, final Result result) {
@@ -274,7 +356,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         result.error(ERROR_REASON_EXCEPTION, e.getMessage(), null);
       } else {
         FirebaseUser user = task.getResult().getUser();
+        Log.i("user", user.getUid());
         ImmutableMap<String, Object> userMap = mapFromUser(user);
+Log.i("map",userMap.toString());
         result.success(userMap);
       }
     }
@@ -283,8 +367,8 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
   private ImmutableMap.Builder<String, Object> userInfoToMap(UserInfo userInfo) {
     ImmutableMap.Builder<String, Object> builder =
         ImmutableMap.<String, Object>builder()
-            .put("providerId", userInfo.getProviderId())
-            .put("uid", userInfo.getUid());
+            .put("providerId", (userInfo.getProviderId()))
+            .put("uid", (userInfo.getUid())!= null ?userInfo.getUid() : "x");
     if (userInfo.getDisplayName() != null) {
       builder.put("displayName", userInfo.getDisplayName());
     }
@@ -293,6 +377,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     }
     if (userInfo.getEmail() != null) {
       builder.put("email", userInfo.getEmail());
+    }
+    if (userInfo.getPhoneNumber()!= null){
+      builder.put("phoneNumber",userInfo.getPhoneNumber());
     }
     return builder;
   }
@@ -315,4 +402,6 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       return null;
     }
   }
+
+
 }

@@ -184,6 +184,38 @@ class FirebaseAuth {
     return currentUser;
   }
 
+  Future<FirebaseUser> signInWithPhoneNumber({
+    @required String phoneNumber,
+  })async{
+try{
+  final Map<String,dynamic> data   = await channel.invokeMethod(
+        'signInWithPhoneNumber',
+        <String,String>{
+          'phoneNumber': phoneNumber,
+        },
+    );
+     final FirebaseUser currentUser = new FirebaseUser._(data);
+     return currentUser;}
+  catch(exception,stackTrace){
+  print(exception);
+  print(stackTrace);
+  }
+  }
+
+  Future<FirebaseUser> verifyotp({
+    @required String otp,
+  })async{
+
+    print("otpprocess initiated");
+    final Map<String,dynamic> data = await channel.invokeMethod(
+        'verifyOtp',
+        <String,String>{
+          'otp': otp,
+        }
+    );
+   final FirebaseUser currentUser = new FirebaseUser._(data);
+   return currentUser;
+  }
   Future<FirebaseUser> signInWithCustomToken({@required String token}) async {
     assert(token != null);
     final Map<String, dynamic> data = await channel.invokeMethod(
@@ -207,7 +239,12 @@ class FirebaseAuth {
         data == null ? null : new FirebaseUser._(data);
     return currentUser;
   }
+  /// Asynchronously gets delete current user.
+  Future<String> deletecurrentUser() async {
+  var data = await channel.invokeMethod("deleteCurrentUser");
 
+    return data;
+  }
   /// Links email account with current user and returns [Future<FirebaseUser>]
   /// basically current user with addtional email infomation
   ///
@@ -273,4 +310,20 @@ class FirebaseAuth {
         data != null ? new FirebaseUser._(data) : null;
     _authStateChangedControllers[id].add(currentUser);
   }
+ Future<Null> resetPassword({
+    @required String email
+  }) async {
+    assert(email != null);
+
+    final Map<String, dynamic> data = await channel.invokeMethod(
+      'resetPassword',
+      <String, String>{
+        'email': email
+      },
+    );
+  }
+
+
 }
+
+

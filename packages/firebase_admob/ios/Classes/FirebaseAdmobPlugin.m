@@ -18,14 +18,14 @@
 }
 @end
 
-@interface FLTFirebaseAdMobPlugin ()
+@interface FirebaseAdMobPlugin ()
 @property(nonatomic, retain) FlutterMethodChannel *channel;
 @end
 
-@implementation FLTFirebaseAdMobPlugin
+@implementation FirebaseAdMobPlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
-  FLTFirebaseAdMobPlugin *instance = [[FLTFirebaseAdMobPlugin alloc] init];
+  FirebaseAdMobPlugin *instance = [[FirebaseAdMobPlugin alloc] init];
   instance.channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/firebase_admob"
                                   binaryMessenger:[registrar messenger]];
@@ -54,11 +54,11 @@
                                details:nil]);
     return;
   }
-  [FLTMobileAd configureWithAppId:appId];
+  [MobileAd configureWithAppId:appId];
   result([NSNumber numberWithBool:YES]);
 }
 
-- (void)callLoadAd:(FLTMobileAd *)ad call:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)callLoadAd:(MobileAd *)ad call:(FlutterMethodCall *)call result:(FlutterResult)result {
   if (ad.status != CREATED) {
     if (ad.status == FAILED) {
       NSString *message = [NSString stringWithFormat:@"cannot reload a failed ad=%@", ad];
@@ -84,7 +84,7 @@
 - (void)callShowAd:(NSNumber *)mobileAdId
               call:(FlutterMethodCall *)call
             result:(FlutterResult)result {
-  FLTMobileAd *ad = [FLTMobileAd getAdForId:mobileAdId];
+  MobileAd *ad = [MobileAd getAdForId:mobileAdId];
   if (ad == nil) {
     NSString *message =
         [NSString stringWithFormat:@"show failed, the specified ad was not loaded id=%d",
@@ -99,7 +99,7 @@
 - (void)callDisposeAd:(NSNumber *)mobileAdId
                  call:(FlutterMethodCall *)call
                result:(FlutterResult)result {
-  FLTMobileAd *ad = [FLTMobileAd getAdForId:mobileAdId];
+  MobileAd *ad = [MobileAd getAdForId:mobileAdId];
   if (ad == nil) {
     NSString *message =
         [NSString stringWithFormat:@"dispose failed, no ad exists for id=%d", mobileAdId.intValue];
@@ -126,9 +126,9 @@
   }
 
   if ([call.method isEqualToString:@"loadBannerAd"]) {
-    [self callLoadAd:[FLTBannerAd withId:mobileAdId channel:self.channel] call:call result:result];
+    [self callLoadAd:[BannerAd withId:mobileAdId channel:self.channel] call:call result:result];
   } else if ([call.method isEqualToString:@"loadInterstitialAd"]) {
-    [self callLoadAd:[FLTInterstitialAd withId:mobileAdId channel:self.channel]
+    [self callLoadAd:[InterstitialAd withId:mobileAdId channel:self.channel]
                 call:call
               result:result];
   } else if ([call.method isEqualToString:@"showAd"]) {

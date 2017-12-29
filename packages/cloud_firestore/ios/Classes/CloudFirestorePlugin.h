@@ -4,5 +4,5 @@
 
 #import <Flutter/Flutter.h>
 
-@interface FLTCloudFirestorePlugin : NSObject<FlutterPlugin>
+@interface CloudFirestorePlugin : NSObject<FlutterPlugin>
 @end

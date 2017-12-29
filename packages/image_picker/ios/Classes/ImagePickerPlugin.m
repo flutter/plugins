@@ -6,14 +6,14 @@
 
 #import "ImagePickerPlugin.h"
 
-@interface FLTImagePickerPlugin ()<UINavigationControllerDelegate, UIImagePickerControllerDelegate>
+@interface ImagePickerPlugin ()<UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 @end
 
 static const int SOURCE_ASK_USER = 0;
 static const int SOURCE_CAMERA = 1;
 static const int SOURCE_GALLERY = 2;
 
-@implementation FLTImagePickerPlugin {
+@implementation ImagePickerPlugin {
   FlutterResult _result;
   NSDictionary *_arguments;
   UIImagePickerController *_imagePickerController;
@@ -26,8 +26,7 @@ static const int SOURCE_GALLERY = 2;
                                   binaryMessenger:[registrar messenger]];
   UIViewController *viewController =
       [UIApplication sharedApplication].delegate.window.rootViewController;
-  FLTImagePickerPlugin *instance =
-      [[FLTImagePickerPlugin alloc] initWithViewController:viewController];
+  ImagePickerPlugin *instance = [[ImagePickerPlugin alloc] initWithViewController:viewController];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 

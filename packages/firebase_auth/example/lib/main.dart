@@ -37,6 +37,10 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   Future<String> _message = new Future<String>.value('');
+  TextEditingController _mobilenumbercontroller = new TextEditingController();
+  TextEditingController _otpcontroller = new TextEditingController();
+
+
 
   Future<String> _testSignInAnonymously() async {
     final FirebaseUser user = await _auth.signInAnonymously();
@@ -63,7 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return 'signInAnonymously succeeded: $user';
   }
 
-  Future<String> _testSignInWithGoogle() async {
+ Future<String> _testSignInWithGoogle() async {
     final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
     final GoogleSignInAuthentication googleAuth =
         await googleUser.authentication;
@@ -81,7 +85,18 @@ class _MyHomePageState extends State<MyHomePage> {
 
     return 'signInWithGoogle succeeded: $user';
   }
-
+void alert(String msg){
+  showDialog<String>(
+    context: context,
+    child: new AlertDialog(content: new Text(msg), actions: <Widget>[
+      new FlatButton(
+          child: const Text('OK'),
+          onPressed: () {
+            Navigator.pop(context);
+          }),
+    ]),
+  );
+}
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -98,6 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   _message = _testSignInAnonymously();
                 });
               }),
+
           new MaterialButton(
               child: const Text('Test signInWithGoogle'),
               onPressed: () {
@@ -105,6 +121,82 @@ class _MyHomePageState extends State<MyHomePage> {
                   _message = _testSignInWithGoogle();
                 });
               }),
+
+
+
+
+new Container(height: 20.0,),
+        new Container(
+          padding: const EdgeInsets.only(
+              left: 20.0, right: 20.0, top: 0.0, bottom: 0.0),
+          child:new TextFormField(
+            controller: _mobilenumbercontroller,
+            decoration: const InputDecoration(
+              hintText: 'Enter mobilenumber to get otp',
+
+              helperStyle: const TextStyle(
+                  color: Colors.grey, fontSize: 11.0),
+            ),
+            keyboardType: TextInputType.phone,
+
+          ),
+        ),
+         new Center(child:new RaisedButton(
+              child: const Text('send otp'),
+              onPressed: () async{
+                try {
+                  var request = await _auth.signInWithPhoneNumber(
+                      phoneNumber: _mobilenumbercontroller.text
+
+                  );
+             //     alert("$request to requested mobile number");
+print(request);
+                }catch(exception){
+                 // print(exception.toString());
+                alert(exception.toString());
+                }
+              }),),
+          new Container(
+            padding: const EdgeInsets.only(
+                left: 20.0, right: 20.0, top: 0.0, bottom: 0.0),
+            child:new TextFormField(
+                controller: _otpcontroller,
+                decoration: const InputDecoration(
+                  hintText: 'Enter otp',
+
+                  helperStyle: const TextStyle(
+                      color: Colors.grey, fontSize: 11.0),
+                ),
+                keyboardType: TextInputType.number,
+
+            ),
+          ),
+          new Container(height:20.0),
+         new Center(child: new RaisedButton(
+              child: const Text('verify otp'),
+              onPressed: () async{
+                try {
+                var user =  await _auth.verifyotp(
+                      otp: _otpcontroller.text
+                  );
+                alert("user created with this uid: ${user.uid}");
+                }catch(exception){
+                alert(exception.toString());
+                }
+
+              }),),
+          new Center(child: new RaisedButton(
+              child: const Text('delete user'),
+              onPressed: () async{
+                try {
+                  var x =  await _auth.deletecurrentUser();
+                  alert(x);
+                }catch(exception){
+                  print(exception.toString());
+                  alert(exception.toString());
+                }
+
+              }),),
           new FutureBuilder<String>(
               future: _message,
               builder: (_, AsyncSnapshot<String> snapshot) {
@@ -116,4 +208,5 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
+
 }

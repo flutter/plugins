@@ -4,5 +4,5 @@
 
 #import <Flutter/Flutter.h>
 
-@interface FLTFirebaseAdMobPlugin : NSObject<FlutterPlugin>
+@interface FirebaseAdMobPlugin : NSObject<FlutterPlugin>
 @end

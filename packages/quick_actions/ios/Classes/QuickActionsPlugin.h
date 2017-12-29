@@ -4,5 +4,5 @@
 
 #import <Flutter/Flutter.h>
 
-@interface FLTQuickActionsPlugin : NSObject<FlutterPlugin>
+@interface QuickActionsPlugin : NSObject<FlutterPlugin>
 @end

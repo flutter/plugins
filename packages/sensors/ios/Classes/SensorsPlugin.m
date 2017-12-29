@@ -5,17 +5,17 @@
 #import "SensorsPlugin.h"
 #import <CoreMotion/CoreMotion.h>
 
-@implementation FLTSensorsPlugin
+@implementation SensorsPlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  FLTAccelerometerStreamHandler* accelerometerStreamHandler =
-      [[FLTAccelerometerStreamHandler alloc] init];
+  AccelerometerStreamHandler* accelerometerStreamHandler =
+      [[AccelerometerStreamHandler alloc] init];
   FlutterEventChannel* accelerometerChannel =
       [FlutterEventChannel eventChannelWithName:@"plugins.flutter.io/accelerometer"
                                 binaryMessenger:[registrar messenger]];
   [accelerometerChannel setStreamHandler:accelerometerStreamHandler];
 
-  FLTGyroscopeStreamHandler* gyroscopeStreamHandler = [[FLTGyroscopeStreamHandler alloc] init];
+  GyroscopeStreamHandler* gyroscopeStreamHandler = [[GyroscopeStreamHandler alloc] init];
   FlutterEventChannel* gyroscopeChannel =
       [FlutterEventChannel eventChannelWithName:@"plugins.flutter.io/gyroscope"
                                 binaryMessenger:[registrar messenger]];
@@ -33,7 +33,7 @@ void _initMotionManager() {
   }
 }
 
-@implementation FLTAccelerometerStreamHandler
+@implementation AccelerometerStreamHandler
 
 - (FlutterError*)onListenWithArguments:(id)arguments eventSink:(FlutterEventSink)eventSink {
   _initMotionManager();
@@ -59,7 +59,7 @@ void _initMotionManager() {
 
 @end
 
-@implementation FLTGyroscopeStreamHandler
+@implementation GyroscopeStreamHandler
 
 - (FlutterError*)onListenWithArguments:(id)arguments eventSink:(FlutterEventSink)eventSink {
   _initMotionManager();

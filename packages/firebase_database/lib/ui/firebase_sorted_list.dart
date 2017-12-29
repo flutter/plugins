@@ -6,9 +6,8 @@ import 'dart:collection';
 
 import 'package:meta/meta.dart';
 
-import '../firebase_database.dart'
-    show DatabaseError, DataSnapshot, Event, Query;
-import 'firebase_list.dart' show ChildCallback, ErrorCallback, ValueCallback;
+import '../firebase_database.dart' show DataSnapshot, Event, Query;
+import 'firebase_list.dart' show ChildCallback, ValueCallback;
 import 'utils/stream_subscriber_mixin.dart';
 
 /// Sorts the results of `query` on the client side using to the `comparator`.
@@ -27,14 +26,13 @@ class FirebaseSortedList extends ListBase<DataSnapshot>
     this.onChildRemoved,
     this.onChildChanged,
     this.onValue,
-    this.onError,
   }) {
     assert(query != null);
     assert(comparator != null);
-    listen(query.onChildAdded, _onChildAdded, onError: _onError);
-    listen(query.onChildRemoved, _onChildRemoved, onError: _onError);
-    listen(query.onChildChanged, _onChildChanged, onError: _onError);
-    listen(query.onValue, _onValue, onError: _onError);
+    listen(query.onChildAdded, _onChildAdded);
+    listen(query.onChildRemoved, _onChildRemoved);
+    listen(query.onChildChanged, _onChildChanged);
+    listen(query.onValue, _onValue);
   }
 
   /// Database query used to populate the list
@@ -55,9 +53,6 @@ class FirebaseSortedList extends ListBase<DataSnapshot>
   /// Called when the data of the list has finished loading
   final ValueCallback onValue;
 
-  /// Called when an error is reported (e.g. permission denied)
-  final ErrorCallback onError;
-
   // ListBase implementation
   final List<DataSnapshot> _snapshots = <DataSnapshot>[];
 
@@ -75,13 +70,6 @@ class FirebaseSortedList extends ListBase<DataSnapshot>
   @override
   void operator []=(int index, DataSnapshot value) {
     throw new UnsupportedError("List cannot be modified.");
-  }
-
-  @override
-  void clear() {
-    cancelSubscriptions();
-
-    // Do not call super.clear(), it will set the length, it's unsupported.
   }
 
   void _onChildAdded(Event event) {
@@ -112,9 +100,5 @@ class FirebaseSortedList extends ListBase<DataSnapshot>
 
   void _onValue(Event event) {
     onValue(event.snapshot);
-  }
-
-  void _onError(DatabaseError error) {
-    onError?.call(error);
   }
 }
