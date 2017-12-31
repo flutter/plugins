@@ -39,14 +39,73 @@ class MyHomePage extends StatelessWidget {
     intent.launch();
   }
 
+  void _openGoogleMapsStreetView() {
+    final AndroidIntent intent = new AndroidIntent(
+        action: 'action_view',
+        data: Uri.encodeFull('google.streetview:cbll=46.414382,10.013988'),
+        package: 'com.google.android.apps.maps');
+    intent.launch();
+  }
+
+  void _displayMapInGoogleMaps({int zoomLevel: 12}) {
+    final AndroidIntent intent = new AndroidIntent(
+        action: 'action_view',
+        data: Uri.encodeFull('geo:37.7749,-122.4194?z=$zoomLevel'),
+        package: 'com.google.android.apps.maps');
+    intent.launch();
+  }
+
+  void _launchTurnByTurnNavigationInGoogleMaps() {
+    final AndroidIntent intent = new AndroidIntent(
+        action: 'action_view',
+        data: Uri.encodeFull(
+            'google.navigation:q=Taronga+Zoo,+Sydney+Australia&avoid=tf'),
+        package: 'com.google.android.apps.maps');
+    intent.launch();
+  }
+
+  void _openLinkInGoogleChrome() {
+    final AndroidIntent intent = new AndroidIntent(
+        action: 'action_view',
+        data: Uri.encodeFull('https://flutter.io'),
+        package: 'com.android.chrome');
+    intent.launch();
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget body;
     if (const LocalPlatform().isAndroid) {
-      body = new InkWell(
-        child: const Text('Tap here to set an alarm\non weekdays at 9:30pm.'),
-        onTap: _createAlarm,
-      );
+      body = new Padding(
+          padding: const EdgeInsets.symmetric(vertical: 15.0),
+          child: new Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              new RaisedButton(
+                child: const Text(
+                    'Tap here to set an alarm\non weekdays at 9:30pm.'),
+                onPressed: _createAlarm,
+              ),
+              new RaisedButton(
+                child: const Text(
+                    'Tap here to display panorama\nimagery in Google Street View.'),
+                onPressed: _openGoogleMapsStreetView,
+              ),
+              new RaisedButton(
+                child: const Text('Tap here to display\na map in Google Maps.'),
+                onPressed: _displayMapInGoogleMaps,
+              ),
+              new RaisedButton(
+                child: const Text(
+                    'Tap here to launch turn-by-turn\nnavigation in Google Maps.'),
+                onPressed: _launchTurnByTurnNavigationInGoogleMaps,
+              ),
+              new RaisedButton(
+                child: const Text('Tap here to open link in Google Chrome.'),
+                onPressed: _openLinkInGoogleChrome,
+              ),
+            ],
+          ));
     } else {
       body = const Text('This plugin only works with Android');
     }

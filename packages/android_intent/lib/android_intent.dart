@@ -16,6 +16,7 @@ class AndroidIntent {
   final String category;
   final String data;
   final Map<String, dynamic> arguments;
+  final String package;
   final MethodChannel _channel;
   final Platform _platform;
 
@@ -31,6 +32,7 @@ class AndroidIntent {
       this.category,
       this.data,
       this.arguments,
+      this.package,
       Platform platform})
       : assert(action != null),
         _channel = const MethodChannel(kChannelName),
@@ -51,6 +53,9 @@ class AndroidIntent {
     }
     if (arguments != null) {
       args['arguments'] = arguments;
+    }
+    if (package != null) {
+      args['package'] = package;
     }
     await _channel.invokeMethod('launch', args);
   }

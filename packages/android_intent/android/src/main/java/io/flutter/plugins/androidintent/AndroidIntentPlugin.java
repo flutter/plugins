@@ -4,6 +4,7 @@
 
 package io.flutter.plugins.androidintent;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import java.util.Map;
 /** AndroidIntentPlugin */
 @SuppressWarnings("unchecked")
 public class AndroidIntentPlugin implements MethodCallHandler {
+  private static final String TAG = AndroidIntentPlugin.class.getCanonicalName();
   private final Registrar mRegistrar;
 
   /** Plugin registration. */
@@ -106,7 +108,10 @@ public class AndroidIntentPlugin implements MethodCallHandler {
 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
+    Context context =
+        (mRegistrar.activity() != null) ? mRegistrar.activity() : mRegistrar.context();
     String action = convertAction((String) call.argument("action"));
+
     // Build intent
     Intent intent = new Intent(action);
     if (mRegistrar.activity() == null) {
@@ -121,12 +126,17 @@ public class AndroidIntentPlugin implements MethodCallHandler {
     if (call.argument("arguments") != null) {
       intent.putExtras(convertArguments((Map) call.argument("arguments")));
     }
-    Log.i("android_intent plugin", "Sending intent " + intent);
-    if (mRegistrar.activity() != null) {
-      mRegistrar.activity().startActivity(intent);
-    } else {
-      mRegistrar.context().startActivity(intent);
+    if (call.argument("package") != null) {
+      intent.setPackage((String) call.argument("package"));
     }
+    // If we cannot resolve an explicit intent fallback to an implicit one
+    if (intent.getPackage() != null
+        && intent.resolveActivity(context.getPackageManager()) == null) {
+      intent.setPackage(null);
+    }
+
+    Log.i(TAG, "Sending intent " + intent);
+    context.startActivity(intent);
 
     result.success(null);
   }
