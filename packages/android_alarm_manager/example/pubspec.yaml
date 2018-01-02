@@ -4,15 +4,15 @@ description: Demonstrates how to use the android_alarm_manager plugin.
 dependencies:
   flutter:
     sdk: flutter
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
   android_alarm_manager:
     path: ../
   firebase_auth:
     path: ../../firebase_auth
   google_sign_in:
     path: ../../google_sign_in
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
 
 flutter:
   uses-material-design: true
