@@ -25,6 +25,7 @@ class FirebaseAnimatedList extends StatefulWidget {
     @required this.itemBuilder,
     this.sort,
     this.defaultChild,
+    this.emptyStateChild,
     this.scrollDirection: Axis.vertical,
     this.reverse: false,
     this.controller,
@@ -47,8 +48,12 @@ class FirebaseAnimatedList extends StatefulWidget {
   final Comparator<DataSnapshot> sort;
 
   /// A widget to display while the query is loading. Defaults to an empty
-  /// Container().
+  /// [Container].
   final Widget defaultChild;
+
+  /// A widget to display if the query returns as empty. Defaults to an empty
+  /// Container().
+  final Widget emptyStateChild;
 
   /// Called, as needed, to build list item widgets.
   ///
@@ -214,6 +219,9 @@ class FirebaseAnimatedListState extends State<FirebaseAnimatedList> {
   Widget build(BuildContext context) {
     if (!_loaded) {
       return widget.defaultChild ?? new Container();
+    }
+    if (_model.isEmpty) {
+      return widget.emptyStateChild ?? new Container();
     }
     return new AnimatedList(
       key: _animatedListKey,
