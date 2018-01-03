@@ -90,14 +90,16 @@ abstract class MobileAd {
   static final Map<int, MobileAd> _allAds = <int, MobileAd>{};
 
   /// Default constructor, used by subclasses.
-  MobileAd({@required this.unitId, this.targetingInfo, this.listener}) {
+  MobileAd({@required this.unitId, MobileAdTargetingInfo targetingInfo, this.listener}) {
     assert(unitId != null && unitId.isNotEmpty);
     assert(_allAds[id] == null);
+    _targetingInfo = targetingInfo ?? const MobileAdTargetingInfo();
     _allAds[id] = this;
   }
 
   /// Optional targeting info per the native AdMob API.
-  final MobileAdTargetingInfo targetingInfo;
+  MobileAdTargetingInfo get targetingInfo => _targetingInfo;
+  final MobileAdTargetingInfo _targetingInfo;
 
   /// Identifies the source of ads for your application.
   ///
@@ -156,11 +158,7 @@ class BannerAd extends MobileAd {
     @required String unitId,
     MobileAdTargetingInfo targetingInfo,
     MobileAdListener listener,
-  }) : super(
-    unitId: unitId,
-    targetingInfo: targetingInfo ?? const MobileAdTargetingInfo(),
-    listener: listener
-  );
+  }) : super(unitId: unitId, targetingInfo: targetingInfo, listener: listener);
 
   @override
   Future<bool> load() => _doLoad("loadBannerAd");
@@ -175,11 +173,7 @@ class InterstitialAd extends MobileAd {
     String unitId,
     MobileAdTargetingInfo targetingInfo,
     MobileAdListener listener,
-  }) : super(
-    unitId: unitId,
-    targetingInfo: targetingInfo ?? const MobileAdTargetInfo(),
-    listener: listener
-  );
+  }) : super(unitId: unitId, targetingInfo: targetingInfo, listener: listener);
 
   @override
   Future<bool> load() => _doLoad("loadInterstitialAd");
