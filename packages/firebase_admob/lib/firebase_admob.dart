@@ -46,7 +46,6 @@ class MobileAdTargetingInfo {
     this.designedForFamilies,
     this.childDirected,
     this.testDevices,
-    this.requestAgent,
   });
 
   final List<String> keywords;
@@ -56,10 +55,11 @@ class MobileAdTargetingInfo {
   final bool designedForFamilies;
   final bool childDirected;
   final List<String> testDevices;
-  final String requestAgent;
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> json = <String, dynamic>{};
+    final Map<String, dynamic> json = <String, dynamic>{
+      'requestAgent': 'flutter-alpha',
+    };
 
     if (keywords != null && keywords.isNotEmpty) {
       assert(keywords.every((String s) => s != null && s.isNotEmpty));
@@ -76,8 +76,6 @@ class MobileAdTargetingInfo {
       assert(testDevices.every((String s) => s != null && s.isNotEmpty));
       json['testDevices'] = testDevices;
     }
-    if (requestAgent != null && requestAgent.isNotEmpty)
-      json['requestAgent'] = requestAgent;
 
     return json;
   }
@@ -92,14 +90,19 @@ abstract class MobileAd {
   static final Map<int, MobileAd> _allAds = <int, MobileAd>{};
 
   /// Default constructor, used by subclasses.
-  MobileAd({@required this.unitId, this.targetingInfo, this.listener}) {
+  MobileAd(
+      {@required this.unitId,
+      MobileAdTargetingInfo targetingInfo,
+      this.listener})
+      : _targetingInfo = targetingInfo ?? const MobileAdTargetingInfo() {
     assert(unitId != null && unitId.isNotEmpty);
     assert(_allAds[id] == null);
     _allAds[id] = this;
   }
 
   /// Optional targeting info per the native AdMob API.
-  final MobileAdTargetingInfo targetingInfo;
+  MobileAdTargetingInfo get targetingInfo => _targetingInfo;
+  final MobileAdTargetingInfo _targetingInfo;
 
   /// Identifies the source of ads for your application.
   ///
