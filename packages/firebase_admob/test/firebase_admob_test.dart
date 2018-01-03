@@ -66,7 +66,7 @@ void main() {
         isMethodCall('loadBannerAd', arguments: <String, dynamic>{
           'id': id,
           'unitId': bannerAdUnitId,
-          'targetingInfo': <String, String>{'requestAgent:', 'flutter-alpha'},
+          'targetingInfo': <String, String>{'requestAgent':, 'flutter-alpha'},
         }),
         isMethodCall('showAd', arguments: <String, dynamic>{
           'id': id,
@@ -94,7 +94,7 @@ void main() {
         isMethodCall('loadInterstitialAd', arguments: <String, dynamic>{
           'id': id,
           'unitId': interstitialAdUnitId,
-          'targetingInfo': <String, String>{'requestAgent:', 'flutter-alpha'},
+          'targetingInfo': <String, String>{'requestAgent':, 'flutter-alpha'},
         }),
         isMethodCall('showAd', arguments: <String, dynamic>{
           'id': id,
