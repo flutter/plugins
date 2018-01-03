@@ -90,9 +90,11 @@ abstract class MobileAd {
   static final Map<int, MobileAd> _allAds = <int, MobileAd>{};
 
   /// Default constructor, used by subclasses.
-  MobileAd({@required this.unitId, MobileAdTargetingInfo targetingInfo, this.listener})
-    : _targetingInfo = targetingInfo ?? const MobileAdTargetingInfo()
-  {
+  MobileAd(
+      {@required this.unitId,
+      MobileAdTargetingInfo targetingInfo,
+      this.listener})
+      : _targetingInfo = targetingInfo ?? const MobileAdTargetingInfo() {
     assert(unitId != null && unitId.isNotEmpty);
     assert(_allAds[id] == null);
     _allAds[id] = this;
@@ -159,7 +161,8 @@ class BannerAd extends MobileAd {
     @required String unitId,
     MobileAdTargetingInfo targetingInfo,
     MobileAdListener listener,
-  }) : super(unitId: unitId, targetingInfo: targetingInfo, listener: listener);
+  })
+      : super(unitId: unitId, targetingInfo: targetingInfo, listener: listener);
 
   @override
   Future<bool> load() => _doLoad("loadBannerAd");
@@ -174,7 +177,8 @@ class InterstitialAd extends MobileAd {
     String unitId,
     MobileAdTargetingInfo targetingInfo,
     MobileAdListener listener,
-  }) : super(unitId: unitId, targetingInfo: targetingInfo, listener: listener);
+  })
+      : super(unitId: unitId, targetingInfo: targetingInfo, listener: listener);
 
   @override
   Future<bool> load() => _doLoad("loadInterstitialAd");
