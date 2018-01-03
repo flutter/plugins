@@ -58,6 +58,7 @@ void main() {
       );
       final int id = banner.id;
 
+      expect(banner.targetingInfo?.requestAgent, 'flutter-alpha');
       expect(await banner.load(), true);
       expect(await banner.show(), true);
       expect(await banner.dispose(), true);
@@ -85,6 +86,7 @@ void main() {
       );
       final int id = interstitial.id;
 
+      expect(interstitial.targetingInfo?.requestAgent, 'flutter-alpha');
       expect(await interstitial.load(), true);
       expect(await interstitial.show(), true);
       expect(await interstitial.dispose(), true);

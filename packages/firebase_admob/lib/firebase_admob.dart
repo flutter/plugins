@@ -156,8 +156,11 @@ class BannerAd extends MobileAd {
     @required String unitId,
     MobileAdTargetingInfo targetingInfo,
     MobileAdListener listener,
-  })
-      : super(unitId: unitId, targetingInfo: targetingInfo, listener: listener);
+  }) : super(
+    unitId: unitId,
+    targetingInfo: targetingInfo ?? const MobileAdTargetingInfo(),
+    listener: listener
+  );
 
   @override
   Future<bool> load() => _doLoad("loadBannerAd");
@@ -172,8 +175,11 @@ class InterstitialAd extends MobileAd {
     String unitId,
     MobileAdTargetingInfo targetingInfo,
     MobileAdListener listener,
-  })
-      : super(unitId: unitId, targetingInfo: targetingInfo, listener: listener);
+  }) : super(
+    unitId: unitId,
+    targetingInfo: targetingInfo ?? const MobileAdTargetInfo(),
+    listener: listener
+  );
 
   @override
   Future<bool> load() => _doLoad("loadInterstitialAd");
