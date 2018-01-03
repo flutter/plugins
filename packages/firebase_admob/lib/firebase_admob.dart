@@ -46,7 +46,6 @@ class MobileAdTargetingInfo {
     this.designedForFamilies,
     this.childDirected,
     this.testDevices,
-    this.requestAgent,
   });
 
   final List<String> keywords;
@@ -56,10 +55,11 @@ class MobileAdTargetingInfo {
   final bool designedForFamilies;
   final bool childDirected;
   final List<String> testDevices;
-  final String requestAgent;
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> json = <String, dynamic>{};
+    final Map<String, dynamic> json = <String, dynamic>{
+      'requestAgent': 'flutter-alpha',
+    };
 
     if (keywords != null && keywords.isNotEmpty) {
       assert(keywords.every((String s) => s != null && s.isNotEmpty));
@@ -76,8 +76,6 @@ class MobileAdTargetingInfo {
       assert(testDevices.every((String s) => s != null && s.isNotEmpty));
       json['testDevices'] = testDevices;
     }
-    if (requestAgent != null && requestAgent.isNotEmpty)
-      json['requestAgent'] = requestAgent;
 
     return json;
   }
