@@ -58,7 +58,6 @@ void main() {
       );
       final int id = banner.id;
 
-      expect(banner.targetingInfo?.requestAgent, 'flutter-alpha');
       expect(await banner.load(), true);
       expect(await banner.show(), true);
       expect(await banner.dispose(), true);
@@ -67,7 +66,7 @@ void main() {
         isMethodCall('loadBannerAd', arguments: <String, dynamic>{
           'id': id,
           'unitId': bannerAdUnitId,
-          'targetingInfo': null,
+          'targetingInfo': <String, String>{'requestAgent:', 'flutter-alpha'},
         }),
         isMethodCall('showAd', arguments: <String, dynamic>{
           'id': id,
@@ -95,7 +94,7 @@ void main() {
         isMethodCall('loadInterstitialAd', arguments: <String, dynamic>{
           'id': id,
           'unitId': interstitialAdUnitId,
-          'targetingInfo': null,
+          'targetingInfo': <String, String>{'requestAgent:', 'flutter-alpha'},
         }),
         isMethodCall('showAd', arguments: <String, dynamic>{
           'id': id,

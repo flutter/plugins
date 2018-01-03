@@ -90,10 +90,11 @@ abstract class MobileAd {
   static final Map<int, MobileAd> _allAds = <int, MobileAd>{};
 
   /// Default constructor, used by subclasses.
-  MobileAd({@required this.unitId, MobileAdTargetingInfo targetingInfo, this.listener}) {
+  MobileAd({@required this.unitId, MobileAdTargetingInfo targetingInfo, this.listener})
+    : _targetingInfo = targetingInfo ?? const MobileAdTargetingInfo();
+  {
     assert(unitId != null && unitId.isNotEmpty);
     assert(_allAds[id] == null);
-    _targetingInfo = targetingInfo ?? const MobileAdTargetingInfo();
     _allAds[id] = this;
   }
 
