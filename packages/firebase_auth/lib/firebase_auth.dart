@@ -39,7 +39,7 @@ class UserInfo {
 /// to check if value was set to null or not provided
 class UserUpdateInfo {
   /// Container of data that will be send in update request
-  final Map<String, String> _updateData = {};
+  final Map<String, String> _updateData = <String, String>{};
 
   set displayName(String displayName) =>
       _updateData["displayName"] = displayName;
