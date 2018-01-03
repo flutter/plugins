@@ -91,7 +91,7 @@ abstract class MobileAd {
 
   /// Default constructor, used by subclasses.
   MobileAd({@required this.unitId, MobileAdTargetingInfo targetingInfo, this.listener})
-    : _targetingInfo = targetingInfo ?? const MobileAdTargetingInfo();
+    : _targetingInfo = targetingInfo ?? const MobileAdTargetingInfo()
   {
     assert(unitId != null && unitId.isNotEmpty);
     assert(_allAds[id] == null);
