@@ -27,13 +27,14 @@ class AndroidIntent {
   /// intent.
   /// [arguments] is the map that will be converted into an extras bundle and
   /// passed to the intent.
-  const AndroidIntent(
-      {@required this.action,
-      this.category,
-      this.data,
-      this.arguments,
-      this.package,
-      Platform platform})
+  const AndroidIntent({
+    @required this.action,
+    this.category,
+    this.data,
+    this.arguments,
+    this.package,
+    Platform platform,
+  })
       : assert(action != null),
         _channel = const MethodChannel(kChannelName),
         _platform = platform ?? const LocalPlatform();

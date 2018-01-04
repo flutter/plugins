@@ -128,11 +128,10 @@ public class AndroidIntentPlugin implements MethodCallHandler {
     }
     if (call.argument("package") != null) {
       intent.setPackage((String) call.argument("package"));
-    }
-    // If we cannot resolve an explicit intent fallback to an implicit one
-    if (intent.getPackage() != null
-        && intent.resolveActivity(context.getPackageManager()) == null) {
-      intent.setPackage(null);
+      if (intent.resolveActivity(context.getPackageManager()) == null) {
+        Log.i(TAG, "Cannot resolve explicit intent - ignoring package");
+        intent.setPackage(null);
+      }
     }
 
     Log.i(TAG, "Sending intent " + intent);
