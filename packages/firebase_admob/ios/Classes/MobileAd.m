@@ -230,15 +230,18 @@ GADBannerView *_banner;
       [_banner.bottomAnchor constraintEqualToAnchor:guide.bottomAnchor]
     ]];
   } else {
+    [self placeBannerPreIos11];
+  }
+#else
+  [self placeBannerPreIos11];
+#endif
+}
+
+- (void)placeBannerPreIos11 {
+    UIView *screen = [FLTMobileAd rootViewController].view;
     CGFloat x = screen.frame.size.width / 2 - _banner.frame.size.width / 2;
     CGFloat y = screen.frame.size.height - _banner.frame.size.height;
     _banner.frame = (CGRect){{x, y}, _banner.frame.size};
-  }
-#else
-  CGFloat x = screen.frame.size.width / 2 - _banner.frame.size.width / 2;
-  CGFloat y = screen.frame.size.height - _banner.frame.size.height;
-  _banner.frame = (CGRect){{x, y}, _banner.frame.size};
-#endif
 }
 
 - (void)adViewDidReceiveAd:(GADBannerView *)adView {
