@@ -1,3 +1,7 @@
+## 0.2.1
+
+* Use safe area layout to place ad in iOS 11
+
 ## 0.2.0
 
 * **Breaking change**. MobileAd TargetingInfo requestAgent is now hardcoded to 'flutter-alpha'.
