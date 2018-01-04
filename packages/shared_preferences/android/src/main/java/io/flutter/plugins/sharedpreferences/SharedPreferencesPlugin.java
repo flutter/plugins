@@ -4,7 +4,6 @@
 
 package io.flutter.plugins.sharedpreferences;
 
-import android.app.Activity;
 import android.content.Context;
 import android.util.Base64;
 import io.flutter.plugin.common.MethodCall;
@@ -38,12 +37,12 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
 
   public static void registerWith(PluginRegistry.Registrar registrar) {
     MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL_NAME);
-    SharedPreferencesPlugin instance = new SharedPreferencesPlugin(registrar.activity());
+    SharedPreferencesPlugin instance = new SharedPreferencesPlugin(registrar.context());
     channel.setMethodCallHandler(instance);
   }
 
-  private SharedPreferencesPlugin(Activity activity) {
-    preferences = activity.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+  private SharedPreferencesPlugin(Context context) {
+    preferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
     editor = preferences.edit();
   }
 

@@ -4,7 +4,6 @@
 
 package io.flutter.plugins.androidintent;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -21,17 +20,18 @@ import java.util.Map;
 /** AndroidIntentPlugin */
 @SuppressWarnings("unchecked")
 public class AndroidIntentPlugin implements MethodCallHandler {
-  private final Context context;
+  private static final String TAG = AndroidIntentPlugin.class.getCanonicalName();
+  private final Registrar mRegistrar;
 
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/android_intent");
-    channel.setMethodCallHandler(new AndroidIntentPlugin(registrar.activity()));
+    channel.setMethodCallHandler(new AndroidIntentPlugin(registrar));
   }
 
-  private AndroidIntentPlugin(Activity activity) {
-    this.context = activity;
+  private AndroidIntentPlugin(Registrar registrar) {
+    this.mRegistrar = registrar;
   }
 
   private String convertAction(String action) {
@@ -106,11 +106,20 @@ public class AndroidIntentPlugin implements MethodCallHandler {
     return true;
   }
 
+  private Context getActiveContext() {
+    return (mRegistrar.activity() != null) ? mRegistrar.activity() : mRegistrar.context();
+  }
+
   @Override
   public void onMethodCall(MethodCall call, Result result) {
+    Context context = getActiveContext();
     String action = convertAction((String) call.argument("action"));
+
     // Build intent
     Intent intent = new Intent(action);
+    if (mRegistrar.activity() == null) {
+      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    }
     if (call.argument("category") != null) {
       intent.addCategory((String) call.argument("category"));
     }
@@ -120,8 +129,17 @@ public class AndroidIntentPlugin implements MethodCallHandler {
     if (call.argument("arguments") != null) {
       intent.putExtras(convertArguments((Map) call.argument("arguments")));
     }
-    Log.i("android_intent plugin", "Sending intent " + intent);
+    if (call.argument("package") != null) {
+      intent.setPackage((String) call.argument("package"));
+      if (intent.resolveActivity(context.getPackageManager()) == null) {
+        Log.i(TAG, "Cannot resolve explicit intent - ignoring package");
+        intent.setPackage(null);
+      }
+    }
+
+    Log.i(TAG, "Sending intent " + intent);
     context.startActivity(intent);
+
     result.success(null);
   }
 }

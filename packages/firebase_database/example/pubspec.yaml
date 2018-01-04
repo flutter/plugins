@@ -8,6 +8,7 @@ dependencies:
     path: ../../firebase_auth
   firebase_database:
     path: ../
+  firebase_core: ^0.0.1
 
 flutter:
   uses-material-design: true

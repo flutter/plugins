@@ -1,5 +1,7 @@
 # android_alarm_manager
 
+[![pub package](https://img.shields.io/pub/v/android_alarm_manager.svg)](https://pub.dartlang.org/packages/android_alarm_manager)
+
 A Flutter plugin for accessing the Android AlarmManager service, and running
 Dart code in the background when alarms fire.
 

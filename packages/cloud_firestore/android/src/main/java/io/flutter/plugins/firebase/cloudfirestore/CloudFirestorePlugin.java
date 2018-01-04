@@ -208,11 +208,11 @@ public class CloudFirestorePlugin implements MethodCallHandler {
           listenerRegistrations.put(
               handle, getDocumentReference(arguments).addSnapshotListener(observer));
           result.success(handle);
+          break;
         }
       case "Query#removeListener":
         {
           Map<String, Object> arguments = call.arguments();
-          // TODO(arthurthompson): find out why removeListener is sometimes called without handle.
           int handle = (Integer) arguments.get("handle");
           listenerRegistrations.get(handle).remove();
           listenerRegistrations.remove(handle);

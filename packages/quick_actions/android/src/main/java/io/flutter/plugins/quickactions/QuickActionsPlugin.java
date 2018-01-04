@@ -25,15 +25,16 @@ import java.util.Map;
 /** QuickActionsPlugin */
 @SuppressWarnings("unchecked")
 public class QuickActionsPlugin implements MethodCallHandler {
-  private final Activity activity;
+  private final Registrar registrar;
+
   // Channel is a static field because it needs to be accessible to the
   // {@link ShortcutHandlerActivity} which has to be a static class with
   // no-args constructor.
   // It is also mutable because it is derived from {@link Registrar}.
   private static MethodChannel channel;
 
-  private QuickActionsPlugin(Activity activity) {
-    this.activity = activity;
+  private QuickActionsPlugin(Registrar registrar) {
+    this.registrar = registrar;
   }
 
   /** Plugin registration. */
@@ -42,7 +43,7 @@ public class QuickActionsPlugin implements MethodCallHandler {
       throw new IllegalStateException("You should not call registerWith more than once.");
     }
     channel = new MethodChannel(registrar.messenger(), "plugins.flutter.io/quick_actions");
-    channel.setMethodCallHandler(new QuickActionsPlugin(registrar.activity()));
+    channel.setMethodCallHandler(new QuickActionsPlugin(registrar));
   }
 
   @Override
@@ -54,8 +55,9 @@ public class QuickActionsPlugin implements MethodCallHandler {
       result.success(null);
       return;
     }
+    Context context = registrar.context();
     ShortcutManager shortcutManager =
-        (ShortcutManager) activity.getSystemService(Context.SHORTCUT_SERVICE);
+        (ShortcutManager) context.getSystemService(Context.SHORTCUT_SERVICE);
     switch (call.method) {
       case "setShortcutItems":
         List<Map<String, String>> serializedShortcuts = call.arguments();
@@ -75,21 +77,22 @@ public class QuickActionsPlugin implements MethodCallHandler {
   @SuppressLint("NewApi")
   private List<ShortcutInfo> deserializeShortcuts(List<Map<String, String>> shortcuts) {
     List<ShortcutInfo> shortcutInfos = new ArrayList<>();
+    Context context = registrar.context();
     for (Map<String, String> shortcut : shortcuts) {
       String icon = shortcut.get("icon");
       String type = shortcut.get("type");
       String title = shortcut.get("localizedTitle");
-      ShortcutInfo.Builder shortcutBuilder = new ShortcutInfo.Builder(activity, type);
+      ShortcutInfo.Builder shortcutBuilder = new ShortcutInfo.Builder(context, type);
       if (icon != null) {
         int resourceId =
-            activity.getResources().getIdentifier(icon, "drawable", activity.getPackageName());
+            context.getResources().getIdentifier(icon, "drawable", context.getPackageName());
         if (resourceId > 0) {
-          shortcutBuilder.setIcon(Icon.createWithResource(activity, resourceId));
+          shortcutBuilder.setIcon(Icon.createWithResource(context, resourceId));
         }
       }
       shortcutBuilder.setLongLabel(title);
       shortcutBuilder.setShortLabel(title);
-      Intent intent = new Intent(activity, ShortcutHandlerActivity.class);
+      Intent intent = new Intent(context, ShortcutHandlerActivity.class);
       intent.setAction("plugins.flutter.io/quick_action");
       intent.putExtra("type", type);
       shortcutBuilder.setIntent(intent);
