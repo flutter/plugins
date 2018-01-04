@@ -106,10 +106,13 @@ public class AndroidIntentPlugin implements MethodCallHandler {
     return true;
   }
 
+  private Context getActiveContext() {
+    return (mRegistrar.activity() != null) ? mRegistrar.activity() : mRegistrar.context();
+  }
+
   @Override
   public void onMethodCall(MethodCall call, Result result) {
-    Context context =
-        (mRegistrar.activity() != null) ? mRegistrar.activity() : mRegistrar.context();
+    Context context = getActiveContext();
     String action = convertAction((String) call.argument("action"));
 
     // Build intent
