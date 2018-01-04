@@ -8,6 +8,20 @@ final MethodChannel _channel = const MethodChannel('camera')
 
 enum CameraLensDirection { front, back, external, unknown }
 
+enum ResolutionPreset { low, medium, high }
+
+String serializeResolutionPreset(ResolutionPreset resolutionPreset) {
+  switch (resolutionPreset) {
+    case ResolutionPreset.high:
+      return 'high';
+    case ResolutionPreset.medium:
+      return 'medium';
+    case ResolutionPreset.low:
+      return 'low';
+  }
+  throw new ArgumentError('Unknown ResolutionPreset value');
+}
+
 CameraLensDirection _parseCameraLensDirection(String string) {
   switch (string) {
     case 'front':
@@ -21,61 +35,44 @@ CameraLensDirection _parseCameraLensDirection(String string) {
   }
 }
 
-Future<List<CameraConfiguration>> availableCameras() async {
-  Size parseSize(Map<String, Object> m) {
-    return new Size((m["width"] as int).toDouble(), (m["height"] as int).toDouble());
-  }
+/// Completes with a list of available cameras.
+///
+/// May throw a [CameraException].
+Future<List<CameraDescription>> availableCameras() async {
   try {
-    List<Map<String, String>> cameras = await _channel.invokeMethod('list');
-    var v = cameras.map((Map<String, dynamic> camera) {
-      return new CameraConfiguration(
-          name: camera['name'],
-          lensDirection: _parseCameraLensDirection(camera['lensFacing']),
-      previewSize: parseSize(camera['previewFormat']),
-      captureSize: parseSize(camera['captureFormat']));
+    final List<Map<String, String>> cameras =
+        await _channel.invokeMethod('list');
+    return cameras.map((Map<String, dynamic> camera) {
+      return new CameraDescription(
+        name: camera['name'],
+        lensDirection: _parseCameraLensDirection(camera['lensFacing']),
+      );
     }).toList();
-    return v;
   } on PlatformException catch (e) {
     throw new CameraException(e.code, e.message);
   }
 }
 
-class CameraConfiguration {
+class CameraDescription {
   final String name;
   final CameraLensDirection lensDirection;
-  final Size captureSize;
-  final Size previewSize;
-  CameraConfiguration({this.name, this.lensDirection, this.previewSize, this.captureSize});
+  CameraDescription({this.name, this.lensDirection});
 
   @override
   bool operator ==(Object o) {
-    return o is CameraConfiguration &&
-        o.lensDirection == lensDirection &&
-        o.previewSize == previewSize &&
-        o.captureSize == previewSize;
+    return o is CameraDescription &&
+        o.name == name &&
+        o.lensDirection == lensDirection;
   }
 
   @override
   int get hashCode {
-    return hashValues(previewSize, captureSize);
+    return hashValues(name, lensDirection);
   }
 
   @override
   String toString() {
-    return "$runtimeType(${previewSize}x$captureSize)";
-  }
-}
-
-enum CameraEvent { error, disconnected }
-
-CameraEvent _parseCameraEvent(String string) {
-  switch (string) {
-    case 'error':
-      return CameraEvent.error;
-    case 'disconnected':
-      return CameraEvent.disconnected;
-    default:
-      throw new ArgumentError("$string is not a valid camera event");
+    return '$runtimeType($name, $lensDirection)';
   }
 }
 
@@ -83,7 +80,9 @@ class CameraException implements Exception {
   String code;
   String description;
   CameraException(this.code, this.description);
-  String toString() => "$runtimeType($code, $description)";
+
+  @override
+  String toString() => '$runtimeType($code, $description)';
 }
 
 class CameraPreview extends StatelessWidget {
@@ -99,76 +98,112 @@ class CameraPreview extends StatelessWidget {
 }
 
 class CameraValue {
-  final bool isPlaying;
+  /// True if the camera is on.
+  final bool isStarted;
   final bool initialized;
   final String errorDescription;
+
+  const CameraValue({this.isStarted, this.initialized, this.errorDescription});
+
+  const CameraValue.uninitialized()
+      : this(isStarted: false, initialized: false);
+
   bool get isErroneous => errorDescription != null;
 
-  CameraValue({this.isPlaying, this.initialized, this.errorDescription});
-
-  CameraValue.uninitialized() : this(isPlaying: false, initialized: false);
-
-  CameraValue copyWith({bool isPlaying, bool initialized, String errorDescription}) {
+  CameraValue copyWith({
+    bool isStarted,
+    bool initialized,
+    String errorDescription,
+  }) {
     return new CameraValue(
-      isPlaying: isPlaying ?? this.isPlaying,
+      isStarted: isStarted ?? this.isStarted,
       initialized: initialized ?? this.initialized,
-      errorDescription: errorDescription ?? this.errorDescription
+      errorDescription: errorDescription ?? this.errorDescription,
     );
   }
 
   @override
   String toString() {
     return '$runtimeType('
-        'playing: $isPlaying, '
+        'started: $isStarted, '
         'initialized: $initialized, '
         'errorDescription: $errorDescription)';
   }
 }
 
+/// Controls a device camera.
+///
+/// Use [availableCameras] to get a list of available cameras.
+///
+/// Before using a [CameraController] a call to [initialize] must complete.
+///
+/// To show the camera preview on the screen, call [start()], and use a
+/// [CameraPreview] widget.
 class CameraController extends ValueNotifier<CameraValue> {
-  final CameraConfiguration configuration;
+  final CameraDescription description;
+  final ResolutionPreset resolutionPreset;
   int _textureId;
   bool _disposed = false;
-  StreamSubscription<CameraEvent> _eventSubscription;
+  StreamSubscription<Map<String, dynamic>> _eventSubscription;
   Completer<Null> _creatingCompleter;
+  Size _previewSize;
 
-  CameraController(this.configuration)
-      : super(new CameraValue.uninitialized());
+  CameraController(this.description, this.resolutionPreset)
+      : super(const CameraValue.uninitialized());
 
+  /// The size of the preview in pixels.
+  ///
+  /// Is [null] until [initialize] completes.
+  Size get previewSize => _previewSize;
+
+  /// Convenience getter for `previewSize.height / previewSize.width`.
+  ///
+  /// Can only be called after [initialize] completes
+  double get aspectRatio => previewSize.height / previewSize.width;
+
+  /// Initializes the camera on the device.
+  ///
+  /// Throws a [CameraException] if the initialization fails.
   Future<Null> initialize() async {
     if (_disposed) {
       return;
     }
     try {
       _creatingCompleter = new Completer<Null>();
-      _textureId = await _channel.invokeMethod('create', {
-        'cameraName': configuration.name,
-        'previewWidth': configuration.previewSize.width.toInt(),
-        'previewHeight': configuration.previewSize.height.toInt(),
-        'captureWidth': configuration.captureSize.width.toInt(),
-        'captureHeight': configuration.captureSize.height.toInt(),
-      });
+      final Map<String, dynamic> reply = await _channel.invokeMethod(
+        'create',
+        <String, dynamic>{
+          'cameraName': description.name,
+          'resolutionPreset': serializeResolutionPreset(resolutionPreset),
+        },
+      );
+      _textureId = reply['textureId'];
+      _previewSize = new Size(
+        reply['previewWidth'].toDouble(),
+        reply['previewHeight'].toDouble(),
+      );
       value = value.copyWith(initialized: true);
       _applyStartStop();
     } on PlatformException catch (e) {
+      value = value.copyWith(errorDescription: e.message);
       throw new CameraException(e.code, e.message);
     }
-    _eventSubscription = new EventChannel('cameraPlugin/cameraEvents$_textureId')
+    _eventSubscription =
+        new EventChannel('flutter.io/cameraPlugin/cameraEvents$_textureId')
             .receiveBroadcastStream()
-            .map(_parseCameraEvent).listen(_listener);
+            .listen(_listener);
     _creatingCompleter.complete(null);
   }
 
-  void _listener(CameraEvent event) {
-    switch (event) {
-      case CameraEvent.disconnected:
-
-      case CameraEvent.error:
+  void _listener(Map<String, dynamic> event) {
+    if (event['eventType'] == 'error') {
+      value = value.copyWith(errorDescription: event['errorDescription']);
     }
   }
 
+  /// Must be called to release the resources of this camera.
+  @override
   Future<Null> dispose() async {
-
     if (_creatingCompleter != null) {
       await _creatingCompleter.future;
       if (!_disposed) {
@@ -184,15 +219,24 @@ class CameraController extends ValueNotifier<CameraValue> {
     super.dispose();
   }
 
-  /// Captures an image and saves it to [filename].
-  Future<String> capture(String filename) async {
+  /// Captures an image and saves it to [path].
+  ///
+  /// A path can for example be obtained using
+  /// [path_provider](https://pub.dartlang.org/packages/path_provider).
+  ///
+  /// Throws a [CameraException] if the capture fails.
+  Future<Null> capture(String path) async {
     if (!value.initialized || _disposed) {
-      throw new CameraException('Uninitialized capture()',
-          'capture() was called on uninitialized CameraController');
+      throw new CameraException(
+        'Uninitialized capture()',
+        'capture() was called on uninitialized CameraController',
+      );
     }
     try {
-      return await _channel.invokeMethod(
-          'capture', {'textureId': _textureId, 'filename': filename});
+      await _channel.invokeMethod(
+        'capture',
+        <String, dynamic>{'textureId': _textureId, 'path': path},
+      );
     } on PlatformException catch (e) {
       throw new CameraException(e.code, e.message);
     }
@@ -200,24 +244,35 @@ class CameraController extends ValueNotifier<CameraValue> {
 
   void _applyStartStop() {
     if (value.initialized && !_disposed) {
-      if (value.isPlaying) {
-        _channel
-            .invokeMethod('start', {'textureId': _textureId}).catchError(print);
+      if (value.isStarted) {
+        _channel.invokeMethod(
+          'start',
+          <String, dynamic>{'textureId': _textureId},
+        );
       } else {
-        _channel.invokeMethod('stop', {'textureId': _textureId});
+        _channel.invokeMethod(
+          'stop',
+          <String, dynamic>{'textureId': _textureId},
+        );
       }
     }
   }
 
   /// Starts the preview.
+  ///
+  /// If called before [initialize] it will take effect just after
+  /// initialization is done.
   Future<Null> start() async {
-    value = value.copyWith(isPlaying: true);
+    value = value.copyWith(isStarted: true);
     _applyStartStop();
   }
 
   /// Stops the preview.
+  ///
+  /// If called before [initialize] it will take effect just after
+  /// initialization is done.
   Future<Null> stop() async {
-    value = value.copyWith(isPlaying: false);
+    value = value.copyWith(isStarted: false);
     _applyStartStop();
   }
 }

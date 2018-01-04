@@ -1,134 +1,101 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
-
-class CameraStartStop extends StatefulWidget {
-  final CameraController controller;
-
-  CameraStartStop(this.controller);
-
-  @override
-  State createState() {
-    return new _CameraStartStopState();
-  }
-}
-
-class _CameraStartStopState extends State<CameraStartStop> {
-  bool isPlaying = true;
-  VoidCallback listener;
-
-  _CameraStartStopState() {
-    listener = () {
-      if (!mounted) return;
-      setState(() {});
-    };
-  }
-
-  CameraController get controller => widget.controller;
-
-  @override
-  void initState() {
-    super.initState();
-    controller.addListener(listener);
-  }
-
-  @override
-  void didUpdateWidget(CameraStartStop oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.controller != widget.controller) {
-      controller.addListener(listener);
-    }
-  }
-
-  @override
-  void dispose() {
-    controller.removeListener(listener);
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return new GestureDetector(
-      child: new CameraPreview(controller),
-      onTap: () {
-        if (controller.value.isPlaying) {
-          controller.stop();
-        } else {
-          controller.start();
-        }
-      },
-    );
-  }
-}
+import 'package:path_provider/path_provider.dart';
 
 class CameraExampleHome extends StatefulWidget {
   @override
-  CameraExampleHomeState createState() {
-    return new CameraExampleHomeState();
+  _CameraExampleHomeState createState() {
+    return new _CameraExampleHomeState();
   }
 }
 
-class CameraExampleHomeState extends State<CameraExampleHome> {
+IconData cameraLensIcon(CameraLensDirection direction) {
+  switch (direction) {
+    case CameraLensDirection.back:
+      return Icons.camera_rear;
+    case CameraLensDirection.front:
+      return Icons.camera_front;
+    case CameraLensDirection.external:
+    case CameraLensDirection.unknown:
+      return Icons.camera;
+  }
+  throw new ArgumentError('Unknown lens direction');
+}
+
+class _CameraExampleHomeState extends State<CameraExampleHome> {
   bool opening = false;
   CameraController controller;
-  List<CameraConfiguration> cameras;
-  String filename;
+  String imagePath;
   int pictureCount = 0;
 
   @override
   void initState() {
     super.initState();
-    availableCameras().then((List<CameraConfiguration> cameras) {
-      setState(() {
-        this.cameras = cameras;
-      });
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> cameraList = <Widget>[];
-    if (cameras == null) {
-      cameraList.add(new Text("No cameras yet"));
+    final List<Widget> headerChildren = <Widget>[];
+
+    final List<Widget> cameraList = <Widget>[];
+
+    if (cameras.isEmpty) {
+      cameraList.add(const Text('No cameras found'));
     } else {
-      for (CameraConfiguration cameraConfiguration in cameras) {
-        cameraList.add(new RaisedButton(
-            onPressed: () async {
-                CameraController tempController = controller;
+      for (CameraDescription cameraDescription in cameras) {
+        cameraList.add(
+          new SizedBox(
+            width: 90.0,
+            child: new RadioListTile<CameraDescription>(
+              title: new Icon(cameraLensIcon(cameraDescription.lensDirection)),
+              groupValue: controller?.description,
+              value: cameraDescription,
+              onChanged: (CameraDescription newValue) async {
+                final CameraController tempController = controller;
                 controller = null;
                 await tempController?.dispose();
-                setState(() {
-                controller = new CameraController(cameraConfiguration);
+                controller =
+                    new CameraController(newValue, ResolutionPreset.high);
                 controller.start();
-                controller.initialize();
-              });
-            },
-            child: new Text(
-                '${cameraConfiguration.lensDirection}')));
+                await controller.initialize();
+                setState(() {});
+              },
+            ),
+          ),
+        );
       }
     }
-    List<Widget> rowChildren = <Widget>[new Column(children: cameraList)];
-    if (filename != null) {
-      rowChildren.add(new SizedBox(
-        child: new Image.file(new File(filename)),
-        width: 64.0,
-        height: 64.0,
-      ));
+
+    headerChildren.add(new Column(children: cameraList));
+    if (controller != null) {
+      headerChildren.add(playPauseButton());
+    }
+    if (imagePath != null) {
+      headerChildren.add(imageWidget());
     }
 
-    List<Widget> columnChildren = <Widget>[];
-    columnChildren.add(new Row(children: rowChildren));
-    if (controller == null) {
-      columnChildren.add(new Text("Tap a camera"));
+    final List<Widget> columnChildren = <Widget>[];
+    columnChildren.add(new Row(children: headerChildren));
+    if (controller == null || !controller.value.initialized) {
+      columnChildren.add(const Text('Tap a camera'));
+    } else if (controller.value.isErroneous) {
+      columnChildren.add(
+        new Text('Camera error ${controller.value.errorDescription}'),
+      );
     } else {
       columnChildren.add(
         new Expanded(
-          child: new Center(
-            child: new AspectRatio(
-              aspectRatio: controller.configuration.previewSize.height /
-                  controller.configuration.previewSize.width,
-              child: new CameraStartStop(controller),
+          child: new Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: new Center(
+              child: new AspectRatio(
+                aspectRatio:
+                controller.aspectRatio,
+                child: new CameraPreview(controller),
+              ),
             ),
           ),
         ),
@@ -136,32 +103,73 @@ class CameraExampleHomeState extends State<CameraExampleHome> {
     }
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text("Camera example"),
+        title: const Text('Camera example'),
       ),
       body: new Column(children: columnChildren),
-      floatingActionButton: new FloatingActionButton(
-        onPressed: () {
-          if (controller.value.isPlaying) {
-            controller.capture("picture${pictureCount++}").then(
-              (String filename) {
-                setState(
-                  () {
-                    this.filename = filename;
-                  },
-                );
-              },
-            );
-          }
-        },
+      floatingActionButton: (controller == null)
+          ? null
+          : new FloatingActionButton(
+              child: const Icon(Icons.camera),
+              onPressed: controller.value.isStarted ? capture : null,
+            ),
+    );
+  }
+
+  Widget imageWidget() {
+    return new Expanded(
+      child: new Align(
+        alignment: Alignment.centerRight,
+        child: new SizedBox(
+          child: new Image.file(new File(imagePath)),
+          width: 64.0,
+          height: 64.0,
+        ),
       ),
     );
   }
+
+  Widget playPauseButton() {
+    return new FlatButton(
+      onPressed: () {
+        setState(
+          () {
+            if (controller.value.isStarted) {
+              controller.stop();
+            } else {
+              controller.start();
+            }
+          },
+        );
+      },
+      child:
+          new Icon(controller.value.isStarted ? Icons.pause : Icons.play_arrow),
+    );
+  }
+
+  Future<Null> capture() async {
+    if (controller.value.isStarted) {
+      final Directory tempDir = await getTemporaryDirectory();
+      if (!mounted) {
+        return;
+      }
+      final String tempPath = tempDir.path;
+      final String path = '$tempPath/picture${pictureCount++}.jpg';
+      await controller.capture(path);
+      if (!mounted) {
+        return;
+      }
+      setState(
+        () {
+          imagePath = path;
+        },
+      );
+    }
+  }
 }
 
-void main() {
-  runApp(
-    new MaterialApp(
-      home: new CameraExampleHome(),
-    ),
-  );
+List<CameraDescription> cameras;
+
+Future<Null> main() async {
+  cameras = await availableCameras();
+  runApp(new MaterialApp(home: new CameraExampleHome()));
 }

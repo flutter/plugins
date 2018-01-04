@@ -1,10 +1,105 @@
 # Camera Plugin
 
-A Flutter plugin for demonstrating connecting the device camera to a Texture Widget.
+[![pub package](https://img.shields.io/pub/v/camera.svg)](https://pub.dartlang.org/packages/camera)
 
-Features:
+A Flutter plugin for iOS and Android allowing access to the device cameras.
 
-* Display live camera on a Texture widget
-* Snapshots can be saved to a file.
+## Features:
 
-Still a work in progress.
+* Display live camera preview in a widget.
+* Snapshots can be captured and saved to a file.
+
+## Installation
+
+First, add `camera` as a [dependency in your pubspec.yaml file](https://flutter.io/using-packages/).
+
+### iOS
+
+Add a row to the `ios/Runner/Info.plist` of your app with the key `Privacy - Camera Usage Description` and a usage description.
+
+Or in text format add the key:
+
+```xml
+	<key>NSCameraUsageDescription</key>
+    <string>Can I use the camera please?</string>
+```
+
+### Android
+
+#### Permissions
+Add the right permissions and features in your Android Manifest file, located in `<project root>/android/app/src/main/AndroidManifest.xml:
+
+For example:
+
+```xml
+<uses-permission android:name="android.permission.CAMERA"/>
+
+<uses-feature android:name="android.hardware.camera" />
+```
+
+Read more details about camera permissions [here](https://developer.android.com/guide/topics/media/camera.html).
+
+#### Android sdk version
+
+Change you minimum Android sdk version to 21 (or higher) in your `android/app/build.gradle` file.
+
+```
+        minSdkVersion 21
+```
+
+### Example
+
+Here is a small example flutter app displaying a full screen camera preview.
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:camera/camera.dart';
+
+void main() => runApp(new CameraApp());
+
+class CameraApp extends StatefulWidget {
+  @override
+  _CameraAppState createState() => new _CameraAppState();
+}
+
+class _CameraAppState extends State<CameraApp> {
+  CameraController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    availableCameras().then((List<CameraDescription> cameras) async {
+      controller = new CameraController(cameras[0], ResolutionPreset.medium);
+      controller.start();
+      await controller.initialize();
+      if (!mounted) {
+        return;
+      }
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    controller?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (controller == null || !controller.value.initialized) {
+      return new Container();
+    }
+    return new AspectRatio(
+        aspectRatio:
+            controller.previewSize.height / controller.previewSize.width,
+        child: new CameraPreview(controller));
+  }
+}
+```
+
+For a more elaborate usage example see [here](https://github.com/flutter/plugins/tree/master/packages/camera/example).
+
+*Note*: This plugin is still under development, and some APIs might not be available yet.
+[Feedback welcome](https://github.com/flutter/flutter/issues) and
+[Pull Requests](https://github.com/flutter/plugins/pulls) are most welcome!
