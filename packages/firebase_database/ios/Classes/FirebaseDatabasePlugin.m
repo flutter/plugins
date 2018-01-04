@@ -6,8 +6,12 @@
 
 #import <Firebase/Firebase.h>
 
+@interface FLTFirebaseDatabasePlugin ()
+@end
+
 @interface NSError (FlutterError)
 @property(readonly, nonatomic) FlutterError *flutterError;
+@property(readonly, nonatomic) NSDictionary *dictionary;
 @end
 
 @implementation NSError (FlutterError)
@@ -16,17 +20,25 @@
                              message:self.domain
                              details:self.localizedDescription];
 }
+
+- (NSDictionary *)dictionary {
+  return @{
+    @"code" : @(self.code),
+    @"message" : self.domain ?: [NSNull null],
+    @"details" : self.localizedDescription ?: [NSNull null],
+  };
+}
 @end
 
-FIRDatabaseReference *getReference(NSDictionary *arguments) {
+FIRDatabaseReference *getReference(FIRDatabase *database, NSDictionary *arguments) {
   NSString *path = arguments[@"path"];
-  FIRDatabaseReference *ref = [FIRDatabase database].reference;
+  FIRDatabaseReference *ref = database.reference;
   if ([path length] > 0) ref = [ref child:path];
   return ref;
 }
 
-FIRDatabaseQuery *getQuery(NSDictionary *arguments) {
-  FIRDatabaseQuery *query = getReference(arguments);
+FIRDatabaseQuery *getQuery(FIRDatabase *database, NSDictionary *arguments) {
+  FIRDatabaseQuery *query = getReference(database, arguments);
   NSDictionary *parameters = arguments[@"parameters"];
   NSString *orderBy = parameters[@"orderBy"];
   if ([orderBy isEqualToString:@"child"]) {
@@ -115,17 +127,17 @@ id roundDoubles(id value) {
   return value;
 }
 
-@interface FirebaseDatabasePlugin ()
+@interface FLTFirebaseDatabasePlugin ()
 @property(nonatomic, retain) FlutterMethodChannel *channel;
 @end
 
-@implementation FirebaseDatabasePlugin
+@implementation FLTFirebaseDatabasePlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/firebase_database"
                                   binaryMessenger:[registrar messenger]];
-  FirebaseDatabasePlugin *instance = [[FirebaseDatabasePlugin alloc] init];
+  FLTFirebaseDatabasePlugin *instance = [[FLTFirebaseDatabasePlugin alloc] init];
   instance.channel = channel;
   [registrar addMethodCallDelegate:instance channel:channel];
 }
@@ -136,28 +148,36 @@ id roundDoubles(id value) {
     if (![FIRApp defaultApp]) {
       [FIRApp configure];
     }
+    self.updatedSnapshots = [NSMutableDictionary new];
   }
   return self;
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
+  FIRDatabase *database;
+  NSString *appName = call.arguments[@"app"];
+  if (![appName isEqual:[NSNull null]]) {
+    database = [FIRDatabase databaseForApp:[FIRApp appNamed:appName]];
+  } else {
+    database = [FIRDatabase database];
+  }
   void (^defaultCompletionBlock)(NSError *, FIRDatabaseReference *) =
       ^(NSError *error, FIRDatabaseReference *ref) {
         result(error.flutterError);
       };
   if ([@"FirebaseDatabase#goOnline" isEqualToString:call.method]) {
-    [[FIRDatabase database] goOnline];
+    [database goOnline];
     result(nil);
   } else if ([@"FirebaseDatabase#goOffline" isEqualToString:call.method]) {
-    [[FIRDatabase database] goOffline];
+    [database goOffline];
     result(nil);
   } else if ([@"FirebaseDatabase#purgeOutstandingWrites" isEqualToString:call.method]) {
-    [[FIRDatabase database] purgeOutstandingWrites];
+    [database purgeOutstandingWrites];
     result(nil);
   } else if ([@"FirebaseDatabase#setPersistenceEnabled" isEqualToString:call.method]) {
-    NSNumber *value = call.arguments;
+    NSNumber *value = call.arguments[@"enabled"];
     @try {
-      [FIRDatabase database].persistenceEnabled = value.boolValue;
+      database.persistenceEnabled = value.boolValue;
       result([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
       if ([@"FIRDatabaseAlreadyInUse" isEqualToString:exception.name]) {
@@ -168,9 +188,9 @@ id roundDoubles(id value) {
       }
     }
   } else if ([@"FirebaseDatabase#setPersistenceCacheSizeBytes" isEqualToString:call.method]) {
-    NSNumber *value = call.arguments;
+    NSNumber *value = call.arguments[@"cacheSize"];
     @try {
-      [FIRDatabase database].persistenceCacheSizeBytes = value.unsignedIntegerValue;
+      database.persistenceCacheSizeBytes = value.unsignedIntegerValue;
       result([NSNumber numberWithBool:YES]);
     } @catch (NSException *exception) {
       if ([@"FIRDatabaseAlreadyInUse" isEqualToString:exception.name]) {
@@ -181,16 +201,82 @@ id roundDoubles(id value) {
       }
     }
   } else if ([@"DatabaseReference#set" isEqualToString:call.method]) {
-    [getReference(call.arguments) setValue:call.arguments[@"value"]
-                               andPriority:call.arguments[@"priority"]
-                       withCompletionBlock:defaultCompletionBlock];
+    [getReference(database, call.arguments) setValue:call.arguments[@"value"]
+                                         andPriority:call.arguments[@"priority"]
+                                 withCompletionBlock:defaultCompletionBlock];
+  } else if ([@"DatabaseReference#update" isEqualToString:call.method]) {
+    [getReference(database, call.arguments) updateChildValues:call.arguments[@"value"]
+                                          withCompletionBlock:defaultCompletionBlock];
   } else if ([@"DatabaseReference#setPriority" isEqualToString:call.method]) {
-    [getReference(call.arguments) setPriority:call.arguments[@"priority"]
-                          withCompletionBlock:defaultCompletionBlock];
+    [getReference(database, call.arguments) setPriority:call.arguments[@"priority"]
+                                    withCompletionBlock:defaultCompletionBlock];
+  } else if ([@"DatabaseReference#runTransaction" isEqualToString:call.method]) {
+    [getReference(database, call.arguments) runTransactionBlock:^FIRTransactionResult *_Nonnull(
+                                                FIRMutableData *_Nonnull currentData) {
+      // Create semaphore to allow native side to wait while snapshot
+      // updates occur on the Dart side.
+      dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+
+      NSObject *snapshot =
+          @{@"key" : currentData.key ?: [NSNull null], @"value" : currentData.value};
+
+      __block bool shouldAbort = false;
+
+      [self.channel invokeMethod:@"DoTransaction"
+                       arguments:@{
+                         @"transactionKey" : call.arguments[@"transactionKey"],
+                         @"snapshot" : snapshot
+                       }
+                          result:^(id _Nullable result) {
+                            if ([result isKindOfClass:[FlutterError class]]) {
+                              FlutterError *flutterError = ((FlutterError *)result);
+                              NSLog(@"Error code: %@", flutterError.code);
+                              NSLog(@"Error message: %@", flutterError.message);
+                              NSLog(@"Error details: %@", flutterError.details);
+                              shouldAbort = true;
+                            } else if ([result isEqual:FlutterMethodNotImplemented]) {
+                              NSLog(@"DoTransaction not implemented on the Dart side.");
+                              shouldAbort = true;
+                            } else {
+                              [self.updatedSnapshots setObject:result
+                                                        forKey:call.arguments[@"transactionKey"]];
+                            }
+                            dispatch_semaphore_signal(semaphore);
+                          }];
+
+      // Wait while Dart side updates the snapshot. Incoming transactionTimeout is in milliseconds
+      // so converting to nanoseconds for use with dispatch_semaphore_wait.
+      long result = dispatch_semaphore_wait(
+          semaphore, dispatch_time(DISPATCH_TIME_NOW,
+                                   [call.arguments[@"transactionTimeout"] integerValue] * 1000000));
+
+      if (result == 0 && !shouldAbort) {
+        // Set FIRMutableData value to value returned from the Dart side.
+        currentData.value =
+            [self.updatedSnapshots objectForKey:call.arguments[@"transactionKey"]][@"value"];
+      } else {
+        if (result != 0) {
+          NSLog(@"Transaction at %@ timed out.", [getReference(database, call.arguments) URL]);
+        }
+        return [FIRTransactionResult abort];
+      }
+
+      return [FIRTransactionResult successWithValue:currentData];
+    }
+        andCompletionBlock:^(NSError *_Nullable error, BOOL committed,
+                             FIRDataSnapshot *_Nullable snapshot) {
+          // Invoke transaction completion on the Dart side.
+          result(@{
+            @"transactionKey" : call.arguments[@"transactionKey"],
+            @"error" : error.dictionary ?: [NSNull null],
+            @"committed" : [NSNumber numberWithBool:committed],
+            @"snapshot" : @{@"key" : snapshot.key ?: [NSNull null], @"value" : snapshot.value}
+          });
+        }];
   } else if ([@"Query#observe" isEqualToString:call.method]) {
     FIRDataEventType eventType = parseEventType(call.arguments[@"eventType"]);
-    __block FIRDatabaseHandle handle = [getQuery(call.arguments)
-                      observeEventType:eventType
+    __block FIRDatabaseHandle handle = [getQuery(database, call.arguments)
+        observeEventType:eventType
         andPreviousSiblingKeyWithBlock:^(FIRDataSnapshot *snapshot, NSString *previousSiblingKey) {
           [self.channel invokeMethod:@"Event"
                            arguments:@{
@@ -201,15 +287,23 @@ id roundDoubles(id value) {
                              },
                              @"previousSiblingKey" : previousSiblingKey ?: [NSNull null],
                            }];
+        }
+        withCancelBlock:^(NSError *error) {
+          [self.channel invokeMethod:@"Error"
+                           arguments:@{
+                             @"handle" : [NSNumber numberWithUnsignedInteger:handle],
+                             @"error" : error.dictionary,
+                           }];
         }];
     result([NSNumber numberWithUnsignedInteger:handle]);
   } else if ([@"Query#removeObserver" isEqualToString:call.method]) {
     FIRDatabaseHandle handle = [call.arguments[@"handle"] unsignedIntegerValue];
-    [getQuery(call.arguments) removeObserverWithHandle:handle];
+    [getQuery(database, call.arguments) removeObserverWithHandle:handle];
     result(nil);
   } else if ([@"Query#keepSynced" isEqualToString:call.method]) {
     NSNumber *value = call.arguments[@"value"];
-    [getQuery(call.arguments) keepSynced:value];
+    [getQuery(database, call.arguments) keepSynced:value.boolValue];
+    result(nil);
   } else {
     result(FlutterMethodNotImplemented);
   }

@@ -4,7 +4,6 @@
 
 package io.flutter.plugins.share;
 
-import android.content.Context;
 import android.content.Intent;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -17,14 +16,14 @@ public class SharePlugin implements MethodChannel.MethodCallHandler {
 
   public static void registerWith(Registrar registrar) {
     MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL);
-    SharePlugin instance = new SharePlugin(registrar.activity());
+    SharePlugin instance = new SharePlugin(registrar);
     channel.setMethodCallHandler(instance);
   }
 
-  private final Context context;
+  private final Registrar mRegistrar;
 
-  private SharePlugin(Context context) {
-    this.context = context;
+  private SharePlugin(Registrar registrar) {
+    this.mRegistrar = registrar;
   }
 
   @Override
@@ -47,6 +46,12 @@ public class SharePlugin implements MethodChannel.MethodCallHandler {
     shareIntent.setAction(Intent.ACTION_SEND);
     shareIntent.putExtra(Intent.EXTRA_TEXT, text);
     shareIntent.setType("text/plain");
-    context.startActivity(Intent.createChooser(shareIntent, null /* dialog title optional */));
+    Intent chooserIntent = Intent.createChooser(shareIntent, null /* dialog title optional */);
+    if (mRegistrar.activity() != null) {
+      mRegistrar.activity().startActivity(chooserIntent);
+    } else {
+      chooserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      mRegistrar.context().startActivity(chooserIntent);
+    }
   }
 }

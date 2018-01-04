@@ -6,11 +6,16 @@
 
 #import "ImagePickerPlugin.h"
 
-@interface ImagePickerPlugin ()<UINavigationControllerDelegate, UIImagePickerControllerDelegate>
+@interface FLTImagePickerPlugin ()<UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 @end
 
-@implementation ImagePickerPlugin {
+static const int SOURCE_ASK_USER = 0;
+static const int SOURCE_CAMERA = 1;
+static const int SOURCE_GALLERY = 2;
+
+@implementation FLTImagePickerPlugin {
   FlutterResult _result;
+  NSDictionary *_arguments;
   UIImagePickerController *_imagePickerController;
   UIViewController *_viewController;
 }
@@ -19,9 +24,10 @@
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"image_picker"
                                   binaryMessenger:[registrar messenger]];
-  // TODO(goderbauer): cast is workaround for https://github.com/flutter/flutter/issues/9961.
-  UIViewController *viewController = (UIViewController *)registrar.messenger;
-  ImagePickerPlugin *instance = [[ImagePickerPlugin alloc] initWithViewController:viewController];
+  UIViewController *viewController =
+      [UIApplication sharedApplication].delegate.window.rootViewController;
+  FLTImagePickerPlugin *instance =
+      [[FLTImagePickerPlugin alloc] initWithViewController:viewController];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
@@ -41,36 +47,60 @@
                                 details:nil]);
     _result = nil;
   }
+
   if ([@"pickImage" isEqualToString:call.method]) {
     _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
     _imagePickerController.delegate = self;
+
     _result = result;
+    _arguments = call.arguments;
 
-    UIAlertControllerStyle style = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad
-                                       ? UIAlertControllerStyleAlert
-                                       : UIAlertControllerStyleActionSheet;
+    int imageSource = [[_arguments objectForKey:@"source"] intValue];
 
-    UIAlertController *alert =
-        [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:style];
-    UIAlertAction *camera = [UIAlertAction actionWithTitle:@"Take Photo"
-                                                     style:UIAlertActionStyleDefault
-                                                   handler:^(UIAlertAction *action) {
-                                                     [self showCamera];
-                                                   }];
-    UIAlertAction *library = [UIAlertAction actionWithTitle:@"Choose Photo"
-                                                      style:UIAlertActionStyleDefault
-                                                    handler:^(UIAlertAction *action) {
-                                                      [self showPhotoLibrary];
-                                                    }];
-    UIAlertAction *cancel =
-        [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
-    [alert addAction:camera];
-    [alert addAction:library];
-    [alert addAction:cancel];
-    [_viewController presentViewController:alert animated:YES completion:nil];
+    switch (imageSource) {
+      case SOURCE_ASK_USER:
+        [self showImageSourceSelector];
+        break;
+      case SOURCE_CAMERA:
+        [self showCamera];
+        break;
+      case SOURCE_GALLERY:
+        [self showPhotoLibrary];
+        break;
+      default:
+        result([FlutterError errorWithCode:@"invalid_source"
+                                   message:@"Invalid image source."
+                                   details:nil]);
+        break;
+    }
   } else {
     result(FlutterMethodNotImplemented);
   }
+}
+
+- (void)showImageSourceSelector {
+  UIAlertControllerStyle style = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad
+                                     ? UIAlertControllerStyleAlert
+                                     : UIAlertControllerStyleActionSheet;
+
+  UIAlertController *alert =
+      [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:style];
+  UIAlertAction *camera = [UIAlertAction actionWithTitle:@"Take Photo"
+                                                   style:UIAlertActionStyleDefault
+                                                 handler:^(UIAlertAction *action) {
+                                                   [self showCamera];
+                                                 }];
+  UIAlertAction *library = [UIAlertAction actionWithTitle:@"Choose Photo"
+                                                    style:UIAlertActionStyleDefault
+                                                  handler:^(UIAlertAction *action) {
+                                                    [self showPhotoLibrary];
+                                                  }];
+  UIAlertAction *cancel =
+      [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
+  [alert addAction:camera];
+  [alert addAction:library];
+  [alert addAction:cancel];
+  [_viewController presentViewController:alert animated:YES completion:nil];
 }
 
 - (void)showCamera {
@@ -100,10 +130,15 @@
   if (image == nil) {
     image = [info objectForKey:UIImagePickerControllerOriginalImage];
   }
-  if (image == nil) {
-    image = [info objectForKey:UIImagePickerControllerCropRect];
-  }
   image = [self normalizedImage:image];
+
+  NSNumber *maxWidth = [_arguments objectForKey:@"maxWidth"];
+  NSNumber *maxHeight = [_arguments objectForKey:@"maxHeight"];
+
+  if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
+    image = [self scaledImage:image maxWidth:maxWidth maxHeight:maxHeight];
+  }
+
   NSData *data = UIImageJPEGRepresentation(image, 1.0);
   NSString *tmpDirectory = NSTemporaryDirectory();
   NSString *guid = [[NSProcessInfo processInfo] globallyUniqueString];
@@ -119,6 +154,7 @@
                                 details:nil]);
   }
   _result = nil;
+  _arguments = nil;
 }
 
 // The way we save images to the tmp dir currently throws away all EXIF data
@@ -134,6 +170,56 @@
   UIImage *normalizedImage = UIGraphicsGetImageFromCurrentImageContext();
   UIGraphicsEndImageContext();
   return normalizedImage;
+}
+
+- (UIImage *)scaledImage:(UIImage *)image
+                maxWidth:(NSNumber *)maxWidth
+               maxHeight:(NSNumber *)maxHeight {
+  double originalWidth = image.size.width;
+  double originalHeight = image.size.height;
+
+  bool hasMaxWidth = maxWidth != (id)[NSNull null];
+  bool hasMaxHeight = maxHeight != (id)[NSNull null];
+
+  double width = hasMaxWidth ? MIN([maxWidth doubleValue], originalWidth) : originalWidth;
+  double height = hasMaxHeight ? MIN([maxHeight doubleValue], originalHeight) : originalHeight;
+
+  bool shouldDownscaleWidth = hasMaxWidth && [maxWidth doubleValue] < originalWidth;
+  bool shouldDownscaleHeight = hasMaxHeight && [maxHeight doubleValue] < originalHeight;
+  bool shouldDownscale = shouldDownscaleWidth || shouldDownscaleHeight;
+
+  if (shouldDownscale) {
+    double downscaledWidth = (height / originalHeight) * originalWidth;
+    double downscaledHeight = (width / originalWidth) * originalHeight;
+
+    if (width < height) {
+      if (!hasMaxWidth) {
+        width = downscaledWidth;
+      } else {
+        height = downscaledHeight;
+      }
+    } else if (height < width) {
+      if (!hasMaxHeight) {
+        height = downscaledHeight;
+      } else {
+        width = downscaledWidth;
+      }
+    } else {
+      if (originalWidth < originalHeight) {
+        width = downscaledWidth;
+      } else if (originalHeight < originalWidth) {
+        height = downscaledHeight;
+      }
+    }
+  }
+
+  UIGraphicsBeginImageContextWithOptions(CGSizeMake(width, height), NO, 1.0);
+  [image drawInRect:CGRectMake(0, 0, width, height)];
+
+  UIImage *scaledImage = UIGraphicsGetImageFromCurrentImageContext();
+  UIGraphicsEndImageContext();
+
+  return scaledImage;
 }
 
 @end

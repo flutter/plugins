@@ -1,3 +1,36 @@
+## 0.2.0
+
+* **Breaking change**. Upgraded to Gradle 4.1 and Android Studio Gradle plugin
+  3.0.1. Older Flutter projects need to upgrade their Gradle setup as well in
+  order to use this version of the plugin. Instructions can be found
+  [here](https://github.com/flutter/flutter/wiki/Updating-Flutter-projects-to-Gradle-4.1-and-Android-Studio-Gradle-plugin-3.0.1).
+
+## 0.1.5
+
+* Added FLT prefix to iOS types
+
+## 0.1.4
+
+* Bugfix: canceling image picking threw exception.
+* Bugfix: errors in plugin state management.
+
+## 0.1.3
+
+* Added optional source argument to pickImage for controlling where the image comes from.
+
+## 0.1.2
+
+* Added optional maxWidth and maxHeight arguments to pickImage.
+
+## 0.1.1
+
+* Updated Gradle repositories declaration to avoid the need for manual configuration
+  in the consuming app.
+
+## 0.1.0+1
+
+* Updated readme and description in pubspec.yaml
+
 ## 0.1.0
 
 * Updated dependencies

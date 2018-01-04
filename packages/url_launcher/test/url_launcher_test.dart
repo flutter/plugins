@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/services.dart';
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 void main() {
@@ -18,21 +18,76 @@ void main() {
     log.clear();
   });
 
-  test('canLaunch test', () async {
+  test('canLaunch', () async {
     await canLaunch('http://example.com/');
     expect(
       log,
-      equals(
-          <MethodCall>[const MethodCall('canLaunch', 'http://example.com/')]),
+      <Matcher>[
+        isMethodCall('canLaunch', arguments: <String, Object>{
+          'url': 'http://example.com/',
+        })
+      ],
     );
-    log.clear();
   });
 
-  test('launch test', () async {
+  test('launch default behavior', () async {
     await launch('http://example.com/');
     expect(
-        log,
-        equals(
-            <MethodCall>[const MethodCall('launch', 'http://example.com/')]));
+      log,
+      <Matcher>[
+        isMethodCall('launch', arguments: <String, Object>{
+          'url': 'http://example.com/',
+          'useSafariVC': true,
+          'useWebView': false,
+        })
+      ],
+    );
+  });
+
+  test('launch force SafariVC', () async {
+    await launch('http://example.com/', forceSafariVC: true);
+    expect(
+      log,
+      <Matcher>[
+        isMethodCall('launch', arguments: <String, Object>{
+          'url': 'http://example.com/',
+          'useSafariVC': true,
+          'useWebView': false,
+        })
+      ],
+    );
+  });
+
+  test('launch force WebView', () async {
+    await launch('http://example.com/', forceWebView: true);
+    expect(
+      log,
+      <Matcher>[
+        isMethodCall('launch', arguments: <String, Object>{
+          'url': 'http://example.com/',
+          'useSafariVC': true,
+          'useWebView': true,
+        })
+      ],
+    );
+  });
+
+  test('launch force SafariVC to false', () async {
+    await launch('http://example.com/', forceSafariVC: false);
+    expect(
+      log,
+      <Matcher>[
+        isMethodCall('launch', arguments: <String, Object>{
+          'url': 'http://example.com/',
+          'useSafariVC': false,
+          'useWebView': false,
+        })
+      ],
+    );
+  });
+
+  test('cannot launch a non-web in webview', () async {
+    expect(() async => await launch('tel:555-555-5555', forceWebView: true),
+        throwsA(const isInstanceOf<PlatformException>()));
   });
 }

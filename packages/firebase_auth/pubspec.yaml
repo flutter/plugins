@@ -3,11 +3,12 @@ name: firebase_auth
 description: Firebase Auth plugin for Flutter.
 author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/firebase_auth
-version: 0.1.0
+version: 0.4.0
 
 flutter:
   plugin:
     androidPackage: io.flutter.firebaseauth
+    iosPrefix: FLT
     pluginClass: FirebaseAuthPlugin
 
 dependencies:
@@ -16,7 +17,8 @@ dependencies:
     sdk: flutter
 
 dev_dependencies:
-  test: 0.12.21
+  flutter_test:
+    sdk: flutter
 
 environment:
     sdk: ">=1.8.0 <2.0.0"

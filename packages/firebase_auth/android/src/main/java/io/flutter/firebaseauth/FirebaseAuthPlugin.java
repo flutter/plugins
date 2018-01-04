@@ -4,8 +4,8 @@
 
 package io.flutter.firebaseauth;
 
-import android.app.Activity;
 import android.support.annotation.NonNull;
+import android.util.SparseArray;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.common.collect.ImmutableList;
@@ -13,6 +13,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.EmailAuthProvider;
+import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
@@ -27,26 +29,36 @@ import java.util.Map;
 
 /** Flutter plugin for Firebase Auth. */
 public class FirebaseAuthPlugin implements MethodCallHandler {
-  private final Activity activity;
+  private final PluginRegistry.Registrar registrar;
   private final FirebaseAuth firebaseAuth;
+  private final SparseArray<FirebaseAuth.AuthStateListener> authStateListeners =
+      new SparseArray<>();
+  private final MethodChannel channel;
+
+  // Handles are ints used as indexes into the sparse array of active observers
+  private int nextHandle = 0;
 
   private static final String ERROR_REASON_EXCEPTION = "exception";
 
   public static void registerWith(PluginRegistry.Registrar registrar) {
-    final MethodChannel channel =
+    MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_auth");
-    channel.setMethodCallHandler(new FirebaseAuthPlugin(registrar.activity()));
+    channel.setMethodCallHandler(new FirebaseAuthPlugin(registrar, channel));
   }
 
-  private FirebaseAuthPlugin(Activity activity) {
-    this.activity = activity;
-    FirebaseApp.initializeApp(activity);
+  private FirebaseAuthPlugin(PluginRegistry.Registrar registrar, MethodChannel channel) {
+    this.registrar = registrar;
+    this.channel = channel;
+    FirebaseApp.initializeApp(registrar.context());
     this.firebaseAuth = FirebaseAuth.getInstance();
   }
 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
     switch (call.method) {
+      case "currentUser":
+        handleCurrentUser(call, result);
+        break;
       case "signInAnonymously":
         handleSignInAnonymously(call, result);
         break;
@@ -59,11 +71,29 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       case "signInWithGoogle":
         handleSignInWithGoogle(call, result);
         break;
+      case "signInWithCustomToken":
+        handleSignInWithCustomToken(call, result);
+        break;
+      case "signInWithFacebook":
+        handleSignInWithFacebook(call, result);
+        break;
       case "signOut":
         handleSignOut(call, result);
         break;
-      case "getToken":
+      case "getIdToken":
         handleGetToken(call, result);
+        break;
+      case "linkWithEmailAndPassword":
+        handleLinkWithEmailAndPassword(call, result);
+        break;
+      case "linkWithGoogleCredential":
+        handleLinkWithGoogleCredential(call, result);
+        break;
+      case "startListeningAuthState":
+        handleStartListeningAuthState(call, result);
+        break;
+      case "stopListeningAuthState":
+        handleStopListeningAuthState(call, result);
         break;
       default:
         result.notImplemented();
@@ -71,10 +101,36 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     }
   }
 
-  private void handleSignInAnonymously(MethodCall call, final Result result) {
+  private void handleLinkWithEmailAndPassword(MethodCall call, Result result) {
+    @SuppressWarnings("unchecked")
+    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    String email = arguments.get("email");
+    String password = arguments.get("password");
+
+    AuthCredential credential = EmailAuthProvider.getCredential(email, password);
     firebaseAuth
-        .signInAnonymously()
-        .addOnCompleteListener(activity, new SignInCompleteListener(result));
+        .getCurrentUser()
+        .linkWithCredential(credential)
+        .addOnCompleteListener(new SignInCompleteListener(result));
+  }
+
+  private void handleCurrentUser(MethodCall call, final Result result) {
+    final FirebaseAuth.AuthStateListener listener =
+        new FirebaseAuth.AuthStateListener() {
+          @Override
+          public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+            firebaseAuth.removeAuthStateListener(this);
+            FirebaseUser user = firebaseAuth.getCurrentUser();
+            ImmutableMap<String, Object> userMap = mapFromUser(user);
+            result.success(userMap);
+          }
+        };
+
+    firebaseAuth.addAuthStateListener(listener);
+  }
+
+  private void handleSignInAnonymously(MethodCall call, final Result result) {
+    firebaseAuth.signInAnonymously().addOnCompleteListener(new SignInCompleteListener(result));
   }
 
   private void handleCreateUserWithEmailAndPassword(MethodCall call, final Result result) {
@@ -85,7 +141,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
 
     firebaseAuth
         .createUserWithEmailAndPassword(email, password)
-        .addOnCompleteListener(activity, new SignInCompleteListener(result));
+        .addOnCompleteListener(new SignInCompleteListener(result));
   }
 
   private void handleSignInWithEmailAndPassword(MethodCall call, final Result result) {
@@ -96,7 +152,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
 
     firebaseAuth
         .signInWithEmailAndPassword(email, password)
-        .addOnCompleteListener(activity, new SignInCompleteListener(result));
+        .addOnCompleteListener(new SignInCompleteListener(result));
   }
 
   private void handleSignInWithGoogle(MethodCall call, final Result result) {
@@ -107,7 +163,37 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     AuthCredential credential = GoogleAuthProvider.getCredential(idToken, accessToken);
     firebaseAuth
         .signInWithCredential(credential)
-        .addOnCompleteListener(activity, new SignInCompleteListener(result));
+        .addOnCompleteListener(new SignInCompleteListener(result));
+  }
+
+  private void handleLinkWithGoogleCredential(MethodCall call, final Result result) {
+    @SuppressWarnings("unchecked")
+    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    String idToken = arguments.get("idToken");
+    String accessToken = arguments.get("accessToken");
+    AuthCredential credential = GoogleAuthProvider.getCredential(idToken, accessToken);
+    firebaseAuth
+        .getCurrentUser()
+        .linkWithCredential(credential)
+        .addOnCompleteListener(new SignInCompleteListener(result));
+  }
+
+  private void handleSignInWithFacebook(MethodCall call, final Result result) {
+    @SuppressWarnings("unchecked")
+    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    String accessToken = arguments.get("accessToken");
+    AuthCredential credential = FacebookAuthProvider.getCredential(accessToken);
+    firebaseAuth
+        .signInWithCredential(credential)
+        .addOnCompleteListener(new SignInCompleteListener(result));
+  }
+
+  private void handleSignInWithCustomToken(MethodCall call, final Result result) {
+    Map<String, String> arguments = call.arguments();
+    String token = arguments.get("token");
+    firebaseAuth
+        .signInWithCustomToken(token)
+        .addOnCompleteListener(new SignInCompleteListener(result));
   }
 
   private void handleSignOut(MethodCall call, final Result result) {
@@ -121,7 +207,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     boolean refresh = arguments.get("refresh");
     firebaseAuth
         .getCurrentUser()
-        .getToken(refresh)
+        .getIdToken(refresh)
         .addOnCompleteListener(
             new OnCompleteListener<GetTokenResult>() {
               public void onComplete(@NonNull Task<GetTokenResult> task) {
@@ -135,28 +221,50 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
             });
   }
 
+  private void handleStartListeningAuthState(MethodCall call, final Result result) {
+    final int handle = nextHandle++;
+    FirebaseAuth.AuthStateListener listener =
+        new FirebaseAuth.AuthStateListener() {
+          @Override
+          public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+            FirebaseUser user = firebaseAuth.getCurrentUser();
+            ImmutableMap<String, Object> userMap = mapFromUser(user);
+            ImmutableMap.Builder<String, Object> builder =
+                ImmutableMap.<String, Object>builder().put("id", handle);
+
+            if (userMap != null) {
+              builder.put("user", userMap);
+            }
+            channel.invokeMethod("onAuthStateChanged", builder.build());
+          }
+        };
+    FirebaseAuth.getInstance().addAuthStateListener(listener);
+    authStateListeners.append(handle, listener);
+    result.success(handle);
+  }
+
+  private void handleStopListeningAuthState(MethodCall call, final Result result) {
+    Map<String, Integer> arguments = call.arguments();
+    Integer id = arguments.get("id");
+
+    FirebaseAuth.AuthStateListener listener = authStateListeners.get(id);
+    if (listener != null) {
+      FirebaseAuth.getInstance().removeAuthStateListener(listener);
+      authStateListeners.removeAt(id);
+      result.success(null);
+    } else {
+      result.error(
+          ERROR_REASON_EXCEPTION,
+          String.format("Listener with identifier '%d' not found.", id),
+          null);
+    }
+  }
+
   private class SignInCompleteListener implements OnCompleteListener<AuthResult> {
     private final Result result;
 
     SignInCompleteListener(Result result) {
       this.result = result;
-    }
-
-    private ImmutableMap.Builder<String, Object> userInfoToMap(UserInfo userInfo) {
-      ImmutableMap.Builder<String, Object> builder =
-          ImmutableMap.<String, Object>builder()
-              .put("providerId", userInfo.getProviderId())
-              .put("uid", userInfo.getUid());
-      if (userInfo.getDisplayName() != null) {
-        builder.put("displayName", userInfo.getDisplayName());
-      }
-      if (userInfo.getPhotoUrl() != null) {
-        builder.put("photoUrl", userInfo.getPhotoUrl().toString());
-      }
-      if (userInfo.getEmail() != null) {
-        builder.put("email", userInfo.getEmail());
-      }
-      return builder;
     }
 
     @Override
@@ -166,23 +274,45 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         result.error(ERROR_REASON_EXCEPTION, e.getMessage(), null);
       } else {
         FirebaseUser user = task.getResult().getUser();
-        if (user != null) {
-          ImmutableList.Builder<ImmutableMap<String, Object>> providerDataBuilder =
-              ImmutableList.<ImmutableMap<String, Object>>builder();
-          for (UserInfo userInfo : user.getProviderData()) {
-            providerDataBuilder.add(userInfoToMap(userInfo).build());
-          }
-          ImmutableMap<String, Object> userMap =
-              userInfoToMap(user)
-                  .put("isAnonymous", user.isAnonymous())
-                  .put("isEmailVerified", user.isEmailVerified())
-                  .put("providerData", providerDataBuilder.build())
-                  .build();
-          result.success(userMap);
-        } else {
-          result.success(null);
-        }
+        ImmutableMap<String, Object> userMap = mapFromUser(user);
+        result.success(userMap);
       }
+    }
+  }
+
+  private ImmutableMap.Builder<String, Object> userInfoToMap(UserInfo userInfo) {
+    ImmutableMap.Builder<String, Object> builder =
+        ImmutableMap.<String, Object>builder()
+            .put("providerId", userInfo.getProviderId())
+            .put("uid", userInfo.getUid());
+    if (userInfo.getDisplayName() != null) {
+      builder.put("displayName", userInfo.getDisplayName());
+    }
+    if (userInfo.getPhotoUrl() != null) {
+      builder.put("photoUrl", userInfo.getPhotoUrl().toString());
+    }
+    if (userInfo.getEmail() != null) {
+      builder.put("email", userInfo.getEmail());
+    }
+    return builder;
+  }
+
+  private ImmutableMap<String, Object> mapFromUser(FirebaseUser user) {
+    if (user != null) {
+      ImmutableList.Builder<ImmutableMap<String, Object>> providerDataBuilder =
+          ImmutableList.<ImmutableMap<String, Object>>builder();
+      for (UserInfo userInfo : user.getProviderData()) {
+        providerDataBuilder.add(userInfoToMap(userInfo).build());
+      }
+      ImmutableMap<String, Object> userMap =
+          userInfoToMap(user)
+              .put("isAnonymous", user.isAnonymous())
+              .put("isEmailVerified", user.isEmailVerified())
+              .put("providerData", providerDataBuilder.build())
+              .build();
+      return userMap;
+    } else {
+      return null;
     }
   }
 }

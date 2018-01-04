@@ -73,7 +73,24 @@ class DatabaseReference extends Query {
   Future<Null> set(dynamic value, {dynamic priority}) {
     return _database._channel.invokeMethod(
       'DatabaseReference#set',
-      <String, dynamic>{'path': path, 'value': value, 'priority': priority},
+      <String, dynamic>{
+        'app': _database.app?.name,
+        'path': path,
+        'value': value,
+        'priority': priority,
+      },
+    );
+  }
+
+  /// Update the node with the `value`
+  Future<Null> update(Map<String, dynamic> value) {
+    return _database._channel.invokeMethod(
+      'DatabaseReference#update',
+      <String, dynamic>{
+        'app': _database.app?.name,
+        'path': path,
+        'value': value,
+      },
     );
   }
 
@@ -104,7 +121,11 @@ class DatabaseReference extends Query {
   Future<Null> setPriority(dynamic priority) async {
     return _database._channel.invokeMethod(
       'DatabaseReference#setPriority',
-      <String, dynamic>{'path': path, 'priority': priority},
+      <String, dynamic>{
+        'app': _database.app?.name,
+        'path': path,
+        'priority': priority,
+      },
     );
   }
 
@@ -117,10 +138,59 @@ class DatabaseReference extends Query {
   ///
   /// remove() is equivalent to calling set(null)
   Future<Null> remove() => set(null);
+
+  /// Performs an optimistic-concurrency transactional update to the data at
+  /// this Firebase Database location.
+  Future<TransactionResult> runTransaction(
+      TransactionHandler transactionHandler,
+      {Duration timeout: const Duration(seconds: 5)}) async {
+    assert(timeout.inMilliseconds > 0,
+        'Transaction timeout must be more than 0 milliseconds.');
+
+    final Completer<TransactionResult> completer =
+        new Completer<TransactionResult>();
+
+    final int transactionKey = FirebaseDatabase._transactions.isEmpty
+        ? 0
+        : FirebaseDatabase._transactions.keys.last + 1;
+
+    FirebaseDatabase._transactions[transactionKey] = transactionHandler;
+
+    _database._channel
+        .invokeMethod('DatabaseReference#runTransaction', <String, dynamic>{
+      'app': _database.app?.name,
+      'path': path,
+      'transactionKey': transactionKey,
+      'transactionTimeout': timeout.inMilliseconds
+    }).then((Map<String, dynamic> result) {
+      final DatabaseError databaseError =
+          result['error'] != null ? new DatabaseError._(result['error']) : null;
+      final bool committed = result['committed'];
+      final DataSnapshot dataSnapshot = result['snapshot'] != null
+          ? new DataSnapshot._(result['snapshot'])
+          : null;
+
+      FirebaseDatabase._transactions.remove(transactionKey);
+
+      completer.complete(
+          new TransactionResult._(databaseError, committed, dataSnapshot));
+    });
+
+    return completer.future;
+  }
 }
 
 class ServerValue {
   static const Map<String, String> timestamp = const <String, String>{
     '.sv': 'timestamp'
   };
+}
+
+typedef Future<MutableData> TransactionHandler(MutableData mutableData);
+
+class TransactionResult {
+  const TransactionResult._(this.error, this.committed, this.dataSnapshot);
+  final DatabaseError error;
+  final bool committed;
+  final DataSnapshot dataSnapshot;
 }

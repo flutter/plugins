@@ -16,24 +16,24 @@ static NSString *const kClientIdKey = @"CLIENT_ID";
 
 @implementation NSError (FlutterError)
 - (FlutterError *)flutterError {
-  return [FlutterError errorWithCode:[NSString stringWithFormat:@"%ld", (long)self.code]
+  return [FlutterError errorWithCode:@"exception"
                              message:self.domain
                              details:self.localizedDescription];
 }
 @end
 
-@interface GoogleSignInPlugin ()<GIDSignInDelegate, GIDSignInUIDelegate>
+@interface FLTGoogleSignInPlugin ()<GIDSignInDelegate, GIDSignInUIDelegate>
 @end
 
-@implementation GoogleSignInPlugin {
-  NSMutableArray<FlutterResult> *_accountRequests;
+@implementation FLTGoogleSignInPlugin {
+  FlutterResult _accountRequest;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/google_sign_in"
                                   binaryMessenger:[registrar messenger]];
-  GoogleSignInPlugin *instance = [[GoogleSignInPlugin alloc] init];
+  FLTGoogleSignInPlugin *instance = [[FLTGoogleSignInPlugin alloc] init];
   [registrar addApplicationDelegate:instance];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
@@ -41,7 +41,6 @@ static NSString *const kClientIdKey = @"CLIENT_ID";
 - (instancetype)init {
   self = [super init];
   if (self) {
-    _accountRequests = [[NSMutableArray alloc] init];
     [GIDSignIn sharedInstance].delegate = self;
     [GIDSignIn sharedInstance].uiDelegate = self;
 
@@ -69,11 +68,13 @@ static NSString *const kClientIdKey = @"CLIENT_ID";
                                  details:nil]);
     }
   } else if ([call.method isEqualToString:@"signInSilently"]) {
-    [_accountRequests insertObject:result atIndex:0];
-    [[GIDSignIn sharedInstance] signInSilently];
+    if ([self setAccountRequest:result]) {
+      [[GIDSignIn sharedInstance] signInSilently];
+    }
   } else if ([call.method isEqualToString:@"signIn"]) {
-    [_accountRequests insertObject:result atIndex:0];
-    [[GIDSignIn sharedInstance] signIn];
+    if ([self setAccountRequest:result]) {
+      [[GIDSignIn sharedInstance] signIn];
+    }
   } else if ([call.method isEqualToString:@"getTokens"]) {
     GIDGoogleUser *currentUser = [GIDSignIn sharedInstance].currentUser;
     GIDAuthentication *auth = currentUser.authentication;
@@ -87,11 +88,23 @@ static NSString *const kClientIdKey = @"CLIENT_ID";
     [[GIDSignIn sharedInstance] signOut];
     result(nil);
   } else if ([call.method isEqualToString:@"disconnect"]) {
-    [_accountRequests insertObject:result atIndex:0];
-    [[GIDSignIn sharedInstance] disconnect];
+    if ([self setAccountRequest:result]) {
+      [[GIDSignIn sharedInstance] disconnect];
+    }
   } else {
     result(FlutterMethodNotImplemented);
   }
+}
+
+- (BOOL)setAccountRequest:(FlutterResult)request {
+  if (_accountRequest != nil) {
+    request([FlutterError errorWithCode:@"concurrent-requests"
+                                message:@"Concurrent requests to account signin"
+                                details:nil]);
+    return NO;
+  }
+  _accountRequest = request;
+  return YES;
 }
 
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary *)options {
@@ -120,8 +133,11 @@ static NSString *const kClientIdKey = @"CLIENT_ID";
     didSignInForUser:(GIDGoogleUser *)user
            withError:(NSError *)error {
   if (error != nil) {
-    if (error.code == -4) {
-      // Occurs when silent sign-in is not possible, return an empty user in this case
+    if (error.code == kGIDSignInErrorCodeHasNoAuthInKeychain ||
+        error.code == kGIDSignInErrorCodeCanceled) {
+      // Occurs when silent sign-in is not possible or user has cancelled sign
+      // in,
+      // return an empty user in this case
       [self respondWithAccount:nil error:nil];
     } else {
       [self respondWithAccount:nil error:error];
@@ -129,7 +145,8 @@ static NSString *const kClientIdKey = @"CLIENT_ID";
   } else {
     NSURL *photoUrl;
     if (user.profile.hasImage) {
-      // Placeholder that will be replaced by on the Dart side based on screen size
+      // Placeholder that will be replaced by on the Dart side based on screen
+      // size
       photoUrl = [user.profile imageURLWithDimension:1337];
     }
     [self respondWithAccount:@{
@@ -151,11 +168,9 @@ static NSString *const kClientIdKey = @"CLIENT_ID";
 #pragma mark - private methods
 
 - (void)respondWithAccount:(id)account error:(NSError *)error {
-  NSArray<FlutterResult> *requests = _accountRequests;
-  _accountRequests = [[NSMutableArray alloc] init];
-  for (FlutterResult accountRequest in requests) {
-    accountRequest(error != nil ? error.flutterError : account);
-  }
+  FlutterResult result = _accountRequest;
+  _accountRequest = nil;
+  result(error != nil ? error.flutterError : account);
 }
 
 @end

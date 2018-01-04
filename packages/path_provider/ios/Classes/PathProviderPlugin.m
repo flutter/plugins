@@ -6,11 +6,10 @@
 
 NSString* GetDirectoryOfType(NSSearchPathDirectory dir) {
   NSArray* paths = NSSearchPathForDirectoriesInDomains(dir, NSUserDomainMask, YES);
-  if (paths.count == 0) return nil;
   return paths.firstObject;
 }
 
-@implementation PathProviderPlugin
+@implementation FLTPathProviderPlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   FlutterMethodChannel* channel =

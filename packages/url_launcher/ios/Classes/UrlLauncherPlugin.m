@@ -2,56 +2,117 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <SafariServices/SafariServices.h>
+
 #import "UrlLauncherPlugin.h"
 
-@implementation UrlLauncherPlugin
-+ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  FlutterMethodChannel* channel =
-      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/url_launcher"
-                                  binaryMessenger:registrar.messenger];
-  [channel setMethodCallHandler:^(FlutterMethodCall* call, FlutterResult result) {
-    NSString* url = call.arguments;
-    if ([@"canLaunch" isEqualToString:call.method]) {
-      result(@([self canLaunchURL:url]));
-    } else if ([@"launch" isEqualToString:call.method]) {
-      [self launchURL:url result:result];
-    } else {
-      result(FlutterMethodNotImplemented);
-    }
-  }];
+@interface FLTUrlLaunchSession : NSObject<SFSafariViewControllerDelegate>
+@end
+
+@implementation FLTUrlLaunchSession {
+  NSURL *_url;
+  FlutterResult _flutterResult;
 }
 
-+ (BOOL)canLaunchURL:(NSString*)urlString {
-  NSURL* url = [NSURL URLWithString:urlString];
-  UIApplication* application = [UIApplication sharedApplication];
+- (instancetype)initWithUrl:url withFlutterResult:result {
+  self = [super init];
+  if (self) {
+    _url = url;
+    _flutterResult = result;
+  }
+  return self;
+}
+
+- (void)safariViewController:(SFSafariViewController *)controller
+      didCompleteInitialLoad:(BOOL)didLoadSuccessfully {
+  if (didLoadSuccessfully) {
+    _flutterResult(nil);
+  } else {
+    _flutterResult([FlutterError
+        errorWithCode:@"Error"
+              message:[NSString stringWithFormat:@"Error while launching %@", _url]
+              details:nil]);
+  }
+}
+
+- (void)safariViewControllerDidFinish:(SFSafariViewController *)controller {
+  [controller dismissViewControllerAnimated:YES completion:nil];
+  _url = nil;
+  _flutterResult = nil;
+}
+
+@end
+
+@implementation FLTUrlLauncherPlugin {
+  UIViewController *_viewController;
+  FLTUrlLaunchSession *_currentSession;
+}
+
++ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
+  FlutterMethodChannel *channel =
+      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/url_launcher"
+                                  binaryMessenger:registrar.messenger];
+  UIViewController *viewController =
+      [UIApplication sharedApplication].delegate.window.rootViewController;
+  FLTUrlLauncherPlugin *plugin =
+      [[FLTUrlLauncherPlugin alloc] initWithViewController:viewController];
+  [registrar addMethodCallDelegate:plugin channel:channel];
+}
+
+- (instancetype)initWithViewController:(UIViewController *)viewController {
+  self = [super init];
+  if (self) {
+    _viewController = viewController;
+  }
+  return self;
+}
+
+- (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSString *url = call.arguments[@"url"];
+  if ([@"canLaunch" isEqualToString:call.method]) {
+    result(@([self canLaunchURL:url]));
+  } else if ([@"launch" isEqualToString:call.method]) {
+    NSNumber *useSafariVC = call.arguments[@"useSafariVC"];
+    if (useSafariVC.boolValue) {
+      [self launchURLInVC:url result:result];
+    } else {
+      [self launchURL:url result:result];
+    }
+  } else {
+    result(FlutterMethodNotImplemented);
+  }
+}
+
+- (BOOL)canLaunchURL:(NSString *)urlString {
+  NSURL *url = [NSURL URLWithString:urlString];
+  UIApplication *application = [UIApplication sharedApplication];
   return [application canOpenURL:url];
 }
 
-+ (void)launchURL:(NSString*)urlString result:(FlutterResult)result {
-  NSURL* url = [NSURL URLWithString:urlString];
-  UIApplication* application = [UIApplication sharedApplication];
-
-// Using ifdef as workaround to support running with Xcode 7.0 and sdk version 9
-// where the dynamic check fails.
-#if __IPHONE_OS_VERSION_MIN_REQUIRED > __IPHONE_9_0
+- (void)launchURL:(NSString *)urlString result:(FlutterResult)result {
+  NSURL *url = [NSURL URLWithString:urlString];
+  UIApplication *application = [UIApplication sharedApplication];
   [application openURL:url
       options:@{}
       completionHandler:^(BOOL success) {
-        [self sendResult:success result:result url:url];
+        if (success) {
+          result(nil);
+        } else {
+          result([FlutterError
+              errorWithCode:@"Error"
+                    message:[NSString stringWithFormat:@"Error while launching %@", url]
+                    details:nil]);
+        }
       }];
-#else
-  [self sendResult:[application openURL:url] result:result url:url];
-#endif
 }
 
-+ (void)sendResult:(BOOL)success result:(FlutterResult)result url:(NSURL*)url {
-  if (success) {
-    result(nil);
-  } else {
-    result([FlutterError errorWithCode:@"Error"
-                               message:[NSString stringWithFormat:@"Error while launching %@", url]
-                               details:nil]);
-  }
+- (void)launchURLInVC:(NSString *)urlString result:(FlutterResult)result {
+  NSURL *url = [NSURL URLWithString:urlString];
+
+  SFSafariViewController *safari = [[SFSafariViewController alloc] initWithURL:url];
+  _currentSession = [[FLTUrlLaunchSession alloc] initWithUrl:url withFlutterResult:result];
+  safari.delegate = _currentSession;
+  [_viewController presentViewController:safari animated:YES completion:nil];
 }
 
 @end

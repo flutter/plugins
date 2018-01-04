@@ -4,14 +4,21 @@
 
 package io.flutter.plugins.firebase.database;
 
+import android.util.Log;
 import android.util.SparseArray;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
+import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseException;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -20,9 +27,14 @@ import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /** FirebaseDatabasePlugin */
 public class FirebaseDatabasePlugin implements MethodCallHandler {
+
+  private static final String TAG = "FirebaseDatabasePlugin";
 
   private final MethodChannel channel;
   private static final String EVENT_TYPE_CHILD_ADDED = "_EventType.childAdded";
@@ -45,15 +57,15 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
     this.channel = channel;
   }
 
-  private DatabaseReference getReference(Map<String, Object> arguments) {
+  private DatabaseReference getReference(FirebaseDatabase database, Map<String, Object> arguments) {
     String path = (String) arguments.get("path");
-    DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+    DatabaseReference reference = database.getReference();
     if (path != null) reference = reference.child(path);
     return reference;
   }
 
-  private Query getQuery(Map<String, Object> arguments) {
-    Query query = getReference(arguments);
+  private Query getQuery(FirebaseDatabase database, Map<String, Object> arguments) {
+    Query query = getReference(database, arguments);
     @SuppressWarnings("unchecked")
     Map<String, Object> parameters = (Map<String, Object>) arguments.get("parameters");
     if (parameters == null) return query;
@@ -168,7 +180,12 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
     }
 
     @Override
-    public void onCancelled(DatabaseError error) {}
+    public void onCancelled(DatabaseError error) {
+      Map<String, Object> arguments = new HashMap<>();
+      arguments.put("handle", handle);
+      arguments.put("error", asMap(error));
+      channel.invokeMethod("Error", arguments);
+    }
 
     @Override
     public void onChildAdded(DataSnapshot snapshot, String previousChildName) {
@@ -197,34 +214,42 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
   }
 
   @Override
-  public void onMethodCall(MethodCall call, final Result result) {
+  public void onMethodCall(final MethodCall call, final Result result) {
+    final Map<String, Object> arguments = call.arguments();
+    FirebaseDatabase database;
+    String appName = (String) arguments.get("app");
+    if (appName != null) {
+      database = FirebaseDatabase.getInstance(FirebaseApp.getInstance(appName));
+    } else {
+      database = FirebaseDatabase.getInstance();
+    }
     switch (call.method) {
       case "FirebaseDatabase#goOnline":
         {
-          FirebaseDatabase.getInstance().goOnline();
+          database.goOnline();
           result.success(null);
           break;
         }
 
       case "FirebaseDatabase#goOffline":
         {
-          FirebaseDatabase.getInstance().goOffline();
+          database.goOffline();
           result.success(null);
           break;
         }
 
       case "FirebaseDatabase#purgeOutstandingWrites":
         {
-          FirebaseDatabase.getInstance().purgeOutstandingWrites();
+          database.purgeOutstandingWrites();
           result.success(null);
           break;
         }
 
       case "FirebaseDatabase#setPersistenceEnabled":
         {
-          Boolean isEnabled = (Boolean) call.arguments;
+          Boolean isEnabled = (Boolean) arguments.get("enabled");
           try {
-            FirebaseDatabase.getInstance().setPersistenceEnabled(isEnabled);
+            database.setPersistenceEnabled(isEnabled);
             result.success(true);
           } catch (DatabaseException e) {
             // Database is already in use, e.g. after hot reload/restart.
@@ -235,9 +260,9 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
 
       case "FirebaseDatabase#setPersistenceCacheSizeBytes":
         {
-          long cacheSize = (Integer) call.arguments;
+          long cacheSize = (Integer) arguments.get("cacheSize");
           try {
-            FirebaseDatabase.getInstance().setPersistenceCacheSizeBytes(cacheSize);
+            database.setPersistenceCacheSizeBytes(cacheSize);
             result.success(true);
           } catch (DatabaseException e) {
             // Database is already in use, e.g. after hot reload/restart.
@@ -248,10 +273,9 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
 
       case "DatabaseReference#set":
         {
-          Map<String, Object> arguments = call.arguments();
           Object value = arguments.get("value");
           Object priority = arguments.get("priority");
-          DatabaseReference reference = getReference(arguments);
+          DatabaseReference reference = getReference(database, arguments);
           if (priority != null) {
             reference.setValue(value, priority, new DefaultCompletionListener(result));
           } else {
@@ -260,34 +284,138 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
           break;
         }
 
+      case "DatabaseReference#update":
+        {
+          @SuppressWarnings("unchecked")
+          Map<String, Object> value = (Map<String, Object>) arguments.get("value");
+          DatabaseReference reference = getReference(database, arguments);
+          reference.updateChildren(value, new DefaultCompletionListener(result));
+          break;
+        }
+
       case "DatabaseReference#setPriority":
         {
-          Map<String, Object> arguments = call.arguments();
           Object priority = arguments.get("priority");
-          DatabaseReference reference = getReference(arguments);
+          DatabaseReference reference = getReference(database, arguments);
           reference.setPriority(priority, new DefaultCompletionListener(result));
+          break;
+        }
+
+      case "DatabaseReference#runTransaction":
+        {
+          final DatabaseReference reference = getReference(database, arguments);
+
+          // Initiate native transaction.
+          reference.runTransaction(
+              new Transaction.Handler() {
+                @Override
+                public Transaction.Result doTransaction(MutableData mutableData) {
+                  // Tasks are used to allow native execution of doTransaction to wait while Snapshot is
+                  // processed by logic on the Dart side.
+                  final TaskCompletionSource<Map<String, Object>> updateMutableDataTCS =
+                      new TaskCompletionSource<>();
+                  final Task<Map<String, Object>> updateMutableDataTCSTask =
+                      updateMutableDataTCS.getTask();
+
+                  Map<String, Object> doTransactionMap = new HashMap<>();
+                  doTransactionMap.put("transactionKey", arguments.get("transactionKey"));
+
+                  final Map<String, Object> snapshotMap = new HashMap<>();
+                  snapshotMap.put("key", mutableData.getKey());
+                  snapshotMap.put("value", mutableData.getValue());
+                  doTransactionMap.put("snapshot", snapshotMap);
+
+                  // Return snapshot to Dart side for update.
+                  channel.invokeMethod(
+                      "DoTransaction",
+                      doTransactionMap,
+                      new MethodChannel.Result() {
+                        @Override
+                        @SuppressWarnings("unchecked")
+                        public void success(Object result) {
+                          updateMutableDataTCS.setResult((Map<String, Object>) result);
+                        }
+
+                        @Override
+                        public void error(
+                            String errorCode, String errorMessage, Object errorDetails) {
+                          String exceptionMessage =
+                              "Error code: "
+                                  + errorCode
+                                  + "\nError message: "
+                                  + errorMessage
+                                  + "\nError details: "
+                                  + errorDetails;
+                          updateMutableDataTCS.setException(new Exception(exceptionMessage));
+                        }
+
+                        @Override
+                        public void notImplemented() {
+                          updateMutableDataTCS.setException(
+                              new Exception("DoTransaction not implemented on Dart side."));
+                        }
+                      });
+
+                  try {
+                    // Wait for updated snapshot from the Dart side.
+                    Map<String, Object> updatedSnapshotMap =
+                        Tasks.await(
+                            updateMutableDataTCSTask,
+                            (int) arguments.get("transactionTimeout"),
+                            TimeUnit.MILLISECONDS);
+                    // Set value of MutableData to value returned from the Dart side.
+                    mutableData.setValue(updatedSnapshotMap.get("value"));
+                  } catch (ExecutionException | InterruptedException | TimeoutException e) {
+                    Log.e(TAG, "Unable to commit Snapshot update. Transaction failed.", e);
+                    if (e instanceof TimeoutException) {
+                      Log.e(TAG, "Transaction at " + reference.toString() + " timed out.");
+                    }
+                    return Transaction.abort();
+                  }
+                  return Transaction.success(mutableData);
+                }
+
+                @Override
+                public void onComplete(
+                    DatabaseError databaseError, boolean committed, DataSnapshot dataSnapshot) {
+                  Map<String, Object> completionMap = new HashMap<>();
+                  completionMap.put("transactionKey", arguments.get("transactionKey"));
+                  if (databaseError != null) {
+                    completionMap.put("error", asMap(databaseError));
+                  }
+                  completionMap.put("committed", committed);
+                  if (dataSnapshot != null) {
+                    Map<String, Object> snapshotMap = new HashMap<>();
+                    snapshotMap.put("key", dataSnapshot.getKey());
+                    snapshotMap.put("value", dataSnapshot.getValue());
+                    completionMap.put("snapshot", snapshotMap);
+                  }
+
+                  // Invoke transaction completion on the Dart side.
+                  result.success(completionMap);
+                }
+              });
           break;
         }
 
       case "Query#keepSynced":
         {
-          Map<String, Object> arguments = call.arguments();
           boolean value = (Boolean) arguments.get("value");
-          getQuery(arguments).keepSynced(value);
+          getQuery(database, arguments).keepSynced(value);
+          result.success(null);
           break;
         }
 
       case "Query#observe":
         {
-          Map<String, Object> arguments = call.arguments();
           String eventType = (String) arguments.get("eventType");
           int handle = nextHandle++;
           EventObserver observer = new EventObserver(eventType, handle);
           observers.put(handle, observer);
           if (eventType.equals(EVENT_TYPE_VALUE)) {
-            getQuery(arguments).addValueEventListener(observer);
+            getQuery(database, arguments).addValueEventListener(observer);
           } else {
-            getQuery(arguments).addChildEventListener(observer);
+            getQuery(database, arguments).addChildEventListener(observer);
           }
           result.success(handle);
           break;
@@ -295,8 +423,7 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
 
       case "Query#removeObserver":
         {
-          Map<String, Object> arguments = call.arguments();
-          Query query = getQuery(arguments);
+          Query query = getQuery(database, arguments);
           int handle = (Integer) arguments.get("handle");
           EventObserver observer = observers.get(handle);
           if (observer != null) {
@@ -320,5 +447,13 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
           break;
         }
     }
+  }
+
+  private static Map<String, Object> asMap(DatabaseError error) {
+    Map<String, Object> map = new HashMap<>();
+    map.put("code", error.getCode());
+    map.put("message", error.getMessage());
+    map.put("details", error.getDetails());
+    return map;
   }
 }

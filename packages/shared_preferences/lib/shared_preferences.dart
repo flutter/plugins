@@ -11,8 +11,10 @@ const MethodChannel _kChannel =
     const MethodChannel('plugins.flutter.io/shared_preferences');
 
 /// Wraps NSUserDefaults (on iOS) and SharedPreferences (on Android), providing
-/// a persistent store for simple data. Data is persisted to disk automatically
-/// and asynchronously. Use commit() to be notified when a save is successful.
+/// a persistent store for simple data.
+///
+/// Data is persisted to disk automatically and asynchronously. Use [commit()]
+/// to be notified when a save is successful.
 class SharedPreferences {
   SharedPreferences._(this._preferenceCache);
 
@@ -45,49 +47,69 @@ class SharedPreferences {
   final Map<String, Object> _preferenceCache;
 
   /// Reads a value from persistent storage, throwing an exception if it's not a
-  /// bool
+  /// bool.
   bool getBool(String key) => _preferenceCache[key];
 
   /// Reads a value from persistent storage, throwing an exception if it's not
-  /// an int
+  /// an int.
   int getInt(String key) => _preferenceCache[key];
 
   /// Reads a value from persistent storage, throwing an exception if it's not a
-  /// double
+  /// double.
   double getDouble(String key) => _preferenceCache[key];
 
   /// Reads a value from persistent storage, throwing an exception if it's not a
-  /// String
+  /// String.
   String getString(String key) => _preferenceCache[key];
 
-  /// Reads a set of string values from persistent storage,
-  /// throwing an exception if it's not a string set.
+  /// Reads a set of string values from persistent storage, throwing an
+  /// exception if it's not a string set.
   List<String> getStringList(String key) => _preferenceCache[key];
 
   /// Saves a boolean [value] to persistent storage in the background.
+  ///
+  /// If [value] is null, this is equivalent to calling [remove()] on the [key].
   void setBool(String key, bool value) => _setValue('Bool', key, value);
 
   /// Saves an integer [value] to persistent storage in the background.
+  ///
+  /// If [value] is null, this is equivalent to calling [remove()] on the [key].
   void setInt(String key, int value) => _setValue('Int', key, value);
 
   /// Saves a double [value] to persistent storage in the background.
+  ///
   /// Android doesn't support storing doubles, so it will be stored as a float.
+  ///
+  /// If [value] is null, this is equivalent to calling [remove()] on the [key].
   void setDouble(String key, double value) => _setValue('Double', key, value);
 
   /// Saves a string [value] to persistent storage in the background.
+  ///
+  /// If [value] is null, this is equivalent to calling [remove()] on the [key].
   void setString(String key, String value) => _setValue('String', key, value);
 
   /// Saves a list of strings [value] to persistent storage in the background.
+  ///
+  /// If [value] is null, this is equivalent to calling [remove()] on the [key].
   void setStringList(String key, List<String> value) =>
       _setValue('StringList', key, value);
 
+  /// Removes an entry from persistent storage.
+  void remove(String key) => _setValue(null, key, null);
+
   void _setValue(String valueType, String key, Object value) {
-    _preferenceCache[key] = value;
     // Set the value in the background.
-    _kChannel.invokeMethod('set$valueType', <String, dynamic>{
+    final Map<String, dynamic> params = <String, dynamic>{
       'key': '$_prefix$key',
-      'value': value,
-    });
+    };
+    if (value == null) {
+      _preferenceCache.remove(key);
+      _kChannel.invokeMethod('remove', params);
+    } else {
+      _preferenceCache[key] = value;
+      params['value'] = value;
+      _kChannel.invokeMethod('set$valueType', params);
+    }
   }
 
   /// Completes with true once saved values have been persisted to local
