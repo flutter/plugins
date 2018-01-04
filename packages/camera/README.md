@@ -20,31 +20,16 @@ Add a row to the `ios/Runner/Info.plist` of your app with the key `Privacy - Cam
 Or in text format add the key:
 
 ```xml
-	<key>NSCameraUsageDescription</key>
-    <string>Can I use the camera please?</string>
+<key>NSCameraUsageDescription</key>
+<string>Can I use the camera please?</string>
 ```
 
 ### Android
 
-#### Permissions
-Add the right permissions and features in your Android Manifest file, located in `<project root>/android/app/src/main/AndroidManifest.xml:
-
-For example:
-
-```xml
-<uses-permission android:name="android.permission.CAMERA"/>
-
-<uses-feature android:name="android.hardware.camera" />
-```
-
-Read more details about camera permissions [here](https://developer.android.com/guide/topics/media/camera.html).
-
-#### Android sdk version
-
-Change you minimum Android sdk version to 21 (or higher) in your `android/app/build.gradle` file.
+Change the minimum Android sdk version to 21 (or higher) in your `android/app/build.gradle` file.
 
 ```
-        minSdkVersion 21
+minSdkVersion 21
 ```
 
 ### Example
@@ -52,10 +37,16 @@ Change you minimum Android sdk version to 21 (or higher) in your `android/app/bu
 Here is a small example flutter app displaying a full screen camera preview.
 
 ```dart
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 
-void main() => runApp(new CameraApp());
+List<CameraDescription> cameras;
+
+Future<Null> main() async {
+  cameras = await availableCameras();
+  runApp(new CameraApp());
+}
 
 class CameraApp extends StatefulWidget {
   @override
@@ -68,10 +59,8 @@ class _CameraAppState extends State<CameraApp> {
   @override
   void initState() {
     super.initState();
-    availableCameras().then((List<CameraDescription> cameras) async {
-      controller = new CameraController(cameras[0], ResolutionPreset.medium);
-      controller.start();
-      await controller.initialize();
+    controller = new CameraController(cameras[0], ResolutionPreset.medium);
+    controller.initialize().then((_) {
       if (!mounted) {
         return;
       }

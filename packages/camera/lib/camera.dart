@@ -106,7 +106,7 @@ class CameraValue {
   const CameraValue({this.isStarted, this.initialized, this.errorDescription});
 
   const CameraValue.uninitialized()
-      : this(isStarted: false, initialized: false);
+      : this(isStarted: true, initialized: false);
 
   bool get isErroneous => errorDescription != null;
 
@@ -137,8 +137,7 @@ class CameraValue {
 ///
 /// Before using a [CameraController] a call to [initialize] must complete.
 ///
-/// To show the camera preview on the screen, call [start()], and use a
-/// [CameraPreview] widget.
+/// To show the camera preview on the screen use a [CameraPreview] widget.
 class CameraController extends ValueNotifier<CameraValue> {
   final CameraDescription description;
   final ResolutionPreset resolutionPreset;
