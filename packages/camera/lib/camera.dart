@@ -201,24 +201,6 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
   }
 
-  /// Must be called to release the resources of this camera.
-  @override
-  Future<Null> dispose() async {
-    if (_creatingCompleter != null) {
-      await _creatingCompleter.future;
-      if (!_disposed) {
-        _disposed = true;
-        await _eventSubscription?.cancel();
-        await _channel.invokeMethod(
-          'dispose',
-          <String, dynamic>{'textureId': _textureId},
-        );
-      }
-    }
-    _disposed = true;
-    super.dispose();
-  }
-
   /// Captures an image and saves it to [path].
   ///
   /// A path can for example be obtained using
@@ -274,5 +256,24 @@ class CameraController extends ValueNotifier<CameraValue> {
   Future<Null> stop() async {
     value = value.copyWith(isStarted: false);
     _applyStartStop();
+  }
+
+
+  /// Releases the resources of this camera.
+  @override
+  Future<Null> dispose() async {
+    if (_creatingCompleter != null) {
+      await _creatingCompleter.future;
+      if (!_disposed) {
+        _disposed = true;
+        await _eventSubscription?.cancel();
+        await _channel.invokeMethod(
+          'dispose',
+          <String, dynamic>{'textureId': _textureId},
+        );
+      }
+    }
+    _disposed = true;
+    super.dispose();
   }
 }

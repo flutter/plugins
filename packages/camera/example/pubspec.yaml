@@ -5,13 +5,12 @@ dependencies:
   path_provider: 0.3.0
   flutter:
     sdk: flutter
+  camera:
+    path: ../
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
-  camera:
-    path: ../
 
 flutter:
   uses-material-design: true

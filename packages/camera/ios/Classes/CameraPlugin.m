@@ -26,17 +26,17 @@
                          bracketSettings:(AVCaptureBracketedStillImageSettings *)bracketSettings
                                    error:(NSError *)error {
   _selfProperty = nil;
-    if (error) {
-        _result([FlutterError errorWithCode:@"cameraAccess" message:[error description] details:nil]);
-    }
+  if (error) {
+    _result([FlutterError errorWithCode:@"cameraAccess" message:[error description] details:nil]);
+  }
   NSData *data = [AVCapturePhotoOutput
-                JPEGPhotoDataRepresentationForJPEGSampleBuffer:photoSampleBuffer
-                previewPhotoSampleBuffer:previewPhotoSampleBuffer];
+      JPEGPhotoDataRepresentationForJPEGSampleBuffer:photoSampleBuffer
+                            previewPhotoSampleBuffer:previewPhotoSampleBuffer];
   // TODO(sigurdm): Consider writing file asynchronously.
   bool success = [data writeToFile:_path atomically:YES];
-    if (!success) {
-        _result([FlutterError errorWithCode:@"IOError" message:@"Unable to write file" details:nil]);
-    }
+  if (!success) {
+    _result([FlutterError errorWithCode:@"IOError" message:@"Unable to write file" details:nil]);
+  }
   _result(nil);
 }
 @end
@@ -54,38 +54,40 @@
 @property(readonly, nonatomic) CGSize previewSize;
 @property(readonly, nonatomic) CGSize captureSize;
 
-- (instancetype)initWithCameraName:(NSString *)cameraName resolutionPreset:(NSString*)resolutionPreset result:(FlutterResult)result;
+- (instancetype)initWithCameraName:(NSString *)cameraName
+                  resolutionPreset:(NSString *)resolutionPreset
+                            result:(FlutterResult)result;
 - (void)start;
 - (void)stop;
 - (void)captureToFile:(NSString *)filename result:(FlutterResult)result;
 @end
 
 @implementation FLTCam
-- (instancetype)initWithCameraName:(NSString *)cameraName resolutionPreset:(NSString*)resolutionPreset  result:(FlutterResult)result {
+- (instancetype)initWithCameraName:(NSString *)cameraName
+                  resolutionPreset:(NSString *)resolutionPreset
+                            result:(FlutterResult)result {
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
   _captureSession = [[AVCaptureSession alloc] init];
-    AVCaptureSessionPreset preset;
-    if ([resolutionPreset isEqualToString:@"high"]) {
-        preset = AVCaptureSessionPresetHigh;
-    } else if ([resolutionPreset isEqualToString:@"medium"]) {
-        preset = AVCaptureSessionPresetMedium;
-    } else {
-        preset = AVCaptureSessionPresetLow;
-    }
+  AVCaptureSessionPreset preset;
+  if ([resolutionPreset isEqualToString:@"high"]) {
+    preset = AVCaptureSessionPresetHigh;
+  } else if ([resolutionPreset isEqualToString:@"medium"]) {
+    preset = AVCaptureSessionPresetMedium;
+  } else {
+    preset = AVCaptureSessionPresetLow;
+  }
   _captureSession.sessionPreset = preset;
   _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraName];
   NSError *error = nil;
   AVCaptureInput *input = [AVCaptureDeviceInput deviceInputWithDevice:_captureDevice error:&error];
-    if (error) {
-        result([FlutterError errorWithCode:@"cameraAccess"
-                                   message:[error description]
-                                   details:nil]);
-        return nil;
-    }
-  CMVideoDimensions dimensions = CMVideoFormatDescriptionGetDimensions([[_captureDevice activeFormat] formatDescription]);
+  if (error) {
+    result([FlutterError errorWithCode:@"cameraAccess" message:[error description] details:nil]);
+    return nil;
+  }
+  CMVideoDimensions dimensions =
+      CMVideoFormatDescriptionGetDimensions([[_captureDevice activeFormat] formatDescription]);
   _previewSize = CGSizeMake(dimensions.width, dimensions.height);
-
 
   AVCaptureVideoDataOutput *output = [AVCaptureVideoDataOutput new];
   output.videoSettings =
@@ -119,8 +121,7 @@
   AVCapturePhotoSettings *settings = [AVCapturePhotoSettings photoSettings];
   [_capturePhotoOutput
       capturePhotoWithSettings:settings
-                      delegate:[[FLTSavePhotoDelegate alloc] initWithPath:path
-                                                                   result:result]];
+                      delegate:[[FLTSavePhotoDelegate alloc] initWithPath:path result:result]];
 }
 
 - (void)captureOutput:(AVCaptureOutput *)output
@@ -203,12 +204,12 @@
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"init" isEqualToString:call.method]) {
-      for (NSNumber *textureId in _cams) {
-          [_registry unregisterTexture:[textureId longLongValue]];
-          [[_cams objectForKey:textureId] close];
-      }
-      [_cams removeAllObjects];
-      result(nil);
+    for (NSNumber *textureId in _cams) {
+      [_registry unregisterTexture:[textureId longLongValue]];
+      [[_cams objectForKey:textureId] close];
+    }
+    [_cams removeAllObjects];
+    result(nil);
   } else if ([@"list" isEqualToString:call.method]) {
     AVCaptureDeviceDiscoverySession *discoverySession = [AVCaptureDeviceDiscoverySession
         discoverySessionWithDeviceTypes:@[ AVCaptureDeviceTypeBuiltInWideAngleCamera ]
@@ -239,7 +240,9 @@
   } else if ([@"create" isEqualToString:call.method]) {
     NSString *cameraName = call.arguments[@"cameraName"];
     NSString *resolutionPreset = call.arguments[@"resolutionPreset"];
-    FLTCam *cam = [[FLTCam alloc] initWithCameraName:cameraName resolutionPreset:resolutionPreset result:result];
+    FLTCam *cam = [[FLTCam alloc] initWithCameraName:cameraName
+                                    resolutionPreset:resolutionPreset
+                                              result:result];
     if (cam != nil) {
       int64_t textureId = [_registry registerTexture:cam];
       _cams[@(textureId)] = cam;
@@ -253,7 +256,13 @@
                binaryMessenger:_messenger];
       [eventChannel setStreamHandler:cam];
       cam.eventChannel = eventChannel;
-      result(@{@"textureId": @(textureId), @"previewWidth": @(cam.previewSize.width), @"previewHeight": @(cam.previewSize.height), @"captureWidth": @(cam.captureSize.width), @"captureHeight": @(cam.captureSize.height), });
+      result(@{
+        @"textureId" : @(textureId),
+        @"previewWidth" : @(cam.previewSize.width),
+        @"previewHeight" : @(cam.previewSize.height),
+        @"captureWidth" : @(cam.captureSize.width),
+        @"captureHeight" : @(cam.captureSize.height),
+      });
     }
   } else {
     NSDictionary *argsMap = call.arguments;
