@@ -129,7 +129,7 @@ class ExplicitIntentsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: const Text('Test explict intents'),
+        title: const Text('Test explicit intents'),
       ),
       body: new Center(
         child: new Padding(
@@ -157,7 +157,7 @@ class ExplicitIntentsWidget extends StatelessWidget {
               ),
               new RaisedButton(
                 child: const Text(
-                    'Tap here to test explict intent fallback to implicit.'),
+                    'Tap here to test explicit intent fallback to implicit.'),
                 onPressed: _testExplicitIntentFallback,
               ),
             ],
