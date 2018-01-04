@@ -256,7 +256,11 @@ public class CloudFirestorePlugin implements MethodCallHandler {
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                       Map<String, Object> snapshotMap = new HashMap<>();
                       snapshotMap.put("path", documentSnapshot.getReference().getPath());
-                      snapshotMap.put("data", documentSnapshot.getData());
+                      if (documentSnapshot.exists()) {
+                        snapshotMap.put("data", documentSnapshot.getData());
+                      } else {
+                        snapshotMap.put("data", null);
+                      }
                       result.success(snapshotMap);
                     }
                   })
