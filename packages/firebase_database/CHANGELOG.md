@@ -1,3 +1,7 @@
+## 0.3.1
+
+* Fix function name collision when using Firebase Database and Cloud Firestore together on iOS.
+
 ## 0.3.0
 
 * **Breaking change**. Upgraded to Gradle 4.1 and Android Studio Gradle plugin
