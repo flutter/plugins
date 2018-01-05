@@ -214,9 +214,6 @@ class RewardedVideoAd {
 
   RewardedVideoAd.private();
 
-  /// Optional targeting info per the native AdMob API.
-  final MobileAdTargetingInfo targetingInfo;
-
   /// Callback invoked for events in the rewarded video ad lifecycle.
   RewardedVideoAdListener listener;
 
@@ -226,13 +223,13 @@ class RewardedVideoAd {
 
   /// Shows a rewarded video ad if one has been loaded.
   Future<bool> show() {
-    return _channel.invokeMethod("showRewardedAd", <String, dynamic>{'id': id});
+    return _channel.invokeMethod("showRewardedVideoAd", <String, dynamic>{'id': id});
   }
 
   /// Loads a rewarded video ad using the provided ad unit ID.
-  Future<bool> load(String adUnitId) {
+  Future<bool> load(String adUnitId, MobileAdTargetingInfo targetingInfo) {
     assert(adUnitId != null && adUnitId.isNotEmpty);
-    return _channel.invokeMethod("loadRewardedAd", <String, dynamic>{
+    return _channel.invokeMethod("loadRewardedVideoAd", <String, dynamic>{
       'id': id,
       'adUnitId': adUnitId,
       'targetingInfo': targetingInfo?.toJson(),
@@ -317,10 +314,10 @@ class FirebaseAdMob {
     assert(call.arguments is Map);
     final Map<String, dynamic> argumentsMap = call.arguments;
     final RewardedVideoAdEvent rewardedEvent =
-        _methodToMobileAdEvent[call.method];
+        _methodToRewardedVideoAdEvent[call.method];
     if (rewardedEvent != null) {
       if (RewardedVideoAd.instance.listener != null) {
-        if (rewardedEvent == RewardedVideoEvent.rewarded) {
+        if (rewardedEvent == RewardedVideoAdEvent.rewarded) {
           RewardedVideoAd.instance.listener(rewardedEvent,
               argumentsMap['rewardType'], argumentsMap['rewardAmount']);
         } else {

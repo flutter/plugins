@@ -4,5 +4,8 @@
 
 #import <Flutter/Flutter.h>
 
-@interface FLTFirebaseAdMobPlugin : NSObject<FlutterPlugin>
+#define FLTLogWarning(format, ...)                                             \
+  NSLog((@"FirebaseAdMobPlugin <warning> " format), ##__VA_ARGS__)
+
+@interface FLTFirebaseAdMobPlugin : NSObject <FlutterPlugin>
 @end
