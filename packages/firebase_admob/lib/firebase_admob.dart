@@ -206,6 +206,34 @@ typedef void RewardedVideoAdListener(RewardedVideoAdEvent event,
 
 /// The AdMob rewarded video ad. The AdMob API uses a singleton for its rewarded
 /// video ads, and this class is designed to match.
+///
+/// Apps should assign a callback function to [RewardedVideoAd]'s listener
+/// property in order to receive reward notifications from the AdMob SDK:
+/// ```
+/// RewardedVideoAd.instance.listener = (RewardedVideoAdEvent event,
+///     [String rewardType, int rewardAmount]) {
+///     print("You were rewarded with $rewardAmount $rewardType!");
+///   }
+/// };
+/// ```
+///
+/// The function will be invoked when any of the events in
+/// [RewardedVideoAdEvent] occur.
+///
+/// To load and show ads, call the load method:
+/// ```
+/// RewardedVideoAd.instance.load(myAdUnitString, myTargetingInfoObj);
+/// ```
+///
+/// Later (any point after your listener callback receives the
+/// RewardedVideoAdEvent.loaded event), call the show method:
+/// ```
+/// RewardedVideoAd.instance.show();
+/// ```
+///
+/// Only one rewarded video ad can be loaded at a time. Because the creatives
+/// are so large, it's a good idea to start loading an ad well in advance of
+/// when it's likely to be needed.
 class RewardedVideoAd {
   static final RewardedVideoAd _instance = new RewardedVideoAd.private();
 
@@ -217,20 +245,17 @@ class RewardedVideoAd {
   /// Callback invoked for events in the rewarded video ad lifecycle.
   RewardedVideoAdListener listener;
 
-  int get id => hashCode;
-
   MethodChannel get _channel => FirebaseAdMob.instance._channel;
 
   /// Shows a rewarded video ad if one has been loaded.
   Future<bool> show() {
-    return _channel.invokeMethod("showRewardedVideoAd", <String, dynamic>{'id': id});
+    return _channel.invokeMethod("showRewardedVideoAd");
   }
 
   /// Loads a rewarded video ad using the provided ad unit ID.
   Future<bool> load(String adUnitId, MobileAdTargetingInfo targetingInfo) {
     assert(adUnitId != null && adUnitId.isNotEmpty);
     return _channel.invokeMethod("loadRewardedVideoAd", <String, dynamic>{
-      'id': id,
       'adUnitId': adUnitId,
       'targetingInfo': targetingInfo?.toJson(),
     });
@@ -258,7 +283,7 @@ class RewardedVideoAd {
 ///  * [BannerAd], a small rectangular ad displayed at the bottom of the screen.
 ///  * [InterstitialAd], a full screen ad that must be dismissed by the user.
 ///  * [RewardedVideoAd], a full screen video ad that provides in-app user
-///    rewards when viewed to completion.
+///    rewards.
 class FirebaseAdMob {
   @visibleForTesting
   FirebaseAdMob.private(MethodChannel channel) : _channel = channel {

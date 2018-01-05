@@ -75,7 +75,8 @@ class _MyAppState extends State<MyApp> {
     FirebaseAdMob.instance
         .initialize(appId: Platform.isAndroid ? androidAppId : iOSAppId);
     _bannerAd = createBannerAd()..load();
-    RewardedVideoAd.instance.listener = (RewardedVideoAdEvent event, [String rewardType, int rewardAmount]) {
+    RewardedVideoAd.instance.listener =
+        (RewardedVideoAdEvent event, [String rewardType, int rewardAmount]) {
       print("RewardedVideoAd event $event");
       if (event == RewardedVideoAdEvent.rewarded) {
         setState(() {
@@ -134,9 +135,10 @@ class _MyAppState extends State<MyApp> {
               new RaisedButton(
                 child: const Text('LOAD REWARDED VIDEO'),
                 onPressed: () {
-                  RewardedVideoAd.instance.load(Platform.isAndroid
-                      ? androidRewardedVideoAdUnitId
-                      : iOSRewardedVideoAdUnitId,
+                  RewardedVideoAd.instance.load(
+                      Platform.isAndroid
+                          ? androidRewardedVideoAdUnitId
+                          : iOSRewardedVideoAdUnitId,
                       targetingInfo);
                 },
               ),

@@ -1,3 +1,7 @@
+## 0.3.0
+
+* Added support for rewarded video ads.
+
 ## 0.2.2
 
 * Added platform-specific App IDs and ad unit IDs to example.
