@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io' show Platform;
 
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/services.dart';
@@ -13,10 +14,32 @@ void main() {
     const MethodChannel channel =
         const MethodChannel('plugins.flutter.io/firebase_admob');
 
-    const String appId = 'ca-app-pub-3940256099942544~3347511713';
-    const String bannerAdUnitId = 'ca-app-pub-3940256099942544/6300978111';
-    const String interstitialAdUnitId =
+    // Platform-specific App IDs that can be used for testing.
+    const String androidAppId = 'ca-app-pub-3940256099942544~3347511713';
+    const String iOSAppId = 'ca-app-pub-3940256099942544~1458002511';
+
+    // Platform-specific ad unit IDs that always return test ads.
+    const String androidBannerAdUnitId =
+        'ca-app-pub-3940256099942544/6300978111';
+    const String androidInterstitialAdUnitId =
         'ca-app-pub-3940256099942544/1033173712';
+    const String androidRewardedVideoAdUnitId =
+        'ca-app-pub-3940256099942544/5224354917';
+    const String iOSBannerAdUnitId = 'ca-app-pub-3940256099942544/2934735716';
+    const String iOSInterstitialAdUnitId =
+        'ca-app-pub-3940256099942544/4411468910';
+    const String iOSRewardedVideoAdUnitId =
+        'ca-app-pub-3940256099942544/1712485313';
+
+    final String appId = Platform.isAndroid ? androidAppId : iOSAppId;
+    final String bannerAdUnitId =
+        Platform.isAndroid ? androidBannerAdUnitId : iOSBannerAdUnitId;
+    final String interstitialAdUnitId = Platform.isAndroid
+        ? androidInterstitialAdUnitId
+        : iOSInterstitialAdUnitId;
+    final String rewardedVideoAdUnitId = Platform.isAndroid
+        ? androidRewardedVideoAdUnitId
+        : iOSRewardedVideoAdUnitId;
 
     final List<MethodCall> log = <MethodCall>[];
     final FirebaseAdMob admob = new FirebaseAdMob.private(channel);
@@ -28,7 +51,9 @@ void main() {
           case 'initialize':
           case 'loadBannerAd':
           case 'loadInterstitialAd':
+          case 'loadRewardedVideoAd':
           case 'showAd':
+          case 'showRewardedVideoAd':
           case 'disposeAd':
             return new Future<bool>.value(true);
           default:
@@ -101,6 +126,25 @@ void main() {
         isMethodCall('disposeAd', arguments: <String, dynamic>{
           'id': id,
         }),
+      ]);
+    });
+
+    test('rewarded', () async {
+      log.clear();
+
+      expect(
+          await RewardedVideoAd.instance
+              .load(rewardedVideoAdUnitId, const MobileAdTargetingInfo()),
+          true);
+
+      expect(await RewardedVideoAd.instance.show(), true);
+
+      expect(log, <Matcher>[
+        isMethodCall('loadRewardedVideoAd', arguments: <String, dynamic>{
+          'adUnitId': rewardedVideoAdUnitId,
+          'targetingInfo': <String, String>{'requestAgent': 'flutter-alpha'},
+        }),
+        isMethodCall('showRewardedVideoAd', arguments: null),
       ]);
     });
   });

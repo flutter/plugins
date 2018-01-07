@@ -237,10 +237,10 @@ typedef void RewardedVideoAdListener(RewardedVideoAdEvent event,
 class RewardedVideoAd {
   static final RewardedVideoAd _instance = new RewardedVideoAd.private();
 
+  RewardedVideoAd.private();
+
   /// The one and only instance of this class.
   static RewardedVideoAd get instance => _instance;
-
-  RewardedVideoAd.private();
 
   /// Callback invoked for events in the rewarded video ad lifecycle.
   RewardedVideoAdListener listener;

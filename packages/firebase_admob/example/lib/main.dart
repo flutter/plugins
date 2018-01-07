@@ -148,7 +148,7 @@ class _MyAppState extends State<MyApp> {
                   RewardedVideoAd.instance.show();
                 },
               ),
-              new Text("You have ${_coins} coins."),
+              new Text("You have $_coins coins."),
             ].map((Widget button) {
               return new Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
