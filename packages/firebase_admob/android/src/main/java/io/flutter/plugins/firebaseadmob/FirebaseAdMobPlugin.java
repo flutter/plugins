@@ -71,15 +71,15 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
 
     String adUnitId = call.argument("adUnitId");
     if (adUnitId == null || adUnitId.isEmpty()) {
-      result.error("no_ad_unit_id", "a non-empty adUnitId was not provided for rewarded video",
-          null);
+      result.error(
+          "no_ad_unit_id", "a non-empty adUnitId was not provided for rewarded video", null);
       return;
     }
 
     Map<String, Object> targetingInfo = call.argument("targetingInfo");
     if (targetingInfo == null) {
-      result.error("no_targeting_info",
-          "a null targetingInfo object was provided for rewarded video", null);
+      result.error(
+          "no_targeting_info", "a null targetingInfo object was provided for rewarded video", null);
       return;
     }
 

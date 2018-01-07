@@ -6,14 +6,11 @@ package io.flutter.plugins.firebaseadmob;
 
 import android.app.Activity;
 import android.util.Log;
-
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.reward.RewardItem;
 import com.google.android.gms.ads.reward.RewardedVideoAd;
 import com.google.android.gms.ads.reward.RewardedVideoAdListener;
-
 import io.flutter.plugin.common.MethodChannel;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,8 +46,9 @@ public class RewardedVideoAdWrapper implements RewardedVideoAdListener {
 
   @Override
   public void onRewarded(RewardItem rewardItem) {
-    channel.invokeMethod("onRewarded", argumentsMap("rewardType", rewardItem.getType(),
-            "rewardAmount", rewardItem.getAmount()));
+    channel.invokeMethod(
+        "onRewarded",
+        argumentsMap("rewardType", rewardItem.getType(), "rewardAmount", rewardItem.getAmount()));
   }
 
   @Override

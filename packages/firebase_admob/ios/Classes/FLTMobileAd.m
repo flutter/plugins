@@ -42,8 +42,7 @@ FLTMobileAdStatus _status;
   return [UIApplication sharedApplication].delegate.window.rootViewController;
 }
 
-- (instancetype)initWithId:(NSNumber *)mobileAdId
-                   channel:(FlutterMethodChannel *)channel {
+- (instancetype)initWithId:(NSNumber *)mobileAdId channel:(FlutterMethodChannel *)channel {
   self = [super init];
   if (self) {
     _mobileAdId = mobileAdId;
@@ -58,8 +57,7 @@ FLTMobileAdStatus _status;
   return _status;
 }
 
-- (void)loadWithUnitId:(NSString *)unitId
-         targetingInfo:(NSDictionary *)targetingInfo {
+- (void)loadWithUnitId:(NSString *)unitId targetingInfo:(NSDictionary *)targetingInfo {
   // Implemented by the Banner and Interstitial subclasses
 }
 
@@ -76,35 +74,29 @@ FLTMobileAdStatus _status;
 }
 
 - (NSString *)description {
-  NSString *statusString =
-      (NSString *)statusToString[[NSNumber numberWithInt:_status]];
-  return [NSString stringWithFormat:@"%@ %@ mobileAdId:%@", super.description,
-                                    statusString, _mobileAdId];
+  NSString *statusString = (NSString *)statusToString[[NSNumber numberWithInt:_status]];
+  return [NSString
+      stringWithFormat:@"%@ %@ mobileAdId:%@", super.description, statusString, _mobileAdId];
 }
 @end
 
 @implementation FLTBannerAd
 GADBannerView *_banner;
 
-+ (instancetype)withId:(NSNumber *)mobileAdId
-               channel:(FlutterMethodChannel *)channel {
++ (instancetype)withId:(NSNumber *)mobileAdId channel:(FlutterMethodChannel *)channel {
   FLTMobileAd *ad = [FLTMobileAd getAdForId:mobileAdId];
-  return ad != nil
-             ? (FLTBannerAd *)ad
-             : [[FLTBannerAd alloc] initWithId:mobileAdId channel:channel];
+  return ad != nil ? (FLTBannerAd *)ad
+                   : [[FLTBannerAd alloc] initWithId:mobileAdId channel:channel];
 }
 
-- (void)loadWithUnitId:(NSString *)unitId
-         targetingInfo:(NSDictionary *)targetingInfo {
-  if (_status != CREATED)
-    return;
+- (void)loadWithUnitId:(NSString *)unitId targetingInfo:(NSDictionary *)targetingInfo {
+  if (_status != CREATED) return;
   _status = LOADING;
   _banner = [[GADBannerView alloc] initWithAdSize:kGADAdSizeBanner];
   _banner.delegate = self;
   _banner.adUnitID = unitId;
   _banner.rootViewController = [FLTMobileAd rootViewController];
-  FLTRequestFactory *factory =
-      [[FLTRequestFactory alloc] initWithTargetingInfo:targetingInfo];
+  FLTRequestFactory *factory = [[FLTRequestFactory alloc] initWithTargetingInfo:targetingInfo];
   [_banner loadRequest:[factory createRequest]];
 }
 
@@ -113,8 +105,7 @@ GADBannerView *_banner;
     _status = PENDING;
     return;
   }
-  if (_status != LOADED)
-    return;
+  if (_status != LOADED) return;
 
   _banner.translatesAutoresizingMaskIntoConstraints = NO;
   UIView *screen = [FLTMobileAd rootViewController].view;
@@ -147,14 +138,12 @@ GADBannerView *_banner;
   bool statusWasPending = _status == PENDING;
   _status = LOADED;
   [_channel invokeMethod:@"onAdLoaded" arguments:[self argumentsMap]];
-  if (statusWasPending)
-    [self show];
+  if (statusWasPending) [self show];
 }
 
-- (void)adView:(GADBannerView *)adView
-    didFailToReceiveAdWithError:(GADRequestError *)error {
+- (void)adView:(GADBannerView *)adView didFailToReceiveAdWithError:(GADRequestError *)error {
   FLTLogWarning(@"adView:didFailToReceiveAdWithError: %@ (MobileAd %@)",
-             [error localizedDescription], self);
+                [error localizedDescription], self);
   [_channel invokeMethod:@"onAdFailedToLoad" arguments:[self argumentsMap]];
 }
 
@@ -175,8 +164,7 @@ GADBannerView *_banner;
 }
 
 - (void)dispose {
-  if (_banner.superview)
-    [_banner removeFromSuperview];
+  if (_banner.superview) [_banner removeFromSuperview];
   _banner = nil;
   [super dispose];
 }
@@ -189,24 +177,19 @@ GADBannerView *_banner;
 @implementation FLTInterstitialAd
 GADInterstitial *_interstitial;
 
-+ (instancetype)withId:(NSNumber *)mobileAdId
-               channel:(FlutterMethodChannel *)channel {
++ (instancetype)withId:(NSNumber *)mobileAdId channel:(FlutterMethodChannel *)channel {
   FLTMobileAd *ad = [FLTMobileAd getAdForId:mobileAdId];
   return ad != nil ? (FLTInterstitialAd *)ad
-                   : [[FLTInterstitialAd alloc] initWithId:mobileAdId
-                                                   channel:channel];
+                   : [[FLTInterstitialAd alloc] initWithId:mobileAdId channel:channel];
 }
 
-- (void)loadWithUnitId:(NSString *)unitId
-         targetingInfo:(NSDictionary *)targetingInfo {
-  if (_status != CREATED)
-    return;
+- (void)loadWithUnitId:(NSString *)unitId targetingInfo:(NSDictionary *)targetingInfo {
+  if (_status != CREATED) return;
   _status = LOADING;
 
   _interstitial = [[GADInterstitial alloc] initWithAdUnitID:unitId];
   _interstitial.delegate = self;
-  FLTRequestFactory *factory =
-      [[FLTRequestFactory alloc] initWithTargetingInfo:targetingInfo];
+  FLTRequestFactory *factory = [[FLTRequestFactory alloc] initWithTargetingInfo:targetingInfo];
   [_interstitial loadRequest:[factory createRequest]];
 }
 
@@ -215,25 +198,21 @@ GADInterstitial *_interstitial;
     _status = PENDING;
     return;
   }
-  if (_status != LOADED)
-    return;
+  if (_status != LOADED) return;
 
-  [_interstitial
-      presentFromRootViewController:[FLTMobileAd rootViewController]];
+  [_interstitial presentFromRootViewController:[FLTMobileAd rootViewController]];
 }
 
 - (void)interstitialDidReceiveAd:(GADInterstitial *)ad {
   bool statusWasPending = _status == PENDING;
   _status = LOADED;
   [_channel invokeMethod:@"onAdLoaded" arguments:[self argumentsMap]];
-  if (statusWasPending)
-    [self show];
+  if (statusWasPending) [self show];
 }
 
-- (void)interstitial:(GADInterstitial *)ad
-    didFailToReceiveAdWithError:(GADRequestError *)error {
+- (void)interstitial:(GADInterstitial *)ad didFailToReceiveAdWithError:(GADRequestError *)error {
   FLTLogWarning(@"interstitial:didFailToReceiveAdWithError: %@ (MobileAd %@)",
-             [error localizedDescription], self);
+                [error localizedDescription], self);
   [_channel invokeMethod:@"onAdFailedToLoad" arguments:[self argumentsMap]];
 }
 
@@ -260,7 +239,6 @@ GADInterstitial *_interstitial;
 }
 
 - (NSString *)description {
-  return [NSString
-      stringWithFormat:@"%@ for: %@", super.description, _interstitial];
+  return [NSString stringWithFormat:@"%@ for: %@", super.description, _interstitial];
 }
 @end

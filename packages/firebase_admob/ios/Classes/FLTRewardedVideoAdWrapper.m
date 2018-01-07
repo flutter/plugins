@@ -8,7 +8,7 @@
 
 static NSDictionary *rewardedStatusToString = nil;
 
-@interface FLTRewardedVideoAdWrapper () <GADRewardBasedVideoAdDelegate>
+@interface FLTRewardedVideoAdWrapper ()<GADRewardBasedVideoAdDelegate>
 @end
 
 @implementation FLTRewardedVideoAdWrapper
@@ -45,31 +45,28 @@ FLTRewardedVideoAdStatus _rewardedStatus;
   return _rewardedStatus;
 }
 
-- (void)loadWithAdUnitId:(NSString *)adUnitId
-           targetingInfo:(NSDictionary *)targetingInfo {
+- (void)loadWithAdUnitId:(NSString *)adUnitId targetingInfo:(NSDictionary *)targetingInfo {
   if (_rewardedStatus != FLTRewardedVideoAdStatusCreated &&
       _rewardedStatus != FLTRewardedVideoAdStatusFailed) {
     return;
   }
 
   _rewardedStatus = FLTRewardedVideoAdStatusLoading;
-  FLTRequestFactory *factory =
-      [[FLTRequestFactory alloc] initWithTargetingInfo:targetingInfo];
+  FLTRequestFactory *factory = [[FLTRequestFactory alloc] initWithTargetingInfo:targetingInfo];
   [[GADRewardBasedVideoAd sharedInstance] loadRequest:[factory createRequest]
                                          withAdUnitID:adUnitId];
 }
 
 - (void)show {
   [[GADRewardBasedVideoAd sharedInstance]
-      presentFromRootViewController:[FLTRewardedVideoAdWrapper
-                                        rootViewController]];
+      presentFromRootViewController:[FLTRewardedVideoAdWrapper rootViewController]];
 }
 
 - (NSString *)description {
-  NSString *statusString = (NSString *)
-      rewardedStatusToString[[NSNumber numberWithInt:_rewardedStatus]];
-  return [NSString stringWithFormat:@"%@ %@ FLTRewardedVideoAdWrapper",
-                                    super.description, statusString];
+  NSString *statusString =
+      (NSString *)rewardedStatusToString[[NSNumber numberWithInt:_rewardedStatus]];
+  return [NSString
+      stringWithFormat:@"%@ %@ FLTRewardedVideoAdWrapper", super.description, statusString];
 }
 
 - (void)rewardBasedVideoAd:(nonnull GADRewardBasedVideoAd *)rewardBasedVideoAd
@@ -83,38 +80,32 @@ FLTRewardedVideoAdStatus _rewardedStatus;
 
 - (void)rewardBasedVideoAd:(nonnull GADRewardBasedVideoAd *)rewardBasedVideoAd
     didFailToLoadWithError:(nonnull NSError *)error {
-  NSLog(@"interstitial:didFailToReceiveAdWithError: %@ (MobileAd %@)",
-        [error localizedDescription], self);
+  NSLog(@"interstitial:didFailToReceiveAdWithError: %@ (MobileAd %@)", [error localizedDescription],
+        self);
   _rewardedStatus = FLTRewardedVideoAdStatusFailed;
   [_rewardedChannel invokeMethod:@"onAdFailedToLoad" arguments:@{}];
 }
 
-- (void)rewardBasedVideoAdDidReceiveAd:
-    (nonnull GADRewardBasedVideoAd *)rewardBasedVideoAd {
+- (void)rewardBasedVideoAdDidReceiveAd:(nonnull GADRewardBasedVideoAd *)rewardBasedVideoAd {
   _rewardedStatus = FLTRewardedVideoAdStatusLoaded;
   [_rewardedChannel invokeMethod:@"onRewardedVideoAdLoaded" arguments:@{}];
 }
 
-- (void)rewardBasedVideoAdDidOpen:
-    (nonnull GADRewardBasedVideoAd *)rewardBasedVideoAd {
+- (void)rewardBasedVideoAdDidOpen:(nonnull GADRewardBasedVideoAd *)rewardBasedVideoAd {
   [_rewardedChannel invokeMethod:@"onRewardedVideoAdOpened" arguments:@{}];
 }
 
-- (void)rewardBasedVideoAdDidStartPlaying:
-    (nonnull GADRewardBasedVideoAd *)rewardBasedVideoAd {
+- (void)rewardBasedVideoAdDidStartPlaying:(nonnull GADRewardBasedVideoAd *)rewardBasedVideoAd {
   [_rewardedChannel invokeMethod:@"onRewardedVideoStarted" arguments:@{}];
 }
 
-- (void)rewardBasedVideoAdDidClose:
-    (nonnull GADRewardBasedVideoAd *)rewardBasedVideoAd {
+- (void)rewardBasedVideoAdDidClose:(nonnull GADRewardBasedVideoAd *)rewardBasedVideoAd {
   [_rewardedChannel invokeMethod:@"onRewardedVideoAdClosed" arguments:@{}];
   _rewardedStatus = FLTRewardedVideoAdStatusCreated;
 }
 
-- (void)rewardBasedVideoAdWillLeaveApplication:
-    (nonnull GADRewardBasedVideoAd *)rewardBasedVideoAd {
-  [_rewardedChannel invokeMethod:@"onRewardedVideoAdLeftApplication"
-                       arguments:@{}];
+- (void)rewardBasedVideoAdWillLeaveApplication:(nonnull GADRewardBasedVideoAd *)rewardBasedVideoAd {
+  [_rewardedChannel invokeMethod:@"onRewardedVideoAdLeftApplication" arguments:@{}];
 }
 
 @end

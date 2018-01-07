@@ -2,14 +2,14 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-#import "GoogleMobileAds/GoogleMobileAds.h"
 #import <Flutter/Flutter.h>
+#import "GoogleMobileAds/GoogleMobileAds.h"
 
 typedef enum : NSUInteger {
   CREATED,
   LOADING,
   FAILED,
-  PENDING, // Will be shown when status is changed to LOADED.
+  PENDING,  // Will be shown when status is changed to LOADED.
   LOADED,
 } FLTMobileAdStatus;
 
@@ -17,18 +17,15 @@ typedef enum : NSUInteger {
 + (void)configureWithAppId:(NSString *)appId;
 + (FLTMobileAd *)getAdForId:(NSNumber *)mobileAdId;
 - (FLTMobileAdStatus)status;
-- (void)loadWithUnitId:(NSString *)unitId
-         targetingInfo:(NSDictionary *)targetingInfo;
+- (void)loadWithUnitId:(NSString *)unitId targetingInfo:(NSDictionary *)targetingInfo;
 - (void)show;
 - (void)dispose;
 @end
 
-@interface FLTBannerAd : FLTMobileAd <GADBannerViewDelegate>
-+ (instancetype)withId:(NSNumber *)mobileAdId
-               channel:(FlutterMethodChannel *)channel;
+@interface FLTBannerAd : FLTMobileAd<GADBannerViewDelegate>
++ (instancetype)withId:(NSNumber *)mobileAdId channel:(FlutterMethodChannel *)channel;
 @end
 
-@interface FLTInterstitialAd : FLTMobileAd <GADInterstitialDelegate>
-+ (instancetype)withId:(NSNumber *)mobileAdId
-               channel:(FlutterMethodChannel *)channel;
+@interface FLTInterstitialAd : FLTMobileAd<GADInterstitialDelegate>
++ (instancetype)withId:(NSNumber *)mobileAdId channel:(FlutterMethodChannel *)channel;
 @end
