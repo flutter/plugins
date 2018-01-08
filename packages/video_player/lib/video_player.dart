@@ -52,7 +52,6 @@ class VideoPlayerValue {
   /// The current volume of the playback.
   final double volume;
 
-
   /// A description of the error.
   ///
   /// If [isErroneous] is false this is [null].
