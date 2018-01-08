@@ -28,6 +28,7 @@
 
 - initWithPath:(NSString *)path result:(FlutterResult)result {
   self = [super init];
+  NSAssert(self, @"super init cannot be nil");
   _path = path;
   _result = result;
   selfReference = self;
