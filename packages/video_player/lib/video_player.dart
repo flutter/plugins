@@ -32,13 +32,35 @@ class DurationRange {
 }
 
 class VideoPlayerValue {
+  /// The total duration of the video.
+  ///
+  /// Before the [VideoPlayerController] is initialized this is null.
   final Duration duration;
+
+  /// The current playback position.
   final Duration position;
+
+  /// The currently buffered ranges.
   final List<DurationRange> buffered;
+
+  /// True if the video is playing. False if it's paused.
   final bool isPlaying;
+
+  /// True iff the video is looping.
   final bool isLooping;
+
+  /// The current volume of the playback.
   final double volume;
+
+
+  /// A description of the error.
+  ///
+  /// If [isErroneous] is false this is [null].
   final String errorDescription;
+
+  /// The [size] of the currently loaded video.
+  ///
+  /// Before the [VideoPlayerController] is initialized this is null.
   final Size size;
 
   VideoPlayerValue({

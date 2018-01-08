@@ -1,3 +1,8 @@
+## 0.1.1
+
+* Updated documentation of when fields are available on `VideoPlayerController`.
+* Updated links in README.md.
+
 ## 0.1.0
 
 * **Breaking change**. Upgraded to Gradle 4.1 and Android Studio Gradle plugin
