@@ -207,7 +207,7 @@ public class CameraPlugin implements MethodCallHandler {
         {
           Cam cam = getCamOfCall(call);
           cam.start();
-          result.success(true);
+          result.success(null);
           break;
         }
       case "capture":
@@ -220,7 +220,7 @@ public class CameraPlugin implements MethodCallHandler {
         {
           Cam cam = getCamOfCall(call);
           cam.stop();
-          result.success(true);
+          result.success(null);
           break;
         }
       case "dispose":
@@ -548,11 +548,13 @@ public class CameraPlugin implements MethodCallHandler {
                 ByteBuffer buffer = image.getPlanes()[0].getBuffer();
                 writeToFile(buffer, file);
                 success = true;
-              } catch (IOException e) {
-                result.error("IOError", "Failed saving image", null);
-              }
-              if (success) {
                 result.success(null);
+              } catch (IOException e) {
+                // Theoretically image.close() could throw, so only report the error
+                // if we have not successfully written the file.
+                if (!success) {
+                  result.error("IOError", "Failed saving image", null);
+                }
               }
             }
           },
@@ -583,7 +585,7 @@ public class CameraPlugin implements MethodCallHandler {
                     reason = "An error happened in the framework";
                     break;
                   case CaptureFailure.REASON_FLUSHED:
-                    reason = "The capture has failed due to a abortCaptures() call";
+                    reason = "The capture has failed due to an abortCaptures() call";
                     break;
                   default:
                     reason = "Unknown reason";
