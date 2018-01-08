@@ -19,7 +19,6 @@ IconData cameraLensIcon(CameraLensDirection direction) {
     case CameraLensDirection.front:
       return Icons.camera_front;
     case CameraLensDirection.external:
-    case CameraLensDirection.unknown:
       return Icons.camera;
   }
   throw new ArgumentError('Unknown lens direction');
@@ -80,7 +79,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
     columnChildren.add(new Row(children: headerChildren));
     if (controller == null || !controller.value.initialized) {
       columnChildren.add(const Text('Tap a camera'));
-    } else if (controller.value.isErroneous) {
+    } else if (controller.value.hasError) {
       columnChildren.add(
         new Text('Camera error ${controller.value.errorDescription}'),
       );
@@ -91,8 +90,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
             padding: const EdgeInsets.all(5.0),
             child: new Center(
               child: new AspectRatio(
-                aspectRatio:
-                controller.aspectRatio,
+                aspectRatio: controller.value.aspectRatio,
                 child: new CameraPreview(controller),
               ),
             ),

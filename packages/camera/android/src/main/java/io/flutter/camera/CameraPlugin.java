@@ -14,6 +14,7 @@ import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CameraMetadata;
+import android.hardware.camera2.CaptureFailure;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
@@ -115,7 +116,7 @@ public class CameraPlugin implements MethodCallHandler {
   }
 
   public static void registerWith(Registrar registrar) {
-    final MethodChannel channel = new MethodChannel(registrar.messenger(), "camera");
+    final MethodChannel channel = new MethodChannel(registrar.messenger(), "plugins.flutter.io/camera");
     cameraManager = (CameraManager) registrar.activity().getSystemService(Context.CAMERA_SERVICE);
 
     channel.setMethodCallHandler(
@@ -146,14 +147,21 @@ public class CameraPlugin implements MethodCallHandler {
         new CompareSizesByArea());
   }
 
+  private Cam getCamOfCall(MethodCall call) {
+    long textureId = ((Number) call.argument("textureId")).longValue();
+    return cams.get(textureId);
+  }
+
   @Override
-  public void onMethodCall(MethodCall call, Result result) {
+  public void onMethodCall(MethodCall call, final Result result) {
     switch (call.method) {
       case "init":
+        final int remainingCams = cams.size();
         for (Cam cam : cams.values()) {
           cam.dispose();
         }
         cams.clear();
+        result.success(null);
       case "list":
         try {
           String[] cameraNames = cameraManager.getCameraIdList();
@@ -180,7 +188,7 @@ public class CameraPlugin implements MethodCallHandler {
           }
           result.success(cameras);
         } catch (CameraAccessException e) {
-          result.error("cameraAccess", e.toString(), null);
+          result.error("cameraAccess", e.getMessage(), null);
         }
         break;
       case "create":
@@ -198,35 +206,30 @@ public class CameraPlugin implements MethodCallHandler {
         }
       case "start":
         {
-          long textureId = ((Number) call.argument("textureId")).longValue();
-          Cam cam = cams.get(textureId);
+          Cam cam = getCamOfCall(call);
           cam.start();
           result.success(true);
           break;
         }
       case "capture":
         {
-          long textureId = ((Number) call.argument("textureId")).longValue();
-          Cam cam = cams.get(textureId);
+          Cam cam = getCamOfCall(call);
           cam.capture((String) call.argument("path"), result);
           break;
         }
       case "stop":
         {
-          long textureId = ((Number) call.argument("textureId")).longValue();
-          Cam cam = cams.get(textureId);
+          Cam cam = getCamOfCall(call);
           cam.stop();
           result.success(true);
           break;
         }
       case "dispose":
         {
-          long textureId = ((Number) call.argument("textureId")).longValue();
-          Cam cam = cams.remove(textureId);
+          Cam cam = getCamOfCall(call);
           if (cam != null) {
             cam.dispose();
           }
-          result.success(true);
           break;
         }
       default:
@@ -394,7 +397,7 @@ public class CameraPlugin implements MethodCallHandler {
                         },
                         null);
                   } catch (CameraAccessException e) {
-                    result.error("cameraAccess", e.toString(), null);
+                    result.error("cameraAccess", e.getMessage(), null);
                   }
                 }
 
@@ -441,12 +444,15 @@ public class CameraPlugin implements MethodCallHandler {
               },
               null);
         } catch (CameraAccessException e) {
-          result.error("cameraAccess", e.toString(), null);
+          result.error("cameraAccess", e.getMessage(), null);
         }
       }
     }
 
     void start() {
+      if (!initialized) {
+        return;
+      }
       try {
         final CaptureRequest.Builder previewRequestBuilder =
             cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
@@ -480,8 +486,10 @@ public class CameraPlugin implements MethodCallHandler {
     }
 
     void pause() {
-      if (!initialized) return;
-      if (started) {
+      if (!initialized) {
+        return;
+      }
+      if (started && cameraCaptureSession != null) {
         try {
           cameraCaptureSession.stopRepeating();
         } catch (CameraAccessException e) {
@@ -493,14 +501,18 @@ public class CameraPlugin implements MethodCallHandler {
       }
       if (cameraCaptureSession != null) {
         cameraCaptureSession.close();
+        cameraCaptureSession = null;
       }
       if (cameraDevice != null) {
         cameraDevice.close();
+        cameraDevice = null;
       }
     }
 
     void resume() {
-      if (!initialized) return;
+      if (!initialized) {
+        return;
+      }
       openCamera(
           new Result() {
             @Override
@@ -518,37 +530,30 @@ public class CameraPlugin implements MethodCallHandler {
           });
     }
 
+    private void writeToFile(ByteBuffer buffer, File file) throws IOException {
+      try (FileOutputStream outputStream = new FileOutputStream(file)) {
+        while (0 < buffer.remaining()) {
+          outputStream.getChannel().write(buffer);
+        }
+      }
+    }
+
     void capture(String path, final Result result) {
       final File file = new File(path);
       imageReader.setOnImageAvailableListener(
           new ImageReader.OnImageAvailableListener() {
             @Override
             public void onImageAvailable(ImageReader reader) {
-              Image image = null;
-              try {
-                image = reader.acquireLatestImage();
+              boolean success = false;
+              try (Image image = reader.acquireLatestImage()) {
                 ByteBuffer buffer = image.getPlanes()[0].getBuffer();
-                byte[] bytes = new byte[buffer.capacity()];
-                buffer.get(bytes);
-                OutputStream output = null;
-                try {
-                  output = new FileOutputStream(file);
-                  output.write(bytes);
-                  result.success(null);
-                } finally {
-                  if (output != null) {
-                    output.close();
-                    if (started) {
-                      start();
-                    }
-                  }
-                }
+                writeToFile(buffer, file);
+                success = true;
               } catch (IOException e) {
                 result.error("IOError", "Failed saving image", null);
-              } finally {
-                if (image != null) {
-                  image.close();
-                }
+              }
+              if (success) {
+                result.success(null);
               }
             }
           },
@@ -569,16 +574,27 @@ public class CameraPlugin implements MethodCallHandler {
             captureBuilder.build(),
             new CameraCaptureSession.CaptureCallback() {
               @Override
-              public void onCaptureCompleted(
-                  @NonNull CameraCaptureSession session,
-                  @NonNull CaptureRequest request,
-                  @NonNull TotalCaptureResult result) {
-                super.onCaptureCompleted(session, request, result);
+              public void onCaptureFailed(
+                      @NonNull CameraCaptureSession session,
+                      @NonNull CaptureRequest request,
+                      @NonNull CaptureFailure failure) {
+                String reason;
+                switch (failure.getReason()) {
+                  case CaptureFailure.REASON_ERROR:
+                    reason = "An error happened in the framework";
+                    break;
+                  case CaptureFailure.REASON_FLUSHED:
+                    reason = "The capture has failed due to a abortCaptures() call";
+                    break;
+                  default:
+                    reason = "Unknown reason";
+                }
+                result.error("captureFailure", reason, null);
               }
             },
             null);
       } catch (CameraAccessException e) {
-        result.error("cameraAccess", e.toString(), null);
+        result.error("cameraAccess", e.getMessage(), null);
       }
     }
 
@@ -601,11 +617,12 @@ public class CameraPlugin implements MethodCallHandler {
     void dispose() {
       if (cameraCaptureSession != null) {
         cameraCaptureSession.close();
+        cameraCaptureSession = null;
       }
       if (cameraDevice != null) {
         cameraDevice.close();
+        cameraDevice = null;
       }
-      cameraDevice = null;
       textureEntry.release();
     }
   }

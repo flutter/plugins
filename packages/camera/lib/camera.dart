@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart';
 
-final MethodChannel _channel = const MethodChannel('camera')
+final MethodChannel _channel = const MethodChannel('plugins.flutter.io/camera')
   ..invokeMethod('init');
 
-enum CameraLensDirection { front, back, external, unknown }
+enum CameraLensDirection { front, back, external }
 
 enum ResolutionPreset { low, medium, high }
 
@@ -30,9 +30,8 @@ CameraLensDirection _parseCameraLensDirection(String string) {
       return CameraLensDirection.back;
     case 'external':
       return CameraLensDirection.external;
-    default:
-      return CameraLensDirection.unknown;
   }
+  throw new ArgumentError('Unknown CameraLensDirection value');
 }
 
 /// Completes with a list of available cameras.
@@ -100,25 +99,43 @@ class CameraPreview extends StatelessWidget {
 class CameraValue {
   /// True if the camera is on.
   final bool isStarted;
+
+  /// True after [CameraController.initialize] has completed successfully.
   final bool initialized;
+
   final String errorDescription;
 
-  const CameraValue({this.isStarted, this.initialized, this.errorDescription});
+  /// The size of the preview in pixels.
+  ///
+  /// Is `null` until initialized is `true`.
+  final Size previewSize;
 
-  const CameraValue.uninitialized()
-      : this(isStarted: true, initialized: false);
+  const CameraValue(
+      {this.isStarted,
+      this.initialized,
+      this.errorDescription,
+      this.previewSize});
 
-  bool get isErroneous => errorDescription != null;
+  const CameraValue.uninitialized() : this(isStarted: true, initialized: false);
+
+  /// Convenience getter for `previewSize.height / previewSize.width`.
+  ///
+  /// Can only be called when [initialized] is done.
+  double get aspectRatio => previewSize.height / previewSize.width;
+
+  bool get hasError => errorDescription != null;
 
   CameraValue copyWith({
     bool isStarted,
     bool initialized,
     String errorDescription,
+    Size previewSize,
   }) {
     return new CameraValue(
       isStarted: isStarted ?? this.isStarted,
       initialized: initialized ?? this.initialized,
       errorDescription: errorDescription ?? this.errorDescription,
+      previewSize: previewSize ?? this.previewSize,
     );
   }
 
@@ -127,7 +144,8 @@ class CameraValue {
     return '$runtimeType('
         'started: $isStarted, '
         'initialized: $initialized, '
-        'errorDescription: $errorDescription)';
+        'errorDescription: $errorDescription, '
+        'previewSize: $previewSize)';
   }
 }
 
@@ -145,20 +163,9 @@ class CameraController extends ValueNotifier<CameraValue> {
   bool _disposed = false;
   StreamSubscription<Map<String, dynamic>> _eventSubscription;
   Completer<Null> _creatingCompleter;
-  Size _previewSize;
 
   CameraController(this.description, this.resolutionPreset)
       : super(const CameraValue.uninitialized());
-
-  /// The size of the preview in pixels.
-  ///
-  /// Is [null] until [initialize] completes.
-  Size get previewSize => _previewSize;
-
-  /// Convenience getter for `previewSize.height / previewSize.width`.
-  ///
-  /// Can only be called after [initialize] completes
-  double get aspectRatio => previewSize.height / previewSize.width;
 
   /// Initializes the camera on the device.
   ///
@@ -177,11 +184,13 @@ class CameraController extends ValueNotifier<CameraValue> {
         },
       );
       _textureId = reply['textureId'];
-      _previewSize = new Size(
-        reply['previewWidth'].toDouble(),
-        reply['previewHeight'].toDouble(),
+      value = value.copyWith(
+        initialized: true,
+        previewSize: new Size(
+          reply['previewWidth'].toDouble(),
+          reply['previewHeight'].toDouble(),
+        ),
       );
-      value = value.copyWith(initialized: true);
       _applyStartStop();
     } on PlatformException catch (e) {
       value = value.copyWith(errorDescription: e.message);
@@ -195,6 +204,9 @@ class CameraController extends ValueNotifier<CameraValue> {
   }
 
   void _listener(Map<String, dynamic> event) {
+    if (_disposed) {
+      return;
+    }
     if (event['eventType'] == 'error') {
       value = value.copyWith(errorDescription: event['errorDescription']);
     }
@@ -243,7 +255,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   ///
   /// If called before [initialize] it will take effect just after
   /// initialization is done.
-  Future<Null> start() async {
+  void start() {
     value = value.copyWith(isStarted: true);
     _applyStartStop();
   }
@@ -252,27 +264,29 @@ class CameraController extends ValueNotifier<CameraValue> {
   ///
   /// If called before [initialize] it will take effect just after
   /// initialization is done.
-  Future<Null> stop() async {
+  void stop() {
     value = value.copyWith(isStarted: false);
     _applyStartStop();
   }
 
-
   /// Releases the resources of this camera.
   @override
-  Future<Null> dispose() async {
-    if (_creatingCompleter != null) {
-      await _creatingCompleter.future;
-      if (!_disposed) {
-        _disposed = true;
+  Future<Null> dispose() {
+    if (_disposed) {
+      return new Future<Null>.value(null);
+    }
+    _disposed = true;
+    super.dispose();
+    if (_creatingCompleter == null) {
+      return new Future<Null>.value(null);
+    } else {
+      return _creatingCompleter.future.then((_) async {
         await _eventSubscription?.cancel();
         await _channel.invokeMethod(
           'dispose',
           <String, dynamic>{'textureId': _textureId},
         );
-      }
+      });
     }
-    _disposed = true;
-    super.dispose();
   }
 }

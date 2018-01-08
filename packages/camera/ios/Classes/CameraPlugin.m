@@ -2,20 +2,35 @@
 #import <AVFoundation/AVFoundation.h>
 #import <libkern/OSAtomic.h>
 
+@interface NSError (FlutterError)
+@property(readonly, nonatomic) FlutterError *flutterError;
+@end
+
+@implementation NSError (FlutterError)
+- (FlutterError *)flutterError {
+  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %d", (int)self.code]
+                             message:self.domain
+                             details:self.localizedDescription];
+}
+@end
+
 @interface FLTSavePhotoDelegate : NSObject<AVCapturePhotoCaptureDelegate>
 @property(readonly, nonatomic) NSString *path;
 @property(readonly, nonatomic) FlutterResult result;
-@property(readonly, nonatomic) id selfProperty;
 
 - initWithPath:(NSString *)filename result:(FlutterResult)result;
 @end
 
-@implementation FLTSavePhotoDelegate
+@implementation FLTSavePhotoDelegate {
+  /// Used to keep the delegate alive until didFinishProcessingPhotoSampleBuffer.
+  FLTSavePhotoDelegate *selfReference;
+}
+
 - initWithPath:(NSString *)path result:(FlutterResult)result {
   self = [super init];
   _path = path;
   _result = result;
-  _selfProperty = self;
+  selfReference = self;
   return self;
 }
 
@@ -25,9 +40,10 @@
                         resolvedSettings:(AVCaptureResolvedPhotoSettings *)resolvedSettings
                          bracketSettings:(AVCaptureBracketedStillImageSettings *)bracketSettings
                                    error:(NSError *)error {
-  _selfProperty = nil;
+  selfReference = nil;
   if (error) {
-    _result([FlutterError errorWithCode:@"cameraAccess" message:[error description] details:nil]);
+    _result([error flutterError]);
+    return;
   }
   NSData *data = [AVCapturePhotoOutput
       JPEGPhotoDataRepresentationForJPEGSampleBuffer:photoSampleBuffer
@@ -36,6 +52,7 @@
   bool success = [data writeToFile:_path atomically:YES];
   if (!success) {
     _result([FlutterError errorWithCode:@"IOError" message:@"Unable to write file" details:nil]);
+    return;
   }
   _result(nil);
 }
@@ -56,7 +73,7 @@
 
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
-                            result:(FlutterResult)result;
+                             error:(NSError **)error;
 - (void)start;
 - (void)stop;
 - (void)captureToFile:(NSString *)filename result:(FlutterResult)result;
@@ -65,7 +82,7 @@
 @implementation FLTCam
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
-                            result:(FlutterResult)result {
+                             error:(NSError **)error {
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
   _captureSession = [[AVCaptureSession alloc] init];
@@ -75,14 +92,17 @@
   } else if ([resolutionPreset isEqualToString:@"medium"]) {
     preset = AVCaptureSessionPresetMedium;
   } else {
+    NSAssert([resolutionPreset isEqualToString:@"low"], @"Unknown resolution preset %@",
+             resolutionPreset);
     preset = AVCaptureSessionPresetLow;
   }
   _captureSession.sessionPreset = preset;
   _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraName];
-  NSError *error = nil;
-  AVCaptureInput *input = [AVCaptureDeviceInput deviceInputWithDevice:_captureDevice error:&error];
-  if (error) {
-    result([FlutterError errorWithCode:@"cameraAccess" message:[error description] details:nil]);
+  NSError *localError = nil;
+  AVCaptureInput *input =
+      [AVCaptureDeviceInput deviceInputWithDevice:_captureDevice error:&localError];
+  if (localError) {
+    *error = localError;
     return nil;
   }
   CMVideoDimensions dimensions =
@@ -186,7 +206,8 @@
 @implementation CameraPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
-      [FlutterMethodChannel methodChannelWithName:@"camera" binaryMessenger:[registrar messenger]];
+      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/camera"
+                                  binaryMessenger:[registrar messenger]];
   CameraPlugin *instance =
       [[CameraPlugin alloc] initWithRegistry:[registrar textures] messenger:[registrar messenger]];
   [registrar addMethodCallDelegate:instance channel:channel];
@@ -240,10 +261,13 @@
   } else if ([@"create" isEqualToString:call.method]) {
     NSString *cameraName = call.arguments[@"cameraName"];
     NSString *resolutionPreset = call.arguments[@"resolutionPreset"];
+    NSError *error;
     FLTCam *cam = [[FLTCam alloc] initWithCameraName:cameraName
                                     resolutionPreset:resolutionPreset
-                                              result:result];
-    if (cam != nil) {
+                                               error:&error];
+    if (error) {
+      result([error flutterError]);
+    } else {
       int64_t textureId = [_registry registerTexture:cam];
       _cams[@(textureId)] = cam;
       cam.onFrameAvailable = ^{
