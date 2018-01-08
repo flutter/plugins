@@ -16,7 +16,6 @@ import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureFailure;
 import android.hardware.camera2.CaptureRequest;
-import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
@@ -37,7 +36,6 @@ import io.flutter.view.FlutterView;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -116,7 +114,8 @@ public class CameraPlugin implements MethodCallHandler {
   }
 
   public static void registerWith(Registrar registrar) {
-    final MethodChannel channel = new MethodChannel(registrar.messenger(), "plugins.flutter.io/camera");
+    final MethodChannel channel =
+        new MethodChannel(registrar.messenger(), "plugins.flutter.io/camera");
     cameraManager = (CameraManager) registrar.activity().getSystemService(Context.CAMERA_SERVICE);
 
     channel.setMethodCallHandler(
@@ -575,9 +574,9 @@ public class CameraPlugin implements MethodCallHandler {
             new CameraCaptureSession.CaptureCallback() {
               @Override
               public void onCaptureFailed(
-                      @NonNull CameraCaptureSession session,
-                      @NonNull CaptureRequest request,
-                      @NonNull CaptureFailure failure) {
+                  @NonNull CameraCaptureSession session,
+                  @NonNull CaptureRequest request,
+                  @NonNull CaptureFailure failure) {
                 String reason;
                 switch (failure.getReason()) {
                   case CaptureFailure.REASON_ERROR:
