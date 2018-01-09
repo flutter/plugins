@@ -11,9 +11,7 @@ import com.google.android.gms.auth.GoogleAuthUtil;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * Android inbuilt solution for calling async tasks
- */
+/** Android inbuilt solution for calling async tasks */
 class GetOauthTokenTask extends AsyncTask<GetOauthTokenTask.Request, Void, String> {
 
   private final OnTokenListener listener;
@@ -72,9 +70,7 @@ class GetOauthTokenTask extends AsyncTask<GetOauthTokenTask.Request, Void, Strin
   }
 
 
-  /**
-   * Callback to handle the result of the call
-   */
+  /** Callback to handle the result of the call */
   interface OnTokenListener {
     /**
      * Called only once if the token was received successfully. Method is called on the
@@ -91,9 +87,7 @@ class GetOauthTokenTask extends AsyncTask<GetOauthTokenTask.Request, Void, Strin
     void onError(@NonNull Throwable error);
   }
 
-  /**
-   * Options to request an oauth token
-   */
+  /** Options to request an oauth token */
   static class Request {
     final String email;
     final List<String> scopes;

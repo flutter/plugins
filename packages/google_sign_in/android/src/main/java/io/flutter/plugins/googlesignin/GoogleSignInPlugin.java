@@ -39,9 +39,7 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
 
-/**
- * Google sign-in plugin for Flutter.
- */
+/** Google sign-in plugin for Flutter. */
 public final class GoogleSignInPlugin implements MethodCallHandler {
   private static final String CHANNEL_NAME = "plugins.flutter.io/google_sign_in";
 
@@ -136,9 +134,7 @@ public final class GoogleSignInPlugin implements MethodCallHandler {
       registrar.addActivityResultListener(handler);
     }
 
-    /**
-     * Returns the most recently signed-in account, or null if there was none.
-     */
+    /** Returns the most recently signed-in account, or null if there was none. */
     public GoogleSignInAccount getCurrentAccount() {
       return currentAccount;
     }
@@ -284,9 +280,7 @@ public final class GoogleSignInPlugin implements MethodCallHandler {
               });
     }
 
-    /**
-     * Signs the user out, and revokes their credentials.
-     */
+    /** Signs the user out, and revokes their credentials. */
     public void disconnect(Result result) {
       checkAndSetPendingOperation(METHOD_DISCONNECT, result);
 
@@ -390,16 +384,13 @@ public final class GoogleSignInPlugin implements MethodCallHandler {
       }
 
       @Override
-      public void onActivityDestroyed(Activity activity) {
-      }
+      public void onActivityDestroyed(Activity activity) {}
 
       @Override
-      public void onActivityPaused(Activity activity) {
-      }
+      public void onActivityPaused(Activity activity) {}
 
       @Override
-      public void onActivityResumed(Activity activity) {
-      }
+      public void onActivityResumed(Activity activity) {}
 
       @Override
       public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
