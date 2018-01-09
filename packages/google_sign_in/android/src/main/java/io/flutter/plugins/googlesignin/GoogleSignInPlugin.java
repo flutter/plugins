@@ -4,7 +4,6 @@
 
 package io.flutter.plugins.googlesignin;
 
-import android.accounts.Account;
 import android.app.Activity;
 import android.app.Application;
 import android.app.Application.ActivityLifecycleCallbacks;
@@ -13,8 +12,9 @@ import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.util.Log;
-import com.google.android.gms.auth.GoogleAuthUtil;
+
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -28,22 +28,21 @@ import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.common.api.Status;
-import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
-/** Google sign-in plugin for Flutter. */
-public class GoogleSignInPlugin implements MethodCallHandler {
+/**
+ * Google sign-in plugin for Flutter.
+ */
+public final class GoogleSignInPlugin implements MethodCallHandler {
   private static final String CHANNEL_NAME = "plugins.flutter.io/google_sign_in";
 
   private static final String TAG = "flutter";
@@ -105,7 +104,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
   /**
    * Delegate class that does the work for the Google sign-in plugin. This is exposed as a dedicated
    * class for use in other plugins that wrap basic sign-in functionality.
-   *
+   * <p>
    * <p>All methods in this class assume that they are run to completion before any other method is
    * invoked. In this context, "run to completion" means that their {@link Result} argument has been
    * completed (either successfully or in error). This class provides no synchronization consructs
@@ -123,7 +122,6 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 
     private final PluginRegistry.Registrar registrar;
     private final Handler handler = new Handler();
-    private final BackgroundTaskRunner backgroundTaskRunner = new BackgroundTaskRunner(1);
 
     private boolean resolvingError = false; // Whether we are currently resolving a sign-in error
     private GoogleApiClient googleApiClient;
@@ -138,7 +136,9 @@ public class GoogleSignInPlugin implements MethodCallHandler {
       registrar.addActivityResultListener(handler);
     }
 
-    /** Returns the most recently signed-in account, or null if there was none. */
+    /**
+     * Returns the most recently signed-in account, or null if there was none.
+     */
     public GoogleSignInAccount getCurrentAccount() {
       return currentAccount;
     }
@@ -179,7 +179,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
         for (String scope : requestedScopes) {
           optionsBuilder.requestScopes(new Scope(scope));
         }
-        if (!Strings.isNullOrEmpty(hostedDomain)) {
+        if (TextUtils.isEmpty(hostedDomain)) {
           optionsBuilder.setHostedDomain(hostedDomain);
         }
 
@@ -245,41 +245,25 @@ public class GoogleSignInPlugin implements MethodCallHandler {
         return;
       }
 
-      new GetOauthTokenTask()
+      GetOauthTokenTask task = new GetOauthTokenTask(new GetOauthTokenTask.OnTokenListener() {
+        @Override
+        public void onToken(@NonNull String token) {
+          HashMap<String, String> tokenResult = new HashMap<>();
+          tokenResult.put("accessToken", token);
+          // TODO(jackson): If we had a way to get the current user at this
+          // point, we could use that to obtain an up-to-date idToken here
+          // instead of the value we cached during sign in. At least, that's
+          // how it works on iOS.
+          result.success(tokenResult);
+        }
 
-      Callable<String> getTokenTask =
-          new Callable<String>() {
-            @Override
-            public String call() throws Exception {
-              Account account = new Account(email, "com.google");
-              String scopesStr = "oauth2:" + Joiner.on(' ').join(requestedScopes);
-              return GoogleAuthUtil.getToken(registrar.context(), account, scopesStr);
-            }
-          };
-
-      backgroundTaskRunner.runInBackground(
-          getTokenTask,
-          new BackgroundTaskRunner.Callback<String>() {
-            @Override
-            public void run(Future<String> tokenFuture) {
-              try {
-                String token = tokenFuture.get();
-                HashMap<String, String> tokenResult = new HashMap<>();
-                tokenResult.put("accessToken", token);
-                // TODO(jackson): If we had a way to get the current user at this
-                // point, we could use that to obtain an up-to-date idToken here
-                // instead of the value we cached during sign in. At least, that's
-                // how it works on iOS.
-                result.success(tokenResult);
-              } catch (ExecutionException e) {
-                Log.e(TAG, "Exception getting access token", e);
-                result.error(ERROR_REASON_EXCEPTION, e.getCause().getMessage(), null);
-              } catch (InterruptedException e) {
-                result.error(ERROR_REASON_EXCEPTION, e.getMessage(), null);
-                Thread.currentThread().interrupt();
-              }
-            }
-          });
+        @Override
+        public void onError(@NonNull Throwable error) {
+          Log.e(TAG, "Exception getting access token", error);
+          result.error(ERROR_REASON_EXCEPTION, error.getCause().getMessage(), null);
+        }
+      });
+      task.execute(new GetOauthTokenTask.Request(registrar.context(), email, requestedScopes));
     }
 
     /**
@@ -300,7 +284,9 @@ public class GoogleSignInPlugin implements MethodCallHandler {
               });
     }
 
-    /** Signs the user out, and revokes their credentials. */
+    /**
+     * Signs the user out, and revokes their credentials.
+     */
     public void disconnect(Result result) {
       checkAndSetPendingOperation(METHOD_DISCONNECT, result);
 
@@ -360,9 +346,9 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 
     private class Handler
         implements ActivityLifecycleCallbacks,
-            PluginRegistry.ActivityResultListener,
-            GoogleApiClient.ConnectionCallbacks,
-            GoogleApiClient.OnConnectionFailedListener {
+        PluginRegistry.ActivityResultListener,
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener {
       @Override
       public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE_RESOLVE_ERROR) {
@@ -404,13 +390,16 @@ public class GoogleSignInPlugin implements MethodCallHandler {
       }
 
       @Override
-      public void onActivityDestroyed(Activity activity) {}
+      public void onActivityDestroyed(Activity activity) {
+      }
 
       @Override
-      public void onActivityPaused(Activity activity) {}
+      public void onActivityPaused(Activity activity) {
+      }
 
       @Override
-      public void onActivityResumed(Activity activity) {}
+      public void onActivityResumed(Activity activity) {
+      }
 
       @Override
       public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
