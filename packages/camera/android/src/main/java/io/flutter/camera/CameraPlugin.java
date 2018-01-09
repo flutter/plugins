@@ -161,6 +161,7 @@ public class CameraPlugin implements MethodCallHandler {
         }
         cams.clear();
         result.success(null);
+        break;
       case "list":
         try {
           String[] cameraNames = cameraManager.getCameraIdList();
