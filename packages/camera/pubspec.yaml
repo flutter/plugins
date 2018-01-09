@@ -1,0 +1,14 @@
+name: camera
+description: A new flutter plugin project.
+version: 0.0.1
+author:
+homepage:
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+flutter:
+  plugin:
+    androidPackage: io.flutter.camera
+    pluginClass: CameraPlugin
