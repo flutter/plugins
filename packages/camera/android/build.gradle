@@ -1,0 +1,38 @@
+group 'io.flutter.camera'
+version '1.0-SNAPSHOT'
+
+buildscript {
+    repositories {
+        google()
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.0.1'
+    }
+}
+
+rootProject.allprojects {
+    repositories {
+        google()
+        jcenter()
+    }
+}
+
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 26
+    buildToolsVersion '26.0.3'
+
+    defaultConfig {
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        minSdkVersion 21
+    }
+    lintOptions {
+        disable 'InvalidPackage'
+    }
+    dependencies {
+        implementation 'com.android.support:support-annotations:26.0.0'
+    }
+}
