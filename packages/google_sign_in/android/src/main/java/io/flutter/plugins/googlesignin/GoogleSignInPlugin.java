@@ -174,7 +174,7 @@ public final class GoogleSignInPlugin implements MethodCallHandler {
         for (String scope : requestedScopes) {
           optionsBuilder.requestScopes(new Scope(scope));
         }
-        if (TextUtils.isEmpty(hostedDomain)) {
+        if (!TextUtils.isEmpty(hostedDomain)) {
           optionsBuilder.setHostedDomain(hostedDomain);
         }
 
