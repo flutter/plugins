@@ -344,7 +344,7 @@ void main() {
         _checkEncoding<dynamic>(
           standard,
           -0x7fffffffffffffff - 2,
-          <int>[5, 17]..addAll('-8000000000000001'.codeUnits),
+          <int>[4, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x7f],
         );
         _checkEncoding<dynamic>(
           standard,
@@ -354,7 +354,7 @@ void main() {
         _checkEncoding<dynamic>(
           standard,
           0x7fffffffffffffff + 1,
-          <int>[5, 16]..addAll('8000000000000000'.codeUnits),
+          <int>[4, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80],
         );
       });
       test('should encode sizes correctly at boundary cases', () {
@@ -388,9 +388,8 @@ void main() {
         _checkEncodeDecode<dynamic>(standard, -7);
         _checkEncodeDecode<dynamic>(standard, 98742923489);
         _checkEncodeDecode<dynamic>(standard, -98742923489);
-        _checkEncodeDecode<dynamic>(standard, 98740023429234899324932473298438);
-        _checkEncodeDecode<dynamic>(
-            standard, -98740023429234899324932473298438);
+        _checkEncodeDecode<dynamic>(standard, 9223372036854775807);
+        _checkEncodeDecode<dynamic>(standard, -9223372036854775807);
         _checkEncodeDecode<dynamic>(standard, 3.14);
         _checkEncodeDecode<dynamic>(standard, double.INFINITY);
         _checkEncodeDecode<dynamic>(standard, double.NAN);
@@ -410,7 +409,7 @@ void main() {
           false,
           -707,
           -7000000007,
-          -70000000000000000000000000000000000000000000000007,
+          -7000000000000000007,
           -3.14,
           '',
           'hello',
