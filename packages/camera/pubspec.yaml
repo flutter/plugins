@@ -2,7 +2,7 @@ name: camera
 description: A Flutter plugin providing access to the device cameras
 version: 0.0.1
 author: Flutter Team <flutter-dev@googlegroups.com>
-homepage: https://github.com/flutter/plugins/tree/master/packages/video_player
+homepage: https://github.com/flutter/plugins/tree/master/packages/camera
 
 dependencies:
   flutter:
