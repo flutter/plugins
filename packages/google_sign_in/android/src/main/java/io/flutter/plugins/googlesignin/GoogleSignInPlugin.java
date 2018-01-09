@@ -245,6 +245,8 @@ public class GoogleSignInPlugin implements MethodCallHandler {
         return;
       }
 
+      new GetOauthTokenTask()
+
       Callable<String> getTokenTask =
           new Callable<String>() {
             @Override
