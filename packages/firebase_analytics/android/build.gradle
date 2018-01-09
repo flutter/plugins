@@ -23,8 +23,9 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 27
-    
+
     defaultConfig {
+        minSdkVersion 16
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     lintOptions {

@@ -16,13 +16,15 @@ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
     compileSdkVersion 27
-    
+
     lintOptions {
         disable 'InvalidPackage'
     }
 
     defaultConfig {
+        minSdkVersion 16
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        applicationId "io.flutter.plugins.shareexample"
     }
 
     buildTypes {

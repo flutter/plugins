@@ -16,13 +16,14 @@ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
     compileSdkVersion 27
-    
+
     lintOptions {
         disable 'InvalidPackage'
     }
 
     defaultConfig {
-        applicationId 'com.yourcompany.firebaseauth.example'
+        minSdkVersion 16
+        applicationId 'io.flutter.plugins.firebaseauthexample'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
