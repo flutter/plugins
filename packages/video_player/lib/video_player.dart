@@ -34,7 +34,7 @@ class DurationRange {
 class VideoPlayerValue {
   /// The total duration of the video.
   ///
-  /// Before the [VideoPlayerController] is initialized this is null.
+  /// Is null when [initialized] is false.
   final Duration duration;
 
   /// The current playback position.
@@ -52,14 +52,14 @@ class VideoPlayerValue {
   /// The current volume of the playback.
   final double volume;
 
-  /// A description of the error.
+  /// A description of the error if present.
   ///
-  /// If [isErroneous] is false this is [null].
+  /// If [hasError] is false this is [null].
   final String errorDescription;
 
   /// The [size] of the currently loaded video.
   ///
-  /// Before the [VideoPlayerController] is initialized this is null.
+  /// Is null when [initialized] is false.
   final Size size;
 
   VideoPlayerValue({
@@ -79,7 +79,7 @@ class VideoPlayerValue {
       : this(duration: null, errorDescription: errorDescription);
 
   bool get initialized => duration != null;
-  bool get isErroneous => errorDescription != null;
+  bool get hasError => errorDescription != null;
   double get aspectRatio => size.width / size.height;
 
   VideoPlayerValue copyWith({
