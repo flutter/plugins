@@ -6,7 +6,6 @@ import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-
 import com.google.android.gms.auth.GoogleAuthUtil;
 import java.util.List;
 
@@ -19,7 +18,6 @@ class GetOauthTokenTask extends AsyncTask<GetOauthTokenTask.Request, Void, Strin
   public GetOauthTokenTask(@NonNull OnTokenListener listener) {
     this.listener = listener;
   }
-
 
   @Override
   protected String doInBackground(GetOauthTokenTask.Request... requests) {
