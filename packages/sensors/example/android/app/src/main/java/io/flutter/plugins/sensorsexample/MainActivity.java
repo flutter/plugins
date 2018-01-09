@@ -1,4 +1,4 @@
-package com.yourcompany.firebasecoreexample;
+package io.flutter.plugins.sensorsexample;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;

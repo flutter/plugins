@@ -1,9 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="io.flutter.plugins.quickactionsexample"
-    android:versionCode="1"
-    android:versionName="0.0.1">
+    package="io.flutter.plugins.quickactionsexample">
 
-    <uses-sdk android:minSdkVersion="16" android:targetSdkVersion="21" />
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application android:name="io.flutter.app.FlutterApplication" android:label="quick_actions_example" android:icon="@mipmap/ic_launcher">
