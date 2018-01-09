@@ -22,7 +22,7 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion
+        minSdkVersion 16
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         applicationId "io.flutter.plugins.urllauncherexample"
     }
