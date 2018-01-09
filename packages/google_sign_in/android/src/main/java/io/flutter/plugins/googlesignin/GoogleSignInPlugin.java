@@ -14,7 +14,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
-
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -28,16 +27,14 @@ import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.common.api.Status;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /** Google sign-in plugin for Flutter. */
 public final class GoogleSignInPlugin implements MethodCallHandler {
@@ -102,7 +99,9 @@ public final class GoogleSignInPlugin implements MethodCallHandler {
   /**
    * Delegate class that does the work for the Google sign-in plugin. This is exposed as a dedicated
    * class for use in other plugins that wrap basic sign-in functionality.
+   *
    * <p>
+   *
    * <p>All methods in this class assume that they are run to completion before any other method is
    * invoked. In this context, "run to completion" means that their {@link Result} argument has been
    * completed (either successfully or in error). This class provides no synchronization consructs
@@ -241,24 +240,26 @@ public final class GoogleSignInPlugin implements MethodCallHandler {
         return;
       }
 
-      GetOauthTokenTask task = new GetOauthTokenTask(new GetOauthTokenTask.OnTokenListener() {
-        @Override
-        public void onToken(@NonNull String token) {
-          HashMap<String, String> tokenResult = new HashMap<>();
-          tokenResult.put("accessToken", token);
-          // TODO(jackson): If we had a way to get the current user at this
-          // point, we could use that to obtain an up-to-date idToken here
-          // instead of the value we cached during sign in. At least, that's
-          // how it works on iOS.
-          result.success(tokenResult);
-        }
+      GetOauthTokenTask task =
+          new GetOauthTokenTask(
+              new GetOauthTokenTask.OnTokenListener() {
+                @Override
+                public void onToken(@NonNull String token) {
+                  HashMap<String, String> tokenResult = new HashMap<>();
+                  tokenResult.put("accessToken", token);
+                  // TODO(jackson): If we had a way to get the current user at this
+                  // point, we could use that to obtain an up-to-date idToken here
+                  // instead of the value we cached during sign in. At least, that's
+                  // how it works on iOS.
+                  result.success(tokenResult);
+                }
 
-        @Override
-        public void onError(@NonNull Throwable error) {
-          Log.e(TAG, "Exception getting access token", error);
-          result.error(ERROR_REASON_EXCEPTION, error.getCause().getMessage(), null);
-        }
-      });
+                @Override
+                public void onError(@NonNull Throwable error) {
+                  Log.e(TAG, "Exception getting access token", error);
+                  result.error(ERROR_REASON_EXCEPTION, error.getCause().getMessage(), null);
+                }
+              });
       task.execute(new GetOauthTokenTask.Request(registrar.context(), email, requestedScopes));
     }
 
@@ -340,9 +341,9 @@ public final class GoogleSignInPlugin implements MethodCallHandler {
 
     private class Handler
         implements ActivityLifecycleCallbacks,
-        PluginRegistry.ActivityResultListener,
-        GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener {
+            PluginRegistry.ActivityResultListener,
+            GoogleApiClient.ConnectionCallbacks,
+            GoogleApiClient.OnConnectionFailedListener {
       @Override
       public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE_RESOLVE_ERROR) {

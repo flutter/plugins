@@ -5,9 +5,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-
 import com.google.android.gms.auth.GoogleAuthUtil;
-
 import java.util.Iterator;
 import java.util.List;
 
@@ -15,8 +13,7 @@ import java.util.List;
 class GetOauthTokenTask extends AsyncTask<GetOauthTokenTask.Request, Void, String> {
 
   private final OnTokenListener listener;
-  @Nullable
-  private Exception error;
+  @Nullable private Exception error;
 
   public GetOauthTokenTask(@NonNull OnTokenListener listener) {
     this.listener = listener;
@@ -28,8 +25,10 @@ class GetOauthTokenTask extends AsyncTask<GetOauthTokenTask.Request, Void, Strin
    *
    * @param stringsToJoin a list of strings you want to join
    * @return a string that joined the list of strings separated by a space character
-   * @see <a href="https://developer.android.com/studio/build/multidex.html#about">Android Method Limit</a>
-   * @see <a href="http://www.methodscount.com/?lib=com.google.guava%3Aguava%3A20.0">Guava Method count</a>
+   * @see <a href="https://developer.android.com/studio/build/multidex.html#about">Android Method
+   *     Limit</a>
+   * @see <a href="http://www.methodscount.com/?lib=com.google.guava%3Aguava%3A20.0">Guava Method
+   *     count</a>
    */
   @NonNull
   private static String stringJoiner(@NonNull List<String> stringsToJoin) {
@@ -69,12 +68,12 @@ class GetOauthTokenTask extends AsyncTask<GetOauthTokenTask.Request, Void, Strin
     }
   }
 
-
   /** Callback to handle the result of the call */
   interface OnTokenListener {
     /**
-     * Called only once if the token was received successfully. Method is called on the
-     * android main thread.
+     * Called only once if the token was received successfully. Method is called on the android main
+     * thread.
+     *
      * @param token to receive
      */
     void onToken(@NonNull String token);
@@ -82,6 +81,7 @@ class GetOauthTokenTask extends AsyncTask<GetOauthTokenTask.Request, Void, Strin
     /**
      * Called only once when there was an error while catching the token. Method is called on the
      * android main thread.
+     *
      * @param error for handling it
      */
     void onError(@NonNull Throwable error);
@@ -94,8 +94,8 @@ class GetOauthTokenTask extends AsyncTask<GetOauthTokenTask.Request, Void, Strin
     final Context context;
 
     /**
-     *
-     * @param context required for the {@link GoogleAuthUtil#getToken(Context, Account, String)} method
+     * @param context required for the {@link GoogleAuthUtil#getToken(Context, Account, String)}
+     *     method
      * @param email you want a token for
      * @param scopes you need the token for
      */
