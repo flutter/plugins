@@ -46,7 +46,7 @@ class VideoPlayerValue {
   /// True if the video is playing. False if it's paused.
   final bool isPlaying;
 
-  /// True iff the video is looping.
+  /// True if the video is looping.
   final bool isLooping;
 
   /// The current volume of the playback.
