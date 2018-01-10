@@ -200,27 +200,31 @@ public class VideoPlayerPlugin implements MethodCallHandler {
         }
         videoPlayers.clear();
         break;
-      case "create": {
-        TextureRegistry.SurfaceTextureEntry handle = textures.createSurfaceTexture();
-        EventChannel eventChannel =
-            new EventChannel(
-                registrar.messenger(), "flutter.io/videoPlayer/videoEvents" + handle.id());
-        VideoPlayer player =
-            new VideoPlayer(eventChannel, handle, (String) call.argument("dataSource"), result);
-        videoPlayers.put(handle.id(), player);
-        break;
-      }
-      default: {
-        long textureId = ((Number) call.argument("textureId")).longValue();
-        VideoPlayer player = videoPlayers.get(textureId);
-        if (player == null) {
-          result.error(
-              "Unknown textureId", "No video player associated with texture id " + textureId, null);
-          return;
+      case "create":
+        {
+          TextureRegistry.SurfaceTextureEntry handle = textures.createSurfaceTexture();
+          EventChannel eventChannel =
+              new EventChannel(
+                  registrar.messenger(), "flutter.io/videoPlayer/videoEvents" + handle.id());
+          VideoPlayer player =
+              new VideoPlayer(eventChannel, handle, (String) call.argument("dataSource"), result);
+          videoPlayers.put(handle.id(), player);
+          break;
         }
-        onMethodCall(call, result, textureId, player);
-        break;
-      }
+      default:
+        {
+          long textureId = ((Number) call.argument("textureId")).longValue();
+          VideoPlayer player = videoPlayers.get(textureId);
+          if (player == null) {
+            result.error(
+                "Unknown textureId",
+                "No video player associated with texture id " + textureId,
+                null);
+            return;
+          }
+          onMethodCall(call, result, textureId, player);
+          break;
+        }
     }
   }
 
