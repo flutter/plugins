@@ -218,42 +218,46 @@ public class VideoPlayerPlugin implements MethodCallHandler {
               "Unknown textureId", "No video player associated with texture id " + textureId, null);
           return;
         }
-        switch (call.method) {
-          case "setLooping":
-            player.setLooping((Boolean) call.argument("looping"));
-            result.success(null);
-            break;
-          case "setVolume":
-            player.setVolume((Double) call.argument("volume"));
-            result.success(null);
-            break;
-          case "play":
-            player.play();
-            result.success(null);
-            break;
-          case "pause":
-            player.pause();
-            result.success(null);
-            break;
-          case "seekTo":
-            int location = ((Number) call.argument("location")).intValue();
-            player.seekTo(location);
-            result.success(null);
-            break;
-          case "position":
-            result.success(player.getPosition());
-            break;
-          case "dispose":
-            player.dispose();
-            videoPlayers.remove(textureId);
-            result.success(null);
-            break;
-          default:
-            result.notImplemented();
-            break;
-        }
+        onMethodCall(call, result, textureId, player);
         break;
       }
+    }
+  }
+
+  private void onMethodCall(MethodCall call, Result result, long textureId, VideoPlayer player) {
+    switch (call.method) {
+      case "setLooping":
+        player.setLooping((Boolean) call.argument("looping"));
+        result.success(null);
+        break;
+      case "setVolume":
+        player.setVolume((Double) call.argument("volume"));
+        result.success(null);
+        break;
+      case "play":
+        player.play();
+        result.success(null);
+        break;
+      case "pause":
+        player.pause();
+        result.success(null);
+        break;
+      case "seekTo":
+        int location = ((Number) call.argument("location")).intValue();
+        player.seekTo(location);
+        result.success(null);
+        break;
+      case "position":
+        result.success(player.getPosition());
+        break;
+      case "dispose":
+        player.dispose();
+        videoPlayers.remove(textureId);
+        result.success(null);
+        break;
+      default:
+        result.notImplemented();
+        break;
     }
   }
 }
