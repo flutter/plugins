@@ -1,4 +1,4 @@
-package com.yourcompany.cameraexample;
+package io.flutter.plugins.cameraexample;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;
