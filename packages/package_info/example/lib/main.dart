@@ -92,10 +92,13 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: new AppBar(
         title: const Text('Plugin example app'),
       ),
-      body: new Center(
-          child: new Text('App version is: $_version\n'
-              'buildNumber is: $_buildNumber\n'
-              'packageName is: $_packageName\n')),
+      body: new Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+        new Text('App version is: $_version'),
+        new Text('Build number is: $_buildNumber'),
+        new Text('Package name is: $_packageName')
+      ]),
     );
   }
 }
