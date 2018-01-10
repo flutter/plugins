@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package io.flutter.videoplayer;
+package io.flutter.plugins.videoplayer;
 
 import android.annotation.TargetApi;
 import android.media.AudioAttributes;
@@ -31,7 +31,6 @@ public class VideoPlayerPlugin implements MethodCallHandler {
     private final EventChannel eventChannel;
     private boolean isInitialized = false;
 
-    @TargetApi(21)
     VideoPlayer(
         final EventChannel eventChannel,
         final TextureRegistry.SurfaceTextureEntry textureEntry,
