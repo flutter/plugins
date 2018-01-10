@@ -220,7 +220,7 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
     String appName = (String) arguments.get("app");
     String databaseURL = (String) arguments.get("databaseURL");
     if (appName != null && databaseURL != null) {
-      database = FirebaseApp.getInstance(FirebaseApp.getInstance(appName), databaseURL);
+      database = FirebaseDatabase.getInstance(FirebaseApp.getInstance(appName), databaseURL);
     } else if (appName != null) {
       database = FirebaseDatabase.getInstance(FirebaseApp.getInstance(appName));
     } else if (databaseURL != null) {
