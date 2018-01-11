@@ -102,7 +102,11 @@ class Query {
   /// than or equal to the given key.
   Query startAt(dynamic value, {String key}) {
     assert(!_parameters.containsKey('startAt'));
-    assert(value is String || value is bool || value is double || value is int);
+    assert(value is String ||
+        value is bool ||
+        value is double ||
+        value is int ||
+        value == null);
     final Map<String, dynamic> parameters = <String, dynamic>{'startAt': value};
     if (key != null) parameters['startAtKey'] = key;
     return _copyWithParameters(parameters);
