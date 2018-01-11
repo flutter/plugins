@@ -26,8 +26,8 @@ void main() {
       ),
     );
     final String databaseURL = 'https://fake-database-url2.firebaseio.com';
-    final FirebaseDatabase database = new FirebaseDatabase(app: app,
-        databaseURL: databaseURL);
+    final FirebaseDatabase database =
+      new FirebaseDatabase(app: app, databaseURL: databaseURL);
 
     setUp(() async {
       channel.setMockMethodCallHandler((MethodCall methodCall) async {
