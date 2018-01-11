@@ -27,7 +27,7 @@ class Connectivity {
     if (_onConnectivityChanged == null) {
       _onConnectivityChanged = _eventChannel
           .receiveBroadcastStream()
-          .map(_stringToConnectivityResult);
+          .map((dynamic event) => _parseConnectivityResult(event));
     }
     return _onConnectivityChanged;
   }
@@ -40,11 +40,11 @@ class Connectivity {
   /// Instead listen for connectivity changes via [onConnectivityChanged] stream.
   Future<ConnectivityResult> checkConnectivity() async {
     final String result = await _methodChannel.invokeMethod('check');
-    return _stringToConnectivityResult(result);
+    return _parseConnectivityResult(result);
   }
 }
 
-ConnectivityResult _stringToConnectivityResult(String state) {
+ConnectivityResult _parseConnectivityResult(String state) {
   switch (state) {
     case 'wifi':
       return ConnectivityResult.wifi;
