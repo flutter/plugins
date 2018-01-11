@@ -1,3 +1,7 @@
+## 0.2.0
+
+* **Breaking change**. Change package_info to class PackageInfo.
+
 ## 0.1.0
 
 * **Breaking change**. Upgraded to Gradle 4.1 and Android Studio Gradle plugin
