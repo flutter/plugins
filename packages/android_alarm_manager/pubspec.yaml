@@ -14,3 +14,6 @@ flutter:
     androidPackage: io.flutter.androidalarmmanager
     pluginClass: AndroidAlarmManagerPlugin
     iosPrefix: FLT
+
+environment:
+  sdk: ">=1.8.0 <2.0.0"

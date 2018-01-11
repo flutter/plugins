@@ -13,3 +13,6 @@ flutter:
   plugin:
     androidPackage: io.flutter.plugins.camera
     pluginClass: CameraPlugin
+
+environment:
+  sdk: ">=1.8.0 <2.0.0"
