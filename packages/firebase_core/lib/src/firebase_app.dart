@@ -43,7 +43,7 @@ class FirebaseApp {
     return channel.invokeMethod('FirebaseApp#configure', <String, dynamic>{
       'name': name,
       'options': options.asMap,
-    }).then((Null _) => _namedApps[name]);
+    }).then((dynamic _) => _namedApps[name]);
   }
 
   /// Returns a list of all extant FirebaseApp instances, or null if there are
