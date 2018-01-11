@@ -44,7 +44,8 @@ class Connectivity {
   }
 }
 
-ConnectivityResult _stringToConnectivityResult(String state) {
+ConnectivityResult _stringToConnectivityResult(dynamic event) {
+  final String state = event;
   switch (state) {
     case 'wifi':
       return ConnectivityResult.wifi;

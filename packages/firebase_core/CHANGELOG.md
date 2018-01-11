@@ -1,3 +1,7 @@
+## 0.0.4
+
+* Fixed warnings from the Dart 2.0 analyzer.
+
 # 0.0.3
 
 * **Breaking change**. Upgraded to Gradle 4.1 and Android Studio Gradle plugin

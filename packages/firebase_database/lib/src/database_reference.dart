@@ -162,12 +162,13 @@ class DatabaseReference extends Query {
       'path': path,
       'transactionKey': transactionKey,
       'transactionTimeout': timeout.inMilliseconds
-    }).then((Map<String, dynamic> result) {
+    }).then((dynamic response) {
+      final Map<String, dynamic> message = response;
       final DatabaseError databaseError =
-          result['error'] != null ? new DatabaseError._(result['error']) : null;
-      final bool committed = result['committed'];
-      final DataSnapshot dataSnapshot = result['snapshot'] != null
-          ? new DataSnapshot._(result['snapshot'])
+          message['error'] != null ? new DatabaseError._(message['error']) : null;
+      final bool committed = message['committed'];
+      final DataSnapshot dataSnapshot = message['snapshot'] != null
+          ? new DataSnapshot._(message['snapshot'])
           : null;
 
       FirebaseDatabase._transactions.remove(transactionKey);

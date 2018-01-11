@@ -45,7 +45,8 @@ class Battery {
   }
 }
 
-BatteryState _stringToBatteryStateEnum(String state) {
+BatteryState _stringToBatteryStateEnum(dynamic event) {
+  final String state = event;
   switch (state) {
     case 'full':
       return BatteryState.full;

@@ -40,11 +40,13 @@ class GyroscopeEvent {
   String toString() => '[GyroscopeEvent (x: $x, y: $y, z: $z)]';
 }
 
-AccelerometerEvent _listToAccelerometerEvent(List<double> list) {
+AccelerometerEvent _listToAccelerometerEvent(dynamic event) {
+  final List<double> list = event;
   return new AccelerometerEvent(list[0], list[1], list[2]);
 }
 
-GyroscopeEvent _listToGyroscopeEvent(List<double> list) {
+GyroscopeEvent _listToGyroscopeEvent(dynamic event) {
+  final List<double> list = event;
   return new GyroscopeEvent(list[0], list[1], list[2]);
 }
 
