@@ -9,7 +9,7 @@ For Flutter plugins for other Firebase products, see [FlutterFire.md](https://gi
 *Note*: This plugin is still under development, and some APIs might not be available yet. [Feedback](https://github.com/flutter/flutter/issues) and [Pull Requests](https://github.com/flutter/plugins/pulls) are most welcome!
 
 ## Usage
-To use this plugin, add `firebase_analytics` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
+To use this plugin, add `firebase_analytics` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/). You must also configure firebase analytics for each platform project: Android and iOS (see the example folder or https://codelabs.developers.google.com/codelabs/flutter-firebase/#4 for step by step details).
 
 ## Track PageRoute Transitions
 

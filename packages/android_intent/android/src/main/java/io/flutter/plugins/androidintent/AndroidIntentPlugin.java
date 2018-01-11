@@ -4,6 +4,7 @@
 
 package io.flutter.plugins.androidintent;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import java.util.Map;
 /** AndroidIntentPlugin */
 @SuppressWarnings("unchecked")
 public class AndroidIntentPlugin implements MethodCallHandler {
+  private static final String TAG = AndroidIntentPlugin.class.getCanonicalName();
   private final Registrar mRegistrar;
 
   /** Plugin registration. */
@@ -104,9 +106,15 @@ public class AndroidIntentPlugin implements MethodCallHandler {
     return true;
   }
 
+  private Context getActiveContext() {
+    return (mRegistrar.activity() != null) ? mRegistrar.activity() : mRegistrar.context();
+  }
+
   @Override
   public void onMethodCall(MethodCall call, Result result) {
+    Context context = getActiveContext();
     String action = convertAction((String) call.argument("action"));
+
     // Build intent
     Intent intent = new Intent(action);
     if (mRegistrar.activity() == null) {
@@ -121,12 +129,16 @@ public class AndroidIntentPlugin implements MethodCallHandler {
     if (call.argument("arguments") != null) {
       intent.putExtras(convertArguments((Map) call.argument("arguments")));
     }
-    Log.i("android_intent plugin", "Sending intent " + intent);
-    if (mRegistrar.activity() != null) {
-      mRegistrar.activity().startActivity(intent);
-    } else {
-      mRegistrar.context().startActivity(intent);
+    if (call.argument("package") != null) {
+      intent.setPackage((String) call.argument("package"));
+      if (intent.resolveActivity(context.getPackageManager()) == null) {
+        Log.i(TAG, "Cannot resolve explicit intent - ignoring package");
+        intent.setPackage(null);
+      }
     }
+
+    Log.i(TAG, "Sending intent " + intent);
+    context.startActivity(intent);
 
     result.success(null);
   }

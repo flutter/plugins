@@ -37,9 +37,9 @@ public class ImagePickerPlugin implements MethodCallHandler, ActivityResultListe
   private static final int SOURCE_CAMERA = 1;
   private static final int SOURCE_GALLERY = 2;
 
-  private Activity activity;
-
   private static final DefaultCameraModule cameraModule = new DefaultCameraModule();
+
+  private final PluginRegistry.Registrar registrar;
 
   // Pending method call to obtain an image
   private Result pendingResult;
@@ -47,19 +47,25 @@ public class ImagePickerPlugin implements MethodCallHandler, ActivityResultListe
 
   public static void registerWith(PluginRegistry.Registrar registrar) {
     final MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL);
-    final ImagePickerPlugin instance = new ImagePickerPlugin(registrar.activity());
+    final ImagePickerPlugin instance = new ImagePickerPlugin(registrar);
     registrar.addActivityResultListener(instance);
     channel.setMethodCallHandler(instance);
   }
 
-  private ImagePickerPlugin(Activity activity) {
-    this.activity = activity;
+  private ImagePickerPlugin(PluginRegistry.Registrar registrar) {
+    this.registrar = registrar;
   }
 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
     if (pendingResult != null) {
       result.error("ALREADY_ACTIVE", "Image picker is already active", null);
+      return;
+    }
+
+    Activity activity = registrar.activity();
+    if (activity == null) {
+      result.error("no_activity", "image_picker plugin requires a foreground activity.", null);
       return;
     }
 
@@ -106,7 +112,7 @@ public class ImagePickerPlugin implements MethodCallHandler, ActivityResultListe
     if (requestCode == REQUEST_CODE_CAMERA) {
       if (resultCode == Activity.RESULT_OK) {
         cameraModule.getImage(
-            activity,
+            registrar.context(),
             data,
             new OnImageReadyListener() {
               @Override

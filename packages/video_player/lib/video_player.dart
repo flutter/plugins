@@ -39,9 +39,11 @@ class VideoPlayerValue {
   final bool isLooping;
   final double volume;
   final String errorDescription;
+  final Size size;
 
   VideoPlayerValue({
     @required this.duration,
+    this.size,
     this.position: const Duration(),
     this.buffered: const <DurationRange>[],
     this.isPlaying: false,
@@ -57,9 +59,11 @@ class VideoPlayerValue {
 
   bool get initialized => duration != null;
   bool get isErroneous => errorDescription != null;
+  double get aspectRatio => size.width / size.height;
 
   VideoPlayerValue copyWith({
     Duration duration,
+    Size size,
     Duration position,
     List<DurationRange> buffered,
     bool isPlaying,
@@ -69,6 +73,7 @@ class VideoPlayerValue {
   }) {
     return new VideoPlayerValue(
       duration: duration ?? this.duration,
+      size: size ?? this.size,
       position: position ?? this.position,
       buffered: buffered ?? this.buffered,
       isPlaying: isPlaying ?? this.isPlaying,
@@ -82,6 +87,7 @@ class VideoPlayerValue {
   String toString() {
     return '$runtimeType('
         'duration: $duration, '
+        'size: $size, '
         'position: $position, '
         'buffered: [${buffered.join(', ')}], '
         'isplaying: $isPlaying, '
@@ -130,19 +136,21 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       );
     }
 
-    void eventListener(Map<String, dynamic> event) {
-      if (event["event"] == "initialized") {
+    void eventListener(dynamic event) {
+      final Map<String, dynamic> map = event;
+      if (map["event"] == "initialized") {
         value = value.copyWith(
-          duration: new Duration(milliseconds: event["duration"]),
+          duration: new Duration(milliseconds: map["duration"]),
+          size: new Size(map["width"].toDouble(), map["height"].toDouble()),
         );
         _applyLooping();
         _applyVolume();
         _applyPlayPause();
-      } else if (event["event"] == "completed") {
+      } else if (map["event"] == "completed") {
         value = value.copyWith(isPlaying: false);
         timer?.cancel();
-      } else if (event["event"] == "bufferingUpdate") {
-        final List<List<int>> bufferedValues = event["values"];
+      } else if (map["event"] == "bufferingUpdate") {
+        final List<List<int>> bufferedValues = map["values"];
         value = value.copyWith(
           buffered: bufferedValues.map(toDurationRange).toList(),
         );
@@ -168,6 +176,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     if (_creatingCompleter != null) {
       await _creatingCompleter.future;
       if (!isDisposed) {
+        isDisposed = true;
         timer?.cancel();
         await _eventSubscription?.cancel();
         await _channel.invokeMethod(
@@ -218,7 +227,13 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       timer = new Timer.periodic(
         const Duration(milliseconds: 500),
         (Timer timer) async {
+          if (isDisposed) {
+            return;
+          }
           final Duration newPosition = await position;
+          if (isDisposed) {
+            return;
+          }
           value = value.copyWith(position: newPosition);
         },
       );

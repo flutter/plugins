@@ -3,16 +3,18 @@ version '1.0-SNAPSHOT'
 
 buildscript {
     repositories {
+        google()
         jcenter()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.0'
+        classpath 'com.android.tools.build:gradle:3.0.1'
     }
 }
 
 rootProject.allprojects {
     repositories {
+        google()
         jcenter()
     }
 }
@@ -20,17 +22,17 @@ rootProject.allprojects {
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.3'
+    compileSdkVersion 27
 
     defaultConfig {
+        minSdkVersion 16
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     lintOptions {
         disable 'InvalidPackage'
     }
     dependencies {
-        compile 'com.google.firebase:firebase-auth:11.4.+'
-        compile 'com.google.firebase:firebase-analytics:11.4.+'
+        api 'com.google.firebase:firebase-auth:[11.4.0,12.0['
+        api 'com.google.firebase:firebase-analytics:[11.4.0,12.0['
     }
 }

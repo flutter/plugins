@@ -1,8 +1,8 @@
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
 if (localPropertiesFile.exists()) {
-    localPropertiesFile.withInputStream { stream ->
-        localProperties.load(stream)
+    localPropertiesFile.withReader('UTF-8') { reader ->
+        localProperties.load(reader)
     }
 }
 
@@ -15,14 +15,14 @@ apply plugin: 'com.android.application'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.3'
+    compileSdkVersion 27
 
     lintOptions {
         disable 'InvalidPackage'
     }
 
     defaultConfig {
+        minSdkVersion 16
         applicationId 'io.flutter.plugins.firebasedatabaseexample'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -41,9 +41,9 @@ flutter {
 }
 
 dependencies {
-    androidTestCompile 'com.android.support:support-annotations:25.0.0'
-    androidTestCompile 'com.android.support.test:runner:0.5'
-    androidTestCompile 'com.android.support.test:rules:0.5'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.1'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 }
 
 apply plugin: 'com.google.gms.google-services'
