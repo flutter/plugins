@@ -1,4 +1,4 @@
-package io.flutter.camera;
+package io.flutter.plugins.camera;
 
 import android.Manifest;
 import android.annotation.SuppressLint;

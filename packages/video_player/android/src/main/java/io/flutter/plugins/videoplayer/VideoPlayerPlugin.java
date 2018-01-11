@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package io.flutter.videoplayer;
+package io.flutter.plugins.videoplayer;
 
-import android.annotation.TargetApi;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -19,6 +18,7 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.view.TextureRegistry;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +31,6 @@ public class VideoPlayerPlugin implements MethodCallHandler {
     private final EventChannel eventChannel;
     private boolean isInitialized = false;
 
-    @TargetApi(21)
     VideoPlayer(
         final EventChannel eventChannel,
         final TextureRegistry.SurfaceTextureEntry textureEntry,
@@ -56,14 +55,7 @@ public class VideoPlayerPlugin implements MethodCallHandler {
       try {
         mediaPlayer.setSurface(new Surface(textureEntry.surfaceTexture()));
         mediaPlayer.setDataSource(dataSource);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
-          mediaPlayer.setAudioAttributes(
-              new AudioAttributes.Builder()
-                  .setContentType(AudioAttributes.CONTENT_TYPE_MOVIE)
-                  .build());
-        } else {
-          mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        }
+        setAudioAttributes(mediaPlayer);
         mediaPlayer.setOnPreparedListener(
             new MediaPlayer.OnPreparedListener() {
               @Override
@@ -78,7 +70,7 @@ public class VideoPlayerPlugin implements MethodCallHandler {
                           List<Integer> range =
                               Arrays.asList(0, percent * mediaPlayer.getDuration() / 100);
                           // iOS supports a list of buffered ranges, so here is a list with a single range.
-                          event.put("values", Arrays.asList(range));
+                          event.put("values", Collections.singletonList(range));
                           eventSink.success(event);
                         }
                       }
@@ -115,6 +107,18 @@ public class VideoPlayerPlugin implements MethodCallHandler {
       Map<String, Object> reply = new HashMap<>();
       reply.put("textureId", textureEntry.id());
       result.success(reply);
+    }
+
+    @SuppressWarnings("deprecation")
+    private static void setAudioAttributes(MediaPlayer mediaPlayer) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        mediaPlayer.setAudioAttributes(
+            new AudioAttributes.Builder()
+                .setContentType(AudioAttributes.CONTENT_TYPE_MOVIE)
+                .build());
+      } else {
+        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+      }
     }
 
     void play() {
@@ -189,52 +193,75 @@ public class VideoPlayerPlugin implements MethodCallHandler {
       result.error("no_activity", "video_player plugin requires a foreground activity", null);
       return;
     }
-    if (call.method.equals("init")) {
-      for (VideoPlayer player : videoPlayers.values()) {
-        player.dispose();
-      }
-      videoPlayers.clear();
-    } else if (call.method.equals("create")) {
-      TextureRegistry.SurfaceTextureEntry handle = textures.createSurfaceTexture();
-      EventChannel eventChannel =
-          new EventChannel(
-              registrar.messenger(), "flutter.io/videoPlayer/videoEvents" + handle.id());
-      VideoPlayer player =
-          new VideoPlayer(eventChannel, handle, (String) call.argument("dataSource"), result);
-      videoPlayers.put(handle.id(), player);
-    } else {
-      long textureId = ((Number) call.argument("textureId")).longValue();
-      VideoPlayer player = videoPlayers.get(textureId);
-      if (player == null) {
-        result.error(
-            "Unknown textureId", "No video player associated with texture id " + textureId, null);
-        return;
-      }
-      if (call.method.equals("setLooping")) {
+    switch (call.method) {
+      case "init":
+        for (VideoPlayer player : videoPlayers.values()) {
+          player.dispose();
+        }
+        videoPlayers.clear();
+        break;
+      case "create":
+        {
+          TextureRegistry.SurfaceTextureEntry handle = textures.createSurfaceTexture();
+          EventChannel eventChannel =
+              new EventChannel(
+                  registrar.messenger(), "flutter.io/videoPlayer/videoEvents" + handle.id());
+          VideoPlayer player =
+              new VideoPlayer(eventChannel, handle, (String) call.argument("dataSource"), result);
+          videoPlayers.put(handle.id(), player);
+          break;
+        }
+      default:
+        {
+          long textureId = ((Number) call.argument("textureId")).longValue();
+          VideoPlayer player = videoPlayers.get(textureId);
+          if (player == null) {
+            result.error(
+                "Unknown textureId",
+                "No video player associated with texture id " + textureId,
+                null);
+            return;
+          }
+          onMethodCall(call, result, textureId, player);
+          break;
+        }
+    }
+  }
+
+  private void onMethodCall(MethodCall call, Result result, long textureId, VideoPlayer player) {
+    switch (call.method) {
+      case "setLooping":
         player.setLooping((Boolean) call.argument("looping"));
         result.success(null);
-      } else if (call.method.equals("setVolume")) {
+        break;
+      case "setVolume":
         player.setVolume((Double) call.argument("volume"));
         result.success(null);
-      } else if (call.method.equals("play")) {
+        break;
+      case "play":
         player.play();
         result.success(null);
-      } else if (call.method.equals("pause")) {
+        break;
+      case "pause":
         player.pause();
         result.success(null);
-      } else if (call.method.equals("seekTo")) {
+        break;
+      case "seekTo":
         int location = ((Number) call.argument("location")).intValue();
         player.seekTo(location);
         result.success(null);
-      } else if (call.method.equals("position")) {
+        break;
+      case "position":
         result.success(player.getPosition());
-      } else if (call.method.equals("dispose")) {
+        break;
+      case "dispose":
         player.dispose();
         videoPlayers.remove(textureId);
         result.success(null);
-      } else {
+        break;
+      default:
         result.notImplemented();
-      }
+        break;
     }
   }
 }

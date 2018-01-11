@@ -7,7 +7,7 @@ homepage: https://github.com/flutter/plugins/tree/master/packages/video_player
 
 flutter:
   plugin:
-    androidPackage: io.flutter.videoplayer
+    androidPackage: io.flutter.plugins.videoplayer
     iosPrefix: FLT
     pluginClass: VideoPlayerPlugin
 
