@@ -1,6 +1,6 @@
 ## 0.3.3
 
-* Support to specify a database by URL if required
+* Support to specify a database by URL if required 
 
 ## 0.3.2
 
