@@ -218,11 +218,30 @@ GADBannerView *_banner;
   }
   if (_status != LOADED) return;
 
+  _banner.translatesAutoresizingMaskIntoConstraints = NO;
+  UIView *screen = [FLTMobileAd rootViewController].view;
+  [screen addSubview:_banner];
+
+#if defined(__IPHONE_11_0) && (__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_11_0)
+  if (@available(ios 11.0, *)) {
+    UILayoutGuide *guide = screen.safeAreaLayoutGuide;
+    [NSLayoutConstraint activateConstraints:@[
+      [_banner.centerXAnchor constraintEqualToAnchor:guide.centerXAnchor],
+      [_banner.bottomAnchor constraintEqualToAnchor:guide.bottomAnchor]
+    ]];
+  } else {
+    [self placeBannerPreIos11];
+  }
+#else
+  [self placeBannerPreIos11];
+#endif
+}
+
+- (void)placeBannerPreIos11 {
   UIView *screen = [FLTMobileAd rootViewController].view;
   CGFloat x = screen.frame.size.width / 2 - _banner.frame.size.width / 2;
   CGFloat y = screen.frame.size.height - _banner.frame.size.height;
   _banner.frame = (CGRect){{x, y}, _banner.frame.size};
-  [screen addSubview:_banner];
 }
 
 - (void)adViewDidReceiveAd:(GADBannerView *)adView {

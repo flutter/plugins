@@ -1,9 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="io.flutter.plugins.quickactions"
-  android:versionCode="1"
-  android:versionName="0.0.1">
+  package="io.flutter.plugins.quickactions">
 
-  <uses-sdk android:minSdkVersion="16" android:targetSdkVersion="25" />
   <application>
     <activity android:name=".QuickActionsPlugin$ShortcutHandlerActivity" android:exported="false"/>
   </application>

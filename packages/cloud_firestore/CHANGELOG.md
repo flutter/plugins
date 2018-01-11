@@ -1,3 +1,7 @@
+## 0.2.2
+
+* Add `get` to DocumentReference.
+
 ## 0.2.1
 
 * Fix bug on Android where removeListener is sometimes called without a handle

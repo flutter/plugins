@@ -1,3 +1,12 @@
+## 0.2.2
+
+* Added platform-specific App IDs and ad unit IDs to example.
+* Separated load and show functionality for interstitials in example.
+
+## 0.2.1
+
+* Use safe area layout to place ad in iOS 11
+
 ## 0.2.0
 
 * **Breaking change**. MobileAd TargetingInfo requestAgent is now hardcoded to 'flutter-alpha'.
