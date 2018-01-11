@@ -38,15 +38,15 @@ class Battery {
   /// Fires whenever the battery state changes.
   Stream<BatteryState> get onBatteryStateChanged {
     if (_onBatteryStateChanged == null) {
-      _onBatteryStateChanged =
-          _eventChannel.receiveBroadcastStream().map(_stringToBatteryStateEnum);
+      _onBatteryStateChanged = _eventChannel
+          .receiveBroadcastStream()
+          .map((dynamic event) => _parseBatteryState(event));
     }
     return _onBatteryStateChanged;
   }
 }
 
-BatteryState _stringToBatteryStateEnum(dynamic event) {
-  final String state = event;
+BatteryState _parseBatteryState(String state) {
   switch (state) {
     case 'full':
       return BatteryState.full;

@@ -204,11 +204,11 @@ class CameraController extends ValueNotifier<CameraValue> {
   }
 
   void _listener(dynamic event) {
-    final Map<String, dynamic> message = event;
+    final Map<String, dynamic> map = event;
     if (_disposed) {
       return;
     }
-    if (message['eventType'] == 'error') {
+    if (map['eventType'] == 'error') {
       value = value.copyWith(errorDescription: event['errorDescription']);
     }
   }

@@ -156,6 +156,18 @@ class DatabaseReference extends Query {
 
     FirebaseDatabase._transactions[transactionKey] = transactionHandler;
 
+    TransactionResult toTransactionResult(Map<String, dynamic> map) {
+      final DatabaseError databaseError =
+          map['error'] != null ? new DatabaseError._(map['error']) : null;
+      final bool committed = map['committed'];
+      final DataSnapshot dataSnapshot =
+          map['snapshot'] != null ? new DataSnapshot._(map['snapshot']) : null;
+
+      FirebaseDatabase._transactions.remove(transactionKey);
+
+      return new TransactionResult._(databaseError, committed, dataSnapshot);
+    }
+
     _database._channel
         .invokeMethod('DatabaseReference#runTransaction', <String, dynamic>{
       'app': _database.app?.name,
@@ -163,18 +175,7 @@ class DatabaseReference extends Query {
       'transactionKey': transactionKey,
       'transactionTimeout': timeout.inMilliseconds
     }).then((dynamic response) {
-      final Map<String, dynamic> message = response;
-      final DatabaseError databaseError =
-          message['error'] != null ? new DatabaseError._(message['error']) : null;
-      final bool committed = message['committed'];
-      final DataSnapshot dataSnapshot = message['snapshot'] != null
-          ? new DataSnapshot._(message['snapshot'])
-          : null;
-
-      FirebaseDatabase._transactions.remove(transactionKey);
-
-      completer.complete(
-          new TransactionResult._(databaseError, committed, dataSnapshot));
+      completer.complete(toTransactionResult(response));
     });
 
     return completer.future;
