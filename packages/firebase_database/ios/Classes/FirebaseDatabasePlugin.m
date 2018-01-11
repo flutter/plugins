@@ -158,11 +158,11 @@ id roundDoubles(id value) {
   NSString *appName = call.arguments[@"app"];
   NSString *databaseURL = call.arguments[@"databaseURL"];
   if (![appName isEqual:[NSNull null]] && ![databaseURL isEqual:[NSNull null]]) {
-    database = [FIRDatabase databaseForApp:[FIRApp appNamed:appName] URL: databaseURL];
+    database = [FIRDatabase databaseForApp:[FIRApp appNamed:appName] URL:databaseURL];
   } else if (![appName isEqual:[NSNull null]]) {
     database = [FIRDatabase databaseForApp:[FIRApp appNamed:appName]];
   } else if (![databaseURL isEqual:[NSNull null]]) {
-    database = [FIRDatabase databaseWithURL: databaseURL];
+    database = [FIRDatabase databaseWithURL:databaseURL];
   } else {
     database = [FIRDatabase database];
   }
