@@ -67,10 +67,14 @@ class StorageDeleteTask {
   Future<DeleteTaskResult> get future => _completer.future;
 
   Future<Null> _start() async {
-    final bool result = await FirebaseStorage._channel.invokeMethod(
-        "StorageReference#deleteFile", <String, String>{'path': path});
+    try {
+      await FirebaseStorage._channel.invokeMethod(
+          "StorageReference#deleteFile", <String, String>{'path': path});
 
-    _completer.complete(new DeleteTaskResult(isFailed: result));
+      _completer.complete(new DeleteTaskResult(isSuccess: true));
+    } catch (e) {
+      _completer.complete(new DeleteTaskResult(isSuccess: false));
+    }
   }
 }
 
@@ -102,6 +106,6 @@ class UploadTaskSnapshot {
 }
 
 class DeleteTaskResult {
-  DeleteTaskResult({this.isFailed});
-  final bool isFailed;
+  DeleteTaskResult({this.isSuccess});
+  final bool isSuccess;
 }

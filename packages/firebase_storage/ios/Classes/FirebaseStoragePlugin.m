@@ -98,7 +98,7 @@
       result(error.flutterError);
       return;
     } else {
-      result(@(YES));
+      result(nil);
     }
   }];
 }
