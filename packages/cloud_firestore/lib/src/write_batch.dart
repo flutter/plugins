@@ -8,23 +8,22 @@ part of cloud_firestore;
 // Use Java source and iOS source
 // See if I need to dispose or block.
 
-class Batch {
-  Batch():
+class WriteBatch {
+  WriteBatch():
     _handle = Firestore.channel.invokeMethod(
       'Batch#create',
     );
 
   Future<int> _handle;
-
   final List<Future<Null>> _actions = <Future<Null>>[];
 
   Future<Null> commit() async {
-    await Future.wait(_actions);
-    return await Firestore.channel.invokeMethod(
-      'Batch#commit',
-      <String, dynamic>{'handle': await _handle}
-    );
-  }
+      await Future.wait(_actions);
+      return await Firestore.channel.invokeMethod(
+        'Batch#commit',
+        <String, dynamic>{'handle': await _handle}
+      );
+    }
 
   void delete(DocumentReference reference){
     _handle.then((int handle){
