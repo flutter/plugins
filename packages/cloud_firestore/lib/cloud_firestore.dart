@@ -15,6 +15,7 @@ import 'package:collection/collection.dart';
 
 import 'src/utils/push_id_generator.dart';
 
+part 'src/batch.dart';
 part 'src/collection_reference.dart';
 part 'src/document_change.dart';
 part 'src/document_snapshot.dart';
