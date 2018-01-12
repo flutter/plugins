@@ -102,6 +102,8 @@ void main() {
             return null;
           case 'Transaction#delete':
             return null;
+          case 'WriteBatch#create':
+            return 1;
           default:
             return null;
         }
@@ -429,6 +431,7 @@ void main() {
         expect(colRef.path, 'foo/bar/baz');
       });
     });
+<<<<<<< HEAD
 
     group('Query', () {
       test('getDocuments', () async {
@@ -473,6 +476,120 @@ void main() {
           firestore.document('foo/bar'),
         ];
         _checkEncodeDecode<dynamic>(codec, message);
+=======
+    group('WriteBatch', (){
+      test('set', () async {
+        final WriteBatch batch = new WriteBatch();
+        batch.setData(
+          collectionReference.document('bar'),
+          <String, String>{'bazKey': 'quxValue'},
+        );
+        await batch.commit();
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall('WriteBatch#create', arguments: null),
+            isMethodCall(
+              'WriteBatch#setData',
+              arguments: <String, dynamic>{
+                'handle': 1,
+                'path': 'foo/bar',
+                'data': <String, String>{'bazKey': 'quxValue'},
+                'options': null,
+              },
+            ),
+            isMethodCall(
+              'WriteBatch#commit',
+              arguments: <String, dynamic>{
+                'handle': 1,
+              },
+            ),
+          ],
+        );
+      });
+      test('merge set', () async {
+        final WriteBatch batch = new WriteBatch();
+        batch.setData(
+          collectionReference.document('bar'),
+          <String, String>{'bazKey': 'quxValue'},
+          SetOptions.merge,
+        );
+        await batch.commit();
+        expect(SetOptions.merge, isNotNull);
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall('WriteBatch#create', arguments: null),
+            isMethodCall(
+              'WriteBatch#setData',
+              arguments: <String, dynamic>{
+                'handle': 1,
+                'path': 'foo/bar',
+                'data': <String, String>{'bazKey': 'quxValue'},
+                'options': <String, bool>{'merge': true},
+              }
+            ),
+            isMethodCall(
+              'WriteBatch#commit',
+              arguments: <String, dynamic>{
+                'handle': 1,
+              },
+            ),
+          ],
+        );
+      });
+      test('update', () async {
+        final WriteBatch batch = new WriteBatch();
+        batch.updateData(
+          collectionReference.document('bar'),
+          <String, String>{'bazKey': 'quxValue'},
+        );
+        await batch.commit();
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall('WriteBatch#create', arguments: null),
+            isMethodCall(
+              'WriteBatch#updateData',
+              arguments: <String, dynamic>{
+                'handle': 1,
+                'path': 'foo/bar',
+                'data': <String, String>{'bazKey': 'quxValue'},
+              },
+            ),
+            isMethodCall(
+              'WriteBatch#commit',
+              arguments: <String, dynamic>{
+                'handle': 1,
+              },
+            ),
+          ],
+        );
+      });
+      test('delete', () async {
+        final WriteBatch batch = new WriteBatch();
+        batch.delete(collectionReference.document('bar'));
+        await batch.commit();
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall('WriteBatch#create', arguments: null),
+            isMethodCall(
+              'WriteBatch#delete',
+              arguments: <String, dynamic>{
+                'handle': 1,
+                'path': 'foo/bar',
+              },
+            ),
+            isMethodCall(
+              'WriteBatch#commit',
+              arguments: <String, dynamic>{
+                'handle': 1,
+              },
+            ),
+          ],
+        );
+>>>>>>> Add some tests
       });
     });
   });
