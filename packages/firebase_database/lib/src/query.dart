@@ -50,6 +50,7 @@ class Query {
         _handle = _database._channel.invokeMethod(
           'Query#observe',
           <String, dynamic>{
+            'app': _database.app?.name,
             'path': path,
             'parameters': _parameters,
             'eventType': eventType.toString(),
@@ -64,6 +65,7 @@ class Query {
           await _database._channel.invokeMethod(
             'Query#removeObserver',
             <String, dynamic>{
+              'app': _database.app?.name,
               'path': path,
               'parameters': _parameters,
               'handle': handle,
@@ -193,6 +195,7 @@ class Query {
     return _database._channel.invokeMethod(
       'Query#keepSynced',
       <String, dynamic>{
+        'app': _database.app?.name,
         'path': path,
         'parameters': _parameters,
         'value': value

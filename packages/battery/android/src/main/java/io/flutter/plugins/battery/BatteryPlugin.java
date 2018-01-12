@@ -30,16 +30,16 @@ public class BatteryPlugin implements MethodCallHandler, StreamHandler {
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/battery");
     final EventChannel eventChannel =
         new EventChannel(registrar.messenger(), "plugins.flutter.io/charging");
-    final BatteryPlugin instance = new BatteryPlugin(registrar.context());
+    final BatteryPlugin instance = new BatteryPlugin(registrar);
     eventChannel.setStreamHandler(instance);
     methodChannel.setMethodCallHandler(instance);
   }
 
-  BatteryPlugin(Context context) {
-    this.context = context;
+  BatteryPlugin(PluginRegistry.Registrar registrar) {
+    this.registrar = registrar;
   }
 
-  private final Context context;
+  private final PluginRegistry.Registrar registrar;
   private BroadcastReceiver chargingStateChangeReceiver;
 
   @Override
@@ -60,18 +60,21 @@ public class BatteryPlugin implements MethodCallHandler, StreamHandler {
   @Override
   public void onListen(Object arguments, EventSink events) {
     chargingStateChangeReceiver = createChargingStateChangeReceiver(events);
-    context.registerReceiver(
-        chargingStateChangeReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+    registrar
+        .context()
+        .registerReceiver(
+            chargingStateChangeReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
   }
 
   @Override
   public void onCancel(Object arguments) {
-    context.unregisterReceiver(chargingStateChangeReceiver);
+    registrar.context().unregisterReceiver(chargingStateChangeReceiver);
     chargingStateChangeReceiver = null;
   }
 
   private int getBatteryLevel() {
     int batteryLevel = -1;
+    Context context = registrar.context();
     if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
       BatteryManager batteryManager =
           (BatteryManager) context.getSystemService(context.BATTERY_SERVICE);

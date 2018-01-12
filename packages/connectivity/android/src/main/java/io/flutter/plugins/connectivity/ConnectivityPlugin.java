@@ -21,7 +21,7 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 /** ConnectivityPlugin */
 public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
-  private final Context context;
+  private final Registrar registrar;
   private final ConnectivityManager manager;
   private BroadcastReceiver receiver;
 
@@ -31,25 +31,28 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/connectivity");
     final EventChannel eventChannel =
         new EventChannel(registrar.messenger(), "plugins.flutter.io/connectivity_status");
-    ConnectivityPlugin instance = new ConnectivityPlugin(registrar.context());
+    ConnectivityPlugin instance = new ConnectivityPlugin(registrar);
     channel.setMethodCallHandler(instance);
     eventChannel.setStreamHandler(instance);
   }
 
-  private ConnectivityPlugin(Context context) {
-    this.context = context;
-    this.manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+  private ConnectivityPlugin(Registrar registrar) {
+    this.registrar = registrar;
+    this.manager =
+        (ConnectivityManager) registrar.context().getSystemService(Context.CONNECTIVITY_SERVICE);
   }
 
   @Override
   public void onListen(Object arguments, EventSink events) {
     receiver = createReceiver(events);
-    context.registerReceiver(receiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+    registrar
+        .context()
+        .registerReceiver(receiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
   }
 
   @Override
   public void onCancel(Object arguments) {
-    context.unregisterReceiver(receiver);
+    registrar.context().unregisterReceiver(receiver);
     receiver = null;
   }
 

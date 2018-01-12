@@ -4,7 +4,6 @@
 
 package io.flutter.plugins.pathprovider;
 
-import android.content.Context;
 import android.os.Environment;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -14,17 +13,17 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.util.PathUtils;
 
 public class PathProviderPlugin implements MethodCallHandler {
-  private final Context context;
+  private final Registrar mRegistrar;
 
   public static void registerWith(Registrar registrar) {
     MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/path_provider");
-    PathProviderPlugin instance = new PathProviderPlugin(registrar.context());
+    PathProviderPlugin instance = new PathProviderPlugin(registrar);
     channel.setMethodCallHandler(instance);
   }
 
-  private PathProviderPlugin(Context context) {
-    this.context = context;
+  private PathProviderPlugin(Registrar registrar) {
+    this.mRegistrar = registrar;
   }
 
   @Override
@@ -45,11 +44,11 @@ public class PathProviderPlugin implements MethodCallHandler {
   }
 
   private String getPathProviderTemporaryDirectory() {
-    return context.getCacheDir().getPath();
+    return mRegistrar.context().getCacheDir().getPath();
   }
 
   private String getPathProviderApplicationDocumentsDirectory() {
-    return PathUtils.getDataDirectory(context);
+    return PathUtils.getDataDirectory(mRegistrar.context());
   }
 
   private String getPathProviderStorageDirectory() {

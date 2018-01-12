@@ -4,7 +4,6 @@
 
 package io.flutter.plugins.firebase.storage;
 
-import android.app.Activity;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -29,11 +28,11 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
 
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel = new MethodChannel(registrar.messenger(), "firebase_storage");
-    channel.setMethodCallHandler(new FirebaseStoragePlugin(registrar.activity()));
+    channel.setMethodCallHandler(new FirebaseStoragePlugin(registrar));
   }
 
-  private FirebaseStoragePlugin(Activity activity) {
-    FirebaseApp.initializeApp(activity);
+  private FirebaseStoragePlugin(Registrar registrar) {
+    FirebaseApp.initializeApp(registrar.context());
     this.firebaseStorage = FirebaseStorage.getInstance();
   }
 
