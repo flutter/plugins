@@ -40,6 +40,9 @@ public class PackageInfoPlugin implements MethodCallHandler {
         case "getBuildNumber":
           result.success(String.valueOf(info.versionCode));
           break;
+        case "getPackageName":
+          result.success(context.getPackageName());
+          break;
         default:
           result.notImplemented();
       }
