@@ -1,3 +1,8 @@
+## 2.0.1
+
+* Simplified and upgraded Android project template to Android SDK 27.
+* Updated package description.
+
 ## 2.0.0
 
 * **Breaking change**. Upgraded to Gradle 4.1 and Android Studio Gradle plugin
