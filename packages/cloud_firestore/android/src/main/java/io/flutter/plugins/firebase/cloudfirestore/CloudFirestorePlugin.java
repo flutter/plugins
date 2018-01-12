@@ -376,7 +376,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
           }.execute();
           break;
         }
-      case "Batch#create":
+      case "WriteBatch#create":
         {
           int handle = nextBatchHandle++;
           WriteBatch batch = FirebaseFirestore.getInstance().batch();
@@ -384,7 +384,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
           result.success(handle);
           break;
         }
-      case "Batch#set":
+      case "WriteBatch#setData":
         {
           Map<String, Object> arguments = call.arguments();
           int handle = (Integer) arguments.get("handle");
@@ -400,7 +400,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
           result.success(null);
           break;
         }
-      case "Batch#update":
+      case "WriteBatch#updateData":
         {
           Map<String, Object> arguments = call.arguments();
           int handle = (Integer) arguments.get("handle");
@@ -412,7 +412,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
           result.success(null);
           break;
         }
-      case "Batch#delete":
+      case "WriteBatch#delete":
         {
           Map<String, Object> arguments = call.arguments();
           int handle = (Integer) arguments.get("handle");
@@ -422,7 +422,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
           result.success(null);
           break;
         }
-      case "Batch#commit":
+      case "WriteBatch#commit":
         {
           Map<String, Object> arguments = call.arguments();
           int handle = (Integer) arguments.get("handle");

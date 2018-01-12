@@ -410,12 +410,12 @@ const UInt8 DOCUMENT_REFERENCE = 130;
     [[_listeners objectForKey:handle] remove];
     [_listeners removeObjectForKey:handle];
     result(nil);
-  } else if ([@"Batch#create" isEqualToString:call.method]) {
+  } else if ([@"WriteBatch#create" isEqualToString:call.method]) {
     __block NSNumber *handle = [NSNumber numberWithInt:_nextBatchHandle++];
     FIRWriteBatch *batch = [[FIRFirestore firestore] batch];
     _batches[handle] = batch;
     result(handle);
-  } else if ([@"Batch#set" isEqualToString:call.method]) {
+  } else if ([@"WriteBatch#setData" isEqualToString:call.method]) {
     NSNumber *handle = call.arguments[@"handle"];
     NSString *path = call.arguments[@"path"];
     NSDictionary *options = call.arguments[@"options"];
@@ -430,21 +430,21 @@ const UInt8 DOCUMENT_REFERENCE = 130;
       [batch setData:call.arguments[@"data"] forDocument:reference];
     }
     result(nil);
-  } else if ([@"Batch#update" isEqualToString:call.method]) {
+  } else if ([@"WriteBatch#updateData" isEqualToString:call.method]) {
     NSNumber *handle = call.arguments[@"handle"];
     NSString *path = call.arguments[@"path"];
     FIRDocumentReference *reference = [[FIRFirestore firestore] documentWithPath:path];
     FIRWriteBatch batch = [_batches objectForKey:handle];
     [batch updateData:call.arguments[@"data"] forDocument:reference];
     result(nil);
-  } else if ([@"Batch#delete" isEqualToString:call.method]) {
+  } else if ([@"WriteBatch#delete" isEqualToString:call.method]) {
     NSNumber *handle = call.arguments[@"handle"];
     NSString *path = call.arguments[@"path"];
     FIRDocumentReference *reference = [[FIRFirestore firestore] documentWithPath:path];
     FIRWriteBatch batch = [_batches objectForKey:handle];
     [batch deleteDocument:reference];
     result(nil);
-  } else if ([@"Batch#commit" isEqualToString:call.method]) {
+  } else if ([@"WriteBatch#commit" isEqualToString:call.method]) {
     // TODO:
     NSNumber *handle = call.arguments[@"handle"];
     FIRWriteBatch batch = [_batches objectForKey:handle];

@@ -13,7 +13,7 @@ part of cloud_firestore;
 class WriteBatch {
   WriteBatch():
     _handle = Firestore.channel.invokeMethod(
-      'Batch#create',
+      'WriteBatch#create',
     );
 
   Future<int> _handle;
@@ -29,7 +29,7 @@ class WriteBatch {
       committed = true;
       await Future.wait(_actions);
       return await Firestore.channel.invokeMethod(
-        'Batch#commit',
+        'WriteBatch#commit',
         <String, dynamic>{'handle': await _handle}
       );
     } else {
@@ -43,7 +43,7 @@ class WriteBatch {
       _handle.then((int handle){
         _actions.add(
           Firestore.channel.invokeMethod(
-            'Batch#delete',
+            'WriteBatch#delete',
             <String, dynamic>{
               'handle': handle,
               'path': reference.path
@@ -59,12 +59,12 @@ class WriteBatch {
   /// Adds a write operation for the given [DocumentReference]. If the document
   /// does not yet exist, it will be created. If you pass [SetOptions], the
   /// provided data will be merged into an existing document.
-  void set(DocumentReference reference, Map<String, dynamic> data, [SetOptions options]){
+  void setData(DocumentReference reference, Map<String, dynamic> data, [SetOptions options]){
     if (!committed){
       _handle.then((int handle){
         _actions.add(
           Firestore.channel.invokeMethod(
-            'Batch#set',
+            'WriteBatch#setData',
             <String, dynamic>{
               'handle': handle,
               'path': reference.path,
@@ -82,12 +82,12 @@ class WriteBatch {
   /// Adds an update operation for the given [DocumentReference].
   /// 
   /// If the document doesn't exist yet, the operation will fail.
-  void update(DocumentReference reference, Map<String, dynamic> data){
+  void updateData(DocumentReference reference, Map<String, dynamic> data){
     if (!committed){
       _handle.then((int handle){
         _actions.add(
           Firestore.channel.invokeMethod(
-            'Batch#update',
+            'WriteBatch#updateData',
             <String, dynamic>{
               'handle': handle,
               'path': reference.path,
