@@ -20,13 +20,13 @@ class WriteBatch {
   final List<Future<Null>> _actions = <Future<Null>>[];
   
   /// Indicator to whether or not this [WriteBatch] has been committed.
-  bool committed = false;
+  bool _committed = false;
 
   /// Processes all operations in this [WriteBatch] and prevents any future
   /// operations from being added.
   Future<Null> commit() async {
-    if (!committed){
-      committed = true;
+    if (!_committed){
+      _committed = true;
       await Future.wait(_actions);
       return await Firestore.channel.invokeMethod(
         'WriteBatch#commit',
@@ -39,7 +39,7 @@ class WriteBatch {
 
   /// Adds a delete operation for the given [DocumentReference].
   void delete(DocumentReference reference){
-    if (!committed){
+    if (!_committed){
       _handle.then((int handle){
         _actions.add(
           Firestore.channel.invokeMethod(
@@ -60,7 +60,7 @@ class WriteBatch {
   /// does not yet exist, it will be created. If you pass [SetOptions], the
   /// provided data will be merged into an existing document.
   void setData(DocumentReference reference, Map<String, dynamic> data, [SetOptions options]){
-    if (!committed){
+    if (!_committed){
       _handle.then((int handle){
         _actions.add(
           Firestore.channel.invokeMethod(
@@ -83,7 +83,7 @@ class WriteBatch {
   /// 
   /// If the document doesn't exist yet, the operation will fail.
   void updateData(DocumentReference reference, Map<String, dynamic> data){
-    if (!committed){
+    if (!_committed){
       _handle.then((int handle){
         _actions.add(
           Firestore.channel.invokeMethod(
