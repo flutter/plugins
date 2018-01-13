@@ -36,6 +36,9 @@ void main() {
           case "startListeningAuthState":
             return mockHandleId++;
             break;
+          case "updateProfile":
+            return null;
+            break;
           default:
             return mockFirebaseUser();
             break;
@@ -203,6 +206,23 @@ void main() {
           ),
         ],
       );
+    });
+
+    test('updateProfile', () async {
+      final UserUpdateInfo userUpdateInfo = new UserUpdateInfo();
+      userUpdateInfo.photoUrl = kMockPhotoUrl;
+      userUpdateInfo.displayName = kMockDisplayName;
+
+      await auth.updateProfile(userUpdateInfo);
+      expect(log, <Matcher>[
+        isMethodCall(
+          'updateProfile',
+          arguments: <String, String>{
+            'photoUrl': kMockPhotoUrl,
+            'displayName': kMockDisplayName,
+          },
+        ),
+      ]);
     });
 
     test('signInWithCustomToken', () async {

@@ -37,7 +37,7 @@ FIRDatabaseReference *getReference(FIRDatabase *database, NSDictionary *argument
   return ref;
 }
 
-FIRDatabaseQuery *getQuery(FIRDatabase *database, NSDictionary *arguments) {
+FIRDatabaseQuery *getDatabaseQuery(FIRDatabase *database, NSDictionary *arguments) {
   FIRDatabaseQuery *query = getReference(database, arguments);
   NSDictionary *parameters = arguments[@"parameters"];
   NSString *orderBy = parameters[@"orderBy"];
@@ -156,8 +156,13 @@ id roundDoubles(id value) {
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   FIRDatabase *database;
   NSString *appName = call.arguments[@"app"];
-  if (![appName isEqual:[NSNull null]]) {
+  NSString *databaseURL = call.arguments[@"databaseURL"];
+  if (![appName isEqual:[NSNull null]] && ![databaseURL isEqual:[NSNull null]]) {
+    database = [FIRDatabase databaseForApp:[FIRApp appNamed:appName] URL:databaseURL];
+  } else if (![appName isEqual:[NSNull null]]) {
     database = [FIRDatabase databaseForApp:[FIRApp appNamed:appName]];
+  } else if (![databaseURL isEqual:[NSNull null]]) {
+    database = [FIRDatabase databaseWithURL:databaseURL];
   } else {
     database = [FIRDatabase database];
   }
@@ -275,7 +280,7 @@ id roundDoubles(id value) {
         }];
   } else if ([@"Query#observe" isEqualToString:call.method]) {
     FIRDataEventType eventType = parseEventType(call.arguments[@"eventType"]);
-    __block FIRDatabaseHandle handle = [getQuery(database, call.arguments)
+    __block FIRDatabaseHandle handle = [getDatabaseQuery(database, call.arguments)
         observeEventType:eventType
         andPreviousSiblingKeyWithBlock:^(FIRDataSnapshot *snapshot, NSString *previousSiblingKey) {
           [self.channel invokeMethod:@"Event"
@@ -298,11 +303,11 @@ id roundDoubles(id value) {
     result([NSNumber numberWithUnsignedInteger:handle]);
   } else if ([@"Query#removeObserver" isEqualToString:call.method]) {
     FIRDatabaseHandle handle = [call.arguments[@"handle"] unsignedIntegerValue];
-    [getQuery(database, call.arguments) removeObserverWithHandle:handle];
+    [getDatabaseQuery(database, call.arguments) removeObserverWithHandle:handle];
     result(nil);
   } else if ([@"Query#keepSynced" isEqualToString:call.method]) {
     NSNumber *value = call.arguments[@"value"];
-    [getQuery(database, call.arguments) keepSynced:value.boolValue];
+    [getDatabaseQuery(database, call.arguments) keepSynced:value.boolValue];
     result(nil);
   } else {
     result(FlutterMethodNotImplemented);

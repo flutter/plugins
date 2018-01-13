@@ -1,6 +1,11 @@
-## 0.1.1
+## 0.1.2
 
 * Fix for APNS not being correctly registered on iOS when reinstalling application.
+
+## 0.1.1
+
+* Simplified and upgraded Android project template to Android SDK 27.
+* Updated package description.
 
 ## 0.1.0
 
