@@ -1,3 +1,8 @@
+## 0.2.4
+
+* Support for DocumentReference.documentID
+* Support for CollectionReference.add
+
 ## 0.2.3
 
 * Simplified and upgraded Android project template to Android SDK 27.
