@@ -16,6 +16,7 @@ class AndroidIntent {
   final String category;
   final String data;
   final Map<String, dynamic> arguments;
+  final String package;
   final MethodChannel _channel;
   final Platform _platform;
 
@@ -26,12 +27,14 @@ class AndroidIntent {
   /// intent.
   /// [arguments] is the map that will be converted into an extras bundle and
   /// passed to the intent.
-  const AndroidIntent(
-      {@required this.action,
-      this.category,
-      this.data,
-      this.arguments,
-      Platform platform})
+  const AndroidIntent({
+    @required this.action,
+    this.category,
+    this.data,
+    this.arguments,
+    this.package,
+    Platform platform,
+  })
       : assert(action != null),
         _channel = const MethodChannel(kChannelName),
         _platform = platform ?? const LocalPlatform();
@@ -51,6 +54,9 @@ class AndroidIntent {
     }
     if (arguments != null) {
       args['arguments'] = arguments;
+    }
+    if (package != null) {
+      args['package'] = package;
     }
     await _channel.invokeMethod('launch', args);
   }

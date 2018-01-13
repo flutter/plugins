@@ -1,9 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="io.flutter.firebaseanalytics"
-  android:versionCode="1"
-  android:versionName="0.0.1">
-
-  <uses-sdk android:minSdkVersion="16" android:targetSdkVersion="21" />
+  package="io.flutter.firebaseanalytics">
 
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
   <uses-permission android:name="android.permission.INTERNET" />

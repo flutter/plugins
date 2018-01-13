@@ -1,6 +1,7 @@
 name: share
-version: 0.2.2
-description: A Flutter plugin for sharing content from the Flutter app via the platform share sheet.
+description: Flutter plugin for sharing content via the platform share UI, using
+  the ACTION_SEND intent on Android and UIActivityViewController on iOS.
+version: 0.3.1
 author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/share
 
@@ -15,4 +16,4 @@ dependencies:
     sdk: flutter
 
 environment:
-    sdk: ">=1.8.0 <2.0.0"
+  sdk: ">=1.8.0 <2.0.0"

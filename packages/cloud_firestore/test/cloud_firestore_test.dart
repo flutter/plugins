@@ -64,6 +64,14 @@ void main() {
             return handle;
           case 'DocumentReference#setData':
             return true;
+          case 'DocumentReference#get':
+            if (methodCall.arguments['path'] == 'foo/bar') {
+              return <String, dynamic>{
+                'path': 'foo/bar',
+                'data': <String, dynamic>{'key1': 'val1'}
+              };
+            }
+            throw new PlatformException(code: 'UNKNOWN_PATH');
           default:
             return null;
         }
@@ -275,6 +283,28 @@ void main() {
             ),
           ]),
         );
+      });
+      test('get', () async {
+        final DocumentSnapshot snapshot =
+            await collectionReference.document('bar').get();
+        expect(
+          log,
+          equals(<Matcher>[
+            isMethodCall(
+              'DocumentReference#get',
+              arguments: <String, dynamic>{'path': 'foo/bar'},
+            ),
+          ]),
+        );
+        expect(snapshot.reference.path, equals('foo/bar'));
+        expect(snapshot.data.containsKey('key1'), equals(true));
+        expect(snapshot.data['key1'], equals('val1'));
+
+        try {
+          await collectionReference.document('baz').get();
+        } on PlatformException catch (e) {
+          expect(e.code, equals('UNKNOWN_PATH'));
+        }
       });
       test('getCollection', () async {
         final CollectionReference colRef =

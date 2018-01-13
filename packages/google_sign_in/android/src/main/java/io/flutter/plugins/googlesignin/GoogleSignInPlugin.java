@@ -121,7 +121,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 
     private static final String STATE_RESOLVING_ERROR = "resolving_error";
 
-    private final PluginRegistry.Registrar mRegistrar;
+    private final PluginRegistry.Registrar registrar;
     private final Handler handler = new Handler();
     private final BackgroundTaskRunner backgroundTaskRunner = new BackgroundTaskRunner(1);
 
@@ -132,10 +132,10 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     private volatile GoogleSignInAccount currentAccount;
 
     public Delegate(PluginRegistry.Registrar registrar) {
-      mRegistrar = registrar;
-      Application application = (Application) mRegistrar.context();
+      this.registrar = registrar;
+      Application application = (Application) registrar.context();
       application.registerActivityLifecycleCallbacks(handler);
-      mRegistrar.addActivityResultListener(handler);
+      registrar.addActivityResultListener(handler);
     }
 
     /** Returns the most recently signed-in account, or null if there was none. */
@@ -168,13 +168,13 @@ public class GoogleSignInPlugin implements MethodCallHandler {
         // TODO(jackson): Perhaps we should provide a mechanism to override this
         // behavior.
         int clientIdIdentifier =
-            mRegistrar
+            registrar
                 .context()
                 .getResources()
                 .getIdentifier(
-                    "default_web_client_id", "string", mRegistrar.context().getPackageName());
+                    "default_web_client_id", "string", registrar.context().getPackageName());
         if (clientIdIdentifier != 0) {
-          optionsBuilder.requestIdToken(mRegistrar.context().getString(clientIdIdentifier));
+          optionsBuilder.requestIdToken(registrar.context().getString(clientIdIdentifier));
         }
         for (String scope : requestedScopes) {
           optionsBuilder.requestScopes(new Scope(scope));
@@ -185,7 +185,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 
         this.requestedScopes = requestedScopes;
         googleApiClient =
-            new GoogleApiClient.Builder(mRegistrar.context())
+            new GoogleApiClient.Builder(registrar.context())
                 .addApi(Auth.GOOGLE_SIGN_IN_API, optionsBuilder.build())
                 .addConnectionCallbacks(handler)
                 .addOnConnectionFailedListener(handler)
@@ -224,13 +224,13 @@ public class GoogleSignInPlugin implements MethodCallHandler {
      * were requested.
      */
     public void signIn(Result result) {
-      if (mRegistrar.activity() == null) {
+      if (registrar.activity() == null) {
         throw new IllegalStateException("signIn needs a foreground activity");
       }
       checkAndSetPendingOperation(METHOD_SIGN_IN, result);
 
       Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
-      mRegistrar.activity().startActivityForResult(signInIntent, REQUEST_CODE);
+      registrar.activity().startActivityForResult(signInIntent, REQUEST_CODE);
     }
 
     /**
@@ -251,7 +251,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
             public String call() throws Exception {
               Account account = new Account(email, "com.google");
               String scopesStr = "oauth2:" + Joiner.on(' ').join(requestedScopes);
-              return GoogleAuthUtil.getToken(mRegistrar.context(), account, scopesStr);
+              return GoogleAuthUtil.getToken(registrar.context(), account, scopesStr);
             }
           };
 
@@ -417,14 +417,14 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 
       @Override
       public void onActivityStarted(Activity activity) {
-        if (!resolvingError && activity == mRegistrar.activity() && googleApiClient != null) {
+        if (!resolvingError && activity == registrar.activity() && googleApiClient != null) {
           googleApiClient.connect();
         }
       }
 
       @Override
       public void onActivityStopped(Activity activity) {
-        if (activity == mRegistrar.activity() && googleApiClient != null) {
+        if (activity == registrar.activity() && googleApiClient != null) {
           googleApiClient.disconnect();
         }
       }
@@ -452,19 +452,19 @@ public class GoogleSignInPlugin implements MethodCallHandler {
         if (resolvingError) {
           // Already attempting to resolve an error.
           return;
-        } else if (result.hasResolution() && mRegistrar.activity() != null) {
+        } else if (result.hasResolution() && registrar.activity() != null) {
           resolvingError = true;
           try {
-            result.startResolutionForResult(mRegistrar.activity(), REQUEST_CODE_RESOLVE_ERROR);
+            result.startResolutionForResult(registrar.activity(), REQUEST_CODE_RESOLVE_ERROR);
           } catch (SendIntentException e) {
             resolvingError = false;
             finishWithError(ERROR_REASON_CONNECTION_FAILED, String.valueOf(result.getErrorCode()));
           }
-        } else if (mRegistrar.activity() != null) {
+        } else if (registrar.activity() != null) {
           resolvingError = true;
           GoogleApiAvailability.getInstance()
               .showErrorDialogFragment(
-                  mRegistrar.activity(),
+                  registrar.activity(),
                   result.getErrorCode(),
                   REQUEST_CODE_RESOLVE_ERROR,
                   new DialogInterface.OnCancelListener() {

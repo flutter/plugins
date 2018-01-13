@@ -4,7 +4,7 @@
 
 package io.flutter.firebaseauth;
 
-import android.app.Activity;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.util.SparseArray;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -12,15 +12,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.EmailAuthProvider;
-import com.google.firebase.auth.FacebookAuthProvider;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GetTokenResult;
-import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.auth.UserInfo;
+import com.google.firebase.auth.*;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -30,7 +22,7 @@ import java.util.Map;
 
 /** Flutter plugin for Firebase Auth. */
 public class FirebaseAuthPlugin implements MethodCallHandler {
-  private final Activity activity;
+  private final PluginRegistry.Registrar registrar;
   private final FirebaseAuth firebaseAuth;
   private final SparseArray<FirebaseAuth.AuthStateListener> authStateListeners =
       new SparseArray<>();
@@ -44,13 +36,13 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
   public static void registerWith(PluginRegistry.Registrar registrar) {
     MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_auth");
-    channel.setMethodCallHandler(new FirebaseAuthPlugin(registrar.activity(), channel));
+    channel.setMethodCallHandler(new FirebaseAuthPlugin(registrar, channel));
   }
 
-  private FirebaseAuthPlugin(Activity activity, MethodChannel channel) {
-    this.activity = activity;
+  private FirebaseAuthPlugin(PluginRegistry.Registrar registrar, MethodChannel channel) {
+    this.registrar = registrar;
     this.channel = channel;
-    FirebaseApp.initializeApp(activity);
+    FirebaseApp.initializeApp(registrar.context());
     this.firebaseAuth = FirebaseAuth.getInstance();
   }
 
@@ -90,6 +82,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       case "linkWithGoogleCredential":
         handleLinkWithGoogleCredential(call, result);
         break;
+      case "updateProfile":
+        handleUpdateProfile(call, result);
+        break;
       case "startListeningAuthState":
         handleStartListeningAuthState(call, result);
         break;
@@ -112,7 +107,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     firebaseAuth
         .getCurrentUser()
         .linkWithCredential(credential)
-        .addOnCompleteListener(activity, new SignInCompleteListener(result));
+        .addOnCompleteListener(new SignInCompleteListener(result));
   }
 
   private void handleCurrentUser(MethodCall call, final Result result) {
@@ -131,9 +126,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
   }
 
   private void handleSignInAnonymously(MethodCall call, final Result result) {
-    firebaseAuth
-        .signInAnonymously()
-        .addOnCompleteListener(activity, new SignInCompleteListener(result));
+    firebaseAuth.signInAnonymously().addOnCompleteListener(new SignInCompleteListener(result));
   }
 
   private void handleCreateUserWithEmailAndPassword(MethodCall call, final Result result) {
@@ -144,7 +137,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
 
     firebaseAuth
         .createUserWithEmailAndPassword(email, password)
-        .addOnCompleteListener(activity, new SignInCompleteListener(result));
+        .addOnCompleteListener(new SignInCompleteListener(result));
   }
 
   private void handleSignInWithEmailAndPassword(MethodCall call, final Result result) {
@@ -155,7 +148,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
 
     firebaseAuth
         .signInWithEmailAndPassword(email, password)
-        .addOnCompleteListener(activity, new SignInCompleteListener(result));
+        .addOnCompleteListener(new SignInCompleteListener(result));
   }
 
   private void handleSignInWithGoogle(MethodCall call, final Result result) {
@@ -166,7 +159,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     AuthCredential credential = GoogleAuthProvider.getCredential(idToken, accessToken);
     firebaseAuth
         .signInWithCredential(credential)
-        .addOnCompleteListener(activity, new SignInCompleteListener(result));
+        .addOnCompleteListener(new SignInCompleteListener(result));
   }
 
   private void handleLinkWithGoogleCredential(MethodCall call, final Result result) {
@@ -178,7 +171,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     firebaseAuth
         .getCurrentUser()
         .linkWithCredential(credential)
-        .addOnCompleteListener(activity, new SignInCompleteListener(result));
+        .addOnCompleteListener(new SignInCompleteListener(result));
   }
 
   private void handleSignInWithFacebook(MethodCall call, final Result result) {
@@ -188,7 +181,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     AuthCredential credential = FacebookAuthProvider.getCredential(accessToken);
     firebaseAuth
         .signInWithCredential(credential)
-        .addOnCompleteListener(activity, new SignInCompleteListener(result));
+        .addOnCompleteListener(new SignInCompleteListener(result));
   }
 
   private void handleSignInWithCustomToken(MethodCall call, final Result result) {
@@ -196,7 +189,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     String token = arguments.get("token");
     firebaseAuth
         .signInWithCustomToken(token)
-        .addOnCompleteListener(activity, new SignInCompleteListener(result));
+        .addOnCompleteListener(new SignInCompleteListener(result));
   }
 
   private void handleSignOut(MethodCall call, final Result result) {
@@ -219,6 +212,35 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
                   result.success(idToken);
                 } else {
                   result.error(ERROR_REASON_EXCEPTION, task.getException().getMessage(), null);
+                }
+              }
+            });
+  }
+
+  private void handleUpdateProfile(MethodCall call, final Result result) {
+    @SuppressWarnings("unchecked")
+    Map<String, String> arguments = (Map<String, String>) call.arguments;
+
+    UserProfileChangeRequest.Builder builder = new UserProfileChangeRequest.Builder();
+    if (arguments.containsKey("displayName")) {
+      builder.setDisplayName(arguments.get("displayName"));
+    }
+    if (arguments.containsKey("photoUrl")) {
+      builder.setPhotoUri(Uri.parse(arguments.get("photoUrl")));
+    }
+
+    firebaseAuth
+        .getCurrentUser()
+        .updateProfile(builder.build())
+        .addOnCompleteListener(
+            new OnCompleteListener<Void>() {
+              @Override
+              public void onComplete(@NonNull Task<Void> task) {
+                if (!task.isSuccessful()) {
+                  Exception e = task.getException();
+                  result.error(ERROR_REASON_EXCEPTION, e.getMessage(), null);
+                } else {
+                  result.success(null);
                 }
               }
             });

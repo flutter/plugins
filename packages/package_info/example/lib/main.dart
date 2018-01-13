@@ -37,6 +37,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   String _version = 'Unknown';
+  String _buildNumber = 'Unknown';
+  String _packageName = 'Unknown';
 
   @override
   void initState() {
@@ -54,6 +56,22 @@ class _MyHomePageState extends State<MyHomePage> {
       version = 'Failed to get version.';
     }
 
+    String buildNumber;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      buildNumber = await package_info.buildNumber;
+    } on PlatformException {
+      buildNumber = 'Failed to get buildNumber.';
+    }
+
+    String packageName;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      packageName = await package_info.packageName;
+    } on PlatformException {
+      packageName = 'Failed to get packageName.';
+    }
+
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling
     // setState to update our non-existent appearance.
@@ -63,6 +81,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
     setState(() {
       _version = version;
+      _buildNumber = buildNumber;
+      _packageName = packageName;
     });
   }
 
@@ -72,7 +92,13 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: new AppBar(
         title: const Text('Plugin example app'),
       ),
-      body: new Center(child: new Text('App version is: $_version\n')),
+      body: new Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            new Text('App version is: $_version'),
+            new Text('Build number is: $_buildNumber'),
+            new Text('Package name is: $_packageName')
+          ]),
     );
   }
 }

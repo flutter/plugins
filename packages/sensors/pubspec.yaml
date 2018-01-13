@@ -1,7 +1,7 @@
 name: sensors
-
-version: 0.1.1
-description: A Flutter plugin to access the accelerometer and gyroscope sensors.
+description: Flutter plugin for accessing the Android and iOS accelerometer and
+  gyroscope sensors.
+version: 0.2.1
 author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/sensors
 
@@ -14,3 +14,6 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
+
+environment:
+  sdk: ">=1.8.0 <2.0.0"
