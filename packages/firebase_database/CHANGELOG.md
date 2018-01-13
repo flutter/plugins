@@ -1,3 +1,7 @@
+## 0.3.3
+
+* Support to specify a database by URL if required 
+
 ## 0.3.2
 
 * Fix warnings from the Dart 2.0 analyzer.

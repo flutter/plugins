@@ -75,6 +75,7 @@ class DatabaseReference extends Query {
       'DatabaseReference#set',
       <String, dynamic>{
         'app': _database.app?.name,
+        'databaseURL': _database.databaseURL,
         'path': path,
         'value': value,
         'priority': priority,
@@ -88,6 +89,7 @@ class DatabaseReference extends Query {
       'DatabaseReference#update',
       <String, dynamic>{
         'app': _database.app?.name,
+        'databaseURL': _database.databaseURL,
         'path': path,
         'value': value,
       },
@@ -123,6 +125,7 @@ class DatabaseReference extends Query {
       'DatabaseReference#setPriority',
       <String, dynamic>{
         'app': _database.app?.name,
+        'databaseURL': _database.databaseURL,
         'path': path,
         'priority': priority,
       },
@@ -171,6 +174,7 @@ class DatabaseReference extends Query {
     _database._channel
         .invokeMethod('DatabaseReference#runTransaction', <String, dynamic>{
       'app': _database.app?.name,
+      'databaseURL': _database.databaseURL,
       'path': path,
       'transactionKey': transactionKey,
       'transactionTimeout': timeout.inMilliseconds
