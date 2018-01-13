@@ -22,6 +22,9 @@ class DocumentReference {
   /// Slash-delimited path representing the database location of this query.
   String get path => _pathComponents.join('/');
 
+  /// This document's given or generated ID in the collection.
+  String get documentID => _pathComponents.last;
+
   /// Writes to the document referred to by this [DocumentReference]. If the
   /// document does not yet exist, it will be created. If you pass [SetOptions],
   /// the provided data will be merged into an existing document.

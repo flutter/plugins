@@ -1,3 +1,8 @@
+## 0.2.3
+
+* Simplified and upgraded Android project template to Android SDK 27.
+* Updated package description.
+
 ## 0.2.2
 
 * Added platform-specific App IDs and ad unit IDs to example.
