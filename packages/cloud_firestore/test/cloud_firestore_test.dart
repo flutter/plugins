@@ -431,7 +431,6 @@ void main() {
         expect(colRef.path, 'foo/bar/baz');
       });
     });
-<<<<<<< HEAD
 
     group('Query', () {
       test('getDocuments', () async {
@@ -476,8 +475,7 @@ void main() {
           firestore.document('foo/bar'),
         ];
         _checkEncodeDecode<dynamic>(codec, message);
-=======
-    group('WriteBatch', (){
+    group('WriteBatch', () {
       test('set', () async {
         final WriteBatch batch = new WriteBatch();
         batch.setData(
@@ -520,15 +518,12 @@ void main() {
           log,
           <Matcher>[
             isMethodCall('WriteBatch#create', arguments: null),
-            isMethodCall(
-              'WriteBatch#setData',
-              arguments: <String, dynamic>{
-                'handle': 1,
-                'path': 'foo/bar',
-                'data': <String, String>{'bazKey': 'quxValue'},
-                'options': <String, bool>{'merge': true},
-              }
-            ),
+            isMethodCall('WriteBatch#setData', arguments: <String, dynamic>{
+              'handle': 1,
+              'path': 'foo/bar',
+              'data': <String, String>{'bazKey': 'quxValue'},
+              'options': <String, bool>{'merge': true},
+            }),
             isMethodCall(
               'WriteBatch#commit',
               arguments: <String, dynamic>{
@@ -589,7 +584,6 @@ void main() {
             ),
           ],
         );
->>>>>>> Add some tests
       });
     });
   });
