@@ -1,3 +1,7 @@
+## 0.1.1
+
+* Fix for APNS not being correctly registered on iOS when reinstalling application.
+
 ## 0.1.0
 
 * **Breaking change**. Upgraded to Gradle 4.1 and Android Studio Gradle plugin
