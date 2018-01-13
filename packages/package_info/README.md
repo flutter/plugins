@@ -5,7 +5,7 @@ application package.
 
 # Usage
 
-You can use the package_info to query information about the
+You can use the package_info package to query information about the
 application package. This works both on iOS and Android.
 
 ```dart

@@ -23,7 +23,7 @@ class FirebaseDatabase {
   /// Gets an instance of [FirebaseDatabase].
   ///
   /// If [app] is specified, its options should include a [databaseURL].
-  FirebaseDatabase({this.app}) {
+  FirebaseDatabase({this.app, this.databaseURL}) {
     assert(app == null || app.options.databaseURL != null);
     if (_initialized) return;
     _channel.setMethodCallHandler((MethodCall call) async {
@@ -59,6 +59,11 @@ class FirebaseDatabase {
   /// If null, the default [FirebaseApp] is used.
   final FirebaseApp app;
 
+  /// The URL to which this [FirebaseDatabase] belongs
+  ///
+  /// If null, the URL of the specified [FirebaseApp] is used
+  final String databaseURL;
+
   /// Gets the instance of FirebaseDatabase for the default Firebase app.
   static FirebaseDatabase get instance => _instance;
 
@@ -87,6 +92,7 @@ class FirebaseDatabase {
     return _channel.invokeMethod(
         'FirebaseDatabase#setPersistenceEnabled', <String, dynamic>{
       'app': app?.name,
+      'databaseURL': databaseURL,
       'enabled': enabled,
     });
   }
@@ -112,6 +118,7 @@ class FirebaseDatabase {
     return _channel.invokeMethod(
         'FirebaseDatabase#setPersistenceCacheSizeBytes', <String, dynamic>{
       'app': app?.name,
+      'databaseURL': databaseURL,
       'cacheSize': cacheSize,
     });
   }
@@ -121,7 +128,10 @@ class FirebaseDatabase {
   Future<Null> goOnline() {
     return _channel.invokeMethod(
       'FirebaseDatabase#goOnline',
-      <String, dynamic>{'app': app?.name},
+      <String, dynamic>{
+        'app': app?.name,
+        'databaseURL': databaseURL,
+      },
     );
   }
 
@@ -130,7 +140,10 @@ class FirebaseDatabase {
   Future<Null> goOffline() {
     return _channel.invokeMethod(
       'FirebaseDatabase#goOffline',
-      <String, dynamic>{'app': app?.name},
+      <String, dynamic>{
+        'app': app?.name,
+        'databaseURL': databaseURL,
+      },
     );
   }
 
@@ -147,7 +160,10 @@ class FirebaseDatabase {
   Future<Null> purgeOutstandingWrites() {
     return _channel.invokeMethod(
       'FirebaseDatabase#purgeOutstandingWrites',
-      <String, dynamic>{'app': app?.name},
+      <String, dynamic>{
+        'app': app?.name,
+        'databaseURL': databaseURL,
+      },
     );
   }
 }

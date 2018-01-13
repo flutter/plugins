@@ -1,3 +1,17 @@
+## 0.2.4
+
+* Support for DocumentReference.documentID
+* Support for CollectionReference.add
+
+## 0.2.3
+
+* Simplified and upgraded Android project template to Android SDK 27.
+* Updated package description.
+
+## 0.2.2
+
+* Add `get` to DocumentReference.
+
 ## 0.2.1
 
 * Fix bug on Android where removeListener is sometimes called without a handle
