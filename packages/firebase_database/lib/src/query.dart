@@ -51,6 +51,7 @@ class Query {
           'Query#observe',
           <String, dynamic>{
             'app': _database.app?.name,
+            'databaseURL': _database.databaseURL,
             'path': path,
             'parameters': _parameters,
             'eventType': eventType.toString(),
@@ -66,6 +67,7 @@ class Query {
             'Query#removeObserver',
             <String, dynamic>{
               'app': _database.app?.name,
+              'databaseURL': _database.databaseURL,
               'path': path,
               'parameters': _parameters,
               'handle': handle,
@@ -196,6 +198,7 @@ class Query {
       'Query#keepSynced',
       <String, dynamic>{
         'app': _database.app?.name,
+        'databaseURL': _database.databaseURL,
         'path': path,
         'parameters': _parameters,
         'value': value

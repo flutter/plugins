@@ -75,6 +75,7 @@ class DatabaseReference extends Query {
       'DatabaseReference#set',
       <String, dynamic>{
         'app': _database.app?.name,
+        'databaseURL': _database.databaseURL,
         'path': path,
         'value': value,
         'priority': priority,
@@ -88,6 +89,7 @@ class DatabaseReference extends Query {
       'DatabaseReference#update',
       <String, dynamic>{
         'app': _database.app?.name,
+        'databaseURL': _database.databaseURL,
         'path': path,
         'value': value,
       },
@@ -123,6 +125,7 @@ class DatabaseReference extends Query {
       'DatabaseReference#setPriority',
       <String, dynamic>{
         'app': _database.app?.name,
+        'databaseURL': _database.databaseURL,
         'path': path,
         'priority': priority,
       },
@@ -156,24 +159,27 @@ class DatabaseReference extends Query {
 
     FirebaseDatabase._transactions[transactionKey] = transactionHandler;
 
-    _database._channel
-        .invokeMethod('DatabaseReference#runTransaction', <String, dynamic>{
-      'app': _database.app?.name,
-      'path': path,
-      'transactionKey': transactionKey,
-      'transactionTimeout': timeout.inMilliseconds
-    }).then((Map<String, dynamic> result) {
+    TransactionResult toTransactionResult(Map<String, dynamic> map) {
       final DatabaseError databaseError =
-          result['error'] != null ? new DatabaseError._(result['error']) : null;
-      final bool committed = result['committed'];
-      final DataSnapshot dataSnapshot = result['snapshot'] != null
-          ? new DataSnapshot._(result['snapshot'])
-          : null;
+          map['error'] != null ? new DatabaseError._(map['error']) : null;
+      final bool committed = map['committed'];
+      final DataSnapshot dataSnapshot =
+          map['snapshot'] != null ? new DataSnapshot._(map['snapshot']) : null;
 
       FirebaseDatabase._transactions.remove(transactionKey);
 
-      completer.complete(
-          new TransactionResult._(databaseError, committed, dataSnapshot));
+      return new TransactionResult._(databaseError, committed, dataSnapshot);
+    }
+
+    _database._channel
+        .invokeMethod('DatabaseReference#runTransaction', <String, dynamic>{
+      'app': _database.app?.name,
+      'databaseURL': _database.databaseURL,
+      'path': path,
+      'transactionKey': transactionKey,
+      'transactionTimeout': timeout.inMilliseconds
+    }).then((dynamic response) {
+      completer.complete(toTransactionResult(response));
     });
 
     return completer.future;
