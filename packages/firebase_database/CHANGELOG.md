@@ -1,3 +1,13 @@
+## 0.3.2
+
+* Fix warnings from the Dart 2.0 analyzer.
+* Simplified and upgraded Android project template to Android SDK 27.
+* Updated package description.
+
+## 0.3.1
+
+* Fix function name collision when using Firebase Database and Cloud Firestore together on iOS.
+
 ## 0.3.0
 
 * **Breaking change**. Upgraded to Gradle 4.1 and Android Studio Gradle plugin

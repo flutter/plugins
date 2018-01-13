@@ -105,6 +105,20 @@ FIRQuery *getQuery(NSDictionary *arguments) {
     NSString *path = call.arguments[@"path"];
     FIRDocumentReference *reference = [[FIRFirestore firestore] documentWithPath:path];
     [reference deleteDocumentWithCompletion:defaultCompletionBlock];
+  } else if ([@"DocumentReference#get" isEqualToString:call.method]) {
+    NSString *path = call.arguments[@"path"];
+    FIRDocumentReference *reference = [[FIRFirestore firestore] documentWithPath:path];
+    [reference getDocumentWithCompletion:^(FIRDocumentSnapshot *_Nullable snapshot,
+                                           NSError *_Nullable error) {
+      if (error) {
+        result(error.flutterError);
+      } else {
+        result(@{
+          @"path" : snapshot.reference.path,
+          @"data" : snapshot.exists ? snapshot.data : [NSNull null]
+        });
+      }
+    }];
   } else if ([@"Query#addSnapshotListener" isEqualToString:call.method]) {
     __block NSNumber *handle = [NSNumber numberWithInt:_nextListenerHandle++];
     FIRQuery *query;

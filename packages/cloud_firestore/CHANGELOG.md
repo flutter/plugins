@@ -1,3 +1,16 @@
+## 0.2.3
+
+* Simplified and upgraded Android project template to Android SDK 27.
+* Updated package description.
+
+## 0.2.2
+
+* Add `get` to DocumentReference.
+
+## 0.2.1
+
+* Fix bug on Android where removeListener is sometimes called without a handle
+
 ## 0.2.0
 
 * **Breaking change**. Upgraded to Gradle 4.1 and Android Studio Gradle plugin
