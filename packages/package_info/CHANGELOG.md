@@ -1,3 +1,7 @@
+## 0.2.0
+
+* **Breaking change**. Change package_info to class PackageInfo.
+
 ## 0.1.1
 
 * Added package name to available information.

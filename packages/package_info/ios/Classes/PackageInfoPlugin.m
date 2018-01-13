@@ -14,12 +14,12 @@
 }
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
-  if ([call.method isEqualToString:@"getVersion"]) {
-    result([[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"]);
-  } else if ([call.method isEqualToString:@"getBuildNumber"]) {
-    result([[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]);
-  } else if ([call.method isEqualToString:@"getPackageName"]) {
-    result([[NSBundle mainBundle] bundleIdentifier]);
+  if ([call.method isEqualToString:@"getAll"]) {
+    result(@{
+      @"version" : [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"],
+      @"buildNumber" : [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"],
+      @"packageName" : [[NSBundle mainBundle] bundleIdentifier]
+    });
   } else {
     result(FlutterMethodNotImplemented);
   }

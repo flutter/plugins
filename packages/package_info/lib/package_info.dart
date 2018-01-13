@@ -4,19 +4,59 @@
 
 import 'dart:async';
 
+import 'package:meta/meta.dart';
 import 'package:flutter/services.dart';
 
-/// Provides information about the current application package.
 const MethodChannel _kChannel =
     const MethodChannel('plugins.flutter.io/package_info');
 
-/// Returns the `CFBundleShortVersionString` on iOS or `versionName` on Android
-Future<String> get version async => await _kChannel.invokeMethod('getVersion');
+/// Wrap application Bundle (on iOS) and Package (on Android) information,
+/// providing cached verion, build number and package name.
+///
+/// PackgeInfo implemented in singleton, after first called
+/// [PackageInfo.getInstance], cached value never changed.
+///
+/// ```dart
+///     PackageInfo paakcageInfo = await PackageInfo.getInstance()
+///     print("Version is: ${packcageInfo.version}");
+/// ```
+///
+class PackageInfo {
+  PackageInfo._(
+      {@required this.version,
+      @required this.buildNumber,
+      @required this.packageName})
+      : assert(version != null),
+        assert(buildNumber != null),
+        assert(packageName != null);
 
-/// Returns the `CFBundleVersion` on iOS or `versionCode` on Android
-Future<String> get buildNumber async =>
-    await _kChannel.invokeMethod('getBuildNumber');
+  static PackageInfo _instance;
 
-/// Returns the `bundleIdentifier` on iOS or `getPackageName` on Android
-Future<String> get packageName async =>
-    await _kChannel.invokeMethod('getPackageName');
+  static Future<PackageInfo> getInstance() async {
+    if (_instance == null) {
+      final Map<String, String> fromSystem =
+          await _kChannel.invokeMethod('getAll');
+      print("fromSystem $fromSystem");
+      assert(fromSystem != null);
+      assert(fromSystem["version"] != null);
+      assert(fromSystem["buildNumber"] != null);
+      assert(fromSystem["packageName"] != null);
+
+      _instance = new PackageInfo._(
+        version: fromSystem["version"],
+        buildNumber: fromSystem["buildNumber"],
+        packageName: fromSystem["packageName"],
+      );
+    }
+    return _instance;
+  }
+
+  /// property of the `CFBundleShortVersionString` on iOS or `versionName` on Android
+  final String version;
+
+  /// property of the `CFBundleVersion` on iOS or `versionCode` on Android
+  final String buildNumber;
+
+  /// property of the `bundleIdentifier` on iOS or `getPackageName` on Android
+  final String packageName;
+}
