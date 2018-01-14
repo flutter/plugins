@@ -8,6 +8,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.ExifInterface;
+import android.os.Build;
 import com.esafirm.imagepicker.features.ImagePicker;
 import com.esafirm.imagepicker.features.camera.DefaultCameraModule;
 import com.esafirm.imagepicker.features.camera.OnImageReadyListener;
@@ -207,6 +209,114 @@ public class ImagePickerPlugin implements MethodCallHandler, ActivityResultListe
     fileOutput.write(outputStream.toByteArray());
     fileOutput.close();
 
+    if (shouldDownscale)
+      copyExif(image.getPath(), scaledCopyPath);
+
     return imageFile;
+  }
+
+  private void copyExif(String filePathOri, String filePathDest) {
+    try {
+      ExifInterface oldexif = new ExifInterface(filePathOri);
+      ExifInterface newexif = new ExifInterface(filePathDest);
+
+      int build = Build.VERSION.SDK_INT;
+
+
+      // From API 11
+      if (build >= 11) {
+        if (oldexif.getAttribute("FNumber") != null) {
+          newexif.setAttribute("FNumber",
+                  oldexif.getAttribute("FNumber"));
+        }
+        if (oldexif.getAttribute("ExposureTime") != null) {
+          newexif.setAttribute("ExposureTime",
+                  oldexif.getAttribute("ExposureTime"));
+        }
+        if (oldexif.getAttribute("ISOSpeedRatings") != null) {
+          newexif.setAttribute("ISOSpeedRatings",
+                  oldexif.getAttribute("ISOSpeedRatings"));
+        }
+      }
+      // From API 9
+      if (build >= 9) {
+        if (oldexif.getAttribute("GPSAltitude") != null) {
+          newexif.setAttribute("GPSAltitude",
+                  oldexif.getAttribute("GPSAltitude"));
+        }
+        if (oldexif.getAttribute("GPSAltitudeRef") != null) {
+          newexif.setAttribute("GPSAltitudeRef",
+                  oldexif.getAttribute("GPSAltitudeRef"));
+        }
+      }
+      // From API 8
+      if (build >= 8) {
+        if (oldexif.getAttribute("FocalLength") != null) {
+          newexif.setAttribute("FocalLength",
+                  oldexif.getAttribute("FocalLength"));
+        }
+        if (oldexif.getAttribute("GPSDateStamp") != null) {
+          newexif.setAttribute("GPSDateStamp",
+                  oldexif.getAttribute("GPSDateStamp"));
+        }
+        if (oldexif.getAttribute("GPSProcessingMethod") != null) {
+          newexif.setAttribute(
+                  "GPSProcessingMethod",
+                  oldexif.getAttribute("GPSProcessingMethod"));
+        }
+        if (oldexif.getAttribute("GPSTimeStamp") != null) {
+          newexif.setAttribute("GPSTimeStamp", ""
+                  + oldexif.getAttribute("GPSTimeStamp"));
+        }
+      }
+      if (oldexif.getAttribute("DateTime") != null) {
+        newexif.setAttribute("DateTime",
+                oldexif.getAttribute("DateTime"));
+      }
+      if (oldexif.getAttribute("Flash") != null) {
+        newexif.setAttribute("Flash",
+                oldexif.getAttribute("Flash"));
+      }
+      if (oldexif.getAttribute("GPSLatitude") != null) {
+        newexif.setAttribute("GPSLatitude",
+                oldexif.getAttribute("GPSLatitude"));
+      }
+      if (oldexif.getAttribute("GPSLatitudeRef") != null) {
+        newexif.setAttribute("GPSLatitudeRef",
+                oldexif.getAttribute("GPSLatitudeRef"));
+      }
+      if (oldexif.getAttribute("GPSLongitude") != null) {
+        newexif.setAttribute("GPSLongitude",
+                oldexif.getAttribute("GPSLongitude"));
+      }
+      if (oldexif.getAttribute("GPSLatitudeRef") != null) {
+        newexif.setAttribute("GPSLongitudeRef",
+                oldexif.getAttribute("GPSLongitudeRef"));
+      }
+      //Need to update it, with your new height width
+      newexif.setAttribute("ImageLength",
+              "200");
+      newexif.setAttribute("ImageWidth",
+              "200");
+
+      if (oldexif.getAttribute("Make") != null) {
+        newexif.setAttribute("Make",
+                oldexif.getAttribute("Make"));
+      }
+      if (oldexif.getAttribute("Model") != null) {
+        newexif.setAttribute("Model",
+                oldexif.getAttribute("Model"));
+      }
+      if (oldexif.getAttribute("Orientation") != null) {
+        newexif.setAttribute("Orientation",
+                oldexif.getAttribute("Orientation"));
+      }
+      if (oldexif.getAttribute("WhiteBalance") != null) {
+        newexif.setAttribute("WhiteBalance",
+                oldexif.getAttribute("WhiteBalance"));
+      }
+      newexif.saveAttributes();
+
+    } catch (Exception ex) { }
   }
 }
