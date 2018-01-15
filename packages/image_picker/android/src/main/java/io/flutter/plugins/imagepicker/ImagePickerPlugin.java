@@ -273,9 +273,9 @@ public class ImagePickerPlugin implements MethodCallHandler, ActivityResultListe
       if (oldexif.getAttribute("GPSLongitude") != null) {
         newexif.setAttribute("GPSLongitude", oldexif.getAttribute("GPSLongitude"));
       }
-      if (oldexif.getAttribute("GPSLatitudeRef") != null) {
+      if (oldexif.getAttribute("GPSLongitudeRef") != null) {
         newexif.setAttribute("GPSLongitudeRef", oldexif.getAttribute("GPSLongitudeRef"));
-      }      
+      }
       if (oldexif.getAttribute("Make") != null) {
         newexif.setAttribute("Make", oldexif.getAttribute("Make"));
       }
@@ -290,7 +290,7 @@ public class ImagePickerPlugin implements MethodCallHandler, ActivityResultListe
       }
       newexif.saveAttributes();
 
-    } catch (Exception ex) { 
+    } catch (Exception ex) {
     }
   }
 }
