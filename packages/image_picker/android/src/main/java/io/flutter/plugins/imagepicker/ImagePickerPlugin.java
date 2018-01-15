@@ -221,7 +221,6 @@ public class ImagePickerPlugin implements MethodCallHandler, ActivityResultListe
 
       int build = Build.VERSION.SDK_INT;
 
-
       // From API 11
       if (build >= 11) {
         if (oldexif.getAttribute("FNumber") != null) {
