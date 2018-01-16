@@ -86,6 +86,9 @@ public class CloudFirestorePlugin implements MethodCallHandler {
       }
     }
     @SuppressWarnings("unchecked")
+    Number limit = (Number) parameters.get("limit");
+    if (limit != null) query = query.limit(limit.longValue());
+    @SuppressWarnings("unchecked")
     List<List<Object>> orderBy = (List<List<Object>>) parameters.get("orderBy");
     if (orderBy == null) return query;
     for (List<Object> order : orderBy) {

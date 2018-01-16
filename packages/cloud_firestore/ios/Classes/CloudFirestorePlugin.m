@@ -41,6 +41,11 @@ FIRQuery *getQuery(NSDictionary *arguments) {
       // Unsupported operator
     }
   }
+  id limit = parameters[@"limit"];
+  if (limit) {
+    NSNumber *length = limit;
+    query = [query queryLimitedTo:[length intValue]];
+  }
   NSArray orderBy = parameters[@"orderBy"];
   for (id item in orderBy) {
     NSArray *orderByParameters = orderBy;
