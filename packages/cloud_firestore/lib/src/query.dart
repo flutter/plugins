@@ -15,6 +15,7 @@ class Query {
         _parameters = parameters ??
             new Map<String, dynamic>.unmodifiable(<String, dynamic>{
               'where': new List<List<dynamic>>.unmodifiable(<List<dynamic>>[]),
+              'orderBy': new List<List<dynamic>>.unmodifiable(<List<dynamic>>[]),
             }),
         assert(firestore != null),
         assert(pathComponents != null);
