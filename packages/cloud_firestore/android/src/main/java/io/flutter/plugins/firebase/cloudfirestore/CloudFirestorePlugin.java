@@ -100,16 +100,16 @@ public class CloudFirestorePlugin implements MethodCallHandler {
     }
     @SuppressWarnings("unchecked")
     List<Object> startAt = (List<Object>) parameters.get("startAt");
-    if (startAt != null) query = query.startAt(startAt);
+    if (startAt != null) query = query.startAt(startAt.toArray());
     @SuppressWarnings("unchecked")
     List<Object> startAfter = (List<Object>) parameters.get("startAfter");
-    if (startAfter != null) query = query.startAfter(startAfter);
+    if (startAfter != null) query = query.startAfter(startAfter.toArray());
     @SuppressWarnings("unchecked")
     List<Object> endAt = (List<Object>) parameters.get("endAt");
-    if (endAt != null) query = query.endAt(endAt);
+    if (endAt != null) query = query.endAt(endAt.toArray());
     @SuppressWarnings("unchecked")
     List<Object> endBefore = (List<Object>) parameters.get("endBefore");
-    if (endBefore != null) query = query.endBefore(endBefore);
+    if (endBefore != null) query = query.endBefore(endBefore.toArray());
     return query;
   }
 
