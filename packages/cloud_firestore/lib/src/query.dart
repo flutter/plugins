@@ -189,8 +189,8 @@ class Query {
   }
 
   /// Creates and returns a new Query that's additionally limited to only return up
-  /// to the specified number of documents. 
-  Query limit(int length){
+  /// to the specified number of documents.
+  Query limit(int length) {
     assert(!_parameters.containsKey('limit'));
     return _copyWithParameters(<String, dynamic>{'limit': length});
   }
