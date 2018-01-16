@@ -130,9 +130,13 @@ class Query {
   /// Creates and returns a new [Query] that's additionally sorted by the specified
   /// [field].
   Query orderBy(String field, {bool descending: false}) {
-    assert(!_parameters.containsKey('orderBy'));
-    return _copyWithParameters(<String, dynamic>{
-      'orderBy': <dynamic>[field, descending]
-    });
+    final List<List<dynamic>> orders =
+        new List<List<dynamic>>.from(_parameters['orderBy']);
+
+    final List<dynamic> order = <dynamic>[field, descending];
+    assert(orders.where((List<dynamic> item) => field == item[0]).isEmpty,
+        'OrderBy $field already exists in this query');
+    orders.add(order);
+    return _copyWithParameters(<String, dynamic>{'orderBy': orders});
   }
 }

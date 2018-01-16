@@ -41,8 +41,8 @@ FIRQuery *getQuery(NSDictionary *arguments) {
       // Unsupported operator
     }
   }
-  id orderBy = parameters[@"orderBy"];
-  if (orderBy) {
+  NSArray orderBy = parameters[@"orderBy"];
+  for (id item in orderBy) {
     NSArray *orderByParameters = orderBy;
     NSString *fieldName = orderByParameters[0];
     NSNumber *descending = orderByParameters[1];
