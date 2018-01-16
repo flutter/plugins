@@ -95,6 +95,18 @@ public class CloudFirestorePlugin implements MethodCallHandler {
           descending ? Query.Direction.DESCENDING : Query.Direction.ASCENDING;
       query = query.orderBy(orderByFieldName, direction);
     }
+    @SuppressWarnings("unchecked")
+    List<Object> startAt = (List<Object>) parameters.get("startAt");
+    if (startAt != null) query = query.startAt(startAt);
+    @SuppressWarnings("unchecked")
+    List<Object> startAfter = (List<Object>) parameters.get("startAfter");
+    if (startAfter != null) query = query.startAfter(startAfter);
+    @SuppressWarnings("unchecked")
+    List<Object> endAt = (List<Object>) parameters.get("endAt");
+    if (endAt != null) query = query.endAt(endAt);
+    @SuppressWarnings("unchecked")
+    List<Object> endBefore = (List<Object>) parameters.get("endBefore");
+    if (endBefore != null) query = query.endBefore(endBefore);
     return query;
   }
 

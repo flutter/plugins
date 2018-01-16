@@ -48,6 +48,26 @@ FIRQuery *getQuery(NSDictionary *arguments) {
     NSNumber *descending = orderByParameters[1];
     query = [query queryOrderedByField:fieldName descending:[descending boolValue]];
   }
+  id startAt = parameters[@"startAt"];
+  if (startAt) {
+    NSArray *startAtValues = startAt;
+    query = [query queryStartingAtValues:startAtValues];
+  }
+  id startAfter = parameters[@"startAfter"];
+  if (startAfter) {
+    NSArray *startAfterValues = startAfter;
+    query = [query queryStartingAfterValues:startAfterValues];
+  }
+  id startAt = parameters[@"endAt"];
+  if (endAt) {
+    NSArray *endAtValues = endAt;
+    query = [query queryEndingAtValues:endAtValues];
+  }
+  id endBefore = parameters[@"endBefore"];
+  if (endBefore) {
+    NSArray *endBeforeValues = endBefore;
+    query = [query queryEndingBeforeValues:endBeforeValues];
+  }
   return query;
 }
 

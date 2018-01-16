@@ -139,4 +139,52 @@ class Query {
     orders.add(order);
     return _copyWithParameters(<String, dynamic>{'orderBy': orders});
   }
+
+  /// Takes a list of [values], creates and returns a new [Query] that starts after
+  /// the provided fields relative to the order of the query.
+  ///
+  /// The [values] must be in order of [orderBy] filters.
+  ///
+  /// Cannot be used in combination with [startAt].
+  Query startAfter(List<dynamic> values) {
+    assert(!_parameters.containsKey('startAfter'));
+    assert(!_parameters.containsKey('startAt'));
+    return _copyWithParameters(<String, dynamic>{'startAfter': values});
+  }
+
+  /// Takes a list of [values], creates and returns a new [Query] that starts at
+  /// the provided fields relative to the order of the query.
+  ///
+  /// The [values] must be in order of [orderBy] filters.
+  ///
+  /// Cannot be used in combination with [startAfter].
+  Query startAt(List<dynamic> values) {
+    assert(!_parameters.containsKey('startAfter'));
+    assert(!_parameters.containsKey('startAt'));
+    return _copyWithParameters(<String, dynamic>{'startAt': values});
+  }
+
+  /// Takes a list of [values], creates and returns a new [Query] that ends at the
+  /// provided fields relative to the order of the query.
+  ///
+  /// The [values] must be in order of [orderBy] filters.
+  ///
+  /// Cannot be used in combination with [endBefore].
+  Query endAt(List<dynamic> values) {
+    assert(!_parameters.containsKey('endBefore'));
+    assert(!_parameters.containsKey('endAt'));
+    return _copyWithParameters(<String, dynamic>{'endAt': values});
+  }
+
+  /// Takes a list of [values], creates and returns a new [Query] that ends before
+  /// the provided fields relative to the order of the query.
+  ///
+  /// The [values] must be in order of [orderBy] filters.
+  ///
+  /// Cannot be used in combination with [endAt].
+  Query endBefore(List<dynamic> values) {
+    assert(!_parameters.containsKey('endBefore'));
+    assert(!_parameters.containsKey('endAt'));
+    return _copyWithParameters(<String, dynamic>{'endBefore': values});
+  }
 }
