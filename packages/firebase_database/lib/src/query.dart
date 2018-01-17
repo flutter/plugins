@@ -118,7 +118,11 @@ class Query {
   /// than or equal to the given key.
   Query endAt(dynamic value, {String key}) {
     assert(!_parameters.containsKey('endAt'));
-    assert(value is String || value is bool || value is double || value is int);
+    assert(value is String ||
+        value is bool ||
+        value is double ||
+        value is int ||
+        value == null);
     final Map<String, dynamic> parameters = <String, dynamic>{'endAt': value};
     if (key != null) parameters['endAtKey'] = key;
     return _copyWithParameters(parameters);
@@ -130,7 +134,11 @@ class Query {
   /// If a key is provided, there is at most one such child as names are unique.
   Query equalTo(dynamic value, {String key}) {
     assert(!_parameters.containsKey('equalTo'));
-    assert(value is String || value is bool || value is double || value is int);
+    assert(value is String ||
+        value is bool ||
+        value is double ||
+        value is int ||
+        value == null);
     return _copyWithParameters(
       <String, dynamic>{'equalTo': value, 'equalToKey': key},
     );
