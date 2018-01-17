@@ -1,6 +1,6 @@
 ## 0.2.2
 
-* Moved Android implementation to io.flutter.plugins package.
+* Moved to the io.flutter.plugins organization.
 
 ## 0.2.1
 
