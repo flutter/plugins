@@ -1,3 +1,7 @@
+## 0.3.4
+
+* Allow null values for Query startAt, endAt, and equalTo
+
 ## 0.3.3
 
 * Support to specify a database by URL if required 
