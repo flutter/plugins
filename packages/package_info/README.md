@@ -5,12 +5,15 @@ application package.
 
 # Usage
 
-You can use the `PackageInfo` class to query information about the
+You can use the package_info package to query information about the
 application package. This works both on iOS and Android.
 
 ```dart
-var version = await PackageInfo.getVersion();
-var buildNumber = await PackageInfo.getBuildNumber();
+import 'package:package_info/package_info.dart' as package_info;
+
+var version = await package_info.version;
+var buildNumber = await package_info.buildNumber;
+var packageName = await package_info.packageName;
 ```
 
 ## Getting Started

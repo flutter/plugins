@@ -134,6 +134,17 @@ int nextHandle = 0;
                                         completion:^(FIRUser *user, NSError *error) {
                                           [self sendResult:result forUser:user error:error];
                                         }];
+  } else if ([@"updateProfile" isEqualToString:call.method]) {
+    FIRUserProfileChangeRequest *changeRequest = [[FIRAuth auth].currentUser profileChangeRequest];
+    if (call.arguments[@"displayName"]) {
+      changeRequest.displayName = call.arguments[@"displayName"];
+    }
+    if (call.arguments[@"photoUrl"]) {
+      changeRequest.photoURL = call.arguments[@"photoUrl"];
+    }
+    [changeRequest commitChangesWithCompletion:^(NSError *error) {
+      [self sendResult:result forUser:nil error:error];
+    }];
   } else if ([@"signInWithCustomToken" isEqualToString:call.method]) {
     NSString *token = call.arguments[@"token"];
     [[FIRAuth auth] signInWithCustomToken:token

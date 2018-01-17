@@ -1,4 +1,4 @@
-group 'io.flutter.camera'
+group 'io.flutter.plugins.camera'
 version '1.0-SNAPSHOT'
 
 buildscript {
