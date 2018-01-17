@@ -7,6 +7,29 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
+const String androidAppId = 'ca-app-pub-3940256099942544~3347511713';
+const String iOSAppId = 'ca-app-pub-3940256099942544~1458002511';
+
+// A placeholder AdMob App ID for testing. AdMob App IDs and ad unit IDs are
+// specific to a single operating system, so apps building for both Android and
+// iOS will need a set for each platform.
+const String androidTestAppId = 'ca-app-pub-3940256099942544~3347511713';
+const String iOSTestAppId = 'ca-app-pub-3940256099942544~1458002511';
+
+// These are AdMob's test ad unit IDs, which always return test ads. You're
+// encouraged to use them for testing in your own apps.
+const String androidBannerTestAdUnitId =
+    'ca-app-pub-3940256099942544/6300978111';
+const String androidInterstitialTestAdUnitId =
+    'ca-app-pub-3940256099942544/1033173712';
+const String androidRewardedVideoTestAdUnitId =
+    'ca-app-pub-3940256099942544/5224354917';
+const String iOSBannerTestAdUnitId = 'ca-app-pub-3940256099942544/2934735716';
+const String iOSInterstitialTestAdUnitId =
+    'ca-app-pub-3940256099942544/4411468910';
+const String iOSRewardedVideoTestAdUnitId =
+    'ca-app-pub-3940256099942544/1712485313';
+
 /// [MobileAd] status changes reported to [MobileAdListener]s.
 ///
 /// Applications can wait until an ad is [MobileAdEvent.loaded] before showing
@@ -200,12 +223,18 @@ enum RewardedVideoAdEvent {
 
 /// Signature for a [RewardedVideoAd] status change callback. The optional
 /// parameters are only used when the [RewardedVideoAdEvent.rewarded] event
-/// is sent, and will be null for all others.
+/// is sent, when they'll contain the reward amount and reward type that were
+/// configured for the AdMob ad unit when it was created. They will be null for
+/// all other events.
 typedef void RewardedVideoAdListener(RewardedVideoAdEvent event,
-    [String rewardType, int rewardAmount]);
+    {String rewardType, int rewardAmount});
 
-/// The AdMob rewarded video ad. The AdMob API uses a singleton for its rewarded
-/// video ads, and this class is designed to match.
+/// An AdMob rewarded video ad.
+///
+/// This class is a singleton, and [RewardedVideoAd.instance] provides a
+/// reference to the single instance, which is created at launch. The native
+/// Android and iOS APIs for AdMob use a singleton to manage rewarded video ad
+/// objects, and that pattern is reflected here.
 ///
 /// Apps should assign a callback function to [RewardedVideoAd]'s listener
 /// property in order to receive reward notifications from the AdMob SDK:
@@ -231,13 +260,13 @@ typedef void RewardedVideoAdListener(RewardedVideoAdEvent event,
 /// RewardedVideoAd.instance.show();
 /// ```
 ///
-/// Only one rewarded video ad can be loaded at a time. Because the creatives
+/// Only one rewarded video ad can be loaded at a time. Because the video assets
 /// are so large, it's a good idea to start loading an ad well in advance of
 /// when it's likely to be needed.
 class RewardedVideoAd {
-  static final RewardedVideoAd _instance = new RewardedVideoAd.private();
+  static final RewardedVideoAd _instance = new RewardedVideoAd._();
 
-  RewardedVideoAd.private();
+  RewardedVideoAd._();
 
   /// The one and only instance of this class.
   static RewardedVideoAd get instance => _instance;
@@ -253,8 +282,9 @@ class RewardedVideoAd {
   }
 
   /// Loads a rewarded video ad using the provided ad unit ID.
-  Future<bool> load(String adUnitId, MobileAdTargetingInfo targetingInfo) {
-    assert(adUnitId != null && adUnitId.isNotEmpty);
+  Future<bool> load(
+      {@required String adUnitId, MobileAdTargetingInfo targetingInfo}) {
+    assert(adUnitId.isNotEmpty);
     return _channel.invokeMethod("loadRewardedVideoAd", <String, dynamic>{
       'adUnitId': adUnitId,
       'targetingInfo': targetingInfo?.toJson(),
@@ -344,7 +374,8 @@ class FirebaseAdMob {
       if (RewardedVideoAd.instance.listener != null) {
         if (rewardedEvent == RewardedVideoAdEvent.rewarded) {
           RewardedVideoAd.instance.listener(rewardedEvent,
-              argumentsMap['rewardType'], argumentsMap['rewardAmount']);
+              rewardType: argumentsMap['rewardType'],
+              rewardAmount: argumentsMap['rewardAmount']);
         } else {
           RewardedVideoAd.instance.listener(rewardedEvent);
         }

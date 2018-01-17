@@ -14,32 +14,15 @@ void main() {
     const MethodChannel channel =
         const MethodChannel('plugins.flutter.io/firebase_admob');
 
-    // Platform-specific App IDs that can be used for testing.
-    const String androidAppId = 'ca-app-pub-3940256099942544~3347511713';
-    const String iOSAppId = 'ca-app-pub-3940256099942544~1458002511';
-
-    // Platform-specific ad unit IDs that always return test ads.
-    const String androidBannerAdUnitId =
-        'ca-app-pub-3940256099942544/6300978111';
-    const String androidInterstitialAdUnitId =
-        'ca-app-pub-3940256099942544/1033173712';
-    const String androidRewardedVideoAdUnitId =
-        'ca-app-pub-3940256099942544/5224354917';
-    const String iOSBannerAdUnitId = 'ca-app-pub-3940256099942544/2934735716';
-    const String iOSInterstitialAdUnitId =
-        'ca-app-pub-3940256099942544/4411468910';
-    const String iOSRewardedVideoAdUnitId =
-        'ca-app-pub-3940256099942544/1712485313';
-
-    final String appId = Platform.isAndroid ? androidAppId : iOSAppId;
+    final String appId = Platform.isAndroid ? androidTestAppId : iOSTestAppId;
     final String bannerAdUnitId =
-        Platform.isAndroid ? androidBannerAdUnitId : iOSBannerAdUnitId;
+        Platform.isAndroid ? androidBannerTestAdUnitId : iOSBannerTestAdUnitId;
     final String interstitialAdUnitId = Platform.isAndroid
-        ? androidInterstitialAdUnitId
-        : iOSInterstitialAdUnitId;
+        ? androidInterstitialTestAdUnitId
+        : iOSInterstitialTestAdUnitId;
     final String rewardedVideoAdUnitId = Platform.isAndroid
-        ? androidRewardedVideoAdUnitId
-        : iOSRewardedVideoAdUnitId;
+        ? androidRewardedVideoTestAdUnitId
+        : iOSRewardedVideoTestAdUnitId;
 
     final List<MethodCall> log = <MethodCall>[];
     final FirebaseAdMob admob = new FirebaseAdMob.private(channel);
@@ -133,8 +116,9 @@ void main() {
       log.clear();
 
       expect(
-          await RewardedVideoAd.instance
-              .load(rewardedVideoAdUnitId, const MobileAdTargetingInfo()),
+          await RewardedVideoAd.instance.load(
+              adUnitId: rewardedVideoAdUnitId,
+              targetingInfo: const MobileAdTargetingInfo()),
           true);
 
       expect(await RewardedVideoAd.instance.show(), true);

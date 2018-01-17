@@ -1,7 +1,7 @@
 # firebase_admob
 
 A plugin for [Flutter](https://flutter.io) that supports loading and
-displaying banner and interstitial (full-screen) ads using the
+displaying banner, interstitial (full-screen), and rewarded video ads using the
 [Firebase AdMob API](https://firebase.google.com/docs/admob/).
 
 *Warning*: This plugin is still under development, some AdMob features are not
@@ -60,8 +60,8 @@ listener can be used to detect when the ad has actually finished loading
 ## Using rewarded video ads
 
 Unlike banners and interstitials, rewarded video ads are loaded one at a time
-via a singleton object, `RewardedVideoAd`. Its `load` method takes an AdMob ad
-unit ID and an instance of `MobileAdTargetingInfo`:
+via a singleton object, `RewardedVideoAd.instance`. Its `load` method takes an
+AdMob ad unit ID and an instance of `MobileAdTargetingInfo`:
 ```
 RewardedVideoAd.instance.load(yourAdMobAdUnitId, targetingInfo);
 ```

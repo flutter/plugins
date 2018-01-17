@@ -6,24 +6,6 @@ import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:firebase_admob/firebase_admob.dart';
 
-// A placeholder AdMob App Id for testing. AdMob App IDs and ad unit IDs are
-// specific to a single operating system, so apps building for both Android and
-// iOS will need a set for each platform.
-const String androidAppId = 'ca-app-pub-3940256099942544~3347511713';
-const String iOSAppId = 'ca-app-pub-3940256099942544~1458002511';
-
-// These are AdMob's test ad unit IDs, which always return test ads. You're
-// encouraged to use them for testing in your own apps.
-const String androidBannerAdUnitId = 'ca-app-pub-3940256099942544/6300978111';
-const String androidInterstitialAdUnitId =
-    'ca-app-pub-3940256099942544/1033173712';
-const String androidRewardedVideoAdUnitId =
-    'ca-app-pub-3940256099942544/5224354917';
-const String iOSBannerAdUnitId = 'ca-app-pub-3940256099942544/2934735716';
-const String iOSInterstitialAdUnitId = 'ca-app-pub-3940256099942544/4411468910';
-const String iOSRewardedVideoAdUnitId =
-    'ca-app-pub-3940256099942544/1712485313';
-
 // You can also test with your own ad unit IDs by registering your device as a
 // test device. Check the logs for your device's ID value.
 const String testDevice = 'YOUR_DEVICE_ID';
@@ -43,13 +25,24 @@ class _MyAppState extends State<MyApp> {
     gender: MobileAdGender.male,
   );
 
+  static final String _appId =
+      Platform.isAndroid ? androidTestAppId : iOSTestAppId;
+  static final String _bannerAdUnitId =
+      Platform.isAndroid ? androidBannerTestAdUnitId : iOSBannerTestAdUnitId;
+  static final String _interstitialAdUnitId = Platform.isAndroid
+      ? androidInterstitialTestAdUnitId
+      : iOSInterstitialTestAdUnitId;
+  static final String _rewardedVideoAdUnitId = Platform.isAndroid
+      ? androidRewardedVideoTestAdUnitId
+      : iOSRewardedVideoTestAdUnitId;
+
   BannerAd _bannerAd;
   InterstitialAd _interstitialAd;
   int _coins = 0;
 
   BannerAd createBannerAd() {
     return new BannerAd(
-      unitId: Platform.isAndroid ? androidBannerAdUnitId : iOSBannerAdUnitId,
+      unitId: _bannerAdUnitId,
       targetingInfo: targetingInfo,
       listener: (MobileAdEvent event) {
         print("BannerAd event $event");
@@ -59,9 +52,7 @@ class _MyAppState extends State<MyApp> {
 
   InterstitialAd createInterstitialAd() {
     return new InterstitialAd(
-      unitId: Platform.isAndroid
-          ? androidInterstitialAdUnitId
-          : iOSInterstitialAdUnitId,
+      unitId: _interstitialAdUnitId,
       targetingInfo: targetingInfo,
       listener: (MobileAdEvent event) {
         print("InterstitialAd event $event");
@@ -73,10 +64,10 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     FirebaseAdMob.instance
-        .initialize(appId: Platform.isAndroid ? androidAppId : iOSAppId);
+        .initialize(appId: _appId);
     _bannerAd = createBannerAd()..load();
     RewardedVideoAd.instance.listener =
-        (RewardedVideoAdEvent event, [String rewardType, int rewardAmount]) {
+        (RewardedVideoAdEvent event, {String rewardType, int rewardAmount}) {
       print("RewardedVideoAd event $event");
       if (event == RewardedVideoAdEvent.rewarded) {
         setState(() {
@@ -136,10 +127,8 @@ class _MyAppState extends State<MyApp> {
                 child: const Text('LOAD REWARDED VIDEO'),
                 onPressed: () {
                   RewardedVideoAd.instance.load(
-                      Platform.isAndroid
-                          ? androidRewardedVideoAdUnitId
-                          : iOSRewardedVideoAdUnitId,
-                      targetingInfo);
+                      adUnitId: _rewardedVideoAdUnitId,
+                      targetingInfo: targetingInfo);
                 },
               ),
               new RaisedButton(
