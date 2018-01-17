@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package io.flutter.firebaseauth;
+package io.flutter.plugins.firebaseauth;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;
