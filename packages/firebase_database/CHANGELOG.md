@@ -1,3 +1,7 @@
+## 0.3.2
+
+* Allow null values for Query startAt, endAt, and equalTo
+
 ## 0.3.1
 
 * Fix function name collision when using Firebase Database and Cloud Firestore together on iOS.
