@@ -1,3 +1,7 @@
+## 0.2.2
+
+* Moved Android implementation to io.flutter.plugins package.
+
 ## 0.2.1
 
 * Simplified and upgraded Android project template to Android SDK 27.

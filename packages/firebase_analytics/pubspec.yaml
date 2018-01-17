@@ -3,11 +3,11 @@ description: Flutter plugin for Firebase Analytics, an app measurement solution
   that provides insight on app usage and user engagement on Android and iOS.
 author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/firebase_analytics
-version: 0.2.1
+version: 0.2.2
 
 flutter:
   plugin:
-    androidPackage: io.flutter.firebaseanalytics
+    androidPackage: io.flutter.plugins.firebaseanalytics
     iosPrefix: FLT
     pluginClass: FirebaseAnalyticsPlugin
 
