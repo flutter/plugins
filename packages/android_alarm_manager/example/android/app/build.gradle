@@ -23,7 +23,7 @@ android {
 
     defaultConfig {
         minSdkVersion 16
-        applicationId "io.flutter.androidalarmmanagerexample"
+        applicationId "io.flutter.plugins.androidalarmmanagerexample"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
