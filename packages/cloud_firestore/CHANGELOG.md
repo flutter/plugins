@@ -1,3 +1,9 @@
+## 0.3.0
+
+* Add GeoPoint class
+* Allow for reading and writing DocumentReference, DateTime, and GeoPoint
+  values to and from Documents.
+
 ## 0.2.4
 
 * Support for DocumentReference.documentID

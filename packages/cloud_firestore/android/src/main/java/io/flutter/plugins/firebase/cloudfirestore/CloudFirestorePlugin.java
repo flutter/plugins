@@ -42,7 +42,10 @@ public class CloudFirestorePlugin implements MethodCallHandler {
 
   public static void registerWith(PluginRegistry.Registrar registrar) {
     final MethodChannel channel =
-        new MethodChannel(registrar.messenger(), "plugins.flutter.io/cloud_firestore");
+        new MethodChannel(
+            registrar.messenger(),
+            "plugins.flutter.io/cloud_firestore",
+            FirestoreMethodCodec.INSTANCE);
     channel.setMethodCallHandler(new CloudFirestorePlugin(channel));
   }
 
