@@ -1,4 +1,4 @@
-group 'com.yourcompany.firebase_auth'
+group 'io.flutter.plugins.firebaseauth'
 version '1.0-SNAPSHOT'
 
 buildscript {
@@ -23,7 +23,7 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 27
-    
+
     defaultConfig {
         minSdkVersion 16
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"

@@ -1,3 +1,7 @@
+## 0.4.3
+
+* Moved to the io.flutter.plugins organization.
+
 ## 0.4.2
 
 * Added support for changing user data
