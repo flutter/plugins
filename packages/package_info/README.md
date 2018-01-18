@@ -13,9 +13,19 @@ import 'package:package_info/package_info.dart';
 
 PackageInfo packageInfo = await PackageInfo.getInstance();
 
+String packageName = packageInfo.packageName;
 String version = packageInfo.version;
 String buildNumber = packageInfo.buildNumber;
-String packageName = packageInfo.packageName;
+```
+
+Or in async mode:
+
+```dart
+PackageInfo.getInstance().then((PackageInfo packageInfo) {
+  String packageName = packageInfo.packageName;
+  String version = packageInfo.version;
+  String buildNumber = packageInfo.buildNumber;
+});
 ```
 
 ## Getting Started

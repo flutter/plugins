@@ -10,53 +10,66 @@ import 'package:flutter/services.dart';
 const MethodChannel _kChannel =
     const MethodChannel('plugins.flutter.io/package_info');
 
-/// Wrap application Bundle (on iOS) and Package (on Android) information,
-/// providing cached verion, build number and package name.
+/// [PackageInfo] wrap application Bundle (on iOS) and Package (on Android) information,
+/// providing cached property for package name verion and build number.
 ///
-/// PackgeInfo implemented in singleton, after first called
-/// [PackageInfo.getInstance], cached value never changed.
+/// [PackgeInfo] implemented in singleton idiom. After first called
+/// [PackageInfo.getInstance], cached properties never changed.
 ///
 /// ```dart
-///     PackageInfo paakcageInfo = await PackageInfo.getInstance()
-///     print("Version is: ${packcageInfo.version}");
+///     PackageInfo packageInfo = await PackageInfo.getInstance()
+///     print("Version is: ${packageInfo.version}");
 /// ```
+/// 
+/// Or in async mode:
 ///
+/// ```dart
+///   PackageInfo.getInstance().then((PackageInfo packageInfo) {
+///     String packageName = packageInfo.packageName;
+///     String version = packageInfo.version;
+///     String buildNumber = packageInfo.buildNumber;
+///   });
+/// ```
+/// 
+/// All properties are type of [String].
 class PackageInfo {
-  PackageInfo._(
-      {@required this.version,
-      @required this.buildNumber,
-      @required this.packageName})
-      : assert(version != null),
-        assert(buildNumber != null),
-        assert(packageName != null);
+  PackageInfo._({
+    @required this.packageName,
+    @required this.version,
+    @required this.buildNumber,
+  })
+      : assert(packageName != null),
+        assert(version != null),
+        assert(buildNumber != null);
 
-  static PackageInfo _instance;
+  static Future<PackageInfo> _instance;
 
+  /// Singleton instance.
   static Future<PackageInfo> getInstance() async {
     if (_instance == null) {
-      final Map<String, String> fromSystem =
-          await _kChannel.invokeMethod('getAll');
-      print("fromSystem $fromSystem");
-      assert(fromSystem != null);
-      assert(fromSystem["version"] != null);
-      assert(fromSystem["buildNumber"] != null);
-      assert(fromSystem["packageName"] != null);
+      final Completer<PackageInfo> completer = new Completer<PackageInfo>();
 
-      _instance = new PackageInfo._(
-        version: fromSystem["version"],
-        buildNumber: fromSystem["buildNumber"],
-        packageName: fromSystem["packageName"],
-      );
+      _kChannel.invokeMethod('getAll').then((dynamic result) {
+        final Map<String, String> fromSystem = result;
+
+        completer.complete(new PackageInfo._(
+          packageName: fromSystem["packageName"],
+          version: fromSystem["version"],
+          buildNumber: fromSystem["buildNumber"],
+        ));
+      }, onError: completer.completeError);
+
+      _instance = completer.future;
     }
     return _instance;
   }
 
-  /// property of the `CFBundleShortVersionString` on iOS or `versionName` on Android
+  /// The package name. `bundleIdentifier` on iOS, `getPackageName` on Android.
+  final String packageName;
+
+  /// The package version. `CFBundleShortVersionString` on iOS, `versionName` on Android.
   final String version;
 
-  /// property of the `CFBundleVersion` on iOS or `versionCode` on Android
+  /// The build number. `CFBundleVersion` on iOS, `versionCode` on Android.
   final String buildNumber;
-
-  /// property of the `bundleIdentifier` on iOS or `getPackageName` on Android
-  final String packageName;
 }

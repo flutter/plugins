@@ -62,11 +62,11 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             new Text(
+                'Package name is: ${_packageInfo != null ? _packageInfo.packageName : ""}'),
+            new Text(
                 'App version is: ${_packageInfo != null ? _packageInfo.version : ""}'),
             new Text(
                 'Build number is: ${_packageInfo != null ? _packageInfo.buildNumber : ""}'),
-            new Text(
-                'Package name is: ${_packageInfo != null ? _packageInfo.packageName : ""}')
           ]),
     );
   }
