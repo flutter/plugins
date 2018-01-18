@@ -440,7 +440,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.flutter.firebaseAnalyticsExample;
+				PRODUCT_BUNDLE_IDENTIFIER = io.flutter.plugins.firebaseAnalyticsExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -465,7 +465,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.flutter.firebaseAnalyticsExample;
+				PRODUCT_BUNDLE_IDENTIFIER = io.flutter.plugins.firebaseAnalyticsExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";

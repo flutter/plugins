@@ -24,7 +24,7 @@ android {
     defaultConfig {
         minSdkVersion 16
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        applicationId "io.flutter.firebaseanalyticsexample"
+        applicationId "io.flutter.plugins.firebaseanalyticsexample"
     }
 
     buildTypes {
