@@ -39,6 +39,8 @@ Icon?
 /ServiceDefinitions.json
 
 Pods/
+Podfile
 Podfile.lock
+
 /Runner/GeneratedPluginRegistrant.h
 /Runner/GeneratedPluginRegistrant.m

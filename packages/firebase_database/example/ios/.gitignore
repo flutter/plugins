@@ -30,6 +30,9 @@ Icon?
 .tags*
 
 Pods/
+Podfile
+Podfile.lock
+
 /Flutter/app.zip
 /Flutter/App.framework
 /Flutter/Flutter.framework
@@ -37,6 +40,5 @@ Pods/
 /Flutter/Generated.xcconfig
 /ServiceDefinitions.json
 
-Podfile.lock
 /Runner/GeneratedPluginRegistrant.h
 /Runner/GeneratedPluginRegistrant.m
