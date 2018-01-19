@@ -20,7 +20,6 @@ const MethodChannel _kChannel =
 ///     PackageInfo packageInfo = await PackageInfo.getInstance()
 ///     print("Version is: ${packageInfo.version}");
 /// ```
-/// 
 /// Or in async mode:
 ///
 /// ```dart
@@ -30,7 +29,6 @@ const MethodChannel _kChannel =
 ///     String buildNumber = packageInfo.buildNumber;
 ///   });
 /// ```
-/// 
 /// All properties are type of [String].
 class PackageInfo {
   PackageInfo._({
