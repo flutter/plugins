@@ -47,11 +47,13 @@ FIRQuery *getQuery(NSDictionary *arguments) {
     query = [query queryLimitedTo:[length intValue]];
   }
   NSArray *orderBy = parameters[@"orderBy"];
-  for (id item in orderBy) {
-    NSArray *orderByParameters = item;
-    NSString *fieldName = orderByParameters[0];
-    NSNumber *descending = orderByParameters[1];
-    query = [query queryOrderedByField:fieldName descending:[descending boolValue]];
+  if (orderBy) {
+    for (id item in orderBy) {
+      NSArray *orderByParameters = item;
+      NSString *fieldName = orderByParameters[0];
+      NSNumber *descending = orderByParameters[1];
+      query = [query queryOrderedByField:fieldName descending:[descending boolValue]];
+    }
   }
   id startAt = parameters[@"startAt"];
   if (startAt) {
