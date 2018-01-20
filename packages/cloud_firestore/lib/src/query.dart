@@ -15,6 +15,8 @@ class Query {
         _parameters = parameters ??
             new Map<String, dynamic>.unmodifiable(<String, dynamic>{
               'where': new List<List<dynamic>>.unmodifiable(<List<dynamic>>[]),
+              'orderBy':
+                  new List<List<dynamic>>.unmodifiable(<List<dynamic>>[]),
             }),
         assert(firestore != null),
         assert(pathComponents != null);
@@ -130,9 +132,68 @@ class Query {
   /// Creates and returns a new [Query] that's additionally sorted by the specified
   /// [field].
   Query orderBy(String field, {bool descending: false}) {
-    assert(!_parameters.containsKey('orderBy'));
-    return _copyWithParameters(<String, dynamic>{
-      'orderBy': <dynamic>[field, descending]
-    });
+    final List<List<dynamic>> orders =
+        new List<List<dynamic>>.from(_parameters['orderBy']);
+
+    final List<dynamic> order = <dynamic>[field, descending];
+    assert(orders.where((List<dynamic> item) => field == item[0]).isEmpty,
+        'OrderBy $field already exists in this query');
+    orders.add(order);
+    return _copyWithParameters(<String, dynamic>{'orderBy': orders});
+  }
+
+  /// Takes a list of [values], creates and returns a new [Query] that starts after
+  /// the provided fields relative to the order of the query.
+  ///
+  /// The [values] must be in order of [orderBy] filters.
+  ///
+  /// Cannot be used in combination with [startAt].
+  Query startAfter(List<dynamic> values) {
+    assert(!_parameters.containsKey('startAfter'));
+    assert(!_parameters.containsKey('startAt'));
+    return _copyWithParameters(<String, dynamic>{'startAfter': values});
+  }
+
+  /// Takes a list of [values], creates and returns a new [Query] that starts at
+  /// the provided fields relative to the order of the query.
+  ///
+  /// The [values] must be in order of [orderBy] filters.
+  ///
+  /// Cannot be used in combination with [startAfter].
+  Query startAt(List<dynamic> values) {
+    assert(!_parameters.containsKey('startAfter'));
+    assert(!_parameters.containsKey('startAt'));
+    return _copyWithParameters(<String, dynamic>{'startAt': values});
+  }
+
+  /// Takes a list of [values], creates and returns a new [Query] that ends at the
+  /// provided fields relative to the order of the query.
+  ///
+  /// The [values] must be in order of [orderBy] filters.
+  ///
+  /// Cannot be used in combination with [endBefore].
+  Query endAt(List<dynamic> values) {
+    assert(!_parameters.containsKey('endBefore'));
+    assert(!_parameters.containsKey('endAt'));
+    return _copyWithParameters(<String, dynamic>{'endAt': values});
+  }
+
+  /// Takes a list of [values], creates and returns a new [Query] that ends before
+  /// the provided fields relative to the order of the query.
+  ///
+  /// The [values] must be in order of [orderBy] filters.
+  ///
+  /// Cannot be used in combination with [endAt].
+  Query endBefore(List<dynamic> values) {
+    assert(!_parameters.containsKey('endBefore'));
+    assert(!_parameters.containsKey('endAt'));
+    return _copyWithParameters(<String, dynamic>{'endBefore': values});
+  }
+
+  /// Creates and returns a new Query that's additionally limited to only return up
+  /// to the specified number of documents.
+  Query limit(int length) {
+    assert(!_parameters.containsKey('limit'));
+    return _copyWithParameters(<String, dynamic>{'limit': length});
   }
 }

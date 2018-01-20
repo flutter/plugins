@@ -1,3 +1,9 @@
+## 0.2.5
+
+* Query can now have more than one orderBy field.
+* startAt, startAfter, endAt, and endBefore support
+* limit support
+
 ## 0.2.4
 
 * Support for DocumentReference.documentID
