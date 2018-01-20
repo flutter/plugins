@@ -71,16 +71,16 @@
     }
   }
 
-  NSString *unitId = (NSString *)call.arguments[@"unitId"];
-  if (unitId == nil || [unitId length] == 0) {
+  NSString *adUnitId = (NSString *)call.arguments[@"adUnitId"];
+  if (adUnitId == nil || [adUnitId length] == 0) {
     NSString *message =
-        [NSString stringWithFormat:@"a non-empty unitId was not provided for %@", ad];
+        [NSString stringWithFormat:@"a non-empty adUnitId was not provided for %@", ad];
     result([FlutterError errorWithCode:@"no_unit_id" message:message details:nil]);
     return;
   }
 
   NSDictionary *targetingInfo = (NSDictionary *)call.arguments[@"targetingInfo"];
-  [ad loadWithUnitId:unitId targetingInfo:targetingInfo];
+  [ad loadWithAdUnitId:adUnitId targetingInfo:targetingInfo];
   result([NSNumber numberWithBool:YES]);
 }
 

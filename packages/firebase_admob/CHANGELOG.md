@@ -1,6 +1,9 @@
 ## 0.3.0
 
 * Added support for rewarded video ads.
+* **Breaking change**. The properties and parameters named "unitId" in BannerAd
+  and InterstitialAd have been renamed to "adUnitId" to better match AdMob's
+  documentation and UI.
 
 ## 0.2.2
 

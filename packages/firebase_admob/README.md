@@ -31,12 +31,12 @@ MobileAdTargetingInfo targetingInfo = new MobileAdTargetingInfo(
 );
 
 BannerAd myBanner = new BannerAd(
-  unitId: myBannerAdUnitId,
+  adUnitId: myBannerAdUnitId,
   targetingInfo: targetingInfo,
 );
 
 InterstitialAd myInterstitial = new InterstitialAd(
-  unitId: myInterstitalAdUnitId,
+  adUnitId: myInterstitalAdUnitId,
   targetingInfo: targetingInfo,
 );
 ```
@@ -63,7 +63,7 @@ Unlike banners and interstitials, rewarded video ads are loaded one at a time
 via a singleton object, `RewardedVideoAd.instance`. Its `load` method takes an
 AdMob ad unit ID and an instance of `MobileAdTargetingInfo`:
 ```
-RewardedVideoAd.instance.load(yourAdMobAdUnitId, targetingInfo);
+RewardedVideoAd.instance.load(myAdMobAdUnitId, targetingInfo);
 ```
 
 To listen for events in the rewarded video ad lifecycle, apps can define a

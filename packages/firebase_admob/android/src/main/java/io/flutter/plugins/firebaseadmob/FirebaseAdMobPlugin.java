@@ -52,13 +52,13 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
       return;
     }
 
-    String unitId = call.argument("unitId");
-    if (unitId == null || unitId.isEmpty()) {
-      result.error("no_unit_id", "a non-empty unitId was not provided for ad id=" + ad.id, null);
+    String adUnitId = call.argument("adUnitId");
+    if (adUnitId == null || adUnitId.isEmpty()) {
+      result.error("no_unit_id", "a non-empty adUnitId was not provided for ad id=" + ad.id, null);
       return;
     }
     Map<String, Object> targetingInfo = call.argument("targetingInfo");
-    ad.load(unitId, targetingInfo);
+    ad.load(adUnitId, targetingInfo);
     result.success(Boolean.TRUE);
   }
 

@@ -3,32 +3,10 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io' show Platform;
 
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
-
-const String androidAppId = 'ca-app-pub-3940256099942544~3347511713';
-const String iOSAppId = 'ca-app-pub-3940256099942544~1458002511';
-
-// A placeholder AdMob App ID for testing. AdMob App IDs and ad unit IDs are
-// specific to a single operating system, so apps building for both Android and
-// iOS will need a set for each platform.
-const String androidTestAppId = 'ca-app-pub-3940256099942544~3347511713';
-const String iOSTestAppId = 'ca-app-pub-3940256099942544~1458002511';
-
-// These are AdMob's test ad unit IDs, which always return test ads. You're
-// encouraged to use them for testing in your own apps.
-const String androidBannerTestAdUnitId =
-    'ca-app-pub-3940256099942544/6300978111';
-const String androidInterstitialTestAdUnitId =
-    'ca-app-pub-3940256099942544/1033173712';
-const String androidRewardedVideoTestAdUnitId =
-    'ca-app-pub-3940256099942544/5224354917';
-const String iOSBannerTestAdUnitId = 'ca-app-pub-3940256099942544/2934735716';
-const String iOSInterstitialTestAdUnitId =
-    'ca-app-pub-3940256099942544/4411468910';
-const String iOSRewardedVideoTestAdUnitId =
-    'ca-app-pub-3940256099942544/1712485313';
 
 /// [MobileAd] status changes reported to [MobileAdListener]s.
 ///
@@ -108,17 +86,17 @@ class MobileAdTargetingInfo {
 ///
 /// A [MobileAd] must be loaded with [load] before it is shown with [show].
 ///
-/// A valid [unitId] is required.
+/// A valid [adUnitId] is required.
 abstract class MobileAd {
   static final Map<int, MobileAd> _allAds = <int, MobileAd>{};
 
   /// Default constructor, used by subclasses.
   MobileAd(
-      {@required this.unitId,
+      {@required this.adUnitId,
       MobileAdTargetingInfo targetingInfo,
       this.listener})
       : _targetingInfo = targetingInfo ?? const MobileAdTargetingInfo() {
-    assert(unitId != null && unitId.isNotEmpty);
+    assert(adUnitId != null && adUnitId.isNotEmpty);
     assert(_allAds[id] == null);
     _allAds[id] = this;
   }
@@ -130,7 +108,7 @@ abstract class MobileAd {
   /// Identifies the source of ads for your application.
   ///
   /// For testing use a [sample ad unit](https://developers.google.com/admob/ios/test-ads#sample_ad_units).
-  final String unitId;
+  final String adUnitId;
 
   /// Called when the status of the ad changes.
   final MobileAdListener listener;
@@ -169,7 +147,7 @@ abstract class MobileAd {
   Future<bool> _doLoad(String loadMethod) {
     return _channel.invokeMethod(loadMethod, <String, dynamic>{
       'id': id,
-      'unitId': unitId,
+      'adUnitId': adUnitId,
       'targetingInfo': targetingInfo?.toJson(),
     });
   }
@@ -177,15 +155,24 @@ abstract class MobileAd {
 
 /// A banner ad for the [FirebaseAdMobPlugin].
 class BannerAd extends MobileAd {
+  /// These are AdMob's test ad unit IDs, which always return test ads. You're
+  /// encouraged to use them for testing in your own apps.
+  static final String testAdUnitId = Platform.isAndroid
+      ? 'ca-app-pub-3940256099942544/6300978111'
+      : 'ca-app-pub-3940256099942544/2934735716';
+
   /// Create a BannerAd.
   ///
-  /// A valid [unitId] is required.
+  /// A valid [adUnitId] is required.
   BannerAd({
-    @required String unitId,
+    @required String adUnitId,
     MobileAdTargetingInfo targetingInfo,
     MobileAdListener listener,
   })
-      : super(unitId: unitId, targetingInfo: targetingInfo, listener: listener);
+      : super(
+            adUnitId: adUnitId,
+            targetingInfo: targetingInfo,
+            listener: listener);
 
   @override
   Future<bool> load() => _doLoad("loadBannerAd");
@@ -193,15 +180,25 @@ class BannerAd extends MobileAd {
 
 /// A full-screen interstitial ad for the [FirebaseAdMobPlugin].
 class InterstitialAd extends MobileAd {
+  /// A platform-specific AdMob test ad unit ID for interstitials. This ad unit
+  /// has been specially configured to always return test ads, and developers
+  /// are encouraged to use it while building and testing their apps.
+  static final String testAdUnitId = Platform.isAndroid
+      ? 'ca-app-pub-3940256099942544/1033173712'
+      : 'ca-app-pub-3940256099942544/4411468910';
+
   /// Create an Interstitial.
   ///
-  /// A valid [unitId] is required.
+  /// A valid [adUnitId] is required.
   InterstitialAd({
-    String unitId,
+    String adUnitId,
     MobileAdTargetingInfo targetingInfo,
     MobileAdListener listener,
   })
-      : super(unitId: unitId, targetingInfo: targetingInfo, listener: listener);
+      : super(
+            adUnitId: adUnitId,
+            targetingInfo: targetingInfo,
+            listener: listener);
 
   @override
   Future<bool> load() => _doLoad("loadInterstitialAd");
@@ -264,6 +261,13 @@ typedef void RewardedVideoAdListener(RewardedVideoAdEvent event,
 /// are so large, it's a good idea to start loading an ad well in advance of
 /// when it's likely to be needed.
 class RewardedVideoAd {
+  /// A platform-specific AdMob test ad unit ID for rewarded video ads. This ad
+  /// unit has been specially configured to always return test ads, and
+  /// developers are encouraged to use it while building and testing their apps.
+  static final String testAdUnitId = Platform.isAndroid
+      ? 'ca-app-pub-3940256099942544/5224354917'
+      : 'ca-app-pub-3940256099942544/1712485313';
+
   static final RewardedVideoAd _instance = new RewardedVideoAd._();
 
   RewardedVideoAd._();
@@ -315,6 +319,13 @@ class RewardedVideoAd {
 ///  * [RewardedVideoAd], a full screen video ad that provides in-app user
 ///    rewards.
 class FirebaseAdMob {
+  // A placeholder AdMob App ID for testing. AdMob App IDs and ad unit IDs are
+  // specific to a single operating system, so apps building for both Android and
+  // iOS will need a set for each platform.
+  static final String testAppId = Platform.isAndroid
+      ? 'ca-app-pub-3940256099942544~3347511713'
+      : 'ca-app-pub-3940256099942544~1458002511';
+
   @visibleForTesting
   FirebaseAdMob.private(MethodChannel channel) : _channel = channel {
     _channel.setMethodCallHandler(_handleMethod);

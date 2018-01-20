@@ -62,7 +62,7 @@ abstract class MobileAd extends AdListener {
     return status;
   }
 
-  abstract void load(String unitId, Map<String, Object> targetingInfo);
+  abstract void load(String adUnitId, Map<String, Object> targetingInfo);
 
   abstract void show();
 
@@ -125,13 +125,13 @@ abstract class MobileAd extends AdListener {
     }
 
     @Override
-    void load(String unitId, Map<String, Object> targetingInfo) {
+    void load(String adUnitId, Map<String, Object> targetingInfo) {
       if (status != Status.CREATED) return;
       status = Status.LOADING;
 
       adView = new AdView(activity);
       adView.setAdSize(AdSize.SMART_BANNER);
-      adView.setAdUnitId(unitId);
+      adView.setAdUnitId(adUnitId);
       adView.setAdListener(this);
 
       AdRequestBuilderFactory factory = new AdRequestBuilderFactory(targetingInfo);
@@ -182,11 +182,11 @@ abstract class MobileAd extends AdListener {
     }
 
     @Override
-    void load(String unitId, Map<String, Object> targetingInfo) {
+    void load(String adUnitId, Map<String, Object> targetingInfo) {
       status = Status.LOADING;
 
       interstitial = new InterstitialAd(activity);
-      interstitial.setAdUnitId(unitId);
+      interstitial.setAdUnitId(adUnitId);
 
       interstitial.setAdListener(this);
       AdRequestBuilderFactory factory = new AdRequestBuilderFactory(targetingInfo);

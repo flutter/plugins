@@ -57,7 +57,7 @@ FLTMobileAdStatus _status;
   return _status;
 }
 
-- (void)loadWithUnitId:(NSString *)unitId targetingInfo:(NSDictionary *)targetingInfo {
+- (void)loadWithAdUnitId:(NSString *)adUnitId targetingInfo:(NSDictionary *)targetingInfo {
   // Implemented by the Banner and Interstitial subclasses
 }
 
@@ -89,12 +89,12 @@ GADBannerView *_banner;
                    : [[FLTBannerAd alloc] initWithId:mobileAdId channel:channel];
 }
 
-- (void)loadWithUnitId:(NSString *)unitId targetingInfo:(NSDictionary *)targetingInfo {
+- (void)loadWithAdUnitId:(NSString *)adUnitId targetingInfo:(NSDictionary *)targetingInfo {
   if (_status != CREATED) return;
   _status = LOADING;
   _banner = [[GADBannerView alloc] initWithAdSize:kGADAdSizeBanner];
   _banner.delegate = self;
-  _banner.adUnitID = unitId;
+  _banner.adUnitID = adUnitId;
   _banner.rootViewController = [FLTMobileAd rootViewController];
   FLTRequestFactory *factory = [[FLTRequestFactory alloc] initWithTargetingInfo:targetingInfo];
   [_banner loadRequest:[factory createRequest]];
@@ -183,11 +183,11 @@ GADInterstitial *_interstitial;
                    : [[FLTInterstitialAd alloc] initWithId:mobileAdId channel:channel];
 }
 
-- (void)loadWithUnitId:(NSString *)unitId targetingInfo:(NSDictionary *)targetingInfo {
+- (void)loadWithAdUnitId:(NSString *)adUnitId targetingInfo:(NSDictionary *)targetingInfo {
   if (_status != CREATED) return;
   _status = LOADING;
 
-  _interstitial = [[GADInterstitial alloc] initWithAdUnitID:unitId];
+  _interstitial = [[GADInterstitial alloc] initWithAdUnitID:adUnitId];
   _interstitial.delegate = self;
   FLTRequestFactory *factory = [[FLTRequestFactory alloc] initWithTargetingInfo:targetingInfo];
   [_interstitial loadRequest:[factory createRequest]];

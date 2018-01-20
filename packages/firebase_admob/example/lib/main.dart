@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:io' show Platform;
+
 import 'package:flutter/material.dart';
 import 'package:firebase_admob/firebase_admob.dart';
 
@@ -25,24 +26,13 @@ class _MyAppState extends State<MyApp> {
     gender: MobileAdGender.male,
   );
 
-  static final String _appId =
-      Platform.isAndroid ? androidTestAppId : iOSTestAppId;
-  static final String _bannerAdUnitId =
-      Platform.isAndroid ? androidBannerTestAdUnitId : iOSBannerTestAdUnitId;
-  static final String _interstitialAdUnitId = Platform.isAndroid
-      ? androidInterstitialTestAdUnitId
-      : iOSInterstitialTestAdUnitId;
-  static final String _rewardedVideoAdUnitId = Platform.isAndroid
-      ? androidRewardedVideoTestAdUnitId
-      : iOSRewardedVideoTestAdUnitId;
-
   BannerAd _bannerAd;
   InterstitialAd _interstitialAd;
   int _coins = 0;
 
   BannerAd createBannerAd() {
     return new BannerAd(
-      unitId: _bannerAdUnitId,
+      adUnitId: BannerAd.testAdUnitId,
       targetingInfo: targetingInfo,
       listener: (MobileAdEvent event) {
         print("BannerAd event $event");
@@ -52,7 +42,7 @@ class _MyAppState extends State<MyApp> {
 
   InterstitialAd createInterstitialAd() {
     return new InterstitialAd(
-      unitId: _interstitialAdUnitId,
+      adUnitId: InterstitialAd.testAdUnitId,
       targetingInfo: targetingInfo,
       listener: (MobileAdEvent event) {
         print("InterstitialAd event $event");
@@ -63,8 +53,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    FirebaseAdMob.instance
-        .initialize(appId: _appId);
+    FirebaseAdMob.instance.initialize(appId: FirebaseAdMob.testAppId);
     _bannerAd = createBannerAd()..load();
     RewardedVideoAd.instance.listener =
         (RewardedVideoAdEvent event, {String rewardType, int rewardAmount}) {
@@ -127,7 +116,7 @@ class _MyAppState extends State<MyApp> {
                 child: const Text('LOAD REWARDED VIDEO'),
                 onPressed: () {
                   RewardedVideoAd.instance.load(
-                      adUnitId: _rewardedVideoAdUnitId,
+                      adUnitId: RewardedVideoAd.testAdUnitId,
                       targetingInfo: targetingInfo);
                 },
               ),

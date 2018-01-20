@@ -14,16 +14,6 @@ void main() {
     const MethodChannel channel =
         const MethodChannel('plugins.flutter.io/firebase_admob');
 
-    final String appId = Platform.isAndroid ? androidTestAppId : iOSTestAppId;
-    final String bannerAdUnitId =
-        Platform.isAndroid ? androidBannerTestAdUnitId : iOSBannerTestAdUnitId;
-    final String interstitialAdUnitId = Platform.isAndroid
-        ? androidInterstitialTestAdUnitId
-        : iOSInterstitialTestAdUnitId;
-    final String rewardedVideoAdUnitId = Platform.isAndroid
-        ? androidRewardedVideoTestAdUnitId
-        : iOSRewardedVideoTestAdUnitId;
-
     final List<MethodCall> log = <MethodCall>[];
     final FirebaseAdMob admob = new FirebaseAdMob.private(channel);
 
@@ -48,10 +38,10 @@ void main() {
     test('initialize', () async {
       log.clear();
 
-      expect(await admob.initialize(appId: appId), true);
+      expect(await admob.initialize(appId: FirebaseAdMob.testAppId), true);
       expect(log, <Matcher>[
         isMethodCall('initialize', arguments: <String, dynamic>{
-          'appId': appId,
+          'appId': FirebaseAdMob.testAppId,
           'trackingId': null,
           'analyticsEnabled': false,
         }),
@@ -62,7 +52,7 @@ void main() {
       log.clear();
 
       final BannerAd banner = new BannerAd(
-        unitId: bannerAdUnitId,
+        adUnitId: BannerAd.testAdUnitId,
       );
       final int id = banner.id;
 
@@ -73,7 +63,7 @@ void main() {
       expect(log, <Matcher>[
         isMethodCall('loadBannerAd', arguments: <String, dynamic>{
           'id': id,
-          'unitId': bannerAdUnitId,
+          'adUnitId': BannerAd.testAdUnitId,
           'targetingInfo': <String, String>{'requestAgent': 'flutter-alpha'},
         }),
         isMethodCall('showAd', arguments: <String, dynamic>{
@@ -89,7 +79,7 @@ void main() {
       log.clear();
 
       final InterstitialAd interstitial = new InterstitialAd(
-        unitId: interstitialAdUnitId,
+        adUnitId: InterstitialAd.testAdUnitId,
       );
       final int id = interstitial.id;
 
@@ -100,7 +90,7 @@ void main() {
       expect(log, <Matcher>[
         isMethodCall('loadInterstitialAd', arguments: <String, dynamic>{
           'id': id,
-          'unitId': interstitialAdUnitId,
+          'adUnitId': InterstitialAd.testAdUnitId,
           'targetingInfo': <String, String>{'requestAgent': 'flutter-alpha'},
         }),
         isMethodCall('showAd', arguments: <String, dynamic>{
@@ -117,7 +107,7 @@ void main() {
 
       expect(
           await RewardedVideoAd.instance.load(
-              adUnitId: rewardedVideoAdUnitId,
+              adUnitId: RewardedVideoAd.testAdUnitId,
               targetingInfo: const MobileAdTargetingInfo()),
           true);
 
@@ -125,7 +115,7 @@ void main() {
 
       expect(log, <Matcher>[
         isMethodCall('loadRewardedVideoAd', arguments: <String, dynamic>{
-          'adUnitId': rewardedVideoAdUnitId,
+          'adUnitId': RewardedVideoAd.testAdUnitId,
           'targetingInfo': <String, String>{'requestAgent': 'flutter-alpha'},
         }),
         isMethodCall('showRewardedVideoAd', arguments: null),
