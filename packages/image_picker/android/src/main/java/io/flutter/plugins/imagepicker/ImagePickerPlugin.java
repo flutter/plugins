@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /** Location Plugin */
@@ -221,8 +222,8 @@ public class ImagePickerPlugin implements MethodCallHandler, ActivityResultListe
       ExifInterface oldExif = new ExifInterface(filePathOri);
       ExifInterface newExif = new ExifInterface(filePathDest);
 
-      List attributes = Arrays.asList("FNumber", "ExposureTime", "ISOSpeedRatings",
-              "GPSAltitude", "GPSAltitudeRef", "FocalLength", "GPSDateStamp", "WhiteBalance"
+      List<String> attributes = Arrays.asList("FNumber", "ExposureTime", "ISOSpeedRatings",
+              "GPSAltitude", "GPSAltitudeRef", "FocalLength", "GPSDateStamp", "WhiteBalance",
               "GPSProcessingMethod", "GPSTimeStamp", "DateTime", "Flash", "GPSLatitude",
               "GPSLatitudeRef", "GPSLongitude", "GPSLongitudeRef", "Make", "Model", "Orientation"
       );
