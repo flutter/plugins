@@ -149,6 +149,7 @@ class Query {
   ///
   /// Cannot be used in combination with [startAt].
   Query startAfter(List<dynamic> values) {
+    assert(values != null);
     assert(!_parameters.containsKey('startAfter'));
     assert(!_parameters.containsKey('startAt'));
     return _copyWithParameters(<String, dynamic>{'startAfter': values});
@@ -161,6 +162,7 @@ class Query {
   ///
   /// Cannot be used in combination with [startAfter].
   Query startAt(List<dynamic> values) {
+    assert(values != null);
     assert(!_parameters.containsKey('startAfter'));
     assert(!_parameters.containsKey('startAt'));
     return _copyWithParameters(<String, dynamic>{'startAt': values});
@@ -173,6 +175,7 @@ class Query {
   ///
   /// Cannot be used in combination with [endBefore].
   Query endAt(List<dynamic> values) {
+    assert(values != null);
     assert(!_parameters.containsKey('endBefore'));
     assert(!_parameters.containsKey('endAt'));
     return _copyWithParameters(<String, dynamic>{'endAt': values});
@@ -185,6 +188,7 @@ class Query {
   ///
   /// Cannot be used in combination with [endAt].
   Query endBefore(List<dynamic> values) {
+    assert(values != null);
     assert(!_parameters.containsKey('endBefore'));
     assert(!_parameters.containsKey('endAt'));
     return _copyWithParameters(<String, dynamic>{'endBefore': values});
