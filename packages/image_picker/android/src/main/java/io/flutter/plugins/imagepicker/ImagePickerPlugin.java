@@ -242,8 +242,7 @@ public class ImagePickerPlugin implements MethodCallHandler, ActivityResultListe
           "GPSLongitudeRef",
           "Make",
           "Model",
-          "Orientation"
-      );
+          "Orientation");
       for (String attribute : attributes) {
         setIfNotNull(oldExif, newExif, attribute);
       }
