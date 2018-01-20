@@ -1,3 +1,7 @@
+## 0.2.6
+
+* Build fixes for iOS
+
 ## 0.2.5
 
 * Query can now have more than one orderBy field.
