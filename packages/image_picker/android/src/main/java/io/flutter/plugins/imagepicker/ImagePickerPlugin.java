@@ -223,26 +223,26 @@ public class ImagePickerPlugin implements MethodCallHandler, ActivityResultListe
       ExifInterface newExif = new ExifInterface(filePathDest);
 
       List<String> attributes = 
-        Arrays.asList(
-          "FNumber",
-          "ExposureTime",
-          "ISOSpeedRatings",
-          "GPSAltitude",
-          "GPSAltitudeRef",
-          "FocalLength",
-          "GPSDateStamp",
-          "WhiteBalance",
-          "GPSProcessingMethod",
-          "GPSTimeStamp",
-          "DateTime",
-          "Flash",
-          "GPSLatitude",
-          "GPSLatitudeRef",
-          "GPSLongitude",
-          "GPSLongitudeRef",
-          "Make",
-          "Model",
-          "Orientation");
+          Arrays.asList(
+              "FNumber",
+              "ExposureTime",
+              "ISOSpeedRatings",
+              "GPSAltitude",
+              "GPSAltitudeRef",
+              "FocalLength",
+              "GPSDateStamp",
+              "WhiteBalance",
+              "GPSProcessingMethod",
+              "GPSTimeStamp",
+              "DateTime",
+              "Flash",
+              "GPSLatitude",
+              "GPSLatitudeRef",
+              "GPSLongitude",
+              "GPSLongitudeRef",
+              "Make",
+              "Model",
+              "Orientation");
       for (String attribute : attributes) {
         setIfNotNull(oldExif, newExif, attribute);
       }
