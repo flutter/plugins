@@ -37,6 +37,7 @@ abstract class MobileAd extends AdListener {
     FAILED,
     PENDING, // The ad will be shown when status is changed to LOADED.
     LOADED,
+    DISPOSED,
   }
 
   private MobileAd(int id, Activity activity, MethodChannel channel) {
@@ -70,6 +71,8 @@ abstract class MobileAd extends AdListener {
   abstract void show();
 
   void dispose() {
+    status = Status.DISPOSED;
+
     allAds.remove(id);
   }
 
@@ -179,6 +182,8 @@ abstract class MobileAd extends AdListener {
 
   @Override
   public void onAdLoaded() {
+    if (status == Status.DISPOSED) return;
+
     boolean statusWasPending = status == Status.PENDING;
     status = Status.LOADED;
     channel.invokeMethod("onAdLoaded", argumentsMap());
@@ -187,6 +192,8 @@ abstract class MobileAd extends AdListener {
 
   @Override
   public void onAdFailedToLoad(int errorCode) {
+    if (status == Status.DISPOSED) return;
+
     Log.w(TAG, "onAdFailedToLoad: " + errorCode);
     status = Status.FAILED;
     channel.invokeMethod("onAdFailedToLoad", argumentsMap("errorCode", errorCode));
@@ -283,6 +290,7 @@ abstract class MobileAd extends AdListener {
 
     @Override
     void load(String unitId, Map<String, Object> targetingInfo) {
+      if (status != Status.CREATED) return;
       status = Status.LOADING;
 
       interstitial = new InterstitialAd(activity);
