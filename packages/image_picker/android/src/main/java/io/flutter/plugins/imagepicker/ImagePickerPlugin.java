@@ -222,7 +222,7 @@ public class ImagePickerPlugin implements MethodCallHandler, ActivityResultListe
       ExifInterface oldExif = new ExifInterface(filePathOri);
       ExifInterface newExif = new ExifInterface(filePathDest);
 
-      List<String> attributes = 
+      List<String> attributes =
           Arrays.asList(
               "FNumber",
               "ExposureTime",
