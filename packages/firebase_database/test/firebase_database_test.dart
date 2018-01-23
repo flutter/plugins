@@ -25,7 +25,9 @@ void main() {
         databaseURL: 'https://fake-database-url.firebaseio.com',
       ),
     );
-    final FirebaseDatabase database = new FirebaseDatabase(app: app);
+    final String databaseURL = 'https://fake-database-url2.firebaseio.com';
+    final FirebaseDatabase database =
+        new FirebaseDatabase(app: app, databaseURL: databaseURL);
 
     setUp(() async {
       channel.setMockMethodCallHandler((MethodCall methodCall) async {
@@ -93,6 +95,7 @@ void main() {
             'FirebaseDatabase#setPersistenceEnabled',
             arguments: <String, dynamic>{
               'app': app.name,
+              'databaseURL': databaseURL,
               'enabled': false,
             },
           ),
@@ -100,6 +103,7 @@ void main() {
             'FirebaseDatabase#setPersistenceEnabled',
             arguments: <String, dynamic>{
               'app': app.name,
+              'databaseURL': databaseURL,
               'enabled': true,
             },
           ),
@@ -116,6 +120,7 @@ void main() {
             'FirebaseDatabase#setPersistenceCacheSizeBytes',
             arguments: <String, dynamic>{
               'app': app.name,
+              'databaseURL': databaseURL,
               'cacheSize': 42,
             },
           ),
@@ -132,6 +137,7 @@ void main() {
             'FirebaseDatabase#goOnline',
             arguments: <String, dynamic>{
               'app': app.name,
+              'databaseURL': databaseURL,
             },
           ),
         ],
@@ -147,6 +153,7 @@ void main() {
             'FirebaseDatabase#goOffline',
             arguments: <String, dynamic>{
               'app': app.name,
+              'databaseURL': databaseURL,
             },
           ),
         ],
@@ -162,6 +169,7 @@ void main() {
             'FirebaseDatabase#purgeOutstandingWrites',
             arguments: <String, dynamic>{
               'app': app.name,
+              'databaseURL': databaseURL,
             },
           ),
         ],
@@ -181,6 +189,7 @@ void main() {
               'DatabaseReference#set',
               arguments: <String, dynamic>{
                 'app': app.name,
+                'databaseURL': databaseURL,
                 'path': 'foo',
                 'value': value,
                 'priority': null,
@@ -190,6 +199,7 @@ void main() {
               'DatabaseReference#set',
               arguments: <String, dynamic>{
                 'app': app.name,
+                'databaseURL': databaseURL,
                 'path': 'bar',
                 'value': value,
                 'priority': priority,
@@ -208,6 +218,7 @@ void main() {
               'DatabaseReference#update',
               arguments: <String, dynamic>{
                 'app': app.name,
+                'databaseURL': databaseURL,
                 'path': 'foo',
                 'value': value,
               },
@@ -226,6 +237,7 @@ void main() {
               'DatabaseReference#setPriority',
               arguments: <String, dynamic>{
                 'app': app.name,
+                'databaseURL': databaseURL,
                 'path': 'foo',
                 'priority': priority,
               },
@@ -252,6 +264,7 @@ void main() {
               'DatabaseReference#runTransaction',
               arguments: <String, dynamic>{
                 'app': app.name,
+                'databaseURL': databaseURL,
                 'path': 'foo',
                 'transactionKey': 0,
                 'transactionTimeout': 5000,
@@ -285,6 +298,7 @@ void main() {
               'Query#keepSynced',
               arguments: <String, dynamic>{
                 'app': app.name,
+                'databaseURL': databaseURL,
                 'path': path,
                 'parameters': <String, dynamic>{},
                 'value': true,
@@ -320,6 +334,7 @@ void main() {
               'Query#keepSynced',
               arguments: <String, dynamic>{
                 'app': app.name,
+                'databaseURL': databaseURL,
                 'path': path,
                 'parameters': expectedParameters,
                 'value': false
@@ -417,6 +432,7 @@ void main() {
               'Query#observe',
               arguments: <String, dynamic>{
                 'app': app.name,
+                'databaseURL': databaseURL,
                 'path': path,
                 'parameters': <String, dynamic>{},
                 'eventType': '_EventType.value',
@@ -426,6 +442,7 @@ void main() {
               'Query#removeObserver',
               arguments: <String, dynamic>{
                 'app': app.name,
+                'databaseURL': databaseURL,
                 'path': path,
                 'parameters': <String, dynamic>{},
                 'handle': 87,

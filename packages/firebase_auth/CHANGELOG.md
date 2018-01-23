@@ -1,3 +1,16 @@
+## 0.4.3
+
+* Moved to the io.flutter.plugins organization.
+
+## 0.4.2
+
+* Added support for changing user data
+
+## 0.4.1
+
+* Simplified and upgraded Android project template to Android SDK 27.
+* Updated package description.
+
 ## 0.4.0
 
 * **Breaking change**. Upgraded to Gradle 4.1 and Android Studio Gradle plugin
