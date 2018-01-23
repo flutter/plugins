@@ -17,7 +17,7 @@ typedef enum : NSUInteger {
 + (void)configureWithAppId:(NSString *)appId;
 + (FLTMobileAd *)getAdForId:(NSNumber *)mobileAdId;
 - (FLTMobileAdStatus)status;
-- (void)loadWithUnitId:(NSString *)unitId targetingInfo:(NSDictionary *)targetingInfo;
+- (void)loadWithAdUnitId:(NSString *)adUnitId targetingInfo:(NSDictionary *)targetingInfo;
 - (void)show;
 - (void)dispose;
 @end

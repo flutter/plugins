@@ -2,19 +2,12 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-#import "MobileAd.h"
-#import "FirebaseAdmobPlugin.h"
+#import "FLTMobileAd.h"
+#import "FLTRequestFactory.h"
+#import "FirebaseAdMobPlugin.h"
 
 static NSMutableDictionary *allAds = nil;
 static NSDictionary *statusToString = nil;
-
-static void logWarning(NSString *format, ...) {
-  va_list args;
-  va_start(args, format);
-  NSString *message = [[NSString alloc] initWithFormat:format arguments:args];
-  va_end(args);
-  NSLog(@"FirebaseAdMobPlugin <Warning> %@", message);
-}
 
 @implementation FLTMobileAd
 NSNumber *_mobileAdId;
@@ -64,7 +57,7 @@ FLTMobileAdStatus _status;
   return _status;
 }
 
-- (void)loadWithUnitId:(NSString *)unitId targetingInfo:(NSDictionary *)targetingInfo {
+- (void)loadWithAdUnitId:(NSString *)adUnitId targetingInfo:(NSDictionary *)targetingInfo {
   // Implemented by the Banner and Interstitial subclasses
 }
 
@@ -74,111 +67,6 @@ FLTMobileAdStatus _status;
 
 - (void)dispose {
   [allAds removeObjectForKey:_mobileAdId];
-}
-
-- (NSArray *)targetingInfoArrayForKey:(NSString *)key info:(NSDictionary *)info {
-  NSObject *value = info[key];
-  if (value == NULL) {
-    return nil;
-  }
-  if (![value isKindOfClass:[NSArray class]]) {
-    logWarning(@"targeting info %@: expected an array (MobileAd %@)", key, self);
-    return nil;
-  }
-  return (NSArray *)value;
-}
-
-- (NSString *)targetingInfoStringForKey:(NSString *)key info:(NSDictionary *)info {
-  NSObject *value = info[key];
-  if (value == NULL) {
-    return nil;
-  }
-  if (![value isKindOfClass:[NSString class]]) {
-    logWarning(@"targeting info %@: expected a string (MobileAd %@)", key, self);
-    return nil;
-  }
-  NSString *stringValue = (NSString *)value;
-  if ([stringValue length] == 0) {
-    logWarning(@"targeting info %@: expected a non-empty string (MobileAd %@)", key, self);
-    return nil;
-  }
-  return stringValue;
-}
-
-- (NSNumber *)targetingInfoBoolForKey:(NSString *)key info:(NSDictionary *)info {
-  NSObject *value = info[key];
-  if (value == NULL) {
-    return nil;
-  }
-  if (![value isKindOfClass:[NSNumber class]]) {
-    logWarning(@"targeting info %@: expected a boolean, (MobileAd %@)", key, self);
-    return nil;
-  }
-  return (NSNumber *)value;
-}
-
-- (GADRequest *)createLoadRequest:(NSDictionary *)targetingInfo {
-  GADRequest *request = [GADRequest request];
-  if (targetingInfo == nil) {
-    return request;
-  }
-
-  NSArray *testDevices = [self targetingInfoArrayForKey:@"testDevices" info:targetingInfo];
-  if (testDevices != nil) {
-    request.testDevices = testDevices;
-  }
-
-  NSArray *keywords = [self targetingInfoArrayForKey:@"keywords" info:targetingInfo];
-  if (keywords != nil) {
-    request.keywords = keywords;
-  }
-
-  NSString *contentURL = [self targetingInfoStringForKey:@"contentUrl" info:targetingInfo];
-  if (contentURL != nil) {
-    request.contentURL = contentURL;
-  }
-
-  NSObject *birthday = targetingInfo[@"birthday"];
-  if (birthday != NULL) {
-    if (![birthday isKindOfClass:[NSNumber class]]) {
-      logWarning(@"targeting info birthday: expected a long integer (MobileAd %@)", self);
-    } else {
-      // Incoming time value is milliseconds since the epoch, NSDate uses
-      // seconds.
-      request.birthday =
-          [NSDate dateWithTimeIntervalSince1970:((NSNumber *)birthday).longValue / 1000.0];
-    }
-  }
-
-  NSObject *gender = targetingInfo[@"gender"];
-  if (gender != NULL) {
-    if (![gender isKindOfClass:[NSNumber class]]) {
-      logWarning(@"targeting info gender: expected an integer (MobileAd %@)", self);
-    } else {
-      int genderValue = ((NSNumber *)gender).intValue;
-      switch (genderValue) {
-        case 0:  // MobileAdGender.unknown
-        case 1:  // MobileAdGender.male
-        case 2:  // MobileAdGender.female
-          request.gender = genderValue;
-          break;
-        default:
-          logWarning(@"targeting info gender: not one of 0, 1, or 2 (MobileAd %@)", self);
-      }
-    }
-  }
-
-  NSNumber *childDirected = [self targetingInfoBoolForKey:@"childDirected" info:targetingInfo];
-  if (childDirected != nil) {
-    [request tagForChildDirectedTreatment:childDirected.boolValue];
-  }
-
-  NSString *requestAgent = [self targetingInfoStringForKey:@"requestAgent" info:targetingInfo];
-  if (requestAgent != nil) {
-    request.requestAgent = requestAgent;
-  }
-
-  return request;
 }
 
 - (NSDictionary *)argumentsMap {
@@ -201,14 +89,15 @@ GADBannerView *_banner;
                    : [[FLTBannerAd alloc] initWithId:mobileAdId channel:channel];
 }
 
-- (void)loadWithUnitId:(NSString *)unitId targetingInfo:(NSDictionary *)targetingInfo {
+- (void)loadWithAdUnitId:(NSString *)adUnitId targetingInfo:(NSDictionary *)targetingInfo {
   if (_status != CREATED) return;
   _status = LOADING;
   _banner = [[GADBannerView alloc] initWithAdSize:kGADAdSizeBanner];
   _banner.delegate = self;
-  _banner.adUnitID = unitId;
+  _banner.adUnitID = adUnitId;
   _banner.rootViewController = [FLTMobileAd rootViewController];
-  [_banner loadRequest:[self createLoadRequest:targetingInfo]];
+  FLTRequestFactory *factory = [[FLTRequestFactory alloc] initWithTargetingInfo:targetingInfo];
+  [_banner loadRequest:[factory createRequest]];
 }
 
 - (void)show {
@@ -242,6 +131,7 @@ GADBannerView *_banner;
   CGFloat x = screen.frame.size.width / 2 - _banner.frame.size.width / 2;
   CGFloat y = screen.frame.size.height - _banner.frame.size.height;
   _banner.frame = (CGRect){{x, y}, _banner.frame.size};
+  [screen addSubview:_banner];
 }
 
 - (void)adViewDidReceiveAd:(GADBannerView *)adView {
@@ -252,8 +142,8 @@ GADBannerView *_banner;
 }
 
 - (void)adView:(GADBannerView *)adView didFailToReceiveAdWithError:(GADRequestError *)error {
-  logWarning(@"adView:didFailToReceiveAdWithError: %@ (MobileAd %@)", [error localizedDescription],
-             self);
+  FLTLogWarning(@"adView:didFailToReceiveAdWithError: %@ (MobileAd %@)",
+                [error localizedDescription], self);
   [_channel invokeMethod:@"onAdFailedToLoad" arguments:[self argumentsMap]];
 }
 
@@ -293,13 +183,14 @@ GADInterstitial *_interstitial;
                    : [[FLTInterstitialAd alloc] initWithId:mobileAdId channel:channel];
 }
 
-- (void)loadWithUnitId:(NSString *)unitId targetingInfo:(NSDictionary *)targetingInfo {
+- (void)loadWithAdUnitId:(NSString *)adUnitId targetingInfo:(NSDictionary *)targetingInfo {
   if (_status != CREATED) return;
   _status = LOADING;
 
-  _interstitial = [[GADInterstitial alloc] initWithAdUnitID:unitId];
+  _interstitial = [[GADInterstitial alloc] initWithAdUnitID:adUnitId];
   _interstitial.delegate = self;
-  [_interstitial loadRequest:[self createLoadRequest:targetingInfo]];
+  FLTRequestFactory *factory = [[FLTRequestFactory alloc] initWithTargetingInfo:targetingInfo];
+  [_interstitial loadRequest:[factory createRequest]];
 }
 
 - (void)show {
@@ -320,8 +211,8 @@ GADInterstitial *_interstitial;
 }
 
 - (void)interstitial:(GADInterstitial *)ad didFailToReceiveAdWithError:(GADRequestError *)error {
-  logWarning(@"interstitial:didFailToReceiveAdWithError: %@ (MobileAd %@)",
-             [error localizedDescription], self);
+  FLTLogWarning(@"interstitial:didFailToReceiveAdWithError: %@ (MobileAd %@)",
+                [error localizedDescription], self);
   [_channel invokeMethod:@"onAdFailedToLoad" arguments:[self argumentsMap]];
 }
 
