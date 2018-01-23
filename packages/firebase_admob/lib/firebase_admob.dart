@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io' show Platform;
 
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
@@ -85,17 +86,17 @@ class MobileAdTargetingInfo {
 ///
 /// A [MobileAd] must be loaded with [load] before it is shown with [show].
 ///
-/// A valid [unitId] is required.
+/// A valid [adUnitId] is required.
 abstract class MobileAd {
   static final Map<int, MobileAd> _allAds = <int, MobileAd>{};
 
   /// Default constructor, used by subclasses.
   MobileAd(
-      {@required this.unitId,
+      {@required this.adUnitId,
       MobileAdTargetingInfo targetingInfo,
       this.listener})
       : _targetingInfo = targetingInfo ?? const MobileAdTargetingInfo() {
-    assert(unitId != null && unitId.isNotEmpty);
+    assert(adUnitId != null && adUnitId.isNotEmpty);
     assert(_allAds[id] == null);
     _allAds[id] = this;
   }
@@ -107,7 +108,7 @@ abstract class MobileAd {
   /// Identifies the source of ads for your application.
   ///
   /// For testing use a [sample ad unit](https://developers.google.com/admob/ios/test-ads#sample_ad_units).
-  final String unitId;
+  final String adUnitId;
 
   /// Called when the status of the ad changes.
   final MobileAdListener listener;
@@ -146,7 +147,7 @@ abstract class MobileAd {
   Future<bool> _doLoad(String loadMethod) {
     return _channel.invokeMethod(loadMethod, <String, dynamic>{
       'id': id,
-      'unitId': unitId,
+      'adUnitId': adUnitId,
       'targetingInfo': targetingInfo?.toJson(),
     });
   }
@@ -154,15 +155,24 @@ abstract class MobileAd {
 
 /// A banner ad for the [FirebaseAdMobPlugin].
 class BannerAd extends MobileAd {
+  /// These are AdMob's test ad unit IDs, which always return test ads. You're
+  /// encouraged to use them for testing in your own apps.
+  static final String testAdUnitId = Platform.isAndroid
+      ? 'ca-app-pub-3940256099942544/6300978111'
+      : 'ca-app-pub-3940256099942544/2934735716';
+
   /// Create a BannerAd.
   ///
-  /// A valid [unitId] is required.
+  /// A valid [adUnitId] is required.
   BannerAd({
-    @required String unitId,
+    @required String adUnitId,
     MobileAdTargetingInfo targetingInfo,
     MobileAdListener listener,
   })
-      : super(unitId: unitId, targetingInfo: targetingInfo, listener: listener);
+      : super(
+            adUnitId: adUnitId,
+            targetingInfo: targetingInfo,
+            listener: listener);
 
   @override
   Future<bool> load() => _doLoad("loadBannerAd");
@@ -170,18 +180,120 @@ class BannerAd extends MobileAd {
 
 /// A full-screen interstitial ad for the [FirebaseAdMobPlugin].
 class InterstitialAd extends MobileAd {
+  /// A platform-specific AdMob test ad unit ID for interstitials. This ad unit
+  /// has been specially configured to always return test ads, and developers
+  /// are encouraged to use it while building and testing their apps.
+  static final String testAdUnitId = Platform.isAndroid
+      ? 'ca-app-pub-3940256099942544/1033173712'
+      : 'ca-app-pub-3940256099942544/4411468910';
+
   /// Create an Interstitial.
   ///
-  /// A valid [unitId] is required.
+  /// A valid [adUnitId] is required.
   InterstitialAd({
-    String unitId,
+    String adUnitId,
     MobileAdTargetingInfo targetingInfo,
     MobileAdListener listener,
   })
-      : super(unitId: unitId, targetingInfo: targetingInfo, listener: listener);
+      : super(
+            adUnitId: adUnitId,
+            targetingInfo: targetingInfo,
+            listener: listener);
 
   @override
   Future<bool> load() => _doLoad("loadInterstitialAd");
+}
+
+/// [RewardedVideoAd] status changes reported to [RewardedVideoAdListener]s.
+///
+/// The [rewarded] event is particularly important, since it indicates that the
+/// user has watched a video to completion and should be given an in-app reward.
+enum RewardedVideoAdEvent {
+  loaded,
+  failedToLoad,
+  opened,
+  leftApplication,
+  closed,
+  rewarded,
+  started,
+}
+
+/// Signature for a [RewardedVideoAd] status change callback. The optional
+/// parameters are only used when the [RewardedVideoAdEvent.rewarded] event
+/// is sent, when they'll contain the reward amount and reward type that were
+/// configured for the AdMob ad unit when it was created. They will be null for
+/// all other events.
+typedef void RewardedVideoAdListener(RewardedVideoAdEvent event,
+    {String rewardType, int rewardAmount});
+
+/// An AdMob rewarded video ad.
+///
+/// This class is a singleton, and [RewardedVideoAd.instance] provides a
+/// reference to the single instance, which is created at launch. The native
+/// Android and iOS APIs for AdMob use a singleton to manage rewarded video ad
+/// objects, and that pattern is reflected here.
+///
+/// Apps should assign a callback function to [RewardedVideoAd]'s listener
+/// property in order to receive reward notifications from the AdMob SDK:
+/// ```
+/// RewardedVideoAd.instance.listener = (RewardedVideoAdEvent event,
+///     [String rewardType, int rewardAmount]) {
+///     print("You were rewarded with $rewardAmount $rewardType!");
+///   }
+/// };
+/// ```
+///
+/// The function will be invoked when any of the events in
+/// [RewardedVideoAdEvent] occur.
+///
+/// To load and show ads, call the load method:
+/// ```
+/// RewardedVideoAd.instance.load(myAdUnitString, myTargetingInfoObj);
+/// ```
+///
+/// Later (any point after your listener callback receives the
+/// RewardedVideoAdEvent.loaded event), call the show method:
+/// ```
+/// RewardedVideoAd.instance.show();
+/// ```
+///
+/// Only one rewarded video ad can be loaded at a time. Because the video assets
+/// are so large, it's a good idea to start loading an ad well in advance of
+/// when it's likely to be needed.
+class RewardedVideoAd {
+  /// A platform-specific AdMob test ad unit ID for rewarded video ads. This ad
+  /// unit has been specially configured to always return test ads, and
+  /// developers are encouraged to use it while building and testing their apps.
+  static final String testAdUnitId = Platform.isAndroid
+      ? 'ca-app-pub-3940256099942544/5224354917'
+      : 'ca-app-pub-3940256099942544/1712485313';
+
+  static final RewardedVideoAd _instance = new RewardedVideoAd._();
+
+  RewardedVideoAd._();
+
+  /// The one and only instance of this class.
+  static RewardedVideoAd get instance => _instance;
+
+  /// Callback invoked for events in the rewarded video ad lifecycle.
+  RewardedVideoAdListener listener;
+
+  MethodChannel get _channel => FirebaseAdMob.instance._channel;
+
+  /// Shows a rewarded video ad if one has been loaded.
+  Future<bool> show() {
+    return _channel.invokeMethod("showRewardedVideoAd");
+  }
+
+  /// Loads a rewarded video ad using the provided ad unit ID.
+  Future<bool> load(
+      {@required String adUnitId, MobileAdTargetingInfo targetingInfo}) {
+    assert(adUnitId.isNotEmpty);
+    return _channel.invokeMethod("loadRewardedVideoAd", <String, dynamic>{
+      'adUnitId': adUnitId,
+      'targetingInfo': targetingInfo?.toJson(),
+    });
+  }
 }
 
 /// Support for Google AdMob mobile ads.
@@ -204,7 +316,16 @@ class InterstitialAd extends MobileAd {
 ///  * The example associated with this plugin.
 ///  * [BannerAd], a small rectangular ad displayed at the bottom of the screen.
 ///  * [InterstitialAd], a full screen ad that must be dismissed by the user.
+///  * [RewardedVideoAd], a full screen video ad that provides in-app user
+///    rewards.
 class FirebaseAdMob {
+  // A placeholder AdMob App ID for testing. AdMob App IDs and ad unit IDs are
+  // specific to a single operating system, so apps building for both Android and
+  // iOS will need a set for each platform.
+  static final String testAppId = Platform.isAndroid
+      ? 'ca-app-pub-3940256099942544~3347511713'
+      : 'ca-app-pub-3940256099942544~1458002511';
+
   @visibleForTesting
   FirebaseAdMob.private(MethodChannel channel) : _channel = channel {
     _channel.setMethodCallHandler(_handleMethod);
@@ -219,7 +340,7 @@ class FirebaseAdMob {
 
   final MethodChannel _channel;
 
-  static const Map<String, MobileAdEvent> _methodToEvent =
+  static const Map<String, MobileAdEvent> _methodToMobileAdEvent =
       const <String, MobileAdEvent>{
     'onAdLoaded': MobileAdEvent.loaded,
     'onAdFailedToLoad': MobileAdEvent.failedToLoad,
@@ -230,9 +351,18 @@ class FirebaseAdMob {
     'onAdClosed': MobileAdEvent.closed,
   };
 
+  static const Map<String, RewardedVideoAdEvent> _methodToRewardedVideoAdEvent =
+      const <String, RewardedVideoAdEvent>{
+    'onRewarded': RewardedVideoAdEvent.rewarded,
+    'onRewardedVideoAdClosed': RewardedVideoAdEvent.closed,
+    'onRewardedVideoAdFailedToLoad': RewardedVideoAdEvent.failedToLoad,
+    'onRewardedVideoAdLeftApplication': RewardedVideoAdEvent.leftApplication,
+    'onRewardedVideoAdLoaded': RewardedVideoAdEvent.loaded,
+    'onRewardedVideoAdOpened': RewardedVideoAdEvent.opened,
+    'onRewardedVideoStarted': RewardedVideoAdEvent.started,
+  };
+
   /// Initialize this plugin for the AdMob app specified by `appId`.
-  ///
-  /// For testing one can use `ca-app-pub-3940256099942544~3347511713` for the `appId`.
   Future<bool> initialize(
       {@required String appId,
       String trackingId,
@@ -249,11 +379,27 @@ class FirebaseAdMob {
   Future<dynamic> _handleMethod(MethodCall call) {
     assert(call.arguments is Map);
     final Map<String, dynamic> argumentsMap = call.arguments;
-    final int id = argumentsMap['id'];
-    if (id != null && MobileAd._allAds[id] != null) {
-      final MobileAd ad = MobileAd._allAds[id];
-      final MobileAdEvent event = _methodToEvent[call.method];
-      if (event != null && ad.listener != null) ad.listener(event);
+    final RewardedVideoAdEvent rewardedEvent =
+        _methodToRewardedVideoAdEvent[call.method];
+    if (rewardedEvent != null) {
+      if (RewardedVideoAd.instance.listener != null) {
+        if (rewardedEvent == RewardedVideoAdEvent.rewarded) {
+          RewardedVideoAd.instance.listener(rewardedEvent,
+              rewardType: argumentsMap['rewardType'],
+              rewardAmount: argumentsMap['rewardAmount']);
+        } else {
+          RewardedVideoAd.instance.listener(rewardedEvent);
+        }
+      }
+    } else {
+      final int id = argumentsMap['id'];
+      if (id != null && MobileAd._allAds[id] != null) {
+        final MobileAd ad = MobileAd._allAds[id];
+        final MobileAdEvent mobileAdEvent = _methodToMobileAdEvent[call.method];
+        if (mobileAdEvent != null && ad.listener != null) {
+          ad.listener(mobileAdEvent);
+        }
+      }
     }
 
     return new Future<Null>(null);

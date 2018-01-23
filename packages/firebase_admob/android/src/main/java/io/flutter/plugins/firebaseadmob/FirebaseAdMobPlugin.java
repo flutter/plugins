@@ -5,8 +5,6 @@
 package io.flutter.plugins.firebaseadmob;
 
 import android.app.Activity;
-import android.widget.LinearLayout;
-import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.FirebaseApp;
 import io.flutter.plugin.common.MethodCall;
@@ -17,13 +15,11 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 import java.util.Map;
 
 public class FirebaseAdMobPlugin implements MethodCallHandler {
-  private static final String TAG = "flutter";
 
   private final Registrar registrar;
   private final MethodChannel channel;
 
-  private LinearLayout banner;
-  InterstitialAd interstitial;
+  RewardedVideoAdWrapper rewardedWrapper;
 
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel =
@@ -35,6 +31,7 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
     this.registrar = registrar;
     this.channel = channel;
     FirebaseApp.initializeApp(registrar.context());
+    rewardedWrapper = new RewardedVideoAdWrapper(registrar.activity(), channel);
   }
 
   private void callInitialize(MethodCall call, Result result) {
@@ -55,13 +52,38 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
       return;
     }
 
-    String unitId = call.argument("unitId");
-    if (unitId == null || unitId.isEmpty()) {
-      result.error("no_unit_id", "a non-empty unitId was not provided for ad id=" + ad.id, null);
+    String adUnitId = call.argument("adUnitId");
+    if (adUnitId == null || adUnitId.isEmpty()) {
+      result.error("no_unit_id", "a non-empty adUnitId was not provided for ad id=" + ad.id, null);
       return;
     }
     Map<String, Object> targetingInfo = call.argument("targetingInfo");
-    ad.load(unitId, targetingInfo);
+    ad.load(adUnitId, targetingInfo);
+    result.success(Boolean.TRUE);
+  }
+
+  private void callLoadRewardedVideoAd(MethodCall call, Result result) {
+    if (rewardedWrapper.getStatus() != RewardedVideoAdWrapper.Status.CREATED
+        && rewardedWrapper.getStatus() != RewardedVideoAdWrapper.Status.FAILED) {
+      result.success(Boolean.TRUE); // The ad was already loading or loaded.
+      return;
+    }
+
+    String adUnitId = call.argument("adUnitId");
+    if (adUnitId == null || adUnitId.isEmpty()) {
+      result.error(
+          "no_ad_unit_id", "a non-empty adUnitId was not provided for rewarded video", null);
+      return;
+    }
+
+    Map<String, Object> targetingInfo = call.argument("targetingInfo");
+    if (targetingInfo == null) {
+      result.error(
+          "no_targeting_info", "a null targetingInfo object was provided for rewarded video", null);
+      return;
+    }
+
+    rewardedWrapper.load(adUnitId, targetingInfo);
     result.success(Boolean.TRUE);
   }
 
@@ -73,6 +95,15 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
     }
     ad.show();
     result.success(Boolean.TRUE);
+  }
+
+  private void callShowRewardedVideoAd(MethodCall call, Result result) {
+    if (rewardedWrapper.getStatus() == RewardedVideoAdWrapper.Status.LOADED) {
+      rewardedWrapper.show();
+      result.success(Boolean.TRUE);
+    } else {
+      result.error("ad_not_loaded", "show failed for rewarded video, no ad was loaded", null);
+    }
   }
 
   private void callDisposeAd(int id, MethodCall call, Result result) {
@@ -100,13 +131,6 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
     }
 
     Integer id = call.argument("id");
-    if (id == null) {
-      result.error(
-          "no_id",
-          "all FirebaseAdMobPlugin method calls must specify an integer mobile ad id",
-          null);
-      return;
-    }
 
     switch (call.method) {
       case "loadBannerAd":
@@ -115,8 +139,14 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
       case "loadInterstitialAd":
         callLoadAd(MobileAd.createInterstitial(id, activity, channel), call, result);
         break;
+      case "loadRewardedVideoAd":
+        callLoadRewardedVideoAd(call, result);
+        break;
       case "showAd":
         callShowAd(id, call, result);
+        break;
+      case "showRewardedVideoAd":
+        callShowRewardedVideoAd(call, result);
         break;
       case "disposeAd":
         callDisposeAd(id, call, result);
