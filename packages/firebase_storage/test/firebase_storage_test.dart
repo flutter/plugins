@@ -71,13 +71,13 @@ void main() {
       });
 
       test('invokes correct method', () async {
-        await ref.deleteData('image.jpg');
+        await ref.delete();
 
         expect(
           log,
           <Matcher>[
             isMethodCall(
-              'StorageReference#deleteFile',
+              'StorageReference#delete',
               arguments: <String, dynamic>{
                 'path': 'image.jpg',
               },
