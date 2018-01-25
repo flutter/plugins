@@ -250,7 +250,7 @@ public class ImagePickerPlugin implements MethodCallHandler, ActivityResultListe
       newExif.saveAttributes();
 
     } catch (Exception ex) {
-      Log.e(TAG, "copying exif " + ex);
+      Log.e(TAG, "Error preserving Exif data on selected image: " + ex);
     }
   }
 
