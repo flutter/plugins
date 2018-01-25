@@ -71,7 +71,7 @@ void main() {
       });
 
       test('invokes correct method', () async {
-        await ref.delete().future;
+        await ref.deleteData('image.jpg');
 
         expect(
           log,
