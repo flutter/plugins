@@ -1,3 +1,19 @@
+## 0.2.6
+
+* Build fixes for iOS
+* Null checking in newly added Query methods
+
+## 0.2.5
+
+* Query can now have more than one orderBy field.
+* startAt, startAfter, endAt, and endBefore support
+* limit support
+
+## 0.2.4
+
+* Support for DocumentReference.documentID
+* Support for CollectionReference.add
+
 ## 0.2.3
 
 * Simplified and upgraded Android project template to Android SDK 27.

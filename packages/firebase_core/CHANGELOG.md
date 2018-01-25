@@ -1,3 +1,7 @@
+## 0.0.5
+
+* Moved to the io.flutter.plugins org.
+
 ## 0.0.4
 
 * Fixed warnings from the Dart 2.0 analyzer.

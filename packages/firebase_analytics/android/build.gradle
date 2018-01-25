@@ -1,4 +1,4 @@
-group 'io.flutter.firebaseanalytics'
+group 'io.flutter.plugins.firebaseanalytics'
 version '1.0-SNAPSHOT'
 
 buildscript {

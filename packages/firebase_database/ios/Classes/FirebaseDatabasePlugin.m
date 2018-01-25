@@ -156,8 +156,13 @@ id roundDoubles(id value) {
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   FIRDatabase *database;
   NSString *appName = call.arguments[@"app"];
-  if (![appName isEqual:[NSNull null]]) {
+  NSString *databaseURL = call.arguments[@"databaseURL"];
+  if (![appName isEqual:[NSNull null]] && ![databaseURL isEqual:[NSNull null]]) {
+    database = [FIRDatabase databaseForApp:[FIRApp appNamed:appName] URL:databaseURL];
+  } else if (![appName isEqual:[NSNull null]]) {
     database = [FIRDatabase databaseForApp:[FIRApp appNamed:appName]];
+  } else if (![databaseURL isEqual:[NSNull null]]) {
+    database = [FIRDatabase databaseWithURL:databaseURL];
   } else {
     database = [FIRDatabase database];
   }

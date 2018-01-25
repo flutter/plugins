@@ -41,12 +41,39 @@ FIRQuery *getQuery(NSDictionary *arguments) {
       // Unsupported operator
     }
   }
-  id orderBy = parameters[@"orderBy"];
+  id limit = parameters[@"limit"];
+  if (limit) {
+    NSNumber *length = limit;
+    query = [query queryLimitedTo:[length intValue]];
+  }
+  NSArray *orderBy = parameters[@"orderBy"];
   if (orderBy) {
-    NSArray *orderByParameters = orderBy;
-    NSString *fieldName = orderByParameters[0];
-    NSNumber *descending = orderByParameters[1];
-    query = [query queryOrderedByField:fieldName descending:[descending boolValue]];
+    for (id item in orderBy) {
+      NSArray *orderByParameters = item;
+      NSString *fieldName = orderByParameters[0];
+      NSNumber *descending = orderByParameters[1];
+      query = [query queryOrderedByField:fieldName descending:[descending boolValue]];
+    }
+  }
+  id startAt = parameters[@"startAt"];
+  if (startAt) {
+    NSArray *startAtValues = startAt;
+    query = [query queryStartingAtValues:startAtValues];
+  }
+  id startAfter = parameters[@"startAfter"];
+  if (startAfter) {
+    NSArray *startAfterValues = startAfter;
+    query = [query queryStartingAfterValues:startAfterValues];
+  }
+  id endAt = parameters[@"endAt"];
+  if (endAt) {
+    NSArray *endAtValues = endAt;
+    query = [query queryEndingAtValues:endAtValues];
+  }
+  id endBefore = parameters[@"endBefore"];
+  if (endBefore) {
+    NSArray *endBeforeValues = endBefore;
+    query = [query queryEndingBeforeValues:endBeforeValues];
   }
   return query;
 }

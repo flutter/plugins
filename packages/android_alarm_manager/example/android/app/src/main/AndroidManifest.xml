@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="io.flutter.androidalarmmanagerexample">
+    package="io.flutter.plugins.androidalarmmanagerexample">
 
     <uses-permission android:name="android.permission.INTERNET"/>
 
@@ -23,7 +23,7 @@
             </intent-filter>
         </activity>
         <service
-            android:name="io.flutter.androidalarmmanager.AlarmService"
+            android:name="io.flutter.plugins.androidalarmmanager.AlarmService"
             android:exported="false"/>
     </application>
 </manifest>

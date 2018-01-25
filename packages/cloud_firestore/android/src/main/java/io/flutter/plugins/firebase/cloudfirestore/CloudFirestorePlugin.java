@@ -86,12 +86,31 @@ public class CloudFirestorePlugin implements MethodCallHandler {
       }
     }
     @SuppressWarnings("unchecked")
-    List<Object> orderBy = (List<Object>) parameters.get("orderBy");
+    Number limit = (Number) parameters.get("limit");
+    if (limit != null) query = query.limit(limit.longValue());
+    @SuppressWarnings("unchecked")
+    List<List<Object>> orderBy = (List<List<Object>>) parameters.get("orderBy");
     if (orderBy == null) return query;
-    String orderByFieldName = (String) orderBy.get(0);
-    Boolean descending = (Boolean) orderBy.get(1);
-    Query.Direction direction = descending ? Query.Direction.DESCENDING : Query.Direction.ASCENDING;
-    return query.orderBy(orderByFieldName, direction);
+    for (List<Object> order : orderBy) {
+      String orderByFieldName = (String) order.get(0);
+      Boolean descending = (Boolean) order.get(1);
+      Query.Direction direction =
+          descending ? Query.Direction.DESCENDING : Query.Direction.ASCENDING;
+      query = query.orderBy(orderByFieldName, direction);
+    }
+    @SuppressWarnings("unchecked")
+    List<Object> startAt = (List<Object>) parameters.get("startAt");
+    if (startAt != null) query = query.startAt(startAt.toArray());
+    @SuppressWarnings("unchecked")
+    List<Object> startAfter = (List<Object>) parameters.get("startAfter");
+    if (startAfter != null) query = query.startAfter(startAfter.toArray());
+    @SuppressWarnings("unchecked")
+    List<Object> endAt = (List<Object>) parameters.get("endAt");
+    if (endAt != null) query = query.endAt(endAt.toArray());
+    @SuppressWarnings("unchecked")
+    List<Object> endBefore = (List<Object>) parameters.get("endBefore");
+    if (endBefore != null) query = query.endBefore(endBefore.toArray());
+    return query;
   }
 
   private class DocumentObserver implements EventListener<DocumentSnapshot> {

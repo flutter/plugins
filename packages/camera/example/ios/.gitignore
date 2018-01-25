@@ -31,11 +31,10 @@ xcuserdata
 Icon?
 .tags*
 
-/Flutter/app.flx
 /Flutter/app.zip
 /Flutter/App.framework
-/Flutter/flutter_assets
 /Flutter/Flutter.framework
+/Flutter/flutter_assets/
 /Flutter/Generated.xcconfig
 /ServiceDefinitions.json
 
