@@ -36,14 +36,6 @@ class StorageReference {
     return task;
   }
 
-  /// Asynchronously deletes a file from the currently specified StorageReference
-//  StorageDeleteTask delete() {
-//    final StorageDeleteTask task =
-//        new StorageDeleteTask._(_pathComponents.join("/"));
-//    task._start();
-//    return task;
-//  }
-
   /// Asynchronously downloads the object at the StorageReference to a list in memory.
   /// A list of the provided max size will be allocated.
   Future<Uint8List> getData(int maxSize) {
@@ -62,27 +54,6 @@ class StorageReference {
   }
 
 }
-//
-//class StorageDeleteTask {
-//  final String path;
-//
-//  StorageDeleteTask._(this.path);
-//
-//  Completer<DeleteTaskResult> _completer = new Completer<DeleteTaskResult>();
-//
-//  Future<DeleteTaskResult> get future => _completer.future;
-//
-//  Future<Null> _start() async {
-//    try {
-//      await FirebaseStorage._channel.invokeMethod(
-//          "StorageReference#deleteFile", <String, String>{'path': path});
-//
-//      _completer.complete(new DeleteTaskResult(isSuccess: true));
-//    } catch (e) {
-//      _completer.complete(new DeleteTaskResult(isSuccess: false));
-//    }
-//  }
-//}
 
 class StorageUploadTask {
   StorageUploadTask._(this.file, this.path);
@@ -110,8 +81,3 @@ class UploadTaskSnapshot {
   UploadTaskSnapshot({this.downloadUrl});
   final Uri downloadUrl;
 }
-//
-//class DeleteTaskResult {
-//  DeleteTaskResult({this.isSuccess});
-//  final bool isSuccess;
-//}
