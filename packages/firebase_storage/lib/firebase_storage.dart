@@ -52,7 +52,6 @@ class StorageReference {
     return FirebaseStorage._channel.invokeMethod(
         "StorageReference#deleteFile", <String, String>{'path': path});
   }
-
 }
 
 class StorageUploadTask {
