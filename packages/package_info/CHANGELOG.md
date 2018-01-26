@@ -1,8 +1,7 @@
 ## 0.2.0
 
-* **Breaking change**. Change package_info to class PackageInfo.
-* Provides all package information with a single async call.
-* Cache all properties in instance.
+* **Breaking change**. Introduced class `PackageInfo` in place of individual functions.
+* `PackageInfo` provides all package information with a single async call.
 
 ## 0.1.1
 
