@@ -38,9 +38,9 @@ public class PackageInfoPlugin implements MethodCallHandler {
         PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
 
         Map<String, String> map = new HashMap<String, String>();
+        map.put("packageName", context.getPackageName());
         map.put("version", info.versionName);
         map.put("buildNumber", String.valueOf(info.versionCode));
-        map.put("packageName", context.getPackageName());
 
         result.success(map);
       } else {
