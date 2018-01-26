@@ -16,9 +16,9 @@
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
   if ([call.method isEqualToString:@"getAll"]) {
     result(@{
+      @"packageName" : [[NSBundle mainBundle] bundleIdentifier],
       @"version" : [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"],
-      @"buildNumber" : [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"],
-      @"packageName" : [[NSBundle mainBundle] bundleIdentifier]
+      @"buildNumber" : [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]
     });
   } else {
     result(FlutterMethodNotImplemented);
