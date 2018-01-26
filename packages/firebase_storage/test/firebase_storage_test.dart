@@ -53,7 +53,7 @@ void main() {
       });
     });
 
-    group('deleteFile', () {
+    group('delete', () {
       const MethodChannel channel = const MethodChannel(
         'firebase_storage',
       );
@@ -63,9 +63,9 @@ void main() {
       StorageReference ref;
 
       setUp(() {
-        channel.setMockMethodCallHandler((MethodCall methodCall) {
+        channel.setMockMethodCallHandler((MethodCall methodCall) async {
           log.add(methodCall);
-          return new Future<bool>.value(true);
+          return null;
         });
         ref = FirebaseStorage.instance.ref().child('image.jpg');
       });

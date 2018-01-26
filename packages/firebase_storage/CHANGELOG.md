@@ -1,6 +1,6 @@
 ## 0.1.2
 
-* Added StorageReference deleteFile function to remove files from Firebase.
+* Added StorageReference delete function to remove files from Firebase.
 
 ## 0.1.1
 
