@@ -4,7 +4,6 @@
 
 import 'dart:async';
 
-import 'package:meta/meta.dart';
 import 'package:flutter/services.dart';
 
 const MethodChannel _kChannel =
