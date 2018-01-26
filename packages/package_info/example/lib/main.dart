@@ -52,7 +52,10 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _infoTile(String title, String subtitle) {
-    return new ListTile(title: new Text(title), subtitle: new Text(subtitle ?? 'Not set'));
+    return new ListTile(
+      title: new Text(title),
+      subtitle: new Text(subtitle ?? 'Not set'),
+    );
   }
 
   @override
