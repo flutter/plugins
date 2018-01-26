@@ -11,7 +11,7 @@ application package. This works both on iOS and Android.
 ```dart
 import 'package:package_info/package_info.dart';
 
-PackageInfo packageInfo = await PackageInfo.getInstance();
+PackageInfo packageInfo = await PackageInfo.fromPlatform();
 
 String packageName = packageInfo.packageName;
 String version = packageInfo.version;
@@ -21,7 +21,7 @@ String buildNumber = packageInfo.buildNumber;
 Or in async mode:
 
 ```dart
-PackageInfo.getInstance().then((PackageInfo packageInfo) {
+PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
   String packageName = packageInfo.packageName;
   String version = packageInfo.version;
   String buildNumber = packageInfo.buildNumber;
