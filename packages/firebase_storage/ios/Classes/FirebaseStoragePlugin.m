@@ -44,6 +44,8 @@
     [self putFile:call result:result];
   } else if ([@"StorageReference#getData" isEqualToString:call.method]) {
     [self getData:call result:result];
+  } else if ([@"StorageReference#delete" isEqualToString:call.method]) {
+    [self delete:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -86,6 +88,18 @@
                   [FlutterStandardTypedData typedDataWithBytes:data];
               result(dartData);
             }];
+}
+
+- (void) delete:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSString *path = call.arguments[@"path"];
+  FIRStorageReference *ref = [[FIRStorage storage].reference child:path];
+  [ref deleteWithCompletion:^(NSError *error) {
+    if (error != nil) {
+      result(error.flutterError);
+    } else {
+      result(nil);
+    }
+  }];
 }
 
 @end
