@@ -12,6 +12,8 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
+import java.util.HashMap;
+import java.util.Map;
 
 /** PackageInfoPlugin */
 public class PackageInfoPlugin implements MethodCallHandler {
@@ -32,19 +34,17 @@ public class PackageInfoPlugin implements MethodCallHandler {
   public void onMethodCall(MethodCall call, Result result) {
     try {
       Context context = mRegistrar.context();
-      PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
-      switch (call.method) {
-        case "getVersion":
-          result.success(info.versionName);
-          break;
-        case "getBuildNumber":
-          result.success(String.valueOf(info.versionCode));
-          break;
-        case "getPackageName":
-          result.success(context.getPackageName());
-          break;
-        default:
-          result.notImplemented();
+      if (call.method.equals("getAll")) {
+        PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("packageName", context.getPackageName());
+        map.put("version", info.versionName);
+        map.put("buildNumber", String.valueOf(info.versionCode));
+
+        result.success(map);
+      } else {
+        result.notImplemented();
       }
     } catch (PackageManager.NameNotFoundException ex) {
       result.error("Name not found", ex.getMessage(), null);

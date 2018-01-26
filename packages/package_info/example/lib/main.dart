@@ -5,23 +5,19 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:package_info/package_info.dart' as package_info;
+import 'package:package_info/package_info.dart';
 
 void main() {
   runApp(new MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-      title: 'Flutter Demo',
-      theme: new ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: new MyHomePage(title: 'Flutter Demo Home Page'),
+      title: 'PackageInfo Demo',
+      theme: new ThemeData(primarySwatch: Colors.blue),
+      home: new MyHomePage(title: 'PackageInfo example app'),
     );
   }
 }
@@ -36,69 +32,46 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String _version = 'Unknown';
-  String _buildNumber = 'Unknown';
-  String _packageName = 'Unknown';
+  PackageInfo _packageInfo = new PackageInfo(
+    packageName: 'Unknown',
+    version: 'Unknown',
+    buildNumber: 'Unknown',
+  );
 
   @override
   void initState() {
     super.initState();
-    initPackageState();
+    _initPackageInfo();
   }
 
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<Null> initPackageState() async {
-    String version;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    try {
-      version = await package_info.version;
-    } on PlatformException {
-      version = 'Failed to get version.';
-    }
-
-    String buildNumber;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    try {
-      buildNumber = await package_info.buildNumber;
-    } on PlatformException {
-      buildNumber = 'Failed to get buildNumber.';
-    }
-
-    String packageName;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    try {
-      packageName = await package_info.packageName;
-    } on PlatformException {
-      packageName = 'Failed to get packageName.';
-    }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) {
-      return;
-    }
-
+  Future<Null> _initPackageInfo() async {
+    final PackageInfo info = await PackageInfo.fromPlatform();
     setState(() {
-      _version = version;
-      _buildNumber = buildNumber;
-      _packageName = packageName;
+      _packageInfo = info;
     });
+  }
+
+  Widget _infoTile(String title, String subtitle) {
+    return new ListTile(
+      title: new Text(title),
+      subtitle: new Text(subtitle ?? 'Not set'),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: const Text('Plugin example app'),
+        title: new Text(widget.title),
       ),
       body: new Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            new Text('App version is: $_version'),
-            new Text('Build number is: $_buildNumber'),
-            new Text('Package name is: $_packageName')
-          ]),
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          _infoTile('Package name', _packageInfo.packageName),
+          _infoTile('App version', _packageInfo.version),
+          _infoTile('Build number', _packageInfo.buildNumber),
+        ],
+      ),
     );
   }
 }
