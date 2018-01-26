@@ -37,7 +37,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -78,19 +77,12 @@ public class CloudFirestorePlugin implements MethodCallHandler {
     return transactions.get(getTransactionId(arguments));
   }
 
-  private TaskCompletionSource getCompletionTask(Map<String, Object> arguments) {
-    return completionTasks.get(getTransactionId(arguments));
-  }
-
   private int getTransactionId(Map<String, Object> arguments) {
     return (Integer) arguments.get("transactionId");
   }
 
   private long getTransactionTimeout(Map<String, Object> arguments) {
-    if (arguments.containsKey("transactionTimeout")) {
-      return (Long) arguments.get("transactionTimeout");
-    }
-    return 5000;
+    return (Long) arguments.get("transactionTimeout");
   }
 
   private Query getQuery(Map<String, Object> arguments) {
@@ -259,18 +251,35 @@ public class CloudFirestorePlugin implements MethodCallHandler {
               completionTasks.append(transactionId, transactionTCS);
 
               // Start operations on dart side.
-              channel.invokeMethod("DoTransaction", arguments);
+              channel.invokeMethod("DoTransaction", arguments, new Result() {
+                @Override
+                public void success(Object o) {
+                  transactionTCS.setResult((Map<String, Object>) o);
+                }
+
+                @Override
+                public void error(String s, String s1, Object o) {
+                  result.error(s, s1, o);
+                  transactionTCS.setResult(null);
+                }
+
+                @Override
+                public void notImplemented() {
+                  result.error("DoTransaction not implemented", null, null);
+                  transactionTCS.setResult(null);
+                }
+              });
 
               // wait till transaction is complete.
               try {
-                Tasks.await(
+                Map<String, Object> transactionResult = Tasks.await(
                         transactionTCSTask,
                         getTransactionTimeout(arguments),
                         TimeUnit.MILLISECONDS);
+                result.success(transactionResult);
               } catch (Exception e) {
                 result.error("Error performing transaction", e.getMessage(), null);
               }
-              result.success(null);
               return null;
             }
           });
@@ -279,35 +288,70 @@ public class CloudFirestorePlugin implements MethodCallHandler {
       case "Transaction#get":
         {
           final Map<String, Object> arguments = call.arguments();
-          Transaction transaction = getTransaction(arguments);
-          new TransactionTask("get", transaction, result, arguments).execute();
+          final Transaction transaction = getTransaction(arguments);
+          new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+              try {
+                DocumentSnapshot documentSnapshot = transaction.get(getDocumentReference(arguments));
+                Map<String, Object> snapshotMap = new HashMap<>();
+                snapshotMap.put("path", documentSnapshot.getReference().getPath());
+                if (documentSnapshot.exists()) {
+                  snapshotMap.put("data", documentSnapshot.getData());
+                } else {
+                  snapshotMap.put("data", null);
+                }
+                result.success(snapshotMap);
+              } catch (FirebaseFirestoreException e) {
+                result.error("Error performing Transaction#get", e.getMessage(), null);
+              }
+              return null;
+            }
+          }.execute();
           break;
         }
       case "Transaction#update":
         {
           final Map<String, Object> arguments = call.arguments();
           final Transaction transaction = getTransaction(arguments);
-          new TransactionTask("update", transaction, result, arguments).execute();
+          new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+              Map<String, Object> data = (Map<String, Object>) arguments.get("data");
+              transaction.update(getDocumentReference(arguments), data);
+              result.success(null);
+              return null;
+            }
+          }.execute();
           break;
         }
       case "Transaction#set":
         {
           final Map<String, Object> arguments = call.arguments();
           final Transaction transaction = getTransaction(arguments);
-          new TransactionTask("set", transaction, result, arguments).execute();
+          new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+              Map<String, Object> data = (Map<String, Object>) arguments.get("data");
+              transaction.set(getDocumentReference(arguments), data);
+              result.success(null);
+              return null;
+            }
+          }.execute();
           break;
         }
       case "Transaction#delete":
         {
           final Map<String, Object> arguments = call.arguments();
           final Transaction transaction = getTransaction(arguments);
-          new TransactionTask("delete", transaction, result, arguments).execute();
-          break;
-        }
-      case "Transaction#complete":
-        {
-          final Map<String, Object> arguments = call.arguments();
-          getCompletionTask(arguments).setResult(null);
+          new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+              transaction.delete(getDocumentReference(arguments));
+              result.success(null);
+              return null;
+            }
+          }.execute();
           break;
         }
       case "Query#addSnapshotListener":
@@ -408,74 +452,5 @@ public class CloudFirestorePlugin implements MethodCallHandler {
           break;
         }
     }
-  }
-
-  private static class TransactionTask extends AsyncTask<Void, Void, Void> {
-
-    private String operation;
-    private Transaction transaction;
-    private Result result;
-    private Map<String, Object> arguments;
-
-    TransactionTask(String operation, Transaction transaction, Result result,
-                    Map<String, Object> arguments) {
-      this.operation = operation;
-      this.transaction = transaction;
-      this.result = result;
-      this.arguments = arguments;
-    }
-
-    private DocumentReference getDocumentReference() {
-      return FirebaseFirestore.getInstance().document((String) arguments.get("path"));
-    }
-
-    @Override
-    protected Void doInBackground(Void... voids) {
-      try {
-        switch(operation) {
-          case "get":
-            {
-              DocumentSnapshot documentSnapshot = transaction.get(getDocumentReference());
-              Map<String, Object> snapshotMap = new HashMap<>();
-              snapshotMap.put("path", documentSnapshot.getReference().getPath());
-              if (documentSnapshot.exists()) {
-                snapshotMap.put("data", documentSnapshot.getData());
-              } else {
-                snapshotMap.put("data", null);
-              }
-              result.success(snapshotMap);
-              break;
-            }
-          case "update":
-            {
-              Map<String, Object> data = (Map<String, Object>) arguments.get("data");
-              transaction.update(getDocumentReference(), data);
-              result.success(null);
-              break;
-            }
-          case "delete":
-            {
-              transaction.delete(getDocumentReference());
-              result.success(null);
-              break;
-            }
-          case "set":
-            {
-              Map<String, Object> data = (Map<String, Object>) arguments.get("data");
-              transaction.set(getDocumentReference(), data);
-              result.success(null);
-              break;
-            }
-          default:
-            // do nothing
-        }
-      } catch (Exception e) {
-        result.error("Error performing Transaction#" + operation, e.getMessage(), null);
-      }
-      return null;
-    }
-
-
-
   }
 }

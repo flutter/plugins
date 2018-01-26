@@ -37,10 +37,8 @@ class Firestore {
         _documentObservers[call.arguments['handle']].add(snapshot);
       } else if (call.method == 'DoTransaction') {
         final int transactionId = call.arguments['transactionId'];
-        _transactionHandlers[transactionId](new Transaction(transactionId))
-            .then((Transaction tx) {
-          // Complete transaction.
-          tx.complete();
+        return _transactionHandlers[transactionId](new Transaction(transactionId)).then<Map<String, dynamic>>((Map<String, dynamic> result) {
+          return result;
         });
       }
     });
@@ -64,20 +62,23 @@ class Firestore {
   }
 
   /// Runs a set of atomic database operations.
-  Future<TransactionResult> runTransaction(TransactionHandler transactionHandler) {
+  Future<Map<String, dynamic>> runTransaction(TransactionHandler transactionHandler,
+      {Duration timeout: const Duration(seconds: 5)}) async {
+    assert(timeout.inMilliseconds > 0, 'Transaction timeout must e more than 0 milliseconds');
     final int transactionId = _transactionHandlerId++;
     _transactionHandlers[transactionId] = transactionHandler;
-    // setup transaction
-    return channel.invokeMethod('Firestore#runTransaction', <String, dynamic>{'transactionId': transactionId}).then((dynamic result) {
-      return new TransactionResult();
-    }).catchError((Error error) {
-      print(error);
-      return new TransactionResult();
-    });
+    // Execute operations on the native side.
+    final Map<String, dynamic> result = await channel.invokeMethod('Firestore#runTransaction',
+        <String, dynamic>{'transactionId': transactionId, 'transactionTimeout': timeout.inMilliseconds});
+    if (result != null) {
+      return result;
+    } else {
+      return <String, dynamic>{};
+    }
   }
 }
 
-typedef Future<Null> TransactionHandler(Transaction tx);
+typedef Future<Map<String, dynamic>> TransactionHandler(Transaction tx);
 
 class Transaction {
   MethodChannel _channel;
@@ -100,7 +101,7 @@ class Transaction {
   }
 
   Future<Null> delete(DocumentReference documentReference) async {
-    return _channel.invokeMethod('Transaction#update', <String, dynamic>{
+    return _channel.invokeMethod('Transaction#delete', <String, dynamic>{
       'transactionId': _transactionId,
       'path': documentReference.path
     });
@@ -115,16 +116,10 @@ class Transaction {
   }
 
   Future<Null> set(DocumentReference documentReference, Map<String, dynamic> data) async {
-    return _channel.invokeMethod('Transaction#update', <String, dynamic>{
+    return _channel.invokeMethod('Transaction#set', <String, dynamic>{
       'transactionId': _transactionId,
       'path': documentReference.path,
       'data': data
-    });
-  }
-
-  Future<Null> complete() {
-    return _channel.invokeMethod('Transaction#complete', <String, dynamic>{
-      'transactionId': _transactionId,
     });
   }
 }
