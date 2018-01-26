@@ -6,17 +6,52 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
-/// Provides information about the current application package.
 const MethodChannel _kChannel =
     const MethodChannel('plugins.flutter.io/package_info');
 
-/// Returns the `CFBundleShortVersionString` on iOS or `versionName` on Android
-Future<String> get version async => await _kChannel.invokeMethod('getVersion');
+/// Application metadata. Provides application bundle information on iOS and
+/// application package information on Android.
+///
+/// ```dart
+/// PackageInfo packageInfo = await PackageInfo.fromPlatform()
+/// print("Version is: ${packageInfo.version}");
+/// ```
+class PackageInfo {
+  PackageInfo({
+    this.packageName,
+    this.version,
+    this.buildNumber,
+  });
 
-/// Returns the `CFBundleVersion` on iOS or `versionCode` on Android
-Future<String> get buildNumber async =>
-    await _kChannel.invokeMethod('getBuildNumber');
+  static Future<PackageInfo> _fromPlatform;
 
-/// Returns the `bundleIdentifier` on iOS or `getPackageName` on Android
-Future<String> get packageName async =>
-    await _kChannel.invokeMethod('getPackageName');
+  /// Retrieves package information from the platform.
+  /// The result is cached.
+  static Future<PackageInfo> fromPlatform() async {
+    if (_fromPlatform == null) {
+      final Completer<PackageInfo> completer = new Completer<PackageInfo>();
+
+      _kChannel.invokeMethod('getAll').then((dynamic result) {
+        final Map<String, String> map = result;
+
+        completer.complete(new PackageInfo(
+          packageName: map["packageName"],
+          version: map["version"],
+          buildNumber: map["buildNumber"],
+        ));
+      }, onError: completer.completeError);
+
+      _fromPlatform = completer.future;
+    }
+    return _fromPlatform;
+  }
+
+  /// The package name. `bundleIdentifier` on iOS, `getPackageName` on Android.
+  final String packageName;
+
+  /// The package version. `CFBundleShortVersionString` on iOS, `versionName` on Android.
+  final String version;
+
+  /// The build number. `CFBundleVersion` on iOS, `versionCode` on Android.
+  final String buildNumber;
+}
