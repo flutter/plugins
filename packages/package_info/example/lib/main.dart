@@ -12,14 +12,11 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
       title: 'PackageInfo Demo',
-      theme: new ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: new ThemeData(primarySwatch: Colors.blue),
       home: new MyHomePage(title: 'PackageInfo example app'),
     );
   }
@@ -35,39 +32,43 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  PackageInfo _packageInfo;
+  PackageInfo _packageInfo = new PackageInfo(
+    packageName: 'Unknown',
+    version: 'Unknown',
+    buildNumber: 'Unknown',
+  );
 
   @override
   void initState() {
     super.initState();
-    initPackageState();
+    _initPackageInfo();
   }
 
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<Null> initPackageState() async {
-    PackageInfo.getInstance().then((PackageInfo packageInfo) {
-      setState(() {
-        _packageInfo = packageInfo;
-      });
+  Future<Null> _initPackageInfo() async {
+    PackageInfo info = await PackageInfo.fromPlatform();
+    setState(() {
+      _packageInfo = info;
     });
+  }
+
+  Widget _infoTile(String title, String subtitle) {
+    return new ListTile(title: new Text(title), subtitle: new Text(subtitle ?? 'Not set'));
   }
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: const Text('PackageInfo example app'),
+        title: new Text(widget.title),
       ),
       body: new Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            new Text(
-                'Package name is: ${_packageInfo != null ? _packageInfo.packageName : ""}'),
-            new Text(
-                'App version is: ${_packageInfo != null ? _packageInfo.version : ""}'),
-            new Text(
-                'Build number is: ${_packageInfo != null ? _packageInfo.buildNumber : ""}'),
-          ]),
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          _infoTile('Package name', _packageInfo.packageName),
+          _infoTile('App version', _packageInfo.version),
+          _infoTile('Build number', _packageInfo.buildNumber),
+        ],
+      ),
     );
   }
 }
