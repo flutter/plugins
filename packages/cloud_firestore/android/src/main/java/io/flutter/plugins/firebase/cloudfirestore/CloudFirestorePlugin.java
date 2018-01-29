@@ -260,7 +260,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
           }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-              result.error("Error performing get", e.getMessage(), null);
+              result.error("Error performing getDocuments", e.getMessage(), null);
             }
           });
           break;
