@@ -60,6 +60,44 @@ public class CloudFirestorePlugin implements MethodCallHandler {
     return FirebaseFirestore.getInstance().document(path);
   }
 
+  private Map<String, Object> parseQuerySnapshot(QuerySnapshot querySnapshot) {
+    Map<String, Object> data = new HashMap<>();
+    List<String> paths = new ArrayList<>();
+    List<Map<String, Object>> documents = new ArrayList<>();
+    for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+      paths.add(document.getReference().getPath());
+      documents.add(document.getData());
+    }
+    data.put("paths", paths);
+    data.put("documents", documents);
+
+    List<Map<String, Object>> documentChanges = new ArrayList<>();
+    for (DocumentChange documentChange : querySnapshot.getDocumentChanges()) {
+      Map<String, Object> change = new HashMap<>();
+      String type = null;
+      switch (documentChange.getType()) {
+        case ADDED:
+          type = "DocumentChangeType.added";
+          break;
+        case MODIFIED:
+          type = "DocumentChangeType.modified";
+          break;
+        case REMOVED:
+          type = "DocumentChangeType.removed";
+          break;
+      }
+      change.put("type", type);
+      change.put("oldIndex", documentChange.getOldIndex());
+      change.put("newIndex", documentChange.getNewIndex());
+      change.put("document", documentChange.getDocument().getData());
+      change.put("path", documentChange.getDocument().getReference().getPath());
+      documentChanges.add(change);
+    }
+    data.put("documentChanges", documentChanges);
+
+    return data;
+  }
+
   private Query getQuery(Map<String, Object> arguments) {
     Query query = getCollectionReference(arguments);
     @SuppressWarnings("unchecked")
@@ -148,41 +186,9 @@ public class CloudFirestorePlugin implements MethodCallHandler {
         // TODO: send error
         System.out.println(e);
       }
-      Map<String, Object> arguments = new HashMap<>();
+
+      Map<String, Object> arguments = parseQuerySnapshot(querySnapshot);
       arguments.put("handle", handle);
-
-      List<String> paths = new ArrayList<>();
-      List<Map<String, Object>> documents = new ArrayList<>();
-      for (DocumentSnapshot document : querySnapshot.getDocuments()) {
-        paths.add(document.getReference().getPath());
-        documents.add(document.getData());
-      }
-      arguments.put("paths", paths);
-      arguments.put("documents", documents);
-
-      List<Map<String, Object>> documentChanges = new ArrayList<>();
-      for (DocumentChange documentChange : querySnapshot.getDocumentChanges()) {
-        Map<String, Object> change = new HashMap<>();
-        String type = null;
-        switch (documentChange.getType()) {
-          case ADDED:
-            type = "DocumentChangeType.added";
-            break;
-          case MODIFIED:
-            type = "DocumentChangeType.modified";
-            break;
-          case REMOVED:
-            type = "DocumentChangeType.removed";
-            break;
-        }
-        change.put("type", type);
-        change.put("oldIndex", documentChange.getOldIndex());
-        change.put("newIndex", documentChange.getNewIndex());
-        change.put("document", documentChange.getDocument().getData());
-        change.put("path", documentChange.getDocument().getReference().getPath());
-        documentChanges.add(change);
-      }
-      arguments.put("documentChanges", documentChanges);
 
       channel.invokeMethod("QuerySnapshot", arguments);
     }
@@ -238,6 +244,24 @@ public class CloudFirestorePlugin implements MethodCallHandler {
           observers.remove(handle);
           result.success(null);
           break;
+        }
+      case "Query#getDocuments":
+        {
+          Map<String, Object> arguments = call.arguments();
+          CollectionReference collectionReference = getCollectionReference(arguments);
+          Task<QuerySnapshot> task = collectionReference.get();
+          task.addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot querySnapshot) {
+              result.success(parseQuerySnapshot(querySnapshot));
+            }
+
+          }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+              result.error("Error performing get", e.getMessage(), null);
+            }
+          });
         }
       case "DocumentReference#setData":
         {
