@@ -1,3 +1,6 @@
+## 0.2.7
+* Support for Query.getDocuments
+
 ## 0.2.6
 
 * Build fixes for iOS
