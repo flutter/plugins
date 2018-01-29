@@ -61,6 +61,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
   }
 
   private Map<String, Object> parseQuerySnapshot(QuerySnapshot querySnapshot) {
+    if (querySnapshot == null) return new HashMap<>();
     Map<String, Object> data = new HashMap<>();
     List<String> paths = new ArrayList<>();
     List<Map<String, Object>> documents = new ArrayList<>();
@@ -262,6 +263,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
               result.error("Error performing get", e.getMessage(), null);
             }
           });
+          break;
         }
       case "DocumentReference#setData":
         {
