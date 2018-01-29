@@ -108,9 +108,9 @@ NSDictionary *parseQuerySnapshot(FIRQuerySnapshot *snapshot) {
     }];
   }
   return @{
-    @"paths": paths,
-    @"documentChanges": documentChanges,
-    @"documents": documents,
+    @"paths" : paths,
+    @"documentChanges" : documentChanges,
+    @"documents" : documents,
   };
 }
 
@@ -194,11 +194,10 @@ NSDictionary *parseQuerySnapshot(FIRQuerySnapshot *snapshot) {
     }
     id<FIRListenerRegistration> listener = [query
         addSnapshotListener:^(FIRQuerySnapshot *_Nullable snapshot, NSError *_Nullable error) {
-          if (error) result(error.flutterError);        
+          if (error) result(error.flutterError);
           NSMutableDictionary *arguments = [parseQuerySnapshot(snapshot) mutableCopy];
           [arguments setObject:handle forKey:@"handle"];
-          [self.channel invokeMethod:@"QuerySnapshot"
-                           arguments:arguments];
+          [self.channel invokeMethod:@"QuerySnapshot" arguments:arguments];
         }];
     _listeners[handle] = listener;
     result(handle);
@@ -227,11 +226,11 @@ NSDictionary *parseQuerySnapshot(FIRQuerySnapshot *snapshot) {
                                  message:[exception name]
                                  details:[exception reason]]);
     }
-    [query getDocumentsWithCompletion:^(FIRQuerySnapshot * _Nullable snapshot, NSError * _Nullable error) {
+    [query getDocumentsWithCompletion:^(FIRQuerySnapshot *_Nullable snapshot,
+                                        NSError *_Nullable error) {
       if (error) result(error.flutterError);
       result(parseQuerySnapshot(snapshot));
     }];
-    
   } else if ([@"Query#removeListener" isEqualToString:call.method]) {
     NSNumber *handle = call.arguments[@"handle"];
     [[_listeners objectForKey:handle] remove];

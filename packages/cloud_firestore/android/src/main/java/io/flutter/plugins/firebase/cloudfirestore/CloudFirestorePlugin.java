@@ -251,18 +251,20 @@ public class CloudFirestorePlugin implements MethodCallHandler {
           Map<String, Object> arguments = call.arguments();
           CollectionReference collectionReference = getCollectionReference(arguments);
           Task<QuerySnapshot> task = collectionReference.get();
-          task.addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot querySnapshot) {
-              result.success(parseQuerySnapshot(querySnapshot));
-            }
-
-          }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-              result.error("Error performing getDocuments", e.getMessage(), null);
-            }
-          });
+          task.addOnSuccessListener(
+                  new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot querySnapshot) {
+                      result.success(parseQuerySnapshot(querySnapshot));
+                    }
+                  })
+              .addOnFailureListener(
+                  new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                      result.error("Error performing getDocuments", e.getMessage(), null);
+                    }
+                  });
           break;
         }
       case "DocumentReference#setData":
