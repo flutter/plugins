@@ -172,7 +172,7 @@ class _PlayerLifeCycleState extends State<PlayerLifeCycle> {
     super.initState();
     controller = new VideoPlayerController(widget.uri);
     controller.addListener(() {
-      if (controller.value.isErroneous) {
+      if (controller.value.hasError) {
         print(controller.value.errorDescription);
       }
     });
