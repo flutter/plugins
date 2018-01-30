@@ -37,9 +37,7 @@ class Firestore {
         _documentObservers[call.arguments['handle']].add(snapshot);
       } else if (call.method == 'DoTransaction') {
         final int transactionId = call.arguments['transactionId'];
-        return _transactionHandlers[transactionId](new Transaction(transactionId)).then<Map<String, dynamic>>((Map<String, dynamic> result) {
-          return result;
-        });
+        return _transactionHandlers[transactionId](new Transaction(transactionId));
       }
     });
   }
@@ -62,19 +60,15 @@ class Firestore {
   }
 
   /// Runs a set of atomic database operations.
-  Future<Map<String, dynamic>> runTransaction(TransactionHandler transactionHandler,
+  Future<Map<String, dynamic>> runTransaction(
+      TransactionHandler transactionHandler,
       {Duration timeout: const Duration(seconds: 5)}) async {
-    assert(timeout.inMilliseconds > 0, 'Transaction timeout must e more than 0 milliseconds');
+    assert(timeout.inMilliseconds > 0, 'Transaction timeout must be more than 0 milliseconds');
     final int transactionId = _transactionHandlerId++;
     _transactionHandlers[transactionId] = transactionHandler;
-    // Execute operations on the native side.
     final Map<String, dynamic> result = await channel.invokeMethod('Firestore#runTransaction',
         <String, dynamic>{'transactionId': transactionId, 'transactionTimeout': timeout.inMilliseconds});
-    if (result != null) {
-      return result;
-    } else {
-      return <String, dynamic>{};
-    }
+    return result ?? <String, dynamic>{};
   }
 }
 
@@ -84,20 +78,15 @@ class Transaction {
   MethodChannel _channel;
   int _transactionId;
 
-  Transaction(this._transactionId) {
-    _channel = Firestore.channel;
-  }
+  Transaction(this._transactionId): _channel = Firestore.channel;
 
   Future<DocumentSnapshot> get(DocumentReference documentReference) async {
-    return _channel.invokeMethod('Transaction#get', <String, dynamic>{
+    final dynamic result = await _channel.invokeMethod('Transaction#get', <String, dynamic>{
       'transactionId': _transactionId,
       'path': documentReference.path
-    }).then((dynamic result) {
-      return new DocumentSnapshot._(documentReference.path, result['data'],
-          Firestore.instance);
-    }).catchError((Error error) {
-      throw error;
     });
+    return new DocumentSnapshot._(documentReference.path, result['data'],
+        Firestore.instance);
   }
 
   Future<Null> delete(DocumentReference documentReference) async {
@@ -122,8 +111,4 @@ class Transaction {
       'data': data
     });
   }
-}
-
-class TransactionResult {
-
 }

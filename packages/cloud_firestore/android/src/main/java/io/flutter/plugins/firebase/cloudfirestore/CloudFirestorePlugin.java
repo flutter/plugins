@@ -7,7 +7,6 @@ package io.flutter.plugins.firebase.cloudfirestore;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.util.SparseArray;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -38,7 +37,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 public class CloudFirestorePlugin implements MethodCallHandler {
 
@@ -74,15 +72,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
   }
 
   private Transaction getTransaction(Map<String, Object> arguments) {
-    return transactions.get(getTransactionId(arguments));
-  }
-
-  private int getTransactionId(Map<String, Object> arguments) {
-    return (Integer) arguments.get("transactionId");
-  }
-
-  private long getTransactionTimeout(Map<String, Object> arguments) {
-    return (Long) arguments.get("transactionTimeout");
+    return transactions.get((Integer) arguments.get("transactionId"));
   }
 
   private Query getQuery(Map<String, Object> arguments) {
@@ -246,20 +236,20 @@ public class CloudFirestorePlugin implements MethodCallHandler {
             @Override
             public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
               // Store transaction.
-              int transactionId = getTransactionId(arguments);
+              int transactionId = (Integer) arguments.get("transactionId");
               transactions.append(transactionId, transaction);
               completionTasks.append(transactionId, transactionTCS);
 
               // Start operations on dart side.
               channel.invokeMethod("DoTransaction", arguments, new Result() {
                 @Override
-                public void success(Object o) {
-                  transactionTCS.setResult((Map<String, Object>) o);
+                public void success(Object doTransactionResult) {
+                  transactionTCS.setResult((Map<String, Object>) doTransactionResult);
                 }
 
                 @Override
-                public void error(String s, String s1, Object o) {
-                  result.error(s, s1, o);
+                public void error(String errorCode, String errorMessage, Object errroDetails) {
+                  result.error(errorCode, errorMessage, errroDetails);
                   transactionTCS.setResult(null);
                 }
 
@@ -270,12 +260,21 @@ public class CloudFirestorePlugin implements MethodCallHandler {
                 }
               });
 
-              // wait till transaction is complete.
+              // Wait till transaction is complete.
               try {
+                long timeout;
+                String timeoutKey = "transactionTimeout";
+                if (arguments.get(timeoutKey) instanceof Integer) {
+                  timeout = (Integer) arguments.get(timeoutKey);
+                } else {
+                  timeout = (Long) arguments.get(timeoutKey);
+                }
                 Map<String, Object> transactionResult = Tasks.await(
                         transactionTCSTask,
-                        getTransactionTimeout(arguments),
+                        timeout,
                         TimeUnit.MILLISECONDS);
+
+                // Once transaction completes return the result to the Dart side.
                 result.success(transactionResult);
               } catch (Exception e) {
                 result.error("Error performing transaction", e.getMessage(), null);
@@ -318,8 +317,12 @@ public class CloudFirestorePlugin implements MethodCallHandler {
             @Override
             protected Void doInBackground(Void... voids) {
               Map<String, Object> data = (Map<String, Object>) arguments.get("data");
-              transaction.update(getDocumentReference(arguments), data);
-              result.success(null);
+              try {
+                transaction.update(getDocumentReference(arguments), data);
+                result.success(null);
+              } catch (IllegalStateException e) {
+                result.error("Error performing Transaction#update", e.getMessage(), null);
+              }
               return null;
             }
           }.execute();
