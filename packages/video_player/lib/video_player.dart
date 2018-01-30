@@ -31,6 +31,8 @@ class DurationRange {
   String toString() => '$runtimeType(start: $start, end: $end)';
 }
 
+/// The duration, current position, buffering state, error state and settings
+/// of a [VideoPlayerController].
 class VideoPlayerValue {
   /// The total duration of the video.
   ///
