@@ -1,3 +1,13 @@
+## 0.0.5
+
+* Moved to the io.flutter.plugins org.
+
+## 0.0.4
+
+* Fixed warnings from the Dart 2.0 analyzer.
+* Simplified and upgraded Android project template to Android SDK 27.
+* Updated package description.
+
 # 0.0.3
 
 * **Breaking change**. Upgraded to Gradle 4.1 and Android Studio Gradle plugin

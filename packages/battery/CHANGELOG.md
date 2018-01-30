@@ -1,3 +1,9 @@
+## 0.1.1
+
+* Fixed warnings from the Dart 2.0 analyzer.
+* Simplified and upgraded Android project template to Android SDK 27.
+* Updated package description.
+
 ## 0.1.0
 
 * **Breaking change**. Upgraded to Gradle 4.1 and Android Studio Gradle plugin

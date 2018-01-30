@@ -1,33 +1,35 @@
 {
   "project_info": {
-    "project_number": "1067712222741",
-    "project_id": "flutter-alarmmanager-example"
+    "project_number": "469543255310",
+    "firebase_url": "https://flutter-plugins-alarmmanager.firebaseio.com",
+    "project_id": "flutter-plugins-alarmmanager",
+    "storage_bucket": "flutter-plugins-alarmmanager.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1067712222741:android:b3f895545fce0ad2",
+        "mobilesdk_app_id": "1:469543255310:android:b691665129a4b343",
         "android_client_info": {
-          "package_name": "io.flutter.androidalarmmanagerexample"
+          "package_name": "io.flutter.plugins.androidalarmmanagerexample"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1067712222741-k2jv050djreb4i551vd6q621css54tia.apps.googleusercontent.com",
-          "client_type": 3
-        },
-        {
-          "client_id": "1067712222741-qfv81bdrucm5hpnjqp8157jj1bvjjlqn.apps.googleusercontent.com",
+          "client_id": "469543255310-eb57hpmenljlgej9urc8k3iju63a70ig.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "io.flutter.androidalarmmanagerexample",
-            "certificate_hash": "0f729308cc7f95a84196351d1aa788e1f9b62e9e"
+            "package_name": "io.flutter.plugins.androidalarmmanagerexample",
+            "certificate_hash": "f8323ac5fe6e7adc1ddc5612e16b5d04d7f1358b"
           }
+        },
+        {
+          "client_id": "469543255310-39gq6cjl6h84529omissps5v81la963c.apps.googleusercontent.com",
+          "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCkXpml3lzlhOzX-ZhOWX95TdKQFZqMkHE"
+          "current_key": "AIzaSyAXOxEfOptvOfvaRhdXeoUe-KmVDYtc72M"
         }
       ],
       "services": {
@@ -35,11 +37,16 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "469543255310-39gq6cjl6h84529omissps5v81la963c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
-          "status": 1
+          "status": 2
         }
       }
     }

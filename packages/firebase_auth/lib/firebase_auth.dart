@@ -34,6 +34,23 @@ class UserInfo {
   }
 }
 
+/// Represents user profile data that can be updated by [updateProfile]
+/// The purpose of having separate class with a map is to give possibility
+/// to check if value was set to null or not provided
+class UserUpdateInfo {
+  /// Container of data that will be send in update request
+  final Map<String, String> _updateData = <String, String>{};
+
+  set displayName(String displayName) =>
+      _updateData["displayName"] = displayName;
+
+  String get displayName => _updateData["displayName"];
+
+  set photoUrl(String photoUri) => _updateData["photoUrl"] = photoUri;
+
+  String get photoUrl => _updateData["photoUrl"];
+}
+
 /// Represents a user.
 class FirebaseUser extends UserInfo {
   final List<UserInfo> providerData;
@@ -229,6 +246,14 @@ class FirebaseAuth {
     );
     final FirebaseUser currentUser = new FirebaseUser._(data);
     return currentUser;
+  }
+
+  Future<Null> updateProfile(UserUpdateInfo userUpdateInfo) async {
+    assert(userUpdateInfo != null);
+    return await channel.invokeMethod(
+      'updateProfile',
+      userUpdateInfo._updateData,
+    );
   }
 
   /// Links google account with current user and returns [Future<FirebaseUser>]

@@ -1,0 +1,16 @@
+name: camera_example
+description: Demonstrates how to use the camera plugin.
+
+dependencies:
+  path_provider: 0.3.0
+  flutter:
+    sdk: flutter
+  camera:
+    path: ../
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true

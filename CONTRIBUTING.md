@@ -56,6 +56,13 @@ To start working on a patch:
  * `git fetch upstream`
  * `git checkout upstream/master -b <name_of_your_branch>`
  * Hack away.
+ * Verify changes with [flutter_plugin_tools](https://pub.dartlang.org/packages/flutter_plugin_tools)
+```
+pub global activate flutter_plugin_tools
+pub global run flutter_plugin_tools format --plugins plugin_name
+pub global run flutter_plugin_tools analyze --plugins plugin_name
+pub global run flutter_plugin_tools test --plugins plugin_name
+```
  * `git commit -a -m "<your informative commit message>"`
  * `git push origin <name_of_your_branch>`
 
