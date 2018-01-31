@@ -91,11 +91,12 @@ void main() {
 
     group('Transaction', () {
       test('runTransaction', () async {
-        final Map<String, dynamic> result = await firestore.runTransaction((Transaction tx) async {},
+        final Map<String, dynamic> result = await firestore.runTransaction(
+            (Transaction tx) async {},
             timeout: new Duration(seconds: 3));
 
         expect(log, <Matcher>[
-          isMethodCall('Firestore#runTransaction', arguments: <String, dynamic> {
+          isMethodCall('Firestore#runTransaction', arguments: <String, dynamic>{
             'transactionId': 0,
             'transactionTimeout': 3000
           }),
@@ -104,30 +105,40 @@ void main() {
       });
 
       test('get', () async {
-        final DocumentReference documentReference = Firestore.instance.document('foo/bar');
+        final DocumentReference documentReference =
+            Firestore.instance.document('foo/bar');
         await transaction.get(documentReference);
-        expect(log, <Matcher> [
-          isMethodCall('Transaction#get', arguments: {'transactionId': 0, 'path': documentReference.path})
+        expect(log, <Matcher>[
+          isMethodCall('Transaction#get', arguments: <String, dynamic>{
+            'transactionId': 0,
+            'path': documentReference.path
+          })
         ]);
       });
 
       test('delete', () async {
-        final DocumentReference documentReference = Firestore.instance.document('foo/bar');
+        final DocumentReference documentReference =
+            Firestore.instance.document('foo/bar');
         await transaction.delete(documentReference);
-        expect(log, <Matcher> [
-          isMethodCall('Transaction#delete', arguments: {'transactionId': 0, 'path': documentReference.path})
+        expect(log, <Matcher>[
+          isMethodCall('Transaction#delete', arguments: <String, dynamic>{
+            'transactionId': 0,
+            'path': documentReference.path
+          })
         ]);
       });
 
       test('update', () async {
-        final DocumentReference documentReference = Firestore.instance.document('foo/bar');
+        final DocumentReference documentReference =
+            Firestore.instance.document('foo/bar');
         final DocumentSnapshot documentSnapshot = await documentReference.get();
         final Map<String, dynamic> data = documentSnapshot.data;
         data['key2'] = 'val2';
         await transaction.set(documentReference, data);
         expect(log, <Matcher>[
-          isMethodCall('DocumentReference#get', arguments: {'path': 'foo/bar'}),
-          isMethodCall('Transaction#set', arguments: <String, dynamic> {
+          isMethodCall('DocumentReference#get',
+              arguments: <String, dynamic>{'path': 'foo/bar'}),
+          isMethodCall('Transaction#set', arguments: <String, dynamic>{
             'transactionId': 0,
             'path': documentReference.path,
             'data': <String, dynamic>{'key1': 'val1', 'key2': 'val2'}
@@ -136,14 +147,16 @@ void main() {
       });
 
       test('set', () async {
-        final DocumentReference documentReference = Firestore.instance.document('foo/bar');
+        final DocumentReference documentReference =
+            Firestore.instance.document('foo/bar');
         final DocumentSnapshot documentSnapshot = await documentReference.get();
         final Map<String, dynamic> data = documentSnapshot.data;
         data['key2'] = 'val2';
         await transaction.set(documentReference, data);
         expect(log, <Matcher>[
-          isMethodCall('DocumentReference#get', arguments: {'path': 'foo/bar'}),
-          isMethodCall('Transaction#set', arguments: <String, dynamic> {
+          isMethodCall('DocumentReference#get',
+              arguments: <String, dynamic>{'path': 'foo/bar'}),
+          isMethodCall('Transaction#set', arguments: <String, dynamic>{
             'transactionId': 0,
             'path': documentReference.path,
             'data': <String, dynamic>{'key1': 'val1', 'key2': 'val2'}

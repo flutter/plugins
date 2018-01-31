@@ -19,7 +19,8 @@ class Firestore {
   static final Map<int, StreamController<DocumentSnapshot>> _documentObservers =
       <int, StreamController<DocumentSnapshot>>{};
 
-  static final Map<int, TransactionHandler> _transactionHandlers = <int, TransactionHandler>{};
+  static final Map<int, TransactionHandler> _transactionHandlers =
+      <int, TransactionHandler>{};
   static int _transactionHandlerId = 0;
 
   Firestore._() {
@@ -37,7 +38,8 @@ class Firestore {
         _documentObservers[call.arguments['handle']].add(snapshot);
       } else if (call.method == 'DoTransaction') {
         final int transactionId = call.arguments['transactionId'];
-        return _transactionHandlers[transactionId](new Transaction(transactionId));
+        return _transactionHandlers[transactionId](
+            new Transaction(transactionId));
       }
     });
   }
@@ -63,11 +65,15 @@ class Firestore {
   Future<Map<String, dynamic>> runTransaction(
       TransactionHandler transactionHandler,
       {Duration timeout: const Duration(seconds: 5)}) async {
-    assert(timeout.inMilliseconds > 0, 'Transaction timeout must be more than 0 milliseconds');
+    assert(timeout.inMilliseconds > 0,
+        'Transaction timeout must be more than 0 milliseconds');
     final int transactionId = _transactionHandlerId++;
     _transactionHandlers[transactionId] = transactionHandler;
-    final Map<String, dynamic> result = await channel.invokeMethod('Firestore#runTransaction',
-        <String, dynamic>{'transactionId': transactionId, 'transactionTimeout': timeout.inMilliseconds});
+    final Map<String, dynamic> result = await channel.invokeMethod(
+        'Firestore#runTransaction', <String, dynamic>{
+      'transactionId': transactionId,
+      'transactionTimeout': timeout.inMilliseconds
+    });
     return result ?? <String, dynamic>{};
   }
 }
@@ -78,7 +84,7 @@ class Transaction {
   MethodChannel _channel;
   int _transactionId;
 
-  Transaction(this._transactionId): _channel = Firestore.channel;
+  Transaction(this._transactionId) : _channel = Firestore.channel;
 
   Future<DocumentSnapshot> get(DocumentReference documentReference) async {
     final dynamic result = await _channel.invokeMethod(
@@ -86,8 +92,8 @@ class Transaction {
       'transactionId': _transactionId,
       'path': documentReference.path
     });
-    return new DocumentSnapshot._(documentReference.path, result['data'],
-        Firestore.instance);
+    return new DocumentSnapshot._(
+        documentReference.path, result['data'], Firestore.instance);
   }
 
   Future<Null> delete(DocumentReference documentReference) async {
@@ -97,7 +103,8 @@ class Transaction {
     });
   }
 
-  Future<Null> update(DocumentReference documentReference, Map<String, dynamic> data) async {
+  Future<Null> update(
+      DocumentReference documentReference, Map<String, dynamic> data) async {
     return _channel.invokeMethod('Transaction#update', <String, dynamic>{
       'transactionId': _transactionId,
       'path': documentReference.path,
@@ -105,7 +112,8 @@ class Transaction {
     });
   }
 
-  Future<Null> set(DocumentReference documentReference, Map<String, dynamic> data) async {
+  Future<Null> set(
+      DocumentReference documentReference, Map<String, dynamic> data) async {
     return _channel.invokeMethod('Transaction#set', <String, dynamic>{
       'transactionId': _transactionId,
       'path': documentReference.path,
