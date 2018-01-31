@@ -8,7 +8,6 @@ import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.SparseArray;
-
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -26,7 +25,6 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.Transaction;
-
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -226,62 +224,66 @@ public class CloudFirestorePlugin implements MethodCallHandler {
       case "Firestore#runTransaction":
         {
           final TaskCompletionSource<Map<String, Object>> transactionTCS =
-                  new TaskCompletionSource<>();
-          final Task<Map<String, Object>> transactionTCSTask =
-                  transactionTCS.getTask();
+              new TaskCompletionSource<>();
+          final Task<Map<String, Object>> transactionTCSTask = transactionTCS.getTask();
 
           final Map<String, Object> arguments = call.arguments();
-          FirebaseFirestore.getInstance().runTransaction(new Transaction.Function<Void>() {
-            @Nullable
-            @Override
-            public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
-              // Store transaction.
-              int transactionId = (Integer) arguments.get("transactionId");
-              transactions.append(transactionId, transaction);
-              completionTasks.append(transactionId, transactionTCS);
+          FirebaseFirestore.getInstance()
+              .runTransaction(
+                  new Transaction.Function<Void>() {
+                    @Nullable
+                    @Override
+                    public Void apply(@NonNull Transaction transaction)
+                        throws FirebaseFirestoreException {
+                      // Store transaction.
+                      int transactionId = (Integer) arguments.get("transactionId");
+                      transactions.append(transactionId, transaction);
+                      completionTasks.append(transactionId, transactionTCS);
 
-              // Start operations on dart side.
-              channel.invokeMethod("DoTransaction", arguments, new Result() {
-                @Override
-                public void success(Object doTransactionResult) {
-                  transactionTCS.setResult((Map<String, Object>) doTransactionResult);
-                }
+                      // Start operations on dart side.
+                      channel.invokeMethod(
+                          "DoTransaction",
+                          arguments,
+                          new Result() {
+                            @Override
+                            public void success(Object doTransactionResult) {
+                              transactionTCS.setResult((Map<String, Object>) doTransactionResult);
+                            }
 
-                @Override
-                public void error(String errorCode, String errorMessage, Object errroDetails) {
-                  result.error(errorCode, errorMessage, errroDetails);
-                  transactionTCS.setResult(null);
-                }
+                            @Override
+                            public void error(
+                                String errorCode, String errorMessage, Object errroDetails) {
+                              result.error(errorCode, errorMessage, errroDetails);
+                              transactionTCS.setResult(null);
+                            }
 
-                @Override
-                public void notImplemented() {
-                  result.error("DoTransaction not implemented", null, null);
-                  transactionTCS.setResult(null);
-                }
-              });
+                            @Override
+                            public void notImplemented() {
+                              result.error("DoTransaction not implemented", null, null);
+                              transactionTCS.setResult(null);
+                            }
+                          });
 
-              // Wait till transaction is complete.
-              try {
-                long timeout;
-                String timeoutKey = "transactionTimeout";
-                if (arguments.get(timeoutKey) instanceof Integer) {
-                  timeout = (Integer) arguments.get(timeoutKey);
-                } else {
-                  timeout = (Long) arguments.get(timeoutKey);
-                }
-                Map<String, Object> transactionResult = Tasks.await(
-                        transactionTCSTask,
-                        timeout,
-                        TimeUnit.MILLISECONDS);
+                      // Wait till transaction is complete.
+                      try {
+                        long timeout;
+                        String timeoutKey = "transactionTimeout";
+                        if (arguments.get(timeoutKey) instanceof Integer) {
+                          timeout = (Integer) arguments.get(timeoutKey);
+                        } else {
+                          timeout = (Long) arguments.get(timeoutKey);
+                        }
+                        Map<String, Object> transactionResult =
+                            Tasks.await(transactionTCSTask, timeout, TimeUnit.MILLISECONDS);
 
-                // Once transaction completes return the result to the Dart side.
-                result.success(transactionResult);
-              } catch (Exception e) {
-                result.error("Error performing transaction", e.getMessage(), null);
-              }
-              return null;
-            }
-          });
+                        // Once transaction completes return the result to the Dart side.
+                        result.success(transactionResult);
+                      } catch (Exception e) {
+                        result.error("Error performing transaction", e.getMessage(), null);
+                      }
+                      return null;
+                    }
+                  });
           break;
         }
       case "Transaction#get":
@@ -292,7 +294,8 @@ public class CloudFirestorePlugin implements MethodCallHandler {
             @Override
             protected Void doInBackground(Void... voids) {
               try {
-                DocumentSnapshot documentSnapshot = transaction.get(getDocumentReference(arguments));
+                DocumentSnapshot documentSnapshot =
+                    transaction.get(getDocumentReference(arguments));
                 Map<String, Object> snapshotMap = new HashMap<>();
                 snapshotMap.put("path", documentSnapshot.getReference().getPath());
                 if (documentSnapshot.exists()) {

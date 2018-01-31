@@ -115,82 +115,90 @@ FIRQuery *getQuery(NSDictionary *arguments) {
     result(error.flutterError);
   };
   if ([@"Firestore#runTransaction" isEqualToString:call.method]) {
-    [[FIRFirestore firestore] runTransactionWithBlock:^id(FIRTransaction *transaction, NSError **pError) {
-        NSNumber *transactionId = call.arguments[@"transactionId"];
-        NSNumber *transactionTimeout = call.arguments[@"transactionTimeout"];
+    [[FIRFirestore firestore] runTransactionWithBlock:^id(FIRTransaction *transaction,
+                                                          NSError **pError) {
+      NSNumber *transactionId = call.arguments[@"transactionId"];
+      NSNumber *transactionTimeout = call.arguments[@"transactionTimeout"];
 
-        self.transactions[transactionId] = transaction;
+      self.transactions[transactionId] = transaction;
 
-        dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+      dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
 
-        [self.channel invokeMethod:@"DoTransaction" arguments:call.arguments result:^(id doTransactionResult) {
-            self.transactionResults[transactionId] = doTransactionResult;
-            dispatch_semaphore_signal(semaphore);
+      [self.channel invokeMethod:@"DoTransaction"
+                       arguments:call.arguments
+                          result:^(id doTransactionResult) {
+                            self.transactionResults[transactionId] = doTransactionResult;
+                            dispatch_semaphore_signal(semaphore);
+                          }];
+
+      dispatch_semaphore_wait(
+          semaphore, dispatch_time(DISPATCH_TIME_NOW, [transactionTimeout integerValue] * 1000000));
+
+      return self.transactionResults[transactionId];
+    }
+        completion:^(id transactionResult, NSError *error) {
+          if (error != nil) {
+            NSLog(@"This is the transaction error: %@", error.localizedDescription);
+            result([FlutterError errorWithCode:[NSString stringWithFormat:@"%ld", error.code]
+                                       message:error.localizedDescription
+                                       details:nil]);
+          }
+          result(transactionResult);
         }];
-
-        dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW,
-            [transactionTimeout integerValue] * 1000000));
-
-        return self.transactionResults[transactionId];
-    } completion:^(id transactionResult, NSError *error) {
-      if (error != nil) {
-        NSLog(@"This is the transaction error: %@", error.localizedDescription);
-        result([FlutterError errorWithCode:[NSString stringWithFormat:@"%ld", error.code]
-        message:error.localizedDescription details:nil]);
-      }
-      result(transactionResult);
-    }];
   } else if ([@"Transaction#get" isEqualToString:call.method]) {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSNumber *transactionId = call.arguments[@"transactionId"];
-        NSString *path = call.arguments[@"path"];
-        FIRDocumentReference *documentReference = [[FIRFirestore firestore] documentWithPath:path];
-        FIRTransaction *transaction = self.transactions[transactionId];
-        NSError *pError = [[NSError alloc] init];
+      NSNumber *transactionId = call.arguments[@"transactionId"];
+      NSString *path = call.arguments[@"path"];
+      FIRDocumentReference *documentReference = [[FIRFirestore firestore] documentWithPath:path];
+      FIRTransaction *transaction = self.transactions[transactionId];
+      NSError *pError = [[NSError alloc] init];
 
-        FIRDocumentSnapshot *snapshot = [transaction getDocument:documentReference error:&pError];
+      FIRDocumentSnapshot *snapshot = [transaction getDocument:documentReference error:&pError];
 
-        if (pError != nil) {
-          result([FlutterError errorWithCode:[NSString stringWithFormat:@"%tu", [pError code]]
-                                     message:[pError localizedDescription] details:nil]);
-        } else if (snapshot != nil) {
-          result(@{
-              @"path": snapshot.reference.path,
-              @"data": snapshot.exists ? snapshot.data : [NSNull null]
-          });
-        } else {
-          result([FlutterError errorWithCode:@"DOCUMENT_NOT_FOUND" message:@"Document not found." details:nil]);
-        }
+      if (pError != nil) {
+        result([FlutterError errorWithCode:[NSString stringWithFormat:@"%tu", [pError code]]
+                                   message:[pError localizedDescription]
+                                   details:nil]);
+      } else if (snapshot != nil) {
+        result(@{
+          @"path" : snapshot.reference.path,
+          @"data" : snapshot.exists ? snapshot.data : [NSNull null]
+        });
+      } else {
+        result([FlutterError errorWithCode:@"DOCUMENT_NOT_FOUND"
+                                   message:@"Document not found."
+                                   details:nil]);
+      }
     });
   } else if ([@"Transaction#update" isEqualToString:call.method]) {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSNumber *transactionId = call.arguments[@"transactionId"];
-        NSString *path = call.arguments[@"path"];
-        FIRDocumentReference *documentReference = [[FIRFirestore firestore] documentWithPath:path];
-        FIRTransaction *transaction = self.transactions[transactionId];
+      NSNumber *transactionId = call.arguments[@"transactionId"];
+      NSString *path = call.arguments[@"path"];
+      FIRDocumentReference *documentReference = [[FIRFirestore firestore] documentWithPath:path];
+      FIRTransaction *transaction = self.transactions[transactionId];
 
-        [transaction updateData:call.arguments[@"data"] forDocument:documentReference];
-        result(@{});
+      [transaction updateData:call.arguments[@"data"] forDocument:documentReference];
+      result(@{});
     });
   } else if ([@"Transaction#set" isEqualToString:call.method]) {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSNumber *transactionId = call.arguments[@"transactionId"];
-        NSString *path = call.arguments[@"path"];
-        FIRDocumentReference *documentReference = [[FIRFirestore firestore] documentWithPath:path];
-        FIRTransaction *transaction = self.transactions[transactionId];
+      NSNumber *transactionId = call.arguments[@"transactionId"];
+      NSString *path = call.arguments[@"path"];
+      FIRDocumentReference *documentReference = [[FIRFirestore firestore] documentWithPath:path];
+      FIRTransaction *transaction = self.transactions[transactionId];
 
-        [transaction setData:call.arguments[@"data"] forDocument:documentReference];
-        result(@{});
+      [transaction setData:call.arguments[@"data"] forDocument:documentReference];
+      result(@{});
     });
   } else if ([@"Transaction#delete" isEqualToString:call.method]) {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSNumber *transactionId = call.arguments[@"transactionId"];
-        NSString *path = call.arguments[@"path"];
-        FIRDocumentReference *documentReference = [[FIRFirestore firestore] documentWithPath:path];
-        FIRTransaction *transaction = self.transactions[transactionId];
+      NSNumber *transactionId = call.arguments[@"transactionId"];
+      NSString *path = call.arguments[@"path"];
+      FIRDocumentReference *documentReference = [[FIRFirestore firestore] documentWithPath:path];
+      FIRTransaction *transaction = self.transactions[transactionId];
 
-        [transaction deleteDocument:documentReference];
-        result(@{});
+      [transaction deleteDocument:documentReference];
+      result(@{});
     });
   } else if ([@"DocumentReference#setData" isEqualToString:call.method]) {
     NSString *path = call.arguments[@"path"];
