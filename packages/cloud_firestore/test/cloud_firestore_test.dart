@@ -82,6 +82,10 @@ void main() {
             };
           case 'Transaction#set':
             return null;
+          case 'Transaction#update':
+            return null;
+          case 'Transaction#delete':
+            return null;
           default:
             return null;
         }
