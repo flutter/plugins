@@ -1,3 +1,7 @@
+## 0.2.7
+
+* Add transaction support.
+
 ## 0.2.6
 
 * Build fixes for iOS
