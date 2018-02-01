@@ -39,7 +39,8 @@ class Firestore {
       } else if (call.method == 'DoTransaction') {
         final int transactionId = call.arguments['transactionId'];
         return _transactionHandlers[transactionId](
-            new Transaction(transactionId));
+          new Transaction(transactionId),
+        );
       }
     });
   }
@@ -61,7 +62,27 @@ class Firestore {
     return new DocumentReference._(this, path.split('/'));
   }
 
-  /// Runs a set of atomic database operations.
+  /// Executes the given TransactionHandler and then attempts to commit the
+  /// changes applied within an atomic transaction.
+  ///
+  /// In the TransactionHandler, a set of reads and writes can be performed
+  /// atomically using the Transaction object passed to the TransactionHandler.
+  /// After the TransactionHandler is run, Firestore will attempt to apply the
+  /// changes to the server. If any of the data read has been modified outside
+  /// of this transaction since being read, then the transaction will be
+  /// retried by executing the updateBlock again. If the transaction still
+  /// fails after 5 retries, then the transaction will fail.
+  ///
+  /// The TransactionHandler may be executed multiple times, it should be able
+  /// to handle multiple executions.
+  ///
+  /// Data accessed with the transaction will not reflect local changes that
+  /// have not been committed. For this reason, it is required that all
+  /// reads are performed before any writes. Transactions must be performed
+  /// while online. Otherwise, reads will fail, and the final commit will fail.
+  ///
+  /// By default transactions are limited to 5 seconds of execution time. This
+  /// timeout can be adjusted by setting the timeout parameter.
   Future<Map<String, dynamic>> runTransaction(
       TransactionHandler transactionHandler,
       {Duration timeout: const Duration(seconds: 5)}) async {
@@ -78,46 +99,51 @@ class Firestore {
   }
 }
 
-typedef Future<Map<String, dynamic>> TransactionHandler(Transaction tx);
+typedef Future<dynamic> TransactionHandler(Transaction transaction);
 
 class Transaction {
-  MethodChannel _channel;
   int _transactionId;
 
-  Transaction(this._transactionId) : _channel = Firestore.channel;
+  Transaction(this._transactionId);
 
   Future<DocumentSnapshot> get(DocumentReference documentReference) async {
-    final dynamic result = await _channel.invokeMethod(
-        'Transaction#get', <String, dynamic>{
+    final dynamic result = await Firestore.channel
+        .invokeMethod('Transaction#get', <String, dynamic>{
       'transactionId': _transactionId,
-      'path': documentReference.path
+      'path': documentReference.path,
     });
-    return new DocumentSnapshot._(
-        documentReference.path, result['data'], Firestore.instance);
+    if (result != null) {
+      return new DocumentSnapshot._(
+          documentReference.path, result['data'], Firestore.instance);
+    } else {
+      return null;
+    }
   }
 
   Future<Null> delete(DocumentReference documentReference) async {
-    return _channel.invokeMethod('Transaction#delete', <String, dynamic>{
+    return Firestore.channel
+        .invokeMethod('Transaction#delete', <String, dynamic>{
       'transactionId': _transactionId,
-      'path': documentReference.path
+      'path': documentReference.path,
     });
   }
 
   Future<Null> update(
       DocumentReference documentReference, Map<String, dynamic> data) async {
-    return _channel.invokeMethod('Transaction#update', <String, dynamic>{
+    return Firestore.channel
+        .invokeMethod('Transaction#update', <String, dynamic>{
       'transactionId': _transactionId,
       'path': documentReference.path,
-      'data': data
+      'data': data,
     });
   }
 
   Future<Null> set(
       DocumentReference documentReference, Map<String, dynamic> data) async {
-    return _channel.invokeMethod('Transaction#set', <String, dynamic>{
+    return Firestore.channel.invokeMethod('Transaction#set', <String, dynamic>{
       'transactionId': _transactionId,
       'path': documentReference.path,
-      'data': data
+      'data': data,
     });
   }
 }

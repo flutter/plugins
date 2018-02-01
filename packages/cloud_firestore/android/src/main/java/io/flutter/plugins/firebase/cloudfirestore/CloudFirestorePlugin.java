@@ -240,7 +240,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
                       transactions.append(transactionId, transaction);
                       completionTasks.append(transactionId, transactionTCS);
 
-                      // Start operations on dart side.
+                      // Start operations on Dart side.
                       channel.invokeMethod(
                           "DoTransaction",
                           arguments,
@@ -252,27 +252,23 @@ public class CloudFirestorePlugin implements MethodCallHandler {
 
                             @Override
                             public void error(
-                                String errorCode, String errorMessage, Object errroDetails) {
-                              result.error(errorCode, errorMessage, errroDetails);
-                              transactionTCS.setResult(null);
+                                String errorCode, String errorMessage, Object errorDetails) {
+                              // result.error(errorCode, errorMessage, errroDetails);
+                              transactionTCS.setException(new Exception("Do transaction failed."));
                             }
 
                             @Override
                             public void notImplemented() {
-                              result.error("DoTransaction not implemented", null, null);
-                              transactionTCS.setResult(null);
+                              // result.error("DoTransaction not implemented", null, null);
+                              transactionTCS.setException(
+                                  new Exception("DoTransaction not implemented"));
                             }
                           });
 
                       // Wait till transaction is complete.
                       try {
-                        long timeout;
                         String timeoutKey = "transactionTimeout";
-                        if (arguments.get(timeoutKey) instanceof Integer) {
-                          timeout = (Integer) arguments.get(timeoutKey);
-                        } else {
-                          timeout = (Long) arguments.get(timeoutKey);
-                        }
+                        long timeout = ((Number) arguments.get(timeoutKey)).longValue();
                         Map<String, Object> transactionResult =
                             Tasks.await(transactionTCSTask, timeout, TimeUnit.MILLISECONDS);
 

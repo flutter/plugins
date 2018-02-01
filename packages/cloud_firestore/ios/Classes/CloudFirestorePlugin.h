@@ -5,8 +5,4 @@
 #import <Flutter/Flutter.h>
 
 @interface FLTCloudFirestorePlugin : NSObject<FlutterPlugin>
-
-@property(nonatomic) NSMutableDictionary *transactions;
-@property(nonatomic) NSMutableDictionary *transactionResults;
-
 @end
