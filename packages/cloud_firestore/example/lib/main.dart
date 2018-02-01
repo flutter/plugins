@@ -6,6 +6,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart';
 
 void main() {
   runApp(new MaterialApp(title: 'Firestore Example', home: new MyHomePage()));
@@ -34,10 +35,28 @@ class MyHomePage extends StatelessWidget {
   CollectionReference get messages => Firestore.instance.collection('messages');
 
   Future<Null> _addMessage() async {
+//    Firestore.instance
+//        .collection('books')
+//        .document()
+//        .setData(<String, String>{'message': 'Hello world!'});
+    final TransactionHandler transactionHandler = (Transaction tx) async {
+      print('handler on dart side');
+      final DocumentSnapshot documentSnapshot = await tx
+          .get(Firestore.instance.document('books/BxsUKLVDF3BLTlQO8puk'));
+
+      await tx.update(documentSnapshot.reference, <String, dynamic>{
+        'message': documentSnapshot.data['message'] + ' good'
+      });
+      return <String, dynamic>{'val': 1};
+    };
     Firestore.instance
-        .collection('books')
-        .document()
-        .setData(<String, String>{'message': 'Hello world!'});
+        .runTransaction(transactionHandler, timeout: new Duration(seconds: 10))
+        .then((Map<String, dynamic> result) {
+      print(result);
+      print('transaction is complete');
+    }).catchError((PlatformException e) {
+      print('dart side error message: ' + e.message);
+    });
   }
 
   @override
