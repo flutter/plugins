@@ -32,6 +32,8 @@ You're good to go!
 ### Example
 
 ``` dart
+import 'package:image_picker/image_picker.dart';
+
 class _MyHomePageState extends State<MyHomePage> {
   File imageFile;
 
