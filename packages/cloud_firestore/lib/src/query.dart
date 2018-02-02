@@ -79,6 +79,18 @@ class Query {
     return controller.stream;
   }
 
+  /// Fetch the documents for this query
+  Future<QuerySnapshot> getDocuments() async {
+    final Map<String, dynamic> data = await Firestore.channel.invokeMethod(
+      'Query#getDocuments',
+      <String, dynamic>{
+        'path': path,
+        'parameters': _parameters,
+      },
+    );
+    return new QuerySnapshot._(data, _firestore);
+  }
+
   /// Obtains a CollectionReference corresponding to this query's location.
   CollectionReference reference() =>
       new CollectionReference._(_firestore, _pathComponents);

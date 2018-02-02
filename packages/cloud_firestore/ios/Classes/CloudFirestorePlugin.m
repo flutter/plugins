@@ -78,6 +78,42 @@ FIRQuery *getQuery(NSDictionary *arguments) {
   return query;
 }
 
+NSDictionary *parseQuerySnapshot(FIRQuerySnapshot *snapshot) {
+  NSMutableArray *paths = [NSMutableArray array];
+  NSMutableArray *documents = [NSMutableArray array];
+  for (FIRDocumentSnapshot *document in snapshot.documents) {
+    [paths addObject:document.reference.path];
+    [documents addObject:document.data];
+  }
+  NSMutableArray *documentChanges = [NSMutableArray array];
+  for (FIRDocumentChange *documentChange in snapshot.documentChanges) {
+    NSString *type;
+    switch (documentChange.type) {
+      case FIRDocumentChangeTypeAdded:
+        type = @"DocumentChangeType.added";
+        break;
+      case FIRDocumentChangeTypeModified:
+        type = @"DocumentChangeType.modified";
+        break;
+      case FIRDocumentChangeTypeRemoved:
+        type = @"DocumentChangeType.removed";
+        break;
+    }
+    [documentChanges addObject:@{
+      @"type" : type,
+      @"document" : documentChange.document.data,
+      @"path" : documentChange.document.reference.path,
+      @"oldIndex" : [NSNumber numberWithInt:documentChange.oldIndex],
+      @"newIndex" : [NSNumber numberWithInt:documentChange.newIndex],
+    }];
+  }
+  return @{
+    @"paths" : paths,
+    @"documentChanges" : documentChanges,
+    @"documents" : documents,
+  };
+}
+
 @interface FLTCloudFirestorePlugin ()
 @property(nonatomic, retain) FlutterMethodChannel *channel;
 @end
@@ -248,41 +284,9 @@ FIRQuery *getQuery(NSDictionary *arguments) {
     id<FIRListenerRegistration> listener = [query
         addSnapshotListener:^(FIRQuerySnapshot *_Nullable snapshot, NSError *_Nullable error) {
           if (error) result(error.flutterError);
-          NSMutableArray *paths = [NSMutableArray array];
-          NSMutableArray *documents = [NSMutableArray array];
-          for (FIRDocumentSnapshot *document in snapshot.documents) {
-            [paths addObject:document.reference.path];
-            [documents addObject:document.data];
-          }
-          NSMutableArray *documentChanges = [NSMutableArray array];
-          for (FIRDocumentChange *documentChange in snapshot.documentChanges) {
-            NSString *type;
-            switch (documentChange.type) {
-              case FIRDocumentChangeTypeAdded:
-                type = @"DocumentChangeType.added";
-                break;
-              case FIRDocumentChangeTypeModified:
-                type = @"DocumentChangeType.modified";
-                break;
-              case FIRDocumentChangeTypeRemoved:
-                type = @"DocumentChangeType.removed";
-                break;
-            }
-            [documentChanges addObject:@{
-              @"type" : type,
-              @"document" : documentChange.document.data,
-              @"path" : documentChange.document.reference.path,
-              @"oldIndex" : [NSNumber numberWithInt:documentChange.oldIndex],
-              @"newIndex" : [NSNumber numberWithInt:documentChange.newIndex],
-            }];
-          }
-          [self.channel invokeMethod:@"QuerySnapshot"
-                           arguments:@{
-                             @"handle" : handle,
-                             @"paths" : paths,
-                             @"documents" : documents,
-                             @"documentChanges" : documentChanges
-                           }];
+          NSMutableDictionary *arguments = [parseQuerySnapshot(snapshot) mutableCopy];
+          [arguments setObject:handle forKey:@"handle"];
+          [self.channel invokeMethod:@"QuerySnapshot" arguments:arguments];
         }];
     _listeners[handle] = listener;
     result(handle);
@@ -302,6 +306,20 @@ FIRQuery *getQuery(NSDictionary *arguments) {
         }];
     _listeners[handle] = listener;
     result(handle);
+  } else if ([@"Query#getDocuments" isEqualToString:call.method]) {
+    FIRQuery *query;
+    @try {
+      query = getQuery(call.arguments);
+    } @catch (NSException *exception) {
+      result([FlutterError errorWithCode:@"invalid_query"
+                                 message:[exception name]
+                                 details:[exception reason]]);
+    }
+    [query getDocumentsWithCompletion:^(FIRQuerySnapshot *_Nullable snapshot,
+                                        NSError *_Nullable error) {
+      if (error) result(error.flutterError);
+      result(parseQuerySnapshot(snapshot));
+    }];
   } else if ([@"Query#removeListener" isEqualToString:call.method]) {
     NSNumber *handle = call.arguments[@"handle"];
     [[_listeners objectForKey:handle] remove];
