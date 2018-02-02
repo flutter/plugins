@@ -31,14 +31,37 @@ class DurationRange {
   String toString() => '$runtimeType(start: $start, end: $end)';
 }
 
+/// The duration, current position, buffering state, error state and settings
+/// of a [VideoPlayerController].
 class VideoPlayerValue {
+  /// The total duration of the video.
+  ///
+  /// Is null when [initialized] is false.
   final Duration duration;
+
+  /// The current playback position.
   final Duration position;
+
+  /// The currently buffered ranges.
   final List<DurationRange> buffered;
+
+  /// True if the video is playing. False if it's paused.
   final bool isPlaying;
+
+  /// True if the video is looping.
   final bool isLooping;
+
+  /// The current volume of the playback.
   final double volume;
+
+  /// A description of the error if present.
+  ///
+  /// If [hasError] is false this is [null].
   final String errorDescription;
+
+  /// The [size] of the currently loaded video.
+  ///
+  /// Is null when [initialized] is false.
   final Size size;
 
   VideoPlayerValue({
@@ -58,7 +81,7 @@ class VideoPlayerValue {
       : this(duration: null, errorDescription: errorDescription);
 
   bool get initialized => duration != null;
-  bool get isErroneous => errorDescription != null;
+  bool get hasError => errorDescription != null;
   double get aspectRatio => size.width / size.height;
 
   VideoPlayerValue copyWith({

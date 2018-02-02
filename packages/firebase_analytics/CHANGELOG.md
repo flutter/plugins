@@ -1,3 +1,7 @@
+## 0.2.2+1
+
+* Updated description to clarify this is 'Google Analytics for Firebase'
+
 ## 0.2.2
 
 * Moved to the io.flutter.plugins organization.

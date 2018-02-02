@@ -1,5 +1,9 @@
-## 0.2.7
+## 0.2.8
 * Support for Query.getDocuments
+
+## 0.2.7
+
+* Add transaction support.
 
 ## 0.2.6
 
