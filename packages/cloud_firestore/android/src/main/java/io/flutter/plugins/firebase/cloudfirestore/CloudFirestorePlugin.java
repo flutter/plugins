@@ -398,7 +398,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
         {
           Map<String, Object> arguments = call.arguments();
           Query query = getQuery(arguments);
-          Task<QuerySnapshot> task =  query.get();
+          Task<QuerySnapshot> task = query.get();
           task.addOnSuccessListener(
                   new OnSuccessListener<QuerySnapshot>() {
                     @Override
