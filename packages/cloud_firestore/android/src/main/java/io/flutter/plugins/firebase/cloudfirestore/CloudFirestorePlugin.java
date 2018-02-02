@@ -110,7 +110,6 @@ public class CloudFirestorePlugin implements MethodCallHandler {
 
   private Transaction getTransaction(Map<String, Object> arguments) {
     return transactions.get((Integer) arguments.get("transactionId"));
-
   }
 
   private Query getQuery(Map<String, Object> arguments) {
@@ -398,8 +397,8 @@ public class CloudFirestorePlugin implements MethodCallHandler {
       case "Query#getDocuments":
         {
           Map<String, Object> arguments = call.arguments();
-          CollectionReference collectionReference = getCollectionReference(arguments);
-          Task<QuerySnapshot> task = collectionReference.get();
+          Query query = getQuery(arguments);
+          Task<QuerySnapshot> task =  query.get();
           task.addOnSuccessListener(
                   new OnSuccessListener<QuerySnapshot>() {
                     @Override

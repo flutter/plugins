@@ -85,6 +85,7 @@ class Query {
       'Query#getDocuments',
       <String, dynamic>{
         'path': path,
+        'parameters': _parameters,
       },
     );
     return new QuerySnapshot._(data, _firestore);

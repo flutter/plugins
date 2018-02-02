@@ -431,7 +431,13 @@ void main() {
             <Matcher>[
               isMethodCall(
                 'Query#getDocuments',
-                arguments: <String, dynamic>{'path': 'foo'},
+                arguments: <String, dynamic>{
+                  'path': 'foo',
+                  'parameters': <String, dynamic>{
+                    'where': <List<dynamic>>[],
+                    'orderBy': <List<dynamic>>[],
+                  },
+                },
               ),
             ],
           ),
