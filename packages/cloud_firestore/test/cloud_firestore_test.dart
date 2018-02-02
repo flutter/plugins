@@ -63,6 +63,19 @@ void main() {
               (_) {},
             );
             return handle;
+          case 'Query#getDocuments':
+            return <String, dynamic>{
+              'paths': <String>["${methodCall.arguments['path']}/0"],
+              'documents': <dynamic>[kMockDocumentSnapshotData],
+              'documentChanges': <dynamic>[
+                <String, dynamic>{
+                  'oldIndex': -1,
+                  'newIndex': 0,
+                  'type': 'DocumentChangeType.added',
+                  'document': kMockDocumentSnapshotData,
+                },
+              ],
+            };
           case 'DocumentReference#setData':
             return true;
           case 'DocumentReference#get':
@@ -405,6 +418,33 @@ void main() {
         final CollectionReference colRef =
             collectionReference.document('bar').getCollection('baz');
         expect(colRef.path, 'foo/bar/baz');
+      });
+    });
+
+    group('Query', () {
+      test('getDocuments', () async {
+        final QuerySnapshot snapshot = await collectionReference.getDocuments();
+        final DocumentSnapshot document = snapshot.documents.first;
+        expect(
+          log,
+          equals(
+            <Matcher>[
+              isMethodCall(
+                'Query#getDocuments',
+                arguments: <String, dynamic>{
+                  'path': 'foo',
+                  'parameters': <String, dynamic>{
+                    'where': <List<dynamic>>[],
+                    'orderBy': <List<dynamic>>[],
+                  },
+                },
+              ),
+            ],
+          ),
+        );
+        expect(document.documentID, equals('0'));
+        expect(document.reference.path, equals('foo/0'));
+        expect(document.data, equals(kMockDocumentSnapshotData));
       });
     });
   });
