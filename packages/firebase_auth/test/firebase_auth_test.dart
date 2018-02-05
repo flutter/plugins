@@ -36,6 +36,7 @@ void main() {
           case "startListeningAuthState":
             return mockHandleId++;
             break;
+          case "sendPasswordResetEmail":
           case "updateProfile":
             return null;
             break;
@@ -202,6 +203,23 @@ void main() {
             arguments: <String, String>{
               'email': kMockEmail,
               'password': kMockPassword,
+            },
+          ),
+        ],
+      );
+    });
+
+    test('sendPasswordResetEmail', () async {
+      await auth.sendPasswordResetEmail(
+        email: kMockEmail,
+      );
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'sendPasswordResetEmail',
+            arguments: <String, String>{
+              'email': kMockEmail,
             },
           ),
         ],

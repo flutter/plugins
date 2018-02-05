@@ -1,3 +1,7 @@
+## 0.4.4
+
+* Added support for sendPasswordResetEmail
+
 ## 0.4.3
 
 * Moved to the io.flutter.plugins organization.
