@@ -48,6 +48,11 @@ void main() {
     });
 
     test('reading', () async {
+      expect(preferences.get('String'), kTestValues['flutter.String']);
+      expect(preferences.get('bool'), kTestValues['flutter.bool']);
+      expect(preferences.get('int'), kTestValues['flutter.int']);
+      expect(preferences.get('double'), kTestValues['flutter.double']);
+      expect(preferences.get('List'), kTestValues['flutter.List']);
       expect(preferences.getString('String'), kTestValues['flutter.String']);
       expect(preferences.getBool('bool'), kTestValues['flutter.bool']);
       expect(preferences.getInt('int'), kTestValues['flutter.int']);
