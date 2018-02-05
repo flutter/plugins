@@ -46,7 +46,7 @@ class SharedPreferences {
   /// in sync since the setter method might fail for any reason.
   final Map<String, Object> _preferenceCache;
 
-  /// Reads a value from persistent storage, and gives back the value.
+  /// Reads a value of any type from persistent storage.
   dynamic get(String key) => _preferenceCache[key];
 
   /// Reads a value from persistent storage, throwing an exception if it's not a
