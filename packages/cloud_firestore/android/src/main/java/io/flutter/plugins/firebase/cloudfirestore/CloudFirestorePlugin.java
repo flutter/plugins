@@ -242,6 +242,62 @@ public class CloudFirestorePlugin implements MethodCallHandler {
   @Override
   public void onMethodCall(MethodCall call, final Result result) {
     switch (call.method) {
+      case "WriteBatch#create":
+        {
+          int handle = nextBatchHandle++;
+          WriteBatch batch = FirebaseFirestore.getInstance().batch();
+          batches.put(handle, batch);
+          result.success(handle);
+          break;
+        }
+      case "WriteBatch#setData":
+        {
+          Map<String, Object> arguments = call.arguments();
+          int handle = (Integer) arguments.get("handle");
+          DocumentReference reference = getDocumentReference(arguments);
+          @SuppressWarnings("unchecked")
+          Map<String, Object> options = (Map<String, Object>) arguments.get("options");
+          WriteBatch batch = batches.get(handle);
+          if (options != null && (Boolean) options.get("merge")) {
+            batch.set(reference, arguments.get("data"), SetOptions.merge());
+          } else {
+            batch.set(reference, arguments.get("data"));
+          }
+          result.success(null);
+          break;
+        }
+      case "WriteBatch#updateData":
+        {
+          Map<String, Object> arguments = call.arguments();
+          int handle = (Integer) arguments.get("handle");
+          DocumentReference reference = getDocumentReference(arguments);
+          @SuppressWarnings("unchecked")
+          Map<String, Object> data = (Map<String, Object>) arguments.get("data");
+          WriteBatch batch = batches.get(handle);
+          batch.update(reference, data);
+          result.success(null);
+          break;
+        }
+      case "WriteBatch#delete":
+        {
+          Map<String, Object> arguments = call.arguments();
+          int handle = (Integer) arguments.get("handle");
+          DocumentReference reference = getDocumentReference(arguments);
+          WriteBatch batch = batches.get(handle);
+          batch.delete(reference);
+          result.success(null);
+          break;
+        }
+      case "WriteBatch#commit":
+        {
+          Map<String, Object> arguments = call.arguments();
+          int handle = (Integer) arguments.get("handle");
+          WriteBatch batch = batches.get(handle);
+          Task<Void> task = batch.commit();
+          batches.delete(handle);
+          addDefaultListeners("commit", task, result);
+          break;
+        }
       case "Firestore#runTransaction":
         {
           final TaskCompletionSource<Map<String, Object>> transactionTCS =
