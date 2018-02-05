@@ -156,6 +156,18 @@ class FirebaseAuth {
     return currentUser;
   }
 
+  Future<Null> sendPasswordResetEmail({
+    @required String email,
+  }) async {
+    assert(email != null);
+    return await channel.invokeMethod(
+      'sendPasswordResetEmail',
+      <String, String>{
+        'email': email,
+      },
+    );
+  }
+
   Future<FirebaseUser> signInWithEmailAndPassword({
     @required String email,
     @required String password,
