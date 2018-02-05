@@ -477,7 +477,7 @@ void main() {
         _checkEncodeDecode<dynamic>(codec, message);
     group('WriteBatch', () {
       test('set', () async {
-        final WriteBatch batch = new WriteBatch();
+        final WriteBatch batch = firestore.batch();
         batch.setData(
           collectionReference.document('bar'),
           <String, String>{'bazKey': 'quxValue'},
@@ -506,7 +506,7 @@ void main() {
         );
       });
       test('merge set', () async {
-        final WriteBatch batch = new WriteBatch();
+        final WriteBatch batch = firestore.batch();
         batch.setData(
           collectionReference.document('bar'),
           <String, String>{'bazKey': 'quxValue'},
@@ -534,7 +534,7 @@ void main() {
         );
       });
       test('update', () async {
-        final WriteBatch batch = new WriteBatch();
+        final WriteBatch batch = firestore.batch();
         batch.updateData(
           collectionReference.document('bar'),
           <String, String>{'bazKey': 'quxValue'},
@@ -562,7 +562,7 @@ void main() {
         );
       });
       test('delete', () async {
-        final WriteBatch batch = new WriteBatch();
+        final WriteBatch batch = firestore.batch();
         batch.delete(collectionReference.document('bar'));
         await batch.commit();
         expect(

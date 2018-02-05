@@ -11,7 +11,7 @@ part of cloud_firestore;
 /// Once committed, no further operations can be performed on the [WriteBatch],
 /// nor can it be committed again.
 class WriteBatch {
-  WriteBatch()
+  WriteBatch._()
       : _handle = Firestore.channel.invokeMethod(
           'WriteBatch#create',
         );
@@ -22,8 +22,9 @@ class WriteBatch {
   /// Indicator to whether or not this [WriteBatch] has been committed.
   bool _committed = false;
 
-  /// Processes all operations in this [WriteBatch] and prevents any future
-  /// operations from being added.
+  /// Commits all of the writes in this write batch as a single atomic unit.
+  ///
+  /// Calling this method prevents any future operations from being added.
   Future<Null> commit() async {
     if (!_committed) {
       _committed = true;
@@ -35,14 +36,14 @@ class WriteBatch {
     }
   }
 
-  /// Adds a delete operation for the given [DocumentReference].
-  void delete(DocumentReference reference) {
+  /// Deletes the document referred to by [document].
+  void delete(DocumentReference document) {
     if (!_committed) {
       _handle.then((int handle) {
         _actions.add(
           Firestore.channel.invokeMethod(
             'WriteBatch#delete',
-            <String, dynamic>{'handle': handle, 'path': reference.path},
+            <String, dynamic>{'handle': handle, 'path': document.path},
           ),
         );
       });
@@ -52,10 +53,13 @@ class WriteBatch {
     }
   }
 
-  /// Adds a write operation for the given [DocumentReference]. If the document
-  /// does not yet exist, it will be created. If you pass [SetOptions], the
-  /// provided data will be merged into an existing document.
-  void setData(DocumentReference reference, Map<String, dynamic> data,
+  /// Writes to the document referred to by [document].
+  ///
+  /// If the document does not yet exist, it will be created.
+  ///
+  /// If you pass [SetOptions], the provided data will be merged into an
+  /// existing document.
+  void setData(DocumentReference document, Map<String, dynamic> data,
       [SetOptions options]) {
     if (!_committed) {
       _handle.then((int handle) {
@@ -64,7 +68,7 @@ class WriteBatch {
             'WriteBatch#setData',
             <String, dynamic>{
               'handle': handle,
-              'path': reference.path,
+              'path': document.path,
               'data': data,
               'options': options?._data,
             },
@@ -77,10 +81,10 @@ class WriteBatch {
     }
   }
 
-  /// Adds an update operation for the given [DocumentReference].
+  /// Updates fields in the document referred to by [document].
   ///
-  /// If the document doesn't exist yet, the operation will fail.
-  void updateData(DocumentReference reference, Map<String, dynamic> data) {
+  /// If the document does not exist, the operation will fail.
+  void updateData(DocumentReference document, Map<String, dynamic> data) {
     if (!_committed) {
       _handle.then((int handle) {
         _actions.add(
@@ -88,7 +92,7 @@ class WriteBatch {
             'WriteBatch#updateData',
             <String, dynamic>{
               'handle': handle,
-              'path': reference.path,
+              'path': document.path,
               'data': data,
             },
           ),
