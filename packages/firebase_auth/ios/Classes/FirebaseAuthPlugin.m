@@ -93,6 +93,12 @@ int nextHandle = 0;
                              completion:^(FIRUser *user, NSError *error) {
                                [self sendResult:result forUser:user error:error];
                              }];
+  } else if ([@"sendPasswordResetEmail" isEqualToString:call.method]) {
+    NSString *email = call.arguments[@"email"];
+    [[FIRAuth auth] sendPasswordResetWithEmail:email
+                                    completion:^(NSError *error) {
+                                      [self sendResult:result forUser:nil error:error];
+                                    }];
   } else if ([@"signInWithEmailAndPassword" isEqualToString:call.method]) {
     NSString *email = call.arguments[@"email"];
     NSString *password = call.arguments[@"password"];

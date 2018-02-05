@@ -58,6 +58,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       case "createUserWithEmailAndPassword":
         handleCreateUserWithEmailAndPassword(call, result);
         break;
+      case "sendPasswordResetEmail":
+        handleSendPasswordResetEmail(call, result);
+        break;
       case "signInWithEmailAndPassword":
         handleSignInWithEmailAndPassword(call, result);
         break;
@@ -138,6 +141,16 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     firebaseAuth
         .createUserWithEmailAndPassword(email, password)
         .addOnCompleteListener(new SignInCompleteListener(result));
+  }
+
+  private void handleSendPasswordResetEmail(MethodCall call, final Result result) {
+    @SuppressWarnings("unchecked")
+    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    String email = arguments.get("email");
+
+    firebaseAuth
+        .sendPasswordResetEmail(email)
+        .addOnCompleteListener(new TaskVoidCompleteListener(result));
   }
 
   private void handleSignInWithEmailAndPassword(MethodCall call, final Result result) {
@@ -301,6 +314,24 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         FirebaseUser user = task.getResult().getUser();
         ImmutableMap<String, Object> userMap = mapFromUser(user);
         result.success(userMap);
+      }
+    }
+  }
+
+  private class TaskVoidCompleteListener implements OnCompleteListener<Void> {
+    private final Result result;
+
+    TaskVoidCompleteListener(Result result) {
+      this.result = result;
+    }
+
+    @Override
+    public void onComplete(@NonNull Task<Void> task) {
+      if (!task.isSuccessful()) {
+        Exception e = task.getException();
+        result.error(ERROR_REASON_EXCEPTION, e.getMessage(), null);
+      } else {
+        result.success(null);
       }
     }
   }
