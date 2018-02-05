@@ -56,9 +56,9 @@ public class CloudFirestorePlugin implements MethodCallHandler {
   private final SparseArray<EventObserver> observers = new SparseArray<>();
   private final SparseArray<DocumentObserver> documentObservers = new SparseArray<>();
   private final SparseArray<ListenerRegistration> listenerRegistrations = new SparseArray<>();
+  private final SparseArray<WriteBatch> batches = new SparseArray<>();
   private final SparseArray<Transaction> transactions = new SparseArray<>();
   private final SparseArray<TaskCompletionSource> completionTasks = new SparseArray<>();
-  private final SparseArray<WriteBatch> batches = new SparseArray<>();
 
   public static void registerWith(PluginRegistry.Registrar registrar) {
     final MethodChannel channel =
