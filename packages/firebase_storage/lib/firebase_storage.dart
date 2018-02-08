@@ -53,7 +53,7 @@ class StorageReference {
         <String, String>{'path': _pathComponents.join("/")});
   }
 
-  String getPath() => _pathComponents.join("/");
+  String get path => _pathComponents.join('/');
 }
 
 class StorageUploadTask {
