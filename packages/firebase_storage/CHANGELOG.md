@@ -1,3 +1,7 @@
+## 0.1.3
+
+* Added StorageReference `path` getter to retrieve the path component for the storage node.
+
 ## 0.1.2
 
 * Added StorageReference delete function to remove files from Firebase.
