@@ -153,7 +153,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     _creatingCompleter.complete(null);
 
     DurationRange toDurationRange(Object obj) {
-      List<dynamic> values = obj;
+      final List<dynamic> values = obj;
       return new DurationRange(
         new Duration(milliseconds: values[0]),
         new Duration(milliseconds: values[1]),
@@ -182,7 +182,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     }
 
     void errorListener(Object obj) {
-      PlatformException e = obj;
+      final PlatformException e = obj;
       value = new VideoPlayerValue.erroneous(e.message);
       timer?.cancel();
     }
