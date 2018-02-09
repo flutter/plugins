@@ -136,7 +136,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   Timer timer;
   bool isDisposed = false;
   Completer<Null> _creatingCompleter;
-  StreamSubscription<Map<String, dynamic>> _eventSubscription;
+  StreamSubscription<dynamic> _eventSubscription;
   _VideoAppLifeCycleObserver _lifeCycleObserver;
 
   VideoPlayerController(this.uri) : super(new VideoPlayerValue(duration: null));
@@ -145,14 +145,15 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     _lifeCycleObserver = new _VideoAppLifeCycleObserver(this);
     _lifeCycleObserver.initialize();
     _creatingCompleter = new Completer<Null>();
-    final Map<String, dynamic> response = await _channel.invokeMethod(
+    final Map<dynamic, dynamic> response = await _channel.invokeMethod(
       'create',
       <String, dynamic>{'dataSource': uri},
     );
     _textureId = response["textureId"];
     _creatingCompleter.complete(null);
 
-    DurationRange toDurationRange(List<int> values) {
+    DurationRange toDurationRange(Object obj) {
+      List<dynamic> values = obj;
       return new DurationRange(
         new Duration(milliseconds: values[0]),
         new Duration(milliseconds: values[1]),
@@ -160,7 +161,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     }
 
     void eventListener(dynamic event) {
-      final Map<String, dynamic> map = event;
+      final Map<dynamic, dynamic> map = event;
       if (map["event"] == "initialized") {
         value = value.copyWith(
           duration: new Duration(milliseconds: map["duration"]),
@@ -173,14 +174,15 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         value = value.copyWith(isPlaying: false);
         timer?.cancel();
       } else if (map["event"] == "bufferingUpdate") {
-        final List<List<int>> bufferedValues = map["values"];
+        final List<dynamic> bufferedValues = map["values"];
         value = value.copyWith(
-          buffered: bufferedValues.map(toDurationRange).toList(),
+          buffered: bufferedValues.map<DurationRange>(toDurationRange).toList(),
         );
       }
     }
 
-    void errorListener(PlatformException e) {
+    void errorListener(Object obj) {
+      PlatformException e = obj;
       value = new VideoPlayerValue.erroneous(e.message);
       timer?.cancel();
     }
