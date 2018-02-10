@@ -1,3 +1,7 @@
+## 0.2.1
+
+* Fixed some signatures to account for strong mode runtime errors.
+
 ## 0.2.0
 
 * **Breaking change**. Renamed `VideoPlayerController.isErroneous` to `VideoPlayerController.hasError`.
