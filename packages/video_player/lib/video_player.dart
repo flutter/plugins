@@ -174,7 +174,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         timer?.cancel();
       } else if (map["event"] == "bufferingUpdate") {
         final List<List<dynamic>> bufferedValues =
-	   map["values"].cast<List<List<dynamic>>>();
+	  map["values"].cast<List<List<dynamic>>>();
         value = value.copyWith(
           buffered: bufferedValues.map<DurationRange>(toDurationRange).toList(),
         );
