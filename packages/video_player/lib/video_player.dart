@@ -152,8 +152,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     _textureId = response["textureId"];
     _creatingCompleter.complete(null);
 
-    DurationRange toDurationRange(Object obj) {
-      final List<dynamic> values = obj;
+    DurationRange toDurationRange(List<dynamic> values) {
       return new DurationRange(
         new Duration(milliseconds: values[0]),
         new Duration(milliseconds: values[1]),
@@ -174,7 +173,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         value = value.copyWith(isPlaying: false);
         timer?.cancel();
       } else if (map["event"] == "bufferingUpdate") {
-        final List<dynamic> bufferedValues = map["values"];
+        final List<List> bufferedValues = map["values"].cast<List>();
         value = value.copyWith(
           buffered: bufferedValues.map<DurationRange>(toDurationRange).toList(),
         );
