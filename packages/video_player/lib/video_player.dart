@@ -162,22 +162,26 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
     void eventListener(dynamic event) {
       final Map<dynamic, dynamic> map = event;
-      if (map['event'] == 'initialized') {
-        value = value.copyWith(
-          duration: new Duration(milliseconds: map['duration']),
-          size: new Size(map['width'].toDouble(), map['height'].toDouble()),
-        );
-        _applyLooping();
-        _applyVolume();
-        _applyPlayPause();
-      } else if (map['event'] == 'completed') {
-        value = value.copyWith(isPlaying: false);
-        timer?.cancel();
-      } else if (map['event'] == 'bufferingUpdate') {
-        final List<dynamic> values = map['values'];
-        value = value.copyWith(
-          buffered: values.map<DurationRange>(toDurationRange).toList(),
-        );
+      switch (map['event']) {
+        case 'initialized':
+          value = value.copyWith(
+            duration: new Duration(milliseconds: map['duration']),
+            size: new Size(map['width'].toDouble(), map['height'].toDouble()),
+          );
+          _applyLooping();
+          _applyVolume();
+          _applyPlayPause();
+          break;
+        case 'completed':
+          value = value.copyWith(isPlaying: false);
+          timer?.cancel();
+          break;
+        case 'bufferingUpdate':
+          final List<dynamic> values = map['values'];
+          value = value.copyWith(
+            buffered: values.map<DurationRange>(toDurationRange).toList(),
+          );
+          break;
       }
     }
 
