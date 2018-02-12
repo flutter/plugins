@@ -1,5 +1,5 @@
 container:
-  image: cirrusci/flutter:0.0.24
+  image: cirrusci/flutter:0.1.0
 
 task:
   pub_cache:
