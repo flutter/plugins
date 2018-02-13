@@ -103,7 +103,11 @@ public class CameraPlugin implements MethodCallHandler {
               }
 
               @Override
-              public void onActivityStopped(Activity activity) {}
+              public void onActivityStopped(Activity activity) {
+                if (activity == CameraPlugin.this.activity) {
+                  disposeAllCams();
+                }
+              }
 
               @Override
               public void onActivitySaveInstanceState(Activity activity, Bundle outState) {}
@@ -146,20 +150,26 @@ public class CameraPlugin implements MethodCallHandler {
         new CompareSizesByArea());
   }
 
+  private long textureIdOfCall(MethodCall call) {
+    return ((Number) call.argument("textureId")).longValue();
+  }
+
   private Cam getCamOfCall(MethodCall call) {
-    long textureId = ((Number) call.argument("textureId")).longValue();
-    return cams.get(textureId);
+    return cams.get(textureIdOfCall(call));
+  }
+
+  private void disposeAllCams() {
+    for (Cam cam : cams.values()) {
+      cam.dispose();
+    }
+    cams.clear();
   }
 
   @Override
   public void onMethodCall(MethodCall call, final Result result) {
     switch (call.method) {
       case "init":
-        final int remainingCams = cams.size();
-        for (Cam cam : cams.values()) {
-          cam.dispose();
-        }
-        cams.clear();
+        disposeAllCams();
         result.success(null);
         break;
       case "list":
@@ -215,6 +225,7 @@ public class CameraPlugin implements MethodCallHandler {
         {
           Cam cam = getCamOfCall(call);
           cam.capture((String) call.argument("path"), result);
+          result.success(null);
           break;
         }
       case "stop":
@@ -230,6 +241,8 @@ public class CameraPlugin implements MethodCallHandler {
           if (cam != null) {
             cam.dispose();
           }
+          cams.remove(textureIdOfCall(call));
+          result.success(null);
           break;
         }
       default:
