@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:path_provider/path_provider.dart';
 
+//import 'video.dart';
+
+
 class CameraExampleHome extends StatefulWidget {
   @override
   _CameraExampleHomeState createState() {
@@ -76,39 +79,74 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
     }
 
     final List<Widget> columnChildren = <Widget>[];
-    columnChildren.add(new Row(children: headerChildren));
+    //columnChildren.add(new Row(children: headerChildren));
     if (controller == null || !controller.value.initialized) {
-      columnChildren.add(const Text('Tap a camera'));
+      columnChildren.add(new Text('Tap a camera',
+      style: new TextStyle(
+          color: Colors.white,
+          fontSize: 24.0,
+          fontWeight: FontWeight.w900,
+        ),));
     } else if (controller.value.hasError) {
       columnChildren.add(
         new Text('Camera error ${controller.value.errorDescription}'),
       );
     } else {
       columnChildren.add(
-        new Expanded(
-          child: new Padding(
-            padding: const EdgeInsets.all(5.0),
-            child: new Center(
-              child: new AspectRatio(
+        new Container(
+        child: new AspectRatio(
                 aspectRatio: controller.value.aspectRatio,
                 child: new CameraPreview(controller),
               ),
+              height: 450.0,
+              color: Colors.black,
+              //width: MediaQuery.of(context).size.width,
             ),
-          ),
-        ),
+
+
+
       );
     }
     return new Scaffold(
       appBar: new AppBar(
         title: const Text('Camera example'),
       ),
-      body: new Column(children: columnChildren),
+      body: new Column(
+        children: <Widget>[
+          new Container(
+           child: new Padding(
+                padding: const EdgeInsets.all(1.0),
+                child: new Center(
+                child: new Column(
+                  mainAxisAlignment: MainAxisAlignment.center ,
+                  children: columnChildren
+                ),
+              ),
+            ),
+          //height: 400.0,
+          color: Colors.black,
+          width: MediaQuery.of(context).size.width ,
+        ),
+
+          new Row(
+            mainAxisAlignment: MainAxisAlignment.start ,
+            children: headerChildren),
+
+
+        ]
+        ),
+      bottomNavigationBar: new IconButton(
+        icon: new Icon( Icons.videocam ) ,
+        color: Colors.blue ,
+        onPressed: null,
+      ),
       floatingActionButton: (controller == null)
           ? null
           : new FloatingActionButton(
               child: const Icon(Icons.camera),
               onPressed: controller.value.isStarted ? capture : null,
             ),
+
     );
   }
 
@@ -164,9 +202,25 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
   }
 }
 
+class CameraApp extends StatelessWidget {
+
+@override
+Widget build(BuildContext context){
+  return new MaterialApp(
+    home: new CameraExampleHome(),
+    routes: <String, WidgetBuilder> {
+        //"/Video": (BuildContext context) => new CameraExampleVideo(),
+
+      }
+  );
+
+}
+
+}
+
 List<CameraDescription> cameras;
 
 Future<Null> main() async {
   cameras = await availableCameras();
-  runApp(new MaterialApp(home: new CameraExampleHome()));
+  runApp( new CameraApp());
 }
