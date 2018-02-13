@@ -225,7 +225,6 @@ public class CameraPlugin implements MethodCallHandler {
         {
           Cam cam = getCamOfCall(call);
           cam.capture((String) call.argument("path"), result);
-          result.success(null);
           break;
         }
       case "stop":
