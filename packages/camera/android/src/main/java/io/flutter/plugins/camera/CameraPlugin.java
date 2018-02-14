@@ -234,6 +234,14 @@ public class CameraPlugin implements MethodCallHandler {
           result.success(null);
           break;
         }
+      case "video":
+      {
+          ////Cam cam = getCamOfCall(call);
+          final String msg = call.argument("path");
+          final String video = "Hello Video call from Android , this is the path sent: " + msg;
+          result.success(video);
+          break;
+      }
       case "dispose":
         {
           Cam cam = getCamOfCall(call);

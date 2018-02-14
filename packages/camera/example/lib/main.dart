@@ -135,10 +135,12 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
 
         ]
         ),
-      bottomNavigationBar: new IconButton(
+      bottomNavigationBar: (controller == null)
+          ? null
+          : new IconButton(
         icon: new Icon( Icons.videocam ) ,
         color: Colors.blue ,
-        onPressed: null,
+        onPressed: controller.value.isStarted ? video : null,
       ),
       floatingActionButton: (controller == null)
           ? null
@@ -181,6 +183,31 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
     );
   }
 
+  Future<Null> video() async {
+    if (controller.value.isStarted) {
+//      final Directory tempDir = await getTemporaryDirectory();
+//      if (!mounted) {
+//        return;
+//      }
+//      final String tempPath = tempDir.path;
+//      final String path = '$tempPath/movie${pictureCount++}.jpg';
+//      await controller.video(path);
+//      if (!mounted) {
+//        return;
+//      }
+//      setState(
+//            () {
+//          imagePath = path;
+//        },
+//      );
+      final String tempPath = "/path/to/some/video.mp4";
+      await controller.video(tempPath);
+      //final String hello = await controller.video(tempPath);
+      //print(hello + ':::From example:::');
+
+    }
+  }
+
   Future<Null> capture() async {
     if (controller.value.isStarted) {
       final Directory tempDir = await getTemporaryDirectory();
@@ -208,10 +235,10 @@ class CameraApp extends StatelessWidget {
 Widget build(BuildContext context){
   return new MaterialApp(
     home: new CameraExampleHome(),
-    routes: <String, WidgetBuilder> {
-        //"/Video": (BuildContext context) => new CameraExampleVideo(),
-
-      }
+    // routes: <String, WidgetBuilder> {
+    //     //"/Video": (BuildContext context) => new CameraExampleVideo(),
+    //
+    //   }
   );
 
 }

@@ -306,6 +306,10 @@
       [cam close];
       [_cams removeObjectForKey:@(textureId)];
       result(nil);
+    } else if ([@"video" isEqualToString:call.method]) {
+        NSArray *hello = [NSArray arrayWithObjects:  @"Hello Video call on iOS, this is the path sent: " , call.arguments[@"path"] , nil];
+        NSString *msg = [hello componentsJoinedByString:@" "] ;
+        result(msg );
     } else {
       result(FlutterMethodNotImplemented);
     }

@@ -160,6 +160,7 @@ class CameraValue {
 class CameraController extends ValueNotifier<CameraValue> {
   final CameraDescription description;
   final ResolutionPreset resolutionPreset;
+
   int _textureId;
   bool _disposed = false;
   StreamSubscription<Map<String, dynamic>> _eventSubscription;
@@ -270,6 +271,28 @@ class CameraController extends ValueNotifier<CameraValue> {
     value = value.copyWith(isStarted: false);
     _applyStartStop();
   }
+
+  /// Temp function to test method channel for video feature
+
+  Future<Null> video(String path) async {
+    if (!value.initialized || _disposed) {
+      throw new CameraException(
+        'Uninitialized video()',
+        'video() was called on uninitialized CameraController',
+      );
+    }
+    try {
+      final String hello = await _channel.invokeMethod(
+        'video',
+        <String, dynamic>{ 'path': path },
+      );
+     print(hello);
+     //return hello;
+    } on PlatformException catch (e) {
+      throw new CameraException(e.code, e.message);
+    }
+  }
+
 
   /// Releases the resources of this camera.
   @override
