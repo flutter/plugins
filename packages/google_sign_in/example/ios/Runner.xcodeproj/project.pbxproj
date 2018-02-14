@@ -447,7 +447,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.yourcompany.googlesignin.example;
+				PRODUCT_BUNDLE_IDENTIFIER = io.flutter.plugins.googlesignin.example;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -470,7 +470,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.yourcompany.googlesignin.example;
+				PRODUCT_BUNDLE_IDENTIFIER = io.flutter.plugins.googlesignin.example;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

@@ -449,7 +449,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.yourcompany.firebaseDatabaseExample;
+				PRODUCT_BUNDLE_IDENTIFIER = io.flutter.plugins.firebaseDatabaseExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -472,7 +472,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.yourcompany.firebaseDatabaseExample;
+				PRODUCT_BUNDLE_IDENTIFIER = io.flutter.plugins.firebaseDatabaseExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
