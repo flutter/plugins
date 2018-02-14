@@ -1,3 +1,6 @@
+## 0.2.9
+* Relax sdk upper bound constraint to  '<2.0.0' to allow 'edge' dart sdk use.
+
 ## 0.2.8
 * Support for Query.getDocuments
 
