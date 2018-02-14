@@ -1,3 +1,7 @@
+## 0.4.5
+
+* Enabled use in Swift projects.
+
 ## 0.4.4
 
 * Added support for sendPasswordResetEmail

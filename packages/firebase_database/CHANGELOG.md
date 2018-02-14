@@ -1,3 +1,7 @@
+## 0.3.5
+
+* Enabled use in Swift projects.
+
 ## 0.3.4
 
 * Allow null values for Query startAt, endAt, and equalTo
