@@ -1,4 +1,4 @@
-group 'com.yourcompany.image_picker'
+group 'io.flutter.plugins.imagepicker'
 version '1.0-SNAPSHOT'
 
 buildscript {
@@ -26,7 +26,7 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 27
-    
+
     defaultConfig {
         minSdkVersion 16
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
