@@ -1,9 +1,12 @@
 container:
-  image: cirrusci/flutter:0.1.0
+  image: cirrusci/flutter:0.1.1
 
 task:
   pub_cache:
     folder: ~/.pub-cache
+  upgrade_script:
+    - flutter channel master
+    - flutter upgrade
   activate_script: pub global activate flutter_plugin_tools
   matrix:
     - name: test+format
