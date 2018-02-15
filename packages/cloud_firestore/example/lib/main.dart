@@ -21,7 +21,7 @@ class MessageList extends StatelessWidget {
         final int messageCount = snapshot.data.documents.length;
         return new ListView.builder(
           itemCount: messageCount,
-          itemBuilder: (_, index) {
+          itemBuilder: (_, int index) {
             final DocumentSnapshot document = snapshot.data.documents[index];
             return new ListTile(
               title: new Text(document['message'] ?? '<No message retrieved>'),
