@@ -17,6 +17,10 @@ Firebase Cloud Messaging plugin for Flutter.
   s.dependency 'Flutter'
   s.dependency 'Firebase/Core'
   s.dependency 'Firebase/Messaging'
+  s.pod_target_xcconfig = {
+   'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/**',
+   'OTHER_LDFLAGS' => '$(inherited) -undefined dynamic_lookup'
+  }
   
   s.ios.deployment_target = '8.0'
 end

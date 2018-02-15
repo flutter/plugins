@@ -18,4 +18,8 @@ Firebase Auth plugin for Flutter.
   s.dependency 'Flutter'
   s.dependency 'Firebase/Auth'
   s.dependency 'Firebase/Core'
+  s.pod_target_xcconfig = {
+   'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/**',
+   'OTHER_LDFLAGS' => '$(inherited) -undefined dynamic_lookup'
+  }
 end
