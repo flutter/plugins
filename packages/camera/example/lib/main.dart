@@ -60,7 +60,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
                 controller = null;
                 await tempController?.dispose();
                 controller =
-                    new CameraController(newValue, ResolutionPreset.high);
+                    new CameraController(newValue, ResolutionPreset.low);
                 await controller.initialize();
                 setState(() {});
               },
@@ -70,7 +70,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
       }
     }
 
-    headerChildren.add(new Column(children: cameraList));
+    headerChildren.add(new Row(children: cameraList));
     if (controller != null) {
       headerChildren.add(playPauseButton());
     }
@@ -98,9 +98,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
                 aspectRatio: controller.value.aspectRatio,
                 child: new CameraPreview(controller),
               ),
-              height: 450.0,
+              height: (MediaQuery.of(context).size.height - 210.0),
               color: Colors.black,
-              //width: MediaQuery.of(context).size.width,
             ),
 
 
@@ -128,28 +127,80 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
           width: MediaQuery.of(context).size.width ,
         ),
 
-          new Row(
+
+          new Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: new Row(
             mainAxisAlignment: MainAxisAlignment.start ,
-            children: headerChildren),
+            children: headerChildren
 
-
+          ),
+        ),
         ]
         ),
-      bottomNavigationBar: (controller == null)
-          ? null
-          : new IconButton(
-        icon: new Icon( Icons.videocam ) ,
-        color: Colors.blue ,
-        onPressed: controller.value.isStarted ? video : null,
-      ),
-      floatingActionButton: (controller == null)
-          ? null
-          : new FloatingActionButton(
-              child: const Icon(Icons.camera),
+        bottomNavigationBar: (controller == null)
+            ? null
+            : new Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly ,
+              mainAxisSize: MainAxisSize.max ,
+          children: <Widget>[
+              new IconButton(
+              icon: new Icon( Icons.camera_alt ),
+              color: Colors.blue,
               onPressed: controller.value.isStarted ? capture : null,
             ),
+              new IconButton(
+              icon: new Icon( Icons.videocam ),
+              color: Colors.blue ,
+              onPressed: controller.value.isStarted && !controller.value.videoOn ? videoStart : null,
+            ),
+              new IconButton(
+              icon: new Icon( Icons.stop ) ,
+              color: Colors.red ,
+              onPressed: controller.value.isStarted && controller.value.videoOn ? videoStop : null,
+            ),
+
+          ]),
+      // bottomNavigationBar:  (controller == null)
+      //     ? null
+      //     : new IconButton(
+      //   icon: new Icon( Icons.videocam ) ,
+      //   color: Colors.blue ,
+      //   onPressed: controller.value.isStarted ? video : null,
+      // ),
+      // floatingActionButton: (controller == null)
+      //     ? null
+      //     : new FloatingActionButton(
+      //         child: const Icon(Icons.camera),
+      //         onPressed: controller.value.isStarted ? capture : null,
+      //       ),
 
     );
+  }
+
+  void videoStart() {
+
+    video();
+
+      setState(
+        () {
+          if (!controller.value.videoOn) {
+
+          }
+        },
+      );
+  }
+
+
+  void videoStop() {
+
+      setState(
+        () {
+          if (controller.value.videoOn) {
+            controller.videostop();
+          }
+        },
+      );
   }
 
   Widget imageWidget() {

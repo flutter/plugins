@@ -103,6 +103,7 @@ class CameraValue {
 
   /// True after [CameraController.initialize] has completed successfully.
   final bool initialized;
+  final bool videoOn;
 
   final String errorDescription;
 
@@ -115,9 +116,11 @@ class CameraValue {
       {this.isStarted,
       this.initialized,
       this.errorDescription,
-      this.previewSize});
+      this.previewSize,
+      this.videoOn});
 
-  const CameraValue.uninitialized() : this(isStarted: true, initialized: false);
+  const CameraValue.uninitialized() : this(isStarted: true, initialized: false,videoOn: false);
+  const CameraValue.novideo() : this(videoOn: false);
 
   /// Convenience getter for `previewSize.height / previewSize.width`.
   ///
@@ -129,6 +132,7 @@ class CameraValue {
   CameraValue copyWith({
     bool isStarted,
     bool initialized,
+    bool videoOn,
     String errorDescription,
     Size previewSize,
   }) {
@@ -137,6 +141,7 @@ class CameraValue {
       initialized: initialized ?? this.initialized,
       errorDescription: errorDescription ?? this.errorDescription,
       previewSize: previewSize ?? this.previewSize,
+      videoOn: videoOn ?? this.videoOn,
     );
   }
 
@@ -144,6 +149,7 @@ class CameraValue {
   String toString() {
     return '$runtimeType('
         'started: $isStarted, '
+        'videoOn: $videoOn, '
         'initialized: $initialized, '
         'errorDescription: $errorDescription, '
         'previewSize: $previewSize)';
@@ -272,6 +278,8 @@ class CameraController extends ValueNotifier<CameraValue> {
     _applyStartStop();
   }
 
+
+
   /// Temp function to test method channel for video feature
 
   Future<Null> video(String path) async {
@@ -282,15 +290,32 @@ class CameraController extends ValueNotifier<CameraValue> {
       );
     }
     try {
+      value = value.copyWith(videoOn: true);
       final String hello = await _channel.invokeMethod(
         'video',
         <String, dynamic>{ 'path': path },
       );
-     print(hello);
+     print(hello + value.toString());
      //return hello;
     } on PlatformException catch (e) {
       throw new CameraException(e.code, e.message);
     }
+  }
+
+
+  // void videostart(String path) {
+  //     if (value.initialized && !_disposed) {
+  //       if (value.isStarted) {
+  //         value = value.copyWith(videoOn: true);
+  //           await  _video(path);
+  //     }
+  //
+  //   }
+  // }
+
+  void videostop() {
+    value = value.copyWith(videoOn: false);
+     print('Video Stop pressed:' + value.toString());
   }
 
 
