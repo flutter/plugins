@@ -1,3 +1,7 @@
+## 0.3.1
+
+* Enabled use in Swift projects.
+
 ## 0.3.0
 
 * Added support for rewarded video ads.

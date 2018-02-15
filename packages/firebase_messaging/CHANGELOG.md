@@ -1,3 +1,7 @@
+## 0.1.3
+
+* Enabled use in Swift projects.
+
 ## 0.1.2
 
 * Fix for APNS not being correctly registered on iOS when reinstalling application.

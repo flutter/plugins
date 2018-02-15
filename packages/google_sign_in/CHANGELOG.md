@@ -1,3 +1,7 @@
+## 2.1.0
+
+* Enabled use in Swift projects.
+
 ## 2.0.1
 
 * Simplified and upgraded Android project template to Android SDK 27.

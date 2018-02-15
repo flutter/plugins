@@ -17,5 +17,9 @@ Firebase Database plugin for Flutter.
   s.ios.deployment_target = '6.0'
   s.dependency 'Flutter'
   s.dependency 'Firebase/Database'
+  s.pod_target_xcconfig = {
+   'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/**',
+   'OTHER_LDFLAGS' => '$(inherited) -undefined dynamic_lookup'
+  }
 end
 
