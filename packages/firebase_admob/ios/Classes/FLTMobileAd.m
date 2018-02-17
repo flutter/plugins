@@ -13,12 +13,16 @@ static NSDictionary *statusToString = nil;
 NSNumber *_mobileAdId;
 FlutterMethodChannel *_channel;
 FLTMobileAdStatus _status;
+int _anchorOffset;
+int _anchorType;
 
 + (void)initialize {
   if (allAds == nil) {
     allAds = [[NSMutableDictionary alloc] init];
   }
-
+  _anchorType = 0;
+  _anchorOffset = 0;
+    
   if (statusToString == nil) {
     statusToString = @{
       @(CREATED) : @"CREATED",
@@ -48,6 +52,8 @@ FLTMobileAdStatus _status;
     _mobileAdId = mobileAdId;
     _channel = channel;
     _status = CREATED;
+    _anchorOffset = 0;
+    _anchorType = 0;
     allAds[mobileAdId] = self;
   }
   return self;
@@ -61,9 +67,14 @@ FLTMobileAdStatus _status;
   // Implemented by the Banner and Interstitial subclasses
 }
 
-- (void)show {
+- (void)show:(NSNumber *)anchorOffset anchorType:(NSNumber *)anchorType {
   // Implemented by the Banner and Interstitial subclasses
 }
+
+- (void)show {
+    [self show:nil anchorType:nil];
+}
+
 
 - (void)dispose {
   [allAds removeObjectForKey:_mobileAdId];
@@ -100,13 +111,23 @@ GADBannerView *_banner;
   [_banner loadRequest:[factory createRequest]];
 }
 
-- (void)show {
+- (void)show:(NSNumber *)anchorOffset anchorType:(NSNumber *)anchorType {
+  if( anchorType != nil ) {
+        _anchorType = anchorType.intValue;
+  }
+  if( anchorOffset != nil ) {
+      _anchorOffset = anchorOffset.intValue;
+      if(_anchorType == 0) {
+          _anchorOffset = -_anchorOffset;
+      }
+  }
   if (_status == LOADING) {
     _status = PENDING;
     return;
   }
-  if (_status != LOADED) return;
 
+  if (_status != LOADED) return;
+    
   _banner.translatesAutoresizingMaskIntoConstraints = NO;
   UIView *screen = [FLTMobileAd rootViewController].view;
   [screen addSubview:_banner];
@@ -116,7 +137,7 @@ GADBannerView *_banner;
     UILayoutGuide *guide = screen.safeAreaLayoutGuide;
     [NSLayoutConstraint activateConstraints:@[
       [_banner.centerXAnchor constraintEqualToAnchor:guide.centerXAnchor],
-      [_banner.bottomAnchor constraintEqualToAnchor:guide.bottomAnchor]
+      [_banner.bottomAnchor constraintEqualToAnchor: _anchorType == 0 ? guide.bottomAnchor : guide.topAnchor constant: _anchorOffset]
     ]];
   } else {
     [self placeBannerPreIos11];
@@ -129,7 +150,7 @@ GADBannerView *_banner;
 - (void)placeBannerPreIos11 {
   UIView *screen = [FLTMobileAd rootViewController].view;
   CGFloat x = screen.frame.size.width / 2 - _banner.frame.size.width / 2;
-  CGFloat y = screen.frame.size.height - _banner.frame.size.height;
+  CGFloat y = screen.frame.size.height - _banner.frame.size.height - _anchorOffset;
   _banner.frame = (CGRect){{x, y}, _banner.frame.size};
   [screen addSubview:_banner];
 }
@@ -138,7 +159,7 @@ GADBannerView *_banner;
   bool statusWasPending = _status == PENDING;
   _status = LOADED;
   [_channel invokeMethod:@"onAdLoaded" arguments:[self argumentsMap]];
-  if (statusWasPending) [self show];
+    if (statusWasPending) [self show ];
 }
 
 - (void)adView:(GADBannerView *)adView didFailToReceiveAdWithError:(GADRequestError *)error {
@@ -193,7 +214,7 @@ GADInterstitial *_interstitial;
   [_interstitial loadRequest:[factory createRequest]];
 }
 
-- (void)show {
+- (void)show:(NSNumber *)anchorOffset anchorType:(NSNumber *)anchorType {
   if (_status == LOADING) {
     _status = PENDING;
     return;
@@ -207,7 +228,7 @@ GADInterstitial *_interstitial;
   bool statusWasPending = _status == PENDING;
   _status = LOADED;
   [_channel invokeMethod:@"onAdLoaded" arguments:[self argumentsMap]];
-  if (statusWasPending) [self show];
+    if (statusWasPending) [self show];
 }
 
 - (void)interstitial:(GADInterstitial *)ad didFailToReceiveAdWithError:(GADRequestError *)error {

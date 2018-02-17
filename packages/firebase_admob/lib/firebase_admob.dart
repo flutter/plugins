@@ -82,6 +82,11 @@ class MobileAdTargetingInfo {
   }
 }
 
+enum AnchorType {
+  AnchorBottom,
+  AnchorTop
+}
+
 /// A mobile [BannerAd] or [InterstitialAd] for the [FirebaseAdMobPlugin].
 ///
 /// A [MobileAd] must be loaded with [load] before it is shown with [show].
@@ -130,8 +135,16 @@ abstract class MobileAd {
   ///
   /// The [listener] will be notified when the ad has finished loading or fails
   /// to do so. An ad that fails to load will not be shown.
-  Future<bool> show() {
-    return _channel.invokeMethod("showAd", <String, dynamic>{'id': id});
+  Future<bool> show({int anchorOffset, AnchorType anchorType}) {
+    var params = <String, dynamic>{'id': id};
+    if(anchorOffset != null) {
+      params['anchorOffset'] = anchorOffset;
+    }
+    if(anchorType != null) {
+      params['anchorType'] = anchorType.index;
+    }
+
+    return _channel.invokeMethod("showAd", params);
   }
 
   /// Free the plugin resources associated with this ad.
