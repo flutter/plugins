@@ -22,7 +22,7 @@ int _anchorType;
   }
   _anchorType = 0;
   _anchorOffset = 0;
-    
+
   if (statusToString == nil) {
     statusToString = @{
       @(CREATED) : @"CREATED",
@@ -72,9 +72,8 @@ int _anchorType;
 }
 
 - (void)show {
-    [self show:nil anchorType:nil];
+  [self show:nil anchorType:nil];
 }
-
 
 - (void)dispose {
   [allAds removeObjectForKey:_mobileAdId];
@@ -112,14 +111,14 @@ GADBannerView *_banner;
 }
 
 - (void)show:(NSNumber *)anchorOffset anchorType:(NSNumber *)anchorType {
-  if( anchorType != nil ) {
-        _anchorType = anchorType.intValue;
+  if (anchorType != nil) {
+    _anchorType = anchorType.intValue;
   }
-  if( anchorOffset != nil ) {
-      _anchorOffset = anchorOffset.intValue;
-      if(_anchorType == 0) {
-          _anchorOffset = -_anchorOffset;
-      }
+  if (anchorOffset != nil) {
+    _anchorOffset = anchorOffset.intValue;
+    if (_anchorType == 0) {
+      _anchorOffset = -_anchorOffset;
+    }
   }
   if (_status == LOADING) {
     _status = PENDING;
@@ -127,7 +126,7 @@ GADBannerView *_banner;
   }
 
   if (_status != LOADED) return;
-    
+
   _banner.translatesAutoresizingMaskIntoConstraints = NO;
   UIView *screen = [FLTMobileAd rootViewController].view;
   [screen addSubview:_banner];
@@ -137,7 +136,9 @@ GADBannerView *_banner;
     UILayoutGuide *guide = screen.safeAreaLayoutGuide;
     [NSLayoutConstraint activateConstraints:@[
       [_banner.centerXAnchor constraintEqualToAnchor:guide.centerXAnchor],
-      [_banner.bottomAnchor constraintEqualToAnchor: _anchorType == 0 ? guide.bottomAnchor : guide.topAnchor constant: _anchorOffset]
+      [_banner.bottomAnchor
+          constraintEqualToAnchor:_anchorType == 0 ? guide.bottomAnchor : guide.topAnchor
+                         constant:_anchorOffset]
     ]];
   } else {
     [self placeBannerPreIos11];
@@ -159,7 +160,7 @@ GADBannerView *_banner;
   bool statusWasPending = _status == PENDING;
   _status = LOADED;
   [_channel invokeMethod:@"onAdLoaded" arguments:[self argumentsMap]];
-    if (statusWasPending) [self show ];
+  if (statusWasPending) [self show];
 }
 
 - (void)adView:(GADBannerView *)adView didFailToReceiveAdWithError:(GADRequestError *)error {
@@ -228,7 +229,7 @@ GADInterstitial *_interstitial;
   bool statusWasPending = _status == PENDING;
   _status = LOADED;
   [_channel invokeMethod:@"onAdLoaded" arguments:[self argumentsMap]];
-    if (statusWasPending) [self show];
+  if (statusWasPending) [self show];
 }
 
 - (void)interstitial:(GADInterstitial *)ad didFailToReceiveAdWithError:(GADRequestError *)error {

@@ -93,11 +93,11 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
       result.error("ad_not_loaded", "show failed, the specified ad was not loaded id=" + id, null);
       return;
     }
-    if( call.argument("anchorOffset") != null) {
-      ad.anchorOffset = ((Integer)call.argument("anchorOffset")).intValue();
+    if (call.argument("anchorOffset") != null) {
+      ad.anchorOffset = ((Integer) call.argument("anchorOffset")).intValue();
     }
-    if( call.argument("anchorType") != null) {
-      ad.anchorType = ((Integer)call.argument("anchorType")).intValue();
+    if (call.argument("anchorType") != null) {
+      ad.anchorType = ((Integer) call.argument("anchorType")).intValue();
     }
 
     ad.show();

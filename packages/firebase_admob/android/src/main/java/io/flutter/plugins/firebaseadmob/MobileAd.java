@@ -154,14 +154,14 @@ abstract class MobileAd extends AdListener {
         LinearLayout content = new LinearLayout(activity);
         content.setId(id);
         content.setOrientation(LinearLayout.VERTICAL);
-        content.setGravity(anchorType == 0 ? Gravity.BOTTOM : Gravity.TOP );
+        content.setGravity(anchorType == 0 ? Gravity.BOTTOM : Gravity.TOP);
         content.addView(adView);
         final float scale = activity.getResources().getDisplayMetrics().density;
 
-        if(anchorType == 0) {
-          content.setPadding( 0, 0, 0, (int)((float)anchorOffset * scale) );
-        }else {
-          content.setPadding( 0, (int)((float)anchorOffset * scale), 0,0 );
+        if (anchorType == 0) {
+          content.setPadding(0, 0, 0, (int) ((float) anchorOffset * scale));
+        } else {
+          content.setPadding(0, (int) ((float) anchorOffset * scale), 0, 0);
         }
 
         activity.addContentView(

@@ -82,10 +82,7 @@ class MobileAdTargetingInfo {
   }
 }
 
-enum AnchorType {
-  AnchorBottom,
-  AnchorTop
-}
+enum AnchorType { AnchorBottom, AnchorTop }
 
 /// A mobile [BannerAd] or [InterstitialAd] for the [FirebaseAdMobPlugin].
 ///
@@ -137,10 +134,10 @@ abstract class MobileAd {
   /// to do so. An ad that fails to load will not be shown.
   Future<bool> show({int anchorOffset, AnchorType anchorType}) {
     var params = <String, dynamic>{'id': id};
-    if(anchorOffset != null) {
+    if (anchorOffset != null) {
       params['anchorOffset'] = anchorOffset;
     }
-    if(anchorType != null) {
+    if (anchorType != null) {
       params['anchorType'] = anchorType.index;
     }
 
