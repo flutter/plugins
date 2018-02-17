@@ -133,7 +133,7 @@ abstract class MobileAd {
   /// The [listener] will be notified when the ad has finished loading or fails
   /// to do so. An ad that fails to load will not be shown.
   Future<bool> show({int anchorOffset, AnchorType anchorType}) {
-    var params = <String, dynamic>{'id': id};
+    final Map<String, dynamic> params = <String, dynamic>{'id': id};
     if (anchorOffset != null) {
       params['anchorOffset'] = anchorOffset;
     }
