@@ -313,6 +313,25 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
   }
 
+  Future<Null> videostart(String path) async {
+    if (!value.initialized || _disposed) {
+      throw new CameraException(
+        'Uninitialized video()',
+        'video() was called on uninitialized CameraController',
+      );
+    }
+    try {
+      value = value.copyWith(videoOn: true);
+      final String hello = await _channel.invokeMethod(
+        'videostart',
+        <String, dynamic>{ 'path': path },
+      );
+      print('Video Start pressed:' + hello + ' ' + value.toString());
+     //return hello;
+    } on PlatformException catch (e) {
+      throw new CameraException(e.code, e.message);
+    }
+  }
 
 // videostop call to stop recording and replies with a path to the saved video
 // file. Work here is required to gracefully stop the recording.

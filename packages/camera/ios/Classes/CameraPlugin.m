@@ -536,42 +536,57 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                      });
         }
     } else {
-        NSDictionary *argsMap = call.arguments;
-        NSUInteger textureId = ((NSNumber *)argsMap[@"textureId"]).unsignedIntegerValue;
-        NSString *pathv;
-
-        FLTCam *cam = _cams[@(textureId)];
-        if ([@"start" isEqualToString:call.method]) {
-            [cam start];
-            result(nil);
-        } else if ([@"stop" isEqualToString:call.method]) {
-            [cam stop];
-            result(nil);
-        } else if ([@"capture" isEqualToString:call.method]) {
-            [cam captureToFile:call.arguments[@"path"] result:result];
-        } else if ([@"dispose" isEqualToString:call.method]) {
-            [_registry unregisterTexture:textureId];
-            [cam close];
-            [_cams removeObjectForKey:@(textureId)];
-            result(nil);
-        } else if ([@"video" isEqualToString:call.method]) {
-            NSArray *hello1 = [NSArray arrayWithObjects:  @"Hello Video call on iOS, this is the path sent: " , call.arguments[@"path"] , nil];
-            NSString *msg1 = [hello1 componentsJoinedByString:@" "] ;
-            result(msg1 );
-        } else if ([@"videostart" isEqualToString:call.method]) {
-            pathv = call.arguments[@"path"];
-            NSArray *hello2 = [NSArray arrayWithObjects:  @"VideoStart call on iOS: " , pathv , nil];
-            NSString *msg2 = [hello2 componentsJoinedByString:@" "] ;
-            [cam startRecordingVideoAtPath:pathv result:result];
-            result(msg2 );
-        } else if ([@"videostop" isEqualToString:call.method]) {
-            NSArray *hello3 = [NSArray arrayWithObjects:  @"VideoStop call on iOS: " , pathv , nil];
-            NSString *msg3 = [hello3 componentsJoinedByString:@" "] ;
-            [cam stopRecordingVideo];
-            result(msg3 );
-        } else {
-            result(FlutterMethodNotImplemented);
-        }
+      int64_t textureId = [_registry registerTexture:cam];
+      _cams[@(textureId)] = cam;
+      cam.onFrameAvailable = ^{
+        [_registry textureFrameAvailable:textureId];
+      };
+      FlutterEventChannel *eventChannel = [FlutterEventChannel
+          eventChannelWithName:[NSString
+                                   stringWithFormat:@"flutter.io/cameraPlugin/cameraEvents%lld",
+                                                    textureId]
+               binaryMessenger:_messenger];
+      [eventChannel setStreamHandler:cam];
+      cam.eventChannel = eventChannel;
+      result(@{
+        @"textureId" : @(textureId),
+        @"previewWidth" : @(cam.previewSize.width),
+        @"previewHeight" : @(cam.previewSize.height),
+        @"captureWidth" : @(cam.captureSize.width),
+        @"captureHeight" : @(cam.captureSize.height),
+      });
+    }
+  } else {
+    NSDictionary *argsMap = call.arguments;
+    NSUInteger textureId = ((NSNumber *)argsMap[@"textureId"]).unsignedIntegerValue;
+    FLTCam *cam = _cams[@(textureId)];
+    if ([@"start" isEqualToString:call.method]) {
+      [cam start];
+      result(nil);
+    } else if ([@"stop" isEqualToString:call.method]) {
+      [cam stop];
+      result(nil);
+    } else if ([@"capture" isEqualToString:call.method]) {
+      [cam captureToFile:call.arguments[@"path"] result:result];
+    } else if ([@"dispose" isEqualToString:call.method]) {
+      [_registry unregisterTexture:textureId];
+      [cam close];
+      [_cams removeObjectForKey:@(textureId)];
+      result(nil);
+    } else if ([@"video" isEqualToString:call.method]) {
+        NSArray *hello = [NSArray arrayWithObjects:  @"Hello Video call on iOS, this is the path sent: " , call.arguments[@"path"] , nil];
+        NSString *msg = [hello componentsJoinedByString:@" "] ;
+        result(msg );
+    } else if ([@"videostart" isEqualToString:call.method]) {
+        NSArray *hello = [NSArray arrayWithObjects:  @"Hello VideoStart call on iOS, this is the path sent: " , call.arguments[@"path"] , nil];
+        NSString *msg = [hello componentsJoinedByString:@" "] ;
+        result(msg );
+    } else if ([@"videostop" isEqualToString:call.method]) {
+        NSArray *hello = [NSArray arrayWithObjects:  @"Hello VideoStop call on iOS, this is the path sent: " , call.arguments[@"path"] , nil];
+        NSString *msg = [hello componentsJoinedByString:@" "] ;
+        result(msg );
+    } else {
+      result(FlutterMethodNotImplemented);
     }
 }
 
