@@ -60,7 +60,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
                 controller = null;
                 await tempController?.dispose();
                 controller =
-                    new CameraController(newValue, ResolutionPreset.low);
+                    new CameraController(newValue, ResolutionPreset.medium);
                 await controller.initialize();
                 setState(() {});
               },
@@ -180,7 +180,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
 
   void videoStart() {
 
-    video();
+    videostart();
 
       setState(
         () {
@@ -197,7 +197,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
       setState(
         () {
           if (controller.value.videoOn) {
-            controller.videostop();
+            videostop();
           }
         },
       );
@@ -234,7 +234,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
     );
   }
 
-  Future<Null> video() async {
+  Future<Null> videostart() async {
     if (controller.value.isStarted) {
 //      final Directory tempDir = await getTemporaryDirectory();
 //      if (!mounted) {
@@ -251,8 +251,33 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
 //          imagePath = path;
 //        },
 //      );
-      final String tempPath = "/path/to/some/video.mp4";
-      await controller.video(tempPath);
+      final String tempPath = "VIDEOSTART/path/to/some/video.mp4";
+      await controller.videostart(tempPath);
+      //final String hello = await controller.video(tempPath);
+      //print(hello + ':::From example:::');
+
+    }
+  }
+
+  Future<Null> videostop() async {
+    if (controller.value.isStarted) {
+//      final Directory tempDir = await getTemporaryDirectory();
+//      if (!mounted) {
+//        return;
+//      }
+//      final String tempPath = tempDir.path;
+//      final String path = '$tempPath/movie${pictureCount++}.jpg';
+//      await controller.video(path);
+//      if (!mounted) {
+//        return;
+//      }
+//      setState(
+//            () {
+//          imagePath = path;
+//        },
+//      );
+      final String tempPath = "VIDEOSTOP/path/to/some/video.mp4";
+      await controller.videostop(tempPath);
       //final String hello = await controller.video(tempPath);
       //print(hello + ':::From example:::');
 

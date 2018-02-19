@@ -302,21 +302,47 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
   }
 
-
-  // void videostart(String path) {
-  //     if (value.initialized && !_disposed) {
-  //       if (value.isStarted) {
-  //         value = value.copyWith(videoOn: true);
-  //           await  _video(path);
-  //     }
-  //
-  //   }
-  // }
-
-  void videostop() {
-    value = value.copyWith(videoOn: false);
-     print('Video Stop pressed:' + value.toString());
+  Future<Null> videostart(String path) async {
+    if (!value.initialized || _disposed) {
+      throw new CameraException(
+        'Uninitialized video()',
+        'video() was called on uninitialized CameraController',
+      );
+    }
+    try {
+      value = value.copyWith(videoOn: true);
+      final String hello = await _channel.invokeMethod(
+        'videostart',
+        <String, dynamic>{ 'path': path },
+      );
+      print('Video Start pressed:' + hello + ' ' + value.toString());
+     //return hello;
+    } on PlatformException catch (e) {
+      throw new CameraException(e.code, e.message);
+    }
   }
+
+  Future<Null> videostop(String path) async {
+    if (!value.initialized || _disposed) {
+      throw new CameraException(
+        'Uninitialized video()',
+        'video() was called on uninitialized CameraController',
+      );
+    }
+    try {
+      value = value.copyWith(videoOn: false);
+      final String hello = await _channel.invokeMethod(
+        'videostop',
+        <String, dynamic>{ 'path': path },
+      );
+       print('Video Start pressed:' + hello + ' ' + value.toString());
+     //return hello;
+    } on PlatformException catch (e) {
+      throw new CameraException(e.code, e.message);
+    }
+  }
+
+
 
 
   /// Releases the resources of this camera.

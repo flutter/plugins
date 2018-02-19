@@ -310,6 +310,14 @@
         NSArray *hello = [NSArray arrayWithObjects:  @"Hello Video call on iOS, this is the path sent: " , call.arguments[@"path"] , nil];
         NSString *msg = [hello componentsJoinedByString:@" "] ;
         result(msg );
+    } else if ([@"videostart" isEqualToString:call.method]) {
+        NSArray *hello = [NSArray arrayWithObjects:  @"Hello VideoStart call on iOS, this is the path sent: " , call.arguments[@"path"] , nil];
+        NSString *msg = [hello componentsJoinedByString:@" "] ;
+        result(msg );
+    } else if ([@"videostop" isEqualToString:call.method]) {
+        NSArray *hello = [NSArray arrayWithObjects:  @"Hello VideoStop call on iOS, this is the path sent: " , call.arguments[@"path"] , nil];
+        NSString *msg = [hello componentsJoinedByString:@" "] ;
+        result(msg );
     } else {
       result(FlutterMethodNotImplemented);
     }

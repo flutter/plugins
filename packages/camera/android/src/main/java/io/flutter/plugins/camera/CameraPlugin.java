@@ -19,6 +19,8 @@ import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
+import android.media.MediaCodec;
+import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -44,12 +46,16 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import android.util.Log;
+
+
 
 public class CameraPlugin implements MethodCallHandler {
 
   private static final int cameraRequestId = 513469796;
   private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
   private static CameraManager cameraManager;
+  private static final String TAG = "VideoCALLmeMAybe:";
 
   @SuppressLint("UseSparseArrays")
   private static Map<Long, Cam> cams = new HashMap<>();
@@ -150,9 +156,16 @@ public class CameraPlugin implements MethodCallHandler {
         new CompareSizesByArea());
   }
 
-  private long textureIdOfCall(MethodCall call) {
-    return ((Number) call.argument("textureId")).longValue();
+  private static Size chooseVideoSize(Size[] choices) {
+    for (Size size : choices) {
+        if (size.getWidth() == size.getHeight() * 4 / 3 && size.getWidth() <= 1080) {
+            return size;
+        }
+    }
+    Log.e(TAG, "Couldn't find any suitable video size");
+    return choices[choices.length - 1];
   }
+
 
   private Cam getCamOfCall(MethodCall call) {
     return cams.get(textureIdOfCall(call));
@@ -242,6 +255,22 @@ public class CameraPlugin implements MethodCallHandler {
           result.success(video);
           break;
       }
+      case "videostart":
+      {
+          ////Cam cam = getCamOfCall(call);
+          final String msg = call.argument("path");
+          final String video = "Hello VideoStart call from Android , this is the path sent: " + msg;
+          result.success(video);
+          break;
+      }
+      case "videostop":
+      {
+          ////Cam cam = getCamOfCall(call);
+          final String msg = call.argument("path");
+          final String video = "Hello VideoStop call from Android , this is the path sent: " + msg;
+          result.success(video);
+          break;
+      }
       case "dispose":
         {
           Cam cam = getCamOfCall(call);
@@ -294,6 +323,12 @@ public class CameraPlugin implements MethodCallHandler {
     private Size captureSize;
     private Size previewSize;
 
+    // New Media Recorder
+    private Size mVideoSize;
+    private MediaRecorder mMediaRecorder;
+    private String mNextVideoAbsolutePath;
+
+
     Cam(
         final EventChannel eventChannel,
         final FlutterView.SurfaceTextureEntry textureEntry,
@@ -323,12 +358,18 @@ public class CameraPlugin implements MethodCallHandler {
         StreamConfigurationMap streamConfigurationMap =
             characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
         captureSize = getBestCaptureSize(streamConfigurationMap);
+        mVideoSize = chooseVideoSize(streamConfigurationMap.getOutputSizes(MediaRecorder.class));
         previewSize = getBestPreviewSize(streamConfigurationMap, minPreviewSize, captureSize);
         imageReader =
             ImageReader.newInstance(
                 captureSize.getWidth(), captureSize.getHeight(), ImageFormat.JPEG, 2);
+        // Set up Surface for the MediaRecorder
+        mMediaRecorder = new MediaRecorder();
+        //Surface recorderSurface = mMediaRecorder.getSurface();
         SurfaceTexture surfaceTexture = textureEntry.surfaceTexture();
         surfaceTexture.setDefaultBufferSize(previewSize.getWidth(), previewSize.getHeight());
+
+        Log.v(TAG, "ImageHH=" + captureSize.getHeight()+ "ImageWW=" + captureSize.getHeight() + "preHH" + previewSize.getHeight() + "preWW=" + previewSize.getWidth() );
         previewSurface = new Surface(surfaceTexture);
         eventChannel.setStreamHandler(
             new EventChannel.StreamHandler() {
@@ -363,6 +404,9 @@ public class CameraPlugin implements MethodCallHandler {
       }
     }
 
+
+
+
     private boolean hasCameraPermission() {
       return Build.VERSION.SDK_INT < Build.VERSION_CODES.M
           || activity.checkSelfPermission(Manifest.permission.CAMERA)
@@ -376,6 +420,7 @@ public class CameraPlugin implements MethodCallHandler {
         try {
           CameraCharacteristics characteristics =
               cameraManager.getCameraCharacteristics(cameraName);
+
           //noinspection ConstantConditions
           sensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
           //noinspection ConstantConditions
@@ -391,6 +436,7 @@ public class CameraPlugin implements MethodCallHandler {
                   List<Surface> surfaceList = new ArrayList<>();
                   surfaceList.add(previewSurface);
                   surfaceList.add(imageReader.getSurface());
+                  //surfaceList.add(mMediaRecorder.getSurface());
 
                   try {
                     cameraDevice.createCaptureSession(
@@ -468,6 +514,49 @@ public class CameraPlugin implements MethodCallHandler {
         }
       }
     }
+
+
+
+    private void setUpMediaRecorder() throws IOException {
+        //final Activity activity = getActivity();
+        if (null == activity) {
+            return;
+        }
+
+        //mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
+        mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+        if (mNextVideoAbsolutePath == null || mNextVideoAbsolutePath.isEmpty()) {
+            mNextVideoAbsolutePath = getVideoFilePath(activity);
+        }
+        mMediaRecorder.setOutputFile(mNextVideoAbsolutePath);
+        mMediaRecorder.setVideoEncodingBitRate(10000000);
+        mMediaRecorder.setVideoFrameRate(30);
+        mMediaRecorder.setVideoSize(previewSize.getWidth(), previewSize.getHeight());
+        mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
+        //mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+        //int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
+        int vdisplayRotation = activity.getWindowManager().getDefaultDisplay().getRotation();
+        int vdisplayOrientation = ORIENTATIONS.get(vdisplayRotation);
+        //   Log.v(TAG, "Rotation:  " + rotation);
+        // switch (sensorOrientation) {
+        //     case SENSOR_ORIENTATION_DEFAULT_DEGREES:
+        //         mMediaRecorder.setOrientationHint(DEFAULT_ORIENTATIONS.get(rotation));
+        //         break;
+        //     case SENSOR_ORIENTATION_INVERSE_DEGREES:
+        //         mMediaRecorder.setOrientationHint(INVERSE_ORIENTATIONS.get(rotation));
+        //         break;
+        // }
+
+        mMediaRecorder.setOrientationHint((vdisplayOrientation + sensorOrientation) % 360);
+        mMediaRecorder.prepare();
+    }
+
+    private String getVideoFilePath(Context context) {
+           final File dir = context.getExternalFilesDir(null);
+           return (dir == null ? "" : (dir.getAbsolutePath() + "/"))
+                   + System.currentTimeMillis() + ".mp4";
+       }
 
     void start() {
       if (!initialized) {
@@ -648,4 +737,5 @@ public class CameraPlugin implements MethodCallHandler {
       textureEntry.release();
     }
   }
+
 }
