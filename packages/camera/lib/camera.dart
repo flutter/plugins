@@ -291,11 +291,11 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
     try {
       value = value.copyWith(videoOn: true);
-      final String hello = await _channel.invokeMethod(
+      await _channel.invokeMethod(
         'video',
         <String, dynamic>{ 'path': path },
       );
-     print(hello + value.toString());
+     //print(hello + value.toString());
      //return hello;
     } on PlatformException catch (e) {
       throw new CameraException(e.code, e.message);
@@ -311,18 +311,18 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
     try {
       value = value.copyWith(videoOn: true);
-      final String hello = await _channel.invokeMethod(
+      await _channel.invokeMethod(
         'videostart',
-        <String, dynamic>{ 'path': path },
+        <String, dynamic>{'textureId': _textureId, 'path': path },
       );
-      print('Video Start pressed:' + hello + ' ' + value.toString());
+      print('Video Start pressed:' + value.toString());
      //return hello;
     } on PlatformException catch (e) {
       throw new CameraException(e.code, e.message);
     }
   }
 
-  Future<Null> videostop(String path) async {
+  Future<Null> videostop() async {
     if (!value.initialized || _disposed) {
       throw new CameraException(
         'Uninitialized video()',
@@ -331,11 +331,11 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
     try {
       value = value.copyWith(videoOn: false);
-      final String hello = await _channel.invokeMethod(
+      await _channel.invokeMethod(
         'videostop',
-        <String, dynamic>{ 'path': path },
+        <String, dynamic>{'textureId': _textureId },
       );
-       print('Video Start pressed:' + hello + ' ' + value.toString());
+       print('Video Stop pressed:' + value.toString());
      //return hello;
     } on PlatformException catch (e) {
       throw new CameraException(e.code, e.message);

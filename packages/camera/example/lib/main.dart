@@ -31,6 +31,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
   bool opening = false;
   CameraController controller;
   String imagePath;
+  bool recording = false;
   int pictureCount = 0;
 
   @override
@@ -60,7 +61,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
                 controller = null;
                 await tempController?.dispose();
                 controller =
-                    new CameraController(newValue, ResolutionPreset.medium);
+                    new CameraController(newValue, ResolutionPreset.high);
                 await controller.initialize();
                 setState(() {});
               },
@@ -117,14 +118,23 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
                 padding: const EdgeInsets.all(1.0),
                 child: new Center(
                 child: new Column(
+
                   mainAxisAlignment: MainAxisAlignment.center ,
                   children: columnChildren
                 ),
               ),
             ),
           //height: 400.0,
-          color: Colors.black,
+
           width: MediaQuery.of(context).size.width ,
+          decoration: new BoxDecoration(
+          color: Colors.black,
+          border: new Border.all(
+              color: Colors.redAccent,
+              width: controller != null && controller.value.isStarted && recording ? 3.0 : 0.0,
+            ),
+          ),
+
         ),
 
 
@@ -152,12 +162,12 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
               new IconButton(
               icon: new Icon( Icons.videocam ),
               color: Colors.blue ,
-              onPressed: controller.value.isStarted && !controller.value.videoOn ? videoStart : null,
+              onPressed: controller.value.isStarted && !recording ? videoStart : null, //videoStart //
             ),
               new IconButton(
               icon: new Icon( Icons.stop ) ,
               color: Colors.red ,
-              onPressed: controller.value.isStarted && controller.value.videoOn ? videoStop : null,
+              onPressed: controller.value.isStarted && recording ? videoStop : null, //videoStop //
             ),
 
           ]),
@@ -185,7 +195,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
       setState(
         () {
           if (!controller.value.videoOn) {
-
+            recording = true;
           }
         },
       );
@@ -194,10 +204,12 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
 
   void videoStop() {
 
+     videostop();
+
       setState(
         () {
           if (controller.value.videoOn) {
-            videostop();
+            recording = false;
           }
         },
       );
@@ -236,12 +248,12 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
 
   Future<Null> videostart() async {
     if (controller.value.isStarted) {
-//      final Directory tempDir = await getTemporaryDirectory();
-//      if (!mounted) {
-//        return;
-//      }
-//      final String tempPath = tempDir.path;
-//      final String path = '$tempPath/movie${pictureCount++}.jpg';
+     final Directory tempDir = await getTemporaryDirectory();
+     if (!mounted) {
+       return;
+     }
+     final String tempPath = tempDir.path;
+     final String path = '$tempPath/movie${pictureCount++}.mp4';
 //      await controller.video(path);
 //      if (!mounted) {
 //        return;
@@ -251,8 +263,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
 //          imagePath = path;
 //        },
 //      );
-      final String tempPath = "VIDEOSTART/path/to/some/video.mp4";
-      await controller.videostart(tempPath);
+      //final String tempPath = "VIDEOSTART/path/to/some/video.mp4";
+      await controller.videostart(path);
       //final String hello = await controller.video(tempPath);
       //print(hello + ':::From example:::');
 
@@ -261,11 +273,11 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
 
   Future<Null> videostop() async {
     if (controller.value.isStarted) {
-//      final Directory tempDir = await getTemporaryDirectory();
-//      if (!mounted) {
-//        return;
-//      }
-//      final String tempPath = tempDir.path;
+     // final Directory tempDir = await getTemporaryDirectory();
+     // if (!mounted) {
+     //   return;
+     // }
+     // final String tempPath = tempDir.path;
 //      final String path = '$tempPath/movie${pictureCount++}.jpg';
 //      await controller.video(path);
 //      if (!mounted) {
@@ -276,8 +288,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
 //          imagePath = path;
 //        },
 //      );
-      final String tempPath = "VIDEOSTOP/path/to/some/video.mp4";
-      await controller.videostop(tempPath);
+      //final String tempPath = "VIDEOSTOP/path/to/some/video.mp4";
+      await controller.videostop();
       //final String hello = await controller.video(tempPath);
       //print(hello + ':::From example:::');
 
