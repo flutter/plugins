@@ -48,6 +48,11 @@ class StorageReference {
     );
   }
 
+  Future<String> getDownloadURL() {
+    return FirebaseStorage._channel.invokeMethod("StorageReference#getDownloadUrl",
+        <String, String>{'path': _pathComponents.join("/")});
+  }
+
   Future<Null> delete() {
     return FirebaseStorage._channel.invokeMethod("StorageReference#delete",
         <String, String>{'path': _pathComponents.join("/")});
