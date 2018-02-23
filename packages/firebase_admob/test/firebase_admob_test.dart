@@ -85,7 +85,10 @@ void main() {
       final int id = interstitial.id;
 
       expect(await interstitial.load(), true);
-      expect(await interstitial.show(anchorOffset: 60.0, anchorType: AnchorType.anchorTop), true);
+      expect(
+          await interstitial.show(
+              anchorOffset: 60.0, anchorType: AnchorType.anchorTop),
+          true);
       expect(await interstitial.dispose(), true);
 
       expect(log, <Matcher>[
