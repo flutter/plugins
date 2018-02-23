@@ -216,7 +216,7 @@ GADInterstitial *_interstitial;
   [_interstitial loadRequest:[factory createRequest]];
 }
 
-- (void)show:(NSNumber *)anchorOffset anchorType:(NSNumber *)anchorType {
+- (void)show {
   if (_status == LOADING) {
     _status = PENDING;
     return;
