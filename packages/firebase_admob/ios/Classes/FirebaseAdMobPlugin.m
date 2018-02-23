@@ -113,7 +113,6 @@
 
 - (void)callShowAd:(NSNumber *)mobileAdId
               call:(FlutterMethodCall *)call
-            params:(id)params
             result:(FlutterResult)result {
   FLTMobileAd *ad = [FLTMobileAd getAdForId:mobileAdId];
   if (ad == nil) {
@@ -123,16 +122,16 @@
     result([FlutterError errorWithCode:@"ad_not_loaded" message:message details:nil]);
   }
 
-  NSNumber *offset;
-  NSNumber *type;
-  if (params[@"anchorOffset"] != nil) {
-    offset = (NSNumber *)params[@"anchorOffset"];
+  double offset = 0.0;
+  int type = 0;
+  if (call.arguments[@"anchorOffset"] != nil) {
+    offset = [call.arguments[@"anchorOffset"] doubleValue];
   }
-  if (params[@"anchorType"] != nil) {
-    type = (NSNumber *)params[@"anchorType"];
+  if (call.arguments[@"anchorType"] != nil) {
+    type = [call.arguments[@"anchorType"] intValue];
   }
 
-  [ad show:offset anchorType:type];
+  [ad showAtOffset:offset fromAnchor:type];
   result([NSNumber numberWithBool:YES]);
 }
 
@@ -195,7 +194,7 @@
                 call:call
               result:result];
   } else if ([call.method isEqualToString:@"showAd"]) {
-    [self callShowAd:mobileAdId call:call params:call.arguments result:result];
+    [self callShowAd:mobileAdId call:call result:result];
   } else if ([call.method isEqualToString:@"disposeAd"]) {
     [self callDisposeAd:mobileAdId call:call result:result];
   } else {

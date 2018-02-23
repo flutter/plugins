@@ -13,7 +13,7 @@ static NSDictionary *statusToString = nil;
 NSNumber *_mobileAdId;
 FlutterMethodChannel *_channel;
 FLTMobileAdStatus _status;
-int _anchorOffset;
+double _anchorOffset;
 int _anchorType;
 
 + (void)initialize {
@@ -67,12 +67,17 @@ int _anchorType;
   // Implemented by the Banner and Interstitial subclasses
 }
 
-- (void)show:(NSNumber *)anchorOffset anchorType:(NSNumber *)anchorType {
-  // Implemented by the Banner and Interstitial subclasses
+- (void)showAtOffset:(double)anchorOffset fromAnchor:(int)anchorType {
+  _anchorType = anchorType;
+  _anchorOffset = anchorOffset;
+  if (_anchorType == 0) {
+    _anchorOffset = -_anchorOffset;
+  }
+  [self show];
 }
 
 - (void)show {
-  [self show:nil anchorType:nil];
+  // Implemented by the Banner and Interstitial subclasses
 }
 
 - (void)dispose {
@@ -110,16 +115,7 @@ GADBannerView *_banner;
   [_banner loadRequest:[factory createRequest]];
 }
 
-- (void)show:(NSNumber *)anchorOffset anchorType:(NSNumber *)anchorType {
-  if (anchorType != nil) {
-    _anchorType = anchorType.intValue;
-  }
-  if (anchorOffset != nil) {
-    _anchorOffset = anchorOffset.intValue;
-    if (_anchorType == 0) {
-      _anchorOffset = -_anchorOffset;
-    }
-  }
+- (void)show {
   if (_status == LOADING) {
     _status = PENDING;
     return;
@@ -151,7 +147,12 @@ GADBannerView *_banner;
 - (void)placeBannerPreIos11 {
   UIView *screen = [FLTMobileAd rootViewController].view;
   CGFloat x = screen.frame.size.width / 2 - _banner.frame.size.width / 2;
-  CGFloat y = screen.frame.size.height - _banner.frame.size.height - _anchorOffset;
+  CGFloat y;
+  if (_anchorType == 0) {
+    y = screen.frame.size.height - _banner.frame.size.height + _anchorOffset;
+  } else {
+    y = _anchorOffset;
+  }
   _banner.frame = (CGRect){{x, y}, _banner.frame.size};
   [screen addSubview:_banner];
 }

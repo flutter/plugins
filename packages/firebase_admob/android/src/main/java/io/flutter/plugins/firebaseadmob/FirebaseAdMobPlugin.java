@@ -5,6 +5,7 @@
 package io.flutter.plugins.firebaseadmob;
 
 import android.app.Activity;
+import android.view.Gravity;
 import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.FirebaseApp;
 import io.flutter.plugin.common.MethodCall;
@@ -94,10 +95,11 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
       return;
     }
     if (call.argument("anchorOffset") != null) {
-      ad.anchorOffset = ((Integer) call.argument("anchorOffset")).intValue();
+      ad.anchorOffset = Double.parseDouble((String) call.argument("anchorOffset"));
     }
     if (call.argument("anchorType") != null) {
-      ad.anchorType = ((Integer) call.argument("anchorType")).intValue();
+      int type = Integer.parseInt((String) call.argument("anchorType"));
+      ad.anchorType = type == 0 ? Gravity.BOTTOM : Gravity.TOP;
     }
 
     ad.show();

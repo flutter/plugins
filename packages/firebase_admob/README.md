@@ -45,8 +45,8 @@ Ads must be loaded before they're shown.
 ```
 myBanner
   ..load() // typically this happens well before the ad is shown
-  ..show(anchorOffset: 60, anchorType: AnchorType.AnchorBottom);
-// Positions the banner add 60 pixels from the bottom of the screen
+  ..show(anchorOffset: 60.0, anchorType: AnchorType.anchorBottom);
+// Positions the banner ad 60 pixels from the bottom of the screen
 // InterstitialAds are loaded and shown in the same way
 ```
 
@@ -100,7 +100,7 @@ method.
 This is just an initial version of the plugin. There are still some
 limitiations:
 
-- Banner ads have limited positioning functionality. They can be positioned at the top or the bottom of the screen and offset from the edge by a number of pixels.
+- Banner ads have limited positioning functionality. They can be positioned at the top or the bottom of the screen and at a logical pixel offset from the edge.
 - Banner ads cannot be animated into view.
 - It's not possible to specify a banner ad's size.
 - There's no support for native ads.
