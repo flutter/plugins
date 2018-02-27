@@ -30,7 +30,7 @@ const MethodChannel _channel =
 ///
 /// Note that if any of the above are set to true but the URL is not a web URL,
 /// this will throw a [PlatformException].
-Future<Null> launch(
+Future<void> launch(
   String urlString, {
   bool forceSafariVC,
   bool forceWebView,
