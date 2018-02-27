@@ -53,7 +53,7 @@ class LocalAuthentication {
     bool stickyAuth: false,
     AndroidAuthMessages androidAuthStrings: const AndroidAuthMessages(),
     IOSAuthMessages iOSAuthStrings: const IOSAuthMessages(),
-  }) {
+  }) async {
     assert(localizedReason != null);
     final Map<String, Object> args = <String, Object>{
       'localizedReason': localizedReason,
@@ -71,6 +71,6 @@ class LocalAuthentication {
               'operating systems.',
           details: 'Your operating system is ${Platform.operatingSystem}');
     }
-    return _channel.invokeMethod('authenticateWithBiometrics', args);
+    return await _channel.invokeMethod('authenticateWithBiometrics', args);
   }
 }
