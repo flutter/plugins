@@ -1,3 +1,7 @@
+## 0.3.3
+
+* Fixed Dart 2 issues.
+
 ## 0.3.2
 
 * Added an getter that can retrieve values of any type
