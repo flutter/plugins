@@ -32,7 +32,7 @@ class PackageInfo {
       final Completer<PackageInfo> completer = new Completer<PackageInfo>();
 
       _kChannel.invokeMethod('getAll').then((dynamic result) {
-        final Map<String, String> map = result;
+        final Map<dynamic, dynamic> map = result;
 
         completer.complete(new PackageInfo(
           packageName: map["packageName"],
