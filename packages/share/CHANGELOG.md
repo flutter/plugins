@@ -1,3 +1,7 @@
+## 0.3.2
+
+* Fixed Dart 2 type error.
+
 ## 0.3.1
 
 * Simplified and upgraded Android project template to Android SDK 27.
