@@ -16,7 +16,7 @@ const MethodChannel _kChannel = const MethodChannel('plugins.flutter.io/share');
 ///
 /// May throw [PlatformException] or [FormatException]
 /// from [MethodChannel].
-Future<Null> share(String text) async {
+Future<void> share(String text) {
   assert(text != null && text.isNotEmpty);
-  await _kChannel.invokeMethod('share', text);
+  return _kChannel.invokeMethod('share', text);
 }
