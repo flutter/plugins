@@ -1,6 +1,6 @@
 ## 0.1.4
 
-* Fix Dart 2 type error in example project.
+* Fixed Dart 2 type error in example project.
 
 ## 0.1.3
 
