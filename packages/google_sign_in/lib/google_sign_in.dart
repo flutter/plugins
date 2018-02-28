@@ -14,7 +14,7 @@ export 'src/common.dart';
 export 'widgets.dart';
 
 class GoogleSignInAuthentication {
-  final Map<String, String> _data;
+  final Map<dynamic, dynamic> _data;
 
   GoogleSignInAuthentication._(this._data);
 
@@ -29,7 +29,7 @@ class GoogleSignInAuthentication {
 }
 
 class GoogleSignInAccount implements GoogleIdentity {
-  GoogleSignInAccount._(this._googleSignIn, Map<String, dynamic> data)
+  GoogleSignInAccount._(this._googleSignIn, Map<dynamic, dynamic> data)
       : displayName = data['displayName'],
         email = data['email'],
         id = data['id'],
@@ -59,7 +59,7 @@ class GoogleSignInAccount implements GoogleIdentity {
       throw new StateError('User is no longer signed in.');
     }
 
-    final Map<String, String> response =
+    final Map<dynamic, dynamic> response =
         await GoogleSignIn.channel.invokeMethod(
       'getTokens',
       <String, dynamic>{'email': email},
@@ -139,7 +139,7 @@ class GoogleSignIn {
       _currentUserController.stream;
 
   // Future that completes when we've finished calling `init` on the native side
-  Future<Null> _initialization;
+  Future<void> _initialization;
 
   Future<GoogleSignInAccount> _callMethod(String method) async {
     if (_initialization == null) {
@@ -153,7 +153,7 @@ class GoogleSignIn {
         });
     }
     await _initialization;
-    final Map<String, dynamic> response = await channel.invokeMethod(method);
+    final Map<dynamic, dynamic> response = await channel.invokeMethod(method);
     return _setCurrentUser(response != null && response.isNotEmpty
         ? new GoogleSignInAccount._(this, response)
         : null);
