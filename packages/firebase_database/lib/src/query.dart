@@ -56,7 +56,7 @@ class Query {
             'parameters': _parameters,
             'eventType': eventType.toString(),
           },
-        );
+        ).then<int>((dynamic result) => result);
         _handle.then((int handle) {
           FirebaseDatabase._observers[handle] = controller;
         });
@@ -205,7 +205,7 @@ class Query {
   /// automatically be downloaded and kept in sync, even when no listeners are
   /// attached for that location. Additionally, while a location is kept synced,
   /// it will not be evicted from the persistent disk cache.
-  Future<Null> keepSynced(bool value) {
+  Future<void> keepSynced(bool value) {
     return _database._channel.invokeMethod(
       'Query#keepSynced',
       <String, dynamic>{
