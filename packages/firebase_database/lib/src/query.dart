@@ -56,10 +56,7 @@ class Query {
             'parameters': _parameters,
             'eventType': eventType.toString(),
           },
-        ).then((dynamic result) {
-          final int handle = result;
-          return handle;
-        });
+        ).then<int>((dynamic result) => result);
         _handle.then((int handle) {
           FirebaseDatabase._observers[handle] = controller;
         });
