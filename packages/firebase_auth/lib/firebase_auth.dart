@@ -239,7 +239,7 @@ class FirebaseAuth {
   }
 
   /// Links email account with current user and returns [Future<FirebaseUser>]
-  /// basically current user with addtional email infomation
+  /// basically current user with additional email information
   ///
   /// throws [PlatformException] when
   /// 1. email address is already used
