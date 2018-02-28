@@ -46,7 +46,14 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+// add log feature for debug
 import android.util.Log;
+
+// Handle date for file name
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 
 
@@ -55,7 +62,7 @@ public class CameraPlugin implements MethodCallHandler {
   private static final int cameraRequestId = 513469796;
   private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
   private static CameraManager cameraManager;
-  private static final String TAG = "VideoCALLmeMAybe:";
+  private static final String TAG = "VideoCALL:";
 
   @SuppressLint("UseSparseArrays")
   private static Map<Long, Cam> cams = new HashMap<>();
@@ -364,23 +371,25 @@ public class CameraPlugin implements MethodCallHandler {
         imageReader =
             ImageReader.newInstance(
                 captureSize.getWidth(), captureSize.getHeight(), ImageFormat.JPEG, 2);
+        startMRec();
         // Set up Surface for the MediaRecorder
-        mMediaRecorder = new MediaRecorder();
-        //mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
-        mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-        //mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-        mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
-        if (mNextVideoAbsolutePath == null || mNextVideoAbsolutePath.isEmpty()) {
-            //mNextVideoAbsolutePath = getVideoFilePath(activity);
-            final int videotime = ((int) System.currentTimeMillis()/1000);
-            mNextVideoAbsolutePath = "/sdcard/Movies/video" + videotime + ".mp4";
-        }
-
-        mMediaRecorder.setVideoEncodingBitRate(1024 * 1000);
-        mMediaRecorder.setVideoFrameRate(27);
-        mMediaRecorder.setVideoSize(mVideoSize.getWidth(), mVideoSize.getHeight());
-        mMediaRecorder.setOutputFile(mNextVideoAbsolutePath);
+        // mMediaRecorder = new MediaRecorder();
+        // mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        // mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
+        // mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+        // mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+        // mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
+        // if (mNextVideoAbsolutePath == null || mNextVideoAbsolutePath.isEmpty()) {
+        //     //mNextVideoAbsolutePath = getVideoFilePath(activity);
+        //     String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date());
+        //   //  final int videotime = ((int) System.currentTimeMillis()/1000);
+        //     mNextVideoAbsolutePath = "/sdcard/Movies/VID_" + timeStamp + ".mp4";
+        // }
+        //
+        // mMediaRecorder.setVideoEncodingBitRate(1024 * 1000);
+        // mMediaRecorder.setVideoFrameRate(27);
+        // mMediaRecorder.setVideoSize(mVideoSize.getWidth(), mVideoSize.getHeight());
+        // mMediaRecorder.setOutputFile(mNextVideoAbsolutePath);
         //mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
         //int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
         // int vdisplayRotation = activity.getWindowManager().getDefaultDisplay().getRotation();
@@ -442,6 +451,26 @@ public class CameraPlugin implements MethodCallHandler {
       return Build.VERSION.SDK_INT < Build.VERSION_CODES.M
           || activity.checkSelfPermission(Manifest.permission.CAMERA)
               == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void startMRec() {
+      mMediaRecorder = new MediaRecorder();
+      mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+      mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
+      mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+      mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+      mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
+      if (mNextVideoAbsolutePath == null || mNextVideoAbsolutePath.isEmpty()) {
+          //mNextVideoAbsolutePath = getVideoFilePath(activity);
+          String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date());
+        //  final int videotime = ((int) System.currentTimeMillis()/1000);
+          mNextVideoAbsolutePath = "/sdcard/Movies/VID_" + timeStamp + ".mp4";
+      }
+
+      mMediaRecorder.setVideoEncodingBitRate(1024 * 1000);
+      mMediaRecorder.setVideoFrameRate(27);
+      mMediaRecorder.setVideoSize(mVideoSize.getWidth(), mVideoSize.getHeight());
+      mMediaRecorder.setOutputFile(mNextVideoAbsolutePath);
     }
 
     private void openCamera(final Result result) {
@@ -839,13 +868,21 @@ void videostop(final Result result) {
 
   try{
     if(mIsRecordingVideo){
-      // Start recording
-      mMediaRecorder.stop();
+      // stop recording
+
       mIsRecordingVideo = false;
+      //pause();
+      mMediaRecorder.stop();
+      //stop();
       mMediaRecorder.reset();
-      stop();
-      dispose();
-      result.success(null);
+      //startMRec();
+      //start();
+      //start();
+      //resume();
+      Log.d(TAG, "Video saved: " + mNextVideoAbsolutePath);
+      //dispose();
+      result.success(mNextVideoAbsolutePath);
+      mNextVideoAbsolutePath = null;
     }
   }  catch (Exception e) {
       result.error("captureFailure", "videostop: an exception was thrown", null);
@@ -873,6 +910,11 @@ void videostop(final Result result) {
     }
 
     void dispose() {
+      if (mMediaRecorder != null) {
+                mMediaRecorder.reset();
+                mMediaRecorder.release();
+                mMediaRecorder = null;
+        }
       if (cameraCaptureSession != null) {
         cameraCaptureSession.close();
         cameraCaptureSession = null;
