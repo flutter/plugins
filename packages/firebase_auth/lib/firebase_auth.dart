@@ -231,7 +231,8 @@ class FirebaseAuth {
 
   /// Asynchronously gets current user, or `null` if there is none.
   Future<FirebaseUser> currentUser() async {
-    final Map<dynamic, dynamic> data = await channel.invokeMethod("currentUser");
+    final Map<dynamic, dynamic> data =
+        await channel.invokeMethod("currentUser");
     final FirebaseUser currentUser =
         data == null ? null : new FirebaseUser._(data);
     return currentUser;

@@ -135,7 +135,7 @@ class FirebaseList extends ListBase<DataSnapshot>
   }
 
   void _onError(Object o) {
-    DatabaseError error = o;
+    final DatabaseError error = o;
     onError?.call(error);
   }
 }
