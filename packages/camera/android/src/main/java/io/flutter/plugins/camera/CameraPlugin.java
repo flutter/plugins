@@ -914,6 +914,7 @@ void videostop(final Result result) {
                 mMediaRecorder.reset();
                 mMediaRecorder.release();
                 mMediaRecorder = null;
+                mNextVideoAbsolutePath = null;
         }
       if (cameraCaptureSession != null) {
         cameraCaptureSession.close();
