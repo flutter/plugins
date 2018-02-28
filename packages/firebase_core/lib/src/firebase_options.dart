@@ -21,7 +21,7 @@ class FirebaseOptions {
       : assert(googleAppID != null);
 
   @visibleForTesting
-  FirebaseOptions.from(Map<String, String> map)
+  FirebaseOptions.from(Map<dynamic, dynamic> map)
       : apiKey = map['APIKey'],
         bundleID = map['bundleID'],
         clientID = map['clientID'],
