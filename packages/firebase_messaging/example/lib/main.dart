@@ -96,7 +96,7 @@ class _PushMessagingExampleState extends State<PushMessagingExample> {
 
   Future<Null> _showItemDialog(Map<String, dynamic> message) async {
     final Item item = _itemForMessage(message);
-    showDialog<Null>(
+    showDialog<bool>(
         context: context,
         child: new AlertDialog(
           content: new Text("Item ${item.itemId} has been updated"),
