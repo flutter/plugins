@@ -23,7 +23,7 @@ enum DocumentChangeType {
 /// It contains the document affected and the type of change that occurred
 /// (added, modified, or removed).
 class DocumentChange {
-  DocumentChange._(Map<String, dynamic> data, this._firestore)
+  DocumentChange._(Map<dynamic, dynamic> data, this._firestore)
       : oldIndex = data['oldIndex'],
         newIndex = data['newIndex'],
         document = new DocumentSnapshot._(

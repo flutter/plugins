@@ -120,7 +120,7 @@ class Transaction {
     }
   }
 
-  Future<Null> delete(DocumentReference documentReference) async {
+  Future<void> delete(DocumentReference documentReference) async {
     return Firestore.channel
         .invokeMethod('Transaction#delete', <String, dynamic>{
       'transactionId': _transactionId,
@@ -128,7 +128,7 @@ class Transaction {
     });
   }
 
-  Future<Null> update(
+  Future<void> update(
       DocumentReference documentReference, Map<String, dynamic> data) async {
     return Firestore.channel
         .invokeMethod('Transaction#update', <String, dynamic>{
@@ -138,7 +138,7 @@ class Transaction {
     });
   }
 
-  Future<Null> set(
+  Future<void> set(
       DocumentReference documentReference, Map<String, dynamic> data) async {
     return Firestore.channel.invokeMethod('Transaction#set', <String, dynamic>{
       'transactionId': _transactionId,
