@@ -52,10 +52,10 @@ class FirebaseApp {
     final List<dynamic> result = await channel.invokeMethod(
       'FirebaseApp#allApps',
     );
-    return result?.map<FirebaseApp>((dynamic map) {
+    return result?.map<FirebaseApp>((dynamic app) {
       return new FirebaseApp(
-        name: map['name'],
-        options: new FirebaseOptions.from(map['options']),
+        name: app['name'],
+        options: new FirebaseOptions.from(app['options']),
       );
     })?.toList();
   }
