@@ -10,7 +10,7 @@ part of cloud_firestore;
 /// The data can be extracted with the data property or by using subscript
 /// syntax to access a specific field.
 class DocumentSnapshot {
-  DocumentSnapshot._(this._path, Map<dynamic, dynamic> data, this._firestore): data = _asStringKeyedMap(data);
+  DocumentSnapshot._(this._path, this.data, this._firestore);
 
   final String _path;
   final Firestore _firestore;

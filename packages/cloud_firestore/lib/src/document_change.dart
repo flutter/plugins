@@ -28,7 +28,7 @@ class DocumentChange {
         newIndex = data['newIndex'],
         document = new DocumentSnapshot._(
           data['path'],
-          data['document'],
+          _asStringKeyedMap(data['document']),
           _firestore,
         ),
         type = DocumentChangeType.values.firstWhere((DocumentChangeType type) {

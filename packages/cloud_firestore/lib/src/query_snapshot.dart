@@ -20,7 +20,7 @@ class QuerySnapshot {
             data['documents'].length, (int index) {
           return new DocumentSnapshot._(
             data['paths'][index],
-            data['documents'][index],
+            _asStringKeyedMap(data['documents'][index]),
             _firestore,
           );
         }),

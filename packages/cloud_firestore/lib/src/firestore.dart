@@ -32,7 +32,7 @@ class Firestore {
       } else if (call.method == 'DocumentSnapshot') {
         final DocumentSnapshot snapshot = new DocumentSnapshot._(
           call.arguments['path'],
-          call.arguments['data'],
+          _asStringKeyedMap(call.arguments['data']),
           this,
         );
         _documentObservers[call.arguments['handle']].add(snapshot);
