@@ -114,7 +114,8 @@ class FirebaseSortedList extends ListBase<DataSnapshot>
     onValue(event.snapshot);
   }
 
-  void _onError(DatabaseError error) {
+  void _onError(Object o) {
+    final DatabaseError error = o;
     onError?.call(error);
   }
 }
