@@ -113,7 +113,7 @@ class _PushMessagingExampleState extends State<PushMessagingExample> {
                 }),
           ],
         )).then((bool shouldNavigate) {
-      if (shouldNavigate) {
+      if (shouldNavigate == true) {
         _navigateToItemDetail(message);
       }
     });
