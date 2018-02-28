@@ -49,10 +49,10 @@ class FirebaseApp {
   /// Returns a list of all extant FirebaseApp instances, or null if there are
   /// no FirebaseApp instances.
   static Future<List<FirebaseApp>> allApps() async {
-    final List<Map<String, dynamic>> result = await channel.invokeMethod(
+    final List<dynamic> result = await channel.invokeMethod(
       'FirebaseApp#allApps',
     );
-    return result?.map((Map<String, dynamic> app) {
+    return result?.map<FirebaseApp>((dynamic app) {
       return new FirebaseApp(
         name: app['name'],
         options: new FirebaseOptions.from(app['options']),
