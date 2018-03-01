@@ -61,7 +61,7 @@ class Query {
             'path': path,
             'parameters': _parameters,
           },
-        );
+        ).then<int>((dynamic result) => result);
         _handle.then((int handle) {
           Firestore._queryObservers[handle] = controller;
         });
@@ -81,7 +81,7 @@ class Query {
 
   /// Fetch the documents for this query
   Future<QuerySnapshot> getDocuments() async {
-    final Map<String, dynamic> data = await Firestore.channel.invokeMethod(
+    final Map<dynamic, dynamic> data = await Firestore.channel.invokeMethod(
       'Query#getDocuments',
       <String, dynamic>{
         'path': path,
