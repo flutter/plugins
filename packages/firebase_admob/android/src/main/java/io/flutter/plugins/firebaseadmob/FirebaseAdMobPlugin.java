@@ -5,6 +5,7 @@
 package io.flutter.plugins.firebaseadmob;
 
 import android.app.Activity;
+import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.FirebaseApp;
 import io.flutter.plugin.common.MethodCall;
@@ -44,7 +45,47 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
     result.success(Boolean.TRUE);
   }
 
-  private void callLoadAd(MobileAd ad, MethodCall call, Result result) {
+  private void callLoadBannerAd(int id, Activity activity, MethodChannel channel, MethodCall call, Result result) {
+    String adUnitId = call.argument("adUnitId");
+    if (adUnitId == null || adUnitId.isEmpty()) {
+      result.error("no_unit_id", "a non-empty adUnitId was not provided for ad id=" + id, null);
+      return;
+    }
+
+    int width = call.argument("width");
+    int height = call.argument("height");
+    int sizeType = call.argument("sizeType");
+    if ((sizeType < 0)
+      || (sizeType > 1)
+      || ((sizeType == 0) && ((width <= 0) || (height <= 0)))) {
+        String errMsg =
+            String.format("an invalid AdSize (%d, %d, %d) was provided for banner id=%d",
+                width, height, sizeType, id);
+        result.error("invalid_adsize", errMsg, null);
+      }
+
+    AdSize size;
+    if (sizeType == MobileAd.Banner.SMART_BANNER) {
+      size = AdSize.SMART_BANNER;
+    } else {
+      size = new AdSize(width, height);
+    }
+
+    MobileAd.Banner banner = MobileAd.createBanner(id, size, activity, channel);
+
+    if (banner.status != MobileAd.Status.CREATED) {
+      if (banner.status == MobileAd.Status.FAILED)
+        result.error("load_failed_ad", "cannot reload a failed ad, id=" + id, null);
+      else result.success(Boolean.TRUE); // The ad was already loaded.
+      return;
+    }
+
+    Map<String, Object> targetingInfo = call.argument("targetingInfo");
+    banner.load(adUnitId, targetingInfo);
+    result.success(Boolean.TRUE);
+  }
+
+  private void callLoadInterstitialAd(MobileAd ad, MethodCall call, Result result) {
     if (ad.status != MobileAd.Status.CREATED) {
       if (ad.status == MobileAd.Status.FAILED)
         result.error("load_failed_ad", "cannot reload a failed ad, id=" + ad.id, null);
@@ -134,10 +175,10 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
 
     switch (call.method) {
       case "loadBannerAd":
-        callLoadAd(MobileAd.createBanner(id, activity, channel), call, result);
+        callLoadBannerAd(id, activity, channel, call, result);
         break;
       case "loadInterstitialAd":
-        callLoadAd(MobileAd.createInterstitial(id, activity, channel), call, result);
+        callLoadInterstitialAd(MobileAd.createInterstitial(id, activity, channel), call, result);
         break;
       case "loadRewardedVideoAd":
         callLoadRewardedVideoAd(call, result);

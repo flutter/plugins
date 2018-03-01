@@ -82,6 +82,65 @@ class MobileAdTargetingInfo {
   }
 }
 
+// The types of ad sizes supported for banners.
+enum AdSizeType {
+  WidthAndHeight,
+  SmartBanner,
+}
+
+/// [AdSize] represents the size of a banner ad.
+class AdSize {
+  final int height;
+  final int width;
+  final AdSizeType sizeType;
+
+  /// Creates a typical width-by-height banner size. In most cases, it's easier
+  /// to use one of the named constructors like [AdSize.banner].
+  AdSize({this.width, this.height})
+      : assert(width > 0),
+        assert(height > 0),
+        sizeType = AdSizeType.WidthAndHeight;
+
+  /// Creates a standard banner (320x50) size.
+  AdSize.banner()
+      : width = 320,
+        height = 50,
+        sizeType = AdSizeType.WidthAndHeight;
+
+  /// Creates a large banner (320x100) size.
+  AdSize.largeBanner()
+      : width = 320,
+        height = 100,
+        sizeType = AdSizeType.WidthAndHeight;
+
+  /// Creates a medium rectangle (300x250) size.
+  AdSize.mediumRectangle()
+      : width = 300,
+        height = 250,
+        sizeType = AdSizeType.WidthAndHeight;
+
+  /// Creates a full banner (468x60) size.
+  AdSize.fullBanner()
+      : width = 468,
+        height = 60,
+        sizeType = AdSizeType.WidthAndHeight;
+
+  /// Creates a leaderboard (728x90) size.
+  AdSize.leaderboard()
+      : width = 728,
+        height = 90,
+        sizeType = AdSizeType.WidthAndHeight;
+
+  /// Creates a smart banner size. Smart banners are unique in that they will
+  /// automatically adjust their width to match that of the displaying device's
+  /// screen. Height also varies, and will be 32, 50, or 90 depending on how
+  /// tall the screen is.
+  AdSize.smartBanner()
+      : width = 0,
+        height = 0,
+        sizeType = AdSizeType.SmartBanner;
+}
+
 /// A mobile [BannerAd] or [InterstitialAd] for the [FirebaseAdMobPlugin].
 ///
 /// A [MobileAd] must be loaded with [load] before it is shown with [show].
@@ -143,14 +202,6 @@ abstract class MobileAd {
     _allAds[id] = null;
     return _channel.invokeMethod("disposeAd", <String, dynamic>{'id': id});
   }
-
-  Future<bool> _doLoad(String loadMethod) {
-    return _channel.invokeMethod(loadMethod, <String, dynamic>{
-      'id': id,
-      'adUnitId': adUnitId,
-      'targetingInfo': targetingInfo?.toJson(),
-    });
-  }
 }
 
 /// A banner ad for the [FirebaseAdMobPlugin].
@@ -161,11 +212,14 @@ class BannerAd extends MobileAd {
       ? 'ca-app-pub-3940256099942544/6300978111'
       : 'ca-app-pub-3940256099942544/2934735716';
 
+  final AdSize size;
+
   /// Create a BannerAd.
   ///
   /// A valid [adUnitId] is required.
   BannerAd({
     @required String adUnitId,
+    @required this.size,
     MobileAdTargetingInfo targetingInfo,
     MobileAdListener listener,
   })
@@ -175,7 +229,16 @@ class BannerAd extends MobileAd {
             listener: listener);
 
   @override
-  Future<bool> load() => _doLoad("loadBannerAd");
+  Future<bool> load() {
+    return _channel.invokeMethod("loadBannerAd", <String, dynamic>{
+      'id': id,
+      'adUnitId': adUnitId,
+      'targetingInfo': targetingInfo?.toJson(),
+      'width': size.width,
+      'height': size.height,
+      'sizeType': size.sizeType.index,
+    });
+  }
 }
 
 /// A full-screen interstitial ad for the [FirebaseAdMobPlugin].
@@ -201,7 +264,13 @@ class InterstitialAd extends MobileAd {
             listener: listener);
 
   @override
-  Future<bool> load() => _doLoad("loadInterstitialAd");
+  Future<bool> load() {
+    return _channel.invokeMethod("loadInterstitialAd", <String, dynamic>{
+      'id': id,
+      'adUnitId': adUnitId,
+      'targetingInfo': targetingInfo?.toJson(),
+    });
+  }
 }
 
 /// [RewardedVideoAd] status changes reported to [RewardedVideoAdListener]s.
