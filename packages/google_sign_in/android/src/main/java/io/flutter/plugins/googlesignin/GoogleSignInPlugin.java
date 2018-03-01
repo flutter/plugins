@@ -64,7 +64,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
   }
 
   private GoogleSignInPlugin(PluginRegistry.Registrar registrar) {
-    delegate = new Delegate(registrar);
+    delegate = new DelegateImpl(registrar);
   }
 
   @Override
@@ -103,6 +103,43 @@ public class GoogleSignInPlugin implements MethodCallHandler {
   }
 
   /**
+   * A delegate interface that exposes all of the sign-in functionality for other plugins to use.
+   * The {@link #DelegateImpl} implementation should be used by any clients unless they need to
+   * override some of these functions, such as for testing.
+   */
+  public interface Delegate {
+    /** Initializes this delegate so that it is ready to perform other operations. */
+    public void init(Result result, List<String> requestedScopes, String hostedDomain);
+
+    /**
+     * Returns the account information for the user who is signed in to this app. If no user is
+     * signed in, tries to sign the user in without displaying any user interface.
+     */
+    public void signInSilently(Result result);
+
+    /**
+     * Signs the user in via the sign-in user interface, including the OAuth consent flow if scopes
+     * were requested.
+     */
+    public void signIn(Result result);
+
+    /**
+     * Gets an OAuth access token with the scopes that were specified during initialization for the
+     * user with the specified email address.
+     */
+    public void getTokens(final Result result, final String email);
+
+    /**
+     * Signs the user out. Their credentials may remain valid, meaning they'll be able to silently
+     * sign back in.
+     */
+    public void signOut(Result result);
+
+    /** Signs the user out, and revokes their credentials. */
+    public void disconnect(Result result);
+  }
+
+  /**
    * Delegate class that does the work for the Google sign-in plugin. This is exposed as a dedicated
    * class for use in other plugins that wrap basic sign-in functionality.
    *
@@ -111,7 +148,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
    * completed (either successfully or in error). This class provides no synchronization consructs
    * to guarantee such behavior; callers are responsible for providing such guarantees.
    */
-  public static final class Delegate {
+  public static final class DelegateImpl implements Delegate {
     private static final int REQUEST_CODE = 53293;
     private static final int REQUEST_CODE_RESOLVE_ERROR = 1001;
 
@@ -131,7 +168,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     private PendingOperation pendingOperation;
     private volatile GoogleSignInAccount currentAccount;
 
-    public Delegate(PluginRegistry.Registrar registrar) {
+    public DelegateImpl(PluginRegistry.Registrar registrar) {
       this.registrar = registrar;
       Application application = (Application) registrar.context();
       application.registerActivityLifecycleCallbacks(handler);
