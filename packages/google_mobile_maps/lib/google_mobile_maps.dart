@@ -23,7 +23,6 @@ class Location {
   const Location(this.latitude, this.longitude);
 
   dynamic _toJson() => <dynamic>[latitude, longitude];
-  static Location _fromJson(dynamic json) => new Location(json[0], json[1]);
 }
 
 /// A GoogleMaps zoom value.
@@ -33,7 +32,6 @@ class Zoom {
   const Zoom(this.value);
 
   dynamic _toJson() => value;
-  static Zoom _fromJson(dynamic json) => new Zoom(json);
 }
 
 /// Controller for a single GoogleMaps instance.
