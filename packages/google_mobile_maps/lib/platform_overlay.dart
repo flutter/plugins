@@ -1,3 +1,7 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'dart:async';
 import 'dart:ui';
 
@@ -6,6 +10,24 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:meta/meta.dart';
 
+/// Base class for controllers of platform overlays.
+///
+/// Platform overlays are normal platform-specific views that are
+/// created, shown on top of the Flutter view, or hidden below it,
+/// under control of the Flutter app. The platform overlay is
+/// typically placed on top of a [Texture] widget acting as stand-in
+/// while Flutter movement or transformations are ongoing.
+///
+/// Overlays are attached to a [BuildContext] when used in a Widget and
+/// are deactivated and reactivated when the ambient ModalRoute
+/// (if any) is on top of the navigator stack.
+///
+/// *Warning*: Platform overlays cannot be freely composed with
+/// over widgets.
+///
+/// Limitations and caveats:
+///
+/// * TODO(mravn)
 abstract class PlatformOverlayController extends NavigatorObserver
     with WidgetsBindingObserver {
   final double width;
@@ -41,6 +63,8 @@ abstract class PlatformOverlayController extends NavigatorObserver
     WidgetsBinding.instance.removeObserver(this);
   }
 
+  /// Allow activating the overlay, unless there are other pending calls to
+  /// [deactivateOverlay].
   void activateOverlay() {
     _activationCount += 1;
     if (_activationCount == 1) {
@@ -60,6 +84,7 @@ abstract class PlatformOverlayController extends NavigatorObserver
     }
   }
 
+  /// Prevent activating the overlay until a matching call to [activateOverlay].
   void deactivateOverlay() {
     _activationCount -= 1;
     if (_activationCount == 0) {
@@ -166,14 +191,22 @@ abstract class PlatformOverlayController extends NavigatorObserver
     activateOverlay();
   }
 
+  /// Subclasses implement this method to create a platform view of the
+  /// specified [physicalSize] (in device pixels).
+  ///
+  /// The view should remain hidden.
   @protected
   Future<int> createOverlay(Size physicalSize);
 
+  /// Subclasses implement this method to display the platform view at the
+  /// specified [physicalOffset] (in device pixels).
   @protected
   Future<void> showOverlay(Offset physicalOffset);
 
+  /// Subclasses implement this method to hide the platform view.
   @protected
   Future<void> hideOverlay();
 
+  /// Subclasses implement this method to dispose of the platform view.
   Future<void> disposeOverlay();
 }

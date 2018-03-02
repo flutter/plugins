@@ -1,3 +1,7 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.googlemobilemaps;
 
 import android.app.Activity;
@@ -6,7 +10,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Surface;
 import android.widget.FrameLayout;
 
@@ -33,7 +36,6 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.view.TextureRegistry;
 
 public class GoogleMobileMapsPlugin implements MethodCallHandler, Application.ActivityLifecycleCallbacks {
-  private static final String TAG = "GMM";
   private final Map<Long, GoogleMapsEntry> googleMaps = new HashMap<>();
   private final Registrar registrar;
   private final AtomicInteger state = new AtomicInteger(0);
@@ -63,7 +65,6 @@ public class GoogleMobileMapsPlugin implements MethodCallHandler, Application.Ac
       case "createMap": {
         final int width = ((Number) call.argument("width")).intValue();
         final int height = ((Number) call.argument("height")).intValue();
-        Log.e(TAG, "createMap(" + width + ", " + height + ")");
         final GoogleMapsEntry entry = new GoogleMapsEntry(state, registrar, width, height);
         googleMaps.put(entry.id(), entry);
         entry.init();

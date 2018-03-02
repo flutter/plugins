@@ -1,3 +1,7 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'dart:async';
 import 'dart:ui';
 
@@ -11,6 +15,7 @@ final MethodChannel _channel =
     const MethodChannel('plugins.flutter.io/google_mobile_maps')
       ..invokeMethod('init');
 
+/// A GoogleMaps geographical location.
 class Location {
   final double latitude;
   final double longitude;
@@ -21,6 +26,7 @@ class Location {
   static Location _fromJson(dynamic json) => new Location(json[0], json[1]);
 }
 
+/// A GoogleMaps zoom value.
 class Zoom {
   final double value;
 
@@ -30,11 +36,18 @@ class Zoom {
   static Zoom _fromJson(dynamic json) => new Zoom(json);
 }
 
+/// Controller for a single GoogleMaps instance.
+///
+/// Used for programmatically controlling a platform-specific
+/// GoogleMaps view, once it has been created and integrated
+/// into the Flutter application.
 class GoogleMapsController {
+  /// An ID identifying the GoogleMaps instance, once created.
   final Future<int> id;
 
   GoogleMapsController(this.id);
 
+  /// Initiate a camera move to the specified [location] and [zoom] level.
   Future<void> moveCamera(Location location, Zoom zoom) async {
     final int id = await this.id;
     await _channel.invokeMethod('moveCamera', <String, dynamic>{
@@ -45,19 +58,29 @@ class GoogleMapsController {
   }
 }
 
+/// Controller for a GoogleMaps instance that is integrated as a
+/// platform overlay.
+///
+/// *Warning*: Platform overlays cannot be freely composed with
+/// over widgets. See [PlatformOverlayController] for caveats and
+/// limitations.
 class GoogleMapsOverlayController {
-  final GoogleMapsController mapsController;
-  final PlatformOverlayController overlayController;
+  GoogleMapsOverlayController._(this.mapsController, this.overlayController);
 
-  GoogleMapsOverlayController(this.mapsController, this.overlayController);
-
+  /// Creates a controller for a GoogleMaps of the specified size in
+  /// logical pixels.
   factory GoogleMapsOverlayController.fromSize(double width, double height) {
     final _GoogleMapsPlatformOverlayController overlayController =
-        new _GoogleMapsPlatformOverlayController(width, height);
+    new _GoogleMapsPlatformOverlayController(width, height);
     final GoogleMapsController mapsController =
-        new GoogleMapsController(overlayController.mapId);
-    return new GoogleMapsOverlayController(mapsController, overlayController);
+    new GoogleMapsController(overlayController.mapId);
+    return new GoogleMapsOverlayController._(mapsController, overlayController);
   }
+
+  /// The controller of the GoogleMaps instance.
+  final GoogleMapsController mapsController;
+  /// The controller of the platform overlay.
+  final PlatformOverlayController overlayController;
 
   void dispose() {
     overlayController.dispose();
@@ -74,7 +97,6 @@ class _GoogleMapsPlatformOverlayController extends PlatformOverlayController {
 
   @override
   Future<int> createOverlay(Size physicalSize) {
-    print('physicalSize: $physicalSize');
     _textureId.complete(_channel.invokeMethod('createMap', <String, dynamic>{
       'width': physicalSize.width,
       'height': physicalSize.height,
@@ -109,6 +131,7 @@ class _GoogleMapsPlatformOverlayController extends PlatformOverlayController {
   }
 }
 
+/// A Widget that is fronted by a GoogleMaps platform overlay.
 class GoogleMapsOverlay extends StatefulWidget {
   final GoogleMapsOverlayController controller;
 
