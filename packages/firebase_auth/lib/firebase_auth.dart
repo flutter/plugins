@@ -72,8 +72,8 @@ class FirebaseUser extends UserInfo {
   /// Obtains the id token for the current user, forcing a [refresh] if desired.
   ///
   /// Completes with an error if the user is signed out.
-  Future<String> getIdToken({bool refresh: false}) {
-    return FirebaseAuth.channel.invokeMethod('getIdToken', <String, bool>{
+  Future<String> getIdToken({bool refresh: false}) async {
+    return await FirebaseAuth.channel.invokeMethod('getIdToken', <String, bool>{
       'refresh': refresh,
     });
   }
@@ -108,7 +108,9 @@ class FirebaseAuth {
 
     StreamController<FirebaseUser> controller;
     controller = new StreamController<FirebaseUser>.broadcast(onListen: () {
-      _handle = channel.invokeMethod('startListeningAuthState');
+      _handle = channel
+          .invokeMethod('startListeningAuthState')
+          .then<int>((dynamic v) => v);
       _handle.then((int handle) {
         _authStateChangedControllers[handle] = controller;
       });

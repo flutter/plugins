@@ -1,3 +1,6 @@
+## 0.2.11
+* Fix Dart 2 type errors.
+
 ## 0.2.10
 * Fix Dart 2 type errors.
 
