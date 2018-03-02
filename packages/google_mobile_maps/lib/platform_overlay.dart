@@ -19,8 +19,8 @@ import 'package:meta/meta.dart';
 /// while Flutter movement or transformations are ongoing.
 ///
 /// Overlays are attached to a [BuildContext] when used in a Widget and
-/// are deactivated and reactivated when the ambient ModalRoute
-/// (if any) is on top of the navigator stack.
+/// are deactivated when the ambient ModalRoute (if any) is not on top of the
+/// navigator stack.
 ///
 /// *Warning*: Platform overlays cannot be freely composed with
 /// over widgets.

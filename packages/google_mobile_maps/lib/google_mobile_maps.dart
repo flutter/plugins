@@ -69,14 +69,15 @@ class GoogleMapsOverlayController {
   /// logical pixels.
   factory GoogleMapsOverlayController.fromSize(double width, double height) {
     final _GoogleMapsPlatformOverlayController overlayController =
-    new _GoogleMapsPlatformOverlayController(width, height);
+        new _GoogleMapsPlatformOverlayController(width, height);
     final GoogleMapsController mapsController =
-    new GoogleMapsController(overlayController.mapId);
+        new GoogleMapsController(overlayController.mapId);
     return new GoogleMapsOverlayController._(mapsController, overlayController);
   }
 
   /// The controller of the GoogleMaps instance.
   final GoogleMapsController mapsController;
+
   /// The controller of the platform overlay.
   final PlatformOverlayController overlayController;
 
