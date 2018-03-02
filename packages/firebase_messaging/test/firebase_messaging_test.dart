@@ -58,7 +58,9 @@ void main() {
   test('incoming token', () async {
     firebaseMessaging.configure();
     final dynamic handler =
-        verify(mockChannel.setMethodCallHandler(typed(captureAny))).captured.single;
+        verify(mockChannel.setMethodCallHandler(typed(captureAny)))
+            .captured
+            .single;
     final String token1 = 'I am a super secret token';
     final String token2 = 'I am the new token in town';
     Future<String> tokenFromStream = firebaseMessaging.onTokenRefresh.first;
@@ -77,7 +79,9 @@ void main() {
   test('incoming iOS settings', () async {
     firebaseMessaging.configure();
     final dynamic handler =
-        verify(mockChannel.setMethodCallHandler(typed(captureAny))).captured.single;
+        verify(mockChannel.setMethodCallHandler(typed(captureAny)))
+            .captured
+            .single;
     IosNotificationSettings iosSettings = const IosNotificationSettings();
 
     Future<IosNotificationSettings> iosSettingsFromStream =
@@ -106,7 +110,9 @@ void main() {
       onResume.complete(m);
     });
     final dynamic handler =
-        verify(mockChannel.setMethodCallHandler(typed(captureAny))).captured.single;
+        verify(mockChannel.setMethodCallHandler(typed(captureAny)))
+            .captured
+            .single;
 
     final Map<String, dynamic> onMessageMessage = <String, dynamic>{};
     final Map<String, dynamic> onLaunchMessage = <String, dynamic>{};
