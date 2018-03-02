@@ -108,11 +108,9 @@ class FirebaseAuth {
 
     StreamController<FirebaseUser> controller;
     controller = new StreamController<FirebaseUser>.broadcast(onListen: () {
-      _handle =
-          channel.invokeMethod('startListeningAuthState').then((dynamic v) {
-        int typedV = v;
-        return typedV;
-      });
+      _handle = channel
+          .invokeMethod('startListeningAuthState')
+          .then<int>((dynamic v) => v);
       _handle.then((int handle) {
         _authStateChangedControllers[handle] = controller;
       });

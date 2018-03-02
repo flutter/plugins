@@ -90,12 +90,12 @@ class Firestore {
         'Transaction timeout must be more than 0 milliseconds');
     final int transactionId = _transactionHandlerId++;
     _transactionHandlers[transactionId] = transactionHandler;
-    final Map<String, dynamic> result = await channel.invokeMethod(
+    final Map<dynamic, dynamic> result = await channel.invokeMethod(
         'Firestore#runTransaction', <String, dynamic>{
       'transactionId': transactionId,
       'transactionTimeout': timeout.inMilliseconds
     });
-    return result ?? <String, dynamic>{};
+    return result?.cast<String, dynamic>() ?? <String, dynamic>{};
   }
 }
 
@@ -113,8 +113,8 @@ class Transaction {
       'path': documentReference.path,
     });
     if (result != null) {
-      return new DocumentSnapshot._(
-          documentReference.path, result['data'], Firestore.instance);
+      return new DocumentSnapshot._(documentReference.path,
+          result['data'].cast<String, dynamic>(), Firestore.instance);
     } else {
       return null;
     }
