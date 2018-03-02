@@ -1,3 +1,7 @@
+## 0.4.7
+
+* Fixed Dart 2 type errors.
+
 ## 0.4.6
 
 * Fixed Dart 2 type errors.
