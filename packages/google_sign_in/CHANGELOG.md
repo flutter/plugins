@@ -1,3 +1,8 @@
+## 2.1.2
+
+* Added a Delegate interface (IDelegate) that can be implemented by clients in
+  order to override the functionality (for testing purposes for example).
+
 ## 2.1.1
 
 * Fixed Dart 2 type errors.

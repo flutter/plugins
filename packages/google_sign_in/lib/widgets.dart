@@ -26,8 +26,7 @@ class GoogleUserCircleAvatar extends StatelessWidget {
     this.placeholderPhotoUrl,
     this.foregroundColor,
     this.backgroundColor,
-  })
-      : assert(identity != null);
+  }) : assert(identity != null);
 
   /// A regular expression that matches against the "size directive" path
   /// segment of Google profile image URLs.
@@ -88,8 +87,7 @@ class GoogleUserCircleAvatar extends StatelessWidget {
       scheme: profileUri.scheme,
       host: profileUri.host,
       pathSegments: pathSegments,
-    )
-        .toString();
+    ).toString();
   }
 
   Widget _buildClippedImage(BuildContext context, BoxConstraints constraints) {
