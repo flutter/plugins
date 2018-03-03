@@ -55,7 +55,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
   private static final String METHOD_SIGN_OUT = "signOut";
   private static final String METHOD_DISCONNECT = "disconnect";
 
-  private final Delegate delegate;
+  private final IDelegate delegate;
 
   public static void registerWith(PluginRegistry.Registrar registrar) {
     final MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL_NAME);
@@ -64,7 +64,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
   }
 
   private GoogleSignInPlugin(PluginRegistry.Registrar registrar) {
-    delegate = new DelegateImpl(registrar);
+    delegate = new Delegate(registrar);
   }
 
   @Override
@@ -104,10 +104,10 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 
   /**
    * A delegate interface that exposes all of the sign-in functionality for other plugins to use.
-   * The {@link #DelegateImpl} implementation should be used by any clients unless they need to
+   * The below {@link #Delegate} implementation should be used by any clients unless they need to
    * override some of these functions, such as for testing.
    */
-  public interface Delegate {
+  public interface IDelegate {
     /** Initializes this delegate so that it is ready to perform other operations. */
     public void init(Result result, List<String> requestedScopes, String hostedDomain);
 
@@ -148,7 +148,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
    * completed (either successfully or in error). This class provides no synchronization consructs
    * to guarantee such behavior; callers are responsible for providing such guarantees.
    */
-  public static final class DelegateImpl implements Delegate {
+  public static final class Delegate implements IDelegate {
     private static final int REQUEST_CODE = 53293;
     private static final int REQUEST_CODE_RESOLVE_ERROR = 1001;
 
@@ -168,7 +168,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     private PendingOperation pendingOperation;
     private volatile GoogleSignInAccount currentAccount;
 
-    public DelegateImpl(PluginRegistry.Registrar registrar) {
+    public Delegate(PluginRegistry.Registrar registrar) {
       this.registrar = registrar;
       Application application = (Application) registrar.context();
       application.registerActivityLifecycleCallbacks(handler);
