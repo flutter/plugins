@@ -26,9 +26,13 @@ class DocumentSnapshot {
 
   /// Returns the ID of the snapshot's document
   String get documentID => _path.split('/').last;
+
+  /// Returns `true` if the document exists.
+  bool get exists => data != null;
 }
 
 Map<String, dynamic> _asStringKeyedMap(Map<dynamic, dynamic> map) {
+  if (map == null) return null;
   if (map is Map<String, dynamic>) {
     return map;
   } else {
