@@ -77,7 +77,8 @@ class _MyHomePageState extends State<MyHomePage> {
         _error = null;
         _counter = event.snapshot.value ?? 0;
       });
-    }, onError: (DatabaseError error) {
+    }, onError: (Object o) {
+      final DatabaseError error = o;
       setState(() {
         _error = error;
       });
@@ -85,7 +86,8 @@ class _MyHomePageState extends State<MyHomePage> {
     _messagesSubscription =
         _messagesRef.limitToLast(10).onChildAdded.listen((Event event) {
       print('Child added: ${event.snapshot.value}');
-    }, onError: (DatabaseError error) {
+    }, onError: (Object o) {
+      final DatabaseError error = o;
       print('Error: ${error.code} ${error.message}');
     });
   }

@@ -15,12 +15,12 @@ class QuerySnapshot {
 
   final Firestore _firestore;
 
-  QuerySnapshot._(Map<String, List<dynamic>> data, this._firestore)
+  QuerySnapshot._(Map<dynamic, dynamic> data, this._firestore)
       : documents = new List<DocumentSnapshot>.generate(
             data['documents'].length, (int index) {
           return new DocumentSnapshot._(
             data['paths'][index],
-            data['documents'][index],
+            _asStringKeyedMap(data['documents'][index]),
             _firestore,
           );
         }),

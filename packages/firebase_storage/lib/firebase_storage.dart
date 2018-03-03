@@ -38,8 +38,8 @@ class StorageReference {
 
   /// Asynchronously downloads the object at the StorageReference to a list in memory.
   /// A list of the provided max size will be allocated.
-  Future<Uint8List> getData(int maxSize) {
-    return FirebaseStorage._channel.invokeMethod(
+  Future<Uint8List> getData(int maxSize) async {
+    return await FirebaseStorage._channel.invokeMethod(
       "StorageReference#getData",
       <String, dynamic>{
         'maxSize': maxSize,
@@ -48,7 +48,7 @@ class StorageReference {
     );
   }
 
-  Future<Null> delete() {
+  Future<void> delete() {
     return FirebaseStorage._channel.invokeMethod("StorageReference#delete",
         <String, String>{'path': _pathComponents.join("/")});
   }
