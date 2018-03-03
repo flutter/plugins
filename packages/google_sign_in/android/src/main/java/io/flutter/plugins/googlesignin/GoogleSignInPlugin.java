@@ -192,6 +192,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
      * Initializes this delegate so that it is ready to perform other operations. The Dart code
      * guarantees that this will be called and completed before any other methods are invoked.
      */
+    @Override
     public void init(Result result, List<String> requestedScopes, String hostedDomain) {
       // We're not initialized until we receive `onConnected`.
       // If initialization fails, we'll receive `onConnectionFailed`
@@ -238,6 +239,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
      * Returns the account information for the user who is signed in to this app. If no user is
      * signed in, tries to sign the user in without displaying any user interface.
      */
+    @Override
     public void signInSilently(Result result) {
       checkAndSetPendingOperation(METHOD_SIGN_IN_SILENTLY, result);
 
@@ -260,6 +262,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
      * Signs the user in via the sign-in user interface, including the OAuth consent flow if scopes
      * were requested.
      */
+    @Override
     public void signIn(Result result) {
       if (registrar.activity() == null) {
         throw new IllegalStateException("signIn needs a foreground activity");
@@ -274,6 +277,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
      * Gets an OAuth access token with the scopes that were specified during initialization for the
      * user with the specified email address.
      */
+    @Override
     public void getTokens(final Result result, final String email) {
       // TODO(issue/11107): Add back the checkAndSetPendingOperation once getTokens is properly
       // gated from Dart code. Change result.success/error calls below to use finishWith()
@@ -321,6 +325,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
      * Signs the user out. Their credentials may remain valid, meaning they'll be able to silently
      * sign back in.
      */
+    @Override
     public void signOut(Result result) {
       checkAndSetPendingOperation(METHOD_SIGN_OUT, result);
 
@@ -336,6 +341,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     }
 
     /** Signs the user out, and revokes their credentials. */
+    @Override
     public void disconnect(Result result) {
       checkAndSetPendingOperation(METHOD_DISCONNECT, result);
 
