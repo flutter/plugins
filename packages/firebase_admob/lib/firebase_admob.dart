@@ -135,7 +135,7 @@ abstract class MobileAd {
   /// anchorType place advert at top or bottom of screen (default bottom)
   Future<bool> show(
       {double anchorOffset = 0.0, AnchorType anchorType = AnchorType.bottom}) {
-    return _channel._invokeBooleanMethod("showAd", <String, dynamic>{
+    return _invokeBooleanMethod("showAd", <String, dynamic>{
       'id': id,
       'anchorOffset': anchorOffset.toString(),
       'anchorType': anchorType == AnchorType.top ? "top" : "bottom"
