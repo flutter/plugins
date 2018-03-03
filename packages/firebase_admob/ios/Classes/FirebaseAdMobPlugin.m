@@ -128,7 +128,7 @@
     offset = [call.arguments[@"anchorOffset"] doubleValue];
   }
   if (call.arguments[@"anchorType"] != nil) {
-    type = [call.arguments[@"anchorType"] intValue];
+    type = [call.arguments[@"anchorType"] isEqualToString:@"bottom"] ? 0 : 1;
   }
 
   [ad showAtOffset:offset fromAnchor:type];

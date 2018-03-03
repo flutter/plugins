@@ -98,8 +98,7 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
       ad.anchorOffset = Double.parseDouble((String) call.argument("anchorOffset"));
     }
     if (call.argument("anchorType") != null) {
-      int type = Integer.parseInt((String) call.argument("anchorType"));
-      ad.anchorType = type == 0 ? Gravity.BOTTOM : Gravity.TOP;
+      ad.anchorType = call.argument("anchorType").equals("bottom") ? Gravity.BOTTOM : Gravity.TOP;
     }
 
     ad.show();

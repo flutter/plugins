@@ -82,7 +82,7 @@ class MobileAdTargetingInfo {
   }
 }
 
-enum AnchorType { anchorBottom, anchorTop }
+enum AnchorType { bottom, top }
 
 /// A mobile [BannerAd] or [InterstitialAd] for the [FirebaseAdMobPlugin].
 ///
@@ -134,14 +134,13 @@ abstract class MobileAd {
   /// to do so. An ad that fails to load will not be shown.
   ///
   /// anchorOffset is the logical pixel offset from the edge of the screen (default 0.0)
-  /// anchorType place advert at top (anchorTop) or bottom (anchorBottom) of screen (default anchorBottom)
+  /// anchorType place advert at top or bottom of screen (default bottom)
   Future<bool> show(
-      {double anchorOffset = 0.0,
-      AnchorType anchorType = AnchorType.anchorBottom}) {
+      {double anchorOffset = 0.0, AnchorType anchorType = AnchorType.bottom}) {
     return _channel.invokeMethod("showAd", <String, dynamic>{
       'id': id,
       'anchorOffset': anchorOffset.toString(),
-      'anchorType': anchorType.index.toString()
+      'anchorType': anchorType == AnchorType.top ? "top" : "bottom"
     });
   }
 
