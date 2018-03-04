@@ -460,8 +460,7 @@ class VideoProgressIndicator extends StatefulWidget {
     VideoProgressColors colors,
     this.allowScrubbing,
     this.padding: const EdgeInsets.only(top: 5.0),
-  })
-      : colors = colors ?? new VideoProgressColors();
+  }) : colors = colors ?? new VideoProgressColors();
 
   @override
   _VideoProgressIndicatorState createState() =>
