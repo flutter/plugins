@@ -5,6 +5,7 @@
 package io.flutter.plugins.firebaseadmob;
 
 import android.app.Activity;
+import android.view.Gravity;
 import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.FirebaseApp;
 import io.flutter.plugin.common.MethodCall;
@@ -93,6 +94,13 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
       result.error("ad_not_loaded", "show failed, the specified ad was not loaded id=" + id, null);
       return;
     }
+    if (call.argument("anchorOffset") != null) {
+      ad.anchorOffset = Double.parseDouble((String) call.argument("anchorOffset"));
+    }
+    if (call.argument("anchorType") != null) {
+      ad.anchorType = call.argument("anchorType").equals("bottom") ? Gravity.BOTTOM : Gravity.TOP;
+    }
+
     ad.show();
     result.success(Boolean.TRUE);
   }
