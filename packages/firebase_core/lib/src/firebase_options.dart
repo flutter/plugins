@@ -17,8 +17,7 @@ class FirebaseOptions {
     this.databaseURL,
     this.deepLinkURLScheme,
     this.storageBucket,
-  })
-      : assert(googleAppID != null);
+  }) : assert(googleAppID != null);
 
   @visibleForTesting
   FirebaseOptions.from(Map<dynamic, dynamic> map)
