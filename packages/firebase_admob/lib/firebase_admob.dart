@@ -82,6 +82,8 @@ class MobileAdTargetingInfo {
   }
 }
 
+enum AnchorType { bottom, top }
+
 /// A mobile [BannerAd] or [InterstitialAd] for the [FirebaseAdMobPlugin].
 ///
 /// A [MobileAd] must be loaded with [load] before it is shown with [show].
@@ -128,8 +130,16 @@ abstract class MobileAd {
   ///
   /// The [listener] will be notified when the ad has finished loading or fails
   /// to do so. An ad that fails to load will not be shown.
-  Future<bool> show() {
-    return _invokeBooleanMethod("showAd", <String, dynamic>{'id': id});
+  ///
+  /// anchorOffset is the logical pixel offset from the edge of the screen (default 0.0)
+  /// anchorType place advert at top or bottom of screen (default bottom)
+  Future<bool> show(
+      {double anchorOffset = 0.0, AnchorType anchorType = AnchorType.bottom}) {
+    return _invokeBooleanMethod("showAd", <String, dynamic>{
+      'id': id,
+      'anchorOffset': anchorOffset.toString(),
+      'anchorType': anchorType == AnchorType.top ? "top" : "bottom"
+    });
   }
 
   /// Free the plugin resources associated with this ad.
@@ -166,8 +176,7 @@ class BannerAd extends MobileAd {
     @required String adUnitId,
     MobileAdTargetingInfo targetingInfo,
     MobileAdListener listener,
-  })
-      : super(
+  }) : super(
             adUnitId: adUnitId,
             targetingInfo: targetingInfo,
             listener: listener);
@@ -192,8 +201,7 @@ class InterstitialAd extends MobileAd {
     String adUnitId,
     MobileAdTargetingInfo targetingInfo,
     MobileAdListener listener,
-  })
-      : super(
+  }) : super(
             adUnitId: adUnitId,
             targetingInfo: targetingInfo,
             listener: listener);
