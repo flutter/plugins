@@ -158,6 +158,18 @@ class FirebaseAuth {
     return currentUser;
   }
 
+  Future<List<String>> fetchProvidersForEmail({
+    @required String email,
+  }) async {
+    assert(email != null);
+    return await channel.invokeMethod(
+      'fetchProvidersForEmail',
+      <String, String>{
+        'email': email,
+      },
+    );
+  }
+
   Future<void> sendPasswordResetEmail({
     @required String email,
   }) async {

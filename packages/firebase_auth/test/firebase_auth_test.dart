@@ -40,6 +40,9 @@ void main() {
           case "updateProfile":
             return null;
             break;
+          case "fetchProvidersForEmail":
+            return new List<String>();
+            break;
           default:
             return mockFirebaseUser();
             break;
@@ -105,6 +108,25 @@ void main() {
             arguments: <String, String>{
               'email': kMockEmail,
               'password': kMockPassword,
+            },
+          ),
+        ],
+      );
+    });
+
+    test('fetchProvidersForEmail', () async {
+      final List<String> providers = await auth.fetchProvidersForEmail(
+        email: kMockEmail
+      );
+      expect(providers, isNotNull);
+      expect(providers.length, 0);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'fetchProvidersForEmail',
+            arguments: <String, String>{
+              'email': kMockEmail
             },
           ),
         ],
