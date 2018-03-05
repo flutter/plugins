@@ -8,7 +8,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:meta/meta.dart';
 
 /// Controller of platform overlays, supporting a limited form
 /// of compositing with Flutter Widgets.
