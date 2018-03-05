@@ -1,5 +1,5 @@
 container:
-  image: cirrusci/flutter:0.1.1
+  image: cirrusci/flutter:latest
 
 task:
   upgrade_script:
