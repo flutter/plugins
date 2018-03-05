@@ -118,10 +118,10 @@ class CameraValue {
 
   const CameraValue.uninitialized() : this(isStarted: true, initialized: false);
 
-  /// Convenience getter for `previewSize.height / previewSize.width`.
+  /// Convenience getter for `previewSize.width / previewSize.height`.
   ///
   /// Can only be called when [initialized] is done.
-  double get aspectRatio => previewSize.height / previewSize.width;
+  double get aspectRatio => previewSize.width / previewSize.height;
 
   bool get hasError => errorDescription != null;
 
