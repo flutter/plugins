@@ -1,4 +1,4 @@
 #import <Flutter/Flutter.h>
 
-@interface GoogleMobileMapsPlugin : NSObject<FlutterPlugin>
+@interface FLTGoogleMobileMapsPlugin : NSObject<FlutterPlugin>
 @end

@@ -1,6 +1,6 @@
 #import "GoogleMobileMapsPlugin.h"
 
-@implementation GoogleMobileMapsPlugin
+@implementation FLTGoogleMobileMapsPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   FlutterMethodChannel* channel =
       [FlutterMethodChannel methodChannelWithName:@"google_mobile_maps"
