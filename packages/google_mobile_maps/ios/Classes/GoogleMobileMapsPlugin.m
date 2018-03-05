@@ -5,7 +5,7 @@
   FlutterMethodChannel* channel =
       [FlutterMethodChannel methodChannelWithName:@"google_mobile_maps"
                                   binaryMessenger:[registrar messenger]];
-  GoogleMobileMapsPlugin* instance = [[GoogleMobileMapsPlugin alloc] init];
+  FLTGoogleMobileMapsPlugin* instance = [[FLTGoogleMobileMapsPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
