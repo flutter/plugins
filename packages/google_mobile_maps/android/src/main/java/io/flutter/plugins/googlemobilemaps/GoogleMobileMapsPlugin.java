@@ -4,6 +4,12 @@
 
 package io.flutter.plugins.googlemobilemaps;
 
+import static io.flutter.plugins.googlemobilemaps.GoogleMobileMapsPlugin.CREATED;
+import static io.flutter.plugins.googlemobilemaps.GoogleMobileMapsPlugin.PAUSED;
+import static io.flutter.plugins.googlemobilemaps.GoogleMobileMapsPlugin.RESUMED;
+import static io.flutter.plugins.googlemobilemaps.GoogleMobileMapsPlugin.STARTED;
+import static io.flutter.plugins.googlemobilemaps.GoogleMobileMapsPlugin.STOPPED;
+
 import android.app.Activity;
 import android.app.Application;
 import android.graphics.Bitmap;
@@ -12,14 +18,18 @@ import android.graphics.Paint;
 import android.os.Bundle;
 import android.view.Surface;
 import android.widget.FrameLayout;
-
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
-
+import io.flutter.plugin.common.MethodCall;
+import io.flutter.plugin.common.MethodChannel;
+import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
+import io.flutter.plugin.common.MethodChannel.Result;
+import io.flutter.plugin.common.PluginRegistry.Registrar;
+import io.flutter.view.TextureRegistry;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,20 +38,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
-import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.MethodCall;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
-import io.flutter.view.TextureRegistry;
-
-import static io.flutter.plugins.googlemobilemaps.GoogleMobileMapsPlugin.CREATED;
-import static io.flutter.plugins.googlemobilemaps.GoogleMobileMapsPlugin.PAUSED;
-import static io.flutter.plugins.googlemobilemaps.GoogleMobileMapsPlugin.RESUMED;
-import static io.flutter.plugins.googlemobilemaps.GoogleMobileMapsPlugin.STARTED;
-import static io.flutter.plugins.googlemobilemaps.GoogleMobileMapsPlugin.STOPPED;
-
-public class GoogleMobileMapsPlugin implements MethodCallHandler, Application.ActivityLifecycleCallbacks {
+public class GoogleMobileMapsPlugin
+    implements MethodCallHandler, Application.ActivityLifecycleCallbacks {
   static final int CREATED = 1;
   static final int STARTED = 2;
   static final int RESUMED = 3;
@@ -54,7 +52,8 @@ public class GoogleMobileMapsPlugin implements MethodCallHandler, Application.Ac
 
   public static void registerWith(Registrar registrar) {
     final GoogleMobileMapsPlugin plugin = new GoogleMobileMapsPlugin(registrar);
-    final MethodChannel channel = new MethodChannel(registrar.messenger(), "plugins.flutter.io/google_mobile_maps");
+    final MethodChannel channel =
+        new MethodChannel(registrar.messenger(), "plugins.flutter.io/google_mobile_maps");
     channel.setMethodCallHandler(plugin);
     registrar.activity().getApplication().registerActivityLifecycleCallbacks(plugin);
   }
@@ -66,72 +65,81 @@ public class GoogleMobileMapsPlugin implements MethodCallHandler, Application.Ac
   @Override
   public void onMethodCall(MethodCall call, Result result) {
     switch (call.method) {
-      case "init": {
-        for (GoogleMapsEntry entry: googleMaps.values()) {
-          entry.dispose();
-        }
-        googleMaps.clear();
-        result.success(null);
-        break;
-      }
-      case "createMap": {
-        final int width = ((Number) call.argument("width")).intValue();
-        final int height = ((Number) call.argument("height")).intValue();
-        final GoogleMapsEntry entry = new GoogleMapsEntry(state, registrar, width, height);
-        googleMaps.put(entry.id(), entry);
-        entry.init();
-        result.success(entry.id());
-        break;
-      }
-      case "moveCamera": {
-        final long id = ((Number) call.argument("id")).longValue();
-        final List<Double> location = call.argument("location");
-        final float zoom = ((Number) call.argument("zoom")).floatValue();
-        final GoogleMapsEntry entry = googleMaps.get(id);
-        if (entry == null) {
-          result.error("unknown", "Unknown ID " + id, null);
-        } else {
-          entry.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.get(0), location.get(1)), zoom));
+      case "init":
+        {
+          for (GoogleMapsEntry entry : googleMaps.values()) {
+            entry.dispose();
+          }
+          googleMaps.clear();
           result.success(null);
+          break;
         }
-        break;
-      }
-      case "showMapOverlay": {
-        final long id = ((Number) call.argument("id")).longValue();
-        final int x = ((Number) call.argument("x")).intValue();
-        final int y = ((Number) call.argument("y")).intValue();
-        final GoogleMapsEntry entry = googleMaps.get(id);
-        if (entry == null) {
-          result.error("unknown", "Unknown ID " + id, null);
-        } else {
-          entry.showOverlay(x, y);
-          result.success(null);
+      case "createMap":
+        {
+          final int width = ((Number) call.argument("width")).intValue();
+          final int height = ((Number) call.argument("height")).intValue();
+          final GoogleMapsEntry entry = new GoogleMapsEntry(state, registrar, width, height);
+          googleMaps.put(entry.id(), entry);
+          entry.init();
+          result.success(entry.id());
+          break;
         }
-        break;
-      }
-      case "hideMapOverlay": {
-        final long id = ((Number) call.argument("id")).longValue();
-        final GoogleMapsEntry entry = googleMaps.get(id);
-        if (entry == null) {
-          result.error("unknown", "Unknown ID " + id, null);
-        } else {
-          entry.hideOverlay();
-          result.success(null);
+      case "moveCamera":
+        {
+          final long id = ((Number) call.argument("id")).longValue();
+          final List<Double> location = call.argument("location");
+          final float zoom = ((Number) call.argument("zoom")).floatValue();
+          final GoogleMapsEntry entry = googleMaps.get(id);
+          if (entry == null) {
+            result.error("unknown", "Unknown ID " + id, null);
+          } else {
+            entry.moveCamera(
+                CameraUpdateFactory.newLatLngZoom(
+                    new LatLng(location.get(0), location.get(1)), zoom));
+            result.success(null);
+          }
+          break;
         }
-        break;
-      }
-      case "disposeMap": {
-        final long id = ((Number) call.argument("id")).longValue();
-        final GoogleMapsEntry entry = googleMaps.get(id);
-        if (entry == null) {
-          result.error("unknown", "Unknown ID " + id, null);
-        } else {
-          entry.dispose();
-          result.success(null);
+      case "showMapOverlay":
+        {
+          final long id = ((Number) call.argument("id")).longValue();
+          final int x = ((Number) call.argument("x")).intValue();
+          final int y = ((Number) call.argument("y")).intValue();
+          final GoogleMapsEntry entry = googleMaps.get(id);
+          if (entry == null) {
+            result.error("unknown", "Unknown ID " + id, null);
+          } else {
+            entry.showOverlay(x, y);
+            result.success(null);
+          }
+          break;
         }
-        break;
-      }
-      default: result.notImplemented();
+      case "hideMapOverlay":
+        {
+          final long id = ((Number) call.argument("id")).longValue();
+          final GoogleMapsEntry entry = googleMaps.get(id);
+          if (entry == null) {
+            result.error("unknown", "Unknown ID " + id, null);
+          } else {
+            entry.hideOverlay();
+            result.success(null);
+          }
+          break;
+        }
+      case "disposeMap":
+        {
+          final long id = ((Number) call.argument("id")).longValue();
+          final GoogleMapsEntry entry = googleMaps.get(id);
+          if (entry == null) {
+            result.error("unknown", "Unknown ID " + id, null);
+          } else {
+            entry.dispose();
+            result.success(null);
+          }
+          break;
+        }
+      default:
+        result.notImplemented();
     }
   }
 
@@ -161,8 +169,7 @@ public class GoogleMobileMapsPlugin implements MethodCallHandler, Application.Ac
   }
 
   @Override
-  public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
-  }
+  public void onActivitySaveInstanceState(Activity activity, Bundle outState) {}
 
   @Override
   public void onActivityDestroyed(Activity activity) {
@@ -170,10 +177,12 @@ public class GoogleMobileMapsPlugin implements MethodCallHandler, Application.Ac
   }
 }
 
-final class GoogleMapsEntry implements
-    Application.ActivityLifecycleCallbacks,
-    OnMapReadyCallback,
-    GoogleMap.SnapshotReadyCallback, GoogleMap.OnCameraMoveStartedListener, GoogleMap.OnCameraIdleListener {
+final class GoogleMapsEntry
+    implements Application.ActivityLifecycleCallbacks,
+        OnMapReadyCallback,
+        GoogleMap.SnapshotReadyCallback,
+        GoogleMap.OnCameraMoveStartedListener,
+        GoogleMap.OnCameraIdleListener {
   private final AtomicInteger activityState;
   private final FrameLayout parent;
   private final Registrar registrar;
@@ -203,11 +212,31 @@ final class GoogleMapsEntry implements
 
   void init() {
     switch (activityState.get()) {
-      case STOPPED: mapView.onCreate(null); mapView.onStart(); mapView.onResume(); mapView.onPause(); mapView.onStop(); break;
-      case PAUSED: mapView.onCreate(null); mapView.onStart(); mapView.onResume(); mapView.onPause(); break;
-      case RESUMED: mapView.onCreate(null); mapView.onStart(); mapView.onResume(); break;
-      case STARTED: mapView.onCreate(null); mapView.onStart(); break;
-      case CREATED: mapView.onCreate(null); break;
+      case STOPPED:
+        mapView.onCreate(null);
+        mapView.onStart();
+        mapView.onResume();
+        mapView.onPause();
+        mapView.onStop();
+        break;
+      case PAUSED:
+        mapView.onCreate(null);
+        mapView.onStart();
+        mapView.onResume();
+        mapView.onPause();
+        break;
+      case RESUMED:
+        mapView.onCreate(null);
+        mapView.onStart();
+        mapView.onResume();
+        break;
+      case STARTED:
+        mapView.onCreate(null);
+        mapView.onStart();
+        break;
+      case CREATED:
+        mapView.onCreate(null);
+        break;
     }
     registrar.activity().getApplication().registerActivityLifecycleCallbacks(this);
     final FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(width, height);
@@ -352,6 +381,7 @@ final class GoogleMapsEntry implements
   }
 
   private List<SnapshotTimerTask> snapshotTasks = new ArrayList<>();
+
   private SnapshotTimerTask newSnapshotTask() {
     final SnapshotTimerTask task = new SnapshotTimerTask();
     snapshotTasks.add(task);

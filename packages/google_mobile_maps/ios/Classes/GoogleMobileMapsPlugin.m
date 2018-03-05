@@ -2,9 +2,9 @@
 
 @implementation GoogleMobileMapsPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  FlutterMethodChannel* channel = [FlutterMethodChannel
-      methodChannelWithName:@"google_mobile_maps"
-            binaryMessenger:[registrar messenger]];
+  FlutterMethodChannel* channel =
+      [FlutterMethodChannel methodChannelWithName:@"google_mobile_maps"
+                                  binaryMessenger:[registrar messenger]];
   GoogleMobileMapsPlugin* instance = [[GoogleMobileMapsPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
