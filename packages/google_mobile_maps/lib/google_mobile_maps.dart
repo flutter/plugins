@@ -60,7 +60,7 @@ class GoogleMapsController {
 /// platform overlay.
 ///
 /// *Warning*: Platform overlays cannot be freely composed with
-/// over widgets. See [PlatformOverlayController] for caveats and
+/// other widgets. See [PlatformOverlayController] for caveats and
 /// limitations.
 class GoogleMapsOverlayController {
   GoogleMapsOverlayController._(this.mapsController, this.overlayController);
@@ -68,11 +68,11 @@ class GoogleMapsOverlayController {
   /// Creates a controller for a GoogleMaps of the specified size in
   /// logical pixels.
   factory GoogleMapsOverlayController.fromSize(double width, double height) {
-    final _GoogleMapsPlatformOverlayController overlayController =
-        new _GoogleMapsPlatformOverlayController(width, height);
-    final GoogleMapsController mapsController =
-        new GoogleMapsController(overlayController.mapId);
-    return new GoogleMapsOverlayController._(mapsController, overlayController);
+    final _GoogleMapsPlatformOverlay overlay = new _GoogleMapsPlatformOverlay();
+    return new GoogleMapsOverlayController._(
+      new GoogleMapsController(overlay._textureId.future),
+      new PlatformOverlayController(width, height, overlay),
+    );
   }
 
   /// The controller of the GoogleMaps instance.
@@ -86,16 +86,11 @@ class GoogleMapsOverlayController {
   }
 }
 
-class _GoogleMapsPlatformOverlayController extends PlatformOverlayController {
+class _GoogleMapsPlatformOverlay extends PlatformOverlay {
   Completer<int> _textureId = new Completer<int>();
 
-  _GoogleMapsPlatformOverlayController(double width, double height)
-      : super(width, height);
-
-  Future<int> get mapId => _textureId.future;
-
   @override
-  Future<int> createOverlay(Size physicalSize) {
+  Future<int> create(Size physicalSize) {
     _textureId.complete(_channel.invokeMethod('createMap', <String, dynamic>{
       'width': physicalSize.width,
       'height': physicalSize.height,
@@ -104,7 +99,7 @@ class _GoogleMapsPlatformOverlayController extends PlatformOverlayController {
   }
 
   @override
-  Future<void> showOverlay(Offset physicalOffset) async {
+  Future<void> show(Offset physicalOffset) async {
     final int id = await _textureId.future;
     _channel.invokeMethod('showMapOverlay', <String, dynamic>{
       'id': id,
@@ -114,7 +109,7 @@ class _GoogleMapsPlatformOverlayController extends PlatformOverlayController {
   }
 
   @override
-  Future<void> hideOverlay() async {
+  Future<void> hide() async {
     final int id = await _textureId.future;
     _channel.invokeMethod('hideMapOverlay', <String, dynamic>{
       'id': id,
@@ -122,7 +117,7 @@ class _GoogleMapsPlatformOverlayController extends PlatformOverlayController {
   }
 
   @override
-  Future<void> disposeOverlay() async {
+  Future<void> dispose() async {
     final int id = await _textureId.future;
     _channel.invokeMethod('disposeMap', <String, dynamic>{
       'id': id,
@@ -130,7 +125,7 @@ class _GoogleMapsPlatformOverlayController extends PlatformOverlayController {
   }
 }
 
-/// A Widget that is fronted by a GoogleMaps platform overlay.
+/// A Widget covered by a GoogleMaps platform overlay.
 class GoogleMapsOverlay extends StatefulWidget {
   final GoogleMapsOverlayController controller;
 

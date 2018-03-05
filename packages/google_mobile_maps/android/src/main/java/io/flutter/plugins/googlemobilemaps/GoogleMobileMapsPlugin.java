@@ -35,7 +35,19 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.view.TextureRegistry;
 
+import static io.flutter.plugins.googlemobilemaps.GoogleMobileMapsPlugin.CREATED;
+import static io.flutter.plugins.googlemobilemaps.GoogleMobileMapsPlugin.PAUSED;
+import static io.flutter.plugins.googlemobilemaps.GoogleMobileMapsPlugin.RESUMED;
+import static io.flutter.plugins.googlemobilemaps.GoogleMobileMapsPlugin.STARTED;
+import static io.flutter.plugins.googlemobilemaps.GoogleMobileMapsPlugin.STOPPED;
+
 public class GoogleMobileMapsPlugin implements MethodCallHandler, Application.ActivityLifecycleCallbacks {
+  static final int CREATED = 1;
+  static final int STARTED = 2;
+  static final int RESUMED = 3;
+  static final int PAUSED = 4;
+  static final int STOPPED = 5;
+  private final int DESTROYED = 6;
   private final Map<Long, GoogleMapsEntry> googleMaps = new HashMap<>();
   private final Registrar registrar;
   private final AtomicInteger state = new AtomicInteger(0);
@@ -125,27 +137,27 @@ public class GoogleMobileMapsPlugin implements MethodCallHandler, Application.Ac
 
   @Override
   public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-    state.set(1);
+    state.set(CREATED);
   }
 
   @Override
   public void onActivityStarted(Activity activity) {
-    state.set(2);
+    state.set(STARTED);
   }
 
   @Override
   public void onActivityResumed(Activity activity) {
-    state.set(3);
+    state.set(RESUMED);
   }
 
   @Override
   public void onActivityPaused(Activity activity) {
-    state.set(4);
+    state.set(PAUSED);
   }
 
   @Override
   public void onActivityStopped(Activity activity) {
-    state.set(5);
+    state.set(STOPPED);
   }
 
   @Override
@@ -154,7 +166,7 @@ public class GoogleMobileMapsPlugin implements MethodCallHandler, Application.Ac
 
   @Override
   public void onActivityDestroyed(Activity activity) {
-    state.set(6);
+    state.set(DESTROYED);
   }
 }
 
@@ -191,9 +203,11 @@ final class GoogleMapsEntry implements
 
   void init() {
     switch (activityState.get()) {
-      case 3: mapView.onCreate(null); mapView.onStart(); mapView.onResume(); break;
-      case 2: mapView.onCreate(null); mapView.onStart(); break;
-      case 1: mapView.onCreate(null); break;
+      case STOPPED: mapView.onCreate(null); mapView.onStart(); mapView.onResume(); mapView.onPause(); mapView.onStop(); break;
+      case PAUSED: mapView.onCreate(null); mapView.onStart(); mapView.onResume(); mapView.onPause(); break;
+      case RESUMED: mapView.onCreate(null); mapView.onStart(); mapView.onResume(); break;
+      case STARTED: mapView.onCreate(null); mapView.onStart(); break;
+      case CREATED: mapView.onCreate(null); break;
     }
     registrar.activity().getApplication().registerActivityLifecycleCallbacks(this);
     final FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(width, height);
@@ -337,24 +351,24 @@ final class GoogleMapsEntry implements
     mapView.onDestroy();
   }
 
-  private List<SnaphotTimerTask> snapshotTasks = new ArrayList<>();
-  private SnaphotTimerTask newSnapshotTask() {
-    final SnaphotTimerTask task = new SnaphotTimerTask();
+  private List<SnapshotTimerTask> snapshotTasks = new ArrayList<>();
+  private SnapshotTimerTask newSnapshotTask() {
+    final SnapshotTimerTask task = new SnapshotTimerTask();
     snapshotTasks.add(task);
     return task;
   }
 
   private void cancelSnapshotTimerTasks() {
-    for (SnaphotTimerTask task : snapshotTasks) {
+    for (SnapshotTimerTask task : snapshotTasks) {
       task.cancel();
     }
     snapshotTasks.clear();
   }
 
-  class SnaphotTimerTask extends TimerTask {
+  class SnapshotTimerTask extends TimerTask {
     @Override
     public void run() {
-      if (disposed || activityState.get() != 3) {
+      if (disposed || activityState.get() != RESUMED) {
         return;
       }
       googleMap.snapshot(GoogleMapsEntry.this, bitmap);

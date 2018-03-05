@@ -10,7 +10,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:meta/meta.dart';
 
-/// Base class for controllers of platform overlays.
+/// Controller of platform overlays, supporting a limited form
+/// of compositing with Flutter Widgets.
 ///
 /// Platform overlays are normal platform-specific views that are
 /// created, shown on top of the Flutter view, or hidden below it,
@@ -28,20 +29,35 @@ import 'package:meta/meta.dart';
 /// Limitations and caveats:
 ///
 /// * TODO(mravn)
-abstract class PlatformOverlayController extends NavigatorObserver
+class PlatformOverlayController extends NavigatorObserver
     with WidgetsBindingObserver {
   final double width;
   final double height;
+  final PlatformOverlay overlay;
   final Completer<int> _overlayIdCompleter = new Completer<int>();
   BuildContext _context;
+
+  // Current route as observed via NavigatorObserver calls.
   Route<dynamic> _currentRoute;
+
+  // Previous route as observed via NavigatorObserver calls.
   Route<dynamic> _previousRoute;
+
+  // Current route at the most recent time [attachTo] was called.
   Route<dynamic> _routeWithOverlay;
+
+  // Number of calls to [activateOverlay] minus number of calls to
+  // [deactivateOverlay].
   int _activationCount = 0;
+
+  // True if [deactivateOverlay] has been called due to another route
+  // having been pushed atop [_routeWithOverlay].
   bool _deactivatedByPush = false;
+
+  // True if [dispose] has been called.
   bool _disposed = false;
 
-  PlatformOverlayController(this.width, this.height);
+  PlatformOverlayController(this.width, this.height, this.overlay);
 
   void attachTo(BuildContext context) {
     _context = context;
@@ -54,18 +70,21 @@ abstract class PlatformOverlayController extends NavigatorObserver
       }
       if (!_overlayIdCompleter.isCompleted) {
         _overlayIdCompleter.complete(
-            createOverlay(new Size(width, height) * window.devicePixelRatio));
+            overlay.create(new Size(width, height) * window.devicePixelRatio));
       }
     });
   }
 
   void detach() {
     WidgetsBinding.instance.removeObserver(this);
+    _context = null;
+    _routeWithOverlay = null;
   }
 
   /// Allow activating the overlay, unless there are other pending calls to
   /// [deactivateOverlay].
   void activateOverlay() {
+    assert(_activationCount <= 0);
     _activationCount += 1;
     if (_activationCount == 1) {
       SchedulerBinding.instance.addPostFrameCallback((_) {
@@ -79,7 +98,7 @@ abstract class PlatformOverlayController extends NavigatorObserver
         } else {
           offset = Offset.zero;
         }
-        showOverlay(offset);
+        overlay.show(offset);
       });
     }
   }
@@ -88,7 +107,7 @@ abstract class PlatformOverlayController extends NavigatorObserver
   void deactivateOverlay() {
     _activationCount -= 1;
     if (_activationCount == 0) {
-      hideOverlay();
+      overlay.hide();
     }
   }
 
@@ -157,15 +176,15 @@ abstract class PlatformOverlayController extends NavigatorObserver
 
   void _doOnceAfter(Animation<dynamic> animation, void onDone()) {
     void listener() {
-      if (animation.status != AnimationStatus.forward &&
-          animation.status != AnimationStatus.reverse) {
+      if (animation.status == AnimationStatus.completed ||
+          animation.status == AnimationStatus.dismissed) {
         animation.removeListener(listener);
         onDone();
       }
     }
 
-    if (animation.status != AnimationStatus.completed &&
-        animation.status != AnimationStatus.dismissed) {
+    if (animation.status == AnimationStatus.forward ||
+        animation.status == AnimationStatus.reverse) {
       animation.addListener(listener);
     } else {
       onDone();
@@ -179,7 +198,7 @@ abstract class PlatformOverlayController extends NavigatorObserver
 
   void dispose() {
     if (!_disposed) {
-      disposeOverlay();
+      overlay.dispose();
       _disposed = true;
     }
   }
@@ -190,23 +209,23 @@ abstract class PlatformOverlayController extends NavigatorObserver
     deactivateOverlay();
     activateOverlay();
   }
+}
 
-  /// Subclasses implement this method to create a platform view of the
-  /// specified [physicalSize] (in device pixels).
+/// Platform overlay.
+abstract class PlatformOverlay {
+  /// Create a platform view of the specified [physicalSize] (in device pixels).
   ///
-  /// The view should remain hidden.
-  @protected
-  Future<int> createOverlay(Size physicalSize);
+  /// The platform view should remain hidden until explicitly shown by calling
+  /// [showOverlay].
+  Future<int> create(Size physicalSize);
 
-  /// Subclasses implement this method to display the platform view at the
-  /// specified [physicalOffset] (in device pixels).
-  @protected
-  Future<void> showOverlay(Offset physicalOffset);
+  /// Show the platform view at the specified [physicalOffset] (in device
+  /// pixels).
+  Future<void> show(Offset physicalOffset);
 
-  /// Subclasses implement this method to hide the platform view.
-  @protected
-  Future<void> hideOverlay();
+  /// Hide the platform view.
+  Future<void> hide();
 
-  /// Subclasses implement this method to dispose of the platform view.
-  Future<void> disposeOverlay();
+  /// Dispose of the platform view.
+  Future<void> dispose();
 }
