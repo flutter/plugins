@@ -94,11 +94,11 @@ int nextHandle = 0;
                                [self sendResult:result forUser:user error:error];
                              }];
   } else if ([@"fetchProvidersForEmail" isEqualToString:call.method]) {
-      NSString *email = call.arguments[@"email"];
-      [[FIRAuth auth] fetchProvidersForEmail:email
-                               completion:^(NSArray<NSString *> *providers, NSError *error) {
-                                   [self sendResult:result forProviders:providers error:error];
-                               }];
+    NSString *email = call.arguments[@"email"];
+    [[FIRAuth auth] fetchProvidersForEmail:email
+                                completion:^(NSArray<NSString *> *providers, NSError *error) {
+                                  [self sendResult:result forProviders:providers error:error];
+                                }];
   } else if ([@"sendPasswordResetEmail" isEqualToString:call.method]) {
     NSString *email = call.arguments[@"email"];
     [[FIRAuth auth] sendPasswordResetWithEmail:email
@@ -222,13 +222,15 @@ int nextHandle = 0;
   }
 }
 
-- (void)sendResult:(FlutterResult)result forProviders:(NSArray<NSString *> *)providers error:(NSError *)error {
-    if (error != nil) {
-        result(error.flutterError);
-    } else if (providers == nil) {
-        result(nil);
-    } else {
-        result(providers);
-    }
+- (void)sendResult:(FlutterResult)result
+      forProviders:(NSArray<NSString *> *)providers
+             error:(NSError *)error {
+  if (error != nil) {
+    result(error.flutterError);
+  } else if (providers == nil) {
+    result(nil);
+  } else {
+    result(providers);
+  }
 }
 @end

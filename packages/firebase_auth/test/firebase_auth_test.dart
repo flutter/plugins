@@ -41,7 +41,7 @@ void main() {
             return null;
             break;
           case "fetchProvidersForEmail":
-            return new List<String>();
+            return new List<String>(0);
             break;
           default:
             return mockFirebaseUser();
@@ -115,9 +115,8 @@ void main() {
     });
 
     test('fetchProvidersForEmail', () async {
-      final List<String> providers = await auth.fetchProvidersForEmail(
-        email: kMockEmail
-      );
+      final List<String> providers =
+          await auth.fetchProvidersForEmail(email: kMockEmail);
       expect(providers, isNotNull);
       expect(providers.length, 0);
       expect(
@@ -125,9 +124,7 @@ void main() {
         <Matcher>[
           isMethodCall(
             'fetchProvidersForEmail',
-            arguments: <String, String>{
-              'email': kMockEmail
-            },
+            arguments: <String, String>{'email': kMockEmail},
           ),
         ],
       );

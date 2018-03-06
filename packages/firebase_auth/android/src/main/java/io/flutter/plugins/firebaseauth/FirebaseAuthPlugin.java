@@ -354,8 +354,8 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     private final Result result;
 
     ProvidersCompleteListener(Result result) {
-            this.result = result;
-        }
+      this.result = result;
+    }
 
     @Override
     public void onComplete(@NonNull Task<ProviderQueryResult> task) {
