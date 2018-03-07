@@ -40,19 +40,19 @@ There are two channels communicating with the native code,
 
 #### Method Calls
 
-* init: initialise the respective native cams and reset set them to their original states
-* list: list all available cams
-* create: create a camera object with the selected camera and resolution preset
+* `init` : initialise the respective native cams and reset set them to their original states
+* `list` : list all available cams
+* `create` : create a camera object with the selected camera and resolution preset
           also start a stream with the event channel with `textureId`. starts the
           image data stream display too
-* start: Start the image data stream display in the UI
-* stop:  Stops the image data stream display in the UI
-* capture: Capture the JPEG image by sending the image path to be saved
-* videostart: Trigger start of the video Recorder variable to capture
+* `start` : Start the image data stream display in the UI
+* `stop` :  Stops the image data stream display in the UI
+* `capture` : Capture the JPEG image by sending the image path to be saved
+* `videostart` : Trigger start of the video Recorder variable to capture
               video to a file ( requires work)
-* videostop: Stop the camera from recording, send the file path of the saved file
+* `videostop` : Stop the camera from recording, send the file path of the saved file
               back and dispose the camera ( requires work)
-* dispose: Dispose and reset the camera that was initialised
+* `dispose` : Dispose and reset the camera that was initialised
 
 
 
