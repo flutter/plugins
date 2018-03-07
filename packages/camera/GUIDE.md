@@ -13,7 +13,7 @@ This guide is in 3 parts:
 
 ### Example App
 
-A demo app to showcase the plugin with all its features
+A demo app to showcase the plugin with all its features located in `example/lib/main.dart`
 
 #### Features
 
