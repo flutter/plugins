@@ -52,7 +52,7 @@ myBanner
 
 `BannerAd` and `InterstitialAd` objects can be disposed to free up plugin
 resources. Disposing a banner ad that's been shown removes it from the screen.
-Interstitial ads, however, can't be programatically removed from view.
+Interstitial ads, however, can't be programmatically removed from view.
 
 Banner and interstitial ads can be created with a `MobileAdEvent` listener. The
 listener can be used to detect when the ad has actually finished loading
