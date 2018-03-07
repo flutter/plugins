@@ -31,7 +31,7 @@ class _MyAppState extends State<MyApp> {
   BannerAd createBannerAd() {
     return new BannerAd(
       adUnitId: BannerAd.testAdUnitId,
-      size: new AdSize.banner(),
+      size: AdSize.banner,
       targetingInfo: targetingInfo,
       listener: (MobileAdEvent event) {
         print("BannerAd event $event");

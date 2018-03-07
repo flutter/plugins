@@ -5,6 +5,7 @@
 package io.flutter.plugins.firebaseadmob;
 
 import android.app.Activity;
+import android.view.Gravity;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.FirebaseApp;
@@ -38,31 +39,31 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
   private void callInitialize(MethodCall call, Result result) {
     String appId = call.argument("appId");
     if (appId == null || appId.isEmpty()) {
-      result.error("no_app_id", "a non-empty AdMob appId was not provided", null);
+      result.error("no_app_id", "a null or empty AdMob appId was provided", null);
       return;
     }
     MobileAds.initialize(registrar.context(), appId);
     result.success(Boolean.TRUE);
   }
 
-  private void callLoadBannerAd(int id, Activity activity, MethodChannel channel, MethodCall call, Result result) {
+  private void callLoadBannerAd(
+      int id, Activity activity, MethodChannel channel, MethodCall call,Result result) {
     String adUnitId = call.argument("adUnitId");
     if (adUnitId == null || adUnitId.isEmpty()) {
-      result.error("no_unit_id", "a non-empty adUnitId was not provided for ad id=" + id, null);
+      result.error("no_unit_id", "a null or empty adUnitId was provided for ad id=" + id, null);
       return;
     }
 
     int width = call.argument("width");
     int height = call.argument("height");
     int sizeType = call.argument("sizeType");
-    if ((sizeType < 0)
-      || (sizeType > 1)
-      || ((sizeType == 0) && ((width <= 0) || (height <= 0)))) {
-        String errMsg =
-            String.format("an invalid AdSize (%d, %d, %d) was provided for banner id=%d",
-                width, height, sizeType, id);
-        result.error("invalid_adsize", errMsg, null);
-      }
+    if ((sizeType < 0) || (sizeType > 1) || ((sizeType == 0) && ((width <= 0) || (height <= 0)))) {
+      String errMsg =
+          String.format(
+              "an invalid AdSize (%d, %d, %d) was provided for banner id=%d",
+              width, height, sizeType, id);
+      result.error("invalid_adsize", errMsg, null);
+    }
 
     AdSize size;
     if (sizeType == MobileAd.Banner.SMART_BANNER) {
@@ -95,7 +96,7 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
 
     String adUnitId = call.argument("adUnitId");
     if (adUnitId == null || adUnitId.isEmpty()) {
-      result.error("no_unit_id", "a non-empty adUnitId was not provided for ad id=" + ad.id, null);
+      result.error("no_adunit_id", "a null or empty adUnitId was provided for ad id=" + ad.id, null);
       return;
     }
     Map<String, Object> targetingInfo = call.argument("targetingInfo");
@@ -134,6 +135,13 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
       result.error("ad_not_loaded", "show failed, the specified ad was not loaded id=" + id, null);
       return;
     }
+    if (call.argument("anchorOffset") != null) {
+      ad.anchorOffset = Double.parseDouble((String) call.argument("anchorOffset"));
+    }
+    if (call.argument("anchorType") != null) {
+      ad.anchorType = call.argument("anchorType").equals("bottom") ? Gravity.BOTTOM : Gravity.TOP;
+    }
+
     ad.show();
     result.success(Boolean.TRUE);
   }
