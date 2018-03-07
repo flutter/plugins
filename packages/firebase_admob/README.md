@@ -98,7 +98,7 @@ method.
 ## Limitations
 
 This is just an initial version of the plugin. There are still some
-limitiations:
+limitations:
 
 - Banner ads have limited positioning functionality. They can be positioned at the top or the bottom of the screen and at a logical pixel offset from the edge.
 - Banner ads cannot be animated into view.
