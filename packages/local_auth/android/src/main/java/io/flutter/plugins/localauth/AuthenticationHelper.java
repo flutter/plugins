@@ -216,7 +216,7 @@ class AuthenticationHelper extends FingerprintManagerCompat.AuthenticationCallba
     resultInfo.setText(message);
   }
 
-  // Supress inflateParams lint because dialogs do not need to attach to a parent view.
+  // Suppress inflateParams lint because dialogs do not need to attach to a parent view.
   @SuppressLint("InflateParams")
   private void showFingerprintDialog() {
     View view = LayoutInflater.from(activity).inflate(R.layout.scan_fp, null, false);
@@ -242,7 +242,7 @@ class AuthenticationHelper extends FingerprintManagerCompat.AuthenticationCallba
             .show();
   }
 
-  // Supress inflateParams lint because dialogs do not need to attach to a parent view.
+  // Suppress inflateParams lint because dialogs do not need to attach to a parent view.
   @SuppressLint("InflateParams")
   private void showGoToSettingsDialog() {
     View view = LayoutInflater.from(activity).inflate(R.layout.go_to_setting, null, false);
