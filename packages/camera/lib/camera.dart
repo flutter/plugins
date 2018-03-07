@@ -10,6 +10,8 @@ enum CameraLensDirection { front, back, external }
 
 enum ResolutionPreset { low, medium, high }
 
+
+// function to return the accordingly the resolution preset as chosen by the user
 String serializeResolutionPreset(ResolutionPreset resolutionPreset) {
   switch (resolutionPreset) {
     case ResolutionPreset.high:
@@ -22,6 +24,7 @@ String serializeResolutionPreset(ResolutionPreset resolutionPreset) {
   throw new ArgumentError('Unknown ResolutionPreset value');
 }
 
+// function to return the camera direction chosen by the user
 CameraLensDirection _parseCameraLensDirection(String string) {
   switch (string) {
     case 'front':
@@ -53,6 +56,8 @@ Future<List<CameraDescription>> availableCameras() async {
   }
 }
 
+
+
 class CameraDescription {
   final String name;
   final CameraLensDirection lensDirection;
@@ -76,6 +81,7 @@ class CameraDescription {
   }
 }
 
+// error catching class
 class CameraException implements Exception {
   String code;
   String description;
@@ -85,6 +91,7 @@ class CameraException implements Exception {
   String toString() => '$runtimeType($code, $description)';
 }
 
+//building the UI texture view of the video data with textureId
 class CameraPreview extends StatelessWidget {
   final CameraController controller;
   const CameraPreview(this.controller);
@@ -97,12 +104,14 @@ class CameraPreview extends StatelessWidget {
   }
 }
 
+// meta data of the camera plugin
 class CameraValue {
   /// True if the camera is on.
   final bool isStarted;
 
   /// True after [CameraController.initialize] has completed successfully.
   final bool initialized;
+  // true when videostart is called
   final bool videoOn;
 
   final String errorDescription;
@@ -280,28 +289,8 @@ class CameraController extends ValueNotifier<CameraValue> {
 
 
 
-  /// Temp function to test method channel for video feature
-
-  Future<Null> video(String path) async {
-    if (!value.initialized || _disposed) {
-      throw new CameraException(
-        'Uninitialized video()',
-        'video() was called on uninitialized CameraController',
-      );
-    }
-    try {
-      value = value.copyWith(videoOn: true);
-      await _channel.invokeMethod(
-        'video',
-        <String, dynamic>{ 'path': path },
-      );
-     //print(hello + value.toString());
-     //return hello;
-    } on PlatformException catch (e) {
-      throw new CameraException(e.code, e.message);
-    }
-  }
-
+// Similar to capture, invoke the videoastart call and set videoOn to true
+// send the path to point the location of the file to save, this isn't used at the moment but is kept as a placeholder
   Future<Null> videostart(String path) async {
     if (!value.initialized || _disposed) {
       throw new CameraException(
@@ -311,17 +300,22 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
     try {
       value = value.copyWith(videoOn: true);
-      await _channel.invokeMethod(
+      final String videofile = await _channel.invokeMethod(
         'videostart',
         <String, dynamic>{'textureId': _textureId, 'path': path },
       );
-      print('Video Start pressed:' + value.toString());
+      // not required, kept to test reply after the call was made
+      print('Video Start pressed:' + videofile);
      //return hello;
     } on PlatformException catch (e) {
       throw new CameraException(e.code, e.message);
     }
   }
 
+
+// videostop call to stop recording and replies with a path to the saved video
+// file. Work here is required to gracefully stop the recording.
+// Maybe dispose the camera and reinitialise the camera
   Future<String> videostop() async {
     if (!value.initialized || _disposed) {
       throw new CameraException(
@@ -330,15 +324,17 @@ class CameraController extends ValueNotifier<CameraValue> {
       );
     }
     try {
-      value = value.copyWith(videoOn: false);
       final String videofile = await _channel.invokeMethod(
         'videostop',
         <String, dynamic>{'textureId': _textureId },
       );
        print('Video Stop pressed:' + videofile);
-       return videofile;
+       if(videofile != null){value = value.copyWith(videoOn: false);}
+
        //initialize();
-     //return hello;
+
+       return videofile;
+
     } on PlatformException catch (e) {
       throw new CameraException(e.code, e.message);
     }

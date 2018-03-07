@@ -292,6 +292,8 @@
   } else {
     NSDictionary *argsMap = call.arguments;
     NSUInteger textureId = ((NSNumber *)argsMap[@"textureId"]).unsignedIntegerValue;
+    NSString *pathv;
+
     FLTCam *cam = _cams[@(textureId)];
     if ([@"start" isEqualToString:call.method]) {
       [cam start];
@@ -307,17 +309,19 @@
       [_cams removeObjectForKey:@(textureId)];
       result(nil);
     } else if ([@"video" isEqualToString:call.method]) {
-        NSArray *hello = [NSArray arrayWithObjects:  @"Hello Video call on iOS, this is the path sent: " , call.arguments[@"path"] , nil];
-        NSString *msg = [hello componentsJoinedByString:@" "] ;
-        result(msg );
+        NSArray *hello1 = [NSArray arrayWithObjects:  @"Hello Video call on iOS, this is the path sent: " , call.arguments[@"path"] , nil];
+        NSString *msg1 = [hello1 componentsJoinedByString:@" "] ;
+        result(msg1 );
     } else if ([@"videostart" isEqualToString:call.method]) {
-        NSArray *hello = [NSArray arrayWithObjects:  @"Hello VideoStart call on iOS, this is the path sent: " , call.arguments[@"path"] , nil];
-        NSString *msg = [hello componentsJoinedByString:@" "] ;
-        result(msg );
+        pathv = call.arguments[@"path"];
+        NSArray *hello2 = [NSArray arrayWithObjects:  @"VideoStart call on iOS: " , pathv , nil];
+        NSString *msg2 = [hello2 componentsJoinedByString:@" "] ;
+
+        result(msg2 );
     } else if ([@"videostop" isEqualToString:call.method]) {
-        NSArray *hello = [NSArray arrayWithObjects:  @"Hello VideoStop call on iOS, this is the path sent: " , call.arguments[@"path"] , nil];
-        NSString *msg = [hello componentsJoinedByString:@" "] ;
-        result(msg );
+        NSArray *hello3 = [NSArray arrayWithObjects:  @"VideoStop call on iOS: " , pathv , nil];
+        NSString *msg3 = [hello3 componentsJoinedByString:@" "] ;
+        result(msg3 );
     } else {
       result(FlutterMethodNotImplemented);
     }

@@ -163,6 +163,7 @@ public class CameraPlugin implements MethodCallHandler {
         new CompareSizesByArea());
   }
 
+// choose a video capture size for Media recorder max width 1080 as higher values aren't supported
   private static Size chooseVideoSize(Size[] choices) {
     for (Size size : choices) {
         if (size.getWidth() == size.getHeight() * 4 / 3 && size.getWidth() <= 1080) {
@@ -366,50 +367,25 @@ public class CameraPlugin implements MethodCallHandler {
         StreamConfigurationMap streamConfigurationMap =
             characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
         captureSize = getBestCaptureSize(streamConfigurationMap);
+
+        // choose a capture size <= 1080 for Media recorder
         mVideoSize = chooseVideoSize(streamConfigurationMap.getOutputSizes(MediaRecorder.class));
+
         previewSize = getBestPreviewSize(streamConfigurationMap, minPreviewSize, captureSize);
         imageReader =
             ImageReader.newInstance(
                 captureSize.getWidth(), captureSize.getHeight(), ImageFormat.JPEG, 2);
-        startMRec();
-        // Set up Surface for the MediaRecorder
-        // mMediaRecorder = new MediaRecorder();
-        // mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        // mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
-        // mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-        // mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-        // mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
-        // if (mNextVideoAbsolutePath == null || mNextVideoAbsolutePath.isEmpty()) {
-        //     //mNextVideoAbsolutePath = getVideoFilePath(activity);
-        //     String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date());
-        //   //  final int videotime = ((int) System.currentTimeMillis()/1000);
-        //     mNextVideoAbsolutePath = "/sdcard/Movies/VID_" + timeStamp + ".mp4";
-        // }
-        //
-        // mMediaRecorder.setVideoEncodingBitRate(1024 * 1000);
-        // mMediaRecorder.setVideoFrameRate(27);
-        // mMediaRecorder.setVideoSize(mVideoSize.getWidth(), mVideoSize.getHeight());
-        // mMediaRecorder.setOutputFile(mNextVideoAbsolutePath);
-        //mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-        //int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
-        // int vdisplayRotation = activity.getWindowManager().getDefaultDisplay().getRotation();
-        // int vdisplayOrientation = ORIENTATIONS.get(vdisplayRotation);
-        //   Log.v(TAG, "Rotation:  " + rotation);
-        // switch (sensorOrientation) {
-        //     case SENSOR_ORIENTATION_DEFAULT_DEGREES:
-        //         mMediaRecorder.setOrientationHint(DEFAULT_ORIENTATIONS.get(rotation));
-        //         break;
-        //     case SENSOR_ORIENTATION_INVERSE_DEGREES:
-        //         mMediaRecorder.setOrientationHint(INVERSE_ORIENTATIONS.get(rotation));
-        //         break;
-        // }
 
-        // mMediaRecorder.setOrientationHint((vdisplayOrientation + sensorOrientation) % 360);
-        //Surface recorderSurface = mMediaRecorder.getSurface();
+        //Initialize mMediaRecorder
+        startMRec();
+
         SurfaceTexture surfaceTexture = textureEntry.surfaceTexture();
         surfaceTexture.setDefaultBufferSize(previewSize.getWidth(), previewSize.getHeight());
 
-      Log.v(TAG, "VideoHH=" + mVideoSize.getHeight()+ "VideoWW=" + mVideoSize.getWidth() + "preHH" + previewSize.getHeight() + "preWW=" + previewSize.getWidth() );
+        //Log the video preview and capture sizes
+        Log.v(TAG, "VideoH=" + mVideoSize.getHeight()+ "VideoW=" + mVideoSize.getWidth() +
+        "preH" + previewSize.getHeight() + "preW=" + previewSize.getWidth() );
+
         previewSurface = new Surface(surfaceTexture);
         eventChannel.setStreamHandler(
             new EventChannel.StreamHandler() {
@@ -454,22 +430,31 @@ public class CameraPlugin implements MethodCallHandler {
     }
 
     private void startMRec() {
+      // initialize the variable
       mMediaRecorder = new MediaRecorder();
-      mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+
+      // setup audio and video source and formats
+      mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
       mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
       mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
       mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
       mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
+
+      //setup the location to save to, and the name of the file in tiem and date
       if (mNextVideoAbsolutePath == null || mNextVideoAbsolutePath.isEmpty()) {
-          //mNextVideoAbsolutePath = getVideoFilePath(activity);
+
           String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date());
         //  final int videotime = ((int) System.currentTimeMillis()/1000);
           mNextVideoAbsolutePath = "/sdcard/Movies/VID_" + timeStamp + ".mp4";
       }
 
+      //bitrate and framerate of the saved video
       mMediaRecorder.setVideoEncodingBitRate(1024 * 1000);
       mMediaRecorder.setVideoFrameRate(27);
+
+      //width x height
       mMediaRecorder.setVideoSize(mVideoSize.getWidth(), mVideoSize.getHeight());
+      // set the path and filename
       mMediaRecorder.setOutputFile(mNextVideoAbsolutePath);
     }
 
@@ -487,16 +472,21 @@ public class CameraPlugin implements MethodCallHandler {
           facingFront =
               characteristics.get(CameraCharacteristics.LENS_FACING)
                   == CameraMetadata.LENS_FACING_FRONT;
+
+                  // handle a rotaed camera
                   int vdisplayRotation = activity.getWindowManager().getDefaultDisplay().getRotation();
                   int vdisplayOrientation = ORIENTATIONS.get(vdisplayRotation);
                   mMediaRecorder.setOrientationHint((vdisplayOrientation + sensorOrientation) % 360);
-                  //Surface recorderSurface = mMediaRecorder.getSurface();
+
+                  // try to prepare() the mMediaRecorder variable with the set values, if no errors, we can start recording
                   try {
                        mMediaRecorder.prepare();
                    } catch (Exception e) {
                        e.printStackTrace();
                        return;
                    }
+
+
           cameraManager.openCamera(
               cameraName,
               new CameraDevice.StateCallback() {
@@ -506,6 +496,8 @@ public class CameraPlugin implements MethodCallHandler {
                   List<Surface> surfaceList = new ArrayList<>();
                   surfaceList.add(previewSurface);
                   surfaceList.add(imageReader.getSurface());
+
+                  // added the media recorder surface to the surfaceList variable
                   surfaceList.add(mMediaRecorder.getSurface());
 
 
@@ -588,66 +580,21 @@ public class CameraPlugin implements MethodCallHandler {
 
 
 
-    // private void setUpMediaRecorder() {
-    //   try {
-    //     //final Activity activity = getActivity();
-    //     if (null == activity) {
-    //         return;
-    //     }
-    //
-    //     //mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-    //     mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
-    //     mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-    //     if (mNextVideoAbsolutePath == null || mNextVideoAbsolutePath.isEmpty()) {
-    //         mNextVideoAbsolutePath = getVideoFilePath(activity);
-    //     }
-    //     mMediaRecorder.setOutputFile(mNextVideoAbsolutePath);
-    //     mMediaRecorder.setVideoEncodingBitRate(10000000);
-    //     mMediaRecorder.setVideoFrameRate(30);
-    //     mMediaRecorder.setVideoSize(mVideoSize.getWidth(), mVideoSize.getHeight());
-    //     mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
-    //     //mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-    //     //int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
-    //     int vdisplayRotation = activity.getWindowManager().getDefaultDisplay().getRotation();
-    //     int vdisplayOrientation = ORIENTATIONS.get(vdisplayRotation);
-    //     //   Log.v(TAG, "Rotation:  " + rotation);
-    //     // switch (sensorOrientation) {
-    //     //     case SENSOR_ORIENTATION_DEFAULT_DEGREES:
-    //     //         mMediaRecorder.setOrientationHint(DEFAULT_ORIENTATIONS.get(rotation));
-    //     //         break;
-    //     //     case SENSOR_ORIENTATION_INVERSE_DEGREES:
-    //     //         mMediaRecorder.setOrientationHint(INVERSE_ORIENTATIONS.get(rotation));
-    //     //         break;
-    //     // }
-    //
-    //     mMediaRecorder.setOrientationHint((vdisplayOrientation + sensorOrientation) % 360);
-    //     //mMediaRecorder.prepare();
-    //   } catch (CameraAccessException exception) {
-    //     // Theoretically image.close() could throw, so only report the error
-    //     // if we have not successfully written the file.
-    //     // if (!success) {
-    //     //   result.error("IOError", "Failed init video", null);
-    //     // }
-    //     //Log.e(TAG, e);
-    //   }
-    // }
 
-    private String getVideoFilePath(Context context) {
-           final File dir = context.getExternalFilesDir(null);
-           return (dir == null ? "" : (dir.getAbsolutePath() + "/"))
-                   + System.currentTimeMillis() + ".mp4";
-       }
 
     void start() {
       if (!initialized) {
         return;
       }
       try {
+
+        //build the preview surface with a TEMPLATE_RECORD as oppsed to a preview TEMPLATE_PREVIEW
         final CaptureRequest.Builder previewRequestBuilder =
             cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_RECORD);
         previewRequestBuilder.set(
             CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
 
+        // add surface targets in total 2 video and preview
         previewRequestBuilder.addTarget(previewSurface);
         previewRequestBuilder.addTarget(mMediaRecorder.getSurface());
         CaptureRequest previewRequest = previewRequestBuilder.build();
@@ -791,86 +738,36 @@ public class CameraPlugin implements MethodCallHandler {
       }
     }
 
+
+// start the video recording , takes a dummy path for now.
 void videostart(String path, final Result result) {
-Log.v(TAG, path );
-  try{
+    Log.v(TAG, path );
+      try{
 
-    // Start recording
-    mMediaRecorder.start();
-    mIsRecordingVideo = true;
-    result.success(null);
+        // Start recording
+        mMediaRecorder.start();
+        mIsRecordingVideo = true;
+        result.success(null);
 
-  }  catch (Exception e) {
-    result.error("captureFailure", "an exception was thrown", null);
-    //  e.printStackTrace();
-      return;
-  }
-
-// try{
-  // Set up Surface for the MediaRecorder
-  //Surface recorderSurface = mMediaRecorder.getSurface();
-  //surfaces.add(recorderSurface);
-
-
-
-
-  // Start a capture session
-  // Once the session starts, we can update the UI and start recording
-
-  // cameraDevice.capture(
-  //     videoBuilder.build(),
-  //     new CameraCaptureSession.CaptureCallback() {
-  //
-  //
-  //     @Override
-  //     public void onConfigured(@NonNull CameraCaptureSession cameraCaptureSession) {
-          // mPreviewSession = cameraCaptureSession;
-          // updatePreview();
-          // getActivity().runOnUiThread(new Runnable() {
-          //     @Override
-          //     public void run() {
-          //         // UI
-          //         mButtonVideo.setText(R.string.stop);
-                  // mIsRecordingVideo = true;
-
-                  // Start recording
-                  // mMediaRecorder.start();
-          //     }
-          // });
-  //     }
-  //
-  //     @Override
-  //     public void onCaptureFailed(
-  //         @NonNull CameraCaptureSession session,
-  //         @NonNull CaptureRequest request,
-  //         @NonNull CaptureFailure failure) {
-  //       String reason;
-  //       switch (failure.getReason()) {
-  //         case CaptureFailure.REASON_ERROR:
-  //           reason = "An error happened in the framework";
-  //           break;
-  //         case CaptureFailure.REASON_FLUSHED:
-  //           reason = "The capture has failed due to an abortCaptures() call";
-  //           break;
-  //         default:
-  //           reason = "Unknown reason";
-  //       }
-  //       result.error("captureFailure", reason, null);
-  //     }
-  // }, null);
-  // } catch (CameraAccessException | IOException e) {
-  // e.printStackTrace();
-  // }
+      }  catch (Exception e) {
+        // catch any exception that may pop up and return
+        result.error("captureFailure", "an exception was thrown", null);
+        //  e.printStackTrace();
+          return;
+      }
 
   }
 
+
+// stop recording, this requires some work, the video recording at the moment does not conclude gracefully
+// I've tried multiple options to pause and restart the preview with no avail.
 void videostop(final Result result) {
 
   try{
     if(mIsRecordingVideo){
       // stop recording
 
-      mIsRecordingVideo = false;
+
       //pause();
       mMediaRecorder.stop();
       //stop();
@@ -883,6 +780,7 @@ void videostop(final Result result) {
       //dispose();
       result.success(mNextVideoAbsolutePath);
       mNextVideoAbsolutePath = null;
+      mIsRecordingVideo = false;
     }
   }  catch (Exception e) {
       result.error("captureFailure", "videostop: an exception was thrown", null);
@@ -910,6 +808,7 @@ void videostop(final Result result) {
     }
 
     void dispose() {
+      // remove and clear the mMediaRecorder variable with dispose
       if (mMediaRecorder != null) {
                 mMediaRecorder.reset();
                 mMediaRecorder.release();

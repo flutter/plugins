@@ -15,6 +15,7 @@ class CameraExampleHome extends StatefulWidget {
   }
 }
 
+// function to select a suitable icon depending on the lens selected
 IconData cameraLensIcon(CameraLensDirection direction) {
   switch (direction) {
     case CameraLensDirection.back:
@@ -28,12 +29,23 @@ IconData cameraLensIcon(CameraLensDirection direction) {
 }
 
 class _CameraExampleHomeState extends State<CameraExampleHome> {
+
   bool opening = false;
+
+  //initiate the controller to be used
   CameraController controller;
+
+  //test second controller to save currently used controller
   CameraController currentcontroller;
+
+  // image and video file that is saved
   String imagePath;
   String videofile;
+
+  // recording bool for UI triggers
   bool recording = false;
+
+  // to enable different filenames
   int pictureCount = 0;
 
   @override
@@ -43,13 +55,17 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> headerChildren = <Widget>[];
 
+    // List Widget to build the UI controls of the camera
+    final List<Widget> controlsChildren = <Widget>[];
+
+    // For UI to add the the available camers selector
     final List<Widget> cameraList = <Widget>[];
 
     if (cameras.isEmpty) {
       cameraList.add(const Text('No cameras found'));
     } else {
+      // Adding cams to the widget
       for (CameraDescription cameraDescription in cameras) {
         cameraList.add(
           new SizedBox(
@@ -74,33 +90,37 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
       }
     }
 
-    headerChildren.add(new Row(children: cameraList));
-    //headerChildren.add(new Text( 'Video: ' + videofile  ));
+    // adding the cameras to the main controls widget
+    controlsChildren.add(new Row(children: cameraList));
+
+    // adding the play/pause button && thumb of image capture to the controls widget
     if (controller != null) {
-      headerChildren.add(playPauseButton());
+      controlsChildren.add(playPauseButton());
     }
     if (imagePath != null) {
-      headerChildren.add(imageWidget());
+      controlsChildren.add(imageWidget());
     }
-    // if (videofile != null) {
-    //   headerChildren.add(new Text( 'Saved here: $videofile '  ));
-    // }
-    final List<Widget> columnChildren = <Widget>[];
-    //columnChildren.add(new Row(children: headerChildren));
+
+    // initialize the preview window
+    final List<Widget> previewChildren = <Widget>[];
+
+    //depending on controller state display a message or the camera preview
     if (controller == null || !controller.value.initialized) {
-      columnChildren.add(new Text('Tap a camera',
+      previewChildren.add(new Text('Tap a camera',
       style: new TextStyle(
           color: Colors.white,
           fontSize: 24.0,
           fontWeight: FontWeight.w900,
         ),));
     } else if (controller.value.hasError) {
-      columnChildren.add(
+      previewChildren.add(
         new Text('Camera error ${controller.value.errorDescription}'),
       );
     } else {
-      columnChildren.add(
+      previewChildren.add(
         new Container(
+        // handle the preview depending on the aspect ratio of the camera view
+        // This may need work to display correctly
         child: new AspectRatio(
                 aspectRatio: controller.value.aspectRatio,
                 child: new CameraPreview(controller),
@@ -113,6 +133,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
 
       );
     }
+
+    // the main scaffoling of the app
     return new Scaffold(
       appBar: new AppBar(
         title: const Text('Camera example'),
@@ -126,12 +148,13 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
                 child: new Column(
 
                   mainAxisAlignment: MainAxisAlignment.center ,
-                  children: columnChildren
+
+                  // add the preview to the app
+                  children: previewChildren
                 ),
               ),
             ),
-          //height: 400.0,
-
+            // size of the container as wide  as the device screen
           width: MediaQuery.of(context).size.width ,
           decoration: new BoxDecoration(
           color: Colors.black,
@@ -148,16 +171,21 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
             padding: const EdgeInsets.all(5.0),
             child: new Row(
             mainAxisAlignment: MainAxisAlignment.start ,
-            children: headerChildren
+
+            // add the controls to the app
+            children: controlsChildren
 
           ),
         ),
 
+        // Add the message to the user depending on the camera controller state.
         vidMsg(),
 
 
         ]
         ),
+
+        // Bottom bar with the capture controls image and video
         bottomNavigationBar: (controller == null)
             ? null
             : new Row(
@@ -182,36 +210,26 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
             ),
 
           ]),
-      // bottomNavigationBar:  (controller == null)
-      //     ? null
-      //     : new IconButton(
-      //   icon: new Icon( Icons.videocam ) ,
-      //   color: Colors.blue ,
-      //   onPressed: controller.value.isStarted ? video : null,
-      // ),
-      // floatingActionButton: (controller == null)
-      //     ? null
-      //     : new FloatingActionButton(
-      //         child: const Icon(Icons.camera),
-      //         onPressed: controller.value.isStarted ? capture : null,
-      //       ),
 
     );
   }
 
+
+// start video capture *need improvement*
   void videoStart() {
 
     videostart();
 
       setState(
         () {
-          // if (!controller.value.videoOn) {
+          if (!controller.value.videoOn) {
             recording = true;
-          // }
+          }
         },
       );
   }
 
+  // stop video capture *need improvement*
 
   void videoStop() {
 
@@ -219,13 +237,14 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
 
       setState(
         () {
-          // if (controller.value.videoOn) {
+           if (controller.value.videoOn) {
             recording = false;
-          // }
+          }
         },
       );
   }
 
+// widget to display the thumb of the captured image in the UI
   Widget imageWidget() {
     return new Expanded(
       child: new Align(
@@ -239,12 +258,13 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
     );
   }
 
+// display message depending on camera app state
   Widget vidMsg() {
     if (videofile == null && controller == null){
       return const Padding(
         padding: const EdgeInsets.all(1.0),
         child:
-        const Text( 'Choose a camera') ,
+        const Text( 'Choose a camera'),
       );
     }
     else if (videofile != null && controller == null){
@@ -258,20 +278,21 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
       return const Padding(
         padding: const EdgeInsets.all(1.0),
         child:
-        const Text( 'Take a video / photo ') ,
+        const Text( 'Take a video / photo '),
       );
     }
     else {
       return const Padding(
         padding: const EdgeInsets.all(1.0),
         child:
-        const Text( 'Take a video / photo ') ,
+        const Text( 'Take a video / photo'),
       );
 
     }
 
   }
 
+  // UI for pause/play button
   Widget playPauseButton() {
     return new FlatButton(
       onPressed: () {
@@ -290,31 +311,29 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
     );
   }
 
+// actual videostart
   Future<Null> videostart() async {
     if (controller.value.isStarted) {
+
+// at the moment this section of filename is dummy and not used in the final output
      final Directory tempDir = await getTemporaryDirectory();
      if (!mounted) {
        return;
      }
      final String tempPath = tempDir.path;
      final String path = '$tempPath/movie${pictureCount++}.mp4';
-//      await controller.video(path);
-//      if (!mounted) {
-//        return;
-//      }
-//      setState(
-//            () {
-//          imagePath = path;
-//        },
-//      );
-      //final String tempPath = "VIDEOSTART/path/to/some/video.mp4";
+
+     // call the controller to start capture
       await controller.videostart(path);
-      //final String hello = await controller.video(tempPath);
-      //print(hello + ':::From example:::');
+
 
     }
   }
 
+
+// after the videostop is called reset the camera to the initial state
+// This is similar to the code when the camera is switched from front / back /
+// external. This section of code needs work
   Future<Null> restartcam() async {
    final CameraController tempController2 = controller;
    controller = null;
@@ -324,25 +343,11 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
    //setState(() {});
  }
 
+
+// videostop call to the camera controller
+// this code may need work
   Future<Null> videostop() async {
     if (controller.value.isStarted) {
-     // final Directory tempDir = await getTemporaryDirectory();
-     // if (!mounted) {
-     //   return;
-     // }
-     // final String tempPath = tempDir.path;
-//      final String path = '$tempPath/movie${pictureCount++}.jpg';
-//      await controller.video(path);
-//      if (!mounted) {
-//        return;
-//      }
-//      setState(
-//            () {
-//          imagePath = path;
-//        },
-//      );
-      //final String tempPath = "VIDEOSTOP/path/to/some/video.mp4";
-
 
      final String vfile =  await controller.videostop();
 
@@ -350,15 +355,11 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
         videofile = vfile;
       });
       await restartcam();
-      //restartcam();
-
-      //final String hello = await controller.video(tempPath);
-      //print(hello + ':::From example:::');
 
     }
   }
 
-
+// capture call to save a JPEG image
   Future<Null> capture() async {
     if (controller.value.isStarted) {
       final Directory tempDir = await getTemporaryDirectory();
@@ -396,9 +397,12 @@ Widget build(BuildContext context){
 
 }
 
+// initialze a list of cameras
 List<CameraDescription> cameras;
 
 Future<Null> main() async {
+
+  //save the available cameras in this variable first before initializing the app
   cameras = await availableCameras();
   runApp( new CameraApp());
 }
