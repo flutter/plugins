@@ -33,8 +33,7 @@ class FirebaseAnimatedList extends StatefulWidget {
     this.shrinkWrap: false,
     this.padding,
     this.duration: const Duration(milliseconds: 300),
-  })
-      : super(key: key) {
+  }) : super(key: key) {
     assert(itemBuilder != null);
   }
 

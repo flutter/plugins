@@ -13,11 +13,15 @@ static NSDictionary *statusToString = nil;
 NSNumber *_mobileAdId;
 FlutterMethodChannel *_channel;
 FLTMobileAdStatus _status;
+double _anchorOffset;
+int _anchorType;
 
 + (void)initialize {
   if (allAds == nil) {
     allAds = [[NSMutableDictionary alloc] init];
   }
+  _anchorType = 0;
+  _anchorOffset = 0;
 
   if (statusToString == nil) {
     statusToString = @{
@@ -48,6 +52,8 @@ FLTMobileAdStatus _status;
     _mobileAdId = mobileAdId;
     _channel = channel;
     _status = CREATED;
+    _anchorOffset = 0;
+    _anchorType = 0;
     allAds[mobileAdId] = self;
   }
   return self;
@@ -59,6 +65,15 @@ FLTMobileAdStatus _status;
 
 - (void)loadWithAdUnitId:(NSString *)adUnitId targetingInfo:(NSDictionary *)targetingInfo {
   // Implemented by the Banner and Interstitial subclasses
+}
+
+- (void)showAtOffset:(double)anchorOffset fromAnchor:(int)anchorType {
+  _anchorType = anchorType;
+  _anchorOffset = anchorOffset;
+  if (_anchorType == 0) {
+    _anchorOffset = -_anchorOffset;
+  }
+  [self show];
 }
 
 - (void)show {
@@ -105,6 +120,7 @@ GADBannerView *_banner;
     _status = PENDING;
     return;
   }
+
   if (_status != LOADED) return;
 
   _banner.translatesAutoresizingMaskIntoConstraints = NO;
@@ -116,7 +132,9 @@ GADBannerView *_banner;
     UILayoutGuide *guide = screen.safeAreaLayoutGuide;
     [NSLayoutConstraint activateConstraints:@[
       [_banner.centerXAnchor constraintEqualToAnchor:guide.centerXAnchor],
-      [_banner.bottomAnchor constraintEqualToAnchor:guide.bottomAnchor]
+      [_banner.bottomAnchor
+          constraintEqualToAnchor:_anchorType == 0 ? guide.bottomAnchor : guide.topAnchor
+                         constant:_anchorOffset]
     ]];
   } else {
     [self placeBannerPreIos11];
@@ -129,7 +147,12 @@ GADBannerView *_banner;
 - (void)placeBannerPreIos11 {
   UIView *screen = [FLTMobileAd rootViewController].view;
   CGFloat x = screen.frame.size.width / 2 - _banner.frame.size.width / 2;
-  CGFloat y = screen.frame.size.height - _banner.frame.size.height;
+  CGFloat y;
+  if (_anchorType == 0) {
+    y = screen.frame.size.height - _banner.frame.size.height + _anchorOffset;
+  } else {
+    y = _anchorOffset;
+  }
   _banner.frame = (CGRect){{x, y}, _banner.frame.size};
   [screen addSubview:_banner];
 }

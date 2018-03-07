@@ -253,7 +253,7 @@ void main() {
             throw "First init fails";
           }
         }
-        return responses[methodCall.method];
+        return new Future<dynamic>.value(responses[methodCall.method]);
       });
       expect(googleSignIn.signIn(),
           throwsA(const isInstanceOf<PlatformException>()));

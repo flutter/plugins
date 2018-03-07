@@ -1,3 +1,7 @@
+## 0.3.2
+
+* Fixed Dart 2 type errors.
+
 ## 0.3.1
 
 * Enabled use in Swift projects.
@@ -8,7 +12,7 @@
 * **Breaking change**. The properties and parameters named "unitId" in BannerAd
   and InterstitialAd have been renamed to "adUnitId" to better match AdMob's
   documentation and UI.
-  
+
 ## 0.2.3
 
 * Simplified and upgraded Android project template to Android SDK 27.

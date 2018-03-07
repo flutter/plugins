@@ -1,3 +1,7 @@
+## 0.1.5
+
+* Fix Dart 2 type errors.
+
 ## 0.1.4
 
 * Enabled use in Swift projects.

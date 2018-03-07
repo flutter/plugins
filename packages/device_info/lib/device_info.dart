@@ -58,8 +58,7 @@ class AndroidDeviceInfo {
     this.tags,
     this.type,
     this.isPhysicalDevice,
-  })
-      : supported32BitAbis = new List<String>.unmodifiable(supported32BitAbis),
+  })  : supported32BitAbis = new List<String>.unmodifiable(supported32BitAbis),
         supported64BitAbis = new List<String>.unmodifiable(supported64BitAbis),
         supportedAbis = new List<String>.unmodifiable(supportedAbis);
 

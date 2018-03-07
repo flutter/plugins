@@ -34,8 +34,7 @@ class AndroidIntent {
     this.arguments,
     this.package,
     Platform platform,
-  })
-      : assert(action != null),
+  })  : assert(action != null),
         _channel = const MethodChannel(kChannelName),
         _platform = platform ?? const LocalPlatform();
 
