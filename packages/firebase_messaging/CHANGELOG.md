@@ -1,3 +1,7 @@
+## 0.1.4
+
+* Fixed Dart 2 type error in example project.
+
 ## 0.1.3
 
 * Enabled use in Swift projects.

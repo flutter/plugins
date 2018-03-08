@@ -122,7 +122,16 @@
     result([FlutterError errorWithCode:@"ad_not_loaded" message:message details:nil]);
   }
 
-  [ad show];
+  double offset = 0.0;
+  int type = 0;
+  if (call.arguments[@"anchorOffset"] != nil) {
+    offset = [call.arguments[@"anchorOffset"] doubleValue];
+  }
+  if (call.arguments[@"anchorType"] != nil) {
+    type = [call.arguments[@"anchorType"] isEqualToString:@"bottom"] ? 0 : 1;
+  }
+
+  [ad showAtOffset:offset fromAnchor:type];
   result([NSNumber numberWithBool:YES]);
 }
 

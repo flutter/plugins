@@ -67,6 +67,8 @@ void main() {
         }),
         isMethodCall('showAd', arguments: <String, dynamic>{
           'id': id,
+          'anchorOffset': '0.0',
+          'anchorType': 'bottom',
         }),
         isMethodCall('disposeAd', arguments: <String, dynamic>{
           'id': id,
@@ -83,7 +85,10 @@ void main() {
       final int id = interstitial.id;
 
       expect(await interstitial.load(), true);
-      expect(await interstitial.show(), true);
+      expect(
+          await interstitial.show(
+              anchorOffset: 60.0, anchorType: AnchorType.top),
+          true);
       expect(await interstitial.dispose(), true);
 
       expect(log, <Matcher>[
@@ -94,6 +99,8 @@ void main() {
         }),
         isMethodCall('showAd', arguments: <String, dynamic>{
           'id': id,
+          'anchorOffset': '60.0',
+          'anchorType': 'top',
         }),
         isMethodCall('disposeAd', arguments: <String, dynamic>{
           'id': id,

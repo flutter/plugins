@@ -70,7 +70,7 @@ class DatabaseReference extends Query {
   ///
   /// Passing null for the new value means all data at this location or any
   /// child location will be deleted.
-  Future<Null> set(dynamic value, {dynamic priority}) {
+  Future<void> set(dynamic value, {dynamic priority}) {
     return _database._channel.invokeMethod(
       'DatabaseReference#set',
       <String, dynamic>{
@@ -84,7 +84,7 @@ class DatabaseReference extends Query {
   }
 
   /// Update the node with the `value`
-  Future<Null> update(Map<String, dynamic> value) {
+  Future<void> update(Map<String, dynamic> value) {
     return _database._channel.invokeMethod(
       'DatabaseReference#update',
       <String, dynamic>{
@@ -120,7 +120,7 @@ class DatabaseReference extends Query {
   /// Note that priorities are parsed and ordered as IEEE 754 double-precision
   /// floating-point numbers. Keys are always stored as strings and are treated
   /// as numbers only when they can be parsed as a 32-bit integer.
-  Future<Null> setPriority(dynamic priority) async {
+  Future<void> setPriority(dynamic priority) async {
     return _database._channel.invokeMethod(
       'DatabaseReference#setPriority',
       <String, dynamic>{
@@ -140,7 +140,7 @@ class DatabaseReference extends Query {
   /// Database servers will also be started.
   ///
   /// remove() is equivalent to calling set(null)
-  Future<Null> remove() => set(null);
+  Future<void> remove() => set(null);
 
   /// Performs an optimistic-concurrency transactional update to the data at
   /// this Firebase Database location.
@@ -159,7 +159,7 @@ class DatabaseReference extends Query {
 
     FirebaseDatabase._transactions[transactionKey] = transactionHandler;
 
-    TransactionResult toTransactionResult(Map<String, dynamic> map) {
+    TransactionResult toTransactionResult(Map<dynamic, dynamic> map) {
       final DatabaseError databaseError =
           map['error'] != null ? new DatabaseError._(map['error']) : null;
       final bool committed = map['committed'];

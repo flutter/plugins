@@ -9,7 +9,7 @@ import 'package:meta/meta.dart';
 
 /// Represents user data returned from an identity provider.
 class UserInfo {
-  final Map<String, dynamic> _data;
+  final Map<dynamic, dynamic> _data;
 
   UserInfo._(this._data);
 
@@ -55,9 +55,9 @@ class UserUpdateInfo {
 class FirebaseUser extends UserInfo {
   final List<UserInfo> providerData;
 
-  FirebaseUser._(Map<String, dynamic> data)
+  FirebaseUser._(Map<dynamic, dynamic> data)
       : providerData = data['providerData']
-            .map((Map<String, dynamic> info) => new UserInfo._(info))
+            .map<UserInfo>((dynamic item) => new UserInfo._(item))
             .toList(),
         super._(data);
 
@@ -72,8 +72,8 @@ class FirebaseUser extends UserInfo {
   /// Obtains the id token for the current user, forcing a [refresh] if desired.
   ///
   /// Completes with an error if the user is signed out.
-  Future<String> getIdToken({bool refresh: false}) {
-    return FirebaseAuth.channel.invokeMethod('getIdToken', <String, bool>{
+  Future<String> getIdToken({bool refresh: false}) async {
+    return await FirebaseAuth.channel.invokeMethod('getIdToken', <String, bool>{
       'refresh': refresh,
     });
   }
@@ -108,7 +108,9 @@ class FirebaseAuth {
 
     StreamController<FirebaseUser> controller;
     controller = new StreamController<FirebaseUser>.broadcast(onListen: () {
-      _handle = channel.invokeMethod('startListeningAuthState');
+      _handle = channel
+          .invokeMethod('startListeningAuthState')
+          .then<int>((dynamic v) => v);
       _handle.then((int handle) {
         _authStateChangedControllers[handle] = controller;
       });
@@ -133,7 +135,7 @@ class FirebaseAuth {
   /// FIRAuthErrorCodeOperationNotAllowed - Indicates that anonymous accounts are not enabled. Enable them in the Auth section of the Firebase console.
   /// See FIRAuthErrors for a list of error codes that are common to all API methods.
   Future<FirebaseUser> signInAnonymously() async {
-    final Map<String, dynamic> data =
+    final Map<dynamic, dynamic> data =
         await channel.invokeMethod('signInAnonymously');
     final FirebaseUser currentUser = new FirebaseUser._(data);
     return currentUser;
@@ -145,7 +147,7 @@ class FirebaseAuth {
   }) async {
     assert(email != null);
     assert(password != null);
-    final Map<String, dynamic> data = await channel.invokeMethod(
+    final Map<dynamic, dynamic> data = await channel.invokeMethod(
       'createUserWithEmailAndPassword',
       <String, String>{
         'email': email,
@@ -156,7 +158,7 @@ class FirebaseAuth {
     return currentUser;
   }
 
-  Future<Null> sendPasswordResetEmail({
+  Future<void> sendPasswordResetEmail({
     @required String email,
   }) async {
     assert(email != null);
@@ -174,7 +176,7 @@ class FirebaseAuth {
   }) async {
     assert(email != null);
     assert(password != null);
-    final Map<String, dynamic> data = await channel.invokeMethod(
+    final Map<dynamic, dynamic> data = await channel.invokeMethod(
       'signInWithEmailAndPassword',
       <String, String>{
         'email': email,
@@ -188,7 +190,7 @@ class FirebaseAuth {
   Future<FirebaseUser> signInWithFacebook(
       {@required String accessToken}) async {
     assert(accessToken != null);
-    final Map<String, dynamic> data =
+    final Map<dynamic, dynamic> data =
         await channel.invokeMethod('signInWithFacebook', <String, String>{
       'accessToken': accessToken,
     });
@@ -202,7 +204,7 @@ class FirebaseAuth {
   }) async {
     assert(idToken != null);
     assert(accessToken != null);
-    final Map<String, dynamic> data = await channel.invokeMethod(
+    final Map<dynamic, dynamic> data = await channel.invokeMethod(
       'signInWithGoogle',
       <String, String>{
         'idToken': idToken,
@@ -215,7 +217,7 @@ class FirebaseAuth {
 
   Future<FirebaseUser> signInWithCustomToken({@required String token}) async {
     assert(token != null);
-    final Map<String, dynamic> data = await channel.invokeMethod(
+    final Map<dynamic, dynamic> data = await channel.invokeMethod(
       'signInWithCustomToken',
       <String, String>{
         'token': token,
@@ -225,20 +227,21 @@ class FirebaseAuth {
     return currentUser;
   }
 
-  Future<Null> signOut() async {
+  Future<void> signOut() async {
     return await channel.invokeMethod("signOut");
   }
 
   /// Asynchronously gets current user, or `null` if there is none.
   Future<FirebaseUser> currentUser() async {
-    final Map<String, dynamic> data = await channel.invokeMethod("currentUser");
+    final Map<dynamic, dynamic> data =
+        await channel.invokeMethod("currentUser");
     final FirebaseUser currentUser =
         data == null ? null : new FirebaseUser._(data);
     return currentUser;
   }
 
   /// Links email account with current user and returns [Future<FirebaseUser>]
-  /// basically current user with addtional email infomation
+  /// basically current user with additional email information
   ///
   /// throws [PlatformException] when
   /// 1. email address is already used
@@ -249,7 +252,7 @@ class FirebaseAuth {
   }) async {
     assert(email != null);
     assert(password != null);
-    final Map<String, dynamic> data = await channel.invokeMethod(
+    final Map<dynamic, dynamic> data = await channel.invokeMethod(
       'linkWithEmailAndPassword',
       <String, String>{
         'email': email,
@@ -260,7 +263,7 @@ class FirebaseAuth {
     return currentUser;
   }
 
-  Future<Null> updateProfile(UserUpdateInfo userUpdateInfo) async {
+  Future<void> updateProfile(UserUpdateInfo userUpdateInfo) async {
     assert(userUpdateInfo != null);
     return await channel.invokeMethod(
       'updateProfile',
@@ -282,7 +285,7 @@ class FirebaseAuth {
   }) async {
     assert(idToken != null);
     assert(accessToken != null);
-    final Map<String, dynamic> data = await channel.invokeMethod(
+    final Map<dynamic, dynamic> data = await channel.invokeMethod(
       'linkWithGoogleCredential',
       <String, String>{
         'idToken': idToken,
@@ -303,7 +306,7 @@ class FirebaseAuth {
   }
 
   void _onAuthStageChangedHandler(MethodCall call) {
-    final Map<String, dynamic> data = call.arguments["user"];
+    final Map<dynamic, dynamic> data = call.arguments["user"];
     final int id = call.arguments["id"];
 
     final FirebaseUser currentUser =

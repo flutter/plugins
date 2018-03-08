@@ -32,7 +32,7 @@ class Firestore {
       } else if (call.method == 'DocumentSnapshot') {
         final DocumentSnapshot snapshot = new DocumentSnapshot._(
           call.arguments['path'],
-          call.arguments['data'],
+          _asStringKeyedMap(call.arguments['data']),
           this,
         );
         _documentObservers[call.arguments['handle']].add(snapshot);
@@ -90,12 +90,12 @@ class Firestore {
         'Transaction timeout must be more than 0 milliseconds');
     final int transactionId = _transactionHandlerId++;
     _transactionHandlers[transactionId] = transactionHandler;
-    final Map<String, dynamic> result = await channel.invokeMethod(
+    final Map<dynamic, dynamic> result = await channel.invokeMethod(
         'Firestore#runTransaction', <String, dynamic>{
       'transactionId': transactionId,
       'transactionTimeout': timeout.inMilliseconds
     });
-    return result ?? <String, dynamic>{};
+    return result?.cast<String, dynamic>() ?? <String, dynamic>{};
   }
 }
 
@@ -113,14 +113,14 @@ class Transaction {
       'path': documentReference.path,
     });
     if (result != null) {
-      return new DocumentSnapshot._(
-          documentReference.path, result['data'], Firestore.instance);
+      return new DocumentSnapshot._(documentReference.path,
+          result['data'].cast<String, dynamic>(), Firestore.instance);
     } else {
       return null;
     }
   }
 
-  Future<Null> delete(DocumentReference documentReference) async {
+  Future<void> delete(DocumentReference documentReference) async {
     return Firestore.channel
         .invokeMethod('Transaction#delete', <String, dynamic>{
       'transactionId': _transactionId,
@@ -128,7 +128,7 @@ class Transaction {
     });
   }
 
-  Future<Null> update(
+  Future<void> update(
       DocumentReference documentReference, Map<String, dynamic> data) async {
     return Firestore.channel
         .invokeMethod('Transaction#update', <String, dynamic>{
@@ -138,7 +138,7 @@ class Transaction {
     });
   }
 
-  Future<Null> set(
+  Future<void> set(
       DocumentReference documentReference, Map<String, dynamic> data) async {
     return Firestore.channel.invokeMethod('Transaction#set', <String, dynamic>{
       'transactionId': _transactionId,

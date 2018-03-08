@@ -1,3 +1,7 @@
+## 0.2.1
+
+* Fix Dart 2 type error.
+
 ## 0.2.0
 
 * **Breaking change**. Introduced class `PackageInfo` in place of individual functions.

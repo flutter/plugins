@@ -88,13 +88,16 @@ class FirebaseDatabase {
   /// to `true`, the data will be persisted to on-device (disk) storage and will
   /// thus be available again when the app is restarted (even when there is no
   /// network connectivity at that time).
-  Future<bool> setPersistenceEnabled(bool enabled) {
-    return _channel.invokeMethod(
-        'FirebaseDatabase#setPersistenceEnabled', <String, dynamic>{
-      'app': app?.name,
-      'databaseURL': databaseURL,
-      'enabled': enabled,
-    });
+  Future<bool> setPersistenceEnabled(bool enabled) async {
+    final bool result = await _channel.invokeMethod(
+      'FirebaseDatabase#setPersistenceEnabled',
+      <String, dynamic>{
+        'app': app?.name,
+        'databaseURL': databaseURL,
+        'enabled': enabled,
+      },
+    );
+    return result;
   }
 
   /// Attempts to set the size of the persistence cache.
@@ -114,18 +117,21 @@ class FirebaseDatabase {
   /// Note that the specified cache size is only an approximation and the size
   /// on disk may temporarily exceed it at times. Cache sizes smaller than 1 MB
   /// or greater than 100 MB are not supported.
-  Future<bool> setPersistenceCacheSizeBytes(int cacheSize) {
-    return _channel.invokeMethod(
-        'FirebaseDatabase#setPersistenceCacheSizeBytes', <String, dynamic>{
-      'app': app?.name,
-      'databaseURL': databaseURL,
-      'cacheSize': cacheSize,
-    });
+  Future<bool> setPersistenceCacheSizeBytes(int cacheSize) async {
+    final bool result = await _channel.invokeMethod(
+      'FirebaseDatabase#setPersistenceCacheSizeBytes',
+      <String, dynamic>{
+        'app': app?.name,
+        'databaseURL': databaseURL,
+        'cacheSize': cacheSize,
+      },
+    );
+    return result;
   }
 
   /// Resumes our connection to the Firebase Database backend after a previous
   /// [goOffline] call.
-  Future<Null> goOnline() {
+  Future<void> goOnline() {
     return _channel.invokeMethod(
       'FirebaseDatabase#goOnline',
       <String, dynamic>{
@@ -137,7 +143,7 @@ class FirebaseDatabase {
 
   /// Shuts down our connection to the Firebase Database backend until
   /// [goOnline] is called.
-  Future<Null> goOffline() {
+  Future<void> goOffline() {
     return _channel.invokeMethod(
       'FirebaseDatabase#goOffline',
       <String, dynamic>{
@@ -157,7 +163,7 @@ class FirebaseDatabase {
   /// The writes will be rolled back locally, perhaps triggering events for
   /// affected event listeners, and the client will not (re-)send them to the
   /// Firebase Database backend.
-  Future<Null> purgeOutstandingWrites() {
+  Future<void> purgeOutstandingWrites() {
     return _channel.invokeMethod(
       'FirebaseDatabase#purgeOutstandingWrites',
       <String, dynamic>{

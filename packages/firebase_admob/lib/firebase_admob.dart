@@ -82,6 +82,8 @@ class MobileAdTargetingInfo {
   }
 }
 
+enum AnchorType { bottom, top }
+
 /// A mobile [BannerAd] or [InterstitialAd] for the [FirebaseAdMobPlugin].
 ///
 /// A [MobileAd] must be loaded with [load] before it is shown with [show].
@@ -118,8 +120,6 @@ abstract class MobileAd {
   /// Plugin log messages will identify this property as the ad's `mobileAdId`.
   int get id => hashCode;
 
-  MethodChannel get _channel => FirebaseAdMob.instance._channel;
-
   /// Start loading this ad.
   Future<bool> load();
 
@@ -130,22 +130,30 @@ abstract class MobileAd {
   ///
   /// The [listener] will be notified when the ad has finished loading or fails
   /// to do so. An ad that fails to load will not be shown.
-  Future<bool> show() {
-    return _channel.invokeMethod("showAd", <String, dynamic>{'id': id});
+  ///
+  /// anchorOffset is the logical pixel offset from the edge of the screen (default 0.0)
+  /// anchorType place advert at top or bottom of screen (default bottom)
+  Future<bool> show(
+      {double anchorOffset = 0.0, AnchorType anchorType = AnchorType.bottom}) {
+    return _invokeBooleanMethod("showAd", <String, dynamic>{
+      'id': id,
+      'anchorOffset': anchorOffset.toString(),
+      'anchorType': anchorType == AnchorType.top ? "top" : "bottom"
+    });
   }
 
   /// Free the plugin resources associated with this ad.
   ///
-  /// Disposing a banner ad that's been shown removes it from the screen. Interstitial
-  /// ads can't be programatically removed from view.
+  /// Disposing a banner ad that's been shown removes it from the screen.
+  /// Interstitial ads can't be programmatically removed from view.
   Future<bool> dispose() {
     assert(_allAds[id] != null);
     _allAds[id] = null;
-    return _channel.invokeMethod("disposeAd", <String, dynamic>{'id': id});
+    return _invokeBooleanMethod("disposeAd", <String, dynamic>{'id': id});
   }
 
   Future<bool> _doLoad(String loadMethod) {
-    return _channel.invokeMethod(loadMethod, <String, dynamic>{
+    return _invokeBooleanMethod(loadMethod, <String, dynamic>{
       'id': id,
       'adUnitId': adUnitId,
       'targetingInfo': targetingInfo?.toJson(),
@@ -168,8 +176,7 @@ class BannerAd extends MobileAd {
     @required String adUnitId,
     MobileAdTargetingInfo targetingInfo,
     MobileAdListener listener,
-  })
-      : super(
+  }) : super(
             adUnitId: adUnitId,
             targetingInfo: targetingInfo,
             listener: listener);
@@ -194,8 +201,7 @@ class InterstitialAd extends MobileAd {
     String adUnitId,
     MobileAdTargetingInfo targetingInfo,
     MobileAdListener listener,
-  })
-      : super(
+  }) : super(
             adUnitId: adUnitId,
             targetingInfo: targetingInfo,
             listener: listener);
@@ -278,18 +284,16 @@ class RewardedVideoAd {
   /// Callback invoked for events in the rewarded video ad lifecycle.
   RewardedVideoAdListener listener;
 
-  MethodChannel get _channel => FirebaseAdMob.instance._channel;
-
   /// Shows a rewarded video ad if one has been loaded.
   Future<bool> show() {
-    return _channel.invokeMethod("showRewardedVideoAd");
+    return _invokeBooleanMethod("showRewardedVideoAd");
   }
 
   /// Loads a rewarded video ad using the provided ad unit ID.
   Future<bool> load(
       {@required String adUnitId, MobileAdTargetingInfo targetingInfo}) {
     assert(adUnitId.isNotEmpty);
-    return _channel.invokeMethod("loadRewardedVideoAd", <String, dynamic>{
+    return _invokeBooleanMethod("loadRewardedVideoAd", <String, dynamic>{
       'adUnitId': adUnitId,
       'targetingInfo': targetingInfo?.toJson(),
     });
@@ -369,7 +373,7 @@ class FirebaseAdMob {
       bool analyticsEnabled: false}) {
     assert(appId != null && appId.isNotEmpty);
     assert(analyticsEnabled != null);
-    return _channel.invokeMethod("initialize", <String, dynamic>{
+    return _invokeBooleanMethod("initialize", <String, dynamic>{
       'appId': appId,
       'trackingId': trackingId,
       'analyticsEnabled': analyticsEnabled,
@@ -404,4 +408,12 @@ class FirebaseAdMob {
 
     return new Future<Null>(null);
   }
+}
+
+Future<bool> _invokeBooleanMethod(String method, [dynamic arguments]) async {
+  final bool result = await FirebaseAdMob.instance._channel.invokeMethod(
+    method,
+    arguments,
+  );
+  return result;
 }

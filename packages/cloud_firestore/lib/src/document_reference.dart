@@ -28,7 +28,7 @@ class DocumentReference {
   /// Writes to the document referred to by this [DocumentReference]. If the
   /// document does not yet exist, it will be created. If you pass [SetOptions],
   /// the provided data will be merged into an existing document.
-  Future<Null> setData(Map<String, dynamic> data, [SetOptions options]) {
+  Future<void> setData(Map<String, dynamic> data, [SetOptions options]) {
     return Firestore.channel.invokeMethod(
       'DocumentReference#setData',
       <String, dynamic>{'path': path, 'data': data, 'options': options?._data},
@@ -38,7 +38,7 @@ class DocumentReference {
   /// Updates fields in the document referred to by this [DocumentReference].
   ///
   /// If no document exists yet, the update will fail.
-  Future<Null> updateData(Map<String, dynamic> data) {
+  Future<void> updateData(Map<String, dynamic> data) {
     return Firestore.channel.invokeMethod(
       'DocumentReference#updateData',
       <String, dynamic>{'path': path, 'data': data},
@@ -49,19 +49,19 @@ class DocumentReference {
   ///
   /// If no document exists, the read will return null.
   Future<DocumentSnapshot> get() async {
-    final Map<String, dynamic> data = await Firestore.channel.invokeMethod(
+    final Map<dynamic, dynamic> data = await Firestore.channel.invokeMethod(
       'DocumentReference#get',
       <String, dynamic>{'path': path},
     );
     return new DocumentSnapshot._(
       data['path'],
-      data['data'],
+      _asStringKeyedMap(data['data']),
       Firestore.instance,
     );
   }
 
   /// Deletes the document referred to by this [DocumentReference].
-  Future<Null> delete() {
+  Future<void> delete() {
     return Firestore.channel.invokeMethod(
       'DocumentReference#delete',
       <String, dynamic>{'path': path},
@@ -90,7 +90,7 @@ class DocumentReference {
           <String, dynamic>{
             'path': path,
           },
-        );
+        ).then<int>((dynamic result) => result);
         _handle.then((int handle) {
           Firestore._documentObservers[handle] = controller;
         });
