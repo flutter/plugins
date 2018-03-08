@@ -1,6 +1,10 @@
+## 0.3.0
+
+* **Breaking change**. Set SDK constraints to match the Flutter beta release.
+
 ## 0.2.1
 
-* Fix Dart 2 type error.
+* Fixed Dart 2 type error.
 
 ## 0.2.0
 

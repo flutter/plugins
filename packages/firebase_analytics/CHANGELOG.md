@@ -1,3 +1,7 @@
+## 0.3.0
+
+* **Breaking change**. Set SDK constraints to match the Flutter beta release.
+
 ## 0.2.3
 
 * Enabled use in Swift projects.
