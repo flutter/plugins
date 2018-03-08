@@ -48,9 +48,9 @@ abstract class MobileAd extends AdListener {
     allAds.put(id, this);
   }
 
-  static Banner createBanner(Integer id, AdSize size, Activity activity, MethodChannel channel) {
+  static Banner createBanner(Integer id, AdSize adSize, Activity activity, MethodChannel channel) {
     MobileAd ad = getAdForId(id);
-    return (ad != null) ? (Banner) ad : new Banner(id, size, activity, channel);
+    return (ad != null) ? (Banner) ad : new Banner(id, adSize, activity, channel);
   }
 
   static Interstitial createInterstitial(Integer id, Activity activity, MethodChannel channel) {
@@ -122,15 +122,12 @@ abstract class MobileAd extends AdListener {
   }
 
   static class Banner extends MobileAd {
-    static final int WIDTH_AND_HEIGHT = 0;
-    static final int SMART_BANNER = 1;
-
     private AdView adView;
-    private AdSize size;
+    private AdSize adSize;
 
-    private Banner(Integer id, AdSize size, Activity activity, MethodChannel channel) {
+    private Banner(Integer id, AdSize adSize, Activity activity, MethodChannel channel) {
       super(id, activity, channel);
-      this.size = size;
+      this.adSize = adSize;
     }
 
     @Override
@@ -139,7 +136,7 @@ abstract class MobileAd extends AdListener {
       status = Status.LOADING;
 
       adView = new AdView(activity);
-      adView.setAdSize(size);
+      adView.setAdSize(adSize);
       adView.setAdUnitId(adUnitId);
       adView.setAdListener(this);
 

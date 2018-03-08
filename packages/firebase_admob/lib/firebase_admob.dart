@@ -84,8 +84,8 @@ class MobileAdTargetingInfo {
 
 enum AnchorType { bottom, top }
 
-// The types of ad sizes supported for banners. The indices of these values are
-// used as parameters in method channel calls, so the order is important.
+// The types of ad sizes supported for banners. The names of the values are used
+// in MethodChannel calls to iOS and Android, and should not be changed.
 enum AdSizeType {
   WidthAndHeight,
   SmartBanner,
@@ -150,11 +150,11 @@ class AdSize {
   /// displaying device's screen. It will also set the banner's height using a
   /// calculation based on the displaying device's height. For more info see the
   /// [Android](https://developers.google.com/admob/android/banner) and
-  /// [iOS](https://developers.google.com/admob/ios/banner) guides.
+  /// [iOS](https://developers.google.com/admob/ios/banner) banner ad guides.
   static const AdSize smartBanner = const AdSize._(
     width: 0,
     height: 0,
-    adSizeType: AdSizeType.WidthAndHeight,
+    adSizeType: AdSizeType.SmartBanner,
   );
 }
 
@@ -245,7 +245,8 @@ class BannerAd extends MobileAd {
     @required this.size,
     MobileAdTargetingInfo targetingInfo,
     MobileAdListener listener,
-  }) : super(
+  })
+      : super(
             adUnitId: adUnitId,
             targetingInfo: targetingInfo,
             listener: listener);
@@ -258,7 +259,7 @@ class BannerAd extends MobileAd {
       'targetingInfo': targetingInfo?.toJson(),
       'width': size.width,
       'height': size.height,
-      'sizeType': size.adSizeType.index,
+      'adSizeType': size.adSizeType.toString(),
     });
   }
 }
@@ -279,7 +280,8 @@ class InterstitialAd extends MobileAd {
     String adUnitId,
     MobileAdTargetingInfo targetingInfo,
     MobileAdListener listener,
-  }) : super(
+  })
+      : super(
             adUnitId: adUnitId,
             targetingInfo: targetingInfo,
             listener: listener);

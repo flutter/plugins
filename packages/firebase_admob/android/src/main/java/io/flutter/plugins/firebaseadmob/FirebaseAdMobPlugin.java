@@ -56,23 +56,32 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
 
     int width = call.argument("width");
     int height = call.argument("height");
-    int sizeType = call.argument("sizeType");
-    if ((sizeType < 0) || (sizeType > 1) || ((sizeType == 0) && ((width <= 0) || (height <= 0)))) {
+    String adSizeType = call.argument("adSizeType");
+
+    if (!adSizeType.equals("AdSizeType.WidthAndHeight")
+        && !adSizeType.equals("AdSizeType.SmartBanner")) {
       String errMsg =
           String.format(
-              "an invalid AdSize (%d, %d, %d) was provided for banner id=%d",
-              width, height, sizeType, id);
+              "an invalid adSizeType (%s) was provided for banner id=%d", adSizeType, id);
+      result.error("invalid_adsizetype", errMsg, null);
+    }
+
+    if (adSizeType.equals("AdSizeType.WidthAndHeight") && (width <= 0 || height <= 0)) {
+      String errMsg =
+          String.format(
+              "an invalid AdSize (%d, %d) was provided for banner id=%d",
+              width, height, id);
       result.error("invalid_adsize", errMsg, null);
     }
 
-    AdSize size;
-    if (sizeType == MobileAd.Banner.SMART_BANNER) {
-      size = AdSize.SMART_BANNER;
+    AdSize adSize;
+    if (adSizeType.equals("AdSizeType.SmartBanner")) {
+      adSize = AdSize.SMART_BANNER;
     } else {
-      size = new AdSize(width, height);
+      adSize = new AdSize(width, height);
     }
 
-    MobileAd.Banner banner = MobileAd.createBanner(id, size, activity, channel);
+    MobileAd.Banner banner = MobileAd.createBanner(id, adSize, activity, channel);
 
     if (banner.status != MobileAd.Status.CREATED) {
       if (banner.status == MobileAd.Status.FAILED)
