@@ -99,15 +99,17 @@ int _anchorType;
 GADBannerView *_banner;
 GADAdSize _adSize;
 
-+ (instancetype)withId:(NSNumber *)mobileAdId adSize:(GADAdSize)adSize channel:(FlutterMethodChannel *)channel {
++ (instancetype)withId:(NSNumber *)mobileAdId
+                adSize:(GADAdSize)adSize
+               channel:(FlutterMethodChannel *)channel {
   FLTMobileAd *ad = [FLTMobileAd getAdForId:mobileAdId];
   return ad != nil ? (FLTBannerAd *)ad
-                   : [[FLTBannerAd alloc] initWithId:mobileAdId
-                                              adSize:adSize
-                                             channel:channel];
+                   : [[FLTBannerAd alloc] initWithId:mobileAdId adSize:adSize channel:channel];
 }
 
-- (instancetype) initWithId:mobileAdId adSize:(GADAdSize)adSize channel:(FlutterMethodChannel *)channel {
+- (instancetype)initWithId:mobileAdId
+                    adSize:(GADAdSize)adSize
+                   channel:(FlutterMethodChannel *)channel {
   self = [super initWithId:mobileAdId channel:channel];
   if (self) {
     _adSize = adSize;

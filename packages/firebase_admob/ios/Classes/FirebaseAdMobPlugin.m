@@ -65,9 +65,9 @@
 }
 
 - (void)callLoadBannerAdWithId:(NSNumber *)id
-                 channel:(FlutterMethodChannel *)channel
-                    call:(FlutterMethodCall *)call
-                  result:(FlutterResult)result {
+                       channel:(FlutterMethodChannel *)channel
+                          call:(FlutterMethodCall *)call
+                        result:(FlutterResult)result {
   NSString *adUnitId = (NSString *)call.arguments[@"adUnitId"];
   if (adUnitId == nil || [adUnitId length] == 0) {
     NSString *message =
@@ -76,8 +76,8 @@
     return;
   }
 
-  NSNumber *widthArg = (NSNumber*)call.arguments[@"width"];
-  NSNumber *heightArg = (NSNumber*)call.arguments[@"height"];
+  NSNumber *widthArg = (NSNumber *)call.arguments[@"width"];
+  NSNumber *heightArg = (NSNumber *)call.arguments[@"height"];
 
   if (widthArg == nil || heightArg == nil) {
     NSString *message =
@@ -86,12 +86,12 @@
     return;
   }
 
-  NSString *adSizeTypeArg = (NSString*)call.arguments[@"adSizeType"];
+  NSString *adSizeTypeArg = (NSString *)call.arguments[@"adSizeType"];
   FLTLogWarning(@"Size Type: %@", adSizeTypeArg);
-  if (adSizeTypeArg == nil ||
-      (![adSizeTypeArg isEqualToString:@"AdSizeType.SmartBanner"] && ![adSizeTypeArg isEqualToString:@"AdSizeType.WidthAndHeight"])) {
-    NSString *message =
-        [NSString stringWithFormat:@"a null or invalid ad size type was provided for banner id=%@", id];
+  if (adSizeTypeArg == nil || (![adSizeTypeArg isEqualToString:@"AdSizeType.SmartBanner"] &&
+                               ![adSizeTypeArg isEqualToString:@"AdSizeType.WidthAndHeight"])) {
+    NSString *message = [NSString
+        stringWithFormat:@"a null or invalid ad size type was provided for banner id=%@", id];
     result([FlutterError errorWithCode:@"invalid_adsizetype" message:message details:nil]);
     return;
   }
@@ -102,7 +102,7 @@
   if ([adSizeTypeArg isEqualToString:@"AdSizeType.WidthAndHeight"] && (width <= 0 || height <= 0)) {
     NSString *message =
         [NSString stringWithFormat:@"an invalid AdSize (%d, %d) was provided for banner id=%@",
-            width, height, id];
+                                   width, height, id];
     result([FlutterError errorWithCode:@"invalid_adsize" message:message details:nil]);
     return;
   }
@@ -118,9 +118,7 @@
     adSize = GADAdSizeFromCGSize(CGSizeMake(width, height));
   }
 
-  FLTBannerAd *banner = [FLTBannerAd withId:id
-                                     adSize:adSize
-                                    channel:self.channel];
+  FLTBannerAd *banner = [FLTBannerAd withId:id adSize:adSize channel:self.channel];
 
   if (banner.status != CREATED) {
     if (banner.status == FAILED) {
@@ -136,7 +134,9 @@
   result([NSNumber numberWithBool:YES]);
 }
 
-- (void)callLoadInterstitialAd:(FLTMobileAd *)ad call:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)callLoadInterstitialAd:(FLTMobileAd *)ad
+                          call:(FlutterMethodCall *)call
+                        result:(FlutterResult)result {
   if (ad.status != CREATED) {
     if (ad.status == FAILED) {
       NSString *message = [NSString stringWithFormat:@"cannot reload a failed ad=%@", ad];
@@ -266,8 +266,8 @@
     [self callLoadBannerAdWithId:mobileAdId channel:self.channel call:call result:result];
   } else if ([call.method isEqualToString:@"loadInterstitialAd"]) {
     [self callLoadInterstitialAd:[FLTInterstitialAd withId:mobileAdId channel:self.channel]
-                call:call
-              result:result];
+                            call:call
+                          result:result];
   } else if ([call.method isEqualToString:@"showAd"]) {
     [self callShowAd:mobileAdId call:call result:result];
   } else if ([call.method isEqualToString:@"disposeAd"]) {

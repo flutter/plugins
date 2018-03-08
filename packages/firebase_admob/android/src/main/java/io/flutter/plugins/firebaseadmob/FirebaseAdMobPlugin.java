@@ -47,7 +47,7 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
   }
 
   private void callLoadBannerAd(
-      int id, Activity activity, MethodChannel channel, MethodCall call,Result result) {
+      int id, Activity activity, MethodChannel channel, MethodCall call, Result result) {
     String adUnitId = call.argument("adUnitId");
     if (adUnitId == null || adUnitId.isEmpty()) {
       result.error("no_unit_id", "a null or empty adUnitId was provided for ad id=" + id, null);
@@ -61,16 +61,14 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
     if (!adSizeType.equals("AdSizeType.WidthAndHeight")
         && !adSizeType.equals("AdSizeType.SmartBanner")) {
       String errMsg =
-          String.format(
-              "an invalid adSizeType (%s) was provided for banner id=%d", adSizeType, id);
+          String.format("an invalid adSizeType (%s) was provided for banner id=%d", adSizeType, id);
       result.error("invalid_adsizetype", errMsg, null);
     }
 
     if (adSizeType.equals("AdSizeType.WidthAndHeight") && (width <= 0 || height <= 0)) {
       String errMsg =
           String.format(
-              "an invalid AdSize (%d, %d) was provided for banner id=%d",
-              width, height, id);
+              "an invalid AdSize (%d, %d) was provided for banner id=%d", width, height, id);
       result.error("invalid_adsize", errMsg, null);
     }
 
@@ -105,7 +103,8 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
 
     String adUnitId = call.argument("adUnitId");
     if (adUnitId == null || adUnitId.isEmpty()) {
-      result.error("no_adunit_id", "a null or empty adUnitId was provided for ad id=" + ad.id, null);
+      result.error(
+          "no_adunit_id", "a null or empty adUnitId was provided for ad id=" + ad.id, null);
       return;
     }
     Map<String, Object> targetingInfo = call.argument("targetingInfo");
