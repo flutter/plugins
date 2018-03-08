@@ -67,7 +67,7 @@ void main() {
           'targetingInfo': <String, String>{'requestAgent': 'flutter-alpha'},
           'width': 320,
           'height': 50,
-          'sizeType': 0,
+          'adSizeType': 'AdSizeType.WidthAndHeight',
         }),
         isMethodCall('showAd', arguments: <String, dynamic>{
           'id': id,
