@@ -245,8 +245,7 @@ class BannerAd extends MobileAd {
     @required this.size,
     MobileAdTargetingInfo targetingInfo,
     MobileAdListener listener,
-  })
-      : super(
+  }) : super(
             adUnitId: adUnitId,
             targetingInfo: targetingInfo,
             listener: listener);
@@ -280,8 +279,7 @@ class InterstitialAd extends MobileAd {
     String adUnitId,
     MobileAdTargetingInfo targetingInfo,
     MobileAdListener listener,
-  })
-      : super(
+  }) : super(
             adUnitId: adUnitId,
             targetingInfo: targetingInfo,
             listener: listener);
