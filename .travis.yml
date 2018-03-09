@@ -14,7 +14,7 @@ matrix:
             - libstdc++6
             - fonts-droid
       before_script:
-        - git clone https://github.com/flutter/flutter.git --depth 1
+        - git clone https://github.com/flutter/flutter.git
         - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
         - flutter doctor
         - pub global activate flutter_plugin_tools
@@ -37,7 +37,7 @@ matrix:
             - fonts-droid
             - clang-format-5.0
       before_script:
-        - git clone https://github.com/flutter/flutter.git --depth 1
+        - git clone https://github.com/flutter/flutter.git
         - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
         - flutter doctor
         - pub global activate flutter_plugin_tools
@@ -81,7 +81,7 @@ matrix:
         - export GRADLE_HOME=$PWD/gradle-4.1
         - export PATH=$GRADLE_HOME/bin:$PATH
         - gradle -v
-        - git clone https://github.com/flutter/flutter.git --depth 1
+        - git clone https://github.com/flutter/flutter.git
         - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
         - flutter doctor
         - pub global activate flutter_plugin_tools
@@ -99,7 +99,7 @@ matrix:
         - brew install ideviceinstaller
         - brew install ios-deploy
         - pod repo update
-        - git clone https://github.com/flutter/flutter.git --depth 1
+        - git clone https://github.com/flutter/flutter.git
         - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
         - flutter doctor
         - pub global activate flutter_plugin_tools

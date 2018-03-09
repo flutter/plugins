@@ -1,3 +1,7 @@
+## 0.2.0
+
+* **Breaking change**. Set SDK constraints to match the Flutter beta release.
+
 ## 0.1.1
 
 * Fixed warnings from the Dart 2.0 analyzer.

@@ -1,3 +1,7 @@
+## 0.1.0
+
+* **Breaking change**. Set SDK constraints to match the Flutter beta release.
+
 ## 0.0.4
 
 * Revert regression of `CameraController.capture()` introduced in v. 0.0.3.

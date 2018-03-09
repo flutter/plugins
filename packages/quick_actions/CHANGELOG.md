@@ -1,3 +1,7 @@
+## 0.2.0
+
+* **Breaking change**. Set SDK constraints to match the Flutter beta release.
+
 ## 0.1.1
 
 * Simplified and upgraded Android project template to Android SDK 27.
