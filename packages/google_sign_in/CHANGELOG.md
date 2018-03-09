@@ -1,3 +1,7 @@
+## 3.0.0
+
+* **Breaking change**. Set SDK constraints to match the Flutter beta release.
+
 ## 2.1.2
 
 * Added a Delegate interface (IDelegate) that can be implemented by clients in

@@ -1,6 +1,10 @@
-## 0.4.8
+## 0.5.1
 
 * Added wrapper to fetchProvidersForEmail
+
+## 0.5.0
+
+* **Breaking change**. Set SDK constraints to match the Flutter beta release.
 
 ## 0.4.7
 
