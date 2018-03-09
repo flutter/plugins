@@ -1,6 +1,6 @@
 ## 0.5.1
 
-* Added wrapper to fetchProvidersForEmail
+* Added support to fetchProvidersForEmail
 
 ## 0.5.0
 
