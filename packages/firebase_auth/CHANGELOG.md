@@ -1,3 +1,7 @@
+## 0.4.8
+
+* Added wrapper to fetchProvidersForEmail
+
 ## 0.4.7
 
 * Fixed Dart 2 type errors.
