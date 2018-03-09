@@ -1,3 +1,7 @@
+## 3.0.0
+
+* **Breaking change**. Set SDK constraints to match the Flutter beta release.
+
 ## 2.0.2
 
 * Fixed Dart 2 issue: `launch` now returns `Future<void>` instead of
