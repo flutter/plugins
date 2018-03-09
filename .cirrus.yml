@@ -1,0 +1,18 @@
+container:
+  image: cirrusci/flutter:latest
+
+task:
+  activate_script: pub global activate flutter_plugin_tools
+  matrix:
+    - name: test+format
+      install_script:
+        - wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+        - sudo apt-add-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-5.0 main"
+        - sudo apt-get update
+        - sudo apt-get install -y --allow-unauthenticated clang-format-5.0
+      format_script: ./script/plugin_tools.sh format --travis --clang-format=clang-format-5.0
+      test_script: ./script/plugin_tools.sh test
+    - name: analyze
+      script: ./script/plugin_tools.sh analyze
+    - name: build-apks
+      script: ./script/plugin_tools.sh build-examples --apk
