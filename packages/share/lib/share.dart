@@ -17,12 +17,9 @@ const MethodChannel _kChannel = const MethodChannel('plugins.flutter.io/share');
 /// May throw [PlatformException] or [FormatException]
 /// from [MethodChannel].
 Future<void> share(String text,
-    {String title = null,
-    String url = null,
-    String media = null,
-    String dialogTitle = null}) {
+    {String title, String media, String dialogTitle}) {
   assert(text != null && text.isNotEmpty);
-  return _kChannel.invokeMethod('share', {
+  return _kChannel.invokeMethod('share', <String, String>{
     "text": text,
     "title": title,
     "media": media,

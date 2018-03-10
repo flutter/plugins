@@ -46,7 +46,8 @@ class DemoAppState extends State<DemoApp> {
                       ? () {
                           share(text,
                               title: "Share Plugin Demo",
-                              media: "https://pbs.twimg.com/profile_images/760249570085314560/yCrkrbl3_400x400.jpg",
+                              media:
+                                  "https://pbs.twimg.com/profile_images/760249570085314560/yCrkrbl3_400x400.jpg",
                               dialogTitle: "A Demo Title");
                         }
                       : null,
