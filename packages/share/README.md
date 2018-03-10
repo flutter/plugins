@@ -22,3 +22,15 @@ Then invoke the static `share` method anywhere in your Dart code
 ``` dart
 share('check out my website https://example.com');
 ```
+
+## Additional Options on Android
+In Android platform you can share text along with an optional title and external file url. What exactly actually gets shared depends on the application the user chooses to complete the action. For example, the optional title is used with applications like Email.
+
+You can also specifiy an optional title for the Share dialog.
+
+``` dart
+share('This is the text content' ,
+    title: "Check Title" ,
+    media: "http://example.com/image.jpg" ,
+    dialogTitle: "Love It? Share It!");
+```
