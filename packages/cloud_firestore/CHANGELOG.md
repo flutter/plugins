@@ -1,3 +1,9 @@
+## 0.3.1
+
+* Add GeoPoint class
+* Allow for reading and writing DocumentReference, DateTime, and GeoPoint
+  values to and from Documents.
+
 ## 0.3.0
 
 * **Breaking change**. Set SDK constraints to match the Flutter beta release.
