@@ -182,7 +182,7 @@ class FirestoreMessageCodec extends StandardMessageCodec {
         return new GeoPoint(readValue(buffer), readValue(buffer));
       case _kDocumentReference:
         return Firestore.instance.document(readValue(buffer));
-      default: return super.readValueOfType(buffer);
+      default: return super.readValueOfType(type, buffer);
     }
   }
 }
