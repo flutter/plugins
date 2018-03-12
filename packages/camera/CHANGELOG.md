@@ -1,3 +1,7 @@
+## 0.1.1
+
+* Fix Dart 2 runtime error.
+
 ## 0.1.0
 
 * **Breaking change**. Set SDK constraints to match the Flutter beta release.
