@@ -11,7 +11,7 @@ class Firestore {
   @visibleForTesting
   static const MethodChannel channel = const MethodChannel(
     'plugins.flutter.io/cloud_firestore',
-    const StandardMethodCodec(const FirestoreCodec()),
+    const StandardMethodCodec(const FirestoreMessageCodec()),
   );
 
   static final Map<int, StreamController<QuerySnapshot>> _queryObservers =
