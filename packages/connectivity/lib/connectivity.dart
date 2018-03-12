@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 
 /// Connection Status Check Result
 ///
-/// Wifi: Device connected via Wi-Fi
+/// WiFi: Device connected via Wi-Fi
 /// Mobile: Device connected to cellular network
 /// None: Device not connected to any network
 enum ConnectivityResult { wifi, mobile, none }

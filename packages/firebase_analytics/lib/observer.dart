@@ -10,7 +10,7 @@ import 'firebase_analytics.dart';
 /// Signature for a function that extracts a screen name from [RouteSettings].
 ///
 /// Usually, the route name is not a plain string, and it may contains some
-/// unique ids that makes it difficult to agregate over them in Firebase
+/// unique ids that makes it difficult to aggregate over them in Firebase
 /// Analytics.
 typedef String ScreenNameExtractor(RouteSettings settings);
 

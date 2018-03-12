@@ -89,7 +89,7 @@ String get androidFingerprintSuccess => Intl.message('Fingerprint recognized.',
 
 String get androidCancelButton => Intl.message('Cancel',
     desc: 'Message showed on a button that the user can click to leave the '
-        'current dialog. It is used on Andorid side. Maxium 30 characters.');
+        'current dialog. It is used on Android side. Maximum 30 characters.');
 
 String get androidSignInTitle => Intl.message('Fingerprint Authentication',
     desc: 'Message showed as a title in a dialog which indicates the user '

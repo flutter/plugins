@@ -260,7 +260,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
                             @Override
                             public void error(
                                 String errorCode, String errorMessage, Object errorDetails) {
-                              // result.error(errorCode, errorMessage, errroDetails);
+                              // result.error(errorCode, errorMessage, errorDetails);
                               transactionTCS.setException(new Exception("Do transaction failed."));
                             }
 
