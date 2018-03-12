@@ -19,6 +19,13 @@ class DocumentReference {
   final Firestore _firestore;
   final List<String> _pathComponents;
 
+  @override
+  bool operator ==(dynamic o) =>
+      o is DocumentReference && o._firestore == _firestore && o.path == path;
+
+  @override
+  int get hashCode => hashList(_pathComponents);
+
   /// Slash-delimited path representing the database location of this query.
   String get path => _pathComponents.join('/');
 

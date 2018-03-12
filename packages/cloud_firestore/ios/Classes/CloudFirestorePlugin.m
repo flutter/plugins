@@ -114,6 +114,80 @@ NSDictionary *parseQuerySnapshot(FIRQuerySnapshot *snapshot) {
   };
 }
 
+const UInt8 DATE_TIME = 128;
+const UInt8 GEO_POINT = 129;
+const UInt8 DOCUMENT_REFERENCE = 130;
+
+@interface FirestoreWriter : FlutterStandardWriter
+- (void)writeValue:(id)value;
+@end
+
+@interface FirestoreWriter : FlutterStandardWriter
+- (void)writeValue:(id)value {
+  if ([value isKindOfClass:[NSDate class]]) {
+    [self writeByte:DATE_TIME];
+    NSDate* date = value;
+    NSTimeInterval time = date.timeIntervalSince1970;
+    SInt64 ms = (SInt64) (time * 1000.0);
+    [self writeBytes:&ms length:8];
+  } else if ([value isKindOfClass:[FIRGeoPoint class]]) {
+    FIRGeoPoint* geopoint = value;
+    [self writeByte:GEO_POINT];
+    [self writeValue:geopoint.latitude];
+    [self writeValue:geopoint.longitude];
+  } else if ([value isKindOfClass:[FIRDocumentReference]]){
+    FIRDocumentReference* documentReference = value;
+    NSString* documentPath = [documentReference path];
+    [self writeByte:DOCUMENT_REFERENCE];
+    [self writeValue:documentPath];
+  } else {
+    [super writeValue:value];
+  }
+}
+@end
+
+@interface FirestoreReader : FlutterStandardReader
+- (id)readValue:(UInt8)type;
+@end
+
+@implementation FirestoreReader
+- (id)readValue:(UInt8)type {
+  switch (type) {
+    case DATE_TIME: {
+      SInt64 value;
+      [self readBytes:&value length:8];
+      NSTimeInterval time = [NSNumber numberWithLong:value].doubleValue / 1000.0;
+      return [NSDate dateWithTimeIntervalSince1970:time];
+    }
+    case GEO_POINT: {
+      Float64 latitude;
+      Float64 longitude;
+      return [[FIRGeoPoint alloc] initWithLatitude:[self readValue] longitude:[self readValue]];
+    }
+    case DOCUMENT_REFERENCE: {
+      NSString* documentPath = [self readValue];
+      return [[FIRFirestore firestore] documentWithPath:documentPath];
+    }
+    default: return [super readValueOfType:type];
+  }
+}
+@end
+
+
+@interface FirestoreReaderWriter : FlutterStandardReaderWriter
+- (FlutterStandardWriter*)writerWithData:(NSMutableData*)data;
+- (FlutterStandardReader*)readerWithData:(NSData*)data;
+@end
+
+@implementation FirestoreReaderWriter
+- (FlutterStandardWriter*)writerWithData:(NSMutableData*)data {
+  return [[FirestoreWriter alloc] initWithData:data];
+}
+- (FlutterStandardReader*)readerWithData:(NSData*)data {
+  return [[FirestoreReader alloc] initWithData:data];
+}
+@end
+
 @interface FLTCloudFirestorePlugin ()
 @property(nonatomic, retain) FlutterMethodChannel *channel;
 @end
@@ -126,9 +200,11 @@ NSDictionary *parseQuerySnapshot(FIRQuerySnapshot *snapshot) {
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
+  ExtendedReaderWriter* extendedReaderWriter = [ExtendedReaderWriter new];
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/cloud_firestore"
-                                  binaryMessenger:[registrar messenger]];
+                                  binaryMessenger:[registrar messenger]
+                                            codec:[FlutterStandardMethodCodec withReaderWriter:FirestoreWriter]];
   FLTCloudFirestorePlugin *instance = [[FLTCloudFirestorePlugin alloc] init];
   instance.channel = channel;
   [registrar addMethodCallDelegate:instance channel:channel];

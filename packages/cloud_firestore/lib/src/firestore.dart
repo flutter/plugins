@@ -11,6 +11,7 @@ class Firestore {
   @visibleForTesting
   static const MethodChannel channel = const MethodChannel(
     'plugins.flutter.io/cloud_firestore',
+    const StandardMethodCodec(const FirestoreCodec()),
   );
 
   static final Map<int, StreamController<QuerySnapshot>> _queryObservers =
@@ -146,4 +147,55 @@ class Transaction {
       'data': data,
     });
   }
+}
+
+class FirestoreMessageCodec extends StandardMessageCodec {
+  const FirestoreMessageCodec();
+
+  static const int _kDateTime = 128;
+  static const int _kGeoPoint = 129;
+  static const int _kDocumentReference = 130;
+
+  @override
+  void writeValue(WriteBuffer buffer, dynamic value){
+    if (value is DateTime) {
+      buffer.putUint8(_kDateTime);
+      buffer.putInt64(value.millisecondsSinceEpoch);
+    } else if (value is GeoPoint) {
+      buffer.putUint8(_kGeoPoint);
+      writeValue(buffer, value.latitude);
+      writeValue(buffer, value.longitude);
+    } else if (value is DocumentReference) {
+      buffer.putUint8(_kDocumentReference);
+      writeValue(buffer, value.path);
+    } else {
+      super.writeValue(buffer, value);
+    }
+  }
+
+  @override
+  dynamic readValueOfType(int type, ReadBuffer buffer){
+    switch (buffer.getUint8()) {
+      case _kDateTime:
+        return new DateTime.fromMillisecondsSinceEpoch(buffer.getInt64());
+      case _kGeoPoint:
+        return new GeoPoint(readValue(buffer), readValue(buffer));
+      case _kDocumentReference:
+        return Firestore.instance.document(readValue(buffer));
+      default: return super.readValueOfType(buffer);
+    }
+  }
+}
+
+class GeoPoint {
+  final double latitude;
+  final double longitude;
+  const GeoPoint(this.latitude, this.longitude);
+
+  @override
+  bool operator ==(dynamic o) =>
+      o is GeoPoint && o.latitude == latitude && o.longitude == longitude;
+
+  @override
+  int get hashCode => hashValues(latitude, longitude);
 }
