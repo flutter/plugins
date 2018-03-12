@@ -104,7 +104,7 @@ public class QuickActionsPlugin implements MethodCallHandler {
   /**
    * Handle the shortcut and immediately closes the activity.
    *
-   * <p>Needs to be invokable by Android system; hence it is public.
+   * <p>Needs to be invocable by Android system; hence it is public.
    */
   public static class ShortcutHandlerActivity extends Activity {
 

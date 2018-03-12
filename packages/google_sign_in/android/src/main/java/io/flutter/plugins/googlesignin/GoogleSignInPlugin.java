@@ -145,7 +145,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
    *
    * <p>All methods in this class assume that they are run to completion before any other method is
    * invoked. In this context, "run to completion" means that their {@link Result} argument has been
-   * completed (either successfully or in error). This class provides no synchronization consructs
+   * completed (either successfully or in error). This class provides no synchronization constructs
    * to guarantee such behavior; callers are responsible for providing such guarantees.
    */
   public static final class Delegate implements IDelegate {
