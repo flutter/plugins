@@ -204,7 +204,7 @@ const UInt8 DOCUMENT_REFERENCE = 130;
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/cloud_firestore"
                                   binaryMessenger:[registrar messenger]
-                                            codec:[FlutterStandardMethodCodec withReaderWriter:FirestoreWriter]];
+                                            codec:[FlutterStandardMethodCodec codecWithReaderWriter:FirestoreWriter]];
   FLTCloudFirestorePlugin *instance = [[FLTCloudFirestorePlugin alloc] init];
   instance.channel = channel;
   [registrar addMethodCallDelegate:instance channel:channel];
