@@ -171,7 +171,8 @@ public class ImagePickerPlugin
         activity.startActivityForResult(
             cameraModule.getCameraIntent(activity), REQUEST_CODE_CAMERA);
       } else {
-        pendingResult.error("no_permissions", "image_picker plugin requires camera permissions", null);
+        pendingResult.error(
+            "no_permissions", "image_picker plugin requires camera permissions", null);
         pendingResult = null;
         methodCall = null;
       }
