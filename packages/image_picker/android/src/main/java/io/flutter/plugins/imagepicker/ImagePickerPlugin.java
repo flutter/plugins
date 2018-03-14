@@ -24,6 +24,7 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.common.PluginRegistry.ActivityResultListener;
+import io.flutter.plugin.common.PluginRegistry.RequestPermissionsResultListener;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -33,7 +34,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /** Location Plugin */
-public class ImagePickerPlugin implements MethodCallHandler, ActivityResultListener {
+public class ImagePickerPlugin
+    implements MethodCallHandler, ActivityResultListener, RequestPermissionsResultListener {
   private static String TAG = "ImagePicker";
   private static final String CHANNEL = "image_picker";
 
@@ -57,6 +59,7 @@ public class ImagePickerPlugin implements MethodCallHandler, ActivityResultListe
     final MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL);
     final ImagePickerPlugin instance = new ImagePickerPlugin(registrar);
     registrar.addActivityResultListener(instance);
+    registrar.addRequestPermissionsResultListener(instance);
     channel.setMethodCallHandler(instance);
   }
 
@@ -102,8 +105,6 @@ public class ImagePickerPlugin implements MethodCallHandler, ActivityResultListe
                   Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE
                 },
                 REQUEST_PERMISSIONS);
-            pendingResult = null;
-            methodCall = null;
             break;
           }
           activity.startActivityForResult(
@@ -150,6 +151,29 @@ public class ImagePickerPlugin implements MethodCallHandler, ActivityResultListe
 
       pendingResult = null;
       methodCall = null;
+      return true;
+    }
+    return false;
+  }
+
+  @Override
+  public boolean onRequestPermissionsResult(
+      int requestCode, String[] permissions, int[] grantResults) {
+    if (requestCode == REQUEST_PERMISSIONS) {
+      if (grantResults.length == 2
+          && grantResults[0] == PackageManager.PERMISSION_GRANTED
+          && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+        Activity activity = registrar.activity();
+        if (activity == null) {
+          pendingResult.error(
+              "no_activity", "image_picker plugin requires a foreground activity.", null);
+        }
+        activity.startActivityForResult(
+            cameraModule.getCameraIntent(activity), REQUEST_CODE_CAMERA);
+      } else {
+        pendingResult = null;
+        methodCall = null;
+      }
       return true;
     }
     return false;
