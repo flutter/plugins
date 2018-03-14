@@ -58,7 +58,7 @@ void main() {
                   ),
                 ),
                 (_) {
-                  updatedValue = channel.codec.decodeEnvelope(_)['value'];
+                  updatedValue = channel.codec.decodeEnvelope(_)['value'].cast<String, dynamic>();
                 },
               );
             }
