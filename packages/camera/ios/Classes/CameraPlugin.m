@@ -66,6 +66,12 @@
 @property(nonatomic) FlutterEventChannel *eventChannel;
 @property(nonatomic) FlutterEventSink eventSink;
 @property(readonly, nonatomic) AVCaptureSession *captureSession;
+@property(readonly, nonatomic) AVAssetWriter *assetWriter;
+@property(readonly, nonatomic) AVAssetWriterInput *assetWriterInput;
+@property(readonly, nonatomic) AVAssetWriterInputPixelBufferAdaptor *pixelBufferAdaptor;
+@property(readonly, nonatomic) CMTime *frameTime;
+@property(readonly, nonatomic)  BOOL recording;
+@property(readonly, nonatomic)  int64_t frameNumber;
 @property(readonly, nonatomic) AVCaptureDevice *captureDevice;
 @property(readonly, nonatomic) AVCapturePhotoOutput *capturePhotoOutput;
 @property(readonly) CVPixelBufferRef volatile latestPixelBuffer;
@@ -78,6 +84,8 @@
 - (void)start;
 - (void)stop;
 - (void)captureToFile:(NSString *)filename result:(FlutterResult)result;
+- (void)captureToVid:(NSString *)filename;
+- (void)stopCapture:(NSString *)filename;
 @end
 
 @implementation FLTCam
@@ -87,6 +95,7 @@
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
   _captureSession = [[AVCaptureSession alloc] init];
+  _assetWriter = nil ;
   AVCaptureSessionPreset preset;
   if ([resolutionPreset isEqualToString:@"high"]) {
     preset = AVCaptureSessionPresetHigh;
@@ -106,6 +115,9 @@
     *error = localError;
     return nil;
   }
+  _frameNumber = 0;
+  _recording = false;
+    _frameTime = nil;
   CMVideoDimensions dimensions =
       CMVideoFormatDescriptionGetDimensions([[_captureDevice activeFormat] formatDescription]);
   _previewSize = CGSizeMake(dimensions.width, dimensions.height);
@@ -115,6 +127,9 @@
       @{(NSString *)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_32BGRA) };
   [output setAlwaysDiscardsLateVideoFrames:YES];
   [output setSampleBufferDelegate:self queue:dispatch_get_main_queue()];
+
+
+
 
   AVCaptureConnection *connection =
       [AVCaptureConnection connectionWithInputPorts:input.ports output:output];
@@ -127,6 +142,90 @@
   [_captureSession addConnection:connection];
   _capturePhotoOutput = [AVCapturePhotoOutput new];
   [_captureSession addOutput:_capturePhotoOutput];
+
+    // AVCaptureMovieFileOutput *movieOutput = [AVCaptureMovieFileOutput new];
+    // if ([_captureSession canAddOutput:movieOutput]) {
+    //     [_captureSession addOutput:movieOutput];
+    //     NSLog(@"We can capture video");
+    // }
+    // else {
+    //     // Handle the failure.
+    //     NSLog(@"No capture video");
+    // }
+
+
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *basePath = paths.firstObject;
+
+
+
+
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateFormat:@"dd-MM-yyyy--HHmmss"];
+
+    NSDate *currentDate = [NSDate date];
+    NSString *dateString = [formatter stringFromDate:currentDate];
+
+
+
+    //NSLog(@"BASEPATH -  %@", basePath);
+
+    NSArray *mPath = [NSArray arrayWithObjects: basePath , @"/movie-", dateString , @".mp4" , nil];
+    NSString *moviePath = [mPath componentsJoinedByString:@""] ;
+
+    NSLog(@"Saved:  %@",moviePath);
+    //NSString *moviePath = [basePath stringByAppendingPathComponent: @"/movie0.mp4" ];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:moviePath])
+    {
+        NSLog(@"The PATH exists removing file: %@", moviePath);
+        [[NSFileManager defaultManager] removeItemAtPath:moviePath error:nil];
+    }
+    /* to prepare for output; I'll output 640x480 in H.264, via an asset writer */
+    NSDictionary *outputSettings =
+    [NSDictionary dictionaryWithObjectsAndKeys:
+
+     [NSNumber numberWithInt:dimensions.height], AVVideoWidthKey,
+     [NSNumber numberWithInt:dimensions.width], AVVideoHeightKey,
+     AVVideoCodecH264, AVVideoCodecKey,
+
+     nil];
+
+    // _assetWriterInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeVideo outputSettings:outputSettings];
+    _assetWriterInput = [[AVAssetWriterInput alloc] initWithMediaType:AVMediaTypeVideo outputSettings:outputSettings];
+    /* I'm going to push pixel buffers to it, so will need a
+     AVAssetWriterPixelBufferAdaptor, to expect the same 32BGRA input as I've
+     asked the AVCaptureVideDataOutput to supply */
+    _pixelBufferAdaptor =
+    [[AVAssetWriterInputPixelBufferAdaptor alloc]
+     initWithAssetWriterInput: _assetWriterInput
+     sourcePixelBufferAttributes:
+     [NSDictionary dictionaryWithObjectsAndKeys:
+      [NSNumber numberWithInt:kCVPixelFormatType_32BGRA],
+      kCVPixelBufferPixelFormatTypeKey,
+      nil]];
+
+    NSError *movieError = nil;
+    NSURL *url = [NSURL fileURLWithPath:moviePath];;
+    _assetWriter = [AVAssetWriter
+                    assetWriterWithURL:url
+                    fileType:AVFileTypeMPEG4
+                    error:&movieError];
+
+    if (movieError != nil)
+
+    {
+        NSLog(@"Error allocating video writer - %@", [movieError localizedDescription]);
+    }
+
+    NSParameterAssert(_assetWriter);
+    //AVAssetWriterInput *videoInput = [[AVAssetWriterInput alloc] initWithMediaType:AVMediaTypeVideo outputSettings:outputSettings];
+    _assetWriterInput.expectsMediaDataInRealTime = YES;
+
+    if ([_assetWriter canAddInput:_assetWriterInput]) {
+        NSLog(@"Yes we have saved the AVAssetWriter INPUT");
+        [_assetWriter addInput:_assetWriterInput];
+    }
+  //  _frameTime = [CMT init];
   return self;
 }
 
@@ -145,6 +244,52 @@
                       delegate:[[FLTSavePhotoDelegate alloc] initWithPath:path result:result]];
 }
 
+
+- (void)captureToVid:(NSString *)path {
+
+  NSLog(@"File Location: %@", path);
+
+
+  NSError *error = nil;
+
+    BOOL success = [_assetWriter startWriting];
+    [_assetWriter startSessionAtSourceTime:CMTimeMake(_frameNumber, 25)];
+
+    if (!success) {
+        error = _assetWriter.error;
+        _recording = false;
+    } else {
+
+        _recording = true;
+
+    }
+
+
+
+}
+
+- (void)stopCapture:(NSString *)path {
+
+    [_assetWriterInput markAsFinished];
+    NSLog(@"Stop Capture: %@", path);
+    [_assetWriter finishWritingWithCompletionHandler:^{
+        @synchronized( self )
+        {
+            NSError *error = _assetWriter.error;
+            if(error){
+                NSLog(@"error finishWriting: %@", error);
+                //_recording = true;
+            }
+            else {
+                NSLog(@"no errors");
+                _recording = false;
+            }
+        }
+    }];
+
+
+}
+
 - (void)captureOutput:(AVCaptureOutput *)output
     didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
            fromConnection:(AVCaptureConnection *)connection {
@@ -154,6 +299,39 @@
   while (!OSAtomicCompareAndSwapPtrBarrier(old, newBuffer, (void **)&_latestPixelBuffer)) {
     old = _latestPixelBuffer;
   }
+
+
+//    ::::Alternate method reference code::::
+//    if(!_haveStartedSession && mediaType == AVMediaTypeVideo) {
+//        [_assetWriter startSessionAtSourceTime:CMSampleBufferGetPresentationTimeStamp(sampleBuffer)];
+//        _haveStartedSession = YES;
+//    }
+//
+//    AVAssetWriterInput *input = ( mediaType == AVMediaTypeVideo ) ? _videoInput : _audioInput;
+//
+//    if(input.readyForMoreMediaData){
+//        BOOL success = [input appendSampleBuffer:sampleBuffer];
+//        if (!success){
+//            NSError *error = _assetWriter.error;
+//            @synchronized(self){
+//                [self transitionToStatus:WriterStatusFailed error:error];
+//            }
+//        }
+//    } else {
+//        NSLog( @"%@ input not ready for more media data, dropping buffer", mediaType );
+//    }
+//[_assetWriter startSessionAtSourceTime:CMSampleBufferGetPresentationTimeStamp(sampleBuffer)];
+//CMSampleBufferGetPresentationTimeStamp(sampleBuffer));
+//    _frameTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer);
+
+
+    if(_recording){
+        if(_assetWriterInput.readyForMoreMediaData)
+            [_pixelBufferAdaptor appendPixelBuffer:newBuffer
+                              withPresentationTime:CMTimeMake(_frameNumber, 25)];
+        //NSLog([NSString stringWithFormat:@"%d", _frameNumber]);
+        _frameNumber++;
+    }
   if (old != nil) {
     CFRelease(old);
   }
@@ -316,11 +494,13 @@
         pathv = call.arguments[@"path"];
         NSArray *hello2 = [NSArray arrayWithObjects:  @"VideoStart call on iOS: " , pathv , nil];
         NSString *msg2 = [hello2 componentsJoinedByString:@" "] ;
+        [cam captureToVid:call.arguments[@"path"]];
 
         result(msg2 );
     } else if ([@"videostop" isEqualToString:call.method]) {
         NSArray *hello3 = [NSArray arrayWithObjects:  @"VideoStop call on iOS: " , pathv , nil];
         NSString *msg3 = [hello3 componentsJoinedByString:@" "] ;
+        [cam stopCapture:call.arguments[@"path"]];
         result(msg3 );
     } else {
       result(FlutterMethodNotImplemented);

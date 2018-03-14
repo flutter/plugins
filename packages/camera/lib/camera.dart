@@ -299,6 +299,7 @@ class CameraController extends ValueNotifier<CameraValue> {
       );
     }
     try {
+      print(_textureId);
       value = value.copyWith(videoOn: true);
       final String videofile = await _channel.invokeMethod(
         'videostart',

@@ -170,10 +170,14 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
           new Padding(
             padding: const EdgeInsets.all(5.0),
             child: new Row(
-            mainAxisAlignment: MainAxisAlignment.start ,
+            mainAxisAlignment: MainAxisAlignment.center ,
 
             // add the controls to the app
-            children: controlsChildren
+            children: recording ?
+            <Widget>[
+              const Text('Recoding in progress ...'),
+            ]
+              : controlsChildren ,
 
           ),
         ),
@@ -219,7 +223,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
   void videoStart() {
 
     videostart();
-
+    recording = true;
       setState(
         () {
           if (!controller.value.videoOn) {
@@ -234,11 +238,12 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
   void videoStop() {
 
      videostop();
+     recording = false;
 
       setState(
         () {
            if (controller.value.videoOn) {
-            recording = false;
+          //  recording = false;
           }
         },
       );
@@ -294,7 +299,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
 
   // UI for pause/play button
   Widget playPauseButton() {
-    return new FlatButton(
+    return recording ? null : new FlatButton(
       onPressed: () {
         setState(
           () {
@@ -316,7 +321,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
     if (controller.value.isStarted) {
 
 // at the moment this section of filename is dummy and not used in the final output
-     final Directory tempDir = await getTemporaryDirectory();
+     final Directory tempDir = await getApplicationDocumentsDirectory();
      if (!mounted) {
        return;
      }
@@ -362,7 +367,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
 // capture call to save a JPEG image
   Future<Null> capture() async {
     if (controller.value.isStarted) {
-      final Directory tempDir = await getTemporaryDirectory();
+      final Directory tempDir = await getApplicationDocumentsDirectory();
       if (!mounted) {
         return;
       }
