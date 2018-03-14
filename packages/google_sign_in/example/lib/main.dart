@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:convert' show JSON;
+import 'dart:convert' show json;
 
 import "package:http/http.dart" as http;
 import 'package:flutter/material.dart';
@@ -65,7 +65,7 @@ class SignInDemoState extends State<SignInDemo> {
       print('People API ${response.statusCode} response: ${response.body}');
       return;
     }
-    final Map<String, dynamic> data = JSON.decode(response.body);
+    final Map<String, dynamic> data = json.decode(response.body);
     final String namedContact = _pickFirstNamedContact(data);
     setState(() {
       if (namedContact != null) {
