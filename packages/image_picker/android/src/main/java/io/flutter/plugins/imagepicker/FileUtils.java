@@ -9,14 +9,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.channels.FileChannel;
 
 /*
  * Copyright (C) 2007-2008 OpenIntents.org
@@ -100,25 +93,6 @@ class FileUtils {
         }
 
         return null;
-    }
-
-    public static void copyFile(@NonNull String pathFrom, @NonNull String pathTo) throws IOException {
-        if (pathFrom.equalsIgnoreCase(pathTo)) {
-            return;
-        }
-
-        FileChannel outputChannel = null;
-        FileChannel inputChannel = null;
-
-        try {
-            inputChannel = new FileInputStream(new File(pathFrom)).getChannel();
-            outputChannel = new FileOutputStream(new File(pathTo)).getChannel();
-            inputChannel.transferTo(0, inputChannel.size(), outputChannel);
-            inputChannel.close();
-        } finally {
-            if (inputChannel != null) inputChannel.close();
-            if (outputChannel != null) outputChannel.close();
-        }
     }
 
     private static String getDataColumn(Context context, Uri uri, String selection,

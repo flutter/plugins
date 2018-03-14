@@ -13,7 +13,7 @@ enum ImageSource {
   /// Opens up the device camera, letting the user to take a new picture.
   camera,
 
-  /// Opens the users photo gallery.
+  /// Opens the user's photo gallery.
   gallery,
 }
 

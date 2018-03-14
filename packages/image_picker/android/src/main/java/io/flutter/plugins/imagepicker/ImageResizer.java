@@ -53,15 +53,15 @@ class ImageResizer {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         scaledBmp.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
 
-        throw new RuntimeException(path);
-        /*
-        String scaledCopyPath = path; //path.replace(image.getName(), "scaled_" + image.getName())
-        File imageFile = new File(scaledCopyPath);
+        String[] pathParts = path.split("/");
+        String imageName = pathParts[pathParts.length - 1];
+        String scaledCopyPath = path.replace(imageName, "scaled_" + imageName);
 
+        File imageFile = new File(scaledCopyPath);
         FileOutputStream fileOutput = new FileOutputStream(imageFile);
         fileOutput.write(outputStream.toByteArray());
         fileOutput.close();
 
-        return imageFile;*/
+        return imageFile;
     }
 }
