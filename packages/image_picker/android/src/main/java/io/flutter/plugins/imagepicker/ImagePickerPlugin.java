@@ -4,12 +4,16 @@
 
 package io.flutter.plugins.imagepicker;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.util.Log;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import com.esafirm.imagepicker.features.ImagePicker;
 import com.esafirm.imagepicker.features.camera.DefaultCameraModule;
 import com.esafirm.imagepicker.features.camera.OnImageReadyListener;
@@ -35,7 +39,8 @@ public class ImagePickerPlugin implements MethodCallHandler, ActivityResultListe
 
   public static final int REQUEST_CODE_PICK = 2342;
   public static final int REQUEST_CODE_CAMERA = 2343;
-
+  public static final int REQUEST_PERMISSIONS = 2345;
+      
   private static final int SOURCE_ASK_USER = 0;
   private static final int SOURCE_CAMERA = 1;
   private static final int SOURCE_GALLERY = 2;
@@ -86,6 +91,14 @@ public class ImagePickerPlugin implements MethodCallHandler, ActivityResultListe
           ImagePicker.create(activity).single().showCamera(false).start(REQUEST_CODE_PICK);
           break;
         case SOURCE_CAMERA:
+          if (ContextCompat.checkSelfPermission(activity, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(activity,
+                new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSIONS);
+            pendingResult = null;
+            methodCall = null;
+            break;
+          }
           activity.startActivityForResult(
               cameraModule.getCameraIntent(activity), REQUEST_CODE_CAMERA);
           break;
