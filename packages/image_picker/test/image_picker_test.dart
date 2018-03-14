@@ -8,7 +8,8 @@ import 'package:image_picker/image_picker.dart';
 
 void main() {
   group('$ImagePicker', () {
-    const MethodChannel channel = const MethodChannel('plugins.flutter.io/image_picker');
+    const MethodChannel channel =
+        const MethodChannel('plugins.flutter.io/image_picker');
 
     final List<MethodCall> log = <MethodCall>[];
 

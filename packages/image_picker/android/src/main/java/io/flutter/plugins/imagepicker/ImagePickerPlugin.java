@@ -9,24 +9,23 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
-
 import com.esafirm.imagepicker.features.camera.DefaultCameraModule;
 import com.esafirm.imagepicker.features.camera.OnImageReadyListener;
 import com.esafirm.imagepicker.model.Image;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.common.PluginRegistry.ActivityResultListener;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
-public class ImagePickerPlugin implements MethodCallHandler,
-        ActivityResultListener, PluginRegistry.RequestPermissionsResultListener {
+public class ImagePickerPlugin
+    implements MethodCallHandler,
+        ActivityResultListener,
+        PluginRegistry.RequestPermissionsResultListener {
   private static final String CHANNEL = "plugins.flutter.io/image_picker";
 
   private static final int REQUEST_CODE_PICK = 2342;
@@ -49,11 +48,8 @@ public class ImagePickerPlugin implements MethodCallHandler,
 
   public static void registerWith(PluginRegistry.Registrar registrar) {
     final MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL);
-    final ImagePickerPlugin instance = new ImagePickerPlugin(
-            registrar,
-            new ImageResizer(),
-            new ExifDataCopier()
-    );
+    final ImagePickerPlugin instance =
+        new ImagePickerPlugin(registrar, new ImageResizer(), new ExifDataCopier());
 
     registrar.addActivityResultListener(instance);
     registrar.addRequestPermissionsResultListener(instance);
@@ -62,10 +58,9 @@ public class ImagePickerPlugin implements MethodCallHandler,
   }
 
   private ImagePickerPlugin(
-          PluginRegistry.Registrar registrar,
-          ImageResizer imageResizer,
-          ExifDataCopier exifDataCopier
-  ) {
+      PluginRegistry.Registrar registrar,
+      ImageResizer imageResizer,
+      ExifDataCopier exifDataCopier) {
     this.registrar = registrar;
     this.imageResizer = imageResizer;
     this.exifDataCopier = exifDataCopier;
@@ -145,10 +140,9 @@ public class ImagePickerPlugin implements MethodCallHandler,
   }
 
   private void pickImageFromGallery(Activity activity) {
-    boolean hasPermission = ActivityCompat.checkSelfPermission(
-            activity,
-            Manifest.permission.READ_EXTERNAL_STORAGE
-    ) == PackageManager.PERMISSION_GRANTED;
+    boolean hasPermission =
+        ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE)
+            == PackageManager.PERMISSION_GRANTED;
 
     if (hasPermission) {
       Intent pickImageIntent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -162,16 +156,16 @@ public class ImagePickerPlugin implements MethodCallHandler,
 
   private void requestReadExternalStoragePermission() {
     ActivityCompat.requestPermissions(
-            registrar.activity(),
-            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-            PERMISSION_REQUEST_CODE_EXTERNAL_STORAGE
-    );
+        registrar.activity(),
+        new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
+        PERMISSION_REQUEST_CODE_EXTERNAL_STORAGE);
   }
 
   @Override
-  public boolean onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+  public boolean onRequestPermissionsResult(
+      int requestCode, String[] permissions, int[] grantResults) {
     if (requestCode == PERMISSION_REQUEST_CODE_EXTERNAL_STORAGE
-            && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
       pickImageFromGallery(registrar.activity());
     }
 
