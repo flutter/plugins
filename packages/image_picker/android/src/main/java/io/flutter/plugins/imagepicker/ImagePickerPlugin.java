@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/** Location Plugin */
+/** ImagePicker Plugin */
 public class ImagePickerPlugin
     implements MethodCallHandler, ActivityResultListener, RequestPermissionsResultListener {
   private static String TAG = "ImagePicker";
