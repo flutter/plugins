@@ -13,9 +13,9 @@ task:
         - sudo apt-add-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-5.0 main"
         - sudo apt-get update
         - sudo apt-get install -y --allow-unauthenticated clang-format-5.0
-      format_script: ./script/plugin_tools.sh format --travis --clang-format=clang-format-5.0
-      test_script: ./script/plugin_tools.sh test
+      format_script: ./script/incremental_build.sh format --travis --clang-format=clang-format-5.0
+      test_script: ./script/incremental_build.sh test
     - name: analyze
-      script: ./script/plugin_tools.sh analyze
+      script: ./script/incremental_build.sh analyze
     - name: build-apks
-      script: ./script/plugin_tools.sh build-examples --apk
+      script: ./script/incremental_build.sh build-examples --apk
