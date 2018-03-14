@@ -44,11 +44,12 @@ class _MyHomePageState extends State<MyHomePage> {
           child: new FutureBuilder<File>(
               future: _imageFile,
               builder: (BuildContext context, AsyncSnapshot<File> snapshot) {
-                if (snapshot.connectionState == ConnectionState.done && snapshot.error == null) {
+                if (snapshot.connectionState == ConnectionState.done &&
+                    snapshot.error == null) {
                   return new Image.file(snapshot.data);
                 } else if (snapshot.error != null) {
                   return const Text('error picking image.');
-                } else  {
+                } else {
                   return const Text('You have not yet picked an image.');
                 }
               })),
