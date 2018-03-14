@@ -4,17 +4,18 @@
 
 package io.flutter.plugins.imagepicker;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
 
-import com.esafirm.imagepicker.features.ImagePicker;
 import com.esafirm.imagepicker.features.camera.DefaultCameraModule;
 import com.esafirm.imagepicker.features.camera.OnImageReadyListener;
 import com.esafirm.imagepicker.model.Image;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import io.flutter.plugin.common.MethodCall;
@@ -24,15 +25,17 @@ import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.common.PluginRegistry.ActivityResultListener;
 
-public class ImagePickerPlugin implements MethodCallHandler, ActivityResultListener {
+public class ImagePickerPlugin implements MethodCallHandler,
+        ActivityResultListener, PluginRegistry.RequestPermissionsResultListener {
   private static final String CHANNEL = "plugins.flutter.io/image_picker";
 
-  public static final int REQUEST_CODE_PICK = 2342;
-  public static final int REQUEST_CODE_CAMERA = 2343;
+  private static final int REQUEST_CODE_PICK = 2342;
+  private static final int REQUEST_CODE_CAMERA = 2343;
 
-  private static final int SOURCE_ASK_USER = 0;
-  private static final int SOURCE_CAMERA = 1;
-  private static final int SOURCE_GALLERY = 2;
+  private static final int PERMISSION_REQUEST_CODE_EXTERNAL_STORAGE = 2344;
+
+  private static final int SOURCE_CAMERA = 0;
+  private static final int SOURCE_GALLERY = 1;
 
   private static final DefaultCameraModule cameraModule = new DefaultCameraModule();
 
@@ -53,6 +56,8 @@ public class ImagePickerPlugin implements MethodCallHandler, ActivityResultListe
     );
 
     registrar.addActivityResultListener(instance);
+    registrar.addRequestPermissionsResultListener(instance);
+
     channel.setMethodCallHandler(instance);
   }
 
@@ -86,11 +91,8 @@ public class ImagePickerPlugin implements MethodCallHandler, ActivityResultListe
       int imageSource = call.argument("source");
 
       switch (imageSource) {
-        case SOURCE_ASK_USER:
-          ImagePicker.create(activity).single().start(REQUEST_CODE_PICK);
-          break;
         case SOURCE_GALLERY:
-          ImagePicker.create(activity).single().showCamera(false).start(REQUEST_CODE_PICK);
+          pickImageFromGallery(activity);
           break;
         case SOURCE_CAMERA:
           activity.startActivityForResult(
@@ -108,8 +110,8 @@ public class ImagePickerPlugin implements MethodCallHandler, ActivityResultListe
   public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
     if (requestCode == REQUEST_CODE_PICK) {
       if (resultCode == Activity.RESULT_OK && data != null) {
-        ArrayList<Image> images = (ArrayList<Image>) ImagePicker.getImages(data);
-        handleResult(images.get(0));
+        String path = FileUtils.getPathFromUri(registrar.activity(), data.getData());
+        handleResult(path);
         return true;
       } else if (resultCode != Activity.RESULT_CANCELED) {
         pendingResult.error("PICK_ERROR", "Error picking image", null);
@@ -127,7 +129,7 @@ public class ImagePickerPlugin implements MethodCallHandler, ActivityResultListe
             new OnImageReadyListener() {
               @Override
               public void onImageReady(List<Image> images) {
-                handleResult(images.get(0));
+                handleResult(images.get(0).getPath());
               }
             });
         return true;
@@ -142,18 +144,52 @@ public class ImagePickerPlugin implements MethodCallHandler, ActivityResultListe
     return false;
   }
 
-  private void handleResult(Image image) {
+  private void pickImageFromGallery(Activity activity) {
+    boolean hasPermission = ActivityCompat.checkSelfPermission(
+            activity,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+    ) == PackageManager.PERMISSION_GRANTED;
+
+    if (hasPermission) {
+      Intent pickImageIntent = new Intent(Intent.ACTION_GET_CONTENT);
+      pickImageIntent.setType("image/*");
+
+      activity.startActivityForResult(pickImageIntent, REQUEST_CODE_PICK);
+    } else {
+      requestReadExternalStoragePermission();
+    }
+  }
+
+  private void requestReadExternalStoragePermission() {
+    ActivityCompat.requestPermissions(
+            registrar.activity(),
+            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+            PERMISSION_REQUEST_CODE_EXTERNAL_STORAGE
+    );
+  }
+
+  @Override
+  public boolean onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    if (requestCode == PERMISSION_REQUEST_CODE_EXTERNAL_STORAGE
+            && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+      pickImageFromGallery(registrar.activity());
+    }
+
+    return false;
+  }
+
+  private void handleResult(String path) {
     if (pendingResult != null) {
       Double maxWidth = methodCall.argument("maxWidth");
       Double maxHeight = methodCall.argument("maxHeight");
       boolean shouldScale = maxWidth != null || maxHeight != null;
 
       if (!shouldScale) {
-        pendingResult.success(image.getPath());
+        pendingResult.success(path);
       } else {
         try {
-          File scaledImage = imageResizer.resizedImage(image, maxWidth, maxHeight);
-          exifDataCopier.copyExif(image.getPath(), scaledImage.getPath());
+          File scaledImage = imageResizer.resizedImage(path, maxWidth, maxHeight);
+          exifDataCopier.copyExif(path, scaledImage.getPath());
           pendingResult.success(scaledImage.getPath());
         } catch (IOException e) {
           throw new RuntimeException(e);

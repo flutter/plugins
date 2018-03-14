@@ -3,16 +3,14 @@ package io.flutter.plugins.imagepicker;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-import com.esafirm.imagepicker.model.Image;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
 class ImageResizer {
-    File resizedImage(Image image, Double maxWidth, Double maxHeight) throws IOException {
-        Bitmap bmp = BitmapFactory.decodeFile(image.getPath());
+    File resizedImage(String path, Double maxWidth, Double maxHeight) throws IOException {
+        Bitmap bmp = BitmapFactory.decodeFile(path);
         double originalWidth = bmp.getWidth() * 1.0;
         double originalHeight = bmp.getHeight() * 1.0;
 
@@ -55,13 +53,15 @@ class ImageResizer {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         scaledBmp.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
 
-        String scaledCopyPath = image.getPath().replace(image.getName(), "scaled_" + image.getName());
+        throw new RuntimeException(path);
+        /*
+        String scaledCopyPath = path; //path.replace(image.getName(), "scaled_" + image.getName())
         File imageFile = new File(scaledCopyPath);
 
         FileOutputStream fileOutput = new FileOutputStream(imageFile);
         fileOutput.write(outputStream.toByteArray());
         fileOutput.close();
 
-        return imageFile;
+        return imageFile;*/
     }
 }
