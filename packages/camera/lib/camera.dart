@@ -306,7 +306,7 @@ class CameraController extends ValueNotifier<CameraValue> {
         <String, dynamic>{'textureId': _textureId, 'path': path },
       );
       // not required, kept to test reply after the call was made
-      print('Video Start pressed:' + videofile);
+      print('Video Start pressed:');
      //return hello;
     } on PlatformException catch (e) {
       throw new CameraException(e.code, e.message);
@@ -329,7 +329,7 @@ class CameraController extends ValueNotifier<CameraValue> {
         'videostop',
         <String, dynamic>{'textureId': _textureId },
       );
-       print('Video Stop pressed:' + videofile);
+       print('Video Stop pressed:');
        if(videofile != null){value = value.copyWith(videoOn: false);}
 
        //initialize();

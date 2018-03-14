@@ -173,7 +173,7 @@
     NSArray *mPath = [NSArray arrayWithObjects: basePath , @"/movie-", dateString , @".mp4" , nil];
     NSString *moviePath = [mPath componentsJoinedByString:@""] ;
 
-    NSLog(@"Saved:  %@",moviePath);
+    NSLog(@"Saved on iOS:  %@", moviePath);
     //NSString *moviePath = [basePath stringByAppendingPathComponent: @"/movie0.mp4" ];
     if ([[NSFileManager defaultManager] fileExistsAtPath:moviePath])
     {
