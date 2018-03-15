@@ -87,13 +87,13 @@ class FirebaseList extends ListBase<DataSnapshot>
     assert(key != null);
     int min = 0;
     int max = _snapshots.length;
-    
+    int mid;
     while (min < max) {
-      int mid = min + ((max - min) >> 1);
-      if(key == _snapshots[mid].key) {
+      mid = min + ((max - min) >> 1);
+      if (key == _snapshots[mid].key) {
         return mid;
       }
-      if(key > _snapshots[mid].key) {
+      if (key.compareTo(_snapshots[mid].key) > 0) {
         min = mid;
       } else {
         max = mid;
