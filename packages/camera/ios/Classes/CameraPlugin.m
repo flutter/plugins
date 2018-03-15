@@ -14,6 +14,8 @@
 }
 @end
 
+
+// the delegate class to call when capturing a photo
 @interface FLTSavePhotoDelegate : NSObject<AVCapturePhotoCaptureDelegate>
 @property(readonly, nonatomic) NSString *path;
 @property(readonly, nonatomic) FlutterResult result;
@@ -59,6 +61,8 @@
 }
 @end
 
+
+// The main class that handles all image data related work
 @interface FLTCam
     : NSObject<FlutterTexture, AVCaptureVideoDataOutputSampleBufferDelegate, FlutterStreamHandler>
 @property(readonly, nonatomic) int64_t textureId;
@@ -66,17 +70,19 @@
 @property(nonatomic) FlutterEventChannel *eventChannel;
 @property(nonatomic) FlutterEventSink eventSink;
 @property(readonly, nonatomic) AVCaptureSession *captureSession;
+@property(readonly, nonatomic) AVCaptureDevice *captureDevice;
+@property(readonly, nonatomic) AVCapturePhotoOutput *capturePhotoOutput;
+@property(readonly) CVPixelBufferRef volatile latestPixelBuffer;
+@property(readonly, nonatomic) CGSize previewSize;
+@property(readonly, nonatomic) CGSize captureSize;
+
+//BEGIN: these properties have been added to support video recording
 @property(readonly, nonatomic) AVAssetWriter *assetWriter;
 @property(readonly, nonatomic) AVAssetWriterInput *assetWriterInput;
 @property(readonly, nonatomic) AVAssetWriterInputPixelBufferAdaptor *pixelBufferAdaptor;
 @property(readonly, nonatomic) CMTime *frameTime;
 @property(readonly, nonatomic)  BOOL recording;
 @property(readonly, nonatomic)  int64_t frameNumber;
-@property(readonly, nonatomic) AVCaptureDevice *captureDevice;
-@property(readonly, nonatomic) AVCapturePhotoOutput *capturePhotoOutput;
-@property(readonly) CVPixelBufferRef volatile latestPixelBuffer;
-@property(readonly, nonatomic) CGSize previewSize;
-@property(readonly, nonatomic) CGSize captureSize;
 
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
@@ -115,9 +121,19 @@
     *error = localError;
     return nil;
   }
+
+// initialise the variables
+
+  // used to track LIVE frames from the capture device
   _frameNumber = 0;
+
+  // recording state
   _recording = false;
-    _frameTime = nil;
+
+  // unused at the moment, could be used to track frame actual time or could be discarded
+  _frameTime = nil;
+
+
   CMVideoDimensions dimensions =
       CMVideoFormatDescriptionGetDimensions([[_captureDevice activeFormat] formatDescription]);
   _previewSize = CGSizeMake(dimensions.width, dimensions.height);
@@ -143,6 +159,10 @@
   _capturePhotoOutput = [AVCapturePhotoOutput new];
   [_captureSession addOutput:_capturePhotoOutput];
 
+
+// If you uncomment this code the capture will blank as AVCaptureVideoDataOutput
+// and AVCaptureMovieFileOutput do not work together in this flutter plugin format.
+// This might be usuful once Apple supports this.
     // AVCaptureMovieFileOutput *movieOutput = [AVCaptureMovieFileOutput new];
     // if ([_captureSession canAddOutput:movieOutput]) {
     //     [_captureSession addOutput:movieOutput];
@@ -153,12 +173,12 @@
     //     NSLog(@"No capture video");
     // }
 
-
+// Creating the path and file to save from the Documents directory and setting the
+// filename with a timeStamp
+// This section could be removed later, as we could save the filename sent from
+// flutter
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *basePath = paths.firstObject;
-
-
-
 
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     [formatter setDateFormat:@"dd-MM-yyyy--HHmmss"];
@@ -168,33 +188,37 @@
 
 
 
-    //NSLog(@"BASEPATH -  %@", basePath);
-
     NSArray *mPath = [NSArray arrayWithObjects: basePath , @"/movie-", dateString , @".mp4" , nil];
     NSString *moviePath = [mPath componentsJoinedByString:@""] ;
 
     NSLog(@"Saved on iOS:  %@", moviePath);
-    //NSString *moviePath = [basePath stringByAppendingPathComponent: @"/movie0.mp4" ];
+
+    // Delete the file if it already exists by some chance
     if ([[NSFileManager defaultManager] fileExistsAtPath:moviePath])
     {
         NSLog(@"The PATH exists removing file: %@", moviePath);
         [[NSFileManager defaultManager] removeItemAtPath:moviePath error:nil];
     }
-    /* to prepare for output; I'll output 640x480 in H.264, via an asset writer */
+
+    // this code is from: https://stackoverflow.com/questions/4944083/can-use-avcapturevideodataoutput-and-avcapturemoviefileoutput-at-the-same-time
+    // Prepare the output settings for the asset writer with the cam with
+    // height and width, .MP4 (H.264)
+    // Need to be improved: to control the setting changes from the flutter side
+
     NSDictionary *outputSettings =
     [NSDictionary dictionaryWithObjectsAndKeys:
 
      [NSNumber numberWithInt:dimensions.height], AVVideoWidthKey,
      [NSNumber numberWithInt:dimensions.width], AVVideoHeightKey,
-     AVVideoCodecH264, AVVideoCodecKey,
+        AVVideoCodecH264, AVVideoCodecKey,
+      nil];
 
-     nil];
-
-    // _assetWriterInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeVideo outputSettings:outputSettings];
     _assetWriterInput = [[AVAssetWriterInput alloc] initWithMediaType:AVMediaTypeVideo outputSettings:outputSettings];
+
     /* I'm going to push pixel buffers to it, so will need a
      AVAssetWriterPixelBufferAdaptor, to expect the same 32BGRA input as I've
      asked the AVCaptureVideDataOutput to supply */
+
     _pixelBufferAdaptor =
     [[AVAssetWriterInputPixelBufferAdaptor alloc]
      initWithAssetWriterInput: _assetWriterInput
@@ -203,7 +227,7 @@
       [NSNumber numberWithInt:kCVPixelFormatType_32BGRA],
       kCVPixelBufferPixelFormatTypeKey,
       nil]];
-
+// Initialise the asset writer with a path
     NSError *movieError = nil;
     NSURL *url = [NSURL fileURLWithPath:moviePath];;
     _assetWriter = [AVAssetWriter
@@ -218,14 +242,13 @@
     }
 
     NSParameterAssert(_assetWriter);
-    //AVAssetWriterInput *videoInput = [[AVAssetWriterInput alloc] initWithMediaType:AVMediaTypeVideo outputSettings:outputSettings];
     _assetWriterInput.expectsMediaDataInRealTime = YES;
-
+// check if we can add the input
     if ([_assetWriter canAddInput:_assetWriterInput]) {
         NSLog(@"Yes we have saved the AVAssetWriter INPUT");
         [_assetWriter addInput:_assetWriterInput];
     }
-  //  _frameTime = [CMT init];
+
   return self;
 }
 
@@ -247,10 +270,13 @@
 
 - (void)captureToVid:(NSString *)path {
 
-  NSLog(@"File Location: %@", path);
+    // placeholder to recieve path from the flutter side
+    NSLog(@"File Location dummy: %@", path);
 
+    // Possible to add the AVAssetWriter init code here ?
+    // ??
 
-  NSError *error = nil;
+    NSError *error = nil;
 
     BOOL success = [_assetWriter startWriting];
     [_assetWriter startSessionAtSourceTime:CMTimeMake(_frameNumber, 25)];
@@ -269,6 +295,10 @@
 }
 
 - (void)stopCapture:(NSString *)path {
+
+
+    // To Improve: need to clear memory here after recording
+    // finishWritingWithCompletionHandler must be called
 
     [_assetWriterInput markAsFinished];
     NSLog(@"Stop Capture: %@", path);
@@ -300,8 +330,9 @@
     old = _latestPixelBuffer;
   }
 
-
-//    ::::Alternate method reference code::::
+//  ::::Alternate method reference code::::
+// Could use this while we delegate the video capture
+//
 //    if(!_haveStartedSession && mediaType == AVMediaTypeVideo) {
 //        [_assetWriter startSessionAtSourceTime:CMSampleBufferGetPresentationTimeStamp(sampleBuffer)];
 //        _haveStartedSession = YES;
@@ -320,11 +351,12 @@
 //    } else {
 //        NSLog( @"%@ input not ready for more media data, dropping buffer", mediaType );
 //    }
-//[_assetWriter startSessionAtSourceTime:CMSampleBufferGetPresentationTimeStamp(sampleBuffer)];
-//CMSampleBufferGetPresentationTimeStamp(sampleBuffer));
+//    [_assetWriter startSessionAtSourceTime:CMSampleBufferGetPresentationTimeStamp(sampleBuffer)];
+//    CMSampleBufferGetPresentationTimeStamp(sampleBuffer));
 //    _frameTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer);
 
-
+// This is where the magic happens, recording frames via _pixelBufferAdaptor to
+//  the asset writer input
     if(_recording){
         if(_assetWriterInput.readyForMoreMediaData)
             [_pixelBufferAdaptor appendPixelBuffer:newBuffer
@@ -332,6 +364,8 @@
         //NSLog([NSString stringWithFormat:@"%d", _frameNumber]);
         _frameNumber++;
     }
+  //END: rest of the code below is as is from the original plugin
+
   if (old != nil) {
     CFRelease(old);
   }
