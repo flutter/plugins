@@ -94,32 +94,38 @@ class _PushMessagingExampleState extends State<PushMessagingExample> {
   final TextEditingController _topicController =
       new TextEditingController(text: 'topic');
 
-  Future<Null> _showItemDialog(Map<String, dynamic> message) async {
-    final Item item = _itemForMessage(message);
+  Widget _buildDialog(BuildContext context, Item item) {
+    return new AlertDialog(
+      content: new Text("Item ${item.itemId} has been updated"),
+      actions: <Widget>[
+        new FlatButton(
+          child: const Text('CLOSE'),
+          onPressed: () {
+            Navigator.pop(context, false);
+          },
+        ),
+        new FlatButton(
+          child: const Text('SHOW'),
+          onPressed: () {
+            Navigator.pop(context, true);
+          },
+        ),
+      ],
+    );
+  }
+
+  void _showItemDialog(Map<String, dynamic> message) {
     showDialog<bool>(
-        context: context,
-        child: new AlertDialog(
-          content: new Text("Item ${item.itemId} has been updated"),
-          actions: <Widget>[
-            new FlatButton(
-                child: const Text('CLOSE'),
-                onPressed: () {
-                  Navigator.pop(context, false);
-                }),
-            new FlatButton(
-                child: const Text('SHOW'),
-                onPressed: () {
-                  Navigator.pop(context, true);
-                }),
-          ],
-        )).then((bool shouldNavigate) {
+      context: context,
+      builder: (_) => _buildDialog(context, _itemForMessage(message)),
+    ).then((bool shouldNavigate) {
       if (shouldNavigate == true) {
         _navigateToItemDetail(message);
       }
     });
   }
 
-  Future<Null> _navigateToItemDetail(Map<String, dynamic> message) async {
+  void _navigateToItemDetail(Map<String, dynamic> message) {
     final Item item = _itemForMessage(message);
     // Clear away dialogs
     Navigator.popUntil(context, (Route<dynamic> route) => route is PageRoute);
