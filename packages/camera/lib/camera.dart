@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 
 final MethodChannel _channel = const MethodChannel('plugins.flutter.io/camera')
   ..invokeMethod('init');
@@ -40,9 +40,10 @@ CameraLensDirection _parseCameraLensDirection(String string) {
 /// Completes with a list of available cameras.
 ///
 /// May throw a [CameraException].
-Future<List<CameraDescription>> availableCameras() async {
+Future<List<CameraDescription>> getAllAvailableCameras() async {
   try {
-    final List<dynamic> cameras = await _channel.invokeMethod('list');
+    final List<dynamic> cameras = await _channel.invokeMethod(
+        'getAllAvailableCameras');
     return cameras
         .cast<Map<String, dynamic>>()
         .map((Map<String, dynamic> camera) {
@@ -57,10 +58,10 @@ Future<List<CameraDescription>> availableCameras() async {
 }
 
 
-
 class CameraDescription {
   final String name;
   final CameraLensDirection lensDirection;
+
   CameraDescription({this.name, this.lensDirection});
 
   @override
@@ -81,19 +82,20 @@ class CameraDescription {
   }
 }
 
-// error catching class
 class CameraException implements Exception {
   String code;
   String description;
+
   CameraException(this.code, this.description);
 
   @override
   String toString() => '$runtimeType($code, $description)';
 }
 
-//building the UI texture view of the video data with textureId
+// Build the UI texture view of the video data with textureId.
 class CameraPreview extends StatelessWidget {
   final CameraController controller;
+
   const CameraPreview(this.controller);
 
   @override
@@ -104,32 +106,31 @@ class CameraPreview extends StatelessWidget {
   }
 }
 
-// meta data of the camera plugin
+// Metadata of the camera plugin
 class CameraValue {
   /// True if the camera is on.
-  final bool isStarted;
+  final bool opened;
 
-  /// True after [CameraController.initialize] has completed successfully.
+  /// True after [CameraController.openCamera] has completed successfully.
   final bool initialized;
-  // true when videostart is called
-  final bool videoOn;
+
+  final bool recordingVideo;
 
   final String errorDescription;
 
   /// The size of the preview in pixels.
   ///
-  /// Is `null` until initialized is `true`.
+  /// Is `null` until  [initialized] is `true`.
   final Size previewSize;
 
-  const CameraValue(
-      {this.isStarted,
-      this.initialized,
-      this.errorDescription,
-      this.previewSize,
-      this.videoOn});
+  const CameraValue({this.opened,
+    this.initialized,
+    this.errorDescription,
+    this.previewSize,
+    this.recordingVideo});
 
-  const CameraValue.uninitialized() : this(isStarted: true, initialized: false,videoOn: false);
-  const CameraValue.novideo() : this(videoOn: false);
+  const CameraValue.uninitialized()
+      : this(opened: true, initialized: false, recordingVideo: false);
 
   /// Convenience getter for `previewSize.height / previewSize.width`.
   ///
@@ -139,26 +140,26 @@ class CameraValue {
   bool get hasError => errorDescription != null;
 
   CameraValue copyWith({
-    bool isStarted,
+    bool opened,
     bool initialized,
-    bool videoOn,
+    bool recordingVideo,
     String errorDescription,
     Size previewSize,
   }) {
     return new CameraValue(
-      isStarted: isStarted ?? this.isStarted,
+      opened: opened ?? this.opened,
       initialized: initialized ?? this.initialized,
       errorDescription: errorDescription ?? this.errorDescription,
       previewSize: previewSize ?? this.previewSize,
-      videoOn: videoOn ?? this.videoOn,
+      recordingVideo: recordingVideo ?? this.recordingVideo,
     );
   }
 
   @override
   String toString() {
     return '$runtimeType('
-        'started: $isStarted, '
-        'videoOn: $videoOn, '
+        'opened: $opened, '
+        'recordingVideo: $recordingVideo, '
         'initialized: $initialized, '
         'errorDescription: $errorDescription, '
         'previewSize: $previewSize)';
@@ -167,9 +168,9 @@ class CameraValue {
 
 /// Controls a device camera.
 ///
-/// Use [availableCameras] to get a list of available cameras.
+/// Use [getAllAvailableCameras] to get a list of available cameras.
 ///
-/// Before using a [CameraController] a call to [initialize] must complete.
+/// Before using a [CameraController] a call to [openCamera] must complete.
 ///
 /// To show the camera preview on the screen use a [CameraPreview] widget.
 class CameraController extends ValueNotifier<CameraValue> {
@@ -187,14 +188,14 @@ class CameraController extends ValueNotifier<CameraValue> {
   /// Initializes the camera on the device.
   ///
   /// Throws a [CameraException] if the initialization fails.
-  Future<Null> initialize() async {
+  Future<Null> openCamera() async {
     if (_disposed) {
       return;
     }
     try {
       _creatingCompleter = new Completer<Null>();
       final Map<String, dynamic> reply = await _channel.invokeMethod(
-        'create',
+        'openCamera',
         <String, dynamic>{
           'cameraName': description.name,
           'resolutionPreset': serializeResolutionPreset(resolutionPreset),
@@ -208,7 +209,6 @@ class CameraController extends ValueNotifier<CameraValue> {
           reply['previewHeight'].toDouble(),
         ),
       );
-      _applyStartStop();
     } on PlatformException catch (e) {
       value = value.copyWith(errorDescription: e.message);
       throw new CameraException(e.code, e.message);
@@ -220,13 +220,20 @@ class CameraController extends ValueNotifier<CameraValue> {
     _creatingCompleter.complete(null);
   }
 
+  /// Listen to events from the native plugins.
   void _listener(dynamic event) {
     final Map<String, dynamic> map = event;
     if (_disposed) {
       return;
     }
-    if (map['eventType'] == 'error') {
-      value = value.copyWith(errorDescription: event['errorDescription']);
+
+    switch (map['eventType']) {
+      case 'error':
+        value = value.copyWith(errorDescription: event['errorDescription']);
+        break;
+      case 'cameraClosing':
+        value = value.copyWith(recordingVideo: false);
+        break;
     }
   }
 
@@ -236,7 +243,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   /// [path_provider](https://pub.dartlang.org/packages/path_provider).
   ///
   /// Throws a [CameraException] if the capture fails.
-  Future<Null> capture(String path) async {
+  Future<Null> takePicture(String path) async {
     if (!value.initialized || _disposed) {
       throw new CameraException(
         'Uninitialized capture()',
@@ -245,127 +252,56 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
     try {
       await _channel.invokeMethod(
-        'capture',
+        'takePicture',
         <String, dynamic>{'textureId': _textureId, 'path': path},
       );
     } on PlatformException catch (e) {
+      value = value.copyWith(errorDescription: e.message);
       throw new CameraException(e.code, e.message);
     }
   }
 
-  void _applyStartStop() {
-    if (value.initialized && !_disposed) {
-      if (value.isStarted) {
-        _channel.invokeMethod(
-          'start',
-          <String, dynamic>{'textureId': _textureId},
-        );
-      } else {
-        _channel.invokeMethod(
-          'stop',
-          <String, dynamic>{'textureId': _textureId},
-        );
-      }
-    }
-  }
-
-  /// Starts the preview.
-  ///
-  /// If called before [initialize] it will take effect just after
-  /// initialization is done.
-  void start() {
-    value = value.copyWith(isStarted: true);
-    _applyStartStop();
-  }
-
-  /// Stops the preview.
-  ///
-  /// If called before [initialize] it will take effect just after
-  /// initialization is done.
-  void stop() {
-    value = value.copyWith(isStarted: false);
-    _applyStartStop();
-  }
-
-
-
-// Similar to capture, invoke the videoastart call and set videoOn to true
-// send the path to point the location of the file to save, this isn't used at the moment but is kept as a placeholder
-  Future<Null> videostart(String path) async {
+  Future<Null> startVideoRecording(String filePath) async {
     if (!value.initialized || _disposed) {
       throw new CameraException(
-        'Uninitialized video()',
-        'video() was called on uninitialized CameraController',
+        'Uninitialized CameraController',
+        'startVideoRecording was called on uninitialized CameraController',
       );
     }
     try {
-      print(_textureId);
-      value = value.copyWith(videoOn: true);
-      final String videofile = await _channel.invokeMethod(
-        'videostart',
-        <String, dynamic>{'textureId': _textureId, 'path': path },
+      value = value.copyWith(recordingVideo: true);
+      await _channel.invokeMethod(
+        'startVideoRecording',
+        <String, dynamic>{'textureId': _textureId, 'filePath': filePath},
       );
-      // not required, kept to test reply after the call was made
-      print('Video Start pressed:');
-     //return hello;
     } on PlatformException catch (e) {
+      value = value.copyWith(errorDescription: e.message);
       throw new CameraException(e.code, e.message);
     }
   }
 
-  Future<Null> videostart(String path) async {
+  Future<Null> stopVideoRecording() async {
     if (!value.initialized || _disposed) {
       throw new CameraException(
-        'Uninitialized video()',
-        'video() was called on uninitialized CameraController',
+        'Uninitialized CameraController',
+        'stopVideoRecording was called on uninitialized CameraController',
       );
     }
     try {
-      value = value.copyWith(videoOn: true);
-      final String hello = await _channel.invokeMethod(
-        'videostart',
-        <String, dynamic>{ 'path': path },
+      value = value.copyWith(recordingVideo: false);
+      await _channel.invokeMethod(
+        'stopVideoRecording',
+        <String, dynamic>{'textureId': _textureId},
       );
-      print('Video Start pressed:' + hello + ' ' + value.toString());
-     //return hello;
     } on PlatformException catch (e) {
+      value = value.copyWith(errorDescription: e.message);
       throw new CameraException(e.code, e.message);
     }
   }
-
-// videostop call to stop recording and replies with a path to the saved video
-// file. Work here is required to gracefully stop the recording.
-// Maybe dispose the camera and reinitialise the camera
-  Future<String> videostop() async {
-    if (!value.initialized || _disposed) {
-      throw new CameraException(
-        'Uninitialized video()',
-        'video() was called on uninitialized CameraController',
-      );
-    }
-    try {
-      final String videofile = await _channel.invokeMethod(
-        'videostop',
-        <String, dynamic>{'textureId': _textureId },
-      );
-       print('Video Stop pressed:');
-       if(videofile != null){value = value.copyWith(videoOn: false);}
-
-       //initialize();
-
-       return videofile;
-
-    } on PlatformException catch (e) {
-      throw new CameraException(e.code, e.message);
-    }
-  }
-
-
-
 
   /// Releases the resources of this camera.
   @override
-  Future<Null> dispose() {
+  Future<Null> dispose() async {
     if (_disposed) {
       return new Future<Null>.value(null);
     }
@@ -375,11 +311,11 @@ class CameraController extends ValueNotifier<CameraValue> {
       return new Future<Null>.value(null);
     } else {
       return _creatingCompleter.future.then((_) async {
-        await _eventSubscription?.cancel();
         await _channel.invokeMethod(
-          'dispose',
+          'closeCamera',
           <String, dynamic>{'textureId': _textureId},
         );
+        await _eventSubscription?.cancel();
       });
     }
   }
