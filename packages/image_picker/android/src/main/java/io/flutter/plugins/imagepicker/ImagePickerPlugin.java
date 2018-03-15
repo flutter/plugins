@@ -4,11 +4,15 @@
 
 package io.flutter.plugins.imagepicker;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import com.esafirm.imagepicker.features.ImagePicker;
 import com.esafirm.imagepicker.features.camera.DefaultCameraModule;
@@ -20,6 +24,7 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.common.PluginRegistry.ActivityResultListener;
+import io.flutter.plugin.common.PluginRegistry.RequestPermissionsResultListener;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -28,13 +33,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/** Location Plugin */
-public class ImagePickerPlugin implements MethodCallHandler, ActivityResultListener {
+/** ImagePicker Plugin */
+public class ImagePickerPlugin
+    implements MethodCallHandler, ActivityResultListener, RequestPermissionsResultListener {
   private static String TAG = "ImagePicker";
   private static final String CHANNEL = "image_picker";
 
   public static final int REQUEST_CODE_PICK = 2342;
   public static final int REQUEST_CODE_CAMERA = 2343;
+  public static final int REQUEST_PERMISSIONS = 2345;
 
   private static final int SOURCE_ASK_USER = 0;
   private static final int SOURCE_CAMERA = 1;
@@ -52,6 +59,7 @@ public class ImagePickerPlugin implements MethodCallHandler, ActivityResultListe
     final MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL);
     final ImagePickerPlugin instance = new ImagePickerPlugin(registrar);
     registrar.addActivityResultListener(instance);
+    registrar.addRequestPermissionsResultListener(instance);
     channel.setMethodCallHandler(instance);
   }
 
@@ -86,6 +94,19 @@ public class ImagePickerPlugin implements MethodCallHandler, ActivityResultListe
           ImagePicker.create(activity).single().showCamera(false).start(REQUEST_CODE_PICK);
           break;
         case SOURCE_CAMERA:
+          if (ContextCompat.checkSelfPermission(activity, Manifest.permission.CAMERA)
+                  != PackageManager.PERMISSION_GRANTED
+              || ContextCompat.checkSelfPermission(
+                      activity, Manifest.permission.READ_EXTERNAL_STORAGE)
+                  != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                activity,
+                new String[] {
+                  Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE
+                },
+                REQUEST_PERMISSIONS);
+            break;
+          }
           activity.startActivityForResult(
               cameraModule.getCameraIntent(activity), REQUEST_CODE_CAMERA);
           break;
@@ -130,6 +151,31 @@ public class ImagePickerPlugin implements MethodCallHandler, ActivityResultListe
 
       pendingResult = null;
       methodCall = null;
+      return true;
+    }
+    return false;
+  }
+
+  @Override
+  public boolean onRequestPermissionsResult(
+      int requestCode, String[] permissions, int[] grantResults) {
+    if (requestCode == REQUEST_PERMISSIONS) {
+      if (grantResults.length == 2
+          && grantResults[0] == PackageManager.PERMISSION_GRANTED
+          && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+        Activity activity = registrar.activity();
+        if (activity == null) {
+          pendingResult.error(
+              "no_activity", "image_picker plugin requires a foreground activity.", null);
+        }
+        activity.startActivityForResult(
+            cameraModule.getCameraIntent(activity), REQUEST_CODE_CAMERA);
+      } else {
+        pendingResult.error(
+            "no_permissions", "image_picker plugin requires camera permissions", null);
+        pendingResult = null;
+        methodCall = null;
+      }
       return true;
     }
     return false;
