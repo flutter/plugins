@@ -98,7 +98,7 @@ class _PushMessagingExampleState extends State<PushMessagingExample> {
     final Item item = _itemForMessage(message);
     showDialog<bool>(
         context: context,
-        child: new AlertDialog(
+        builder: (_) => new AlertDialog(
           content: new Text("Item ${item.itemId} has been updated"),
           actions: <Widget>[
             new FlatButton(
