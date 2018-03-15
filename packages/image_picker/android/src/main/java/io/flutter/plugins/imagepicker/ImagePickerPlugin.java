@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.util.List;
 
 public class ImagePickerPlugin
-        implements MethodChannel.MethodCallHandler,
+    implements MethodChannel.MethodCallHandler,
         PluginRegistry.ActivityResultListener,
         PluginRegistry.RequestPermissionsResultListener {
   private static final String CHANNEL = "plugins.flutter.io/image_picker";
@@ -48,7 +48,7 @@ public class ImagePickerPlugin
   public static void registerWith(PluginRegistry.Registrar registrar) {
     final MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL);
     final ImagePickerPlugin instance =
-            new ImagePickerPlugin(registrar, new ImageResizer(), new ExifDataCopier());
+        new ImagePickerPlugin(registrar, new ImageResizer(), new ExifDataCopier());
 
     registrar.addActivityResultListener(instance);
     registrar.addRequestPermissionsResultListener(instance);
@@ -57,9 +57,9 @@ public class ImagePickerPlugin
   }
 
   private ImagePickerPlugin(
-          PluginRegistry.Registrar registrar,
-          ImageResizer imageResizer,
-          ExifDataCopier exifDataCopier) {
+      PluginRegistry.Registrar registrar,
+      ImageResizer imageResizer,
+      ExifDataCopier exifDataCopier) {
     this.registrar = registrar;
     this.imageResizer = imageResizer;
     this.exifDataCopier = exifDataCopier;
@@ -91,19 +91,19 @@ public class ImagePickerPlugin
         case SOURCE_CAMERA:
           if (ContextCompat.checkSelfPermission(activity, Manifest.permission.CAMERA)
                   != PackageManager.PERMISSION_GRANTED
-                  || ContextCompat.checkSelfPermission(
-                  activity, Manifest.permission.READ_EXTERNAL_STORAGE)
+              || ContextCompat.checkSelfPermission(
+                      activity, Manifest.permission.READ_EXTERNAL_STORAGE)
                   != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(
-                    activity,
-                    new String[] {
-                            Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE
-                    },
-                    REQUEST_CAMERA_PERMISSIONS);
+                activity,
+                new String[] {
+                  Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE
+                },
+                REQUEST_CAMERA_PERMISSIONS);
             break;
           }
           activity.startActivityForResult(
-                  cameraModule.getCameraIntent(activity), REQUEST_CODE_CAMERA);
+              cameraModule.getCameraIntent(activity), REQUEST_CODE_CAMERA);
           break;
         default:
           throw new IllegalArgumentException("Invalid image source: " + imageSource);
@@ -131,14 +131,14 @@ public class ImagePickerPlugin
     if (requestCode == REQUEST_CODE_CAMERA) {
       if (resultCode == Activity.RESULT_OK) {
         cameraModule.getImage(
-                registrar.context(),
-                data,
-                new OnImageReadyListener() {
-                  @Override
-                  public void onImageReady(List<Image> images) {
-                    handleResult(images.get(0).getPath());
-                  }
-                });
+            registrar.context(),
+            data,
+            new OnImageReadyListener() {
+              @Override
+              public void onImageReady(List<Image> images) {
+                handleResult(images.get(0).getPath());
+              }
+            });
         return true;
       } else if (resultCode != Activity.RESULT_CANCELED) {
         pendingResult.error("PICK_ERROR", "Error taking photo", null);
@@ -153,8 +153,8 @@ public class ImagePickerPlugin
 
   private void pickImageFromGallery(Activity activity) {
     boolean hasPermission =
-            ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE)
-                    == PackageManager.PERMISSION_GRANTED;
+        ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE)
+            == PackageManager.PERMISSION_GRANTED;
 
     if (hasPermission) {
       Intent pickImageIntent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -168,31 +168,31 @@ public class ImagePickerPlugin
 
   private void requestReadExternalStoragePermission() {
     ActivityCompat.requestPermissions(
-            registrar.activity(),
-            new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
-            REQUEST_EXTERNAL_STORAGE_PERMISSIONS);
+        registrar.activity(),
+        new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
+        REQUEST_EXTERNAL_STORAGE_PERMISSIONS);
   }
 
   @Override
   public boolean onRequestPermissionsResult(
-          int requestCode, String[] permissions, int[] grantResults) {
+      int requestCode, String[] permissions, int[] grantResults) {
     if (requestCode == REQUEST_EXTERNAL_STORAGE_PERMISSIONS
-            && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
       pickImageFromGallery(registrar.activity());
     } else if (requestCode == REQUEST_CAMERA_PERMISSIONS) {
       if (grantResults.length == 2
-              && grantResults[0] == PackageManager.PERMISSION_GRANTED
-              && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+          && grantResults[0] == PackageManager.PERMISSION_GRANTED
+          && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
         Activity activity = registrar.activity();
         if (activity == null) {
           pendingResult.error(
-                  "no_activity", "image_picker plugin requires a foreground activity.", null);
+              "no_activity", "image_picker plugin requires a foreground activity.", null);
         }
         activity.startActivityForResult(
-                cameraModule.getCameraIntent(activity), REQUEST_CODE_CAMERA);
+            cameraModule.getCameraIntent(activity), REQUEST_CODE_CAMERA);
       } else {
         pendingResult.error(
-                "no_permissions", "image_picker plugin requires camera permissions", null);
+            "no_permissions", "image_picker plugin requires camera permissions", null);
         pendingResult = null;
         methodCall = null;
       }
