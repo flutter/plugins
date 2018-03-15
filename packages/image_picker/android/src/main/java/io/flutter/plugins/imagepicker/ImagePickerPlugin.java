@@ -9,29 +9,28 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import com.esafirm.imagepicker.features.camera.DefaultCameraModule;
 import com.esafirm.imagepicker.features.camera.OnImageReadyListener;
 import com.esafirm.imagepicker.model.Image;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
-import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
-import io.flutter.plugin.common.PluginRegistry.ActivityResultListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
 public class ImagePickerPlugin
-    implements MethodCallHandler,
-        ActivityResultListener,
+    implements MethodChannel.MethodCallHandler,
+        PluginRegistry.ActivityResultListener,
         PluginRegistry.RequestPermissionsResultListener {
   private static final String CHANNEL = "plugins.flutter.io/image_picker";
 
   private static final int REQUEST_CODE_PICK = 2342;
   private static final int REQUEST_CODE_CAMERA = 2343;
 
-  private static final int PERMISSION_REQUEST_CODE_EXTERNAL_STORAGE = 2344;
+  private static final int REQUEST_EXTERNAL_STORAGE_PERMISSIONS = 2344;
+  private static final int REQUEST_CAMERA_PERMISSIONS = 2345;
 
   private static final int SOURCE_CAMERA = 0;
   private static final int SOURCE_GALLERY = 1;
@@ -43,7 +42,7 @@ public class ImagePickerPlugin
   private final ExifDataCopier exifDataCopier;
 
   // Pending method call to obtain an image
-  private Result pendingResult;
+  private MethodChannel.Result pendingResult;
   private MethodCall methodCall;
 
   public static void registerWith(PluginRegistry.Registrar registrar) {
@@ -67,7 +66,7 @@ public class ImagePickerPlugin
   }
 
   @Override
-  public void onMethodCall(MethodCall call, Result result) {
+  public void onMethodCall(MethodCall call, MethodChannel.Result result) {
     if (pendingResult != null) {
       result.error("ALREADY_ACTIVE", "Image picker is already active", null);
       return;
@@ -90,6 +89,19 @@ public class ImagePickerPlugin
           pickImageFromGallery(activity);
           break;
         case SOURCE_CAMERA:
+          if (ContextCompat.checkSelfPermission(activity, Manifest.permission.CAMERA)
+                  != PackageManager.PERMISSION_GRANTED
+              || ContextCompat.checkSelfPermission(
+                      activity, Manifest.permission.READ_EXTERNAL_STORAGE)
+                  != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                activity,
+                new String[] {
+                  Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE
+                },
+                REQUEST_CAMERA_PERMISSIONS);
+            break;
+          }
           activity.startActivityForResult(
               cameraModule.getCameraIntent(activity), REQUEST_CODE_CAMERA);
           break;
@@ -158,17 +170,34 @@ public class ImagePickerPlugin
     ActivityCompat.requestPermissions(
         registrar.activity(),
         new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
-        PERMISSION_REQUEST_CODE_EXTERNAL_STORAGE);
+        REQUEST_EXTERNAL_STORAGE_PERMISSIONS);
   }
 
   @Override
   public boolean onRequestPermissionsResult(
       int requestCode, String[] permissions, int[] grantResults) {
-    if (requestCode == PERMISSION_REQUEST_CODE_EXTERNAL_STORAGE
+    if (requestCode == REQUEST_EXTERNAL_STORAGE_PERMISSIONS
         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
       pickImageFromGallery(registrar.activity());
+    } else if (requestCode == REQUEST_CAMERA_PERMISSIONS) {
+      if (grantResults.length == 2
+          && grantResults[0] == PackageManager.PERMISSION_GRANTED
+          && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+        Activity activity = registrar.activity();
+        if (activity == null) {
+          pendingResult.error(
+              "no_activity", "image_picker plugin requires a foreground activity.", null);
+        }
+        activity.startActivityForResult(
+            cameraModule.getCameraIntent(activity), REQUEST_CODE_CAMERA);
+      } else {
+        pendingResult.error(
+            "no_permissions", "image_picker plugin requires camera permissions", null);
+        pendingResult = null;
+        methodCall = null;
+      }
+      return true;
     }
-
     return false;
   }
 
