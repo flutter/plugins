@@ -85,10 +85,18 @@ class FirebaseList extends ListBase<DataSnapshot>
 
   int _indexForKey(String key) {
     assert(key != null);
-    // TODO(jackson): We could binary search since the list is already sorted.
-    for (int index = 0; index < _snapshots.length; index++) {
-      if (key == _snapshots[index].key) {
-        return index;
+    int min = 0;
+    int max = _snapshots.length;
+    
+    while (min < max) {
+      int mid = min + ((max - min) >> 1);
+      if(key == _snapshots[mid].key) {
+        return mid;
+      }
+      if(key > _snapshots[mid].key) {
+        min = mid;
+      } else {
+        max = mid;
       }
     }
     return null;
