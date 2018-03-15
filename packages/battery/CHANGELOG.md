@@ -1,3 +1,8 @@
+## 0.2.1
+
+* Fixed Dart 2 type error.
+* Removed use of deprecated parameter in example.
+
 ## 0.2.0
 
 * **Breaking change**. Set SDK constraints to match the Flutter beta release.

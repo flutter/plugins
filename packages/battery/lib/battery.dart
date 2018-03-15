@@ -32,8 +32,9 @@ class Battery {
   Stream<BatteryState> _onBatteryStateChanged;
 
   /// Returns the current battery level in percent.
-  Future<int> get batteryLevel =>
-      _methodChannel.invokeMethod('getBatteryLevel');
+  Future<int> get batteryLevel => _methodChannel
+      .invokeMethod('getBatteryLevel')
+      .then<int>((dynamic result) => result);
 
   /// Fires whenever the battery state changes.
   Stream<BatteryState> get onBatteryStateChanged {

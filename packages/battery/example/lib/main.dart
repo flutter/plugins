@@ -62,19 +62,20 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: new FloatingActionButton(
         child: const Icon(Icons.battery_unknown),
         onPressed: () async {
+          final int batteryLevel = await _battery.batteryLevel;
           showDialog<Null>(
             context: context,
-            child: new AlertDialog(
-              content: new Text('Battery: ${await _battery.batteryLevel}%'),
-              actions: <Widget>[
-                new FlatButton(
-                  child: const Text('OK'),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                )
-              ],
-            ),
+            builder: (_) => new AlertDialog(
+                  content: new Text('Battery: $batteryLevel%'),
+                  actions: <Widget>[
+                    new FlatButton(
+                      child: const Text('OK'),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    )
+                  ],
+                ),
           );
         },
       ),
