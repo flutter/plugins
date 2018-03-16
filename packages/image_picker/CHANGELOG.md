@@ -1,3 +1,7 @@
+## 0.3.1
+
+* Bugfix: Android version correctly asks for runtime camera permission when using `ImageSource.camera`. 
+
 ## 0.3.0
 
 * **Breaking change**. Set SDK constraints to match the Flutter beta release.
