@@ -29,18 +29,18 @@ class MyHomePageState extends State<MyHomePage> {
           builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.none:
-                return new Center(
-                  child: new Text('loading...'),
+                return const Center(
+                  child: const Text('loading...'),
                 );
               case ConnectionState.waiting:
-                return new Center(
-                  child: new Text('waiting...'),
+                return const Center(
+                  child: const Text('waiting...'),
                 );
               default:
                 if (snapshot.hasError) {
                   print(snapshot.error);
-                  return new Center(
-                    child: new Text('Failed to show welcome message'),
+                  return const Center(
+                    child: const Text('Failed to show welcome message'),
                   );
                 } else {
                   return new Center(
