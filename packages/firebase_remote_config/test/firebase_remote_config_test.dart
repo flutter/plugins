@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-
   group('$RemoteConfig', () {
     const MethodChannel channel = const MethodChannel(
       'plugins.flutter.io/firebase_remote_config',
@@ -19,31 +18,31 @@ void main() {
         log.add(methodCall);
         switch (methodCall.method) {
           case 'RemoteConfig#fetch':
-            return <String, dynamic> {
+            return <String, dynamic>{
               'LAST_FETCH_TIME': lastFetchTime,
               'LAST_FETCH_STATUS': 0,
             };
           case 'RemoteConfig#instance':
-            return <String, dynamic> {
+            return <String, dynamic>{
               'LAST_FETCH_TIME': lastFetchTime,
               'LAST_FETCH_STATUS': 0,
               'IN_DEBUG_MODE': true,
             };
           case 'RemoteConfig#activate':
-            return <String, dynamic> {
-              'param1': <String, dynamic> {
+            return <String, dynamic>{
+              'param1': <String, dynamic>{
                 'source': 0,
                 'value': <int>[118, 97, 108, 49], // UTF-8 encoded 'val1'
               },
-              'param2': <String, dynamic> {
+              'param2': <String, dynamic>{
                 'source': 0,
                 'value': <int>[49, 50, 51, 52, 53], // UTF-8 encoded '12345'
               },
-              'param3': <String, dynamic> {
+              'param3': <String, dynamic>{
                 'source': 1,
                 'value': <int>[51, 46, 49, 52], // UTF-8 encoded '3.14'
               },
-              'param4': <String, dynamic> {
+              'param4': <String, dynamic>{
                 'source': 0,
                 'value': <int>[116, 114, 117, 101] // UTF-8 encoded 'true'
               }
@@ -63,14 +62,12 @@ void main() {
       expect(
         log,
         <Matcher>[
-          isMethodCall(
-            'RemoteConfig#instance',
-            arguments: null
-          ),
+          isMethodCall('RemoteConfig#instance', arguments: null),
         ],
       );
       expect(remoteConfig.remoteConfigSettings.debugMode, true);
-      expect(remoteConfig.lastFetchTime, new DateTime.fromMillisecondsSinceEpoch(lastFetchTime));
+      expect(remoteConfig.lastFetchTime,
+          new DateTime.fromMillisecondsSinceEpoch(lastFetchTime));
       expect(remoteConfig.lastFetchStatus, LastFetchStatus.values[0]);
     });
 
@@ -108,7 +105,8 @@ void main() {
 
     test('setConfigSettings', () async {
       expect(remoteConfig.remoteConfigSettings.debugMode, true);
-      final RemoteConfigSettings remoteConfigSettings = new RemoteConfigSettings();
+      final RemoteConfigSettings remoteConfigSettings =
+          new RemoteConfigSettings();
       remoteConfigSettings.debugMode = false;
       await remoteConfig.setConfigSettings(remoteConfigSettings);
       expect(
@@ -116,7 +114,7 @@ void main() {
         <Matcher>[
           isMethodCall(
             'RemoteConfig#setConfigSettings',
-            arguments: <String, dynamic> {
+            arguments: <String, dynamic>{
               'debugMode': false,
             },
           ),
