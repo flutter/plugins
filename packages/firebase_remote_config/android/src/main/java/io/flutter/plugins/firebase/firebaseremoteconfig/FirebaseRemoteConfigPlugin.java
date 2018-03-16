@@ -30,6 +30,7 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 public class FirebaseRemoteConfigPlugin implements MethodCallHandler {
 
   public static final String TAG = "FirebbaseRCPlugin";
+  public static final String DEFAULT_PREF_KEY = "default_keys";
 
   private static SharedPreferences sharedPreferences;
   private final MethodChannel channel;
@@ -97,22 +98,20 @@ public class FirebaseRemoteConfigPlugin implements MethodCallHandler {
                       FirebaseRemoteConfigFetchThrottledException throttledException = (FirebaseRemoteConfigFetchThrottledException) exception;
                       Map<String, Object> details = new HashMap<>();
                       details.put("FETCH_THROTTLED_END", throttledException.getThrottleEndTimeMillis());
-                      result.error("FETCH_FAILED_THROTTLED", exception.getMessage(), details);
+                      result.error("FETCH_FAILED_THROTTLED", null, details);
                     } else {
-                      result.error("FETCH_FAILED", exception.getMessage(), null);
+                      result.error("FETCH_FAILED", null, null);
                     }
                   }
 
                   @Override
-                  public void error(String s, String s1, Object o) {
-                    // TODO: handle appropriately
-                    Log.d(TAG, "Error when updating fetch");
+                  public void error(String errorCode, String errorMessage, Object errorDetails) {
+                    result.error(errorCode, errorMessage, errorDetails);
                   }
 
                   @Override
                   public void notImplemented() {
-                    // TODO: handle appropriately
-                    Log.d(TAG, "Update fetch not implemented");
+                    result.error("UPDATE_FETCH_NOT_IMPLEMENTED", null, null);
                   }
                 });
 
@@ -132,19 +131,13 @@ public class FirebaseRemoteConfigPlugin implements MethodCallHandler {
           Set<String> keys = firebaseRemoteConfig.getKeysByPrefix("");
           for (String key : keys) {
             FirebaseRemoteConfigValue remoteConfigValue = firebaseRemoteConfig.getValue(key);
-            Map<String, Object> valueMap = new HashMap<>();
-            valueMap.put("value", remoteConfigValue.asByteArray());
-            valueMap.put("source", mapValueSource(remoteConfigValue.getSource()));
-            parameterMap.put(key, valueMap);
+            parameterMap.put(key, createRemoteConfigValueMap(remoteConfigValue));
           }
-          Set<String> defaultKeys = sharedPreferences.getStringSet("default_keys", new HashSet<String>());
+          Set<String> defaultKeys = sharedPreferences.getStringSet(DEFAULT_PREF_KEY, new HashSet<String>());
           for (String defaultKey : defaultKeys) {
             if (!parameterMap.containsKey(defaultKey)) {
               FirebaseRemoteConfigValue remoteConfigValue = firebaseRemoteConfig.getValue(defaultKey);
-              Map<String, Object> valueMap = new HashMap<>();
-              valueMap.put("value", remoteConfigValue.asByteArray());
-              valueMap.put("source", mapValueSource(remoteConfigValue.getSource()));
-              parameterMap.put(defaultKey, valueMap);
+              parameterMap.put(defaultKey, createRemoteConfigValueMap(remoteConfigValue));
             }
           }
           result.success(parameterMap);
@@ -155,7 +148,7 @@ public class FirebaseRemoteConfigPlugin implements MethodCallHandler {
           Map<String, Object> defaults = call.argument("defaults");
           FirebaseRemoteConfig.getInstance().setDefaults(defaults);
           SharedPreferences.Editor editor = sharedPreferences.edit();
-          editor.putStringSet("default_keys", defaults.keySet()).apply();
+          editor.putStringSet(DEFAULT_PREF_KEY, defaults.keySet()).apply();
           result.success(null);
           break;
         }
@@ -165,6 +158,13 @@ public class FirebaseRemoteConfigPlugin implements MethodCallHandler {
           break;
         }
     }
+  }
+
+  private Map<String, Object> createRemoteConfigValueMap(FirebaseRemoteConfigValue remoteConfigValue) {
+    Map<String, Object> valueMap = new HashMap<>();
+    valueMap.put("value", remoteConfigValue.asByteArray());
+    valueMap.put("source", mapValueSource(remoteConfigValue.getSource()));
+    return valueMap;
   }
 
   private int mapLastFetchStatus(int status) {

@@ -90,7 +90,7 @@ void main() {
     });
 
     test('activate', () async {
-      await remoteConfig.activate();
+      await remoteConfig.activateFetched();
       expect(
         log,
         <Matcher>[

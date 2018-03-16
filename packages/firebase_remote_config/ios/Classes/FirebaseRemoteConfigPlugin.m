@@ -8,6 +8,8 @@
 
 @implementation FirebaseRemoteConfigPlugin
 
+static NSString *DEFAULT_KEYS = @"default_keys";
+
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   FlutterMethodChannel* channel = [FlutterMethodChannel
       methodChannelWithName:@"plugins.flutter.io/firebase_remote_config"
@@ -55,11 +57,13 @@
         if (status != FIRRemoteConfigFetchStatusSuccess) {
           [self.channel invokeMethod:@"UpdateFetch" arguments:resultDict result:^(id _Nullable updateFetchResult) {
               if ([updateFetchResult isKindOfClass:[FlutterError class]]) {
-                // TODO: handle appropriately
-                NSLog(@"Error when updating fetch");
+                FlutterError *flutterError = (FlutterError *) updateFetchResult;
+                result(flutterError);
               } else if ([updateFetchResult isEqual:FlutterMethodNotImplemented]) {
-                // TODO: handle appropriately
-                NSLog(@"Update fetch not implemented");
+                FlutterError *flutterError = [FlutterError errorWithCode:@"UPDATE_FETCH_NOT_IMPLEMENTED"
+                                                                 message:nil
+                                                                 details:nil];
+                result(flutterError);
               } else {
                 if (status == FIRRemoteConfigFetchStatusThrottled) {
                   NSMutableDictionary *details = [[NSMutableDictionary alloc] init];
@@ -90,18 +94,12 @@
 
     NSSet *keySet = [remoteConfig keysWithPrefix:@""];
     for (NSString *key in keySet) {
-      NSMutableDictionary *valueDict = [[NSMutableDictionary alloc] init];
-      valueDict[@"value"] = [FlutterStandardTypedData typedDataWithBytes:[[remoteConfig configValueForKey:key] dataValue]];
-      valueDict[@"source"] = [[NSNumber alloc] initWithInt: [self mapValueSource:[[remoteConfig configValueForKey:key] source]]];
-      parameterDict[key] = valueDict;
+      parameterDict[key] = [self createRemoteConfigValueDict:[remoteConfig configValueForKey:key]];
     }
-    NSArray *defaultKeys = [[NSUserDefaults standardUserDefaults] arrayForKey:@"default_keys"];
+    NSArray *defaultKeys = [[NSUserDefaults standardUserDefaults] arrayForKey:DEFAULT_KEYS];
     for (NSString *key in defaultKeys) {
       if ([parameterDict valueForKey:key] == nil) {
-        NSMutableDictionary *valueDict = [[NSMutableDictionary alloc] init];
-        valueDict[@"value"] = [FlutterStandardTypedData typedDataWithBytes:[[remoteConfig configValueForKey:key] dataValue]];
-        valueDict[@"source"] = [[NSNumber alloc] initWithInt: [self mapValueSource:[[remoteConfig configValueForKey:key] source]]];
-        parameterDict[key] = valueDict;
+        parameterDict[key] = [self createRemoteConfigValueDict:[remoteConfig configValueForKey:key]];
       }
     }
     result(parameterDict);
@@ -109,11 +107,18 @@
     FIRRemoteConfig *remoteConfig = [FIRRemoteConfig remoteConfig];
     NSDictionary *defaults = call.arguments[@"defaults"];
     [remoteConfig setDefaults:defaults];
-    [[NSUserDefaults standardUserDefaults] setValue:[defaults allKeys] forKey:@"default_keys"];
+    [[NSUserDefaults standardUserDefaults] setValue:[defaults allKeys] forKey:DEFAULT_KEYS];
     result(nil);
   } else {
     result(FlutterMethodNotImplemented);
   }
+}
+
+- (NSMutableDictionary *)createRemoteConfigValueDict:(FIRRemoteConfigValue *)remoteConfigValue {
+  NSMutableDictionary *valueDict = [[NSMutableDictionary alloc] init];
+  valueDict[@"value"] = [FlutterStandardTypedData typedDataWithBytes:[remoteConfigValue dataValue]];
+  valueDict[@"source"] = [[NSNumber alloc] initWithInt: [self mapValueSource:[remoteConfigValue source]]];
+  return valueDict;
 }
 
 - (int)mapLastFetchStatus:(FIRRemoteConfigFetchStatus)status {

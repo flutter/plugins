@@ -8,6 +8,7 @@ homepage: https://github.com/flutter/plugins/tree/master/packages/firebase_remot
 dependencies:
   flutter:
     sdk: flutter
+  collection: '^1.14.6'
 
 dev_dependencies:
   flutter_test:

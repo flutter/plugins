@@ -1,11 +1,14 @@
 part of firebase_remote_config;
 
+/// ValueSource defines the possible sources of a config parameter value.
 enum ValueSource {
   valueStatic,
   valueDefault,
   valueRemote
 }
 
+/// RemoteConfigValue encapsulates the value and source of a Remote Config
+/// parameter.
 class RemoteConfigValue {
 
   dynamic _value;
@@ -15,10 +18,12 @@ class RemoteConfigValue {
 
   ValueSource get source => _source == ValueSource.valueDefault ? ValueSource.valueDefault : ValueSource.valueRemote;
 
+  /// Decode value to string.
   String asString() {
     return _value != null ? UTF8.decode(_value) : RemoteConfig.defaultValueForString;
   }
 
+  /// Decode value to int.
   int asInt() {
     if (_value != null) {
       final String strValue = UTF8.decode(_value);
@@ -29,6 +34,7 @@ class RemoteConfigValue {
     }
   }
 
+  /// Decode value to double.
   double asDouble() {
     if (_value != null) {
       final String strValue = UTF8.decode(_value);
@@ -39,6 +45,7 @@ class RemoteConfigValue {
     }
   }
 
+  /// Decode value to bool.
   bool asBool() {
     if (_value != null) {
       final String strValue = UTF8.decode(_value);
