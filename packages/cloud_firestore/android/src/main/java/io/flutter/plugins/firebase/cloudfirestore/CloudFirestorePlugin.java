@@ -31,7 +31,10 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
+import io.flutter.plugin.common.StandardMethodCodec;
+import io.flutter.plugin.common.StandardMessageCodec;
 import java.io.ByteArrayOutputStream;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -501,14 +504,14 @@ final class FirestoreMessageCodec extends StandardMessageCodec {
   protected void writeValue(ByteArrayOutputStream stream, Object value) {
     if (value instanceof Date) {
       stream.write(DATE_TIME);
-      writeLong(stream, (Date) value.getTime());
+      writeLong(stream, ((Date) value).getTime());
     } else if (value instanceof GeoPoint) {
       stream.write(GEO_POINT);
       writeValue(stream, ((GeoPoint) value).getLatitude());
       writeValue(stream, ((GeoPoint) value).getLongitude());
     } else if (value instanceof DocumentReference) {
       stream.write(DOCUMENT_REFERENCE);
-      writeValue(stream, ((DocumentReference) value).getPath())
+      writeValue(stream, ((DocumentReference) value).getPath());
     } else {
       super.writeValue(stream, value);
     }
@@ -520,9 +523,9 @@ final class FirestoreMessageCodec extends StandardMessageCodec {
       case DATE_TIME:
         return new Date(buffer.getLong());
       case GEO_POINT:
-        return new GeoPoint(readValue(buffer), readValue(buffer));
+        return new GeoPoint((Double) readValue(buffer), (Double) readValue(buffer));
       case DOCUMENT_REFERENCE:
-        return FirebaseFirestore.getInstance().document(readValue(buffer));
+        return FirebaseFirestore.getInstance().document((String) readValue(buffer));
       default: return super.readValueOfType(type, buffer);
     }
   }
