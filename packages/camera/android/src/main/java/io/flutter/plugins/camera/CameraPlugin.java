@@ -162,6 +162,10 @@ public class CameraPlugin implements MethodCallHandler {
         Arrays.asList(streamConfigurationMap.getOutputSizes(ImageFormat.JPEG)),
         new CompareSizesByArea());
   }
+  
+  private long textureIdOfCall(MethodCall call) {
+    return ((Number) call.argument("textureId")).longValue();
+  }
 
 // choose a video capture size for Media recorder max width 1080 as higher values aren't supported
   private static Size chooseVideoSize(Size[] choices) {
