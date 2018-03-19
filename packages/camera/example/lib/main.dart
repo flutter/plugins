@@ -359,7 +359,10 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
       setState(() {
         videofile = vfile;
       });
-      await restartcam();
+      if (!Platform.isIOS)
+        {
+          await restartcam();
+        }
 
     }
   }
