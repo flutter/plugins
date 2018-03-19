@@ -147,11 +147,11 @@ const UInt8 DOCUMENT_REFERENCE = 130;
 @end
 
 @interface FirestoreReader : FlutterStandardReader
-- (id)readValue:(UInt8)type;
+- (id)readValueOfType:(UInt8)type;
 @end
 
 @implementation FirestoreReader
-- (id)readValue:(UInt8)type {
+- (id)readValueOfType:(UInt8)type {
   switch (type) {
     case DATE_TIME: {
       SInt64 value;
@@ -160,8 +160,6 @@ const UInt8 DOCUMENT_REFERENCE = 130;
       return [NSDate dateWithTimeIntervalSince1970:time];
     }
     case GEO_POINT: {
-      Float64 latitude;
-      Float64 longitude;
       return [[FIRGeoPoint alloc] initWithLatitude:[self readValue] longitude:[self readValue]];
     }
     case DOCUMENT_REFERENCE: {

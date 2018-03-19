@@ -519,7 +519,7 @@ final class FirestoreMessageCodec extends StandardMessageCodec {
 
   @Override
   protected Object readValueOfType(byte type, ByteBuffer buffer) {
-    switch (buffer.get()) {
+    switch (type) {
       case DATE_TIME:
         return new Date(buffer.getLong());
       case GEO_POINT:
