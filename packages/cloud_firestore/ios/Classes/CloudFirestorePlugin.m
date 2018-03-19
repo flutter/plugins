@@ -198,11 +198,11 @@ const UInt8 DOCUMENT_REFERENCE = 130;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
-  ExtendedReaderWriter* extendedReaderWriter = [ExtendedReaderWriter new];
+  FirestoreReaderWriter* firestoreReaderWriter = [FirestoreReaderWriter new];
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/cloud_firestore"
                                   binaryMessenger:[registrar messenger]
-                                            codec:[FlutterStandardMethodCodec codecWithReaderWriter:FirestoreWriter]];
+                                            codec:[FlutterStandardMethodCodec codecWithReaderWriter:firestoreReaderWriter]];
   FLTCloudFirestorePlugin *instance = [[FLTCloudFirestorePlugin alloc] init];
   instance.channel = channel;
   [registrar addMethodCallDelegate:instance channel:channel];
