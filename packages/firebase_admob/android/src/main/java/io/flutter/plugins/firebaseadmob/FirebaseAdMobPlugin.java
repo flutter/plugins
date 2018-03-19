@@ -6,6 +6,7 @@ package io.flutter.plugins.firebaseadmob;
 
 import android.app.Activity;
 import android.view.Gravity;
+import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.FirebaseApp;
 import io.flutter.plugin.common.MethodCall;
@@ -38,14 +39,61 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
   private void callInitialize(MethodCall call, Result result) {
     String appId = call.argument("appId");
     if (appId == null || appId.isEmpty()) {
-      result.error("no_app_id", "a non-empty AdMob appId was not provided", null);
+      result.error("no_app_id", "a null or empty AdMob appId was provided", null);
       return;
     }
     MobileAds.initialize(registrar.context(), appId);
     result.success(Boolean.TRUE);
   }
 
-  private void callLoadAd(MobileAd ad, MethodCall call, Result result) {
+  private void callLoadBannerAd(
+      int id, Activity activity, MethodChannel channel, MethodCall call, Result result) {
+    String adUnitId = call.argument("adUnitId");
+    if (adUnitId == null || adUnitId.isEmpty()) {
+      result.error("no_unit_id", "a null or empty adUnitId was provided for ad id=" + id, null);
+      return;
+    }
+
+    int width = call.argument("width");
+    int height = call.argument("height");
+    String adSizeType = call.argument("adSizeType");
+
+    if (!adSizeType.equals("AdSizeType.WidthAndHeight")
+        && !adSizeType.equals("AdSizeType.SmartBanner")) {
+      String errMsg =
+          String.format("an invalid adSizeType (%s) was provided for banner id=%d", adSizeType, id);
+      result.error("invalid_adsizetype", errMsg, null);
+    }
+
+    if (adSizeType.equals("AdSizeType.WidthAndHeight") && (width <= 0 || height <= 0)) {
+      String errMsg =
+          String.format(
+              "an invalid AdSize (%d, %d) was provided for banner id=%d", width, height, id);
+      result.error("invalid_adsize", errMsg, null);
+    }
+
+    AdSize adSize;
+    if (adSizeType.equals("AdSizeType.SmartBanner")) {
+      adSize = AdSize.SMART_BANNER;
+    } else {
+      adSize = new AdSize(width, height);
+    }
+
+    MobileAd.Banner banner = MobileAd.createBanner(id, adSize, activity, channel);
+
+    if (banner.status != MobileAd.Status.CREATED) {
+      if (banner.status == MobileAd.Status.FAILED)
+        result.error("load_failed_ad", "cannot reload a failed ad, id=" + id, null);
+      else result.success(Boolean.TRUE); // The ad was already loaded.
+      return;
+    }
+
+    Map<String, Object> targetingInfo = call.argument("targetingInfo");
+    banner.load(adUnitId, targetingInfo);
+    result.success(Boolean.TRUE);
+  }
+
+  private void callLoadInterstitialAd(MobileAd ad, MethodCall call, Result result) {
     if (ad.status != MobileAd.Status.CREATED) {
       if (ad.status == MobileAd.Status.FAILED)
         result.error("load_failed_ad", "cannot reload a failed ad, id=" + ad.id, null);
@@ -55,7 +103,8 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
 
     String adUnitId = call.argument("adUnitId");
     if (adUnitId == null || adUnitId.isEmpty()) {
-      result.error("no_unit_id", "a non-empty adUnitId was not provided for ad id=" + ad.id, null);
+      result.error(
+          "no_adunit_id", "a null or empty adUnitId was provided for ad id=" + ad.id, null);
       return;
     }
     Map<String, Object> targetingInfo = call.argument("targetingInfo");
@@ -142,10 +191,10 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
 
     switch (call.method) {
       case "loadBannerAd":
-        callLoadAd(MobileAd.createBanner(id, activity, channel), call, result);
+        callLoadBannerAd(id, activity, channel, call, result);
         break;
       case "loadInterstitialAd":
-        callLoadAd(MobileAd.createInterstitial(id, activity, channel), call, result);
+        callLoadInterstitialAd(MobileAd.createInterstitial(id, activity, channel), call, result);
         break;
       case "loadRewardedVideoAd":
         callLoadRewardedVideoAd(call, result);

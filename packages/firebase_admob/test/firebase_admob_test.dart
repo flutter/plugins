@@ -52,6 +52,7 @@ void main() {
 
       final BannerAd banner = new BannerAd(
         adUnitId: BannerAd.testAdUnitId,
+        size: AdSize.banner,
       );
       final int id = banner.id;
 
@@ -64,6 +65,9 @@ void main() {
           'id': id,
           'adUnitId': BannerAd.testAdUnitId,
           'targetingInfo': <String, String>{'requestAgent': 'flutter-alpha'},
+          'width': 320,
+          'height': 50,
+          'adSizeType': 'AdSizeType.WidthAndHeight',
         }),
         isMethodCall('showAd', arguments: <String, dynamic>{
           'id': id,
