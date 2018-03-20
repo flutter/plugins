@@ -1,7 +1,3 @@
-## 0.4.1
-
-* Fixes Dart 2 runtime cast error.
-
 ## 0.4.0
 
 * **Breaking change**. Set SDK constraints to match the Flutter beta release.
