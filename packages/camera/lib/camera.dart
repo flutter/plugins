@@ -209,6 +209,7 @@ class CameraController extends ValueNotifier<CameraValue> {
           reply['previewHeight'].toDouble(),
         ),
       );
+      _applyStartStop();
     } on PlatformException catch (e) {
       value = value.copyWith(errorDescription: e.message);
       throw new CameraException(e.code, e.message);
@@ -298,6 +299,42 @@ class CameraController extends ValueNotifier<CameraValue> {
       throw new CameraException(e.code, e.message);
     }
   }
+
+
+  void _applyStartStop() {
+     if (value.initialized && !_disposed) {
+       if (value.opened) {
+         _channel.invokeMethod(
+           'start',
+           <String, dynamic>{'textureId': _textureId},
+         );
+       } else {
+         _channel.invokeMethod(
+           'stop',
+           <String, dynamic>{'textureId': _textureId},
+         );
+       }
+     }
+   }
+
+   /// Starts the preview.
+   ///
+   /// If called before [initialize] it will take effect just after
+   /// initialization is done.
+   void start() {
+     value = value.copyWith(opened: true);
+     _applyStartStop();
+   }
+
+   /// Stops the preview.
+   ///
+   /// If called before [initialize] it will take effect just after
+   /// initialization is done.
+   void stop() {
+     value = value.copyWith(opened: false);
+     _applyStartStop();
+   }
+
 
   /// Releases the resources of this camera.
   @override

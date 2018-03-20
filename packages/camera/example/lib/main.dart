@@ -287,7 +287,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
     if (!controller.value.opened) {
       return '';
     }
-    final Directory extDir = await getExternalStorageDirectory();
+    final Directory extDir = await getApplicationDocumentsDirectory();
     final String dirPath = '${extDir.path}/Movies/flutter_test';
     await new Directory(dirPath).create(recursive: true);
     final String filePath = '$dirPath/${getCurrentDate()}.mp4';
@@ -313,7 +313,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
     if (!controller.value.opened) {
       return '';
     }
-    final Directory extDir = await getExternalStorageDirectory();
+    final Directory extDir = await getApplicationDocumentsDirectory();
     final String dirPath = '${extDir.path}/Pictures/flutter_test';
     await new Directory(dirPath).create(recursive: true);
     final String filePath = '$dirPath/${getCurrentDate()}.jpg';

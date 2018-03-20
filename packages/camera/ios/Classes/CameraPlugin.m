@@ -365,7 +365,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         if (_videoWriter.status != 0) {
             [_videoWriter finishWritingWithCompletionHandler:^{
 
-              [_captureSession startRunning];
+                [_captureSession startRunning];
 
             }];
         }
@@ -422,8 +422,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     // add input
     [_videoWriter addInput:_videoWriterInput];
     [_videoWriter addInput:_audioWriterInput];
-//    FLTVideoDelegate *delegate = [[FLTVideoDelegate alloc] initWithWriter:_videoWriter videoOutput:_captureVideoOutput videoInput:_videoWriterInput audioInput:_audioWriterInput];
-//    delegate.onFrameAvailable = _onFrameAvailable;
+    //    FLTVideoDelegate *delegate = [[FLTVideoDelegate alloc] initWithWriter:_videoWriter videoOutput:_captureVideoOutput videoInput:_videoWriterInput audioInput:_audioWriterInput];
+    //    delegate.onFrameAvailable = _onFrameAvailable;
     // Setup the queue
     dispatch_queue_t queue = dispatch_queue_create("MyQueue", NULL);
     [_captureVideoOutput setSampleBufferDelegate:self queue:queue];
@@ -478,7 +478,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         }
         [_cams removeAllObjects];
         result(nil);
-    } else if ([@"list" isEqualToString:call.method]) {
+    } else if ([@"getAllAvailableCameras" isEqualToString:call.method]) {
         AVCaptureDeviceDiscoverySession *discoverySession = [AVCaptureDeviceDiscoverySession
                                                              discoverySessionWithDeviceTypes:@[ AVCaptureDeviceTypeBuiltInWideAngleCamera ]
                                                              mediaType:AVMediaTypeVideo
@@ -505,7 +505,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                                }];
         }
         result(reply);
-    } else if ([@"create" isEqualToString:call.method]) {
+    } else if ([@"openCamera" isEqualToString:call.method]) {
         NSString *cameraName = call.arguments[@"cameraName"];
         NSString *resolutionPreset = call.arguments[@"resolutionPreset"];
         NSError *error;
@@ -534,63 +534,45 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                      @"captureWidth" : @(cam.captureSize.width),
                      @"captureHeight" : @(cam.captureSize.height),
                      });
+          //[cam start];
         }
     } else {
-      int64_t textureId = [_registry registerTexture:cam];
-      _cams[@(textureId)] = cam;
-      cam.onFrameAvailable = ^{
-        [_registry textureFrameAvailable:textureId];
-      };
-      FlutterEventChannel *eventChannel = [FlutterEventChannel
-          eventChannelWithName:[NSString
-                                   stringWithFormat:@"flutter.io/cameraPlugin/cameraEvents%lld",
-                                                    textureId]
-               binaryMessenger:_messenger];
-      [eventChannel setStreamHandler:cam];
-      cam.eventChannel = eventChannel;
-      result(@{
-        @"textureId" : @(textureId),
-        @"previewWidth" : @(cam.previewSize.width),
-        @"previewHeight" : @(cam.previewSize.height),
-        @"captureWidth" : @(cam.captureSize.width),
-        @"captureHeight" : @(cam.captureSize.height),
-      });
-    }
-  } else {
-    NSDictionary *argsMap = call.arguments;
-    NSUInteger textureId = ((NSNumber *)argsMap[@"textureId"]).unsignedIntegerValue;
-    NSString *pathv;
+        NSDictionary *argsMap = call.arguments;
+        NSUInteger textureId = ((NSNumber *)argsMap[@"textureId"]).unsignedIntegerValue;
+        NSString *pathv;
 
-    FLTCam *cam = _cams[@(textureId)];
-    if ([@"start" isEqualToString:call.method]) {
-      [cam start];
-      result(nil);
-    } else if ([@"stop" isEqualToString:call.method]) {
-      [cam stop];
-      result(nil);
-    } else if ([@"capture" isEqualToString:call.method]) {
-      [cam captureToFile:call.arguments[@"path"] result:result];
-    } else if ([@"dispose" isEqualToString:call.method]) {
-      [_registry unregisterTexture:textureId];
-      [cam close];
-      [_cams removeObjectForKey:@(textureId)];
-      result(nil);
-    } else if ([@"video" isEqualToString:call.method]) {
-        NSArray *hello1 = [NSArray arrayWithObjects:  @"Hello Video call on iOS, this is the path sent: " , call.arguments[@"path"] , nil];
-        NSString *msg1 = [hello1 componentsJoinedByString:@" "] ;
-        result(msg1 );
-    } else if ([@"videostart" isEqualToString:call.method]) {
-        pathv = call.arguments[@"path"];
-        NSArray *hello2 = [NSArray arrayWithObjects:  @"VideoStart call on iOS: " , pathv , nil];
-        NSString *msg2 = [hello2 componentsJoinedByString:@" "] ;
-
-        result(msg2 );
-    } else if ([@"videostop" isEqualToString:call.method]) {
-        NSArray *hello3 = [NSArray arrayWithObjects:  @"VideoStop call on iOS: " , pathv , nil];
-        NSString *msg3 = [hello3 componentsJoinedByString:@" "] ;
-        result(msg3 );
-    } else {
-      result(FlutterMethodNotImplemented);
+        FLTCam *cam = _cams[@(textureId)];
+        if ([@"start" isEqualToString:call.method]) {
+            [cam start];
+            result(nil);
+        } else if ([@"stop" isEqualToString:call.method]) {
+            [cam stop];
+            result(nil);
+        } else if ([@"takePicture" isEqualToString:call.method]) {
+            [cam captureToFile:call.arguments[@"path"] result:result];
+        } else if ([@"closeCamera" isEqualToString:call.method]) {
+            [_registry unregisterTexture:textureId];
+            [cam close];
+            [_cams removeObjectForKey:@(textureId)];
+            result(nil);
+        } else if ([@"video" isEqualToString:call.method]) {
+            NSArray *hello1 = [NSArray arrayWithObjects:  @"Hello Video call on iOS, this is the path sent: " , call.arguments[@"path"] , nil];
+            NSString *msg1 = [hello1 componentsJoinedByString:@" "] ;
+            result(msg1 );
+        } else if ([@"startVideoRecording" isEqualToString:call.method]) {
+            pathv = call.arguments[@"path"];
+            NSArray *hello2 = [NSArray arrayWithObjects:  @"VideoStart call on iOS: " , pathv , nil];
+            NSString *msg2 = [hello2 componentsJoinedByString:@" "] ;
+            [cam startRecordingVideoAtPath:pathv result:result];
+            result(msg2 );
+        } else if ([@"stopVideoRecording" isEqualToString:call.method]) {
+            NSArray *hello3 = [NSArray arrayWithObjects:  @"VideoStop call on iOS: " , pathv , nil];
+            NSString *msg3 = [hello3 componentsJoinedByString:@" "] ;
+            [cam stopRecordingVideo];
+            result(msg3 );
+        } else {
+            result(FlutterMethodNotImplemented);
+        }
     }
 }
 

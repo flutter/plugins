@@ -198,6 +198,14 @@ public class CameraPlugin implements MethodCallHandler {
                 camera.stopVideoRecording(result);
                 break;
             }
+            case "start": {
+                // do nothing
+                break;
+            }
+            case "stop": {
+                // do nothing
+                break;
+            }
             case "closeCamera": {
                 if (camera != null) {
                     camera.dispose();
