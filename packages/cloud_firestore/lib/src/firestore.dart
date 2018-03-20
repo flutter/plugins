@@ -157,7 +157,7 @@ class FirestoreMessageCodec extends StandardMessageCodec {
   static const int _kDocumentReference = 130;
 
   @override
-  void writeValue(WriteBuffer buffer, dynamic value){
+  void writeValue(WriteBuffer buffer, dynamic value) {
     if (value is DateTime) {
       buffer.putUint8(_kDateTime);
       buffer.putInt64(value.millisecondsSinceEpoch);
@@ -174,7 +174,7 @@ class FirestoreMessageCodec extends StandardMessageCodec {
   }
 
   @override
-  dynamic readValueOfType(int type, ReadBuffer buffer){
+  dynamic readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
       case _kDateTime:
         return new DateTime.fromMillisecondsSinceEpoch(buffer.getInt64());
@@ -182,7 +182,8 @@ class FirestoreMessageCodec extends StandardMessageCodec {
         return new GeoPoint(readValue(buffer), readValue(buffer));
       case _kDocumentReference:
         return Firestore.instance.document(readValue(buffer));
-      default: return super.readValueOfType(type, buffer);
+      default:
+        return super.readValueOfType(type, buffer);
     }
   }
 }

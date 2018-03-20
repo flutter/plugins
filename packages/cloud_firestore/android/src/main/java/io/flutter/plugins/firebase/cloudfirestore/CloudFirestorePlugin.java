@@ -31,8 +31,8 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
-import io.flutter.plugin.common.StandardMethodCodec;
 import io.flutter.plugin.common.StandardMessageCodec;
+import io.flutter.plugin.common.StandardMethodCodec;
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -58,9 +58,9 @@ public class CloudFirestorePlugin implements MethodCallHandler {
   public static void registerWith(PluginRegistry.Registrar registrar) {
     final MethodChannel channel =
         new MethodChannel(
-          registrar.messenger(),
-          "plugins.flutter.io/cloud_firestore",
-          new StandardMethodCodec(FirestoreMessageCodec.INSTANCE));
+            registrar.messenger(),
+            "plugins.flutter.io/cloud_firestore",
+            new StandardMethodCodec(FirestoreMessageCodec.INSTANCE));
     channel.setMethodCallHandler(new CloudFirestorePlugin(channel));
   }
 
@@ -526,7 +526,8 @@ final class FirestoreMessageCodec extends StandardMessageCodec {
         return new GeoPoint((Double) readValue(buffer), (Double) readValue(buffer));
       case DOCUMENT_REFERENCE:
         return FirebaseFirestore.getInstance().document((String) readValue(buffer));
-      default: return super.readValueOfType(type, buffer);
+      default:
+        return super.readValueOfType(type, buffer);
     }
   }
 }
