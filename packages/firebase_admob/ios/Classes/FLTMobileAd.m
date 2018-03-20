@@ -97,17 +97,32 @@ int _anchorType;
 
 @implementation FLTBannerAd
 GADBannerView *_banner;
+GADAdSize _adSize;
 
-+ (instancetype)withId:(NSNumber *)mobileAdId channel:(FlutterMethodChannel *)channel {
++ (instancetype)withId:(NSNumber *)mobileAdId
+                adSize:(GADAdSize)adSize
+               channel:(FlutterMethodChannel *)channel {
   FLTMobileAd *ad = [FLTMobileAd getAdForId:mobileAdId];
   return ad != nil ? (FLTBannerAd *)ad
-                   : [[FLTBannerAd alloc] initWithId:mobileAdId channel:channel];
+                   : [[FLTBannerAd alloc] initWithId:mobileAdId adSize:adSize channel:channel];
+}
+
+- (instancetype)initWithId:mobileAdId
+                    adSize:(GADAdSize)adSize
+                   channel:(FlutterMethodChannel *)channel {
+  self = [super initWithId:mobileAdId channel:channel];
+  if (self) {
+    _adSize = adSize;
+    return self;
+  }
+
+  return nil;
 }
 
 - (void)loadWithAdUnitId:(NSString *)adUnitId targetingInfo:(NSDictionary *)targetingInfo {
   if (_status != CREATED) return;
   _status = LOADING;
-  _banner = [[GADBannerView alloc] initWithAdSize:kGADAdSizeBanner];
+  _banner = [[GADBannerView alloc] initWithAdSize:_adSize];
   _banner.delegate = self;
   _banner.adUnitID = adUnitId;
   _banner.rootViewController = [FLTMobileAd rootViewController];

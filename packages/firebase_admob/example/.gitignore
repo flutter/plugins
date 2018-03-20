@@ -1,10 +1,11 @@
-.DS_Store
 .atom/
+.DS_Store
+.flutter-plugins
 .idea
 .packages
 .pub/
 build/
 ios/.generated/
+ios/Flutter/app.flx
 packages
 pubspec.lock
-.flutter-plugins

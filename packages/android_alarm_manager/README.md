@@ -12,7 +12,7 @@ After importing this plugin to your project as usual, add the following to your
 
 ```xml
 <service
-    android:name="io.flutter.androidalarmmanager.AlarmService"
+    android:name="io.flutter.plugins.androidalarmmanager.AlarmService"
     android:exported="false"/>
 ```
 
