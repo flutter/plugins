@@ -172,7 +172,6 @@ const UInt8 DOCUMENT_REFERENCE = 130;
 }
 @end
 
-
 @interface FirestoreReaderWriter : FlutterStandardReaderWriter
 - (FlutterStandardWriter *)writerWithData:(NSMutableData *)data;
 - (FlutterStandardReader *)readerWithData:(NSData *)data;
