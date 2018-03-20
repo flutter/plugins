@@ -103,6 +103,8 @@ public class ImagePickerPlugin
             break;
           }
           activity.startActivityForResult(
+                  // TODO: Refactor to use the native camera. After that, remove the
+                  // com.esafirm.imagepicker depency.
               cameraModule.getCameraIntent(activity), REQUEST_CODE_CAMERA);
           break;
         default:
