@@ -1,3 +1,10 @@
+## 0.5.0
+
+* **Breaking change**. The BannerAd constructor now requires an AdSize
+  parameter. BannerAds can be created with AdSize.smartBanner, or one of
+  the other predefined AdSize values. Previously BannerAds were always
+  defined with the smartBanner size.
+
 ## 0.4.0
 
 * **Breaking change**. Set SDK constraints to match the Flutter beta release.
