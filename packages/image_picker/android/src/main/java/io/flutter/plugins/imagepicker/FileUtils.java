@@ -1,18 +1,5 @@
-package io.flutter.plugins.imagepicker;
-
-import android.annotation.SuppressLint;
-import android.content.ContentUris;
-import android.content.Context;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Environment;
-import android.provider.DocumentsContract;
-import android.provider.MediaStore;
-import android.text.TextUtils;
-
 /*
- * Copyright (C) 2007-2008 OpenIntents.org
+ * Copyright 2011 - 2013 Paul Burke
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,9 +13,27 @@ import android.text.TextUtils;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * A modified version of
+ * This file was modified by the Flutter authors from the following original file:
  * https://raw.githubusercontent.com/iPaulPro/aFileChooser/master/aFileChooser/src/com/ipaulpro/afilechooser/utils/FileUtils.java
  */
+
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package io.flutter.plugins.imagepicker;
+
+import android.annotation.SuppressLint;
+import android.content.ContentUris;
+import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
+import android.text.TextUtils;
+
 class FileUtils {
   private FileUtils() {}
 
