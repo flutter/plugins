@@ -111,11 +111,11 @@ class FirebaseMessaging {
             .add(new IosNotificationSettings._fromMap(call.arguments));
         return null;
       case "onMessage":
-        return _onMessage(call.arguments);
+        return _onMessage(call.arguments.cast<String, dynamic>());
       case "onLaunch":
-        return _onLaunch(call.arguments);
+        return _onLaunch(call.arguments.cast<String, dynamic>());
       case "onResume":
-        return _onResume(call.arguments);
+        return _onResume(call.arguments.cast<String, dynamic>());
       default:
         throw new UnsupportedError("Unrecognized JSON message");
     }
