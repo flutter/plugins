@@ -459,10 +459,7 @@ void main() {
 
     group('FirestoreMessageCodec', () {
       const MessageCodec<dynamic> codec = const FirestoreMessageCodec();
-      // Java is only precise to millisecond, Dart to microsecond.
-      // The mismatch between millisecond and microsecond precision will fail this test.
-      final DateTime testTime = new DateTime.fromMillisecondsSinceEpoch(
-          new DateTime.now().millisecondsSinceEpoch);
+      final DateTime testTime = new DateTime(2015, 10, 30, 11, 16);
       test('should encode and decode simple messages', () {
         _checkEncodeDecode<dynamic>(codec, testTime);
         _checkEncodeDecode<dynamic>(

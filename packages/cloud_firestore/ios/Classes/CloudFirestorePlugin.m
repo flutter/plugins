@@ -131,15 +131,18 @@ const UInt8 DOCUMENT_REFERENCE = 130;
     SInt64 ms = (SInt64)(time * 1000.0);
     [self writeBytes:&ms length:8];
   } else if ([value isKindOfClass:[FIRGeoPoint class]]) {
-    FIRGeoPoint *geopoint = value;
+    FIRGeoPoint *geoPoint = value;
+    Float64 latitude = geoPoint.latitude;
+    Float64 longitude = geoPoint.longitude;
     [self writeByte:GEO_POINT];
-    [self writeValue:geopoint.latitude];
-    [self writeValue:geopoint.longitude];
+    [self writeAlignment:8];
+    [self writeBytes:(UInt8*)&latitude length:8];
+    [self writeBytes:(UInt8*)&longitude length:8];
   } else if ([value isKindOfClass:[FIRDocumentReference]]) {
     FIRDocumentReference *documentReference = value;
     NSString *documentPath = [documentReference path];
     [self writeByte:DOCUMENT_REFERENCE];
-    [self writeValue:documentPath];
+    [self writeUTF8:documentPath];
   } else {
     [super writeValue:value];
   }
@@ -160,10 +163,15 @@ const UInt8 DOCUMENT_REFERENCE = 130;
       return [NSDate dateWithTimeIntervalSince1970:time];
     }
     case GEO_POINT: {
-      return [[FIRGeoPoint alloc] initWithLatitude:[self readValue] longitude:[self readValue]];
+      Float64 latitude;
+      Float64 longitude;
+      [self readAlignment:8];
+      [self readBytes:&latitude length:8];
+      [self readBytes:&longitude length:8];
+      return [[FIRGeoPoint alloc] initWithLatitude:latitude longitude:longitude];
     }
     case DOCUMENT_REFERENCE: {
-      NSString *documentPath = [self readValue];
+      NSString *documentPath = [self readUTF8];
       return [[FIRFirestore firestore] documentWithPath:documentPath];
     }
     default:

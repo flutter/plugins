@@ -35,6 +35,7 @@ import io.flutter.plugin.common.StandardMessageCodec;
 import io.flutter.plugin.common.StandardMethodCodec;
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -496,6 +497,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
 
 final class FirestoreMessageCodec extends StandardMessageCodec {
   public static final FirestoreMessageCodec INSTANCE = new FirestoreMessageCodec();
+  private static final Charset UTF8 = Charset.forName("UTF8");
   private static final byte DATE_TIME = (byte) 128;
   private static final byte GEO_POINT = (byte) 129;
   private static final byte DOCUMENT_REFERENCE = (byte) 130;
@@ -507,11 +509,11 @@ final class FirestoreMessageCodec extends StandardMessageCodec {
       writeLong(stream, ((Date) value).getTime());
     } else if (value instanceof GeoPoint) {
       stream.write(GEO_POINT);
-      writeValue(stream, ((GeoPoint) value).getLatitude());
-      writeValue(stream, ((GeoPoint) value).getLongitude());
+      writeDouble(stream, ((GeoPoint) value).getLatitude());
+      writeDouble(stream, ((GeoPoint) value).getLongitude());
     } else if (value instanceof DocumentReference) {
       stream.write(DOCUMENT_REFERENCE);
-      writeValue(stream, ((DocumentReference) value).getPath());
+      writeBytes(stream, ((DocumentReference) value).getPath().getBytes(UTF8));
     } else {
       super.writeValue(stream, value);
     }
@@ -523,9 +525,12 @@ final class FirestoreMessageCodec extends StandardMessageCodec {
       case DATE_TIME:
         return new Date(buffer.getLong());
       case GEO_POINT:
-        return new GeoPoint((Double) readValue(buffer), (Double) readValue(buffer));
+        readAlignment(buffer, 8);
+        return new GeoPoint(buffer.getDouble(), buffer.getDouble());
       case DOCUMENT_REFERENCE:
-        return FirebaseFirestore.getInstance().document((String) readValue(buffer));
+        final byte[] bytes = readBytes(buffer);
+        String path = new String(bytes, UTF8);
+        return FirebaseFirestore.getInstance().document(path);
       default:
         return super.readValueOfType(type, buffer);
     }

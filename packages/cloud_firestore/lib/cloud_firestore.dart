@@ -5,6 +5,7 @@
 library cloud_firestore;
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:ui' show hashValues, hashList;
 
 import 'package:flutter/services.dart';

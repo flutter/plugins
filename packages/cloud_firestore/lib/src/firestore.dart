@@ -163,11 +163,13 @@ class FirestoreMessageCodec extends StandardMessageCodec {
       buffer.putInt64(value.millisecondsSinceEpoch);
     } else if (value is GeoPoint) {
       buffer.putUint8(_kGeoPoint);
-      writeValue(buffer, value.latitude);
-      writeValue(buffer, value.longitude);
+      buffer.putFloat64(value.latitude);
+      buffer.putFloat64(value.longitude);
     } else if (value is DocumentReference) {
       buffer.putUint8(_kDocumentReference);
-      writeValue(buffer, value.path);
+      final List<int> bytes = utf8.encoder.convert(value.path);
+      writeSize(buffer, bytes.length);
+      buffer.putUint8List(bytes);
     } else {
       super.writeValue(buffer, value);
     }
@@ -179,9 +181,11 @@ class FirestoreMessageCodec extends StandardMessageCodec {
       case _kDateTime:
         return new DateTime.fromMillisecondsSinceEpoch(buffer.getInt64());
       case _kGeoPoint:
-        return new GeoPoint(readValue(buffer), readValue(buffer));
+        return new GeoPoint(buffer.getFloat64(), buffer.getFloat64());
       case _kDocumentReference:
-        return Firestore.instance.document(readValue(buffer));
+        final int length = readSize(buffer);
+        final String path = utf8.decoder.convert(buffer.getUint8List(length));
+        return Firestore.instance.document(path);
       default:
         return super.readValueOfType(type, buffer);
     }

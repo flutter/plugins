@@ -2,7 +2,7 @@
 
 * Add GeoPoint class
 * Allow for reading and writing DocumentReference, DateTime, and GeoPoint
-  values to and from Documents.
+  values from and to Documents.
 
 ## 0.3.0
 
