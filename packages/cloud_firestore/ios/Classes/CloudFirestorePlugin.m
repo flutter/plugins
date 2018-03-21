@@ -136,8 +136,8 @@ const UInt8 DOCUMENT_REFERENCE = 130;
     Float64 longitude = geoPoint.longitude;
     [self writeByte:GEO_POINT];
     [self writeAlignment:8];
-    [self writeBytes:(UInt8*)&latitude length:8];
-    [self writeBytes:(UInt8*)&longitude length:8];
+    [self writeBytes:(UInt8 *)&latitude length:8];
+    [self writeBytes:(UInt8 *)&longitude length:8];
   } else if ([value isKindOfClass:[FIRDocumentReference]]) {
     FIRDocumentReference *documentReference = value;
     NSString *documentPath = [documentReference path];
