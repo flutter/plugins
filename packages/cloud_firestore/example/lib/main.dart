@@ -21,7 +21,7 @@ class BookList extends StatelessWidget {
         return new ListView(
           children: snapshot.data.documents.map((DocumentSnapshot document) {
             return new ListTile(
-              title: new Text(document['message']),
+              title: new Text(document['message'] ?? '<No message retrieved>'),
             );
           }).toList(),
         );
