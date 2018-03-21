@@ -529,7 +529,7 @@ final class FirestoreMessageCodec extends StandardMessageCodec {
         return new GeoPoint(buffer.getDouble(), buffer.getDouble());
       case DOCUMENT_REFERENCE:
         final byte[] bytes = readBytes(buffer);
-        String path = new String(bytes, UTF8);
+        final String path = new String(bytes, UTF8);
         return FirebaseFirestore.getInstance().document(path);
       default:
         return super.readValueOfType(type, buffer);
