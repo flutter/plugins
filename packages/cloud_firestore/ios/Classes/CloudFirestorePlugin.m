@@ -122,7 +122,7 @@ const UInt8 DOCUMENT_REFERENCE = 130;
 - (void)writeValue:(id)value;
 @end
 
-@interface FirestoreWriter : FlutterStandardWriter
+@implementation FirestoreWriter : FlutterStandardWriter
 - (void)writeValue:(id)value {
   if ([value isKindOfClass:[NSDate class]]) {
     [self writeByte:DATE_TIME];
