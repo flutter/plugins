@@ -138,7 +138,7 @@ const UInt8 DOCUMENT_REFERENCE = 130;
     [self writeAlignment:8];
     [self writeBytes:(UInt8 *)&latitude length:8];
     [self writeBytes:(UInt8 *)&longitude length:8];
-  } else if ([value isKindOfClass:[FIRDocumentReference]]) {
+  } else if ([value isKindOfClass:[FIRDocumentReference class]]) {
     FIRDocumentReference *documentReference = value;
     NSString *documentPath = [documentReference path];
     [self writeByte:DOCUMENT_REFERENCE];
