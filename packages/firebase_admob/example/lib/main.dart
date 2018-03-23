@@ -31,6 +31,7 @@ class _MyAppState extends State<MyApp> {
   BannerAd createBannerAd() {
     return new BannerAd(
       adUnitId: BannerAd.testAdUnitId,
+      size: AdSize.banner,
       targetingInfo: targetingInfo,
       listener: (MobileAdEvent event) {
         print("BannerAd event $event");
@@ -78,59 +79,61 @@ class _MyAppState extends State<MyApp> {
         appBar: new AppBar(
           title: const Text('AdMob Plugin example app'),
         ),
-        body: new Center(
-          child: new Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              new RaisedButton(
-                  child: const Text('SHOW BANNER'),
+        body: new SingleChildScrollView(
+          child: new Center(
+            child: new Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                new RaisedButton(
+                    child: const Text('SHOW BANNER'),
+                    onPressed: () {
+                      _bannerAd ??= createBannerAd();
+                      _bannerAd
+                        ..load()
+                        ..show();
+                    }),
+                new RaisedButton(
+                    child: const Text('REMOVE BANNER'),
+                    onPressed: () {
+                      _bannerAd?.dispose();
+                      _bannerAd = null;
+                    }),
+                new RaisedButton(
+                  child: const Text('LOAD INTERSTITIAL'),
                   onPressed: () {
-                    _bannerAd ??= createBannerAd();
-                    _bannerAd
-                      ..load()
-                      ..show();
-                  }),
-              new RaisedButton(
-                  child: const Text('REMOVE BANNER'),
+                    _interstitialAd?.dispose();
+                    _interstitialAd = createInterstitialAd()..load();
+                  },
+                ),
+                new RaisedButton(
+                  child: const Text('SHOW INTERSTITIAL'),
                   onPressed: () {
-                    _bannerAd?.dispose();
-                    _bannerAd = null;
-                  }),
-              new RaisedButton(
-                child: const Text('LOAD INTERSTITIAL'),
-                onPressed: () {
-                  _interstitialAd?.dispose();
-                  _interstitialAd = createInterstitialAd()..load();
-                },
-              ),
-              new RaisedButton(
-                child: const Text('SHOW INTERSTITIAL'),
-                onPressed: () {
-                  _interstitialAd?.show();
-                },
-              ),
-              new RaisedButton(
-                child: const Text('LOAD REWARDED VIDEO'),
-                onPressed: () {
-                  RewardedVideoAd.instance.load(
-                      adUnitId: RewardedVideoAd.testAdUnitId,
-                      targetingInfo: targetingInfo);
-                },
-              ),
-              new RaisedButton(
-                child: const Text('SHOW REWARDED VIDEO'),
-                onPressed: () {
-                  RewardedVideoAd.instance.show();
-                },
-              ),
-              new Text("You have $_coins coins."),
-            ].map((Widget button) {
-              return new Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                child: button,
-              );
-            }).toList(),
+                    _interstitialAd?.show();
+                  },
+                ),
+                new RaisedButton(
+                  child: const Text('LOAD REWARDED VIDEO'),
+                  onPressed: () {
+                    RewardedVideoAd.instance.load(
+                        adUnitId: RewardedVideoAd.testAdUnitId,
+                        targetingInfo: targetingInfo);
+                  },
+                ),
+                new RaisedButton(
+                  child: const Text('SHOW REWARDED VIDEO'),
+                  onPressed: () {
+                    RewardedVideoAd.instance.show();
+                  },
+                ),
+                new Text("You have $_coins coins."),
+              ].map((Widget button) {
+                return new Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: button,
+                );
+              }).toList(),
+            ),
           ),
         ),
       ),

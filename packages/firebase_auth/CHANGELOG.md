@@ -1,3 +1,7 @@
+## 0.5.2
+
+* Fixed Dart 2 type error in fetchProvidersForEmail.
+
 ## 0.5.1
 
 * Added support to fetchProvidersForEmail

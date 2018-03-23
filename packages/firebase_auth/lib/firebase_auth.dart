@@ -162,12 +162,13 @@ class FirebaseAuth {
     @required String email,
   }) async {
     assert(email != null);
-    return await channel.invokeMethod(
+    final List<dynamic> providers = await channel.invokeMethod(
       'fetchProvidersForEmail',
       <String, String>{
         'email': email,
       },
     );
+    return providers.cast<String>();
   }
 
   Future<void> sendPasswordResetEmail({
