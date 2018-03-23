@@ -1,7 +1,6 @@
 ## 0.3.2
 
 * Support for batched writes.
-* Fix example app
 
 ## 0.3.1
 
