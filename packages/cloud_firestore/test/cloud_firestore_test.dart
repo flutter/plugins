@@ -475,6 +475,9 @@ void main() {
           firestore.document('foo/bar'),
         ];
         _checkEncodeDecode<dynamic>(codec, message);
+      });
+    });
+
     group('WriteBatch', () {
       test('set', () async {
         final WriteBatch batch = firestore.batch();
