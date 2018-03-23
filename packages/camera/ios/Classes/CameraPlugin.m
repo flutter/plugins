@@ -58,88 +58,6 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
     _result(nil);
 }
 @end
-//@interface FLTVideoDelegate : NSObject<AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureAudioDataOutputSampleBufferDelegate>
-//@property(readonly, nonatomic) AVAssetWriter *videoWriter;
-//@property(readonly, nonatomic) FlutterResult result;
-//@property(assign, nonatomic) BOOL isRecording;
-//@property(assign, nonatomic) AVCaptureVideoDataOutput *videoOutput;
-//@property(readonly) CVPixelBufferRef volatile latestPixelBuffer;
-//@property (strong, nonatomic) AVAssetWriterInput *videoWriterInput;
-//@property (strong, nonatomic) AVAssetWriterInput *audioWriterInput;
-//@property(nonatomic, copy) void (^onFrameAvailable)();
-//- initWithWriter:(AVAssetWriter *)writer videoOutput:(AVCaptureVideoDataOutput*)output videoInput:(AVAssetWriterInput *)input audioInput:(AVAssetWriterInput *)audioInput;
-//@end
-//
-//@implementation FLTVideoDelegate {
-//    /// Used to keep the delegate alive until didFinishProcessingPhotoSampleBuffer.
-//    FLTVideoDelegate *selfReference;
-//
-//}
-//
-//- initWithWriter:(AVAssetWriter *)writer videoOutput:(AVCaptureVideoDataOutput*)output videoInput:(AVAssetWriterInput *)input audioInput:(AVAssetWriterInput *)audioInput{
-//    self = [super init];
-//    NSAssert(self, @"super init cannot be nil");
-//    _videoWriter = writer;
-//    _videoOutput = output;
-//    _videoWriterInput = input;
-//    _audioWriterInput = audioInput;
-//    _isRecording = YES;
-//    selfReference = self;
-//    return self;
-//}
-//
-//-(void)captureOutput:(AVCaptureOutput *)output didDropSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection
-//{
-//
-//}
-//-(void)captureOutput:(AVCaptureOutput *)output didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection
-//{
-//    if (output == _videoOutput) {
-//    CVPixelBufferRef newBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
-//    CFRetain(newBuffer);
-//    CVPixelBufferRef old = _latestPixelBuffer;
-//    while (!OSAtomicCompareAndSwapPtrBarrier(old, newBuffer, (void **)&_latestPixelBuffer)) {
-//        old = _latestPixelBuffer;
-//    }
-//    if (old != nil) {
-//        CFRelease(old);
-//    }
-//    if (_onFrameAvailable) {
-//        _onFrameAvailable();
-//    }
-//    }
-//    if (!CMSampleBufferDataIsReady(sampleBuffer)) {
-//        NSLog( @"sample buffer is not ready. Skipping sample" );
-//        return;
-//    }
-//    if (_isRecording == YES) {
-//        CMTime lastSampleTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer);
-//        if (_videoWriter.status != AVAssetWriterStatusWriting ) {
-//            [_videoWriter startWriting];
-//            [_videoWriter startSessionAtSourceTime:lastSampleTime];
-//        }
-//        if (output == _videoOutput) {
-//            [self newVideoSample:sampleBuffer];
-//        } else {
-//            [self newAudioSample:sampleBuffer];
-//        }
-//    }
-//}
-//
-//- (void)dealloc {
-//    if (_latestPixelBuffer) {
-//        CFRelease(_latestPixelBuffer);
-//    }
-//}
-//
-//- (CVPixelBufferRef)copyPixelBuffer {
-//    CVPixelBufferRef pixelBuffer = _latestPixelBuffer;
-//    while (!OSAtomicCompareAndSwapPtrBarrier(pixelBuffer, nil, (void **)&_latestPixelBuffer)) {
-//        pixelBuffer = _latestPixelBuffer;
-//    }
-//    return pixelBuffer;
-//}
-//@end
 
 @interface FLTCam
 : NSObject<FlutterTexture, AVCaptureVideoDataOutputSampleBufferDelegate,AVCaptureAudioDataOutputSampleBufferDelegate, FlutterStreamHandler>
@@ -162,6 +80,7 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
 @property (strong, nonatomic) AVCaptureVideoDataOutput *videoOutput;
 @property (strong, nonatomic) AVCaptureAudioDataOutput *audioOutput;
 @property (assign, nonatomic) BOOL isRecording;
+@property (assign, nonatomic) BOOL isAudioSetup;
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
                              error:(NSError **)error;
@@ -201,13 +120,13 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
     CMVideoDimensions dimensions =
     CMVideoFormatDescriptionGetDimensions([[_captureDevice activeFormat] formatDescription]);
     _previewSize = CGSizeMake(dimensions.width, dimensions.height);
-
+    
     _captureVideoOutput = [AVCaptureVideoDataOutput new];
     _captureVideoOutput.videoSettings =
     @{(NSString *)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_32BGRA) };
     [_captureVideoOutput setAlwaysDiscardsLateVideoFrames:YES];
     [_captureVideoOutput setSampleBufferDelegate:self queue:dispatch_get_main_queue()];
-
+    
     AVCaptureConnection *connection =
     [AVCaptureConnection connectionWithInputPorts:_captureVideoInput.ports output:_captureVideoOutput];
     if ([_captureDevice position] == AVCaptureDevicePositionFront) {
@@ -219,7 +138,7 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
     [_captureSession addConnection:connection];
     _capturePhotoOutput = [AVCapturePhotoOutput new];
     [_captureSession addOutput:_capturePhotoOutput];
-    [self setUpCaptureSessionForAudio];
+    
     return self;
 }
 
@@ -299,7 +218,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                 NSLog(@"Error: %@", _videoWriter.error);
             return;
         }
-
+        
         if (![_audioWriterInput appendSampleBuffer:sampleBuffer]) {
             NSLog(@"Unable to write to audio input");
         }
@@ -342,7 +261,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 }
 -(void)startRecordingVideoAtPath:(NSString *)path result:(FlutterResult)result
 {
-    // [self setUpCaptureSessionForAudio];
+    if(!_isAudioSetup) {
+        [self setUpCaptureSessionForAudio];
+    }
+    
     if( !_isRecording )
     {
         NSLog(@"start video recording...");
@@ -354,19 +276,20 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         _isRecording = YES;
         [_captureSession startRunning] ;
     }
+    //NSLog(@"Saved: %@ ", path );
 }
 -(void)stopRecordingVideo
 {
     if( _isRecording )
-
+        
     {
         _isRecording = NO;
         [_captureSession stopRunning] ;
         if (_videoWriter.status != 0) {
             [_videoWriter finishWritingWithCompletionHandler:^{
-
+                
                 [_captureSession startRunning];
-
+                
             }];
         }
         NSLog(@"video recording stopped");
@@ -380,31 +303,39 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     NSString *timestamp=[NSString stringWithFormat:@"%ld",unixTime];
     NSString *filename = [NSString stringWithFormat:@"iPhoneVideo_%@.mp4",timestamp];
     NSURL * outputURL = [NSURL fileURLWithPath:[documentsDirectoryPath stringByAppendingPathComponent:filename]];
+    
+    if(path != nil){
+        outputURL = [NSURL fileURLWithPath:path];
+    }
+    
+    
     _videoWriter = [[AVAssetWriter alloc] initWithURL:outputURL
                                              fileType:AVFileTypeQuickTimeMovie
                                                 error:&error];
     NSParameterAssert(_videoWriter);
-
+    
+    
+    
     NSDictionary *videoSettings = [NSDictionary dictionaryWithObjectsAndKeys:
                                    AVVideoCodecH264, AVVideoCodecKey,
                                    [NSNumber numberWithInt:_previewSize.height], AVVideoWidthKey,
                                    [NSNumber numberWithInt:_previewSize.width], AVVideoHeightKey,
                                    nil];
-
+    
     _videoWriterInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeVideo
                                                            outputSettings:videoSettings] ;
-
-
+    
+    
     NSParameterAssert(_videoWriterInput);
     _videoWriterInput.expectsMediaDataInRealTime = YES;
-
-
+    
+    
     // Add the audio input
     AudioChannelLayout acl;
     bzero( &acl, sizeof(acl));
     acl.mChannelLayoutTag = kAudioChannelLayoutTag_Mono;
-
-
+    
+    
     NSDictionary* audioOutputSettings = nil;
     // Both type of audio inputs causes output video file to be corrupted.
     audioOutputSettings = [ NSDictionary dictionaryWithObjectsAndKeys:
@@ -413,21 +344,20 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                            [ NSNumber numberWithInt: 1 ], AVNumberOfChannelsKey,
                            [ NSData dataWithBytes: &acl length: sizeof( acl ) ], AVChannelLayoutKey,
                            nil ];
-
+    
     _audioWriterInput = [AVAssetWriterInput
                          assetWriterInputWithMediaType: AVMediaTypeAudio
                          outputSettings: audioOutputSettings];
     _audioWriterInput.expectsMediaDataInRealTime = YES;
-
-    // add input
+    
+ 
     [_videoWriter addInput:_videoWriterInput];
     [_videoWriter addInput:_audioWriterInput];
-    //    FLTVideoDelegate *delegate = [[FLTVideoDelegate alloc] initWithWriter:_videoWriter videoOutput:_captureVideoOutput videoInput:_videoWriterInput audioInput:_audioWriterInput];
-    //    delegate.onFrameAvailable = _onFrameAvailable;
-    // Setup the queue
+
     dispatch_queue_t queue = dispatch_queue_create("MyQueue", NULL);
     [_captureVideoOutput setSampleBufferDelegate:self queue:queue];
     [_audioOutput setSampleBufferDelegate:self queue:queue];
+    
     return YES;
 }
 -(void)setUpCaptureSessionForAudio
@@ -439,8 +369,20 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     AVCaptureDeviceInput *audioInput = [AVCaptureDeviceInput deviceInputWithDevice:audioDevice error:&error ];
     // Setup the audio output
     _audioOutput = [[AVCaptureAudioDataOutput alloc] init];
-    [_captureSession addInput:audioInput];
-    [_captureSession addOutput:_audioOutput];
+    
+    if ([_captureSession canAddInput:audioInput]){
+        [_captureSession addInput:audioInput];
+        
+        if ([_captureSession canAddOutput:_audioOutput]){
+            [_captureSession addOutput:_audioOutput];
+             _isAudioSetup = YES;
+        } else {
+            NSLog( @"Error: Unable to add Audio input/output to session capture" );
+             _isAudioSetup = NO;
+        }
+    }
+
+    
 }
 @end
 
@@ -534,42 +476,28 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                      @"captureWidth" : @(cam.captureSize.width),
                      @"captureHeight" : @(cam.captureSize.height),
                      });
-          //[cam start];
+            // starting the choosen cam
+            FLTCam *cam2 = _cams[@(textureId)];
+            [cam2 start];
         }
     } else {
         NSDictionary *argsMap = call.arguments;
         NSUInteger textureId = ((NSNumber *)argsMap[@"textureId"]).unsignedIntegerValue;
-        NSString *pathv;
-
         FLTCam *cam = _cams[@(textureId)];
-        if ([@"start" isEqualToString:call.method]) {
-            [cam start];
-            result(nil);
-        } else if ([@"stop" isEqualToString:call.method]) {
-            [cam stop];
-            result(nil);
-        } else if ([@"takePicture" isEqualToString:call.method]) {
+        
+        if ([@"takePicture" isEqualToString:call.method]) {
             [cam captureToFile:call.arguments[@"path"] result:result];
         } else if ([@"closeCamera" isEqualToString:call.method]) {
             [_registry unregisterTexture:textureId];
             [cam close];
             [_cams removeObjectForKey:@(textureId)];
             result(nil);
-        } else if ([@"video" isEqualToString:call.method]) {
-            NSArray *hello1 = [NSArray arrayWithObjects:  @"Hello Video call on iOS, this is the path sent: " , call.arguments[@"path"] , nil];
-            NSString *msg1 = [hello1 componentsJoinedByString:@" "] ;
-            result(msg1 );
         } else if ([@"startVideoRecording" isEqualToString:call.method]) {
-            pathv = call.arguments[@"path"];
-            NSArray *hello2 = [NSArray arrayWithObjects:  @"VideoStart call on iOS: " , pathv , nil];
-            NSString *msg2 = [hello2 componentsJoinedByString:@" "] ;
-            [cam startRecordingVideoAtPath:pathv result:result];
-            result(msg2 );
+            [cam startRecordingVideoAtPath:call.arguments[@"filePath"] result:result];
+            
         } else if ([@"stopVideoRecording" isEqualToString:call.method]) {
-            NSArray *hello3 = [NSArray arrayWithObjects:  @"VideoStop call on iOS: " , pathv , nil];
-            NSString *msg3 = [hello3 componentsJoinedByString:@" "] ;
             [cam stopRecordingVideo];
-            result(msg3 );
+            result(nil);
         } else {
             result(FlutterMethodNotImplemented);
         }
