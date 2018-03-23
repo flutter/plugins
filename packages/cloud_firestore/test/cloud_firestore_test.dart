@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
@@ -455,5 +456,84 @@ void main() {
         expect(document.data, equals(kMockDocumentSnapshotData));
       });
     });
+
+    group('FirestoreMessageCodec', () {
+      const MessageCodec<dynamic> codec = const FirestoreMessageCodec();
+      final DateTime testTime = new DateTime(2015, 10, 30, 11, 16);
+      test('should encode and decode simple messages', () {
+        _checkEncodeDecode<dynamic>(codec, testTime);
+        _checkEncodeDecode<dynamic>(
+            codec, const GeoPoint(37.421939, -122.083509));
+        _checkEncodeDecode<dynamic>(codec, firestore.document('foo/bar'));
+      });
+      test('should encode and decode composite message', () {
+        final List<dynamic> message = <dynamic>[
+          testTime,
+          const GeoPoint(37.421939, -122.083509),
+          firestore.document('foo/bar'),
+        ];
+        _checkEncodeDecode<dynamic>(codec, message);
+      });
+    });
   });
+}
+
+void _checkEncodeDecode<T>(MessageCodec<T> codec, T message) {
+  final ByteData encoded = codec.encodeMessage(message);
+  final T decoded = codec.decodeMessage(encoded);
+  if (message == null) {
+    expect(encoded, isNull);
+    expect(decoded, isNull);
+  } else {
+    expect(_deepEquals(message, decoded), isTrue);
+    final ByteData encodedAgain = codec.encodeMessage(decoded);
+    expect(
+      encodedAgain.buffer.asUint8List(),
+      orderedEquals(encoded.buffer.asUint8List()),
+    );
+  }
+}
+
+bool _deepEquals(dynamic valueA, dynamic valueB) {
+  if (valueA is TypedData)
+    return valueB is TypedData && _deepEqualsTypedData(valueA, valueB);
+  if (valueA is List) return valueB is List && _deepEqualsList(valueA, valueB);
+  if (valueA is Map) return valueB is Map && _deepEqualsMap(valueA, valueB);
+  if (valueA is double && valueA.isNaN) return valueB is double && valueB.isNaN;
+  return valueA == valueB;
+}
+
+bool _deepEqualsTypedData(TypedData valueA, TypedData valueB) {
+  if (valueA is ByteData) {
+    return valueB is ByteData &&
+        _deepEqualsList(
+            valueA.buffer.asUint8List(), valueB.buffer.asUint8List());
+  }
+  if (valueA is Uint8List)
+    return valueB is Uint8List && _deepEqualsList(valueA, valueB);
+  if (valueA is Int32List)
+    return valueB is Int32List && _deepEqualsList(valueA, valueB);
+  if (valueA is Int64List)
+    return valueB is Int64List && _deepEqualsList(valueA, valueB);
+  if (valueA is Float64List)
+    return valueB is Float64List && _deepEqualsList(valueA, valueB);
+  throw 'Unexpected typed data: $valueA';
+}
+
+bool _deepEqualsList(List<dynamic> valueA, List<dynamic> valueB) {
+  if (valueA.length != valueB.length) return false;
+  for (int i = 0; i < valueA.length; i++) {
+    if (!_deepEquals(valueA[i], valueB[i])) return false;
+  }
+  return true;
+}
+
+bool _deepEqualsMap(
+    Map<dynamic, dynamic> valueA, Map<dynamic, dynamic> valueB) {
+  if (valueA.length != valueB.length) return false;
+  for (final dynamic key in valueA.keys) {
+    if (!valueB.containsKey(key) || !_deepEquals(valueA[key], valueB[key]))
+      return false;
+  }
+  return true;
 }
