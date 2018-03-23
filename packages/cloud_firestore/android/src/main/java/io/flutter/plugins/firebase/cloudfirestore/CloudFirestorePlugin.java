@@ -26,6 +26,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.Transaction;
+import com.google.firebase.firestore.WriteBatch;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -49,10 +50,12 @@ public class CloudFirestorePlugin implements MethodCallHandler {
   private final MethodChannel channel;
 
   // Handles are ints used as indexes into the sparse array of active observers
-  private int nextHandle = 0;
+  private int nextListenerHandle = 0;
+  private int nextBatchHandle = 0;
   private final SparseArray<EventObserver> observers = new SparseArray<>();
   private final SparseArray<DocumentObserver> documentObservers = new SparseArray<>();
   private final SparseArray<ListenerRegistration> listenerRegistrations = new SparseArray<>();
+  private final SparseArray<WriteBatch> batches = new SparseArray<>();
   private final SparseArray<Transaction> transactions = new SparseArray<>();
   private final SparseArray<TaskCompletionSource> completionTasks = new SparseArray<>();
 
@@ -373,10 +376,66 @@ public class CloudFirestorePlugin implements MethodCallHandler {
           }.execute();
           break;
         }
+      case "WriteBatch#create":
+        {
+          int handle = nextBatchHandle++;
+          WriteBatch batch = FirebaseFirestore.getInstance().batch();
+          batches.put(handle, batch);
+          result.success(handle);
+          break;
+        }
+      case "WriteBatch#setData":
+        {
+          Map<String, Object> arguments = call.arguments();
+          int handle = (Integer) arguments.get("handle");
+          DocumentReference reference = getDocumentReference(arguments);
+          @SuppressWarnings("unchecked")
+          Map<String, Object> options = (Map<String, Object>) arguments.get("options");
+          WriteBatch batch = batches.get(handle);
+          if (options != null && (Boolean) options.get("merge")) {
+            batch.set(reference, arguments.get("data"), SetOptions.merge());
+          } else {
+            batch.set(reference, arguments.get("data"));
+          }
+          result.success(null);
+          break;
+        }
+      case "WriteBatch#updateData":
+        {
+          Map<String, Object> arguments = call.arguments();
+          int handle = (Integer) arguments.get("handle");
+          DocumentReference reference = getDocumentReference(arguments);
+          @SuppressWarnings("unchecked")
+          Map<String, Object> data = (Map<String, Object>) arguments.get("data");
+          WriteBatch batch = batches.get(handle);
+          batch.update(reference, data);
+          result.success(null);
+          break;
+        }
+      case "WriteBatch#delete":
+        {
+          Map<String, Object> arguments = call.arguments();
+          int handle = (Integer) arguments.get("handle");
+          DocumentReference reference = getDocumentReference(arguments);
+          WriteBatch batch = batches.get(handle);
+          batch.delete(reference);
+          result.success(null);
+          break;
+        }
+      case "WriteBatch#commit":
+        {
+          Map<String, Object> arguments = call.arguments();
+          int handle = (Integer) arguments.get("handle");
+          WriteBatch batch = batches.get(handle);
+          Task<Void> task = batch.commit();
+          batches.delete(handle);
+          addDefaultListeners("commit", task, result);
+          break;
+        }
       case "Query#addSnapshotListener":
         {
           Map<String, Object> arguments = call.arguments();
-          int handle = nextHandle++;
+          int handle = nextListenerHandle++;
           EventObserver observer = new EventObserver(handle);
           observers.put(handle, observer);
           listenerRegistrations.put(handle, getQuery(arguments).addSnapshotListener(observer));
@@ -386,7 +445,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
       case "Query#addDocumentListener":
         {
           Map<String, Object> arguments = call.arguments();
-          int handle = nextHandle++;
+          int handle = nextListenerHandle++;
           DocumentObserver observer = new DocumentObserver(handle);
           documentObservers.put(handle, observer);
           listenerRegistrations.put(

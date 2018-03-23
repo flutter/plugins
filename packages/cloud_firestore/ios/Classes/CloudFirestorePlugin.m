@@ -203,6 +203,8 @@ const UInt8 DOCUMENT_REFERENCE = 130;
   int _nextListenerHandle;
   NSMutableDictionary *transactions;
   NSMutableDictionary *transactionResults;
+  NSMutableDictionary<NSNumber *, FIRWriteBatch *> *_batches;
+  int _nextBatchHandle;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -224,7 +226,9 @@ const UInt8 DOCUMENT_REFERENCE = 130;
       [FIRApp configure];
     }
     _listeners = [NSMutableDictionary<NSNumber *, id<FIRListenerRegistration>> dictionary];
+    _batches = [NSMutableDictionary<NSNumber *, FIRWriteBatch *> dictionary];
     _nextListenerHandle = 0;
+    _nextBatchHandle = 0;
     transactions = [NSMutableDictionary<NSNumber *, FIRTransaction *> dictionary];
     transactionResults = [NSMutableDictionary<NSNumber *, id> dictionary];
   }
@@ -408,6 +412,43 @@ const UInt8 DOCUMENT_REFERENCE = 130;
     [[_listeners objectForKey:handle] remove];
     [_listeners removeObjectForKey:handle];
     result(nil);
+  } else if ([@"WriteBatch#create" isEqualToString:call.method]) {
+    __block NSNumber *handle = [NSNumber numberWithInt:_nextBatchHandle++];
+    FIRWriteBatch *batch = [[FIRFirestore firestore] batch];
+    _batches[handle] = batch;
+    result(handle);
+  } else if ([@"WriteBatch#setData" isEqualToString:call.method]) {
+    NSNumber *handle = call.arguments[@"handle"];
+    NSString *path = call.arguments[@"path"];
+    NSDictionary *options = call.arguments[@"options"];
+    FIRDocumentReference *reference = [[FIRFirestore firestore] documentWithPath:path];
+    FIRWriteBatch *batch = [_batches objectForKey:handle];
+    if (![options isEqual:[NSNull null]] &&
+        [options[@"merge"] isEqual:[NSNumber numberWithBool:YES]]) {
+      [batch setData:call.arguments[@"data"] forDocument:reference options:[FIRSetOptions merge]];
+    } else {
+      [batch setData:call.arguments[@"data"] forDocument:reference];
+    }
+    result(nil);
+  } else if ([@"WriteBatch#updateData" isEqualToString:call.method]) {
+    NSNumber *handle = call.arguments[@"handle"];
+    NSString *path = call.arguments[@"path"];
+    FIRDocumentReference *reference = [[FIRFirestore firestore] documentWithPath:path];
+    FIRWriteBatch *batch = [_batches objectForKey:handle];
+    [batch updateData:call.arguments[@"data"] forDocument:reference];
+    result(nil);
+  } else if ([@"WriteBatch#delete" isEqualToString:call.method]) {
+    NSNumber *handle = call.arguments[@"handle"];
+    NSString *path = call.arguments[@"path"];
+    FIRDocumentReference *reference = [[FIRFirestore firestore] documentWithPath:path];
+    FIRWriteBatch *batch = [_batches objectForKey:handle];
+    [batch deleteDocument:reference];
+    result(nil);
+  } else if ([@"WriteBatch#commit" isEqualToString:call.method]) {
+    NSNumber *handle = call.arguments[@"handle"];
+    FIRWriteBatch *batch = [_batches objectForKey:handle];
+    [batch commitWithCompletion:defaultCompletionBlock];
+    [_batches removeObjectForKey:handle];
   } else {
     result(FlutterMethodNotImplemented);
   }

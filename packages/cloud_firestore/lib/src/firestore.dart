@@ -63,6 +63,13 @@ class Firestore {
     return new DocumentReference._(this, path.split('/'));
   }
 
+  /// Creates a write batch, used for performing multiple writes as a single
+  /// atomic operation.
+  ///
+  /// Unlike transactions, write batches are persisted offline and therefore are
+  /// preferable when you don’t need to condition your writes on read data.
+  WriteBatch batch() => new WriteBatch._();
+
   /// Executes the given TransactionHandler and then attempts to commit the
   /// changes applied within an atomic transaction.
   ///
