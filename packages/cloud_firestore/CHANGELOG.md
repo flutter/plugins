@@ -1,3 +1,7 @@
+## 0.3.2
+
+* Support for batched writes.
+
 ## 0.3.1
 
 * Add GeoPoint class
