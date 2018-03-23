@@ -16,8 +16,8 @@ class WriteBatch {
           'WriteBatch#create',
         );
 
-  Future<int> _handle;
-  final List<Future<Null>> _actions = <Future<Null>>[];
+  Future<dynamic> _handle;
+  final List<Future<dynamic>> _actions = <Future<dynamic>>[];
 
   /// Indicator to whether or not this [WriteBatch] has been committed.
   bool _committed = false;
@@ -28,7 +28,7 @@ class WriteBatch {
   Future<Null> commit() async {
     if (!_committed) {
       _committed = true;
-      await Future.wait(_actions);
+      await Future.wait<dynamic>(_actions);
       return await Firestore.channel.invokeMethod(
           'WriteBatch#commit', <String, dynamic>{'handle': await _handle});
     } else {
@@ -39,7 +39,7 @@ class WriteBatch {
   /// Deletes the document referred to by [document].
   void delete(DocumentReference document) {
     if (!_committed) {
-      _handle.then((int handle) {
+      _handle.then((dynamic handle) {
         _actions.add(
           Firestore.channel.invokeMethod(
             'WriteBatch#delete',
@@ -62,7 +62,7 @@ class WriteBatch {
   void setData(DocumentReference document, Map<String, dynamic> data,
       [SetOptions options]) {
     if (!_committed) {
-      _handle.then((int handle) {
+      _handle.then((dynamic handle) {
         _actions.add(
           Firestore.channel.invokeMethod(
             'WriteBatch#setData',
@@ -86,7 +86,7 @@ class WriteBatch {
   /// If the document does not exist, the operation will fail.
   void updateData(DocumentReference document, Map<String, dynamic> data) {
     if (!_committed) {
-      _handle.then((int handle) {
+      _handle.then((dynamic handle) {
         _actions.add(
           Firestore.channel.invokeMethod(
             'WriteBatch#updateData',
