@@ -509,6 +509,7 @@ final class FirestoreMessageCodec extends StandardMessageCodec {
       writeLong(stream, ((Date) value).getTime());
     } else if (value instanceof GeoPoint) {
       stream.write(GEO_POINT);
+      writeAlignment(stream, 8);
       writeDouble(stream, ((GeoPoint) value).getLatitude());
       writeDouble(stream, ((GeoPoint) value).getLongitude());
     } else if (value instanceof DocumentReference) {
