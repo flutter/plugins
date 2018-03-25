@@ -40,8 +40,7 @@ CameraLensDirection _parseCameraLensDirection(String string) {
 Future<List<CameraDescription>> availableCameras() async {
   try {
     final List<dynamic> cameras = await _channel.invokeMethod('list');
-    return cameras
-        .map((dynamic camera) {
+    return cameras.map((dynamic camera) {
       return new CameraDescription(
         name: camera['name'],
         lensDirection: _parseCameraLensDirection(camera['lensFacing']),
@@ -204,7 +203,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   }
 
   void _listener(dynamic event) {
-    final Map<String, dynamic> map = event;
+    final dynamic map = event;
     if (_disposed) {
       return;
     }
