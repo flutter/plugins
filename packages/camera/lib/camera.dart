@@ -40,9 +40,7 @@ CameraLensDirection _parseCameraLensDirection(String string) {
 Future<List<CameraDescription>> availableCameras() async {
   try {
     final List<dynamic> cameras = await _channel.invokeMethod('list');
-    return cameras
-        .cast<Map<String, dynamic>>()
-        .map((Map<String, dynamic> camera) {
+    return cameras.map((dynamic camera) {
       return new CameraDescription(
         name: camera['name'],
         lensDirection: _parseCameraLensDirection(camera['lensFacing']),
