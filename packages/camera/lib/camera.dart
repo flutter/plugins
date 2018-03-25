@@ -160,7 +160,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   final ResolutionPreset resolutionPreset;
   int _textureId;
   bool _disposed = false;
-  StreamSubscription<Map<String, dynamic>> _eventSubscription;
+  StreamSubscription<dynamic> _eventSubscription;
   Completer<Null> _creatingCompleter;
 
   CameraController(this.description, this.resolutionPreset)
@@ -175,7 +175,7 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
     try {
       _creatingCompleter = new Completer<Null>();
-      final Map<String, dynamic> reply = await _channel.invokeMethod(
+      final Map<dynamic, dynamic> reply = await _channel.invokeMethod(
         'create',
         <String, dynamic>{
           'cameraName': description.name,
@@ -203,7 +203,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   }
 
   void _listener(dynamic event) {
-    final Map<String, dynamic> map = event;
+    final Map<dynamic, dynamic> map = event;
     if (_disposed) {
       return;
     }
