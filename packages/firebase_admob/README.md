@@ -45,7 +45,7 @@ Ads must be loaded before they're shown.
 ```
 myBanner
   ..load() // typically this happens well before the ad is shown
-  ..show(anchorOffset: 60.0, anchorType: AnchorType.anchorBottom);
+  ..show(anchorOffset: 60.0, anchorType: AnchorType.bottom);
 // Positions the banner ad 60 pixels from the bottom of the screen
 // InterstitialAds are loaded and shown in the same way
 ```
