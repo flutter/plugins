@@ -3,8 +3,9 @@
 [![pub package](https://img.shields.io/pub/v/shared_preferences.svg)](https://pub.dartlang.org/packages/shared_preferences)
 
 Wraps NSUserDefaults (on iOS) and SharedPreferences (on Android), providing
-a persistent store for simple data. Data is persisted to disk automatically
-and asynchronously.
+a persistent store for simple data. Data is persisted to disk asynchronously.
+Neither platform can guarantee that writes will be persisted to disk after
+returning and this plugin must not be used for storing critical data.
 
 ## Usage
 To use this plugin, add `shared_preferences` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
@@ -32,7 +33,7 @@ _incrementCounter() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   int counter = (prefs.getInt('counter') ?? 0) + 1;
   print('Pressed $counter times.');
-  prefs.setInt('counter', counter);
+  await prefs.setInt('counter', counter);
 }
 ```
 

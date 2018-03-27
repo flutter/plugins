@@ -13,8 +13,7 @@ const MethodChannel _kChannel =
 /// Wraps NSUserDefaults (on iOS) and SharedPreferences (on Android), providing
 /// a persistent store for simple data.
 ///
-/// Data is persisted to disk automatically and asynchronously. Use [commit()]
-/// to be notified when a save is successful.
+/// Data is persisted to disk asynchronously.
 class SharedPreferences {
   SharedPreferences._(this._preferenceCache);
 
@@ -79,56 +78,57 @@ class SharedPreferences {
   /// Saves a boolean [value] to persistent storage in the background.
   ///
   /// If [value] is null, this is equivalent to calling [remove()] on the [key].
-  void setBool(String key, bool value) => _setValue('Bool', key, value);
+  Future<bool> setBool(String key, bool value) => _setValue('Bool', key, value);
 
   /// Saves an integer [value] to persistent storage in the background.
   ///
   /// If [value] is null, this is equivalent to calling [remove()] on the [key].
-  void setInt(String key, int value) => _setValue('Int', key, value);
+  Future<bool> setInt(String key, int value) => _setValue('Int', key, value);
 
   /// Saves a double [value] to persistent storage in the background.
   ///
   /// Android doesn't support storing doubles, so it will be stored as a float.
   ///
   /// If [value] is null, this is equivalent to calling [remove()] on the [key].
-  void setDouble(String key, double value) => _setValue('Double', key, value);
+  Future<bool> setDouble(String key, double value) =>
+      _setValue('Double', key, value);
 
   /// Saves a string [value] to persistent storage in the background.
   ///
   /// If [value] is null, this is equivalent to calling [remove()] on the [key].
-  void setString(String key, String value) => _setValue('String', key, value);
+  Future<bool> setString(String key, String value) =>
+      _setValue('String', key, value);
 
   /// Saves a list of strings [value] to persistent storage in the background.
   ///
   /// If [value] is null, this is equivalent to calling [remove()] on the [key].
-  void setStringList(String key, List<String> value) =>
+  Future<bool> setStringList(String key, List<String> value) =>
       _setValue('StringList', key, value);
 
   /// Removes an entry from persistent storage.
-  void remove(String key) => _setValue(null, key, null);
+  Future<bool> remove(String key) => _setValue(null, key, null);
 
-  void _setValue(String valueType, String key, Object value) {
-    // Set the value in the background.
+  Future<bool> _setValue(String valueType, String key, Object value) {
     final Map<String, dynamic> params = <String, dynamic>{
       'key': '$_prefix$key',
     };
     if (value == null) {
       _preferenceCache.remove(key);
-      _kChannel.invokeMethod('remove', params);
+      return _kChannel
+          .invokeMethod('remove', params)
+          .then<bool>((dynamic result) => result);
     } else {
       _preferenceCache[key] = value;
       params['value'] = value;
-      _kChannel.invokeMethod('set$valueType', params);
+      return _kChannel
+          .invokeMethod('set$valueType', params)
+          .then<bool>((dynamic result) => result);
     }
   }
 
-  /// Completes with true once saved values have been persisted to local
-  /// storage, or false if the save failed.
-  ///
-  /// It's usually sufficient to just wait for the set methods to complete which
-  /// ensure the preferences have been modified in memory. Commit is necessary
-  /// only if you need to be absolutely sure that the data is in persistent
-  /// storage before taking some other action.
+  /// Always returns true.
+  /// On iOS, synchronize is marked deprecated. On Android, we commit every set.
+  @deprecated
   Future<bool> commit() async => await _kChannel.invokeMethod('commit');
 
   /// Completes with true once the user preferences for the app has been cleared.
