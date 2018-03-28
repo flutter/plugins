@@ -11,6 +11,7 @@ class Firestore {
   @visibleForTesting
   static const MethodChannel channel = const MethodChannel(
     'plugins.flutter.io/cloud_firestore',
+    const StandardMethodCodec(const FirestoreMessageCodec()),
   );
 
   static final Map<int, StreamController<QuerySnapshot>> _queryObservers =
@@ -61,6 +62,13 @@ class Firestore {
     assert(path != null);
     return new DocumentReference._(this, path.split('/'));
   }
+
+  /// Creates a write batch, used for performing multiple writes as a single
+  /// atomic operation.
+  ///
+  /// Unlike transactions, write batches are persisted offline and therefore are
+  /// preferable when you don’t need to condition your writes on read data.
+  WriteBatch batch() => new WriteBatch._();
 
   /// Executes the given TransactionHandler and then attempts to commit the
   /// changes applied within an atomic transaction.
@@ -146,4 +154,60 @@ class Transaction {
       'data': data,
     });
   }
+}
+
+class FirestoreMessageCodec extends StandardMessageCodec {
+  const FirestoreMessageCodec();
+
+  static const int _kDateTime = 128;
+  static const int _kGeoPoint = 129;
+  static const int _kDocumentReference = 130;
+
+  @override
+  void writeValue(WriteBuffer buffer, dynamic value) {
+    if (value is DateTime) {
+      buffer.putUint8(_kDateTime);
+      buffer.putInt64(value.millisecondsSinceEpoch);
+    } else if (value is GeoPoint) {
+      buffer.putUint8(_kGeoPoint);
+      buffer.putFloat64(value.latitude);
+      buffer.putFloat64(value.longitude);
+    } else if (value is DocumentReference) {
+      buffer.putUint8(_kDocumentReference);
+      final List<int> bytes = utf8.encoder.convert(value.path);
+      writeSize(buffer, bytes.length);
+      buffer.putUint8List(bytes);
+    } else {
+      super.writeValue(buffer, value);
+    }
+  }
+
+  @override
+  dynamic readValueOfType(int type, ReadBuffer buffer) {
+    switch (type) {
+      case _kDateTime:
+        return new DateTime.fromMillisecondsSinceEpoch(buffer.getInt64());
+      case _kGeoPoint:
+        return new GeoPoint(buffer.getFloat64(), buffer.getFloat64());
+      case _kDocumentReference:
+        final int length = readSize(buffer);
+        final String path = utf8.decoder.convert(buffer.getUint8List(length));
+        return Firestore.instance.document(path);
+      default:
+        return super.readValueOfType(type, buffer);
+    }
+  }
+}
+
+class GeoPoint {
+  final double latitude;
+  final double longitude;
+  const GeoPoint(this.latitude, this.longitude);
+
+  @override
+  bool operator ==(dynamic o) =>
+      o is GeoPoint && o.latitude == latitude && o.longitude == longitude;
+
+  @override
+  int get hashCode => hashValues(latitude, longitude);
 }

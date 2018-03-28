@@ -5,8 +5,11 @@
 library cloud_firestore;
 
 import 'dart:async';
+import 'dart:convert';
+import 'dart:ui' show hashValues, hashList;
 
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart' show ReadBuffer, WriteBuffer;
 import 'package:meta/meta.dart';
 import 'package:collection/collection.dart';
 
@@ -20,3 +23,4 @@ part 'src/firestore.dart';
 part 'src/query.dart';
 part 'src/query_snapshot.dart';
 part 'src/set_options.dart';
+part 'src/write_batch.dart';

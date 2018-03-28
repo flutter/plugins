@@ -51,9 +51,3 @@ class CollectionReference extends Query {
     return newDocument;
   }
 }
-
-class ServerValue {
-  static const Map<String, String> timestamp = const <String, String>{
-    '.sv': 'timestamp'
-  };
-}
