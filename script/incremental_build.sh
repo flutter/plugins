@@ -12,7 +12,7 @@ else
   git fetch origin master
 
   FLUTTER_CHANGED_GLOBAL=0
-  FLUTTER_CHANGED_GLOBAL=""
+  FLUTTER_CHANGED_PACKAGES=""
 
   # Try get a merge base for the branch and calculate affected packages.
   # We need this check because some CIs can do a single branch clones with a limited history of commits.
