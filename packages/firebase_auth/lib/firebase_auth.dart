@@ -168,7 +168,7 @@ class FirebaseAuth {
         'email': email,
       },
     );
-    return providers.cast<String>();
+    return providers?.cast<String>();
   }
 
   Future<void> sendPasswordResetEmail({
