@@ -63,10 +63,10 @@ static NSString *LAST_FETCH_STATUS_KEY = @"LAST_FETCH_STATUS";
                   completionHandler:^(FIRRemoteConfigFetchStatus status, NSError *error) {
                     NSNumber *lastFetchTime = [[NSNumber alloc]
                         initWithLong:(long)[[remoteConfig lastFetchTime] timeIntervalSince1970] *
-                            1000];
+                                     1000];
                     NSNumber *lastFetchStatus = [[NSNumber alloc]
                         initWithInt:[self mapLastFetchStatus:(FIRRemoteConfigFetchStatus)
-                            [remoteConfig lastFetchStatus]]];
+                                                                 [remoteConfig lastFetchStatus]]];
                     NSMutableDictionary *resultDict = [[NSMutableDictionary alloc] init];
                     resultDict[@"LAST_FETCH_TIME"] = lastFetchTime;
                     resultDict[@"LAST_FETCH_STATUS"] = lastFetchStatus;
@@ -74,7 +74,10 @@ static NSString *LAST_FETCH_STATUS_KEY = @"LAST_FETCH_STATUS";
                     if (status != FIRRemoteConfigFetchStatusSuccess) {
                       FlutterError *flutterError;
                       if (status == FIRRemoteConfigFetchStatusThrottled) {
-                        int mills = [[error.userInfo valueForKey: FIRRemoteConfigThrottledEndTimeInSecondsKey] intValue] * 1000;
+                        int mills =
+                            [[error.userInfo
+                                valueForKey:FIRRemoteConfigThrottledEndTimeInSecondsKey] intValue] *
+                            1000;
                         resultDict[@"FETCH_THROTTLED_END"] = [[NSNumber alloc] initWithInt:mills];
                         flutterError = [FlutterError errorWithCode:@"FETCH_FAILED_THROTTLED"
                                                            message:nil
@@ -122,8 +125,7 @@ static NSString *LAST_FETCH_STATUS_KEY = @"LAST_FETCH_STATUS";
   NSArray *defaultKeys = [[NSUserDefaults standardUserDefaults] arrayForKey:DEFAULT_KEYS];
   for (NSString *key in defaultKeys) {
     if ([parameterDict valueForKey:key] == nil) {
-      parameterDict[key] =
-          [self createRemoteConfigValueDict:[remoteConfig configValueForKey:key]];
+      parameterDict[key] = [self createRemoteConfigValueDict:[remoteConfig configValueForKey:key]];
     }
   }
   return parameterDict;

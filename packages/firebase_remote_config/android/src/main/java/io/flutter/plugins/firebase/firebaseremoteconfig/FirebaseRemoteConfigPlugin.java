@@ -3,8 +3,6 @@ package io.flutter.plugins.firebase.firebaseremoteconfig;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
-import android.util.Log;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
@@ -26,9 +24,9 @@ import java.util.Set;
 public class FirebaseRemoteConfigPlugin implements MethodCallHandler {
 
   public static final String TAG = "FirebaseRemoteConfigPlugin";
-  public static final String PREFS_NAME = "io.flutter.plugins.firebase.firebaseremoteconfig.FirebaseRemoteConfigPlugin";
+  public static final String PREFS_NAME =
+      "io.flutter.plugins.firebase.firebaseremoteconfig.FirebaseRemoteConfigPlugin";
   public static final String DEFAULT_PREF_KEY = "default_keys";
-
 
   private static SharedPreferences sharedPreferences;
   private final MethodChannel channel;
@@ -37,8 +35,7 @@ public class FirebaseRemoteConfigPlugin implements MethodCallHandler {
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_remote_config");
     channel.setMethodCallHandler(new FirebaseRemoteConfigPlugin(channel));
-    sharedPreferences =
-        registrar.context().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+    sharedPreferences = registrar.context().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
   }
 
   private FirebaseRemoteConfigPlugin(MethodChannel channel) {
@@ -100,9 +97,10 @@ public class FirebaseRemoteConfigPlugin implements MethodCallHandler {
                         final Exception exception = task.getException();
 
                         if (exception instanceof FirebaseRemoteConfigFetchThrottledException) {
-                          properties.put("FETCH_THROTTLED_END",
-                                  ((FirebaseRemoteConfigFetchThrottledException) exception)
-                                          .getThrottleEndTimeMillis());
+                          properties.put(
+                              "FETCH_THROTTLED_END",
+                              ((FirebaseRemoteConfigFetchThrottledException) exception)
+                                  .getThrottleEndTimeMillis());
                           result.error("FETCH_FAILED_THROTTLED", null, properties);
                         } else {
                           result.error("FETCH_FAILED", null, properties);
@@ -147,11 +145,10 @@ public class FirebaseRemoteConfigPlugin implements MethodCallHandler {
     }
     // Add default parameters if missing since `getKeysByPrefix` does not return default keys.
     Set<String> defaultKeys =
-            sharedPreferences.getStringSet(DEFAULT_PREF_KEY, new HashSet<String>());
+        sharedPreferences.getStringSet(DEFAULT_PREF_KEY, new HashSet<String>());
     for (String defaultKey : defaultKeys) {
       if (!parameterMap.containsKey(defaultKey)) {
-        FirebaseRemoteConfigValue remoteConfigValue =
-                firebaseRemoteConfig.getValue(defaultKey);
+        FirebaseRemoteConfigValue remoteConfigValue = firebaseRemoteConfig.getValue(defaultKey);
         parameterMap.put(defaultKey, createRemoteConfigValueMap(remoteConfigValue));
       }
     }
