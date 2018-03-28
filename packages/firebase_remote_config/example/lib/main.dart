@@ -4,19 +4,33 @@ import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(
-      new MaterialApp(title: 'Remote Config Example', home: new MyHomePage()));
+  runApp(new MaterialApp(
+      title: 'Remote Config Example',
+      home: new FutureBuilder<RemoteConfig>(
+        future: setupRemoteConfig(),
+        builder: (BuildContext context, AsyncSnapshot<RemoteConfig> snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.none:
+              return new ConnectionStateWidget(stateMessage: 'Loading...');
+            case ConnectionState.waiting:
+              return new ConnectionStateWidget(stateMessage: 'Waiting...');
+            default:
+              if (snapshot.hasError || snapshot.data == null) {
+                print(snapshot.error);
+                return new ConnectionStateWidget(
+                  stateMessage: 'Unable to fetch remote config.',
+                );
+              }
+              return new WelcomeWidget(remoteConfig: snapshot.data);
+          }
+        },
+      )));
 }
 
-class MyHomePage extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() {
-    return new MyHomePageState();
-  }
-}
+class WelcomeWidget extends AnimatedWidget {
+  final RemoteConfig remoteConfig;
 
-class MyHomePageState extends State<MyHomePage> {
-  RemoteConfig rc;
+  WelcomeWidget({this.remoteConfig}) : super(listenable: remoteConfig);
 
   @override
   Widget build(BuildContext context) {
@@ -24,59 +38,54 @@ class MyHomePageState extends State<MyHomePage> {
       appBar: new AppBar(
         title: const Text('Remote Config Example'),
       ),
-      body: new FutureBuilder<void>(
-          future: setupRemoteConfig(),
-          builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-            switch (snapshot.connectionState) {
-              case ConnectionState.none:
-                return const Center(
-                  child: const Text('loading...'),
-                );
-              case ConnectionState.waiting:
-                return const Center(
-                  child: const Text('waiting...'),
-                );
-              default:
-                if (snapshot.hasError) {
-                  print(snapshot.error);
-                  return const Center(
-                    child: const Text('Failed to show welcome message'),
-                  );
-                } else {
-                  return new Center(
-                    child: new Text('Welcome: ${rc.getString('welcome')}'),
-                  );
-                }
-            }
-          }),
+      body: new Center(
+          child: new Text('Welcome ${remoteConfig.getString('welcome')}')),
       floatingActionButton: new FloatingActionButton(
           child: new Icon(Icons.refresh),
           onPressed: () {
-            setState(() {});
+            retrieveConfig(remoteConfig: remoteConfig);
           }),
     );
   }
+}
 
-  Future<void> setupRemoteConfig() async {
-    if (rc == null) {
-      // Get remote config instance
-      rc = await RemoteConfig.instance;
-      // Enable developer mode to relax fetch throttling
-      await rc.setConfigSettings(new RemoteConfigSettings(debugMode: true));
-      await rc.setDefaults(<String, dynamic>{'welcome': 'default welcome'});
-    }
-    try {
-      await rc.fetch(expiration: 0);
-    } on FetchThrottledException catch (fetchThrottledException) {
-      print(fetchThrottledException);
-      // Get the DateTime for when another fetch is possible with:
-      // fetchThrottledException.throttleEnd
-    } catch (exception) {
-      print(
-          'Unable to fetch remote config. Will use cached, default or static values');
-    }
-    // Activate the values fetched from remote server.
-    await rc.activateFetched();
-    return new Future<void>.value();
+class ConnectionStateWidget extends StatelessWidget {
+  final String stateMessage;
+
+  ConnectionStateWidget({this.stateMessage});
+
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+      appBar: new AppBar(
+        title: const Text('Remote Config Example'),
+      ),
+      body: new Center(child: new Text(stateMessage)),
+    );
+  }
+}
+
+Future<RemoteConfig> setupRemoteConfig() async {
+  final RemoteConfig remoteConfig = await RemoteConfig.instance;
+  // Enable developer mode to relax fetch throttling
+  remoteConfig.setConfigSettings(new RemoteConfigSettings(debugMode: true));
+  await remoteConfig.setDefaults(<String, dynamic>{
+    'welcome': 'default welcome',
+    'hello': 'default hello',
+  });
+  await retrieveConfig(remoteConfig: remoteConfig);
+  return remoteConfig;
+}
+
+Future<void> retrieveConfig({RemoteConfig remoteConfig}) async {
+  try {
+    // Using default duration to force fetching from remote server.
+    await remoteConfig.fetch(expiration: const Duration());
+    await remoteConfig.activateFetched();
+  } on FetchThrottledException catch (exception) {
+    print(exception);
+    print(remoteConfig.getValue('welcome').source);
+  } catch (exception) {
+    print('Unable to fetch remote config.');
   }
 }

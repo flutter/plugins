@@ -1,35 +1,10 @@
 part of firebase_remote_config;
 
-/// LastFetchStatus defines the possible status values of the last fetch.
-enum LastFetchStatus { success, failure, throttled, noFetchYet }
-
-class FetchThrottledException implements Exception {
-  DateTime _throttleEnd;
-
-  FetchThrottledException._({int endTimeInMills = 43200}) {
-    _throttleEnd = new DateTime.fromMillisecondsSinceEpoch(endTimeInMills);
-  }
-
-  DateTime get throttleEnd => _throttleEnd;
-  String get msg {
-    final Duration duration = _throttleEnd.difference(new DateTime.now());
-    return '''Fetching throttled try again in ${duration.inMilliseconds}
-milliseconds''';
-  }
-
-  @override
-  String toString() {
-    final Duration duration = _throttleEnd.difference(new DateTime.now());
-    return '''FetchThrottledException
-Fetching throttled try again in ${duration.inMilliseconds} milliseconds''';
-  }
-}
-
 /// The entry point for accessing Remote Config.
 ///
 /// You can get an instance by calling [RemoteConfig.instance]. Note
 /// [RemoteConfig.instance] is async.
-class RemoteConfig {
+class RemoteConfig extends ChangeNotifier {
   static const MethodChannel _channel =
       const MethodChannel('plugins.flutter.io/firebase_remote_config');
 
@@ -38,7 +13,10 @@ class RemoteConfig {
   static const double defaultValueForDouble = 0.0;
   static const bool defaultValueForBool = false;
 
-  static const String fetchFailedThrottled = 'FETCH_FAILED_THROTTLED';
+  static const String fetchFailedThrottledKey = 'FETCH_FAILED_THROTTLED';
+  static const String lastFetchTimeKey = 'LAST_FETCH_TIME';
+  static const String lastFetchStatusKey = 'LAST_FETCH_STATUS';
+  static const String parametersKey = 'PARAMETERS';
 
   Map<String, RemoteConfigValue> _parameters;
 
@@ -49,12 +27,6 @@ class RemoteConfig {
   RemoteConfig._() {
     _channel.setMethodCallHandler((MethodCall call) async {
       switch (call.method) {
-        case 'UpdateFetch':
-          _lastFetchTime = new DateTime.fromMillisecondsSinceEpoch(
-              call.arguments['LAST_FETCH_TIME']);
-          _lastFetchStatus =
-              LastFetchStatus.values[call.arguments['LAST_FETCH_STATUS']];
-          return null;
         default:
           throw new MissingPluginException(
             '${call.method} method not implemented on the Dart side.',
@@ -69,19 +41,34 @@ class RemoteConfig {
 
   /// Gets the instance of RemoteConfig for the default Firebase app.
   static Future<RemoteConfig> get instance async {
-    final Map<String, dynamic> properties =
+    final Map<dynamic, dynamic> properties =
         await _channel.invokeMethod('RemoteConfig#instance');
     final RemoteConfig remoteConfig = new RemoteConfig._();
+
     remoteConfig._lastFetchTime =
-        new DateTime.fromMillisecondsSinceEpoch(properties['LAST_FETCH_TIME']);
+        new DateTime.fromMillisecondsSinceEpoch(properties[lastFetchTimeKey]);
     remoteConfig._lastFetchStatus =
-        LastFetchStatus.values[properties['LAST_FETCH_STATUS']];
+        LastFetchStatus.values[properties[lastFetchStatusKey]];
     final RemoteConfigSettings remoteConfigSettings =
         new RemoteConfigSettings();
     remoteConfigSettings.debugMode = properties['IN_DEBUG_MODE'];
     remoteConfig._remoteConfigSettings = remoteConfigSettings;
-    remoteConfig._parameters = <String, RemoteConfigValue>{};
+    remoteConfig._parameters =
+        _parseRemoteConfigParameters(parameters: properties[parametersKey]);
     return remoteConfig;
+  }
+
+  static Map<String, RemoteConfigValue> _parseRemoteConfigParameters(
+      {Map<dynamic, dynamic> parameters}) {
+    final Map<String, RemoteConfigValue> parsedParameters =
+        <String, RemoteConfigValue>{};
+    parameters.forEach((dynamic key, dynamic value) {
+      final ValueSource valueSource = ValueSource.values[value['source']];
+      final RemoteConfigValue remoteConfigValue =
+          new RemoteConfigValue._(value['value'].cast<int>(), valueSource);
+      parsedParameters[key] = remoteConfigValue;
+    });
+    return parsedParameters;
   }
 
   /// Set the configuration settings for this RemoteConfig instance.
@@ -100,23 +87,29 @@ class RemoteConfig {
   /// Fetches parameter values for your app. Parameter values may be from
   /// Default Config (local cache) or Remote Config if enough time has elapsed
   /// since parameter values were last fetched from the server. The default
-  /// expiration time is 12 hours.
-  Future<void> fetch({int expiration: 43200}) async {
+  /// expiration time is 12 hours. Expiration must be defined in seconds.
+  Future<void> fetch({Duration expiration: const Duration(hours: 12)}) async {
     try {
-      final Map<String, dynamic> properties = await _channel.invokeMethod(
-          'RemoteConfig#fetch', <String, dynamic>{'expiration': expiration});
-      _lastFetchTime = new DateTime.fromMillisecondsSinceEpoch(
-          properties['LAST_FETCH_TIME']);
-      _lastFetchStatus =
-          LastFetchStatus.values[properties['LAST_FETCH_STATUS']];
+      final Map<dynamic, dynamic> properties = await _channel.invokeMethod(
+          'RemoteConfig#fetch',
+          <dynamic, dynamic>{'expiration': expiration.inSeconds});
+      _lastFetchTime =
+          new DateTime.fromMillisecondsSinceEpoch(properties[lastFetchTimeKey]);
+      _lastFetchStatus = LastFetchStatus.values[properties[lastFetchStatusKey]];
     } on PlatformException catch (e) {
-      if (e.code == RemoteConfig.fetchFailedThrottled) {
+      _lastFetchTime =
+          new DateTime.fromMillisecondsSinceEpoch(e.details[lastFetchTimeKey]);
+      _lastFetchStatus = LastFetchStatus.values[e.details[lastFetchStatusKey]];
+      if (e.code == RemoteConfig.fetchFailedThrottledKey) {
+        print('fetch failed throttled');
         final int fetchThrottleEnd = e.details['FETCH_THROTTLED_END'];
         throw new FetchThrottledException._(endTimeInMills: fetchThrottleEnd);
       } else {
+        print('fetch failed unknown');
         throw new Exception('Unable to fetch remote config');
       }
     }
+    print('fetch succeeded');
     return new Future<void>.value();
   }
 
@@ -125,22 +118,18 @@ class RemoteConfig {
   /// The returned Future contains true if the fetched config is different
   /// from the currently activated config, it contains false otherwise.
   Future<bool> activateFetched() async {
-    final Map<String, dynamic> rawParameters =
+    final Map<dynamic, dynamic> rawParameters =
         await _channel.invokeMethod('RemoteConfig#activate');
     final Map<String, RemoteConfigValue> fetchedParameters =
-        <String, RemoteConfigValue>{};
-    rawParameters.forEach((String key, dynamic value) {
-      final ValueSource valueSource = ValueSource.values[value['source']];
-      final RemoteConfigValue remoteConfigValue =
-          new RemoteConfigValue._(value['value'], valueSource);
-      fetchedParameters[key] = remoteConfigValue;
-    });
+        _parseRemoteConfigParameters(parameters: rawParameters);
     final MapEquality<String, RemoteConfigValue> mapEquality =
         const MapEquality<String, RemoteConfigValue>(
-            keys: const Equality<String>(),
-            values: const Equality<RemoteConfigValue>());
+      keys: const Equality<String>(),
+      values: const Equality<RemoteConfigValue>(),
+    );
     final bool newConfig = mapEquality.equals(_parameters, fetchedParameters);
     _parameters = fetchedParameters;
+    notifyListeners();
     return new Future<bool>.value(newConfig);
   }
 
@@ -150,6 +139,17 @@ class RemoteConfig {
   Future<void> setDefaults(Map<String, dynamic> defaults) async {
     await _channel.invokeMethod(
         'RemoteConfig#setDefaults', <String, dynamic>{'defaults': defaults});
+    // Make defaults available even if fetch fails.
+    defaults.forEach((String key, dynamic value) {
+      if (!_parameters.containsKey(key)) {
+        final ValueSource valueSource = ValueSource.valueDefault;
+        final RemoteConfigValue remoteConfigValue = new RemoteConfigValue._(
+          const Utf8Codec().encode(value.toString()),
+          valueSource,
+        );
+        _parameters[key] = remoteConfigValue;
+      }
+    });
     return new Future<void>.value();
   }
 

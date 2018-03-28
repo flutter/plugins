@@ -3,6 +3,8 @@ package io.flutter.plugins.firebase.firebaseremoteconfig;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
+import android.util.Log;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
@@ -23,19 +25,20 @@ import java.util.Set;
 /** FirebaseRemoteConfigPlugin */
 public class FirebaseRemoteConfigPlugin implements MethodCallHandler {
 
-  public static final String TAG = "FirebbaseRCPlugin";
+  public static final String TAG = "FirebaseRemoteConfigPlugin";
+  public static final String PREFS_NAME = "io.flutter.plugins.firebase.firebaseremoteconfig.FirebaseRemoteConfigPlugin";
   public static final String DEFAULT_PREF_KEY = "default_keys";
+
 
   private static SharedPreferences sharedPreferences;
   private final MethodChannel channel;
 
-  /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_remote_config");
     channel.setMethodCallHandler(new FirebaseRemoteConfigPlugin(channel));
     sharedPreferences =
-        registrar.context().getSharedPreferences("FirebaseRCPlugin", Context.MODE_PRIVATE);
+        registrar.context().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
   }
 
   private FirebaseRemoteConfigPlugin(MethodChannel channel) {
@@ -58,6 +61,7 @@ public class FirebaseRemoteConfigPlugin implements MethodCallHandler {
           properties.put(
               "IN_DEBUG_MODE",
               firebaseRemoteConfigInfo.getConfigSettings().isDeveloperModeEnabled());
+          properties.put("PARAMETERS", getConfigParameters());
           result.success(properties);
           break;
         }
@@ -94,39 +98,15 @@ public class FirebaseRemoteConfigPlugin implements MethodCallHandler {
                           mapLastFetchStatus(firebaseRemoteConfigInfo.getLastFetchStatus()));
                       if (!task.isSuccessful()) {
                         final Exception exception = task.getException();
-                        channel.invokeMethod(
-                            "UpdateFetch",
-                            properties,
-                            new MethodChannel.Result() {
 
-                              @Override
-                              public void success(Object o) {
-                                if (exception
-                                    instanceof FirebaseRemoteConfigFetchThrottledException) {
-                                  FirebaseRemoteConfigFetchThrottledException throttledException =
-                                      (FirebaseRemoteConfigFetchThrottledException) exception;
-                                  Map<String, Object> details = new HashMap<>();
-                                  details.put(
-                                      "FETCH_THROTTLED_END",
-                                      throttledException.getThrottleEndTimeMillis());
-                                  result.error("FETCH_FAILED_THROTTLED", null, details);
-                                } else {
-                                  result.error("FETCH_FAILED", null, null);
-                                }
-                              }
-
-                              @Override
-                              public void error(
-                                  String errorCode, String errorMessage, Object errorDetails) {
-                                result.error(errorCode, errorMessage, errorDetails);
-                              }
-
-                              @Override
-                              public void notImplemented() {
-                                result.error("UPDATE_FETCH_NOT_IMPLEMENTED", null, null);
-                              }
-                            });
-
+                        if (exception instanceof FirebaseRemoteConfigFetchThrottledException) {
+                          properties.put("FETCH_THROTTLED_END",
+                                  ((FirebaseRemoteConfigFetchThrottledException) exception)
+                                          .getThrottleEndTimeMillis());
+                          result.error("FETCH_FAILED_THROTTLED", null, properties);
+                        } else {
+                          result.error("FETCH_FAILED", null, properties);
+                        }
                       } else {
                         result.success(properties);
                       }
@@ -136,25 +116,8 @@ public class FirebaseRemoteConfigPlugin implements MethodCallHandler {
         }
       case "RemoteConfig#activate":
         {
-          FirebaseRemoteConfig firebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
-          firebaseRemoteConfig.activateFetched();
-
-          Map<String, Object> parameterMap = new HashMap<>();
-          Set<String> keys = firebaseRemoteConfig.getKeysByPrefix("");
-          for (String key : keys) {
-            FirebaseRemoteConfigValue remoteConfigValue = firebaseRemoteConfig.getValue(key);
-            parameterMap.put(key, createRemoteConfigValueMap(remoteConfigValue));
-          }
-          Set<String> defaultKeys =
-              sharedPreferences.getStringSet(DEFAULT_PREF_KEY, new HashSet<String>());
-          for (String defaultKey : defaultKeys) {
-            if (!parameterMap.containsKey(defaultKey)) {
-              FirebaseRemoteConfigValue remoteConfigValue =
-                  firebaseRemoteConfig.getValue(defaultKey);
-              parameterMap.put(defaultKey, createRemoteConfigValueMap(remoteConfigValue));
-            }
-          }
-          result.success(parameterMap);
+          FirebaseRemoteConfig.getInstance().activateFetched();
+          result.success(getConfigParameters());
           break;
         }
       case "RemoteConfig#setDefaults":
@@ -172,6 +135,27 @@ public class FirebaseRemoteConfigPlugin implements MethodCallHandler {
           break;
         }
     }
+  }
+
+  private Map<String, Object> getConfigParameters() {
+    FirebaseRemoteConfig firebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
+    Map<String, Object> parameterMap = new HashMap<>();
+    Set<String> keys = firebaseRemoteConfig.getKeysByPrefix("");
+    for (String key : keys) {
+      FirebaseRemoteConfigValue remoteConfigValue = firebaseRemoteConfig.getValue(key);
+      parameterMap.put(key, createRemoteConfigValueMap(remoteConfigValue));
+    }
+    // Add default parameters if missing since `getKeysByPrefix` does not return default keys.
+    Set<String> defaultKeys =
+            sharedPreferences.getStringSet(DEFAULT_PREF_KEY, new HashSet<String>());
+    for (String defaultKey : defaultKeys) {
+      if (!parameterMap.containsKey(defaultKey)) {
+        FirebaseRemoteConfigValue remoteConfigValue =
+                firebaseRemoteConfig.getValue(defaultKey);
+        parameterMap.put(defaultKey, createRemoteConfigValueMap(remoteConfigValue));
+      }
+    }
+    return parameterMap;
   }
 
   private Map<String, Object> createRemoteConfigValueMap(
@@ -193,7 +177,7 @@ public class FirebaseRemoteConfigPlugin implements MethodCallHandler {
       case FirebaseRemoteConfig.LAST_FETCH_STATUS_NO_FETCH_YET:
         return 3;
       default:
-        return 3;
+        return 1;
     }
   }
 

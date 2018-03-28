@@ -27,6 +27,12 @@ void main() {
               'LAST_FETCH_TIME': lastFetchTime,
               'LAST_FETCH_STATUS': 0,
               'IN_DEBUG_MODE': true,
+              'PARAMETERS': <String, dynamic>{
+                'param1': <String, dynamic>{
+                  'source': 0,
+                  'value': <int>[118, 97, 108, 49], // UTF-8 encoded 'val1'
+                },
+              },
             };
           case 'RemoteConfig#activate':
             return <String, dynamic>{
@@ -72,14 +78,14 @@ void main() {
     });
 
     test('fetch', () async {
-      await remoteConfig.fetch(expiration: 20);
+      await remoteConfig.fetch(expiration: new Duration(hours: 1));
       expect(
         log,
         <Matcher>[
           isMethodCall(
             'RemoteConfig#fetch',
             arguments: <String, dynamic>{
-              'expiration': 20,
+              'expiration': 3600,
             },
           ),
         ],

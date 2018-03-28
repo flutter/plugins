@@ -9,6 +9,8 @@
 @implementation FirebaseRemoteConfigPlugin
 
 static NSString *DEFAULT_KEYS = @"default_keys";
+static NSString *LAST_FETCH_TIME_KEY = @"LAST_FETCH_TIME";
+static NSString *LAST_FETCH_STATUS_KEY = @"LAST_FETCH_STATUS";
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
@@ -42,6 +44,8 @@ static NSString *DEFAULT_KEYS = @"default_keys";
     resultDict[@"IN_DEBUG_MODE"] =
         [[NSNumber alloc] initWithBool:[firRemoteConfigSettings isDeveloperModeEnabled]];
 
+    resultDict[@"PARAMETERS", [self getConfigParameters]];
+
     result(resultDict);
   } else if ([@"RemoteConfig#setConfigSettings" isEqualToString:call.method]) {
     FIRRemoteConfig *remoteConfig = [FIRRemoteConfig remoteConfig];
@@ -57,77 +61,37 @@ static NSString *DEFAULT_KEYS = @"default_keys";
     [remoteConfig
         fetchWithExpirationDuration:expiration
                   completionHandler:^(FIRRemoteConfigFetchStatus status, NSError *error) {
-                    NSMutableDictionary *resultDict = [[NSMutableDictionary alloc] init];
-                    resultDict[@"LAST_FETCH_TIME"] = [[NSNumber alloc]
+                    NSNumber *lastFetchTime = [[NSNumber alloc]
                         initWithLong:(long)[[remoteConfig lastFetchTime] timeIntervalSince1970] *
-                                     1000];
-                    resultDict[@"LAST_FETCH_STATUS"] = [[NSNumber alloc]
+                            1000];
+                    NSNumber *lastFetchStatus = [[NSNumber alloc]
                         initWithInt:[self mapLastFetchStatus:(FIRRemoteConfigFetchStatus)
-                                                                 [remoteConfig lastFetchStatus]]];
+                            [remoteConfig lastFetchStatus]]];
+                    NSMutableDictionary *resultDict = [[NSMutableDictionary alloc] init];
+                    resultDict[@"LAST_FETCH_TIME"] = lastFetchTime;
+                    resultDict[@"LAST_FETCH_STATUS"] = lastFetchStatus;
 
                     if (status != FIRRemoteConfigFetchStatusSuccess) {
-                      [self.channel
-                          invokeMethod:@"UpdateFetch"
-                             arguments:resultDict
-                                result:^(id _Nullable updateFetchResult) {
-                                  if ([updateFetchResult isKindOfClass:[FlutterError class]]) {
-                                    FlutterError *flutterError = (FlutterError *)updateFetchResult;
-                                    result(flutterError);
-                                  } else if ([updateFetchResult
-                                                 isEqual:FlutterMethodNotImplemented]) {
-                                    FlutterError *flutterError =
-                                        [FlutterError errorWithCode:@"UPDATE_FETCH_NOT_IMPLEMENTED"
-                                                            message:nil
-                                                            details:nil];
-                                    result(flutterError);
-                                  } else {
-                                    if (status == FIRRemoteConfigFetchStatusThrottled) {
-                                      NSMutableDictionary *details =
-                                          [[NSMutableDictionary alloc] init];
-                                      int mills =
-                                          [[error valueForKey:
-                                                      FIRRemoteConfigThrottledEndTimeInSecondsKey]
-                                              intValue] *
-                                          1000;
-                                      details[@"FETCH_THROTTLED_END"] =
-                                          [[NSNumber alloc] initWithInt:mills];
-
-                                      FlutterError *flutterError =
-                                          [FlutterError errorWithCode:@"FETCH_FAILED_THROTTLED"
-                                                              message:nil
-                                                              details:details];
-                                      result(flutterError);
-                                    } else {
-                                      FlutterError *flutterError =
-                                          [FlutterError errorWithCode:@"FETCH_FAILED"
-                                                              message:nil
-                                                              details:nil];
-                                      result(flutterError);
-                                    }
-                                  }
-                                }];
+                      FlutterError *flutterError;
+                      if (status == FIRRemoteConfigFetchStatusThrottled) {
+                        int mills = [[error.userInfo valueForKey: FIRRemoteConfigThrottledEndTimeInSecondsKey] intValue] * 1000;
+                        resultDict[@"FETCH_THROTTLED_END"] = [[NSNumber alloc] initWithInt:mills];
+                        flutterError = [FlutterError errorWithCode:@"FETCH_FAILED_THROTTLED"
+                                                           message:nil
+                                                           details:resultDict];
+                      } else {
+                        flutterError = [FlutterError errorWithCode:@"FETCH_FAILED"
+                                                           message:nil
+                                                           details:resultDict];
+                      }
+                      result(flutterError);
                     } else {
                       result(resultDict);
                     }
                   }];
   } else if ([@"RemoteConfig#activate" isEqualToString:call.method]) {
-    FIRRemoteConfig *remoteConfig = [FIRRemoteConfig remoteConfig];
-    [remoteConfig activateFetched];
-
-    NSMutableDictionary *parameterDict = [[NSMutableDictionary alloc] init];
-
-    NSSet *keySet = [remoteConfig keysWithPrefix:@""];
-    for (NSString *key in keySet) {
-      parameterDict[key] = [self createRemoteConfigValueDict:[remoteConfig configValueForKey:key]];
-    }
-    NSArray *defaultKeys = [[NSUserDefaults standardUserDefaults] arrayForKey:DEFAULT_KEYS];
-    for (NSString *key in defaultKeys) {
-      if ([parameterDict valueForKey:key] == nil) {
-        parameterDict[key] =
-            [self createRemoteConfigValueDict:[remoteConfig configValueForKey:key]];
-      }
-    }
-    result(parameterDict);
+    [[FIRRemoteConfig remoteConfig] activateFetched];
+    result([self getConfigParameters]);
   } else if ([@"RemoteConfig#setDefaults" isEqualToString:call.method]) {
     FIRRemoteConfig *remoteConfig = [FIRRemoteConfig remoteConfig];
     NSDictionary *defaults = call.arguments[@"defaults"];
@@ -145,6 +109,24 @@ static NSString *DEFAULT_KEYS = @"default_keys";
   valueDict[@"source"] =
       [[NSNumber alloc] initWithInt:[self mapValueSource:[remoteConfigValue source]]];
   return valueDict;
+}
+
+- (NSDictionary *)getConfigParameters {
+  FIRRemoteConfig *remoteConfig = [FIRRemoteConfig remoteConfig];
+  NSMutableDictionary *parameterDict = [[NSMutableDictionary alloc] init];
+  NSSet *keySet = [remoteConfig keysWithPrefix:@""];
+  for (NSString *key in keySet) {
+    parameterDict[key] = [self createRemoteConfigValueDict:[remoteConfig configValueForKey:key]];
+  }
+  // Add default parameters if missing since `keysWithPrefix` does not return default keys.
+  NSArray *defaultKeys = [[NSUserDefaults standardUserDefaults] arrayForKey:DEFAULT_KEYS];
+  for (NSString *key in defaultKeys) {
+    if ([parameterDict valueForKey:key] == nil) {
+      parameterDict[key] =
+          [self createRemoteConfigValueDict:[remoteConfig configValueForKey:key]];
+    }
+  }
+  return parameterDict;
 }
 
 - (int)mapLastFetchStatus:(FIRRemoteConfigFetchStatus)status {
