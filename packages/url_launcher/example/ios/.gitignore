@@ -35,3 +35,7 @@ Icon?
 /Flutter/flutter_assets/
 /Flutter/Generated.xcconfig
 /ServiceDefinitions.json
+
+Podfile
+Podfile.lock
+Pods
