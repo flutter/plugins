@@ -79,12 +79,16 @@ static NSString *LAST_FETCH_STATUS_KEY = @"LAST_FETCH_STATUS";
                                 valueForKey:FIRRemoteConfigThrottledEndTimeInSecondsKey] intValue] *
                             1000;
                         resultDict[@"FETCH_THROTTLED_END"] = [[NSNumber alloc] initWithInt:mills];
+                        NSString *errorMessage = @"Fetch has been throttled. See the error's FETCH_THROTTLED_END "
+                            "field for throttle end time.";
                         flutterError = [FlutterError errorWithCode:@"FETCH_FAILED_THROTTLED"
-                                                           message:nil
+                                                           message:errorMessage
                                                            details:resultDict];
                       } else {
+                        NSString *errorMessage = @"Unable to complete fetch. Reason is unknown "
+                            "but this could be due to lack of connectivity.";
                         flutterError = [FlutterError errorWithCode:@"FETCH_FAILED"
-                                                           message:nil
+                                                           message:errorMessage
                                                            details:resultDict];
                       }
                       result(flutterError);

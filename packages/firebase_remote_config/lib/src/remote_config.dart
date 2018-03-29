@@ -13,10 +13,10 @@ class RemoteConfig extends ChangeNotifier {
   static const double defaultValueForDouble = 0.0;
   static const bool defaultValueForBool = false;
 
-  static const String fetchFailedThrottledKey = 'FETCH_FAILED_THROTTLED';
-  static const String lastFetchTimeKey = 'LAST_FETCH_TIME';
-  static const String lastFetchStatusKey = 'LAST_FETCH_STATUS';
-  static const String parametersKey = 'PARAMETERS';
+  static const String _fetchFailedThrottledKey = 'FETCH_FAILED_THROTTLED';
+  static const String _lastFetchTimeKey = 'LAST_FETCH_TIME';
+  static const String _lastFetchStatusKey = 'LAST_FETCH_STATUS';
+  static const String _parametersKey = 'PARAMETERS';
 
   Map<String, RemoteConfigValue> _parameters;
 
@@ -46,15 +46,15 @@ class RemoteConfig extends ChangeNotifier {
     final RemoteConfig remoteConfig = new RemoteConfig._();
 
     remoteConfig._lastFetchTime =
-        new DateTime.fromMillisecondsSinceEpoch(properties[lastFetchTimeKey]);
+        new DateTime.fromMillisecondsSinceEpoch(properties[_lastFetchTimeKey]);
     remoteConfig._lastFetchStatus =
-        LastFetchStatus.values[properties[lastFetchStatusKey]];
+        LastFetchStatus.values[properties[_lastFetchStatusKey]];
     final RemoteConfigSettings remoteConfigSettings =
         new RemoteConfigSettings();
     remoteConfigSettings.debugMode = properties['IN_DEBUG_MODE'];
     remoteConfig._remoteConfigSettings = remoteConfigSettings;
     remoteConfig._parameters =
-        _parseRemoteConfigParameters(parameters: properties[parametersKey]);
+        _parseRemoteConfigParameters(parameters: properties[_parametersKey]);
     return remoteConfig;
   }
 
@@ -81,7 +81,6 @@ class RemoteConfig extends ChangeNotifier {
       'debugMode': remoteConfigSettings.debugMode,
     });
     _remoteConfigSettings = remoteConfigSettings;
-    return new Future<void>.value();
   }
 
   /// Fetches parameter values for your app. Parameter values may be from
@@ -94,23 +93,19 @@ class RemoteConfig extends ChangeNotifier {
           'RemoteConfig#fetch',
           <dynamic, dynamic>{'expiration': expiration.inSeconds});
       _lastFetchTime =
-          new DateTime.fromMillisecondsSinceEpoch(properties[lastFetchTimeKey]);
-      _lastFetchStatus = LastFetchStatus.values[properties[lastFetchStatusKey]];
+          new DateTime.fromMillisecondsSinceEpoch(properties[_lastFetchTimeKey]);
+      _lastFetchStatus = LastFetchStatus.values[properties[_lastFetchStatusKey]];
     } on PlatformException catch (e) {
       _lastFetchTime =
-          new DateTime.fromMillisecondsSinceEpoch(e.details[lastFetchTimeKey]);
-      _lastFetchStatus = LastFetchStatus.values[e.details[lastFetchStatusKey]];
-      if (e.code == RemoteConfig.fetchFailedThrottledKey) {
-        print('fetch failed throttled');
+          new DateTime.fromMillisecondsSinceEpoch(e.details[_lastFetchTimeKey]);
+      _lastFetchStatus = LastFetchStatus.values[e.details[_lastFetchStatusKey]];
+      if (e.code == RemoteConfig._fetchFailedThrottledKey) {
         final int fetchThrottleEnd = e.details['FETCH_THROTTLED_END'];
         throw new FetchThrottledException._(endTimeInMills: fetchThrottleEnd);
       } else {
-        print('fetch failed unknown');
         throw new Exception('Unable to fetch remote config');
       }
     }
-    print('fetch succeeded');
-    return new Future<void>.value();
   }
 
   /// Activates the fetched config. This makes fetched key-values take effect.
@@ -130,15 +125,13 @@ class RemoteConfig extends ChangeNotifier {
     final bool newConfig = mapEquality.equals(_parameters, fetchedParameters);
     _parameters = fetchedParameters;
     notifyListeners();
-    return new Future<bool>.value(newConfig);
+    return newConfig;
   }
 
   /// Sets the default config. Default config parameters should be set then when
   /// changes are needed the parameters should be updated in the Firebase
   /// console.
-  Future<void> setDefaults(Map<String, dynamic> defaults) async {
-    await _channel.invokeMethod(
-        'RemoteConfig#setDefaults', <String, dynamic>{'defaults': defaults});
+  void setDefaults(Map<String, dynamic> defaults) async {
     // Make defaults available even if fetch fails.
     defaults.forEach((String key, dynamic value) {
       if (!_parameters.containsKey(key)) {
@@ -150,7 +143,8 @@ class RemoteConfig extends ChangeNotifier {
         _parameters[key] = remoteConfigValue;
       }
     });
-    return new Future<void>.value();
+    _channel.invokeMethod(
+        'RemoteConfig#setDefaults', <String, dynamic>{'defaults': defaults});
   }
 
   /// Gets the value corresponding to the key as a String. If there is no

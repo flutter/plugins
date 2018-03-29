@@ -52,16 +52,17 @@ import 'package:firebase_auth/firebase_remote_config.dart';
 
 Initialize `RemoteConfig`:
 ```
-final RemoteConfig _remoteConfig = await RemoteConfig.instance;
+final RemoteConfig remoteConfig = await RemoteConfig.instance;
 ```
 
-You can now use the Firebase `_remoteConfig` to fetch remote configurations in your Dart code, e.g.
+You can now use the Firebase `remoteConfig` to fetch remote configurations in your Dart code, e.g.
 ```
 final defaults = <String, dynamic>{'welcome': 'default welcome'};
-await _remoteConfig.setDefaults();
+await remoteConfig.setDefaults(defaults);
 
-await _remoteConfig.fetch(expiration: new Duration(hours: 5));
-print('welcome message: ' + _remoteConfig.getString('welcome'));
+await remoteConfig.fetch(expiration: const Duration(hours: 5));
+await remoteConfig.activate();
+print('welcome message: ' + remoteConfig.getString('welcome'));
 ```
 
 ## Example

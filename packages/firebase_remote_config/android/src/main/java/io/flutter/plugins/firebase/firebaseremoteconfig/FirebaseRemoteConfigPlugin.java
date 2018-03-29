@@ -74,10 +74,7 @@ public class FirebaseRemoteConfigPlugin implements MethodCallHandler {
         }
       case "RemoteConfig#fetch":
         {
-          long expiration =
-              call.argument("expiration") instanceof Integer
-                  ? Long.valueOf((Integer) call.argument("expiration"))
-                  : (Long) call.argument("expiration");
+          long expiration = ((Number) call.argument("expiration")).longValue();
           final FirebaseRemoteConfig firebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
           firebaseRemoteConfig
               .fetch(expiration)
@@ -101,9 +98,13 @@ public class FirebaseRemoteConfigPlugin implements MethodCallHandler {
                               "FETCH_THROTTLED_END",
                               ((FirebaseRemoteConfigFetchThrottledException) exception)
                                   .getThrottleEndTimeMillis());
-                          result.error("FETCH_FAILED_THROTTLED", null, properties);
+                          String errorMessage = "Fetch has been throttled. See the error's " +
+                                  "FETCH_THROTTLED_END field for throttle end time.";
+                          result.error("FETCH_FAILED_THROTTLED", errorMessage, properties);
                         } else {
-                          result.error("FETCH_FAILED", null, properties);
+                          String errorMessage = "Unable to complete fetch. Reason is unknown " +
+                                  "but this could be due to lack of connectivity.";
+                          result.error("FETCH_FAILED", errorMessage, properties);
                         }
                       } else {
                         result.success(properties);
