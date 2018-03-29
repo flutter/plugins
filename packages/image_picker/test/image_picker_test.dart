@@ -8,7 +8,8 @@ import 'package:image_picker/image_picker.dart';
 
 void main() {
   group('$ImagePicker', () {
-    const MethodChannel channel = const MethodChannel('image_picker');
+    const MethodChannel channel =
+        const MethodChannel('plugins.flutter.io/image_picker');
 
     final List<MethodCall> log = <MethodCall>[];
 
@@ -22,23 +23,7 @@ void main() {
     });
 
     group('#pickImage', () {
-      test('ImageSource.askUser is the default image source', () async {
-        await ImagePicker.pickImage();
-
-        expect(
-          log,
-          <Matcher>[
-            isMethodCall('pickImage', arguments: <String, dynamic>{
-              'source': 0,
-              'maxWidth': null,
-              'maxHeight': null,
-            }),
-          ],
-        );
-      });
-
       test('passes the image source argument correctly', () async {
-        await ImagePicker.pickImage(source: ImageSource.askUser);
         await ImagePicker.pickImage(source: ImageSource.camera);
         await ImagePicker.pickImage(source: ImageSource.gallery);
 
@@ -55,20 +40,22 @@ void main() {
               'maxWidth': null,
               'maxHeight': null,
             }),
-            isMethodCall('pickImage', arguments: <String, dynamic>{
-              'source': 2,
-              'maxWidth': null,
-              'maxHeight': null,
-            }),
           ],
         );
       });
 
       test('passes the width and height arguments correctly', () async {
-        await ImagePicker.pickImage();
-        await ImagePicker.pickImage(maxWidth: 10.0);
-        await ImagePicker.pickImage(maxHeight: 10.0);
+        await ImagePicker.pickImage(source: ImageSource.camera);
         await ImagePicker.pickImage(
+          source: ImageSource.camera,
+          maxWidth: 10.0,
+        );
+        await ImagePicker.pickImage(
+          source: ImageSource.camera,
+          maxHeight: 10.0,
+        );
+        await ImagePicker.pickImage(
+          source: ImageSource.camera,
           maxWidth: 10.0,
           maxHeight: 20.0,
         );
@@ -101,8 +88,15 @@ void main() {
       });
 
       test('does not accept a negative width or height argument', () {
-        expect(ImagePicker.pickImage(maxWidth: -1.0), throwsArgumentError);
-        expect(ImagePicker.pickImage(maxHeight: -1.0), throwsArgumentError);
+        expect(
+          ImagePicker.pickImage(source: ImageSource.camera, maxWidth: -1.0),
+          throwsArgumentError,
+        );
+
+        expect(
+          ImagePicker.pickImage(source: ImageSource.camera, maxHeight: -1.0),
+          throwsArgumentError,
+        );
       });
     });
   });
