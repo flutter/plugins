@@ -14,7 +14,6 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
-  meta: "^1.0.5"
 
 dev_dependencies:
   flutter_test:
