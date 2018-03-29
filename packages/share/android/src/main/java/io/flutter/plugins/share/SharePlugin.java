@@ -29,11 +29,11 @@ public class SharePlugin implements MethodChannel.MethodCallHandler {
   @Override
   public void onMethodCall(MethodCall call, MethodChannel.Result result) {
     if (call.method.equals("share")) {
-      if (!(call.arguments instanceof String)) {
-        result.error("ARGUMENT_ERROR", "String argument expected", null);
+      if (!(call.arguments instanceof Map)) {
+        result.error("ARGUMENT_ERROR", "Map argument expected", null);
         return;
       }
-      final String text = (String) call.arguments;
+      final String text = ((Map) call.arguments)["text"];
       share(text);
       result.success(null);
     } else {

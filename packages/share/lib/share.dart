@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:flutter/services.dart';
 
@@ -16,7 +17,16 @@ const MethodChannel _kChannel = const MethodChannel('plugins.flutter.io/share');
 ///
 /// May throw [PlatformException] or [FormatException]
 /// from [MethodChannel].
-Future<void> share(String text) {
+Future<void> share(String text, { Offset sharePositionOrigin }) {
   assert(text != null && text.isNotEmpty);
-  return _kChannel.invokeMethod('share', text);
+  final Map<String, dynamic> params = <String, dynamic> {
+    'text': text,
+  };
+
+  if (sharePositionOrigin != null) {
+    params['originX'] = sharePositionOrigin.dx;
+    params['originY'] = sharePositionOrigin.dy;
+  }
+
+  return _kChannel.invokeMethod('share', params);
 }

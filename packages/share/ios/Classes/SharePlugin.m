@@ -30,6 +30,8 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
   UIActivityViewController *activityViewController =
       [[UIActivityViewController alloc] initWithActivityItems:@[ sharedItems ]
                                         applicationActivities:nil];
+  // activityViewController.modalInPopover = YES;
+  activityViewController.popoverPresentationController.sourceView = controller.view;
   [controller presentViewController:activityViewController animated:YES completion:nil];
 }
 
