@@ -37,7 +37,5 @@ android {
 }
 
 dependencies {
-    api 'com.github.bumptech.glide:glide:4.0.0'
-    api 'com.android.support:appcompat-v7:26.1.0'
-    api 'com.android.support:recyclerview-v7:26.1.0'
+    api 'com.android.support:appcompat-v7:27.1.0'
 }
