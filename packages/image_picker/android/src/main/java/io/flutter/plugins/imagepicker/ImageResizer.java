@@ -31,15 +31,15 @@ class ImageResizer {
 
     if (!shouldScale) {
       return imagePath;
-    }
+    } else {
+      try {
+        File scaledImage = resizedImage(imagePath, maxWidth, maxHeight);
+        exifDataCopier.copyExif(imagePath, scaledImage.getPath());
 
-    try {
-      File scaledImage = resizedImage(imagePath, maxWidth, maxHeight);
-      exifDataCopier.copyExif(imagePath, scaledImage.getPath());
-
-      return scaledImage.getPath();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+        return scaledImage.getPath();
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
     }
   }
 
