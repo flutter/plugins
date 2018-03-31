@@ -38,7 +38,6 @@ android {
 
 dependencies {
     api 'com.github.bumptech.glide:glide:4.0.0'
-    api 'com.github.esafirm.android-image-picker:imagepicker:1.9.2@aar'
     api 'com.android.support:appcompat-v7:26.1.0'
     api 'com.android.support:recyclerview-v7:26.1.0'
 }

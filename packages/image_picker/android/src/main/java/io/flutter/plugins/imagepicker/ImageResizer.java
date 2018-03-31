@@ -12,7 +12,30 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 class ImageResizer {
-  File resizedImage(String path, Double maxWidth, Double maxHeight) throws IOException {
+  private final ExifDataCopier exifDataCopier;
+
+  ImageResizer(ExifDataCopier exifDataCopier) {
+    this.exifDataCopier = exifDataCopier;
+  }
+
+  String resizeImageIfNeeded(String imagePath, Double maxWidth, Double maxHeight) {
+    boolean shouldScale = maxWidth != null || maxHeight != null;
+
+    if (!shouldScale) {
+      return imagePath;
+    } else {
+      try {
+        File scaledImage = resizedImage(imagePath, maxWidth, maxHeight);
+        exifDataCopier.copyExif(imagePath, scaledImage.getPath());
+
+        return scaledImage.getPath();
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+
+  private File resizedImage(String path, Double maxWidth, Double maxHeight) throws IOException {
     Bitmap bmp = BitmapFactory.decodeFile(path);
     double originalWidth = bmp.getWidth() * 1.0;
     double originalHeight = bmp.getHeight() * 1.0;
