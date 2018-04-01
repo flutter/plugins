@@ -38,7 +38,7 @@ class _MyHomePageState extends State<MyHomePage> {
   File imageFile;
 
   getImage() async {
-    var _fileName = await ImagePicker.pickImage();
+    var _fileName = await ImagePicker.pickImage(source: ImageSource.camera);
     setState(() {
       imageFile = _fileName;
     });

@@ -30,12 +30,24 @@ class SharedPreferencesDemo extends StatefulWidget {
 
 class SharedPreferencesDemoState extends State<SharedPreferencesDemo> {
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  Future<int> _counter;
 
   Future<Null> _incrementCounter() async {
     final SharedPreferences prefs = await _prefs;
     final int counter = (prefs.getInt('counter') ?? 0) + 1;
+
     setState(() {
-      prefs.setInt("counter", counter);
+      _counter = prefs.setInt("counter", counter).then((bool success) {
+        return counter;
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _counter = _prefs.then((SharedPreferences prefs) {
+      return (prefs.getInt('counter') ?? 0);
     });
   }
 
@@ -46,18 +58,21 @@ class SharedPreferencesDemoState extends State<SharedPreferencesDemo> {
         title: const Text("SharedPreferences Demo"),
       ),
       body: new Center(
-          child: new FutureBuilder<SharedPreferences>(
-              future: _prefs,
-              builder: (BuildContext context,
-                  AsyncSnapshot<SharedPreferences> snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting)
-                  return const Text('Loading...');
-                final int counter = snapshot.requireData.getInt('counter') ?? 0;
-                // ignore: prefer_const_constructors
-                return new Text(
-                  'Button tapped $counter time${ counter == 1 ? '' : 's' }.\n\n'
-                      'This should persist across restarts.',
-                );
+          child: new FutureBuilder<int>(
+              future: _counter,
+              builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+                switch (snapshot.connectionState) {
+                  case ConnectionState.waiting:
+                    return const CircularProgressIndicator();
+                  default:
+                    if (snapshot.hasError)
+                      return new Text('Error: ${snapshot.error}');
+                    else
+                      return new Text(
+                        'Button tapped ${snapshot.data} time${ snapshot.data == 1 ? '' : 's' }.\n\n'
+                            'This should persist across restarts.',
+                      );
+                }
               })),
       floatingActionButton: new FloatingActionButton(
         onPressed: _incrementCounter,
