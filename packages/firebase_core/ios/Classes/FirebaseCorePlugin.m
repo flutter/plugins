@@ -49,7 +49,7 @@
     if (![optionsDictionary[@"trackingID"] isEqual:[NSNull null]])
       options.trackingID = optionsDictionary[@"trackingID"];
     if (![optionsDictionary[@"projectID"] isEqual:[NSNull null]])
-      options.androidClientID = optionsDictionary[@"projectID"];
+      options.projectID = optionsDictionary[@"projectID"];
     if (![optionsDictionary[@"androidClientID"] isEqual:[NSNull null]])
       options.androidClientID = optionsDictionary[@"androidClientID"];
     if (![optionsDictionary[@"databaseURL"] isEqual:[NSNull null]])
