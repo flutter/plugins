@@ -58,21 +58,23 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
   }
 
   private void getDownloadUrl(MethodCall call, final Result result) {
-      String path = call.argument("path");
-      StorageReference ref = firebaseStorage.getReference().child(path);
-      ref.getDownloadUrl().addOnSuccessListener(
-              new OnSuccessListener<Uri>() {
-                  @Override
-                  public void onSuccess(Uri uri) {
-                      result.success(uri.toString());
-                  }
+    String path = call.argument("path");
+    StorageReference ref = firebaseStorage.getReference().child(path);
+    ref.getDownloadUrl()
+        .addOnSuccessListener(
+            new OnSuccessListener<Uri>() {
+              @Override
+              public void onSuccess(Uri uri) {
+                result.success(uri.toString());
               }
-      ).addOnFailureListener(new OnFailureListener() {
-          @Override
-          public void onFailure(@NonNull Exception e) {
-              result.error("download_error", e.getMessage(), null);
-          }
-      });
+            })
+        .addOnFailureListener(
+            new OnFailureListener() {
+              @Override
+              public void onFailure(@NonNull Exception e) {
+                result.error("download_error", e.getMessage(), null);
+              }
+            });
   }
 
   private void delete(MethodCall call, final Result result) {

@@ -92,16 +92,16 @@
             }];
 }
 
-- (void) getDownloadUrl:(FlutterMethodCall *)call result:(FlutterResult)result {
-    NSString *path = call.arguments[@"path"];
-    FIRStorageReference *ref = [[FIRStorage storage].reference child:path];
-    [ref downloadURLWithCompletion:^(NSURL *URL, NSError *error){
-        if (error != nil) {
-            result(error.flutterError);
-        } else {
-            result(URL.absoluteString);
-        }
-    }];
+- (void)getDownloadUrl:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSString *path = call.arguments[@"path"];
+  FIRStorageReference *ref = [[FIRStorage storage].reference child:path];
+  [ref downloadURLWithCompletion:^(NSURL *URL, NSError *error) {
+    if (error != nil) {
+      result(error.flutterError);
+    } else {
+      result(URL.absoluteString);
+    }
+  }];
 }
 
 - (void) delete:(FlutterMethodCall *)call result:(FlutterResult)result {
