@@ -1,7 +1,7 @@
-## 0.4.0
+## 0.3.3
 
-* **Breaking change**. Adjusted Flutter SDK constraint to match Flutter release
-  with extensible platform message codec, required already by version 0.3.1.
+* Adjusted Flutter SDK constraint to match Flutter release with extensible
+  platform message codec, required already by version 0.3.1.
 
 ## 0.3.2
 
