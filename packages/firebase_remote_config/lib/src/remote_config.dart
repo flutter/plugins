@@ -113,16 +113,12 @@ class RemoteConfig extends ChangeNotifier {
   /// The returned Future contains true if the fetched config is different
   /// from the currently activated config, it contains false otherwise.
   Future<bool> activateFetched() async {
-    final Map<dynamic, dynamic> rawParameters =
+    final Map<dynamic, dynamic> properties =
         await _channel.invokeMethod('RemoteConfig#activate');
+    final Map<dynamic, dynamic> rawParameters = properties['parameters'];
+    final bool newConfig = properties['newConfig'];
     final Map<String, RemoteConfigValue> fetchedParameters =
         _parseRemoteConfigParameters(parameters: rawParameters);
-    final MapEquality<String, RemoteConfigValue> mapEquality =
-        const MapEquality<String, RemoteConfigValue>(
-      keys: const Equality<String>(),
-      values: const Equality<RemoteConfigValue>(),
-    );
-    final bool newConfig = mapEquality.equals(_parameters, fetchedParameters);
     _parameters = fetchedParameters;
     notifyListeners();
     return newConfig;

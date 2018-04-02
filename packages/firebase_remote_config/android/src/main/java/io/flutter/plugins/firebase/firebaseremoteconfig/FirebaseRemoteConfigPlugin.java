@@ -115,8 +115,11 @@ public class FirebaseRemoteConfigPlugin implements MethodCallHandler {
         }
       case "RemoteConfig#activate":
         {
-          FirebaseRemoteConfig.getInstance().activateFetched();
-          result.success(getConfigParameters());
+          boolean newConfig = FirebaseRemoteConfig.getInstance().activateFetched();
+          Map<String, Object> properties = new HashMap<>();
+          properties.put("parameters", getConfigParameters());
+          properties.put("newConfig", newConfig);
+          result.success(properties);
           break;
         }
       case "RemoteConfig#setDefaults":

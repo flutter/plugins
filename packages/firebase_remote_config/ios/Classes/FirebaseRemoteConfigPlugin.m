@@ -97,8 +97,12 @@ static NSString *LAST_FETCH_STATUS_KEY = @"LAST_FETCH_STATUS";
                     }
                   }];
   } else if ([@"RemoteConfig#activate" isEqualToString:call.method]) {
-    [[FIRRemoteConfig remoteConfig] activateFetched];
-    result([self getConfigParameters]);
+    bool newConfig = [[FIRRemoteConfig remoteConfig] activateFetched];
+    NSDictionary *parameters = [self getConfigParameters];
+    result(@{
+        @"newConfig": [[NSNumber init] initWithBool:newConfig],
+        @"parameters": parameters
+    });
   } else if ([@"RemoteConfig#setDefaults" isEqualToString:call.method]) {
     FIRRemoteConfig *remoteConfig = [FIRRemoteConfig remoteConfig];
     NSDictionary *defaults = call.arguments[@"defaults"];
