@@ -10,7 +10,7 @@ void main() {
   group('$FirebaseApp', () {
     final List<MethodCall> log = <MethodCall>[];
     const FirebaseApp testApp = const FirebaseApp(
-      name: 'foo',
+      name: 'testApp',
       options: const FirebaseOptions(googleAppID: '12345'),
     );
 
@@ -34,7 +34,7 @@ void main() {
     });
 
     test('configure', () async {
-      final String name = 'foo';
+      final String name = 'configuredApp';
       const FirebaseOptions options = const FirebaseOptions(
         apiKey: 'testAPIKey',
         bundleID: 'testBundleID',
@@ -54,6 +54,7 @@ void main() {
       );
       expect(app.name, equals(name));
       expect(app.options, equals(options));
+      expect(app, equals(new FirebaseApp.named(app.name)));
       expect(
         log,
         <Matcher>[
