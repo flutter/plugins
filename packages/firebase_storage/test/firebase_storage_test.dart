@@ -64,7 +64,6 @@ void main() {
 
       setUp(() {
         channel.setMockMethodCallHandler((MethodCall methodCall) async {
-          print('get download called');
           log.add(methodCall);
           return 'https://path/to/file';
         });
