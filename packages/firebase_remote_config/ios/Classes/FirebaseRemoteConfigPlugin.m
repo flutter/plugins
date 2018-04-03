@@ -79,14 +79,16 @@ static NSString *LAST_FETCH_STATUS_KEY = @"LAST_FETCH_STATUS";
                                 valueForKey:FIRRemoteConfigThrottledEndTimeInSecondsKey] intValue] *
                             1000;
                         resultDict[@"FETCH_THROTTLED_END"] = [[NSNumber alloc] initWithInt:mills];
-                        NSString *errorMessage = @"Fetch has been throttled. See the error's FETCH_THROTTLED_END "
-                            "field for throttle end time.";
+                        NSString *errorMessage =
+                            @"Fetch has been throttled. See the error's FETCH_THROTTLED_END "
+                             "field for throttle end time.";
                         flutterError = [FlutterError errorWithCode:@"FETCH_FAILED_THROTTLED"
                                                            message:errorMessage
                                                            details:resultDict];
                       } else {
-                        NSString *errorMessage = @"Unable to complete fetch. Reason is unknown "
-                            "but this could be due to lack of connectivity.";
+                        NSString *errorMessage =
+                            @"Unable to complete fetch. Reason is unknown "
+                             "but this could be due to lack of connectivity.";
                         flutterError = [FlutterError errorWithCode:@"FETCH_FAILED"
                                                            message:errorMessage
                                                            details:resultDict];
@@ -99,10 +101,7 @@ static NSString *LAST_FETCH_STATUS_KEY = @"LAST_FETCH_STATUS";
   } else if ([@"RemoteConfig#activate" isEqualToString:call.method]) {
     bool newConfig = [[FIRRemoteConfig remoteConfig] activateFetched];
     NSDictionary *parameters = [self getConfigParameters];
-    result(@{
-        @"newConfig": [[NSNumber init] initWithBool:newConfig],
-        @"parameters": parameters
-    });
+    result(@{@"newConfig" : [[NSNumber init] initWithBool:newConfig], @"parameters" : parameters});
   } else if ([@"RemoteConfig#setDefaults" isEqualToString:call.method]) {
     FIRRemoteConfig *remoteConfig = [FIRRemoteConfig remoteConfig];
     NSDictionary *defaults = call.arguments[@"defaults"];

@@ -9,7 +9,9 @@ void main() {
       home: new FutureBuilder<RemoteConfig>(
         future: setupRemoteConfig(),
         builder: (BuildContext context, AsyncSnapshot<RemoteConfig> snapshot) {
-          return snapshot.hasData ? new WelcomeWidget(remoteConfig: snapshot.data) : new Container();
+          return snapshot.hasData
+              ? new WelcomeWidget(remoteConfig: snapshot.data)
+              : new Container();
         },
       )));
 }
@@ -38,7 +40,8 @@ class WelcomeWidget extends AnimatedWidget {
               // Fetch throttled.
               print(exception);
             } catch (exception) {
-              print('Unable to fetch remote config. Cached or default values will be '
+              print(
+                  'Unable to fetch remote config. Cached or default values will be '
                   'used');
             }
           }),

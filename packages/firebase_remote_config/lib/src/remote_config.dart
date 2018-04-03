@@ -72,7 +72,7 @@ class RemoteConfig extends ChangeNotifier {
   }
 
   static ValueSource _parseValueSource(String sourceStr) {
-    switch(sourceStr) {
+    switch (sourceStr) {
       case 'valueStatic':
         return ValueSource.valueStatic;
       case 'valueDefault':
@@ -85,7 +85,7 @@ class RemoteConfig extends ChangeNotifier {
   }
 
   static LastFetchStatus _parseLastFetchStatus(String statusStr) {
-    switch(statusStr) {
+    switch (statusStr) {
       case 'success':
         return LastFetchStatus.success;
       case 'failure':
@@ -120,8 +120,8 @@ class RemoteConfig extends ChangeNotifier {
       final Map<dynamic, dynamic> properties = await _channel.invokeMethod(
           'RemoteConfig#fetch',
           <dynamic, dynamic>{'expiration': expiration.inSeconds});
-      _lastFetchTime =
-          new DateTime.fromMillisecondsSinceEpoch(properties[_lastFetchTimeKey]);
+      _lastFetchTime = new DateTime.fromMillisecondsSinceEpoch(
+          properties[_lastFetchTimeKey]);
       _lastFetchStatus = _parseLastFetchStatus(properties[_lastFetchStatusKey]);
     } on PlatformException catch (e) {
       _lastFetchTime =
