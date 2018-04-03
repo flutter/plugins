@@ -161,18 +161,17 @@ abstract class PlayerLifeCycle extends StatefulWidget {
 /// A widget connecting its life cycle to a [VideoPlayerController] using
 /// a data source from the network.
 class NetworkPlayerLifeCycle extends PlayerLifeCycle {
-
   NetworkPlayerLifeCycle(String dataSource, VideoWidgetBuilder childBuilder)
       : super(dataSource, childBuilder);
 
   @override
-  _NetworkPlayerLifeCycleState createState() => new _NetworkPlayerLifeCycleState();
+  _NetworkPlayerLifeCycleState createState() =>
+      new _NetworkPlayerLifeCycleState();
 }
 
 /// A widget connecting its life cycle to a [VideoPlayerController] using
 /// an asset as data source
 class AssetPlayerLifeCycle extends PlayerLifeCycle {
-
   AssetPlayerLifeCycle(String dataSource, VideoWidgetBuilder childBuilder)
       : super(dataSource, childBuilder);
 
@@ -183,9 +182,8 @@ class AssetPlayerLifeCycle extends PlayerLifeCycle {
 abstract class _PlayerLifeCycleState extends State<PlayerLifeCycle> {
   VideoPlayerController controller;
 
-  _PlayerLifeCycleState();
-
   @override
+
   /// Subclasses should implement [createVideoPlayerController], which is used
   /// by this method.
   void initState() {
@@ -221,7 +219,6 @@ abstract class _PlayerLifeCycleState extends State<PlayerLifeCycle> {
 }
 
 class _NetworkPlayerLifeCycleState extends _PlayerLifeCycleState {
-
   @override
   VideoPlayerController createVideoPlayerController() {
     return new VideoPlayerController.network(widget.dataSource);
@@ -229,7 +226,6 @@ class _NetworkPlayerLifeCycleState extends _PlayerLifeCycleState {
 }
 
 class _AssetPlayerLifeCycleState extends _PlayerLifeCycleState {
-
   @override
   VideoPlayerController createVideoPlayerController() {
     return new VideoPlayerController.asset(widget.dataSource);

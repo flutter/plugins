@@ -32,7 +32,6 @@ public class VideoPlayerPlugin implements MethodCallHandler {
     private final EventChannel eventChannel;
     private boolean isInitialized = false;
 
-
     VideoPlayer(
         EventChannel eventChannel,
         TextureRegistry.SurfaceTextureEntry textureEntry,
@@ -239,13 +238,21 @@ public class VideoPlayerPlugin implements MethodCallHandler {
           VideoPlayer player;
           if (call.argument("asset") != null) {
             try {
-              AssetFileDescriptor fd = registrar.context().getAssets()
-                  .openFd(registrar.lookupKeyForAsset((String) call.argument("asset")));
+              AssetFileDescriptor fd =
+                  registrar
+                      .context()
+                      .getAssets()
+                      .openFd(registrar.lookupKeyForAsset((String) call.argument("asset")));
               player = new VideoPlayer(eventChannel, handle, fd, result);
               videoPlayers.put(handle.id(), player);
             } catch (IOException e) {
-              result.error("IOError", "Error trying to access asset " +
-                                      (String) call.argument("asset") + ". " + e.toString(), null);
+              result.error(
+                  "IOError",
+                  "Error trying to access asset "
+                      + (String) call.argument("asset")
+                      + ". "
+                      + e.toString(),
+                  null);
             }
           } else {
             player = new VideoPlayer(eventChannel, handle, (String) call.argument("uri"), result);

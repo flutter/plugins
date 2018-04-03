@@ -140,15 +140,13 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   StreamSubscription<dynamic> _eventSubscription;
   _VideoAppLifeCycleObserver _lifeCycleObserver;
 
-  VideoPlayerController.asset(String asset) :
-        dataSource = asset,
-        isNetwork = false,
-        super(new VideoPlayerValue(duration: null)) {}
+  VideoPlayerController.asset(this.dataSource)
+      : isNetwork = false,
+        super(new VideoPlayerValue(duration: null));
 
-  VideoPlayerController.network(String uri) :
-        dataSource = uri,
-        isNetwork = true,
-        super(new VideoPlayerValue(duration: null)) {}
+  VideoPlayerController.network(this.dataSource)
+      : isNetwork = true,
+        super(new VideoPlayerValue(duration: null));
 
   Future<Null> initialize() async {
     _lifeCycleObserver = new _VideoAppLifeCycleObserver(this);

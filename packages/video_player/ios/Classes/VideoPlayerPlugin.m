@@ -50,7 +50,7 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
 @implementation FLTVideoPlayer
 - (instancetype)initWithAsset:(NSString*)asset frameUpdater:(FLTFrameUpdater*)frameUpdater {
   NSString* path = [[NSBundle mainBundle] pathForResource:asset ofType:nil];
-  return [self initWithURL: [NSURL fileURLWithPath:path] frameUpdater:frameUpdater];
+  return [self initWithURL:[NSURL fileURLWithPath:path] frameUpdater:frameUpdater];
 }
 
 - (instancetype)initWithURL:(NSURL*)url frameUpdater:(FLTFrameUpdater*)frameUpdater {
@@ -269,8 +269,7 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
   FlutterMethodChannel* channel =
       [FlutterMethodChannel methodChannelWithName:@"flutter.io/videoPlayer"
                                   binaryMessenger:[registrar messenger]];
-  FLTVideoPlayerPlugin* instance =
-      [[FLTVideoPlayerPlugin alloc] initWithRegistrar:registrar];
+  FLTVideoPlayerPlugin* instance = [[FLTVideoPlayerPlugin alloc] initWithRegistrar:registrar];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
