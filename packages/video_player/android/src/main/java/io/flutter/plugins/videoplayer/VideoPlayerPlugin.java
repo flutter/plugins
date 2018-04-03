@@ -4,6 +4,7 @@
 
 package io.flutter.plugins.videoplayer;
 
+import android.content.res.AssetFileDescriptor;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -32,11 +33,43 @@ public class VideoPlayerPlugin implements MethodCallHandler {
     private boolean isInitialized = false;
 
     VideoPlayer(
-        final EventChannel eventChannel,
-        final TextureRegistry.SurfaceTextureEntry textureEntry,
-        String dataSource,
+        EventChannel eventChannel,
+        TextureRegistry.SurfaceTextureEntry textureEntry,
+        AssetFileDescriptor afd,
         final Result result) {
       this.eventChannel = eventChannel;
+      this.mediaPlayer = new MediaPlayer();
+      this.textureEntry = textureEntry;
+      try {
+        mediaPlayer.setDataSource(afd);
+        setupVideoPlayer(eventChannel, textureEntry, mediaPlayer, result);
+      } catch (IOException e) {
+        result.error("VideoError", "IOError when initializing video player " + e.toString(), null);
+      }
+    }
+
+    VideoPlayer(
+        EventChannel eventChannel,
+        TextureRegistry.SurfaceTextureEntry textureEntry,
+        String dataSource,
+        Result result) {
+      this.eventChannel = eventChannel;
+      this.mediaPlayer = new MediaPlayer();
+      this.textureEntry = textureEntry;
+      try {
+        mediaPlayer.setDataSource(dataSource);
+        setupVideoPlayer(eventChannel, textureEntry, mediaPlayer, result);
+      } catch (IOException e) {
+        result.error("VideoError", "IOError when initializing video player " + e.toString(), null);
+      }
+    }
+
+    private void setupVideoPlayer(
+        EventChannel eventChannel,
+        TextureRegistry.SurfaceTextureEntry textureEntry,
+        final MediaPlayer mediaPlayer,
+        Result result) {
+
       eventChannel.setStreamHandler(
           new EventChannel.StreamHandler() {
             @Override
@@ -50,60 +83,55 @@ public class VideoPlayerPlugin implements MethodCallHandler {
               eventSink = null;
             }
           });
-      this.textureEntry = textureEntry;
-      this.mediaPlayer = new MediaPlayer();
-      try {
-        mediaPlayer.setSurface(new Surface(textureEntry.surfaceTexture()));
-        mediaPlayer.setDataSource(dataSource);
-        setAudioAttributes(mediaPlayer);
-        mediaPlayer.setOnPreparedListener(
-            new MediaPlayer.OnPreparedListener() {
-              @Override
-              public void onPrepared(MediaPlayer mp) {
-                mediaPlayer.setOnBufferingUpdateListener(
-                    new MediaPlayer.OnBufferingUpdateListener() {
-                      @Override
-                      public void onBufferingUpdate(MediaPlayer mediaPlayer, int percent) {
-                        if (eventSink != null) {
-                          Map<String, Object> event = new HashMap<>();
-                          event.put("event", "bufferingUpdate");
-                          List<Integer> range =
-                              Arrays.asList(0, percent * mediaPlayer.getDuration() / 100);
-                          // iOS supports a list of buffered ranges, so here is a list with a single range.
-                          event.put("values", Collections.singletonList(range));
-                          eventSink.success(event);
-                        }
+
+      mediaPlayer.setSurface(new Surface(textureEntry.surfaceTexture()));
+      setAudioAttributes(mediaPlayer);
+      mediaPlayer.setOnPreparedListener(
+          new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+              mediaPlayer.setOnBufferingUpdateListener(
+                  new MediaPlayer.OnBufferingUpdateListener() {
+                    @Override
+                    public void onBufferingUpdate(MediaPlayer mediaPlayer, int percent) {
+                      if (eventSink != null) {
+                        Map<String, Object> event = new HashMap<>();
+                        event.put("event", "bufferingUpdate");
+                        List<Integer> range =
+                            Arrays.asList(0, percent * mediaPlayer.getDuration() / 100);
+                        // iOS supports a list of buffered ranges, so here is a list with a single range.
+                        event.put("values", Collections.singletonList(range));
+                        eventSink.success(event);
                       }
-                    });
-                isInitialized = true;
-                sendInitialized();
-              }
-            });
+                    }
+                  });
+              isInitialized = true;
+              sendInitialized();
+            }
+          });
 
-        mediaPlayer.setOnErrorListener(
-            new MediaPlayer.OnErrorListener() {
-              @Override
-              public boolean onError(MediaPlayer mp, int what, int extra) {
-                eventSink.error(
-                    "VideoError", "Video player had error " + what + " extra " + extra, null);
-                return true;
-              }
-            });
+      mediaPlayer.setOnErrorListener(
+          new MediaPlayer.OnErrorListener() {
+            @Override
+            public boolean onError(MediaPlayer mp, int what, int extra) {
+              eventSink.error(
+                  "VideoError", "Video player had error " + what + " extra " + extra, null);
+              return true;
+            }
+          });
 
-        mediaPlayer.setOnCompletionListener(
-            new MediaPlayer.OnCompletionListener() {
-              @Override
-              public void onCompletion(MediaPlayer mediaPlayer) {
-                Map<String, Object> event = new HashMap<>();
-                event.put("event", "completed");
-                eventSink.success(event);
-              }
-            });
+      mediaPlayer.setOnCompletionListener(
+          new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+              Map<String, Object> event = new HashMap<>();
+              event.put("event", "completed");
+              eventSink.success(event);
+            }
+          });
 
-        mediaPlayer.prepareAsync();
-      } catch (IOException e) {
-        result.error("VideoError", "IOError when initializing video player " + e.toString(), null);
-      }
+      mediaPlayer.prepareAsync();
+
       Map<String, Object> reply = new HashMap<>();
       reply.put("textureId", textureEntry.id());
       result.success(reply);
@@ -206,9 +234,30 @@ public class VideoPlayerPlugin implements MethodCallHandler {
           EventChannel eventChannel =
               new EventChannel(
                   registrar.messenger(), "flutter.io/videoPlayer/videoEvents" + handle.id());
-          VideoPlayer player =
-              new VideoPlayer(eventChannel, handle, (String) call.argument("dataSource"), result);
-          videoPlayers.put(handle.id(), player);
+
+          VideoPlayer player;
+          if (call.argument("asset") != null) {
+            try {
+              AssetFileDescriptor fd =
+                  registrar
+                      .context()
+                      .getAssets()
+                      .openFd(registrar.lookupKeyForAsset((String) call.argument("asset")));
+              player = new VideoPlayer(eventChannel, handle, fd, result);
+              videoPlayers.put(handle.id(), player);
+            } catch (IOException e) {
+              result.error(
+                  "IOError",
+                  "Error trying to access asset "
+                      + (String) call.argument("asset")
+                      + ". "
+                      + e.toString(),
+                  null);
+            }
+          } else {
+            player = new VideoPlayer(eventChannel, handle, (String) call.argument("uri"), result);
+            videoPlayers.put(handle.id(), player);
+          }
           break;
         }
       default:

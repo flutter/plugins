@@ -48,7 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    _controller = new VideoPlayerController(
+    _controller = new VideoPlayerController.network(
       'http://www.sample-videos.com/video/mp4/720/big_buck_bunny_720p_20mb.mp4',
     )
       ..addListener(() {
