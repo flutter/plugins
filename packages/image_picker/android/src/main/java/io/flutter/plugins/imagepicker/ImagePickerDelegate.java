@@ -107,19 +107,19 @@ public class ImagePickerDelegate
     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
     boolean canTakePhotos = intent.resolveActivity(activity.getPackageManager()) != null;
 
-    if (canTakePhotos) {
-      File imageFile = createTemporaryWritableImageFile();
-      pendingCameraImageUri = Uri.parse("file:" + imageFile.getAbsolutePath());
-
-      Uri imageUri = FileProvider.getUriForFile(activity, providerName, imageFile);
-      intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-      grantUriPermissions(intent, imageUri);
-
-      activity.startActivityForResult(intent, REQUEST_CODE_TAKE_WITH_CAMERA);
+    if (!canTakePhotos) {
+      finishWithError("no_available_camera", "No cameras available for taking pictures.");
       return;
     }
 
-    finishWithError("no_available_camera", "No cameras available for taking pictures.");
+    File imageFile = createTemporaryWritableImageFile();
+    pendingCameraImageUri = Uri.parse("file:" + imageFile.getAbsolutePath());
+
+    Uri imageUri = FileProvider.getUriForFile(activity, providerName, imageFile);
+    intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+    grantUriPermissions(intent, imageUri);
+
+    activity.startActivityForResult(intent, REQUEST_CODE_TAKE_WITH_CAMERA);
   }
 
   private File createTemporaryWritableImageFile() {
