@@ -48,10 +48,11 @@ class StorageReference {
     );
   }
 
-  Future<String> getDownloadURL() {
-    return FirebaseStorage._channel.invokeMethod(
+  Future<String> getDownloadURL() async {
+    final dynamic downloadUrl = await FirebaseStorage._channel.invokeMethod(
         "StorageReference#getDownloadUrl",
         <String, String>{'path': _pathComponents.join("/")});
+    return downloadUrl;
   }
 
   Future<void> delete() {
