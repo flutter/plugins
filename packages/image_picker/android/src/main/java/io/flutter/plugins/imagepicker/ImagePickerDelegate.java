@@ -22,6 +22,44 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * A delegate class doing the heavy lifting for the plugin.
+ *
+ * When invoked, both the {@link #chooseImageFromGallery} and {@link #takeImageWithCamera} methods
+ * go through the same steps:
+ *
+ * 1. Check for an existing {@link #pendingResult}. If a previous pendingResult exists, this means
+ * that the chooseImageFromGallery() or takeImageWithCamera() method was called at least twice. In
+ * this case, stop executing and finish with an error.
+ *
+ * 2. Check that a required runtime permission has been granted. The chooseImageFromGallery() method
+ * checks if the {@link Manifest.permission#READ_EXTERNAL_STORAGE} permission has been granted.
+ * Similarly, the takeImageWithCamera() method checks that {@link Manifest.permission#CAMERA} has
+ * been granted.
+ *
+ * The permission check can end up in two different outcomes:
+ *
+ *  A) If the permission has already been granted, continue with picking the image from gallery
+ *  or camera.
+ *
+ *  B) If the permission hasn't already been granted, ask for the permission from the user. If
+ *  the user grants the permission, proceed with step #3. If the user denies the permission, stop
+ *  doing anything else and finish with a null result.
+ *
+ * 3. Launch the gallery or camera for picking the image, depending on whether chooseImageFromGallery()
+ * or takeImageWithCamera() was called.
+ *
+ * This can end up in three different outcomes:
+ *
+ *  A) User picks an image. No maxWidth or maxHeight was specified when calling {@code pickImage()}
+ *  method in the Dart side of this plugin. Finish with full path for the picked image as the result.
+ *
+ *  B) User picks an image. A maxWidth and/or maxHeight was provided when calling {@code pickImage()}
+ *  method in the Dart side of this plugin. A scaled copy of the image is created. Finish with full
+ *  path for the scaled image as the result.
+ *
+ *  C) User cancels picking an image. Finish with null result.
+ */
 public class ImagePickerDelegate
     implements PluginRegistry.ActivityResultListener,
         PluginRegistry.RequestPermissionsResultListener {
