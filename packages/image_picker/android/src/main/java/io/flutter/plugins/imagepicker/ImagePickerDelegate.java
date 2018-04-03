@@ -27,7 +27,9 @@ public class ImagePickerDelegate
         PluginRegistry.RequestPermissionsResultListener {
   private static final int REQUEST_CODE_CHOOSE_FROM_GALLERY = 2342;
   private static final int REQUEST_CODE_TAKE_WITH_CAMERA = 2343;
-  private static final int REQUEST_IMAGE_PICKER_PERMISSIONS = 2344;
+
+  private static final int REQUEST_EXTERNAL_STORAGE_PERMISSION = 2344;
+  private static final int REQUEST_CAMERA_PERMISSION = 2345;
 
   private final Activity registrar;
   private final ImageResizer imageResizer;
@@ -36,14 +38,8 @@ public class ImagePickerDelegate
   private Uri pendingCameraImageUri;
   private MethodChannel.Result pendingResult;
   private MethodCall methodCall;
-  private ImagePickingOperationType pendingPickImageOperation;
 
   public static class FileProvider extends android.support.v4.content.FileProvider {}
-
-  private enum ImagePickingOperationType {
-    CHOOSE_FROM_GALLERY,
-    TAKE_WITH_CAMERA
-  }
 
   public ImagePickerDelegate(Activity registrar, ImageResizer imageResizer) {
     this.registrar = registrar;
@@ -54,32 +50,24 @@ public class ImagePickerDelegate
   public void chooseImageFromGallery(MethodCall methodCall, MethodChannel.Result result) {
     setPendingMethodCallAndResult(methodCall, result);
 
-    if (!hasRequiredPermissions()) {
-      pendingPickImageOperation = ImagePickingOperationType.CHOOSE_FROM_GALLERY;
-      requestPermissions();
+    boolean hasExternalStoragePermission =
+        ActivityCompat.checkSelfPermission(registrar, Manifest.permission.READ_EXTERNAL_STORAGE)
+            == PackageManager.PERMISSION_GRANTED;
+
+    if (!hasExternalStoragePermission) {
+      requestExternalStoragePermission();
       return;
     }
 
     launchPickImageFromGalleryIntent();
   }
 
-  private boolean hasRequiredPermissions() {
-    boolean hasExternalStoragePermission =
-        ActivityCompat.checkSelfPermission(registrar, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            == PackageManager.PERMISSION_GRANTED;
-
-    boolean hasCameraPermission =
-        ActivityCompat.checkSelfPermission(registrar, Manifest.permission.CAMERA)
-            == PackageManager.PERMISSION_GRANTED;
-
-    return hasExternalStoragePermission && hasCameraPermission;
-  }
-
-  private void requestPermissions() {
+  private void requestExternalStoragePermission() {
     ActivityCompat.requestPermissions(
         registrar,
-        new String[] {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE},
-        REQUEST_IMAGE_PICKER_PERMISSIONS);
+        new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
+        REQUEST_EXTERNAL_STORAGE_PERMISSION
+    );
   }
 
   private void launchPickImageFromGalleryIntent() {
@@ -92,13 +80,24 @@ public class ImagePickerDelegate
   public void takeImageWithCamera(MethodCall methodCall, MethodChannel.Result result) {
     setPendingMethodCallAndResult(methodCall, result);
 
-    if (!hasRequiredPermissions()) {
-      pendingPickImageOperation = ImagePickingOperationType.TAKE_WITH_CAMERA;
-      requestPermissions();
+    boolean hasCameraPermission =
+        ActivityCompat.checkSelfPermission(registrar, Manifest.permission.CAMERA)
+            == PackageManager.PERMISSION_GRANTED;
+
+    if (!hasCameraPermission) {
+      requestCameraPermission();
       return;
     }
 
     launchTakeImageWithCameraIntent();
+  }
+
+  private void requestCameraPermission() {
+    ActivityCompat.requestPermissions(
+        registrar,
+        new String[] {Manifest.permission.CAMERA},
+        REQUEST_CAMERA_PERMISSION
+    );
   }
 
   private void launchTakeImageWithCameraIntent() {
@@ -146,13 +145,21 @@ public class ImagePickerDelegate
   @Override
   public boolean onRequestPermissionsResult(
       int requestCode, String[] permissions, int[] grantResults) {
-    if (requestCode == REQUEST_IMAGE_PICKER_PERMISSIONS) {
-      boolean bothPermissionsGranted =
-          grantResults[0] == PackageManager.PERMISSION_GRANTED
-              && grantResults[1] == PackageManager.PERMISSION_GRANTED;
+    boolean permissionGranted = grantResults.length > 0
+        && grantResults[0] == PackageManager.PERMISSION_GRANTED;
 
-      if (bothPermissionsGranted) {
-        executePendingOperation();
+    if (requestCode == REQUEST_EXTERNAL_STORAGE_PERMISSION) {
+      if (permissionGranted) {
+        launchPickImageFromGalleryIntent();
+      } else {
+        pendingResult.error(
+            "no_permissions", "image_picker plugin requires storage permissions", null);
+        clearMethodCallAndResult();
+      }
+      return true;
+    } else if (requestCode == REQUEST_CAMERA_PERMISSION) {
+      if (permissionGranted) {
+        launchTakeImageWithCameraIntent();
       } else {
         pendingResult.error(
             "no_permissions", "image_picker plugin requires camera permissions", null);
@@ -161,21 +168,6 @@ public class ImagePickerDelegate
       return true;
     }
     return false;
-  }
-
-  private void executePendingOperation() {
-    if (pendingPickImageOperation != null) {
-      switch (pendingPickImageOperation) {
-        case CHOOSE_FROM_GALLERY:
-          launchPickImageFromGalleryIntent();
-          break;
-        case TAKE_WITH_CAMERA:
-          launchTakeImageWithCameraIntent();
-          break;
-      }
-
-      pendingPickImageOperation = null;
-    }
   }
 
   @Override
