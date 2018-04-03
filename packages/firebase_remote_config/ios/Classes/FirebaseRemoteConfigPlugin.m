@@ -139,29 +139,29 @@ static NSString *LAST_FETCH_STATUS_KEY = @"LAST_FETCH_STATUS";
   return parameterDict;
 }
 
-- (int)mapLastFetchStatus:(FIRRemoteConfigFetchStatus)status {
+- (NSString *)mapLastFetchStatus:(FIRRemoteConfigFetchStatus)status {
   if (status == FIRRemoteConfigFetchStatusSuccess) {
-    return 0;
+    return @"success";
   } else if (status == FIRRemoteConfigFetchStatusFailure) {
-    return 1;
+    return @"failure";
   } else if (status == FIRRemoteConfigFetchStatusThrottled) {
-    return 2;
+    return @"throttled";
   } else if (status == FIRRemoteConfigFetchStatusNoFetchYet) {
-    return 3;
+    return @"noFetchYet";
   } else {
-    return 1;
+    return @"failure";
   }
 }
 
-- (int)mapValueSource:(FIRRemoteConfigSource)source {
+- (NSString *)mapValueSource:(FIRRemoteConfigSource)source {
   if (source == FIRRemoteConfigSourceStatic) {
-    return 0;
+    return @"static";
   } else if (source == FIRRemoteConfigSourceDefault) {
-    return 1;
+    return @"default";
   } else if (source == FIRRemoteConfigSourceRemote) {
-    return 2;
+    return @"remote";
   } else {
-    return 0;
+    return @"static";
   }
 }
 

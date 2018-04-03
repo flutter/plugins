@@ -48,7 +48,7 @@ class RemoteConfig extends ChangeNotifier {
     remoteConfig._lastFetchTime =
         new DateTime.fromMillisecondsSinceEpoch(properties[_lastFetchTimeKey]);
     remoteConfig._lastFetchStatus =
-        LastFetchStatus.values[properties[_lastFetchStatusKey]];
+        _parseLastFetchStatus(properties[_lastFetchStatusKey]);
     final RemoteConfigSettings remoteConfigSettings =
         new RemoteConfigSettings();
     remoteConfigSettings.debugMode = properties['IN_DEBUG_MODE'];
@@ -63,12 +63,40 @@ class RemoteConfig extends ChangeNotifier {
     final Map<String, RemoteConfigValue> parsedParameters =
         <String, RemoteConfigValue>{};
     parameters.forEach((dynamic key, dynamic value) {
-      final ValueSource valueSource = ValueSource.values[value['source']];
+      final ValueSource valueSource = _parseValueSource(value['source']);
       final RemoteConfigValue remoteConfigValue =
           new RemoteConfigValue._(value['value'].cast<int>(), valueSource);
       parsedParameters[key] = remoteConfigValue;
     });
     return parsedParameters;
+  }
+
+  static ValueSource _parseValueSource(String sourceStr) {
+    switch(sourceStr) {
+      case 'valueStatic':
+        return ValueSource.valueStatic;
+      case 'valueDefault':
+        return ValueSource.valueDefault;
+      case 'valueRemote':
+        return ValueSource.valueRemote;
+      default:
+        return ValueSource.valueStatic;
+    }
+  }
+
+  static LastFetchStatus _parseLastFetchStatus(String statusStr) {
+    switch(statusStr) {
+      case 'success':
+        return LastFetchStatus.success;
+      case 'failure':
+        return LastFetchStatus.failure;
+      case 'throttled':
+        return LastFetchStatus.throttled;
+      case 'noFetchYet':
+        return LastFetchStatus.noFetchYet;
+      default:
+        return LastFetchStatus.failure;
+    }
   }
 
   /// Set the configuration settings for this RemoteConfig instance.
@@ -94,11 +122,11 @@ class RemoteConfig extends ChangeNotifier {
           <dynamic, dynamic>{'expiration': expiration.inSeconds});
       _lastFetchTime =
           new DateTime.fromMillisecondsSinceEpoch(properties[_lastFetchTimeKey]);
-      _lastFetchStatus = LastFetchStatus.values[properties[_lastFetchStatusKey]];
+      _lastFetchStatus = _parseLastFetchStatus(properties[_lastFetchStatusKey]);
     } on PlatformException catch (e) {
       _lastFetchTime =
           new DateTime.fromMillisecondsSinceEpoch(e.details[_lastFetchTimeKey]);
-      _lastFetchStatus = LastFetchStatus.values[e.details[_lastFetchStatusKey]];
+      _lastFetchStatus = _parseLastFetchStatus(e.details[_lastFetchStatusKey]);
       if (e.code == RemoteConfig._fetchFailedThrottledKey) {
         final int fetchThrottleEnd = e.details['FETCH_THROTTLED_END'];
         throw new FetchThrottledException._(endTimeInMills: fetchThrottleEnd);

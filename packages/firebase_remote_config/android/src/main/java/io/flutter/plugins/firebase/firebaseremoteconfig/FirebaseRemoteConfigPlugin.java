@@ -167,31 +167,31 @@ public class FirebaseRemoteConfigPlugin implements MethodCallHandler {
     return valueMap;
   }
 
-  private int mapLastFetchStatus(int status) {
+  private String mapLastFetchStatus(int status) {
     switch (status) {
       case FirebaseRemoteConfig.LAST_FETCH_STATUS_SUCCESS:
-        return 0;
+        return "success";
       case FirebaseRemoteConfig.LAST_FETCH_STATUS_FAILURE:
-        return 1;
+        return "failure";
       case FirebaseRemoteConfig.LAST_FETCH_STATUS_THROTTLED:
-        return 2;
+        return "throttled";
       case FirebaseRemoteConfig.LAST_FETCH_STATUS_NO_FETCH_YET:
-        return 3;
+        return "noFetchYet";
       default:
-        return 1;
+        return "failure";
     }
   }
 
-  private int mapValueSource(int source) {
+  private String mapValueSource(int source) {
     switch (source) {
       case FirebaseRemoteConfig.VALUE_SOURCE_STATIC:
-        return 0;
+        return "static";
       case FirebaseRemoteConfig.VALUE_SOURCE_DEFAULT:
-        return 1;
+        return "default";
       case FirebaseRemoteConfig.VALUE_SOURCE_REMOTE:
-        return 2;
+        return "remote";
       default:
-        return 0;
+        return "static";
     }
   }
 }
