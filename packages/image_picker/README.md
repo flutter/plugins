@@ -20,14 +20,7 @@ Add the following keys to your _Info.plist_ file, located in `<project root>/ios
 
 ### Android
 
-Add the following permissions to your Android Manifest, located in `<project root>/android/app/src/main/AndroidManifest.xml:
-
-```xml
-<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-<uses-permission android:name="android.permission.CAMERA"/>
-```
-
-You're good to go!
+No configuration required - the plugin should work out of the box.
 
 ### Example
 
@@ -39,6 +32,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   getImage() async {
     var _fileName = await ImagePicker.pickImage(source: ImageSource.camera);
+
+    if (_fileName == null) {
+      // The fileName can be null if the user cancels picking the image or
+      // denies the required permissions.
+      return;
+    }
+
     setState(() {
       imageFile = _fileName;
     });
