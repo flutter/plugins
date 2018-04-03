@@ -163,14 +163,14 @@ public class ImagePickerDelegate
       if (permissionGranted) {
         launchPickImageFromGalleryIntent();
       } else {
-        finishWithError("no_permissions", "image_picker plugin requires storage permissions");
+        finishWithSuccess(null);
       }
       return true;
     } else if (requestCode == REQUEST_CAMERA_PERMISSION) {
       if (permissionGranted) {
         launchTakeImageWithCameraIntent();
       } else {
-        finishWithError("no_permissions", "image_picker plugin requires camera permissions");
+        finishWithSuccess(null);
       }
       return true;
     }
