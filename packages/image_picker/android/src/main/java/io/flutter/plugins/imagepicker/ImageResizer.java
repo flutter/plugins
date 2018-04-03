@@ -21,6 +21,12 @@ class ImageResizer {
     this.exifDataCopier = exifDataCopier;
   }
 
+  /**
+   * If necessary, resizes the image located in imagePath and then returns the path
+   * for the scaled image.
+   *
+   * If no resizing is needed, returns the path for the original image.
+   */
   String resizeImageIfNeeded(String imagePath, Double maxWidth, Double maxHeight) {
     boolean shouldScale = maxWidth != null || maxHeight != null;
 
