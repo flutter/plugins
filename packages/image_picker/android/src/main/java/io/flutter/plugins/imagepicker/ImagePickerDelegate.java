@@ -31,7 +31,7 @@ public class ImagePickerDelegate
   private static final int REQUEST_EXTERNAL_STORAGE_PERMISSION = 2344;
   private static final int REQUEST_CAMERA_PERMISSION = 2345;
 
-  private final Activity registrar;
+  private final Activity activity;
   private final ImageResizer imageResizer;
   private final String providerName;
 
@@ -41,17 +41,17 @@ public class ImagePickerDelegate
 
   public static class FileProvider extends android.support.v4.content.FileProvider {}
 
-  public ImagePickerDelegate(Activity registrar, ImageResizer imageResizer) {
-    this.registrar = registrar;
+  public ImagePickerDelegate(Activity activity, ImageResizer imageResizer) {
+    this.activity = activity;
     this.imageResizer = imageResizer;
-    this.providerName = registrar.getPackageName() + ".flutter.image_provider";
+    this.providerName = activity.getPackageName() + ".flutter.image_provider";
   }
 
   public void chooseImageFromGallery(MethodCall methodCall, MethodChannel.Result result) {
     setPendingMethodCallAndResult(methodCall, result);
 
     boolean hasExternalStoragePermission =
-        ActivityCompat.checkSelfPermission(registrar, Manifest.permission.READ_EXTERNAL_STORAGE)
+        ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE)
             == PackageManager.PERMISSION_GRANTED;
 
     if (!hasExternalStoragePermission) {
@@ -64,7 +64,7 @@ public class ImagePickerDelegate
 
   private void requestExternalStoragePermission() {
     ActivityCompat.requestPermissions(
-        registrar,
+        activity,
         new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
         REQUEST_EXTERNAL_STORAGE_PERMISSION
     );
@@ -74,14 +74,14 @@ public class ImagePickerDelegate
     Intent pickImageIntent = new Intent(Intent.ACTION_GET_CONTENT);
     pickImageIntent.setType("image/*");
 
-    registrar.startActivityForResult(pickImageIntent, REQUEST_CODE_CHOOSE_FROM_GALLERY);
+    activity.startActivityForResult(pickImageIntent, REQUEST_CODE_CHOOSE_FROM_GALLERY);
   }
 
   public void takeImageWithCamera(MethodCall methodCall, MethodChannel.Result result) {
     setPendingMethodCallAndResult(methodCall, result);
 
     boolean hasCameraPermission =
-        ActivityCompat.checkSelfPermission(registrar, Manifest.permission.CAMERA)
+        ActivityCompat.checkSelfPermission(activity, Manifest.permission.CAMERA)
             == PackageManager.PERMISSION_GRANTED;
 
     if (!hasCameraPermission) {
@@ -94,7 +94,7 @@ public class ImagePickerDelegate
 
   private void requestCameraPermission() {
     ActivityCompat.requestPermissions(
-        registrar,
+        activity,
         new String[] {Manifest.permission.CAMERA},
         REQUEST_CAMERA_PERMISSION
     );
@@ -103,21 +103,21 @@ public class ImagePickerDelegate
   private void launchTakeImageWithCameraIntent() {
     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-    if (intent.resolveActivity(registrar.getPackageManager()) != null) {
+    if (intent.resolveActivity(activity.getPackageManager()) != null) {
       File imageFile = createTemporaryWritableImageFile();
       pendingCameraImageUri = Uri.parse("file:" + imageFile.getAbsolutePath());
 
-      Uri imageUri = FileProvider.getUriForFile(registrar, providerName, imageFile);
+      Uri imageUri = FileProvider.getUriForFile(activity, providerName, imageFile);
       intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
       grantUriPermissions(intent, imageUri);
 
-      registrar.startActivityForResult(intent, REQUEST_CODE_TAKE_WITH_CAMERA);
+      activity.startActivityForResult(intent, REQUEST_CODE_TAKE_WITH_CAMERA);
     }
   }
 
   private File createTemporaryWritableImageFile() {
     String filename = UUID.randomUUID().toString();
-    File storageDirectory = registrar.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+    File storageDirectory = activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
     File image;
 
     try {
@@ -130,15 +130,16 @@ public class ImagePickerDelegate
   }
 
   private void grantUriPermissions(Intent intent, Uri imageUri) {
-    PackageManager packageManager = registrar.getPackageManager();
+    PackageManager packageManager = activity.getPackageManager();
     List<ResolveInfo> compatibleActivities =
         packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
 
     for (ResolveInfo info : compatibleActivities) {
-      registrar.grantUriPermission(
+      activity.grantUriPermission(
           info.activityInfo.packageName,
           imageUri,
-          Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+          Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+      );
     }
   }
 
@@ -182,7 +183,7 @@ public class ImagePickerDelegate
 
   private boolean handleChoosePictureResult(int resultCode, Intent data) {
     if (resultCode == Activity.RESULT_OK && data != null) {
-      String path = FileUtils.getPathFromUri(registrar, data.getData());
+      String path = FileUtils.getPathFromUri(activity, data.getData());
       handleResult(path);
       return true;
     } else if (resultCode != Activity.RESULT_CANCELED) {
@@ -196,7 +197,7 @@ public class ImagePickerDelegate
   private boolean handleTakePictureResult(int resultCode) {
     if (resultCode == Activity.RESULT_OK) {
       MediaScannerConnection.scanFile(
-          registrar,
+          activity,
           new String[] {pendingCameraImageUri.getPath()},
           null,
           new MediaScannerConnection.OnScanCompletedListener() {
