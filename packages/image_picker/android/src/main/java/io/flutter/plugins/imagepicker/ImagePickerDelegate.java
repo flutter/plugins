@@ -50,7 +50,9 @@ public class ImagePickerDelegate
   }
 
   public void chooseImageFromGallery(MethodCall methodCall, MethodChannel.Result result) {
-    setPendingMethodCallAndResult(methodCall, result);
+    if (!setPendingMethodCallAndResult(methodCall, result)) {
+      return;
+    }
 
     boolean hasExternalStoragePermission =
         ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -80,7 +82,9 @@ public class ImagePickerDelegate
   }
 
   public void takeImageWithCamera(MethodCall methodCall, MethodChannel.Result result) {
-    setPendingMethodCallAndResult(methodCall, result);
+    if (!setPendingMethodCallAndResult(methodCall, result)) {
+      return;
+    }
 
     boolean hasCameraPermission =
         ActivityCompat.checkSelfPermission(activity, Manifest.permission.CAMERA)
@@ -228,14 +232,15 @@ public class ImagePickerDelegate
     }
   }
 
-  private void setPendingMethodCallAndResult(MethodCall methodCall, MethodChannel.Result result) {
+  private boolean setPendingMethodCallAndResult(MethodCall methodCall, MethodChannel.Result result) {
     if (pendingResult != null) {
       result.error("ALREADY_ACTIVE", "Image picker is already active", null);
-      return;
+      return false;
     }
 
     this.methodCall = methodCall;
     pendingResult = result;
+    return true;
   }
 
   private void clearMethodCallAndResult() {
