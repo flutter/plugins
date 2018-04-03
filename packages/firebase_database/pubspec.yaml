@@ -18,6 +18,8 @@ dependencies:
   meta: "^1.0.5"
 
 dev_dependencies:
+  mockito: ^2.0.2
+  test:
   flutter_test:
     sdk: flutter
 
