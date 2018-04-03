@@ -110,8 +110,9 @@ public class ImagePickerDelegate
 
   private void launchTakeImageWithCameraIntent() {
     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+    boolean canTakePhotos = intent.resolveActivity(activity.getPackageManager()) != null;
 
-    if (intent.resolveActivity(activity.getPackageManager()) != null) {
+    if (canTakePhotos) {
       File imageFile = createTemporaryWritableImageFile();
       pendingCameraImageUri = Uri.parse("file:" + imageFile.getAbsolutePath());
 
@@ -120,7 +121,11 @@ public class ImagePickerDelegate
       grantUriPermissions(intent, imageUri);
 
       activity.startActivityForResult(intent, REQUEST_CODE_TAKE_WITH_CAMERA);
+      return;
     }
+
+    pendingResult.error("no_available_camera", "No cameras available for taking pictures.", null);
+    clearMethodCallAndResult();
   }
 
   private File createTemporaryWritableImageFile() {
