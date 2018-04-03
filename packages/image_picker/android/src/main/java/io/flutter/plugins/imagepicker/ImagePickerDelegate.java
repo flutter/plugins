@@ -14,9 +14,11 @@ import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
+
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -174,31 +176,31 @@ public class ImagePickerDelegate
   @Override
   public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
     if (requestCode == REQUEST_CODE_CHOOSE_FROM_GALLERY) {
-      return handleChoosePictureResult(resultCode, data);
+      handleChoosePictureResult(resultCode, data);
+      return true;
     } else if (requestCode == REQUEST_CODE_TAKE_WITH_CAMERA) {
-      return handleTakePictureResult(resultCode);
+      handleTakePictureResult(resultCode);
+      return true;
     }
+
     return false;
   }
 
-  private boolean handleChoosePictureResult(int resultCode, Intent data) {
+  private void handleChoosePictureResult(int resultCode, Intent data) {
     if (resultCode == Activity.RESULT_OK && data != null) {
       String path = FileUtils.getPathFromUri(activity, data.getData());
       handleResult(path);
-      return true;
-    } else if (resultCode != Activity.RESULT_CANCELED) {
-      pendingResult.error("PICK_ERROR", "Error picking image", null);
+      return;
     }
 
     clearMethodCallAndResult();
-    return true;
   }
 
-  private boolean handleTakePictureResult(int resultCode) {
+  private void handleTakePictureResult(int resultCode) {
     if (resultCode == Activity.RESULT_OK) {
       MediaScannerConnection.scanFile(
           activity,
-          new String[] {pendingCameraImageUri.getPath()},
+          new String[]{pendingCameraImageUri.getPath()},
           null,
           new MediaScannerConnection.OnScanCompletedListener() {
             @Override
@@ -206,12 +208,10 @@ public class ImagePickerDelegate
               handleResult(path);
             }
           });
-      return true;
-    } else if (resultCode != Activity.RESULT_CANCELED) {
-      pendingResult.error("PICK_ERROR", "Error taking photo", null);
-      clearMethodCallAndResult();
+      return;
     }
-    return true;
+
+    clearMethodCallAndResult();
   }
 
   private void handleResult(String path) {
