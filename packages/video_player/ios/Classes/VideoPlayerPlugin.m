@@ -270,19 +270,15 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
       [FlutterMethodChannel methodChannelWithName:@"flutter.io/videoPlayer"
                                   binaryMessenger:[registrar messenger]];
   FLTVideoPlayerPlugin* instance =
-      [[FLTVideoPlayerPlugin alloc] initWithRegistry:[registrar textures]
-                                           messenger:[registrar messenger]
-                                           registrar:registrar];
+      [[FLTVideoPlayerPlugin alloc] initWithRegistrar:registrar];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
-- (instancetype)initWithRegistry:(NSObject<FlutterTextureRegistry>*)registry
-                       messenger:(NSObject<FlutterBinaryMessenger>*)messenger
-                       registrar:(NSObject<FlutterPluginRegistrar>*)registrar {
+- (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
-  _registry = registry;
-  _messenger = messenger;
+  _registry = [registrar textures];
+  _messenger = [registrar messenger];
   _registrar = registrar;
   _players = [NSMutableDictionary dictionaryWithCapacity:1];
   return self;
@@ -302,8 +298,7 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
     FLTVideoPlayer* player;
     if (dataSource) {
       NSString* assetPath = [_registrar lookupKeyForAsset:dataSource];
-      player = [[FLTVideoPlayer alloc] initWithAsset:assetPath
-                                        frameUpdater:frameUpdater];
+      player = [[FLTVideoPlayer alloc] initWithAsset:assetPath frameUpdater:frameUpdater];
     } else {
       dataSource = argsMap[@"uri"];
       player = [[FLTVideoPlayer alloc] initWithURL:[NSURL URLWithString:dataSource]

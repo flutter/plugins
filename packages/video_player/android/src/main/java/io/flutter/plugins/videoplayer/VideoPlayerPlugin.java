@@ -34,8 +34,8 @@ public class VideoPlayerPlugin implements MethodCallHandler {
 
 
     VideoPlayer(
-        final EventChannel eventChannel,
-        final TextureRegistry.SurfaceTextureEntry textureEntry,
+        EventChannel eventChannel,
+        TextureRegistry.SurfaceTextureEntry textureEntry,
         AssetFileDescriptor afd,
         final Result result) {
       this.eventChannel = eventChannel;
@@ -50,10 +50,10 @@ public class VideoPlayerPlugin implements MethodCallHandler {
     }
 
     VideoPlayer(
-        final EventChannel eventChannel,
-        final TextureRegistry.SurfaceTextureEntry textureEntry,
+        EventChannel eventChannel,
+        TextureRegistry.SurfaceTextureEntry textureEntry,
         String dataSource,
-        final Result result) {
+        Result result) {
       this.eventChannel = eventChannel;
       this.mediaPlayer = new MediaPlayer();
       this.textureEntry = textureEntry;

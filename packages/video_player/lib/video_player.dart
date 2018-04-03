@@ -132,19 +132,23 @@ class VideoPlayerValue {
 /// After [dispose] all further calls are ignored.
 class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   int _textureId;
+  final String dataSource;
+  final bool isNetwork;
   Timer timer;
   bool isDisposed = false;
   Completer<Null> _creatingCompleter;
   StreamSubscription<dynamic> _eventSubscription;
   _VideoAppLifeCycleObserver _lifeCycleObserver;
-  dynamic _createMethodArg;
 
-  VideoPlayerController.asset(String asset) : super(new VideoPlayerValue(duration: null)) {
-    _createMethodArg =  <String, dynamic>{'asset': asset};
-  }
-  VideoPlayerController.network(String uri) : super(new VideoPlayerValue(duration: null)) {
-    _createMethodArg =  <String, dynamic>{'uri': uri};
-  }
+  VideoPlayerController.asset(String asset) :
+        dataSource = asset,
+        isNetwork = false,
+        super(new VideoPlayerValue(duration: null)) {}
+
+  VideoPlayerController.network(String uri) :
+        dataSource = uri,
+        isNetwork = true,
+        super(new VideoPlayerValue(duration: null)) {}
 
   Future<Null> initialize() async {
     _lifeCycleObserver = new _VideoAppLifeCycleObserver(this);
@@ -152,7 +156,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     _creatingCompleter = new Completer<Null>();
     final Map<dynamic, dynamic> response = await _channel.invokeMethod(
       'create',
-      _createMethodArg,
+      isNetwork
+          ? <String, dynamic>{'uri': dataSource}
+          : <String, dynamic>{'asset': dataSource},
     );
     _textureId = response['textureId'];
     _creatingCompleter.complete(null);
