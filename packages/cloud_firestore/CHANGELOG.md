@@ -1,3 +1,10 @@
+## 0.4.0
+
+* **Breaking change**. Hide Firestore codec class from public API.
+* Adjusted Flutter SDK constraint to match Flutter release with extensible
+  platform message codec, required already by version 0.3.1.
+* Move each class into separate files
+
 ## 0.3.2
 
 * Support for batched writes.

@@ -1,189 +1,35 @@
 {
   "project_info": {
-    "project_number": "861823949799",
-    "project_id": "tensile-market-126823"
+    "project_number": "159623150305",
+    "firebase_url": "https://flutter-firebase-plugins.firebaseio.com",
+    "project_id": "flutter-firebase-plugins",
+    "storage_bucket": "flutter-firebase-plugins.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:861823949799:android:ac633ff55751026b",
-        "android_client_info": {
-          "package_name": "com.google.google_sign_in.example"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "861823949799-b79ooadae3620tevk9fuevahrict0j83.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.google.google_sign_in.example",
-            "certificate_hash": "c3adef7e7773e40e777d5c236dbba7461cbea5f0"
-          }
-        },
-        {
-          "client_id": "861823949799-ib268r6ni4s6hief8bmh78sfnr63t8ja.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyBeNYObyAbBwc6EIfVwUKRihZTRSbxgS9M"
-        }
-      ],
-      "services": {
-        "analytics_service": {
-          "status": 1
-        },
-        "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
-        },
-        "ads_service": {
-          "status": 1
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:861823949799:android:267a23c68c23f34f",
-        "android_client_info": {
-          "package_name": "com.example.flutter.google_sign_in"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "861823949799-jgmubfm8604lngvm9lt8fil9f4nefp5t.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.flutter.google_sign_in",
-            "certificate_hash": "8a4e194f5bfc3fb1075e7daae8dcddd526fde207"
-          }
-        },
-        {
-          "client_id": "861823949799-ib268r6ni4s6hief8bmh78sfnr63t8ja.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyBeNYObyAbBwc6EIfVwUKRihZTRSbxgS9M"
-        }
-      ],
-      "services": {
-        "analytics_service": {
-          "status": 1
-        },
-        "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
-        },
-        "ads_service": {
-          "status": 1
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:861823949799:android:84a1951f08b82133",
-        "android_client_info": {
-          "package_name": "com.example.google_sign_in"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "861823949799-en18k5ut51ehp64chfifrlk52pojaqjo.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.google_sign_in",
-            "certificate_hash": "eda6413c3e3a95492114fe07cd953ad897e40d1a"
-          }
-        },
-        {
-          "client_id": "861823949799-ib268r6ni4s6hief8bmh78sfnr63t8ja.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyBeNYObyAbBwc6EIfVwUKRihZTRSbxgS9M"
-        }
-      ],
-      "services": {
-        "analytics_service": {
-          "status": 1
-        },
-        "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
-        },
-        "ads_service": {
-          "status": 1
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:861823949799:android:27717105cac89fff",
-        "android_client_info": {
-          "package_name": "com.yourcompany.googlesignin.example"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "861823949799-jo91u6af10qflkh9gtk61gbu9rekeqin.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.yourcompany.googlesignin.example",
-            "certificate_hash": "8a4e194f5bfc3fb1075e7daae8dcddd526fde207"
-          }
-        },
-        {
-          "client_id": "861823949799-ib268r6ni4s6hief8bmh78sfnr63t8ja.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyBeNYObyAbBwc6EIfVwUKRihZTRSbxgS9M"
-        }
-      ],
-      "services": {
-        "analytics_service": {
-          "status": 1
-        },
-        "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
-        },
-        "ads_service": {
-          "status": 1
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:861823949799:android:24b94c3718c846a6",
+        "mobilesdk_app_id": "1:159623150305:android:5e9f1f89e134dc86",
         "android_client_info": {
           "package_name": "io.flutter.plugins.googlesigninexample"
         }
       },
       "oauth_client": [
         {
-          "client_id": "861823949799-19gil347tgrk0l0k694196i1m1uef404.apps.googleusercontent.com",
+          "client_id": "159623150305-3suu3qq4vs3ki7uaigbtrh2aal1p9ram.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "io.flutter.plugins.googlesigninexample",
-            "certificate_hash": "c3adef7e7773e40e777d5c236dbba7461cbea5f0"
+            "certificate_hash": "f8323ac5fe6e7adc1ddc5612e16b5d04d7f1358b"
           }
         },
         {
-          "client_id": "861823949799-ib268r6ni4s6hief8bmh78sfnr63t8ja.apps.googleusercontent.com",
+          "client_id": "159623150305-q05bbbtsutr02abhips3suj7hujfk4bg.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBeNYObyAbBwc6EIfVwUKRihZTRSbxgS9M"
+          "current_key": "AIzaSyChk3KEG7QYrs4kQPLP1tjJNxBTbfCAdgg"
         }
       ],
       "services": {

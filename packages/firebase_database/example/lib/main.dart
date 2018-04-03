@@ -6,7 +6,6 @@ import 'dart:async';
 import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
@@ -100,7 +99,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<Null> _increment() async {
-    await FirebaseAuth.instance.signInAnonymously();
     // Increment counter in transaction.
     final TransactionResult transactionResult =
         await _counterRef.runTransaction((MutableData mutableData) async {
