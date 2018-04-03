@@ -17,6 +17,7 @@ import android.support.v4.content.FileProvider;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -240,7 +241,7 @@ public class ImagePickerDelegate
     if (resultCode == Activity.RESULT_OK) {
       MediaScannerConnection.scanFile(
           activity,
-          new String[] {pendingCameraImageUri.getPath()},
+          new String[]{pendingCameraImageUri.getPath()},
           null,
           new MediaScannerConnection.OnScanCompletedListener() {
             @Override
