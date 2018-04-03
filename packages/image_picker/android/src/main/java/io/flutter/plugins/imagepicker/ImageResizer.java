@@ -6,6 +6,7 @@ package io.flutter.plugins.imagepicker;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -31,15 +32,15 @@ class ImageResizer {
 
     if (!shouldScale) {
       return imagePath;
-    } else {
-      try {
-        File scaledImage = resizedImage(imagePath, maxWidth, maxHeight);
-        exifDataCopier.copyExif(imagePath, scaledImage.getPath());
+    }
 
-        return scaledImage.getPath();
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
+    try {
+      File scaledImage = resizedImage(imagePath, maxWidth, maxHeight);
+      exifDataCopier.copyExif(imagePath, scaledImage.getPath());
+
+      return scaledImage.getPath();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
   }
 
