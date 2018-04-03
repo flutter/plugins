@@ -50,6 +50,7 @@ public class ImagePickerDelegate
 
   public void chooseImageFromGallery(MethodCall methodCall, MethodChannel.Result result) {
     if (!setPendingMethodCallAndResult(methodCall, result)) {
+      finishWithAlreadyActiveError();
       return;
     }
 
@@ -81,6 +82,7 @@ public class ImagePickerDelegate
 
   public void takeImageWithCamera(MethodCall methodCall, MethodChannel.Result result) {
     if (!setPendingMethodCallAndResult(methodCall, result)) {
+      finishWithAlreadyActiveError();
       return;
     }
 
@@ -228,7 +230,6 @@ public class ImagePickerDelegate
   private boolean setPendingMethodCallAndResult(
       MethodCall methodCall, MethodChannel.Result result) {
     if (pendingResult != null) {
-      finishWithError("already_active", "Image picker is already active");
       return false;
     }
 
@@ -240,6 +241,10 @@ public class ImagePickerDelegate
   private void finishWithSuccess(String imagePath) {
     pendingResult.success(imagePath);
     clearMethodCallAndResult();
+  }
+
+  private void finishWithAlreadyActiveError() {
+    finishWithError("already_active", "Image picker is already active");
   }
 
   private void finishWithError(String errorCode, String errorMessage) {
