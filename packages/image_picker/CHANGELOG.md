@@ -1,6 +1,6 @@
 ## 0.4.1
 
-* **Breaking change**. The `pickImage` method will now return null when the user cancels picking the image or denies the needed permissions.
+* Bugfix: the `pickImage` method will now return null when the user cancels picking the image, instead of hanging indefinitely.
 * Removed the third party library dependency for taking pictures with the camera.
 
 ## 0.4.0
