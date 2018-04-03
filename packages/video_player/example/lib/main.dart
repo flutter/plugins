@@ -151,26 +151,44 @@ class _FadeAnimationState extends State<FadeAnimation>
 typedef Widget VideoWidgetBuilder(
     BuildContext context, VideoPlayerController controller);
 
-/// A widget connecting its life cycle to a [VideoPlayerController].
-class PlayerLifeCycle extends StatefulWidget {
+abstract class PlayerLifeCycle extends StatefulWidget {
   final VideoWidgetBuilder childBuilder;
-  final String uri;
+  final String dataSource;
 
-  PlayerLifeCycle(this.uri, this.childBuilder);
-
-  @override
-  _PlayerLifeCycleState createState() => new _PlayerLifeCycleState();
+  PlayerLifeCycle(this.dataSource, this.childBuilder);
 }
 
-class _PlayerLifeCycleState extends State<PlayerLifeCycle> {
-  VideoPlayerController controller;
-
-  _PlayerLifeCycleState();
+/// A widget connecting its life cycle to a [VideoPlayerController] using
+/// a data source from the network.
+class NetworkPlayerLifeCycle extends PlayerLifeCycle {
+  NetworkPlayerLifeCycle(String dataSource, VideoWidgetBuilder childBuilder)
+      : super(dataSource, childBuilder);
 
   @override
+  _NetworkPlayerLifeCycleState createState() =>
+      new _NetworkPlayerLifeCycleState();
+}
+
+/// A widget connecting its life cycle to a [VideoPlayerController] using
+/// an asset as data source
+class AssetPlayerLifeCycle extends PlayerLifeCycle {
+  AssetPlayerLifeCycle(String dataSource, VideoWidgetBuilder childBuilder)
+      : super(dataSource, childBuilder);
+
+  @override
+  _AssetPlayerLifeCycleState createState() => new _AssetPlayerLifeCycleState();
+}
+
+abstract class _PlayerLifeCycleState extends State<PlayerLifeCycle> {
+  VideoPlayerController controller;
+
+  @override
+
+  /// Subclasses should implement [createVideoPlayerController], which is used
+  /// by this method.
   void initState() {
     super.initState();
-    controller = new VideoPlayerController(widget.uri);
+    controller = createVideoPlayerController();
     controller.addListener(() {
       if (controller.value.hasError) {
         print(controller.value.errorDescription);
@@ -195,6 +213,22 @@ class _PlayerLifeCycleState extends State<PlayerLifeCycle> {
   @override
   Widget build(BuildContext context) {
     return widget.childBuilder(context, controller);
+  }
+
+  VideoPlayerController createVideoPlayerController();
+}
+
+class _NetworkPlayerLifeCycleState extends _PlayerLifeCycleState {
+  @override
+  VideoPlayerController createVideoPlayerController() {
+    return new VideoPlayerController.network(widget.dataSource);
+  }
+}
+
+class _AssetPlayerLifeCycleState extends _PlayerLifeCycleState {
+  @override
+  VideoPlayerController createVideoPlayerController() {
+    return new VideoPlayerController.asset(widget.dataSource);
   }
 }
 
@@ -335,13 +369,13 @@ void main() {
           ),
           body: new TabBarView(
             children: <Widget>[
-              new PlayerLifeCycle(
+              new NetworkPlayerLifeCycle(
                 'http://www.sample-videos.com/video/mp4/720/big_buck_bunny_720p_20mb.mp4',
                 (BuildContext context, VideoPlayerController controller) =>
                     new AspectRatioVideo(controller),
               ),
-              new PlayerLifeCycle(
-                  'http://www.sample-videos.com/video/mp4/720/big_buck_bunny_720p_20mb.mp4',
+              new AssetPlayerLifeCycle(
+                  'assets/Butterfly-209.mp4',
                   (BuildContext context, VideoPlayerController controller) =>
                       new VideoInListOfCards(controller)),
             ],
