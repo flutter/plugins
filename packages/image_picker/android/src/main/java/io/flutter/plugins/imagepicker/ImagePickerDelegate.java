@@ -13,6 +13,7 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.FileProvider;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
@@ -38,8 +39,6 @@ public class ImagePickerDelegate
   private Uri pendingCameraImageUri;
   private MethodChannel.Result pendingResult;
   private MethodCall methodCall;
-
-  public static class FileProvider extends android.support.v4.content.FileProvider {}
 
   public ImagePickerDelegate(
       Activity activity, File externalFilesDirectory, ImageResizer imageResizer) {
