@@ -27,20 +27,19 @@ No configuration required - the plugin should work out of the box.
 ``` dart
 import 'package:image_picker/image_picker.dart';
 
+class MyHomePage extends StatefulWidget {
+  @override
+  _MyHomePageState createState() => new _MyHomePageState();
+}
+
 class _MyHomePageState extends State<MyHomePage> {
-  File imageFile;
+  File _image;
 
-  getImage() async {
-    var _fileName = await ImagePicker.pickImage(source: ImageSource.camera);
-
-    if (_fileName == null) {
-      // The fileName can be null if the user cancels picking the image or
-      // denies the required permissions.
-      return;
-    }
+  Future getImage() async {
+    var image = await ImagePicker.pickImage(source: ImageSource.camera);
 
     setState(() {
-      imageFile = _fileName;
+      _image = image;
     });
   }
 
@@ -51,9 +50,9 @@ class _MyHomePageState extends State<MyHomePage> {
         title: new Text('Image Picker Example'),
       ),
       body: new Center(
-        child: imageFile == null
+        child: _image == null
             ? new Text('No image selected.')
-            : new Image.file(imageFile),
+            : new Image.file(_image),
       ),
       floatingActionButton: new FloatingActionButton(
         onPressed: getImage,
