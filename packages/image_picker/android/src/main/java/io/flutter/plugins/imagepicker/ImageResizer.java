@@ -6,7 +6,6 @@ package io.flutter.plugins.imagepicker;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -22,10 +21,10 @@ class ImageResizer {
   }
 
   /**
-   * If necessary, resizes the image located in imagePath and then returns the path
-   * for the scaled image.
+   * If necessary, resizes the image located in imagePath and then returns the path for the scaled
+   * image.
    *
-   * If no resizing is needed, returns the path for the original image.
+   * <p>If no resizing is needed, returns the path for the original image.
    */
   String resizeImageIfNeeded(String imagePath, Double maxWidth, Double maxHeight) {
     boolean shouldScale = maxWidth != null || maxHeight != null;

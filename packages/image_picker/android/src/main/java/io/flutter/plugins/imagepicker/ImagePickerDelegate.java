@@ -13,11 +13,9 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
-
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -43,7 +41,8 @@ public class ImagePickerDelegate
 
   public static class FileProvider extends android.support.v4.content.FileProvider {}
 
-  public ImagePickerDelegate(Activity activity, File externalFilesDirectory, ImageResizer imageResizer) {
+  public ImagePickerDelegate(
+      Activity activity, File externalFilesDirectory, ImageResizer imageResizer) {
     this.activity = activity;
     this.externalFilesDirectory = externalFilesDirectory;
     this.imageResizer = imageResizer;
@@ -71,8 +70,7 @@ public class ImagePickerDelegate
     ActivityCompat.requestPermissions(
         activity,
         new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
-        REQUEST_EXTERNAL_STORAGE_PERMISSION
-    );
+        REQUEST_EXTERNAL_STORAGE_PERMISSION);
   }
 
   private void launchPickImageFromGalleryIntent() {
@@ -101,10 +99,7 @@ public class ImagePickerDelegate
 
   private void requestCameraPermission() {
     ActivityCompat.requestPermissions(
-        activity,
-        new String[] {Manifest.permission.CAMERA},
-        REQUEST_CAMERA_PERMISSION
-    );
+        activity, new String[] {Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
   }
 
   private void launchTakeImageWithCameraIntent() {
@@ -148,16 +143,15 @@ public class ImagePickerDelegate
       activity.grantUriPermission(
           info.activityInfo.packageName,
           imageUri,
-          Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-      );
+          Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
     }
   }
 
   @Override
   public boolean onRequestPermissionsResult(
       int requestCode, String[] permissions, int[] grantResults) {
-    boolean permissionGranted = grantResults.length > 0
-        && grantResults[0] == PackageManager.PERMISSION_GRANTED;
+    boolean permissionGranted =
+        grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED;
 
     if (requestCode == REQUEST_EXTERNAL_STORAGE_PERMISSION) {
       if (permissionGranted) {
@@ -205,7 +199,7 @@ public class ImagePickerDelegate
     if (resultCode == Activity.RESULT_OK) {
       MediaScannerConnection.scanFile(
           activity,
-          new String[]{pendingCameraImageUri.getPath()},
+          new String[] {pendingCameraImageUri.getPath()},
           null,
           new MediaScannerConnection.OnScanCompletedListener() {
             @Override
@@ -232,7 +226,8 @@ public class ImagePickerDelegate
     }
   }
 
-  private boolean setPendingMethodCallAndResult(MethodCall methodCall, MethodChannel.Result result) {
+  private boolean setPendingMethodCallAndResult(
+      MethodCall methodCall, MethodChannel.Result result) {
     if (pendingResult != null) {
       finishWithError("already_active", "Image picker is already active");
       return false;

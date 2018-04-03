@@ -5,12 +5,10 @@
 package io.flutter.plugins.imagepicker;
 
 import android.os.Environment;
-
-import java.io.File;
-
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
+import java.io.File;
 
 public class ImagePickerPlugin implements MethodChannel.MethodCallHandler {
   private static final String CHANNEL = "plugins.flutter.io/image_picker";
@@ -24,13 +22,13 @@ public class ImagePickerPlugin implements MethodChannel.MethodCallHandler {
   public static void registerWith(PluginRegistry.Registrar registrar) {
     final MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL);
 
-    final File externalFilesDirectory = registrar.activity()
-        .getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+    final File externalFilesDirectory =
+        registrar.activity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
     final ExifDataCopier exifDataCopier = new ExifDataCopier();
     final ImageResizer imageResizer = new ImageResizer(externalFilesDirectory, exifDataCopier);
 
-    final ImagePickerDelegate delegate = new ImagePickerDelegate(
-        registrar.activity(), externalFilesDirectory, imageResizer);
+    final ImagePickerDelegate delegate =
+        new ImagePickerDelegate(registrar.activity(), externalFilesDirectory, imageResizer);
     registrar.addActivityResultListener(delegate);
     registrar.addRequestPermissionsResultListener(delegate);
 
