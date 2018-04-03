@@ -53,6 +53,6 @@ class ImagePicker {
       },
     );
 
-    return new File(path);
+    return path != null ? new File(path) : null;
   }
 }
