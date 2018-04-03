@@ -6,15 +6,18 @@ package io.flutter.plugins.imagepicker;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
 class ImageResizer {
+  private final File externalFilesDirectory;
   private final ExifDataCopier exifDataCopier;
 
-  ImageResizer(ExifDataCopier exifDataCopier) {
+  ImageResizer(File externalFilesDirectory, ExifDataCopier exifDataCopier) {
+    this.externalFilesDirectory = externalFilesDirectory;
     this.exifDataCopier = exifDataCopier;
   }
 
@@ -23,15 +26,15 @@ class ImageResizer {
 
     if (!shouldScale) {
       return imagePath;
-    } else {
-      try {
-        File scaledImage = resizedImage(imagePath, maxWidth, maxHeight);
-        exifDataCopier.copyExif(imagePath, scaledImage.getPath());
+    }
 
-        return scaledImage.getPath();
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
+    try {
+      File scaledImage = resizedImage(imagePath, maxWidth, maxHeight);
+      exifDataCopier.copyExif(imagePath, scaledImage.getPath());
+
+      return scaledImage.getPath();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
   }
 
@@ -81,9 +84,8 @@ class ImageResizer {
 
     String[] pathParts = path.split("/");
     String imageName = pathParts[pathParts.length - 1];
-    String scaledCopyPath = path.replace(imageName, "scaled_" + imageName);
 
-    File imageFile = new File(scaledCopyPath);
+    File imageFile = new File(externalFilesDirectory, "/scaled_" + imageName);
     FileOutputStream fileOutput = new FileOutputStream(imageFile);
     fileOutput.write(outputStream.toByteArray());
     fileOutput.close();

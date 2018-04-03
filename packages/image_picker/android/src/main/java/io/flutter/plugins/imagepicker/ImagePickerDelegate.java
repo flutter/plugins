@@ -34,6 +34,7 @@ public class ImagePickerDelegate
   private static final int REQUEST_CAMERA_PERMISSION = 2345;
 
   private final Activity activity;
+  private final File externalFilesDirectory;
   private final ImageResizer imageResizer;
   private final String providerName;
 
@@ -43,8 +44,9 @@ public class ImagePickerDelegate
 
   public static class FileProvider extends android.support.v4.content.FileProvider {}
 
-  public ImagePickerDelegate(Activity activity, ImageResizer imageResizer) {
+  public ImagePickerDelegate(Activity activity, File externalFilesDirectory, ImageResizer imageResizer) {
     this.activity = activity;
+    this.externalFilesDirectory = externalFilesDirectory;
     this.imageResizer = imageResizer;
     this.providerName = activity.getPackageName() + ".flutter.image_provider";
   }
@@ -123,11 +125,10 @@ public class ImagePickerDelegate
 
   private File createTemporaryWritableImageFile() {
     String filename = UUID.randomUUID().toString();
-    File storageDirectory = activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
     File image;
 
     try {
-      image = File.createTempFile(filename, ".png", storageDirectory);
+      image = File.createTempFile(filename, ".png", externalFilesDirectory);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
