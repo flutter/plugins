@@ -1,3 +1,7 @@
+## 0.4.1
+
+* **Breaking change**. The `pickImage` method will now return null when the user cancels picking the image.
+
 ## 0.4.0
 
 * **Breaking change**. The `source` parameter for the `pickImage` is now required. Also, the `ImageSource.any` option doesn't exist anymore.

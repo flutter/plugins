@@ -98,6 +98,13 @@ void main() {
           throwsArgumentError,
         );
       });
+
+      test('handles a null image path response gracefully', () {
+        channel.setMockMethodCallHandler((MethodCall methodCall) => null);
+
+        ImagePicker.pickImage(source: ImageSource.gallery);
+        ImagePicker.pickImage(source: ImageSource.camera);
+      });
     });
   });
 }

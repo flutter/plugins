@@ -11,7 +11,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 
@@ -124,8 +123,7 @@ public class ImagePickerDelegate
       return;
     }
 
-    pendingResult.error("no_available_camera", "No cameras available for taking pictures.", null);
-    clearMethodCallAndResult();
+    finishWithError("no_available_camera", "No cameras available for taking pictures.");
   }
 
   private File createTemporaryWritableImageFile() {
@@ -165,18 +163,14 @@ public class ImagePickerDelegate
       if (permissionGranted) {
         launchPickImageFromGalleryIntent();
       } else {
-        pendingResult.error(
-            "no_permissions", "image_picker plugin requires storage permissions", null);
-        clearMethodCallAndResult();
+        finishWithError("no_permissions", "image_picker plugin requires storage permissions");
       }
       return true;
     } else if (requestCode == REQUEST_CAMERA_PERMISSION) {
       if (permissionGranted) {
         launchTakeImageWithCameraIntent();
       } else {
-        pendingResult.error(
-            "no_permissions", "image_picker plugin requires camera permissions", null);
-        clearMethodCallAndResult();
+        finishWithError("no_permissions", "image_picker plugin requires camera permissions");
       }
       return true;
     }
@@ -203,7 +197,8 @@ public class ImagePickerDelegate
       return;
     }
 
-    clearMethodCallAndResult();
+    // User cancelled choosing a picture.
+    finishWithSuccess(null);
   }
 
   private void handleTakePictureResult(int resultCode) {
@@ -221,7 +216,8 @@ public class ImagePickerDelegate
       return;
     }
 
-    clearMethodCallAndResult();
+    // User cancelled taking a picture.
+    finishWithSuccess(null);
   }
 
   private void handleResult(String path) {
@@ -230,9 +226,7 @@ public class ImagePickerDelegate
       Double maxHeight = methodCall.argument("maxHeight");
 
       String finalImagePath = imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight);
-      pendingResult.success(finalImagePath);
-
-      clearMethodCallAndResult();
+      finishWithSuccess(finalImagePath);
     } else {
       throw new IllegalStateException("Received images from picker that were not requested");
     }
@@ -240,13 +234,23 @@ public class ImagePickerDelegate
 
   private boolean setPendingMethodCallAndResult(MethodCall methodCall, MethodChannel.Result result) {
     if (pendingResult != null) {
-      result.error("ALREADY_ACTIVE", "Image picker is already active", null);
+      finishWithError("already_active", "Image picker is already active");
       return false;
     }
 
     this.methodCall = methodCall;
     pendingResult = result;
     return true;
+  }
+
+  private void finishWithSuccess(String imagePath) {
+    pendingResult.success(imagePath);
+    clearMethodCallAndResult();
+  }
+
+  private void finishWithError(String errorCode, String errorMessage) {
+    pendingResult.error(errorCode, errorMessage, null);
+    clearMethodCallAndResult();
   }
 
   private void clearMethodCallAndResult() {
