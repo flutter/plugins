@@ -12,7 +12,38 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 class ImageResizer {
-  File resizedImage(String path, Double maxWidth, Double maxHeight) throws IOException {
+  private final File externalFilesDirectory;
+  private final ExifDataCopier exifDataCopier;
+
+  ImageResizer(File externalFilesDirectory, ExifDataCopier exifDataCopier) {
+    this.externalFilesDirectory = externalFilesDirectory;
+    this.exifDataCopier = exifDataCopier;
+  }
+
+  /**
+   * If necessary, resizes the image located in imagePath and then returns the path for the scaled
+   * image.
+   *
+   * <p>If no resizing is needed, returns the path for the original image.
+   */
+  String resizeImageIfNeeded(String imagePath, Double maxWidth, Double maxHeight) {
+    boolean shouldScale = maxWidth != null || maxHeight != null;
+
+    if (!shouldScale) {
+      return imagePath;
+    }
+
+    try {
+      File scaledImage = resizedImage(imagePath, maxWidth, maxHeight);
+      exifDataCopier.copyExif(imagePath, scaledImage.getPath());
+
+      return scaledImage.getPath();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private File resizedImage(String path, Double maxWidth, Double maxHeight) throws IOException {
     Bitmap bmp = BitmapFactory.decodeFile(path);
     double originalWidth = bmp.getWidth() * 1.0;
     double originalHeight = bmp.getHeight() * 1.0;
@@ -58,9 +89,8 @@ class ImageResizer {
 
     String[] pathParts = path.split("/");
     String imageName = pathParts[pathParts.length - 1];
-    String scaledCopyPath = path.replace(imageName, "scaled_" + imageName);
 
-    File imageFile = new File(scaledCopyPath);
+    File imageFile = new File(externalFilesDirectory, "/scaled_" + imageName);
     FileOutputStream fileOutput = new FileOutputStream(imageFile);
     fileOutput.write(outputStream.toByteArray());
     fileOutput.close();

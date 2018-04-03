@@ -1,3 +1,8 @@
+## 0.4.1
+
+* Bugfix: the `pickImage` method will now return null when the user cancels picking the image, instead of hanging indefinitely.
+* Removed the third party library dependency for taking pictures with the camera.
+
 ## 0.4.0
 
 * **Breaking change**. The `source` parameter for the `pickImage` is now required. Also, the `ImageSource.any` option doesn't exist anymore.

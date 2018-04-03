@@ -20,27 +20,26 @@ Add the following keys to your _Info.plist_ file, located in `<project root>/ios
 
 ### Android
 
-Add the following permissions to your Android Manifest, located in `<project root>/android/app/src/main/AndroidManifest.xml:
-
-```xml
-<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-<uses-permission android:name="android.permission.CAMERA"/>
-```
-
-You're good to go!
+No configuration required - the plugin should work out of the box.
 
 ### Example
 
 ``` dart
 import 'package:image_picker/image_picker.dart';
 
-class _MyHomePageState extends State<MyHomePage> {
-  File imageFile;
+class MyHomePage extends StatefulWidget {
+  @override
+  _MyHomePageState createState() => new _MyHomePageState();
+}
 
-  getImage() async {
-    var _fileName = await ImagePicker.pickImage(source: ImageSource.camera);
+class _MyHomePageState extends State<MyHomePage> {
+  File _image;
+
+  Future getImage() async {
+    var image = await ImagePicker.pickImage(source: ImageSource.camera);
+
     setState(() {
-      imageFile = _fileName;
+      _image = image;
     });
   }
 
@@ -51,9 +50,9 @@ class _MyHomePageState extends State<MyHomePage> {
         title: new Text('Image Picker Example'),
       ),
       body: new Center(
-        child: imageFile == null
+        child: _image == null
             ? new Text('No image selected.')
-            : new Image.file(imageFile),
+            : new Image.file(_image),
       ),
       floatingActionButton: new FloatingActionButton(
         onPressed: getImage,
