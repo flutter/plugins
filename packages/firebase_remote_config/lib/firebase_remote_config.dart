@@ -4,7 +4,6 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
-import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 
 part 'src/remote_config.dart';
