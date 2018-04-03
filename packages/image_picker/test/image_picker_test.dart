@@ -102,7 +102,8 @@ void main() {
       test('handles a null image path response gracefully', () async {
         channel.setMockMethodCallHandler((MethodCall methodCall) => null);
 
-        expect(await ImagePicker.pickImage(source: ImageSource.gallery), isNull);
+        expect(
+            await ImagePicker.pickImage(source: ImageSource.gallery), isNull);
         expect(await ImagePicker.pickImage(source: ImageSource.camera), isNull);
       });
     });
