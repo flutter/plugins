@@ -4,16 +4,14 @@
 
 part of google_mobile_maps;
 
-class Marker {
-
-}
+class Marker {}
 
 class MarkerOptions {
   final LatLng position;
 
-  const MarkerOptions({@required this.position}): assert(position != null);
+  const MarkerOptions({@required this.position}) : assert(position != null);
 
   dynamic _toJson() => <String, dynamic>{
-    'position': position._toJson(),
-  };
+        'position': position._toJson(),
+      };
 }

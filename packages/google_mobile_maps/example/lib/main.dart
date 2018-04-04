@@ -20,7 +20,8 @@ class MapsDemo extends StatefulWidget {
   MapsDemoState createState() => new MapsDemoState();
 }
 
-class MapsDemoState extends State<MapsDemo> with SingleTickerProviderStateMixin {
+class MapsDemoState extends State<MapsDemo>
+    with SingleTickerProviderStateMixin {
   TabController _controller;
   PlatformOverlayController _activeOverlayController;
 
@@ -33,7 +34,8 @@ class MapsDemoState extends State<MapsDemo> with SingleTickerProviderStateMixin 
         _activeOverlayController?.deactivateOverlay();
         _activeOverlayController = null;
       } else {
-        _activeOverlayController = _allPages[_controller.index].overlayController;
+        _activeOverlayController =
+            _allPages[_controller.index].overlayController;
         _activeOverlayController.activateOverlay();
       }
     });
@@ -65,7 +67,8 @@ class MapsDemoState extends State<MapsDemo> with SingleTickerProviderStateMixin 
           if (sn.depth != 0) {
             return;
           }
-          if (sn is ScrollStartNotification && _activeOverlayController != null) {
+          if (sn is ScrollStartNotification &&
+              _activeOverlayController != null) {
             _activeOverlayController.deactivateOverlay();
             _activeOverlayController = null;
           }

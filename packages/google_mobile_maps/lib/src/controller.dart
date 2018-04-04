@@ -5,8 +5,8 @@
 part of google_mobile_maps;
 
 final MethodChannel _channel =
-const MethodChannel('plugins.flutter.io/google_mobile_maps')
-  ..invokeMethod('init');
+    const MethodChannel('plugins.flutter.io/google_mobile_maps')
+      ..invokeMethod('init');
 
 /// Controller for a single GoogleMaps instance.
 ///
