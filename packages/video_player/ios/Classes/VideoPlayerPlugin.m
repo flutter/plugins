@@ -296,7 +296,13 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
     NSString* dataSource = argsMap[@"asset"];
     FLTVideoPlayer* player;
     if (dataSource) {
-      NSString* assetPath = [_registrar lookupKeyForAsset:dataSource];
+      NSString* assetPath;
+      NSString* package = argsMap[@"package"];
+      if (package) {
+        assetPath = [_registrar lookupKeyForAsset:dataSource fromPackage:package];
+      } else {
+        assetPath = [_registrar lookupKeyForAsset:dataSource];
+      }
       player = [[FLTVideoPlayer alloc] initWithAsset:assetPath frameUpdater:frameUpdater];
     } else {
       dataSource = argsMap[@"uri"];
