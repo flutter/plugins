@@ -374,12 +374,13 @@ final class GoogleMapsEntry
 
   void moveCamera(final CameraUpdate cameraUpdate) {
     if (googleMap == null) {
-      pendingOperations.add(new Runnable() {
-          @Override
-          public void run() {
-            googleMap.moveCamera(cameraUpdate);
-          }
-        });
+      pendingOperations.add(
+          new Runnable() {
+            @Override
+            public void run() {
+              googleMap.moveCamera(cameraUpdate);
+            }
+          });
     } else {
       googleMap.moveCamera(cameraUpdate);
     }
@@ -387,12 +388,13 @@ final class GoogleMapsEntry
 
   void animateCamera(final CameraUpdate cameraUpdate) {
     if (googleMap == null) {
-      pendingOperations.add(new Runnable() {
-          @Override
-          public void run() {
-            googleMap.animateCamera(cameraUpdate);
-          }
-        });
+      pendingOperations.add(
+          new Runnable() {
+            @Override
+            public void run() {
+              googleMap.animateCamera(cameraUpdate);
+            }
+          });
     } else {
       googleMap.animateCamera(cameraUpdate);
     }
@@ -400,12 +402,13 @@ final class GoogleMapsEntry
 
   void addMarker(final MarkerOptions options) {
     if (googleMap == null) {
-      pendingOperations.add(new Runnable() {
-          @Override
-          public void run() {
-            googleMap.addMarker(options);
-          }
-        });
+      pendingOperations.add(
+          new Runnable() {
+            @Override
+            public void run() {
+              googleMap.addMarker(options);
+            }
+          });
     } else {
       googleMap.addMarker(options);
     }
