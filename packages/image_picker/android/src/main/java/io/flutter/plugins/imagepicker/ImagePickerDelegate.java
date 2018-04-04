@@ -12,6 +12,7 @@ import android.content.pm.ResolveInfo;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
 import io.flutter.plugin.common.MethodCall;
@@ -64,16 +65,86 @@ import java.util.UUID;
 public class ImagePickerDelegate
     implements PluginRegistry.ActivityResultListener,
         PluginRegistry.RequestPermissionsResultListener {
-  private static final int REQUEST_CODE_CHOOSE_FROM_GALLERY = 2342;
-  private static final int REQUEST_CODE_TAKE_WITH_CAMERA = 2343;
+  static final int REQUEST_CODE_CHOOSE_FROM_GALLERY = 2342;
+  static final int REQUEST_CODE_TAKE_WITH_CAMERA = 2343;
 
-  private static final int REQUEST_EXTERNAL_STORAGE_PERMISSION = 2344;
-  private static final int REQUEST_CAMERA_PERMISSION = 2345;
+  static final int REQUEST_EXTERNAL_STORAGE_PERMISSION = 2344;
+  static final int REQUEST_CAMERA_PERMISSION = 2345;
 
   private final Activity activity;
   private final File externalFilesDirectory;
   private final ImageResizer imageResizer;
-  private final String providerName;
+
+  interface PermissionManager {
+    boolean isPermissionGranted(String permissionName);
+
+    void askForPermission(String permissionName, int requestCode);
+  }
+
+  interface IntentResolver {
+    boolean resolveActivity(Intent intent);
+  }
+
+  interface FileUriResolver {
+    Uri resolveFileProviderUriForFile(File imageFile);
+
+    void getFullImagePath(OnPathReadyListener listener);
+  }
+
+  interface OnPathReadyListener {
+    void onPathReady(String path);
+  }
+
+  @VisibleForTesting final String fileProviderName;
+
+  @VisibleForTesting
+  PermissionManager permissionManager =
+      new PermissionManager() {
+        @Override
+        public boolean isPermissionGranted(String permissionName) {
+          return ActivityCompat.checkSelfPermission(activity, permissionName)
+              == PackageManager.PERMISSION_GRANTED;
+        }
+
+        @Override
+        public void askForPermission(String permissionName, int requestCode) {
+          ActivityCompat.requestPermissions(activity, new String[] {permissionName}, requestCode);
+        }
+      };
+
+  @VisibleForTesting
+  IntentResolver intentResolver =
+      new IntentResolver() {
+        @Override
+        public boolean resolveActivity(Intent intent) {
+          return intent.resolveActivity(activity.getPackageManager()) != null;
+        }
+      };
+
+  @VisibleForTesting
+  FileUriResolver fileUriResolver =
+      new FileUriResolver() {
+        @Override
+        public Uri resolveFileProviderUriForFile(File file) {
+          return FileProvider.getUriForFile(activity, fileProviderName, file);
+        }
+
+        @Override
+        public void getFullImagePath(final OnPathReadyListener listener) {
+          MediaScannerConnection.scanFile(
+              activity,
+              new String[] {pendingCameraImageUri.getPath()},
+              null,
+              new MediaScannerConnection.OnScanCompletedListener() {
+                @Override
+                public void onScanCompleted(String path, Uri uri) {
+                  listener.onPathReady(path);
+                }
+              });
+        }
+      };
+
+  @VisibleForTesting FileUtils fileUtils = new FileUtils();
 
   private Uri pendingCameraImageUri;
   private MethodChannel.Result pendingResult;
@@ -84,7 +155,21 @@ public class ImagePickerDelegate
     this.activity = activity;
     this.externalFilesDirectory = externalFilesDirectory;
     this.imageResizer = imageResizer;
-    this.providerName = activity.getPackageName() + ".flutter.image_provider";
+    this.fileProviderName = activity.getPackageName() + ".flutter.image_provider";
+  }
+
+  ImagePickerDelegate(
+      Activity activity,
+      File externalFilesDirectory,
+      ImageResizer imageResizer,
+      MethodChannel.Result result,
+      MethodCall methodCall) {
+    this.activity = activity;
+    this.externalFilesDirectory = externalFilesDirectory;
+    this.imageResizer = imageResizer;
+    this.fileProviderName = activity.getPackageName() + ".flutter.image_provider";
+    this.pendingResult = result;
+    this.methodCall = methodCall;
   }
 
   public void chooseImageFromGallery(MethodCall methodCall, MethodChannel.Result result) {
@@ -93,23 +178,13 @@ public class ImagePickerDelegate
       return;
     }
 
-    boolean hasExternalStoragePermission =
-        ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE)
-            == PackageManager.PERMISSION_GRANTED;
-
-    if (!hasExternalStoragePermission) {
-      requestExternalStoragePermission();
+    if (!permissionManager.isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+      permissionManager.askForPermission(
+          Manifest.permission.READ_EXTERNAL_STORAGE, REQUEST_EXTERNAL_STORAGE_PERMISSION);
       return;
     }
 
     launchPickImageFromGalleryIntent();
-  }
-
-  private void requestExternalStoragePermission() {
-    ActivityCompat.requestPermissions(
-        activity,
-        new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
-        REQUEST_EXTERNAL_STORAGE_PERMISSION);
   }
 
   private void launchPickImageFromGalleryIntent() {
@@ -125,26 +200,17 @@ public class ImagePickerDelegate
       return;
     }
 
-    boolean hasCameraPermission =
-        ActivityCompat.checkSelfPermission(activity, Manifest.permission.CAMERA)
-            == PackageManager.PERMISSION_GRANTED;
-
-    if (!hasCameraPermission) {
-      requestCameraPermission();
+    if (!permissionManager.isPermissionGranted(Manifest.permission.CAMERA)) {
+      permissionManager.askForPermission(Manifest.permission.CAMERA, REQUEST_CAMERA_PERMISSION);
       return;
     }
 
     launchTakeImageWithCameraIntent();
   }
 
-  private void requestCameraPermission() {
-    ActivityCompat.requestPermissions(
-        activity, new String[] {Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
-  }
-
   private void launchTakeImageWithCameraIntent() {
     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-    boolean canTakePhotos = intent.resolveActivity(activity.getPackageManager()) != null;
+    boolean canTakePhotos = intentResolver.resolveActivity(intent);
 
     if (!canTakePhotos) {
       finishWithError("no_available_camera", "No cameras available for taking pictures.");
@@ -154,7 +220,7 @@ public class ImagePickerDelegate
     File imageFile = createTemporaryWritableImageFile();
     pendingCameraImageUri = Uri.parse("file:" + imageFile.getAbsolutePath());
 
-    Uri imageUri = FileProvider.getUriForFile(activity, providerName, imageFile);
+    Uri imageUri = fileUriResolver.resolveFileProviderUriForFile(imageFile);
     intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
     grantUriPermissions(intent, imageUri);
 
@@ -226,7 +292,7 @@ public class ImagePickerDelegate
 
   private void handleChoosePictureResult(int resultCode, Intent data) {
     if (resultCode == Activity.RESULT_OK && data != null) {
-      String path = FileUtils.getPathFromUri(activity, data.getData());
+      String path = fileUtils.getPathFromUri(activity, data.getData());
       handleResult(path);
       return;
     }
@@ -237,13 +303,10 @@ public class ImagePickerDelegate
 
   private void handleTakePictureResult(int resultCode) {
     if (resultCode == Activity.RESULT_OK) {
-      MediaScannerConnection.scanFile(
-          activity,
-          new String[] {pendingCameraImageUri.getPath()},
-          null,
-          new MediaScannerConnection.OnScanCompletedListener() {
+      fileUriResolver.getFullImagePath(
+          new OnPathReadyListener() {
             @Override
-            public void onScanCompleted(String path, Uri uri) {
+            public void onPathReady(String path) {
               handleResult(path);
             }
           });
