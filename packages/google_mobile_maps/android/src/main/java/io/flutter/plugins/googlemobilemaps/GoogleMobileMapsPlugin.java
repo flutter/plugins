@@ -15,6 +15,7 @@ import android.app.Application;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Surface;
 import android.widget.FrameLayout;
@@ -23,7 +24,11 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MarkerOptions;
+
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -87,15 +92,25 @@ public class GoogleMobileMapsPlugin
       case "moveCamera":
         {
           final long id = ((Number) call.argument("id")).longValue();
-          final List<Double> location = call.argument("location");
-          final float zoom = ((Number) call.argument("zoom")).floatValue();
+          final CameraUpdate cameraUpdate = toCameraUpdate(call.argument("cameraUpdate"));
           final GoogleMapsEntry entry = googleMaps.get(id);
           if (entry == null) {
             result.error("unknown", "Unknown ID " + id, null);
           } else {
-            entry.moveCamera(
-                CameraUpdateFactory.newLatLngZoom(
-                    new LatLng(location.get(0), location.get(1)), zoom));
+            entry.moveCamera(cameraUpdate);
+            result.success(null);
+          }
+          break;
+        }
+      case "addMarker":
+        {
+          final long id = ((Number) call.argument("id")).longValue();
+          final MarkerOptions markerOptions = toMarkerOptions(call.argument("markerOptions"));
+          final GoogleMapsEntry entry = googleMaps.get(id);
+          if (entry == null) {
+            result.error("unknown", "Unknown ID " + id, null);
+          } else {
+            entry.addMarker(markerOptions);
             result.success(null);
           }
           break;
@@ -141,6 +156,80 @@ public class GoogleMobileMapsPlugin
       default:
         result.notImplemented();
     }
+  }
+
+  private static LatLng toLatLng(Object o) {
+    @SuppressWarnings("unchecked")
+    final List<Double> coordinates = (List<Double>) o;
+    return new LatLng(coordinates.get(0), coordinates.get(1));
+  }
+
+  private static LatLngBounds toLatLngBounds(Object o) {
+    final List<?> data = (List<?>) o;
+    return new LatLngBounds(toLatLng(data.get(0)), toLatLng(data.get(1)));
+  }
+
+  private static float toFloat(Object o) {
+    return ((Number) o).floatValue();
+  }
+
+  private static int toInt(Object o) {
+    return ((Number) o).intValue();
+  }
+
+  private static Point toPoint(Object o) {
+    @SuppressWarnings("unchecked")
+    final List<Object> data = (List<Object>) o;
+    return new Point(toInt(data.get(0)), toInt(data.get(1)));
+  }
+
+  private static MarkerOptions toMarkerOptions(Object o) {
+    @SuppressWarnings("unchecked")
+    final Map<String, Object> data = (Map<String, Object>) o;
+    final MarkerOptions markerOptions = new MarkerOptions();
+    markerOptions.position(toLatLng(data.get("position")));
+    return markerOptions;
+  }
+
+  private static CameraPosition toCameraPosition(Object o) {
+    @SuppressWarnings("unchecked")
+    final Map<String, Object> data = (Map<String, Object>) o;
+    final CameraPosition.Builder builder = CameraPosition.builder();
+    builder.bearing(toFloat(data.get("bearing")));
+    builder.target(toLatLng(data.get("target")));
+    builder.tilt(toFloat(data.get("tilt")));
+    builder.zoom(toFloat(data.get("zoom")));
+    return builder.build();
+  }
+
+  private static CameraUpdate toCameraUpdate(Object o) {
+    @SuppressWarnings("unchecked")
+    final List<Object> data = (List<Object>) o;
+    switch ((String) data.get(0)) {
+      case "newCameraPosition":
+        return CameraUpdateFactory.newCameraPosition(toCameraPosition(data.get(1)));
+      case "newLatLng":
+        return CameraUpdateFactory.newLatLng(toLatLng(data.get(1)));
+      case "newLatLngBounds":
+        return CameraUpdateFactory.newLatLngBounds(toLatLngBounds(data.get(1)), toInt(data.get(2)));
+      case "newLatLngZoom":
+        return CameraUpdateFactory.newLatLngZoom(toLatLng(data.get(1)), toFloat(data.get(2)));
+      case "scrollBy":
+        return CameraUpdateFactory.scrollBy(toFloat(data.get(1)), toFloat(data.get(2)));
+      case "zoomBy":
+        if (data.size() == 2) {
+          return CameraUpdateFactory.zoomBy(toFloat(data.get(1)));
+        } else {
+          return CameraUpdateFactory.zoomBy(toFloat(data.get(1)), toPoint(data.get(2)));
+        }
+      case "zoomIn":
+        return CameraUpdateFactory.zoomIn();
+      case "zoomOut":
+        return CameraUpdateFactory.zoomOut();
+      case "zoomTo":
+        return CameraUpdateFactory.zoomTo(toFloat(data.get(1)));
+    }
+    throw new IllegalArgumentException("Cannot interpret " + o + " as CameraUpdate");
   }
 
   @Override
@@ -192,6 +281,7 @@ final class GoogleMapsEntry
   private final int width;
   private final int height;
   private final Timer timer;
+  private final List<Runnable> pendingOperations;
   private GoogleMap googleMap;
   private Surface surface;
   private boolean disposed = false;
@@ -208,6 +298,7 @@ final class GoogleMapsEntry
     textureEntry.surfaceTexture().setDefaultBufferSize(width, height);
     this.mapView = new MapView(registrar.activity());
     this.timer = new Timer();
+    this.pendingOperations = new ArrayList<>();
   }
 
   void init() {
@@ -268,8 +359,30 @@ final class GoogleMapsEntry
     parent.addView(mapView, 0);
   }
 
-  void moveCamera(CameraUpdate cameraUpdate) {
-    googleMap.animateCamera(cameraUpdate);
+  void moveCamera(final CameraUpdate cameraUpdate) {
+    if (googleMap == null) {
+      pendingOperations.add(new Runnable() {
+        @Override
+        public void run() {
+          googleMap.animateCamera(cameraUpdate);
+        }
+      });
+    } else {
+      googleMap.animateCamera(cameraUpdate);
+    }
+  }
+
+  void addMarker(final MarkerOptions options) {
+    if (googleMap == null) {
+      pendingOperations.add(new Runnable() {
+        @Override
+        public void run() {
+          googleMap.addMarker(options);
+        }
+      });
+    } else {
+      googleMap.addMarker(options);
+    }
   }
 
   private void updateTexture() {
@@ -292,6 +405,10 @@ final class GoogleMapsEntry
     timer.schedule(newSnapshotTask(), 1000);
     timer.schedule(newSnapshotTask(), 2000);
     timer.schedule(newSnapshotTask(), 4000);
+    for (Runnable op : pendingOperations) {
+      op.run();
+    }
+    pendingOperations.clear();
   }
 
   @Override
