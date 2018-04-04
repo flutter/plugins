@@ -41,7 +41,7 @@ public class VideoPlayerPlugin implements MethodCallHandler {
       this.mediaPlayer = new MediaPlayer();
       this.textureEntry = textureEntry;
       try {
-        mediaPlayer.setDataSource(afd);
+        mediaPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
         setupVideoPlayer(eventChannel, textureEntry, mediaPlayer, result);
       } catch (IOException e) {
         result.error("VideoError", "IOError when initializing video player " + e.toString(), null);
