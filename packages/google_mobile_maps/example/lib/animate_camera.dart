@@ -7,8 +7,8 @@ import 'package:google_mobile_maps/google_mobile_maps.dart';
 
 import 'page.dart';
 
-class MoveCameraPage extends Page {
-  MoveCameraPage() : super("MOVE");
+class AnimateCameraPage extends Page {
+  AnimateCameraPage() : super("ANIMATE");
 
   final GoogleMapsOverlayController controller =
       new GoogleMapsOverlayController.fromSize(300.0, 200.0);
@@ -31,7 +31,7 @@ class MoveCameraPage extends Page {
               children: <Widget>[
                 new FlatButton(
                   onPressed: () {
-                    controller.mapsController.moveCamera(
+                    controller.mapsController.animateCamera(
                       CameraUpdate.newCameraPosition(
                         const CameraPosition(
                           bearing: 270.0,
@@ -47,7 +47,7 @@ class MoveCameraPage extends Page {
                 ),
                 new FlatButton(
                   onPressed: () {
-                    controller.mapsController.moveCamera(
+                    controller.mapsController.animateCamera(
                       CameraUpdate.newLatLong(
                         const LatLng(56.1725505, 10.1850512),
                       ),
@@ -58,7 +58,7 @@ class MoveCameraPage extends Page {
                 ),
                 new FlatButton(
                   onPressed: () {
-                    controller.mapsController.moveCamera(
+                    controller.mapsController.animateCamera(
                       CameraUpdate.newLatLongBounds(
                         const LatLngBounds(
                           southwest: const LatLng(-38.483935, 113.248673),
@@ -73,7 +73,7 @@ class MoveCameraPage extends Page {
                 ),
                 new FlatButton(
                   onPressed: () {
-                    controller.mapsController.moveCamera(
+                    controller.mapsController.animateCamera(
                       CameraUpdate.newLatLongZoom(
                         const LatLng(37.4231613, -122.087159),
                         11.0,
@@ -89,7 +89,7 @@ class MoveCameraPage extends Page {
               children: <Widget>[
                 new FlatButton(
                   onPressed: () {
-                    controller.mapsController.moveCamera(
+                    controller.mapsController.animateCamera(
                       CameraUpdate.scrollBy(150.0, -225.0),
                     );
                   },
@@ -98,7 +98,7 @@ class MoveCameraPage extends Page {
                 ),
                 new FlatButton(
                   onPressed: () {
-                    controller.mapsController.moveCamera(
+                    controller.mapsController.animateCamera(
                       CameraUpdate.zoomBy(
                         -0.5,
                         const Offset(30.0, 20.0),
@@ -110,7 +110,7 @@ class MoveCameraPage extends Page {
                 ),
                 new FlatButton(
                   onPressed: () {
-                    controller.mapsController.moveCamera(
+                    controller.mapsController.animateCamera(
                       CameraUpdate.zoomBy(0.7),
                     );
                   },
@@ -119,7 +119,7 @@ class MoveCameraPage extends Page {
                 ),
                 new FlatButton(
                   onPressed: () {
-                    controller.mapsController.moveCamera(
+                    controller.mapsController.animateCamera(
                       CameraUpdate.zoomIn(),
                     );
                   },
@@ -128,7 +128,7 @@ class MoveCameraPage extends Page {
                 ),
                 new FlatButton(
                   onPressed: () {
-                    controller.mapsController.moveCamera(
+                    controller.mapsController.animateCamera(
                       CameraUpdate.zoomOut(),
                     );
                   },
@@ -137,7 +137,7 @@ class MoveCameraPage extends Page {
                 ),
                 new FlatButton(
                   onPressed: () {
-                    controller.mapsController.moveCamera(
+                    controller.mapsController.animateCamera(
                       CameraUpdate.zoomTo(16.0),
                     );
                   },

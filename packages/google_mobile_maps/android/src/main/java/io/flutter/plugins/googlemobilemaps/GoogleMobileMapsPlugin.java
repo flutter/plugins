@@ -102,6 +102,19 @@ public class GoogleMobileMapsPlugin
           }
           break;
         }
+      case "animateCamera":
+        {
+          final long id = ((Number) call.argument("id")).longValue();
+          final CameraUpdate cameraUpdate = toCameraUpdate(call.argument("cameraUpdate"));
+          final GoogleMapsEntry entry = googleMaps.get(id);
+          if (entry == null) {
+            result.error("unknown", "Unknown ID " + id, null);
+          } else {
+            entry.animateCamera(cameraUpdate);
+            result.success(null);
+          }
+          break;
+        }
       case "addMarker":
         {
           final long id = ((Number) call.argument("id")).longValue();
@@ -360,6 +373,19 @@ final class GoogleMapsEntry
   }
 
   void moveCamera(final CameraUpdate cameraUpdate) {
+    if (googleMap == null) {
+      pendingOperations.add(new Runnable() {
+        @Override
+        public void run() {
+          googleMap.moveCamera(cameraUpdate);
+        }
+      });
+    } else {
+      googleMap.moveCamera(cameraUpdate);
+    }
+  }
+
+  void animateCamera(final CameraUpdate cameraUpdate) {
     if (googleMap == null) {
       pendingOperations.add(new Runnable() {
         @Override

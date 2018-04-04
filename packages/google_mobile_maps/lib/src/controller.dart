@@ -19,6 +19,14 @@ class GoogleMapsController {
 
   GoogleMapsController(this.id);
 
+  Future<void> animateCamera(CameraUpdate cameraUpdate) async {
+    final int id = await this.id;
+    await _channel.invokeMethod('animateCamera', <String, dynamic>{
+      'id': id,
+      'cameraUpdate': cameraUpdate._toJson(),
+    });
+  }
+
   Future<void> moveCamera(CameraUpdate cameraUpdate) async {
     final int id = await this.id;
     await _channel.invokeMethod('moveCamera', <String, dynamic>{

@@ -4,11 +4,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_mobile_maps/google_mobile_maps.dart';
+import 'animate_camera.dart';
 import 'move_camera.dart';
 import 'page.dart';
 import 'place_marker.dart';
 
 final List<Page> _allPages = <Page>[
+  new AnimateCameraPage(),
   new MoveCameraPage(),
   new PlaceMarkerPage(),
 ];
