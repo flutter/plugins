@@ -134,16 +134,27 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   int _textureId;
   final String dataSource;
   final bool isNetwork;
+  String package;
   Timer timer;
   bool isDisposed = false;
   Completer<Null> _creatingCompleter;
   StreamSubscription<dynamic> _eventSubscription;
   _VideoAppLifeCycleObserver _lifeCycleObserver;
 
-  VideoPlayerController.asset(this.dataSource)
+  /// Constructs a [VideoPlayerController] playing a video from an asset.
+  ///
+  /// The name of the asset is given by the [dataSource] argument and must not be
+  /// null. The [package] argument must be non-null when the asset comes from a
+  /// package and null otherwise.
+  VideoPlayerController.asset(this.dataSource, {this.package})
       : isNetwork = false,
         super(new VideoPlayerValue(duration: null));
 
+  /// Constructs a [VideoPlayerController] playing a video from obtained from
+  /// the network.
+  ///
+  /// The URI for the video is given by the [dataSource] argument and must not be
+  /// null.
   VideoPlayerController.network(this.dataSource)
       : isNetwork = true,
         super(new VideoPlayerValue(duration: null));
@@ -156,7 +167,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       'create',
       isNetwork
           ? <String, dynamic>{'uri': dataSource}
-          : <String, dynamic>{'asset': dataSource},
+          : <String, dynamic>{'asset': dataSource, 'package': package},
     );
     _textureId = response['textureId'];
     _creatingCompleter.complete(null);
