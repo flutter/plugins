@@ -163,18 +163,11 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     _lifeCycleObserver = new _VideoAppLifeCycleObserver(this);
     _lifeCycleObserver.initialize();
     _creatingCompleter = new Completer<Null>();
-    Map<String, dynamic> createMethodArgs;
-    if (isNetwork) {
-      createMethodArgs = <String, dynamic>{'uri': dataSource};
-    } else {
-      createMethodArgs = <String, dynamic>{'asset': dataSource};
-      if (package != null) {
-        createMethodArgs['package'] = package;
-      }
-    }
     final Map<dynamic, dynamic> response = await _channel.invokeMethod(
       'create',
-      createMethodArgs,
+      isNetwork
+          ? <String, dynamic>{'uri': dataSource}
+          : <String, dynamic>{'asset': dataSource, 'package': package},
     );
     _textureId = response['textureId'];
     _creatingCompleter.complete(null);
