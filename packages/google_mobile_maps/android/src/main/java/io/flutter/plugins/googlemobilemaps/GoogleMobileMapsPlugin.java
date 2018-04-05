@@ -82,7 +82,8 @@ public class GoogleMobileMapsPlugin
         {
           final int width = ((Number) call.argument("width")).intValue();
           final int height = ((Number) call.argument("height")).intValue();
-          final GoogleMapsEntry entry = new GoogleMapsEntry(state, registrar, width, height, result);
+          final GoogleMapsEntry entry =
+              new GoogleMapsEntry(state, registrar, width, height, result);
           googleMaps.put(entry.id(), entry);
           entry.init();
           // result.success is called from entry when the GoogleMaps instance is ready
@@ -298,7 +299,8 @@ final class GoogleMapsEntry
   private Surface surface;
   private boolean disposed = false;
 
-  GoogleMapsEntry(AtomicInteger activityState, Registrar registrar, int width, int height, Result result) {
+  GoogleMapsEntry(
+      AtomicInteger activityState, Registrar registrar, int width, int height, Result result) {
     this.activityState = activityState;
     this.registrar = registrar;
     this.width = width;
