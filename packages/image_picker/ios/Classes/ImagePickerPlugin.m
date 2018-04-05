@@ -9,9 +9,8 @@
 @interface FLTImagePickerPlugin ()<UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 @end
 
-static const int SOURCE_ASK_USER = 0;
-static const int SOURCE_CAMERA = 1;
-static const int SOURCE_GALLERY = 2;
+static const int SOURCE_CAMERA = 0;
+static const int SOURCE_GALLERY = 1;
 
 @implementation FLTImagePickerPlugin {
   FlutterResult _result;
@@ -22,7 +21,7 @@ static const int SOURCE_GALLERY = 2;
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
-      [FlutterMethodChannel methodChannelWithName:@"image_picker"
+      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/image_picker"
                                   binaryMessenger:[registrar messenger]];
   UIViewController *viewController =
       [UIApplication sharedApplication].delegate.window.rootViewController;
@@ -58,9 +57,6 @@ static const int SOURCE_GALLERY = 2;
     int imageSource = [[_arguments objectForKey:@"source"] intValue];
 
     switch (imageSource) {
-      case SOURCE_ASK_USER:
-        [self showImageSourceSelector];
-        break;
       case SOURCE_CAMERA:
         [self showCamera];
         break;
@@ -76,31 +72,6 @@ static const int SOURCE_GALLERY = 2;
   } else {
     result(FlutterMethodNotImplemented);
   }
-}
-
-- (void)showImageSourceSelector {
-  UIAlertControllerStyle style = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad
-                                     ? UIAlertControllerStyleAlert
-                                     : UIAlertControllerStyleActionSheet;
-
-  UIAlertController *alert =
-      [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:style];
-  UIAlertAction *camera = [UIAlertAction actionWithTitle:@"Take Photo"
-                                                   style:UIAlertActionStyleDefault
-                                                 handler:^(UIAlertAction *action) {
-                                                   [self showCamera];
-                                                 }];
-  UIAlertAction *library = [UIAlertAction actionWithTitle:@"Choose Photo"
-                                                    style:UIAlertActionStyleDefault
-                                                  handler:^(UIAlertAction *action) {
-                                                    [self showPhotoLibrary];
-                                                  }];
-  UIAlertAction *cancel =
-      [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
-  [alert addAction:camera];
-  [alert addAction:library];
-  [alert addAction:cancel];
-  [_viewController presentViewController:alert animated:YES completion:nil];
 }
 
 - (void)showCamera {

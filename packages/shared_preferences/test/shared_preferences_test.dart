@@ -62,18 +62,13 @@ void main() {
     });
 
     test('writing', () async {
-      preferences.setString('String', kTestValues2['flutter.String']);
-      preferences.setBool('bool', kTestValues2['flutter.bool']);
-      preferences.setInt('int', kTestValues2['flutter.int']);
-      preferences.setDouble('double', kTestValues2['flutter.double']);
-      preferences.setStringList('List', kTestValues2['flutter.List']);
-      expect(preferences.getString('String'), kTestValues2['flutter.String']);
-      expect(preferences.getBool('bool'), kTestValues2['flutter.bool']);
-      expect(preferences.getInt('int'), kTestValues2['flutter.int']);
-      expect(preferences.getDouble('double'), kTestValues2['flutter.double']);
-      expect(preferences.getStringList('List'), kTestValues2['flutter.List']);
-      expect(log, equals(<MethodCall>[]));
-      await preferences.commit();
+      await Future.wait(<Future<bool>>[
+        preferences.setString('String', kTestValues2['flutter.String']),
+        preferences.setBool('bool', kTestValues2['flutter.bool']),
+        preferences.setInt('int', kTestValues2['flutter.int']),
+        preferences.setDouble('double', kTestValues2['flutter.double']),
+        preferences.setStringList('List', kTestValues2['flutter.List'])
+      ]);
       expect(
         log,
         <Matcher>[
@@ -97,9 +92,16 @@ void main() {
             'key': 'flutter.List',
             'value': kTestValues2['flutter.List']
           }),
-          isMethodCall('commit', arguments: null),
         ],
       );
+      log.clear();
+
+      expect(preferences.getString('String'), kTestValues2['flutter.String']);
+      expect(preferences.getBool('bool'), kTestValues2['flutter.bool']);
+      expect(preferences.getInt('int'), kTestValues2['flutter.int']);
+      expect(preferences.getDouble('double'), kTestValues2['flutter.double']);
+      expect(preferences.getStringList('List'), kTestValues2['flutter.List']);
+      expect(log, equals(<MethodCall>[]));
     });
 
     test('removing', () async {
@@ -109,20 +111,18 @@ void main() {
         ..setBool(key, null)
         ..setInt(key, null)
         ..setDouble(key, null)
-        ..setStringList(key, null)
-        ..remove(key);
-      await preferences.commit();
+        ..setStringList(key, null);
+      await preferences.remove(key);
       expect(
-        log,
-        new List<Matcher>.filled(
-          6,
-          isMethodCall(
-            'remove',
-            arguments: <String, dynamic>{'key': 'flutter.$key'},
-          ),
-          growable: true,
-        )..add(isMethodCall('commit', arguments: null)),
-      );
+          log,
+          new List<Matcher>.filled(
+            6,
+            isMethodCall(
+              'remove',
+              arguments: <String, dynamic>{'key': 'flutter.$key'},
+            ),
+            growable: true,
+          ));
     });
 
     test('clearing', () async {

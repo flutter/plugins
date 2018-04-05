@@ -11,6 +11,7 @@ class Firestore {
   @visibleForTesting
   static const MethodChannel channel = const MethodChannel(
     'plugins.flutter.io/cloud_firestore',
+    const StandardMethodCodec(const FirestoreMessageCodec()),
   );
 
   static final Map<int, StreamController<QuerySnapshot>> _queryObservers =
@@ -62,6 +63,13 @@ class Firestore {
     return new DocumentReference._(this, path.split('/'));
   }
 
+  /// Creates a write batch, used for performing multiple writes as a single
+  /// atomic operation.
+  ///
+  /// Unlike transactions, write batches are persisted offline and therefore are
+  /// preferable when you don’t need to condition your writes on read data.
+  WriteBatch batch() => new WriteBatch._();
+
   /// Executes the given TransactionHandler and then attempts to commit the
   /// changes applied within an atomic transaction.
   ///
@@ -96,54 +104,5 @@ class Firestore {
       'transactionTimeout': timeout.inMilliseconds
     });
     return result?.cast<String, dynamic>() ?? <String, dynamic>{};
-  }
-}
-
-typedef Future<dynamic> TransactionHandler(Transaction transaction);
-
-class Transaction {
-  int _transactionId;
-
-  Transaction(this._transactionId);
-
-  Future<DocumentSnapshot> get(DocumentReference documentReference) async {
-    final dynamic result = await Firestore.channel
-        .invokeMethod('Transaction#get', <String, dynamic>{
-      'transactionId': _transactionId,
-      'path': documentReference.path,
-    });
-    if (result != null) {
-      return new DocumentSnapshot._(documentReference.path,
-          result['data'].cast<String, dynamic>(), Firestore.instance);
-    } else {
-      return null;
-    }
-  }
-
-  Future<void> delete(DocumentReference documentReference) async {
-    return Firestore.channel
-        .invokeMethod('Transaction#delete', <String, dynamic>{
-      'transactionId': _transactionId,
-      'path': documentReference.path,
-    });
-  }
-
-  Future<void> update(
-      DocumentReference documentReference, Map<String, dynamic> data) async {
-    return Firestore.channel
-        .invokeMethod('Transaction#update', <String, dynamic>{
-      'transactionId': _transactionId,
-      'path': documentReference.path,
-      'data': data,
-    });
-  }
-
-  Future<void> set(
-      DocumentReference documentReference, Map<String, dynamic> data) async {
-    return Firestore.channel.invokeMethod('Transaction#set', <String, dynamic>{
-      'transactionId': _transactionId,
-      'path': documentReference.path,
-      'data': data,
-    });
   }
 }

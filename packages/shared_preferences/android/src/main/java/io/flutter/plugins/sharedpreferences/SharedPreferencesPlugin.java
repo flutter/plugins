@@ -5,6 +5,7 @@
 package io.flutter.plugins.sharedpreferences;
 
 import android.content.Context;
+import android.content.SharedPreferences.Editor;
 import android.util.Base64;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -33,7 +34,6 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
   private static final String BIG_INTEGER_PREFIX = "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBCaWdJbnRlZ2Vy";
 
   private final android.content.SharedPreferences preferences;
-  private final android.content.SharedPreferences.Editor editor;
 
   public static void registerWith(PluginRegistry.Registrar registrar) {
     MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL_NAME);
@@ -43,7 +43,6 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
 
   private SharedPreferencesPlugin(Context context) {
     preferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
-    editor = preferences.edit();
   }
 
   private List<String> decodeList(String encodedList) throws IOException {
@@ -94,8 +93,17 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
           // This only happens for previous usage of setStringSet. The app expects a list.
           List<String> listValue = new ArrayList<>((Set) value);
           // Let's migrate the value too while we are at it.
-          editor.remove(key);
-          editor.putString(key, LIST_IDENTIFIER + encodeList(listValue)).apply();
+          boolean success =
+              preferences
+                  .edit()
+                  .remove(key)
+                  .putString(key, LIST_IDENTIFIER + encodeList(listValue))
+                  .commit();
+          if (!success) {
+            // If we are unable to migrate the existing preferences, it means we potentially lost them.
+            // In this case, an error from getAllPrefs() is appropriate since it will alert the app during plugin initialization.
+            throw new IOException("Could not migrate set to list");
+          }
           value = listValue;
         }
         filteredPrefs.put(key, value);
@@ -107,57 +115,57 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
   @Override
   public void onMethodCall(MethodCall call, MethodChannel.Result result) {
     String key = call.argument("key");
+    boolean status = false;
     try {
       switch (call.method) {
         case "setBool":
-          editor.putBoolean(key, (boolean) call.argument("value")).apply();
-          result.success(null);
+          status = preferences.edit().putBoolean(key, (boolean) call.argument("value")).commit();
           break;
         case "setDouble":
           float floatValue = ((Number) call.argument("value")).floatValue();
-          editor.putFloat(key, floatValue).apply();
-          result.success(null);
+          status = preferences.edit().putFloat(key, floatValue).commit();
           break;
         case "setInt":
           Number number = call.argument("value");
+          Editor editor = preferences.edit();
           if (number instanceof BigInteger) {
             BigInteger integerValue = (BigInteger) number;
             editor.putString(key, BIG_INTEGER_PREFIX + integerValue.toString(Character.MAX_RADIX));
           } else {
             editor.putLong(key, number.longValue());
           }
-          editor.apply();
-          result.success(null);
+          status = editor.commit();
           break;
         case "setString":
-          editor.putString(key, (String) call.argument("value")).apply();
-          result.success(null);
+          status = preferences.edit().putString(key, (String) call.argument("value")).commit();
           break;
         case "setStringList":
           List<String> list = call.argument("value");
-          editor.putString(key, LIST_IDENTIFIER + encodeList(list)).apply();
-          result.success(null);
+          status = preferences.edit().putString(key, LIST_IDENTIFIER + encodeList(list)).commit();
           break;
         case "commit":
-          result.success(editor.commit());
+          // We've been committing the whole time.
+          status = true;
           break;
         case "getAll":
           result.success(getAllPrefs());
-          break;
+          return;
         case "remove":
-          editor.remove(key).apply();
-          result.success(null);
+          status = preferences.edit().remove(key).commit();
           break;
         case "clear":
-          for (String keyToDelete : getAllPrefs().keySet()) {
-            editor.remove(keyToDelete);
+          Set<String> keySet = getAllPrefs().keySet();
+          Editor clearEditor = preferences.edit();
+          for (String keyToDelete : keySet) {
+            clearEditor.remove(keyToDelete);
           }
-          result.success(editor.commit());
+          status = clearEditor.commit();
           break;
         default:
           result.notImplemented();
           break;
       }
+      result.success(status);
     } catch (IOException e) {
       result.error("IOException encountered", call.method, e);
     }

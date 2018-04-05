@@ -44,9 +44,7 @@ Future<List<CameraDescription>> getAllAvailableCameras() async {
   try {
     final List<dynamic> cameras = await _channel.invokeMethod(
         'getAllAvailableCameras');
-    return cameras
-        .cast<Map<String, dynamic>>()
-        .map((Map<String, dynamic> camera) {
+    return cameras.map((dynamic camera) {
       return new CameraDescription(
         name: camera['name'],
         lensDirection: _parseCameraLensDirection(camera['lensFacing']),
@@ -179,7 +177,7 @@ class CameraController extends ValueNotifier<CameraValue> {
 
   int _textureId;
   bool _disposed = false;
-  StreamSubscription<Map<String, dynamic>> _eventSubscription;
+  StreamSubscription<dynamic> _eventSubscription;
   Completer<Null> _creatingCompleter;
 
   CameraController(this.description, this.resolutionPreset)
@@ -194,7 +192,7 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
     try {
       _creatingCompleter = new Completer<Null>();
-      final Map<String, dynamic> reply = await _channel.invokeMethod(
+      final Map<dynamic, dynamic> reply = await _channel.invokeMethod(
         'openCamera',
         <String, dynamic>{
           'cameraName': description.name,
@@ -222,7 +220,7 @@ class CameraController extends ValueNotifier<CameraValue> {
 
   /// Listen to events from the native plugins.
   void _listener(dynamic event) {
-    final Map<String, dynamic> map = event;
+    final Map<dynamic, dynamic> map = event;
     if (_disposed) {
       return;
     }

@@ -1,3 +1,7 @@
+## 0.1.2
+
+* Fix Dart 2 runtime errors.
+
 ## 0.1.1
 
 * Fix Dart 2 runtime error.

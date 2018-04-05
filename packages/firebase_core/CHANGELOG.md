@@ -1,3 +1,11 @@
+## 0.1.2
+
+* Fix projectID on iOS
+
+## 0.1.1
+
+* Fix behavior of constructor for named Firebase apps.
+
 ## 0.1.0
 
 * **Breaking change**. Set SDK constraints to match the Flutter beta release.

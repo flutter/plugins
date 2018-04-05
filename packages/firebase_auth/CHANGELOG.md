@@ -1,3 +1,7 @@
+## 0.5.3
+
+* Secure fetchProvidersForEmail (no providers)
+
 ## 0.5.2
 
 * Fixed Dart 2 type error in fetchProvidersForEmail.

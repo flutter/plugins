@@ -20,17 +20,25 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.Transaction;
+import com.google.firebase.firestore.WriteBatch;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
+import io.flutter.plugin.common.StandardMessageCodec;
+import io.flutter.plugin.common.StandardMethodCodec;
+import java.io.ByteArrayOutputStream;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,16 +50,21 @@ public class CloudFirestorePlugin implements MethodCallHandler {
   private final MethodChannel channel;
 
   // Handles are ints used as indexes into the sparse array of active observers
-  private int nextHandle = 0;
+  private int nextListenerHandle = 0;
+  private int nextBatchHandle = 0;
   private final SparseArray<EventObserver> observers = new SparseArray<>();
   private final SparseArray<DocumentObserver> documentObservers = new SparseArray<>();
   private final SparseArray<ListenerRegistration> listenerRegistrations = new SparseArray<>();
+  private final SparseArray<WriteBatch> batches = new SparseArray<>();
   private final SparseArray<Transaction> transactions = new SparseArray<>();
   private final SparseArray<TaskCompletionSource> completionTasks = new SparseArray<>();
 
   public static void registerWith(PluginRegistry.Registrar registrar) {
     final MethodChannel channel =
-        new MethodChannel(registrar.messenger(), "plugins.flutter.io/cloud_firestore");
+        new MethodChannel(
+            registrar.messenger(),
+            "plugins.flutter.io/cloud_firestore",
+            new StandardMethodCodec(FirestoreMessageCodec.INSTANCE));
     channel.setMethodCallHandler(new CloudFirestorePlugin(channel));
   }
 
@@ -363,10 +376,66 @@ public class CloudFirestorePlugin implements MethodCallHandler {
           }.execute();
           break;
         }
+      case "WriteBatch#create":
+        {
+          int handle = nextBatchHandle++;
+          WriteBatch batch = FirebaseFirestore.getInstance().batch();
+          batches.put(handle, batch);
+          result.success(handle);
+          break;
+        }
+      case "WriteBatch#setData":
+        {
+          Map<String, Object> arguments = call.arguments();
+          int handle = (Integer) arguments.get("handle");
+          DocumentReference reference = getDocumentReference(arguments);
+          @SuppressWarnings("unchecked")
+          Map<String, Object> options = (Map<String, Object>) arguments.get("options");
+          WriteBatch batch = batches.get(handle);
+          if (options != null && (Boolean) options.get("merge")) {
+            batch.set(reference, arguments.get("data"), SetOptions.merge());
+          } else {
+            batch.set(reference, arguments.get("data"));
+          }
+          result.success(null);
+          break;
+        }
+      case "WriteBatch#updateData":
+        {
+          Map<String, Object> arguments = call.arguments();
+          int handle = (Integer) arguments.get("handle");
+          DocumentReference reference = getDocumentReference(arguments);
+          @SuppressWarnings("unchecked")
+          Map<String, Object> data = (Map<String, Object>) arguments.get("data");
+          WriteBatch batch = batches.get(handle);
+          batch.update(reference, data);
+          result.success(null);
+          break;
+        }
+      case "WriteBatch#delete":
+        {
+          Map<String, Object> arguments = call.arguments();
+          int handle = (Integer) arguments.get("handle");
+          DocumentReference reference = getDocumentReference(arguments);
+          WriteBatch batch = batches.get(handle);
+          batch.delete(reference);
+          result.success(null);
+          break;
+        }
+      case "WriteBatch#commit":
+        {
+          Map<String, Object> arguments = call.arguments();
+          int handle = (Integer) arguments.get("handle");
+          WriteBatch batch = batches.get(handle);
+          Task<Void> task = batch.commit();
+          batches.delete(handle);
+          addDefaultListeners("commit", task, result);
+          break;
+        }
       case "Query#addSnapshotListener":
         {
           Map<String, Object> arguments = call.arguments();
-          int handle = nextHandle++;
+          int handle = nextListenerHandle++;
           EventObserver observer = new EventObserver(handle);
           observers.put(handle, observer);
           listenerRegistrations.put(handle, getQuery(arguments).addSnapshotListener(observer));
@@ -376,7 +445,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
       case "Query#addDocumentListener":
         {
           Map<String, Object> arguments = call.arguments();
-          int handle = nextHandle++;
+          int handle = nextListenerHandle++;
           DocumentObserver observer = new DocumentObserver(handle);
           documentObservers.put(handle, observer);
           listenerRegistrations.put(
@@ -481,6 +550,49 @@ public class CloudFirestorePlugin implements MethodCallHandler {
           result.notImplemented();
           break;
         }
+    }
+  }
+}
+
+final class FirestoreMessageCodec extends StandardMessageCodec {
+  public static final FirestoreMessageCodec INSTANCE = new FirestoreMessageCodec();
+  private static final Charset UTF8 = Charset.forName("UTF8");
+  private static final byte DATE_TIME = (byte) 128;
+  private static final byte GEO_POINT = (byte) 129;
+  private static final byte DOCUMENT_REFERENCE = (byte) 130;
+
+  @Override
+  protected void writeValue(ByteArrayOutputStream stream, Object value) {
+    if (value instanceof Date) {
+      stream.write(DATE_TIME);
+      writeLong(stream, ((Date) value).getTime());
+    } else if (value instanceof GeoPoint) {
+      stream.write(GEO_POINT);
+      writeAlignment(stream, 8);
+      writeDouble(stream, ((GeoPoint) value).getLatitude());
+      writeDouble(stream, ((GeoPoint) value).getLongitude());
+    } else if (value instanceof DocumentReference) {
+      stream.write(DOCUMENT_REFERENCE);
+      writeBytes(stream, ((DocumentReference) value).getPath().getBytes(UTF8));
+    } else {
+      super.writeValue(stream, value);
+    }
+  }
+
+  @Override
+  protected Object readValueOfType(byte type, ByteBuffer buffer) {
+    switch (type) {
+      case DATE_TIME:
+        return new Date(buffer.getLong());
+      case GEO_POINT:
+        readAlignment(buffer, 8);
+        return new GeoPoint(buffer.getDouble(), buffer.getDouble());
+      case DOCUMENT_REFERENCE:
+        final byte[] bytes = readBytes(buffer);
+        final String path = new String(bytes, UTF8);
+        return FirebaseFirestore.getInstance().document(path);
+      default:
+        return super.readValueOfType(type, buffer);
     }
   }
 }

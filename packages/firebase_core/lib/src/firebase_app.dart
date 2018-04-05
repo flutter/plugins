@@ -25,7 +25,7 @@ class FirebaseApp {
 
   /// Returns a previously created FirebaseApp instance with the given name,
   /// or null if no such app exists.
-  factory FirebaseApp.named(String name) => _namedApps['name'];
+  factory FirebaseApp.named(String name) => _namedApps[name];
 
   /// Configures an app with the given name.
   ///

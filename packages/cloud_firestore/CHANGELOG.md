@@ -1,3 +1,20 @@
+## 0.4.0
+
+* **Breaking change**. Hide Firestore codec class from public API.
+* Adjusted Flutter SDK constraint to match Flutter release with extensible
+  platform message codec, required already by version 0.3.1.
+* Move each class into separate files
+
+## 0.3.2
+
+* Support for batched writes.
+
+## 0.3.1
+
+* Add GeoPoint class
+* Allow for reading and writing DocumentReference, DateTime, and GeoPoint
+  values from and to Documents.
+
 ## 0.3.0
 
 * **Breaking change**. Set SDK constraints to match the Flutter beta release.
