@@ -4,8 +4,6 @@
 
 part of google_mobile_maps;
 
-class Marker {}
-
 class MarkerOptions {
   final LatLng position;
 

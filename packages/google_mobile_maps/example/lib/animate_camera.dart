@@ -48,7 +48,7 @@ class AnimateCameraPage extends Page {
                 new FlatButton(
                   onPressed: () {
                     controller.mapsController.animateCamera(
-                      CameraUpdate.newLatLong(
+                      CameraUpdate.newLatLng(
                         const LatLng(56.1725505, 10.1850512),
                       ),
                     );
@@ -59,7 +59,7 @@ class AnimateCameraPage extends Page {
                 new FlatButton(
                   onPressed: () {
                     controller.mapsController.animateCamera(
-                      CameraUpdate.newLatLongBounds(
+                      CameraUpdate.newLatLngBounds(
                         const LatLngBounds(
                           southwest: const LatLng(-38.483935, 113.248673),
                           northeast: const LatLng(-8.982446, 153.823821),
@@ -74,7 +74,7 @@ class AnimateCameraPage extends Page {
                 new FlatButton(
                   onPressed: () {
                     controller.mapsController.animateCamera(
-                      CameraUpdate.newLatLongZoom(
+                      CameraUpdate.newLatLngZoom(
                         const LatLng(37.4231613, -122.087159),
                         11.0,
                       ),

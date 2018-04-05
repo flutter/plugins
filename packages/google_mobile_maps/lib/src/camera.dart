@@ -39,11 +39,11 @@ class CameraUpdate {
     );
   }
 
-  static CameraUpdate newLatLong(LatLng latLng) {
+  static CameraUpdate newLatLng(LatLng latLng) {
     return new CameraUpdate._(<dynamic>['newLatLng', latLng._toJson()]);
   }
 
-  static CameraUpdate newLatLongBounds(LatLngBounds bounds, double padding) {
+  static CameraUpdate newLatLngBounds(LatLngBounds bounds, double padding) {
     return new CameraUpdate._(<dynamic>[
       'newLatLngBounds',
       bounds._toJson(),
@@ -51,7 +51,7 @@ class CameraUpdate {
     ]);
   }
 
-  static CameraUpdate newLatLongZoom(LatLng latLng, double zoom) {
+  static CameraUpdate newLatLngZoom(LatLng latLng, double zoom) {
     return new CameraUpdate._(
       <dynamic>['newLatLngZoom', latLng._toJson(), zoom],
     );

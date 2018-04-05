@@ -11,8 +11,7 @@ final MethodChannel _channel =
 /// Controller for a single GoogleMaps instance.
 ///
 /// Used for programmatically controlling a platform-specific
-/// GoogleMaps view, once it has been created and integrated
-/// into the Flutter application.
+/// GoogleMaps view, once created.
 class GoogleMapsController {
   /// An ID identifying the GoogleMaps instance, once created.
   final Future<int> id;

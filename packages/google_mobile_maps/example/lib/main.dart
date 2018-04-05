@@ -63,11 +63,11 @@ class MapsDemoState extends State<MapsDemo>
         ),
       ),
       body: new NotificationListener<ScrollNotification>(
-        onNotification: (ScrollNotification sn) {
-          if (sn.depth != 0) {
+        onNotification: (ScrollNotification scrollNotification) {
+          if (scrollNotification.depth != 0) {
             return;
           }
-          if (sn is ScrollStartNotification &&
+          if (scrollNotification is ScrollStartNotification &&
               _activeOverlayController != null) {
             _activeOverlayController.deactivateOverlay();
             _activeOverlayController = null;

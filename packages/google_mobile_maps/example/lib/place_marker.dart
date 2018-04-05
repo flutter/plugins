@@ -12,7 +12,7 @@ class PlaceMarkerPage extends Page {
 
   final GoogleMapsOverlayController controller =
       new GoogleMapsOverlayController.fromSize(200.0, 300.0)
-        ..mapsController.moveCamera(CameraUpdate.newLatLongZoom(
+        ..mapsController.moveCamera(CameraUpdate.newLatLngZoom(
           const LatLng(-33.852, 151.211),
           11.0,
         ));

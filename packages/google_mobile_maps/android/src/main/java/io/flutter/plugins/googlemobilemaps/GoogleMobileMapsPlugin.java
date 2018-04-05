@@ -82,10 +82,10 @@ public class GoogleMobileMapsPlugin
         {
           final int width = ((Number) call.argument("width")).intValue();
           final int height = ((Number) call.argument("height")).intValue();
-          final GoogleMapsEntry entry = new GoogleMapsEntry(state, registrar, width, height);
+          final GoogleMapsEntry entry = new GoogleMapsEntry(state, registrar, width, height, result);
           googleMaps.put(entry.id(), entry);
           entry.init();
-          result.success(entry.id());
+          // result.success is called from entry when the GoogleMaps instance is ready
           break;
         }
       case "moveCamera":
@@ -292,17 +292,18 @@ final class GoogleMapsEntry
   private final Bitmap bitmap;
   private final int width;
   private final int height;
+  private final Result result;
   private final Timer timer;
-  private final List<Runnable> pendingOperations;
   private GoogleMap googleMap;
   private Surface surface;
   private boolean disposed = false;
 
-  GoogleMapsEntry(AtomicInteger activityState, Registrar registrar, int width, int height) {
+  GoogleMapsEntry(AtomicInteger activityState, Registrar registrar, int width, int height, Result result) {
     this.activityState = activityState;
     this.registrar = registrar;
     this.width = width;
     this.height = height;
+    this.result = result;
     this.bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
     this.parent = (FrameLayout) registrar.view().getParent();
     this.textureEntry = registrar.textures().createSurfaceTexture();
@@ -310,7 +311,6 @@ final class GoogleMapsEntry
     textureEntry.surfaceTexture().setDefaultBufferSize(width, height);
     this.mapView = new MapView(registrar.activity());
     this.timer = new Timer();
-    this.pendingOperations = new ArrayList<>();
   }
 
   void init() {
@@ -372,45 +372,15 @@ final class GoogleMapsEntry
   }
 
   void moveCamera(final CameraUpdate cameraUpdate) {
-    if (googleMap == null) {
-      pendingOperations.add(
-          new Runnable() {
-            @Override
-            public void run() {
-              googleMap.moveCamera(cameraUpdate);
-            }
-          });
-    } else {
-      googleMap.moveCamera(cameraUpdate);
-    }
+    googleMap.moveCamera(cameraUpdate);
   }
 
   void animateCamera(final CameraUpdate cameraUpdate) {
-    if (googleMap == null) {
-      pendingOperations.add(
-          new Runnable() {
-            @Override
-            public void run() {
-              googleMap.animateCamera(cameraUpdate);
-            }
-          });
-    } else {
-      googleMap.animateCamera(cameraUpdate);
-    }
+    googleMap.animateCamera(cameraUpdate);
   }
 
   void addMarker(final MarkerOptions options) {
-    if (googleMap == null) {
-      pendingOperations.add(
-          new Runnable() {
-            @Override
-            public void run() {
-              googleMap.addMarker(options);
-            }
-          });
-    } else {
-      googleMap.addMarker(options);
-    }
+    googleMap.addMarker(options);
   }
 
   private void updateTexture() {
@@ -425,6 +395,7 @@ final class GoogleMapsEntry
   @Override
   public void onMapReady(GoogleMap googleMap) {
     this.googleMap = googleMap;
+    result.success(id());
     googleMap.setOnCameraMoveStartedListener(this);
     googleMap.setOnCameraIdleListener(this);
     // Take snapshots until the dust settles.
@@ -433,10 +404,6 @@ final class GoogleMapsEntry
     timer.schedule(newSnapshotTask(), 1000);
     timer.schedule(newSnapshotTask(), 2000);
     timer.schedule(newSnapshotTask(), 4000);
-    for (Runnable op : pendingOperations) {
-      op.run();
-    }
-    pendingOperations.clear();
   }
 
   @Override
