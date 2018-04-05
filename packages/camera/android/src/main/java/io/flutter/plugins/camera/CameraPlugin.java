@@ -52,7 +52,7 @@ import io.flutter.view.FlutterView;
 public class CameraPlugin implements MethodCallHandler {
 
     private static final int CAMERA_REQUEST_ID = 513469796;
-    private static final String TAG = "CameraPlugin:";
+    private static final String TAG = "CameraPlugin";
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray() {
         {
             append(Surface.ROTATION_0, 0);
@@ -69,6 +69,7 @@ public class CameraPlugin implements MethodCallHandler {
     private Registrar registrar;
     // The code to run after requesting camera permissions.
     private Runnable cameraPermissionContinuation;
+    private boolean requestingPermission;
 
 
     private CameraPlugin(Registrar registrar, FlutterView view, Activity activity) {
@@ -92,6 +93,10 @@ public class CameraPlugin implements MethodCallHandler {
 
                             @Override
                             public void onActivityResumed(Activity activity) {
+                                if (requestingPermission) {
+                                    requestingPermission = false;
+                                    return;
+                                }
                                 if (activity == CameraPlugin.this.activity) {
                                     if (camera != null) {
                                         camera.open(null);
@@ -293,13 +298,36 @@ public class CameraPlugin implements MethodCallHandler {
                             @Override
                             public void run() {
                                 cameraPermissionContinuation = null;
+                                if (!hasCameraPermission()) {
+                                    if (result != null) {
+                                        result.error("cameraPermission",
+                                                "MediaRecorderCamera permission not granted",
+                                                null);
+                                        return;
+                                    }
+                                }
+                                if (!hasAudioPermission()) {
+                                    if (result != null) {
+                                        result.error("cameraPermission",
+                                                "MediaRecorderAudio permission not granted",
+                                                null);
+                                        return;
+                                    }
+                                }
                                 open(result);
                             }
                         };
-                if (hasCameraPermission()) {
+                requestingPermission = false;
+                if (hasCameraPermission() && hasAudioPermission()) {
                     cameraPermissionContinuation.run();
                 } else {
-                    activity.requestPermissions(new String[]{Manifest.permission.CAMERA}, CAMERA_REQUEST_ID);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        requestingPermission = true;
+                        registrar.activity().requestPermissions(new String[] {
+                                Manifest.permission.CAMERA,
+                                Manifest.permission.RECORD_AUDIO
+                                }, CAMERA_REQUEST_ID);
+                        }
                 }
             } catch (CameraAccessException e) {
                 result.error("CameraAccess", e.getMessage(), null);
@@ -329,6 +357,12 @@ public class CameraPlugin implements MethodCallHandler {
         private boolean hasCameraPermission() {
             return Build.VERSION.SDK_INT < Build.VERSION_CODES.M
                     || activity.checkSelfPermission(Manifest.permission.CAMERA)
+                    == PackageManager.PERMISSION_GRANTED;
+        }
+
+        private boolean hasAudioPermission() {
+            return Build.VERSION.SDK_INT < Build.VERSION_CODES.M
+                    || registrar.activity().checkSelfPermission(Manifest.permission.RECORD_AUDIO)
                     == PackageManager.PERMISSION_GRANTED;
         }
 
