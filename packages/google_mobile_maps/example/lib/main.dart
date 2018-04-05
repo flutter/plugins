@@ -4,96 +4,89 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_mobile_maps/google_mobile_maps.dart';
+import 'animate_camera.dart';
+import 'move_camera.dart';
+import 'page.dart';
+import 'place_marker.dart';
 
-GoogleMapsOverlayController controller1 =
-    new GoogleMapsOverlayController.fromSize(300.0, 200.0);
-GoogleMapsOverlayController controller2 =
-    new GoogleMapsOverlayController.fromSize(300.0, 300.0);
+final List<Page> _allPages = <Page>[
+  new AnimateCameraPage(),
+  new MoveCameraPage(),
+  new PlaceMarkerPage(),
+];
 
-void main() {
-  runApp(new MaterialApp(
-    home: new MyAppHome(),
-    navigatorObservers: <NavigatorObserver>[
-      controller1.overlayController,
-      controller2.overlayController,
-    ],
-  ));
+class MapsDemo extends StatefulWidget {
+  @override
+  MapsDemoState createState() => new MapsDemoState();
 }
 
-class MyAppHome extends StatelessWidget {
+class MapsDemoState extends State<MapsDemo>
+    with SingleTickerProviderStateMixin {
+  TabController _controller;
+  PlatformOverlayController _activeOverlayController;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = new TabController(vsync: this, length: _allPages.length);
+    _controller.addListener(() {
+      if (_controller.indexIsChanging) {
+        _activeOverlayController?.deactivateOverlay();
+        _activeOverlayController = null;
+      } else {
+        _activeOverlayController =
+            _allPages[_controller.index].overlayController;
+        _activeOverlayController.activateOverlay();
+      }
+    });
+    _activeOverlayController = _allPages[_controller.index].overlayController;
+    _activeOverlayController.activateOverlay();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: const Text('Google Maps example'),
-      ),
-      body: new Center(
-        child: new Card(
-          child: new GoogleMapsOverlay(controller: controller1),
+        title: const Text('Map controls'),
+        bottom: new TabBar(
+          controller: _controller,
+          isScrollable: true,
+          tabs: _allPages.map((Page page) {
+            return new Tab(text: page.title);
+          }).toList(),
         ),
       ),
-      floatingActionButton: new Builder(
-        builder: (BuildContext actionContext) => new FloatingActionButton(
-              child: new Icon(Icons.place),
-              onPressed: () {
-                Navigator.of(actionContext).push(
-                    new MaterialPageRoute<Null>(builder: (_) => new MapPage()));
-              },
-            ),
+      body: new NotificationListener<ScrollNotification>(
+        onNotification: (ScrollNotification scrollNotification) {
+          if (scrollNotification.depth != 0) {
+            return;
+          }
+          if (scrollNotification is ScrollStartNotification &&
+              _activeOverlayController != null) {
+            _activeOverlayController.deactivateOverlay();
+            _activeOverlayController = null;
+          }
+        },
+        child: new TabBarView(
+            controller: _controller,
+            children: _allPages.map((Page page) {
+              return new Container(
+                key: new ObjectKey(page.title),
+                padding: const EdgeInsets.all(12.0),
+                child: new Card(child: page),
+              );
+            }).toList()),
       ),
     );
   }
 }
 
-class MapPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: const Text('Another page'),
-      ),
-      body: new Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          new Center(child: new GoogleMapsOverlay(controller: controller2)),
-          new Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              new FlatButton(
-                onPressed: () {
-                  controller2.mapsController.moveCamera(
-                    const Location(37.4231613, -122.087159),
-                    const Zoom(11.0),
-                  );
-                },
-                color: Colors.blue,
-                child: const Text('Mountain View'),
-              ),
-              new FlatButton(
-                onPressed: () {
-                  controller2.mapsController.moveCamera(
-                    const Location(56.1725505, 10.1850512),
-                    const Zoom(11.0),
-                  );
-                },
-                color: Colors.red,
-                child: const Text('Aarhus'),
-              ),
-              new FlatButton(
-                onPressed: () {
-                  controller2.mapsController.moveCamera(
-                    const Location(-33.852, 151.211),
-                    const Zoom(11.0),
-                  );
-                },
-                color: Colors.yellow,
-                child: const Text('Sydney'),
-              ),
-            ],
-          )
-        ],
-      ),
-    );
-  }
+void main() {
+  runApp(new MaterialApp(home: new MapsDemo()));
 }

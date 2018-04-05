@@ -2,12 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
-import 'dart:ui';
-
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter/scheduler.dart';
+part of google_mobile_maps;
 
 /// Controller of platform overlays, supporting a limited form
 /// of compositing with Flutter Widgets.
