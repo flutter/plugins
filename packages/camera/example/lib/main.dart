@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 
-
 class CameraExampleHome extends StatefulWidget {
   @override
   _CameraExampleHomeState createState() {
@@ -36,7 +35,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
   String videoFilePath;
   String messageWidgetText = '';
 
-
   @override
   void initState() {
     super.initState();
@@ -60,8 +58,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
                 groupValue: controller?.description,
                 value: cameraDescription,
                 onChanged: (CameraDescription newValue) async =>
-                    onNewCameraSelected(newValue)
-            ),
+                    onNewCameraSelected(newValue)),
           ),
         );
       }
@@ -79,12 +76,14 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
 
     // Depending on controller state display a message or the camera preview.
     if (controller == null || !controller.value.initialized) {
-      previewChildren.add(new Text('Tap a camera',
+      previewChildren.add(new Text(
+        'Tap a camera',
         style: new TextStyle(
           color: Colors.white,
           fontSize: 24.0,
           fontWeight: FontWeight.w900,
-        ),));
+        ),
+      ));
     } else if (controller.value.hasError) {
       previewChildren.add(
         new Text('Camera error ${controller.value.errorDescription}'),
@@ -97,90 +96,86 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
             aspectRatio: controller.value.aspectRatio,
             child: new CameraPreview(controller),
           ),
-          height: (MediaQuery
-              .of(context)
-              .size
-              .height - 230.0),
+          height: (MediaQuery.of(context).size.height - 230.0),
           color: Colors.black,
         ),
       );
     }
 
-    // The main scaffoling of the app.
+    // The main scaffolding of the app.
     return new Scaffold(
       appBar: new AppBar(
         title: const Text('Camera example'),
       ),
-      body: new Column(
-          children: <Widget>[
-            new Container(
-              child: new Padding(
-                padding: const EdgeInsets.all(1.0),
-                child: new Center(
-                  child: new Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      // Add the preview to the app.
-                      children: previewChildren
-                  ),
-                ),
-              ),
-              // Size of the container as wide as the device screen.
-              width: MediaQuery
-                  .of(context)
-                  .size
-                  .width,
-              decoration: new BoxDecoration(
-                color: Colors.black,
-                border: new Border.all(
-                  color: Colors.redAccent,
-                  width: controller != null && controller.value.opened &&
-                      controller.value.recordingVideo ? 3.0 : 0.0,
-                ),
-              ),
+      body: new Column(children: <Widget>[
+        new Container(
+          child: new Padding(
+            padding: const EdgeInsets.all(1.0),
+            child: new Center(
+              child: new Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  // Add the preview to the app.
+                  children: previewChildren),
             ),
+          ),
+          // Size of the container as wide as the device screen.
+          width: MediaQuery.of(context).size.width,
+          decoration: new BoxDecoration(
+            color: Colors.black,
+            border: new Border.all(
+              color: Colors.redAccent,
+              width: controller != null &&
+                      controller.value.opened &&
+                      controller.value.recordingVideo
+                  ? 3.0
+                  : 0.0,
+            ),
+          ),
+        ),
 
-            new Padding(
-              padding: const EdgeInsets.all(5.0),
-              child: new Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  // Add the controls to the app.
-                  children: controlsChildren
-              ),
-            ),
-            // Add the message to the user depending on the camera controller state.
-            vidMsg(),
-          ]
-      ),
+        new Padding(
+          padding: const EdgeInsets.all(5.0),
+          child: new Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              // Add the controls to the app.
+              children: controlsChildren),
+        ),
+        // Add the message to the user depending on the camera controller state.
+        vidMsg(),
+      ]),
 
       // Bottom bar with the capture controls.
       bottomNavigationBar: (controller == null)
           ? null
           : new Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          mainAxisSize: MainAxisSize.max,
-          children: <Widget>[
-            new IconButton(
-              icon: new Icon(Icons.camera_alt),
-              color: Colors.blue,
-              onPressed: controller.value.opened &&
-                  !controller.value.recordingVideo
-                  ? onTakePictureButtonPressed : null,
-            ),
-            new IconButton(
-              icon: new Icon(Icons.videocam),
-              color: Colors.blue,
-              onPressed: controller.value.opened &&
-                  !controller.value.recordingVideo
-                  ? onVideoRecordButtonPressed : null,
-            ),
-            new IconButton(
-              icon: new Icon(Icons.stop),
-              color: Colors.red,
-              onPressed: controller.value.opened &&
-                  controller.value.recordingVideo
-                  ? onStopButtonPressed : null,
-            )
-          ]),
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisSize: MainAxisSize.max,
+              children: <Widget>[
+                  new IconButton(
+                    icon: new Icon(Icons.camera_alt),
+                    color: Colors.blue,
+                    onPressed: controller.value.opened &&
+                            !controller.value.recordingVideo
+                        ? onTakePictureButtonPressed
+                        : null,
+                  ),
+                  new IconButton(
+                    icon: new Icon(Icons.videocam),
+                    color: Colors.blue,
+                    onPressed: controller.value.opened &&
+                            !controller.value.recordingVideo
+                        ? onVideoRecordButtonPressed
+                        : null,
+                  ),
+                  new IconButton(
+                    icon: new Icon(Icons.stop),
+                    color: Colors.red,
+                    onPressed: controller.value.opened &&
+                            controller.value.recordingVideo
+                        ? onStopButtonPressed
+                        : null,
+                  )
+                ]),
     );
   }
 
@@ -203,11 +198,9 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
     if (controller == null) {
       return const Padding(
         padding: const EdgeInsets.all(1.0),
-        child:
-        const Text('Choose a camera'),
+        child: const Text('Choose a camera'),
       );
-    }
-    else {
+    } else {
       if (controller.value.errorDescription != null) {
         messageWidgetText = 'Camera error ${controller.value.errorDescription}';
       } else if (messageWidgetText == '') {
@@ -220,21 +213,18 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
             textAlign: TextAlign.center,
             overflow: TextOverflow.ellipsis,
             softWrap: true,
-          )
-      );
+          ));
     }
   }
 
   String getCurrentDate() =>
       new DateFormat('yyyyMMdd_HHmmss').format(new DateTime.now());
 
-
   void onNewCameraSelected(CameraDescription cameraDescription) async {
     if (controller != null) {
       await controller.dispose();
     }
-    controller =
-    new CameraController(cameraDescription, ResolutionPreset.high);
+    controller = new CameraController(cameraDescription, ResolutionPreset.high);
 
     // If the controller is updated then update the UI.
     controller.addListener(() {
@@ -335,13 +325,12 @@ class CameraApp extends StatelessWidget {
   }
 }
 
-
 List<CameraDescription> cameras;
 
 Future<Null> main() async {
   // Save the available cameras in this variable first before initializing the app.
   try {
-    cameras = await getAllAvailableCameras();
+    cameras = await availableCameras();
   } on CameraException catch (e) {
     logError(e.code, e.description);
   }

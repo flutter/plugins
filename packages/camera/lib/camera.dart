@@ -10,8 +10,7 @@ enum CameraLensDirection { front, back, external }
 
 enum ResolutionPreset { low, medium, high }
 
-
-// function to return the accordingly the resolution preset as chosen by the user
+/// function to return the accordingly the resolution preset as chosen by the user
 String serializeResolutionPreset(ResolutionPreset resolutionPreset) {
   switch (resolutionPreset) {
     case ResolutionPreset.high:
@@ -40,10 +39,10 @@ CameraLensDirection _parseCameraLensDirection(String string) {
 /// Completes with a list of available cameras.
 ///
 /// May throw a [CameraException].
-Future<List<CameraDescription>> getAllAvailableCameras() async {
+Future<List<CameraDescription>> availableCameras() async {
   try {
-    final List<dynamic> cameras = await _channel.invokeMethod(
-        'getAllAvailableCameras');
+    final List<dynamic> cameras =
+        await _channel.invokeMethod('availableCameras');
     return cameras.map((dynamic camera) {
       return new CameraDescription(
         name: camera['name'],
@@ -54,7 +53,6 @@ Future<List<CameraDescription>> getAllAvailableCameras() async {
     throw new CameraException(e.code, e.message);
   }
 }
-
 
 class CameraDescription {
   final String name;
@@ -121,11 +119,12 @@ class CameraValue {
   /// Is `null` until  [initialized] is `true`.
   final Size previewSize;
 
-  const CameraValue({this.opened,
-    this.initialized,
-    this.errorDescription,
-    this.previewSize,
-    this.recordingVideo});
+  const CameraValue(
+      {this.opened,
+      this.initialized,
+      this.errorDescription,
+      this.previewSize,
+      this.recordingVideo});
 
   const CameraValue.uninitialized()
       : this(opened: true, initialized: false, recordingVideo: false);
@@ -166,7 +165,7 @@ class CameraValue {
 
 /// Controls a device camera.
 ///
-/// Use [getAllAvailableCameras] to get a list of available cameras.
+/// Use [availableCameras] to get a list of available cameras.
 ///
 /// Before using a [CameraController] a call to [openCamera] must complete.
 ///
@@ -296,8 +295,6 @@ class CameraController extends ValueNotifier<CameraValue> {
       throw new CameraException(e.code, e.message);
     }
   }
-
-
 
   /// Releases the resources of this camera.
   @override
