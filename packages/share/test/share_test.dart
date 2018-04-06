@@ -22,17 +22,26 @@ void main() {
   });
 
   test('sharing null fails', () {
-    expect(() => Share.share(null), throwsA(const isInstanceOf<AssertionError>()));
+    expect(
+      () => Share.share(null),
+      throwsA(const isInstanceOf<AssertionError>()),
+    );
     verifyZeroInteractions(mockChannel);
   });
 
   test('sharing empty fails', () {
-    expect(() => Share.share(''), throwsA(const isInstanceOf<AssertionError>()));
+    expect(
+      () => Share.share(''),
+      throwsA(const isInstanceOf<AssertionError>()),
+    );
     verifyZeroInteractions(mockChannel);
   });
 
   test('sharing origin sets the right params', () async {
-    await Share.share('some text to share', sharePositionOrigin: new Rect.fromLTWH(1.0, 2.0, 3.0, 4.0));
+    await Share.share(
+      'some text to share',
+      sharePositionOrigin: new Rect.fromLTWH(1.0, 2.0, 3.0, 4.0),
+    );
     verify(mockChannel.invokeMethod(
       'share',
       <String, dynamic>{
