@@ -34,16 +34,13 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
         originRect = CGRectMake([originX doubleValue], [originY doubleValue],
                                 [originWidth doubleValue], [originHeight doubleValue]);
       }
-      NSLog(@"%@", NSStringFromCGRect(originRect));
 
       [self share:call.arguments
           withController:[UIApplication sharedApplication].keyWindow.rootViewController
                 atSource:originRect];
       result(nil);
     } else {
-      result([FlutterError errorWithCode:@"UNKNOWN_METHOD"
-                                 message:@"Unknown share method called"
-                                 details:nil]);
+      result(FlutterMethodNotImplemented);
     }
   }];
 }
