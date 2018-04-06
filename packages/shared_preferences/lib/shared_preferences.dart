@@ -46,7 +46,7 @@ class SharedPreferences {
   final Map<String, Object> _preferenceCache;
 
   /// returns the entire set for debugging purposes.
-  Map<String,Object> getAll() => _preferenceCache;
+  Map<String, Object> getAll() => _preferenceCache;
 
   /// Reads a value of any type from persistent storage.
   dynamic get(String key) => _preferenceCache[key];
