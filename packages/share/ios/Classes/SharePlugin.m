@@ -18,9 +18,8 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
       NSDictionary *arguments = [call arguments];
 
       if ([arguments[@"text"] length] == 0) {
-        result([FlutterError errorWithCode:@"ARGUMENT_ERROR"
-                                   message:@"Non-empty text expected"
-                                   details:nil]);
+        result(
+            [FlutterError errorWithCode:@"error" message:@"Non-empty text expected" details:nil]);
         return;
       }
 

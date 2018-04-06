@@ -31,23 +31,21 @@ public class SharePlugin implements MethodChannel.MethodCallHandler {
   public void onMethodCall(MethodCall call, MethodChannel.Result result) {
     if (call.method.equals("share")) {
       if (!(call.arguments instanceof Map)) {
-        result.error("ARGUMENT_ERROR", "Map argument expected", null);
-        return;
-      }
-      final String text = call.argument("text");
-      if (text == null || text.isEmpty()) {
-        result.error("ARGUMENT_ERROR", "Non-empty text expected", null);
-        return;
+        throw new IllegalArgumentException("Map argument expected");
       }
       // Android does not support showing the share sheet at a particular point on screen.
-      share(text);
+      share((String) call.argument("text"));
       result.success(null);
     } else {
-      result.error("UNKNOWN_METHOD", "Unknown share method called", null);
+      result.notImplemented();
     }
   }
 
   private void share(String text) {
+    if (text == null || text.isEmpty()) {
+      throw new IllegalArgumentException("Non-empty text expected");
+    }
+
     Intent shareIntent = new Intent();
     shareIntent.setAction(Intent.ACTION_SEND);
     shareIntent.putExtra(Intent.EXTRA_TEXT, text);
