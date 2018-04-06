@@ -21,9 +21,9 @@ const MethodChannel _kChannel = const MethodChannel('plugins.flutter.io/share');
 ///
 /// May throw [PlatformException] or [FormatException]
 /// from [MethodChannel].
-Future<void> share(String text, { Rect sharePositionOrigin }) {
+Future<void> share(String text, {Rect sharePositionOrigin}) {
   assert(text != null && text.isNotEmpty);
-  final Map<String, dynamic> params = <String, dynamic> {
+  final Map<String, dynamic> params = <String, dynamic>{
     'text': text,
   };
 

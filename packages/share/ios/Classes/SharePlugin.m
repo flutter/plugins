@@ -19,8 +19,8 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
 
       if ([arguments[@"text"] length] == 0) {
         result([FlutterError errorWithCode:@"ARGUMENT_ERROR"
-                                  message:@"Non-empty text expected"
-                                  details:nil]);
+                                   message:@"Non-empty text expected"
+                                   details:nil]);
         return;
       }
 
@@ -32,13 +32,13 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
       CGRect originRect;
       if (originX != nil && originY != nil && originWidth != nil && originHeight != nil) {
         originRect = CGRectMake([originX doubleValue], [originY doubleValue],
-            [originWidth doubleValue], [originHeight doubleValue]);
+                                [originWidth doubleValue], [originHeight doubleValue]);
       }
       NSLog(@"%@", NSStringFromCGRect(originRect));
 
       [self share:call.arguments
-            withController:[UIApplication sharedApplication].keyWindow.rootViewController
-            atSource:originRect];
+          withController:[UIApplication sharedApplication].keyWindow.rootViewController
+                atSource:originRect];
       result(nil);
     } else {
       result([FlutterError errorWithCode:@"UNKNOWN_METHOD"
@@ -48,7 +48,9 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
   }];
 }
 
-+ (void)share:(id)sharedItems withController:(UIViewController *)controller atSource:(CGRect)origin {
++ (void)share:(id)sharedItems
+    withController:(UIViewController *)controller
+          atSource:(CGRect)origin {
   UIActivityViewController *activityViewController =
       [[UIActivityViewController alloc] initWithActivityItems:@[ sharedItems ]
                                         applicationActivities:nil];

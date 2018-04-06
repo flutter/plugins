@@ -46,21 +46,21 @@ class DemoAppState extends State<DemoApp> {
                     return new RaisedButton(
                       child: const Text('Share'),
                       onPressed: text.isEmpty
-                        ? null
-                        : () {
-                          // A builder is used to retrieve the context immediately
-                          // surrounding the RaisedButton.
-                          //
-                          // The context's `findRenderObject` returns the first
-                          // RenderObject in its descendent tree when it's not
-                          // a RenderObjectWidget. The RaisedButton's RenderObject
-                          // has its position and size after it's built.
-                          final RenderBox box = context.findRenderObject();
-                          share(
-                            text,
-                            sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size
-                          );
-                        },
+                          ? null
+                          : () {
+                              // A builder is used to retrieve the context immediately
+                              // surrounding the RaisedButton.
+                              //
+                              // The context's `findRenderObject` returns the first
+                              // RenderObject in its descendent tree when it's not
+                              // a RenderObjectWidget. The RaisedButton's RenderObject
+                              // has its position and size after it's built.
+                              final RenderBox box = context.findRenderObject();
+                              share(text,
+                                  sharePositionOrigin:
+                                      box.localToGlobal(Offset.zero) &
+                                          box.size);
+                            },
                     );
                   },
                 ),
