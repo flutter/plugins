@@ -34,11 +34,9 @@ void main() {
       void completeWithChange(int index, DataSnapshot snapshot) {
         callbackCompleter.complete(ListChange.at(index, snapshot));
       }
-
       void completeWithMove(int from, int to, DataSnapshot snapshot) {
         callbackCompleter.complete(ListChange.move(from, to, snapshot));
       }
-
       list = new FirebaseList(
         query: query,
         onChildAdded: completeWithChange,
