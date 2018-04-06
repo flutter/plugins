@@ -15,6 +15,10 @@ const MethodChannel _kChannel = const MethodChannel('plugins.flutter.io/share');
 /// It uses the ACTION_SEND Intent on Android and UIActivityViewController
 /// on iOS.
 ///
+/// The optional `sharePositionOrigin` parameter can be used to specify a global
+/// origin rect for the share sheet to popover from on iPads. It has no effect
+/// on Android or on phones.
+///
 /// May throw [PlatformException] or [FormatException]
 /// from [MethodChannel].
 Future<void> share(String text, { Rect sharePositionOrigin }) {

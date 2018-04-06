@@ -8,6 +8,7 @@ import android.content.Intent;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
+import java.util.Map;
 
 /** Plugin method host for presenting a share sheet via Intent */
 public class SharePlugin implements MethodChannel.MethodCallHandler {
@@ -33,13 +34,13 @@ public class SharePlugin implements MethodChannel.MethodCallHandler {
         result.error("ARGUMENT_ERROR", "Map argument expected", null);
         return;
       }
-      final String text = ((Map) call.arguments)["text"];
-      if (text == null || text.isEmpty()) {
+      final Object text = ((Map) call.arguments).get("text");
+      if (text == null || !(text instanceof String) || ((String) text).isEmpty()) {
         result.error("ARGUMENT_ERROR", "Non-empty text expected", null);
         return;
       }
       // Android does not support showing the share sheet at a particular point on screen.
-      share(text);
+      share((String) text);
       result.success(null);
     } else {
       result.error("UNKNOWN_METHOD", "Unknown share method called", null);
