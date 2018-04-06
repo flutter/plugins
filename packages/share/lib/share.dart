@@ -17,15 +17,17 @@ const MethodChannel _kChannel = const MethodChannel('plugins.flutter.io/share');
 ///
 /// May throw [PlatformException] or [FormatException]
 /// from [MethodChannel].
-Future<void> share(String text, { Offset sharePositionOrigin }) {
+Future<void> share(String text, { Rect sharePositionOrigin }) {
   assert(text != null && text.isNotEmpty);
   final Map<String, dynamic> params = <String, dynamic> {
     'text': text,
   };
 
   if (sharePositionOrigin != null) {
-    params['originX'] = sharePositionOrigin.dx;
-    params['originY'] = sharePositionOrigin.dy;
+    params['originX'] = sharePositionOrigin.left;
+    params['originY'] = sharePositionOrigin.top;
+    params['originWidth'] = sharePositionOrigin.width;
+    params['originHeight'] = sharePositionOrigin.height;
   }
 
   return _kChannel.invokeMethod('share', params);
