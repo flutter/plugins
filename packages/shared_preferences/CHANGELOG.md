@@ -1,3 +1,7 @@
+## 0.4.1
+
+* Added getKeys method.
+
 ## 0.4.0
 
 * **Breaking change**. Set SDK constraints to match the Flutter beta release.
