@@ -45,7 +45,7 @@ class SharedPreferences {
   /// in sync since the setter method might fail for any reason.
   final Map<String, Object> _preferenceCache;
 
-  /// Returns all keys in the preferenceCache.
+  /// Returns all keys in the persistent storage.
   Set<String> getKeys() => new Set<String>.from(_preferenceCache.keys);
 
   /// Reads a value of any type from persistent storage.
