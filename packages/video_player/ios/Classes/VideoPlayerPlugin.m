@@ -298,7 +298,7 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
     if (dataSource) {
       NSString* assetPath;
       NSString* package = argsMap[@"package"];
-      if (package) {
+      if (![package isEqual:[NSNull null]]) {
         assetPath = [_registrar lookupKeyForAsset:dataSource fromPackage:package];
       } else {
         assetPath = [_registrar lookupKeyForAsset:dataSource];
