@@ -28,6 +28,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.Transaction;
 import com.google.firebase.firestore.WriteBatch;
+import com.google.firebase.firestore.Blob;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -567,7 +568,8 @@ final class FirestoreMessageCodec extends StandardMessageCodec {
   private static final byte DATE_TIME = (byte) 128;
   private static final byte GEO_POINT = (byte) 129;
   private static final byte DOCUMENT_REFERENCE = (byte) 130;
-
+  private static final byte BLOB = (byte) 131;
+  
   @Override
   protected void writeValue(ByteArrayOutputStream stream, Object value) {
     if (value instanceof Date) {
@@ -583,6 +585,8 @@ final class FirestoreMessageCodec extends StandardMessageCodec {
       writeBytes(
           stream, ((DocumentReference) value).getFirestore().getApp().getName().getBytes(UTF8));
       writeBytes(stream, ((DocumentReference) value).getPath().getBytes(UTF8));
+    } else if (value instanceof Blob){
+      super.writeValue(stream, ((Blob)value).toBytes());
     } else {
       super.writeValue(stream, value);
     }
