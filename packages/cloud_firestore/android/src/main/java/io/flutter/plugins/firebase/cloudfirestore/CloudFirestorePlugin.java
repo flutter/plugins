@@ -14,6 +14,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.firestore.Blob;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
@@ -28,7 +29,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.Transaction;
 import com.google.firebase.firestore.WriteBatch;
-import com.google.firebase.firestore.Blob;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -570,6 +570,7 @@ final class FirestoreMessageCodec extends StandardMessageCodec {
   private static final byte DOCUMENT_REFERENCE = (byte) 130;
   private static final byte BLOB = (byte) 131;
   
+  
   @Override
   protected void writeValue(ByteArrayOutputStream stream, Object value) {
     if (value instanceof Date) {
@@ -586,7 +587,7 @@ final class FirestoreMessageCodec extends StandardMessageCodec {
           stream, ((DocumentReference) value).getFirestore().getApp().getName().getBytes(UTF8));
       writeBytes(stream, ((DocumentReference) value).getPath().getBytes(UTF8));
     } else if (value instanceof Blob){
-      super.writeValue(stream, ((Blob)value).toBytes());
+      super.writeValue(stream, ((Blob) value).toBytes());
     } else {
       super.writeValue(stream, value);
     }
