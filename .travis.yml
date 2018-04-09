@@ -92,10 +92,10 @@ matrix:
       env:
         - SHARD=Build-example-IPAs
       language: generic
-      osx_image: xcode9.3
+      osx_image: xcode9.2
       before_script:
         - brew update
-        - brew install --HEAD libimobiledevice
+        - brew install --force --HEAD libimobiledevice
         - brew install ideviceinstaller
         - brew install ios-deploy
         - pod repo update
