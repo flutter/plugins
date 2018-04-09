@@ -6,44 +6,71 @@ part of firebase_core;
 
 class FirebaseApp {
   @visibleForTesting
-  const FirebaseApp({this.name, @required this.options});
+  const FirebaseApp({@required this.name}) : assert(name != null);
 
-  /// Gets the name of this app.
-  ///
-  /// If null, the default name is used.
+  /// The name of this app.
   final String name;
 
-  /// Gets a copy of the options for this app. These are non-modifiable.
-  final FirebaseOptions options;
+  static final String defaultAppName =
+      Platform.isIOS ? '__FIRAPP_DEFAULT' : '[DEFAULT]';
 
   @visibleForTesting
   static const MethodChannel channel = const MethodChannel(
     'plugins.flutter.io/firebase_core',
   );
 
-  static Map<String, FirebaseApp> _namedApps = <String, FirebaseApp>{};
+  /// A copy of the options for this app. These are non-modifiable.
+  ///
+  /// This getter is asynchronous because apps can also be configured by native
+  /// code.
+  Future<FirebaseOptions> get options async {
+    final Map<dynamic, dynamic> app = await channel.invokeMethod(
+      'FirebaseApp#appNamed',
+      name,
+    );
+    assert(app != null);
+    return new FirebaseOptions.from(app['options']);
+  }
 
   /// Returns a previously created FirebaseApp instance with the given name,
   /// or null if no such app exists.
-  factory FirebaseApp.named(String name) => _namedApps[name];
+  static Future<FirebaseApp> appNamed(String name) async {
+    final Map<dynamic, dynamic> app = await channel.invokeMethod(
+      'FirebaseApp#appNamed',
+      name,
+    );
+    return app == null ? null : new FirebaseApp(name: app['name']);
+  }
 
-  /// Configures an app with the given name.
+  /// Returns the default (first initialized) instance of the FirebaseApp.
+  static final FirebaseApp instance = new FirebaseApp(name: defaultAppName);
+
+  /// Configures an app with the given [name] and [options].
   ///
-  /// If an app with that name has already been configured, asserts that the
-  /// [options] haven't changed.
-  static Future<FirebaseApp> configure(
-      {String name, @required FirebaseOptions options}) {
-    final FirebaseApp existingApp = _namedApps[name];
-    if (existingApp != null) {
-      assert(existingApp.options == options);
-      return new Future<FirebaseApp>.sync(() => existingApp);
-    }
+  /// Configuring the default app is not currently supported. Plugins that
+  /// can interact with the default app should configure it automatically at
+  /// plugin registration time.
+  ///
+  /// Changing the options of a configured app is not supported. Reconfiguring
+  /// an existing app will assert that the options haven't changed.
+  static Future<FirebaseApp> configure({
+    @required String name,
+    @required FirebaseOptions options,
+  }) async {
+    assert(name != null);
+    assert(name != defaultAppName);
+    assert(options != null);
     assert(options.googleAppID != null);
-    _namedApps[name] = new FirebaseApp(name: name, options: options);
-    return channel.invokeMethod('FirebaseApp#configure', <String, dynamic>{
-      'name': name,
-      'options': options.asMap,
-    }).then((dynamic _) => _namedApps[name]);
+    final FirebaseApp existingApp = await FirebaseApp.appNamed(name);
+    if (existingApp != null) {
+      assert(await existingApp.options == options);
+      return existingApp;
+    }
+    await channel.invokeMethod(
+      'FirebaseApp#configure',
+      <String, dynamic>{'name': name, 'options': options.asMap},
+    );
+    return new FirebaseApp(name: name);
   }
 
   /// Returns a list of all extant FirebaseApp instances, or null if there are
@@ -52,24 +79,23 @@ class FirebaseApp {
     final List<dynamic> result = await channel.invokeMethod(
       'FirebaseApp#allApps',
     );
-    return result?.map<FirebaseApp>((dynamic app) {
-      return new FirebaseApp(
-        name: app['name'],
-        options: new FirebaseOptions.from(app['options']),
-      );
-    })?.toList();
+    return result
+        ?.map<FirebaseApp>(
+          (dynamic app) => new FirebaseApp(name: app['name']),
+        )
+        ?.toList();
   }
 
   @override
   bool operator ==(dynamic other) {
     if (identical(this, other)) return true;
     if (other is! FirebaseApp) return false;
-    return other.name == name && other.options == options;
+    return other.name == name;
   }
 
   @override
-  int get hashCode => hashValues(name, options);
+  int get hashCode => name.hashCode;
 
   @override
-  String toString() => '$FirebaseApp($name, $options)';
+  String toString() => '$FirebaseApp($name)';
 }

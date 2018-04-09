@@ -26,6 +26,12 @@ class MyApp extends StatelessWidget {
     print('Currently configured apps: $apps');
   }
 
+  Future<Null> _options() async {
+    final FirebaseApp app = await FirebaseApp.appNamed(name);
+    final FirebaseOptions options = await app?.options;
+    print('Current options for app $name: $options');
+  }
+
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
@@ -43,6 +49,8 @@ class MyApp extends StatelessWidget {
                   onPressed: _configure, child: const Text('initialize')),
               new RaisedButton(
                   onPressed: _allApps, child: const Text('allApps')),
+              new RaisedButton(
+                  onPressed: _options, child: const Text('options')),
             ],
           ),
         ),
