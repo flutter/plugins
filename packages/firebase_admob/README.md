@@ -27,7 +27,7 @@ MobileAdTargetingInfo targetingInfo = new MobileAdTargetingInfo(
   contentUrl: 'http://foo.com/bar.html',
   birthday: new DateTime.now(),
   childDirected: true,
-  gender: "male", // or "female", "unknown"
+  gender: MobileAdGender.male, // or MobileAdGender.female, MobileAdGender.unknown
 );
 
 BannerAd myBanner = new BannerAd(
