@@ -1,3 +1,7 @@
+## 0.5.1
+
+* Fixed Dart 2 type errors.
+
 ## 0.5.0
 
 * **Breaking change**. The BannerAd constructor now requires an AdSize
