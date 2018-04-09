@@ -11,6 +11,9 @@ class CollectionReference extends Query {
   CollectionReference._(Firestore firestore, List<String> pathComponents)
       : super._(firestore: firestore, pathComponents: pathComponents);
 
+  /// ID of the referenced collection.
+  String get id => _pathComponents.isEmpty ? null : _pathComponents.last;
+
   /// For subcollections, parent returns the containing DocumentReference.
   ///
   /// For root collections, null is returned.
@@ -21,6 +24,10 @@ class CollectionReference extends Query {
     return new CollectionReference._(
         _firestore, (new List<String>.from(_pathComponents)..removeLast()));
   }
+
+  /// A string containing the slash-separated path to this  CollectionReference
+  /// (relative to the root of the database).
+  String get path => _path;
 
   /// Returns a `DocumentReference` with the provided path.
   ///
