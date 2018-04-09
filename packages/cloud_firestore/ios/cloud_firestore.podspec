@@ -20,6 +20,7 @@ Firestore plugin for Flutter.
   s.dependency 'Firebase/Core'
   s.dependency 'Firebase/Auth'
   s.dependency 'Firebase/Firestore'
+  s.dependency 'firebase_core'
   s.pod_target_xcconfig = {
    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/**',
    'OTHER_LDFLAGS' => '$(inherited) -undefined dynamic_lookup'

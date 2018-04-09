@@ -8,12 +8,15 @@ typedef Future<dynamic> TransactionHandler(Transaction transaction);
 
 class Transaction {
   int _transactionId;
+  Firestore _firestore;
 
-  Transaction(this._transactionId);
+  @visibleForTesting
+  Transaction(this._transactionId, this._firestore);
 
   Future<DocumentSnapshot> get(DocumentReference documentReference) async {
     final dynamic result = await Firestore.channel
         .invokeMethod('Transaction#get', <String, dynamic>{
+      'app': _firestore.app.name,
       'transactionId': _transactionId,
       'path': documentReference.path,
     });
@@ -28,6 +31,7 @@ class Transaction {
   Future<void> delete(DocumentReference documentReference) async {
     return Firestore.channel
         .invokeMethod('Transaction#delete', <String, dynamic>{
+      'app': _firestore.app.name,
       'transactionId': _transactionId,
       'path': documentReference.path,
     });
@@ -37,6 +41,7 @@ class Transaction {
       DocumentReference documentReference, Map<String, dynamic> data) async {
     return Firestore.channel
         .invokeMethod('Transaction#update', <String, dynamic>{
+      'app': _firestore.app.name,
       'transactionId': _transactionId,
       'path': documentReference.path,
       'data': data,
@@ -46,6 +51,7 @@ class Transaction {
   Future<void> set(
       DocumentReference documentReference, Map<String, dynamic> data) async {
     return Firestore.channel.invokeMethod('Transaction#set', <String, dynamic>{
+      'app': _firestore.app.name,
       'transactionId': _transactionId,
       'path': documentReference.path,
       'data': data,

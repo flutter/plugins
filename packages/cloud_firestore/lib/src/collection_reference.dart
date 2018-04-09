@@ -19,7 +19,9 @@ class CollectionReference extends Query {
       return null;
     }
     return new CollectionReference._(
-        _firestore, (new List<String>.from(_pathComponents)..removeLast()));
+      firestore,
+      (new List<String>.from(_pathComponents)..removeLast()),
+    );
   }
 
   /// Returns a `DocumentReference` with the provided path.
@@ -37,7 +39,7 @@ class CollectionReference extends Query {
       childPath = new List<String>.from(_pathComponents)
         ..addAll(path.split(('/')));
     }
-    return new DocumentReference._(_firestore, childPath);
+    return new DocumentReference._(firestore, childPath);
   }
 
   /// Returns a `DocumentReference` with an auto-generated ID, after

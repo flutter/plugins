@@ -24,7 +24,10 @@ class Firestore {
       <int, TransactionHandler>{};
   static int _transactionHandlerId = 0;
 
-  Firestore._() {
+  static bool _initialized = false;
+
+  Firestore({FirebaseApp app}) : this.app = app ?? FirebaseApp.instance {
+    if (_initialized) return;
     channel.setMethodCallHandler((MethodCall call) {
       if (call.method == 'QuerySnapshot') {
         final QuerySnapshot snapshot =
@@ -40,16 +43,26 @@ class Firestore {
       } else if (call.method == 'DoTransaction') {
         final int transactionId = call.arguments['transactionId'];
         return _transactionHandlers[transactionId](
-          new Transaction(transactionId),
+          new Transaction(transactionId, this),
         );
       }
     });
+    _initialized = true;
   }
 
-  static Firestore _instance = new Firestore._();
-
   /// Gets the instance of Firestore for the default Firebase app.
-  static Firestore get instance => _instance;
+  static final Firestore instance = new Firestore();
+
+  /// The [FirebaseApp] instance to which this [FirebaseDatabase] belongs.
+  ///
+  /// If null, the default [FirebaseApp] is used.
+  final FirebaseApp app;
+
+  @override
+  bool operator ==(dynamic o) => o is Firestore && o.app == app;
+
+  @override
+  int get hashCode => app.hashCode;
 
   /// Gets a [CollectionReference] for the specified Firestore path.
   CollectionReference collection(String path) {
@@ -68,7 +81,7 @@ class Firestore {
   ///
   /// Unlike transactions, write batches are persisted offline and therefore are
   /// preferable when you don’t need to condition your writes on read data.
-  WriteBatch batch() => new WriteBatch._();
+  WriteBatch batch() => new WriteBatch._(this);
 
   /// Executes the given TransactionHandler and then attempts to commit the
   /// changes applied within an atomic transaction.
@@ -98,8 +111,9 @@ class Firestore {
         'Transaction timeout must be more than 0 milliseconds');
     final int transactionId = _transactionHandlerId++;
     _transactionHandlers[transactionId] = transactionHandler;
-    final Map<dynamic, dynamic> result = await channel.invokeMethod(
-        'Firestore#runTransaction', <String, dynamic>{
+    final Map<dynamic, dynamic> result = await channel
+        .invokeMethod('Firestore#runTransaction', <String, dynamic>{
+      'app': app.name,
       'transactionId': transactionId,
       'transactionTimeout': timeout.inMilliseconds
     });
