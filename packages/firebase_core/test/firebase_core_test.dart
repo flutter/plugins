@@ -35,7 +35,19 @@ void main() {
             if (methodCall.arguments != 'testApp') return null;
             return <String, dynamic>{
               'name': 'testApp',
-              'options': testOptions.asMap,
+              'options': <String, dynamic>{
+                'APIKey': 'testAPIKey',
+                'bundleID': 'testBundleID',
+                'clientID': 'testClientID',
+                'trackingID': 'testTrackingID',
+                'GCMSenderID': 'testGCMSenderID',
+                'projectID': 'testProjectID',
+                'androidClientID': 'testAndroidClientID',
+                'googleAppID': 'testGoogleAppID',
+                'databaseURL': 'testDatabaseURL',
+                'deepLinkURLScheme': 'testDeepLinkURLScheme',
+                'storageBucket': 'testStorageBucket',
+              },
             };
           case 'FirebaseApp#allApps':
             return <Map<String, dynamic>>[
