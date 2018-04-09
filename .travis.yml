@@ -94,7 +94,8 @@ matrix:
       language: generic
       osx_image: xcode9.2
       before_script:
-        - brew install -v libimobiledevice
+        - brew update
+        - brew install libimobiledevice
         - brew install ideviceinstaller
         - brew install ios-deploy
         - pod repo update
