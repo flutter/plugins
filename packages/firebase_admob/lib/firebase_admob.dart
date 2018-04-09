@@ -466,7 +466,7 @@ class FirebaseAdMob {
 
   Future<dynamic> _handleMethod(MethodCall call) {
     assert(call.arguments is Map);
-    final Map<String, dynamic> argumentsMap = call.arguments;
+    final Map<dynamic, dynamic> argumentsMap = call.arguments;
     final RewardedVideoAdEvent rewardedEvent =
         _methodToRewardedVideoAdEvent[call.method];
     if (rewardedEvent != null) {
