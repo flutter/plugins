@@ -32,7 +32,7 @@ public class FirebaseCorePlugin implements MethodCallHandler {
     this.context = context;
   }
 
-  private Map appAsMap(FirebaseApp app) {
+  private Map asMap(FirebaseApp app) {
     Map<String, Object> appMap = new HashMap<>();
     appMap.put("name", app.getName());
     FirebaseOptions options = app.getOptions();
@@ -73,7 +73,7 @@ public class FirebaseCorePlugin implements MethodCallHandler {
         {
           List<Map<String, Object>> apps = new ArrayList<>();
           for (FirebaseApp app : FirebaseApp.getApps(context)) {
-            apps.add(appAsMap(app));
+            apps.add(asMap(app));
           }
           result.success(apps);
           break;
@@ -83,7 +83,7 @@ public class FirebaseCorePlugin implements MethodCallHandler {
           String name = (String) call.arguments();
           try {
             FirebaseApp app = FirebaseApp.getInstance(name);
-            result.success(appAsMap(app));
+            result.success(asMap(app));
           } catch (IllegalStateException ex) {
             result.success(null);
           }
