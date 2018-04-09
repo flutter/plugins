@@ -85,6 +85,7 @@ public class FirebaseCorePlugin implements MethodCallHandler {
             FirebaseApp app = FirebaseApp.getInstance(name);
             result.success(asMap(app));
           } catch (IllegalStateException ex) {
+            // App doesn't exist, so successfully return null.
             result.success(null);
           }
           break;
