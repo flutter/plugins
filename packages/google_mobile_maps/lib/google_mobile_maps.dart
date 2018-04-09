@@ -14,6 +14,7 @@ import 'package:flutter/services.dart';
 
 export 'dart:async';
 
+part 'src/bitmap.dart';
 part 'src/camera.dart';
 part 'src/controller.dart';
 part 'src/marker.dart';

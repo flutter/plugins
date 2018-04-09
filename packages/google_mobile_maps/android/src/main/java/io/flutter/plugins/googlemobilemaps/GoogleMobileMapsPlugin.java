@@ -24,15 +24,19 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
+import io.flutter.view.FlutterMain;
 import io.flutter.view.TextureRegistry;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -91,84 +95,96 @@ public class GoogleMobileMapsPlugin
         }
       case "moveCamera":
         {
-          final long id = ((Number) call.argument("id")).longValue();
+          final GoogleMapsEntry entry = mapsEntry(call);
           final CameraUpdate cameraUpdate = toCameraUpdate(call.argument("cameraUpdate"));
-          final GoogleMapsEntry entry = googleMaps.get(id);
-          if (entry == null) {
-            result.error("unknown", "Unknown ID " + id, null);
-          } else {
-            entry.moveCamera(cameraUpdate);
-            result.success(null);
-          }
+          entry.moveCamera(cameraUpdate);
+          result.success(null);
           break;
         }
       case "animateCamera":
         {
-          final long id = ((Number) call.argument("id")).longValue();
+          final GoogleMapsEntry entry = mapsEntry(call);
           final CameraUpdate cameraUpdate = toCameraUpdate(call.argument("cameraUpdate"));
-          final GoogleMapsEntry entry = googleMaps.get(id);
-          if (entry == null) {
-            result.error("unknown", "Unknown ID " + id, null);
-          } else {
-            entry.animateCamera(cameraUpdate);
-            result.success(null);
-          }
+          entry.animateCamera(cameraUpdate);
+          result.success(null);
           break;
         }
       case "addMarker":
         {
-          final long id = ((Number) call.argument("id")).longValue();
+          final GoogleMapsEntry entry = mapsEntry(call);
           final MarkerOptions markerOptions = toMarkerOptions(call.argument("markerOptions"));
-          final GoogleMapsEntry entry = googleMaps.get(id);
-          if (entry == null) {
-            result.error("unknown", "Unknown ID " + id, null);
-          } else {
-            entry.addMarker(markerOptions);
-            result.success(null);
-          }
+          final String markerId = entry.addMarker(markerOptions);
+          result.success(markerId);
+          break;
+        }
+      case "marker#remove":
+        {
+          final GoogleMapsEntry entry = mapsEntry(call);
+          final String markerId = call.argument("marker");
+          entry.removeMarker(markerId);
+          result.success(null);
+          break;
+        }
+      case "marker#hideInfoWindow":
+        {
+          final GoogleMapsEntry entry = mapsEntry(call);
+          final String markerId = call.argument("marker");
+          entry.hideMarkerInfoWindow(markerId);
+          result.success(null);
+          break;
+        }
+      case "marker#showInfoWindow":
+        {
+          final GoogleMapsEntry entry = mapsEntry(call);
+          final String markerId = call.argument("marker");
+          entry.showMarkerInfoWindow(markerId);
+          result.success(null);
+          break;
+        }
+      case "marker#update":
+        {
+          final GoogleMapsEntry entry = mapsEntry(call);
+          final String markerId = call.argument("marker");
+          final MarkerOptions markerOptions = toMarkerOptions(call.argument("markerOptions"));
+          entry.updateMarker(markerId, markerOptions);
+          result.success(null);
           break;
         }
       case "showMapOverlay":
         {
-          final long id = ((Number) call.argument("id")).longValue();
+          final GoogleMapsEntry entry = mapsEntry(call);
           final int x = ((Number) call.argument("x")).intValue();
           final int y = ((Number) call.argument("y")).intValue();
-          final GoogleMapsEntry entry = googleMaps.get(id);
-          if (entry == null) {
-            result.error("unknown", "Unknown ID " + id, null);
-          } else {
-            entry.showOverlay(x, y);
-            result.success(null);
-          }
+          entry.showOverlay(x, y);
+          result.success(null);
           break;
         }
       case "hideMapOverlay":
         {
-          final long id = ((Number) call.argument("id")).longValue();
-          final GoogleMapsEntry entry = googleMaps.get(id);
-          if (entry == null) {
-            result.error("unknown", "Unknown ID " + id, null);
-          } else {
-            entry.hideOverlay();
-            result.success(null);
-          }
+          final GoogleMapsEntry entry = mapsEntry(call);
+          entry.hideOverlay();
+          result.success(null);
           break;
         }
       case "disposeMap":
         {
-          final long id = ((Number) call.argument("id")).longValue();
-          final GoogleMapsEntry entry = googleMaps.get(id);
-          if (entry == null) {
-            result.error("unknown", "Unknown ID " + id, null);
-          } else {
-            entry.dispose();
-            result.success(null);
-          }
+          final GoogleMapsEntry entry = mapsEntry(call);
+          entry.dispose();
+          result.success(null);
           break;
         }
       default:
         result.notImplemented();
     }
+  }
+
+  private GoogleMapsEntry mapsEntry(MethodCall call) {
+    final long id = ((Number) call.argument("map")).longValue();
+    final GoogleMapsEntry entry = googleMaps.get(id);
+    if (entry == null) {
+      throw new IllegalArgumentException("Unknown map: " + id);
+    }
+    return entry;
   }
 
   private static LatLng toLatLng(Object o) {
@@ -180,6 +196,10 @@ public class GoogleMobileMapsPlugin
   private static LatLngBounds toLatLngBounds(Object o) {
     final List<?> data = (List<?>) o;
     return new LatLngBounds(toLatLng(data.get(0)), toLatLng(data.get(1)));
+  }
+
+  private static boolean toBoolean(Object o) {
+    return (Boolean) o;
   }
 
   private static float toFloat(Object o) {
@@ -199,9 +219,21 @@ public class GoogleMobileMapsPlugin
   private static MarkerOptions toMarkerOptions(Object o) {
     @SuppressWarnings("unchecked")
     final Map<String, Object> data = (Map<String, Object>) o;
-    final MarkerOptions markerOptions = new MarkerOptions();
-    markerOptions.position(toLatLng(data.get("position")));
-    return markerOptions;
+    final List<?> anchor = (List<?>) data.get("anchor");
+    final List<?> infoWindowAnchor = (List<?>) data.get("infoWindowAnchor");
+    return new MarkerOptions()
+            .position(toLatLng(data.get("position")))
+            .alpha(toFloat(data.get("alpha")))
+            .anchor(toFloat(anchor.get(0)), toFloat(anchor.get(1)))
+            .draggable(toBoolean(data.get("draggable")))
+            .flat(toBoolean(data.get("flat")))
+            .icon(toBitmapDescriptor(data.get("icon")))
+            .infoWindowAnchor(toFloat(infoWindowAnchor.get(0)), toFloat(infoWindowAnchor.get(1)))
+            .rotation(toFloat(data.get("rotation")))
+            .snippet((String) data.get("snippet"))
+            .title((String) data.get("title"))
+            .visible(toBoolean(data.get("visible")))
+            .zIndex(toFloat(data.get("zIndex")));
   }
 
   private static CameraPosition toCameraPosition(Object o) {
@@ -214,6 +246,30 @@ public class GoogleMobileMapsPlugin
     builder.zoom(toFloat(data.get("zoom")));
     return builder.build();
   }
+
+  private static BitmapDescriptor toBitmapDescriptor(Object o) {
+    @SuppressWarnings("unchecked")
+    final List<Object> data = (List<Object>) o;
+    switch ((String) data.get(0)) {
+      case "defaultMarker":
+        if (data.size() == 1) {
+          return BitmapDescriptorFactory.defaultMarker();
+        } else {
+          return BitmapDescriptorFactory.defaultMarker(toFloat(data.get(1)));
+        }
+      case "fromAsset":
+        if (data.size() == 2) {
+          return BitmapDescriptorFactory.fromAsset(FlutterMain.getLookupKeyForAsset((String) data.get(1)));
+        } else {
+          return BitmapDescriptorFactory.fromAsset(FlutterMain.getLookupKeyForAsset((String) data.get(1), (String) data.get(2)));
+        }
+      case "fromFile":
+        return BitmapDescriptorFactory.fromFile((String) data.get(1));
+      case "fromPath":
+        return BitmapDescriptorFactory.fromPath((String) data.get(1));
+    }
+    throw new IllegalArgumentException("Cannot interpret " + o + " as BitmapDescriptor");
+}
 
   private static CameraUpdate toCameraUpdate(Object o) {
     @SuppressWarnings("unchecked")
@@ -295,6 +351,7 @@ final class GoogleMapsEntry
   private final int height;
   private final Result result;
   private final Timer timer;
+  private final Map<String, Marker> markers;
   private GoogleMap googleMap;
   private Surface surface;
   private boolean disposed = false;
@@ -313,6 +370,7 @@ final class GoogleMapsEntry
     textureEntry.surfaceTexture().setDefaultBufferSize(width, height);
     this.mapView = new MapView(registrar.activity());
     this.timer = new Timer();
+    this.markers = new HashMap<>();
   }
 
   void init() {
@@ -373,16 +431,57 @@ final class GoogleMapsEntry
     parent.addView(mapView, 0);
   }
 
-  void moveCamera(final CameraUpdate cameraUpdate) {
+  void moveCamera(CameraUpdate cameraUpdate) {
     googleMap.moveCamera(cameraUpdate);
   }
 
-  void animateCamera(final CameraUpdate cameraUpdate) {
+  void animateCamera(CameraUpdate cameraUpdate) {
     googleMap.animateCamera(cameraUpdate);
   }
 
-  void addMarker(final MarkerOptions options) {
-    googleMap.addMarker(options);
+  String addMarker(MarkerOptions options) {
+    final Marker marker = googleMap.addMarker(options);
+    markers.put(marker.getId(), marker);
+    return marker.getId();
+  }
+
+  void removeMarker(String markerId) {
+    final Marker marker = marker(markerId);
+    marker.remove();
+  }
+
+  void showMarkerInfoWindow(String markerId) {
+    final Marker marker = marker(markerId);
+    marker.showInfoWindow();
+  }
+
+  void hideMarkerInfoWindow(String markerId) {
+    final Marker marker = marker(markerId);
+    marker.hideInfoWindow();
+  }
+
+  void updateMarker(String markerId, MarkerOptions options) {
+    final Marker marker = marker(markerId);
+    marker.setPosition(options.getPosition());
+    marker.setAlpha(options.getAlpha());
+    marker.setAnchor(options.getAnchorU(), options.getAnchorV());
+    marker.setDraggable(options.isDraggable());
+    marker.setFlat(options.isFlat());
+    marker.setIcon(options.getIcon());
+    marker.setInfoWindowAnchor(options.getInfoWindowAnchorU(), options.getInfoWindowAnchorV());
+    marker.setRotation(options.getRotation());
+    marker.setSnippet(options.getSnippet());
+    marker.setTitle(options.getTitle());
+    marker.setVisible(options.isVisible());
+    marker.setZIndex(options.getZIndex());
+  }
+
+  private Marker marker(String markerId) {
+    final Marker marker = markers.get(markerId);
+    if (marker == null) {
+      throw new IllegalArgumentException("Unknown marker: " + markerId);
+    }
+    return marker;
   }
 
   private void updateTexture() {
