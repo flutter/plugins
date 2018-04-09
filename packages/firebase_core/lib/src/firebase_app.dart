@@ -8,7 +8,7 @@ class FirebaseApp {
   @visibleForTesting
   const FirebaseApp({@required this.name}) : assert(name != null);
 
-  /// Gets the name of this app.
+  /// The name of this app.
   final String name;
 
   static final String defaultAppName =
@@ -19,7 +19,7 @@ class FirebaseApp {
     'plugins.flutter.io/firebase_core',
   );
 
-  /// Gets a copy of the options for this app. These are non-modifiable.
+  /// A copy of the options for this app. These are non-modifiable.
   ///
   /// This getter is asynchronous because apps can also be configured by native
   /// code.
@@ -68,7 +68,7 @@ class FirebaseApp {
     }
     await channel.invokeMethod(
       'FirebaseApp#configure',
-      <String, dynamic>{'name': name, 'options': options?.asMap},
+      <String, dynamic>{'name': name, 'options': options.asMap},
     );
     return new FirebaseApp(name: name);
   }

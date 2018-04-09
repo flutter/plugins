@@ -33,9 +33,9 @@ void main() {
         switch (methodCall.method) {
           case 'FirebaseApp#appNamed':
             if (methodCall.arguments != 'testApp') return null;
-            return <String, dynamic>{
+            return <dynamic, dynamic>{
               'name': 'testApp',
-              'options': <String, dynamic>{
+              'options': <dynamic, dynamic>{
                 'APIKey': 'testAPIKey',
                 'bundleID': 'testBundleID',
                 'clientID': 'testClientID',
@@ -50,8 +50,8 @@ void main() {
               },
             };
           case 'FirebaseApp#allApps':
-            return <Map<String, dynamic>>[
-              <String, dynamic>{
+            return <Map<dynamic, dynamic>>[
+              <dynamic, dynamic>{
                 'name': 'testApp',
               },
             ];
