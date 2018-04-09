@@ -41,7 +41,7 @@ public class VideoPlayerPlugin implements MethodCallHandler {
       this.mediaPlayer = new MediaPlayer();
       this.textureEntry = textureEntry;
       try {
-        mediaPlayer.setDataSource(afd);
+        mediaPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
         setupVideoPlayer(eventChannel, textureEntry, mediaPlayer, result);
       } catch (IOException e) {
         result.error("VideoError", "IOError when initializing video player " + e.toString(), null);
@@ -238,11 +238,15 @@ public class VideoPlayerPlugin implements MethodCallHandler {
           VideoPlayer player;
           if (call.argument("asset") != null) {
             try {
-              AssetFileDescriptor fd =
-                  registrar
-                      .context()
-                      .getAssets()
-                      .openFd(registrar.lookupKeyForAsset((String) call.argument("asset")));
+              String assetLookupKey;
+              if (call.argument("package") != null) {
+                assetLookupKey =
+                    registrar.lookupKeyForAsset(
+                        (String) call.argument("asset"), (String) call.argument("package"));
+              } else {
+                assetLookupKey = registrar.lookupKeyForAsset((String) call.argument("asset"));
+              }
+              AssetFileDescriptor fd = registrar.context().getAssets().openFd(assetLookupKey);
               player = new VideoPlayer(eventChannel, handle, fd, result);
               videoPlayers.put(handle.id(), player);
             } catch (IOException e) {

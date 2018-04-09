@@ -26,9 +26,7 @@ class Query {
   final List<String> _pathComponents;
   final Map<String, dynamic> _parameters;
 
-  /// A string containing the slash-separated path to this Query (relative to
-  /// the root of the database).
-  String get path => _pathComponents.join('/');
+  String get _path => _pathComponents.join('/');
 
   Query _copyWithParameters(Map<String, dynamic> parameters) {
     return new Query._(
@@ -43,7 +41,7 @@ class Query {
   Map<String, dynamic> buildArguments() {
     return new Map<String, dynamic>.from(_parameters)
       ..addAll(<String, dynamic>{
-        'path': path,
+        'path': _path,
       });
   }
 
@@ -60,7 +58,7 @@ class Query {
           'Query#addSnapshotListener',
           <String, dynamic>{
             'app': firestore.app.name,
-            'path': path,
+            'path': _path,
             'parameters': _parameters,
           },
         ).then<int>((dynamic result) => result);
@@ -87,7 +85,7 @@ class Query {
       'Query#getDocuments',
       <String, dynamic>{
         'app': firestore.app.name,
-        'path': path,
+        'path': _path,
         'parameters': _parameters,
       },
     );

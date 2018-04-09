@@ -53,6 +53,45 @@ void main() {
       });
     });
 
+    group('getDownloadUrl', () {
+      const MethodChannel channel = const MethodChannel(
+        'firebase_storage',
+      );
+
+      final List<MethodCall> log = <MethodCall>[];
+
+      StorageReference ref;
+
+      setUp(() {
+        channel.setMockMethodCallHandler((MethodCall methodCall) async {
+          log.add(methodCall);
+          return 'https://path/to/file';
+        });
+        ref = FirebaseStorage.instance
+            .ref()
+            .child('avatars')
+            .child('large')
+            .child('image.jpg');
+      });
+
+      test('invokes correct method', () async {
+        await ref.getDownloadURL();
+
+        expect(log, <Matcher>[
+          isMethodCall(
+            'StorageReference#getDownloadUrl',
+            arguments: <String, dynamic>{
+              'path': 'avatars/large/image.jpg',
+            },
+          ),
+        ]);
+      });
+
+      test('returns correct result', () async {
+        expect(await ref.getDownloadURL(), 'https://path/to/file');
+      });
+    });
+
     group('delete', () {
       const MethodChannel channel = const MethodChannel(
         'firebase_storage',

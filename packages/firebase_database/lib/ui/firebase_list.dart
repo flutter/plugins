@@ -4,7 +4,7 @@
 
 import 'dart:collection';
 
-import 'package:meta/meta.dart';
+import 'package:flutter/foundation.dart';
 
 import '../firebase_database.dart'
     show DatabaseError, DataSnapshot, Event, Query;
@@ -85,7 +85,6 @@ class FirebaseList extends ListBase<DataSnapshot>
 
   int _indexForKey(String key) {
     assert(key != null);
-    // TODO(jackson): We could binary search since the list is already sorted.
     for (int index = 0; index < _snapshots.length; index++) {
       if (key == _snapshots[index].key) {
         return index;

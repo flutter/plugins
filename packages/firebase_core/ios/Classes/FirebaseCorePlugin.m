@@ -1,3 +1,7 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 #import "FirebaseCorePlugin.h"
 
 #import <Firebase/Firebase.h>
@@ -7,7 +11,7 @@
 @end
 
 @implementation FIROptions (FLTFirebaseCorePlugin)
-- (NSDictionary *)dictionary {
+- (NSDictionary *)flutterDictionary {
   return @{
     @"googleAppID" : self.googleAppID ?: [NSNull null],
     @"bundleID" : self.bundleID ?: [NSNull null],
@@ -20,6 +24,15 @@
     @"databaseUrl" : self.databaseURL ?: [NSNull null],
     @"storageBucket" : self.storageBucket ?: [NSNull null],
     @"deepLinkURLScheme" : self.deepLinkURLScheme ?: [NSNull null],
+  };
+}
+@end
+
+@implementation FIRApp (FLTFirebaseCorePlugin)
+- (NSDictionary *)flutterDictionary {
+  return @{
+    @"name" : self.name,
+    @"options" : self.options.flutterDictionary,
   };
 }
 @end
@@ -58,20 +71,20 @@
       options.storageBucket = optionsDictionary[@"storageBucket"];
     if (![optionsDictionary[@"deepLinkURLScheme"] isEqual:[NSNull null]])
       options.deepLinkURLScheme = optionsDictionary[@"deepLinkURLScheme"];
-    if (![name isEqual:[NSNull null]]) {
-      [FIRApp configureWithName:name options:options];
-    } else {
-      [FIRApp configureWithOptions:options];
-    }
+    [FIRApp configureWithName:name options:options];
     result(nil);
   } else if ([@"FirebaseApp#allApps" isEqualToString:call.method]) {
     NSDictionary<NSString *, FIRApp *> *allApps = [FIRApp allApps];
     NSMutableArray *appsList = [NSMutableArray array];
     for (NSString *name in allApps) {
       FIRApp *app = allApps[name];
-      [appsList addObject:@{@"name" : app.name, @"options" : app.options.dictionary}];
+      [appsList addObject:app.flutterDictionary];
     }
     result(appsList.count > 0 ? appsList : nil);
+  } else if ([@"FirebaseApp#appNamed" isEqualToString:call.method]) {
+    NSString *name = call.arguments;
+    FIRApp *app = [FIRApp appNamed:name];
+    result(app.flutterDictionary);
   } else {
     result(FlutterMethodNotImplemented);
   }

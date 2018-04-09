@@ -1,6 +1,13 @@
-## 0.4.1
+## 0.5.1
 
-* Support for multiple Firebase apps
+* Expose the Firebase app corresponding to a Firestore
+* Expose a constructor for a Firestore with a non-default Firebase app
+
+## 0.5.0
+
+* **Breaking change**. Move path getter to CollectionReference
+* Add id getter to CollectionReference
+>>>>>>> 989ebbf4cd2e45980068c05d0c246bee52245faa
 
 ## 0.4.0
 

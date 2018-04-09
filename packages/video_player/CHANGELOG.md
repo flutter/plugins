@@ -1,3 +1,7 @@
+## 0.4.1
+
+* Updated Flutter SDK constraint to reflect the changes in v0.4.0.
+
 ## 0.4.0
 
 * **Breaking change**. Removed the `VideoPlayerController` constructor
