@@ -1,3 +1,8 @@
+## 0.5.0
+
+* **Breaking change**. Move path getter to CollectionReference
+* Add id getter to CollectionReference
+
 ## 0.4.0
 
 * **Breaking change**. Hide Firestore codec class from public API.
