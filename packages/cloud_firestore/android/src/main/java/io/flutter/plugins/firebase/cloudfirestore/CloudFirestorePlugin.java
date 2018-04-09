@@ -580,7 +580,6 @@ final class FirestoreMessageCodec extends StandardMessageCodec {
       writeDouble(stream, ((GeoPoint) value).getLongitude());
     } else if (value instanceof DocumentReference) {
       stream.write(DOCUMENT_REFERENCE);
-      // TODO(jackson): Null checking
       writeBytes(
           stream, ((DocumentReference) value).getFirestore().getApp().getName().getBytes(UTF8));
       writeBytes(stream, ((DocumentReference) value).getPath().getBytes(UTF8));
