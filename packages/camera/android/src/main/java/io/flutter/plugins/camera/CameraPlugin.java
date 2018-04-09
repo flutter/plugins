@@ -22,7 +22,7 @@ import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.util.Log;
+import android.support.annotation.Nullable;
 import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.Surface;
@@ -250,7 +250,7 @@ public class CameraPlugin implements MethodCallHandler {
     private MediaRecorder mediaRecorder;
     private boolean recordingVideo;
 
-    Camera(final String cameraName, final String resolutionPreset, final Result result) {
+    Camera(final String cameraName, final String resolutionPreset, @NonNull final Result result) {
 
       this.cameraName = cameraName;
       textureEntry = view.createSurfaceTexture();
@@ -294,18 +294,14 @@ public class CameraPlugin implements MethodCallHandler {
               public void run() {
                 cameraPermissionContinuation = null;
                 if (!hasCameraPermission()) {
-                  if (result != null) {
-                    result.error(
-                        "cameraPermission", "MediaRecorderCamera permission not granted", null);
-                    return;
-                  }
+                  result.error(
+                      "cameraPermission", "MediaRecorderCamera permission not granted", null);
+                  return;
                 }
                 if (!hasAudioPermission()) {
-                  if (result != null) {
-                    result.error(
+                  result.error(
                         "cameraPermission", "MediaRecorderAudio permission not granted", null);
-                    return;
-                  }
+                  return;
                 }
                 open(result);
               }
@@ -423,7 +419,7 @@ public class CameraPlugin implements MethodCallHandler {
       mediaRecorder.prepare();
     }
 
-    private void open(final Result result) {
+    private void open(@Nullable final Result result) {
       if (!hasCameraPermission()) {
         if (result != null) result.error("cameraPermission", "Camera permission not granted", null);
       } else {
@@ -442,10 +438,8 @@ public class CameraPlugin implements MethodCallHandler {
                     startPreview();
                   } catch (CameraAccessException e) {
                     if (result != null) result.error("CameraAccess", e.getMessage(), null);
-                    e.printStackTrace();
                   } catch (CameraException e) {
                     if (result != null) result.error("CameraException", e.getMessage(), null);
-                    e.printStackTrace();
                   }
 
                   if (result != null) {
@@ -471,19 +465,13 @@ public class CameraPlugin implements MethodCallHandler {
                 public void onDisconnected(@NonNull CameraDevice cameraDevice) {
                   cameraDevice.close();
                   Camera.this.cameraDevice = null;
-                  if (eventSink != null) {
-                    Map<String, String> event = new HashMap<>();
-                    event.put("eventType", "error");
-                    event.put("errorDescription", "The camera was disconnected");
-                    eventSink.success(event);
-                  }
+                  sendErrorEvent("The camera was disconnected.");
                 }
 
                 @Override
                 public void onError(@NonNull CameraDevice cameraDevice, int errorCode) {
                   cameraDevice.close();
                   Camera.this.cameraDevice = null;
-                  if (eventSink != null) {
                     String errorDescription;
                     switch (errorCode) {
                       case ERROR_CAMERA_IN_USE:
@@ -505,17 +493,12 @@ public class CameraPlugin implements MethodCallHandler {
                       default:
                         errorDescription = "Unknown camera error";
                     }
-                    Map<String, String> event = new HashMap<>();
-                    event.put("eventType", "error");
-                    event.put("errorDescription", errorDescription);
-                    eventSink.success(event);
-                  }
+                    sendErrorEvent(errorDescription);
                 }
               },
               null);
         } catch (CameraAccessException e) {
           if (result != null) result.error("cameraAccess", e.getMessage(), null);
-          e.printStackTrace();
         }
       }
     }
@@ -528,7 +511,7 @@ public class CameraPlugin implements MethodCallHandler {
       }
     }
 
-    private void takePicture(String filePath, final Result result) {
+    private void takePicture(String filePath, @NonNull final Result result) {
       final File file = new File(filePath);
 
       imageReader.setOnImageAvailableListener(
@@ -584,7 +567,7 @@ public class CameraPlugin implements MethodCallHandler {
       }
     }
 
-    private void startVideoRecording(String filePath, final Result result) {
+    private void startVideoRecording(String filePath, @NonNull final Result result) {
       if (cameraDevice == null) {
         result.error("configureFailed", "Camera was closed during configuration.", null);
         return;
@@ -642,7 +625,7 @@ public class CameraPlugin implements MethodCallHandler {
       }
     }
 
-    private void stopVideoRecording(final Result result) {
+    private void stopVideoRecording(@NonNull final Result result) {
       if (!recordingVideo) {
         result.success("The video was not recording, nothing to stop.");
         return;
@@ -680,26 +663,36 @@ public class CameraPlugin implements MethodCallHandler {
 
             @Override
             public void onConfigured(@NonNull CameraCaptureSession session) {
+              if (cameraDevice == null) {
+                sendErrorEvent("The camera was closed during configuration.");
+                return;
+              }
               try {
-                if (cameraDevice == null) {
-                  Log.e(TAG, "onConfigured: Camera was closed during configuration.");
-                  return;
-                }
                 cameraCaptureSession = session;
                 captureRequestBuilder.set(
                     CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
                 cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
               } catch (CameraAccessException e) {
-                e.printStackTrace();
+                sendErrorEvent(e.getMessage());
               }
             }
 
             @Override
             public void onConfigureFailed(@NonNull CameraCaptureSession cameraCaptureSession) {
-              Log.e(TAG, "onConfigureFailed: Failed to configure camera for preview.");
+              sendErrorEvent("Failed to configure the camera for preview.");
             }
           },
           null);
+    }
+
+    private void sendErrorEvent(String errorDescription)
+    {
+      if (eventSink != null) {
+        Map<String, String> event = new HashMap<>();
+        event.put("eventType", "error");
+        event.put("errorDescription", errorDescription);
+        eventSink.success(event);
+      }
     }
 
     private void closeCaptureSession() {
