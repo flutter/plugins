@@ -222,18 +222,18 @@ public class GoogleMobileMapsPlugin
     final List<?> anchor = (List<?>) data.get("anchor");
     final List<?> infoWindowAnchor = (List<?>) data.get("infoWindowAnchor");
     return new MarkerOptions()
-            .position(toLatLng(data.get("position")))
-            .alpha(toFloat(data.get("alpha")))
-            .anchor(toFloat(anchor.get(0)), toFloat(anchor.get(1)))
-            .draggable(toBoolean(data.get("draggable")))
-            .flat(toBoolean(data.get("flat")))
-            .icon(toBitmapDescriptor(data.get("icon")))
-            .infoWindowAnchor(toFloat(infoWindowAnchor.get(0)), toFloat(infoWindowAnchor.get(1)))
-            .rotation(toFloat(data.get("rotation")))
-            .snippet((String) data.get("snippet"))
-            .title((String) data.get("title"))
-            .visible(toBoolean(data.get("visible")))
-            .zIndex(toFloat(data.get("zIndex")));
+        .position(toLatLng(data.get("position")))
+        .alpha(toFloat(data.get("alpha")))
+        .anchor(toFloat(anchor.get(0)), toFloat(anchor.get(1)))
+        .draggable(toBoolean(data.get("draggable")))
+        .flat(toBoolean(data.get("flat")))
+        .icon(toBitmapDescriptor(data.get("icon")))
+        .infoWindowAnchor(toFloat(infoWindowAnchor.get(0)), toFloat(infoWindowAnchor.get(1)))
+        .rotation(toFloat(data.get("rotation")))
+        .snippet((String) data.get("snippet"))
+        .title((String) data.get("title"))
+        .visible(toBoolean(data.get("visible")))
+        .zIndex(toFloat(data.get("zIndex")));
   }
 
   private static CameraPosition toCameraPosition(Object o) {
@@ -259,9 +259,11 @@ public class GoogleMobileMapsPlugin
         }
       case "fromAsset":
         if (data.size() == 2) {
-          return BitmapDescriptorFactory.fromAsset(FlutterMain.getLookupKeyForAsset((String) data.get(1)));
+          return BitmapDescriptorFactory.fromAsset(
+              FlutterMain.getLookupKeyForAsset((String) data.get(1)));
         } else {
-          return BitmapDescriptorFactory.fromAsset(FlutterMain.getLookupKeyForAsset((String) data.get(1), (String) data.get(2)));
+          return BitmapDescriptorFactory.fromAsset(
+              FlutterMain.getLookupKeyForAsset((String) data.get(1), (String) data.get(2)));
         }
       case "fromFile":
         return BitmapDescriptorFactory.fromFile((String) data.get(1));
@@ -269,7 +271,7 @@ public class GoogleMobileMapsPlugin
         return BitmapDescriptorFactory.fromPath((String) data.get(1));
     }
     throw new IllegalArgumentException("Cannot interpret " + o + " as BitmapDescriptor");
-}
+  }
 
   private static CameraUpdate toCameraUpdate(Object o) {
     @SuppressWarnings("unchecked")

@@ -11,7 +11,7 @@ class MoveCameraPage extends Page {
   MoveCameraPage() : super(new Icon(Icons.map), "Camera control", "Move");
 
   final GoogleMapsOverlayController controller =
-  new GoogleMapsOverlayController.fromSize(300.0, 200.0);
+      new GoogleMapsOverlayController.fromSize(300.0, 200.0);
 
   @override
   PlatformOverlayController get overlayController =>
