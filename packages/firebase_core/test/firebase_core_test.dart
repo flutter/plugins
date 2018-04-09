@@ -11,7 +11,6 @@ void main() {
     final List<MethodCall> log = <MethodCall>[];
     const FirebaseApp testApp = const FirebaseApp(
       name: 'testApp',
-      options: const FirebaseOptions(googleAppID: '12345'),
     );
 
     setUp(() async {
@@ -19,11 +18,18 @@ void main() {
           .setMockMethodCallHandler((MethodCall methodCall) async {
         log.add(methodCall);
         switch (methodCall.method) {
+          case 'FirebaseApp#appNamed':
+            if (methodCall.arguments != testApp.name) return null;
+            return <String, dynamic>{
+              'name': testApp.name,
+              'options': <String, dynamic>{
+                'googleAppID': '12345',
+              },
+            };
           case 'FirebaseApp#allApps':
             return <Map<String, dynamic>>[
               <String, dynamic>{
                 'name': testApp.name,
-                'options': testApp.options.asMap,
               },
             ];
           default:
@@ -48,13 +54,10 @@ void main() {
         deepLinkURLScheme: 'testDeepLinkURLScheme',
         storageBucket: 'testStorageBucket',
       );
-      final FirebaseApp app = await FirebaseApp.configure(
+      await FirebaseApp.configure(
         name: name,
         options: options,
       );
-      expect(app.name, equals(name));
-      expect(app.options, equals(options));
-      expect(app, equals(new FirebaseApp.named(app.name)));
       expect(
         log,
         <Matcher>[
@@ -64,6 +67,27 @@ void main() {
               'name': name,
               'options': options.asMap,
             },
+          ),
+        ],
+      );
+    });
+
+    test('appNamed', () async {
+      final FirebaseApp existingApp = await FirebaseApp.appNamed(testApp.name);
+      expect(existingApp.name, equals(testApp.name));
+      expect((await existingApp.options).googleAppID, equals('12345'));
+      final FirebaseApp missingApp = await FirebaseApp.appNamed('missing');
+      expect(missingApp, isNull);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'FirebaseApp#appNamed',
+            arguments: testApp.name,
+          ),
+          isMethodCall(
+            'FirebaseApp#appNamed',
+            arguments: 'missing',
           ),
         ],
       );
