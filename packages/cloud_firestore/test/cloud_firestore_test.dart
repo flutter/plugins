@@ -188,10 +188,12 @@ void main() {
     });
 
     group('CollectionsReference', () {
-      test('path', () async {
+      test('id', () async {
         expect(collectionReference.id, equals('foo'));
-        expect(collectionReference.path, equals('foo'));
         expect(collectionReference.parent().id, isNull);
+      });
+      test('path', () async {
+        expect(collectionReference.path, equals('foo'));
         expect(collectionReference.parent().path, equals(''));
       });
       test('listen', () async {
