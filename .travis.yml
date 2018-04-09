@@ -95,6 +95,7 @@ matrix:
       osx_image: xcode9.2
       before_script:
         - brew update
+        - brew unlink python
         - brew install --HEAD libimobiledevice
         - brew install ideviceinstaller
         - brew install ios-deploy
