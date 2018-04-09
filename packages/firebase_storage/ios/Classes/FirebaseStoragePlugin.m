@@ -44,6 +44,8 @@
     [self putFile:call result:result];
   } else if ([@"StorageReference#getData" isEqualToString:call.method]) {
     [self getData:call result:result];
+  } else if ([@"StorageReference#getDownloadUrl" isEqualToString:call.method]) {
+    [self getDownloadUrl:call result:result];
   } else if ([@"StorageReference#delete" isEqualToString:call.method]) {
     [self delete:call result:result];
   } else {
@@ -88,6 +90,18 @@
                   [FlutterStandardTypedData typedDataWithBytes:data];
               result(dartData);
             }];
+}
+
+- (void)getDownloadUrl:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSString *path = call.arguments[@"path"];
+  FIRStorageReference *ref = [[FIRStorage storage].reference child:path];
+  [ref downloadURLWithCompletion:^(NSURL *URL, NSError *error) {
+    if (error != nil) {
+      result(error.flutterError);
+    } else {
+      result(URL.absoluteString);
+    }
+  }];
 }
 
 - (void) delete:(FlutterMethodCall *)call result:(FlutterResult)result {
