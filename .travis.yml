@@ -96,6 +96,7 @@ matrix:
       before_script:
         - brew update
         - brew unlink python
+        - brew install python@2
         - brew install --HEAD libimobiledevice
         - brew install ideviceinstaller
         - brew install ios-deploy
