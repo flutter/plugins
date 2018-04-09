@@ -51,7 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
           future: _imageFile,
           builder: (BuildContext context, AsyncSnapshot<File> snapshot) {
             if (snapshot.connectionState == ConnectionState.done &&
-                snapshot.error == null) {
+                snapshot.data != null) {
               return new Image.file(snapshot.data);
             } else if (snapshot.error != null) {
               return const Text('error picking image.');

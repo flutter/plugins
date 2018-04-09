@@ -1,3 +1,10 @@
+## 0.4.0
+
+* **Breaking change**. Removed the `VideoPlayerController` constructor
+* Added two new factory constructors `VideoPlayerController.asset` and
+  `VideoPlayerController.network` to respectively play a video from the
+  Flutter assets and from a network uri.
+
 ## 0.3.0
 
 * **Breaking change**. Set SDK constraints to match the Flutter beta release.
