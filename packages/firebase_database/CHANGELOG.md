@@ -1,3 +1,8 @@
+## 0.4.2
+
+* Updated `firebase_core` dependency.
+* Removed `meta` dependency.
+
 ## 0.4.1
 
 * Fixes Dart 2 runtime cast error.
