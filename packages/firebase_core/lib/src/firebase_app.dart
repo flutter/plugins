@@ -64,7 +64,7 @@ class FirebaseApp {
     final FirebaseApp existingApp = await FirebaseApp.appNamed(name);
     if (existingApp != null) {
       assert(await existingApp.options == options);
-      return;
+      return existingApp;
     }
     await channel.invokeMethod(
       'FirebaseApp#configure',

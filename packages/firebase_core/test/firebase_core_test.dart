@@ -12,6 +12,19 @@ void main() {
     const FirebaseApp testApp = const FirebaseApp(
       name: 'testApp',
     );
+    const FirebaseOptions testOptions = const FirebaseOptions(
+      apiKey: 'testAPIKey',
+      bundleID: 'testBundleID',
+      clientID: 'testClientID',
+      trackingID: 'testTrackingID',
+      gcmSenderID: 'testGCMSenderID',
+      projectID: 'testProjectID',
+      androidClientID: 'testAndroidClientID',
+      googleAppID: 'testGoogleAppID',
+      databaseURL: 'testDatabaseURL',
+      deepLinkURLScheme: 'testDeepLinkURLScheme',
+      storageBucket: 'testStorageBucket',
+    );
 
     setUp(() async {
       FirebaseApp.channel
@@ -19,17 +32,15 @@ void main() {
         log.add(methodCall);
         switch (methodCall.method) {
           case 'FirebaseApp#appNamed':
-            if (methodCall.arguments != testApp.name) return null;
+            if (methodCall.arguments != 'testApp') return null;
             return <String, dynamic>{
-              'name': testApp.name,
-              'options': <String, dynamic>{
-                'googleAppID': '12345',
-              },
+              'name': 'testApp',
+              'options': testOptions.asMap,
             };
           case 'FirebaseApp#allApps':
             return <Map<String, dynamic>>[
               <String, dynamic>{
-                'name': testApp.name,
+                'name': 'testApp',
               },
             ];
           default:
@@ -40,32 +51,36 @@ void main() {
     });
 
     test('configure', () async {
-      final String name = 'configuredApp';
-      const FirebaseOptions options = const FirebaseOptions(
-        apiKey: 'testAPIKey',
-        bundleID: 'testBundleID',
-        clientID: 'testClientID',
-        trackingID: 'testTrackingID',
-        gcmSenderID: 'testGCMSenderID',
-        projectID: 'testProjectID',
-        androidClientID: 'testAndroidClientID',
-        googleAppID: 'testGoogleAppID',
-        databaseURL: 'testDatabaseURL',
-        deepLinkURLScheme: 'testDeepLinkURLScheme',
-        storageBucket: 'testStorageBucket',
+      final FirebaseApp reconfiguredApp = await FirebaseApp.configure(
+        name: 'testApp',
+        options: testOptions,
       );
-      await FirebaseApp.configure(
-        name: name,
-        options: options,
+      expect(reconfiguredApp, equals(testApp));
+      final FirebaseApp newApp = await FirebaseApp.configure(
+        name: 'newApp',
+        options: testOptions,
       );
+      expect(newApp.name, equals('newApp'));
       expect(
         log,
         <Matcher>[
           isMethodCall(
+            'FirebaseApp#appNamed',
+            arguments: 'testApp',
+          ),
+          isMethodCall(
+            'FirebaseApp#appNamed',
+            arguments: 'testApp',
+          ),
+          isMethodCall(
+            'FirebaseApp#appNamed',
+            arguments: 'newApp',
+          ),
+          isMethodCall(
             'FirebaseApp#configure',
             arguments: <String, dynamic>{
-              'name': name,
-              'options': options.asMap,
+              'name': 'newApp',
+              'options': testOptions.asMap,
             },
           ),
         ],
@@ -73,21 +88,25 @@ void main() {
     });
 
     test('appNamed', () async {
-      final FirebaseApp existingApp = await FirebaseApp.appNamed(testApp.name);
-      expect(existingApp.name, equals(testApp.name));
-      expect((await existingApp.options).googleAppID, equals('12345'));
-      final FirebaseApp missingApp = await FirebaseApp.appNamed('missing');
+      final FirebaseApp existingApp = await FirebaseApp.appNamed('testApp');
+      expect(existingApp.name, equals('testApp'));
+      expect((await existingApp.options), equals(testOptions));
+      final FirebaseApp missingApp = await FirebaseApp.appNamed('missingApp');
       expect(missingApp, isNull);
       expect(
         log,
         <Matcher>[
           isMethodCall(
             'FirebaseApp#appNamed',
-            arguments: testApp.name,
+            arguments: 'testApp',
           ),
           isMethodCall(
             'FirebaseApp#appNamed',
-            arguments: 'missing',
+            arguments: 'testApp',
+          ),
+          isMethodCall(
+            'FirebaseApp#appNamed',
+            arguments: 'missingApp',
           ),
         ],
       );
