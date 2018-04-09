@@ -32,6 +32,21 @@ public class FirebaseCorePlugin implements MethodCallHandler {
     this.context = context;
   }
 
+  private Map asMap(FirebaseApp app) {
+    Map<String, Object> appMap = new HashMap<>();
+    appMap.put("name", app.getName());
+    FirebaseOptions options = app.getOptions();
+    Map<String, String> optionsMap = new HashMap<>();
+    optionsMap.put("googleAppID", options.getApplicationId());
+    optionsMap.put("GCMSenderID", options.getGcmSenderId());
+    optionsMap.put("APIKey", options.getApiKey());
+    optionsMap.put("databaseURL", options.getDatabaseUrl());
+    optionsMap.put("storageBucket", options.getStorageBucket());
+    optionsMap.put("projectID", options.getProjectId());
+    appMap.put("options", optionsMap);
+    return appMap;
+  }
+
   @Override
   public void onMethodCall(MethodCall call, final Result result) {
     switch (call.method) {
@@ -50,32 +65,29 @@ public class FirebaseCorePlugin implements MethodCallHandler {
                   .setProjectId(optionsMap.get("projectId"))
                   .setStorageBucket(optionsMap.get("storageBucket"))
                   .build();
-          if (name != null) {
-            FirebaseApp.initializeApp(context, options, name);
-          } else {
-            FirebaseApp.initializeApp(context, options);
-          }
+          FirebaseApp.initializeApp(context, options, name);
           result.success(null);
           break;
         }
       case "FirebaseApp#allApps":
         {
           List<Map<String, Object>> apps = new ArrayList<>();
-          Map<String, Object> appMap = new HashMap<>();
           for (FirebaseApp app : FirebaseApp.getApps(context)) {
-            appMap.put("name", app.getName());
-            FirebaseOptions options = app.getOptions();
-            Map<String, String> optionsMap = new HashMap<>();
-            optionsMap.put("googleAppID", options.getApplicationId());
-            optionsMap.put("GCMSenderID", options.getGcmSenderId());
-            optionsMap.put("APIKey", options.getApiKey());
-            optionsMap.put("databaseURL", options.getDatabaseUrl());
-            optionsMap.put("storageBucket", options.getStorageBucket());
-            optionsMap.put("projectID", options.getProjectId());
-            appMap.put("options", optionsMap);
-            apps.add(appMap);
+            apps.add(asMap(app));
           }
           result.success(apps);
+          break;
+        }
+      case "FirebaseApp#appNamed":
+        {
+          String name = (String) call.arguments();
+          try {
+            FirebaseApp app = FirebaseApp.getInstance(name);
+            result.success(asMap(app));
+          } catch (IllegalStateException ex) {
+            // App doesn't exist, so successfully return null.
+            result.success(null);
+          }
           break;
         }
       default:

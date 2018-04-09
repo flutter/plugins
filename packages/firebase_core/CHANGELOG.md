@@ -1,3 +1,9 @@
+## 0.2.0
+
+* **Breaking change**. Options API is now async to interoperate with native code that configures Firebase apps.
+* Provide a getter for the default app
+* Fix setting of GCM sender ID on iOS
+
 ## 0.1.2
 
 * Fix projectID on iOS

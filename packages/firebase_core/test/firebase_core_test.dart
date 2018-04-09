@@ -11,7 +11,19 @@ void main() {
     final List<MethodCall> log = <MethodCall>[];
     const FirebaseApp testApp = const FirebaseApp(
       name: 'testApp',
-      options: const FirebaseOptions(googleAppID: '12345'),
+    );
+    const FirebaseOptions testOptions = const FirebaseOptions(
+      apiKey: 'testAPIKey',
+      bundleID: 'testBundleID',
+      clientID: 'testClientID',
+      trackingID: 'testTrackingID',
+      gcmSenderID: 'testGCMSenderID',
+      projectID: 'testProjectID',
+      androidClientID: 'testAndroidClientID',
+      googleAppID: 'testGoogleAppID',
+      databaseURL: 'testDatabaseURL',
+      deepLinkURLScheme: 'testDeepLinkURLScheme',
+      storageBucket: 'testStorageBucket',
     );
 
     setUp(() async {
@@ -19,11 +31,28 @@ void main() {
           .setMockMethodCallHandler((MethodCall methodCall) async {
         log.add(methodCall);
         switch (methodCall.method) {
+          case 'FirebaseApp#appNamed':
+            if (methodCall.arguments != 'testApp') return null;
+            return <dynamic, dynamic>{
+              'name': 'testApp',
+              'options': <dynamic, dynamic>{
+                'APIKey': 'testAPIKey',
+                'bundleID': 'testBundleID',
+                'clientID': 'testClientID',
+                'trackingID': 'testTrackingID',
+                'GCMSenderID': 'testGCMSenderID',
+                'projectID': 'testProjectID',
+                'androidClientID': 'testAndroidClientID',
+                'googleAppID': 'testGoogleAppID',
+                'databaseURL': 'testDatabaseURL',
+                'deepLinkURLScheme': 'testDeepLinkURLScheme',
+                'storageBucket': 'testStorageBucket',
+              },
+            };
           case 'FirebaseApp#allApps':
-            return <Map<String, dynamic>>[
-              <String, dynamic>{
-                'name': testApp.name,
-                'options': testApp.options.asMap,
+            return <Map<dynamic, dynamic>>[
+              <dynamic, dynamic>{
+                'name': 'testApp',
               },
             ];
           default:
@@ -34,36 +63,62 @@ void main() {
     });
 
     test('configure', () async {
-      final String name = 'configuredApp';
-      const FirebaseOptions options = const FirebaseOptions(
-        apiKey: 'testAPIKey',
-        bundleID: 'testBundleID',
-        clientID: 'testClientID',
-        trackingID: 'testTrackingID',
-        gcmSenderID: 'testGCMSenderID',
-        projectID: 'testProjectID',
-        androidClientID: 'testAndroidClientID',
-        googleAppID: 'testGoogleAppID',
-        databaseURL: 'testDatabaseURL',
-        deepLinkURLScheme: 'testDeepLinkURLScheme',
-        storageBucket: 'testStorageBucket',
+      final FirebaseApp reconfiguredApp = await FirebaseApp.configure(
+        name: 'testApp',
+        options: testOptions,
       );
-      final FirebaseApp app = await FirebaseApp.configure(
-        name: name,
-        options: options,
+      expect(reconfiguredApp, equals(testApp));
+      final FirebaseApp newApp = await FirebaseApp.configure(
+        name: 'newApp',
+        options: testOptions,
       );
-      expect(app.name, equals(name));
-      expect(app.options, equals(options));
-      expect(app, equals(new FirebaseApp.named(app.name)));
+      expect(newApp.name, equals('newApp'));
       expect(
         log,
         <Matcher>[
           isMethodCall(
+            'FirebaseApp#appNamed',
+            arguments: 'testApp',
+          ),
+          isMethodCall(
+            'FirebaseApp#appNamed',
+            arguments: 'testApp',
+          ),
+          isMethodCall(
+            'FirebaseApp#appNamed',
+            arguments: 'newApp',
+          ),
+          isMethodCall(
             'FirebaseApp#configure',
             arguments: <String, dynamic>{
-              'name': name,
-              'options': options.asMap,
+              'name': 'newApp',
+              'options': testOptions.asMap,
             },
+          ),
+        ],
+      );
+    });
+
+    test('appNamed', () async {
+      final FirebaseApp existingApp = await FirebaseApp.appNamed('testApp');
+      expect(existingApp.name, equals('testApp'));
+      expect((await existingApp.options), equals(testOptions));
+      final FirebaseApp missingApp = await FirebaseApp.appNamed('missingApp');
+      expect(missingApp, isNull);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'FirebaseApp#appNamed',
+            arguments: 'testApp',
+          ),
+          isMethodCall(
+            'FirebaseApp#appNamed',
+            arguments: 'testApp',
+          ),
+          isMethodCall(
+            'FirebaseApp#appNamed',
+            arguments: 'missingApp',
           ),
         ],
       );

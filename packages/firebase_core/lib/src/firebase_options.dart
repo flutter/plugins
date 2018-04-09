@@ -101,7 +101,7 @@ class FirebaseOptions {
       'bundleID': bundleID,
       'clientID': clientID,
       'trackingID': trackingID,
-      'gcmSenderID': gcmSenderID,
+      'GCMSenderID': gcmSenderID,
       'projectID': projectID,
       'androidClientID': androidClientID,
       'googleAppID': googleAppID,
