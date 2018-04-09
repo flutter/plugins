@@ -95,7 +95,7 @@ matrix:
       osx_image: xcode9.2
       before_script:
         - brew update
-        - brew install --HEAD libimobiledevice
+        - brew install libimobiledevice
         - brew install ideviceinstaller
         - brew install ios-deploy
         - pod repo update
