@@ -9,17 +9,16 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 Future main() async {
-  final FirebaseOptions options = const FirebaseOptions(
-    googleAppID: '1:79601577497:ios:5f2bcc6ba8cecddd',
-    gcmSenderID: '79601577497',
-    apiKey: 'AIzaSyArgmRGfB5kiQT6CunAOmKRVKEsxKmy6YI-G72PVU',
-    projectID: 'flutter-firestore',
-  );
-  FirebaseApp.configure(
+  final FirebaseApp app = await FirebaseApp.configure(
     name: 'test',
-    options: options,
+    options: const FirebaseOptions(
+      googleAppID: '1:79601577497:ios:5f2bcc6ba8cecddd',
+      gcmSenderID: '79601577497',
+      apiKey: 'AIzaSyArgmRGfB5kiQT6CunAOmKRVKEsxKmy6YI-G72PVU',
+      projectID: 'flutter-firestore',
+    ),
   );
-  final Firestore firestore = new Firestore(app: new FirebaseApp.named('test'));
+  final Firestore firestore = new Firestore(app: app);
 
   runApp(new MaterialApp(
       title: 'Firestore Example', home: new MyHomePage(firestore: firestore)));
