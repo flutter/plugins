@@ -189,6 +189,8 @@ void main() {
 
     group('CollectionsReference', () {
       test('listen', () async {
+        expect(collectionReference.id, equals('foo'));
+        expect(collectionReference.path, equals('foo'));
         final QuerySnapshot snapshot =
             await collectionReference.snapshots.first;
         final DocumentSnapshot document = snapshot.documents[0];
