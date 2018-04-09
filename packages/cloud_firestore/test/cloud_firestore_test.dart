@@ -188,9 +188,13 @@ void main() {
     });
 
     group('CollectionsReference', () {
-      test('listen', () async {
+      test('path', () async {
         expect(collectionReference.id, equals('foo'));
         expect(collectionReference.path, equals('foo'));
+        expect(collectionReference.parent().id, isNull);
+        expect(collectionReference.parent().path, equals(''));
+      });
+      test('listen', () async {
         final QuerySnapshot snapshot =
             await collectionReference.snapshots.first;
         final DocumentSnapshot document = snapshot.documents[0];
