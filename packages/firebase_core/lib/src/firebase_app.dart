@@ -21,7 +21,7 @@ class FirebaseApp {
 
   /// Gets a copy of the options for this app. These are non-modifiable.
   ///
-  /// This method is asynchronous because apps can also be configured by native
+  /// This getter is asynchronous because apps can also be configured by native
   /// code.
   Future<FirebaseOptions> get options async {
     final Map<dynamic, dynamic> app = await channel.invokeMethod(
