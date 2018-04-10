@@ -300,7 +300,7 @@ public class CameraPlugin implements MethodCallHandler {
                 }
                 if (!hasAudioPermission()) {
                   result.error(
-                        "cameraPermission", "MediaRecorderAudio permission not granted", null);
+                      "cameraPermission", "MediaRecorderAudio permission not granted", null);
                   return;
                 }
                 open(result);
@@ -469,28 +469,28 @@ public class CameraPlugin implements MethodCallHandler {
                 public void onError(@NonNull CameraDevice cameraDevice, int errorCode) {
                   cameraDevice.close();
                   Camera.this.cameraDevice = null;
-                    String errorDescription;
-                    switch (errorCode) {
-                      case ERROR_CAMERA_IN_USE:
-                        errorDescription = "The camera device is in use already.";
-                        break;
-                      case ERROR_MAX_CAMERAS_IN_USE:
-                        errorDescription = "Max cameras in use";
-                        break;
-                      case ERROR_CAMERA_DISABLED:
-                        errorDescription =
-                            "The camera device could not be opened due to a device policy.";
-                        break;
-                      case ERROR_CAMERA_DEVICE:
-                        errorDescription = "The camera device has encountered a fatal error";
-                        break;
-                      case ERROR_CAMERA_SERVICE:
-                        errorDescription = "The camera service has encountered a fatal error.";
-                        break;
-                      default:
-                        errorDescription = "Unknown camera error";
-                    }
-                    sendErrorEvent(errorDescription);
+                  String errorDescription;
+                  switch (errorCode) {
+                    case ERROR_CAMERA_IN_USE:
+                      errorDescription = "The camera device is in use already.";
+                      break;
+                    case ERROR_MAX_CAMERAS_IN_USE:
+                      errorDescription = "Max cameras in use";
+                      break;
+                    case ERROR_CAMERA_DISABLED:
+                      errorDescription =
+                          "The camera device could not be opened due to a device policy.";
+                      break;
+                    case ERROR_CAMERA_DEVICE:
+                      errorDescription = "The camera device has encountered a fatal error";
+                      break;
+                    case ERROR_CAMERA_SERVICE:
+                      errorDescription = "The camera service has encountered a fatal error.";
+                      break;
+                    default:
+                      errorDescription = "Unknown camera error";
+                  }
+                  sendErrorEvent(errorDescription);
                 }
               },
               null);
@@ -682,8 +682,7 @@ public class CameraPlugin implements MethodCallHandler {
           null);
     }
 
-    private void sendErrorEvent(String errorDescription)
-    {
+    private void sendErrorEvent(String errorDescription) {
       if (eventSink != null) {
         Map<String, String> event = new HashMap<>();
         event.put("eventType", "error");
