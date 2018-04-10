@@ -75,7 +75,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
     final List<Widget> previewChildren = <Widget>[];
 
     // Depending on controller state display a message or the camera preview.
-    if (controller == null || !controller.value.initialized) {
+    if (controller == null || !controller.value.isInitialized) {
       previewChildren.add(new Text(
         'Tap a camera',
         style: new TextStyle(
@@ -125,8 +125,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
             border: new Border.all(
               color: Colors.redAccent,
               width: controller != null &&
-                      controller.value.opened &&
-                      controller.value.recordingVideo
+                      controller.value.isOpen &&
+                      controller.value.isRecordingVideo
                   ? 3.0
                   : 0.0,
             ),
@@ -154,24 +154,24 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
                   new IconButton(
                     icon: new Icon(Icons.camera_alt),
                     color: Colors.blue,
-                    onPressed: controller.value.opened &&
-                            !controller.value.recordingVideo
+                    onPressed: controller.value.isOpen &&
+                            !controller.value.isRecordingVideo
                         ? onTakePictureButtonPressed
                         : null,
                   ),
                   new IconButton(
                     icon: new Icon(Icons.videocam),
                     color: Colors.blue,
-                    onPressed: controller.value.opened &&
-                            !controller.value.recordingVideo
+                    onPressed: controller.value.isOpen &&
+                            !controller.value.isRecordingVideo
                         ? onVideoRecordButtonPressed
                         : null,
                   ),
                   new IconButton(
                     icon: new Icon(Icons.stop),
                     color: Colors.red,
-                    onPressed: controller.value.opened &&
-                            controller.value.recordingVideo
+                    onPressed: controller.value.isOpen &&
+                            controller.value.isRecordingVideo
                         ? onStopButtonPressed
                         : null,
                   )
@@ -274,7 +274,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
   }
 
   Future<String> startVideoRecording() async {
-    if (!controller.value.opened) {
+    if (!controller.value.isOpen) {
       return '';
     }
     final Directory extDir = await getApplicationDocumentsDirectory();
@@ -290,7 +290,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
   }
 
   Future<Null> stopVideoRecording() async {
-    if (controller.value.opened) {
+    if (controller.value.isOpen) {
       try {
         await controller.stopVideoRecording();
       } on CameraException catch (e) {
@@ -300,7 +300,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
   }
 
   Future<String> takePicture() async {
-    if (!controller.value.opened) {
+    if (!controller.value.isOpen) {
       return '';
     }
     final Directory extDir = await getApplicationDocumentsDirectory();

@@ -241,7 +241,7 @@ public class CameraPlugin implements MethodCallHandler {
     private EventChannel.EventSink eventSink;
     private ImageReader imageReader;
     private int sensorOrientation;
-    private boolean isFaceFrontingCamera;
+    private boolean isFrontFacing;
     private String cameraName;
     private Size captureSize;
     private Size previewSize;
@@ -279,7 +279,7 @@ public class CameraPlugin implements MethodCallHandler {
         //noinspection ConstantConditions
         sensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
         //noinspection ConstantConditions
-        isFaceFrontingCamera =
+        isFrontFacing =
             characteristics.get(CameraCharacteristics.LENS_FACING)
                 == CameraMetadata.LENS_FACING_FRONT;
         computeBestCaptureSize(streamConfigurationMap);
@@ -413,7 +413,7 @@ public class CameraPlugin implements MethodCallHandler {
 
       int displayRotation = activity.getWindowManager().getDefaultDisplay().getRotation();
       int displayOrientation = ORIENTATIONS.get(displayRotation);
-      if (isFaceFrontingCamera) displayOrientation = -displayOrientation;
+      if (isFrontFacing) displayOrientation = -displayOrientation;
       mediaRecorder.setOrientationHint((displayOrientation + sensorOrientation) % 360);
 
       mediaRecorder.prepare();
@@ -535,7 +535,7 @@ public class CameraPlugin implements MethodCallHandler {
         captureBuilder.addTarget(imageReader.getSurface());
         int displayRotation = activity.getWindowManager().getDefaultDisplay().getRotation();
         int displayOrientation = ORIENTATIONS.get(displayRotation);
-        if (isFaceFrontingCamera) displayOrientation = -displayOrientation;
+        if (isFrontFacing) displayOrientation = -displayOrientation;
         captureBuilder.set(
             CaptureRequest.JPEG_ORIENTATION, (-displayOrientation + sensorOrientation) % 360);
 
