@@ -1,3 +1,7 @@
+## 0.5.2
+
+* Simplified podspec for Cocoapods 1.5.0, avoiding link issues in app archives.
+
 ## 0.5.1
 
 * Fixed Dart 2 type errors.
