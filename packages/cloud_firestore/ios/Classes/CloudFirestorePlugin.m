@@ -153,6 +153,9 @@ const UInt8 DOCUMENT_REFERENCE = 130;
     [self writeByte:DOCUMENT_REFERENCE];
     [self writeUTF8:document.firestore.app.name];
     [self writeUTF8:documentPath];
+  } else if ([value isKindOfClass:[NSData class]]) {
+    NSData *blob = value;
+    [super writeValue:blob.bytes];
   } else {
     [super writeValue:value];
   }

@@ -568,7 +568,6 @@ final class FirestoreMessageCodec extends StandardMessageCodec {
   private static final byte DATE_TIME = (byte) 128;
   private static final byte GEO_POINT = (byte) 129;
   private static final byte DOCUMENT_REFERENCE = (byte) 130;
-  private static final byte BLOB = (byte) 131;
 
   @Override
   protected void writeValue(ByteArrayOutputStream stream, Object value) {

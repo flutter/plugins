@@ -1,3 +1,7 @@
+## 0.6.2
+
+* Support for BLOB data type.
+
 ## 0.6.1
 
 * Simplified podspec for Cocoapods 1.5.0, avoiding link issues in app archives.
