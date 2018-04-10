@@ -199,10 +199,10 @@ public class GoogleMobileMapsPlugin
       case "fromAsset":
         if (data.size() == 2) {
           return BitmapDescriptorFactory.fromAsset(
-                  FlutterMain.getLookupKeyForAsset(toString(data.get(1))));
+              FlutterMain.getLookupKeyForAsset(toString(data.get(1))));
         } else {
           return BitmapDescriptorFactory.fromAsset(
-                  FlutterMain.getLookupKeyForAsset(toString(data.get(1)), toString(data.get(2))));
+              FlutterMain.getLookupKeyForAsset(toString(data.get(1)), toString(data.get(2))));
         }
       case "fromFile":
         return BitmapDescriptorFactory.fromFile(toString(data.get(1)));
