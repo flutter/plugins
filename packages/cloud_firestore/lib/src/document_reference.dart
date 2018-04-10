@@ -11,17 +11,18 @@ part of cloud_firestore;
 /// A [DocumentReference] can also be used to create a [CollectionReference]
 /// to a subcollection.
 class DocumentReference {
-  DocumentReference._(Firestore firestore, List<String> pathComponents)
-      : _firestore = firestore,
-        _pathComponents = pathComponents,
+  DocumentReference._(this.firestore, List<String> pathComponents)
+      : _pathComponents = pathComponents,
         assert(firestore != null);
 
-  final Firestore _firestore;
+  /// The Firestore instance associated with this document reference
+  final Firestore firestore;
+
   final List<String> _pathComponents;
 
   @override
   bool operator ==(dynamic o) =>
-      o is DocumentReference && o._firestore == _firestore && o.path == path;
+      o is DocumentReference && o.firestore == firestore && o.path == path;
 
   @override
   int get hashCode => hashList(_pathComponents);
@@ -38,7 +39,12 @@ class DocumentReference {
   Future<void> setData(Map<String, dynamic> data, [SetOptions options]) {
     return Firestore.channel.invokeMethod(
       'DocumentReference#setData',
-      <String, dynamic>{'path': path, 'data': data, 'options': options?._data},
+      <String, dynamic>{
+        'app': firestore.app.name,
+        'path': path,
+        'data': data,
+        'options': options?._data,
+      },
     );
   }
 
@@ -48,7 +54,11 @@ class DocumentReference {
   Future<void> updateData(Map<String, dynamic> data) {
     return Firestore.channel.invokeMethod(
       'DocumentReference#updateData',
-      <String, dynamic>{'path': path, 'data': data},
+      <String, dynamic>{
+        'app': firestore.app.name,
+        'path': path,
+        'data': data,
+      },
     );
   }
 
@@ -58,7 +68,7 @@ class DocumentReference {
   Future<DocumentSnapshot> get() async {
     final Map<dynamic, dynamic> data = await Firestore.channel.invokeMethod(
       'DocumentReference#get',
-      <String, dynamic>{'path': path},
+      <String, dynamic>{'app': firestore.app.name, 'path': path},
     );
     return new DocumentSnapshot._(
       data['path'],
@@ -71,14 +81,14 @@ class DocumentReference {
   Future<void> delete() {
     return Firestore.channel.invokeMethod(
       'DocumentReference#delete',
-      <String, dynamic>{'path': path},
+      <String, dynamic>{'app': firestore.app.name, 'path': path},
     );
   }
 
   /// Returns the reference of a collection contained inside of this
   /// document.
   CollectionReference getCollection(String collectionPath) {
-    return _firestore.collection(
+    return firestore.collection(
       <String>[path, collectionPath].join('/'),
     );
   }
@@ -95,6 +105,7 @@ class DocumentReference {
         _handle = Firestore.channel.invokeMethod(
           'Query#addDocumentListener',
           <String, dynamic>{
+            'app': firestore.app.name,
             'path': path,
           },
         ).then<int>((dynamic result) => result);

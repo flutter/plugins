@@ -18,8 +18,17 @@
 }
 @end
 
+FIRFirestore *getFirestore(NSDictionary *arguments) {
+  FIRApp *app = [FIRApp appNamed:arguments[@"app"]];
+  return [FIRFirestore firestoreForApp:app];
+}
+
+FIRDocumentReference *getDocumentReference(NSDictionary *arguments) {
+  return [getFirestore(arguments) documentWithPath:arguments[@"path"]];
+}
+
 FIRQuery *getQuery(NSDictionary *arguments) {
-  FIRQuery *query = [[FIRFirestore firestore] collectionWithPath:arguments[@"path"]];
+  FIRQuery *query = [getFirestore(arguments) collectionWithPath:arguments[@"path"]];
   NSDictionary *parameters = arguments[@"parameters"];
   NSArray *whereConditions = parameters[@"where"];
   for (id item in whereConditions) {
@@ -139,9 +148,10 @@ const UInt8 DOCUMENT_REFERENCE = 130;
     [self writeBytes:(UInt8 *)&latitude length:8];
     [self writeBytes:(UInt8 *)&longitude length:8];
   } else if ([value isKindOfClass:[FIRDocumentReference class]]) {
-    FIRDocumentReference *documentReference = value;
-    NSString *documentPath = [documentReference path];
+    FIRDocumentReference *document = value;
+    NSString *documentPath = [document path];
     [self writeByte:DOCUMENT_REFERENCE];
+    [self writeUTF8:document.firestore.app.name];
     [self writeUTF8:documentPath];
   } else {
     [super writeValue:value];
@@ -171,8 +181,10 @@ const UInt8 DOCUMENT_REFERENCE = 130;
       return [[FIRGeoPoint alloc] initWithLatitude:latitude longitude:longitude];
     }
     case DOCUMENT_REFERENCE: {
+      NSString *appName = [self readUTF8];
+      FIRFirestore *firestore = [FIRFirestore firestoreForApp:[FIRApp appNamed:appName]];
       NSString *documentPath = [self readUTF8];
-      return [[FIRFirestore firestore] documentWithPath:documentPath];
+      return [firestore documentWithPath:documentPath];
     }
     default:
       return [super readValueOfType:type];
@@ -240,8 +252,8 @@ const UInt8 DOCUMENT_REFERENCE = 130;
     result(error.flutterError);
   };
   if ([@"Firestore#runTransaction" isEqualToString:call.method]) {
-    [[FIRFirestore firestore] runTransactionWithBlock:^id(FIRTransaction *transaction,
-                                                          NSError **pError) {
+    [getFirestore(call.arguments) runTransactionWithBlock:^id(FIRTransaction *transaction,
+                                                              NSError **pError) {
       NSNumber *transactionId = call.arguments[@"transactionId"];
       NSNumber *transactionTimeout = call.arguments[@"transactionTimeout"];
 
@@ -272,12 +284,11 @@ const UInt8 DOCUMENT_REFERENCE = 130;
   } else if ([@"Transaction#get" isEqualToString:call.method]) {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
       NSNumber *transactionId = call.arguments[@"transactionId"];
-      NSString *path = call.arguments[@"path"];
-      FIRDocumentReference *documentReference = [[FIRFirestore firestore] documentWithPath:path];
+      FIRDocumentReference *document = getDocumentReference(call.arguments);
       FIRTransaction *transaction = transactions[transactionId];
       NSError *error = [[NSError alloc] init];
 
-      FIRDocumentSnapshot *snapshot = [transaction getDocument:documentReference error:&error];
+      FIRDocumentSnapshot *snapshot = [transaction getDocument:document error:&error];
 
       if (error != nil) {
         result([FlutterError errorWithCode:[NSString stringWithFormat:@"%tu", [error code]]
@@ -297,58 +308,51 @@ const UInt8 DOCUMENT_REFERENCE = 130;
   } else if ([@"Transaction#update" isEqualToString:call.method]) {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
       NSNumber *transactionId = call.arguments[@"transactionId"];
-      NSString *path = call.arguments[@"path"];
-      FIRDocumentReference *documentReference = [[FIRFirestore firestore] documentWithPath:path];
+      FIRDocumentReference *document = getDocumentReference(call.arguments);
       FIRTransaction *transaction = transactions[transactionId];
 
-      [transaction updateData:call.arguments[@"data"] forDocument:documentReference];
+      [transaction updateData:call.arguments[@"data"] forDocument:document];
       result(nil);
     });
   } else if ([@"Transaction#set" isEqualToString:call.method]) {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
       NSNumber *transactionId = call.arguments[@"transactionId"];
-      NSString *path = call.arguments[@"path"];
-      FIRDocumentReference *documentReference = [[FIRFirestore firestore] documentWithPath:path];
+      FIRDocumentReference *document = getDocumentReference(call.arguments);
       FIRTransaction *transaction = transactions[transactionId];
 
-      [transaction setData:call.arguments[@"data"] forDocument:documentReference];
+      [transaction setData:call.arguments[@"data"] forDocument:document];
       result(nil);
     });
   } else if ([@"Transaction#delete" isEqualToString:call.method]) {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
       NSNumber *transactionId = call.arguments[@"transactionId"];
-      NSString *path = call.arguments[@"path"];
-      FIRDocumentReference *documentReference = [[FIRFirestore firestore] documentWithPath:path];
+      FIRDocumentReference *document = getDocumentReference(call.arguments);
       FIRTransaction *transaction = transactions[transactionId];
 
-      [transaction deleteDocument:documentReference];
+      [transaction deleteDocument:document];
       result(nil);
     });
   } else if ([@"DocumentReference#setData" isEqualToString:call.method]) {
-    NSString *path = call.arguments[@"path"];
     NSDictionary *options = call.arguments[@"options"];
-    FIRDocumentReference *reference = [[FIRFirestore firestore] documentWithPath:path];
+    FIRDocumentReference *document = getDocumentReference(call.arguments);
     if (![options isEqual:[NSNull null]] &&
         [options[@"merge"] isEqual:[NSNumber numberWithBool:YES]]) {
-      [reference setData:call.arguments[@"data"]
-                 options:[FIRSetOptions merge]
-              completion:defaultCompletionBlock];
+      [document setData:call.arguments[@"data"]
+                options:[FIRSetOptions merge]
+             completion:defaultCompletionBlock];
     } else {
-      [reference setData:call.arguments[@"data"] completion:defaultCompletionBlock];
+      [document setData:call.arguments[@"data"] completion:defaultCompletionBlock];
     }
   } else if ([@"DocumentReference#updateData" isEqualToString:call.method]) {
-    NSString *path = call.arguments[@"path"];
-    FIRDocumentReference *reference = [[FIRFirestore firestore] documentWithPath:path];
-    [reference updateData:call.arguments[@"data"] completion:defaultCompletionBlock];
+    FIRDocumentReference *document = getDocumentReference(call.arguments);
+    [document updateData:call.arguments[@"data"] completion:defaultCompletionBlock];
   } else if ([@"DocumentReference#delete" isEqualToString:call.method]) {
-    NSString *path = call.arguments[@"path"];
-    FIRDocumentReference *reference = [[FIRFirestore firestore] documentWithPath:path];
-    [reference deleteDocumentWithCompletion:defaultCompletionBlock];
+    FIRDocumentReference *document = getDocumentReference(call.arguments);
+    [document deleteDocumentWithCompletion:defaultCompletionBlock];
   } else if ([@"DocumentReference#get" isEqualToString:call.method]) {
-    NSString *path = call.arguments[@"path"];
-    FIRDocumentReference *reference = [[FIRFirestore firestore] documentWithPath:path];
-    [reference getDocumentWithCompletion:^(FIRDocumentSnapshot *_Nullable snapshot,
-                                           NSError *_Nullable error) {
+    FIRDocumentReference *document = getDocumentReference(call.arguments);
+    [document getDocumentWithCompletion:^(FIRDocumentSnapshot *_Nullable snapshot,
+                                          NSError *_Nullable error) {
       if (error) {
         result(error.flutterError);
       } else {
@@ -379,10 +383,9 @@ const UInt8 DOCUMENT_REFERENCE = 130;
     result(handle);
   } else if ([@"Query#addDocumentListener" isEqualToString:call.method]) {
     __block NSNumber *handle = [NSNumber numberWithInt:_nextListenerHandle++];
-    FIRDocumentReference *reference =
-        [[FIRFirestore firestore] documentWithPath:call.arguments[@"path"]];
+    FIRDocumentReference *document = getDocumentReference(call.arguments);
     id<FIRListenerRegistration> listener =
-        [reference addSnapshotListener:^(FIRDocumentSnapshot *snapshot, NSError *_Nullable error) {
+        [document addSnapshotListener:^(FIRDocumentSnapshot *snapshot, NSError *_Nullable error) {
           if (error) result(error.flutterError);
           [self.channel invokeMethod:@"DocumentSnapshot"
                            arguments:@{
@@ -414,35 +417,32 @@ const UInt8 DOCUMENT_REFERENCE = 130;
     result(nil);
   } else if ([@"WriteBatch#create" isEqualToString:call.method]) {
     __block NSNumber *handle = [NSNumber numberWithInt:_nextBatchHandle++];
-    FIRWriteBatch *batch = [[FIRFirestore firestore] batch];
+    FIRWriteBatch *batch = [getFirestore(call.arguments) batch];
     _batches[handle] = batch;
     result(handle);
   } else if ([@"WriteBatch#setData" isEqualToString:call.method]) {
     NSNumber *handle = call.arguments[@"handle"];
-    NSString *path = call.arguments[@"path"];
     NSDictionary *options = call.arguments[@"options"];
-    FIRDocumentReference *reference = [[FIRFirestore firestore] documentWithPath:path];
+    FIRDocumentReference *document = getDocumentReference(call.arguments);
     FIRWriteBatch *batch = [_batches objectForKey:handle];
     if (![options isEqual:[NSNull null]] &&
         [options[@"merge"] isEqual:[NSNumber numberWithBool:YES]]) {
-      [batch setData:call.arguments[@"data"] forDocument:reference options:[FIRSetOptions merge]];
+      [batch setData:call.arguments[@"data"] forDocument:document options:[FIRSetOptions merge]];
     } else {
-      [batch setData:call.arguments[@"data"] forDocument:reference];
+      [batch setData:call.arguments[@"data"] forDocument:document];
     }
     result(nil);
   } else if ([@"WriteBatch#updateData" isEqualToString:call.method]) {
     NSNumber *handle = call.arguments[@"handle"];
-    NSString *path = call.arguments[@"path"];
-    FIRDocumentReference *reference = [[FIRFirestore firestore] documentWithPath:path];
+    FIRDocumentReference *document = getDocumentReference(call.arguments);
     FIRWriteBatch *batch = [_batches objectForKey:handle];
-    [batch updateData:call.arguments[@"data"] forDocument:reference];
+    [batch updateData:call.arguments[@"data"] forDocument:document];
     result(nil);
   } else if ([@"WriteBatch#delete" isEqualToString:call.method]) {
     NSNumber *handle = call.arguments[@"handle"];
-    NSString *path = call.arguments[@"path"];
-    FIRDocumentReference *reference = [[FIRFirestore firestore] documentWithPath:path];
+    FIRDocumentReference *document = getDocumentReference(call.arguments);
     FIRWriteBatch *batch = [_batches objectForKey:handle];
-    [batch deleteDocument:reference];
+    [batch deleteDocument:document];
     result(nil);
   } else if ([@"WriteBatch#commit" isEqualToString:call.method]) {
     NSNumber *handle = call.arguments[@"handle"];
