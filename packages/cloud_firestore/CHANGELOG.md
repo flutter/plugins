@@ -7,7 +7,6 @@
 
 * **Breaking change**. Move path getter to CollectionReference
 * Add id getter to CollectionReference
->>>>>>> 989ebbf4cd2e45980068c05d0c246bee52245faa
 
 ## 0.4.0
 
