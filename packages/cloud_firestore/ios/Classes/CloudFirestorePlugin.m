@@ -126,6 +126,7 @@ NSDictionary *parseQuerySnapshot(FIRQuerySnapshot *snapshot) {
 const UInt8 DATE_TIME = 128;
 const UInt8 GEO_POINT = 129;
 const UInt8 DOCUMENT_REFERENCE = 130;
+const UInt8 BLOB = 131;
 
 @interface FirestoreWriter : FlutterStandardWriter
 - (void)writeValue:(id)value;
@@ -155,7 +156,9 @@ const UInt8 DOCUMENT_REFERENCE = 130;
     [self writeUTF8:documentPath];
   } else if ([value isKindOfClass:[NSData class]]) {
     NSData *blob = value;
-    [super writeValue:blob.bytes];
+    [self writeByte:BLOB];
+    [self writeSize:blob.length];
+    [self writeData:blob.bytes];
   } else {
     [super writeValue:value];
   }
@@ -188,6 +191,10 @@ const UInt8 DOCUMENT_REFERENCE = 130;
       FIRFirestore *firestore = [FIRFirestore firestoreForApp:[FIRApp appNamed:appName]];
       NSString *documentPath = [self readUTF8];
       return [firestore documentWithPath:documentPath];
+    }
+    case BLOB: {
+      UInt32 elementCount = [self readSize];
+      return [self readData:elementCount];
     }
     default:
       return [super readValueOfType:type];

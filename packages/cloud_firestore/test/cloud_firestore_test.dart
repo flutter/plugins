@@ -527,6 +527,12 @@ void main() {
         ];
         _checkEncodeDecode<dynamic>(codec, message);
       });
+      test('encode and decode blob', () {
+        final bytes = new Uint8List(4);
+        bytes[0] = 128;
+        final message = new Blob(bytes);
+        _checkEncodeDecode<dynamic>(codec, message);
+      });
     });
 
     group('WriteBatch', () {

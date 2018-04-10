@@ -568,6 +568,7 @@ final class FirestoreMessageCodec extends StandardMessageCodec {
   private static final byte DATE_TIME = (byte) 128;
   private static final byte GEO_POINT = (byte) 129;
   private static final byte DOCUMENT_REFERENCE = (byte) 130;
+  private static final byte BLOB = (byte) 131;
 
   @Override
   protected void writeValue(ByteArrayOutputStream stream, Object value) {
@@ -585,7 +586,8 @@ final class FirestoreMessageCodec extends StandardMessageCodec {
           stream, ((DocumentReference) value).getFirestore().getApp().getName().getBytes(UTF8));
       writeBytes(stream, ((DocumentReference) value).getPath().getBytes(UTF8));
     } else if (value instanceof Blob) {
-      super.writeValue(stream, ((Blob) value).toBytes());
+      stream.write(BLOB);
+      writeBytes(stream, ((Blob) value).toBytes());
     } else {
       super.writeValue(stream, value);
     }
@@ -607,6 +609,9 @@ final class FirestoreMessageCodec extends StandardMessageCodec {
         final byte[] pathBytes = readBytes(buffer);
         final String path = new String(pathBytes, UTF8);
         return firestore.document(path);
+      case BLOB:
+        final byte[] bytes = readBytes(buffer);
+        return Blob.fromBytes(bytes);
       default:
         return super.readValueOfType(type, buffer);
     }

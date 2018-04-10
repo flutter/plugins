@@ -6,6 +6,7 @@ library cloud_firestore;
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 import 'dart:ui' show hashValues, hashList;
 
 import 'package:firebase_core/firebase_core.dart';
@@ -29,3 +30,4 @@ part 'src/firestore_message_codec.dart';
 part 'src/snapshot_metadata.dart';
 part 'src/transaction.dart';
 part 'src/write_batch.dart';
+part 'src/blob.dart';
