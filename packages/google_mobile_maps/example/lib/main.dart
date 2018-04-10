@@ -15,78 +15,39 @@ final List<Page> _allPages = <Page>[
   new PlaceMarkerPage(),
 ];
 
-class MapsDemo extends StatefulWidget {
-  @override
-  MapsDemoState createState() => new MapsDemoState();
-}
-
-class MapsDemoState extends State<MapsDemo>
-    with SingleTickerProviderStateMixin {
-  TabController _controller;
-  PlatformOverlayController _activeOverlayController;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = new TabController(vsync: this, length: _allPages.length);
-    _controller.addListener(() {
-      if (_controller.indexIsChanging) {
-        _activeOverlayController?.deactivateOverlay();
-        _activeOverlayController = null;
-      } else {
-        _activeOverlayController =
-            _allPages[_controller.index].overlayController;
-        _activeOverlayController.activateOverlay();
-      }
-    });
-    _activeOverlayController = _allPages[_controller.index].overlayController;
-    _activeOverlayController.activateOverlay();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
+class MapsDemo extends StatelessWidget {
+  void _pushPage(BuildContext context, Page page) {
+    Navigator.of(context).push(new MaterialPageRoute<void>(
+        builder: (_) => new Scaffold(
+              appBar: new AppBar(
+                title: new Text('${page.title} - ${page.subtitle}'),
+              ),
+              body: page,
+            )));
   }
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: new AppBar(
-        title: const Text('Map controls'),
-        bottom: new TabBar(
-          controller: _controller,
-          isScrollable: true,
-          tabs: _allPages.map((Page page) {
-            return new Tab(text: page.title);
-          }).toList(),
-        ),
-      ),
-      body: new NotificationListener<ScrollNotification>(
-        onNotification: (ScrollNotification scrollNotification) {
-          if (scrollNotification.depth != 0) {
-            return;
-          }
-          if (scrollNotification is ScrollStartNotification &&
-              _activeOverlayController != null) {
-            _activeOverlayController.deactivateOverlay();
-            _activeOverlayController = null;
-          }
-        },
-        child: new TabBarView(
-            controller: _controller,
-            children: _allPages.map((Page page) {
-              return new Container(
-                key: new ObjectKey(page.title),
-                padding: const EdgeInsets.all(12.0),
-                child: new Card(child: page),
-              );
-            }).toList()),
+      appBar: new AppBar(title: const Text('GoogleMaps examples')),
+      body: new ListView.builder(
+        itemCount: _allPages.length,
+        itemBuilder: (_, int index) => new ListTile(
+              leading: _allPages[index].leading,
+              title: new Text(_allPages[index].title),
+              subtitle: new Text(_allPages[index].subtitle),
+              onTap: () => _pushPage(context, _allPages[index]),
+            ),
       ),
     );
   }
 }
 
 void main() {
-  runApp(new MaterialApp(home: new MapsDemo()));
+  GoogleMapsController.init();
+  final List<NavigatorObserver> observers = <NavigatorObserver>[];
+  for (Page p in _allPages) {
+    observers.add(p.overlayController);
+  }
+  runApp(new MaterialApp(home: new MapsDemo(), navigatorObservers: observers));
 }

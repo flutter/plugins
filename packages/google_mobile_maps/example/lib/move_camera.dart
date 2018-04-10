@@ -8,7 +8,7 @@ import 'package:google_mobile_maps/google_mobile_maps.dart';
 import 'page.dart';
 
 class MoveCameraPage extends Page {
-  MoveCameraPage() : super("MOVE");
+  MoveCameraPage() : super(new Icon(Icons.map), "Camera control", "Move");
 
   final GoogleMapsOverlayController controller =
       new GoogleMapsOverlayController.fromSize(300.0, 200.0);
@@ -42,7 +42,6 @@ class MoveCameraPage extends Page {
                       ),
                     );
                   },
-                  color: Colors.lightBlue,
                   child: const Text('newCameraPosition'),
                 ),
                 new FlatButton(
@@ -53,7 +52,6 @@ class MoveCameraPage extends Page {
                       ),
                     );
                   },
-                  color: Colors.lightBlue,
                   child: const Text('newLatLng'),
                 ),
                 new FlatButton(
@@ -68,7 +66,6 @@ class MoveCameraPage extends Page {
                       ),
                     );
                   },
-                  color: Colors.lightBlue,
                   child: const Text('newLatLngBounds'),
                 ),
                 new FlatButton(
@@ -80,22 +77,20 @@ class MoveCameraPage extends Page {
                       ),
                     );
                   },
-                  color: Colors.lightBlue,
                   child: const Text('newLatLngZoom'),
                 ),
-              ],
-            ),
-            new Column(
-              children: <Widget>[
                 new FlatButton(
                   onPressed: () {
                     controller.mapsController.moveCamera(
                       CameraUpdate.scrollBy(150.0, -225.0),
                     );
                   },
-                  color: Colors.red,
                   child: const Text('scrollBy'),
                 ),
+              ],
+            ),
+            new Column(
+              children: <Widget>[
                 new FlatButton(
                   onPressed: () {
                     controller.mapsController.moveCamera(
@@ -105,16 +100,14 @@ class MoveCameraPage extends Page {
                       ),
                     );
                   },
-                  color: Colors.yellow,
                   child: const Text('zoomBy with focus'),
                 ),
                 new FlatButton(
                   onPressed: () {
                     controller.mapsController.moveCamera(
-                      CameraUpdate.zoomBy(0.7),
+                      CameraUpdate.zoomBy(-0.5),
                     );
                   },
-                  color: Colors.yellow,
                   child: const Text('zoomBy'),
                 ),
                 new FlatButton(
@@ -123,7 +116,6 @@ class MoveCameraPage extends Page {
                       CameraUpdate.zoomIn(),
                     );
                   },
-                  color: Colors.yellow,
                   child: const Text('zoomIn'),
                 ),
                 new FlatButton(
@@ -132,7 +124,6 @@ class MoveCameraPage extends Page {
                       CameraUpdate.zoomOut(),
                     );
                   },
-                  color: Colors.yellow,
                   child: const Text('zoomOut'),
                 ),
                 new FlatButton(
@@ -141,7 +132,6 @@ class MoveCameraPage extends Page {
                       CameraUpdate.zoomTo(16.0),
                     );
                   },
-                  color: Colors.yellow,
                   child: const Text('zoomTo'),
                 ),
               ],

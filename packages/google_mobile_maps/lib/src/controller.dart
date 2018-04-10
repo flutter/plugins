@@ -5,8 +5,7 @@
 part of google_mobile_maps;
 
 final MethodChannel _channel =
-    const MethodChannel('plugins.flutter.io/google_mobile_maps')
-      ..invokeMethod('init');
+    const MethodChannel('plugins.flutter.io/google_mobile_maps');
 
 /// Controller for a single GoogleMaps instance.
 ///
@@ -18,10 +17,14 @@ class GoogleMapsController {
 
   GoogleMapsController(this.id);
 
+  static Future<void> init() async {
+    await _channel.invokeMethod('init');
+  }
+
   Future<void> animateCamera(CameraUpdate cameraUpdate) async {
     final int id = await this.id;
     await _channel.invokeMethod('animateCamera', <String, dynamic>{
-      'id': id,
+      'map': id,
       'cameraUpdate': cameraUpdate._toJson(),
     });
   }
@@ -29,17 +32,21 @@ class GoogleMapsController {
   Future<void> moveCamera(CameraUpdate cameraUpdate) async {
     final int id = await this.id;
     await _channel.invokeMethod('moveCamera', <String, dynamic>{
-      'id': id,
+      'map': id,
       'cameraUpdate': cameraUpdate._toJson(),
     });
   }
 
-  Future<void> addMarker(MarkerOptions markerOptions) async {
+  Future<Marker> addMarker(MarkerOptions markerOptions) async {
     final int id = await this.id;
-    await _channel.invokeMethod('addMarker', <String, dynamic>{
-      'id': id,
-      'markerOptions': markerOptions._toJson(),
-    });
+    final String markerId = await _channel.invokeMethod(
+      'addMarker',
+      <String, dynamic>{
+        'map': id,
+        'markerOptions': markerOptions._toJson(),
+      },
+    );
+    return new Marker._(id, markerId, markerOptions);
   }
 }
 
@@ -89,7 +96,7 @@ class _GoogleMapsPlatformOverlay extends PlatformOverlay {
   Future<void> show(Offset physicalOffset) async {
     final int id = await _textureId.future;
     _channel.invokeMethod('showMapOverlay', <String, dynamic>{
-      'id': id,
+      'map': id,
       'x': physicalOffset.dx,
       'y': physicalOffset.dy,
     });
@@ -99,7 +106,7 @@ class _GoogleMapsPlatformOverlay extends PlatformOverlay {
   Future<void> hide() async {
     final int id = await _textureId.future;
     _channel.invokeMethod('hideMapOverlay', <String, dynamic>{
-      'id': id,
+      'map': id,
     });
   }
 
@@ -107,7 +114,7 @@ class _GoogleMapsPlatformOverlay extends PlatformOverlay {
   Future<void> dispose() async {
     final int id = await _textureId.future;
     _channel.invokeMethod('disposeMap', <String, dynamic>{
-      'id': id,
+      'map': id,
     });
   }
 }

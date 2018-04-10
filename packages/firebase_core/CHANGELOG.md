@@ -1,3 +1,7 @@
+## 0.2.1
+
+* Fix setting project ID on Android.
+
 ## 0.2.0
 
 * **Breaking change**. Options API is now async to interoperate with native code that configures Firebase apps.

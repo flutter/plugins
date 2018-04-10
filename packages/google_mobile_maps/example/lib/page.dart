@@ -6,9 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:google_mobile_maps/google_mobile_maps.dart';
 
 abstract class Page extends StatelessWidget {
-  const Page(this.title);
+  const Page(this.leading, this.title, this.subtitle);
 
+  final Widget leading;
   final String title;
+  final String subtitle;
 
   PlatformOverlayController get overlayController;
 }

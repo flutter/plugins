@@ -1,3 +1,9 @@
+## 0.5.0
+
+* **Breaking change**. Namespaced the `share` method inside a `Share` class.
+* Fixed crash when sharing on iPad.
+* Added functionality to specify share sheet origin on iOS.
+
 ## 0.4.0
 
 * **Breaking change**. Set SDK constraints to match the Flutter beta release.
