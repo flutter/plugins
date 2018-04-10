@@ -1,3 +1,8 @@
+## 0.5.1
+
+* Expose the Firebase app corresponding to a Firestore
+* Expose a constructor for a Firestore with a non-default Firebase app
+
 ## 0.5.0
 
 * **Breaking change**. Move path getter to CollectionReference

@@ -23,6 +23,9 @@ class FirestoreMessageCodec extends StandardMessageCodec {
       buffer.putFloat64(value.longitude);
     } else if (value is DocumentReference) {
       buffer.putUint8(_kDocumentReference);
+      final List<int> appName = utf8.encoder.convert(value.firestore.app.name);
+      writeSize(buffer, appName.length);
+      buffer.putUint8List(appName);
       final List<int> bytes = utf8.encoder.convert(value.path);
       writeSize(buffer, bytes.length);
       buffer.putUint8List(bytes);
@@ -39,9 +42,15 @@ class FirestoreMessageCodec extends StandardMessageCodec {
       case _kGeoPoint:
         return new GeoPoint(buffer.getFloat64(), buffer.getFloat64());
       case _kDocumentReference:
-        final int length = readSize(buffer);
-        final String path = utf8.decoder.convert(buffer.getUint8List(length));
-        return Firestore.instance.document(path);
+        final int appNameLength = readSize(buffer);
+        final String appName =
+            utf8.decoder.convert(buffer.getUint8List(appNameLength));
+        final FirebaseApp app = new FirebaseApp(name: appName);
+        final Firestore firestore = new Firestore(app: app);
+        final int pathLength = readSize(buffer);
+        final String path =
+            utf8.decoder.convert(buffer.getUint8List(pathLength));
+        return firestore.document(path);
       default:
         return super.readValueOfType(type, buffer);
     }

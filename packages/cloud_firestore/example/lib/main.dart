@@ -5,17 +5,34 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-void main() {
-  runApp(new MaterialApp(title: 'Firestore Example', home: new MyHomePage()));
+Future<void> main() async {
+  final FirebaseApp app = await FirebaseApp.configure(
+    name: 'test',
+    options: const FirebaseOptions(
+      googleAppID: '1:79601577497:ios:5f2bcc6ba8cecddd',
+      gcmSenderID: '79601577497',
+      apiKey: 'AIzaSyArgmRGfB5kiQT6CunAOmKRVKEsxKmy6YI-G72PVU',
+      projectID: 'flutter-firestore',
+    ),
+  );
+  final Firestore firestore = new Firestore(app: app);
+
+  runApp(new MaterialApp(
+      title: 'Firestore Example', home: new MyHomePage(firestore: firestore)));
 }
 
 class MessageList extends StatelessWidget {
+  MessageList({this.firestore});
+
+  final Firestore firestore;
+
   @override
   Widget build(BuildContext context) {
     return new StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance.collection('messages').snapshots,
+      stream: firestore.collection('messages').snapshots,
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (!snapshot.hasData) return const Text('Loading...');
         final int messageCount = snapshot.data.documents.length;
@@ -35,10 +52,15 @@ class MessageList extends StatelessWidget {
 }
 
 class MyHomePage extends StatelessWidget {
-  CollectionReference get messages => Firestore.instance.collection('messages');
+  MyHomePage({this.firestore});
+  final Firestore firestore;
+  CollectionReference get messages => firestore.collection('messages');
 
   Future<Null> _addMessage() async {
-    messages.document().setData(<String, String>{'message': 'Hello world!'});
+    final DocumentReference document = messages.document();
+    document.setData(<String, dynamic>{
+      'message': 'Hello world!',
+    });
   }
 
   @override
@@ -47,7 +69,7 @@ class MyHomePage extends StatelessWidget {
       appBar: new AppBar(
         title: const Text('Firestore Example'),
       ),
-      body: new MessageList(),
+      body: new MessageList(firestore: firestore),
       floatingActionButton: new FloatingActionButton(
         onPressed: _addMessage,
         tooltip: 'Increment',

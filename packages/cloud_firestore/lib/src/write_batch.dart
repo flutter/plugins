@@ -11,11 +11,11 @@ part of cloud_firestore;
 /// Once committed, no further operations can be performed on the [WriteBatch],
 /// nor can it be committed again.
 class WriteBatch {
-  WriteBatch._()
+  WriteBatch._(this._firestore)
       : _handle = Firestore.channel.invokeMethod(
-          'WriteBatch#create',
-        );
+            'WriteBatch#create', <String, dynamic>{'app': _firestore.app.name});
 
+  final Firestore _firestore;
   Future<dynamic> _handle;
   final List<Future<dynamic>> _actions = <Future<dynamic>>[];
 
@@ -43,7 +43,11 @@ class WriteBatch {
         _actions.add(
           Firestore.channel.invokeMethod(
             'WriteBatch#delete',
-            <String, dynamic>{'handle': handle, 'path': document.path},
+            <String, dynamic>{
+              'app': _firestore.app.name,
+              'handle': handle,
+              'path': document.path,
+            },
           ),
         );
       });
@@ -67,6 +71,7 @@ class WriteBatch {
           Firestore.channel.invokeMethod(
             'WriteBatch#setData',
             <String, dynamic>{
+              'app': _firestore.app.name,
               'handle': handle,
               'path': document.path,
               'data': data,
@@ -91,6 +96,7 @@ class WriteBatch {
           Firestore.channel.invokeMethod(
             'WriteBatch#updateData',
             <String, dynamic>{
+              'app': _firestore.app.name,
               'handle': handle,
               'path': document.path,
               'data': data,
