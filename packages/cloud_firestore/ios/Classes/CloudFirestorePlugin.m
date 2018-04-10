@@ -252,28 +252,27 @@ const UInt8 DOCUMENT_REFERENCE = 130;
     result(error.flutterError);
   };
   if ([@"Firestore#runTransaction" isEqualToString:call.method]) {
-    [getFirestore(call.arguments)
-        runTransactionWithBlock:^id(FIRTransaction *transaction, NSError **pError) {
-          NSNumber *transactionId = call.arguments[@"transactionId"];
-          NSNumber *transactionTimeout = call.arguments[@"transactionTimeout"];
+    [getFirestore(call.arguments) runTransactionWithBlock:^id(FIRTransaction *transaction,
+                                                              NSError **pError) {
+      NSNumber *transactionId = call.arguments[@"transactionId"];
+      NSNumber *transactionTimeout = call.arguments[@"transactionTimeout"];
 
-          transactions[transactionId] = transaction;
+      transactions[transactionId] = transaction;
 
-          dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+      dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
 
-          [self.channel invokeMethod:@"DoTransaction"
-                           arguments:call.arguments
-                              result:^(id doTransactionResult) {
-                                transactionResults[transactionId] = doTransactionResult;
-                                dispatch_semaphore_signal(semaphore);
-                              }];
+      [self.channel invokeMethod:@"DoTransaction"
+                       arguments:call.arguments
+                          result:^(id doTransactionResult) {
+                            transactionResults[transactionId] = doTransactionResult;
+                            dispatch_semaphore_signal(semaphore);
+                          }];
 
-          dispatch_semaphore_wait(
-              semaphore,
-              dispatch_time(DISPATCH_TIME_NOW, [transactionTimeout integerValue] * 1000000));
+      dispatch_semaphore_wait(
+          semaphore, dispatch_time(DISPATCH_TIME_NOW, [transactionTimeout integerValue] * 1000000));
 
-          return transactionResults[transactionId];
-        }
+      return transactionResults[transactionId];
+    }
         completion:^(id transactionResult, NSError *error) {
           if (error != nil) {
             result([FlutterError errorWithCode:[NSString stringWithFormat:@"%ld", error.code]
