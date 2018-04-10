@@ -433,13 +433,10 @@ public class CameraPlugin implements MethodCallHandler {
                 @Override
                 public void onOpened(@NonNull CameraDevice cameraDevice) {
                   Camera.this.cameraDevice = cameraDevice;
-
                   try {
                     startPreview();
                   } catch (CameraAccessException e) {
                     if (result != null) result.error("CameraAccess", e.getMessage(), null);
-                  } catch (CameraException e) {
-                    if (result != null) result.error("CameraException", e.getMessage(), null);
                   }
 
                   if (result != null) {
@@ -627,7 +624,7 @@ public class CameraPlugin implements MethodCallHandler {
 
     private void stopVideoRecording(@NonNull final Result result) {
       if (!recordingVideo) {
-        result.success("The video was not recording, nothing to stop.");
+        result.success(null);
         return;
       }
 
@@ -636,13 +633,13 @@ public class CameraPlugin implements MethodCallHandler {
         mediaRecorder.stop();
         mediaRecorder.reset();
         startPreview();
-        result.success("stopVideoRecording called successfully.");
+        result.success(null);
       } catch (Exception e) {
         result.error("videoRecordingFailed", e.getMessage(), null);
       }
     }
 
-    private void startPreview() throws CameraAccessException, CameraException {
+    private void startPreview() throws CameraAccessException {
       closeCaptureSession();
 
       SurfaceTexture surfaceTexture = textureEntry.surfaceTexture();
@@ -723,12 +720,6 @@ public class CameraPlugin implements MethodCallHandler {
     private void dispose() {
       close();
       textureEntry.release();
-    }
-  }
-
-  public class CameraException extends Exception {
-    CameraException(String msg) {
-      super(msg);
     }
   }
 }
