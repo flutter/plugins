@@ -179,7 +179,7 @@ public class GoogleMobileMapsPlugin
   }
 
   private GoogleMapsEntry mapsEntry(MethodCall call) {
-    final long id = ((Number) call.argument("map")).longValue();
+    final long id = toLong(call.argument("map"));
     final GoogleMapsEntry entry = googleMaps.get(id);
     if (entry == null) {
       throw new IllegalArgumentException("Unknown map: " + id);
@@ -187,70 +187,9 @@ public class GoogleMobileMapsPlugin
     return entry;
   }
 
-  private static LatLng toLatLng(Object o) {
-    @SuppressWarnings("unchecked")
-    final List<Double> coordinates = (List<Double>) o;
-    return new LatLng(coordinates.get(0), coordinates.get(1));
-  }
-
-  private static LatLngBounds toLatLngBounds(Object o) {
-    final List<?> data = (List<?>) o;
-    return new LatLngBounds(toLatLng(data.get(0)), toLatLng(data.get(1)));
-  }
-
-  private static boolean toBoolean(Object o) {
-    return (Boolean) o;
-  }
-
-  private static float toFloat(Object o) {
-    return ((Number) o).floatValue();
-  }
-
-  private static int toInt(Object o) {
-    return ((Number) o).intValue();
-  }
-
-  private static Point toPoint(Object o) {
-    @SuppressWarnings("unchecked")
-    final List<Object> data = (List<Object>) o;
-    return new Point(toInt(data.get(0)), toInt(data.get(1)));
-  }
-
-  private static MarkerOptions toMarkerOptions(Object o) {
-    @SuppressWarnings("unchecked")
-    final Map<String, Object> data = (Map<String, Object>) o;
-    final List<?> anchor = (List<?>) data.get("anchor");
-    final List<?> infoWindowAnchor = (List<?>) data.get("infoWindowAnchor");
-    return new MarkerOptions()
-        .position(toLatLng(data.get("position")))
-        .alpha(toFloat(data.get("alpha")))
-        .anchor(toFloat(anchor.get(0)), toFloat(anchor.get(1)))
-        .draggable(toBoolean(data.get("draggable")))
-        .flat(toBoolean(data.get("flat")))
-        .icon(toBitmapDescriptor(data.get("icon")))
-        .infoWindowAnchor(toFloat(infoWindowAnchor.get(0)), toFloat(infoWindowAnchor.get(1)))
-        .rotation(toFloat(data.get("rotation")))
-        .snippet((String) data.get("snippet"))
-        .title((String) data.get("title"))
-        .visible(toBoolean(data.get("visible")))
-        .zIndex(toFloat(data.get("zIndex")));
-  }
-
-  private static CameraPosition toCameraPosition(Object o) {
-    @SuppressWarnings("unchecked")
-    final Map<String, Object> data = (Map<String, Object>) o;
-    final CameraPosition.Builder builder = CameraPosition.builder();
-    builder.bearing(toFloat(data.get("bearing")));
-    builder.target(toLatLng(data.get("target")));
-    builder.tilt(toFloat(data.get("tilt")));
-    builder.zoom(toFloat(data.get("zoom")));
-    return builder.build();
-  }
-
   private static BitmapDescriptor toBitmapDescriptor(Object o) {
-    @SuppressWarnings("unchecked")
-    final List<Object> data = (List<Object>) o;
-    switch ((String) data.get(0)) {
+    final List<?> data = toList(o);
+    switch (toString(data.get(0))) {
       case "defaultMarker":
         if (data.size() == 1) {
           return BitmapDescriptorFactory.defaultMarker();
@@ -260,23 +199,36 @@ public class GoogleMobileMapsPlugin
       case "fromAsset":
         if (data.size() == 2) {
           return BitmapDescriptorFactory.fromAsset(
-              FlutterMain.getLookupKeyForAsset((String) data.get(1)));
+                  FlutterMain.getLookupKeyForAsset(toString(data.get(1))));
         } else {
           return BitmapDescriptorFactory.fromAsset(
-              FlutterMain.getLookupKeyForAsset((String) data.get(1), (String) data.get(2)));
+                  FlutterMain.getLookupKeyForAsset(toString(data.get(1)), toString(data.get(2))));
         }
       case "fromFile":
-        return BitmapDescriptorFactory.fromFile((String) data.get(1));
+        return BitmapDescriptorFactory.fromFile(toString(data.get(1)));
       case "fromPath":
-        return BitmapDescriptorFactory.fromPath((String) data.get(1));
+        return BitmapDescriptorFactory.fromPath(toString(data.get(1)));
     }
     throw new IllegalArgumentException("Cannot interpret " + o + " as BitmapDescriptor");
   }
 
+  private static boolean toBoolean(Object o) {
+    return (Boolean) o;
+  }
+
+  private static CameraPosition toCameraPosition(Object o) {
+    final Map<?, ?> data = toMap(o);
+    final CameraPosition.Builder builder = CameraPosition.builder();
+    builder.bearing(toFloat(data.get("bearing")));
+    builder.target(toLatLng(data.get("target")));
+    builder.tilt(toFloat(data.get("tilt")));
+    builder.zoom(toFloat(data.get("zoom")));
+    return builder.build();
+  }
+
   private static CameraUpdate toCameraUpdate(Object o) {
-    @SuppressWarnings("unchecked")
-    final List<Object> data = (List<Object>) o;
-    switch ((String) data.get(0)) {
+    final List<?> data = toList(o);
+    switch (toString(data.get(0))) {
       case "newCameraPosition":
         return CameraUpdateFactory.newCameraPosition(toCameraPosition(data.get(1)));
       case "newLatLng":
@@ -301,6 +253,68 @@ public class GoogleMobileMapsPlugin
         return CameraUpdateFactory.zoomTo(toFloat(data.get(1)));
     }
     throw new IllegalArgumentException("Cannot interpret " + o + " as CameraUpdate");
+  }
+
+  private static double toDouble(Object o) {
+    return ((Number) o).doubleValue();
+  }
+
+  private static float toFloat(Object o) {
+    return ((Number) o).floatValue();
+  }
+
+  private static int toInt(Object o) {
+    return ((Number) o).intValue();
+  }
+
+  private static LatLng toLatLng(Object o) {
+    final List<?> data = toList(o);
+    return new LatLng(toDouble(data.get(0)), toDouble(data.get(1)));
+  }
+
+  private static LatLngBounds toLatLngBounds(Object o) {
+    final List<?> data = toList(o);
+    return new LatLngBounds(toLatLng(data.get(0)), toLatLng(data.get(1)));
+  }
+
+  private static List<?> toList(Object o) {
+    return (List<?>) o;
+  }
+
+  private static long toLong(Object o) {
+    return ((Number) o).longValue();
+  }
+
+  private static Map<?, ?> toMap(Object o) {
+    return (Map<?, ?>) o;
+  }
+
+  private static MarkerOptions toMarkerOptions(Object o) {
+    final Map<?, ?> data = toMap(o);
+    final List<?> anchor = toList(data.get("anchor"));
+    final List<?> infoWindowAnchor = toList(data.get("infoWindowAnchor"));
+    return new MarkerOptions()
+        .position(toLatLng(data.get("position")))
+        .alpha(toFloat(data.get("alpha")))
+        .anchor(toFloat(anchor.get(0)), toFloat(anchor.get(1)))
+        .draggable(toBoolean(data.get("draggable")))
+        .flat(toBoolean(data.get("flat")))
+        .icon(toBitmapDescriptor(data.get("icon")))
+        .infoWindowAnchor(toFloat(infoWindowAnchor.get(0)), toFloat(infoWindowAnchor.get(1)))
+        .rotation(toFloat(data.get("rotation")))
+        .snippet(toString(data.get("snippet")))
+        .title(toString(data.get("title")))
+        .visible(toBoolean(data.get("visible")))
+        .zIndex(toFloat(data.get("zIndex")));
+  }
+
+  private static Point toPoint(Object o) {
+    final List<?> data = toList(o);
+    return new Point(toInt(data.get(0)), toInt(data.get(1)));
+  }
+
+  private static String toString(Object o) {
+    return (String) o;
   }
 
   @Override
@@ -448,8 +462,10 @@ final class GoogleMapsEntry
   }
 
   void removeMarker(String markerId) {
-    final Marker marker = marker(markerId);
-    marker.remove();
+    final Marker marker = markers.remove(markerId);
+    if (marker != null) {
+      marker.remove();
+    }
   }
 
   void showMarkerInfoWindow(String markerId) {
