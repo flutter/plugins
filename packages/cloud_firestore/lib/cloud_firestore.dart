@@ -18,6 +18,7 @@ import 'package:collection/collection.dart';
 import 'src/utils/push_id_generator.dart';
 
 part 'src/collection_reference.dart';
+part 'src/blob.dart';
 part 'src/document_change.dart';
 part 'src/document_snapshot.dart';
 part 'src/document_reference.dart';
@@ -30,4 +31,3 @@ part 'src/firestore_message_codec.dart';
 part 'src/snapshot_metadata.dart';
 part 'src/transaction.dart';
 part 'src/write_batch.dart';
-part 'src/blob.dart';
