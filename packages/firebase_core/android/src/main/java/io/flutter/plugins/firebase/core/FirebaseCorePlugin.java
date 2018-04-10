@@ -62,7 +62,7 @@ public class FirebaseCorePlugin implements MethodCallHandler {
                   .setApplicationId(optionsMap.get("googleAppID"))
                   .setDatabaseUrl(optionsMap.get("databaseURL"))
                   .setGcmSenderId(optionsMap.get("GCMSenderID"))
-                  .setProjectId(optionsMap.get("projectId"))
+                  .setProjectId(optionsMap.get("projectID"))
                   .setStorageBucket(optionsMap.get("storageBucket"))
                   .build();
           FirebaseApp.initializeApp(context, options, name);
