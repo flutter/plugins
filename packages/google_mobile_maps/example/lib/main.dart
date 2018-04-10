@@ -4,96 +4,50 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_mobile_maps/google_mobile_maps.dart';
+import 'animate_camera.dart';
+import 'move_camera.dart';
+import 'page.dart';
+import 'place_marker.dart';
 
-GoogleMapsOverlayController controller1 =
-    new GoogleMapsOverlayController.fromSize(300.0, 200.0);
-GoogleMapsOverlayController controller2 =
-    new GoogleMapsOverlayController.fromSize(300.0, 300.0);
+final List<Page> _allPages = <Page>[
+  new AnimateCameraPage(),
+  new MoveCameraPage(),
+  new PlaceMarkerPage(),
+];
 
-void main() {
-  runApp(new MaterialApp(
-    home: new MyAppHome(),
-    navigatorObservers: <NavigatorObserver>[
-      controller1.overlayController,
-      controller2.overlayController,
-    ],
-  ));
-}
+class MapsDemo extends StatelessWidget {
+  void _pushPage(BuildContext context, Page page) {
+    Navigator.of(context).push(new MaterialPageRoute<void>(
+        builder: (_) => new Scaffold(
+              appBar: new AppBar(
+                title: new Text('${page.title} - ${page.subtitle}'),
+              ),
+              body: page,
+            )));
+  }
 
-class MyAppHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: new AppBar(
-        title: const Text('Google Maps example'),
-      ),
-      body: new Center(
-        child: new Card(
-          child: new GoogleMapsOverlay(controller: controller1),
-        ),
-      ),
-      floatingActionButton: new Builder(
-        builder: (BuildContext actionContext) => new FloatingActionButton(
-              child: new Icon(Icons.place),
-              onPressed: () {
-                Navigator.of(actionContext).push(
-                    new MaterialPageRoute<Null>(builder: (_) => new MapPage()));
-              },
+      appBar: new AppBar(title: const Text('GoogleMaps examples')),
+      body: new ListView.builder(
+        itemCount: _allPages.length,
+        itemBuilder: (_, int index) => new ListTile(
+              leading: _allPages[index].leading,
+              title: new Text(_allPages[index].title),
+              subtitle: new Text(_allPages[index].subtitle),
+              onTap: () => _pushPage(context, _allPages[index]),
             ),
       ),
     );
   }
 }
 
-class MapPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: const Text('Another page'),
-      ),
-      body: new Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          new Center(child: new GoogleMapsOverlay(controller: controller2)),
-          new Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              new FlatButton(
-                onPressed: () {
-                  controller2.mapsController.moveCamera(
-                    const Location(37.4231613, -122.087159),
-                    const Zoom(11.0),
-                  );
-                },
-                color: Colors.blue,
-                child: const Text('Mountain View'),
-              ),
-              new FlatButton(
-                onPressed: () {
-                  controller2.mapsController.moveCamera(
-                    const Location(56.1725505, 10.1850512),
-                    const Zoom(11.0),
-                  );
-                },
-                color: Colors.red,
-                child: const Text('Aarhus'),
-              ),
-              new FlatButton(
-                onPressed: () {
-                  controller2.mapsController.moveCamera(
-                    const Location(-33.852, 151.211),
-                    const Zoom(11.0),
-                  );
-                },
-                color: Colors.yellow,
-                child: const Text('Sydney'),
-              ),
-            ],
-          )
-        ],
-      ),
-    );
+void main() {
+  GoogleMapsController.init();
+  final List<NavigatorObserver> observers = <NavigatorObserver>[];
+  for (Page p in _allPages) {
+    observers.add(p.overlayController);
   }
+  runApp(new MaterialApp(home: new MapsDemo(), navigatorObservers: observers));
 }

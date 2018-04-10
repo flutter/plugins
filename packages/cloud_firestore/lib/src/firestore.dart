@@ -24,7 +24,10 @@ class Firestore {
       <int, TransactionHandler>{};
   static int _transactionHandlerId = 0;
 
-  Firestore._() {
+  static bool _initialized = false;
+
+  Firestore({FirebaseApp app}) : this.app = app ?? FirebaseApp.instance {
+    if (_initialized) return;
     channel.setMethodCallHandler((MethodCall call) {
       if (call.method == 'QuerySnapshot') {
         final QuerySnapshot snapshot =
@@ -40,16 +43,26 @@ class Firestore {
       } else if (call.method == 'DoTransaction') {
         final int transactionId = call.arguments['transactionId'];
         return _transactionHandlers[transactionId](
-          new Transaction(transactionId),
+          new Transaction(transactionId, this),
         );
       }
     });
+    _initialized = true;
   }
 
-  static Firestore _instance = new Firestore._();
-
   /// Gets the instance of Firestore for the default Firebase app.
-  static Firestore get instance => _instance;
+  static final Firestore instance = new Firestore();
+
+  /// The [FirebaseApp] instance to which this [FirebaseDatabase] belongs.
+  ///
+  /// If null, the default [FirebaseApp] is used.
+  final FirebaseApp app;
+
+  @override
+  bool operator ==(dynamic o) => o is Firestore && o.app == app;
+
+  @override
+  int get hashCode => app.hashCode;
 
   /// Gets a [CollectionReference] for the specified Firestore path.
   CollectionReference collection(String path) {
@@ -68,7 +81,7 @@ class Firestore {
   ///
   /// Unlike transactions, write batches are persisted offline and therefore are
   /// preferable when you don’t need to condition your writes on read data.
-  WriteBatch batch() => new WriteBatch._();
+  WriteBatch batch() => new WriteBatch._(this);
 
   /// Executes the given TransactionHandler and then attempts to commit the
   /// changes applied within an atomic transaction.
@@ -98,116 +111,12 @@ class Firestore {
         'Transaction timeout must be more than 0 milliseconds');
     final int transactionId = _transactionHandlerId++;
     _transactionHandlers[transactionId] = transactionHandler;
-    final Map<dynamic, dynamic> result = await channel.invokeMethod(
-        'Firestore#runTransaction', <String, dynamic>{
+    final Map<dynamic, dynamic> result = await channel
+        .invokeMethod('Firestore#runTransaction', <String, dynamic>{
+      'app': app.name,
       'transactionId': transactionId,
       'transactionTimeout': timeout.inMilliseconds
     });
     return result?.cast<String, dynamic>() ?? <String, dynamic>{};
   }
-}
-
-typedef Future<dynamic> TransactionHandler(Transaction transaction);
-
-class Transaction {
-  int _transactionId;
-
-  Transaction(this._transactionId);
-
-  Future<DocumentSnapshot> get(DocumentReference documentReference) async {
-    final dynamic result = await Firestore.channel
-        .invokeMethod('Transaction#get', <String, dynamic>{
-      'transactionId': _transactionId,
-      'path': documentReference.path,
-    });
-    if (result != null) {
-      return new DocumentSnapshot._(documentReference.path,
-          result['data'].cast<String, dynamic>(), Firestore.instance);
-    } else {
-      return null;
-    }
-  }
-
-  Future<void> delete(DocumentReference documentReference) async {
-    return Firestore.channel
-        .invokeMethod('Transaction#delete', <String, dynamic>{
-      'transactionId': _transactionId,
-      'path': documentReference.path,
-    });
-  }
-
-  Future<void> update(
-      DocumentReference documentReference, Map<String, dynamic> data) async {
-    return Firestore.channel
-        .invokeMethod('Transaction#update', <String, dynamic>{
-      'transactionId': _transactionId,
-      'path': documentReference.path,
-      'data': data,
-    });
-  }
-
-  Future<void> set(
-      DocumentReference documentReference, Map<String, dynamic> data) async {
-    return Firestore.channel.invokeMethod('Transaction#set', <String, dynamic>{
-      'transactionId': _transactionId,
-      'path': documentReference.path,
-      'data': data,
-    });
-  }
-}
-
-class FirestoreMessageCodec extends StandardMessageCodec {
-  const FirestoreMessageCodec();
-
-  static const int _kDateTime = 128;
-  static const int _kGeoPoint = 129;
-  static const int _kDocumentReference = 130;
-
-  @override
-  void writeValue(WriteBuffer buffer, dynamic value) {
-    if (value is DateTime) {
-      buffer.putUint8(_kDateTime);
-      buffer.putInt64(value.millisecondsSinceEpoch);
-    } else if (value is GeoPoint) {
-      buffer.putUint8(_kGeoPoint);
-      buffer.putFloat64(value.latitude);
-      buffer.putFloat64(value.longitude);
-    } else if (value is DocumentReference) {
-      buffer.putUint8(_kDocumentReference);
-      final List<int> bytes = utf8.encoder.convert(value.path);
-      writeSize(buffer, bytes.length);
-      buffer.putUint8List(bytes);
-    } else {
-      super.writeValue(buffer, value);
-    }
-  }
-
-  @override
-  dynamic readValueOfType(int type, ReadBuffer buffer) {
-    switch (type) {
-      case _kDateTime:
-        return new DateTime.fromMillisecondsSinceEpoch(buffer.getInt64());
-      case _kGeoPoint:
-        return new GeoPoint(buffer.getFloat64(), buffer.getFloat64());
-      case _kDocumentReference:
-        final int length = readSize(buffer);
-        final String path = utf8.decoder.convert(buffer.getUint8List(length));
-        return Firestore.instance.document(path);
-      default:
-        return super.readValueOfType(type, buffer);
-    }
-  }
-}
-
-class GeoPoint {
-  final double latitude;
-  final double longitude;
-  const GeoPoint(this.latitude, this.longitude);
-
-  @override
-  bool operator ==(dynamic o) =>
-      o is GeoPoint && o.latitude == latitude && o.longitude == longitude;
-
-  @override
-  int get hashCode => hashValues(latitude, longitude);
 }

@@ -15,6 +15,7 @@ import android.app.Application;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Surface;
 import android.widget.FrameLayout;
@@ -23,12 +24,19 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
+import io.flutter.view.FlutterMain;
 import io.flutter.view.TextureRegistry;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -78,69 +86,235 @@ public class GoogleMobileMapsPlugin
         {
           final int width = ((Number) call.argument("width")).intValue();
           final int height = ((Number) call.argument("height")).intValue();
-          final GoogleMapsEntry entry = new GoogleMapsEntry(state, registrar, width, height);
+          final GoogleMapsEntry entry =
+              new GoogleMapsEntry(state, registrar, width, height, result);
           googleMaps.put(entry.id(), entry);
           entry.init();
-          result.success(entry.id());
+          // result.success is called from entry when the GoogleMaps instance is ready
           break;
         }
       case "moveCamera":
         {
-          final long id = ((Number) call.argument("id")).longValue();
-          final List<Double> location = call.argument("location");
-          final float zoom = ((Number) call.argument("zoom")).floatValue();
-          final GoogleMapsEntry entry = googleMaps.get(id);
-          if (entry == null) {
-            result.error("unknown", "Unknown ID " + id, null);
-          } else {
-            entry.moveCamera(
-                CameraUpdateFactory.newLatLngZoom(
-                    new LatLng(location.get(0), location.get(1)), zoom));
-            result.success(null);
-          }
+          final GoogleMapsEntry entry = mapsEntry(call);
+          final CameraUpdate cameraUpdate = toCameraUpdate(call.argument("cameraUpdate"));
+          entry.moveCamera(cameraUpdate);
+          result.success(null);
+          break;
+        }
+      case "animateCamera":
+        {
+          final GoogleMapsEntry entry = mapsEntry(call);
+          final CameraUpdate cameraUpdate = toCameraUpdate(call.argument("cameraUpdate"));
+          entry.animateCamera(cameraUpdate);
+          result.success(null);
+          break;
+        }
+      case "addMarker":
+        {
+          final GoogleMapsEntry entry = mapsEntry(call);
+          final MarkerOptions markerOptions = toMarkerOptions(call.argument("markerOptions"));
+          final String markerId = entry.addMarker(markerOptions);
+          result.success(markerId);
+          break;
+        }
+      case "marker#remove":
+        {
+          final GoogleMapsEntry entry = mapsEntry(call);
+          final String markerId = call.argument("marker");
+          entry.removeMarker(markerId);
+          result.success(null);
+          break;
+        }
+      case "marker#hideInfoWindow":
+        {
+          final GoogleMapsEntry entry = mapsEntry(call);
+          final String markerId = call.argument("marker");
+          entry.hideMarkerInfoWindow(markerId);
+          result.success(null);
+          break;
+        }
+      case "marker#showInfoWindow":
+        {
+          final GoogleMapsEntry entry = mapsEntry(call);
+          final String markerId = call.argument("marker");
+          entry.showMarkerInfoWindow(markerId);
+          result.success(null);
+          break;
+        }
+      case "marker#update":
+        {
+          final GoogleMapsEntry entry = mapsEntry(call);
+          final String markerId = call.argument("marker");
+          final MarkerOptions markerOptions = toMarkerOptions(call.argument("markerOptions"));
+          entry.updateMarker(markerId, markerOptions);
+          result.success(null);
           break;
         }
       case "showMapOverlay":
         {
-          final long id = ((Number) call.argument("id")).longValue();
+          final GoogleMapsEntry entry = mapsEntry(call);
           final int x = ((Number) call.argument("x")).intValue();
           final int y = ((Number) call.argument("y")).intValue();
-          final GoogleMapsEntry entry = googleMaps.get(id);
-          if (entry == null) {
-            result.error("unknown", "Unknown ID " + id, null);
-          } else {
-            entry.showOverlay(x, y);
-            result.success(null);
-          }
+          entry.showOverlay(x, y);
+          result.success(null);
           break;
         }
       case "hideMapOverlay":
         {
-          final long id = ((Number) call.argument("id")).longValue();
-          final GoogleMapsEntry entry = googleMaps.get(id);
-          if (entry == null) {
-            result.error("unknown", "Unknown ID " + id, null);
-          } else {
-            entry.hideOverlay();
-            result.success(null);
-          }
+          final GoogleMapsEntry entry = mapsEntry(call);
+          entry.hideOverlay();
+          result.success(null);
           break;
         }
       case "disposeMap":
         {
-          final long id = ((Number) call.argument("id")).longValue();
-          final GoogleMapsEntry entry = googleMaps.get(id);
-          if (entry == null) {
-            result.error("unknown", "Unknown ID " + id, null);
-          } else {
-            entry.dispose();
-            result.success(null);
-          }
+          final GoogleMapsEntry entry = mapsEntry(call);
+          entry.dispose();
+          result.success(null);
           break;
         }
       default:
         result.notImplemented();
     }
+  }
+
+  private GoogleMapsEntry mapsEntry(MethodCall call) {
+    final long id = toLong(call.argument("map"));
+    final GoogleMapsEntry entry = googleMaps.get(id);
+    if (entry == null) {
+      throw new IllegalArgumentException("Unknown map: " + id);
+    }
+    return entry;
+  }
+
+  private static BitmapDescriptor toBitmapDescriptor(Object o) {
+    final List<?> data = toList(o);
+    switch (toString(data.get(0))) {
+      case "defaultMarker":
+        if (data.size() == 1) {
+          return BitmapDescriptorFactory.defaultMarker();
+        } else {
+          return BitmapDescriptorFactory.defaultMarker(toFloat(data.get(1)));
+        }
+      case "fromAsset":
+        if (data.size() == 2) {
+          return BitmapDescriptorFactory.fromAsset(
+              FlutterMain.getLookupKeyForAsset(toString(data.get(1))));
+        } else {
+          return BitmapDescriptorFactory.fromAsset(
+              FlutterMain.getLookupKeyForAsset(toString(data.get(1)), toString(data.get(2))));
+        }
+      case "fromFile":
+        return BitmapDescriptorFactory.fromFile(toString(data.get(1)));
+      case "fromPath":
+        return BitmapDescriptorFactory.fromPath(toString(data.get(1)));
+    }
+    throw new IllegalArgumentException("Cannot interpret " + o + " as BitmapDescriptor");
+  }
+
+  private static boolean toBoolean(Object o) {
+    return (Boolean) o;
+  }
+
+  private static CameraPosition toCameraPosition(Object o) {
+    final Map<?, ?> data = toMap(o);
+    final CameraPosition.Builder builder = CameraPosition.builder();
+    builder.bearing(toFloat(data.get("bearing")));
+    builder.target(toLatLng(data.get("target")));
+    builder.tilt(toFloat(data.get("tilt")));
+    builder.zoom(toFloat(data.get("zoom")));
+    return builder.build();
+  }
+
+  private static CameraUpdate toCameraUpdate(Object o) {
+    final List<?> data = toList(o);
+    switch (toString(data.get(0))) {
+      case "newCameraPosition":
+        return CameraUpdateFactory.newCameraPosition(toCameraPosition(data.get(1)));
+      case "newLatLng":
+        return CameraUpdateFactory.newLatLng(toLatLng(data.get(1)));
+      case "newLatLngBounds":
+        return CameraUpdateFactory.newLatLngBounds(toLatLngBounds(data.get(1)), toInt(data.get(2)));
+      case "newLatLngZoom":
+        return CameraUpdateFactory.newLatLngZoom(toLatLng(data.get(1)), toFloat(data.get(2)));
+      case "scrollBy":
+        return CameraUpdateFactory.scrollBy(toFloat(data.get(1)), toFloat(data.get(2)));
+      case "zoomBy":
+        if (data.size() == 2) {
+          return CameraUpdateFactory.zoomBy(toFloat(data.get(1)));
+        } else {
+          return CameraUpdateFactory.zoomBy(toFloat(data.get(1)), toPoint(data.get(2)));
+        }
+      case "zoomIn":
+        return CameraUpdateFactory.zoomIn();
+      case "zoomOut":
+        return CameraUpdateFactory.zoomOut();
+      case "zoomTo":
+        return CameraUpdateFactory.zoomTo(toFloat(data.get(1)));
+    }
+    throw new IllegalArgumentException("Cannot interpret " + o + " as CameraUpdate");
+  }
+
+  private static double toDouble(Object o) {
+    return ((Number) o).doubleValue();
+  }
+
+  private static float toFloat(Object o) {
+    return ((Number) o).floatValue();
+  }
+
+  private static int toInt(Object o) {
+    return ((Number) o).intValue();
+  }
+
+  private static LatLng toLatLng(Object o) {
+    final List<?> data = toList(o);
+    return new LatLng(toDouble(data.get(0)), toDouble(data.get(1)));
+  }
+
+  private static LatLngBounds toLatLngBounds(Object o) {
+    final List<?> data = toList(o);
+    return new LatLngBounds(toLatLng(data.get(0)), toLatLng(data.get(1)));
+  }
+
+  private static List<?> toList(Object o) {
+    return (List<?>) o;
+  }
+
+  private static long toLong(Object o) {
+    return ((Number) o).longValue();
+  }
+
+  private static Map<?, ?> toMap(Object o) {
+    return (Map<?, ?>) o;
+  }
+
+  private static MarkerOptions toMarkerOptions(Object o) {
+    final Map<?, ?> data = toMap(o);
+    final List<?> anchor = toList(data.get("anchor"));
+    final List<?> infoWindowAnchor = toList(data.get("infoWindowAnchor"));
+    return new MarkerOptions()
+        .position(toLatLng(data.get("position")))
+        .alpha(toFloat(data.get("alpha")))
+        .anchor(toFloat(anchor.get(0)), toFloat(anchor.get(1)))
+        .draggable(toBoolean(data.get("draggable")))
+        .flat(toBoolean(data.get("flat")))
+        .icon(toBitmapDescriptor(data.get("icon")))
+        .infoWindowAnchor(toFloat(infoWindowAnchor.get(0)), toFloat(infoWindowAnchor.get(1)))
+        .rotation(toFloat(data.get("rotation")))
+        .snippet(toString(data.get("snippet")))
+        .title(toString(data.get("title")))
+        .visible(toBoolean(data.get("visible")))
+        .zIndex(toFloat(data.get("zIndex")));
+  }
+
+  private static Point toPoint(Object o) {
+    final List<?> data = toList(o);
+    return new Point(toInt(data.get(0)), toInt(data.get(1)));
+  }
+
+  private static String toString(Object o) {
+    return (String) o;
   }
 
   @Override
@@ -191,16 +365,20 @@ final class GoogleMapsEntry
   private final Bitmap bitmap;
   private final int width;
   private final int height;
+  private final Result result;
   private final Timer timer;
+  private final Map<String, Marker> markers;
   private GoogleMap googleMap;
   private Surface surface;
   private boolean disposed = false;
 
-  GoogleMapsEntry(AtomicInteger activityState, Registrar registrar, int width, int height) {
+  GoogleMapsEntry(
+      AtomicInteger activityState, Registrar registrar, int width, int height, Result result) {
     this.activityState = activityState;
     this.registrar = registrar;
     this.width = width;
     this.height = height;
+    this.result = result;
     this.bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
     this.parent = (FrameLayout) registrar.view().getParent();
     this.textureEntry = registrar.textures().createSurfaceTexture();
@@ -208,6 +386,7 @@ final class GoogleMapsEntry
     textureEntry.surfaceTexture().setDefaultBufferSize(width, height);
     this.mapView = new MapView(registrar.activity());
     this.timer = new Timer();
+    this.markers = new HashMap<>();
   }
 
   void init() {
@@ -269,7 +448,58 @@ final class GoogleMapsEntry
   }
 
   void moveCamera(CameraUpdate cameraUpdate) {
+    googleMap.moveCamera(cameraUpdate);
+  }
+
+  void animateCamera(CameraUpdate cameraUpdate) {
     googleMap.animateCamera(cameraUpdate);
+  }
+
+  String addMarker(MarkerOptions options) {
+    final Marker marker = googleMap.addMarker(options);
+    markers.put(marker.getId(), marker);
+    return marker.getId();
+  }
+
+  void removeMarker(String markerId) {
+    final Marker marker = markers.remove(markerId);
+    if (marker != null) {
+      marker.remove();
+    }
+  }
+
+  void showMarkerInfoWindow(String markerId) {
+    final Marker marker = marker(markerId);
+    marker.showInfoWindow();
+  }
+
+  void hideMarkerInfoWindow(String markerId) {
+    final Marker marker = marker(markerId);
+    marker.hideInfoWindow();
+  }
+
+  void updateMarker(String markerId, MarkerOptions options) {
+    final Marker marker = marker(markerId);
+    marker.setPosition(options.getPosition());
+    marker.setAlpha(options.getAlpha());
+    marker.setAnchor(options.getAnchorU(), options.getAnchorV());
+    marker.setDraggable(options.isDraggable());
+    marker.setFlat(options.isFlat());
+    marker.setIcon(options.getIcon());
+    marker.setInfoWindowAnchor(options.getInfoWindowAnchorU(), options.getInfoWindowAnchorV());
+    marker.setRotation(options.getRotation());
+    marker.setSnippet(options.getSnippet());
+    marker.setTitle(options.getTitle());
+    marker.setVisible(options.isVisible());
+    marker.setZIndex(options.getZIndex());
+  }
+
+  private Marker marker(String markerId) {
+    final Marker marker = markers.get(markerId);
+    if (marker == null) {
+      throw new IllegalArgumentException("Unknown marker: " + markerId);
+    }
+    return marker;
   }
 
   private void updateTexture() {
@@ -284,6 +514,7 @@ final class GoogleMapsEntry
   @Override
   public void onMapReady(GoogleMap googleMap) {
     this.googleMap = googleMap;
+    result.success(id());
     googleMap.setOnCameraMoveStartedListener(this);
     googleMap.setOnCameraIdleListener(this);
     // Take snapshots until the dust settles.

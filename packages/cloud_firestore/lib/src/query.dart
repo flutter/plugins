@@ -7,11 +7,10 @@ part of cloud_firestore;
 /// Represents a query over the data at a particular location.
 class Query {
   Query._(
-      {@required Firestore firestore,
+      {@required this.firestore,
       @required List<String> pathComponents,
       Map<String, dynamic> parameters})
-      : _firestore = firestore,
-        _pathComponents = pathComponents,
+      : _pathComponents = pathComponents,
         _parameters = parameters ??
             new Map<String, dynamic>.unmodifiable(<String, dynamic>{
               'where': new List<List<dynamic>>.unmodifiable(<List<dynamic>>[]),
@@ -21,17 +20,17 @@ class Query {
         assert(firestore != null),
         assert(pathComponents != null);
 
-  final Firestore _firestore;
+  /// The Firestore instance associated with this query
+  final Firestore firestore;
+
   final List<String> _pathComponents;
   final Map<String, dynamic> _parameters;
 
-  /// A string containing the slash-separated path to this Query (relative to
-  /// the root of the database).
-  String get path => _pathComponents.join('/');
+  String get _path => _pathComponents.join('/');
 
   Query _copyWithParameters(Map<String, dynamic> parameters) {
     return new Query._(
-      firestore: _firestore,
+      firestore: firestore,
       pathComponents: _pathComponents,
       parameters: new Map<String, dynamic>.unmodifiable(
         new Map<String, dynamic>.from(_parameters)..addAll(parameters),
@@ -42,7 +41,7 @@ class Query {
   Map<String, dynamic> buildArguments() {
     return new Map<String, dynamic>.from(_parameters)
       ..addAll(<String, dynamic>{
-        'path': path,
+        'path': _path,
       });
   }
 
@@ -58,7 +57,8 @@ class Query {
         _handle = Firestore.channel.invokeMethod(
           'Query#addSnapshotListener',
           <String, dynamic>{
-            'path': path,
+            'app': firestore.app.name,
+            'path': _path,
             'parameters': _parameters,
           },
         ).then<int>((dynamic result) => result);
@@ -84,16 +84,17 @@ class Query {
     final Map<dynamic, dynamic> data = await Firestore.channel.invokeMethod(
       'Query#getDocuments',
       <String, dynamic>{
-        'path': path,
+        'app': firestore.app.name,
+        'path': _path,
         'parameters': _parameters,
       },
     );
-    return new QuerySnapshot._(data, _firestore);
+    return new QuerySnapshot._(data, firestore);
   }
 
   /// Obtains a CollectionReference corresponding to this query's location.
   CollectionReference reference() =>
-      new CollectionReference._(_firestore, _pathComponents);
+      new CollectionReference._(firestore, _pathComponents);
 
   /// Creates and returns a new [Query] with additional filter on specified
   /// [field].

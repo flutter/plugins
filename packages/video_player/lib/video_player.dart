@@ -132,14 +132,32 @@ class VideoPlayerValue {
 /// After [dispose] all further calls are ignored.
 class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   int _textureId;
-  final String uri;
+  final String dataSource;
+  final bool isNetwork;
+  String package;
   Timer timer;
   bool isDisposed = false;
   Completer<Null> _creatingCompleter;
   StreamSubscription<dynamic> _eventSubscription;
   _VideoAppLifeCycleObserver _lifeCycleObserver;
 
-  VideoPlayerController(this.uri) : super(new VideoPlayerValue(duration: null));
+  /// Constructs a [VideoPlayerController] playing a video from an asset.
+  ///
+  /// The name of the asset is given by the [dataSource] argument and must not be
+  /// null. The [package] argument must be non-null when the asset comes from a
+  /// package and null otherwise.
+  VideoPlayerController.asset(this.dataSource, {this.package})
+      : isNetwork = false,
+        super(new VideoPlayerValue(duration: null));
+
+  /// Constructs a [VideoPlayerController] playing a video from obtained from
+  /// the network.
+  ///
+  /// The URI for the video is given by the [dataSource] argument and must not be
+  /// null.
+  VideoPlayerController.network(this.dataSource)
+      : isNetwork = true,
+        super(new VideoPlayerValue(duration: null));
 
   Future<Null> initialize() async {
     _lifeCycleObserver = new _VideoAppLifeCycleObserver(this);
@@ -147,7 +165,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     _creatingCompleter = new Completer<Null>();
     final Map<dynamic, dynamic> response = await _channel.invokeMethod(
       'create',
-      <String, dynamic>{'dataSource': uri},
+      isNetwork
+          ? <String, dynamic>{'uri': dataSource}
+          : <String, dynamic>{'asset': dataSource, 'package': package},
     );
     _textureId = response['textureId'];
     _creatingCompleter.complete(null);

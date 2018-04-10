@@ -48,6 +48,13 @@ class StorageReference {
     );
   }
 
+  Future<dynamic> getDownloadURL() async {
+    return await FirebaseStorage._channel
+        .invokeMethod("StorageReference#getDownloadUrl", <String, String>{
+      'path': _pathComponents.join("/"),
+    });
+  }
+
   Future<void> delete() {
     return FirebaseStorage._channel.invokeMethod("StorageReference#delete",
         <String, String>{'path': _pathComponents.join("/")});
@@ -65,7 +72,7 @@ class StorageUploadTask {
       new Completer<UploadTaskSnapshot>();
   Future<UploadTaskSnapshot> get future => _completer.future;
 
-  Future<Null> _start() async {
+  Future<void> _start() async {
     final String downloadUrl = await FirebaseStorage._channel.invokeMethod(
       "StorageReference#putFile",
       <String, String>{

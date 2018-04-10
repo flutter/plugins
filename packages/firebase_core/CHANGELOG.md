@@ -1,3 +1,21 @@
+## 0.2.1
+
+* Fix setting project ID on Android.
+
+## 0.2.0
+
+* **Breaking change**. Options API is now async to interoperate with native code that configures Firebase apps.
+* Provide a getter for the default app
+* Fix setting of GCM sender ID on iOS
+
+## 0.1.2
+
+* Fix projectID on iOS
+
+## 0.1.1
+
+* Fix behavior of constructor for named Firebase apps.
+
 ## 0.1.0
 
 * **Breaking change**. Set SDK constraints to match the Flutter beta release.

@@ -35,18 +35,34 @@ class DemoAppState extends State<DemoApp> {
                     labelText: 'Share:',
                     hintText: 'Enter some text and/or link to share',
                   ),
-                  maxLines: 4,
+                  maxLines: 2,
                   onChanged: (String value) => setState(() {
                         text = value;
                       }),
                 ),
-                new RaisedButton(
-                  child: const Text('Share'),
-                  onPressed: text.isNotEmpty
-                      ? () {
-                          share(text);
-                        }
-                      : null,
+                const Padding(padding: const EdgeInsets.only(top: 24.0)),
+                new Builder(
+                  builder: (BuildContext context) {
+                    return new RaisedButton(
+                      child: const Text('Share'),
+                      onPressed: text.isEmpty
+                          ? null
+                          : () {
+                              // A builder is used to retrieve the context immediately
+                              // surrounding the RaisedButton.
+                              //
+                              // The context's `findRenderObject` returns the first
+                              // RenderObject in its descendent tree when it's not
+                              // a RenderObjectWidget. The RaisedButton's RenderObject
+                              // has its position and size after it's built.
+                              final RenderBox box = context.findRenderObject();
+                              Share.share(text,
+                                  sharePositionOrigin:
+                                      box.localToGlobal(Offset.zero) &
+                                          box.size);
+                            },
+                    );
+                  },
                 ),
               ],
             ),
