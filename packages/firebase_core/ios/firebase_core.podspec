@@ -17,9 +17,5 @@ A new flutter plugin project.
   s.dependency 'Flutter'
   s.dependency 'Firebase/Core'
   s.ios.deployment_target = '8.0'
-  s.pod_target_xcconfig = {
-   'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/**',
-   'OTHER_LDFLAGS' => '$(inherited) -undefined dynamic_lookup'
-  }
+  s.static_framework = true
 end
-
