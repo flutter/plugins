@@ -32,14 +32,11 @@ void logError(String code, String message) =>
 class _CameraExampleHomeState extends State<CameraExampleHome> {
   CameraController controller;
   String imagePath;
-  String statusMessage = '';
   String videoPath;
   VideoPlayerController videoController;
 
-  @override
-  void initState() {
-    super.initState();
-  }
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
 
   @override
   Widget build(BuildContext context) {
@@ -105,8 +102,9 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
 
     // The main scaffolding of the app.
     return new Scaffold(
-      appBar: new AppBar(
-        title: const Text('Camera example'),
+        key: _scaffoldKey,
+        appBar: new AppBar(
+          title: const Text('Camera example'),
       ),
       body: new Column(children: <Widget>[
         new Container(
@@ -125,12 +123,10 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
           decoration: new BoxDecoration(
             color: Colors.black,
             border: new Border.all(
-              color: Colors.redAccent,
-              width: controller != null &&
-                      controller.value.isOpen &&
-                      controller.value.isRecordingVideo
-                  ? 3.0
-                  : 0.0,
+              color: controller != null &&
+                  controller.value.isRecordingVideo
+              ? Colors.redAccent : Colors.grey,
+              width: 3.0,
             ),
           ),
         ),
@@ -142,8 +138,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
               // Add the controls to the app.
               children: controlsChildren),
         ),
-        // Add the message to the user depending on the camera controller state.
-        vidMsg(),
       ]),
 
       // Bottom bar with the capture controls.
@@ -156,7 +150,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
                 new IconButton(
                   icon: new Icon(Icons.camera_alt),
                   color: Colors.blue,
-                  onPressed: controller.value.isOpen &&
+                  onPressed: controller.value.isInitialized &&
                           !controller.value.isRecordingVideo
                       ? onTakePictureButtonPressed
                       : null,
@@ -164,7 +158,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
                 new IconButton(
                   icon: new Icon(Icons.videocam),
                   color: Colors.blue,
-                  onPressed: controller.value.isOpen &&
+                  onPressed: controller.value.isInitialized &&
                           !controller.value.isRecordingVideo
                       ? onVideoRecordButtonPressed
                       : null,
@@ -172,7 +166,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
                 new IconButton(
                   icon: new Icon(Icons.stop),
                   color: Colors.red,
-                  onPressed: controller.value.isOpen &&
+                  onPressed: controller.value.isInitialized &&
                           controller.value.isRecordingVideo
                       ? onStopButtonPressed
                       : null,
@@ -202,31 +196,11 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
     );
   }
 
-  /// Display a message depending on camera app state.
-  Widget vidMsg() {
-    if (controller == null) {
-      return const Padding(
-        padding: const EdgeInsets.all(1.0),
-        child: const Text('Choose a camera'),
-      );
-    } else {
-      if (controller.value.errorDescription != null) {
-        statusMessage = 'Camera error ${controller.value.errorDescription}';
-      } else if (statusMessage == '') {
-        statusMessage = 'Take a picture or record a video';
-      }
-      return new Padding(
-          padding: const EdgeInsets.all(1.0),
-          child: new Text(
-            '$statusMessage',
-            textAlign: TextAlign.center,
-            overflow: TextOverflow.ellipsis,
-            softWrap: true,
-          ));
-    }
-  }
-
   String timestamp() => new DateTime.now().millisecondsSinceEpoch.toString();
+
+  void showInSnackBar(String message) {
+    _scaffoldKey.currentState.showSnackBar(new SnackBar(content: new Text(message)));
+  }
 
   void onNewCameraSelected(CameraDescription cameraDescription) async {
     if (controller != null) {
@@ -236,13 +210,14 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
 
     // If the controller is updated then update the UI.
     controller.addListener(() {
-      if (mounted) {
-        setState(() => statusMessage = '');
+      if (mounted) setState(() {});
+      if(controller.value.hasError) {
+        showInSnackBar('Camera error ${controller.value.errorDescription}');
       }
     });
 
     try {
-      await controller.openCamera();
+      await controller.initialize();
     } on CameraException catch (e) {
       logError(e.code, e.description);
     }
@@ -259,19 +234,16 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
           imagePath = filePath;
           videoController?.dispose();
           videoController = null;
-          statusMessage = 'Picture saved to $filePath';
         });
+        showInSnackBar('Picture saved to $filePath');
       }
     });
   }
 
   void onVideoRecordButtonPressed() {
     startVideoRecording().then((String filePath) {
-      if (mounted) {
-        setState(() {
-          statusMessage = 'Saving video to $filePath';
-        });
-      }
+      if (mounted) setState(() {});
+      showInSnackBar('Saving video to $filePath');
     });
   }
 
@@ -280,14 +252,13 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
     if (!mounted) {
       return null;
     }
-    setState(() {
-      statusMessage = 'Recording done!';
-    });
+    showInSnackBar('Video recorded to: $videoPath');
   }
 
   Future<String> startVideoRecording() async {
-    if (!controller.value.isOpen) {
-      return '';
+    if (!controller.value.isInitialized) {
+      showInSnackBar('Error: select a camera first.');
+      return null;
     }
     final Directory extDir = await getApplicationDocumentsDirectory();
     final String dirPath = '${extDir.path}/Movies/flutter_test';
@@ -326,8 +297,9 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
   }
 
   Future<String> takePicture() async {
-    if (!controller.value.isOpen) {
-      return '';
+    if (!controller.value.isInitialized) {
+      showInSnackBar('Error: select a camera first.');
+      return null;
     }
     final Directory extDir = await getApplicationDocumentsDirectory();
     final String dirPath = '${extDir.path}/Pictures/flutter_test';

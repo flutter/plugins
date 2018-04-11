@@ -77,7 +77,7 @@ class CameraDescription {
   }
 }
 
-/// This is thrown when the plugins report an error.
+/// This is thrown when the plugin reports an error.
 class CameraException implements Exception {
   String code;
   String description;
@@ -104,12 +104,10 @@ class CameraPreview extends StatelessWidget {
 
 /// The state of a [CameraController].
 class CameraValue {
-  /// True if the camera is on.
-  final bool isOpen;
-
-  /// True after [CameraController.openCamera] has completed successfully.
+  /// True after [CameraController.initialize] has completed successfully.
   final bool isInitialized;
 
+  /// True when the camera is recording (not the same as previewing).
   final bool isRecordingVideo;
 
   final String errorDescription;
@@ -120,31 +118,28 @@ class CameraValue {
   final Size previewSize;
 
   const CameraValue(
-      {this.isOpen,
-      this.isInitialized,
+      {this.isInitialized,
       this.errorDescription,
       this.previewSize,
       this.isRecordingVideo});
 
   const CameraValue.uninitialized()
-      : this(isOpen: true, isInitialized: false, isRecordingVideo: false);
+      : this(isInitialized: false, isRecordingVideo: false);
 
   /// Convenience getter for `previewSize.height / previewSize.width`.
   ///
-  /// Can only be called when [isInitialized] is done.
+  /// Can only be called when [initialize] is done.
   double get aspectRatio => previewSize.height / previewSize.width;
 
   bool get hasError => errorDescription != null;
 
   CameraValue copyWith({
-    bool isOpen,
     bool isInitialized,
     bool isRecordingVideo,
     String errorDescription,
     Size previewSize,
   }) {
     return new CameraValue(
-      isOpen: isOpen ?? this.isOpen,
       isInitialized: isInitialized ?? this.isInitialized,
       errorDescription: errorDescription ?? this.errorDescription,
       previewSize: previewSize ?? this.previewSize,
@@ -155,7 +150,6 @@ class CameraValue {
   @override
   String toString() {
     return '$runtimeType('
-        'opened: $isOpen, '
         'recordingVideo: $isRecordingVideo, '
         'initialized: $isInitialized, '
         'errorDescription: $errorDescription, '
@@ -167,7 +161,7 @@ class CameraValue {
 ///
 /// Use [availableCameras] to get a list of available cameras.
 ///
-/// Before using a [CameraController] a call to [openCamera] must complete.
+/// Before using a [CameraController] a call to [initialize] must complete.
 ///
 /// To show the camera preview on the screen use a [CameraPreview] widget.
 class CameraController extends ValueNotifier<CameraValue> {
@@ -185,7 +179,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   /// Initializes the camera on the device.
   ///
   /// Throws a [CameraException] if the initialization fails.
-  Future<Null> openCamera() async {
+  Future<Null> initialize() async {
     if (_isDisposed) {
       return;
     }
