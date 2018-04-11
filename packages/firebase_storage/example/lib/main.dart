@@ -73,7 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: new FloatingActionButton(
         onPressed: _uploadFile,
         tooltip: 'Upload',
-        child: new Icon(Icons.file_upload),
+        child: const Icon(Icons.file_upload),
       ),
     );
   }

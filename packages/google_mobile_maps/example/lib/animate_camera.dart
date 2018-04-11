@@ -8,7 +8,8 @@ import 'package:google_mobile_maps/google_mobile_maps.dart';
 import 'page.dart';
 
 class AnimateCameraPage extends Page {
-  AnimateCameraPage() : super(new Icon(Icons.map), "Camera control", "Animate");
+  AnimateCameraPage()
+      : super(const Icon(Icons.map), "Camera control", "Animate");
 
   final GoogleMapsOverlayController controller =
       new GoogleMapsOverlayController.fromSize(300.0, 200.0);
