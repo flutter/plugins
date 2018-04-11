@@ -1,3 +1,7 @@
+## 0.6.0
+
+* **Breaking change**. Renamed 'getCollection()' to 'collection().'
+
 ## 0.5.1
 
 * Expose the Firebase app corresponding to a Firestore
