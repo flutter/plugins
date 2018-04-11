@@ -32,6 +32,7 @@ MobileAdTargetingInfo targetingInfo = new MobileAdTargetingInfo(
 
 BannerAd myBanner = new BannerAd(
   adUnitId: myBannerAdUnitId,
+  size: AdSize.banner,
   targetingInfo: targetingInfo,
 );
 
