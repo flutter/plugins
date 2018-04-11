@@ -30,7 +30,10 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
 
 @interface FLTFirebaseAuthPlugin ()
 @property(nonatomic, retain) NSMutableDictionary *authStateChangeListeners;
-@property(nonatomic, retain) FlutterMethodChannel *channel;
+@property(nonatomic, retain) FlutterMethodChannel *methodChannel;
+@property(nonatomic, retain) FlutterEventChannel *phoneAuthEventChannel;
+@property(nonatomic, copy) FlutterEventSink phoneAuthEventSink;
+@property(nonatomic, retain) NSString* phoneAuthVerificationID;
 @end
 
 @implementation FLTFirebaseAuthPlugin
@@ -39,13 +42,18 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
 int nextHandle = 0;
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
-  FlutterMethodChannel *channel =
+  FlutterMethodChannel *methodChannel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/firebase_auth"
                                   binaryMessenger:[registrar messenger]];
+  FlutterEventChannel *eventChannel =
+      [FlutterEventChannel eventChannelWithName:@"plugins.flutter.io/firebase_auth_phone_sign_in"
+                                binaryMessenger:[registrar messenger]];
+
   FLTFirebaseAuthPlugin *instance = [[FLTFirebaseAuthPlugin alloc] init];
-  instance.channel = channel;
+  instance.methodChannel = methodChannel;
+  instance.phoneAuthEventChannel = eventChannel;
   instance.authStateChangeListeners = [[NSMutableDictionary alloc] init];
-  [registrar addMethodCallDelegate:instance channel:channel];
+  [registrar addMethodCallDelegate:instance channel:methodChannel];
 }
 
 - (instancetype)init {
@@ -56,6 +64,16 @@ int nextHandle = 0;
     }
   }
   return self;
+}
+
+- (FlutterError* _Nullable)onListenWithArguments:(id _Nullable)arguments eventSink:(FlutterEventSink)events {
+  _phoneAuthEventSink = events;
+  return nil;
+}
+
+- (FlutterError* _Nullable)onCancelWithArguments:(id _Nullable)arguments {
+  _phoneAuthEventSink = nil;
+  return nil;
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
@@ -131,6 +149,27 @@ int nextHandle = 0;
                          completion:^(FIRAuthDataResult *dataResult, NSError *error) {
                            [self sendResult:result forUser:dataResult.user error:error];
                          }];
+  } else if ([@"signInWithPhoneNumber" isEqualToString:call.method]) {
+      NSString* phoneNumber = call.arguments[@"phoneNumber"];
+      [[FIRPhoneAuthProvider provider] verifyPhoneNumber:phoneNumber
+                                              UIDelegate:nil
+                                              completion:^(NSString *verificationID, NSError *error) {
+                                                  if (error == nil) {
+                                                      self.phoneAuthVerificationID = verificationID;
+                                                      _phoneAuthEventSink(@"CODE_SENT");
+                                                  } else {
+                                                      [self sendResult:result forProviders:nil error:error];
+                                                  }
+                                              }];
+  } else if ([@"verifyPhoneNumber" isEqualToString:call.method]) {
+    NSString* verificationCode = call.arguments[@"code"];
+      FIRAuthCredential *credential = [[FIRPhoneAuthProvider provider] credentialWithVerificationID:self.phoneAuthVerificationID
+                                                   verificationCode:verificationCode];
+
+      [[FIRAuth auth] signInWithCredential:credential
+                                completion:^(FIRUser *user, NSError *error) {
+                                    [self sendResult:result forUser:user error:error];
+                                }];
   } else if ([@"signOut" isEqualToString:call.method]) {
     NSError *signOutError;
     BOOL status = [[FIRAuth auth] signOut:&signOutError];
@@ -199,7 +238,7 @@ int nextHandle = 0;
           if (user) {
             response[@"user"] = [self dictionaryFromUser:user];
           }
-          [self.channel invokeMethod:@"onAuthStateChanged" arguments:response];
+          [self.methodChannel invokeMethod:@"onAuthStateChanged" arguments:response];
         }];
     [self.authStateChangeListeners setObject:listener forKey:identifier];
     result(identifier);
@@ -219,7 +258,33 @@ int nextHandle = 0;
                                                    identifier.intValue]
                 details:nil]);
     }
-  } else {
+  } else if ([@"verifyPhoneNumber" isEqualToString:call.method]) {
+    [[FIRPhoneAuthProvider provider] verifyPhoneNumber:call.arguments[@"phoneNumber"]
+                                            UIDelegate:nil
+                                            completion:^(NSString * _Nullable verificationID, NSError * _Nullable error) {
+                                              if (verificationID != nil) {
+                                                result(@{
+                                                         @"status": @"codeSent",
+                                                         @"verificationID": verificationID
+                                                         });
+                                              } else if (error != nil) {
+                                                result(@{
+                                                         @"status": @"error",
+                                                         @"error": error.flutterError
+                                                         });
+                                              }
+                                            }];
+  } else if ([@"signInWithPhoneNumber" isEqualToString:call.method]) {
+    FIRAuthCredential* credential = [[FIRPhoneAuthProvider provider]
+                                     credentialWithVerificationID:call.arguments[@"verificationID"]
+                                     verificationCode:call.arguments[@"enteredCode"]];
+
+    [[FIRAuth auth] signInWithCredential:credential completion:^(FIRUser * _Nullable user, NSError * _Nullable error) {
+      [self sendResult:result forUser:user error:error];
+    }];
+  }
+
+  else {
     result(FlutterMethodNotImplemented);
   }
 }
@@ -233,6 +298,7 @@ int nextHandle = 0;
   NSMutableDictionary *userData = [toDictionary(user) mutableCopy];
   userData[@"isAnonymous"] = [NSNumber numberWithBool:user.isAnonymous];
   userData[@"isEmailVerified"] = [NSNumber numberWithBool:user.isEmailVerified];
+  userData[@"phoneNumber"] = user.phoneNumber;
   userData[@"providerData"] = providerData;
   return userData;
 }
