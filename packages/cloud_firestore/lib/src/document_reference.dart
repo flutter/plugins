@@ -87,7 +87,7 @@ class DocumentReference {
 
   /// Returns the reference of a collection contained inside of this
   /// document.
-  CollectionReference getCollection(String collectionPath) {
+  CollectionReference collection(String collectionPath) {
     return firestore.collection(
       <String>[path, collectionPath].join('/'),
     );
