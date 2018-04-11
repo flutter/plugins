@@ -17,9 +17,5 @@ Firebase Storage plugin for Flutter.
   s.ios.deployment_target = '6.0'
   s.dependency 'Flutter'
   s.dependency 'Firebase/Storage'
-  s.pod_target_xcconfig = {
-   'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/**',
-   'OTHER_LDFLAGS' => '$(inherited) -undefined dynamic_lookup'
-  }
+  s.static_framework = true
 end
-
