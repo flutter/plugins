@@ -134,7 +134,7 @@ void main() {
       test('runTransaction', () async {
         final Map<String, dynamic> result = await firestore.runTransaction(
             (Transaction tx) async {},
-            timeout: new Duration(seconds: 3));
+            timeout: const Duration(seconds: 3));
 
         expect(log, <Matcher>[
           isMethodCall('Firestore#runTransaction', arguments: <String, dynamic>{
