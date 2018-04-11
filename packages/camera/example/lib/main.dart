@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:video_player/video_player.dart';
 
 class CameraExampleHome extends StatefulWidget {
   @override
@@ -32,6 +33,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
   CameraController controller;
   String imagePath;
   String statusMessage = '';
+  String videoPath;
+  VideoPlayerController videoController;
 
   @override
   void initState() {
@@ -65,8 +68,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
     // Add the cameras to the main controls widget.
     controlsChildren.add(new Row(children: cameraList));
 
-    if (imagePath != null) {
-      controlsChildren.add(imageWidget());
+    if (imagePath != null || videoController != null) {
+      controlsChildren.add(previewWidget());
     }
 
     // Initialize the preview window
@@ -180,12 +183,18 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
   }
 
   /// Display the thumbnail of the captured image.
-  Widget imageWidget() {
+  Widget previewWidget() {
     return new Expanded(
       child: new Align(
         alignment: Alignment.centerRight,
         child: new SizedBox(
-          child: new Image.file(new File(imagePath)),
+          child: (videoController == null)
+              ? new Image.file(new File(imagePath))
+              : new Container(
+                  child: new VideoPlayer(videoController),
+                  decoration: new BoxDecoration(
+                      border: new Border.all(color: Colors.pink)),
+                ),
           width: 64.0,
           height: 64.0,
         ),
@@ -248,6 +257,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
       if (mounted) {
         setState(() {
           imagePath = filePath;
+          videoController?.dispose();
+          videoController = null;
           statusMessage = 'Picture saved to $filePath';
         });
       }
@@ -264,11 +275,13 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
     });
   }
 
-  void onStopButtonPressed() {
-    stopVideoRecording().then((_) {
-      if (mounted) {
-        setState(() => statusMessage = 'Recording done!');
-      }
+  Future<void> onStopButtonPressed() async {
+    await stopVideoRecording();
+    if (!mounted) {
+      return null;
+    }
+    setState(() {
+      statusMessage = 'Recording done!';
     });
   }
 
@@ -281,6 +294,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
     await new Directory(dirPath).create(recursive: true);
     final String filePath = '$dirPath/${timestamp()}.mp4';
     try {
+      videoPath = filePath;
       await controller.startVideoRecording(filePath);
     } on CameraException catch (e) {
       logError(e.code, e.description);
@@ -288,13 +302,26 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
     return filePath;
   }
 
-  Future<Null> stopVideoRecording() async {
-    if (controller.value.isOpen) {
+  Future<void> stopVideoRecording() async {
+    if (controller.value.isRecordingVideo) {
       try {
         await controller.stopVideoRecording();
       } on CameraException catch (e) {
         logError(e.code, e.description);
       }
+      final VideoPlayerController vcontroller =
+          new VideoPlayerController.network('file://$videoPath');
+      vcontroller.play();
+      vcontroller.setLooping(true);
+      await vcontroller.initialize();
+      if (!mounted) {
+        return null;
+      }
+      setState(() {
+        imagePath = null;
+        videoController?.dispose();
+        videoController = vcontroller;
+      });
     }
   }
 
