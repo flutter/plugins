@@ -7,7 +7,6 @@ dependencies:
     sdk: flutter
   camera:
     path: ../
-  intl: 
 
 dev_dependencies:
   flutter_test:
