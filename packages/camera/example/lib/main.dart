@@ -294,10 +294,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
     await new Directory(dirPath).create(recursive: true);
     final String filePath = '$dirPath/${timestamp()}.mp4';
     try {
-      print("Set videopath to $videoPath");
       videoPath = filePath;
       await controller.startVideoRecording(filePath);
-      print("started video recording");
     } on CameraException catch (e) {
       logError(e.code, e.description);
     }
@@ -311,7 +309,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
       } on CameraException catch (e) {
         logError(e.code, e.description);
       }
-      print("Videopath $videoPath");
       final VideoPlayerController vcontroller =
           new VideoPlayerController.network('file://$videoPath');
       vcontroller.play();
@@ -321,7 +318,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
         return null;
       }
       setState(() {
-        print("Setting video controller");
         imagePath = null;
         videoController?.dispose();
         videoController = vcontroller;
