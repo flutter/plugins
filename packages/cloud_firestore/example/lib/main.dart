@@ -73,7 +73,7 @@ class MyHomePage extends StatelessWidget {
       floatingActionButton: new FloatingActionButton(
         onPressed: _addMessage,
         tooltip: 'Increment',
-        child: new Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }

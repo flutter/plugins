@@ -10,7 +10,7 @@ import 'package:google_mobile_maps/google_mobile_maps.dart';
 import 'page.dart';
 
 class PlaceMarkerPage extends Page {
-  PlaceMarkerPage() : super(new Icon(Icons.place), "Place marker", "Single");
+  PlaceMarkerPage() : super(const Icon(Icons.place), "Place marker", "Single");
 
   final GoogleMapsOverlayController controller =
       new GoogleMapsOverlayController.fromSize(300.0, 200.0)
