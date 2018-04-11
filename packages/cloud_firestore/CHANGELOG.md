@@ -1,3 +1,8 @@
+## 0.6.0
+
+* **Braking change**. Renamed 'getCollection' in DocumentReference
+  to 'collection'
+
 ## 0.5.1
 
 * Expose the Firebase app corresponding to a Firestore

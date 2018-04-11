@@ -475,9 +475,9 @@ void main() {
           expect(e.code, equals('UNKNOWN_PATH'));
         }
       });
-      test('getCollection', () async {
+      test('collection', () async {
         final CollectionReference colRef =
-            collectionReference.document('bar').getCollection('baz');
+            collectionReference.document('bar').collection('baz');
         expect(colRef.path, 'foo/bar/baz');
       });
     });
