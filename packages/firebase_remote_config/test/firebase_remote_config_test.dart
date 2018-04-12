@@ -108,7 +108,7 @@ void main() {
     });
 
     test('fetch', () async {
-      await remoteConfig.fetch(expiration: new Duration(hours: 1));
+      await remoteConfig.fetch(expiration: const Duration(hours: 1));
       expect(
         log,
         <Matcher>[

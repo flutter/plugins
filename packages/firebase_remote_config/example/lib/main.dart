@@ -30,7 +30,7 @@ class WelcomeWidget extends AnimatedWidget {
       body: new Center(
           child: new Text('Welcome ${remoteConfig.getString('welcome')}')),
       floatingActionButton: new FloatingActionButton(
-          child: new Icon(Icons.refresh),
+          child: const Icon(Icons.refresh),
           onPressed: () async {
             try {
               // Using default duration to force fetching from remote server.
