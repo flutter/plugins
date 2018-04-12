@@ -39,14 +39,135 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> controlsChildren = <Widget>[];
-    final List<Widget> cameraList = <Widget>[];
+    // The main scaffolding of the app.
+    return new Scaffold(
+      key: _scaffoldKey,
+      appBar: new AppBar(
+        title: const Text('Camera example'),
+      ),
+      body: new Column(children: <Widget>[
+        new Expanded(
+          child: new Container(
+            child: new Padding(
+              padding: const EdgeInsets.all(1.0),
+              child: new Center(
+                child: _cameraPreviewWidget(),
+              ),
+            ),
+            decoration: new BoxDecoration(
+              color: Colors.black,
+              border: new Border.all(
+                color: controller != null && controller.value.isRecordingVideo
+                    ? Colors.redAccent
+                    : Colors.grey,
+                width: 3.0,
+              ),
+            ),
+          ),
+        ),
+        new Padding(
+          padding: const EdgeInsets.all(5.0),
+          child: new Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                _cameraTogglesRowWidget(),
+                _thumbnailWidget(),
+              ]),
+        ),
+        _captureControlRowWidget(),
+      ]),
+    );
+  }
+
+  /// Display the preview from the camera (or a message if the preview is not available).
+  Widget _cameraPreviewWidget() {
+    if (controller == null || !controller.value.isInitialized) {
+      return const Text(
+        'Tap a camera',
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 24.0,
+          fontWeight: FontWeight.w900,
+        ),
+      );
+    } else if (controller.value.hasError) {
+      return new Text('Camera error ${controller.value.errorDescription}');
+    } else {
+      return new AspectRatio(
+        aspectRatio: controller.value.aspectRatio,
+        child: new CameraPreview(controller),
+      );
+    }
+  }
+
+  /// Display the thumbnail of the captured image.
+  Widget _thumbnailWidget() {
+    return new Expanded(
+      child: new Align(
+        alignment: Alignment.centerRight,
+        child: videoController == null && imagePath == null
+            ? null
+            : new SizedBox(
+                child: (videoController == null)
+                    ? new Image.file(new File(imagePath))
+                    : new Container(
+                        child: new VideoPlayer(videoController),
+                        decoration: new BoxDecoration(
+                            border: new Border.all(color: Colors.pink)),
+                      ),
+                width: 64.0,
+                height: 64.0,
+              ),
+      ),
+    );
+  }
+
+  /// Display the control bar with buttons to take pictures and record videos.
+  Widget _captureControlRowWidget() {
+    return new Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisSize: MainAxisSize.max,
+      children: <Widget>[
+        new IconButton(
+          icon: const Icon(Icons.camera_alt),
+          color: Colors.blue,
+          onPressed: controller != null &&
+                  controller.value.isInitialized &&
+                  !controller.value.isRecordingVideo
+              ? onTakePictureButtonPressed
+              : null,
+        ),
+        new IconButton(
+          icon: const Icon(Icons.videocam),
+          color: Colors.blue,
+          onPressed: controller != null &&
+                  controller.value.isInitialized &&
+                  !controller.value.isRecordingVideo
+              ? onVideoRecordButtonPressed
+              : null,
+        ),
+        new IconButton(
+          icon: const Icon(Icons.stop),
+          color: Colors.red,
+          onPressed: controller != null &&
+                  controller.value.isInitialized &&
+                  controller.value.isRecordingVideo
+              ? onStopButtonPressed
+              : null,
+        )
+      ],
+    );
+  }
+
+  /// Display a row of toggle to select the camera (or a message if no camera is available).
+  Widget _cameraTogglesRowWidget() {
+    final List<Widget> toggles = <Widget>[];
 
     if (cameras.isEmpty) {
-      cameraList.add(const Text('No camera found'));
+      return const Text('No camera found');
     } else {
       for (CameraDescription cameraDescription in cameras) {
-        cameraList.add(
+        toggles.add(
           new SizedBox(
             width: 90.0,
             child: new RadioListTile<CameraDescription>(
@@ -61,137 +182,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
       }
     }
 
-    // Add the cameras to the main controls widget.
-    controlsChildren.add(new Row(children: cameraList));
-
-    if (imagePath != null || videoController != null) {
-      controlsChildren.add(previewWidget());
-    }
-
-    // Initialize the preview window
-    final List<Widget> previewChildren = <Widget>[];
-
-    // Depending on controller state display a message or the camera preview.
-    if (controller == null || !controller.value.isInitialized) {
-      previewChildren.add(const Text(
-        'Tap a camera',
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 24.0,
-          fontWeight: FontWeight.w900,
-        ),
-      ));
-    } else if (controller.value.hasError) {
-      previewChildren.add(
-        new Text('Camera error ${controller.value.errorDescription}'),
-      );
-    } else {
-      previewChildren.add(
-        new Container(
-          // Handle the preview depending on the aspect ratio of the camera view.
-          child: new AspectRatio(
-            aspectRatio: controller.value.aspectRatio,
-            child: new CameraPreview(controller),
-          ),
-          height: (MediaQuery.of(context).size.height - 230.0),
-          color: Colors.black,
-        ),
-      );
-    }
-
-    // The main scaffolding of the app.
-    return new Scaffold(
-      key: _scaffoldKey,
-      appBar: new AppBar(
-        title: const Text('Camera example'),
-      ),
-      body: new Column(children: <Widget>[
-        new Container(
-          child: new Padding(
-            padding: const EdgeInsets.all(1.0),
-            child: new Center(
-              child: new Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                // Add the preview to the app.
-                children: previewChildren,
-              ),
-            ),
-          ),
-          // Size of the container as wide as the device screen.
-          width: MediaQuery.of(context).size.width,
-          decoration: new BoxDecoration(
-            color: Colors.black,
-            border: new Border.all(
-              color: controller != null && controller.value.isRecordingVideo
-                  ? Colors.redAccent
-                  : Colors.grey,
-              width: 3.0,
-            ),
-          ),
-        ),
-        new Padding(
-          padding: const EdgeInsets.all(5.0),
-          child: new Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              // Add the controls to the app.
-              children: controlsChildren),
-        ),
-      ]),
-
-      // Bottom bar with the capture controls.
-      bottomNavigationBar: (controller == null)
-          ? null
-          : new Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              mainAxisSize: MainAxisSize.max,
-              children: <Widget>[
-                new IconButton(
-                  icon: const Icon(Icons.camera_alt),
-                  color: Colors.blue,
-                  onPressed: controller.value.isInitialized &&
-                          !controller.value.isRecordingVideo
-                      ? onTakePictureButtonPressed
-                      : null,
-                ),
-                new IconButton(
-                  icon: const Icon(Icons.videocam),
-                  color: Colors.blue,
-                  onPressed: controller.value.isInitialized &&
-                          !controller.value.isRecordingVideo
-                      ? onVideoRecordButtonPressed
-                      : null,
-                ),
-                new IconButton(
-                  icon: const Icon(Icons.stop),
-                  color: Colors.red,
-                  onPressed: controller.value.isInitialized &&
-                          controller.value.isRecordingVideo
-                      ? onStopButtonPressed
-                      : null,
-                )
-              ],
-            ),
-    );
-  }
-
-  /// Display the thumbnail of the captured image.
-  Widget previewWidget() {
-    return new Expanded(
-      child: new Align(
-        alignment: Alignment.centerRight,
-        child: new SizedBox(
-          child: (videoController == null)
-              ? new Image.file(new File(imagePath))
-              : new Container(
-                  child: new VideoPlayer(videoController),
-                  decoration: new BoxDecoration(
-                      border: new Border.all(color: Colors.pink)),
-                ),
-          width: 64.0,
-          height: 64.0,
-        ),
-      ),
-    );
+    return new Row(children: toggles);
   }
 
   String timestamp() => new DateTime.now().millisecondsSinceEpoch.toString();
