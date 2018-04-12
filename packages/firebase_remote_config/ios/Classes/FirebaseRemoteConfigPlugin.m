@@ -8,7 +8,6 @@
 
 @implementation FirebaseRemoteConfigPlugin
 
-static NSString *DEFAULT_KEYS = @"default_keys";
 static NSString *LAST_FETCH_TIME_KEY = @"LAST_FETCH_TIME";
 static NSString *LAST_FETCH_STATUS_KEY = @"LAST_FETCH_STATUS";
 
@@ -36,9 +35,9 @@ static NSString *LAST_FETCH_STATUS_KEY = @"LAST_FETCH_STATUS";
     FIRRemoteConfigSettings *firRemoteConfigSettings = [remoteConfig configSettings];
     NSMutableDictionary *resultDict = [[NSMutableDictionary alloc] init];
 
-    resultDict[@"LAST_FETCH_TIME"] = [[NSNumber alloc]
+    resultDict[LAST_FETCH_TIME_KEY] = [[NSNumber alloc]
         initWithLong:(long)[[remoteConfig lastFetchTime] timeIntervalSince1970] * 1000];
-    resultDict[@"LAST_FETCH_STATUS"] = [[NSNumber alloc]
+    resultDict[LAST_FETCH_STATUS_KEY] = [[NSNumber alloc]
         initWithInt:[self mapLastFetchStatus:(FIRRemoteConfigFetchStatus)[remoteConfig
                                                                               lastFetchStatus]]];
     resultDict[@"IN_DEBUG_MODE"] =
@@ -68,8 +67,8 @@ static NSString *LAST_FETCH_STATUS_KEY = @"LAST_FETCH_STATUS";
                         initWithInt:[self mapLastFetchStatus:(FIRRemoteConfigFetchStatus)
                                                                  [remoteConfig lastFetchStatus]]];
                     NSMutableDictionary *resultDict = [[NSMutableDictionary alloc] init];
-                    resultDict[@"LAST_FETCH_TIME"] = lastFetchTime;
-                    resultDict[@"LAST_FETCH_STATUS"] = lastFetchStatus;
+                    resultDict[LAST_FETCH_TIME_KEY] = lastFetchTime;
+                    resultDict[LAST_FETCH_STATUS_KEY] = lastFetchStatus;
 
                     if (status != FIRRemoteConfigFetchStatusSuccess) {
                       FlutterError *flutterError;
@@ -106,7 +105,6 @@ static NSString *LAST_FETCH_STATUS_KEY = @"LAST_FETCH_STATUS";
     FIRRemoteConfig *remoteConfig = [FIRRemoteConfig remoteConfig];
     NSDictionary *defaults = call.arguments[@"defaults"];
     [remoteConfig setDefaults:defaults];
-    [[NSUserDefaults standardUserDefaults] setValue:[defaults allKeys] forKey:DEFAULT_KEYS];
     result(nil);
   } else {
     result(FlutterMethodNotImplemented);
@@ -129,7 +127,8 @@ static NSString *LAST_FETCH_STATUS_KEY = @"LAST_FETCH_STATUS";
     parameterDict[key] = [self createRemoteConfigValueDict:[remoteConfig configValueForKey:key]];
   }
   // Add default parameters if missing since `keysWithPrefix` does not return default keys.
-  NSArray *defaultKeys = [[NSUserDefaults standardUserDefaults] arrayForKey:DEFAULT_KEYS];
+  NSArray *defaultKeys = [remoteConfig allKeysFromSource:FIRRemoteConfigSourceDefault
+                                               namespace:FIRNamespaceGoogleMobilePlatform];
   for (NSString *key in defaultKeys) {
     if ([parameterDict valueForKey:key] == nil) {
       parameterDict[key] = [self createRemoteConfigValueDict:[remoteConfig configValueForKey:key]];

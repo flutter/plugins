@@ -17,9 +17,9 @@ void main() {
 }
 
 class WelcomeWidget extends AnimatedWidget {
-  final RemoteConfig remoteConfig;
-
   WelcomeWidget({this.remoteConfig}) : super(listenable: remoteConfig);
+
+  final RemoteConfig remoteConfig;
 
   @override
   Widget build(BuildContext context) {

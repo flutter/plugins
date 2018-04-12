@@ -18,22 +18,15 @@ class RemoteConfig extends ChangeNotifier {
   static const String _lastFetchStatusKey = 'LAST_FETCH_STATUS';
   static const String _parametersKey = 'PARAMETERS';
 
+  static RemoteConfig _instance;
+
   Map<String, RemoteConfigValue> _parameters;
 
   DateTime _lastFetchTime;
   LastFetchStatus _lastFetchStatus;
   RemoteConfigSettings _remoteConfigSettings;
 
-  RemoteConfig._() {
-    _channel.setMethodCallHandler((MethodCall call) async {
-      switch (call.method) {
-        default:
-          throw new MissingPluginException(
-            '${call.method} method not implemented on the Dart side.',
-          );
-      }
-    });
-  }
+  RemoteConfig._();
 
   DateTime get lastFetchTime => _lastFetchTime;
   LastFetchStatus get lastFetchStatus => _lastFetchStatus;
@@ -41,21 +34,24 @@ class RemoteConfig extends ChangeNotifier {
 
   /// Gets the instance of RemoteConfig for the default Firebase app.
   static Future<RemoteConfig> get instance async {
+    if (_instance != null) {
+      return _instance;
+    }
     final Map<dynamic, dynamic> properties =
         await _channel.invokeMethod('RemoteConfig#instance');
-    final RemoteConfig remoteConfig = new RemoteConfig._();
+    _instance = new RemoteConfig._();
 
-    remoteConfig._lastFetchTime =
+    _instance._lastFetchTime =
         new DateTime.fromMillisecondsSinceEpoch(properties[_lastFetchTimeKey]);
-    remoteConfig._lastFetchStatus =
+    _instance._lastFetchStatus =
         _parseLastFetchStatus(properties[_lastFetchStatusKey]);
     final RemoteConfigSettings remoteConfigSettings =
         new RemoteConfigSettings();
     remoteConfigSettings.debugMode = properties['IN_DEBUG_MODE'];
-    remoteConfig._remoteConfigSettings = remoteConfigSettings;
-    remoteConfig._parameters =
+    _instance._remoteConfigSettings = remoteConfigSettings;
+    _instance._parameters =
         _parseRemoteConfigParameters(parameters: properties[_parametersKey]);
-    return remoteConfig;
+    return _instance;
   }
 
   static Map<String, RemoteConfigValue> _parseRemoteConfigParameters(
@@ -99,7 +95,7 @@ class RemoteConfig extends ChangeNotifier {
     }
   }
 
-  /// Set the configuration settings for this RemoteConfig instance.
+  /// Set the configuration settings for this [RemoteConfig] instance.
   ///
   /// This can be used for enabling developer mode.
   Future<void> setConfigSettings(
@@ -111,10 +107,12 @@ class RemoteConfig extends ChangeNotifier {
     _remoteConfigSettings = remoteConfigSettings;
   }
 
-  /// Fetches parameter values for your app. Parameter values may be from
-  /// Default Config (local cache) or Remote Config if enough time has elapsed
-  /// since parameter values were last fetched from the server. The default
-  /// expiration time is 12 hours. Expiration must be defined in seconds.
+  /// Fetches parameter values for your app.
+  ///
+  /// Parameter values may be from Default Config (local cache) or Remote
+  /// Config if enough time has elapsed since parameter values were last
+  /// fetched from the server. The default expiration time is 12 hours.
+  /// Expiration must be defined in seconds.
   Future<void> fetch({Duration expiration: const Duration(hours: 12)}) async {
     try {
       final Map<dynamic, dynamic> properties = await _channel.invokeMethod(
@@ -127,7 +125,7 @@ class RemoteConfig extends ChangeNotifier {
       _lastFetchTime =
           new DateTime.fromMillisecondsSinceEpoch(e.details[_lastFetchTimeKey]);
       _lastFetchStatus = _parseLastFetchStatus(e.details[_lastFetchStatusKey]);
-      if (e.code == RemoteConfig._fetchFailedThrottledKey) {
+      if (e.code == _fetchFailedThrottledKey) {
         final int fetchThrottleEnd = e.details['FETCH_THROTTLED_END'];
         throw new FetchThrottledException._(endTimeInMills: fetchThrottleEnd);
       } else {
@@ -136,9 +134,9 @@ class RemoteConfig extends ChangeNotifier {
     }
   }
 
-  /// Activates the fetched config. This makes fetched key-values take effect.
+  /// Activates the fetched config, makes fetched key-values take effect.
   ///
-  /// The returned Future contains true if the fetched config is different
+  /// The returned Future completes true if the fetched config is different
   /// from the currently activated config, it contains false otherwise.
   Future<bool> activateFetched() async {
     final Map<dynamic, dynamic> properties =
@@ -152,9 +150,10 @@ class RemoteConfig extends ChangeNotifier {
     return newConfig;
   }
 
-  /// Sets the default config. Default config parameters should be set then when
-  /// changes are needed the parameters should be updated in the Firebase
-  /// console.
+  /// Sets the default config.
+  ///
+  /// Default config parameters should be set then when changes are needed the
+  /// parameters should be updated in the Firebase console.
   void setDefaults(Map<String, dynamic> defaults) async {
     // Make defaults available even if fetch fails.
     defaults.forEach((String key, dynamic value) {
@@ -171,9 +170,10 @@ class RemoteConfig extends ChangeNotifier {
         'RemoteConfig#setDefaults', <String, dynamic>{'defaults': defaults});
   }
 
-  /// Gets the value corresponding to the key as a String. If there is no
-  /// parameter with corresponding key then the default String value is
-  /// returned.
+  /// Gets the value corresponding to the [key] as a String.
+  ///
+  /// If there is no parameter with corresponding [key] then the default
+  /// String value is returned.
   String getString(String key) {
     if (_parameters.containsKey(key)) {
       return _parameters[key].asString();
@@ -182,9 +182,10 @@ class RemoteConfig extends ChangeNotifier {
     }
   }
 
-  /// Gets the value corresponding to the key as an int. If there is no
-  /// parameter with corresponding key then the default int value is
-  /// returned.
+  /// Gets the value corresponding to the [key] as an int.
+  ///
+  /// If there is no parameter with corresponding [key] then the default
+  /// int value is returned.
   int getInt(String key) {
     if (_parameters.containsKey(key)) {
       return _parameters[key].asInt();
@@ -193,9 +194,10 @@ class RemoteConfig extends ChangeNotifier {
     }
   }
 
-  /// Gets the value corresponding to the key as a double. If there is no
-  /// parameter with corresponding key then the default double value is
-  /// returned.
+  /// Gets the value corresponding to the [key] as a double.
+  ///
+  /// If there is no parameter with corresponding [key] then the default double
+  /// value is returned.
   double getDouble(String key) {
     if (_parameters.containsKey(key)) {
       return _parameters[key].asDouble();
@@ -204,9 +206,10 @@ class RemoteConfig extends ChangeNotifier {
     }
   }
 
-  /// Gets the value corresponding to the key as a bool. If there is no
-  /// parameter with corresponding key then the default bool value is
-  /// returned.
+  /// Gets the value corresponding to the [key] as a bool.
+  ///
+  /// If there is no parameter with corresponding [key] then the default bool
+  /// value is returned.
   bool getBool(String key) {
     if (_parameters.containsKey(key)) {
       return _parameters[key].asBool();
@@ -215,9 +218,10 @@ class RemoteConfig extends ChangeNotifier {
     }
   }
 
-  /// Gets the RemoteConfigValue corresponding to the key. If there is no
-  /// parameter with corresponding key then a RemoteConfigValue with a null
-  /// value and static source is returned.
+  /// Gets the [RemoteConfigValue] corresponding to the [key].
+  ///
+  /// If there is no parameter with corresponding key then a [RemoteConfigValue]
+  /// with a null value and static source is returned.
   RemoteConfigValue getValue(String key) {
     if (_parameters.containsKey(key)) {
       return _parameters[key];

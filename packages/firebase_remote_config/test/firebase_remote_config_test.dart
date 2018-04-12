@@ -3,6 +3,57 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  final int lastFetchTime = 1520618753782;
+  Map<String, dynamic> getDefaultInstance() {
+    return <String, dynamic>{
+      'LAST_FETCH_TIME': lastFetchTime,
+      'LAST_FETCH_STATUS': 'success',
+      'IN_DEBUG_MODE': true,
+      'PARAMETERS': <String, dynamic>{
+        'param1': <String, dynamic>{
+          'source': 'static',
+          'value': <int>[118, 97, 108, 49], // UTF-8 encoded 'val1'
+        },
+      },
+    };
+  }
+
+  group('$RemoteConfig', () {
+    const MethodChannel channel = const MethodChannel(
+      'plugins.flutter.io/firebase_remote_config',
+    );
+
+    final List<MethodCall> log = <MethodCall>[];
+
+    RemoteConfig remoteConfig;
+
+    setUp(() async {
+      channel.setMockMethodCallHandler((MethodCall methodCall) async {
+        log.add(methodCall);
+        switch (methodCall.method) {
+          case 'RemoteConfig#instance':
+            return getDefaultInstance();
+          default:
+            return true;
+        }
+      });
+    });
+
+    test('instance', () async {
+      remoteConfig = await RemoteConfig.instance;
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall('RemoteConfig#instance', arguments: null),
+        ],
+      );
+      expect(remoteConfig.remoteConfigSettings.debugMode, true);
+      expect(remoteConfig.lastFetchTime,
+          new DateTime.fromMillisecondsSinceEpoch(lastFetchTime));
+      expect(remoteConfig.lastFetchStatus, LastFetchStatus.values[0]);
+    });
+  });
+
   group('$RemoteConfig', () {
     const MethodChannel channel = const MethodChannel(
       'plugins.flutter.io/firebase_remote_config',
@@ -23,17 +74,7 @@ void main() {
               'LAST_FETCH_STATUS': 'success',
             };
           case 'RemoteConfig#instance':
-            return <String, dynamic>{
-              'LAST_FETCH_TIME': lastFetchTime,
-              'LAST_FETCH_STATUS': 'success',
-              'IN_DEBUG_MODE': true,
-              'PARAMETERS': <String, dynamic>{
-                'param1': <String, dynamic>{
-                  'source': 'static',
-                  'value': <int>[118, 97, 108, 49], // UTF-8 encoded 'val1'
-                },
-              },
-            };
+            return getDefaultInstance();
           case 'RemoteConfig#activate':
             return <String, dynamic>{
               'parameters': <String, dynamic>{
@@ -64,20 +105,6 @@ void main() {
       });
       remoteConfig = await RemoteConfig.instance;
       log.clear();
-    });
-
-    test('instance', () async {
-      remoteConfig = await RemoteConfig.instance;
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall('RemoteConfig#instance', arguments: null),
-        ],
-      );
-      expect(remoteConfig.remoteConfigSettings.debugMode, true);
-      expect(remoteConfig.lastFetchTime,
-          new DateTime.fromMillisecondsSinceEpoch(lastFetchTime));
-      expect(remoteConfig.lastFetchStatus, LastFetchStatus.values[0]);
     });
 
     test('fetch', () async {
