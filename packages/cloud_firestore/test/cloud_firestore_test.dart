@@ -215,6 +215,26 @@ void main() {
       });
     });
 
+    group('Blob', () {
+      test('hashCode equality', () async {
+        final Uint8List bytesA = new Uint8List(8);
+        bytesA.setAll(0, <int>[0, 2, 4, 6, 8, 10, 12, 14]);
+        final Blob a = new Blob(bytesA);
+        final Uint8List bytesB = new Uint8List(8);
+        bytesB.setAll(0, <int>[0, 2, 4, 6, 8, 10, 12, 14]);
+        final Blob b = new Blob(bytesB);
+        expect(a.hashCode == b.hashCode, isTrue);
+      });
+      test('hashCode not equal', () async {
+        final Uint8List bytesA = new Uint8List(8);
+        bytesA.setAll(0, <int>[0, 2, 4, 6, 8, 10, 12, 14]);
+        final Blob a = new Blob(bytesA);
+        final Uint8List bytesB = new Uint8List(8);
+        bytesB.setAll(0, <int>[1, 2, 4, 6, 8, 10, 12, 14]);
+        final Blob b = new Blob(bytesB);
+        expect(a.hashCode == b.hashCode, isFalse);
+      });
+    });
     group('CollectionsReference', () {
       test('id', () async {
         expect(collectionReference.id, equals('foo'));
@@ -525,6 +545,12 @@ void main() {
           const GeoPoint(37.421939, -122.083509),
           firestore.document('foo/bar'),
         ];
+        _checkEncodeDecode<dynamic>(codec, message);
+      });
+      test('encode and decode blob', () {
+        final Uint8List bytes = new Uint8List(4);
+        bytes[0] = 128;
+        final Blob message = new Blob(bytes);
         _checkEncodeDecode<dynamic>(codec, message);
       });
     });
