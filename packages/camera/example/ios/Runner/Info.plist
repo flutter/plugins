@@ -28,8 +28,6 @@
 	<string>Can I use the camera please? Only for demo purpose of the app</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Only for demo purpose of the app</string>
-	<key>UIFileSharingEnabled</key>
-	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
