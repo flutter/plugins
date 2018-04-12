@@ -17,10 +17,10 @@ class Blob {
     return hashCodeIteration(0, bytes);
   }
 
-  int hashCodeIteration(int hashBase, Iterable<int> byteList){
-    if(byteList.isNotEmpty){
-      return hashCodeIteration(hashValues(hashBase, byteList.first),
-          byteList.skip(1));
+  int hashCodeIteration(int hashBase, Iterable<int> byteList) {
+    if (byteList.isNotEmpty) {
+      return hashCodeIteration(
+          hashValues(hashBase, byteList.first), byteList.skip(1));
     }
     return hashBase;
   }
