@@ -175,7 +175,7 @@
     }
   }
   if (!CMSampleBufferDataIsReady(sampleBuffer)) {
-      _eventSink([NSString stringWithFormat:@"sample buffer is not ready. Skipping sample"]);
+      _eventSink(@{@"event" : @"error", @"values" : @"sample buffer is not ready. Skipping sample"});
     return;
   }
   if (_isRecording == YES) {
@@ -195,22 +195,22 @@
 - (void)newVideoSample:(CMSampleBufferRef)sampleBuffer {
     if (_videoWriter.status > AVAssetWriterStatusWriting) {
       if (_videoWriter.status == AVAssetWriterStatusFailed)
-          _eventSink([NSString stringWithFormat:@"AVAssetWriter Failed"]);
+          _eventSink(@{@"event" : @"error", @"values" : [NSString  stringWithFormat:@"%@",_videoWriter.error]});
       return;
     }
     if (![_videoWriterInput appendSampleBuffer:sampleBuffer]) {
-        _eventSink([NSString stringWithFormat:@"Unable to write to video input"]);
+        _eventSink(@{@"event" : @"error", @"values" : [NSString  stringWithFormat:@"%@",@"Unable to write to video input"]});
     }
 }
 
 - (void)newAudioSample:(CMSampleBufferRef)sampleBuffer {
     if (_videoWriter.status > AVAssetWriterStatusWriting) {
       if (_videoWriter.status == AVAssetWriterStatusFailed)
-          _eventSink([NSString stringWithFormat:@"AVAssetWriter Failed"]);
+          _eventSink(@{@"event" : @"error", @"values" : [NSString  stringWithFormat:@"%@",_videoWriter.error]});
       return;
     }
     if (![_audioWriterInput appendSampleBuffer:sampleBuffer]) {
-        _eventSink([NSString stringWithFormat:@"Unable to write to audio input"]);
+        _eventSink(@{@"event" : @"error", @"values" : [NSString  stringWithFormat:@"%@",@"Unable to write to audio input"]});
     }
 }
 
@@ -252,7 +252,7 @@
 
   if (!_isRecording) {
     if (![self setupWriterForPath:path]) {
-    _eventSink([NSString stringWithFormat:@"Setup Writer Failed"]);
+        _eventSink(@{@"event" : @"error", @"values" : @"Setup Writer Failed"});
       return;
     }
       [_captureSession stopRunning];
@@ -344,7 +344,7 @@
       [_captureSession addOutput:_audioOutput];
       _isAudioSetup = YES;
     } else {
-        _eventSink([NSString stringWithFormat:@"Error: Unable to add Audio input/output to session capture"]);
+        _eventSink(@{@"event" : @"error", @"values" : @"Unable to add Audio input/output to session capture"});
       _isAudioSetup = NO;
     }
   }
