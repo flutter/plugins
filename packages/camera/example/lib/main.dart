@@ -37,7 +37,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
 
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
-
   @override
   Widget build(BuildContext context) {
     final List<Widget> controlsChildren = <Widget>[];
@@ -102,9 +101,9 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
 
     // The main scaffolding of the app.
     return new Scaffold(
-        key: _scaffoldKey,
-        appBar: new AppBar(
-          title: const Text('Camera example'),
+      key: _scaffoldKey,
+      appBar: new AppBar(
+        title: const Text('Camera example'),
       ),
       body: new Column(children: <Widget>[
         new Container(
@@ -123,14 +122,13 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
           decoration: new BoxDecoration(
             color: Colors.black,
             border: new Border.all(
-              color: controller != null &&
-                  controller.value.isRecordingVideo
-              ? Colors.redAccent : Colors.grey,
+              color: controller != null && controller.value.isRecordingVideo
+                  ? Colors.redAccent
+                  : Colors.grey,
               width: 3.0,
             ),
           ),
         ),
-
         new Padding(
           padding: const EdgeInsets.all(5.0),
           child: new Row(
@@ -199,7 +197,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
   String timestamp() => new DateTime.now().millisecondsSinceEpoch.toString();
 
   void showInSnackBar(String message) {
-    _scaffoldKey.currentState.showSnackBar(new SnackBar(content: new Text(message)));
+    _scaffoldKey.currentState
+        .showSnackBar(new SnackBar(content: new Text(message)));
   }
 
   void onNewCameraSelected(CameraDescription cameraDescription) async {
@@ -211,7 +210,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
     // If the controller is updated then update the UI.
     controller.addListener(() {
       if (mounted) setState(() {});
-      if(controller.value.hasError) {
+      if (controller.value.hasError) {
         showInSnackBar('Camera error ${controller.value.errorDescription}');
       }
     });
