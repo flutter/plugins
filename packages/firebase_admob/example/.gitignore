@@ -6,6 +6,5 @@
 .pub/
 build/
 ios/.generated/
-ios/Flutter/app.flx
 packages
 pubspec.lock
