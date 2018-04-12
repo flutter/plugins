@@ -139,8 +139,6 @@
   [_captureSession addConnection:connection];
   _capturePhotoOutput = [AVCapturePhotoOutput new];
   [_captureSession addOutput:_capturePhotoOutput];
-
-    _messageCodec = [FlutterStandardMessageCodec sharedInstance];
   return self;
 }
 
