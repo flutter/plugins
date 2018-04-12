@@ -10,36 +10,31 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 
-final FirebaseApp app = new FirebaseApp(
-  name: 'db2',
-  options: Platform.isIOS
-      ? const FirebaseOptions(
-          googleAppID: '1:297855924061:ios:c6de2b69b03a5be8',
-          gcmSenderID: '297855924061',
-          databaseURL: 'https://flutterfire-cd2f7.firebaseio.com',
-        )
-      : const FirebaseOptions(
-          googleAppID: '1:297855924061:android:669871c998cc21bd',
-          apiKey: 'AIzaSyD_shO5mfO9lhy2TVWhfo1VUmARKlG4suk',
-          databaseURL: 'https://flutterfire-cd2f7.firebaseio.com',
-        ),
-);
-
-void main() {
-  runApp(new MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return new MaterialApp(
-      title: 'Flutter Database Example',
-      home: new MyHomePage(),
-    );
-  }
+Future<void> main() async {
+  final FirebaseApp app = await FirebaseApp.configure(
+    name: 'db2',
+    options: Platform.isIOS
+        ? const FirebaseOptions(
+            googleAppID: '1:297855924061:ios:c6de2b69b03a5be8',
+            gcmSenderID: '297855924061',
+            databaseURL: 'https://flutterfire-cd2f7.firebaseio.com',
+          )
+        : const FirebaseOptions(
+            googleAppID: '1:297855924061:android:669871c998cc21bd',
+            apiKey: 'AIzaSyD_shO5mfO9lhy2TVWhfo1VUmARKlG4suk',
+            databaseURL: 'https://flutterfire-cd2f7.firebaseio.com',
+          ),
+  );
+  runApp(new MaterialApp(
+    title: 'Flutter Database Example',
+    home: new MyHomePage(app: app),
+  ));
 }
 
 class MyHomePage extends StatefulWidget {
+  MyHomePage({this.app});
+  final FirebaseApp app;
+
   @override
   _MyHomePageState createState() => new _MyHomePageState();
 }
@@ -59,11 +54,10 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    FirebaseApp.configure(name: app.name, options: app.options);
     // Demonstrates configuring to the database using a file
     _counterRef = FirebaseDatabase.instance.reference().child('counter');
     // Demonstrates configuring the database directly
-    final FirebaseDatabase database = new FirebaseDatabase(app: app);
+    final FirebaseDatabase database = new FirebaseDatabase(app: widget.app);
     _messagesRef = database.reference().child('messages');
     database.reference().child('counter').once().then((DataSnapshot snapshot) {
       print('Connected to second database and read ${snapshot.value}');

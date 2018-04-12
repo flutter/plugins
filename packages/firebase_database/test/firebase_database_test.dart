@@ -19,11 +19,6 @@ void main() {
     final List<MethodCall> log = <MethodCall>[];
     final FirebaseApp app = const FirebaseApp(
       name: 'testApp',
-      options: const FirebaseOptions(
-        googleAppID: '1:1234567890:ios:42424242424242',
-        gcmSenderID: '1234567890',
-        databaseURL: 'https://fake-database-url.firebaseio.com',
-      ),
     );
     final String databaseURL = 'https://fake-database-url2.firebaseio.com';
     final FirebaseDatabase database =
