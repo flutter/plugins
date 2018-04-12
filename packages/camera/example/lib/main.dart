@@ -34,6 +34,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
   String imagePath;
   String videoPath;
   VideoPlayerController videoController;
+  VoidCallback videoPlayerListener;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
@@ -111,7 +112,13 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
                 child: (videoController == null)
                     ? new Image.file(new File(imagePath))
                     : new Container(
-                        child: new VideoPlayer(videoController),
+                        child: new Center(
+                          child: new AspectRatio(
+                              aspectRatio: videoController.value.size != null
+                                  ? videoController.value.aspectRatio
+                                  : 1.0,
+                              child: new VideoPlayer(videoController)),
+                        ),
                         decoration: new BoxDecoration(
                             border: new Border.all(color: Colors.pink)),
                       ),
@@ -274,6 +281,14 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
           new VideoPlayerController.network('file://$videoPath');
       vcontroller.play();
       vcontroller.setLooping(true);
+      videoPlayerListener = () {
+        if (videoController != null && videoController.value.size != null) {
+          videoController.removeListener(videoPlayerListener);
+          // Refreshing the state to update video player with the correct ratio.
+          if (mounted) setState(() {});
+        }
+      };
+      vcontroller.addListener(videoPlayerListener);
       await vcontroller.initialize();
       if (!mounted) {
         return null;
