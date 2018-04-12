@@ -1,3 +1,7 @@
+## 0.4.4
+
+* Update firebase_core dependency to ^0.2.2
+
 ## 0.4.3
 
 * Simplified podspec for Cocoapods 1.5.0, avoiding link issues in app archives.
