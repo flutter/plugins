@@ -158,7 +158,7 @@ const UInt8 BLOB = 131;
     NSData *blob = value;
     [self writeByte:BLOB];
     [self writeSize:blob.length];
-    [self writeData:blob.bytes];
+    [self writeData:blob];
   } else {
     [super writeValue:value];
   }

@@ -10,18 +10,9 @@ class Blob {
 
   @override
   bool operator ==(dynamic other) =>
-      other is Blob && other.hashCode == hashCode;
+      other is Blob &&
+      const DeepCollectionEquality().equals(other.bytes, bytes);
 
   @override
-  int get hashCode {
-    return hashCodeIteration(0, bytes);
-  }
-
-  int hashCodeIteration(int hashBase, Iterable<int> byteList) {
-    if (byteList.isNotEmpty) {
-      return hashCodeIteration(
-          hashValues(hashBase, byteList.first), byteList.skip(1));
-    }
-    return hashBase;
-  }
+  int get hashCode => hashList(bytes);
 }
