@@ -173,7 +173,7 @@ public class CameraPlugin implements MethodCallHandler {
           result.error("cameraAccess", e.getMessage(), null);
         }
         break;
-      case "openCamera":
+      case "initialize":
         {
           String cameraName = call.argument("cameraName");
           String resolutionPreset = call.argument("resolutionPreset");
@@ -199,7 +199,7 @@ public class CameraPlugin implements MethodCallHandler {
           camera.stopVideoRecording(result);
           break;
         }
-      case "closeCamera":
+      case "dispose":
         {
           if (camera != null) {
             camera.dispose();

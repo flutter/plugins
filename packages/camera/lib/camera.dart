@@ -186,7 +186,7 @@ class CameraController extends ValueNotifier<CameraValue> {
     try {
       _creatingCompleter = new Completer<Null>();
       final Map<dynamic, dynamic> reply = await _channel.invokeMethod(
-        'openCamera',
+        'initialize',
         <String, dynamic>{
           'cameraName': description.name,
           'resolutionPreset': serializeResolutionPreset(resolutionPreset),
@@ -312,7 +312,7 @@ class CameraController extends ValueNotifier<CameraValue> {
     } else {
       return _creatingCompleter.future.then((_) async {
         await _channel.invokeMethod(
-          'closeCamera',
+          'dispose',
           <String, dynamic>{'textureId': _textureId},
         );
         await _eventSubscription?.cancel();
