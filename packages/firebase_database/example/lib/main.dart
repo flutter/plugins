@@ -15,15 +15,15 @@ Future<void> main() async {
     name: 'db2',
     options: Platform.isIOS
         ? const FirebaseOptions(
-      googleAppID: '1:297855924061:ios:c6de2b69b03a5be8',
-      gcmSenderID: '297855924061',
-      databaseURL: 'https://flutterfire-cd2f7.firebaseio.com',
-    )
+            googleAppID: '1:297855924061:ios:c6de2b69b03a5be8',
+            gcmSenderID: '297855924061',
+            databaseURL: 'https://flutterfire-cd2f7.firebaseio.com',
+          )
         : const FirebaseOptions(
-      googleAppID: '1:297855924061:android:669871c998cc21bd',
-      apiKey: 'AIzaSyD_shO5mfO9lhy2TVWhfo1VUmARKlG4suk',
-      databaseURL: 'https://flutterfire-cd2f7.firebaseio.com',
-    ),
+            googleAppID: '1:297855924061:android:669871c998cc21bd',
+            apiKey: 'AIzaSyD_shO5mfO9lhy2TVWhfo1VUmARKlG4suk',
+            databaseURL: 'https://flutterfire-cd2f7.firebaseio.com',
+          ),
   );
   runApp(new MaterialApp(
     title: 'Flutter Database Example',
