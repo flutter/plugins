@@ -90,7 +90,8 @@ class MapUiBodyState extends State<MapUiBody> {
 
   Widget _zoomBoundsToggler(GoogleMapOptions options) {
     return new FlatButton(
-      child: new Text(options.zoomBounds.isBounded ? 'release zoom' : 'bound zoom'),
+      child: new Text(
+          options.zoomBounds.isBounded ? 'release zoom' : 'bound zoom'),
       onPressed: () async {
         await widget.controller.mapsController.setMapOptions(
           new GoogleMapOptions(
@@ -206,7 +207,8 @@ class MapUiBodyState extends State<MapUiBody> {
               return new Column(
                 children: <Widget>[
                   new Text('camera bearing: ${options.cameraPosition.bearing}'),
-                  new Text('camera target: ${options.cameraPosition.target.latitude},${options.cameraPosition.target.longitude}'),
+                  new Text(
+                      'camera target: ${options.cameraPosition.target.latitude},${options.cameraPosition.target.longitude}'),
                   new Text('camera zoom: ${options.cameraPosition.zoom}'),
                   new Text('camera tilt: ${options.cameraPosition.tilt}'),
                   _compassToggler(options),

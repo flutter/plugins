@@ -18,17 +18,15 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import io.flutter.view.FlutterMain;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.flutter.view.FlutterMain;
-
-/**
- * Conversions between JSON-like values and GoogleMaps data types.
- */
+/** Conversions between JSON-like values and GoogleMaps data types. */
 class Convert {
   private static BitmapDescriptor toBitmapDescriptor(Object o) {
     final List<?> data = toList(o);
@@ -42,10 +40,10 @@ class Convert {
       case "fromAsset":
         if (data.size() == 2) {
           return BitmapDescriptorFactory.fromAsset(
-                  FlutterMain.getLookupKeyForAsset(toString(data.get(1))));
+              FlutterMain.getLookupKeyForAsset(toString(data.get(1))));
         } else {
           return BitmapDescriptorFactory.fromAsset(
-                  FlutterMain.getLookupKeyForAsset(toString(data.get(1)), toString(data.get(2))));
+              FlutterMain.getLookupKeyForAsset(toString(data.get(1)), toString(data.get(2))));
         }
       case "fromFile":
         return BitmapDescriptorFactory.fromFile(toString(data.get(1)));
@@ -201,18 +199,18 @@ class Convert {
     final List<?> anchor = toList(data.get("anchor"));
     final List<?> infoWindowAnchor = toList(data.get("infoWindowAnchor"));
     return new MarkerOptions()
-            .position(toLatLng(data.get("position")))
-            .alpha(toFloat(data.get("alpha")))
-            .anchor(toFloat(anchor.get(0)), toFloat(anchor.get(1)))
-            .draggable(toBoolean(data.get("draggable")))
-            .flat(toBoolean(data.get("flat")))
-            .icon(toBitmapDescriptor(data.get("icon")))
-            .infoWindowAnchor(toFloat(infoWindowAnchor.get(0)), toFloat(infoWindowAnchor.get(1)))
-            .rotation(toFloat(data.get("rotation")))
-            .snippet(toString(data.get("snippet")))
-            .title(toString(data.get("title")))
-            .visible(toBoolean(data.get("visible")))
-            .zIndex(toFloat(data.get("zIndex")));
+        .position(toLatLng(data.get("position")))
+        .alpha(toFloat(data.get("alpha")))
+        .anchor(toFloat(anchor.get(0)), toFloat(anchor.get(1)))
+        .draggable(toBoolean(data.get("draggable")))
+        .flat(toBoolean(data.get("flat")))
+        .icon(toBitmapDescriptor(data.get("icon")))
+        .infoWindowAnchor(toFloat(infoWindowAnchor.get(0)), toFloat(infoWindowAnchor.get(1)))
+        .rotation(toFloat(data.get("rotation")))
+        .snippet(toString(data.get("snippet")))
+        .title(toString(data.get("title")))
+        .visible(toBoolean(data.get("visible")))
+        .zIndex(toFloat(data.get("zIndex")));
   }
 
   private static Point toPoint(Object o) {
@@ -225,8 +223,8 @@ class Convert {
   }
 
   /**
-   * Sets GoogleMaps user interface options extracted from the specified JSON-like value on
-   * the given GoogleMap instance.
+   * Sets GoogleMaps user interface options extracted from the specified JSON-like value on the
+   * given GoogleMap instance.
    *
    * @param o the JSON-like value
    * @param googleMap the GoogleMap instance
@@ -304,8 +302,8 @@ class Convert {
   }
 
   /**
-   * Extract current GoogleMaps user interface configuration items in a JSON-like value, using
-   * the specified storage Map for cases where no getters exist in the GoogleMaps APIs.
+   * Extract current GoogleMaps user interface configuration items in a JSON-like value, using the
+   * specified storage Map for cases where no getters exist in the GoogleMaps APIs.
    *
    * @param googleMap a GoogleMap instance
    * @param storageMap the storage Map
