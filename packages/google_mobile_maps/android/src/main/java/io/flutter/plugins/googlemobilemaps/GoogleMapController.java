@@ -4,6 +4,12 @@
 
 package io.flutter.plugins.googlemobilemaps;
 
+import static io.flutter.plugins.googlemobilemaps.GoogleMobileMapsPlugin.CREATED;
+import static io.flutter.plugins.googlemobilemaps.GoogleMobileMapsPlugin.PAUSED;
+import static io.flutter.plugins.googlemobilemaps.GoogleMobileMapsPlugin.RESUMED;
+import static io.flutter.plugins.googlemobilemaps.GoogleMobileMapsPlugin.STARTED;
+import static io.flutter.plugins.googlemobilemaps.GoogleMobileMapsPlugin.STOPPED;
+
 import android.app.Activity;
 import android.app.Application;
 import android.graphics.Bitmap;
@@ -12,14 +18,15 @@ import android.graphics.Paint;
 import android.os.Bundle;
 import android.view.Surface;
 import android.widget.FrameLayout;
-
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-
+import io.flutter.plugin.common.MethodChannel;
+import io.flutter.plugin.common.PluginRegistry;
+import io.flutter.view.TextureRegistry;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,19 +35,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.PluginRegistry;
-import io.flutter.view.TextureRegistry;
-
-import static io.flutter.plugins.googlemobilemaps.GoogleMobileMapsPlugin.CREATED;
-import static io.flutter.plugins.googlemobilemaps.GoogleMobileMapsPlugin.PAUSED;
-import static io.flutter.plugins.googlemobilemaps.GoogleMobileMapsPlugin.RESUMED;
-import static io.flutter.plugins.googlemobilemaps.GoogleMobileMapsPlugin.STARTED;
-import static io.flutter.plugins.googlemobilemaps.GoogleMobileMapsPlugin.STOPPED;
-
-/**
- * Controller of a single GoogleMaps MapView instance.
- */
+/** Controller of a single GoogleMaps MapView instance. */
 final class GoogleMapController
     implements Application.ActivityLifecycleCallbacks,
         OnMapReadyCallback,

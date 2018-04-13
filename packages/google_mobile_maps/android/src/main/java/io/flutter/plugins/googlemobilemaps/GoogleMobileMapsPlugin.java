@@ -7,16 +7,13 @@ package io.flutter.plugins.googlemobilemaps;
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
-
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.model.MarkerOptions;
-
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
