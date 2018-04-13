@@ -21,6 +21,23 @@ class GoogleMapsController {
     await _channel.invokeMethod('init');
   }
 
+  Future<void> setMapOptions(GoogleMapOptions options) async {
+    final int id = await this.id;
+    await _channel.invokeMethod('setMapOptions', <String, dynamic>{
+      'map': id,
+      'options': options._toJson(),
+    });
+  }
+
+  Future<GoogleMapOptions> getMapOptions() async {
+    final int id = await this.id;
+    final dynamic json = await _channel.invokeMethod(
+      'getMapOptions',
+      <String, dynamic>{'map': id},
+    );
+    return GoogleMapOptions._fromJson(json);
+  }
+
   Future<void> animateCamera(CameraUpdate cameraUpdate) async {
     final int id = await this.id;
     await _channel.invokeMethod('animateCamera', <String, dynamic>{
@@ -61,8 +78,16 @@ class GoogleMapsOverlayController {
 
   /// Creates a controller for a GoogleMaps of the specified size in
   /// logical pixels.
-  factory GoogleMapsOverlayController.fromSize(double width, double height) {
-    final _GoogleMapsPlatformOverlay overlay = new _GoogleMapsPlatformOverlay();
+  factory GoogleMapsOverlayController.fromSize({
+    @required double width,
+    @required double height,
+    GoogleMapOptions options = const GoogleMapOptions(),
+  }) {
+    assert(width != null);
+    assert(height != null);
+    assert(options != null);
+    final _GoogleMapsPlatformOverlay overlay =
+        new _GoogleMapsPlatformOverlay(options);
     return new GoogleMapsOverlayController._(
       new GoogleMapsController(overlay._textureId.future),
       new PlatformOverlayController(width, height, overlay),
@@ -81,6 +106,9 @@ class GoogleMapsOverlayController {
 }
 
 class _GoogleMapsPlatformOverlay extends PlatformOverlay {
+  _GoogleMapsPlatformOverlay(this.options);
+
+  final GoogleMapOptions options;
   Completer<int> _textureId = new Completer<int>();
 
   @override
@@ -88,6 +116,7 @@ class _GoogleMapsPlatformOverlay extends PlatformOverlay {
     _textureId.complete(_channel.invokeMethod('createMap', <String, dynamic>{
       'width': physicalSize.width,
       'height': physicalSize.height,
+      'options': options._toJson(),
     }).then<int>((dynamic value) => value));
     return _textureId.future;
   }

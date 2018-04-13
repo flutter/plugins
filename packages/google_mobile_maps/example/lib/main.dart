@@ -5,11 +5,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_mobile_maps/google_mobile_maps.dart';
 import 'animate_camera.dart';
+import 'map_ui.dart';
 import 'move_camera.dart';
 import 'page.dart';
 import 'place_marker.dart';
 
 final List<Page> _allPages = <Page>[
+  new MapUiPage(),
   new AnimateCameraPage(),
   new MoveCameraPage(),
   new PlaceMarkerPage(),
@@ -19,9 +21,7 @@ class MapsDemo extends StatelessWidget {
   void _pushPage(BuildContext context, Page page) {
     Navigator.of(context).push(new MaterialPageRoute<void>(
         builder: (_) => new Scaffold(
-              appBar: new AppBar(
-                title: new Text('${page.title} - ${page.subtitle}'),
-              ),
+              appBar: new AppBar(title: new Text(page.title)),
               body: page,
             )));
   }
@@ -35,7 +35,6 @@ class MapsDemo extends StatelessWidget {
         itemBuilder: (_, int index) => new ListTile(
               leading: _allPages[index].leading,
               title: new Text(_allPages[index].title),
-              subtitle: new Text(_allPages[index].subtitle),
               onTap: () => _pushPage(context, _allPages[index]),
             ),
       ),

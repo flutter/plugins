@@ -1,8 +1,8 @@
-import 'dart:math';
-
 // Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:google_mobile_maps/google_mobile_maps.dart';
@@ -10,10 +10,10 @@ import 'package:google_mobile_maps/google_mobile_maps.dart';
 import 'page.dart';
 
 class PlaceMarkerPage extends Page {
-  PlaceMarkerPage() : super(const Icon(Icons.place), "Place marker", "Single");
+  PlaceMarkerPage() : super(const Icon(Icons.place), "Place marker");
 
   final GoogleMapsOverlayController controller =
-      new GoogleMapsOverlayController.fromSize(300.0, 200.0)
+      new GoogleMapsOverlayController.fromSize(width: 300.0, height: 200.0)
         ..mapsController.moveCamera(CameraUpdate.newLatLngZoom(
           const LatLng(-33.852, 151.211),
           11.0,
