@@ -4,6 +4,11 @@
 
 part of google_mobile_maps;
 
+/// Type of map tiles to display.
+///
+/// Enum constants must be indexed to match the corresponding int constants of
+/// the platform APIs, see
+/// <https://developers.google.com/android/reference/com/google/android/gms/maps/GoogleMap.html#MAP_TYPE_NORMAL>
 enum MapType {
   none,
   normal,
@@ -19,11 +24,13 @@ MapType _mapTypeFromJson(dynamic json) {
   return MapType.values[json];
 }
 
+/// Bounds for the map camera target.
 class CameraTargetBounds {
   static const CameraTargetBounds unbounded = const CameraTargetBounds(null);
 
   const CameraTargetBounds(this.bounds);
 
+  /// The current bounds or null, if the camera target is unbounded.
   final LatLngBounds bounds;
 
   bool get isBounded => bounds != null;
@@ -38,13 +45,17 @@ class CameraTargetBounds {
   }
 }
 
+/// Bounds for map camera zoom level.
 class ZoomBounds {
   static const ZoomBounds unbounded = const ZoomBounds(null, null);
 
   const ZoomBounds(this.minZoom, this.maxZoom)
       : assert(minZoom == null || maxZoom == null || minZoom <= maxZoom);
 
+  /// The current minimum zoom level or null, if unbounded from below.
   final double minZoom;
+
+  /// The current maximum zoom level or null, if unbounded from above.
   final double maxZoom;
 
   bool get isBounded => minZoom != null || maxZoom != null;
@@ -61,8 +72,9 @@ class ZoomBounds {
 
 /// Configuration options for the GoogleMaps user interface.
 ///
-/// When used to represent a configuration change, only non-null values are
-/// used.
+/// When used to change configuration, null values will be interpreted as
+/// do not change this configuration item. When used to represent current
+/// configuration, all values will be non-null.
 class GoogleMapOptions {
   final CameraPosition cameraPosition;
   final CameraTargetBounds cameraTargetBounds;
