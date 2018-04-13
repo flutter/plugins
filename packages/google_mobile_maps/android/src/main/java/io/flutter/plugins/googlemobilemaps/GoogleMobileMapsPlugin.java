@@ -11,15 +11,15 @@ import android.os.Bundle;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class GoogleMobileMapsPlugin
     implements MethodCallHandler, Application.ActivityLifecycleCallbacks {
@@ -101,7 +101,8 @@ public class GoogleMobileMapsPlugin
       case "addMarker":
         {
           final GoogleMapController controller = mapsController(call);
-          final MarkerOptions markerOptions = Convert.toMarkerOptions(call.argument("markerOptions"));
+          final MarkerOptions markerOptions =
+              Convert.toMarkerOptions(call.argument("markerOptions"));
           final String markerId = controller.addMarker(markerOptions);
           result.success(markerId);
           break;
@@ -134,7 +135,8 @@ public class GoogleMobileMapsPlugin
         {
           final GoogleMapController controller = mapsController(call);
           final String markerId = call.argument("marker");
-          final MarkerOptions markerOptions = Convert.toMarkerOptions(call.argument("markerOptions"));
+          final MarkerOptions markerOptions =
+              Convert.toMarkerOptions(call.argument("markerOptions"));
           controller.updateMarker(markerId, markerOptions);
           result.success(null);
           break;

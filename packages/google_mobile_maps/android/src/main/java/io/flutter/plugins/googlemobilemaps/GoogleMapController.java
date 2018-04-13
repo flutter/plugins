@@ -64,7 +64,12 @@ final class GoogleMapController
   private boolean disposed = false;
 
   GoogleMapController(
-          AtomicInteger activityState, PluginRegistry.Registrar registrar, int width, int height, Object options, MethodChannel.Result result) {
+      AtomicInteger activityState,
+      PluginRegistry.Registrar registrar,
+      int width,
+      int height,
+      Object options,
+      MethodChannel.Result result) {
     this.activityState = activityState;
     this.registrar = registrar;
     this.width = width;
