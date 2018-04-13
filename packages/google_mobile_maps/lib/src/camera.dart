@@ -26,6 +26,18 @@ class CameraPosition {
         'tilt': tilt,
         'zoom': zoom,
       };
+
+  static CameraPosition _fromJson(dynamic json) {
+    if (json == null) {
+      return null;
+    }
+    return new CameraPosition(
+      bearing: json['bearing'],
+      target: LatLng._fromJson(json['target']),
+      tilt: json['tilt'],
+      zoom: json['zoom'],
+    );
+  }
 }
 
 class CameraUpdate {
