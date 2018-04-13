@@ -17,6 +17,13 @@ class LatLng {
     return <double>[latitude, longitude];
   }
 
+  static LatLng _fromJson(dynamic json) {
+    if (json == null) {
+      return null;
+    }
+    return new LatLng(json[0], json[1]);
+  }
+
   @override
   String toString() {
     return '$runtimeType[$latitude, $longitude]';
@@ -42,6 +49,16 @@ class LatLngBounds {
 
   dynamic _toJson() {
     return <dynamic>[southwest._toJson(), northeast._toJson()];
+  }
+
+  static LatLngBounds _fromJson(dynamic json) {
+    if (json == null) {
+      return null;
+    }
+    return new LatLngBounds(
+      southwest: LatLng._fromJson(json[0]),
+      northeast: LatLng._fromJson(json[1]),
+    );
   }
 
   @override
