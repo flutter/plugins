@@ -208,4 +208,3 @@ public class GoogleMobileMapsPlugin
     state.set(DESTROYED);
   }
 }
-

@@ -73,7 +73,7 @@ class ZoomBounds {
 /// Configuration options for the GoogleMaps user interface.
 ///
 /// When used to change configuration, null values will be interpreted as
-/// do not change this configuration item. When used to represent current
+/// "do not change this configuration item". When used to represent current
 /// configuration, all values will be non-null.
 class GoogleMapOptions {
   final CameraPosition cameraPosition;

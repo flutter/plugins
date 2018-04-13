@@ -5,7 +5,6 @@
 package io.flutter.plugins.googlemobilemaps;
 
 import android.graphics.Point;
-
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -17,9 +16,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
-
 import io.flutter.view.FlutterMain;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
