@@ -48,6 +48,11 @@ static void* statusContext = &statusContext;
 static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
 
 @implementation FLTVideoPlayer
+- (instancetype)initWithAsset:(NSString*)asset frameUpdater:(FLTFrameUpdater*)frameUpdater {
+  NSString* path = [[NSBundle mainBundle] pathForResource:asset ofType:nil];
+  return [self initWithURL:[NSURL fileURLWithPath:path] frameUpdater:frameUpdater];
+}
+
 - (instancetype)initWithURL:(NSURL*)url frameUpdater:(FLTFrameUpdater*)frameUpdater {
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
@@ -255,6 +260,8 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
 @property(readonly, nonatomic) NSObject<FlutterTextureRegistry>* registry;
 @property(readonly, nonatomic) NSObject<FlutterBinaryMessenger>* messenger;
 @property(readonly, nonatomic) NSMutableDictionary* players;
+@property(readonly, nonatomic) NSObject<FlutterPluginRegistrar>* registrar;
+
 @end
 
 @implementation FLTVideoPlayerPlugin
@@ -262,18 +269,16 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
   FlutterMethodChannel* channel =
       [FlutterMethodChannel methodChannelWithName:@"flutter.io/videoPlayer"
                                   binaryMessenger:[registrar messenger]];
-  FLTVideoPlayerPlugin* instance =
-      [[FLTVideoPlayerPlugin alloc] initWithRegistry:[registrar textures]
-                                           messenger:[registrar messenger]];
+  FLTVideoPlayerPlugin* instance = [[FLTVideoPlayerPlugin alloc] initWithRegistrar:registrar];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
-- (instancetype)initWithRegistry:(NSObject<FlutterTextureRegistry>*)registry
-                       messenger:(NSObject<FlutterBinaryMessenger>*)messenger {
+- (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
-  _registry = registry;
-  _messenger = messenger;
+  _registry = [registrar textures];
+  _messenger = [registrar messenger];
+  _registrar = registrar;
   _players = [NSMutableDictionary dictionaryWithCapacity:1];
   return self;
 }
@@ -287,10 +292,17 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
     [_players removeAllObjects];
   } else if ([@"create" isEqualToString:call.method]) {
     NSDictionary* argsMap = call.arguments;
-    NSString* dataSource = argsMap[@"dataSource"];
     FLTFrameUpdater* frameUpdater = [[FLTFrameUpdater alloc] initWithRegistry:_registry];
-    FLTVideoPlayer* player = [[FLTVideoPlayer alloc] initWithURL:[NSURL URLWithString:dataSource]
-                                                    frameUpdater:frameUpdater];
+    NSString* dataSource = argsMap[@"asset"];
+    FLTVideoPlayer* player;
+    if (dataSource) {
+      NSString* assetPath = [_registrar lookupKeyForAsset:dataSource];
+      player = [[FLTVideoPlayer alloc] initWithAsset:assetPath frameUpdater:frameUpdater];
+    } else {
+      dataSource = argsMap[@"uri"];
+      player = [[FLTVideoPlayer alloc] initWithURL:[NSURL URLWithString:dataSource]
+                                      frameUpdater:frameUpdater];
+    }
     int64_t textureId = [_registry registerTexture:player];
     frameUpdater.textureId = textureId;
     FlutterEventChannel* eventChannel = [FlutterEventChannel
