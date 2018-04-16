@@ -1,3 +1,7 @@
+## 0.3.1
+
+* Fixed Dart 2 type error with iOS sensor events.
+
 ## 0.3.0
 
 * **Breaking change**. Set SDK constraints to match the Flutter beta release.

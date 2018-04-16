@@ -33,6 +33,14 @@ void _initMotionManager() {
   }
 }
 
+static void sendTriplet(Float64 x, Float64 y, Float64 z, FlutterEventSink sink) {
+  NSMutableData* event = [NSMutableData dataWithCapacity:3 * sizeof(Float64)];
+  [event appendBytes:&x length:sizeof(Float64)];
+  [event appendBytes:&y length:sizeof(Float64)];
+  [event appendBytes:&z length:sizeof(Float64)];
+  sink([FlutterStandardTypedData typedDataWithFloat64:event]);
+}
+
 @implementation FLTAccelerometerStreamHandler
 
 - (FlutterError*)onListenWithArguments:(id)arguments eventSink:(FlutterEventSink)eventSink {
@@ -43,11 +51,8 @@ void _initMotionManager() {
                              CMAcceleration acceleration = accelerometerData.acceleration;
                              // Multiply by gravity, and adjust sign values to
                              // align with Android.
-                             NSArray* accelerationValues = @[
-                               @(-acceleration.x * GRAVITY), @(-acceleration.y * GRAVITY),
-                               @(-acceleration.z * GRAVITY)
-                             ];
-                             eventSink(accelerationValues);
+                             sendTriplet(-acceleration.x * GRAVITY, -acceleration.y * GRAVITY,
+                                         -acceleration.z * GRAVITY, eventSink);
                            }];
   return nil;
 }
@@ -63,13 +68,12 @@ void _initMotionManager() {
 
 - (FlutterError*)onListenWithArguments:(id)arguments eventSink:(FlutterEventSink)eventSink {
   _initMotionManager();
-  [_motionManager startGyroUpdatesToQueue:[[NSOperationQueue alloc] init]
-                              withHandler:^(CMGyroData* gyroData, NSError* error) {
-                                CMRotationRate rotationRate = gyroData.rotationRate;
-                                NSArray* gyroscopeValues =
-                                    @[ @(rotationRate.x), @(rotationRate.y), @(rotationRate.z) ];
-                                eventSink(gyroscopeValues);
-                              }];
+  [_motionManager
+      startGyroUpdatesToQueue:[[NSOperationQueue alloc] init]
+                  withHandler:^(CMGyroData* gyroData, NSError* error) {
+                    CMRotationRate rotationRate = gyroData.rotationRate;
+                    sendTriplet(rotationRate.x, rotationRate.y, rotationRate.z, eventSink);
+                  }];
   return nil;
 }
 
