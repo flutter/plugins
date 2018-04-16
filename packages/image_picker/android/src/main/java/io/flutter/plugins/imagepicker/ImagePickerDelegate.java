@@ -65,11 +65,10 @@ import java.util.UUID;
 public class ImagePickerDelegate
     implements PluginRegistry.ActivityResultListener,
         PluginRegistry.RequestPermissionsResultListener {
-  static final int REQUEST_CODE_CHOOSE_FROM_GALLERY = 2342;
-  static final int REQUEST_CODE_TAKE_WITH_CAMERA = 2343;
-
-  static final int REQUEST_EXTERNAL_STORAGE_PERMISSION = 2344;
-  static final int REQUEST_CAMERA_PERMISSION = 2345;
+  @VisibleForTesting static final int REQUEST_CODE_CHOOSE_FROM_GALLERY = 2342;
+  @VisibleForTesting static final int REQUEST_CODE_TAKE_WITH_CAMERA = 2343;
+  @VisibleForTesting static final int REQUEST_EXTERNAL_STORAGE_PERMISSION = 2344;
+  @VisibleForTesting static final int REQUEST_CAMERA_PERMISSION = 2345;
 
   private final Activity activity;
   private final File externalFilesDirectory;
