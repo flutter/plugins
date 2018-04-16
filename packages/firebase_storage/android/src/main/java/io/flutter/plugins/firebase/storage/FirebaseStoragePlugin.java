@@ -27,7 +27,8 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
   private FirebaseStorage firebaseStorage;
 
   public static void registerWith(Registrar registrar) {
-    final MethodChannel channel = new MethodChannel(registrar.messenger(), "firebase_storage");
+    final MethodChannel channel =
+        new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_storage");
     channel.setMethodCallHandler(new FirebaseStoragePlugin(registrar));
   }
 

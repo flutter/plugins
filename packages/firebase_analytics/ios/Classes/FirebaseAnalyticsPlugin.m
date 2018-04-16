@@ -11,7 +11,7 @@
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
-      [FlutterMethodChannel methodChannelWithName:@"firebase_analytics"
+      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/firebase_analytics"
                                   binaryMessenger:[registrar messenger]];
   FLTFirebaseAnalyticsPlugin *instance = [[FLTFirebaseAnalyticsPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];

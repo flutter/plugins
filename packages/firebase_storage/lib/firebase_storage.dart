@@ -9,7 +9,8 @@ import 'dart:typed_data';
 import 'package:flutter/services.dart';
 
 class FirebaseStorage {
-  static const MethodChannel _channel = const MethodChannel('firebase_storage');
+  static const MethodChannel channel =
+      const MethodChannel('plugins.flutter.io/firebase_storage');
 
   static FirebaseStorage get instance => new FirebaseStorage();
 
@@ -39,7 +40,7 @@ class StorageReference {
   /// Asynchronously downloads the object at the StorageReference to a list in memory.
   /// A list of the provided max size will be allocated.
   Future<Uint8List> getData(int maxSize) async {
-    return await FirebaseStorage._channel.invokeMethod(
+    return await FirebaseStorage.channel.invokeMethod(
       "StorageReference#getData",
       <String, dynamic>{
         'maxSize': maxSize,
@@ -49,14 +50,14 @@ class StorageReference {
   }
 
   Future<dynamic> getDownloadURL() async {
-    return await FirebaseStorage._channel
+    return await FirebaseStorage.channel
         .invokeMethod("StorageReference#getDownloadUrl", <String, String>{
       'path': _pathComponents.join("/"),
     });
   }
 
   Future<void> delete() {
-    return FirebaseStorage._channel.invokeMethod("StorageReference#delete",
+    return FirebaseStorage.channel.invokeMethod("StorageReference#delete",
         <String, String>{'path': _pathComponents.join("/")});
   }
 
@@ -73,7 +74,7 @@ class StorageUploadTask {
   Future<UploadTaskSnapshot> get future => _completer.future;
 
   Future<void> _start() async {
-    final String downloadUrl = await FirebaseStorage._channel.invokeMethod(
+    final String downloadUrl = await FirebaseStorage.channel.invokeMethod(
       "StorageReference#putFile",
       <String, String>{
         'filename': file.absolute.path,
