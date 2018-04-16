@@ -23,7 +23,8 @@ class FirebaseMessaging {
         _platform = platform;
 
   static final FirebaseMessaging _instance = new FirebaseMessaging.private(
-      const MethodChannel('firebase_messaging'), const LocalPlatform());
+      const MethodChannel('plugins.flutter.io/firebase_messaging'),
+      const LocalPlatform());
 
   final MethodChannel _channel;
   final Platform _platform;

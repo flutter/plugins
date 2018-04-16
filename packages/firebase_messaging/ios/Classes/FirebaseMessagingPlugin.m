@@ -19,7 +19,7 @@
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
-      [FlutterMethodChannel methodChannelWithName:@"firebase_messaging"
+      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/firebase_messaging"
                                   binaryMessenger:[registrar messenger]];
   FLTFirebaseMessagingPlugin *instance =
       [[FLTFirebaseMessagingPlugin alloc] initWithChannel:channel];
