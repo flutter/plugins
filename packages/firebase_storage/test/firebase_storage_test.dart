@@ -12,16 +12,13 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('StorageReference', () {
     group('getData', () {
-      const MethodChannel channel = const MethodChannel(
-        'firebase_storage',
-      );
-
       final List<MethodCall> log = <MethodCall>[];
 
       StorageReference ref;
 
       setUp(() {
-        channel.setMockMethodCallHandler((MethodCall methodCall) {
+        FirebaseStorage.channel
+            .setMockMethodCallHandler((MethodCall methodCall) {
           log.add(methodCall);
           return new Future<Uint8List>.value(
               new Uint8List.fromList(<int>[1, 2, 3, 4]));
@@ -54,16 +51,13 @@ void main() {
     });
 
     group('getDownloadUrl', () {
-      const MethodChannel channel = const MethodChannel(
-        'firebase_storage',
-      );
-
       final List<MethodCall> log = <MethodCall>[];
 
       StorageReference ref;
 
       setUp(() {
-        channel.setMockMethodCallHandler((MethodCall methodCall) async {
+        FirebaseStorage.channel
+            .setMockMethodCallHandler((MethodCall methodCall) async {
           log.add(methodCall);
           return 'https://path/to/file';
         });
@@ -93,16 +87,13 @@ void main() {
     });
 
     group('delete', () {
-      const MethodChannel channel = const MethodChannel(
-        'firebase_storage',
-      );
-
       final List<MethodCall> log = <MethodCall>[];
 
       StorageReference ref;
 
       setUp(() {
-        channel.setMockMethodCallHandler((MethodCall methodCall) async {
+        FirebaseStorage.channel
+            .setMockMethodCallHandler((MethodCall methodCall) async {
           log.add(methodCall);
           return null;
         });

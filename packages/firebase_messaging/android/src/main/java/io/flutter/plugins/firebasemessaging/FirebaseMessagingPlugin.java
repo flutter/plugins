@@ -31,7 +31,8 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
   private static final String CLICK_ACTION_VALUE = "FLUTTER_NOTIFICATION_CLICK";
 
   public static void registerWith(Registrar registrar) {
-    final MethodChannel channel = new MethodChannel(registrar.messenger(), "firebase_messaging");
+    final MethodChannel channel =
+        new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_messaging");
     final FirebaseMessagingPlugin plugin = new FirebaseMessagingPlugin(registrar, channel);
     registrar.addNewIntentListener(plugin);
     channel.setMethodCallHandler(plugin);
