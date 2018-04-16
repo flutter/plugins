@@ -121,11 +121,7 @@ class VideoPlayerValue {
   }
 }
 
-enum DataSourceType {
-  asset,
-  network,
-  file
-}
+enum DataSourceType { asset, network, file }
 
 /// Controls a platform video player, and provides updates when the state is
 /// changing.
@@ -186,7 +182,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     Map<dynamic, dynamic> dataSourceDescription;
     switch (dataSourceType) {
       case DataSourceType.asset:
-        dataSourceDescription = <String, dynamic>{'asset': dataSource, 'package': package};
+        dataSourceDescription = <String, dynamic>{
+          'asset': dataSource,
+          'package': package
+        };
         break;
       case DataSourceType.network:
         dataSourceDescription = <String, dynamic>{'uri': dataSource};
