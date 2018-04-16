@@ -51,7 +51,8 @@ static void sendTriplet(Float64 x, Float64 y, Float64 z, FlutterEventSink sink) 
                              CMAcceleration acceleration = accelerometerData.acceleration;
                              // Multiply by gravity, and adjust sign values to
                              // align with Android.
-                             sendTriplet(-acceleration.x * GRAVITY, -acceleration.y * GRAVITY, -acceleration.z * GRAVITY, eventSink);
+                             sendTriplet(-acceleration.x * GRAVITY, -acceleration.y * GRAVITY,
+                                         -acceleration.z * GRAVITY, eventSink);
                            }];
   return nil;
 }
@@ -67,11 +68,12 @@ static void sendTriplet(Float64 x, Float64 y, Float64 z, FlutterEventSink sink) 
 
 - (FlutterError*)onListenWithArguments:(id)arguments eventSink:(FlutterEventSink)eventSink {
   _initMotionManager();
-  [_motionManager startGyroUpdatesToQueue:[[NSOperationQueue alloc] init]
-                              withHandler:^(CMGyroData* gyroData, NSError* error) {
-                                CMRotationRate rotationRate = gyroData.rotationRate;
-                                sendTriplet(rotationRate.x, rotationRate.y, rotationRate.z, eventSink);
-                              }];
+  [_motionManager
+      startGyroUpdatesToQueue:[[NSOperationQueue alloc] init]
+                  withHandler:^(CMGyroData* gyroData, NSError* error) {
+                    CMRotationRate rotationRate = gyroData.rotationRate;
+                    sendTriplet(rotationRate.x, rotationRate.y, rotationRate.z, eventSink);
+                  }];
   return nil;
 }
 
