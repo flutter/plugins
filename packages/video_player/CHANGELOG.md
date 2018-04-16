@@ -1,3 +1,7 @@
+## 0.5.1
+
+* Fixed bug on video loop feature for ios.
+
 ## 0.5.0
 
 * Added the constructor `VideoPlayerController.file`.
