@@ -70,9 +70,15 @@ public class ImagePickerDelegate
   @VisibleForTesting static final int REQUEST_EXTERNAL_STORAGE_PERMISSION = 2344;
   @VisibleForTesting static final int REQUEST_CAMERA_PERMISSION = 2345;
 
+  @VisibleForTesting final String fileProviderName;
+
   private final Activity activity;
   private final File externalFilesDirectory;
   private final ImageResizer imageResizer;
+  private final PermissionManager permissionManager;
+  private final IntentResolver intentResolver;
+  private final FileUriResolver fileUriResolver;
+  private final FileUtils fileUtils;
 
   interface PermissionManager {
     boolean isPermissionGranted(String permissionName);
@@ -94,81 +100,88 @@ public class ImagePickerDelegate
     void onPathReady(String path);
   }
 
-  @VisibleForTesting final String fileProviderName;
-
-  @VisibleForTesting
-  PermissionManager permissionManager =
-      new PermissionManager() {
-        @Override
-        public boolean isPermissionGranted(String permissionName) {
-          return ActivityCompat.checkSelfPermission(activity, permissionName)
-              == PackageManager.PERMISSION_GRANTED;
-        }
-
-        @Override
-        public void askForPermission(String permissionName, int requestCode) {
-          ActivityCompat.requestPermissions(activity, new String[] {permissionName}, requestCode);
-        }
-      };
-
-  @VisibleForTesting
-  IntentResolver intentResolver =
-      new IntentResolver() {
-        @Override
-        public boolean resolveActivity(Intent intent) {
-          return intent.resolveActivity(activity.getPackageManager()) != null;
-        }
-      };
-
-  @VisibleForTesting
-  FileUriResolver fileUriResolver =
-      new FileUriResolver() {
-        @Override
-        public Uri resolveFileProviderUriForFile(File file) {
-          return FileProvider.getUriForFile(activity, fileProviderName, file);
-        }
-
-        @Override
-        public void getFullImagePath(final OnPathReadyListener listener) {
-          MediaScannerConnection.scanFile(
-              activity,
-              new String[] {pendingCameraImageUri.getPath()},
-              null,
-              new MediaScannerConnection.OnScanCompletedListener() {
-                @Override
-                public void onScanCompleted(String path, Uri uri) {
-                  listener.onPathReady(path);
-                }
-              });
-        }
-      };
-
-  @VisibleForTesting FileUtils fileUtils = new FileUtils();
-
   private Uri pendingCameraImageUri;
   private MethodChannel.Result pendingResult;
   private MethodCall methodCall;
 
   public ImagePickerDelegate(
-      Activity activity, File externalFilesDirectory, ImageResizer imageResizer) {
+      final Activity activity, File externalFilesDirectory, ImageResizer imageResizer) {
     this.activity = activity;
     this.externalFilesDirectory = externalFilesDirectory;
     this.imageResizer = imageResizer;
     this.fileProviderName = activity.getPackageName() + ".flutter.image_provider";
+    this.permissionManager =
+        new PermissionManager() {
+          @Override
+          public boolean isPermissionGranted(String permissionName) {
+            return ActivityCompat.checkSelfPermission(activity, permissionName)
+                == PackageManager.PERMISSION_GRANTED;
+          }
+
+          @Override
+          public void askForPermission(String permissionName, int requestCode) {
+            ActivityCompat.requestPermissions(activity, new String[] {permissionName}, requestCode);
+          }
+        };
+
+    this.intentResolver =
+        new IntentResolver() {
+          @Override
+          public boolean resolveActivity(Intent intent) {
+            return intent.resolveActivity(activity.getPackageManager()) != null;
+          }
+        };
+
+    this.fileUriResolver =
+        new FileUriResolver() {
+          @Override
+          public Uri resolveFileProviderUriForFile(File file) {
+            return FileProvider.getUriForFile(activity, fileProviderName, file);
+          }
+
+          @Override
+          public void getFullImagePath(final OnPathReadyListener listener) {
+            MediaScannerConnection.scanFile(
+                activity,
+                new String[] {pendingCameraImageUri.getPath()},
+                null,
+                new MediaScannerConnection.OnScanCompletedListener() {
+                  @Override
+                  public void onScanCompleted(String path, Uri uri) {
+                    listener.onPathReady(path);
+                  }
+                });
+          }
+        };
+
+    this.fileUtils = new FileUtils();
   }
 
+  /**
+   * This constructor is used exclusively for testing; it can be used to provide mocks to final
+   * fields of this class. Otherwise those fields would have to be mutable and visible.
+   */
+  @VisibleForTesting
   ImagePickerDelegate(
       Activity activity,
       File externalFilesDirectory,
       ImageResizer imageResizer,
       MethodChannel.Result result,
-      MethodCall methodCall) {
+      MethodCall methodCall,
+      PermissionManager permissionManager,
+      IntentResolver intentResolver,
+      FileUriResolver fileUriResolver,
+      FileUtils fileUtils) {
     this.activity = activity;
     this.externalFilesDirectory = externalFilesDirectory;
     this.imageResizer = imageResizer;
     this.fileProviderName = activity.getPackageName() + ".flutter.image_provider";
     this.pendingResult = result;
     this.methodCall = methodCall;
+    this.permissionManager = permissionManager;
+    this.intentResolver = intentResolver;
+    this.fileUriResolver = fileUriResolver;
+    this.fileUtils = fileUtils;
   }
 
   public void chooseImageFromGallery(MethodCall methodCall, MethodChannel.Result result) {

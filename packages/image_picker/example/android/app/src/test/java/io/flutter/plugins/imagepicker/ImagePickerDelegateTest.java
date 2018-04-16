@@ -30,21 +30,13 @@ public class ImagePickerDelegateTest {
   private static final double HEIGHT = 10.0;
 
   @Mock Activity mockActivity;
-
   @Mock ImageResizer mockImageResizer;
-
   @Mock MethodCall mockMethodCall;
-
   @Mock MethodChannel.Result mockResult;
-
   @Mock ImagePickerDelegate.PermissionManager mockPermissionManager;
-
   @Mock ImagePickerDelegate.IntentResolver mockIntentResolver;
-
   @Mock ImagePickerDelegate.FileUriResolver mockFileUriResolver;
-
   @Mock FileUtils mockFileUtils;
-
   @Mock Intent mockIntent;
 
   @Before
@@ -305,24 +297,29 @@ public class ImagePickerDelegateTest {
   }
 
   private ImagePickerDelegate createDelegate() {
-    ImagePickerDelegate delegate = new ImagePickerDelegate(mockActivity, null, mockImageResizer);
-    return delegateWithMocks(delegate);
+    return new ImagePickerDelegate(
+        mockActivity,
+        null,
+        mockImageResizer,
+        null,
+        null,
+        mockPermissionManager,
+        mockIntentResolver,
+        mockFileUriResolver,
+        mockFileUtils);
   }
 
   private ImagePickerDelegate createDelegateWithPendingResultAndMethodCall() {
-    ImagePickerDelegate delegate =
-        new ImagePickerDelegate(mockActivity, null, mockImageResizer, mockResult, mockMethodCall);
-
-    return delegateWithMocks(delegate);
-  }
-
-  private ImagePickerDelegate delegateWithMocks(ImagePickerDelegate delegate) {
-    delegate.permissionManager = mockPermissionManager;
-    delegate.intentResolver = mockIntentResolver;
-    delegate.fileUriResolver = mockFileUriResolver;
-    delegate.fileUtils = mockFileUtils;
-
-    return delegate;
+    return new ImagePickerDelegate(
+        mockActivity,
+        null,
+        mockImageResizer,
+        mockResult,
+        mockMethodCall,
+        mockPermissionManager,
+        mockIntentResolver,
+        mockFileUriResolver,
+        mockFileUtils);
   }
 
   private void verifyFinishedWithAlreadyActiveError() {
