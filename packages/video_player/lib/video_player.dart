@@ -141,7 +141,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   int _textureId;
   final String dataSource;
 
-  /// Describes the type of data source this is constructed with.
+  /// Describes the type of data source this [VideoPlayerController]
+  /// is constructed with.
   final DataSourceType dataSourceType;
 
   String package;
