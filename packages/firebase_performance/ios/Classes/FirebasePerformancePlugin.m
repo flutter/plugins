@@ -3,7 +3,7 @@
 @implementation FirebasePerformancePlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   FlutterMethodChannel* channel = [FlutterMethodChannel
-      methodChannelWithName:@"firebase_performance"
+      methodChannelWithName:@"plugins.flutter.io/firebase_performance"
             binaryMessenger:[registrar messenger]];
   FirebasePerformancePlugin* instance = [[FirebasePerformancePlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
