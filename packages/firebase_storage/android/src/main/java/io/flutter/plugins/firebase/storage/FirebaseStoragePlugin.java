@@ -27,7 +27,8 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
   private FirebaseStorage firebaseStorage;
 
   public static void registerWith(Registrar registrar) {
-    final MethodChannel channel = new MethodChannel(registrar.messenger(), "firebase_storage");
+    final MethodChannel channel =
+        new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_storage");
     channel.setMethodCallHandler(new FirebaseStoragePlugin(registrar));
   }
 
@@ -48,10 +49,33 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
       case "StorageReference#delete":
         delete(call, result);
         break;
+      case "StorageReference#getDownloadUrl":
+        getDownloadUrl(call, result);
+        break;
       default:
         result.notImplemented();
         break;
     }
+  }
+
+  private void getDownloadUrl(MethodCall call, final Result result) {
+    String path = call.argument("path");
+    StorageReference ref = firebaseStorage.getReference().child(path);
+    ref.getDownloadUrl()
+        .addOnSuccessListener(
+            new OnSuccessListener<Uri>() {
+              @Override
+              public void onSuccess(Uri uri) {
+                result.success(uri.toString());
+              }
+            })
+        .addOnFailureListener(
+            new OnFailureListener() {
+              @Override
+              public void onFailure(@NonNull Exception e) {
+                result.error("download_error", e.getMessage(), null);
+              }
+            });
   }
 
   private void delete(MethodCall call, final Result result) {

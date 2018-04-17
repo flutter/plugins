@@ -1,3 +1,15 @@
+## 0.2.3
+
+* Updated package channel name and made channel visible for testing
+
+## 0.2.2
+
+* Simplified podspec for Cocoapods 1.5.0, avoiding link issues in app archives.
+
+## 0.2.1
+
+* Added support for getDownloadUrl.
+
 ## 0.2.0
 
 * **Breaking change**. Set SDK constraints to match the Flutter beta release.

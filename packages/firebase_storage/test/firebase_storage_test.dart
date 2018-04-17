@@ -12,16 +12,13 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('StorageReference', () {
     group('getData', () {
-      const MethodChannel channel = const MethodChannel(
-        'firebase_storage',
-      );
-
       final List<MethodCall> log = <MethodCall>[];
 
       StorageReference ref;
 
       setUp(() {
-        channel.setMockMethodCallHandler((MethodCall methodCall) {
+        FirebaseStorage.channel
+            .setMockMethodCallHandler((MethodCall methodCall) {
           log.add(methodCall);
           return new Future<Uint8List>.value(
               new Uint8List.fromList(<int>[1, 2, 3, 4]));
@@ -53,17 +50,50 @@ void main() {
       });
     });
 
-    group('delete', () {
-      const MethodChannel channel = const MethodChannel(
-        'firebase_storage',
-      );
-
+    group('getDownloadUrl', () {
       final List<MethodCall> log = <MethodCall>[];
 
       StorageReference ref;
 
       setUp(() {
-        channel.setMockMethodCallHandler((MethodCall methodCall) async {
+        FirebaseStorage.channel
+            .setMockMethodCallHandler((MethodCall methodCall) async {
+          log.add(methodCall);
+          return 'https://path/to/file';
+        });
+        ref = FirebaseStorage.instance
+            .ref()
+            .child('avatars')
+            .child('large')
+            .child('image.jpg');
+      });
+
+      test('invokes correct method', () async {
+        await ref.getDownloadURL();
+
+        expect(log, <Matcher>[
+          isMethodCall(
+            'StorageReference#getDownloadUrl',
+            arguments: <String, dynamic>{
+              'path': 'avatars/large/image.jpg',
+            },
+          ),
+        ]);
+      });
+
+      test('returns correct result', () async {
+        expect(await ref.getDownloadURL(), 'https://path/to/file');
+      });
+    });
+
+    group('delete', () {
+      final List<MethodCall> log = <MethodCall>[];
+
+      StorageReference ref;
+
+      setUp(() {
+        FirebaseStorage.channel
+            .setMockMethodCallHandler((MethodCall methodCall) async {
           log.add(methodCall);
           return null;
         });

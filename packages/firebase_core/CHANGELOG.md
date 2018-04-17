@@ -1,3 +1,17 @@
+## 0.2.2
+
+* Simplified podspec for Cocoapods 1.5.0, avoiding link issues in app archives.
+
+## 0.2.1
+
+* Fix setting project ID on Android.
+
+## 0.2.0
+
+* **Breaking change**. Options API is now async to interoperate with native code that configures Firebase apps.
+* Provide a getter for the default app
+* Fix setting of GCM sender ID on iOS
+
 ## 0.1.2
 
 * Fix projectID on iOS

@@ -4,38 +4,18 @@
 
 package io.flutter.plugins.googlemobilemaps;
 
-import static io.flutter.plugins.googlemobilemaps.GoogleMobileMapsPlugin.CREATED;
-import static io.flutter.plugins.googlemobilemaps.GoogleMobileMapsPlugin.PAUSED;
-import static io.flutter.plugins.googlemobilemaps.GoogleMobileMapsPlugin.RESUMED;
-import static io.flutter.plugins.googlemobilemaps.GoogleMobileMapsPlugin.STARTED;
-import static io.flutter.plugins.googlemobilemaps.GoogleMobileMapsPlugin.STOPPED;
-
 import android.app.Activity;
 import android.app.Application;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.os.Bundle;
-import android.view.Surface;
-import android.widget.FrameLayout;
 import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
-import io.flutter.view.TextureRegistry;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class GoogleMobileMapsPlugin
@@ -45,8 +25,8 @@ public class GoogleMobileMapsPlugin
   static final int RESUMED = 3;
   static final int PAUSED = 4;
   static final int STOPPED = 5;
-  private final int DESTROYED = 6;
-  private final Map<Long, GoogleMapsEntry> googleMaps = new HashMap<>();
+  static final int DESTROYED = 6;
+  private final Map<Long, GoogleMapController> googleMaps = new HashMap<>();
   private final Registrar registrar;
   private final AtomicInteger state = new AtomicInteger(0);
 
@@ -67,8 +47,8 @@ public class GoogleMobileMapsPlugin
     switch (call.method) {
       case "init":
         {
-          for (GoogleMapsEntry entry : googleMaps.values()) {
-            entry.dispose();
+          for (GoogleMapController controller : googleMaps.values()) {
+            controller.dispose();
           }
           googleMaps.clear();
           result.success(null);
@@ -76,71 +56,123 @@ public class GoogleMobileMapsPlugin
         }
       case "createMap":
         {
-          final int width = ((Number) call.argument("width")).intValue();
-          final int height = ((Number) call.argument("height")).intValue();
-          final GoogleMapsEntry entry = new GoogleMapsEntry(state, registrar, width, height);
-          googleMaps.put(entry.id(), entry);
-          entry.init();
-          result.success(entry.id());
+          final int width = Convert.toInt(call.argument("width"));
+          final int height = Convert.toInt(call.argument("height"));
+          final Map<?, ?> options = Convert.toMap(call.argument("options"));
+          final GoogleMapController controller =
+              new GoogleMapController(state, registrar, width, height, options, result);
+          googleMaps.put(controller.id(), controller);
+          controller.init();
+          // result.success is called from controller when the GoogleMaps instance is ready
+          break;
+        }
+      case "getMapOptions":
+        {
+          final GoogleMapController controller = mapsController(call);
+          result.success(controller.getMapOptions());
+          break;
+        }
+      case "setMapOptions":
+        {
+          final GoogleMapController controller = mapsController(call);
+          controller.setMapOptions(call.argument("options"));
+          result.success(null);
           break;
         }
       case "moveCamera":
         {
-          final long id = ((Number) call.argument("id")).longValue();
-          final List<Double> location = call.argument("location");
-          final float zoom = ((Number) call.argument("zoom")).floatValue();
-          final GoogleMapsEntry entry = googleMaps.get(id);
-          if (entry == null) {
-            result.error("unknown", "Unknown ID " + id, null);
-          } else {
-            entry.moveCamera(
-                CameraUpdateFactory.newLatLngZoom(
-                    new LatLng(location.get(0), location.get(1)), zoom));
-            result.success(null);
-          }
+          final GoogleMapController controller = mapsController(call);
+          final CameraUpdate cameraUpdate = Convert.toCameraUpdate(call.argument("cameraUpdate"));
+          controller.moveCamera(cameraUpdate);
+          result.success(null);
+          break;
+        }
+      case "animateCamera":
+        {
+          final GoogleMapController controller = mapsController(call);
+          final CameraUpdate cameraUpdate = Convert.toCameraUpdate(call.argument("cameraUpdate"));
+          controller.animateCamera(cameraUpdate);
+          result.success(null);
+          break;
+        }
+      case "addMarker":
+        {
+          final GoogleMapController controller = mapsController(call);
+          final MarkerOptions markerOptions =
+              Convert.toMarkerOptions(call.argument("markerOptions"));
+          final String markerId = controller.addMarker(markerOptions);
+          result.success(markerId);
+          break;
+        }
+      case "marker#remove":
+        {
+          final GoogleMapController controller = mapsController(call);
+          final String markerId = call.argument("marker");
+          controller.removeMarker(markerId);
+          result.success(null);
+          break;
+        }
+      case "marker#hideInfoWindow":
+        {
+          final GoogleMapController controller = mapsController(call);
+          final String markerId = call.argument("marker");
+          controller.hideMarkerInfoWindow(markerId);
+          result.success(null);
+          break;
+        }
+      case "marker#showInfoWindow":
+        {
+          final GoogleMapController controller = mapsController(call);
+          final String markerId = call.argument("marker");
+          controller.showMarkerInfoWindow(markerId);
+          result.success(null);
+          break;
+        }
+      case "marker#update":
+        {
+          final GoogleMapController controller = mapsController(call);
+          final String markerId = call.argument("marker");
+          final MarkerOptions markerOptions =
+              Convert.toMarkerOptions(call.argument("markerOptions"));
+          controller.updateMarker(markerId, markerOptions);
+          result.success(null);
           break;
         }
       case "showMapOverlay":
         {
-          final long id = ((Number) call.argument("id")).longValue();
-          final int x = ((Number) call.argument("x")).intValue();
-          final int y = ((Number) call.argument("y")).intValue();
-          final GoogleMapsEntry entry = googleMaps.get(id);
-          if (entry == null) {
-            result.error("unknown", "Unknown ID " + id, null);
-          } else {
-            entry.showOverlay(x, y);
-            result.success(null);
-          }
+          final GoogleMapController controller = mapsController(call);
+          final int x = Convert.toInt(call.argument("x"));
+          final int y = Convert.toInt(call.argument("y"));
+          controller.showOverlay(x, y);
+          result.success(null);
           break;
         }
       case "hideMapOverlay":
         {
-          final long id = ((Number) call.argument("id")).longValue();
-          final GoogleMapsEntry entry = googleMaps.get(id);
-          if (entry == null) {
-            result.error("unknown", "Unknown ID " + id, null);
-          } else {
-            entry.hideOverlay();
-            result.success(null);
-          }
+          final GoogleMapController controller = mapsController(call);
+          controller.hideOverlay();
+          result.success(null);
           break;
         }
       case "disposeMap":
         {
-          final long id = ((Number) call.argument("id")).longValue();
-          final GoogleMapsEntry entry = googleMaps.get(id);
-          if (entry == null) {
-            result.error("unknown", "Unknown ID " + id, null);
-          } else {
-            entry.dispose();
-            result.success(null);
-          }
+          final GoogleMapController controller = mapsController(call);
+          controller.dispose();
+          result.success(null);
           break;
         }
       default:
         result.notImplemented();
     }
+  }
+
+  private GoogleMapController mapsController(MethodCall call) {
+    final long id = Convert.toLong(call.argument("map"));
+    final GoogleMapController controller = googleMaps.get(id);
+    if (controller == null) {
+      throw new IllegalArgumentException("Unknown map: " + id);
+    }
+    return controller;
   }
 
   @Override
@@ -174,234 +206,5 @@ public class GoogleMobileMapsPlugin
   @Override
   public void onActivityDestroyed(Activity activity) {
     state.set(DESTROYED);
-  }
-}
-
-final class GoogleMapsEntry
-    implements Application.ActivityLifecycleCallbacks,
-        OnMapReadyCallback,
-        GoogleMap.SnapshotReadyCallback,
-        GoogleMap.OnCameraMoveStartedListener,
-        GoogleMap.OnCameraIdleListener {
-  private final AtomicInteger activityState;
-  private final FrameLayout parent;
-  private final Registrar registrar;
-  private final TextureRegistry.SurfaceTextureEntry textureEntry;
-  private final MapView mapView;
-  private final Bitmap bitmap;
-  private final int width;
-  private final int height;
-  private final Timer timer;
-  private GoogleMap googleMap;
-  private Surface surface;
-  private boolean disposed = false;
-
-  GoogleMapsEntry(AtomicInteger activityState, Registrar registrar, int width, int height) {
-    this.activityState = activityState;
-    this.registrar = registrar;
-    this.width = width;
-    this.height = height;
-    this.bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-    this.parent = (FrameLayout) registrar.view().getParent();
-    this.textureEntry = registrar.textures().createSurfaceTexture();
-    this.surface = new Surface(textureEntry.surfaceTexture());
-    textureEntry.surfaceTexture().setDefaultBufferSize(width, height);
-    this.mapView = new MapView(registrar.activity());
-    this.timer = new Timer();
-  }
-
-  void init() {
-    switch (activityState.get()) {
-      case STOPPED:
-        mapView.onCreate(null);
-        mapView.onStart();
-        mapView.onResume();
-        mapView.onPause();
-        mapView.onStop();
-        break;
-      case PAUSED:
-        mapView.onCreate(null);
-        mapView.onStart();
-        mapView.onResume();
-        mapView.onPause();
-        break;
-      case RESUMED:
-        mapView.onCreate(null);
-        mapView.onStart();
-        mapView.onResume();
-        break;
-      case STARTED:
-        mapView.onCreate(null);
-        mapView.onStart();
-        break;
-      case CREATED:
-        mapView.onCreate(null);
-        break;
-    }
-    registrar.activity().getApplication().registerActivityLifecycleCallbacks(this);
-    final FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(width, height);
-    parent.addView(mapView, 0, layoutParams);
-    mapView.getMapAsync(this);
-  }
-
-  long id() {
-    return textureEntry.id();
-  }
-
-  void showOverlay(int x, int y) {
-    if (disposed) {
-      return;
-    }
-    parent.removeView(mapView);
-    final FrameLayout.LayoutParams layout = new FrameLayout.LayoutParams(width, height);
-    layout.leftMargin = x;
-    layout.topMargin = y;
-    parent.addView(mapView, layout);
-  }
-
-  void hideOverlay() {
-    if (disposed) {
-      return;
-    }
-    googleMap.stopAnimation();
-    parent.removeView(mapView);
-    parent.addView(mapView, 0);
-  }
-
-  void moveCamera(CameraUpdate cameraUpdate) {
-    googleMap.animateCamera(cameraUpdate);
-  }
-
-  private void updateTexture() {
-    if (disposed) {
-      return;
-    }
-    final Canvas canvas = surface.lockCanvas(null);
-    canvas.drawBitmap(bitmap, 0, 0, new Paint());
-    surface.unlockCanvasAndPost(canvas);
-  }
-
-  @Override
-  public void onMapReady(GoogleMap googleMap) {
-    this.googleMap = googleMap;
-    googleMap.setOnCameraMoveStartedListener(this);
-    googleMap.setOnCameraIdleListener(this);
-    // Take snapshots until the dust settles.
-    timer.schedule(newSnapshotTask(), 0);
-    timer.schedule(newSnapshotTask(), 500);
-    timer.schedule(newSnapshotTask(), 1000);
-    timer.schedule(newSnapshotTask(), 2000);
-    timer.schedule(newSnapshotTask(), 4000);
-  }
-
-  @Override
-  public void onCameraMoveStarted(int reason) {
-    cancelSnapshotTimerTasks();
-  }
-
-  @Override
-  public void onCameraIdle() {
-    // Take snapshots until the dust settles.
-    timer.schedule(newSnapshotTask(), 500);
-    timer.schedule(newSnapshotTask(), 1500);
-    timer.schedule(newSnapshotTask(), 4000);
-  }
-
-  @Override
-  public void onSnapshotReady(Bitmap bitmap) {
-    updateTexture();
-  }
-
-  void dispose() {
-    if (disposed) {
-      return;
-    }
-    disposed = true;
-    timer.cancel();
-    parent.removeView(mapView);
-    textureEntry.release();
-    mapView.onDestroy();
-    registrar.activity().getApplication().unregisterActivityLifecycleCallbacks(this);
-  }
-
-  @Override
-  public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-    if (disposed) {
-      return;
-    }
-    mapView.onCreate(savedInstanceState);
-  }
-
-  @Override
-  public void onActivityStarted(Activity activity) {
-    if (disposed) {
-      return;
-    }
-    mapView.onStart();
-  }
-
-  @Override
-  public void onActivityResumed(Activity activity) {
-    if (disposed) {
-      return;
-    }
-    mapView.onResume();
-  }
-
-  @Override
-  public void onActivityPaused(Activity activity) {
-    if (disposed) {
-      return;
-    }
-    mapView.onPause();
-  }
-
-  @Override
-  public void onActivityStopped(Activity activity) {
-    if (disposed) {
-      return;
-    }
-    mapView.onStop();
-  }
-
-  @Override
-  public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
-    if (disposed) {
-      return;
-    }
-    mapView.onSaveInstanceState(outState);
-  }
-
-  @Override
-  public void onActivityDestroyed(Activity activity) {
-    if (disposed) {
-      return;
-    }
-    mapView.onDestroy();
-  }
-
-  private List<SnapshotTimerTask> snapshotTasks = new ArrayList<>();
-
-  private SnapshotTimerTask newSnapshotTask() {
-    final SnapshotTimerTask task = new SnapshotTimerTask();
-    snapshotTasks.add(task);
-    return task;
-  }
-
-  private void cancelSnapshotTimerTasks() {
-    for (SnapshotTimerTask task : snapshotTasks) {
-      task.cancel();
-    }
-    snapshotTasks.clear();
-  }
-
-  class SnapshotTimerTask extends TimerTask {
-    @Override
-    public void run() {
-      if (disposed || activityState.get() != RESUMED) {
-        return;
-      }
-      googleMap.snapshot(GoogleMapsEntry.this, bitmap);
-    }
   }
 }

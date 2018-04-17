@@ -6,34 +6,47 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('$Firestore', () {
-    const MethodChannel channel = const MethodChannel(
-      'plugins.flutter.io/cloud_firestore',
-    );
-
     int mockHandleId = 0;
-    final Firestore firestore = Firestore.instance;
+    FirebaseApp app;
+    Firestore firestore;
     final List<MethodCall> log = <MethodCall>[];
-    final CollectionReference collectionReference = firestore.collection('foo');
-    final Transaction transaction = new Transaction(0);
+    CollectionReference collectionReference;
+    Transaction transaction;
     const Map<String, dynamic> kMockDocumentSnapshotData =
         const <String, dynamic>{'1': 2};
 
     setUp(() async {
       mockHandleId = 0;
-      channel.setMockMethodCallHandler((MethodCall methodCall) async {
+      // Required for FirebaseApp.configure
+      FirebaseApp.channel.setMockMethodCallHandler(
+        (MethodCall methodCall) async {},
+      );
+      app = await FirebaseApp.configure(
+        name: 'testApp',
+        options: const FirebaseOptions(
+          googleAppID: '1:1234567890:ios:42424242424242',
+          gcmSenderID: '1234567890',
+        ),
+      );
+      firestore = new Firestore(app: app);
+      collectionReference = firestore.collection('foo');
+      transaction = new Transaction(0, firestore);
+      Firestore.channel.setMockMethodCallHandler((MethodCall methodCall) async {
         log.add(methodCall);
         switch (methodCall.method) {
           case 'Query#addSnapshotListener':
             final int handle = mockHandleId++;
             BinaryMessages.handlePlatformMessage(
-              channel.name,
-              channel.codec.encodeMethodCall(
+              Firestore.channel.name,
+              Firestore.channel.codec.encodeMethodCall(
                 new MethodCall('QuerySnapshot', <String, dynamic>{
+                  'app': app.name,
                   'handle': handle,
                   'paths': <String>["${methodCall.arguments['path']}/0"],
                   'documents': <dynamic>[kMockDocumentSnapshotData],
@@ -53,8 +66,8 @@ void main() {
           case 'Query#addDocumentListener':
             final int handle = mockHandleId++;
             BinaryMessages.handlePlatformMessage(
-              channel.name,
-              channel.codec.encodeMethodCall(
+              Firestore.channel.name,
+              Firestore.channel.codec.encodeMethodCall(
                 new MethodCall('DocumentSnapshot', <String, dynamic>{
                   'handle': handle,
                   'path': methodCall.arguments['path'],
@@ -111,14 +124,21 @@ void main() {
       log.clear();
     });
 
+    test('multiple apps', () async {
+      expect(Firestore.instance, equals(new Firestore()));
+      final FirebaseApp app = new FirebaseApp(name: firestore.app.name);
+      expect(firestore, equals(new Firestore(app: app)));
+    });
+
     group('Transaction', () {
       test('runTransaction', () async {
         final Map<String, dynamic> result = await firestore.runTransaction(
             (Transaction tx) async {},
-            timeout: new Duration(seconds: 3));
+            timeout: const Duration(seconds: 3));
 
         expect(log, <Matcher>[
           isMethodCall('Firestore#runTransaction', arguments: <String, dynamic>{
+            'app': app.name,
             'transactionId': 0,
             'transactionTimeout': 3000
           }),
@@ -128,10 +148,11 @@ void main() {
 
       test('get', () async {
         final DocumentReference documentReference =
-            Firestore.instance.document('foo/bar');
+            firestore.document('foo/bar');
         await transaction.get(documentReference);
         expect(log, <Matcher>[
           isMethodCall('Transaction#get', arguments: <String, dynamic>{
+            'app': app.name,
             'transactionId': 0,
             'path': documentReference.path
           })
@@ -140,10 +161,11 @@ void main() {
 
       test('delete', () async {
         final DocumentReference documentReference =
-            Firestore.instance.document('foo/bar');
+            firestore.document('foo/bar');
         await transaction.delete(documentReference);
         expect(log, <Matcher>[
           isMethodCall('Transaction#delete', arguments: <String, dynamic>{
+            'app': app.name,
             'transactionId': 0,
             'path': documentReference.path
           })
@@ -152,15 +174,18 @@ void main() {
 
       test('update', () async {
         final DocumentReference documentReference =
-            Firestore.instance.document('foo/bar');
+            firestore.document('foo/bar');
         final DocumentSnapshot documentSnapshot = await documentReference.get();
         final Map<String, dynamic> data = documentSnapshot.data;
         data['key2'] = 'val2';
         await transaction.set(documentReference, data);
         expect(log, <Matcher>[
-          isMethodCall('DocumentReference#get',
-              arguments: <String, dynamic>{'path': 'foo/bar'}),
+          isMethodCall('DocumentReference#get', arguments: <String, dynamic>{
+            'app': app.name,
+            'path': 'foo/bar',
+          }),
           isMethodCall('Transaction#set', arguments: <String, dynamic>{
+            'app': app.name,
             'transactionId': 0,
             'path': documentReference.path,
             'data': <String, dynamic>{'key1': 'val1', 'key2': 'val2'}
@@ -170,15 +195,18 @@ void main() {
 
       test('set', () async {
         final DocumentReference documentReference =
-            Firestore.instance.document('foo/bar');
+            firestore.document('foo/bar');
         final DocumentSnapshot documentSnapshot = await documentReference.get();
         final Map<String, dynamic> data = documentSnapshot.data;
         data['key2'] = 'val2';
         await transaction.set(documentReference, data);
         expect(log, <Matcher>[
-          isMethodCall('DocumentReference#get',
-              arguments: <String, dynamic>{'path': 'foo/bar'}),
+          isMethodCall('DocumentReference#get', arguments: <String, dynamic>{
+            'app': app.name,
+            'path': 'foo/bar',
+          }),
           isMethodCall('Transaction#set', arguments: <String, dynamic>{
+            'app': app.name,
             'transactionId': 0,
             'path': documentReference.path,
             'data': <String, dynamic>{'key1': 'val1', 'key2': 'val2'}
@@ -187,7 +215,35 @@ void main() {
       });
     });
 
+    group('Blob', () {
+      test('hashCode equality', () async {
+        final Uint8List bytesA = new Uint8List(8);
+        bytesA.setAll(0, <int>[0, 2, 4, 6, 8, 10, 12, 14]);
+        final Blob a = new Blob(bytesA);
+        final Uint8List bytesB = new Uint8List(8);
+        bytesB.setAll(0, <int>[0, 2, 4, 6, 8, 10, 12, 14]);
+        final Blob b = new Blob(bytesB);
+        expect(a.hashCode == b.hashCode, isTrue);
+      });
+      test('hashCode not equal', () async {
+        final Uint8List bytesA = new Uint8List(8);
+        bytesA.setAll(0, <int>[0, 2, 4, 6, 8, 10, 12, 14]);
+        final Blob a = new Blob(bytesA);
+        final Uint8List bytesB = new Uint8List(8);
+        bytesB.setAll(0, <int>[1, 2, 4, 6, 8, 10, 12, 14]);
+        final Blob b = new Blob(bytesB);
+        expect(a.hashCode == b.hashCode, isFalse);
+      });
+    });
     group('CollectionsReference', () {
+      test('id', () async {
+        expect(collectionReference.id, equals('foo'));
+        expect(collectionReference.parent().id, isNull);
+      });
+      test('path', () async {
+        expect(collectionReference.path, equals('foo'));
+        expect(collectionReference.parent().path, equals(''));
+      });
       test('listen', () async {
         final QuerySnapshot snapshot =
             await collectionReference.snapshots.first;
@@ -201,6 +257,7 @@ void main() {
           isMethodCall(
             'Query#addSnapshotListener',
             arguments: <String, dynamic>{
+              'app': app.name,
               'path': 'foo',
               'parameters': <String, dynamic>{
                 'where': <List<dynamic>>[],
@@ -228,6 +285,7 @@ void main() {
             isMethodCall(
               'Query#addSnapshotListener',
               arguments: <String, dynamic>{
+                'app': app.name,
                 'path': 'foo',
                 'parameters': <String, dynamic>{
                   'where': <List<dynamic>>[
@@ -258,6 +316,7 @@ void main() {
             isMethodCall(
               'Query#addSnapshotListener',
               arguments: <String, dynamic>{
+                'app': app.name,
                 'path': 'foo',
                 'parameters': <String, dynamic>{
                   'where': <List<dynamic>>[
@@ -288,6 +347,7 @@ void main() {
             isMethodCall(
               'Query#addSnapshotListener',
               arguments: <String, dynamic>{
+                'app': app.name,
                 'path': 'foo',
                 'parameters': <String, dynamic>{
                   'where': <List<dynamic>>[],
@@ -309,7 +369,7 @@ void main() {
     group('DocumentReference', () {
       test('listen', () async {
         final DocumentSnapshot snapshot =
-            await Firestore.instance.document('path/to/foo').snapshots.first;
+            await firestore.document('path/to/foo').snapshots.first;
         expect(snapshot.documentID, equals('foo'));
         expect(snapshot.reference.path, equals('path/to/foo'));
         expect(snapshot.data, equals(kMockDocumentSnapshotData));
@@ -321,6 +381,7 @@ void main() {
             isMethodCall(
               'Query#addDocumentListener',
               arguments: <String, dynamic>{
+                'app': app.name,
                 'path': 'path/to/foo',
               },
             ),
@@ -341,6 +402,7 @@ void main() {
             isMethodCall(
               'DocumentReference#setData',
               arguments: <String, dynamic>{
+                'app': app.name,
                 'path': 'foo/bar',
                 'data': <String, String>{'bazKey': 'quxValue'},
                 'options': null,
@@ -360,6 +422,7 @@ void main() {
             isMethodCall(
               'DocumentReference#setData',
               arguments: <String, dynamic>{
+                'app': app.name,
                 'path': 'foo/bar',
                 'data': <String, String>{'bazKey': 'quxValue'},
                 'options': <String, bool>{'merge': true},
@@ -378,6 +441,7 @@ void main() {
             isMethodCall(
               'DocumentReference#updateData',
               arguments: <String, dynamic>{
+                'app': app.name,
                 'path': 'foo/bar',
                 'data': <String, String>{'bazKey': 'quxValue'},
               },
@@ -392,7 +456,10 @@ void main() {
           equals(<Matcher>[
             isMethodCall(
               'DocumentReference#delete',
-              arguments: <String, dynamic>{'path': 'foo/bar'},
+              arguments: <String, dynamic>{
+                'app': app.name,
+                'path': 'foo/bar',
+              },
             ),
           ]),
         );
@@ -405,7 +472,10 @@ void main() {
           equals(<Matcher>[
             isMethodCall(
               'DocumentReference#get',
-              arguments: <String, dynamic>{'path': 'foo/bar'},
+              arguments: <String, dynamic>{
+                'app': app.name,
+                'path': 'foo/bar',
+              },
             ),
           ]),
         );
@@ -425,9 +495,9 @@ void main() {
           expect(e.code, equals('UNKNOWN_PATH'));
         }
       });
-      test('getCollection', () async {
+      test('collection', () async {
         final CollectionReference colRef =
-            collectionReference.document('bar').getCollection('baz');
+            collectionReference.document('bar').collection('baz');
         expect(colRef.path, 'foo/bar/baz');
       });
     });
@@ -443,6 +513,7 @@ void main() {
               isMethodCall(
                 'Query#getDocuments',
                 arguments: <String, dynamic>{
+                  'app': app.name,
                   'path': 'foo',
                   'parameters': <String, dynamic>{
                     'where': <List<dynamic>>[],
@@ -476,6 +547,12 @@ void main() {
         ];
         _checkEncodeDecode<dynamic>(codec, message);
       });
+      test('encode and decode blob', () {
+        final Uint8List bytes = new Uint8List(4);
+        bytes[0] = 128;
+        final Blob message = new Blob(bytes);
+        _checkEncodeDecode<dynamic>(codec, message);
+      });
     });
 
     group('WriteBatch', () {
@@ -489,10 +566,13 @@ void main() {
         expect(
           log,
           <Matcher>[
-            isMethodCall('WriteBatch#create', arguments: null),
+            isMethodCall('WriteBatch#create', arguments: <String, dynamic>{
+              'app': app.name,
+            }),
             isMethodCall(
               'WriteBatch#setData',
               arguments: <String, dynamic>{
+                'app': app.name,
                 'handle': 1,
                 'path': 'foo/bar',
                 'data': <String, String>{'bazKey': 'quxValue'},
@@ -520,8 +600,11 @@ void main() {
         expect(
           log,
           <Matcher>[
-            isMethodCall('WriteBatch#create', arguments: null),
+            isMethodCall('WriteBatch#create', arguments: <String, dynamic>{
+              'app': app.name,
+            }),
             isMethodCall('WriteBatch#setData', arguments: <String, dynamic>{
+              'app': app.name,
               'handle': 1,
               'path': 'foo/bar',
               'data': <String, String>{'bazKey': 'quxValue'},
@@ -546,10 +629,16 @@ void main() {
         expect(
           log,
           <Matcher>[
-            isMethodCall('WriteBatch#create', arguments: null),
+            isMethodCall(
+              'WriteBatch#create',
+              arguments: <String, dynamic>{
+                'app': app.name,
+              },
+            ),
             isMethodCall(
               'WriteBatch#updateData',
               arguments: <String, dynamic>{
+                'app': app.name,
                 'handle': 1,
                 'path': 'foo/bar',
                 'data': <String, String>{'bazKey': 'quxValue'},
@@ -571,10 +660,16 @@ void main() {
         expect(
           log,
           <Matcher>[
-            isMethodCall('WriteBatch#create', arguments: null),
+            isMethodCall(
+              'WriteBatch#create',
+              arguments: <String, dynamic>{
+                'app': app.name,
+              },
+            ),
             isMethodCall(
               'WriteBatch#delete',
               arguments: <String, dynamic>{
+                'app': app.name,
                 'handle': 1,
                 'path': 'foo/bar',
               },

@@ -11,8 +11,8 @@ import 'package:flutter/foundation.dart';
 
 /// Firebase Analytics API.
 class FirebaseAnalytics {
-  static final FirebaseAnalytics _instance =
-      new FirebaseAnalytics.private(const MethodChannel('firebase_analytics'));
+  static final FirebaseAnalytics _instance = new FirebaseAnalytics.private(
+      const MethodChannel('plugins.flutter.io/firebase_analytics'));
 
   /// Provides an instance of this class.
   factory FirebaseAnalytics() => _instance;

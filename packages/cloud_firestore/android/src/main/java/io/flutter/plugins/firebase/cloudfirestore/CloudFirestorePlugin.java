@@ -13,6 +13,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.firestore.Blob;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
@@ -72,14 +74,19 @@ public class CloudFirestorePlugin implements MethodCallHandler {
     this.channel = channel;
   }
 
+  private FirebaseFirestore getFirestore(Map<String, Object> arguments) {
+    String appName = (String) arguments.get("app");
+    return FirebaseFirestore.getInstance(FirebaseApp.getInstance(appName));
+  }
+
   private CollectionReference getCollectionReference(Map<String, Object> arguments) {
     String path = (String) arguments.get("path");
-    return FirebaseFirestore.getInstance().collection(path);
+    return getFirestore(arguments).collection(path);
   }
 
   private DocumentReference getDocumentReference(Map<String, Object> arguments) {
     String path = (String) arguments.get("path");
-    return FirebaseFirestore.getInstance().document(path);
+    return getFirestore(arguments).document(path);
   }
 
   private Map<String, Object> parseQuerySnapshot(QuerySnapshot querySnapshot) {
@@ -248,7 +255,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
           final Task<Map<String, Object>> transactionTCSTask = transactionTCS.getTask();
 
           final Map<String, Object> arguments = call.arguments();
-          FirebaseFirestore.getInstance()
+          getFirestore(arguments)
               .runTransaction(
                   new Transaction.Function<Void>() {
                     @Nullable
@@ -379,7 +386,8 @@ public class CloudFirestorePlugin implements MethodCallHandler {
       case "WriteBatch#create":
         {
           int handle = nextBatchHandle++;
-          WriteBatch batch = FirebaseFirestore.getInstance().batch();
+          final Map<String, Object> arguments = call.arguments();
+          WriteBatch batch = getFirestore(arguments).batch();
           batches.put(handle, batch);
           result.success(handle);
           break;
@@ -560,6 +568,7 @@ final class FirestoreMessageCodec extends StandardMessageCodec {
   private static final byte DATE_TIME = (byte) 128;
   private static final byte GEO_POINT = (byte) 129;
   private static final byte DOCUMENT_REFERENCE = (byte) 130;
+  private static final byte BLOB = (byte) 131;
 
   @Override
   protected void writeValue(ByteArrayOutputStream stream, Object value) {
@@ -573,7 +582,12 @@ final class FirestoreMessageCodec extends StandardMessageCodec {
       writeDouble(stream, ((GeoPoint) value).getLongitude());
     } else if (value instanceof DocumentReference) {
       stream.write(DOCUMENT_REFERENCE);
+      writeBytes(
+          stream, ((DocumentReference) value).getFirestore().getApp().getName().getBytes(UTF8));
       writeBytes(stream, ((DocumentReference) value).getPath().getBytes(UTF8));
+    } else if (value instanceof Blob) {
+      stream.write(BLOB);
+      writeBytes(stream, ((Blob) value).toBytes());
     } else {
       super.writeValue(stream, value);
     }
@@ -588,9 +602,16 @@ final class FirestoreMessageCodec extends StandardMessageCodec {
         readAlignment(buffer, 8);
         return new GeoPoint(buffer.getDouble(), buffer.getDouble());
       case DOCUMENT_REFERENCE:
+        final byte[] appNameBytes = readBytes(buffer);
+        String appName = new String(appNameBytes, UTF8);
+        final FirebaseFirestore firestore =
+            FirebaseFirestore.getInstance(FirebaseApp.getInstance(appName));
+        final byte[] pathBytes = readBytes(buffer);
+        final String path = new String(pathBytes, UTF8);
+        return firestore.document(path);
+      case BLOB:
         final byte[] bytes = readBytes(buffer);
-        final String path = new String(bytes, UTF8);
-        return FirebaseFirestore.getInstance().document(path);
+        return Blob.fromBytes(bytes);
       default:
         return super.readValueOfType(type, buffer);
     }

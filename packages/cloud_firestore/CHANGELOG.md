@@ -1,3 +1,25 @@
+## 0.6.2
+
+* Support for BLOB data type.
+
+## 0.6.1
+
+* Simplified podspec for Cocoapods 1.5.0, avoiding link issues in app archives.
+
+## 0.6.0
+
+* **Breaking change**. Renamed 'getCollection()' to 'collection().'
+
+## 0.5.1
+
+* Expose the Firebase app corresponding to a Firestore
+* Expose a constructor for a Firestore with a non-default Firebase app
+
+## 0.5.0
+
+* **Breaking change**. Move path getter to CollectionReference
+* Add id getter to CollectionReference
+
 ## 0.4.0
 
 * **Breaking change**. Hide Firestore codec class from public API.

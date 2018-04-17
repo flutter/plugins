@@ -1,3 +1,11 @@
+## 0.2.3
+
+* Updated package channel name
+
+## 0.2.2
+
+* Simplified podspec for Cocoapods 1.5.0, avoiding link issues in app archives.
+
 ## 0.2.1
 
 * Fixed Dart 2 type errors.
