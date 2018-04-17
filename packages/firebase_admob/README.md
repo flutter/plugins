@@ -10,45 +10,71 @@ available yet and testing has been limited.
 [Pull Requests](https://github.com/flutter/plugins/pulls) are welcome.
 
 ## Initializing the plugin
+The AdMob plugin must be initialized with an AdMob App ID.
 
-Before any other methods are invoked, the plugin must be initialized with an
-AdMob App ID:
 ```
 FirebaseAdMob.instance.initialize(appId: appId);
 ```
 
 ## Using banners and interstitials
+Banner and interstitial ads can be configured with target information. 
+And in the example below, the ads are given test ad unit IDs for a quick start.
 
-Banner and interstitial ads must be created with an AdMob ad unit ID, and they
-can include targeting information:
 ```
 MobileAdTargetingInfo targetingInfo = new MobileAdTargetingInfo(
-  keywords: <String>['foo', 'bar'],
-  contentUrl: 'http://foo.com/bar.html',
+  keywords: <String>['flutterio', 'beautiful apps'],
+  contentUrl: 'https://flutter.io',
   birthday: new DateTime.now(),
-  childDirected: true,
+  childDirected: false,
+  designedForFamilies: false,
   gender: MobileAdGender.male, // or MobileAdGender.female, MobileAdGender.unknown
+  testDevices: <String>[], // Android emulators are considered test devices
 );
 
 BannerAd myBanner = new BannerAd(
-  adUnitId: myBannerAdUnitId,
-  size: AdSize.banner,
+  // Replace the testAdUnitId with an ad unit id from the AdMob dash.
+  // https://developers.google.com/admob/android/test-ads
+  // https://developers.google.com/admob/ios/test-ads
+  adUnitId: BannerAd.testAdUnitId,
+  size: AdSize.smartBanner,
   targetingInfo: targetingInfo,
+  listener: (MobileAdEvent event) {
+    print("BannerAd event is $event");
+  },
 );
 
 InterstitialAd myInterstitial = new InterstitialAd(
-  adUnitId: myInterstitalAdUnitId,
+  // Replace the testAdUnitId with an ad unit id from the AdMob dash.
+  // https://developers.google.com/admob/android/test-ads
+  // https://developers.google.com/admob/ios/test-ads
+  adUnitId: InterstitialAd.testAdUnitId,
   targetingInfo: targetingInfo,
+  listener: (MobileAdEvent event) {
+    print("InterstitialAd event is $event");
+  },
 );
 ```
 
 Ads must be loaded before they're shown.
 ```
 myBanner
-  ..load() // typically this happens well before the ad is shown
-  ..show(anchorOffset: 60.0, anchorType: AnchorType.bottom);
-// Positions the banner ad 60 pixels from the bottom of the screen
-// InterstitialAds are loaded and shown in the same way
+  // typically this happens well before the ad is shown
+  ..load()
+  ..show(
+    // Positions the banner ad 60 pixels from the bottom of the screen
+    anchorOffset: 60.0,
+    // Banner Position
+    anchorType: AnchorType.bottom,
+  );
+```
+
+```
+myInterstitial
+  ..load()
+  ..show(
+    anchorType: AnchorType.bottom,
+    anchorOffset: 0.0,
+  );
 ```
 
 `BannerAd` and `InterstitialAd` objects can be disposed to free up plugin
