@@ -328,7 +328,7 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
       [_players removeObjectForKey:@(textureId)];
       [player dispose];
     } else if ([@"setLooping" isEqualToString:call.method]) {
-      [player setIsLooping:[argsMap objectForKey:@"looping"]];
+      [player setIsLooping:[[argsMap objectForKey:@"looping"] boolValue]];
       result(nil);
     } else if ([@"setVolume" isEqualToString:call.method]) {
       [player setVolume:[[argsMap objectForKey:@"volume"] doubleValue]];
