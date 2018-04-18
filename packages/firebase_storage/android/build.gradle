@@ -40,7 +40,6 @@ android {
         disable 'InvalidPackage'
     }
     dependencies {
-        api 'com.google.firebase:firebase-core:15.+'
         api 'com.google.firebase:firebase-storage:15.+'
     }
 }

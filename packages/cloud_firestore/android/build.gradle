@@ -35,6 +35,5 @@ android {
     }
     dependencies {
         api 'com.google.firebase:firebase-firestore:15.+'
-        api 'com.google.firebase:firebase-core:15.+'
     }
 }
