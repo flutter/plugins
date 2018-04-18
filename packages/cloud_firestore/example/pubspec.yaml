@@ -6,7 +6,7 @@ dependencies:
     sdk: flutter
   cloud_firestore:
     path: ../
-  firebase_core: "^0.2.1"
+  firebase_core: "^0.2.2"
 
 flutter:
   uses-material-design: true
