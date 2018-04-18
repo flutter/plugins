@@ -23,7 +23,7 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 27
-    
+
     defaultConfig {
         minSdkVersion 16
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -34,6 +34,6 @@ android {
 }
 
 dependencies {
-    api 'com.google.android.gms:play-services-auth:[11.4.0,12.0['
+    api 'com.google.android.gms:play-services-auth:15.+'
     implementation 'com.google.guava:guava:20.0'
 }

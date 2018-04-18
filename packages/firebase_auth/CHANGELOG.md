@@ -1,3 +1,7 @@
+## 0.5.5
+
+* Updated Google Play Services dependencies to version 15.0.0.
+
 ## 0.5.4
 
 * Simplified podspec for Cocoapods 1.5.0, avoiding link issues in app archives.
