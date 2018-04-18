@@ -48,6 +48,8 @@
     [self getDownloadUrl:call result:result];
   } else if ([@"StorageReference#delete" isEqualToString:call.method]) {
     [self delete:call result:result];
+  } else if ([@"StorageReference#getMetadata" isEqualToString:call.method]) {
+    [self getMetadata:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -56,6 +58,11 @@
 - (void)putFile:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSData *data = [NSData dataWithContentsOfFile:call.arguments[@"filename"]];
   NSString *path = call.arguments[@"path"];
+  NSDictionary *metadataDictionary = call.arguments[@"metadata"];
+  FIRStorageMetadata *metadata;
+  if (![metadataDictionary isEqual:[NSNull null]] ) {
+    metadata = [self buildMetadataFromDictionary:metadataDictionary];
+  }
   FIRStorageReference *fileRef = [[FIRStorage storage].reference child:path];
   [fileRef putData:data
           metadata:nil
@@ -69,6 +76,16 @@
             result(downloadURL.absoluteString);
           }
         }];
+}
+
+- (FIRStorageMetadata *)buildMetadataFromDictionary:(NSDictionary *)dictionary {
+  FIRStorageMetadata *metadata = [[FIRStorageMetadata alloc] init];
+  metadata.cacheControl = dictionary[@"cacheControl"];
+  metadata.contentDisposition = dictionary[@"contentDisposition"];
+  metadata.contentEncoding = dictionary[@"contentEncoding"];
+  metadata.contentLanguage = dictionary[@"contentLanguage"];
+  metadata.contentType = dictionary[@"contentType"];
+  return metadata;
 }
 
 - (void)getData:(FlutterMethodCall *)call result:(FlutterResult)result {
@@ -90,6 +107,33 @@
                   [FlutterStandardTypedData typedDataWithBytes:data];
               result(dartData);
             }];
+}
+
+- (void)getMetadata:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSString *path = call.arguments[@"path"];
+  FIRStorageReference *ref = [[FIRStorage storage].reference child:path];
+  [ref metadataWithCompletion:^(FIRStorageMetadata *metadata, NSError *error) {
+    if (error != nil) {
+      result(error.flutterError);
+    } else {
+      NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+      [dictionary setValue:[metadata bucket] forKey:@"bucket"];
+      [dictionary setValue:[NSString stringWithFormat:@"%lld", [metadata generation]]  forKey:@"generation"];
+      [dictionary setValue:[NSString stringWithFormat:@"%lld", [metadata metageneration]] forKey:@"metadataGeneration"];
+      [dictionary setValue:[metadata path] forKey:@"path"];
+      [dictionary setValue:@([[metadata timeCreated] timeIntervalSince1970]) forKey:@"creationTimeMillis"];
+      [dictionary setValue:@([[metadata updated] timeIntervalSince1970]) forKey:@"updatedTimeMillis"];
+      [dictionary setValue:@([metadata size]) forKey:@"sizeBytes"];
+      [dictionary setValue:[metadata md5Hash] forKey:@"md5Hash"];
+      [dictionary setValue:[metadata cacheControl] forKey:@"cacheControl"];
+      [dictionary setValue:[metadata contentDisposition] forKey:@"contentDisposition"];
+      [dictionary setValue:[metadata contentEncoding] forKey:@"contentEncoding"];
+      [dictionary setValue:[metadata contentLanguage] forKey:@"contentLanguage"];
+      [dictionary setValue:[metadata contentType] forKey:@"contentType"];
+      [dictionary setValue:[metadata name] forKey:@"name"];
+      result(dictionary);
+    }
+  }];
 }
 
 - (void)getDownloadUrl:(FlutterMethodCall *)call result:(FlutterResult)result {

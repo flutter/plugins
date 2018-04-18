@@ -1,3 +1,7 @@
+## 0.2.5
+
+* Added StorageMetadata class, support for getMetadata, and support for uploading file with metadata.
+
 ## 0.2.4
 
 * Updated Google Play Services dependencies to version 15.0.0.

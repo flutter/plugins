@@ -50,6 +50,45 @@ void main() {
       });
     });
 
+    group('getMetadata', () {
+      const MethodChannel channel = const MethodChannel(
+        'firebase_storage',
+      );
+
+      final List<MethodCall> log = <MethodCall>[];
+
+      StorageReference ref;
+
+      setUp(() {
+        channel.setMockMethodCallHandler((MethodCall methodCall) async {
+          log.add(methodCall);
+          return {'name': 'image.jpg'};
+        });
+        ref = FirebaseStorage.instance
+            .ref()
+            .child('avatars')
+            .child('large')
+            .child('image.jpg');
+      });
+
+      test('invokes correct method', () async {
+        await ref.getMetadata();
+
+        expect(log, <Matcher>[
+          isMethodCall(
+            'StorageReference#getMetadata',
+            arguments: <String, dynamic>{
+              'path': 'avatars/large/image.jpg',
+            },
+          ),
+        ]);
+      });
+
+      test('returns correct result', () async {
+        expect((await ref.getMetadata()).name, 'image.jpg');
+      });
+    });
+
     group('getDownloadUrl', () {
       final List<MethodCall> log = <MethodCall>[];
 
