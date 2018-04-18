@@ -45,6 +45,11 @@ public class RewardedVideoAdWrapper implements RewardedVideoAdListener {
   }
 
   @Override
+  public void onRewardedVideoCompleted() {
+    channel.invokeMethod("onRewardedVideoCompleted", argumentsMap());
+  }
+
+  @Override
   public void onRewarded(RewardItem rewardItem) {
     channel.invokeMethod(
         "onRewarded",

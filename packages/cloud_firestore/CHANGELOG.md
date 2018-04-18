@@ -1,3 +1,7 @@
+## 0.6.3
+
+* Updated Google Play Services dependencies to version 15.0.0.
+
 ## 0.6.2
 
 * Support for BLOB data type.

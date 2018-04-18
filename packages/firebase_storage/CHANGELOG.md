@@ -1,3 +1,7 @@
+## 0.2.4
+
+* Updated Google Play Services dependencies to version 15.0.0.
+
 ## 0.2.3
 
 * Updated package channel name and made channel visible for testing

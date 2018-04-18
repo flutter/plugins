@@ -1,3 +1,8 @@
+## 0.5.3
+
+* Updated Google Play Services dependencies to version 15.0.0.
+* Added handling of rewarded video completion event.
+
 ## 0.5.2
 
 * Simplified podspec for Cocoapods 1.5.0, avoiding link issues in app archives.
