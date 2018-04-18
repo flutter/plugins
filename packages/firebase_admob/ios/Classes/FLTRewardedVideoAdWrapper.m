@@ -99,6 +99,10 @@ FLTRewardedVideoAdStatus _rewardedStatus;
   [_rewardedChannel invokeMethod:@"onRewardedVideoStarted" arguments:@{}];
 }
 
+- (void)rewardBasedVideoAdDidCompletePlaying:(nonnull GADRewardBasedVideoAd *)rewardBasedVideoAd {
+  [_rewardedChannel invokeMethod:@"onRewardedVideoCompleted" arguments:@{}];
+}
+
 - (void)rewardBasedVideoAdDidClose:(nonnull GADRewardBasedVideoAd *)rewardBasedVideoAd {
   [_rewardedChannel invokeMethod:@"onRewardedVideoAdClosed" arguments:@{}];
   _rewardedStatus = FLTRewardedVideoAdStatusCreated;

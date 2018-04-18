@@ -1,6 +1,10 @@
+## 0.4.5
+
+* Updated Google Play Services dependencies to version 15.0.0.
+
 ## 0.4.4
 
-* Update firebase_core dependency to ^0.2.2
+* Updated firebase_core dependency to ^0.2.2
 
 ## 0.4.3
 

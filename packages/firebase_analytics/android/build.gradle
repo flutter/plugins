@@ -32,7 +32,7 @@ android {
         disable 'InvalidPackage'
     }
     dependencies {
-        api 'com.google.firebase:firebase-auth:[11.4.0,12.0['
-        api 'com.google.firebase:firebase-analytics:[11.4.0,12.0['
+        api 'com.google.firebase:firebase-auth:15.+'
+        api 'com.google.firebase:firebase-analytics:15.+'
     }
 }
