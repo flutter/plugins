@@ -71,6 +71,10 @@ static NSString *const kClientIdKey = @"CLIENT_ID";
     if ([self setAccountRequest:result]) {
       [[GIDSignIn sharedInstance] signInSilently];
     }
+  } else if ([call.method isEqualToString:@"isSignedIn"]) {
+      result(@{
+        @"isSignedIn" : @([[GIDSignIn sharedInstance] hasAuthInKeychain]),
+      });
   } else if ([call.method isEqualToString:@"signIn"]) {
     if ([self setAccountRequest:result]) {
       [[GIDSignIn sharedInstance] signIn];
@@ -133,15 +137,8 @@ static NSString *const kClientIdKey = @"CLIENT_ID";
     didSignInForUser:(GIDGoogleUser *)user
            withError:(NSError *)error {
   if (error != nil) {
-    if (error.code == kGIDSignInErrorCodeHasNoAuthInKeychain ||
-        error.code == kGIDSignInErrorCodeCanceled) {
-      // Occurs when silent sign-in is not possible or user has cancelled sign
-      // in,
-      // return an empty user in this case
-      [self respondWithAccount:nil error:nil];
-    } else {
-      [self respondWithAccount:nil error:error];
-    }
+    // Forward all errors and let Dart side decide how to handle.
+    [self respondWithAccount:nil error:error];
   } else {
     NSURL *photoUrl;
     if (user.profile.hasImage) {

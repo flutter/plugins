@@ -142,17 +142,8 @@ class GoogleSignIn {
   Future<void> _initialization;
 
   Future<GoogleSignInAccount> _callMethod(String method) async {
-    if (_initialization == null) {
-      _initialization = channel.invokeMethod("init", <String, dynamic>{
-        'scopes': scopes ?? <String>[],
-        'hostedDomain': hostedDomain,
-      })
-        ..catchError((dynamic _) {
-          // Invalidate initialization if it errored out.
-          _initialization = null;
-        });
-    }
-    await _initialization;
+    await _ensureInitialized();
+
     final Map<dynamic, dynamic> response = await channel.invokeMethod(method);
     return _setCurrentUser(response != null && response.isNotEmpty
         ? new GoogleSignInAccount._(this, response)
@@ -165,6 +156,20 @@ class GoogleSignIn {
       _currentUserController.add(_currentUser);
     }
     return _currentUser;
+  }
+
+  Future<void> _ensureInitialized() {
+    if (_initialization == null) {
+      _initialization = channel.invokeMethod("init", <String, dynamic>{
+        'scopes': scopes ?? <String>[],
+        'hostedDomain': hostedDomain,
+      })
+        ..catchError((dynamic _) {
+          // Invalidate initialization if it errored out.
+          _initialization = null;
+        });
+    }
+    return _initialization;
   }
 
   /// Keeps track of the most recently scheduled method call.
@@ -217,11 +222,24 @@ class GoogleSignIn {
   /// a Future which resolves to the same user instance.
   ///
   /// Re-authentication can be triggered only after [signOut] or [disconnect].
-  Future<GoogleSignInAccount> signInSilently() {
-    return _addMethodCall('signInSilently').catchError((dynamic _) {
-      // ignore, we promised to be silent.
-      // TODO(goderbauer): revisit when the native side throws less aggressively.
-    });
+  ///
+  /// If [suppressErrors] is set to `false` then returned Future may complete
+  /// with an error.
+  Future<GoogleSignInAccount> signInSilently({bool suppressErrors: true}) {
+    final Future<GoogleSignInAccount> result = _addMethodCall('signInSilently');
+    if (suppressErrors) {
+      return result.catchError((dynamic _) => null);
+    }
+    return result;
+  }
+
+  /// Returns `true` if a user is currently signed in.
+  Future<bool> isSignedIn() async {
+    await _ensureInitialized();
+    final Map<dynamic, dynamic> response =
+        await channel.invokeMethod('isSignedIn');
+    final bool result = response['isSignedIn'];
+    return result;
   }
 
   /// Starts the interactive sign-in process.
