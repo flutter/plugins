@@ -37,8 +37,7 @@ class _MyAppState extends State<MyApp> {
 
     if (!mounted)
       return new Future<void>.value(null);
-
-    // TODO: Fix IOS not updating performance collection status
+    
     setState(() {
       _collectionEnabledString = perfCollection;
     });
