@@ -91,9 +91,9 @@ public class ImagePickerDelegate
   }
 
   interface FileUriResolver {
-    Uri resolveFileProviderUriForFile(File imageFile);
+    Uri resolveFileProviderUriForFile(String fileProviderName, File imageFile);
 
-    void getFullImagePath(OnPathReadyListener listener);
+    void getFullImagePath(Uri imageUri, OnPathReadyListener listener);
   }
 
   interface OnPathReadyListener {
@@ -106,11 +106,12 @@ public class ImagePickerDelegate
 
   public ImagePickerDelegate(
       final Activity activity, File externalFilesDirectory, ImageResizer imageResizer) {
-    this.activity = activity;
-    this.externalFilesDirectory = externalFilesDirectory;
-    this.imageResizer = imageResizer;
-    this.fileProviderName = activity.getPackageName() + ".flutter.image_provider";
-    this.permissionManager =
+    this(
+        activity,
+        externalFilesDirectory,
+        imageResizer,
+        null,
+        null,
         new PermissionManager() {
           @Override
           public boolean isPermissionGranted(String permissionName) {
@@ -122,28 +123,24 @@ public class ImagePickerDelegate
           public void askForPermission(String permissionName, int requestCode) {
             ActivityCompat.requestPermissions(activity, new String[] {permissionName}, requestCode);
           }
-        };
-
-    this.intentResolver =
+        },
         new IntentResolver() {
           @Override
           public boolean resolveActivity(Intent intent) {
             return intent.resolveActivity(activity.getPackageManager()) != null;
           }
-        };
-
-    this.fileUriResolver =
+        },
         new FileUriResolver() {
           @Override
-          public Uri resolveFileProviderUriForFile(File file) {
+          public Uri resolveFileProviderUriForFile(String fileProviderName, File file) {
             return FileProvider.getUriForFile(activity, fileProviderName, file);
           }
 
           @Override
-          public void getFullImagePath(final OnPathReadyListener listener) {
+          public void getFullImagePath(final Uri imageUri, final OnPathReadyListener listener) {
             MediaScannerConnection.scanFile(
                 activity,
-                new String[] {pendingCameraImageUri.getPath()},
+                new String[] {imageUri.getPath()},
                 null,
                 new MediaScannerConnection.OnScanCompletedListener() {
                   @Override
@@ -152,9 +149,8 @@ public class ImagePickerDelegate
                   }
                 });
           }
-        };
-
-    this.fileUtils = new FileUtils();
+        },
+        new FileUtils());
   }
 
   /**
@@ -232,7 +228,7 @@ public class ImagePickerDelegate
     File imageFile = createTemporaryWritableImageFile();
     pendingCameraImageUri = Uri.parse("file:" + imageFile.getAbsolutePath());
 
-    Uri imageUri = fileUriResolver.resolveFileProviderUriForFile(imageFile);
+    Uri imageUri = fileUriResolver.resolveFileProviderUriForFile(fileProviderName, imageFile);
     intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
     grantUriPermissions(intent, imageUri);
 
@@ -316,6 +312,7 @@ public class ImagePickerDelegate
   private void handleTakePictureResult(int resultCode) {
     if (resultCode == Activity.RESULT_OK) {
       fileUriResolver.getFullImagePath(
+          pendingCameraImageUri,
           new OnPathReadyListener() {
             @Override
             public void onPathReady(String path) {

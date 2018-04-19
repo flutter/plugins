@@ -4,7 +4,6 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -18,12 +17,11 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
+import java.io.File;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 public class ImagePickerDelegateTest {
   private static final double WIDTH = 10.0;
@@ -35,9 +33,22 @@ public class ImagePickerDelegateTest {
   @Mock MethodChannel.Result mockResult;
   @Mock ImagePickerDelegate.PermissionManager mockPermissionManager;
   @Mock ImagePickerDelegate.IntentResolver mockIntentResolver;
-  @Mock ImagePickerDelegate.FileUriResolver mockFileUriResolver;
   @Mock FileUtils mockFileUtils;
   @Mock Intent mockIntent;
+
+  ImagePickerDelegate.FileUriResolver mockFileUriResolver;
+
+  private static class MockFileUriResolver implements ImagePickerDelegate.FileUriResolver {
+    @Override
+    public Uri resolveFileProviderUriForFile(String fileProviderName, File imageFile) {
+      return null;
+    }
+
+    @Override
+    public void getFullImagePath(Uri imageUri, ImagePickerDelegate.OnPathReadyListener listener) {
+      listener.onPathReady("pathFromUri");
+    }
+  }
 
   @Before
   public void setUp() {
@@ -48,18 +59,6 @@ public class ImagePickerDelegateTest {
 
     when(mockFileUtils.getPathFromUri(any(Context.class), any(Uri.class)))
         .thenReturn("pathFromUri");
-    doAnswer(
-            new Answer<ImagePickerDelegate.OnPathReadyListener>() {
-              @Override
-              public ImagePickerDelegate.OnPathReadyListener answer(InvocationOnMock invocation)
-                  throws Throwable {
-                ((ImagePickerDelegate.OnPathReadyListener) invocation.getArgument(0))
-                    .onPathReady("pathFromUri");
-                return null;
-              }
-            })
-        .when(mockFileUriResolver)
-        .getFullImagePath(any(ImagePickerDelegate.OnPathReadyListener.class));
 
     when(mockImageResizer.resizeImageIfNeeded("pathFromUri", null, null))
         .thenReturn("originalPath");
@@ -68,6 +67,8 @@ public class ImagePickerDelegateTest {
     when(mockImageResizer.resizeImageIfNeeded("pathFromUri", WIDTH, null)).thenReturn("scaledPath");
     when(mockImageResizer.resizeImageIfNeeded("pathFromUri", null, HEIGHT))
         .thenReturn("scaledPath");
+
+    mockFileUriResolver = new MockFileUriResolver();
 
     Uri mockUri = mock(Uri.class);
     when(mockIntent.getData()).thenReturn(mockUri);
