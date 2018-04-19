@@ -17,7 +17,6 @@ A new Flutter plugin.
   s.dependency 'Flutter'
   s.dependency 'Firebase/Core'
   s.dependency 'Firebase/Performance'
-
   s.ios.deployment_target = '8.0'
 end
 

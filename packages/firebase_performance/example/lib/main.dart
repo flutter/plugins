@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_performance/firebase_performance.dart';
@@ -10,33 +12,41 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
+  bool _collectionEnabled;
+  String _collectionEnabledString = 'Unknown status of performance collection.';
 
   @override
   initState() {
     super.initState();
-    initPlatformState();
+    isPerformanceCollectionEnabled();
   }
 
-  // Platform messages are asynchronous, so we initialize in an async method.
-  initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
+  Future<void> isPerformanceCollectionEnabled() async {
+    String perfCollection;
+
     try {
-      platformVersion = await FirebasePerformance.platformVersion;
+      _collectionEnabled = await FirebasePerformance.isPerformanceCollectionEnabled();
+      if (_collectionEnabled) {
+        perfCollection = 'Performance collection is enabled.';
+      } else {
+        perfCollection = 'Performance collection is disabled.';
+      }
     } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
+      perfCollection = 'Failed to see if performance collection is enabled.';
     }
 
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
     if (!mounted)
-      return;
+      return new Future<void>.value(null);
 
+    // TODO: Fix IOS not updating performance collection status
     setState(() {
-      _platformVersion = platformVersion;
+      _collectionEnabledString = perfCollection;
     });
+  }
+
+  Future<void> togglePerformanceCollection() async {
+    await FirebasePerformance.setPerformanceCollectionEnabled(!_collectionEnabled);
+    isPerformanceCollectionEnabled();
   }
 
   @override
@@ -44,10 +54,18 @@ class _MyAppState extends State<MyApp> {
     return new MaterialApp(
       home: new Scaffold(
         appBar: new AppBar(
-          title: new Text('Plugin example app'),
+          title: new Text('Firebase Performance Example'),
         ),
         body: new Center(
-          child: new Text('Running on: $_platformVersion\n'),
+          child: new Column(
+            children: <Widget>[
+              new Text(_collectionEnabledString),
+              new MaterialButton(
+                  onPressed: togglePerformanceCollection,
+                  child: new Text('Toggle Data Collection'),
+              )
+            ],
+          )
         ),
       ),
     );
