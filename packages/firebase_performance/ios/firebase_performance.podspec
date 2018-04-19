@@ -4,13 +4,13 @@
 Pod::Spec.new do |s|
   s.name             = 'firebase_performance'
   s.version          = '0.0.1'
-  s.summary          = 'A new Flutter plugin.'
+  s.summary          = 'Firebase Performance plugin for Flutter.'
   s.description      = <<-DESC
-A new Flutter plugin.
+Firebase Performance plugin for Flutter.
                        DESC
-  s.homepage         = 'http://example.com'
+  s.homepage         = 'https://github.com/flutter/plugins/tree/master/packages/firebase_performance'
   s.license          = { :file => '../LICENSE' }
-  s.author           = { 'Your Company' => 'email@example.com' }
+  s.author           = { 'Flutter Team' => 'flutter-dev@googlegroups.com' }
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'
