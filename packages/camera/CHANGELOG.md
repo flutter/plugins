@@ -1,3 +1,8 @@
+## 0.2.0
+
+* Added support for video recording.
+* Preview of the saved video files.
+
 ## 0.1.2
 
 * Fix Dart 2 runtime errors.
