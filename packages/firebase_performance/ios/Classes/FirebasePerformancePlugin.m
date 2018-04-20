@@ -27,6 +27,7 @@
   } else if ([@"FirebasePerformance#setPerformanceCollectionEnabled" isEqualToString:call.method]) {
     NSNumber *enable = call.arguments;
     [[FIRPerformance sharedInstance] setDataCollectionEnabled:[enable boolValue]];
+
     result(nil);
   } else {
     result(FlutterMethodNotImplemented);

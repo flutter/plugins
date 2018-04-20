@@ -12,11 +12,12 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  FirebasePerformance performance = FirebasePerformance.instance;
   bool _collectionEnabled;
   String _collectionEnabledString = 'Unknown status of performance collection.';
 
   @override
-  initState() {
+  void initState() {
     super.initState();
     isPerformanceCollectionEnabled();
   }
@@ -25,26 +26,25 @@ class _MyAppState extends State<MyApp> {
     String perfCollection;
 
     try {
-      _collectionEnabled = await FirebasePerformance.isPerformanceCollectionEnabled();
+      _collectionEnabled = await performance.isPerformanceCollectionEnabled();
       if (_collectionEnabled) {
         perfCollection = 'Performance collection is enabled.';
       } else {
         perfCollection = 'Performance collection is disabled.';
       }
     } on PlatformException {
-      perfCollection = 'Failed to see if performance collection is enabled.';
+      perfCollection = 'Failed to see status of performance collection.';
     }
 
-    if (!mounted)
-      return new Future<void>.value(null);
-    
+    if (!mounted) return new Future<void>.value(null);
+
     setState(() {
       _collectionEnabledString = perfCollection;
     });
   }
 
   Future<void> togglePerformanceCollection() async {
-    await FirebasePerformance.setPerformanceCollectionEnabled(!_collectionEnabled);
+    await performance.setPerformanceCollectionEnabled(!_collectionEnabled);
     isPerformanceCollectionEnabled();
   }
 
@@ -53,19 +53,20 @@ class _MyAppState extends State<MyApp> {
     return new MaterialApp(
       home: new Scaffold(
         appBar: new AppBar(
-          title: new Text('Firebase Performance Example'),
+          title: const Text('Firebase Performance Example'),
         ),
         body: new Center(
-          child: new Column(
-            children: <Widget>[
-              new Text(_collectionEnabledString),
-              new MaterialButton(
-                  onPressed: togglePerformanceCollection,
-                  child: new Text('Toggle Data Collection'),
-              )
-            ],
-          )
-        ),
+            child: new Column(
+          children: <Widget>[
+            new Text(_collectionEnabledString),
+            new RaisedButton(
+              onPressed: togglePerformanceCollection,
+              child: const Text('Toggle Data Collection'),
+              color: Colors.blueAccent,
+              textColor: Colors.white,
+            )
+          ],
+        )),
       ),
     );
   }

@@ -4,16 +4,25 @@ import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 
 class FirebasePerformance {
-  @visibleForTesting
-  static const MethodChannel _channel =
-      const MethodChannel('plugins.flutter.io/firebase_performance');
+  final MethodChannel _channel;
 
-  static Future<bool> isPerformanceCollectionEnabled() async {
-    final bool isEnabled = await _channel.invokeMethod('FirebasePerformance#isPerformanceCollectionEnabled');
+  static final FirebasePerformance instance = new FirebasePerformance.private(
+      const MethodChannel('plugins.flutter.io/firebase_performance'));
+
+  /// We don't want people to extend this class, but implementing its interface,
+  /// e.g. in tests, is OK.
+  @visibleForTesting
+  FirebasePerformance.private(MethodChannel platformChannel)
+      : _channel = platformChannel;
+
+  Future<bool> isPerformanceCollectionEnabled() async {
+    final bool isEnabled = await _channel
+        .invokeMethod('FirebasePerformance#isPerformanceCollectionEnabled');
     return isEnabled;
   }
 
-  static Future<void> setPerformanceCollectionEnabled(bool enabled) async {
-    await _channel.invokeMethod('FirebasePerformance#setPerformanceCollectionEnabled', enabled);
+  Future<void> setPerformanceCollectionEnabled(bool enabled) async {
+    await _channel.invokeMethod(
+        'FirebasePerformance#setPerformanceCollectionEnabled', enabled);
   }
 }
