@@ -181,13 +181,13 @@
     });
     return;
   }
-    if (_videoWriter.status == AVAssetWriterStatusFailed) {
-        _eventSink(@{
-                     @"event" : @"error",
-                     @"errorDescription" : @"AVAssetWriter failed! File may already exist at given path."
-                     });
-        return;
-    }
+  if (_videoWriter.status == AVAssetWriterStatusFailed) {
+    _eventSink(@{
+      @"event" : @"error",
+      @"errorDescription" : @"AVAssetWriter failed! File may already exist at given path."
+    });
+    return;
+  }
   if (_isRecording == YES) {
     CMTime lastSampleTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer);
     if (_videoWriter.status != AVAssetWriterStatusWriting) {
@@ -279,11 +279,9 @@
     [_captureSession stopRunning];
     _isRecording = YES;
     [_captureSession startRunning];
+  } else {
+    _eventSink(@{@"event" : @"error", @"errorDescription" : @"Video is already recording!"});
   }
-    else
-    {
-        _eventSink(@{@"event" : @"error", @"errorDescription" : @"Video is already recording!"});
-    }
 }
 
 - (void)stopRecordingVideoWithResult:(FlutterResult)result {

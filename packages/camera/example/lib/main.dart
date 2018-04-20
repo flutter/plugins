@@ -276,7 +276,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
       } on CameraException catch (e) {
         logError(e.code, e.description);
       }
-      final VideoPlayerController vcontroller = new VideoPlayerController.file(new File(videoPath));
+      final VideoPlayerController vcontroller =
+          new VideoPlayerController.file(new File(videoPath));
       vcontroller.play();
       vcontroller.setLooping(true);
       videoPlayerListener = () {
