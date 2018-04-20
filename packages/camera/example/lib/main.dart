@@ -13,7 +13,7 @@ class CameraExampleHome extends StatefulWidget {
   }
 }
 
-// Function to get a suitable icon depending on the selected lens.
+/// Returns a suitable camera icon for [direction].
 IconData getCameraLensIcon(CameraLensDirection direction) {
   switch (direction) {
     case CameraLensDirection.back:
@@ -40,7 +40,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
 
   @override
   Widget build(BuildContext context) {
-    // The main scaffolding of the app.
     return new Scaffold(
       key: _scaffoldKey,
       appBar: new AppBar(
@@ -277,8 +276,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
       } on CameraException catch (e) {
         logError(e.code, e.description);
       }
-      final VideoPlayerController vcontroller =
-          new VideoPlayerController.network('file://$videoPath');
+      final VideoPlayerController vcontroller = new VideoPlayerController.file(new File(videoPath));
       vcontroller.play();
       vcontroller.setLooping(true);
       videoPlayerListener = () {
@@ -331,7 +329,7 @@ class CameraApp extends StatelessWidget {
 List<CameraDescription> cameras;
 
 Future<Null> main() async {
-  // Save the available cameras in this variable first before initializing the app.
+  // Fetch the available cameras before initializing the app.
   try {
     cameras = await availableCameras();
   } on CameraException catch (e) {
