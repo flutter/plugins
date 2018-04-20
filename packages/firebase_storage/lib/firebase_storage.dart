@@ -168,14 +168,14 @@ class StorageUploadTask {
       <String, dynamic>{
         'filename': file.absolute.path,
         'path': path,
-        'metadata': metadata != null ? buildMetadataUploadMap(metadata) : null,
+        'metadata': metadata == null ? null : _buildMetadataUploadMap(metadata),
       },
     );
     _completer
         .complete(new UploadTaskSnapshot(downloadUrl: Uri.parse(downloadUrl)));
   }
 
-  Map<String, dynamic> buildMetadataUploadMap(StorageMetadata metadata) {
+  Map<String, dynamic> _buildMetadataUploadMap(StorageMetadata metadata) {
     return <String, dynamic>{
       'cacheControl': metadata.cacheControl,
       'contentDisposition': metadata.contentDisposition,
