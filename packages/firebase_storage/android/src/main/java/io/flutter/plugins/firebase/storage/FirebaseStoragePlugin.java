@@ -11,6 +11,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import io.flutter.plugin.common.MethodCall;
@@ -19,10 +20,10 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
 
 /** FirebaseStoragePlugin */
-@SuppressWarnings("unchecked")
 public class FirebaseStoragePlugin implements MethodCallHandler {
   private FirebaseStorage firebaseStorage;
 
@@ -52,10 +53,48 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
       case "StorageReference#getDownloadUrl":
         getDownloadUrl(call, result);
         break;
+      case "StorageReference#getMetadata":
+        getMetadata(call, result);
+        break;
       default:
         result.notImplemented();
         break;
     }
+  }
+
+  private void getMetadata(MethodCall call, final Result result) {
+    String path = call.argument("path");
+    StorageReference ref = firebaseStorage.getReference().child(path);
+    ref.getMetadata()
+        .addOnSuccessListener(
+            new OnSuccessListener<StorageMetadata>() {
+              @Override
+              public void onSuccess(StorageMetadata storageMetadata) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("name", storageMetadata.getName());
+                map.put("bucket", storageMetadata.getBucket());
+                map.put("generation", storageMetadata.getGeneration());
+                map.put("metadataGeneration", storageMetadata.getMetadataGeneration());
+                map.put("path", storageMetadata.getPath());
+                map.put("sizeBytes", storageMetadata.getSizeBytes());
+                map.put("creationTimeMillis", storageMetadata.getCreationTimeMillis());
+                map.put("updatedTimeMillis", storageMetadata.getUpdatedTimeMillis());
+                map.put("md5Hash", storageMetadata.getMd5Hash());
+                map.put("cacheControl", storageMetadata.getCacheControl());
+                map.put("contentDisposition", storageMetadata.getContentDisposition());
+                map.put("contentEncoding", storageMetadata.getContentEncoding());
+                map.put("contentLanguage", storageMetadata.getContentLanguage());
+                map.put("contentType", storageMetadata.getContentType());
+                result.success(map);
+              }
+            })
+        .addOnFailureListener(
+            new OnFailureListener() {
+              @Override
+              public void onFailure(@NonNull Exception e) {
+                result.error("metadata_error", e.getMessage(), null);
+              }
+            });
   }
 
   private void getDownloadUrl(MethodCall call, final Result result) {
@@ -92,19 +131,24 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
     deleteTask.addOnFailureListener(
         new OnFailureListener() {
           @Override
-          public void onFailure(Exception e) {
+          public void onFailure(@NonNull Exception e) {
             result.error("deletion_error", e.getMessage(), null);
           }
         });
   }
 
   private void putFile(MethodCall call, final Result result) {
-    Map<String, String> arguments = (Map<String, String>) call.arguments;
-    String filename = arguments.get("filename");
-    String path = arguments.get("path");
+    String filename = call.argument("filename");
+    String path = call.argument("path");
+    Map<String, Object> metadata = call.argument("metadata");
     File file = new File(filename);
     StorageReference ref = firebaseStorage.getReference().child(path);
-    UploadTask uploadTask = ref.putFile(Uri.fromFile(file));
+    UploadTask uploadTask;
+    if (metadata == null) {
+      uploadTask = ref.putFile(Uri.fromFile(file));
+    } else {
+      uploadTask = ref.putFile(Uri.fromFile(file), buildMetadataFromMap(metadata));
+    }
     uploadTask.addOnSuccessListener(
         new OnSuccessListener<UploadTask.TaskSnapshot>() {
           @Override
@@ -115,16 +159,25 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
     uploadTask.addOnFailureListener(
         new OnFailureListener() {
           @Override
-          public void onFailure(Exception e) {
+          public void onFailure(@NonNull Exception e) {
             result.error("upload_error", e.getMessage(), null);
           }
         });
   }
 
+  private StorageMetadata buildMetadataFromMap(Map<String, Object> map) {
+    StorageMetadata.Builder builder = new StorageMetadata.Builder();
+    builder.setCacheControl((String) map.get("cacheControl"));
+    builder.setContentEncoding((String) map.get("contentEncoding"));
+    builder.setContentDisposition((String) map.get("contentDisposition"));
+    builder.setContentLanguage((String) map.get("contentLanguage"));
+    builder.setContentType((String) map.get("contentType"));
+    return builder.build();
+  }
+
   private void getData(MethodCall call, final Result result) {
-    Map<String, Object> arguments = (Map<String, Object>) call.arguments;
-    Integer maxSize = (Integer) arguments.get("maxSize");
-    String path = (String) arguments.get("path");
+    Integer maxSize = call.argument("maxSize");
+    String path = call.argument("path");
     StorageReference ref = firebaseStorage.getReference().child(path);
     Task<byte[]> downloadTask = ref.getBytes(maxSize);
     downloadTask.addOnSuccessListener(
