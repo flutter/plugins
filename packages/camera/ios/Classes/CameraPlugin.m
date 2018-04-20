@@ -181,15 +181,16 @@
     });
     return;
   }
+    if (_videoWriter.status == AVAssetWriterStatusFailed) {
+        
+        _eventSink(@{
+                     @"event" : @"error",
+                     @"errorDescription" : @"AVAssetWriter failed!"
+                     });
+        return;
+    }
   if (_isRecording == YES) {
     CMTime lastSampleTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer);
-      if (_videoWriter.status == AVAssetWriterStatusFailed) {
-          _eventSink(@{
-                       @"event" : @"error",
-                       @"errorDescription" : @"AVAssetWriter failed!"
-                       });
-          return;
-      }
     if (_videoWriter.status != AVAssetWriterStatusWriting) {
       [_videoWriter startWriting];
       [_videoWriter startSessionAtSourceTime:lastSampleTime];
