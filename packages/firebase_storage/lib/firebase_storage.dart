@@ -29,7 +29,7 @@ class StorageReference {
     return new StorageReference._(childPath);
   }
 
-  /// Asynchronously uploads a file to the currently specified StorageReference, without additional metadata.
+  /// Asynchronously uploads a file to the currently specified StorageReference, with an optional metadata.
   StorageUploadTask put(File file, [StorageMetadata metadata]) {
     final StorageUploadTask task =
         new StorageUploadTask._(file, _pathComponents.join("/"), metadata);
@@ -63,7 +63,7 @@ class StorageReference {
 
   /// Retrieves metadata associated with an object at this [StorageReference].
   Future<StorageMetadata> getMetadata() async {
-    return new StorageMetadata._fromMap(await FirebaseStorage._channel
+    return new StorageMetadata._fromMap(await FirebaseStorage.channel
         .invokeMethod("StorageReference#getMetadata", <String, String>{
       'path': _pathComponents.join("/"),
     }));
@@ -75,7 +75,7 @@ class StorageReference {
 /// Metadata for a [StorageReference]. Metadata stores default attributes such as
 /// size and content type.
 class StorageMetadata {
-  StorageMetadata({
+  const StorageMetadata({
     this.cacheControl,
     this.contentDisposition,
     this.contentEncoding,
@@ -91,7 +91,7 @@ class StorageMetadata {
        updatedTimeMillis = null,
        md5Hash = null;
 
-  StorageMetadata._fromMap(Map<String, dynamic> map)
+  StorageMetadata._fromMap(Map<dynamic, dynamic> map)
       : bucket = map['bucket'],
         generation = map['generation'],
         metadataGeneration = map['metadataGeneration'],
@@ -125,49 +125,30 @@ class StorageMetadata {
   /// The stored Size in bytes of the [StorageReference] object.
   final int sizeBytes;
 
-  /// The time the [StorageReference] was created.
-  final num creationTimeMillis;
+  /// The time the [StorageReference] was created in milliseconds since the epoch.
+  final int creationTimeMillis;
 
-  /// The time the [StorageReference] was last updated.
-  final num updatedTimeMillis;
+  /// The time the [StorageReference] was last updated in milliseconds since the epoch.
+  final int updatedTimeMillis;
 
   /// The MD5Hash of the [StorageReference] object.
   final String md5Hash;
 
   /// The Cache Control setting of the [StorageReference].
-  String cacheControl;
+  final String cacheControl;
 
   /// The content disposition of the [StorageReference].
-  String contentDisposition;
+  final String contentDisposition;
 
   /// The content encoding for the [StorageReference].
-  String contentEncoding;
+  final String contentEncoding;
 
   /// The content language for the StorageReference, specified as a 2-letter
   /// lowercase language code defined by ISO 639-1.
-  String contentLanguage;
+  final String contentLanguage;
 
-  /// The content type of the [StorageReference].
-  String contentType;
-
-  Map<String, dynamic> toMap() {
-    return <String, dynamic> {
-      'bucket': bucket,
-      'generation': generation,
-      'metadataGeneration': metadataGeneration,
-      'path': path,
-      'name' : name,
-      'sizeBytes': sizeBytes,
-      'creationTimeMillis': creationTimeMillis,
-      'updatedTimeMillis': updatedTimeMillis,
-      'md5Hash': md5Hash,
-      'cacheControl': cacheControl,
-      'contentDisposition': contentDisposition,
-      'contentLanguage': contentLanguage,
-      'contentType': contentType,
-      'contentEncoding': contentEncoding,
-    };
-  }
+  /// The content type (MIME type) of the [StorageReference].
+  final String contentType;
 }
 
 class StorageUploadTask {
@@ -188,11 +169,21 @@ class StorageUploadTask {
       <String, dynamic>{
         'filename': file.absolute.path,
         'path': path,
-        'metadata': metadata != null ? metadata.toMap() : null,
+        'metadata': metadata != null ? buildMetadataUploadMap(metadata) : null,
       },
     );
     _completer
         .complete(new UploadTaskSnapshot(downloadUrl: Uri.parse(downloadUrl)));
+  }
+
+  Map<String, dynamic> buildMetadataUploadMap(StorageMetadata metadata) {
+    return <String, dynamic> {
+      'cacheControl': metadata.cacheControl,
+      'contentDisposition': metadata.contentDisposition,
+      'contentLanguage': metadata.contentLanguage,
+      'contentType': metadata.contentType,
+      'contentEncoding': metadata.contentEncoding,
+    };
   }
 }
 

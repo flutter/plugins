@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** FirebaseStoragePlugin */
-@SuppressWarnings("unchecked")
 public class FirebaseStoragePlugin implements MethodCallHandler {
   private FirebaseStorage firebaseStorage;
 
@@ -71,7 +70,7 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
             new OnSuccessListener<StorageMetadata>() {
               @Override
               public void onSuccess(StorageMetadata storageMetadata) {
-                HashMap<String, Object> map = new HashMap();
+                Map<String, Object> map = new HashMap<>();
                 map.put("name", storageMetadata.getName());
                 map.put("bucket", storageMetadata.getBucket());
                 map.put("generation", storageMetadata.getGeneration());
@@ -132,24 +131,23 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
     deleteTask.addOnFailureListener(
         new OnFailureListener() {
           @Override
-          public void onFailure(Exception e) {
+          public void onFailure(@NonNull Exception e) {
             result.error("deletion_error", e.getMessage(), null);
           }
         });
   }
 
   private void putFile(MethodCall call, final Result result) {
-    Map<String, Object> arguments = (Map<String, Object>) call.arguments;
-    String filename = (String) arguments.get("filename");
-    String path = (String) arguments.get("path");
-    HashMap<String, Object> metadata = (HashMap<String, Object>) arguments.get("metadata");
+    String filename = call.argument("filename");
+    String path = call.argument("path");
+    Map<String, Object> metadata = call.argument("metadata");
     File file = new File(filename);
     StorageReference ref = firebaseStorage.getReference().child(path);
     UploadTask uploadTask;
-    if (metadata != null) {
-      uploadTask = ref.putFile(Uri.fromFile(file), buildMetadataFromMap(metadata));
-    } else {
+    if (metadata == null) {
       uploadTask = ref.putFile(Uri.fromFile(file));
+    } else {
+      uploadTask = ref.putFile(Uri.fromFile(file), buildMetadataFromMap(metadata));
     }
     uploadTask.addOnSuccessListener(
         new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -161,26 +159,25 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
     uploadTask.addOnFailureListener(
         new OnFailureListener() {
           @Override
-          public void onFailure(Exception e) {
+          public void onFailure(@NonNull Exception e) {
             result.error("upload_error", e.getMessage(), null);
           }
         });
   }
 
-  private StorageMetadata buildMetadataFromMap(HashMap<String, Object> metadataMap) {
+  private StorageMetadata buildMetadataFromMap(Map<String, Object> map) {
     StorageMetadata.Builder builder = new StorageMetadata.Builder();
-    builder.setCacheControl((String) metadataMap.get("cacheControl"));
-    builder.setContentEncoding((String) metadataMap.get("contentEncoding"));
-    builder.setContentDisposition((String) metadataMap.get("contentDisposition"));
-    builder.setContentLanguage((String) metadataMap.get("contentLanguage"));
-    builder.setContentType((String) metadataMap.get("contentType"));
+    builder.setCacheControl((String) map.get("cacheControl"));
+    builder.setContentEncoding((String) map.get("contentEncoding"));
+    builder.setContentDisposition((String) map.get("contentDisposition"));
+    builder.setContentLanguage((String) map.get("contentLanguage"));
+    builder.setContentType((String) map.get("contentType"));
     return builder.build();
   }
 
   private void getData(MethodCall call, final Result result) {
-    Map<String, Object> arguments = (Map<String, Object>) call.arguments;
-    Integer maxSize = (Integer) arguments.get("maxSize");
-    String path = (String) arguments.get("path");
+    Integer maxSize = call.argument("maxSize");
+    String path = call.argument("path");
     StorageReference ref = firebaseStorage.getReference().child(path);
     Task<byte[]> downloadTask = ref.getBytes(maxSize);
     downloadTask.addOnSuccessListener(

@@ -43,13 +43,14 @@ class _MyHomePageState extends State<MyHomePage> {
     final StorageReference ref =
         FirebaseStorage.instance.ref().child("foo$rand.txt");
     final StorageUploadTask uploadTask = ref.put(
-        file, new StorageMetadata(contentLanguage: "en"));
+        file, const StorageMetadata(contentLanguage: "en"));
 
     final Uri downloadUrl = (await uploadTask.future).downloadUrl;
     final http.Response downloadData = await http.get(downloadUrl);
     setState(() {
       _fileContents = downloadData.body;
     });
+
   }
 
   @override

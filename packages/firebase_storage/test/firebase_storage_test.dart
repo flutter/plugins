@@ -51,18 +51,15 @@ void main() {
     });
 
     group('getMetadata', () {
-      const MethodChannel channel = const MethodChannel(
-        'firebase_storage',
-      );
-
       final List<MethodCall> log = <MethodCall>[];
 
       StorageReference ref;
 
       setUp(() {
-        channel.setMockMethodCallHandler((MethodCall methodCall) async {
+        FirebaseStorage.channel
+            .setMockMethodCallHandler((MethodCall methodCall) async {
           log.add(methodCall);
-          return {'name': 'image.jpg'};
+          return <String, String>{'name': 'image.jpg'};
         });
         ref = FirebaseStorage.instance
             .ref()
