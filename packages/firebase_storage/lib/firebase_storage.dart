@@ -29,10 +29,10 @@ class StorageReference {
     return new StorageReference._(childPath);
   }
 
-  /// Asynchronously uploads a file to the currently specified StorageReference, without additional metadata.
-  StorageUploadTask put(File file) {
+  /// Asynchronously uploads a file to the currently specified StorageReference, with an optional metadata.
+  StorageUploadTask put(File file, [StorageMetadata metadata]) {
     final StorageUploadTask task =
-        new StorageUploadTask._(file, _pathComponents.join("/"));
+        new StorageUploadTask._(file, _pathComponents.join("/"), metadata);
     task._start();
     return task;
   }
@@ -61,13 +61,102 @@ class StorageReference {
         <String, String>{'path': _pathComponents.join("/")});
   }
 
+  /// Retrieves metadata associated with an object at this [StorageReference].
+  Future<StorageMetadata> getMetadata() async {
+    return new StorageMetadata._fromMap(await FirebaseStorage.channel
+        .invokeMethod("StorageReference#getMetadata", <String, String>{
+      'path': _pathComponents.join("/"),
+    }));
+  }
+
   String get path => _pathComponents.join('/');
 }
 
+/// Metadata for a [StorageReference]. Metadata stores default attributes such as
+/// size and content type.
+class StorageMetadata {
+  const StorageMetadata({
+    this.cacheControl,
+    this.contentDisposition,
+    this.contentEncoding,
+    this.contentLanguage,
+    this.contentType,
+  })  : bucket = null,
+        generation = null,
+        metadataGeneration = null,
+        path = null,
+        name = null,
+        sizeBytes = null,
+        creationTimeMillis = null,
+        updatedTimeMillis = null,
+        md5Hash = null;
+
+  StorageMetadata._fromMap(Map<dynamic, dynamic> map)
+      : bucket = map['bucket'],
+        generation = map['generation'],
+        metadataGeneration = map['metadataGeneration'],
+        path = map['path'],
+        name = map['name'],
+        sizeBytes = map['sizeBytes'],
+        creationTimeMillis = map['creationTimeMillis'],
+        updatedTimeMillis = map['updatedTimeMillis'],
+        md5Hash = map['md5Hash'],
+        cacheControl = map['cacheControl'],
+        contentDisposition = map['contentDisposition'],
+        contentLanguage = map['contentLanguage'],
+        contentType = map['contentType'],
+        contentEncoding = map['contentEncoding'];
+
+  /// The owning Google Cloud Storage bucket for the [StorageReference].
+  final String bucket;
+
+  /// A version String indicating what version of the [StorageReference].
+  final String generation;
+
+  /// A version String indicating the version of this [StorageMetadata].
+  final String metadataGeneration;
+
+  /// The path of the [StorageReference] object.
+  final String path;
+
+  /// A simple name of the [StorageReference] object.
+  final String name;
+
+  /// The stored Size in bytes of the [StorageReference] object.
+  final int sizeBytes;
+
+  /// The time the [StorageReference] was created in milliseconds since the epoch.
+  final int creationTimeMillis;
+
+  /// The time the [StorageReference] was last updated in milliseconds since the epoch.
+  final int updatedTimeMillis;
+
+  /// The MD5Hash of the [StorageReference] object.
+  final String md5Hash;
+
+  /// The Cache Control setting of the [StorageReference].
+  final String cacheControl;
+
+  /// The content disposition of the [StorageReference].
+  final String contentDisposition;
+
+  /// The content encoding for the [StorageReference].
+  final String contentEncoding;
+
+  /// The content language for the StorageReference, specified as a 2-letter
+  /// lowercase language code defined by ISO 639-1.
+  final String contentLanguage;
+
+  /// The content type (MIME type) of the [StorageReference].
+  final String contentType;
+}
+
 class StorageUploadTask {
-  StorageUploadTask._(this.file, this.path);
+  StorageUploadTask._(this.file, this.path, [this.metadata]);
+
   final File file;
   final String path;
+  final StorageMetadata metadata;
 
   Completer<UploadTaskSnapshot> _completer =
       new Completer<UploadTaskSnapshot>();
@@ -76,13 +165,24 @@ class StorageUploadTask {
   Future<void> _start() async {
     final String downloadUrl = await FirebaseStorage.channel.invokeMethod(
       "StorageReference#putFile",
-      <String, String>{
+      <String, dynamic>{
         'filename': file.absolute.path,
         'path': path,
+        'metadata': metadata == null ? null : _buildMetadataUploadMap(metadata),
       },
     );
     _completer
         .complete(new UploadTaskSnapshot(downloadUrl: Uri.parse(downloadUrl)));
+  }
+
+  Map<String, dynamic> _buildMetadataUploadMap(StorageMetadata metadata) {
+    return <String, dynamic>{
+      'cacheControl': metadata.cacheControl,
+      'contentDisposition': metadata.contentDisposition,
+      'contentLanguage': metadata.contentLanguage,
+      'contentType': metadata.contentType,
+      'contentEncoding': metadata.contentEncoding,
+    };
   }
 }
 
