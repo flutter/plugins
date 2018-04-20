@@ -42,7 +42,9 @@ class _MyHomePageState extends State<MyHomePage> {
     final String rand = "${new Random().nextInt(10000)}";
     final StorageReference ref =
         FirebaseStorage.instance.ref().child("foo$rand.txt");
-    final StorageUploadTask uploadTask = ref.put(file);
+    final StorageUploadTask uploadTask =
+        ref.put(file, const StorageMetadata(contentLanguage: "en"));
+
     final Uri downloadUrl = (await uploadTask.future).downloadUrl;
     final http.Response downloadData = await http.get(downloadUrl);
     setState(() {
