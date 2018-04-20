@@ -60,7 +60,7 @@
   NSString *path = call.arguments[@"path"];
   NSDictionary *metadataDictionary = call.arguments[@"metadata"];
   FIRStorageMetadata *metadata;
-  if (![metadataDictionary isEqual:[NSNull null]] ) {
+  if (![metadataDictionary isEqual:[NSNull null]]) {
     metadata = [self buildMetadataFromDictionary:metadataDictionary];
   }
   FIRStorageReference *fileRef = [[FIRStorage storage].reference child:path];
@@ -81,15 +81,15 @@
 - (FIRStorageMetadata *)buildMetadataFromDictionary:(NSDictionary *)dictionary {
   FIRStorageMetadata *metadata = [[FIRStorageMetadata alloc] init];
   if (![dictionary[@"cacheControl"] isEqual:[NSNull null]])
-      metadata.cacheControl = dictionary[@"cacheControl"];
+    metadata.cacheControl = dictionary[@"cacheControl"];
   if (![dictionary[@"contentDisposition"] isEqual:[NSNull null]])
-      metadata.contentDisposition = dictionary[@"contentDisposition"];
+    metadata.contentDisposition = dictionary[@"contentDisposition"];
   if (![dictionary[@"contentEncoding"] isEqual:[NSNull null]])
-      metadata.contentEncoding = dictionary[@"contentEncoding"];
+    metadata.contentEncoding = dictionary[@"contentEncoding"];
   if (![dictionary[@"contentLanguage"] isEqual:[NSNull null]])
-      metadata.contentLanguage = dictionary[@"contentLanguage"];
+    metadata.contentLanguage = dictionary[@"contentLanguage"];
   if (![dictionary[@"contentType"] isEqual:[NSNull null]])
-      metadata.contentType = dictionary[@"contentType"];
+    metadata.contentType = dictionary[@"contentType"];
   return metadata;
 }
 
@@ -123,11 +123,15 @@
     } else {
       NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
       [dictionary setValue:[metadata bucket] forKey:@"bucket"];
-      [dictionary setValue:[NSString stringWithFormat:@"%lld", [metadata generation]]  forKey:@"generation"];
-      [dictionary setValue:[NSString stringWithFormat:@"%lld", [metadata metageneration]] forKey:@"metadataGeneration"];
+      [dictionary setValue:[NSString stringWithFormat:@"%lld", [metadata generation]]
+                    forKey:@"generation"];
+      [dictionary setValue:[NSString stringWithFormat:@"%lld", [metadata metageneration]]
+                    forKey:@"metadataGeneration"];
       [dictionary setValue:[metadata path] forKey:@"path"];
-      [dictionary setValue:@((long)([[metadata timeCreated] timeIntervalSince1970] * 1000.0)) forKey:@"creationTimeMillis"];
-      [dictionary setValue:@((long)([[metadata updated] timeIntervalSince1970] * 1000.0)) forKey:@"updatedTimeMillis"];
+      [dictionary setValue:@((long)([[metadata timeCreated] timeIntervalSince1970] * 1000.0))
+                    forKey:@"creationTimeMillis"];
+      [dictionary setValue:@((long)([[metadata updated] timeIntervalSince1970] * 1000.0))
+                    forKey:@"updatedTimeMillis"];
       [dictionary setValue:@([metadata size]) forKey:@"sizeBytes"];
       [dictionary setValue:[metadata md5Hash] forKey:@"md5Hash"];
       [dictionary setValue:[metadata cacheControl] forKey:@"cacheControl"];

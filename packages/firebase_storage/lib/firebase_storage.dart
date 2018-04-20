@@ -81,15 +81,15 @@ class StorageMetadata {
     this.contentEncoding,
     this.contentLanguage,
     this.contentType,
-  }) : bucket = null,
-       generation = null,
-       metadataGeneration = null,
-       path = null,
-       name = null,
-       sizeBytes = null,
-       creationTimeMillis = null,
-       updatedTimeMillis = null,
-       md5Hash = null;
+  })  : bucket = null,
+        generation = null,
+        metadataGeneration = null,
+        path = null,
+        name = null,
+        sizeBytes = null,
+        creationTimeMillis = null,
+        updatedTimeMillis = null,
+        md5Hash = null;
 
   StorageMetadata._fromMap(Map<dynamic, dynamic> map)
       : bucket = map['bucket'],
@@ -97,7 +97,7 @@ class StorageMetadata {
         metadataGeneration = map['metadataGeneration'],
         path = map['path'],
         name = map['name'],
-        sizeBytes=  map['sizeBytes'],
+        sizeBytes = map['sizeBytes'],
         creationTimeMillis = map['creationTimeMillis'],
         updatedTimeMillis = map['updatedTimeMillis'],
         md5Hash = map['md5Hash'],
@@ -162,7 +162,6 @@ class StorageUploadTask {
       new Completer<UploadTaskSnapshot>();
   Future<UploadTaskSnapshot> get future => _completer.future;
 
-
   Future<void> _start() async {
     final String downloadUrl = await FirebaseStorage.channel.invokeMethod(
       "StorageReference#putFile",
@@ -177,7 +176,7 @@ class StorageUploadTask {
   }
 
   Map<String, dynamic> buildMetadataUploadMap(StorageMetadata metadata) {
-    return <String, dynamic> {
+    return <String, dynamic>{
       'cacheControl': metadata.cacheControl,
       'contentDisposition': metadata.contentDisposition,
       'contentLanguage': metadata.contentLanguage,
