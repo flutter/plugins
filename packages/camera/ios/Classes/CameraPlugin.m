@@ -182,10 +182,9 @@
     return;
   }
     if (_videoWriter.status == AVAssetWriterStatusFailed) {
-        
         _eventSink(@{
                      @"event" : @"error",
-                     @"errorDescription" : @"AVAssetWriter failed!"
+                     @"errorDescription" : @"AVAssetWriter failed! File may already exist at given path."
                      });
         return;
     }
