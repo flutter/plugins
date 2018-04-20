@@ -181,6 +181,13 @@
     });
     return;
   }
+    if (_videoWriter.status == AVAssetWriterStatusFailed) {
+        _eventSink(@{
+                     @"event" : @"error",
+                     @"errorDescription" : @"AVAssetWriter failed! File may already exist at given path."
+                     });
+        return;
+    }
   if (_isRecording == YES) {
     CMTime lastSampleTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer);
     if (_videoWriter.status != AVAssetWriterStatusWriting) {
@@ -273,6 +280,10 @@
     _isRecording = YES;
     [_captureSession startRunning];
   }
+    else
+    {
+        _eventSink(@{@"event" : @"error", @"errorDescription" : @"Video is already recording!"});
+    }
 }
 
 - (void)stopRecordingVideoWithResult:(FlutterResult)result {
@@ -342,11 +353,11 @@
 - (void)setUpCaptureSessionForAudio {
   NSError *error = nil;
   // Create a device input with the device and add it to the session.
-  // Setup the audio input
+  // Setup the audio input.
   AVCaptureDevice *audioDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeAudio];
   AVCaptureDeviceInput *audioInput =
       [AVCaptureDeviceInput deviceInputWithDevice:audioDevice error:&error];
-  // Setup the audio output
+  // Setup the audio output.
   _audioOutput = [[AVCaptureAudioDataOutput alloc] init];
 
   if ([_captureSession canAddInput:audioInput]) {
@@ -456,7 +467,6 @@
         @"captureWidth" : @(cam.captureSize.width),
         @"captureHeight" : @(cam.captureSize.height),
       });
-      // starting the choosen cam
       [cam start];
     }
   } else {
