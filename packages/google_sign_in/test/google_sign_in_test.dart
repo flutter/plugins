@@ -22,12 +22,17 @@ void main() {
       "displayName": "John Doe",
     };
 
+    const Map<String, dynamic> kIsSignedIn = const <String, dynamic>{
+      'isSignedIn': true
+    };
+
     const Map<String, dynamic> kDefaultResponses = const <String, dynamic>{
       'init': null,
       'signInSilently': kUserData,
       'signIn': kUserData,
       'signOut': null,
       'disconnect': null,
+      'isSignedIn': kIsSignedIn,
     };
 
     final List<MethodCall> log = <MethodCall>[];
@@ -115,6 +120,18 @@ void main() {
           isMethodCall('disconnect', arguments: null),
         ],
       );
+    });
+
+    test('isSignedIn', () async {
+      final bool result = await googleSignIn.isSignedIn();
+      expect(result, isTrue);
+      expect(log, <Matcher>[
+        isMethodCall('init', arguments: <String, dynamic>{
+          'scopes': <String>[],
+          'hostedDomain': null,
+        }),
+        isMethodCall('isSignedIn', arguments: null),
+      ]);
     });
 
     test('concurrent calls of the same method trigger sign in once', () async {
@@ -237,11 +254,19 @@ void main() {
       );
     });
 
-    test('signInSilently does not throw on error', () async {
+    test('signInSilently suppresses errors by default', () async {
       channel.setMockMethodCallHandler((MethodCall methodCall) {
         throw "I am an error";
       });
       expect(await googleSignIn.signInSilently(), isNull); // should not throw
+    });
+
+    test('signInSilently forwards errors', () async {
+      channel.setMockMethodCallHandler((MethodCall methodCall) {
+        throw "I am an error";
+      });
+      expect(googleSignIn.signInSilently(suppressErrors: false),
+          throwsA(const isInstanceOf<PlatformException>()));
     });
 
     test('can sign in after init failed before', () async {
