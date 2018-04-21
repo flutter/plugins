@@ -141,9 +141,9 @@ class Query {
         value is double ||
         value is int ||
         value == null);
-    return _copyWithParameters(
-      <String, dynamic>{'equalTo': value, 'equalToKey': key},
-    );
+    final Map<String, dynamic> parameters = <String, dynamic>{'equalTo': value};
+    if (key != null) parameters['equalToKey'] = key;
+    return _copyWithParameters(parameters);
   }
 
   /// Create a query with limit and anchor it to the start of the window.
