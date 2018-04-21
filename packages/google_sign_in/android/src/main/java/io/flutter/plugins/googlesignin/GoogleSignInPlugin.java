@@ -20,10 +20,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
@@ -365,9 +363,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
               });
     }
 
-    /**
-     * Checks if there is a signed in user.
-     */
+    /** Checks if there is a signed in user. */
     @Override
     public void isSignedIn(final Result result) {
       Map<String, Object> response = new HashMap<>();
