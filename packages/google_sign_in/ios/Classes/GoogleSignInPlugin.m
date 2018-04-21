@@ -72,9 +72,9 @@ static NSString *const kClientIdKey = @"CLIENT_ID";
       [[GIDSignIn sharedInstance] signInSilently];
     }
   } else if ([call.method isEqualToString:@"isSignedIn"]) {
-      result(@{
-        @"isSignedIn" : @([[GIDSignIn sharedInstance] hasAuthInKeychain]),
-      });
+    result(@{
+      @"isSignedIn" : @([[GIDSignIn sharedInstance] hasAuthInKeychain]),
+    });
   } else if ([call.method isEqualToString:@"signIn"]) {
     if ([self setAccountRequest:result]) {
       [[GIDSignIn sharedInstance] signIn];

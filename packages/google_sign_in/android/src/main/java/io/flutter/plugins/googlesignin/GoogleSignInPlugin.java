@@ -16,6 +16,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
@@ -54,6 +55,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
   private static final String METHOD_GET_TOKENS = "getTokens";
   private static final String METHOD_SIGN_OUT = "signOut";
   private static final String METHOD_DISCONNECT = "disconnect";
+  private static final String METHOD_IS_SIGNED_IN = "isSignedIn";
 
   private final IDelegate delegate;
 
@@ -97,6 +99,10 @@ public class GoogleSignInPlugin implements MethodCallHandler {
         delegate.disconnect(result);
         break;
 
+      case METHOD_IS_SIGNED_IN:
+        delegate.isSignedIn(result);
+        break;
+
       default:
         result.notImplemented();
     }
@@ -137,6 +143,9 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 
     /** Signs the user out, and revokes their credentials. */
     public void disconnect(Result result);
+
+    /** Checks if there is a signed in user. */
+    public void isSignedIn(Result result);
   }
 
   /**
@@ -356,6 +365,17 @@ public class GoogleSignInPlugin implements MethodCallHandler {
               });
     }
 
+    /**
+     * Checks if there is a signed in user.
+     */
+    @Override
+    public void isSignedIn(final Result result) {
+      Map<String, Object> response = new HashMap<>();
+      boolean value = GoogleSignIn.getLastSignedInAccount(registrar.context()) != null;
+      response.put("isSignedIn", value);
+      result.success(response);
+    }
+
     private void onSignInResult(GoogleSignInResult result) {
       if (result.isSuccess()) {
         GoogleSignInAccount account = result.getSignInAccount();
@@ -369,12 +389,8 @@ public class GoogleSignInPlugin implements MethodCallHandler {
           response.put("photoUrl", account.getPhotoUrl().toString());
         }
         finishWithSuccess(response);
-      } else if (result.getStatus().getStatusCode() == CommonStatusCodes.SIGN_IN_REQUIRED
-          || result.getStatus().getStatusCode() == GoogleSignInStatusCodes.SIGN_IN_CANCELLED) {
-        // This isn't an error from the caller's (Dart's) perspective; this just
-        // means that the user didn't sign in.
-        finishWithSuccess(null);
       } else {
+        // Forward all errors and let Dart side decide how to handle.
         finishWithError(ERROR_REASON_STATUS, result.getStatus().toString());
       }
     }
