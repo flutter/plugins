@@ -1,7 +1,14 @@
 package io.flutter.plugins.imagepicker;
 
-import android.app.Activity;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
+import android.app.Activity;
+import io.flutter.plugin.common.MethodCall;
+import io.flutter.plugin.common.MethodChannel;
+import io.flutter.plugin.common.PluginRegistry;
+import java.util.HashMap;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -9,22 +16,11 @@ import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.HashMap;
-
-import io.flutter.plugin.common.MethodCall;
-import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.PluginRegistry;
-
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-
 public class ImagePickerPluginTest {
   private static final int SOURCE_CAMERA = 0;
   private static final int SOURCE_GALLERY = 1;
 
-  @Rule
-  public ExpectedException exception = ExpectedException.none();
+  @Rule public ExpectedException exception = ExpectedException.none();
 
   @Mock PluginRegistry.Registrar mockRegistrar;
   @Mock Activity mockActivity;
@@ -47,7 +43,8 @@ public class ImagePickerPluginTest {
 
     plugin.onMethodCall(call, mockResult);
 
-    verify(mockResult).error("no_activity", "image_picker plugin requires a foreground activity.", null);
+    verify(mockResult)
+        .error("no_activity", "image_picker plugin requires a foreground activity.", null);
     verifyZeroInteractions(mockImagePickerDelegate);
   }
 
@@ -98,9 +95,12 @@ public class ImagePickerPluginTest {
   }
 
   private MethodCall buildMethodCall(final int source) {
-    final HashMap<String, Object> arguments = new HashMap<String, Object>() {{
-      put("source", source);
-    }};
+    final HashMap<String, Object> arguments =
+        new HashMap<String, Object>() {
+          {
+            put("source", source);
+          }
+        };
 
     return new MethodCall("pickImage", arguments);
   }
