@@ -1,23 +1,23 @@
 part of firebase_performance;
 
 class Trace {
+  final int id;
   final String name;
   final TraceAndroid android;
 
-  @visibleForTesting
   final HashMap<String, int> counters = new HashMap<String, int>();
 
-  Trace._(this.name)
+  Trace._(this.id, this.name)
       : android = defaultTargetPlatform == TargetPlatform.android
             ? new TraceAndroid._()
             : null;
 
-  Future<void> start() {
-    return null;
+  Future<void> start() async {
+    await FirebasePerformance.instance._traceStart(this);
   }
 
-  Future<void> stop() {
-    return null;
+  Future<void> stop() async {
+    await FirebasePerformance.instance._traceStop(this);
   }
 
   void incrementCounter(String name, [int incrementBy = 1]) {
@@ -27,20 +27,18 @@ class Trace {
 }
 
 class TraceAndroid {
-  final HashMap<String, String> _attributes = new HashMap<String, String>();
+  final HashMap<String, String> attributes = new HashMap<String, String>();
 
   TraceAndroid._();
 
-  Map<String, String> get attributes => _attributes;
-
   void putAttribute(String attribute, String value) {
-    _attributes.putIfAbsent(attribute, () => value);
-    _attributes[attribute] = value;
+    attributes.putIfAbsent(attribute, () => value);
+    attributes[attribute] = value;
   }
   
   void removeAttribute(String attribute) {
-    _attributes.remove(attribute);
+    attributes.remove(attribute);
   }
 
-  String getAttribute(String attribute) => _attributes[attribute];
+  String getAttribute(String attribute) => attributes[attribute];
 }

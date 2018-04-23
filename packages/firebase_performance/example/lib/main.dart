@@ -1,9 +1,11 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:firebase_performance/firebase_performance.dart';
 
+import 'package:firebase_performance/firebase_performance.dart';
+jjjk
 void main() => runApp(new MyApp());
 
 class MyApp extends StatefulWidget {
@@ -48,6 +50,22 @@ class _MyAppState extends State<MyApp> {
     isPerformanceCollectionEnabled();
   }
 
+  Future<void> testTrace() async {
+    final Trace trace = await performance.newTrace("android-test");
+    trace.incrementCounter("counter1", 16);
+
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      trace.android.putAttribute("favorite_color", "blue");
+    }
+    await trace.start();
+
+    int sum = 0;
+    for (int i = 0; i < 10000000; i++) {
+      sum += i;
+    }
+    await trace.stop();
+  }
+
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
@@ -62,6 +80,12 @@ class _MyAppState extends State<MyApp> {
             new RaisedButton(
               onPressed: togglePerformanceCollection,
               child: const Text('Toggle Data Collection'),
+              color: Colors.blueAccent,
+              textColor: Colors.white,
+            ),
+            new RaisedButton(
+              onPressed: testTrace,
+              child: const Text('Send Trace'),
               color: Colors.blueAccent,
               textColor: Colors.white,
             )

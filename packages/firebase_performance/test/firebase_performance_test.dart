@@ -50,22 +50,22 @@ void main() {
     group('$Trace', () {
       Trace testTrace;
 
-      setUp(() {
+      setUp(() async {
         debugDefaultTargetPlatformOverride = TargetPlatform.android;
-        testTrace = performance.newTrace('test');
+        testTrace = await performance.newTrace('test');
       });
 
-      test('android is null on non-android devices', () {
+      test('android is null on non-android devices', () async {
         debugDefaultTargetPlatformOverride = TargetPlatform.android;
-        Trace trace = performance.newTrace('android-trace');
+        Trace trace = await performance.newTrace('android-trace');
         expect(trace.android, isNotNull);
 
         debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
-        trace = performance.newTrace('iOS-trace');
+        trace = await performance.newTrace('iOS-trace');
         expect(trace.android, isNull);
 
         debugDefaultTargetPlatformOverride = TargetPlatform.fuchsia;
-        trace = performance.newTrace('fuschia-trace');
+        trace = await performance.newTrace('fuschia-trace');
         expect(trace.android, isNull);
       });
 
