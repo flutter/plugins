@@ -93,10 +93,10 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
       } else {
         if (startAt instanceof Boolean) {
           query = query.startAt((Boolean) startAt);
-        } else if (startAt instanceof String) {
-          query = query.startAt((String) startAt);
-        } else {
+        } else if (startAt instanceof Number) {
           query = query.startAt(((Number) startAt).doubleValue());
+        } else {
+          query = query.startAt((String) startAt);
         }
       }
     }
@@ -114,10 +114,10 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
       } else {
         if (endAt instanceof Boolean) {
           query = query.endAt((Boolean) endAt);
-        } else if (endAt instanceof String) {
-          query = query.endAt((String) endAt);
-        } else {
+        } else if (endAt instanceof Number) {
           query = query.endAt(((Number) endAt).doubleValue());
+        } else {
+          query = query.endAt((String) endAt);
         }
       }
     }
@@ -135,10 +135,10 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
       } else {
         if (equalTo instanceof Boolean) {
           query = query.equalTo((Boolean) equalTo);
-        } else if (equalTo instanceof String) {
-          query = query.equalTo((String) equalTo);
-        } else {
+        } else if (equalTo instanceof Number) {
           query = query.equalTo(((Number) equalTo).doubleValue());
+        } else {
+          query = query.equalTo((String) equalTo);
         }
       }
     }
