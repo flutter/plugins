@@ -50,6 +50,8 @@
     [self delete:call result:result];
   } else if ([@"StorageReference#getMetadata" isEqualToString:call.method]) {
     [self getMetadata:call result:result];
+  } else if ([@"StorageReference#updateMetadata" isEqualToString:call.method]) {
+    [self updateMetadata:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -93,6 +95,29 @@
   return metadata;
 }
 
+- (NSDictionary *)buildDictionaryFromMetadata:(FIRStorageMetadata *)metadata {
+  NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+  [dictionary setValue:[metadata bucket] forKey:@"bucket"];
+  [dictionary setValue:[NSString stringWithFormat:@"%lld", [metadata generation]]
+                forKey:@"generation"];
+  [dictionary setValue:[NSString stringWithFormat:@"%lld", [metadata metageneration]]
+                forKey:@"metadataGeneration"];
+  [dictionary setValue:[metadata path] forKey:@"path"];
+  [dictionary setValue:@((long)([[metadata timeCreated] timeIntervalSince1970] * 1000.0))
+                forKey:@"creationTimeMillis"];
+  [dictionary setValue:@((long)([[metadata updated] timeIntervalSince1970] * 1000.0))
+                forKey:@"updatedTimeMillis"];
+  [dictionary setValue:@([metadata size]) forKey:@"sizeBytes"];
+  [dictionary setValue:[metadata md5Hash] forKey:@"md5Hash"];
+  [dictionary setValue:[metadata cacheControl] forKey:@"cacheControl"];
+  [dictionary setValue:[metadata contentDisposition] forKey:@"contentDisposition"];
+  [dictionary setValue:[metadata contentEncoding] forKey:@"contentEncoding"];
+  [dictionary setValue:[metadata contentLanguage] forKey:@"contentLanguage"];
+  [dictionary setValue:[metadata contentType] forKey:@"contentType"];
+  [dictionary setValue:[metadata name] forKey:@"name"];
+  return dictionary;
+}
+
 - (void)getData:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSNumber *maxSize = call.arguments[@"maxSize"];
   NSString *path = call.arguments[@"path"];
@@ -121,28 +146,23 @@
     if (error != nil) {
       result(error.flutterError);
     } else {
-      NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
-      [dictionary setValue:[metadata bucket] forKey:@"bucket"];
-      [dictionary setValue:[NSString stringWithFormat:@"%lld", [metadata generation]]
-                    forKey:@"generation"];
-      [dictionary setValue:[NSString stringWithFormat:@"%lld", [metadata metageneration]]
-                    forKey:@"metadataGeneration"];
-      [dictionary setValue:[metadata path] forKey:@"path"];
-      [dictionary setValue:@((long)([[metadata timeCreated] timeIntervalSince1970] * 1000.0))
-                    forKey:@"creationTimeMillis"];
-      [dictionary setValue:@((long)([[metadata updated] timeIntervalSince1970] * 1000.0))
-                    forKey:@"updatedTimeMillis"];
-      [dictionary setValue:@([metadata size]) forKey:@"sizeBytes"];
-      [dictionary setValue:[metadata md5Hash] forKey:@"md5Hash"];
-      [dictionary setValue:[metadata cacheControl] forKey:@"cacheControl"];
-      [dictionary setValue:[metadata contentDisposition] forKey:@"contentDisposition"];
-      [dictionary setValue:[metadata contentEncoding] forKey:@"contentEncoding"];
-      [dictionary setValue:[metadata contentLanguage] forKey:@"contentLanguage"];
-      [dictionary setValue:[metadata contentType] forKey:@"contentType"];
-      [dictionary setValue:[metadata name] forKey:@"name"];
-      result(dictionary);
+      result([self buildDictionaryFromMetadata:metadata]);
     }
   }];
+}
+
+- (void)updateMetadata:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSString *path = call.arguments[@"path"];
+  NSDictionary *metadataDictionary = call.arguments[@"metadata"];
+  FIRStorageReference *ref = [[FIRStorage storage].reference child:path];
+  [ref updateMetadata:[self buildMetadataFromDictionary:metadataDictionary]
+           completion:^(FIRStorageMetadata *metadata, NSError *error) {
+             if (error != nil) {
+               result(error.flutterError);
+             } else {
+               result([self buildDictionaryFromMetadata:metadata]);
+             }
+           }];
 }
 
 - (void)getDownloadUrl:(FlutterMethodCall *)call result:(FlutterResult)result {
