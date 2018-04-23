@@ -29,10 +29,30 @@ class StorageReference {
     return new StorageReference._(childPath);
   }
 
-  /// Asynchronously uploads a file to the currently specified StorageReference, with an optional metadata.
+  /// Asynchronously uploads a file to the currently specified
+  /// [StorageReference], with an optional [metadata].
+  @deprecated
   StorageUploadTask put(File file, [StorageMetadata metadata]) {
     final StorageUploadTask task =
-        new StorageUploadTask._(file, _pathComponents.join("/"), metadata);
+        new StorageUploadTask._file(file, _pathComponents.join("/"), metadata);
+    task._start();
+    return task;
+  }
+
+  /// Asynchronously uploads a file to the currently specified
+  /// [StorageReference], with an optional [metadata].
+  StorageUploadTask putFile(File file, [StorageMetadata metadata]) {
+    final StorageUploadTask task =
+        new StorageUploadTask._file(file, _pathComponents.join("/"), metadata);
+    task._start();
+    return task;
+  }
+
+  /// Asynchronously uploads byte data to the currently specified
+  /// [StorageReference], with an optional [metadata].
+  StorageUploadTask putData(Uint8List data, [StorageMetadata metadata]) {
+    final StorageUploadTask task =
+        new StorageUploadTask._data(data, _pathComponents.join("/"), metadata);
     task._start();
     return task;
   }
@@ -166,10 +186,18 @@ class StorageMetadata {
   final String contentType;
 }
 
-class StorageUploadTask {
-  StorageUploadTask._(this.file, this.path, [this.metadata]);
+enum DataSource { file, bytes }
 
-  final File file;
+class StorageUploadTask {
+  StorageUploadTask._file(File file, this.path, [this.metadata])
+      : dataSourceType = DataSource.file,
+        dataSource = file.absolute.path;
+
+  StorageUploadTask._data(this.dataSource, this.path, [this.metadata])
+      : dataSourceType = DataSource.bytes;
+
+  final DataSource dataSourceType;
+  final dynamic dataSource;
   final String path;
   final StorageMetadata metadata;
 
@@ -178,10 +206,24 @@ class StorageUploadTask {
   Future<UploadTaskSnapshot> get future => _completer.future;
 
   Future<void> _start() async {
+    String method;
+    String dataSourceKey;
+
+    switch (dataSourceType) {
+      case DataSource.file:
+        method = "StorageReference#putFile";
+        dataSourceKey = 'filename';
+        break;
+      case DataSource.bytes:
+        method = "StorageReference#putData";
+        dataSourceKey = 'data';
+        break;
+    }
+
     final String downloadUrl = await FirebaseStorage.channel.invokeMethod(
-      "StorageReference#putFile",
+      method,
       <String, dynamic>{
-        'filename': file.absolute.path,
+        dataSourceKey: dataSource,
         'path': path,
         'metadata': metadata == null ? null : _buildMetadataUploadMap(metadata),
       },

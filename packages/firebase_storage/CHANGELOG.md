@@ -1,3 +1,7 @@
+## 0.2.7
+
+* Deprecated the `put` function and added `putFile` and `putData` to upload files and bytes respectively.
+
 ## 0.2.6
 
 * Added support for updateMetadata.
