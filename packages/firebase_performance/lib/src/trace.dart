@@ -1,13 +1,13 @@
 part of firebase_performance;
 
 class Trace {
-  final int id;
+  final int _id;
   final String name;
   final TraceAndroid android;
 
   final HashMap<String, int> counters = new HashMap<String, int>();
 
-  Trace._(this.id, this.name)
+  Trace._(this._id, this.name)
       : android = defaultTargetPlatform == TargetPlatform.android
             ? new TraceAndroid._()
             : null;

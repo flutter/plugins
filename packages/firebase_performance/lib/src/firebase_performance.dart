@@ -1,9 +1,6 @@
 part of firebase_performance;
 
 class FirebasePerformance {
-  static const String traceCounterPrefix = "c_";
-  static const String traceAttrPrefix = "a_";
-
   final MethodChannel _channel;
 
   static final FirebasePerformance instance = new FirebasePerformance.private(
@@ -27,35 +24,25 @@ class FirebasePerformance {
   }
 
   Future<void> _traceStart(Trace trace) async {
-    final Map<String, dynamic> data = <String, dynamic>{
-      'id': trace.id,
-      'name': trace.name,jjjjnjj
-    };
-
-    final Map<String, int> counters = new Map.fromIterable(trace.counters.keys,
-        key: (item) => traceCounterPrefix + item,
-        value: (item) => trace.counters[item]);
-
-    data.addAll(counters);
-
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      final Map<String, String> attrs = new Map.fromIterable(
-          trace.android.attributes.keys,
-          key: (item) => traceAttrPrefix + item,
-          value: (item) => trace.android.attributes[item]);
-
-      data.addAll(attrs);
-    }
-
-    await _channel.invokeMethod('Trace#start', data);
+    await _channel.invokeMethod('Trace#start', trace._id);
   }
 
   Future<void> _traceStop(Trace trace) async {
-    await _channel.invokeMethod('Trace#stop', trace.id);
+    final Map<String, dynamic> data = <String, dynamic>{
+      'id': trace._id,
+      'name': trace.name,
+      'counters': trace.counters
+    };
+
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      data.putIfAbsent('attributes', () => trace.android.attributes);
+    }
+
+    await _channel.invokeMethod('Trace#stop', data);
   }
 
   Future<Trace> newTrace(String name) async {
-    final int id = await _channel.invokeMethod('FirebasePerformance#newTrace');
+    final int id = await _channel.invokeMethod('FirebasePerformance#newTrace', name);
     return new Trace._(id, name);
   }
 }

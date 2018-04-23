@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:firebase_performance/firebase_performance.dart';
-jjjk
+
 void main() => runApp(new MyApp());
 
 class MyApp extends StatefulWidget {
@@ -63,6 +63,7 @@ class _MyAppState extends State<MyApp> {
     for (int i = 0; i < 10000000; i++) {
       sum += i;
     }
+
     await trace.stop();
   }
 
