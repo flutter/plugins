@@ -83,14 +83,12 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
       Object startAt = parameters.get("startAt");
       if (parameters.containsKey("startAtKey")) {
         String startAtKey = (String) parameters.get("startAtKey");
-        if (startAt == null) {
-          query = query.startAt(null, startAtKey);
-        } else if (startAt instanceof Boolean) {
+        if (startAt instanceof Boolean) {
           query = query.startAt((Boolean) startAt, startAtKey);
-        } else if (startAt instanceof String) {
-          query = query.startAt((String) startAt, startAtKey);
-        } else {
+        } else if (startAt instanceof Number) {
           query = query.startAt(((Number) startAt).doubleValue(), startAtKey);
+        } else {
+          query = query.startAt((String) startAt, startAtKey);
         }
       } else {
         if (startAt instanceof Boolean) {
@@ -106,14 +104,12 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
       Object endAt = parameters.get("endAt");
       if (parameters.containsKey("endAtKey")) {
         String endAtKey = (String) parameters.get("endAtKey");
-        if (endAt == null) {
-          query = query.endAt(null, endAtKey);
-        } else if (endAt instanceof Boolean) {
+        if (endAt instanceof Boolean) {
           query = query.endAt((Boolean) endAt, endAtKey);
-        } else if (endAt instanceof String) {
-          query = query.endAt((String) endAt, endAtKey);
-        } else {
+        } else if (endAt instanceof Number) {
           query = query.endAt(((Number) endAt).doubleValue(), endAtKey);
+        } else {
+          query = query.endAt((String) endAt, endAtKey);
         }
       } else {
         if (endAt instanceof Boolean) {
@@ -129,14 +125,12 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
       Object equalTo = parameters.get("equalTo");
       if (parameters.containsKey("equalToKey")) {
         String equalToKey = (String) parameters.get("equalToKey");
-        if (equalTo == null) {
-          query = query.equalTo(null, equalToKey);
-        } else if (equalTo instanceof Boolean) {
+        if (equalTo instanceof Boolean) {
           query = query.equalTo((Boolean) equalTo, equalToKey);
-        } else if (equalTo instanceof String) {
-          query = query.equalTo((String) equalTo, equalToKey);
-        } else {
+        } else if (equalTo instanceof Number) {
           query = query.equalTo(((Number) equalTo).doubleValue(), equalToKey);
+        } else {
+          query = query.equalTo((String) equalTo, equalToKey);
         }
       } else {
         if (equalTo instanceof Boolean) {
