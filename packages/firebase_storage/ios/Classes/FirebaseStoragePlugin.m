@@ -95,7 +95,7 @@
   return metadata;
 }
 
-- (NSDictionary *)buildDictionaryFromMetadata:(FIRStorageMetadata *) metadata {
+- (NSDictionary *)buildDictionaryFromMetadata:(FIRStorageMetadata *)metadata {
   NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
   [dictionary setValue:[metadata bucket] forKey:@"bucket"];
   [dictionary setValue:[NSString stringWithFormat:@"%lld", [metadata generation]]
@@ -157,12 +157,12 @@
   FIRStorageReference *ref = [[FIRStorage storage].reference child:path];
   [ref updateMetadata:[self buildMetadataFromDictionary:metadataDictionary]
            completion:^(FIRStorageMetadata *metadata, NSError *error) {
-    if (error != nil) {
-      result(error.flutterError);
-    } else {
-      result([self buildDictionaryFromMetadata:metadata]);
-    }
-  }];
+             if (error != nil) {
+               result(error.flutterError);
+             } else {
+               result([self buildDictionaryFromMetadata:metadata]);
+             }
+           }];
 }
 
 - (void)getDownloadUrl:(FlutterMethodCall *)call result:(FlutterResult)result {

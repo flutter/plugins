@@ -85,23 +85,25 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
             });
   }
 
-
   private void updateMetadata(MethodCall call, final Result result) {
     String path = call.argument("path");
     Map<String, Object> metadata = call.argument("metadata");
     StorageReference ref = firebaseStorage.getReference().child(path);
     ref.updateMetadata(buildMetadataFromMap(metadata))
-        .addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
-          @Override
-          public void onSuccess(StorageMetadata storageMetadata) {
-            result.success(buildMapFromMetadata(storageMetadata));
-          }
-        })
-        .addOnFailureListener(new OnFailureListener() {
-          @Override
-          public void onFailure(@NonNull Exception e) {
-            result.error("metadata_error", e.getMessage(), null);          }
-        });
+        .addOnSuccessListener(
+            new OnSuccessListener<StorageMetadata>() {
+              @Override
+              public void onSuccess(StorageMetadata storageMetadata) {
+                result.success(buildMapFromMetadata(storageMetadata));
+              }
+            })
+        .addOnFailureListener(
+            new OnFailureListener() {
+              @Override
+              public void onFailure(@NonNull Exception e) {
+                result.error("metadata_error", e.getMessage(), null);
+              }
+            });
   }
 
   private void getDownloadUrl(MethodCall call, final Result result) {
@@ -198,7 +200,7 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
     map.put("contentEncoding", storageMetadata.getContentEncoding());
     map.put("contentLanguage", storageMetadata.getContentLanguage());
     map.put("contentType", storageMetadata.getContentType());
-    return  map;
+    return map;
   }
 
   private void getData(MethodCall call, final Result result) {

@@ -70,6 +70,8 @@ class StorageReference {
   }
 
   /// Updates the metadata associated with this [StorageReference].
+  ///
+  /// Returns a [Future] that will complete to the updated [StorageMetadata].
   Future<StorageMetadata> updateMetadata(StorageMetadata metadata) async {
     return new StorageMetadata._fromMap(await FirebaseStorage.channel
         .invokeMethod("StorageReference#updateMetadata", <String, dynamic>{

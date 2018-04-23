@@ -86,7 +86,6 @@ void main() {
       });
     });
 
-
     group('updateMetadata', () {
       final List<MethodCall> log = <MethodCall>[];
 
@@ -96,7 +95,21 @@ void main() {
         FirebaseStorage.channel
             .setMockMethodCallHandler((MethodCall methodCall) async {
           log.add(methodCall);
-          return <String, String>{'name': 'image.jpg'};
+          switch (methodCall.method) {
+            case 'StorageReference#getMetadata':
+              return <String, String>{
+                'name': 'image.jpg',
+              };
+              break;
+            case 'StorageReference#updateMetadata':
+              return <String, String>{
+                'name': 'image.jpg',
+                'contentLanguage': 'en'
+              };
+              break;
+            default:
+              break;
+          }
         });
         ref = FirebaseStorage.instance
             .ref()
@@ -106,23 +119,34 @@ void main() {
       });
 
       test('invokes correct method', () async {
-        await ref.getMetadata();
+        await ref.updateMetadata(const StorageMetadata(contentLanguage: 'en'));
 
         expect(log, <Matcher>[
           isMethodCall(
             'StorageReference#updateMetadata',
             arguments: <String, dynamic>{
               'path': 'avatars/large/image.jpg',
+              'metadata': <String, String>{
+                'cacheControl': null,
+                'contentDisposition': null,
+                'contentLanguage': 'en',
+                'contentType': null,
+                'contentEncoding': null
+              },
             },
           ),
         ]);
       });
 
       test('returns correct result', () async {
-        expect((await ref.getMetadata()).name, 'image.jpg');
+        expect((await ref.getMetadata()).contentLanguage, null);
+        expect(
+            (await ref.updateMetadata(
+                    const StorageMetadata(contentLanguage: 'en')))
+                .contentLanguage,
+            'en');
       });
     });
-
 
     group('getDownloadUrl', () {
       final List<MethodCall> log = <MethodCall>[];
