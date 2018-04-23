@@ -72,6 +72,10 @@ class StorageReference {
   /// Updates the metadata associated with this [StorageReference].
   ///
   /// Returns a [Future] that will complete to the updated [StorageMetadata].
+  ///
+  /// This method ignores fields of [metadata] that cannot be set by the public
+  /// [StorageMetadata] constructor. Writable metadata properties can be deleted
+  /// by passing the empty string.
   Future<StorageMetadata> updateMetadata(StorageMetadata metadata) async {
     return new StorageMetadata._fromMap(await FirebaseStorage.channel
         .invokeMethod("StorageReference#updateMetadata", <String, dynamic>{
