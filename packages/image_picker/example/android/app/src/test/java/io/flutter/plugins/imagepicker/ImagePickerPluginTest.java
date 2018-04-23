@@ -9,6 +9,7 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
 import java.util.HashMap;
+import java.util.Map;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -95,12 +96,8 @@ public class ImagePickerPluginTest {
   }
 
   private MethodCall buildMethodCall(final int source) {
-    final HashMap<String, Object> arguments =
-        new HashMap<String, Object>() {
-          {
-            put("source", source);
-          }
-        };
+    final Map<String, Object> arguments = new HashMap<>();
+    arguments.put("source", source);
 
     return new MethodCall("pickImage", arguments);
   }
