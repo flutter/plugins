@@ -69,6 +69,21 @@ class StorageReference {
     }));
   }
 
+  /// Updates the metadata associated with this [StorageReference].
+  ///
+  /// Returns a [Future] that will complete to the updated [StorageMetadata].
+  ///
+  /// This method ignores fields of [metadata] that cannot be set by the public
+  /// [StorageMetadata] constructor. Writable metadata properties can be deleted
+  /// by passing the empty string.
+  Future<StorageMetadata> updateMetadata(StorageMetadata metadata) async {
+    return new StorageMetadata._fromMap(await FirebaseStorage.channel
+        .invokeMethod("StorageReference#updateMetadata", <String, dynamic>{
+      'path': _pathComponents.join("/"),
+      'metadata': metadata == null ? null : _buildMetadataUploadMap(metadata),
+    }));
+  }
+
   String get path => _pathComponents.join('/');
 }
 
@@ -174,16 +189,16 @@ class StorageUploadTask {
     _completer
         .complete(new UploadTaskSnapshot(downloadUrl: Uri.parse(downloadUrl)));
   }
+}
 
-  Map<String, dynamic> _buildMetadataUploadMap(StorageMetadata metadata) {
-    return <String, dynamic>{
-      'cacheControl': metadata.cacheControl,
-      'contentDisposition': metadata.contentDisposition,
-      'contentLanguage': metadata.contentLanguage,
-      'contentType': metadata.contentType,
-      'contentEncoding': metadata.contentEncoding,
-    };
-  }
+Map<String, dynamic> _buildMetadataUploadMap(StorageMetadata metadata) {
+  return <String, dynamic>{
+    'cacheControl': metadata.cacheControl,
+    'contentDisposition': metadata.contentDisposition,
+    'contentLanguage': metadata.contentLanguage,
+    'contentType': metadata.contentType,
+    'contentEncoding': metadata.contentEncoding,
+  };
 }
 
 class UploadTaskSnapshot {

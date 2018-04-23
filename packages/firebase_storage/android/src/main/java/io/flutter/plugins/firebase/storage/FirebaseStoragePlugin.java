@@ -56,6 +56,9 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
       case "StorageReference#getMetadata":
         getMetadata(call, result);
         break;
+      case "StorageReference#updateMetadata":
+        updateMetadata(call, result);
+        break;
       default:
         result.notImplemented();
         break;
@@ -70,22 +73,28 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
             new OnSuccessListener<StorageMetadata>() {
               @Override
               public void onSuccess(StorageMetadata storageMetadata) {
-                Map<String, Object> map = new HashMap<>();
-                map.put("name", storageMetadata.getName());
-                map.put("bucket", storageMetadata.getBucket());
-                map.put("generation", storageMetadata.getGeneration());
-                map.put("metadataGeneration", storageMetadata.getMetadataGeneration());
-                map.put("path", storageMetadata.getPath());
-                map.put("sizeBytes", storageMetadata.getSizeBytes());
-                map.put("creationTimeMillis", storageMetadata.getCreationTimeMillis());
-                map.put("updatedTimeMillis", storageMetadata.getUpdatedTimeMillis());
-                map.put("md5Hash", storageMetadata.getMd5Hash());
-                map.put("cacheControl", storageMetadata.getCacheControl());
-                map.put("contentDisposition", storageMetadata.getContentDisposition());
-                map.put("contentEncoding", storageMetadata.getContentEncoding());
-                map.put("contentLanguage", storageMetadata.getContentLanguage());
-                map.put("contentType", storageMetadata.getContentType());
-                result.success(map);
+                result.success(buildMapFromMetadata(storageMetadata));
+              }
+            })
+        .addOnFailureListener(
+            new OnFailureListener() {
+              @Override
+              public void onFailure(@NonNull Exception e) {
+                result.error("metadata_error", e.getMessage(), null);
+              }
+            });
+  }
+
+  private void updateMetadata(MethodCall call, final Result result) {
+    String path = call.argument("path");
+    Map<String, Object> metadata = call.argument("metadata");
+    StorageReference ref = firebaseStorage.getReference().child(path);
+    ref.updateMetadata(buildMetadataFromMap(metadata))
+        .addOnSuccessListener(
+            new OnSuccessListener<StorageMetadata>() {
+              @Override
+              public void onSuccess(StorageMetadata storageMetadata) {
+                result.success(buildMapFromMetadata(storageMetadata));
               }
             })
         .addOnFailureListener(
@@ -173,6 +182,25 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
     builder.setContentLanguage((String) map.get("contentLanguage"));
     builder.setContentType((String) map.get("contentType"));
     return builder.build();
+  }
+
+  private Map<String, Object> buildMapFromMetadata(StorageMetadata storageMetadata) {
+    Map<String, Object> map = new HashMap<>();
+    map.put("name", storageMetadata.getName());
+    map.put("bucket", storageMetadata.getBucket());
+    map.put("generation", storageMetadata.getGeneration());
+    map.put("metadataGeneration", storageMetadata.getMetadataGeneration());
+    map.put("path", storageMetadata.getPath());
+    map.put("sizeBytes", storageMetadata.getSizeBytes());
+    map.put("creationTimeMillis", storageMetadata.getCreationTimeMillis());
+    map.put("updatedTimeMillis", storageMetadata.getUpdatedTimeMillis());
+    map.put("md5Hash", storageMetadata.getMd5Hash());
+    map.put("cacheControl", storageMetadata.getCacheControl());
+    map.put("contentDisposition", storageMetadata.getContentDisposition());
+    map.put("contentEncoding", storageMetadata.getContentEncoding());
+    map.put("contentLanguage", storageMetadata.getContentLanguage());
+    map.put("contentType", storageMetadata.getContentType());
+    return map;
   }
 
   private void getData(MethodCall call, final Result result) {

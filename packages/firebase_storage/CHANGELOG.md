@@ -1,3 +1,7 @@
+## 0.2.6
+
+* Added support for updateMetadata.
+
 ## 0.2.5
 
 * Added StorageMetadata class, support for getMetadata, and support for uploading file with metadata.
