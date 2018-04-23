@@ -85,18 +85,18 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
         String startAtKey = (String) parameters.get("startAtKey");
         if (startAt instanceof Boolean) {
           query = query.startAt((Boolean) startAt, startAtKey);
-        } else if (startAt instanceof String) {
-          query = query.startAt((String) startAt, startAtKey);
-        } else {
+        } else if (startAt instanceof Number) {
           query = query.startAt(((Number) startAt).doubleValue(), startAtKey);
+        } else {
+          query = query.startAt((String) startAt, startAtKey);
         }
       } else {
         if (startAt instanceof Boolean) {
           query = query.startAt((Boolean) startAt);
-        } else if (startAt instanceof String) {
-          query = query.startAt((String) startAt);
-        } else {
+        } else if (startAt instanceof Number) {
           query = query.startAt(((Number) startAt).doubleValue());
+        } else {
+          query = query.startAt((String) startAt);
         }
       }
     }
@@ -106,29 +106,40 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
         String endAtKey = (String) parameters.get("endAtKey");
         if (endAt instanceof Boolean) {
           query = query.endAt((Boolean) endAt, endAtKey);
-        } else if (endAt instanceof String) {
-          query = query.endAt((String) endAt, endAtKey);
-        } else {
+        } else if (endAt instanceof Number) {
           query = query.endAt(((Number) endAt).doubleValue(), endAtKey);
+        } else {
+          query = query.endAt((String) endAt, endAtKey);
         }
       } else {
         if (endAt instanceof Boolean) {
           query = query.endAt((Boolean) endAt);
-        } else if (endAt instanceof String) {
-          query = query.endAt((String) endAt);
-        } else {
+        } else if (endAt instanceof Number) {
           query = query.endAt(((Number) endAt).doubleValue());
+        } else {
+          query = query.endAt((String) endAt);
         }
       }
     }
     if (parameters.containsKey("equalTo")) {
       Object equalTo = parameters.get("equalTo");
-      if (equalTo instanceof Boolean) {
-        query = query.equalTo((Boolean) equalTo);
-      } else if (equalTo instanceof String) {
-        query = query.equalTo((String) equalTo);
+      if (parameters.containsKey("equalToKey")) {
+        String equalToKey = (String) parameters.get("equalToKey");
+        if (equalTo instanceof Boolean) {
+          query = query.equalTo((Boolean) equalTo, equalToKey);
+        } else if (equalTo instanceof Number) {
+          query = query.equalTo(((Number) equalTo).doubleValue(), equalToKey);
+        } else {
+          query = query.equalTo((String) equalTo, equalToKey);
+        }
       } else {
-        query = query.equalTo(((Number) equalTo).doubleValue());
+        if (equalTo instanceof Boolean) {
+          query = query.equalTo((Boolean) equalTo);
+        } else if (equalTo instanceof Number) {
+          query = query.equalTo(((Number) equalTo).doubleValue());
+        } else {
+          query = query.equalTo((String) equalTo);
+        }
       }
     }
     if (parameters.containsKey("limitToFirst")) {

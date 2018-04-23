@@ -70,7 +70,12 @@ FIRDatabaseQuery *getDatabaseQuery(FIRDatabase *database, NSDictionary *argument
   }
   id equalTo = parameters[@"equalTo"];
   if (equalTo) {
-    query = [query queryEqualToValue:equalTo];
+    id equalToKey = parameters[@"equalToKey"];
+    if (equalToKey) {
+      query = [query queryEqualToValue:equalTo childKey:equalToKey];
+    } else {
+      query = [query queryEqualToValue:equalTo];
+    }
   }
   NSNumber *limitToFirst = parameters[@"limitToFirst"];
   if (limitToFirst) {
