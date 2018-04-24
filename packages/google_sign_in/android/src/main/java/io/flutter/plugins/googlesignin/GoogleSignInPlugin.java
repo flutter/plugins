@@ -366,10 +366,8 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     /** Checks if there is a signed in user. */
     @Override
     public void isSignedIn(final Result result) {
-      Map<String, Object> response = new HashMap<>();
       boolean value = GoogleSignIn.getLastSignedInAccount(registrar.context()) != null;
-      response.put("isSignedIn", value);
-      result.success(response);
+      result.success(value);
     }
 
     private void onSignInResult(GoogleSignInResult result) {

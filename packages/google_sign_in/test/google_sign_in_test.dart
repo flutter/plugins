@@ -22,9 +22,7 @@ void main() {
       "displayName": "John Doe",
     };
 
-    const Map<String, dynamic> kIsSignedIn = const <String, dynamic>{
-      'isSignedIn': true
-    };
+    const bool kIsSignedIn = true;
 
     const Map<String, dynamic> kDefaultResponses = const <String, dynamic>{
       'init': null,

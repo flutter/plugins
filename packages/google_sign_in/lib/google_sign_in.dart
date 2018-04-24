@@ -233,12 +233,10 @@ class GoogleSignIn {
     return result;
   }
 
-  /// Returns `true` if a user is currently signed in.
+  /// Returns a future that resolves to whether a user is currently signed in.
   Future<bool> isSignedIn() async {
     await _ensureInitialized();
-    final Map<dynamic, dynamic> response =
-        await channel.invokeMethod('isSignedIn');
-    final bool result = response['isSignedIn'];
+    final bool result = await channel.invokeMethod('isSignedIn');
     return result;
   }
 
