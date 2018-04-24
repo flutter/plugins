@@ -4,6 +4,26 @@
 
 part of google_mobile_maps;
 
+/// Flags determining which camera move events are reported to Flutter.
+class CameraMoveEvents {
+  const CameraMoveEvents({
+    this.onCameraMoveStarted = false,
+    this.onCameraMoved = false,
+    this.onCameraIdle = false,
+  })  : assert(onCameraMoveStarted != null),
+        assert(onCameraMoved != null),
+        assert(onCameraIdle != null);
+
+  final bool onCameraMoveStarted;
+  final bool onCameraMoved;
+  final bool onCameraIdle;
+
+  static const CameraMoveEvents ignoreAll = const CameraMoveEvents();
+
+  dynamic _toJson() =>
+      <dynamic>[onCameraMoveStarted, onCameraMoved, onCameraIdle];
+}
+
 /// Type of map tiles to display.
 ///
 /// Enum constants must be indexed to match the corresponding int constants of
@@ -17,39 +37,21 @@ enum MapType {
   hybrid,
 }
 
-MapType _mapTypeFromJson(dynamic json) {
-  if (json == null) {
-    return null;
-  }
-  return MapType.values[json];
-}
-
 /// Bounds for the map camera target.
-class CameraTargetBounds {
-  static const CameraTargetBounds unbounded = const CameraTargetBounds(null);
-
-  const CameraTargetBounds(this.bounds);
+class LatLngCameraTargetBounds {
+  const LatLngCameraTargetBounds(this.bounds);
 
   /// The current bounds or null, if the camera target is unbounded.
   final LatLngBounds bounds;
 
-  bool get isBounded => bounds != null;
+  static const LatLngCameraTargetBounds unbounded = const LatLngCameraTargetBounds(null);
 
   dynamic _toJson() => <dynamic>[bounds?._toJson()];
-
-  static CameraTargetBounds _fromJson(dynamic json) {
-    if (json == null) {
-      return null;
-    }
-    return new CameraTargetBounds(LatLngBounds._fromJson(json[0]));
-  }
 }
 
-/// Bounds for map camera zoom level.
-class ZoomBounds {
-  static const ZoomBounds unbounded = const ZoomBounds(null, null);
-
-  const ZoomBounds(this.minZoom, this.maxZoom)
+/// Preferred bounds for map camera zoom level.
+class MinMaxZoomPreference {
+  const MinMaxZoomPreference(this.minZoom, this.maxZoom)
       : assert(minZoom == null || maxZoom == null || minZoom <= maxZoom);
 
   /// The current minimum zoom level or null, if unbounded from below.
@@ -58,16 +60,10 @@ class ZoomBounds {
   /// The current maximum zoom level or null, if unbounded from above.
   final double maxZoom;
 
-  bool get isBounded => minZoom != null || maxZoom != null;
+  static const MinMaxZoomPreference unbounded =
+      const MinMaxZoomPreference(null, null);
 
   dynamic _toJson() => <dynamic>[minZoom, maxZoom];
-
-  static ZoomBounds _fromJson(dynamic json) {
-    if (json == null) {
-      return null;
-    }
-    return new ZoomBounds(json[0], json[1]);
-  }
 }
 
 /// Configuration options for the GoogleMaps user interface.
@@ -76,56 +72,71 @@ class ZoomBounds {
 /// "do not change this configuration item". When used to represent current
 /// configuration, all values will be non-null.
 class GoogleMapOptions {
+  final CameraMoveEvents cameraMoveEvents;
   final CameraPosition cameraPosition;
-  final CameraTargetBounds cameraTargetBounds;
   final bool compassEnabled;
+  final LatLngCameraTargetBounds latLngCameraTargetBounds;
   final MapType mapType;
+  final MinMaxZoomPreference minMaxZoomPreference;
   final bool rotateGesturesEnabled;
   final bool scrollGesturesEnabled;
   final bool tiltGesturesEnabled;
-  final ZoomBounds zoomBounds;
   final bool zoomGesturesEnabled;
 
   const GoogleMapOptions({
+    this.cameraMoveEvents,
     this.cameraPosition,
-    this.cameraTargetBounds,
     this.compassEnabled,
+    this.latLngCameraTargetBounds,
     this.mapType,
+    this.minMaxZoomPreference,
     this.rotateGesturesEnabled,
     this.scrollGesturesEnabled,
     this.tiltGesturesEnabled,
-    this.zoomBounds,
     this.zoomGesturesEnabled,
   });
 
-  static GoogleMapOptions _fromJson(dynamic json) {
-    if (json == null) {
-      return null;
-    }
+  static const GoogleMapOptions defaultOptions = const GoogleMapOptions(
+    cameraMoveEvents: CameraMoveEvents.ignoreAll,
+    compassEnabled: true,
+    latLngCameraTargetBounds: LatLngCameraTargetBounds.unbounded,
+    mapType: MapType.normal,
+    minMaxZoomPreference: MinMaxZoomPreference.unbounded,
+    rotateGesturesEnabled: true,
+    scrollGesturesEnabled: true,
+    tiltGesturesEnabled: true,
+    zoomGesturesEnabled: true,
+  );
+
+  GoogleMapOptions _updateWith(GoogleMapOptions change) {
     return new GoogleMapOptions(
-      cameraPosition: CameraPosition._fromJson(json['cameraPosition']),
-      cameraTargetBounds:
-          CameraTargetBounds._fromJson(json['cameraTargetBounds']),
-      compassEnabled: json['compassEnabled'],
-      mapType: _mapTypeFromJson(json['mapType']),
-      rotateGesturesEnabled: json['rotateGesturesEnabled'],
-      scrollGesturesEnabled: json['scrollGesturesEnabled'],
-      tiltGesturesEnabled: json['tiltGesturesEnabled'],
-      zoomBounds: ZoomBounds._fromJson(json['zoomBounds']),
-      zoomGesturesEnabled: json['zoomGesturesEnabled'],
+      cameraMoveEvents: change.cameraMoveEvents ?? cameraMoveEvents,
+      cameraPosition: change.cameraPosition ?? cameraPosition,
+      latLngCameraTargetBounds:
+          change.latLngCameraTargetBounds ?? latLngCameraTargetBounds,
+      compassEnabled: change.compassEnabled ?? compassEnabled,
+      mapType: change.mapType ?? mapType,
+      rotateGesturesEnabled:
+          change.rotateGesturesEnabled ?? rotateGesturesEnabled,
+      scrollGesturesEnabled:
+          change.scrollGesturesEnabled ?? scrollGesturesEnabled,
+      tiltGesturesEnabled: change.tiltGesturesEnabled ?? tiltGesturesEnabled,
+      minMaxZoomPreference: change.minMaxZoomPreference ?? minMaxZoomPreference,
+      zoomGesturesEnabled: change.zoomGesturesEnabled ?? zoomGesturesEnabled,
     );
   }
 
   dynamic _toJson() {
     final Map<String, dynamic> json = <String, dynamic>{};
+    json['cameraMoveEvents'] = cameraMoveEvents?._toJson();
     json['cameraPosition'] = cameraPosition?._toJson();
-    json['cameraTargetBounds'] = cameraTargetBounds?._toJson();
+    json['latLngCameraTargetBounds'] = latLngCameraTargetBounds?._toJson();
     json['compassEnabled'] = compassEnabled;
     json['mapType'] = mapType?.index;
+    json['minMaxZoomPreference'] = minMaxZoomPreference?._toJson();
     json['rotateGesturesEnabled'] = rotateGesturesEnabled;
     json['scrollGesturesEnabled'] = scrollGesturesEnabled;
     json['tiltGesturesEnabled'] = tiltGesturesEnabled;
-    json['zoomBounds'] = zoomBounds?._toJson();
     json['zoomGesturesEnabled'] = zoomGesturesEnabled;
     return json;
   }

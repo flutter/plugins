@@ -10,8 +10,8 @@ import 'page.dart';
 class MoveCameraPage extends Page {
   MoveCameraPage() : super(const Icon(Icons.map), "Camera control");
 
-  final GoogleMapsOverlayController controller =
-      new GoogleMapsOverlayController.fromSize(width: 300.0, height: 200.0);
+  final GoogleMapOverlayController controller =
+      new GoogleMapOverlayController.fromSize(width: 300.0, height: 200.0);
 
   @override
   PlatformOverlayController get overlayController =>
@@ -23,7 +23,7 @@ class MoveCameraPage extends Page {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        new Center(child: new GoogleMapsOverlay(controller: controller)),
+        new Center(child: new GoogleMapOverlay(controller: controller)),
         new Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[

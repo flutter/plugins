@@ -7,19 +7,26 @@ package io.flutter.plugins.googlemobilemaps;
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
+
 import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Marker;
+
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
+
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class GoogleMobileMapsPlugin
-    implements MethodCallHandler, Application.ActivityLifecycleCallbacks {
+/**
+ * Plugin for controlling GoogleMap views.
+ */
+public class GoogleMobileMapsPlugin implements MethodCallHandler, Application.ActivityLifecycleCallbacks {
   static final int CREATED = 1;
   static final int STARTED = 2;
   static final int RESUMED = 3;
@@ -28,18 +35,20 @@ public class GoogleMobileMapsPlugin
   static final int DESTROYED = 6;
   private final Map<Long, GoogleMapController> googleMaps = new HashMap<>();
   private final Registrar registrar;
+  private final MethodChannel channel;
   private final AtomicInteger state = new AtomicInteger(0);
 
   public static void registerWith(Registrar registrar) {
-    final GoogleMobileMapsPlugin plugin = new GoogleMobileMapsPlugin(registrar);
     final MethodChannel channel =
-        new MethodChannel(registrar.messenger(), "plugins.flutter.io/google_mobile_maps");
+            new MethodChannel(registrar.messenger(), "plugins.flutter.io/google_mobile_maps");
+    final GoogleMobileMapsPlugin plugin = new GoogleMobileMapsPlugin(registrar, channel);
     channel.setMethodCallHandler(plugin);
     registrar.activity().getApplication().registerActivityLifecycleCallbacks(plugin);
   }
 
-  private GoogleMobileMapsPlugin(Registrar registrar) {
+  private GoogleMobileMapsPlugin(Registrar registrar, MethodChannel channel) {
     this.registrar = registrar;
+    this.channel = channel;
   }
 
   @Override
@@ -59,23 +68,48 @@ public class GoogleMobileMapsPlugin
           final int width = Convert.toInt(call.argument("width"));
           final int height = Convert.toInt(call.argument("height"));
           final Map<?, ?> options = Convert.toMap(call.argument("options"));
-          final GoogleMapController controller =
-              new GoogleMapController(state, registrar, width, height, options, result);
+          final GoogleMapBuilder builder = new GoogleMapBuilder();
+          Convert.interpretGoogleMapOptions(options, builder);
+          final GoogleMapController controller = builder.build(state, registrar, width, height, result);
           googleMaps.put(controller.id(), controller);
-          controller.init();
+          controller.setOnCameraMoveListener(new OnCameraMoveListener() {
+            @Override
+            public void onCameraMoveStarted(int reason) {
+              final Map<String, Object> arguments = new HashMap<>(2);
+              arguments.put("map", controller.id());
+              arguments.put("reason", reason);
+              channel.invokeMethod("map#onCameraMoveStarted", arguments);
+            }
+
+            @Override
+            public void onCameraMove(CameraPosition position) {
+              final Map<String, Object> arguments = new HashMap<>(2);
+              arguments.put("map", controller.id());
+              arguments.put("position", Convert.toJson(position));
+              channel.invokeMethod("map#onCameraMove", arguments);
+            }
+
+            @Override
+            public void onCameraIdle() {
+              channel.invokeMethod("map#onCameraIdle", Collections.singletonMap("map", controller.id()));
+            }
+          });
+          controller.setOnMarkerTappedListener(new OnMarkerTappedListener() {
+            @Override
+            public void markerTapped(Marker marker) {
+              final Map<String, Object> arguments = new HashMap<>(2);
+              arguments.put("map", controller.id());
+              arguments.put("marker", marker.getId());
+              channel.invokeMethod("marker#onTap", arguments);
+            }
+          });
           // result.success is called from controller when the GoogleMaps instance is ready
-          break;
-        }
-      case "getMapOptions":
-        {
-          final GoogleMapController controller = mapsController(call);
-          result.success(controller.getMapOptions());
           break;
         }
       case "setMapOptions":
         {
           final GoogleMapController controller = mapsController(call);
-          controller.setMapOptions(call.argument("options"));
+          Convert.interpretGoogleMapOptions(call.argument("options"), controller);
           result.success(null);
           break;
         }
@@ -98,9 +132,9 @@ public class GoogleMobileMapsPlugin
       case "addMarker":
         {
           final GoogleMapController controller = mapsController(call);
-          final MarkerOptions markerOptions =
-              Convert.toMarkerOptions(call.argument("markerOptions"));
-          final String markerId = controller.addMarker(markerOptions);
+          final MarkerBuilder markerBuilder = controller.newMarkerBuilder();
+          Convert.interpretMarkerOptions(call.argument("options"), markerBuilder);
+          final String markerId = markerBuilder.build();
           result.success(markerId);
           break;
         }
@@ -112,29 +146,12 @@ public class GoogleMobileMapsPlugin
           result.success(null);
           break;
         }
-      case "marker#hideInfoWindow":
-        {
-          final GoogleMapController controller = mapsController(call);
-          final String markerId = call.argument("marker");
-          controller.hideMarkerInfoWindow(markerId);
-          result.success(null);
-          break;
-        }
-      case "marker#showInfoWindow":
-        {
-          final GoogleMapController controller = mapsController(call);
-          final String markerId = call.argument("marker");
-          controller.showMarkerInfoWindow(markerId);
-          result.success(null);
-          break;
-        }
       case "marker#update":
         {
           final GoogleMapController controller = mapsController(call);
           final String markerId = call.argument("marker");
-          final MarkerOptions markerOptions =
-              Convert.toMarkerOptions(call.argument("markerOptions"));
-          controller.updateMarker(markerId, markerOptions);
+          final MarkerController marker = controller.marker(markerId);
+          Convert.interpretMarkerOptions(call.argument("options"), marker);
           result.success(null);
           break;
         }

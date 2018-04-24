@@ -15,11 +15,12 @@ const LatLngBounds sydneyBounds = const LatLngBounds(
 class MapUiPage extends Page {
   MapUiPage() : super(const Icon(Icons.map), "User interface");
 
-  final GoogleMapsOverlayController controller =
-      new GoogleMapsOverlayController.fromSize(
+  final GoogleMapOverlayController controller =
+      new GoogleMapOverlayController.fromSize(
     width: 300.0,
     height: 200.0,
     options: const GoogleMapOptions(
+      cameraMoveEvents: const CameraMoveEvents(onCameraMoved: true),
       cameraPosition: const CameraPosition(
         target: const LatLng(-33.852, 151.211),
         zoom: 11.0,
@@ -38,7 +39,7 @@ class MapUiPage extends Page {
 }
 
 class MapUiBody extends StatefulWidget {
-  final GoogleMapsOverlayController controller;
+  final GoogleMapOverlayController controller;
 
   const MapUiBody(this.controller);
 
@@ -47,20 +48,25 @@ class MapUiBody extends StatefulWidget {
 }
 
 class MapUiBodyState extends State<MapUiBody> {
-  Future<GoogleMapOptions> _optionsFuture;
+  CameraPosition _position;
 
   @override
   void initState() {
     super.initState();
-    _optionsFuture = widget.controller.mapsController.getMapOptions();
+    widget.controller.mapsController.onCameraMove = (CameraPosition position) {
+      setState(() {
+        _position = position;
+      });
+    };
+    _position = widget.controller.mapsController.options.cameraPosition;
   }
 
   Widget _compassToggler(GoogleMapOptions options) {
     return new FlatButton(
       child:
           new Text('${options.compassEnabled ? 'disable' : 'enable'} compass'),
-      onPressed: () async {
-        await widget.controller.mapsController.setMapOptions(
+      onPressed: () {
+        widget.controller.mapsController.updateMapOptions(
           new GoogleMapOptions(compassEnabled: !options.compassEnabled),
         );
         _reloadOptions();
@@ -71,16 +77,16 @@ class MapUiBodyState extends State<MapUiBody> {
   Widget _latLngBoundsToggler(GoogleMapOptions options) {
     return new FlatButton(
       child: new Text(
-        options.cameraTargetBounds.isBounded
-            ? 'release camera target'
-            : 'bound camera target',
+        options.latLngCameraTargetBounds.bounds == null
+            ? 'bound camera target'
+            : 'release camera target',
       ),
-      onPressed: () async {
-        await widget.controller.mapsController.setMapOptions(
+      onPressed: () {
+        widget.controller.mapsController.updateMapOptions(
           new GoogleMapOptions(
-            cameraTargetBounds: options.cameraTargetBounds.isBounded
-                ? CameraTargetBounds.unbounded
-                : const CameraTargetBounds(sydneyBounds),
+            latLngCameraTargetBounds: options.latLngCameraTargetBounds.bounds == null
+                ? const LatLngCameraTargetBounds(sydneyBounds)
+                : LatLngCameraTargetBounds.unbounded,
           ),
         );
         _reloadOptions();
@@ -91,13 +97,13 @@ class MapUiBodyState extends State<MapUiBody> {
   Widget _zoomBoundsToggler(GoogleMapOptions options) {
     return new FlatButton(
       child: new Text(
-          options.zoomBounds.isBounded ? 'release zoom' : 'bound zoom'),
-      onPressed: () async {
-        await widget.controller.mapsController.setMapOptions(
+          options.minMaxZoomPreference.minZoom == null ? 'bound zoom' : 'release zoom'),
+      onPressed: () {
+        widget.controller.mapsController.updateMapOptions(
           new GoogleMapOptions(
-            zoomBounds: options.zoomBounds.isBounded
-                ? ZoomBounds.unbounded
-                : const ZoomBounds(12.0, 16.0),
+            minMaxZoomPreference: options.minMaxZoomPreference.minZoom == null
+                ? const MinMaxZoomPreference(12.0, 16.0)
+                : MinMaxZoomPreference.unbounded,
           ),
         );
         _reloadOptions();
@@ -110,8 +116,8 @@ class MapUiBodyState extends State<MapUiBody> {
         MapType.values[(options.mapType.index + 1) % MapType.values.length];
     return new FlatButton(
       child: new Text('change map type to $nextType'),
-      onPressed: () async {
-        await widget.controller.mapsController.setMapOptions(
+      onPressed: () {
+        widget.controller.mapsController.updateMapOptions(
           new GoogleMapOptions(mapType: nextType),
         );
         _reloadOptions();
@@ -123,8 +129,8 @@ class MapUiBodyState extends State<MapUiBody> {
     return new FlatButton(
       child: new Text(
           '${options.rotateGesturesEnabled ? 'disable' : 'enable'} rotate'),
-      onPressed: () async {
-        await widget.controller.mapsController.setMapOptions(
+      onPressed: () {
+        widget.controller.mapsController.updateMapOptions(
           new GoogleMapOptions(
             rotateGesturesEnabled: !options.rotateGesturesEnabled,
           ),
@@ -138,8 +144,8 @@ class MapUiBodyState extends State<MapUiBody> {
     return new FlatButton(
       child: new Text(
           '${options.scrollGesturesEnabled ? 'disable' : 'enable'} scroll'),
-      onPressed: () async {
-        await widget.controller.mapsController.setMapOptions(
+      onPressed: () {
+        widget.controller.mapsController.updateMapOptions(
           new GoogleMapOptions(
             scrollGesturesEnabled: !options.scrollGesturesEnabled,
           ),
@@ -153,8 +159,8 @@ class MapUiBodyState extends State<MapUiBody> {
     return new FlatButton(
       child: new Text(
           '${options.tiltGesturesEnabled ? 'disable' : 'enable'} tilt'),
-      onPressed: () async {
-        await widget.controller.mapsController.setMapOptions(
+      onPressed: () {
+        widget.controller.mapsController.updateMapOptions(
           new GoogleMapOptions(
             tiltGesturesEnabled: !options.tiltGesturesEnabled,
           ),
@@ -168,8 +174,8 @@ class MapUiBodyState extends State<MapUiBody> {
     return new FlatButton(
       child: new Text(
           '${options.zoomGesturesEnabled ? 'disable' : 'enable'} zoom'),
-      onPressed: () async {
-        await widget.controller.mapsController.setMapOptions(
+      onPressed: () {
+        widget.controller.mapsController.updateMapOptions(
           new GoogleMapOptions(
             zoomGesturesEnabled: !options.zoomGesturesEnabled,
           ),
@@ -181,12 +187,13 @@ class MapUiBodyState extends State<MapUiBody> {
 
   void _reloadOptions() {
     setState(() {
-      _optionsFuture = widget.controller.mapsController.getMapOptions();
+      // Do nothing.
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final GoogleMapOptions options = widget.controller.mapsController.options;
     return new Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -194,35 +201,25 @@ class MapUiBodyState extends State<MapUiBody> {
         new Padding(
           padding: const EdgeInsets.all(10.0),
           child: new Center(
-            child: new GoogleMapsOverlay(controller: widget.controller),
+            child: new GoogleMapOverlay(controller: widget.controller),
           ),
         ),
-        new FutureBuilder<GoogleMapOptions>(
-          future: _optionsFuture,
-          builder: (_, AsyncSnapshot<GoogleMapOptions> snapshot) {
-            if (!snapshot.hasData) {
-              return const Text('Loading settings');
-            } else {
-              final GoogleMapOptions options = snapshot.data;
-              return new Column(
-                children: <Widget>[
-                  new Text('camera bearing: ${options.cameraPosition.bearing}'),
-                  new Text(
-                      'camera target: ${options.cameraPosition.target.latitude},${options.cameraPosition.target.longitude}'),
-                  new Text('camera zoom: ${options.cameraPosition.zoom}'),
-                  new Text('camera tilt: ${options.cameraPosition.tilt}'),
-                  _compassToggler(options),
-                  _latLngBoundsToggler(options),
-                  _mapTypeCycler(options),
-                  _zoomBoundsToggler(options),
-                  _rotateToggler(options),
-                  _scrollToggler(options),
-                  _tiltToggler(options),
-                  _zoomToggler(options),
-                ],
-              );
-            }
-          },
+        new Column(
+          children: <Widget>[
+            new Text('camera bearing: ${_position.bearing}'),
+            new Text('camera target: ${_position.target.latitude.toStringAsFixed(4)},'
+                '${_position.target.longitude.toStringAsFixed(4)}'),
+            new Text('camera zoom: ${_position.zoom}'),
+            new Text('camera tilt: ${_position.tilt}'),
+            _compassToggler(options),
+            _latLngBoundsToggler(options),
+            _mapTypeCycler(options),
+            _zoomBoundsToggler(options),
+            _rotateToggler(options),
+            _scrollToggler(options),
+            _tiltToggler(options),
+            _zoomToggler(options),
+          ],
         ),
       ],
     );

@@ -43,7 +43,7 @@ class MapsDemo extends StatelessWidget {
 }
 
 void main() {
-  GoogleMapsController.init();
+  GoogleMapController.init();
   final List<NavigatorObserver> observers = <NavigatorObserver>[];
   for (Page p in _allPages) {
     observers.add(p.overlayController);

@@ -7,35 +7,92 @@ part of google_mobile_maps;
 final MethodChannel _channel =
     const MethodChannel('plugins.flutter.io/google_mobile_maps');
 
+/// Handler of tap events on [Marker] instances.
+typedef void OnMarkerTapped(Marker marker);
+
+typedef void OnCameraMoveStarted();
+typedef void OnCameraMove(CameraPosition position);
+typedef void OnCameraIdle();
+
 /// Controller for a single GoogleMaps instance.
 ///
 /// Used for programmatically controlling a platform-specific
 /// GoogleMaps view, once created.
-class GoogleMapsController {
+class GoogleMapController extends ChangeNotifier {
   /// An ID identifying the GoogleMaps instance, once created.
   final Future<int> id;
+  final Map<String, Marker> _markers = <String, Marker>{};
+  OnMarkerTapped onMarkerTapped;
+  OnCameraMoveStarted onCameraMoveStarted;
+  OnCameraMove onCameraMove;
+  OnCameraIdle onCameraIdle;
+  GoogleMapOptions _options;
 
-  GoogleMapsController(this.id);
+  GoogleMapController._(
+    this.id,
+    this._options,
+  ) {
+    id.then((int id) {
+      _controllers[id] = this;
+    });
+  }
+
+  static Map<int, GoogleMapController> _controllers =
+      <int, GoogleMapController>{};
 
   static Future<void> init() async {
     await _channel.invokeMethod('init');
+    _channel.setMethodCallHandler((MethodCall call) {
+      final int mapId = call.arguments['map'];
+      final GoogleMapController controller = _controllers[mapId];
+      if (controller != null) {
+        controller._handleMethodCall(call);
+      }
+    });
   }
 
-  Future<void> setMapOptions(GoogleMapOptions options) async {
+  void _handleMethodCall(MethodCall call) {
+    switch (call.method) {
+      case "marker#onTap":
+        if (onMarkerTapped != null) {
+          final String markerId = call.arguments['marker'];
+          final Marker marker = _markers[markerId];
+          if (marker != null) {
+            onMarkerTapped(marker);
+          }
+        }
+        break;
+      case "map#onCameraMoveStarted":
+        if (onCameraMoveStarted != null) {
+          onCameraMoveStarted();
+        }
+        break;
+      case "map#onCameraMove":
+        if (onCameraMove != null) {
+          onCameraMove(CameraPosition._fromJson(call.arguments['position']));
+        }
+        break;
+      case "map#onCameraIdle":
+        if (onCameraIdle != null) {
+          onCameraIdle();
+        }
+        break;
+      default:
+        throw new MissingPluginException();
+    }
+  }
+
+  GoogleMapOptions get options => _options;
+
+  Future<void> updateMapOptions(GoogleMapOptions options) async {
+    assert(options != null);
+    _options = _options._updateWith(options);
+    notifyListeners();
     final int id = await this.id;
     await _channel.invokeMethod('setMapOptions', <String, dynamic>{
       'map': id,
       'options': options._toJson(),
     });
-  }
-
-  Future<GoogleMapOptions> getMapOptions() async {
-    final int id = await this.id;
-    final dynamic json = await _channel.invokeMethod(
-      'getMapOptions',
-      <String, dynamic>{'map': id},
-    );
-    return GoogleMapOptions._fromJson(json);
   }
 
   Future<void> animateCamera(CameraUpdate cameraUpdate) async {
@@ -54,31 +111,62 @@ class GoogleMapsController {
     });
   }
 
-  Future<Marker> addMarker(MarkerOptions markerOptions) async {
+  Future<Marker> addMarker(MarkerOptions options) async {
+    assert(options != null);
+    assert(options.position != null);
     final int id = await this.id;
+    final MarkerOptions effectiveOptions =
+        MarkerOptions.defaultOptions._withChanges(options);
     final String markerId = await _channel.invokeMethod(
       'addMarker',
       <String, dynamic>{
         'map': id,
-        'markerOptions': markerOptions._toJson(),
+        'options': effectiveOptions._toJson(),
       },
     );
-    return new Marker._(id, markerId, markerOptions);
+    final Marker marker = new Marker._(this, markerId, effectiveOptions);
+    _markers[markerId] = marker;
+    notifyListeners();
+    return marker;
+  }
+
+  Future<void> _updateMarker(Marker marker, MarkerOptions changes) async {
+    assert(_markers[marker.id] == marker);
+    assert(changes != null);
+    final int id = await this.id;
+    await _channel.invokeMethod('marker#update', <String, dynamic>{
+      'map': id,
+      'marker': marker.id,
+      'options': changes._toJson(),
+    });
+    marker._options = marker._options._withChanges(changes);
+    notifyListeners();
+  }
+
+  Future<void> _removeMarker(Marker marker) async {
+    assert(_markers[marker.id] == marker);
+    final int id = await this.id;
+    await _channel.invokeMethod('marker#remove', <String, dynamic>{
+      'map': id,
+      'marker': marker.id,
+    });
+    _markers.remove(marker.id);
+    notifyListeners();
   }
 }
 
-/// Controller for a GoogleMaps instance that is integrated as a
+/// Controller for a GoogleMap instance that is integrated as a
 /// platform overlay.
 ///
 /// *Warning*: Platform overlays cannot be freely composed with
 /// other widgets. See [PlatformOverlayController] for caveats and
 /// limitations.
-class GoogleMapsOverlayController {
-  GoogleMapsOverlayController._(this.mapsController, this.overlayController);
+class GoogleMapOverlayController {
+  GoogleMapOverlayController._(this.mapsController, this.overlayController);
 
   /// Creates a controller for a GoogleMaps of the specified size in
   /// logical pixels.
-  factory GoogleMapsOverlayController.fromSize({
+  factory GoogleMapOverlayController.fromSize({
     @required double width,
     @required double height,
     GoogleMapOptions options = const GoogleMapOptions(),
@@ -86,16 +174,21 @@ class GoogleMapsOverlayController {
     assert(width != null);
     assert(height != null);
     assert(options != null);
+    final GoogleMapOptions effectiveOptions =
+        GoogleMapOptions.defaultOptions._updateWith(options);
     final _GoogleMapsPlatformOverlay overlay =
-        new _GoogleMapsPlatformOverlay(options);
-    return new GoogleMapsOverlayController._(
-      new GoogleMapsController(overlay._textureId.future),
+        new _GoogleMapsPlatformOverlay(effectiveOptions);
+    return new GoogleMapOverlayController._(
+      new GoogleMapController._(
+        overlay._textureId.future,
+        effectiveOptions,
+      ),
       new PlatformOverlayController(width, height, overlay),
     );
   }
 
   /// The controller of the GoogleMaps instance.
-  final GoogleMapsController mapsController;
+  final GoogleMapController mapsController;
 
   /// The controller of the platform overlay.
   final PlatformOverlayController overlayController;
@@ -149,16 +242,16 @@ class _GoogleMapsPlatformOverlay extends PlatformOverlay {
 }
 
 /// A Widget covered by a GoogleMaps platform overlay.
-class GoogleMapsOverlay extends StatefulWidget {
-  final GoogleMapsOverlayController controller;
+class GoogleMapOverlay extends StatefulWidget {
+  final GoogleMapOverlayController controller;
 
-  GoogleMapsOverlay({Key key, @required this.controller}) : super(key: key);
+  GoogleMapOverlay({Key key, @required this.controller}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => new _GoogleMapsOverlayState();
+  State<StatefulWidget> createState() => new _GoogleMapOverlayState();
 }
 
-class _GoogleMapsOverlayState extends State<GoogleMapsOverlay> {
+class _GoogleMapOverlayState extends State<GoogleMapOverlay> {
   @override
   void initState() {
     super.initState();
