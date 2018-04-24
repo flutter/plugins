@@ -1,3 +1,9 @@
+## 0.3.0
+
+* **Breaking change**. Changed StorageUploadTask to abstract, removed the 'file' field, and made 'path' and 'metadata'
+  private. Added two subclasses: StorageFileUploadTask and StorageDataUploadTask.
+* Deprecated the `put` function and added `putFile` and `putData` to upload files and bytes respectively.
+
 ## 0.2.6
 
 * Added support for updateMetadata.

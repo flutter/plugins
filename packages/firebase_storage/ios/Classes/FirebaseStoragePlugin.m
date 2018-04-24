@@ -42,6 +42,8 @@
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"StorageReference#putFile" isEqualToString:call.method]) {
     [self putFile:call result:result];
+  } else if ([@"StorageReference#putData" isEqualToString:call.method]) {
+    [self putData:call result:result];
   } else if ([@"StorageReference#getData" isEqualToString:call.method]) {
     [self getData:call result:result];
   } else if ([@"StorageReference#getDownloadUrl" isEqualToString:call.method]) {
@@ -59,6 +61,15 @@
 
 - (void)putFile:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSData *data = [NSData dataWithContentsOfFile:call.arguments[@"filename"]];
+  [self put:data call:call result:result];
+}
+
+- (void)putData:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSData *data = [(FlutterStandardTypedData *)call.arguments[@"data"] data];
+  [self put:data call:call result:result];
+}
+
+- (void)put:(NSData *)data call:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSString *path = call.arguments[@"path"];
   NSDictionary *metadataDictionary = call.arguments[@"metadata"];
   FIRStorageMetadata *metadata;
