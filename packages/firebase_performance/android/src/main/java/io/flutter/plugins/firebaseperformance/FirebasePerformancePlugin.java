@@ -89,6 +89,11 @@ public class FirebasePerformancePlugin implements MethodCallHandler {
     int id = (int) arguments.get("id");
     Trace trace = traces.get(id);
 
+    if (trace == null) {
+      result.success(null);
+      return;
+    }
+
     @SuppressWarnings("unchecked")
     Map<String, Integer> counters = (Map<String, Integer>) arguments.get("counters");
     for(Map.Entry<String, Integer> entry : counters.entrySet()) {
