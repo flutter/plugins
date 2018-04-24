@@ -44,6 +44,9 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
       case "StorageReference#putFile":
         putFile(call, result);
         break;
+      case "StorageReference#putData":
+        putData(call, result);
+        break;
       case "StorageReference#getData":
         getData(call, result);
         break;
@@ -146,7 +149,7 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
         });
   }
 
-  private void putFile(MethodCall call, final Result result) {
+  private void putFile(MethodCall call, Result result) {
     String filename = call.argument("filename");
     String path = call.argument("path");
     Map<String, Object> metadata = call.argument("metadata");
@@ -158,6 +161,24 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
     } else {
       uploadTask = ref.putFile(Uri.fromFile(file), buildMetadataFromMap(metadata));
     }
+    addResultListeners(uploadTask, result);
+  }
+
+  private void putData(MethodCall call, Result result) {
+    byte[] bytes = call.argument("data");
+    String path = call.argument("path");
+    Map<String, Object> metadata = call.argument("metadata");
+    StorageReference ref = firebaseStorage.getReference().child(path);
+    UploadTask uploadTask;
+    if (metadata == null) {
+      uploadTask = ref.putBytes(bytes);
+    } else {
+      uploadTask = ref.putBytes(bytes, buildMetadataFromMap(metadata));
+    }
+    addResultListeners(uploadTask, result);
+  }
+
+  private void addResultListeners(UploadTask uploadTask, final Result result) {
     uploadTask.addOnSuccessListener(
         new OnSuccessListener<UploadTask.TaskSnapshot>() {
           @Override
