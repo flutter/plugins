@@ -27,8 +27,8 @@ class RemoteConfigValue {
   int asInt() {
     if (_value != null) {
       final String strValue = const Utf8Codec().decode(_value);
-      final int intValue = int.parse(strValue,
-          onError: (String source) => RemoteConfig.defaultValueForInt);
+      final int intValue =
+          int.tryParse(strValue) ?? RemoteConfig.defaultValueForInt;
       return intValue;
     } else {
       return RemoteConfig.defaultValueForInt;
@@ -39,8 +39,8 @@ class RemoteConfigValue {
   double asDouble() {
     if (_value != null) {
       final String strValue = const Utf8Codec().decode(_value);
-      final double doubleValue = double.parse(
-          strValue, (String source) => RemoteConfig.defaultValueForDouble);
+      final double doubleValue =
+          double.tryParse(strValue) ?? RemoteConfig.defaultValueForDouble;
       return doubleValue;
     } else {
       return RemoteConfig.defaultValueForDouble;
