@@ -11,6 +11,7 @@ class RemoteConfigValue {
 
   RemoteConfigValue._(this._value, this._source);
 
+  /// Indicates at which source this value came from.
   ValueSource get source => _source == ValueSource.valueDefault
       ? ValueSource.valueDefault
       : ValueSource.valueRemote;

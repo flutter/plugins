@@ -6,10 +6,10 @@ void main() {
   final int lastFetchTime = 1520618753782;
   Map<String, dynamic> getDefaultInstance() {
     return <String, dynamic>{
-      'LAST_FETCH_TIME': lastFetchTime,
-      'LAST_FETCH_STATUS': 'success',
-      'IN_DEBUG_MODE': true,
-      'PARAMETERS': <String, dynamic>{
+      'lastFetchTime': lastFetchTime,
+      'lastFetchStatus': 'success',
+      'inDebugMode': true,
+      'parameters': <String, dynamic>{
         'param1': <String, dynamic>{
           'source': 'static',
           'value': <int>[118, 97, 108, 49], // UTF-8 encoded 'val1'
@@ -19,16 +19,11 @@ void main() {
   }
 
   group('$RemoteConfig', () {
-    const MethodChannel channel = const MethodChannel(
-      'plugins.flutter.io/firebase_remote_config',
-    );
-
     final List<MethodCall> log = <MethodCall>[];
 
-    RemoteConfig remoteConfig;
-
     setUp(() async {
-      channel.setMockMethodCallHandler((MethodCall methodCall) async {
+      RemoteConfig.channel
+          .setMockMethodCallHandler((MethodCall methodCall) async {
         log.add(methodCall);
         switch (methodCall.method) {
           case 'RemoteConfig#instance':
@@ -40,7 +35,7 @@ void main() {
     });
 
     test('instance', () async {
-      remoteConfig = await RemoteConfig.instance;
+      final RemoteConfig remoteConfig = await RemoteConfig.instance;
       expect(
         log,
         <Matcher>[
@@ -52,26 +47,34 @@ void main() {
           new DateTime.fromMillisecondsSinceEpoch(lastFetchTime));
       expect(remoteConfig.lastFetchStatus, LastFetchStatus.values[0]);
     });
+
+    test('doubleInstance', () async {
+      final List<Future<RemoteConfig>> futures = <Future<RemoteConfig>>[
+        RemoteConfig.instance,
+        RemoteConfig.instance,
+      ];
+      Future.wait(futures).then((List<RemoteConfig> remoteConfigs) {
+        // Check that both returned Remote Config instances are the same.
+        expect(remoteConfigs[0], remoteConfigs[1]);
+      });
+    });
   });
 
   group('$RemoteConfig', () {
-    const MethodChannel channel = const MethodChannel(
-      'plugins.flutter.io/firebase_remote_config',
-    );
-
     final List<MethodCall> log = <MethodCall>[];
 
     final int lastFetchTime = 1520618753782;
     RemoteConfig remoteConfig;
 
     setUp(() async {
-      channel.setMockMethodCallHandler((MethodCall methodCall) async {
+      RemoteConfig.channel
+          .setMockMethodCallHandler((MethodCall methodCall) async {
         log.add(methodCall);
         switch (methodCall.method) {
           case 'RemoteConfig#fetch':
             return <String, dynamic>{
-              'LAST_FETCH_TIME': lastFetchTime,
-              'LAST_FETCH_STATUS': 'success',
+              'lastFetchTime': lastFetchTime,
+              'lastFetchStatus': 'success',
             };
           case 'RemoteConfig#instance':
             return getDefaultInstance();
@@ -143,8 +146,7 @@ void main() {
     test('setConfigSettings', () async {
       expect(remoteConfig.remoteConfigSettings.debugMode, true);
       final RemoteConfigSettings remoteConfigSettings =
-          new RemoteConfigSettings();
-      remoteConfigSettings.debugMode = false;
+          new RemoteConfigSettings(debugMode: false);
       await remoteConfig.setConfigSettings(remoteConfigSettings);
       expect(
         log,

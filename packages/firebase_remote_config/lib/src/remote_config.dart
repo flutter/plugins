@@ -5,18 +5,14 @@ part of firebase_remote_config;
 /// You can get an instance by calling [RemoteConfig.instance]. Note
 /// [RemoteConfig.instance] is async.
 class RemoteConfig extends ChangeNotifier {
-  static const MethodChannel _channel =
+  @visibleForTesting
+  static const MethodChannel channel =
       const MethodChannel('plugins.flutter.io/firebase_remote_config');
 
   static const String defaultValueForString = '';
   static const int defaultValueForInt = 0;
   static const double defaultValueForDouble = 0.0;
   static const bool defaultValueForBool = false;
-
-  static const String _fetchFailedThrottledKey = 'FETCH_FAILED_THROTTLED';
-  static const String _lastFetchTimeKey = 'LAST_FETCH_TIME';
-  static const String _lastFetchStatusKey = 'LAST_FETCH_STATUS';
-  static const String _parametersKey = 'PARAMETERS';
 
   static RemoteConfig _instance;
 
@@ -32,26 +28,33 @@ class RemoteConfig extends ChangeNotifier {
   LastFetchStatus get lastFetchStatus => _lastFetchStatus;
   RemoteConfigSettings get remoteConfigSettings => _remoteConfigSettings;
 
+  static Completer<RemoteConfig> _instanceCompleter =
+      new Completer<RemoteConfig>();
+
   /// Gets the instance of RemoteConfig for the default Firebase app.
   static Future<RemoteConfig> get instance async {
-    if (_instance != null) {
-      return _instance;
+    if (!_instanceCompleter.isCompleted) {
+      _getRemoteConfigInstance();
     }
+    return _instanceCompleter.future;
+  }
+
+  static void _getRemoteConfigInstance() async {
     final Map<dynamic, dynamic> properties =
-        await _channel.invokeMethod('RemoteConfig#instance');
+        await channel.invokeMethod('RemoteConfig#instance');
+
     _instance = new RemoteConfig._();
 
     _instance._lastFetchTime =
-        new DateTime.fromMillisecondsSinceEpoch(properties[_lastFetchTimeKey]);
+        new DateTime.fromMillisecondsSinceEpoch(properties['lastFetchTime']);
     _instance._lastFetchStatus =
-        _parseLastFetchStatus(properties[_lastFetchStatusKey]);
+        _parseLastFetchStatus(properties['lastFetchStatus']);
     final RemoteConfigSettings remoteConfigSettings =
-        new RemoteConfigSettings();
-    remoteConfigSettings.debugMode = properties['IN_DEBUG_MODE'];
+        new RemoteConfigSettings(debugMode: properties['inDebugMode']);
     _instance._remoteConfigSettings = remoteConfigSettings;
     _instance._parameters =
-        _parseRemoteConfigParameters(parameters: properties[_parametersKey]);
-    return _instance;
+        _parseRemoteConfigParameters(parameters: properties['parameters']);
+    _instanceCompleter.complete(_instance);
   }
 
   static Map<String, RemoteConfigValue> _parseRemoteConfigParameters(
@@ -100,7 +103,7 @@ class RemoteConfig extends ChangeNotifier {
   /// This can be used for enabling developer mode.
   Future<void> setConfigSettings(
       RemoteConfigSettings remoteConfigSettings) async {
-    await _channel
+    await channel
         .invokeMethod('RemoteConfig#setConfigSettings', <String, dynamic>{
       'debugMode': remoteConfigSettings.debugMode,
     });
@@ -115,18 +118,18 @@ class RemoteConfig extends ChangeNotifier {
   /// Expiration must be defined in seconds.
   Future<void> fetch({Duration expiration: const Duration(hours: 12)}) async {
     try {
-      final Map<dynamic, dynamic> properties = await _channel.invokeMethod(
+      final Map<dynamic, dynamic> properties = await channel.invokeMethod(
           'RemoteConfig#fetch',
           <dynamic, dynamic>{'expiration': expiration.inSeconds});
-      _lastFetchTime = new DateTime.fromMillisecondsSinceEpoch(
-          properties[_lastFetchTimeKey]);
-      _lastFetchStatus = _parseLastFetchStatus(properties[_lastFetchStatusKey]);
+      _lastFetchTime =
+          new DateTime.fromMillisecondsSinceEpoch(properties['lastFetchTime']);
+      _lastFetchStatus = _parseLastFetchStatus(properties['lastFetchStatus']);
     } on PlatformException catch (e) {
       _lastFetchTime =
-          new DateTime.fromMillisecondsSinceEpoch(e.details[_lastFetchTimeKey]);
-      _lastFetchStatus = _parseLastFetchStatus(e.details[_lastFetchStatusKey]);
-      if (e.code == _fetchFailedThrottledKey) {
-        final int fetchThrottleEnd = e.details['FETCH_THROTTLED_END'];
+          new DateTime.fromMillisecondsSinceEpoch(e.details['lastFetchTime']);
+      _lastFetchStatus = _parseLastFetchStatus(e.details['lastFetchStatus']);
+      if (e.code == 'fetchFailedThrottled') {
+        final int fetchThrottleEnd = e.details['fetchThrottledEnd'];
         throw new FetchThrottledException._(endTimeInMills: fetchThrottleEnd);
       } else {
         throw new Exception('Unable to fetch remote config');
@@ -140,7 +143,7 @@ class RemoteConfig extends ChangeNotifier {
   /// from the currently activated config, it contains false otherwise.
   Future<bool> activateFetched() async {
     final Map<dynamic, dynamic> properties =
-        await _channel.invokeMethod('RemoteConfig#activate');
+        await channel.invokeMethod('RemoteConfig#activate');
     final Map<dynamic, dynamic> rawParameters = properties['parameters'];
     final bool newConfig = properties['newConfig'];
     final Map<String, RemoteConfigValue> fetchedParameters =
@@ -166,7 +169,7 @@ class RemoteConfig extends ChangeNotifier {
         _parameters[key] = remoteConfigValue;
       }
     });
-    _channel.invokeMethod(
+    channel.invokeMethod(
         'RemoteConfig#setDefaults', <String, dynamic>{'defaults': defaults});
   }
 

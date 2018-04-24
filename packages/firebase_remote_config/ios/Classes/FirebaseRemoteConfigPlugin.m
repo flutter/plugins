@@ -8,9 +8,6 @@
 
 @implementation FirebaseRemoteConfigPlugin
 
-static NSString *LAST_FETCH_TIME_KEY = @"LAST_FETCH_TIME";
-static NSString *LAST_FETCH_STATUS_KEY = @"LAST_FETCH_STATUS";
-
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/firebase_remote_config"
@@ -35,15 +32,15 @@ static NSString *LAST_FETCH_STATUS_KEY = @"LAST_FETCH_STATUS";
     FIRRemoteConfigSettings *firRemoteConfigSettings = [remoteConfig configSettings];
     NSMutableDictionary *resultDict = [[NSMutableDictionary alloc] init];
 
-    resultDict[LAST_FETCH_TIME_KEY] = [[NSNumber alloc]
+    resultDict[@"lastFetchTime"] = [[NSNumber alloc]
         initWithLong:(long)[[remoteConfig lastFetchTime] timeIntervalSince1970] * 1000];
-    resultDict[LAST_FETCH_STATUS_KEY] = [[NSNumber alloc]
+    resultDict[@"lastFetchStatus"] = [[NSNumber alloc]
         initWithInt:[self mapLastFetchStatus:(FIRRemoteConfigFetchStatus)[remoteConfig
                                                                               lastFetchStatus]]];
-    resultDict[@"IN_DEBUG_MODE"] =
+    resultDict[@"inDebugMode"] =
         [[NSNumber alloc] initWithBool:[firRemoteConfigSettings isDeveloperModeEnabled]];
 
-    resultDict[@"PARAMETERS", [self getConfigParameters]];
+    resultDict[@"parameters", [self getConfigParameters]];
 
     result(resultDict);
   } else if ([@"RemoteConfig#setConfigSettings" isEqualToString:call.method]) {
@@ -67,8 +64,8 @@ static NSString *LAST_FETCH_STATUS_KEY = @"LAST_FETCH_STATUS";
                         initWithInt:[self mapLastFetchStatus:(FIRRemoteConfigFetchStatus)
                                                                  [remoteConfig lastFetchStatus]]];
                     NSMutableDictionary *resultDict = [[NSMutableDictionary alloc] init];
-                    resultDict[LAST_FETCH_TIME_KEY] = lastFetchTime;
-                    resultDict[LAST_FETCH_STATUS_KEY] = lastFetchStatus;
+                    resultDict[@"lastFetchTime"] = lastFetchTime;
+                    resultDict[@"lastFetchStatus"] = lastFetchStatus;
 
                     if (status != FIRRemoteConfigFetchStatusSuccess) {
                       FlutterError *flutterError;
@@ -77,18 +74,18 @@ static NSString *LAST_FETCH_STATUS_KEY = @"LAST_FETCH_STATUS";
                             [[error.userInfo
                                 valueForKey:FIRRemoteConfigThrottledEndTimeInSecondsKey] intValue] *
                             1000;
-                        resultDict[@"FETCH_THROTTLED_END"] = [[NSNumber alloc] initWithInt:mills];
+                        resultDict[@"fetchThrottledEnd"] = [[NSNumber alloc] initWithInt:mills];
                         NSString *errorMessage =
-                            @"Fetch has been throttled. See the error's FETCH_THROTTLED_END "
+                            @"Fetch has been throttled. See the error's fetchThrottledEnd "
                              "field for throttle end time.";
-                        flutterError = [FlutterError errorWithCode:@"FETCH_FAILED_THROTTLED"
+                        flutterError = [FlutterError errorWithCode:@"fetchFailedThrottled"
                                                            message:errorMessage
                                                            details:resultDict];
                       } else {
                         NSString *errorMessage =
                             @"Unable to complete fetch. Reason is unknown "
                              "but this could be due to lack of connectivity.";
-                        flutterError = [FlutterError errorWithCode:@"FETCH_FAILED"
+                        flutterError = [FlutterError errorWithCode:@"fetchFailed"
                                                            message:errorMessage
                                                            details:resultDict];
                       }

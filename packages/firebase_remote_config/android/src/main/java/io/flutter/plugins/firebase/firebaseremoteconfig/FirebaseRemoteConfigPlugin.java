@@ -51,14 +51,12 @@ public class FirebaseRemoteConfigPlugin implements MethodCallHandler {
               FirebaseRemoteConfig.getInstance().getInfo();
 
           Map<String, Object> properties = new HashMap<>();
-          properties.put("LAST_FETCH_TIME", firebaseRemoteConfigInfo.getFetchTimeMillis());
+          properties.put("lastFetchTime", firebaseRemoteConfigInfo.getFetchTimeMillis());
           properties.put(
-              "LAST_FETCH_STATUS",
-              mapLastFetchStatus(firebaseRemoteConfigInfo.getLastFetchStatus()));
+              "lastFetchStatus", mapLastFetchStatus(firebaseRemoteConfigInfo.getLastFetchStatus()));
           properties.put(
-              "IN_DEBUG_MODE",
-              firebaseRemoteConfigInfo.getConfigSettings().isDeveloperModeEnabled());
-          properties.put("PARAMETERS", getConfigParameters());
+              "inDebugMode", firebaseRemoteConfigInfo.getConfigSettings().isDeveloperModeEnabled());
+          properties.put("parameters", getConfigParameters());
           result.success(properties);
           break;
         }
@@ -86,27 +84,27 @@ public class FirebaseRemoteConfigPlugin implements MethodCallHandler {
                           firebaseRemoteConfig.getInfo();
                       Map<String, Object> properties = new HashMap<>();
                       properties.put(
-                          "LAST_FETCH_TIME", firebaseRemoteConfigInfo.getFetchTimeMillis());
+                          "lastFetchTime", firebaseRemoteConfigInfo.getFetchTimeMillis());
                       properties.put(
-                          "LAST_FETCH_STATUS",
+                          "lastFetchStatus",
                           mapLastFetchStatus(firebaseRemoteConfigInfo.getLastFetchStatus()));
                       if (!task.isSuccessful()) {
                         final Exception exception = task.getException();
 
                         if (exception instanceof FirebaseRemoteConfigFetchThrottledException) {
                           properties.put(
-                              "FETCH_THROTTLED_END",
+                              "fetchThrottledEnd",
                               ((FirebaseRemoteConfigFetchThrottledException) exception)
                                   .getThrottleEndTimeMillis());
                           String errorMessage =
                               "Fetch has been throttled. See the error's "
                                   + "FETCH_THROTTLED_END field for throttle end time.";
-                          result.error("FETCH_FAILED_THROTTLED", errorMessage, properties);
+                          result.error("fetchFailedThrottled", errorMessage, properties);
                         } else {
                           String errorMessage =
                               "Unable to complete fetch. Reason is unknown "
                                   + "but this could be due to lack of connectivity.";
-                          result.error("FETCH_FAILED", errorMessage, properties);
+                          result.error("fetchFailed", errorMessage, properties);
                         }
                       } else {
                         result.success(properties);
