@@ -149,7 +149,7 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
         });
   }
 
-  private void putFile(MethodCall call, final Result result) {
+  private void putFile(MethodCall call, Result result) {
     String filename = call.argument("filename");
     String path = call.argument("path");
     Map<String, Object> metadata = call.argument("metadata");
@@ -164,7 +164,7 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
     addResultListeners(uploadTask, result);
   }
 
-  private void putData(MethodCall call, final Result result) {
+  private void putData(MethodCall call, Result result) {
     byte[] bytes = call.argument("data");
     String path = call.argument("path");
     Map<String, Object> metadata = call.argument("metadata");

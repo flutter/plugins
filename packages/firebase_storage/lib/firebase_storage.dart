@@ -42,7 +42,7 @@ class StorageReference {
   /// [StorageReference], with an optional [metadata].
   StorageUploadTask putFile(File file, [StorageMetadata metadata]) {
     final StorageFileUploadTask task =
-        new StorageFileUploadTask(file, _pathComponents.join("/"), metadata);
+        new StorageFileUploadTask._(file, _pathComponents.join("/"), metadata);
     task._start();
     return task;
   }
@@ -51,7 +51,7 @@ class StorageReference {
   /// [StorageReference], with an optional [metadata].
   StorageUploadTask putData(Uint8List data, [StorageMetadata metadata]) {
     final StorageUploadTask task =
-        new StorageDataUploadTask(data, _pathComponents.join("/"), metadata);
+        new StorageDataUploadTask._(data, _pathComponents.join("/"), metadata);
     task._start();
     return task;
   }
@@ -189,7 +189,7 @@ abstract class StorageUploadTask {
   final String _path;
   final StorageMetadata _metadata;
 
-  StorageUploadTask(this._path, this._metadata);
+  StorageUploadTask._(this._path, this._metadata);
   Future<void> _start();
 
   Completer<UploadTaskSnapshot> _completer =
@@ -199,8 +199,8 @@ abstract class StorageUploadTask {
 
 class StorageFileUploadTask extends StorageUploadTask {
   final File _file;
-  StorageFileUploadTask(this._file, String path, StorageMetadata metadata)
-      : super(path, metadata);
+  StorageFileUploadTask._(this._file, String path, StorageMetadata metadata)
+      : super._(path, metadata);
 
   @override
   Future<void> _start() async {
@@ -220,8 +220,8 @@ class StorageFileUploadTask extends StorageUploadTask {
 
 class StorageDataUploadTask extends StorageUploadTask {
   final Uint8List _bytes;
-  StorageDataUploadTask(this._bytes, String path, StorageMetadata metadata)
-      : super(path, metadata);
+  StorageDataUploadTask._(this._bytes, String path, StorageMetadata metadata)
+      : super._(path, metadata);
 
   @override
   Future<void> _start() async {
