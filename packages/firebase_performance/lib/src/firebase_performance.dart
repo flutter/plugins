@@ -4,10 +4,11 @@
 
 part of firebase_performance;
 
+/// The Firebase Performance API.
 class FirebasePerformance {
   final MethodChannel _channel;
 
-  /// Singleton of FirebasePerformance.
+  /// Singleton of [FirebasePerformance].
   static final FirebasePerformance instance = new FirebasePerformance.private(
       const MethodChannel('plugins.flutter.io/firebase_performance'));
 
@@ -25,16 +26,16 @@ class FirebasePerformance {
   }
 
   /// Enables or disables performance monitoring.
-  Future<void> setPerformanceCollectionEnabled(bool enabled) async {
+  Future<Null> setPerformanceCollectionEnabled(bool enabled) async {
     await _channel.invokeMethod(
         'FirebasePerformance#setPerformanceCollectionEnabled', enabled);
   }
 
-  Future<void> _traceStart(Trace trace) async {
+  Future<Null> _traceStart(Trace trace) async {
     await _channel.invokeMethod('Trace#start', trace._id);
   }
 
-  Future<void> _traceStop(Trace trace) async {
+  Future<Null> _traceStop(Trace trace) async {
     final Map<String, dynamic> data = <String, dynamic>{
       'id': trace._id,
       'name': trace.name,
@@ -45,16 +46,16 @@ class FirebasePerformance {
     await _channel.invokeMethod('Trace#stop', data);
   }
 
-  /// Creates a Trace object with given name.
+  /// Creates a [Trace] object with given [name].
   Future<Trace> newTrace(String name) async {
     final int id = await _channel.invokeMethod('FirebasePerformance#newTrace', name);
     return new Trace._(this, id, name);
   }
 
-  /// Creates a Trace object with given name and start the trace.
+  /// Creates a [Trace] object with given [name] and start the trace.
   Future<Trace> startTrace(String name) async {
     final Trace trace = await newTrace(name);
-    await _traceStart(trace);
+    await trace.start();
     return trace;
   }
 }

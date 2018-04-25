@@ -103,11 +103,13 @@ void main() {
         await testTrace.start();
         expect(invokedMethod, 'Trace#start');
         expect(arguments, null);
+        expect(testTrace.hasStarted, true);
       });
 
       test('stop', () async {
         testTrace.incrementCounter('counter1');
         testTrace.putAttribute('attr1', 'apple');
+        await testTrace.start();
         await testTrace.stop();
 
         expect(invokedMethod, 'Trace#stop');
@@ -117,6 +119,28 @@ void main() {
           'counters': <String, int>{'counter1': 1},
           'attributes': <String, String>{'attr1': 'apple'},
         });
+        expect(testTrace.hasStarted, true);
+        expect(testTrace.hasStopped, true);
+      });
+
+      test('start and stop called in wrong order', () async {
+        Trace trace = await performance.newTrace("test");
+        await trace.stop();
+        expect(trace.hasStarted, false);
+        expect(trace.hasStopped, false);
+
+        trace = await performance.newTrace("test");
+        await trace.start();
+        await trace.start();
+        expect(trace.hasStarted, true);
+        expect(trace.hasStopped, false);
+
+        trace = await performance.newTrace("test");
+        await trace.start();
+        await trace.stop();
+        await trace.stop();
+        expect(trace.hasStarted, true);
+        expect(trace.hasStopped, true);
       });
 
       test('putAttribute', () {

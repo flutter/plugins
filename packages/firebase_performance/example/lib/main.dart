@@ -20,6 +20,7 @@ class _MyAppState extends State<MyApp> {
   FirebasePerformance performance = FirebasePerformance.instance;
   bool _collectionEnabled;
   String _collectionEnabledString = 'Unknown status of performance collection.';
+  String _message = '';
 
   @override
   void initState() {
@@ -66,6 +67,10 @@ class _MyAppState extends State<MyApp> {
     }
 
     trace.stop();
+
+    setState(() {
+      _message = 'Trace sent!';
+    });
   }
 
   @override
@@ -90,6 +95,10 @@ class _MyAppState extends State<MyApp> {
               child: const Text('Send Trace'),
               color: Colors.blueAccent,
               textColor: Colors.white,
+            ),
+            new Text(
+              _message,
+              style: const TextStyle(color: Colors.lightGreenAccent),
             )
           ],
         )),
