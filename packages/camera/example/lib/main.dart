@@ -90,8 +90,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
           fontWeight: FontWeight.w900,
         ),
       );
-    } else if (controller.value.hasError) {
-      return new Text('Camera error ${controller.value.errorDescription}');
     } else {
       return new AspectRatio(
         aspectRatio: controller.value.aspectRatio,
@@ -100,7 +98,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
     }
   }
 
-  /// Display the thumbnail of the captured image.
+  /// Display the thumbnail of the captured image or video.
   Widget _thumbnailWidget() {
     return new Expanded(
       child: new Align(
@@ -231,7 +229,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
           videoController?.dispose();
           videoController = null;
         });
-        showInSnackBar('Picture saved to $filePath');
+        if (imagePath != null) showInSnackBar('Picture saved to $imagePath');
       }
     });
   }
@@ -239,7 +237,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
   void onVideoRecordButtonPressed() {
     startVideoRecording().then((String filePath) {
       if (mounted) setState(() {});
-      showInSnackBar('Saving video to $filePath');
+      if (imagePath != null) showInSnackBar('Saving video to $filePath');
     });
   }
 
@@ -265,6 +263,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
       await controller.startVideoRecording(filePath);
     } on CameraException catch (e) {
       logError(e.code, e.description);
+      return null;
     }
     return filePath;
   }
@@ -313,6 +312,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
       await controller.takePicture(filePath);
     } on CameraException catch (e) {
       logError(e.code, e.description);
+      return null;
     }
     return filePath;
   }

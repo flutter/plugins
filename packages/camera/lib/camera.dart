@@ -141,7 +141,7 @@ class CameraValue {
   }) {
     return new CameraValue(
       isInitialized: isInitialized ?? this.isInitialized,
-      errorDescription: errorDescription ?? this.errorDescription,
+      errorDescription: errorDescription,
       previewSize: previewSize ?? this.previewSize,
       isRecordingVideo: isRecordingVideo ?? this.isRecordingVideo,
     );
@@ -181,7 +181,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   /// Throws a [CameraException] if the initialization fails.
   Future<Null> initialize() async {
     if (_isDisposed) {
-      return;
+      return new Future<Null>.value(null);
     }
     try {
       _creatingCompleter = new Completer<Null>();
@@ -208,10 +208,12 @@ class CameraController extends ValueNotifier<CameraValue> {
         new EventChannel('flutter.io/cameraPlugin/cameraEvents$_textureId')
             .receiveBroadcastStream()
             .listen(_listener);
-    _creatingCompleter.complete(null);
+    _creatingCompleter.future;
   }
 
   /// Listen to events from the native plugins.
+  ///
+  /// A "cameraClosing" event is sent when the camera is closed automatically by the system (for example when the app go to background). The plugin will try to reopen the camera automatically but any ongoing recording will end.
   void _listener(dynamic event) {
     final Map<dynamic, dynamic> map = event;
     if (_isDisposed) {
@@ -232,6 +234,9 @@ class CameraController extends ValueNotifier<CameraValue> {
   ///
   /// A path can for example be obtained using
   /// [path_provider](https://pub.dartlang.org/packages/path_provider).
+  ///
+  /// If a file already exists at the provided path an error will be thrown.
+  /// The file can be read as this function returns.
   ///
   /// Throws a [CameraException] if the capture fails.
   Future<Null> takePicture(String path) async {
@@ -258,6 +263,8 @@ class CameraController extends ValueNotifier<CameraValue> {
   /// [path_provider](https://pub.dartlang.org/packages/path_provider).
   ///
   /// The file is written on the flight as the video is being recorded.
+  /// If a file already exists at the provided path an error will be thrown.
+  /// The file can be read as soon as [stopVideoRecording] returns.
   ///
   /// Throws a [CameraException] if the capture fails.
   Future<Null> startVideoRecording(String filePath) async {
@@ -268,11 +275,11 @@ class CameraController extends ValueNotifier<CameraValue> {
       );
     }
     try {
-      value = value.copyWith(isRecordingVideo: true);
       await _channel.invokeMethod(
         'startVideoRecording',
         <String, dynamic>{'textureId': _textureId, 'filePath': filePath},
       );
+      value = value.copyWith(isRecordingVideo: true);
     } on PlatformException catch (e) {
       value = value.copyWith(errorDescription: e.message);
       throw new CameraException(e.code, e.message);

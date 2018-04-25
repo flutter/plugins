@@ -511,6 +511,14 @@ public class CameraPlugin implements MethodCallHandler {
     private void takePicture(String filePath, @NonNull final Result result) {
       final File file = new File(filePath);
 
+      if (file.exists()) {
+        result.error(
+            "fileExists",
+            "File at path '" + filePath + "' already exists. Cannot overwrite.",
+            null);
+        return;
+      }
+
       imageReader.setOnImageAvailableListener(
           new ImageReader.OnImageAvailableListener() {
             @Override
@@ -567,6 +575,13 @@ public class CameraPlugin implements MethodCallHandler {
     private void startVideoRecording(String filePath, @NonNull final Result result) {
       if (cameraDevice == null) {
         result.error("configureFailed", "Camera was closed during configuration.", null);
+        return;
+      }
+      if (new File(filePath).exists()) {
+        result.error(
+            "fileExists",
+            "File at path '" + filePath + "' already exists. Cannot overwrite.",
+            null);
         return;
       }
       try {
