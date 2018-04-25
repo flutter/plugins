@@ -8,9 +8,9 @@
 
 @implementation FirebasePerformancePlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  FlutterMethodChannel* channel = [FlutterMethodChannel
-      methodChannelWithName:@"plugins.flutter.io/firebase_performance"
-            binaryMessenger:[registrar messenger]];
+  FlutterMethodChannel* channel =
+      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/firebase_performance"
+                                  binaryMessenger:[registrar messenger]];
   FirebasePerformancePlugin* instance = [[FirebasePerformancePlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
@@ -28,7 +28,7 @@
   return self;
 }
 
-- (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
+- (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"FirebasePerformance#isPerformanceCollectionEnabled" isEqualToString:call.method]) {
     [self handleisPerformanceCollectionEnabled:call result:result];
 
@@ -49,18 +49,20 @@
   }
 }
 
-- (void)handleisPerformanceCollectionEnabled:(FlutterMethodCall*)call result:(FlutterResult)result {
+- (void)handleisPerformanceCollectionEnabled:(FlutterMethodCall *)call
+                                      result:(FlutterResult)result {
   result(@([[FIRPerformance sharedInstance] isDataCollectionEnabled]));
 }
 
-- (void)handleSetPerformanceCollectionEnabled:(FlutterMethodCall*)call result:(FlutterResult)result {
+- (void)handleSetPerformanceCollectionEnabled:(FlutterMethodCall *)call
+                                       result:(FlutterResult)result {
   NSNumber *enable = call.arguments;
   [[FIRPerformance sharedInstance] setDataCollectionEnabled:[enable boolValue]];
 
   result(nil);
 }
 
-- (void)newTrace:(FlutterMethodCall*)call result:(FlutterResult)result {
+- (void)newTrace:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSString *name = call.arguments;
   FIRTrace *trace = [[FIRPerformance sharedInstance] traceWithName:name];
 
@@ -69,7 +71,7 @@
   result([NSNumber numberWithInt:_nextHandleTrace++]);
 }
 
-- (void)traceStart:(FlutterMethodCall*)call result:(FlutterResult)result {
+- (void)traceStart:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSNumber *id = call.arguments;
   FIRTrace *trace = [_traces objectForKey:id];
 
@@ -80,7 +82,7 @@
   result(nil);
 }
 
-- (void)traceStop:(FlutterMethodCall*)call result:(FlutterResult)result {
+- (void)traceStop:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSNumber *id = call.arguments[@"id"];
   FIRTrace *trace = [_traces objectForKey:id];
 
@@ -90,12 +92,12 @@
   }
 
   NSDictionary *counters = call.arguments[@"counters"];
-  [counters enumerateKeysAndObjectsUsingBlock:^(NSString* key, NSNumber* value, BOOL* stop) {
+  [counters enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSNumber *value, BOOL *stop) {
     [trace incrementCounterNamed:key by:[value integerValue]];
   }];
 
   NSDictionary *attributes = call.arguments[@"attributes"];
-  [attributes enumerateKeysAndObjectsUsingBlock:^(NSString* key, NSString* value, BOOL* stop) {
+  [attributes enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
     [trace setValue:key forAttribute:value];
   }];
 

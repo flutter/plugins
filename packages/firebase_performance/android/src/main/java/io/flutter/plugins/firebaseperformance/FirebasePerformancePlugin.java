@@ -9,17 +9,15 @@ import android.util.SparseArray;
 import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.Trace;
 
-import java.util.Map;
-
+import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 
-/**
- * FirebasePerformancePlugin
- */
+import java.util.Map;
+
+/** FirebasePerformancePlugin */
 public class FirebasePerformancePlugin implements MethodCallHandler {
   private FirebasePerformance firebasePerformance;
 
@@ -28,7 +26,8 @@ public class FirebasePerformancePlugin implements MethodCallHandler {
   private final SparseArray<Trace> traces = new SparseArray<>();
 
   public static void registerWith(Registrar registrar) {
-    final MethodChannel channel = new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_performance");
+    final MethodChannel channel =
+        new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_performance");
     channel.setMethodCallHandler(new FirebasePerformancePlugin());
   }
 
@@ -100,13 +99,13 @@ public class FirebasePerformancePlugin implements MethodCallHandler {
 
     @SuppressWarnings("unchecked")
     Map<String, Integer> counters = (Map<String, Integer>) arguments.get("counters");
-    for(Map.Entry<String, Integer> entry : counters.entrySet()) {
+    for (Map.Entry<String, Integer> entry : counters.entrySet()) {
       trace.incrementCounter(entry.getKey(), entry.getValue());
     }
 
     @SuppressWarnings("unchecked")
     Map<String, String> attributes = (Map<String, String>) arguments.get("attributes");
-    for(Map.Entry<String, String> entry : attributes.entrySet()) {
+    for (Map.Entry<String, String> entry : attributes.entrySet()) {
       trace.putAttribute(entry.getKey(), entry.getValue());
     }
 
