@@ -90,6 +90,11 @@
     [trace incrementCounterNamed:key by:[value integerValue]];
   }];
 
+  NSDictionary *attributes = call.arguments[@"attributes"];
+  [attributes enumerateKeysAndObjectsUsingBlock:^(NSString* key, NSString* value, BOOL* stop) {
+    [trace setValue:key forAttribute:value];
+  }];
+
   [trace stop];
   [_traces removeObjectForKey:id];
 

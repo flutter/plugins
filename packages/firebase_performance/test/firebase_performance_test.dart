@@ -6,7 +6,6 @@ import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
 import 'package:flutter/services.dart';
-import 'package:flutter/foundation.dart';
 
 import 'package:firebase_performance/firebase_performance.dart';
 
@@ -56,22 +55,7 @@ void main() {
       Trace testTrace;
 
       setUp(() async {
-        debugDefaultTargetPlatformOverride = TargetPlatform.android;
         testTrace = await performance.newTrace('test');
-      });
-
-      test('android is null on non-android devices', () async {
-        debugDefaultTargetPlatformOverride = TargetPlatform.android;
-        Trace trace = await performance.newTrace('android-trace');
-        expect(trace.android, isNotNull);
-
-        debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
-        trace = await performance.newTrace('iOS-trace');
-        expect(trace.android, isNull);
-
-        debugDefaultTargetPlatformOverride = TargetPlatform.fuchsia;
-        trace = await performance.newTrace('fuschia-trace');
-        expect(trace.android, isNull);
       });
 
       test('incrementCounter', () {
@@ -117,7 +101,7 @@ void main() {
 
       test('stop', () async {
         testTrace.incrementCounter('counter1');
-        testTrace.android.putAttribute('attr1', 'apple');
+        testTrace.putAttribute('attr1', 'apple');
         await testTrace.stop();
 
         expect(invokedMethod, 'Trace#stop');
@@ -129,44 +113,42 @@ void main() {
         });
       });
 
-      group('$TraceAndroid', () {
-        test('putAttribute', () {
-          testTrace.android.putAttribute('attr1', 'apple');
-          testTrace.android.putAttribute('attr2', 'are');
-          expect(testTrace.android.attributes, <String, String>{
-            'attr1': 'apple',
-            'attr2': 'are',
-          });
-
-          testTrace.android.putAttribute('attr1', 'delicious');
-          expect(testTrace.android.attributes, <String, String>{
-            'attr1': 'delicious',
-            'attr2': 'are',
-          });
+      test('putAttribute', () {
+        testTrace.putAttribute('attr1', 'apple');
+        testTrace.putAttribute('attr2', 'are');
+        expect(testTrace.attributes, <String, String>{
+          'attr1': 'apple',
+          'attr2': 'are',
         });
 
-        test('removeAttribute', () {
-          testTrace.android.putAttribute('attr1', 'apple');
-          testTrace.android.putAttribute('attr2', 'are');
-          testTrace.android.removeAttribute('no-attr');
-          expect(testTrace.android.attributes, <String, String>{
-            'attr1': 'apple',
-            'attr2': 'are',
-          });
+        testTrace.putAttribute('attr1', 'delicious');
+        expect(testTrace.attributes, <String, String>{
+          'attr1': 'delicious',
+          'attr2': 'are',
+        });
+      });
 
-          testTrace.android.removeAttribute('attr1');
-          expect(testTrace.android.attributes, <String, String>{
-            'attr2': 'are',
-          });
+      test('removeAttribute', () {
+        testTrace.putAttribute('attr1', 'apple');
+        testTrace.putAttribute('attr2', 'are');
+        testTrace.removeAttribute('no-attr');
+        expect(testTrace.attributes, <String, String>{
+          'attr1': 'apple',
+          'attr2': 'are',
         });
 
-        test('getAttribute', () {
-          testTrace.android.putAttribute('attr1', 'apple');
-          testTrace.android.putAttribute('attr2', 'are');
-          expect(testTrace.android.getAttribute('attr1'), 'apple');
-
-          expect(testTrace.android.getAttribute('attr3'), isNull);
+        testTrace.removeAttribute('attr1');
+        expect(testTrace.attributes, <String, String>{
+          'attr2': 'are',
         });
+      });
+
+      test('getAttribute', () {
+        testTrace.putAttribute('attr1', 'apple');
+        testTrace.putAttribute('attr2', 'are');
+        expect(testTrace.getAttribute('attr1'), 'apple');
+
+        expect(testTrace.getAttribute('attr3'), isNull);
       });
     });
   });

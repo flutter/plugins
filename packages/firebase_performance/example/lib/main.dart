@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -53,10 +52,8 @@ class _MyAppState extends State<MyApp> {
   Future<void> testTrace() async {
     final Trace trace = await performance.newTrace("android-test");
     trace.incrementCounter("counter1", 16);
+    trace.putAttribute("favorite_color", "blue");
 
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      trace.android.putAttribute("favorite_color", "blue");
-    }
     await trace.start();
 
     int sum = 0;

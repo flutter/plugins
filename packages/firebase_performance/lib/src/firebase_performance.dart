@@ -31,12 +31,9 @@ class FirebasePerformance {
     final Map<String, dynamic> data = <String, dynamic>{
       'id': trace._id,
       'name': trace.name,
-      'counters': trace.counters
+      'counters': trace.counters,
+      'attributes': trace.attributes,
     };
-
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      data.putIfAbsent('attributes', () => trace.android.attributes);
-    }
 
     await _channel.invokeMethod('Trace#stop', data);
   }
