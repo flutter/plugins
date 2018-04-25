@@ -55,18 +55,18 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> testTrace() async {
-    final Trace trace = await performance.newTrace("android-test");
+    final Trace trace = await performance.newTrace("test");
     trace.incrementCounter("counter1", 16);
     trace.putAttribute("favorite_color", "blue");
 
-    trace.start();
+    await trace.start();
 
     int sum = 0;
     for (int i = 0; i < 10000000; i++) {
       sum += i;
     }
 
-    trace.stop();
+    await trace.stop();
 
     setState(() {
       _message = 'Trace sent!';

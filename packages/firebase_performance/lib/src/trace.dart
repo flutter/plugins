@@ -28,8 +28,7 @@ class Trace {
   /// Starts this trace.
   Future<Null> start() async {
     if (_hasStarted) {
-      print(
-          "FirebasePerformance: Trace '$name' has already started, should not start again!");
+      _printError('start', "it has already been started!");
       return;
     }
 
@@ -43,31 +42,49 @@ class Trace {
       await _performance._traceStop(this);
       _hasStopped = true;
     } else if (_hasStopped) {
-      print(
-          "FirebasePerformance: Trace '$name' has already stopped, should not stop again!");
+      _printError('stop', "it's been stopped!");
     } else {
-      print(
-          "FirebasePerformance: Trace '$name' has not been started so unable to stop!");
+      _printError('stop', "it has not been started!");
     }
   }
 
   /// Increments the counter in this trace with the given [name] by given value.
   void incrementCounter(String name, [int incrementBy = 1]) {
+    if (hasStopped) {
+      _printError('incrementCounter', "it's been stopped!");
+      return;
+    }
+
     counters.putIfAbsent(name, () => 0);
     counters[name] += incrementBy;
   }
 
   /// Sets a String [value] for the specified [attribute].
   void putAttribute(String attribute, String value) {
+    if (hasStopped) {
+      _printError('putAttribute', "it's been stopped!");
+      return;
+    }
+
     attributes.putIfAbsent(attribute, () => value);
     attributes[attribute] = value;
   }
 
   /// Removes an already added [attribute] from the Trace.
   void removeAttribute(String attribute) {
+    if (hasStopped) {
+      _printError('removeAttribute', "it's been stopped!");
+      return;
+    }
+
     attributes.remove(attribute);
   }
 
   /// Returns the value of an [attribute].
   String getAttribute(String attribute) => attributes[attribute];
+
+  void _printError(String method, String reason) {
+    print(
+        "FirbasePerformance: Can't '$method()' for trace '$name' because $reason!");
+  }
 }

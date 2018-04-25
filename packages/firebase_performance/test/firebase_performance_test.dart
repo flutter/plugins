@@ -58,7 +58,7 @@ void main() {
         testTrace = await performance.newTrace('test');
       });
 
-      test('incrementCounter', () {
+      test('incrementCounter', () async {
         testTrace.incrementCounter('counter1');
         expect(testTrace.counters, <String, int>{
           'counter1': 1,
@@ -80,6 +80,15 @@ void main() {
         });
 
         testTrace.incrementCounter('counter3', 25);
+        expect(testTrace.counters, <String, int>{
+          'counter1': -1,
+          'counter2': 1,
+          'counter3': 25,
+        });
+
+        await testTrace.start();
+        await testTrace.stop();
+        testTrace.incrementCounter('counter3');
         expect(testTrace.counters, <String, int>{
           'counter1': -1,
           'counter2': 1,
@@ -143,7 +152,7 @@ void main() {
         expect(trace.hasStopped, true);
       });
 
-      test('putAttribute', () {
+      test('putAttribute', () async {
         testTrace.putAttribute('attr1', 'apple');
         testTrace.putAttribute('attr2', 'are');
         expect(testTrace.attributes, <String, String>{
@@ -156,9 +165,17 @@ void main() {
           'attr1': 'delicious',
           'attr2': 'are',
         });
+
+        await testTrace.start();
+        await testTrace.stop();
+        testTrace.putAttribute('attr3', 'yes');
+        expect(testTrace.attributes, <String, String>{
+          'attr1': 'delicious',
+          'attr2': 'are',
+        });
       });
 
-      test('removeAttribute', () {
+      test('removeAttribute', () async {
         testTrace.putAttribute('attr1', 'apple');
         testTrace.putAttribute('attr2', 'are');
         testTrace.removeAttribute('no-attr');
@@ -168,6 +185,13 @@ void main() {
         });
 
         testTrace.removeAttribute('attr1');
+        expect(testTrace.attributes, <String, String>{
+          'attr2': 'are',
+        });
+
+        await testTrace.start();
+        await testTrace.stop();
+        testTrace.removeAttribute('attr2');
         expect(testTrace.attributes, <String, String>{
           'attr2': 'are',
         });
