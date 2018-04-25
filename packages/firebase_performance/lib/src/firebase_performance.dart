@@ -43,6 +43,6 @@ class FirebasePerformance {
 
   Future<Trace> newTrace(String name) async {
     final int id = await _channel.invokeMethod('FirebasePerformance#newTrace', name);
-    return new Trace._(id, name);
+    return new Trace._(this, id, name);
   }
 }

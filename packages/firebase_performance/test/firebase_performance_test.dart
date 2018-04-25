@@ -45,6 +45,11 @@ void main() {
       expect(
           invokedMethod, 'FirebasePerformance#setPerformanceCollectionEnabled');
       expect(arguments, true);
+
+      await performance.setPerformanceCollectionEnabled(false);
+      expect(
+          invokedMethod, 'FirebasePerformance#setPerformanceCollectionEnabled');
+      expect(arguments, false);
     });
 
     group('$Trace', () {
@@ -72,7 +77,7 @@ void main() {
       test('incrementCounter', () {
         testTrace.incrementCounter('counter1');
         expect(testTrace.counters, <String, int>{
-          'counter1' : 1,
+          'counter1': 1,
         });
 
         testTrace.incrementCounter('counter1');
@@ -86,15 +91,41 @@ void main() {
 
         testTrace.incrementCounter('counter2');
         expect(testTrace.counters, <String, int>{
-          'counter1' : -1,
-          'counter2' : 1,
+          'counter1': -1,
+          'counter2': 1,
         });
 
         testTrace.incrementCounter('counter3', 25);
         expect(testTrace.counters, <String, int>{
-          'counter1' : -1,
-          'counter2' : 1,
-          'counter3' : 25,
+          'counter1': -1,
+          'counter2': 1,
+          'counter3': 25,
+        });
+      });
+
+      test('newTrace', () async {
+        await performance.newTrace('test-trace');
+        expect(invokedMethod, 'FirebasePerformance#newTrace');
+        expect(arguments, 'test-trace');
+      });
+
+      test('start', () async {
+        await testTrace.start();
+        expect(invokedMethod, 'Trace#start');
+        expect(arguments, null);
+      });
+
+      test('stop', () async {
+        testTrace.incrementCounter('counter1');
+        testTrace.android.putAttribute('attr1', 'apple');
+        await testTrace.stop();
+
+        expect(invokedMethod, 'Trace#stop');
+        expect(arguments, <String, dynamic>{
+          'id': null,
+          'name': 'test',
+          'counters': <String, int>{'counter1': 1},
+          'attributes': <String, String>{'attr1': 'apple'},
         });
       });
 
@@ -103,14 +134,14 @@ void main() {
           testTrace.android.putAttribute('attr1', 'apple');
           testTrace.android.putAttribute('attr2', 'are');
           expect(testTrace.android.attributes, <String, String>{
-            'attr1' : 'apple',
-            'attr2' : 'are',
+            'attr1': 'apple',
+            'attr2': 'are',
           });
 
           testTrace.android.putAttribute('attr1', 'delicious');
           expect(testTrace.android.attributes, <String, String>{
-            'attr1' : 'delicious',
-            'attr2' : 'are',
+            'attr1': 'delicious',
+            'attr2': 'are',
           });
         });
 
@@ -119,13 +150,13 @@ void main() {
           testTrace.android.putAttribute('attr2', 'are');
           testTrace.android.removeAttribute('no-attr');
           expect(testTrace.android.attributes, <String, String>{
-            'attr1' : 'apple',
-            'attr2' : 'are',
+            'attr1': 'apple',
+            'attr2': 'are',
           });
 
           testTrace.android.removeAttribute('attr1');
           expect(testTrace.android.attributes, <String, String>{
-            'attr2' : 'are',
+            'attr2': 'are',
           });
         });
 
