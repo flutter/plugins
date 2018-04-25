@@ -93,6 +93,12 @@ void main() {
         expect(arguments, 'test-trace');
       });
 
+      test('startTrace', () async {
+        await performance.startTrace('test-trace');
+        expect(invokedMethod, 'Trace#start');
+        expect(arguments, null);
+      });
+
       test('start', () async {
         await testTrace.start();
         expect(invokedMethod, 'Trace#start');

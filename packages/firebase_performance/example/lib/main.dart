@@ -1,3 +1,7 @@
+// Copyright 2017, the Flutter project authors.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -54,14 +58,14 @@ class _MyAppState extends State<MyApp> {
     trace.incrementCounter("counter1", 16);
     trace.putAttribute("favorite_color", "blue");
 
-    await trace.start();
+    trace.start();
 
     int sum = 0;
     for (int i = 0; i < 10000000; i++) {
       sum += i;
     }
 
-    await trace.stop();
+    trace.stop();
   }
 
   @override
