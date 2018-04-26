@@ -28,9 +28,8 @@ static NSString *const kErrorReasonSignInCanceled = @"sign_in_canceled";
   } else {
     errorCode = @"exception";
   }
-  return [FlutterError errorWithCode:errorCode
-                             message:self.domain
-                             details:self.localizedDescription];
+  return
+      [FlutterError errorWithCode:errorCode message:self.domain details:self.localizedDescription];
 }
 @end
 
