@@ -53,6 +53,15 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
       case "StorageReference#delete":
         delete(call, result);
         break;
+      case "StorageReference#getBucket":
+        getBucket(call, result);
+        break;
+      case "StorageReference#getName":
+        getName(call, result);
+        break;
+      case "StorageReference#getPath":
+        getPath(call, result);
+        break;
       case "StorageReference#getDownloadUrl":
         getDownloadUrl(call, result);
         break;
@@ -107,6 +116,24 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
                 result.error("metadata_error", e.getMessage(), null);
               }
             });
+  }
+
+  private void getBucket(MethodCall call, final Result result) {
+    String path = call.argument("path");
+    StorageReference ref = firebaseStorage.getReference().child(path);
+    result.success(ref.getBucket());
+  }
+
+  private void getName(MethodCall call, final Result result) {
+    String path = call.argument("path");
+    StorageReference ref = firebaseStorage.getReference().child(path);
+    result.success(ref.getName());
+  }
+
+  private void getPath(MethodCall call, final Result result) {
+    String path = call.argument("path");
+    StorageReference ref = firebaseStorage.getReference().child(path);
+    result.success(ref.getPath());
   }
 
   private void getDownloadUrl(MethodCall call, final Result result) {
