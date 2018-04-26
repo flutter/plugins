@@ -390,7 +390,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
         finishWithSuccess(response);
       }else {
         // Forward all errors and let Dart side decide how to handle.
-        int errorCode = errorCodeForStatus(result.getStatus().getStatusCode());
+        String errorCode = errorCodeForStatus(result.getStatus().getStatusCode());
         finishWithError(errorCode, result.getStatus().toString());
       }
     }
