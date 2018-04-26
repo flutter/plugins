@@ -109,6 +109,16 @@ class GoogleSignInAccount implements GoogleIdentity {
 
 /// GoogleSignIn allows you to authenticate Google users.
 class GoogleSignIn {
+  // These error codes must match with ones declared on Android and iOS sides.
+
+  /// Error code indicating there is no signed in user and interactive sign in
+  /// flow is required.
+  static const String kSignInRequiredError = 'sign_in_required';
+
+  /// Error code indicating that interactive sign in process was canceled by the
+  /// user.
+  static const String kSignInCanceledError = 'sign_in_canceled';
+
   /// The [MethodChannel] over which this class communicates.
   @visibleForTesting
   static const MethodChannel channel =

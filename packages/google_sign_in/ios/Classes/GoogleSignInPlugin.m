@@ -10,13 +10,25 @@
 // for more info.
 static NSString *const kClientIdKey = @"CLIENT_ID";
 
+// These error codes must match with ones declared on Android and Dart sides.
+static NSString *const kErrorReasonSignInRequired = @"sign_in_required";
+static NSString *const kErrorReasonSignInCanceled = @"sign_in_canceled";
+
 @interface NSError (FlutterError)
 @property(readonly, nonatomic) FlutterError *flutterError;
 @end
 
 @implementation NSError (FlutterError)
 - (FlutterError *)flutterError {
-  return [FlutterError errorWithCode:@"exception"
+  NSString *errorCode;
+  if (self.code == kGIDSignInErrorCodeHasNoAuthInKeychain) {
+    errorCode = kErrorReasonSignInRequired;
+  } else if (self.code == kGIDSignInErrorCodeCanceled) {
+    errorCode = kErrorReasonSignInCanceled;
+  } else {
+    errorCode = @"exception";
+  }
+  return [FlutterError errorWithCode:errorCode
                              message:self.domain
                              details:self.localizedDescription];
 }

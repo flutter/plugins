@@ -20,8 +20,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
@@ -162,6 +164,9 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     private static final String ERROR_REASON_EXCEPTION = "exception";
     private static final String ERROR_REASON_STATUS = "status";
     private static final String ERROR_REASON_CONNECTION_FAILED = "connection_failed";
+    // These error codes must match with ones declared on iOS and Dart sides.
+    private static final String ERROR_REASON_SIGN_IN_CANCELED = "sign_in_canceled";
+    private static final String ERROR_REASON_SIGN_IN_REQUIRED = "sign_in_required";
 
     private static final String STATE_RESOLVING_ERROR = "resolving_error";
 
@@ -383,9 +388,20 @@ public class GoogleSignInPlugin implements MethodCallHandler {
           response.put("photoUrl", account.getPhotoUrl().toString());
         }
         finishWithSuccess(response);
-      } else {
+      }else {
         // Forward all errors and let Dart side decide how to handle.
-        finishWithError(ERROR_REASON_STATUS, result.getStatus().toString());
+        int errorCode = errorCodeForStatus(result.getStatus().getStatusCode());
+        finishWithError(errorCode, result.getStatus().toString());
+      }
+    }
+
+    private String errorCodeForStatus(int statusCode) {
+      if (statusCode == GoogleSignInStatusCodes.SIGN_IN_CANCELLED) {
+        return ERROR_REASON_SIGN_IN_CANCELED;
+      } else if (statusCode == CommonStatusCodes.SIGN_IN_REQUIRED) {
+        return ERROR_REASON_SIGN_IN_REQUIRED;
+      } else {
+        return ERROR_REASON_STATUS;
       }
     }
 
