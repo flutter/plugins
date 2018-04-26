@@ -388,7 +388,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
           response.put("photoUrl", account.getPhotoUrl().toString());
         }
         finishWithSuccess(response);
-      }else {
+      } else {
         // Forward all errors and let Dart side decide how to handle.
         String errorCode = errorCodeForStatus(result.getStatus().getStatusCode());
         finishWithError(errorCode, result.getStatus().toString());
