@@ -1,6 +1,6 @@
 ## 0.3.1
 
-* Added support for StorageReference functions: 'getParent', 'getRoot', 'getStorage', 'getName', 'getPath', 'getBucket'.
+* Added support for StorageReference functions: `getParent`, `getRoot`, `getStorage`, `getName`, `getPath`, `getBucket`.
 
 ## 0.3.0
 

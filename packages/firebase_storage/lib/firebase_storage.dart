@@ -32,23 +32,23 @@ class StorageReference {
     return new StorageReference._(childPath, _firebaseStorage);
   }
 
-  ///  Returns a new instance of [StorageReference] pointing to the parent
-  ///  location or null if this instance references the root location.
+  /// Returns a new instance of [StorageReference] pointing to the parent
+  /// location or null if this instance references the root location.
   StorageReference getParent() {
-    if(_pathComponents.isEmpty ||
-       _pathComponents.every((String e) => e.isEmpty)) {
+    if (_pathComponents.isEmpty ||
+        _pathComponents.every((String e) => e.isEmpty)) {
       return null;
     }
 
+    final List<String> parentPath = new List<String>.from(_pathComponents);
     // Trim for trailing empty path components that can
     // come from trailing slashes in the path.
-    while(_pathComponents.last.isEmpty) {
-      _pathComponents.removeLast();
+    while (parentPath.last.isEmpty) {
+      parentPath.removeLast();
     }
+    parentPath.removeLast();
 
-    return new StorageReference._(
-        new List<String>.from(_pathComponents)..removeLast(),
-        _firebaseStorage);
+    return new StorageReference._(parentPath, _firebaseStorage);
   }
 
   /// Returns a new instance of [StorageReference] pointing to the root location.
