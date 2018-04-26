@@ -19,6 +19,10 @@ class FirebasePerformance {
       : _channel = platformChannel;
 
   /// Determines whether performance monitoring is enabled or disabled.
+  ///
+  /// true if performance monitoring is enabled and false if performance
+  /// monitoring is disabled. This is for dynamic enable/disable state. This
+  /// does not reflect whether instrumentation is enabled/disabled.
   Future<bool> isPerformanceCollectionEnabled() async {
     final bool isEnabled = await _channel
         .invokeMethod('FirebasePerformance#isPerformanceCollectionEnabled');
@@ -26,11 +30,17 @@ class FirebasePerformance {
   }
 
   /// Enables or disables performance monitoring.
-  Future<Null> setPerformanceCollectionEnabled(bool enabled) async {
+  ///
+  /// Enables or disables performance monitoring. This setting is persisted and
+  /// applied on future invocations of your application. By default, performance
+  /// monitoring is enabled.
+  ///
+  /// [enable]: Should performance monitoring be enabled
+  Future<Null> setPerformanceCollectionEnabled(bool enable) async {
     await _channel.invokeMethod(
-        'FirebasePerformance#setPerformanceCollectionEnabled', enabled);
+        'FirebasePerformance#setPerformanceCollectionEnabled', enable);
   }
-
+  
   Future<Null> _traceStart(Trace trace) async {
     await _channel.invokeMethod('Trace#start', trace._id);
   }
@@ -47,6 +57,10 @@ class FirebasePerformance {
   }
 
   /// Creates a [Trace] object with given [name].
+  ///
+  /// [name]: name of the trace. Requires no leading or trailing whitespace, no
+  /// leading underscore [_] character, max length of [Trace.maxTraceNameLength]
+  /// characters.
   Future<Trace> newTrace(String name) async {
     final int id =
         await _channel.invokeMethod('FirebasePerformance#newTrace', name);
@@ -54,6 +68,10 @@ class FirebasePerformance {
   }
 
   /// Creates a [Trace] object with given [name] and start the trace.
+  ///
+  /// [name]: name of the trace. Requires no leading or trailing whitespace, no
+  /// leading underscore [_] character, max length of [Trace.maxTraceNameLength]
+  /// characters.
   Future<Trace> startTrace(String name) async {
     final Trace trace = await newTrace(name);
     await trace.start();
