@@ -125,6 +125,15 @@ class StorageReference {
     );
   }
 
+  /// Asynchronously downloads the object at this [StorageReference] to a
+  /// specified system file.
+  StorageFileDownloadTask writeToFile(File file) {
+    final StorageFileDownloadTask task =
+        new StorageFileDownloadTask._(_pathComponents.join("/"), file);
+    task._start();
+    return task;
+  }
+
   /// Asynchronously retrieves a long lived download URL with a revokable token.
   /// This can be used to share the file with others, but can be revoked by a
   /// developer in the Firebase Console if desired.
@@ -245,6 +254,29 @@ class StorageMetadata {
   final String contentType;
 }
 
+class StorageFileDownloadTask {
+  final String _path;
+  final File _file;
+
+  StorageFileDownloadTask._(this._path, this._file);
+
+  Future<void> _start() async {
+    final int totalByteCount = await FirebaseStorage.channel.invokeMethod(
+      "StorageReference#writeToFile",
+      <String, dynamic>{
+        'filePath': _file.absolute.path,
+        'path': _path,
+      },
+    );
+    _completer
+        .complete(new FileDownloadTaskSnapshot(totalByteCount: totalByteCount));
+  }
+
+  Completer<FileDownloadTaskSnapshot> _completer =
+      new Completer<FileDownloadTaskSnapshot>();
+  Future<FileDownloadTaskSnapshot> get future => _completer.future;
+}
+
 abstract class StorageUploadTask {
   final String _path;
   final StorageMetadata _metadata;
@@ -312,4 +344,9 @@ Map<String, dynamic> _buildMetadataUploadMap(StorageMetadata metadata) {
 class UploadTaskSnapshot {
   UploadTaskSnapshot({this.downloadUrl});
   final Uri downloadUrl;
+}
+
+class FileDownloadTaskSnapshot {
+  FileDownloadTaskSnapshot({this.totalByteCount});
+  final int totalByteCount;
 }

@@ -10,6 +10,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
@@ -70,6 +71,9 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
         break;
       case "StorageReference#updateMetadata":
         updateMetadata(call, result);
+        break;
+      case "StorageReference#writeToFile":
+        writeToFile(call, result);
         break;
       default:
         result.notImplemented();
@@ -261,6 +265,28 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
           @Override
           public void onSuccess(byte[] bytes) {
             result.success(bytes);
+          }
+        });
+    downloadTask.addOnFailureListener(
+        new OnFailureListener() {
+          @Override
+          public void onFailure(@NonNull Exception e) {
+            result.error("download_error", e.getMessage(), null);
+          }
+        });
+  }
+
+  private void writeToFile(MethodCall call, final Result result) {
+    String path = call.argument("path");
+    String filePath = call.argument("filePath");
+    File file = new File(filePath);
+    StorageReference ref = firebaseStorage.getReference().child(path);
+    FileDownloadTask downloadTask = ref.getFile(file);
+    downloadTask.addOnSuccessListener(
+        new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+          @Override
+          public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+            result.success(taskSnapshot.getTotalByteCount());
           }
         });
     downloadTask.addOnFailureListener(
