@@ -40,7 +40,7 @@ class FirebasePerformance {
     await _channel.invokeMethod(
         'FirebasePerformance#setPerformanceCollectionEnabled', enable);
   }
-  
+
   Future<Null> _traceStart(Trace trace) async {
     await _channel.invokeMethod('Trace#start', trace._id);
   }
