@@ -1,7 +1,6 @@
 package io.flutter.plugins.firebaseperformanceexample;
 
 import android.os.Bundle;
-
 import io.flutter.app.FlutterActivity;
 import io.flutter.plugins.GeneratedPluginRegistrant;
 
