@@ -5,7 +5,7 @@
 import 'dart:async';
 import 'dart:ui' show hashValues;
 
-import 'package:flutter/services.dart' show MethodChannel;
+import 'package:flutter/services.dart' show MethodChannel, PlatformException;
 import 'package:meta/meta.dart' show visibleForTesting;
 
 import 'src/common.dart';
@@ -118,6 +118,9 @@ class GoogleSignIn {
   /// Error code indicating that interactive sign in process was canceled by the
   /// user.
   static const String kSignInCanceledError = 'sign_in_canceled';
+
+  /// Error code indicating that attempt to sign in failed.
+  static const String kSignInFailedError = 'sign_in_failed';
 
   /// The [MethodChannel] over which this class communicates.
   @visibleForTesting
@@ -233,8 +236,10 @@ class GoogleSignIn {
   ///
   /// Re-authentication can be triggered only after [signOut] or [disconnect].
   ///
-  /// If [suppressErrors] is set to `false` then returned Future may complete
-  /// with an error.
+  /// When [suppressErrors] is set to `false` returned Future completes with
+  /// [PlatformException] whose `code` can be either [kSignInRequiredError]
+  /// (when there is no authenticated user) or [kSignInFailedError] (when an
+  /// unknown error occurred).
   Future<GoogleSignInAccount> signInSilently({bool suppressErrors: true}) {
     final Future<GoogleSignInAccount> result = _addMethodCall('signInSilently');
     if (suppressErrors) {
@@ -253,14 +258,26 @@ class GoogleSignIn {
   /// Starts the interactive sign-in process.
   ///
   /// Returned Future resolves to an instance of [GoogleSignInAccount] for a
-  /// successful sign in or `null` in case sign in process was aborted.
+  /// successful sign in. When [suppressErrors] is `true` (default) returned
+  /// Future resolves to `null` in case sign in process was aborted.
+  ///
+  /// When [suppressErrors] is set to `false` returned Future completes with
+  /// [PlatformException] whose `code` can be either [kSignInCanceledError]
+  /// (when user canceled sign in process) or [kSignInFailedError] (when an
+  /// unknown error occurred).
   ///
   /// Authentication process is triggered only if there is no currently signed in
   /// user (that is when `currentUser == null`), otherwise this method returns
   /// a Future which resolves to the same user instance.
   ///
   /// Re-authentication can be triggered only after [signOut] or [disconnect].
-  Future<GoogleSignInAccount> signIn() => _addMethodCall('signIn');
+  Future<GoogleSignInAccount> signIn({bool suppressErrors: true}) {
+    final Future<GoogleSignInAccount> result = _addMethodCall('signIn');
+    if (suppressErrors) {
+      return result.catchError((dynamic _) => null);
+    }
+    return result;
+  }
 
   /// Marks current user as being in the signed out state.
   Future<GoogleSignInAccount> signOut() => _addMethodCall('signOut');
