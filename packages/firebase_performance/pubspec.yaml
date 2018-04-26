@@ -18,3 +18,7 @@ flutter:
   plugin:
     androidPackage: io.flutter.plugins.firebaseperformance
     pluginClass: FirebasePerformancePlugin
+
+environment:
+  sdk: ">=2.0.0-dev.28.0 <3.0.0"
+  flutter: ">=0.1.4 <2.0.0"
