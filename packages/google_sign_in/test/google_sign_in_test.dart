@@ -22,15 +22,13 @@ void main() {
       "displayName": "John Doe",
     };
 
-    const bool kIsSignedIn = true;
-
     const Map<String, dynamic> kDefaultResponses = const <String, dynamic>{
       'init': null,
       'signInSilently': kUserData,
       'signIn': kUserData,
       'signOut': null,
       'disconnect': null,
-      'isSignedIn': kIsSignedIn,
+      'isSignedIn': true,
     };
 
     final List<MethodCall> log = <MethodCall>[];
