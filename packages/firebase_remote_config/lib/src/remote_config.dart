@@ -14,8 +14,6 @@ class RemoteConfig extends ChangeNotifier {
   static const double defaultValueForDouble = 0.0;
   static const bool defaultValueForBool = false;
 
-  static RemoteConfig _instance;
-
   Map<String, RemoteConfigValue> _parameters;
 
   DateTime _lastFetchTime;
@@ -43,18 +41,18 @@ class RemoteConfig extends ChangeNotifier {
     final Map<dynamic, dynamic> properties =
         await channel.invokeMethod('RemoteConfig#instance');
 
-    _instance = new RemoteConfig._();
+    final RemoteConfig instance = new RemoteConfig._();
 
-    _instance._lastFetchTime =
+    instance._lastFetchTime =
         new DateTime.fromMillisecondsSinceEpoch(properties['lastFetchTime']);
-    _instance._lastFetchStatus =
+    instance._lastFetchStatus =
         _parseLastFetchStatus(properties['lastFetchStatus']);
     final RemoteConfigSettings remoteConfigSettings =
         new RemoteConfigSettings(debugMode: properties['inDebugMode']);
-    _instance._remoteConfigSettings = remoteConfigSettings;
-    _instance._parameters =
+    instance._remoteConfigSettings = remoteConfigSettings;
+    instance._parameters =
         _parseRemoteConfigParameters(parameters: properties['parameters']);
-    _instanceCompleter.complete(_instance);
+    _instanceCompleter.complete(instance);
   }
 
   static Map<String, RemoteConfigValue> _parseRemoteConfigParameters(
