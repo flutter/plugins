@@ -1,5 +1,7 @@
 #import "FirebaseDynamicLinksPlugin.h"
 
+#import "Firebase/Firebase.h"
+
 @implementation FirebaseDynamicLinksPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   FlutterMethodChannel* channel = [FlutterMethodChannel
@@ -7,6 +9,16 @@
             binaryMessenger:[registrar messenger]];
   FirebaseDynamicLinksPlugin* instance = [[FirebaseDynamicLinksPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
+}
+
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    if (![FIRApp defaultApp]) {
+      [FIRApp configure];
+    }
+  }
+  return self;
 }
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
