@@ -211,14 +211,15 @@
       });
     return;
   }
-    if (_videoWriterInput.readyForMoreMediaData) {
-        if (![_videoWriterInput appendSampleBuffer:sampleBuffer]) {
-            _eventSink(@{
-                         @"event" : @"error",
-                         @"errorDescription" : [NSString stringWithFormat:@"%@", @"Unable to write to video input"]
-                         });
-        }
+  if (_videoWriterInput.readyForMoreMediaData) {
+    if (![_videoWriterInput appendSampleBuffer:sampleBuffer]) {
+      _eventSink(@{
+        @"event" : @"error",
+        @"errorDescription" :
+            [NSString stringWithFormat:@"%@", @"Unable to write to video input"]
+      });
     }
+  }
 }
 
 - (void)newAudioSample:(CMSampleBufferRef)sampleBuffer {
@@ -230,14 +231,15 @@
       });
     return;
   }
-    if (_audioWriterInput.readyForMoreMediaData) {
-        if (![_audioWriterInput appendSampleBuffer:sampleBuffer]) {
-            _eventSink(@{
-                         @"event" : @"error",
-                         @"errorDescription" : [NSString stringWithFormat:@"%@", @"Unable to write to audio input"]
-                         });
-        }
+  if (_audioWriterInput.readyForMoreMediaData) {
+    if (![_audioWriterInput appendSampleBuffer:sampleBuffer]) {
+      _eventSink(@{
+        @"event" : @"error",
+        @"errorDescription" :
+            [NSString stringWithFormat:@"%@", @"Unable to write to audio input"]
+      });
     }
+  }
 }
 
 - (void)close {
@@ -293,21 +295,23 @@
     _isRecording = NO;
     if (_videoWriter.status != AVAssetWriterStatusUnknown) {
       [_videoWriter finishWritingWithCompletionHandler:^{
-          if (self->_videoWriter.status == AVAssetWriterStatusCompleted) {
-              result(nil);
-          }
-          else
-          {
-              self->_eventSink(@{@"event" : @"error", @"errorDescription" : @"AVAssetWriter could not finish writing!"});
-          }
+        if (self->_videoWriter.status == AVAssetWriterStatusCompleted) {
+          result(nil);
+        } else {
+          self->_eventSink(@{
+            @"event" : @"error",
+            @"errorDescription" : @"AVAssetWriter could not finish writing!"
+          });
+        }
       }];
     }
+  } else {
+    NSError *error =
+        [NSError errorWithDomain:NSCocoaErrorDomain
+                            code:NSURLErrorResourceUnavailable
+                        userInfo:@{NSLocalizedDescriptionKey : @"Video is not recording!"}];
+    result([error flutterError]);
   }
-    else
-    {
-        NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain code:NSURLErrorResourceUnavailable userInfo:@{NSLocalizedDescriptionKey:@"Video is not recording!"}];
-        result([error flutterError]);
-    }
 }
 
 - (BOOL)setupWriterForPath:(NSString *)path {
@@ -369,12 +373,9 @@
   AVCaptureDevice *audioDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeAudio];
   AVCaptureDeviceInput *audioInput =
       [AVCaptureDeviceInput deviceInputWithDevice:audioDevice error:&error];
-    if (error) {
-        _eventSink(@{
-                     @"event" : @"error",
-                     @"errorDescription" : error.description
-                     });
-    }
+  if (error) {
+    _eventSink(@{@"event" : @"error", @"errorDescription" : error.description});
+  }
   // Setup the audio output.
   _audioOutput = [[AVCaptureAudioDataOutput alloc] init];
 
@@ -484,7 +485,6 @@
   } else {
     NSDictionary *argsMap = call.arguments;
     NSUInteger textureId = ((NSNumber *)argsMap[@"textureId"]).unsignedIntegerValue;
-    
 
     if ([@"takePicture" isEqualToString:call.method]) {
       [_camera captureToFile:call.arguments[@"path"] result:result];
