@@ -22,6 +22,7 @@ The plugins are still under development, and some APIs might not be available ye
 | [cloud_firestore][firestore_pub] | [Cloud Firestore][firestore_product] | [`packages/cloud_firestore`][firestore_code] |
 | [firebase_messaging][messaging_pub] | [Firebase Cloud Messaging][messaging_product] | [`packages/firebase_messaging`][messaging_code] |
 | [firebase_storage][storage_pub] | [Firebase Cloud Storage][storage_product] | [`packages/firebase_storage`][storage_code] |
+| [firebase_performance][storage_pub] | [Firebase Performance Monitoring][performance_product] | [`packages/firebase_performance`][performance_code] |
 
 [admob_pub]: https://pub.dartlang.org/packages/firebase_admob
 [admob_product]: https://firebase.google.com/docs/admob/
@@ -54,3 +55,7 @@ The plugins are still under development, and some APIs might not be available ye
 [storage_pub]: https://pub.dartlang.org/packages/firebase_storage
 [storage_product]: https://firebase.google.com/products/storage/
 [storage_code]: https://github.com/flutter/plugins/tree/master/packages/firebase_storage
+
+[performance_pub]: https://pub.dartlang.org/packages/firebase_performance
+[performance_product]: https://firebase.google.com/products/performance/
+[performance_code]: https://github.com/flutter/plugins/tree/master/packages/firebase_performance
