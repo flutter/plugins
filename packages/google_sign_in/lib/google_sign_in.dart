@@ -236,10 +236,10 @@ class GoogleSignIn {
   ///
   /// Re-authentication can be triggered only after [signOut] or [disconnect].
   ///
-  /// When [suppressErrors] is set to `false` returned Future completes with
-  /// [PlatformException] whose `code` can be either [kSignInRequiredError]
-  /// (when there is no authenticated user) or [kSignInFailedError] (when an
-  /// unknown error occurred).
+  /// When [suppressErrors] is set to `false` and an error occurred during sign in
+  /// returned Future completes with [PlatformException] whose `code` can be
+  /// either [kSignInRequiredError] (when there is no authenticated user) or
+  /// [kSignInFailedError] (when an unknown error occurred).
   Future<GoogleSignInAccount> signInSilently({bool suppressErrors: true}) {
     final Future<GoogleSignInAccount> result = _addMethodCall('signInSilently');
     if (suppressErrors) {
@@ -258,25 +258,18 @@ class GoogleSignIn {
   /// Starts the interactive sign-in process.
   ///
   /// Returned Future resolves to an instance of [GoogleSignInAccount] for a
-  /// successful sign in. When [suppressErrors] is `true` (default) returned
-  /// Future resolves to `null` in case sign in process was aborted.
-  ///
-  /// When [suppressErrors] is set to `false` returned Future completes with
-  /// [PlatformException] whose `code` can be either [kSignInCanceledError]
-  /// (when user canceled sign in process) or [kSignInFailedError] (when an
-  /// unknown error occurred).
+  /// successful sign in or `null` in case sign in process was aborted.
   ///
   /// Authentication process is triggered only if there is no currently signed in
   /// user (that is when `currentUser == null`), otherwise this method returns
   /// a Future which resolves to the same user instance.
   ///
   /// Re-authentication can be triggered only after [signOut] or [disconnect].
-  Future<GoogleSignInAccount> signIn({bool suppressErrors: true}) {
+  Future<GoogleSignInAccount> signIn() {
     final Future<GoogleSignInAccount> result = _addMethodCall('signIn');
-    if (suppressErrors) {
-      return result.catchError((dynamic _) => null);
-    }
-    return result;
+    bool isCanceled(dynamic error) =>
+        error is PlatformException && error.code == kSignInCanceledError;
+    return result.catchError((dynamic _) => null, test: isCanceled);
   }
 
   /// Marks current user as being in the signed out state.
