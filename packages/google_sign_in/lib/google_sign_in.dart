@@ -5,7 +5,7 @@
 import 'dart:async';
 import 'dart:ui' show hashValues;
 
-import 'package:flutter/services.dart' show MethodChannel;
+import 'package:flutter/services.dart' show MethodChannel, PlatformException;
 import 'package:meta/meta.dart' show visibleForTesting;
 
 import 'src/common.dart';
@@ -109,6 +109,19 @@ class GoogleSignInAccount implements GoogleIdentity {
 
 /// GoogleSignIn allows you to authenticate Google users.
 class GoogleSignIn {
+  // These error codes must match with ones declared on Android and iOS sides.
+
+  /// Error code indicating there is no signed in user and interactive sign in
+  /// flow is required.
+  static const String kSignInRequiredError = 'sign_in_required';
+
+  /// Error code indicating that interactive sign in process was canceled by the
+  /// user.
+  static const String kSignInCanceledError = 'sign_in_canceled';
+
+  /// Error code indicating that attempt to sign in failed.
+  static const String kSignInFailedError = 'sign_in_failed';
+
   /// The [MethodChannel] over which this class communicates.
   @visibleForTesting
   static const MethodChannel channel =
@@ -142,17 +155,8 @@ class GoogleSignIn {
   Future<void> _initialization;
 
   Future<GoogleSignInAccount> _callMethod(String method) async {
-    if (_initialization == null) {
-      _initialization = channel.invokeMethod("init", <String, dynamic>{
-        'scopes': scopes ?? <String>[],
-        'hostedDomain': hostedDomain,
-      })
-        ..catchError((dynamic _) {
-          // Invalidate initialization if it errored out.
-          _initialization = null;
-        });
-    }
-    await _initialization;
+    await _ensureInitialized();
+
     final Map<dynamic, dynamic> response = await channel.invokeMethod(method);
     return _setCurrentUser(response != null && response.isNotEmpty
         ? new GoogleSignInAccount._(this, response)
@@ -165,6 +169,20 @@ class GoogleSignIn {
       _currentUserController.add(_currentUser);
     }
     return _currentUser;
+  }
+
+  Future<void> _ensureInitialized() {
+    if (_initialization == null) {
+      _initialization = channel.invokeMethod("init", <String, dynamic>{
+        'scopes': scopes ?? <String>[],
+        'hostedDomain': hostedDomain,
+      })
+        ..catchError((dynamic _) {
+          // Invalidate initialization if it errored out.
+          _initialization = null;
+        });
+    }
+    return _initialization;
   }
 
   /// Keeps track of the most recently scheduled method call.
@@ -217,11 +235,24 @@ class GoogleSignIn {
   /// a Future which resolves to the same user instance.
   ///
   /// Re-authentication can be triggered only after [signOut] or [disconnect].
-  Future<GoogleSignInAccount> signInSilently() {
-    return _addMethodCall('signInSilently').catchError((dynamic _) {
-      // ignore, we promised to be silent.
-      // TODO(goderbauer): revisit when the native side throws less aggressively.
-    });
+  ///
+  /// When [suppressErrors] is set to `false` and an error occurred during sign in
+  /// returned Future completes with [PlatformException] whose `code` can be
+  /// either [kSignInRequiredError] (when there is no authenticated user) or
+  /// [kSignInFailedError] (when an unknown error occurred).
+  Future<GoogleSignInAccount> signInSilently({bool suppressErrors: true}) {
+    final Future<GoogleSignInAccount> result = _addMethodCall('signInSilently');
+    if (suppressErrors) {
+      return result.catchError((dynamic _) => null);
+    }
+    return result;
+  }
+
+  /// Returns a future that resolves to whether a user is currently signed in.
+  Future<bool> isSignedIn() async {
+    await _ensureInitialized();
+    final bool result = await channel.invokeMethod('isSignedIn');
+    return result;
   }
 
   /// Starts the interactive sign-in process.
@@ -234,7 +265,12 @@ class GoogleSignIn {
   /// a Future which resolves to the same user instance.
   ///
   /// Re-authentication can be triggered only after [signOut] or [disconnect].
-  Future<GoogleSignInAccount> signIn() => _addMethodCall('signIn');
+  Future<GoogleSignInAccount> signIn() {
+    final Future<GoogleSignInAccount> result = _addMethodCall('signIn');
+    bool isCanceled(dynamic error) =>
+        error is PlatformException && error.code == kSignInCanceledError;
+    return result.catchError((dynamic _) => null, test: isCanceled);
+  }
 
   /// Marks current user as being in the signed out state.
   Future<GoogleSignInAccount> signOut() => _addMethodCall('signOut');
