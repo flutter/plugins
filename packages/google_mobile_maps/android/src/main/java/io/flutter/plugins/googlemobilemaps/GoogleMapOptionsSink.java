@@ -10,13 +10,22 @@ import com.google.android.gms.maps.model.LatLngBounds;
 /** Receiver of GoogleMap configuration options. */
 interface GoogleMapOptionsSink {
   void setCameraPosition(CameraPosition position);
+
   void setLatLngBoundsForCameraTarget(LatLngBounds bounds);
+
   void setCompassEnabled(boolean compassEnabled);
+
   void setMapType(int mapType);
+
   void setCameraMoveEvents(boolean started, boolean move, boolean idle);
+
   void setRotateGesturesEnabled(boolean rotateGesturesEnabled);
+
   void setScrollGesturesEnabled(boolean scrollGesturesEnabled);
+
   void setTiltGesturesEnabled(boolean tiltGesturesEnabled);
+
   void setMinMaxZoomPreference(Float min, Float max);
+
   void setZoomGesturesEnabled(boolean zoomGesturesEnabled);
 }

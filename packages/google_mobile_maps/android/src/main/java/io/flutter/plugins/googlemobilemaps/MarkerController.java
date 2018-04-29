@@ -14,7 +14,8 @@ class MarkerController implements MarkerOptionsSink {
   private final OnMarkerTappedListener onTappedListener;
   private boolean consumesTapEvents;
 
-  MarkerController(Marker marker, boolean consumesTapEvents, OnMarkerTappedListener onTappedListener) {
+  MarkerController(
+      Marker marker, boolean consumesTapEvents, OnMarkerTappedListener onTappedListener) {
     this.marker = marker;
     this.consumesTapEvents = consumesTapEvents;
     this.onTappedListener = onTappedListener;
@@ -101,4 +102,3 @@ class MarkerController implements MarkerOptionsSink {
     marker.setZIndex(zIndex);
   }
 }
-

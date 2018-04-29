@@ -28,7 +28,6 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.view.TextureRegistry;
@@ -39,7 +38,6 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
-
 
 /** Controller of a single GoogleMaps MapView instance. */
 final class GoogleMapController
@@ -173,7 +171,8 @@ final class GoogleMapController
 
   Marker addMarker(MarkerOptions markerOptions, boolean consumesTapEvents) {
     final Marker marker = googleMap.addMarker(markerOptions);
-    markers.put(marker.getId(), new MarkerController(marker, consumesTapEvents, onMarkerTappedListener));
+    markers.put(
+        marker.getId(), new MarkerController(marker, consumesTapEvents, onMarkerTappedListener));
     return marker;
   }
 

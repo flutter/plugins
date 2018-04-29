@@ -7,11 +7,9 @@ package io.flutter.plugins.googlemobilemaps;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLngBounds;
-
-import java.util.concurrent.atomic.AtomicInteger;
-
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
+import java.util.concurrent.atomic.AtomicInteger;
 
 class GoogleMapBuilder implements GoogleMapOptionsSink {
   private final GoogleMapOptions options = new GoogleMapOptions();
@@ -19,8 +17,12 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   private boolean fireOnCameraMove = false;
   private boolean fireOnCameraIdle = false;
 
-  GoogleMapController build(AtomicInteger state, PluginRegistry.Registrar registrar, int width,
-                            int height, MethodChannel.Result result) {
+  GoogleMapController build(
+      AtomicInteger state,
+      PluginRegistry.Registrar registrar,
+      int width,
+      int height,
+      MethodChannel.Result result) {
     final GoogleMapController controller =
         new GoogleMapController(state, registrar, width, height, options, result);
     controller.init();

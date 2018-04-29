@@ -8,6 +8,8 @@ import com.google.android.gms.maps.model.CameraPosition;
 
 interface OnCameraMoveListener {
   void onCameraMoveStarted(int reason);
+
   void onCameraMove(CameraPosition newPosition);
+
   void onCameraIdle();
 }

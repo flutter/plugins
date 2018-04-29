@@ -7,26 +7,22 @@ package io.flutter.plugins.googlemobilemaps;
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
-
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Marker;
-
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * Plugin for controlling GoogleMap views.
- */
-public class GoogleMobileMapsPlugin implements MethodCallHandler, Application.ActivityLifecycleCallbacks {
+/** Plugin for controlling GoogleMap views. */
+public class GoogleMobileMapsPlugin
+    implements MethodCallHandler, Application.ActivityLifecycleCallbacks {
   static final int CREATED = 1;
   static final int STARTED = 2;
   static final int RESUMED = 3;
@@ -40,7 +36,7 @@ public class GoogleMobileMapsPlugin implements MethodCallHandler, Application.Ac
 
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel =
-            new MethodChannel(registrar.messenger(), "plugins.flutter.io/google_mobile_maps");
+        new MethodChannel(registrar.messenger(), "plugins.flutter.io/google_mobile_maps");
     final GoogleMobileMapsPlugin plugin = new GoogleMobileMapsPlugin(registrar, channel);
     channel.setMethodCallHandler(plugin);
     registrar.activity().getApplication().registerActivityLifecycleCallbacks(plugin);
@@ -70,39 +66,43 @@ public class GoogleMobileMapsPlugin implements MethodCallHandler, Application.Ac
           final Map<?, ?> options = Convert.toMap(call.argument("options"));
           final GoogleMapBuilder builder = new GoogleMapBuilder();
           Convert.interpretGoogleMapOptions(options, builder);
-          final GoogleMapController controller = builder.build(state, registrar, width, height, result);
+          final GoogleMapController controller =
+              builder.build(state, registrar, width, height, result);
           googleMaps.put(controller.id(), controller);
-          controller.setOnCameraMoveListener(new OnCameraMoveListener() {
-            @Override
-            public void onCameraMoveStarted(int reason) {
-              final Map<String, Object> arguments = new HashMap<>(2);
-              arguments.put("map", controller.id());
-              arguments.put("reason", reason);
-              channel.invokeMethod("map#onCameraMoveStarted", arguments);
-            }
+          controller.setOnCameraMoveListener(
+              new OnCameraMoveListener() {
+                @Override
+                public void onCameraMoveStarted(int reason) {
+                  final Map<String, Object> arguments = new HashMap<>(2);
+                  arguments.put("map", controller.id());
+                  arguments.put("reason", reason);
+                  channel.invokeMethod("map#onCameraMoveStarted", arguments);
+                }
 
-            @Override
-            public void onCameraMove(CameraPosition position) {
-              final Map<String, Object> arguments = new HashMap<>(2);
-              arguments.put("map", controller.id());
-              arguments.put("position", Convert.toJson(position));
-              channel.invokeMethod("map#onCameraMove", arguments);
-            }
+                @Override
+                public void onCameraMove(CameraPosition position) {
+                  final Map<String, Object> arguments = new HashMap<>(2);
+                  arguments.put("map", controller.id());
+                  arguments.put("position", Convert.toJson(position));
+                  channel.invokeMethod("map#onCameraMove", arguments);
+                }
 
-            @Override
-            public void onCameraIdle() {
-              channel.invokeMethod("map#onCameraIdle", Collections.singletonMap("map", controller.id()));
-            }
-          });
-          controller.setOnMarkerTappedListener(new OnMarkerTappedListener() {
-            @Override
-            public void markerTapped(Marker marker) {
-              final Map<String, Object> arguments = new HashMap<>(2);
-              arguments.put("map", controller.id());
-              arguments.put("marker", marker.getId());
-              channel.invokeMethod("marker#onTap", arguments);
-            }
-          });
+                @Override
+                public void onCameraIdle() {
+                  channel.invokeMethod(
+                      "map#onCameraIdle", Collections.singletonMap("map", controller.id()));
+                }
+              });
+          controller.setOnMarkerTappedListener(
+              new OnMarkerTappedListener() {
+                @Override
+                public void markerTapped(Marker marker) {
+                  final Map<String, Object> arguments = new HashMap<>(2);
+                  arguments.put("map", controller.id());
+                  arguments.put("marker", marker.getId());
+                  channel.invokeMethod("marker#onTap", arguments);
+                }
+              });
           // result.success is called from controller when the GoogleMaps instance is ready
           break;
         }
