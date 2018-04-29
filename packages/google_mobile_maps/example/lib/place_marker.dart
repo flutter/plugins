@@ -12,6 +12,7 @@ import 'page.dart';
 class PlaceMarkerPage extends Page {
   PlaceMarkerPage() : super(const Icon(Icons.place), "Place marker");
 
+  @override
   final GoogleMapOverlayController controller =
       new GoogleMapOverlayController.fromSize(
     width: 300.0,
@@ -23,10 +24,6 @@ class PlaceMarkerPage extends Page {
       ),
     ),
   );
-
-  @override
-  PlatformOverlayController get overlayController =>
-      controller.overlayController;
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +49,7 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
   @override
   void initState() {
     super.initState();
-    widget.controller.mapsController.onMarkerTapped = (Marker marker) {
+    widget.controller.mapController.onMarkerTapped.add((Marker marker) {
       if (_marker != null) {
         _marker
             .update(const MarkerOptions(icon: BitmapDescriptor.defaultMarker));
@@ -63,8 +60,8 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
       _marker.update(new MarkerOptions(
           icon: BitmapDescriptor
               .defaultMarkerWithHue(BitmapDescriptor.hueGreen)));
-    };
-    widget.controller.mapsController.addListener(() {
+    });
+    widget.controller.mapController.addListener(() {
       setState(() {
         // rebuild
       });
@@ -72,7 +69,7 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
   }
 
   void _add() {
-    widget.controller.mapsController.addMarker(new MarkerOptions(
+    widget.controller.mapController.addMarker(new MarkerOptions(
       position: new LatLng(
         center.latitude + sin(_markerCount * pi / 6.0) / 20.0,
         center.longitude + cos(_markerCount * pi / 6.0) / 20.0,

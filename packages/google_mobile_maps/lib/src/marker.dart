@@ -8,6 +8,9 @@ part of google_mobile_maps;
 /// drawn oriented against the device's screen rather than the map's surface;
 /// that is, it will not necessarily change orientation due to map rotations,
 /// tilting, or zooming.
+///
+/// Markers are owned by a single [GoogleMapController] which fires change
+/// events when markers are added, updated, or removed.
 class Marker {
   Marker._(this._mapController, this.id, this._options);
 
@@ -23,6 +26,10 @@ class Marker {
     return _mapController._updateMarker(this, changes);
   }
 
+  /// The configuration options most recently applied programmatically.
+  ///
+  /// The returned value does not reflect any changes made to the marker through
+  /// touch events. Add listeners to track those.
   MarkerOptions get options => _options;
 }
 

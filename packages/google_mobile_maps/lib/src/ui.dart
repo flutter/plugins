@@ -44,7 +44,8 @@ class LatLngCameraTargetBounds {
   /// The current bounds or null, if the camera target is unbounded.
   final LatLngBounds bounds;
 
-  static const LatLngCameraTargetBounds unbounded = const LatLngCameraTargetBounds(null);
+  static const LatLngCameraTargetBounds unbounded =
+      const LatLngCameraTargetBounds(null);
 
   dynamic _toJson() => <dynamic>[bounds?._toJson()];
 }

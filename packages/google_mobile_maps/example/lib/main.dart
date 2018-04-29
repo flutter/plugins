@@ -46,7 +46,7 @@ void main() {
   GoogleMapController.init();
   final List<NavigatorObserver> observers = <NavigatorObserver>[];
   for (Page p in _allPages) {
-    observers.add(p.overlayController);
+    observers.add(p.controller.overlayController);
   }
   runApp(new MaterialApp(home: new MapsDemo(), navigatorObservers: observers));
 }
