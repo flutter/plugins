@@ -35,10 +35,10 @@
     [self handleSetPerformanceCollectionEnabled:call result:result];
 
   } else if ([@"Trace#start" isEqualToString:call.method]) {
-    [self traceStart:call result:result];
+    [self handleTraceStart:call result:result];
 
   } else if ([@"Trace#stop" isEqualToString:call.method]) {
-    [self traceStop:call result:result];
+    [self handleTraceStop:call result:result];
 
   } else {
     result(FlutterMethodNotImplemented);
@@ -58,26 +58,21 @@
   result(nil);
 }
 
-- (void)traceStart:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)handleTraceStart:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSNumber *id = call.arguments[@"id"];
   NSString *name = call.arguments[@"name"];
 
   FIRTrace *trace = [[FIRPerformance sharedInstance] traceWithName:name];
 
   [_traces setObject:trace forKey:id];
-  [trace start];
 
+  [trace start];
   result(nil);
 }
 
-- (void)traceStop:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)handleTraceStop:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSNumber *id = call.arguments[@"id"];
   FIRTrace *trace = [_traces objectForKey:id];
-
-  if (trace == nil) {
-    result(nil);
-    return;
-  }
 
   NSDictionary *counters = call.arguments[@"counters"];
   [counters enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSNumber *value, BOOL *stop) {

@@ -40,10 +40,10 @@ public class FirebasePerformancePlugin implements MethodCallHandler {
         handleSetPerformanceCollectionEnabled(call, result);
         break;
       case "Trace#start":
-        traceStart(call, result);
+        handleTraceStart(call, result);
         break;
       case "Trace#stop":
-        traceStop(call, result);
+        handleTraceStop(call, result);
         break;
       default:
         result.notImplemented();
@@ -60,7 +60,7 @@ public class FirebasePerformancePlugin implements MethodCallHandler {
     result.success(null);
   }
 
-  private void traceStart(MethodCall call, Result result) {
+  private void handleTraceStart(MethodCall call, Result result) {
     Map<String, Object> arguments = call.arguments();
 
     int id = (int) arguments.get("id");
@@ -69,21 +69,16 @@ public class FirebasePerformancePlugin implements MethodCallHandler {
     Trace trace = firebasePerformance.newTrace(name);
 
     traces.put(id, trace);
-    trace.start();
 
+    trace.start();
     result.success(null);
   }
 
-  private void traceStop(MethodCall call, Result result) {
+  private void handleTraceStop(MethodCall call, Result result) {
     Map<String, Object> arguments = call.arguments();
 
     int id = (int) arguments.get("id");
     Trace trace = traces.get(id);
-
-    if (trace == null) {
-      result.success(null);
-      return;
-    }
 
     @SuppressWarnings("unchecked")
     Map<String, Integer> counters = (Map<String, Integer>) arguments.get("counters");

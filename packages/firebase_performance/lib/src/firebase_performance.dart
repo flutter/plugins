@@ -37,19 +37,19 @@ class FirebasePerformance {
   /// monitoring is enabled.
   ///
   /// [enable]: Should performance monitoring be enabled
-  Future<Null> setPerformanceCollectionEnabled(bool enable) async {
+  Future<void> setPerformanceCollectionEnabled(bool enable) async {
     await channel.invokeMethod(
         'FirebasePerformance#setPerformanceCollectionEnabled', enable);
   }
 
-  Future<Null> _traceStart(Trace trace) async {
+  Future<void> _traceStart(Trace trace) async {
     await channel.invokeMethod('Trace#start', <String, dynamic>{
       'id': trace.id,
       'name': trace.name,
     });
   }
 
-  Future<Null> _traceStop(Trace trace) async {
+  Future<void> _traceStop(Trace trace) async {
     final Map<String, dynamic> data = <String, dynamic>{
       'id': trace.id,
       'name': trace.name,

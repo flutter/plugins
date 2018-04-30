@@ -25,10 +25,10 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    isPerformanceCollectionEnabled();
+    _updatePerformanceCollectionEnabled();
   }
 
-  Future<void> isPerformanceCollectionEnabled() async {
+  Future<void> _updatePerformanceCollectionEnabled() async {
     String perfCollection;
 
     try {
@@ -42,19 +42,19 @@ class _MyAppState extends State<MyApp> {
       perfCollection = 'Failed to see status of performance collection.';
     }
 
-    if (!mounted) return new Future<void>.value(null);
+    if (!mounted) return;
 
     setState(() {
       _collectionEnabledString = perfCollection;
     });
   }
 
-  Future<void> togglePerformanceCollection() async {
+  Future<void> _togglePerformanceCollection() async {
     await performance.setPerformanceCollectionEnabled(!_collectionEnabled);
-    isPerformanceCollectionEnabled();
+    _updatePerformanceCollectionEnabled();
   }
 
-  Future<void> testTrace() async {
+  Future<void> _testTrace() async {
     final Trace trace = performance.newTrace("test");
     trace.incrementCounter("counter1", 16);
     trace.putAttribute("favorite_color", "blue");
@@ -86,16 +86,12 @@ class _MyAppState extends State<MyApp> {
           children: <Widget>[
             new Text(_collectionEnabledString),
             new RaisedButton(
-              onPressed: togglePerformanceCollection,
+              onPressed: _togglePerformanceCollection,
               child: const Text('Toggle Data Collection'),
-              color: Colors.blueAccent,
-              textColor: Colors.white,
             ),
             new RaisedButton(
-              onPressed: testTrace,
+              onPressed: _testTrace,
               child: const Text('Send Trace'),
-              color: Colors.blueAccent,
-              textColor: Colors.white,
             ),
             new Text(
               _message,

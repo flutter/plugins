@@ -45,13 +45,11 @@ void main() {
     });
 
     test('setPerformanceCollectionEnabled', () async {
-      bool enable = await performance.setPerformanceCollectionEnabled(true);
+      await performance.setPerformanceCollectionEnabled(true);
       performanceCollectionEnable = true;
-      expect(enable, null);
 
-      enable = await performance.setPerformanceCollectionEnabled(false);
+      await performance.setPerformanceCollectionEnabled(false);
       performanceCollectionEnable = false;
-      expect(enable, null);
 
       expect(log, <Matcher>[
         isMethodCall('FirebasePerformance#setPerformanceCollectionEnabled',
