@@ -55,7 +55,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> testTrace() async {
-    final Trace trace = await performance.newTrace("test");
+    final Trace trace = performance.newTrace("test");
     trace.incrementCounter("counter1", 16);
     trace.putAttribute("favorite_color", "blue");
 

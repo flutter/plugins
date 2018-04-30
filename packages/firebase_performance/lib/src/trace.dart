@@ -22,11 +22,11 @@ class Trace {
   static const int maxCounterKeyLength = 32;
 
   final FirebasePerformance _performance;
-
-  /// Id used to sync traces with device platform code.
-  final int _id;
   bool _hasStarted = false;
   bool _hasStopped = false;
+
+  /// Id used to sync traces with device platform code.
+  final int id;
 
   /// Name of this [Trace].
   final String name;
@@ -37,7 +37,7 @@ class Trace {
   /// Map of all the attributes added to this trace.
   final HashMap<String, String> attributes = new HashMap<String, String>();
 
-  Trace._(this._performance, this._id, this.name);
+  Trace._(this._performance, this.id, this.name);
 
   /// If start() has been called on this [Trace].
   bool get hasStarted => _hasStarted;

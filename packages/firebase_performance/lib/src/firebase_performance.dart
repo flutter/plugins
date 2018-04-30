@@ -44,14 +44,14 @@ class FirebasePerformance {
 
   Future<Null> _traceStart(Trace trace) async {
     await channel.invokeMethod('Trace#start', <String, dynamic>{
-      'id': trace._id,
+      'id': trace.id,
       'name': trace.name,
     });
   }
 
   Future<Null> _traceStop(Trace trace) async {
     final Map<String, dynamic> data = <String, dynamic>{
-      'id': trace._id,
+      'id': trace.id,
       'name': trace.name,
       'counters': trace.counters,
       'attributes': trace.attributes,

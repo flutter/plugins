@@ -2,60 +2,144 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:mockito/mockito.dart';
-import 'package:test/test.dart';
-
 import 'package:flutter/services.dart';
 
 import 'package:firebase_performance/firebase_performance.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('$FirebasePerformance', () {
-    FirebasePerformance performance;
-
-    String invokedMethod;
-    dynamic arguments;
+    final FirebasePerformance performance = FirebasePerformance.instance;
+    final List<MethodCall> log = <MethodCall>[];
+    bool performanceCollectionEnable = true;
 
     setUp(() {
-      final MockPlatformChannel mockChannel = new MockPlatformChannel();
-
-      when(mockChannel.invokeMethod(typed(any)))
-          .thenAnswer((Invocation invocation) {
-        invokedMethod = invocation.positionalArguments[0];
+      FirebasePerformance.channel
+          .setMockMethodCallHandler((MethodCall methodCall) async {
+        log.add(methodCall);
+        switch (methodCall.method) {
+          case 'FirebasePerformance#isPerformanceCollectionEnabled':
+            return performanceCollectionEnable;
+          case 'FirebasePerformance#setPerformanceCollectionEnabled':
+            performanceCollectionEnable = methodCall.arguments;
+            return null;
+          case 'Trace#start':
+            return null;
+          case 'Trace#stop':
+            return null;
+          default:
+            return null;
+        }
       });
-
-      when(mockChannel.invokeMethod(typed(any), any))
-          .thenAnswer((Invocation invocation) {
-        invokedMethod = invocation.positionalArguments[0];
-        arguments = invocation.positionalArguments[1];
-      });
-
-      performance = FirebasePerformance.private(mockChannel);
+      log.clear();
     });
 
     test('isPerformanceCollectionEnabled', () async {
-      await performance.isPerformanceCollectionEnabled();
-      expect(
-          invokedMethod, 'FirebasePerformance#isPerformanceCollectionEnabled');
+      final bool enabled = await performance.isPerformanceCollectionEnabled();
+
+      expect(performanceCollectionEnable, enabled);
+      expect(log, <Matcher>[
+        isMethodCall('FirebasePerformance#isPerformanceCollectionEnabled',
+            arguments: null)
+      ]);
     });
 
     test('setPerformanceCollectionEnabled', () async {
-      await performance.setPerformanceCollectionEnabled(true);
-      expect(
-          invokedMethod, 'FirebasePerformance#setPerformanceCollectionEnabled');
-      expect(arguments, true);
+      bool enable = await performance.setPerformanceCollectionEnabled(true);
+      performanceCollectionEnable = true;
+      expect(enable, null);
 
-      await performance.setPerformanceCollectionEnabled(false);
-      expect(
-          invokedMethod, 'FirebasePerformance#setPerformanceCollectionEnabled');
-      expect(arguments, false);
+      enable = await performance.setPerformanceCollectionEnabled(false);
+      performanceCollectionEnable = false;
+      expect(enable, null);
+
+      expect(log, <Matcher>[
+        isMethodCall('FirebasePerformance#setPerformanceCollectionEnabled',
+            arguments: true),
+        isMethodCall('FirebasePerformance#setPerformanceCollectionEnabled',
+            arguments: false)
+      ]);
+    });
+
+    test('newTrace', () {
+      final Trace trace = performance.newTrace('test-trace');
+      expect(trace.name, 'test-trace');
     });
 
     group('$Trace', () {
       Trace testTrace;
 
-      setUp(() async {
-        testTrace = await performance.newTrace('test');
+      setUp(() {
+        testTrace = performance.newTrace('test');
+      });
+
+      test('startTrace', () async {
+        final Trace trace = await performance.startTrace('startTrace-test');
+        expect(trace.name, 'startTrace-test');
+
+        expect(log, <Matcher>[
+          isMethodCall('Trace#start', arguments: <String, Object>{
+            'id': trace.id,
+            'name': 'startTrace-test',
+          })
+        ]);
+      });
+
+      test('start', () async {
+        final int ret = await testTrace.start();
+        expect(ret, null);
+        expect(log, <Matcher>[
+          isMethodCall('Trace#start', arguments: <String, Object>{
+            'id': testTrace.id,
+            'name': 'test',
+          })
+        ]);
+        expect(testTrace.hasStarted, true);
+      });
+
+      test('stop', () async {
+        testTrace.incrementCounter('counter1');
+        testTrace.putAttribute('attr1', 'apple');
+
+        int ret = await testTrace.start();
+        expect(ret, null);
+        ret = await testTrace.stop();
+        expect(ret, null);
+
+        expect(log, <Matcher>[
+          isMethodCall('Trace#start', arguments: <String, Object>{
+            'id': testTrace.id,
+            'name': 'test',
+          }),
+          isMethodCall('Trace#stop', arguments: <String, dynamic>{
+            'id': testTrace.id,
+            'name': 'test',
+            'counters': <String, int>{'counter1': 1},
+            'attributes': <String, String>{'attr1': 'apple'},
+          })
+        ]);
+        expect(testTrace.hasStarted, true);
+        expect(testTrace.hasStopped, true);
+      });
+
+      test('start and stop called in wrong order', () async {
+        Trace trace = performance.newTrace("test");
+        await trace.stop();
+        expect(trace.hasStarted, false);
+        expect(trace.hasStopped, false);
+
+        trace = performance.newTrace("test");
+        await trace.start();
+        await trace.start();
+        expect(trace.hasStarted, true);
+        expect(trace.hasStopped, false);
+
+        trace = performance.newTrace("test");
+        await trace.start();
+        await trace.stop();
+        await trace.stop();
+        expect(trace.hasStarted, true);
+        expect(trace.hasStopped, true);
       });
 
       test('incrementCounter', () async {
@@ -86,6 +170,7 @@ void main() {
           'counter3': 25,
         });
 
+        // Don't increment counters after trace has stopped.
         await testTrace.start();
         await testTrace.stop();
         testTrace.incrementCounter('counter3');
@@ -94,62 +179,6 @@ void main() {
           'counter2': 1,
           'counter3': 25,
         });
-      });
-
-      test('newTrace', () async {
-        await performance.newTrace('test-trace');
-        expect(invokedMethod, 'FirebasePerformance#newTrace');
-        expect(arguments, 'test-trace');
-      });
-
-      test('startTrace', () async {
-        await performance.startTrace('test-trace');
-        expect(invokedMethod, 'Trace#start');
-        expect(arguments, null);
-      });
-
-      test('start', () async {
-        await testTrace.start();
-        expect(invokedMethod, 'Trace#start');
-        expect(arguments, null);
-        expect(testTrace.hasStarted, true);
-      });
-
-      test('stop', () async {
-        testTrace.incrementCounter('counter1');
-        testTrace.putAttribute('attr1', 'apple');
-        await testTrace.start();
-        await testTrace.stop();
-
-        expect(invokedMethod, 'Trace#stop');
-        expect(arguments, <String, dynamic>{
-          'id': null,
-          'name': 'test',
-          'counters': <String, int>{'counter1': 1},
-          'attributes': <String, String>{'attr1': 'apple'},
-        });
-        expect(testTrace.hasStarted, true);
-        expect(testTrace.hasStopped, true);
-      });
-
-      test('start and stop called in wrong order', () async {
-        Trace trace = await performance.newTrace("test");
-        await trace.stop();
-        expect(trace.hasStarted, false);
-        expect(trace.hasStopped, false);
-
-        trace = await performance.newTrace("test");
-        await trace.start();
-        await trace.start();
-        expect(trace.hasStarted, true);
-        expect(trace.hasStopped, false);
-
-        trace = await performance.newTrace("test");
-        await trace.start();
-        await trace.stop();
-        await trace.stop();
-        expect(trace.hasStarted, true);
-        expect(trace.hasStopped, true);
       });
 
       test('putAttribute', () async {
@@ -207,5 +236,3 @@ void main() {
     });
   });
 }
-
-class MockPlatformChannel extends Mock implements MethodChannel {}
