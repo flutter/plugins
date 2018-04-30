@@ -62,10 +62,10 @@ class _MyHomePageState extends State<MyHomePage> {
     await tempFile.create();
     assert(await tempFile.readAsString() == "");
     final StorageFileDownloadTask task = ref.writeToFile(tempFile);
-    final int bytes = (await task.future).totalByteCount;
+    final int byteCount = (await task.future).totalByteCount;
     final String tempFileContents = await tempFile.readAsString();
     assert(tempFileContents == kTestString);
-    assert(bytes == kTestString.length);
+    assert(byteCount == kTestString.length);
 
     setState(() {
       _fileContents = downloadData.body;
