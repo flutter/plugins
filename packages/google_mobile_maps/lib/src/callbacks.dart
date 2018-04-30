@@ -29,8 +29,7 @@ class ArgumentCallbacks<T> {
 
   void add(ArgumentCallback<T> callback) {
     _callbacks.add(callback);
-    if (_onEmptyChanged != null && _callbacks.length == 1)
-      _onEmptyChanged();
+    if (_onEmptyChanged != null && _callbacks.length == 1) _onEmptyChanged();
   }
 
   void remove(ArgumentCallback<T> callback) {
