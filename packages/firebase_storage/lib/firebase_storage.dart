@@ -15,18 +15,50 @@ class FirebaseStorage {
   static FirebaseStorage get instance => new FirebaseStorage();
 
   StorageReference ref() {
-    return const StorageReference._(const <String>[]);
+    return new StorageReference._(const <String>[], this);
   }
 }
 
 class StorageReference {
-  const StorageReference._(this._pathComponents);
+  final FirebaseStorage _firebaseStorage;
+  const StorageReference._(this._pathComponents, this._firebaseStorage);
   final List<String> _pathComponents;
 
+  /// Returns a new instance of [StorageReference] pointing to a child
+  /// location of the current reference.
   StorageReference child(String path) {
     final List<String> childPath = new List<String>.from(_pathComponents)
       ..addAll(path.split("/"));
-    return new StorageReference._(childPath);
+    return new StorageReference._(childPath, _firebaseStorage);
+  }
+
+  /// Returns a new instance of [StorageReference] pointing to the parent
+  /// location or null if this instance references the root location.
+  StorageReference getParent() {
+    if (_pathComponents.isEmpty ||
+        _pathComponents.every((String e) => e.isEmpty)) {
+      return null;
+    }
+
+    final List<String> parentPath = new List<String>.from(_pathComponents);
+    // Trim for trailing empty path components that can
+    // come from trailing slashes in the path.
+    while (parentPath.last.isEmpty) {
+      parentPath.removeLast();
+    }
+    parentPath.removeLast();
+
+    return new StorageReference._(parentPath, _firebaseStorage);
+  }
+
+  /// Returns a new instance of [StorageReference] pointing to the root location.
+  StorageReference getRoot() {
+    return new StorageReference._(<String>[], _firebaseStorage);
+  }
+
+  /// Returns the [FirebaseStorage] service which created this reference.
+  FirebaseStorage getStorage() {
+    return _firebaseStorage;
   }
 
   /// This method is deprecated. Please use [putFile] instead.
@@ -56,6 +88,31 @@ class StorageReference {
     return task;
   }
 
+  /// Returns the Google Cloud Storage bucket that holds this object.
+  Future<String> getBucket() async {
+    return await FirebaseStorage.channel
+        .invokeMethod("StorageReference#getBucket", <String, String>{
+      'path': _pathComponents.join("/"),
+    });
+  }
+
+  /// Returns the full path to this object, not including the Google Cloud
+  /// Storage bucket.
+  Future<String> getPath() async {
+    return await FirebaseStorage.channel
+        .invokeMethod("StorageReference#getPath", <String, String>{
+      'path': _pathComponents.join("/"),
+    });
+  }
+
+  /// Returns the short name of this object.
+  Future<String> getName() async {
+    return await FirebaseStorage.channel
+        .invokeMethod("StorageReference#getName", <String, String>{
+      'path': _pathComponents.join("/"),
+    });
+  }
+
   /// Asynchronously downloads the object at the StorageReference to a list in memory.
   /// A list of the provided max size will be allocated.
   Future<Uint8List> getData(int maxSize) async {
@@ -68,6 +125,9 @@ class StorageReference {
     );
   }
 
+  /// Asynchronously retrieves a long lived download URL with a revokable token.
+  /// This can be used to share the file with others, but can be revoked by a
+  /// developer in the Firebase Console if desired.
   Future<dynamic> getDownloadURL() async {
     return await FirebaseStorage.channel
         .invokeMethod("StorageReference#getDownloadUrl", <String, String>{
