@@ -64,9 +64,7 @@ final class GoogleMapController
   private OnCameraMoveListener onCameraMoveListener;
   private GoogleMap googleMap;
   private Surface surface;
-  private boolean fireOnCameraMoveStarted = false;
-  private boolean fireOnCameraMove = false;
-  private boolean fireOnCameraIdle = false;
+  private boolean trackCameraPosition = false;
   private boolean disposed = false;
 
   GoogleMapController(
@@ -218,24 +216,20 @@ final class GoogleMapController
 
   @Override
   public void onCameraMoveStarted(int reason) {
-    if (fireOnCameraMoveStarted) {
-      onCameraMoveListener.onCameraMoveStarted(reason);
-    }
+    onCameraMoveListener.onCameraMoveStarted(reason);
     cancelSnapshotTimerTasks();
   }
 
   @Override
   public void onCameraMove() {
-    if (fireOnCameraMove) {
+    if (trackCameraPosition && onCameraMoveListener != null) {
       onCameraMoveListener.onCameraMove(googleMap.getCameraPosition());
     }
   }
 
   @Override
   public void onCameraIdle() {
-    if (fireOnCameraIdle) {
-      onCameraMoveListener.onCameraIdle();
-    }
+    onCameraMoveListener.onCameraIdle();
     // Take snapshots until the dust settles.
     timer.schedule(newSnapshotTask(), 500);
     timer.schedule(newSnapshotTask(), 1500);
@@ -369,10 +363,8 @@ final class GoogleMapController
   }
 
   @Override
-  public void setCameraMoveEvents(boolean started, boolean move, boolean idle) {
-    this.fireOnCameraMoveStarted = started;
-    this.fireOnCameraMove = move;
-    this.fireOnCameraIdle = idle;
+  public void setTrackCameraPosition(boolean trackCameraPosition) {
+    this.trackCameraPosition = trackCameraPosition;
   }
 
   @Override

@@ -13,9 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 class GoogleMapBuilder implements GoogleMapOptionsSink {
   private final GoogleMapOptions options = new GoogleMapOptions();
-  private boolean fireOnCameraMoveStarted = false;
-  private boolean fireOnCameraMove = false;
-  private boolean fireOnCameraIdle = false;
+  private boolean trackCameraPosition = false;
 
   GoogleMapController build(
       AtomicInteger state,
@@ -26,7 +24,7 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
     final GoogleMapController controller =
         new GoogleMapController(state, registrar, width, height, options, result);
     controller.init();
-    controller.setCameraMoveEvents(fireOnCameraMoveStarted, fireOnCameraMove, fireOnCameraIdle);
+    controller.setTrackCameraPosition(trackCameraPosition);
     return controller;
   }
 
@@ -61,10 +59,8 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   }
 
   @Override
-  public void setCameraMoveEvents(boolean started, boolean move, boolean idle) {
-    this.fireOnCameraMoveStarted = started;
-    this.fireOnCameraMove = move;
-    this.fireOnCameraIdle = idle;
+  public void setTrackCameraPosition(boolean trackCameraPosition) {
+    this.trackCameraPosition = trackCameraPosition;
   }
 
   @Override

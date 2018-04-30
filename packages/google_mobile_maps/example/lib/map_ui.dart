@@ -21,11 +21,11 @@ class MapUiPage extends Page {
     width: 300.0,
     height: 200.0,
     options: const GoogleMapOptions(
-      cameraMoveEvents: const CameraMoveEvents(onCameraMoved: true),
       cameraPosition: const CameraPosition(
         target: const LatLng(-33.852, 151.211),
         zoom: 11.0,
       ),
+      trackCameraPosition: true,
     ),
   );
 
@@ -52,18 +52,14 @@ class MapUiBodyState extends State<MapUiBody> {
   void initState() {
     super.initState();
     final GoogleMapController mapController = widget.controller.mapController;
-    mapController.onCameraMove.add((CameraPosition position) {
-      setState(() {
-        _position = position;
-      });
-    });
     mapController.addListener(() {
       setState(() {
         _options = mapController.options;
+        _position = mapController.cameraPosition;
       });
     });
     _options = mapController.options;
-    _position = _options.cameraPosition;
+    _position = mapController.cameraPosition;
   }
 
   Widget _compassToggler() {

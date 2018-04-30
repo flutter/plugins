@@ -99,7 +99,7 @@ class MarkerOptions {
     zIndex: 0.0,
   );
 
-  MarkerOptions _withChanges(MarkerOptions changes) {
+  MarkerOptions _updateWith(MarkerOptions changes) {
     return new MarkerOptions(
       alpha: changes.alpha ?? alpha,
       anchor: changes.anchor ?? anchor,

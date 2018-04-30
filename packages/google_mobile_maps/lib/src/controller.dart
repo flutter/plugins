@@ -7,21 +7,19 @@ part of google_mobile_maps;
 final MethodChannel _channel =
     const MethodChannel('plugins.flutter.io/google_mobile_maps');
 
-/// Handler of tap events on [Marker] instances.
-typedef void OnMarkerTapped(Marker marker);
-
-typedef void OnCameraMoveStarted();
-typedef void OnCameraMove(CameraPosition position);
-typedef void OnCameraIdle();
-
-/// Controller for a single GoogleMaps instance.
+/// Controller for a single GoogleMap instance.
 ///
-/// Used for programmatically controlling a platform-specific GoogleMaps view.
+/// Used for programmatically controlling a platform-specific GoogleMap view.
 ///
-/// Change listeners are notified upon changes to the [options] property and
-/// the collection of [Marker]s added to this map.
+/// Change listeners are notified upon changes to any of
 ///
-/// Camera movement events and marker taps can be received
+/// * the [options] property,
+/// * the collection of [Marker]s added to this map
+/// * the [cameraPosition] property,
+///
+/// Listeners are notified when changes have been applied on the platform side.
+///
+/// Marker tap events can be received by adding callbacks to [onMarkerTapped].
 class GoogleMapController extends ChangeNotifier {
   GoogleMapController._({
     this.id,
@@ -30,6 +28,9 @@ class GoogleMapController extends ChangeNotifier {
     id.then((int id) {
       _controllers[id] = this;
     });
+    if (options.trackCameraPosition) {
+      _cameraPosition = options.cameraPosition;
+    }
   }
 
   /// An ID identifying the GoogleMaps instance, once created.
@@ -37,21 +38,23 @@ class GoogleMapController extends ChangeNotifier {
 
   final ArgumentCallbacks<Marker> onMarkerTapped =
       new ArgumentCallbacks<Marker>();
-  final VoidCallbacks onCameraMoveStarted = new VoidCallbacks();
-  final ArgumentCallbacks<CameraPosition> onCameraMove =
-      new ArgumentCallbacks<CameraPosition>();
-  final VoidCallbacks onCameraIdle = new VoidCallbacks();
 
-  /// The configuration options most recently applied programmatically.
-  ///
-  /// The returned value does not reflect changes made to the map through
-  /// touch events. To track events, add listeners.
+  /// The configuration options most recently applied via controller
+  /// initialization or [updateMapOptions].
   GoogleMapOptions get options => _options;
   GoogleMapOptions _options;
 
-  Set<String> get markerIds => new Set<String>.from(_markers.keys);
-  Marker marker(String markerId) => _markers[markerId];
+  Set<Marker> get markers => new Set<Marker>.from(_markers.values);
   final Map<String, Marker> _markers = <String, Marker>{};
+
+  bool get isCameraMoving => _isCameraMoving;
+  bool _isCameraMoving = false;
+
+  /// Returns the most recent camera position reported by the platform side.
+  /// Will be null, if camera position tracking is not enabled via
+  /// [GoogleMapOptions].
+  CameraPosition get cameraPosition => _cameraPosition;
+  CameraPosition _cameraPosition;
 
   static Map<int, GoogleMapController> _controllers =
       <int, GoogleMapController>{};
@@ -77,13 +80,16 @@ class GoogleMapController extends ChangeNotifier {
         }
         break;
       case "map#onCameraMoveStarted":
-        onCameraMoveStarted();
+        _isCameraMoving = true;
+        notifyListeners();
         break;
       case "map#onCameraMove":
-        onCameraMove(CameraPosition._fromJson(call.arguments['position']));
+        _cameraPosition = CameraPosition._fromJson(call.arguments['position']);
+        notifyListeners();
         break;
       case "map#onCameraIdle":
-        onCameraIdle();
+        _isCameraMoving = false;
+        notifyListeners();
         break;
       default:
         throw new MissingPluginException();
@@ -98,6 +104,9 @@ class GoogleMapController extends ChangeNotifier {
       'options': options._toJson(),
     });
     _options = _options._updateWith(options);
+    if (!_options.trackCameraPosition) {
+      _cameraPosition = null;
+    }
     notifyListeners();
   }
 
@@ -122,7 +131,7 @@ class GoogleMapController extends ChangeNotifier {
     assert(options.position != null);
     final int id = await this.id;
     final MarkerOptions effectiveOptions =
-        MarkerOptions.defaultOptions._withChanges(options);
+        MarkerOptions.defaultOptions._updateWith(options);
     final String markerId = await _channel.invokeMethod(
       'addMarker',
       <String, dynamic>{
@@ -145,7 +154,7 @@ class GoogleMapController extends ChangeNotifier {
       'marker': marker.id,
       'options': changes._toJson(),
     });
-    marker._options = marker._options._withChanges(changes);
+    marker._options = marker._options._updateWith(changes);
     notifyListeners();
   }
 

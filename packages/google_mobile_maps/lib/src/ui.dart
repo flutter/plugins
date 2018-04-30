@@ -4,26 +4,6 @@
 
 part of google_mobile_maps;
 
-/// Flags determining which camera move events are reported to Flutter.
-class CameraMoveEvents {
-  const CameraMoveEvents({
-    this.onCameraMoveStarted = false,
-    this.onCameraMoved = false,
-    this.onCameraIdle = false,
-  })  : assert(onCameraMoveStarted != null),
-        assert(onCameraMoved != null),
-        assert(onCameraIdle != null);
-
-  final bool onCameraMoveStarted;
-  final bool onCameraMoved;
-  final bool onCameraIdle;
-
-  static const CameraMoveEvents ignoreAll = const CameraMoveEvents();
-
-  dynamic _toJson() =>
-      <dynamic>[onCameraMoveStarted, onCameraMoved, onCameraIdle];
-}
-
 /// Type of map tiles to display.
 ///
 /// Enum constants must be indexed to match the corresponding int constants of
@@ -73,7 +53,6 @@ class MinMaxZoomPreference {
 /// "do not change this configuration item". When used to represent current
 /// configuration, all values will be non-null.
 class GoogleMapOptions {
-  final CameraMoveEvents cameraMoveEvents;
   final CameraPosition cameraPosition;
   final bool compassEnabled;
   final LatLngCameraTargetBounds latLngCameraTargetBounds;
@@ -82,10 +61,10 @@ class GoogleMapOptions {
   final bool rotateGesturesEnabled;
   final bool scrollGesturesEnabled;
   final bool tiltGesturesEnabled;
+  final bool trackCameraPosition;
   final bool zoomGesturesEnabled;
 
   const GoogleMapOptions({
-    this.cameraMoveEvents,
     this.cameraPosition,
     this.compassEnabled,
     this.latLngCameraTargetBounds,
@@ -94,11 +73,11 @@ class GoogleMapOptions {
     this.rotateGesturesEnabled,
     this.scrollGesturesEnabled,
     this.tiltGesturesEnabled,
+    this.trackCameraPosition,
     this.zoomGesturesEnabled,
   });
 
   static const GoogleMapOptions defaultOptions = const GoogleMapOptions(
-    cameraMoveEvents: CameraMoveEvents.ignoreAll,
     compassEnabled: true,
     latLngCameraTargetBounds: LatLngCameraTargetBounds.unbounded,
     mapType: MapType.normal,
@@ -106,38 +85,40 @@ class GoogleMapOptions {
     rotateGesturesEnabled: true,
     scrollGesturesEnabled: true,
     tiltGesturesEnabled: true,
+    trackCameraPosition: false,
     zoomGesturesEnabled: true,
   );
 
   GoogleMapOptions _updateWith(GoogleMapOptions change) {
     return new GoogleMapOptions(
-      cameraMoveEvents: change.cameraMoveEvents ?? cameraMoveEvents,
       cameraPosition: change.cameraPosition ?? cameraPosition,
+      compassEnabled: change.compassEnabled ?? compassEnabled,
       latLngCameraTargetBounds:
           change.latLngCameraTargetBounds ?? latLngCameraTargetBounds,
-      compassEnabled: change.compassEnabled ?? compassEnabled,
       mapType: change.mapType ?? mapType,
+      minMaxZoomPreference: change.minMaxZoomPreference ?? minMaxZoomPreference,
       rotateGesturesEnabled:
           change.rotateGesturesEnabled ?? rotateGesturesEnabled,
       scrollGesturesEnabled:
           change.scrollGesturesEnabled ?? scrollGesturesEnabled,
       tiltGesturesEnabled: change.tiltGesturesEnabled ?? tiltGesturesEnabled,
-      minMaxZoomPreference: change.minMaxZoomPreference ?? minMaxZoomPreference,
+      trackCameraPosition: change.trackCameraPosition ?? trackCameraPosition,
       zoomGesturesEnabled: change.zoomGesturesEnabled ?? zoomGesturesEnabled,
     );
   }
 
   dynamic _toJson() {
     final Map<String, dynamic> json = <String, dynamic>{};
-    json['cameraMoveEvents'] = cameraMoveEvents?._toJson();
     json['cameraPosition'] = cameraPosition?._toJson();
-    json['latLngCameraTargetBounds'] = latLngCameraTargetBounds?._toJson();
     json['compassEnabled'] = compassEnabled;
+    json['latLngCameraTargetBounds'] = latLngCameraTargetBounds?._toJson();
     json['mapType'] = mapType?.index;
     json['minMaxZoomPreference'] = minMaxZoomPreference?._toJson();
+    json['reportCameraMoveEvents'] = trackCameraPosition;
     json['rotateGesturesEnabled'] = rotateGesturesEnabled;
     json['scrollGesturesEnabled'] = scrollGesturesEnabled;
     json['tiltGesturesEnabled'] = tiltGesturesEnabled;
+    json['trackCameraPosition'] = trackCameraPosition;
     json['zoomGesturesEnabled'] = zoomGesturesEnabled;
     return json;
   }

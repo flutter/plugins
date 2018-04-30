@@ -20,7 +20,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/** Plugin for controlling GoogleMap views. */
+/**
+ * Plugin for controlling a set of GoogleMap views to be shown as overlays on top of
+ * the Flutter view. The overlay should be hidden during transformations or while
+ * Flutter is rendering on top of the map. A Texture drawn using GoogleMap bitmap
+ * snapshots can then be shown instead of the overlay.
+ */
 public class GoogleMobileMapsPlugin
     implements MethodCallHandler, Application.ActivityLifecycleCallbacks {
   static final int CREATED = 1;
@@ -96,7 +101,7 @@ public class GoogleMobileMapsPlugin
           controller.setOnMarkerTappedListener(
               new OnMarkerTappedListener() {
                 @Override
-                public void markerTapped(Marker marker) {
+                public void onMarkerTapped(Marker marker) {
                   final Map<String, Object> arguments = new HashMap<>(2);
                   arguments.put("map", controller.id());
                   arguments.put("marker", marker.getId());

@@ -153,14 +153,6 @@ class Convert {
 
   static void interpretGoogleMapOptions(Object o, GoogleMapOptionsSink sink) {
     final Map<?, ?> data = toMap(o);
-    final Object cameraMoveEvents = data.get("cameraMoveEvents");
-    if (cameraMoveEvents != null) {
-      final List<?> cameraMoveEventsData = toList(cameraMoveEvents);
-      sink.setCameraMoveEvents( //
-          toBoolean(cameraMoveEventsData.get(0)), //
-          toBoolean(cameraMoveEventsData.get(1)), //
-          toBoolean(cameraMoveEventsData.get(2)));
-    }
     final Object cameraPosition = data.get("cameraPosition");
     if (cameraPosition != null) {
       sink.setCameraPosition(toCameraPosition(cameraPosition));
@@ -196,6 +188,10 @@ class Convert {
     final Object tiltGesturesEnabled = data.get("tiltGesturesEnabled");
     if (tiltGesturesEnabled != null) {
       sink.setTiltGesturesEnabled(toBoolean(tiltGesturesEnabled));
+    }
+    final Object trackCameraPosition = data.get("trackCameraPosition");
+    if (trackCameraPosition != null) {
+      sink.setTrackCameraPosition(toBoolean(trackCameraPosition));
     }
     final Object zoomGesturesEnabled = data.get("zoomGesturesEnabled");
     if (zoomGesturesEnabled != null) {

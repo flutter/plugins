@@ -17,7 +17,7 @@ interface GoogleMapOptionsSink {
 
   void setMapType(int mapType);
 
-  void setCameraMoveEvents(boolean started, boolean move, boolean idle);
+  void setTrackCameraPosition(boolean reportCameraMoveEvents);
 
   void setRotateGesturesEnabled(boolean rotateGesturesEnabled);
 

@@ -4,38 +4,6 @@
 
 part of google_mobile_maps;
 
-/// Mutable collection of [VoidCallback] instances, itself a [VoidCallback].
-///
-/// Additions and removals happening during a single [call] invocation do not
-/// change who gets a callback until the next such invocation.
-class VoidCallbacks {
-  List<VoidCallback> _callbacks = <VoidCallback>[];
-
-  void call() {
-    final int length = _callbacks.length;
-    if (length == 1) {
-      _callbacks[0].call();
-    } else if (0 < length) {
-      final List<VoidCallback> clone = new List<VoidCallback>.from(_callbacks);
-      for (VoidCallback callback in clone) {
-        callback();
-      }
-    }
-  }
-
-  void add(VoidCallback callback) {
-    _callbacks.add(callback);
-  }
-
-  void remove(VoidCallback callback) {
-    _callbacks.remove(callback);
-  }
-
-  bool get isEmpty => _callbacks.isEmpty;
-
-  bool get isNotEmpty => _callbacks.isNotEmpty;
-}
-
 /// Callback function taking a single argument.
 typedef void ArgumentCallback<T>(T argument);
 
@@ -44,7 +12,8 @@ typedef void ArgumentCallback<T>(T argument);
 /// Additions and removals happening during a single [call] invocation do not
 /// change who gets a callback until the next such invocation.
 class ArgumentCallbacks<T> {
-  List<ArgumentCallback<T>> _callbacks = <ArgumentCallback<T>>[];
+  final List<ArgumentCallback<T>> _callbacks = <ArgumentCallback<T>>[];
+  VoidCallback _onEmptyChanged;
 
   void call(T argument) {
     final int length = _callbacks.length;
@@ -60,10 +29,14 @@ class ArgumentCallbacks<T> {
 
   void add(ArgumentCallback<T> callback) {
     _callbacks.add(callback);
+    if (_onEmptyChanged != null && _callbacks.length == 1)
+      _onEmptyChanged();
   }
 
   void remove(ArgumentCallback<T> callback) {
-    _callbacks.remove(callback);
+    final bool removed = _callbacks.remove(callback);
+    if (_onEmptyChanged != null && removed && _callbacks.isEmpty)
+      _onEmptyChanged();
   }
 
   bool get isEmpty => _callbacks.isEmpty;

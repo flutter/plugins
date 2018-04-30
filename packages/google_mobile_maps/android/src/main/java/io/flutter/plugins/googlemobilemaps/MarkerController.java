@@ -23,7 +23,7 @@ class MarkerController implements MarkerOptionsSink {
 
   boolean onTap() {
     if (onTappedListener != null) {
-      onTappedListener.markerTapped(marker);
+      onTappedListener.onMarkerTapped(marker);
     }
     return consumesTapEvents;
   }
