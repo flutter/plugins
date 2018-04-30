@@ -8,7 +8,6 @@ homepage: https://github.com/flutter/plugins/tree/master/packages/firebase_remot
 dependencies:
   flutter:
     sdk: flutter
-  collection: '^1.14.6'
 
 dev_dependencies:
   flutter_test:
@@ -18,3 +17,7 @@ flutter:
   plugin:
     androidPackage: io.flutter.plugins.firebase.firebaseremoteconfig
     pluginClass: FirebaseRemoteConfigPlugin
+
+environment:
+  sdk: ">=2.0.0-dev.28.0 <3.0.0"
+  flutter: ">=0.1.4 <2.0.0"
