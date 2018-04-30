@@ -18,8 +18,6 @@ import java.util.Map;
 public class FirebasePerformancePlugin implements MethodCallHandler {
   private FirebasePerformance firebasePerformance;
 
-  // Handles are ints used as indexes into the sparse array of active traces
-  private int nextHandleTrace = 0;
   private final SparseArray<Trace> traces = new SparseArray<>();
 
   public static void registerWith(Registrar registrar) {
@@ -40,9 +38,6 @@ public class FirebasePerformancePlugin implements MethodCallHandler {
         break;
       case "FirebasePerformance#setPerformanceCollectionEnabled":
         handleSetPerformanceCollectionEnabled(call, result);
-        break;
-      case "FirebasePerformance#newTrace":
-        newTrace(call, result);
         break;
       case "Trace#start":
         traceStart(call, result);
@@ -65,20 +60,16 @@ public class FirebasePerformancePlugin implements MethodCallHandler {
     result.success(null);
   }
 
-  private void newTrace(MethodCall call, Result result) {
-    String name = (String) call.arguments;
-    traces.put(nextHandleTrace, firebasePerformance.newTrace(name));
-
-    result.success(nextHandleTrace++);
-  }
-
   private void traceStart(MethodCall call, Result result) {
-    int id = (int) call.arguments;
-    Trace trace = traces.get(id);
+    Map<String, Object> arguments = call.arguments();
 
-    if (trace != null) {
-      trace.start();
-    }
+    int id = (int) arguments.get("id");
+    String name = (String) arguments.get("name");
+
+    Trace trace = firebasePerformance.newTrace(name);
+
+    traces.put(id, trace);
+    trace.start();
 
     result.success(null);
   }

@@ -5,18 +5,19 @@
 part of firebase_performance;
 
 /// The Firebase Performance API.
+///
+/// You can get an instance by calling [FirebasePerformance.instance].
 class FirebasePerformance {
-  final MethodChannel _channel;
+  static int _traceCount = 0;
+
+  @visibleForTesting
+  static const MethodChannel channel = const MethodChannel(
+    'plugins.flutter.io/firebase_performance');
 
   /// Singleton of [FirebasePerformance].
-  static final FirebasePerformance instance = new FirebasePerformance.private(
-      const MethodChannel('plugins.flutter.io/firebase_performance'));
+  static final FirebasePerformance instance = new FirebasePerformance._();
 
-  /// We don't want people to extend this class, but implementing its interface,
-  /// e.g. in tests, is OK.
-  @visibleForTesting
-  FirebasePerformance.private(MethodChannel platformChannel)
-      : _channel = platformChannel;
+  FirebasePerformance._();
 
   /// Determines whether performance monitoring is enabled or disabled.
   ///
@@ -24,7 +25,7 @@ class FirebasePerformance {
   /// monitoring is disabled. This is for dynamic enable/disable state. This
   /// does not reflect whether instrumentation is enabled/disabled.
   Future<bool> isPerformanceCollectionEnabled() async {
-    final bool isEnabled = await _channel
+    final bool isEnabled = await channel
         .invokeMethod('FirebasePerformance#isPerformanceCollectionEnabled');
     return isEnabled;
   }
@@ -37,12 +38,15 @@ class FirebasePerformance {
   ///
   /// [enable]: Should performance monitoring be enabled
   Future<Null> setPerformanceCollectionEnabled(bool enable) async {
-    await _channel.invokeMethod(
+    await channel.invokeMethod(
         'FirebasePerformance#setPerformanceCollectionEnabled', enable);
   }
 
   Future<Null> _traceStart(Trace trace) async {
-    await _channel.invokeMethod('Trace#start', trace._id);
+    await channel.invokeMethod('Trace#start', <String, dynamic>{
+      'id': trace._id,
+      'name': trace.name,
+    });
   }
 
   Future<Null> _traceStop(Trace trace) async {
@@ -53,27 +57,25 @@ class FirebasePerformance {
       'attributes': trace.attributes,
     };
 
-    await _channel.invokeMethod('Trace#stop', data);
+    await channel.invokeMethod('Trace#stop', data);
   }
 
   /// Creates a [Trace] object with given [name].
   ///
   /// [name]: name of the trace. Requires no leading or trailing whitespace, no
-  /// leading underscore [_] character, max length of [Trace.maxTraceNameLength]
+  /// leading underscore _ character, max length of [Trace.maxTraceNameLength]
   /// characters.
-  Future<Trace> newTrace(String name) async {
-    final int id =
-        await _channel.invokeMethod('FirebasePerformance#newTrace', name);
-    return new Trace._(this, id, name);
+  Trace newTrace(String name) {
+    return new Trace._(this, _traceCount++, name);
   }
 
   /// Creates a [Trace] object with given [name] and start the trace.
   ///
   /// [name]: name of the trace. Requires no leading or trailing whitespace, no
-  /// leading underscore [_] character, max length of [Trace.maxTraceNameLength]
+  /// leading underscore _ character, max length of [Trace.maxTraceNameLength]
   /// characters.
   Future<Trace> startTrace(String name) async {
-    final Trace trace = await newTrace(name);
+    final Trace trace = newTrace(name);
     await trace.start();
     return trace;
   }

@@ -23,7 +23,6 @@
     }
   }
 
-  _nextHandleTrace = 0;
   _traces = [[NSMutableDictionary alloc] init];
   return self;
 }
@@ -34,9 +33,6 @@
 
   } else if ([@"FirebasePerformance#setPerformanceCollectionEnabled" isEqualToString:call.method]) {
     [self handleSetPerformanceCollectionEnabled:call result:result];
-
-  } else if ([@"FirebasePerformance#newTrace" isEqualToString:call.method]) {
-    [self newTrace:call result:result];
 
   } else if ([@"Trace#start" isEqualToString:call.method]) {
     [self traceStart:call result:result];
@@ -62,22 +58,14 @@
   result(nil);
 }
 
-- (void)newTrace:(FlutterMethodCall *)call result:(FlutterResult)result {
-  NSString *name = call.arguments;
+- (void)traceStart:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSNumber *id = call.arguments[@"id"];
+  NSString *name = call.arguments[@"name"];
+
   FIRTrace *trace = [[FIRPerformance sharedInstance] traceWithName:name];
 
-  [_traces setObject:trace forKey:[NSNumber numberWithInt:_nextHandleTrace]];
-
-  result([NSNumber numberWithInt:_nextHandleTrace++]);
-}
-
-- (void)traceStart:(FlutterMethodCall *)call result:(FlutterResult)result {
-  NSNumber *id = call.arguments;
-  FIRTrace *trace = [_traces objectForKey:id];
-
-  if (trace != nil) {
-    [trace start];
-  }
+  [_traces setObject:trace forKey:id];
+  [trace start];
 
   result(nil);
 }
