@@ -127,6 +127,15 @@ class GoogleSignIn {
   static const MethodChannel channel =
       const MethodChannel('plugins.flutter.io/google_sign_in');
 
+  /// Equivalent to GoogleSignInOptions.DEFAULT_SIGN_IN
+  static const String defaultSignInOptions = "defaultSignIn";
+
+  /// Equivalent to GoogleSignInOptions.DEFAULT_GAMES_Sign_In
+  static const String defaultGamesSignInOptions = "defaultGamesSignIn";
+
+  /// The options to pass to GoogleSignInOptions.Builder()
+  final String builderOptions;
+
   /// The list of [scopes] are OAuth scope codes requested when signing in.
   final List<String> scopes;
 
@@ -142,7 +151,21 @@ class GoogleSignIn {
   /// The [hostedDomain] argument specifies a hosted domain restriction. By
   /// setting this, sign in will be restricted to accounts of the user in the
   /// specified domain. By default, the list of accounts will not be restricted.
-  GoogleSignIn({this.scopes, this.hostedDomain});
+  GoogleSignIn({this.builderOptions, this.scopes, this.hostedDomain});
+
+  /// Factory for creating default sign in
+  factory GoogleSignIn.defaultSignIn(
+      {List<String> scopes, String hostedDomain}) {
+    return new GoogleSignIn(
+        builderOptions: defaultSignInOptions,
+        scopes: scopes,
+        hostedDomain: hostedDomain);
+  }
+
+  /// Factory for creating sign in suitable for games
+  factory GoogleSignIn.defaultGamesSignIn() {
+    return new GoogleSignIn(builderOptions: defaultGamesSignInOptions);
+  }
 
   StreamController<GoogleSignInAccount> _currentUserController =
       new StreamController<GoogleSignInAccount>.broadcast();
@@ -174,6 +197,7 @@ class GoogleSignIn {
   Future<void> _ensureInitialized() {
     if (_initialization == null) {
       _initialization = channel.invokeMethod("init", <String, dynamic>{
+        'builderOptions': builderOptions ?? "defaultSignIn",
         'scopes': scopes ?? <String>[],
         'hostedDomain': hostedDomain,
       })
