@@ -214,5 +214,113 @@ void main() {
         );
       });
     });
+
+    group('getBucket', () {
+      final List<MethodCall> log = <MethodCall>[];
+
+      StorageReference ref;
+
+      setUp(() {
+        FirebaseStorage.channel
+            .setMockMethodCallHandler((MethodCall methodCall) async {
+          log.add(methodCall);
+          return 'foo';
+        });
+        ref = FirebaseStorage.instance
+            .ref()
+            .child('avatars')
+            .child('large')
+            .child('image.jpg');
+      });
+
+      test('invokes correct method', () async {
+        await ref.getBucket();
+
+        expect(log, <Matcher>[
+          isMethodCall(
+            'StorageReference#getBucket',
+            arguments: <String, dynamic>{
+              'path': 'avatars/large/image.jpg',
+            },
+          ),
+        ]);
+      });
+
+      test('returns correct result', () async {
+        expect(await ref.getBucket(), 'foo');
+      });
+    });
+
+    group('getName', () {
+      final List<MethodCall> log = <MethodCall>[];
+
+      StorageReference ref;
+
+      setUp(() {
+        FirebaseStorage.channel
+            .setMockMethodCallHandler((MethodCall methodCall) async {
+          log.add(methodCall);
+          return 'image.jpg';
+        });
+        ref = FirebaseStorage.instance
+            .ref()
+            .child('avatars')
+            .child('large')
+            .child('image.jpg');
+      });
+
+      test('invokes correct method', () async {
+        await ref.getName();
+
+        expect(log, <Matcher>[
+          isMethodCall(
+            'StorageReference#getName',
+            arguments: <String, dynamic>{
+              'path': 'avatars/large/image.jpg',
+            },
+          ),
+        ]);
+      });
+
+      test('returns correct result', () async {
+        expect(await ref.getName(), 'image.jpg');
+      });
+    });
+  });
+
+  group('getPath', () {
+    final List<MethodCall> log = <MethodCall>[];
+
+    StorageReference ref;
+
+    setUp(() {
+      FirebaseStorage.channel
+          .setMockMethodCallHandler((MethodCall methodCall) async {
+        log.add(methodCall);
+        return 'avatars/large/image.jpg';
+      });
+      ref = FirebaseStorage.instance
+          .ref()
+          .child('avatars')
+          .child('large')
+          .child('image.jpg');
+    });
+
+    test('invokes correct method', () async {
+      await ref.getPath();
+
+      expect(log, <Matcher>[
+        isMethodCall(
+          'StorageReference#getPath',
+          arguments: <String, dynamic>{
+            'path': 'avatars/large/image.jpg',
+          },
+        ),
+      ]);
+    });
+
+    test('returns correct result', () async {
+      expect(await ref.getPath(), 'avatars/large/image.jpg');
+    });
   });
 }

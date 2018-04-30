@@ -46,6 +46,12 @@
     [self putData:call result:result];
   } else if ([@"StorageReference#getData" isEqualToString:call.method]) {
     [self getData:call result:result];
+  } else if ([@"StorageReference#getBucket" isEqualToString:call.method]) {
+    [self getBucket:call result:result];
+  } else if ([@"StorageReference#getPath" isEqualToString:call.method]) {
+    [self getPath:call result:result];
+  } else if ([@"StorageReference#getName" isEqualToString:call.method]) {
+    [self getName:call result:result];
   } else if ([@"StorageReference#getDownloadUrl" isEqualToString:call.method]) {
     [self getDownloadUrl:call result:result];
   } else if ([@"StorageReference#delete" isEqualToString:call.method]) {
@@ -174,6 +180,24 @@
                result([self buildDictionaryFromMetadata:metadata]);
              }
            }];
+}
+
+- (void)getBucket:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSString *path = call.arguments[@"path"];
+  FIRStorageReference *ref = [[FIRStorage storage].reference child:path];
+  result([ref bucket]);
+}
+
+- (void)getName:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSString *path = call.arguments[@"path"];
+  FIRStorageReference *ref = [[FIRStorage storage].reference child:path];
+  result([ref name]);
+}
+
+- (void)getPath:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSString *path = call.arguments[@"path"];
+  FIRStorageReference *ref = [[FIRStorage storage].reference child:path];
+  result([ref fullPath]);
 }
 
 - (void)getDownloadUrl:(FlutterMethodCall *)call result:(FlutterResult)result {
