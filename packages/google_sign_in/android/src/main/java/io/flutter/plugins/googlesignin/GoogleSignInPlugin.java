@@ -73,10 +73,10 @@ public class GoogleSignInPlugin implements MethodCallHandler {
   public void onMethodCall(MethodCall call, Result result) {
     switch (call.method) {
       case METHOD_INIT:
-        String builderOptions = call.argument("builderOptions");
+        int signInOption = call.argument("signInOption");
         List<String> requestedScopes = call.argument("scopes");
         String hostedDomain = call.argument("hostedDomain");
-        delegate.init(result, builderOptions, requestedScopes, hostedDomain);
+        delegate.init(result, signInOption, requestedScopes, hostedDomain);
         break;
 
       case METHOD_SIGN_IN_SILENTLY:
@@ -117,7 +117,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
   public interface IDelegate {
     /** Initializes this delegate so that it is ready to perform other operations. */
     public void init(
-        Result result, String builderOptions, List<String> requestedScopes, String hostedDomain);
+        Result result, int signInOption, List<String> requestedScopes, String hostedDomain);
 
     /**
      * Returns the account information for the user who is signed in to this app. If no user is
@@ -173,8 +173,8 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 
     private static final String STATE_RESOLVING_ERROR = "resolving_error";
 
-    private static final String DEFAULT_SIGN_IN = "defaultSignIn";
-    private static final String DEFAULT_GAMES_SIGN_IN = "defaultGamesSignIn";
+    private static final int DEFAULT_SIGN_IN = 0;
+    private static final int DEFAULT_GAMES_SIGN_IN = 1;
 
     private final PluginRegistry.Registrar registrar;
     private final Handler handler = new Handler();
@@ -212,7 +212,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
      */
     @Override
     public void init(
-        Result result, String builderOptions, List<String> requestedScopes, String hostedDomain) {
+        Result result, int signInOption, List<String> requestedScopes, String hostedDomain) {
       // We're not initialized until we receive `onConnected`.
       // If initialization fails, we'll receive `onConnectionFailed`
       checkAndSetPendingOperation(METHOD_INIT, result);
@@ -220,9 +220,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
       try {
         GoogleSignInOptions.Builder optionsBuilder;
 
-        if (builderOptions == null) builderOptions = DEFAULT_SIGN_IN;
-
-        switch (builderOptions) {
+        switch (signInOption) {
           case DEFAULT_GAMES_SIGN_IN:
             optionsBuilder =
                 new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN);
@@ -232,7 +230,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
                 new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail();
             break;
           default:
-            throw new IllegalStateException("Unknown builderOptions: " + builderOptions);
+            throw new IllegalStateException("Unknown signInOption");
         }
 
         // Only requests a clientId if google-services.json was present and parsed
@@ -385,7 +383,6 @@ public class GoogleSignInPlugin implements MethodCallHandler {
                 @Override
                 public void onResult(@NonNull Status status) {
                   currentAccount = null;
-                  registrar.publish(null);
                   // TODO(tvolkert): communicate status back to user
                   finishWithSuccess(null);
                 }
@@ -403,7 +400,6 @@ public class GoogleSignInPlugin implements MethodCallHandler {
       if (result.isSuccess()) {
         GoogleSignInAccount account = result.getSignInAccount();
         currentAccount = account;
-        registrar.publish(account);
         Map<String, Object> response = new HashMap<>();
         response.put("email", account.getEmail());
         response.put("id", account.getId());

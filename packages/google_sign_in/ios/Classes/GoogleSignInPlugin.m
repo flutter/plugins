@@ -67,7 +67,8 @@ static NSString *const kErrorReasonSignInFailed = @"sign_in_failed";
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([call.method isEqualToString:@"init"]) {
-    if ([call.arguments[@"builderOptions"] isEqualToString:@"defaultGamesSignIn"]) {
+    NSNumber *signInOption = call.arguments[@"signInOption"];
+    if ([signInOption intValue] == 1) {
       result([FlutterError errorWithCode:@"unsupported-options"
                                  message:@"Games sign in is not supported on iOS"
                                  details:nil]);
