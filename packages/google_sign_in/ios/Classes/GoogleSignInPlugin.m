@@ -29,8 +29,9 @@ static NSString *const kErrorReasonSignInFailed = @"sign_in_failed";
   } else {
     errorCode = kErrorReasonSignInFailed;
   }
-  return
-      [FlutterError errorWithCode:errorCode message:self.domain details:self.localizedDescription];
+  return [FlutterError errorWithCode:errorCode
+                             message:self.domain
+                             details:self.localizedDescription];
 }
 @end
 
@@ -42,9 +43,9 @@ static NSString *const kErrorReasonSignInFailed = @"sign_in_failed";
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
-  FlutterMethodChannel *channel =
-      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/google_sign_in"
-                                  binaryMessenger:[registrar messenger]];
+  FlutterMethodChannel *channel = [FlutterMethodChannel
+      methodChannelWithName:@"plugins.flutter.io/google_sign_in"
+            binaryMessenger:[registrar messenger]];
   FLTGoogleSignInPlugin *instance = [[FLTGoogleSignInPlugin alloc] init];
   [registrar addApplicationDelegate:instance];
   [registrar addMethodCallDelegate:instance channel:channel];
@@ -65,26 +66,32 @@ static NSString *const kErrorReasonSignInFailed = @"sign_in_failed";
 
 #pragma mark - <FlutterPlugin> protocol
 
-- (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)handleMethodCall:(FlutterMethodCall *)call
+                  result:(FlutterResult)result {
   if ([call.method isEqualToString:@"init"]) {
-    NSNumber *signInOption = call.arguments[@"signInOption"];
-    if ([signInOption intValue] == 1) {
-      result([FlutterError errorWithCode:@"unsupported-options"
-                                 message:@"Games sign in is not supported on iOS"
-                                 details:nil]);
+    NSString *signInOption = call.arguments[@"signInOption"];
+    if ([signInOption isEqualToString] == @"SignInOption.games") {
+      result([FlutterError
+          errorWithCode:@"unsupported-options"
+                message:@"Games sign in is not supported on iOS"
+                details:nil]);
     } else {
       NSString *path =
-          [[NSBundle mainBundle] pathForResource:@"GoogleService-Info" ofType:@"plist"];
+          [[NSBundle mainBundle] pathForResource:@"GoogleService-Info"
+                                          ofType:@"plist"];
       if (path) {
-        NSMutableDictionary *plist = [[NSMutableDictionary alloc] initWithContentsOfFile:path];
+        NSMutableDictionary *plist =
+            [[NSMutableDictionary alloc] initWithContentsOfFile:path];
         [GIDSignIn sharedInstance].clientID = plist[kClientIdKey];
         [GIDSignIn sharedInstance].scopes = call.arguments[@"scopes"];
-        [GIDSignIn sharedInstance].hostedDomain = call.arguments[@"hostedDomain"];
+        [GIDSignIn sharedInstance].hostedDomain =
+            call.arguments[@"hostedDomain"];
         result(nil);
       } else {
-        result([FlutterError errorWithCode:@"missing-config"
-                                   message:@"GoogleService-Info.plist file not found"
-                                   details:nil]);
+        result([FlutterError
+            errorWithCode:@"missing-config"
+                  message:@"GoogleService-Info.plist file not found"
+                  details:nil]);
       }
     }
   } else if ([call.method isEqualToString:@"signInSilently"]) {
@@ -100,7 +107,8 @@ static NSString *const kErrorReasonSignInFailed = @"sign_in_failed";
   } else if ([call.method isEqualToString:@"getTokens"]) {
     GIDGoogleUser *currentUser = [GIDSignIn sharedInstance].currentUser;
     GIDAuthentication *auth = currentUser.authentication;
-    [auth getTokensWithHandler:^void(GIDAuthentication *authentication, NSError *error) {
+    [auth getTokensWithHandler:^void(GIDAuthentication *authentication,
+                                     NSError *error) {
       result(error != nil ? error.flutterError : @{
         @"idToken" : authentication.idToken,
         @"accessToken" : authentication.accessToken,
@@ -129,8 +137,11 @@ static NSString *const kErrorReasonSignInFailed = @"sign_in_failed";
   return YES;
 }
 
-- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary *)options {
-  NSString *sourceApplication = options[UIApplicationOpenURLOptionsSourceApplicationKey];
+- (BOOL)application:(UIApplication *)app
+            openURL:(NSURL *)url
+            options:(NSDictionary *)options {
+  NSString *sourceApplication =
+      options[UIApplicationOpenURLOptionsSourceApplicationKey];
   id annotation = options[UIApplicationOpenURLOptionsAnnotationKey];
   return [[GIDSignIn sharedInstance] handleURL:url
                              sourceApplication:sourceApplication
@@ -139,13 +150,17 @@ static NSString *const kErrorReasonSignInFailed = @"sign_in_failed";
 
 #pragma mark - <GIDSignInUIDelegate> protocol
 
-- (void)signIn:(GIDSignIn *)signIn presentViewController:(UIViewController *)viewController {
+- (void)signIn:(GIDSignIn *)signIn
+    presentViewController:(UIViewController *)viewController {
   UIViewController *rootViewController =
       [UIApplication sharedApplication].delegate.window.rootViewController;
-  [rootViewController presentViewController:viewController animated:YES completion:nil];
+  [rootViewController presentViewController:viewController
+                                   animated:YES
+                                 completion:nil];
 }
 
-- (void)signIn:(GIDSignIn *)signIn dismissViewController:(UIViewController *)viewController {
+- (void)signIn:(GIDSignIn *)signIn
+    dismissViewController:(UIViewController *)viewController {
   [viewController dismissViewControllerAnimated:YES completion:nil];
 }
 

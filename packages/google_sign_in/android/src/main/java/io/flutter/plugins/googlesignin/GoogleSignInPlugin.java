@@ -73,7 +73,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
   public void onMethodCall(MethodCall call, Result result) {
     switch (call.method) {
       case METHOD_INIT:
-        int signInOption = call.argument("signInOption");
+        String signInOption = call.argument("signInOption");
         List<String> requestedScopes = call.argument("scopes");
         String hostedDomain = call.argument("hostedDomain");
         delegate.init(result, signInOption, requestedScopes, hostedDomain);
@@ -117,7 +117,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
   public interface IDelegate {
     /** Initializes this delegate so that it is ready to perform other operations. */
     public void init(
-        Result result, int signInOption, List<String> requestedScopes, String hostedDomain);
+        Result result, String signInOption, List<String> requestedScopes, String hostedDomain);
 
     /**
      * Returns the account information for the user who is signed in to this app. If no user is
@@ -173,8 +173,8 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 
     private static final String STATE_RESOLVING_ERROR = "resolving_error";
 
-    private static final int DEFAULT_SIGN_IN = 0;
-    private static final int DEFAULT_GAMES_SIGN_IN = 1;
+    private static final String DEFAULT_SIGN_IN = "SignInOption.standard";
+    private static final String DEFAULT_GAMES_SIGN_IN = "SignInOption.games";
 
     private final PluginRegistry.Registrar registrar;
     private final Handler handler = new Handler();
@@ -212,7 +212,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
      */
     @Override
     public void init(
-        Result result, int signInOption, List<String> requestedScopes, String hostedDomain) {
+        Result result, String signInOption, List<String> requestedScopes, String hostedDomain) {
       // We're not initialized until we receive `onConnected`.
       // If initialization fails, we'll receive `onConnectionFailed`
       checkAndSetPendingOperation(METHOD_INIT, result);

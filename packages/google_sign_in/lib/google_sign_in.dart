@@ -13,7 +13,7 @@ import 'src/common.dart';
 export 'src/common.dart';
 export 'widgets.dart';
 
-enum SignInOption { defaultSignIn, gamesSignIn }
+enum SignInOption { standard, games }
 
 class GoogleSignInAuthentication {
   final Map<dynamic, dynamic> _data;
@@ -129,7 +129,8 @@ class GoogleSignIn {
   static const MethodChannel channel =
       const MethodChannel('plugins.flutter.io/google_sign_in');
 
-  /// The options to pass to GoogleSignInOptions.Builder()
+  /// Option to determine the sign in user experience. [SignInOption.games] must
+  /// not be used on iOS.
   final SignInOption signInOption;
 
   /// The list of [scopes] are OAuth scope codes requested when signing in.
@@ -140,6 +141,9 @@ class GoogleSignIn {
 
   /// Initializes global sign-in configuration settings.
   ///
+  /// The [signInOption] determines the user experience. [SigninOption.games]
+  /// must not be used on iOS.
+  ///
   /// The list of [scopes] are OAuth scope codes to request when signing in.
   /// These scope codes will determine the level of data access that is granted
   /// to your application by the user.
@@ -149,18 +153,18 @@ class GoogleSignIn {
   /// specified domain. By default, the list of accounts will not be restricted.
   GoogleSignIn({this.signInOption, this.scopes, this.hostedDomain});
 
-  /// Factory for creating default sign in
-  factory GoogleSignIn.defaultSignIn(
-      {List<String> scopes, String hostedDomain}) {
+  /// Factory for creating default sign in user experience.
+  factory GoogleSignIn.standard({List<String> scopes, String hostedDomain}) {
     return new GoogleSignIn(
-        signInOption: SignInOption.defaultSignIn,
+        signInOption: SignInOption.standard,
         scopes: scopes,
         hostedDomain: hostedDomain);
   }
 
-  /// Factory for creating sign in suitable for games
-  factory GoogleSignIn.gamesSignIn() {
-    return new GoogleSignIn(signInOption: SignInOption.gamesSignIn);
+  /// Factory for creating sign in suitable for games. This option must not be
+  /// used on iOS because the games API is not supported.
+  factory GoogleSignIn.games() {
+    return new GoogleSignIn(signInOption: SignInOption.games);
   }
 
   StreamController<GoogleSignInAccount> _currentUserController =
@@ -193,7 +197,7 @@ class GoogleSignIn {
   Future<void> _ensureInitialized() {
     if (_initialization == null) {
       _initialization = channel.invokeMethod('init', <String, dynamic>{
-        'signInOption': (signInOption ?? SignInOption.defaultSignIn).index,
+        'signInOption': (signInOption ?? SignInOption.standard).toString(),
         'scopes': scopes ?? <String>[],
         'hostedDomain': hostedDomain,
       })

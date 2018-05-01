@@ -52,7 +52,7 @@ void main() {
         log,
         <Matcher>[
           isMethodCall('init', arguments: <String, dynamic>{
-            'signInOption': 0,
+            'signInOption': 'SignInOption.standard',
             'scopes': <String>[],
             'hostedDomain': null,
           }),
@@ -68,7 +68,7 @@ void main() {
         log,
         <Matcher>[
           isMethodCall('init', arguments: <String, dynamic>{
-            'signInOption': 0,
+            'signInOption': 'SignInOption.standard',
             'scopes': <String>[],
             'hostedDomain': null,
           }),
@@ -82,7 +82,7 @@ void main() {
       expect(googleSignIn.currentUser, isNull);
       expect(log, <Matcher>[
         isMethodCall('init', arguments: <String, dynamic>{
-          'signInOption': 0,
+          'signInOption': 'SignInOption.standard',
           'scopes': <String>[],
           'hostedDomain': null,
         }),
@@ -97,7 +97,7 @@ void main() {
         log,
         <Matcher>[
           isMethodCall('init', arguments: <String, dynamic>{
-            'signInOption': 0,
+            'signInOption': 'SignInOption.standard',
             'scopes': <String>[],
             'hostedDomain': null,
           }),
@@ -114,7 +114,7 @@ void main() {
         log,
         <Matcher>[
           isMethodCall('init', arguments: <String, dynamic>{
-            'signInOption': 0,
+            'signInOption': 'SignInOption.standard',
             'scopes': <String>[],
             'hostedDomain': null,
           }),
@@ -128,7 +128,7 @@ void main() {
       expect(result, isTrue);
       expect(log, <Matcher>[
         isMethodCall('init', arguments: <String, dynamic>{
-          'signInOption': 0,
+          'signInOption': 'SignInOption.standard',
           'scopes': <String>[],
           'hostedDomain': null,
         }),
@@ -154,7 +154,7 @@ void main() {
         log,
         <Matcher>[
           isMethodCall('init', arguments: <String, dynamic>{
-            'signInOption': 0,
+            'signInOption': 'SignInOption.standard',
             'scopes': <String>[],
             'hostedDomain': null,
           }),
@@ -171,7 +171,7 @@ void main() {
         log,
         <Matcher>[
           isMethodCall('init', arguments: <String, dynamic>{
-            'signInOption': 0,
+            'signInOption': 'SignInOption.standard',
             'scopes': <String>[],
             'hostedDomain': null,
           }),
@@ -193,7 +193,7 @@ void main() {
         log,
         <Matcher>[
           isMethodCall('init', arguments: <String, dynamic>{
-            'signInOption': 0,
+            'signInOption': 'SignInOption.standard',
             'scopes': <String>[],
             'hostedDomain': null,
           }),
@@ -224,7 +224,7 @@ void main() {
         log,
         <Matcher>[
           isMethodCall('init', arguments: <String, dynamic>{
-            'signInOption': 0,
+            'signInOption': 'SignInOption.standard',
             'scopes': <String>[],
             'hostedDomain': null,
           }),
@@ -249,7 +249,7 @@ void main() {
         log,
         <Matcher>[
           isMethodCall('init', arguments: <String, dynamic>{
-            'signInOption': 0,
+            'signInOption': 'SignInOption.standard',
             'scopes': <String>[],
             'hostedDomain': null,
           }),
@@ -292,8 +292,8 @@ void main() {
       expect(await googleSignIn.signIn(), isNotNull);
     });
 
-    test('created with defaultSignIn factory uses correct options', () async {
-      googleSignIn = new GoogleSignIn.defaultSignIn();
+    test('created with standard factory uses correct options', () async {
+      googleSignIn = new GoogleSignIn.standard();
 
       await googleSignIn.signInSilently();
       expect(googleSignIn.currentUser, isNotNull);
@@ -301,7 +301,7 @@ void main() {
         log,
         <Matcher>[
           isMethodCall('init', arguments: <String, dynamic>{
-            'signInOption': 0,
+            'signInOption': 'SignInOption.standard',
             'scopes': <String>[],
             'hostedDomain': null,
           }),
@@ -312,7 +312,7 @@ void main() {
 
     test('created with defaultGamesSignIn factory uses correct options',
         () async {
-      googleSignIn = new GoogleSignIn.gamesSignIn();
+      googleSignIn = new GoogleSignIn.games();
 
       await googleSignIn.signInSilently();
       expect(googleSignIn.currentUser, isNotNull);
@@ -320,7 +320,7 @@ void main() {
         log,
         <Matcher>[
           isMethodCall('init', arguments: <String, dynamic>{
-            'signInOption': 1,
+            'signInOption': 'SignInOption.games',
             'scopes': <String>[],
             'hostedDomain': null,
           }),
