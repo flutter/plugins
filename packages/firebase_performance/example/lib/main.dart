@@ -82,10 +82,8 @@ class _MyAppState extends State<MyApp> {
             ),
             new Text(
               _traceHasRan ? 'Trace Ran!' : '',
-              style:
-              const TextStyle(
-                  color: Colors.lightGreenAccent,
-                  fontSize: 25.0),
+              style: const TextStyle(
+                  color: Colors.lightGreenAccent, fontSize: 25.0),
             )
           ],
         )),
