@@ -77,7 +77,7 @@ public class ImagePickerDelegateTest {
   @Test
   public void whenConstructed_setsCorrectFileProviderName() {
     ImagePickerDelegate delegate = createDelegate();
-    assertThat(delegate.fileProviderName, equalTo("com.example.test.flutter.image_provider"));
+    assertThat(delegate.fileProviderName, equalTo("com.example.test.flutter.image_providersdfsadfasdlfn"));
   }
 
   @Test
