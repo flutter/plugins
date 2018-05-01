@@ -1,3 +1,7 @@
+## 3.0.3
+
+* Added support for games sign in on Android.
+
 ## 3.0.2
 
 * Updated Google Play Services dependency to version 15.0.0.
