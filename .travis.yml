@@ -44,10 +44,10 @@ matrix:
       script:
         - ./script/plugin_tools.sh format --travis --clang-format=clang-format-5.0
         - ./script/plugin_tools.sh test
-    # Job 3) Build example APKs
+    # Job 3) Build example APKs and run Java tests
     - os: linux
       env:
-        - SHARD=Build-example-APKs
+        - SHARD=Build-example-APKs+Java-Tests
       jdk: oraclejdk8
       sudo: false
       addons:
@@ -87,6 +87,7 @@ matrix:
         - pub global activate flutter_plugin_tools
       script:
         - ./script/plugin_tools.sh build-examples --apk
+        - ./script/plugin_tools.sh java-test  # must come after apk build
     # Job 4) Build example IPAs
     - os: osx
       env:
