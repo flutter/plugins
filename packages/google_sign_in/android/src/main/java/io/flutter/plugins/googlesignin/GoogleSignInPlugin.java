@@ -73,9 +73,10 @@ public class GoogleSignInPlugin implements MethodCallHandler {
   public void onMethodCall(MethodCall call, Result result) {
     switch (call.method) {
       case METHOD_INIT:
+        String signInOption = call.argument("signInOption");
         List<String> requestedScopes = call.argument("scopes");
         String hostedDomain = call.argument("hostedDomain");
-        delegate.init(result, requestedScopes, hostedDomain);
+        delegate.init(result, signInOption, requestedScopes, hostedDomain);
         break;
 
       case METHOD_SIGN_IN_SILENTLY:
@@ -115,7 +116,8 @@ public class GoogleSignInPlugin implements MethodCallHandler {
    */
   public interface IDelegate {
     /** Initializes this delegate so that it is ready to perform other operations. */
-    public void init(Result result, List<String> requestedScopes, String hostedDomain);
+    public void init(
+        Result result, String signInOption, List<String> requestedScopes, String hostedDomain);
 
     /**
      * Returns the account information for the user who is signed in to this app. If no user is
@@ -171,6 +173,9 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 
     private static final String STATE_RESOLVING_ERROR = "resolving_error";
 
+    private static final String DEFAULT_SIGN_IN = "SignInOption.standard";
+    private static final String DEFAULT_GAMES_SIGN_IN = "SignInOption.games";
+
     private final PluginRegistry.Registrar registrar;
     private final Handler handler = new Handler();
     private final BackgroundTaskRunner backgroundTaskRunner = new BackgroundTaskRunner(1);
@@ -206,14 +211,28 @@ public class GoogleSignInPlugin implements MethodCallHandler {
      * guarantees that this will be called and completed before any other methods are invoked.
      */
     @Override
-    public void init(Result result, List<String> requestedScopes, String hostedDomain) {
+    public void init(
+        Result result, String signInOption, List<String> requestedScopes, String hostedDomain) {
       // We're not initialized until we receive `onConnected`.
       // If initialization fails, we'll receive `onConnectionFailed`
       checkAndSetPendingOperation(METHOD_INIT, result);
 
       try {
-        GoogleSignInOptions.Builder optionsBuilder =
-            new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail();
+        GoogleSignInOptions.Builder optionsBuilder;
+
+        switch (signInOption) {
+          case DEFAULT_GAMES_SIGN_IN:
+            optionsBuilder =
+                new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN);
+            break;
+          case DEFAULT_SIGN_IN:
+            optionsBuilder =
+                new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail();
+            break;
+          default:
+            throw new IllegalStateException("Unknown signInOption");
+        }
+
         // Only requests a clientId if google-services.json was present and parsed
         // by the google-services Gradle script.
         // TODO(jackson): Perhaps we should provide a mechanism to override this
@@ -363,6 +382,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
               new ResultCallback<Status>() {
                 @Override
                 public void onResult(@NonNull Status status) {
+                  currentAccount = null;
                   // TODO(tvolkert): communicate status back to user
                   finishWithSuccess(null);
                 }

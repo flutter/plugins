@@ -52,6 +52,7 @@ void main() {
         log,
         <Matcher>[
           isMethodCall('init', arguments: <String, dynamic>{
+            'signInOption': 'SignInOption.standard',
             'scopes': <String>[],
             'hostedDomain': null,
           }),
@@ -67,6 +68,7 @@ void main() {
         log,
         <Matcher>[
           isMethodCall('init', arguments: <String, dynamic>{
+            'signInOption': 'SignInOption.standard',
             'scopes': <String>[],
             'hostedDomain': null,
           }),
@@ -80,6 +82,7 @@ void main() {
       expect(googleSignIn.currentUser, isNull);
       expect(log, <Matcher>[
         isMethodCall('init', arguments: <String, dynamic>{
+          'signInOption': 'SignInOption.standard',
           'scopes': <String>[],
           'hostedDomain': null,
         }),
@@ -94,6 +97,7 @@ void main() {
         log,
         <Matcher>[
           isMethodCall('init', arguments: <String, dynamic>{
+            'signInOption': 'SignInOption.standard',
             'scopes': <String>[],
             'hostedDomain': null,
           }),
@@ -110,6 +114,7 @@ void main() {
         log,
         <Matcher>[
           isMethodCall('init', arguments: <String, dynamic>{
+            'signInOption': 'SignInOption.standard',
             'scopes': <String>[],
             'hostedDomain': null,
           }),
@@ -123,6 +128,7 @@ void main() {
       expect(result, isTrue);
       expect(log, <Matcher>[
         isMethodCall('init', arguments: <String, dynamic>{
+          'signInOption': 'SignInOption.standard',
           'scopes': <String>[],
           'hostedDomain': null,
         }),
@@ -148,6 +154,7 @@ void main() {
         log,
         <Matcher>[
           isMethodCall('init', arguments: <String, dynamic>{
+            'signInOption': 'SignInOption.standard',
             'scopes': <String>[],
             'hostedDomain': null,
           }),
@@ -164,6 +171,7 @@ void main() {
         log,
         <Matcher>[
           isMethodCall('init', arguments: <String, dynamic>{
+            'signInOption': 'SignInOption.standard',
             'scopes': <String>[],
             'hostedDomain': null,
           }),
@@ -185,6 +193,7 @@ void main() {
         log,
         <Matcher>[
           isMethodCall('init', arguments: <String, dynamic>{
+            'signInOption': 'SignInOption.standard',
             'scopes': <String>[],
             'hostedDomain': null,
           }),
@@ -215,6 +224,7 @@ void main() {
         log,
         <Matcher>[
           isMethodCall('init', arguments: <String, dynamic>{
+            'signInOption': 'SignInOption.standard',
             'scopes': <String>[],
             'hostedDomain': null,
           }),
@@ -239,6 +249,7 @@ void main() {
         log,
         <Matcher>[
           isMethodCall('init', arguments: <String, dynamic>{
+            'signInOption': 'SignInOption.standard',
             'scopes': <String>[],
             'hostedDomain': null,
           }),
@@ -279,6 +290,43 @@ void main() {
       expect(googleSignIn.signIn(),
           throwsA(const isInstanceOf<PlatformException>()));
       expect(await googleSignIn.signIn(), isNotNull);
+    });
+
+    test('created with standard factory uses correct options', () async {
+      googleSignIn = new GoogleSignIn.standard();
+
+      await googleSignIn.signInSilently();
+      expect(googleSignIn.currentUser, isNotNull);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall('init', arguments: <String, dynamic>{
+            'signInOption': 'SignInOption.standard',
+            'scopes': <String>[],
+            'hostedDomain': null,
+          }),
+          isMethodCall('signInSilently', arguments: null),
+        ],
+      );
+    });
+
+    test('created with defaultGamesSignIn factory uses correct options',
+        () async {
+      googleSignIn = new GoogleSignIn.games();
+
+      await googleSignIn.signInSilently();
+      expect(googleSignIn.currentUser, isNotNull);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall('init', arguments: <String, dynamic>{
+            'signInOption': 'SignInOption.games',
+            'scopes': <String>[],
+            'hostedDomain': null,
+          }),
+          isMethodCall('signInSilently', arguments: null),
+        ],
+      );
     });
   });
 
