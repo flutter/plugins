@@ -52,7 +52,6 @@ public class FirebasePerformancePlugin implements MethodCallHandler {
     }
   }
 
-
   private void handleTraceStart(MethodCall call, Result result) {
     Map<String, Object> arguments = call.arguments();
 
