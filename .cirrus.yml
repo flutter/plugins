@@ -19,3 +19,5 @@ task:
       script: ./script/incremental_build.sh analyze
     - name: build-apks
       script: ./script/incremental_build.sh build-examples --apk
+    - name: java-test
+      script: cd ./packages/image_picker/example/android && ./gradlew testDebugUnitTest

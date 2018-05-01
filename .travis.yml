@@ -42,6 +42,7 @@ matrix:
         - flutter doctor
         - pub global activate flutter_plugin_tools
       script:
+        - cd ./packages/image_picker/example/android && ./gradlew testDebugUnitTest
         - ./script/plugin_tools.sh format --travis --clang-format=clang-format-5.0
         - ./script/plugin_tools.sh test
     # Job 3) Build example APKs
@@ -86,6 +87,7 @@ matrix:
         - flutter doctor
         - pub global activate flutter_plugin_tools
       script:
+        - cd ./packages/image_picker/example/android && ./gradlew testDebugUnitTest
         - ./script/plugin_tools.sh build-examples --apk
     # Job 4) Build example IPAs
     - os: osx
