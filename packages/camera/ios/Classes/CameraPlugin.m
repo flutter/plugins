@@ -285,6 +285,7 @@
     [_captureSession stopRunning];
     _isRecording = YES;
     [_captureSession startRunning];
+    result(nil);
   } else {
     _eventSink(@{@"event" : @"error", @"errorDescription" : @"Video is already recording!"});
   }
