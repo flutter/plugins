@@ -13,8 +13,8 @@ class FirebasePerformance {
   static int _traceCount = 0;
 
   @visibleForTesting
-  static const MethodChannel channel = const MethodChannel(
-    'plugins.flutter.io/firebase_performance');
+  static const MethodChannel channel =
+      const MethodChannel('plugins.flutter.io/firebase_performance');
 
   /// Singleton of [FirebasePerformance].
   static final FirebasePerformance instance = new FirebasePerformance._();

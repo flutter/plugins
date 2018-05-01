@@ -72,7 +72,8 @@ void main() {
     });
 
     test('startTrace', () async {
-      final Trace trace = await FirebasePerformance.startTrace('startTrace-test');
+      final Trace trace =
+          await FirebasePerformance.startTrace('startTrace-test');
 
       expect(log, <Matcher>[
         isMethodCall('Trace#start', arguments: <String, Object>{
