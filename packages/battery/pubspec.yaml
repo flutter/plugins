@@ -17,9 +17,9 @@ dependencies:
   meta: "^1.0.5"
 
 dev_dependencies:
-   test: 0.12.30+4
-   mockito: "^2.0.2"
-   async: "^2.0.4"
+  mockito: "^2.0.2"
+  flutter_test:
+    sdk: flutter
 
 environment:
   sdk: ">=2.0.0-dev.28.0 <3.0.0"
