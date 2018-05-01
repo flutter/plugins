@@ -67,17 +67,25 @@ static NSString *const kErrorReasonSignInFailed = @"sign_in_failed";
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([call.method isEqualToString:@"init"]) {
-    NSString *path = [[NSBundle mainBundle] pathForResource:@"GoogleService-Info" ofType:@"plist"];
-    if (path) {
-      NSMutableDictionary *plist = [[NSMutableDictionary alloc] initWithContentsOfFile:path];
-      [GIDSignIn sharedInstance].clientID = plist[kClientIdKey];
-      [GIDSignIn sharedInstance].scopes = call.arguments[@"scopes"];
-      [GIDSignIn sharedInstance].hostedDomain = call.arguments[@"hostedDomain"];
-      result(nil);
-    } else {
-      result([FlutterError errorWithCode:@"missing-config"
-                                 message:@"GoogleService-Info.plist file not found"
+    NSString *signInOption = call.arguments[@"signInOption"];
+    if ([signInOption isEqualToString:@"SignInOption.games"]) {
+      result([FlutterError errorWithCode:@"unsupported-options"
+                                 message:@"Games sign in is not supported on iOS"
                                  details:nil]);
+    } else {
+      NSString *path =
+          [[NSBundle mainBundle] pathForResource:@"GoogleService-Info" ofType:@"plist"];
+      if (path) {
+        NSMutableDictionary *plist = [[NSMutableDictionary alloc] initWithContentsOfFile:path];
+        [GIDSignIn sharedInstance].clientID = plist[kClientIdKey];
+        [GIDSignIn sharedInstance].scopes = call.arguments[@"scopes"];
+        [GIDSignIn sharedInstance].hostedDomain = call.arguments[@"hostedDomain"];
+        result(nil);
+      } else {
+        result([FlutterError errorWithCode:@"missing-config"
+                                   message:@"GoogleService-Info.plist file not found"
+                                   details:nil]);
+      }
     }
   } else if ([call.method isEqualToString:@"signInSilently"]) {
     if ([self setAccountRequest:result]) {
