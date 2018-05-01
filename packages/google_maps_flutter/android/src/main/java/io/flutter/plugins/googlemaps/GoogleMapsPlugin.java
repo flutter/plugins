@@ -26,8 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * the map. A Texture drawn using GoogleMap bitmap snapshots can then be shown instead of the
  * overlay.
  */
-public class GoogleMapsPlugin
-    implements MethodCallHandler, Application.ActivityLifecycleCallbacks {
+public class GoogleMapsPlugin implements MethodCallHandler, Application.ActivityLifecycleCallbacks {
   static final int CREATED = 1;
   static final int STARTED = 2;
   static final int RESUMED = 3;
