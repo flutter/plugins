@@ -7,18 +7,13 @@ package io.flutter.plugins.googlemobilemaps;
 import android.graphics.Point;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMapOptions;
-import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.MarkerOptions;
 import io.flutter.view.FlutterMain;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -101,62 +96,15 @@ class Convert {
     return ((Number) o).floatValue();
   }
 
-  static GoogleMapOptions toGoogleMapOptions(Object o) {
-    final Map<?, ?> data = toMap(o);
-    final GoogleMapOptions options = new GoogleMapOptions();
-    final Object cameraPosition = data.get("cameraPosition");
-    if (cameraPosition != null) {
-      options.camera(toCameraPosition(cameraPosition));
-    }
-    final Object cameraTargetBounds = data.get("cameraTargetBounds");
-    if (cameraTargetBounds != null) {
-      final List<?> targetData = toList(cameraTargetBounds);
-      if (targetData.get(0) != null) {
-        options.latLngBoundsForCameraTarget(toLatLngBounds(targetData.get(0)));
-      }
-    }
-    final Object compassEnabled = data.get("compassEnabled");
-    if (compassEnabled != null) {
-      options.compassEnabled(toBoolean(compassEnabled));
-    }
-    final Object mapType = data.get("mapType");
-    if (mapType != null) {
-      options.mapType(toInt(mapType));
-    }
-    final Object rotateGesturesEnabled = data.get("rotateGesturesEnabled");
-    if (rotateGesturesEnabled != null) {
-      options.rotateGesturesEnabled(toBoolean(rotateGesturesEnabled));
-    }
-    final Object scrollGesturesEnabled = data.get("scrollGesturesEnabled");
-    if (scrollGesturesEnabled != null) {
-      options.scrollGesturesEnabled(toBoolean(scrollGesturesEnabled));
-    }
-    final Object tiltGesturesEnabled = data.get("tiltGesturesEnabled");
-    if (tiltGesturesEnabled != null) {
-      options.tiltGesturesEnabled(toBoolean(tiltGesturesEnabled));
-    }
-    final Object zoomBounds = data.get("zoomBounds");
-    if (zoomBounds != null) {
-      final List<?> zoomData = toList(zoomBounds);
-      if (zoomData.get(0) != null) {
-        options.minZoomPreference(toFloat(zoomData.get(0)));
-      }
-      if (zoomData.get(1) != null) {
-        options.maxZoomPreference(toFloat(zoomData.get(1)));
-      }
-    }
-    final Object zoomGesturesEnabled = data.get("zoomGesturesEnabled");
-    if (zoomGesturesEnabled != null) {
-      options.zoomGesturesEnabled(toBoolean(zoomGesturesEnabled));
-    }
-    return options;
+  private static Float toFloatWrapper(Object o) {
+    return (o == null) ? null : toFloat(o);
   }
 
   static int toInt(Object o) {
     return ((Number) o).intValue();
   }
 
-  private static Object toJson(CameraPosition position) {
+  static Object toJson(CameraPosition position) {
     final Map<String, Object> data = new HashMap<>();
     data.put("bearing", position.bearing);
     data.put("target", toJson(position.target));
@@ -175,6 +123,9 @@ class Convert {
   }
 
   private static LatLngBounds toLatLngBounds(Object o) {
+    if (o == null) {
+      return null;
+    }
     final List<?> data = toList(o);
     return new LatLngBounds(toLatLng(data.get(0)), toLatLng(data.get(1)));
   }
@@ -191,25 +142,6 @@ class Convert {
     return (Map<?, ?>) o;
   }
 
-  static MarkerOptions toMarkerOptions(Object o) {
-    final Map<?, ?> data = toMap(o);
-    final List<?> anchor = toList(data.get("anchor"));
-    final List<?> infoWindowAnchor = toList(data.get("infoWindowAnchor"));
-    return new MarkerOptions()
-        .position(toLatLng(data.get("position")))
-        .alpha(toFloat(data.get("alpha")))
-        .anchor(toFloat(anchor.get(0)), toFloat(anchor.get(1)))
-        .draggable(toBoolean(data.get("draggable")))
-        .flat(toBoolean(data.get("flat")))
-        .icon(toBitmapDescriptor(data.get("icon")))
-        .infoWindowAnchor(toFloat(infoWindowAnchor.get(0)), toFloat(infoWindowAnchor.get(1)))
-        .rotation(toFloat(data.get("rotation")))
-        .snippet(toString(data.get("snippet")))
-        .title(toString(data.get("title")))
-        .visible(toBoolean(data.get("visible")))
-        .zIndex(toFloat(data.get("zIndex")));
-  }
-
   private static Point toPoint(Object o) {
     final List<?> data = toList(o);
     return new Point(toInt(data.get(0)), toInt(data.get(1)));
@@ -219,109 +151,110 @@ class Convert {
     return (String) o;
   }
 
-  /**
-   * Sets GoogleMaps user interface options extracted from the specified JSON-like value on the
-   * given GoogleMap instance.
-   *
-   * @param o the JSON-like value
-   * @param googleMap the GoogleMap instance
-   */
-  static void setMapOptions(Object o, GoogleMap googleMap) {
-    final Map<?, ?> options = toMap(o);
-    final Object cameraTargetBounds = options.get("cameraTargetBounds");
-    final UiSettings uiSettings = googleMap.getUiSettings();
-    if (cameraTargetBounds != null) {
-      final List<?> targetData = toList(cameraTargetBounds);
-      if (targetData.get(0) == null) {
-        googleMap.setLatLngBoundsForCameraTarget(null);
-      } else {
-        googleMap.setLatLngBoundsForCameraTarget(toLatLngBounds(targetData.get(0)));
-      }
-    }
-    final Object compassEnabled = options.get("compassEnabled");
-    if (compassEnabled != null) {
-      uiSettings.setCompassEnabled(toBoolean(compassEnabled));
-    }
-    final Object mapType = options.get("mapType");
-    if (mapType != null) {
-      googleMap.setMapType(toInt(mapType));
-    }
-    final Object rotateGesturesEnabled = options.get("rotateGesturesEnabled");
-    if (rotateGesturesEnabled != null) {
-      uiSettings.setRotateGesturesEnabled(toBoolean(rotateGesturesEnabled));
-    }
-    final Object scrollGesturesEnabled = options.get("scrollGesturesEnabled");
-    if (scrollGesturesEnabled != null) {
-      uiSettings.setScrollGesturesEnabled(toBoolean(scrollGesturesEnabled));
-    }
-    final Object tiltGesturesEnabled = options.get("tiltGesturesEnabled");
-    if (tiltGesturesEnabled != null) {
-      uiSettings.setTiltGesturesEnabled(toBoolean(tiltGesturesEnabled));
-    }
-    final Object zoomBounds = options.get("zoomBounds");
-    if (zoomBounds != null) {
-      final List<?> zoomData = toList(zoomBounds);
-      googleMap.resetMinMaxZoomPreference();
-      if (zoomData.get(0) != null) {
-        googleMap.setMinZoomPreference(toFloat(zoomData.get(0)));
-      }
-      if (zoomData.get(1) != null) {
-        googleMap.setMaxZoomPreference(toFloat(zoomData.get(1)));
-      }
-    }
-    final Object zoomGesturesEnabled = options.get("zoomGesturesEnabled");
-    if (zoomGesturesEnabled != null) {
-      uiSettings.setZoomGesturesEnabled(toBoolean(zoomGesturesEnabled));
-    }
-    final Object cameraPosition = options.get("cameraPosition");
+  static void interpretGoogleMapOptions(Object o, GoogleMapOptionsSink sink) {
+    final Map<?, ?> data = toMap(o);
+    final Object cameraPosition = data.get("cameraPosition");
     if (cameraPosition != null) {
-      googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(toCameraPosition(cameraPosition)));
+      sink.setCameraPosition(toCameraPosition(cameraPosition));
+    }
+    final Object compassEnabled = data.get("compassEnabled");
+    if (compassEnabled != null) {
+      sink.setCompassEnabled(toBoolean(compassEnabled));
+    }
+    final Object latLngCameraTargetBounds = data.get("latLngCameraTargetBounds");
+    if (latLngCameraTargetBounds != null) {
+      final List<?> targetData = toList(latLngCameraTargetBounds);
+      sink.setLatLngBoundsForCameraTarget(toLatLngBounds(targetData.get(0)));
+    }
+    final Object mapType = data.get("mapType");
+    if (mapType != null) {
+      sink.setMapType(toInt(mapType));
+    }
+    final Object minMaxZoomPreference = data.get("minMaxZoomPreference");
+    if (minMaxZoomPreference != null) {
+      final List<?> zoomPreferenceData = toList(minMaxZoomPreference);
+      sink.setMinMaxZoomPreference( //
+          toFloatWrapper(zoomPreferenceData.get(0)), //
+          toFloatWrapper(zoomPreferenceData.get(1)));
+    }
+    final Object rotateGesturesEnabled = data.get("rotateGesturesEnabled");
+    if (rotateGesturesEnabled != null) {
+      sink.setRotateGesturesEnabled(toBoolean(rotateGesturesEnabled));
+    }
+    final Object scrollGesturesEnabled = data.get("scrollGesturesEnabled");
+    if (scrollGesturesEnabled != null) {
+      sink.setScrollGesturesEnabled(toBoolean(scrollGesturesEnabled));
+    }
+    final Object tiltGesturesEnabled = data.get("tiltGesturesEnabled");
+    if (tiltGesturesEnabled != null) {
+      sink.setTiltGesturesEnabled(toBoolean(tiltGesturesEnabled));
+    }
+    final Object trackCameraPosition = data.get("trackCameraPosition");
+    if (trackCameraPosition != null) {
+      sink.setTrackCameraPosition(toBoolean(trackCameraPosition));
+    }
+    final Object zoomGesturesEnabled = data.get("zoomGesturesEnabled");
+    if (zoomGesturesEnabled != null) {
+      sink.setZoomGesturesEnabled(toBoolean(zoomGesturesEnabled));
     }
   }
 
-  /**
-   * Stores GoogleMaps user interface configuration items extracted from the specified JSON-like
-   * value in the provided storage Map for cases where no getters exist in the GoogleMaps APIs.
-   *
-   * @param o the JSON-like value
-   * @param storageMap the storage Map
-   */
-  static void setMapOptionsWithNoGetters(Object o, Map<String, Object> storageMap) {
-    final Map<?, ?> options = toMap(o);
-    final Object cameraTargetBounds = options.get("cameraTargetBounds");
-    if (cameraTargetBounds != null) {
-      storageMap.put("cameraTargetBounds", cameraTargetBounds);
+  static void interpretMarkerOptions(Object o, MarkerOptionsSink sink) {
+    final Map<?, ?> data = toMap(o);
+    final Object alpha = data.get("alpha");
+    if (alpha != null) {
+      sink.setAlpha(toFloat(alpha));
     }
-    final Object zoomBounds = options.get("zoomBounds");
-    if (zoomBounds != null) {
-      storageMap.put("zoomBounds", zoomBounds);
+    final Object anchor = data.get("anchor");
+    if (anchor != null) {
+      final List<?> anchorData = toList(anchor);
+      sink.setAnchor(toFloat(anchorData.get(0)), toFloat(anchorData.get(1)));
     }
-  }
-
-  /**
-   * Extract current GoogleMaps user interface configuration items in a JSON-like value, using the
-   * specified storage Map for cases where no getters exist in the GoogleMaps APIs.
-   *
-   * @param googleMap a GoogleMap instance
-   * @param storageMap the storage Map
-   * @return a JSON-like value
-   */
-  static Object getMapOptions(GoogleMap googleMap, Map<String, Object> storageMap) {
-    final Map<String, Object> json = new HashMap<>(storageMap);
-    final UiSettings uiSettings = googleMap.getUiSettings();
-    json.put("cameraPosition", toJson(googleMap.getCameraPosition()));
-    if (!json.containsKey("cameraTargetBounds")) {
-      json.put("cameraTargetBounds", Collections.singletonList(null)); // unbounded
+    final Object consumesTapEvents = data.get("consumesTapEvents");
+    if (consumesTapEvents != null) {
+      sink.setConsumesTapEvents(toBoolean(consumesTapEvents));
     }
-    json.put("compassEnabled", uiSettings.isCompassEnabled());
-    json.put("mapType", googleMap.getMapType());
-    json.put("rotateGesturesEnabled", uiSettings.isRotateGesturesEnabled());
-    json.put("scrollGesturesEnabled", uiSettings.isScrollGesturesEnabled());
-    json.put("tiltGesturesEnabled", uiSettings.isTiltGesturesEnabled());
-    if (!json.containsKey("zoomBounds")) {
-      json.put("zoomBounds", Arrays.asList(null, null)); // unbounded
+    final Object draggable = data.get("draggable");
+    if (draggable != null) {
+      sink.setDraggable(toBoolean(draggable));
     }
-    json.put("zoomGesturesEnabled", uiSettings.isZoomGesturesEnabled());
-    return json;
+    final Object flat = data.get("flat");
+    if (flat != null) {
+      sink.setFlat(toBoolean(flat));
+    }
+    final Object icon = data.get("icon");
+    if (icon != null) {
+      sink.setIcon(toBitmapDescriptor(icon));
+    }
+    final Object infoWindowAnchor = data.get("infoWindowAnchor");
+    if (infoWindowAnchor != null) {
+      final List<?> anchorData = toList(infoWindowAnchor);
+      sink.setInfoWindowAnchor(toFloat(anchorData.get(0)), toFloat(anchorData.get(1)));
+    }
+    final Object infoWindowShown = data.get("infoWindowShown");
+    if (infoWindowShown != null) {
+      sink.setInfoWindowShown(toBoolean(infoWindowShown));
+    }
+    final Object infoWindowText = data.get("infoWindowText");
+    if (infoWindowText != null) {
+      final List<?> textData = toList(infoWindowText);
+      sink.setInfoWindowText(toString(textData.get(0)), toString(textData.get(1)));
+    }
+    final Object position = data.get("position");
+    if (position != null) {
+      sink.setPosition(toLatLng(position));
+    }
+    final Object rotation = data.get("rotation");
+    if (rotation != null) {
+      sink.setRotation(toFloat(rotation));
+    }
+    final Object visible = data.get("visible");
+    if (visible != null) {
+      sink.setVisible(toBoolean(visible));
+    }
+    final Object zIndex = data.get("zIndex");
+    if (zIndex != null) {
+      sink.setZIndex(toFloat(zIndex));
+    }
   }
 }
