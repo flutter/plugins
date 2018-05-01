@@ -108,8 +108,8 @@ class FirebaseMessaging {
         }
         return null;
       case "onIosSettingsRegistered":
-        _iosSettingsStreamController
-            .add(new IosNotificationSettings._fromMap(call.arguments));
+        _iosSettingsStreamController.add(new IosNotificationSettings._fromMap(
+            call.arguments.cast<String, bool>()));
         return null;
       case "onMessage":
         return _onMessage(call.arguments.cast<String, dynamic>());
