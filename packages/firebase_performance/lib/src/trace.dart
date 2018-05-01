@@ -6,6 +6,16 @@ part of firebase_performance;
 
 /// Trace allows you to set beginning and end of a certain action in your app.
 class Trace {
+  Trace._(this._id, this._name) {
+    assert(_name != null, "Name is null.");
+    assert(!_name.startsWith(new RegExp(r'[_\s]')),
+        "Name '$_name' starts with an underscore or space.");
+    assert(!_name.contains(new RegExp(r'[_\s]$')),
+        "Name '$_name' ends with an underscore or space.");
+    assert(_name.length <= maxTraceNameLength,
+        "Name '$_name' has length greater than $maxTraceNameLength.");
+  }
+
   /// Maximum allowed length of the Key of the [Trace] attribute.
   static const int maxAttributeKeyLength = 40;
 
@@ -21,51 +31,44 @@ class Trace {
   /// Maximum allowed length of the Key of the [Trace] counter.
   static const int maxCounterKeyLength = 32;
 
-  final FirebasePerformance _performance;
+  final int _id;
+  final String _name;
+
   bool _hasStarted = false;
   bool _hasStopped = false;
 
-  /// Id used to sync traces with device platform code.
-  final int id;
-
-  /// Name of this [Trace].
-  final String name;
-
-  /// Map of all the counters added to this trace.
-  final HashMap<String, int> counters = new HashMap<String, int>();
+  final HashMap<String, int> _counters = new HashMap<String, int>();
+  final HashMap<String, String> _attributes = new HashMap<String, String>();
 
   /// Map of all the attributes added to this trace.
-  final HashMap<String, String> attributes = new HashMap<String, String>();
-
-  Trace._(this._performance, this.id, this.name);
-
-  /// If start() has been called on this [Trace].
-  bool get hasStarted => _hasStarted;
-
-  /// If stop() has been called after start() for this [Trace].
-  bool get hasStopped => _hasStopped;
+  Map<String, String> get attributes => Map<String, String>.from(_attributes);
 
   /// Starts this trace.
-  Future<Null> start() async {
-    if (_hasStarted) {
-      _printError('start', "it has already been started!");
-      return;
-    }
+  Future<void> start() {
+    assert(!_hasStarted, "Trace has already been started.");
 
-    await _performance._traceStart(this);
     _hasStarted = true;
+    return FirebasePerformance.channel
+        .invokeMethod('Trace#start', <String, dynamic>{
+      'id': _id,
+      'name': _name,
+    });
   }
 
   /// Stops this trace.
-  Future<Null> stop() async {
-    if (_hasStarted && !hasStopped) {
-      await _performance._traceStop(this);
-      _hasStopped = true;
-    } else if (_hasStopped) {
-      _printError('stop', "it's been stopped!");
-    } else {
-      _printError('stop', "it has not been started!");
-    }
+  Future<void> stop() {
+    assert(!_hasStopped, "Trace has already been stopped.");
+    assert(_hasStarted, "Trace has not been started.");
+
+    final Map<String, dynamic> data = <String, dynamic>{
+      'id': _id,
+      'name': _name,
+      'counters': _counters,
+      'attributes': _attributes,
+    };
+
+    _hasStopped = true;
+    return FirebasePerformance.channel.invokeMethod('Trace#stop', data);
   }
 
   /// Increments the counter in this trace with the given [name] by given value.
@@ -76,18 +79,22 @@ class Trace {
   /// immediately without taking action.
   ///
   /// [name]: Name of the counter to be incremented. Requires no leading or
-  /// trailing whitespace, no leading underscore [_] character, max length of
+  /// trailing whitespace, no leading underscore _ character, max length of
   /// [maxCounterKeyLength] characters.
   ///
   /// [incrementBy]: Amount by which the counter has to be incremented.
   void incrementCounter(String name, [int incrementBy = 1]) {
-    if (hasStopped) {
-      _printError('incrementCounter', "it's been stopped!");
-      return;
-    }
+    assert(!_hasStopped, "Trace has already been stopped.");
+    assert(name != null, "Counter name is null.");
+    assert(!name.startsWith(new RegExp(r'[_\s]')),
+    "Counter name '$name' starts with an underscore or space.");
+    assert(!name.contains(new RegExp(r'[_\s]$')),
+    "Counter name '$name' ends with an underscore or space.");
+    assert(name.length <= maxCounterKeyLength,
+    "Counter name '$name' has length greater than $maxCounterKeyLength.");
 
-    counters.putIfAbsent(name, () => 0);
-    counters[name] += incrementBy;
+    _counters.putIfAbsent(name, () => 0);
+    _counters[name] += incrementBy;
   }
 
   /// Sets a String [value] for the specified [attribute].
@@ -103,37 +110,34 @@ class Trace {
   /// [value]: Value of the attribute. Max length of [maxAttributeValueLength]
   /// characters.
   void putAttribute(String attribute, String value) {
-    if (hasStopped) {
-      _printError('putAttribute', "it's been stopped!");
-      return;
-    }
+    assert(!_hasStopped, "Trace has already been stopped.");
+    assert(!_hasStopped, "Trace has already been stopped.");
+    assert(attribute != null, "Counter name is null.");
+    assert(!attribute.startsWith(new RegExp(r'[_\s]')),
+    "Attribute key '$attribute' starts with an underscore or space.");
+    assert(!attribute.contains(new RegExp(r'[_\s]$')),
+    "Atribute key '$attribute' ends with an underscore or space.");
+    assert(attribute.length <= maxAttributeKeyLength,
+    "Attribute key '$attribute' has length greater than $maxAttributeKeyLength.");
+    assert(value.length <= maxAttributeValueLength,
+    "Value '$value' has length greater than $maxAttributeValueLength.");
+    assert(_attributes.length <= maxTraceCustomAttributes,
+    "Maximum number of attributes ($maxTraceCustomAttributes) have already been added.");
 
-    attributes.putIfAbsent(attribute, () => value);
-    attributes[attribute] = value;
+    _attributes.putIfAbsent(attribute, () => value);
+    _attributes[attribute] = value;
   }
 
-  /// Removes an already added [attribute] from the Trace.
+  /// Removes an already added [attribute] from the [Trace].
   ///
   /// Removes an already added attribute from the Traces. If the trace has been
   /// stopped, this method returns without removing the attribute.
-  ///
-  /// [attribute]: Name of the attribute to be removed from the running Traces.
   void removeAttribute(String attribute) {
-    if (hasStopped) {
-      _printError('removeAttribute', "it's been stopped!");
-      return;
-    }
+    assert(!_hasStopped, "Trace has already been stopped.");
 
-    attributes.remove(attribute);
+    _attributes.remove(attribute);
   }
 
   /// Returns the value of an [attribute].
-  ///
-  /// [attribute]: Name of the attribute to fetch the value for.
-  String getAttribute(String attribute) => attributes[attribute];
-
-  void _printError(String method, String reason) {
-    print(
-        "FirbasePerformance: Can't '$method()' for trace '$name' because $reason!");
-  }
+  String getAttribute(String attribute) => _attributes[attribute];
 }

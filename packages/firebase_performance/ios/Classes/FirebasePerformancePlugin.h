@@ -1,6 +1,5 @@
 #import <Flutter/Flutter.h>
 
-@interface FirebasePerformancePlugin : NSObject<FlutterPlugin>
-// Handles are ints used as indexes into the dictionary of active traces
+@interface FLTFirebasePerformancePlugin : NSObject<FlutterPlugin>
 @property(nonatomic, retain) NSMutableDictionary *traces;
 @end

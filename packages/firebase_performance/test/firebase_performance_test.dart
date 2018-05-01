@@ -59,9 +59,27 @@ void main() {
       ]);
     });
 
-    test('newTrace', () {
+    test('newTrace', () async {
       final Trace trace = performance.newTrace('test-trace');
-      expect(trace.name, 'test-trace');
+
+      await trace.start();
+      expect(log, <Matcher>[
+        isMethodCall('Trace#start', arguments: <String, Object>{
+          'id': 0,
+          'name': 'test-trace',
+        })
+      ]);
+    });
+
+    test('startTrace', () async {
+      final Trace trace = await FirebasePerformance.startTrace('startTrace-test');
+
+      expect(log, <Matcher>[
+        isMethodCall('Trace#start', arguments: <String, Object>{
+          'id': 0,
+          'name': 'startTrace-test',
+        })
+      ]);
     });
 
     group('$Trace', () {
@@ -71,112 +89,66 @@ void main() {
         testTrace = performance.newTrace('test');
       });
 
-      test('startTrace', () async {
-        final Trace trace = await performance.startTrace('startTrace-test');
-        expect(trace.name, 'startTrace-test');
-
-        expect(log, <Matcher>[
-          isMethodCall('Trace#start', arguments: <String, Object>{
-            'id': trace.id,
-            'name': 'startTrace-test',
-          })
-        ]);
-      });
-
       test('start', () async {
-        final int ret = await testTrace.start();
-        expect(ret, null);
+        await testTrace.start();
+
         expect(log, <Matcher>[
           isMethodCall('Trace#start', arguments: <String, Object>{
-            'id': testTrace.id,
+            'id': 0,
             'name': 'test',
           })
         ]);
-        expect(testTrace.hasStarted, true);
       });
 
       test('stop', () async {
-        testTrace.incrementCounter('counter1');
-        testTrace.putAttribute('attr1', 'apple');
-
-        int ret = await testTrace.start();
-        expect(ret, null);
-        ret = await testTrace.stop();
-        expect(ret, null);
+        await testTrace.start();
+        await testTrace.stop();
 
         expect(log, <Matcher>[
           isMethodCall('Trace#start', arguments: <String, Object>{
-            'id': testTrace.id,
+            'id': 0,
             'name': 'test',
           }),
           isMethodCall('Trace#stop', arguments: <String, dynamic>{
-            'id': testTrace.id,
+            'id': 0,
             'name': 'test',
-            'counters': <String, int>{'counter1': 1},
-            'attributes': <String, String>{'attr1': 'apple'},
+            'counters': <String, int>{},
+            'attributes': <String, String>{},
           })
         ]);
-        expect(testTrace.hasStarted, true);
-        expect(testTrace.hasStopped, true);
-      });
-
-      test('start and stop called in wrong order', () async {
-        Trace trace = performance.newTrace("test");
-        await trace.stop();
-        expect(trace.hasStarted, false);
-        expect(trace.hasStopped, false);
-
-        trace = performance.newTrace("test");
-        await trace.start();
-        await trace.start();
-        expect(trace.hasStarted, true);
-        expect(trace.hasStopped, false);
-
-        trace = performance.newTrace("test");
-        await trace.start();
-        await trace.stop();
-        await trace.stop();
-        expect(trace.hasStarted, true);
-        expect(trace.hasStopped, true);
       });
 
       test('incrementCounter', () async {
-        testTrace.incrementCounter('counter1');
-        expect(testTrace.counters, <String, int>{
-          'counter1': 1,
-        });
+        final Trace trace = performance.newTrace("test");
+        trace.incrementCounter('counter1');
 
-        testTrace.incrementCounter('counter1');
-        expect(testTrace.counters['counter1'], 2);
+        trace.incrementCounter('counter2');
+        trace.incrementCounter('counter2');
 
-        testTrace.incrementCounter('counter1', 10);
-        expect(testTrace.counters['counter1'], 12);
+        trace.incrementCounter('counter3', 5);
+        trace.incrementCounter('counter3', 5);
 
-        testTrace.incrementCounter('counter1', -13);
-        expect(testTrace.counters['counter1'], -1);
+        trace.incrementCounter('counter4', -5);
 
-        testTrace.incrementCounter('counter2');
-        expect(testTrace.counters, <String, int>{
-          'counter1': -1,
-          'counter2': 1,
-        });
-
-        testTrace.incrementCounter('counter3', 25);
-        expect(testTrace.counters, <String, int>{
-          'counter1': -1,
-          'counter2': 1,
-          'counter3': 25,
-        });
-
-        // Don't increment counters after trace has stopped.
-        await testTrace.start();
-        await testTrace.stop();
-        testTrace.incrementCounter('counter3');
-        expect(testTrace.counters, <String, int>{
-          'counter1': -1,
-          'counter2': 1,
-          'counter3': 25,
-        });
+        await trace.start();
+        await trace.stop();
+        expect(log, <Matcher>[
+          isMethodCall('Trace#start', arguments: <String, Object>{
+            'id': 0,
+            'name': 'test',
+          }),
+          isMethodCall('Trace#stop', arguments: <String, dynamic>{
+            'id': 0,
+            'name': 'test',
+            'counters': <String, int>{
+              'counter1': 1,
+              'counter2': 2,
+              'counter3': 10,
+              'counter4': -5,
+            },
+            'attributes': <String, String>{},
+          })
+        ]);
       });
 
       test('putAttribute', () async {
@@ -188,14 +160,6 @@ void main() {
         });
 
         testTrace.putAttribute('attr1', 'delicious');
-        expect(testTrace.attributes, <String, String>{
-          'attr1': 'delicious',
-          'attr2': 'are',
-        });
-
-        await testTrace.start();
-        await testTrace.stop();
-        testTrace.putAttribute('attr3', 'yes');
         expect(testTrace.attributes, <String, String>{
           'attr1': 'delicious',
           'attr2': 'are',
@@ -212,13 +176,6 @@ void main() {
         });
 
         testTrace.removeAttribute('attr1');
-        expect(testTrace.attributes, <String, String>{
-          'attr2': 'are',
-        });
-
-        await testTrace.start();
-        await testTrace.stop();
-        testTrace.removeAttribute('attr2');
         expect(testTrace.attributes, <String, String>{
           'attr2': 'are',
         });

@@ -8,6 +8,8 @@ part of firebase_performance;
 ///
 /// You can get an instance by calling [FirebasePerformance.instance].
 class FirebasePerformance {
+  FirebasePerformance._();
+
   static int _traceCount = 0;
 
   @visibleForTesting
@@ -16,8 +18,6 @@ class FirebasePerformance {
 
   /// Singleton of [FirebasePerformance].
   static final FirebasePerformance instance = new FirebasePerformance._();
-
-  FirebasePerformance._();
 
   /// Determines whether performance monitoring is enabled or disabled.
   ///
@@ -35,29 +35,9 @@ class FirebasePerformance {
   /// Enables or disables performance monitoring. This setting is persisted and
   /// applied on future invocations of your application. By default, performance
   /// monitoring is enabled.
-  ///
-  /// [enable]: Should performance monitoring be enabled
   Future<void> setPerformanceCollectionEnabled(bool enable) async {
     await channel.invokeMethod(
         'FirebasePerformance#setPerformanceCollectionEnabled', enable);
-  }
-
-  Future<void> _traceStart(Trace trace) async {
-    await channel.invokeMethod('Trace#start', <String, dynamic>{
-      'id': trace.id,
-      'name': trace.name,
-    });
-  }
-
-  Future<void> _traceStop(Trace trace) async {
-    final Map<String, dynamic> data = <String, dynamic>{
-      'id': trace.id,
-      'name': trace.name,
-      'counters': trace.counters,
-      'attributes': trace.attributes,
-    };
-
-    await channel.invokeMethod('Trace#stop', data);
   }
 
   /// Creates a [Trace] object with given [name].
@@ -66,7 +46,7 @@ class FirebasePerformance {
   /// leading underscore _ character, max length of [Trace.maxTraceNameLength]
   /// characters.
   Trace newTrace(String name) {
-    return new Trace._(this, _traceCount++, name);
+    return new Trace._(_traceCount++, name);
   }
 
   /// Creates a [Trace] object with given [name] and start the trace.
@@ -74,8 +54,8 @@ class FirebasePerformance {
   /// [name]: name of the trace. Requires no leading or trailing whitespace, no
   /// leading underscore _ character, max length of [Trace.maxTraceNameLength]
   /// characters.
-  Future<Trace> startTrace(String name) async {
-    final Trace trace = newTrace(name);
+  static Future<Trace> startTrace(String name) async {
+    final Trace trace = instance.newTrace(name);
     await trace.start();
     return trace;
   }

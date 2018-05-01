@@ -17,6 +17,7 @@ dev_dependencies:
 flutter:
   plugin:
     androidPackage: io.flutter.plugins.firebaseperformance
+    iosPrefix: FLT
     pluginClass: FirebasePerformancePlugin
 
 environment:

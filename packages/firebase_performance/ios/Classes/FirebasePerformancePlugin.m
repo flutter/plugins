@@ -6,12 +6,12 @@
 
 #import "Firebase/Firebase.h"
 
-@implementation FirebasePerformancePlugin
+@implementation FLTFirebasePerformancePlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/firebase_performance"
                                   binaryMessenger:[registrar messenger]];
-  FirebasePerformancePlugin *instance = [[FirebasePerformancePlugin alloc] init];
+  FLTFirebasePerformancePlugin *instance = [[FLTFirebasePerformancePlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
@@ -20,19 +20,22 @@
   if (self) {
     if (![FIRApp defaultApp]) {
       [FIRApp configure];
+      _traces = [[NSMutableDictionary alloc] init];
     }
   }
 
-  _traces = [[NSMutableDictionary alloc] init];
   return self;
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"FirebasePerformance#isPerformanceCollectionEnabled" isEqualToString:call.method]) {
-    [self handleisPerformanceCollectionEnabled:call result:result];
+    result(@([[FIRPerformance sharedInstance] isDataCollectionEnabled]));
 
   } else if ([@"FirebasePerformance#setPerformanceCollectionEnabled" isEqualToString:call.method]) {
-    [self handleSetPerformanceCollectionEnabled:call result:result];
+    NSNumber *enable = call.arguments;
+    [[FIRPerformance sharedInstance] setDataCollectionEnabled:[enable boolValue]];
+
+    result(nil);
 
   } else if ([@"Trace#start" isEqualToString:call.method]) {
     [self handleTraceStart:call result:result];
@@ -43,19 +46,6 @@
   } else {
     result(FlutterMethodNotImplemented);
   }
-}
-
-- (void)handleisPerformanceCollectionEnabled:(FlutterMethodCall *)call
-                                      result:(FlutterResult)result {
-  result(@([[FIRPerformance sharedInstance] isDataCollectionEnabled]));
-}
-
-- (void)handleSetPerformanceCollectionEnabled:(FlutterMethodCall *)call
-                                       result:(FlutterResult)result {
-  NSNumber *enable = call.arguments;
-  [[FIRPerformance sharedInstance] setDataCollectionEnabled:[enable boolValue]];
-
-  result(nil);
 }
 
 - (void)handleTraceStart:(FlutterMethodCall *)call result:(FlutterResult)result {

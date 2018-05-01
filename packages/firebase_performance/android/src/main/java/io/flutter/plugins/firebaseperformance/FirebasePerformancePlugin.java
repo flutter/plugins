@@ -34,10 +34,12 @@ public class FirebasePerformancePlugin implements MethodCallHandler {
   public void onMethodCall(MethodCall call, Result result) {
     switch (call.method) {
       case "FirebasePerformance#isPerformanceCollectionEnabled":
-        handleIsPerformanceCollectionEnabled(call, result);
+        result.success(firebasePerformance.isPerformanceCollectionEnabled());
         break;
       case "FirebasePerformance#setPerformanceCollectionEnabled":
-        handleSetPerformanceCollectionEnabled(call, result);
+        final boolean enabled = (boolean) call.arguments;
+        firebasePerformance.setPerformanceCollectionEnabled(enabled);
+        result.success(null);
         break;
       case "Trace#start":
         handleTraceStart(call, result);
@@ -50,15 +52,6 @@ public class FirebasePerformancePlugin implements MethodCallHandler {
     }
   }
 
-  private void handleIsPerformanceCollectionEnabled(MethodCall call, Result result) {
-    result.success(firebasePerformance.isPerformanceCollectionEnabled());
-  }
-
-  private void handleSetPerformanceCollectionEnabled(MethodCall call, Result result) {
-    final boolean enabled = (boolean) call.arguments;
-    firebasePerformance.setPerformanceCollectionEnabled(enabled);
-    result.success(null);
-  }
 
   private void handleTraceStart(MethodCall call, Result result) {
     Map<String, Object> arguments = call.arguments();
