@@ -59,7 +59,7 @@ class _MyAppState extends State<MyApp> {
     trace.incrementCounter("counter1", 16);
     trace.putAttribute("favorite_color", "blue");
 
-    await trace.start();
+    trace.start();
 
     int sum = 0;
     for (int i = 0; i < 10000000; i++) {
@@ -67,7 +67,7 @@ class _MyAppState extends State<MyApp> {
     }
     print(sum);
 
-    await trace.stop();
+    trace.stop();
 
     setState(() {
       _message = 'Trace sent!';

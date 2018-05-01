@@ -6,6 +6,10 @@
 
 #import "Firebase/Firebase.h"
 
+@interface FLTFirebasePerformancePlugin ()
+@property(nonatomic, retain) NSMutableDictionary *traces;
+@end
+
 @implementation FLTFirebasePerformancePlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =

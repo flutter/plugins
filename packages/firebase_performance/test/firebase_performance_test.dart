@@ -12,6 +12,7 @@ void main() {
     final FirebasePerformance performance = FirebasePerformance.instance;
     final List<MethodCall> log = <MethodCall>[];
     bool performanceCollectionEnable = true;
+    int currentTraceid;
 
     setUp(() {
       FirebasePerformance.channel
@@ -24,6 +25,7 @@ void main() {
             performanceCollectionEnable = methodCall.arguments;
             return null;
           case 'Trace#start':
+            currentTraceid = methodCall.arguments["id"];
             return null;
           case 'Trace#stop':
             return null;
@@ -61,23 +63,22 @@ void main() {
 
     test('newTrace', () async {
       final Trace trace = performance.newTrace('test-trace');
-
       await trace.start();
+
       expect(log, <Matcher>[
         isMethodCall('Trace#start', arguments: <String, Object>{
-          'id': 0,
+          'id': currentTraceid,
           'name': 'test-trace',
         })
       ]);
     });
 
     test('startTrace', () async {
-      final Trace trace =
-          await FirebasePerformance.startTrace('startTrace-test');
+      await FirebasePerformance.startTrace('startTrace-test');
 
       expect(log, <Matcher>[
         isMethodCall('Trace#start', arguments: <String, Object>{
-          'id': 0,
+          'id': currentTraceid,
           'name': 'startTrace-test',
         })
       ]);
@@ -95,7 +96,7 @@ void main() {
 
         expect(log, <Matcher>[
           isMethodCall('Trace#start', arguments: <String, Object>{
-            'id': 0,
+            'id': currentTraceid,
             'name': 'test',
           })
         ]);
@@ -107,11 +108,11 @@ void main() {
 
         expect(log, <Matcher>[
           isMethodCall('Trace#start', arguments: <String, Object>{
-            'id': 0,
+            'id': currentTraceid,
             'name': 'test',
           }),
           isMethodCall('Trace#stop', arguments: <String, dynamic>{
-            'id': 0,
+            'id': currentTraceid,
             'name': 'test',
             'counters': <String, int>{},
             'attributes': <String, String>{},
@@ -133,13 +134,14 @@ void main() {
 
         await trace.start();
         await trace.stop();
+
         expect(log, <Matcher>[
           isMethodCall('Trace#start', arguments: <String, Object>{
-            'id': 0,
+            'id': currentTraceid,
             'name': 'test',
           }),
           isMethodCall('Trace#stop', arguments: <String, dynamic>{
-            'id': 0,
+            'id': currentTraceid,
             'name': 'test',
             'counters': <String, int>{
               'counter1': 1,
