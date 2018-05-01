@@ -5,7 +5,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import 'package:firebase_performance/firebase_performance.dart';
 
@@ -17,49 +16,37 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  FirebasePerformance performance = FirebasePerformance.instance;
-  bool _collectionEnabled;
-  String _collectionEnabledString = 'Unknown status of performance collection.';
-  String _message = '';
+  FirebasePerformance _performance = FirebasePerformance.instance;
+  bool _isPerformanceCollectionEnabled = false;
+  String _performanceCollectionMessage =
+      'Unknown status of performance collection.';
+  bool _traceHasRan = false;
 
   @override
   void initState() {
     super.initState();
-    _updatePerformanceCollectionEnabled();
-  }
-
-  Future<void> _updatePerformanceCollectionEnabled() async {
-    String perfCollection;
-
-    try {
-      _collectionEnabled = await performance.isPerformanceCollectionEnabled();
-      if (_collectionEnabled) {
-        perfCollection = 'Performance collection is enabled.';
-      } else {
-        perfCollection = 'Performance collection is disabled.';
-      }
-    } on PlatformException {
-      perfCollection = 'Failed to see status of performance collection.';
-    }
-
-    if (!mounted) return;
-
-    setState(() {
-      _collectionEnabledString = perfCollection;
-    });
+    _togglePerformanceCollection();
   }
 
   Future<void> _togglePerformanceCollection() async {
-    await performance.setPerformanceCollectionEnabled(!_collectionEnabled);
-    _updatePerformanceCollectionEnabled();
+    await _performance
+        .setPerformanceCollectionEnabled(!_isPerformanceCollectionEnabled);
+
+    final bool isEnabled = await _performance.isPerformanceCollectionEnabled();
+    setState(() {
+      _isPerformanceCollectionEnabled = isEnabled;
+      _performanceCollectionMessage = _isPerformanceCollectionEnabled
+          ? 'Performance collection is enabled.'
+          : 'Performance collection is disabled.';
+    });
   }
 
   Future<void> _testTrace() async {
-    final Trace trace = performance.newTrace("test");
+    final Trace trace = _performance.newTrace("test");
     trace.incrementCounter("counter1", 16);
     trace.putAttribute("favorite_color", "blue");
 
-    trace.start();
+    await trace.start();
 
     int sum = 0;
     for (int i = 0; i < 10000000; i++) {
@@ -67,10 +54,10 @@ class _MyAppState extends State<MyApp> {
     }
     print(sum);
 
-    trace.stop();
+    await trace.stop();
 
     setState(() {
-      _message = 'Trace sent!';
+      _traceHasRan = true;
     });
   }
 
@@ -84,18 +71,21 @@ class _MyAppState extends State<MyApp> {
         body: new Center(
             child: new Column(
           children: <Widget>[
-            new Text(_collectionEnabledString),
+            new Text(_performanceCollectionMessage),
             new RaisedButton(
               onPressed: _togglePerformanceCollection,
               child: const Text('Toggle Data Collection'),
             ),
             new RaisedButton(
               onPressed: _testTrace,
-              child: const Text('Send Trace'),
+              child: const Text('Run Trace'),
             ),
             new Text(
-              _message,
-              style: const TextStyle(color: Colors.lightGreenAccent),
+              _traceHasRan ? 'Trace Ran!' : '',
+              style:
+              const TextStyle(
+                  color: Colors.lightGreenAccent,
+                  fontSize: 25.0),
             )
           ],
         )),
