@@ -60,6 +60,8 @@
     [self getMetadata:call result:result];
   } else if ([@"StorageReference#updateMetadata" isEqualToString:call.method]) {
     [self updateMetadata:call result:result];
+  } else if ([@"StorageReference#writeToFile" isEqualToString:call.method]) {
+    [self writeToFile:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -154,6 +156,24 @@
                   [FlutterStandardTypedData typedDataWithBytes:data];
               result(dartData);
             }];
+}
+
+- (void)writeToFile:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSString *path = call.arguments[@"path"];
+  NSString *filePath = call.arguments[@"filePath"];
+  NSURL *localURL = [NSURL fileURLWithPath:filePath];
+  FIRStorageReference *ref = [[FIRStorage storage].reference child:path];
+  FIRStorageDownloadTask *task = [ref writeToFile:localURL];
+  [task observeStatus:FIRStorageTaskStatusSuccess
+              handler:^(FIRStorageTaskSnapshot *snapshot) {
+                result(@(snapshot.progress.totalUnitCount));
+              }];
+  [task observeStatus:FIRStorageTaskStatusFailure
+              handler:^(FIRStorageTaskSnapshot *snapshot) {
+                if (snapshot.error != nil) {
+                  result(snapshot.error.flutterError);
+                }
+              }];
 }
 
 - (void)getMetadata:(FlutterMethodCall *)call result:(FlutterResult)result {

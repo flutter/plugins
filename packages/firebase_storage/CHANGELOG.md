@@ -1,3 +1,7 @@
+## 0.3.2
+
+* Added support for StorageReference `writeToFile`.
+
 ## 0.3.1
 
 * Added support for StorageReference functions: `getParent`, `getRoot`, `getStorage`, `getName`, `getPath`, `getBucket`.
