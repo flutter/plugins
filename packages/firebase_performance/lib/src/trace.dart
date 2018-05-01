@@ -7,13 +7,13 @@ part of firebase_performance;
 /// Trace allows you to set beginning and end of a certain action in your app.
 class Trace {
   Trace._(this._id, this._name) {
-    assert(_name != null, "Name is null.");
+    assert(_name != null, "Trace name is invalid. (Trace name must not be null)");
     assert(!_name.startsWith(new RegExp(r'[_\s]')),
-        "Name '$_name' starts with an underscore or space.");
+        "Trace '$_name' is invalid. (Trace name must not start with '_' or space)");
     assert(!_name.contains(new RegExp(r'[_\s]$')),
-        "Name '$_name' ends with an underscore or space.");
+        "Trace '$_name' is invalid. (Trace name must not end with '_' or space)");
     assert(_name.length <= maxTraceNameLength,
-        "Name '$_name' has length greater than $maxTraceNameLength.");
+        "Trace '$_name' is invalid. (Trace name must not exceed $maxTraceNameLength characters)");
   }
 
   /// Maximum allowed length of the Key of the [Trace] attribute.
@@ -27,9 +27,6 @@ class Trace {
 
   /// Maximum allowed length of the name of the [Trace].
   static const int maxTraceNameLength = 100;
-
-  /// Maximum allowed length of the Key of the [Trace] counter.
-  static const int maxCounterKeyLength = 32;
 
   final int _id;
   final String _name;
@@ -45,7 +42,7 @@ class Trace {
 
   /// Starts this trace.
   Future<void> start() {
-    assert(!_hasStarted, "Trace has already been started.");
+    assert(!_hasStarted, "Trace '$_name' has already started, should not start again!");
 
     _hasStarted = true;
     return FirebasePerformance.channel
@@ -57,8 +54,8 @@ class Trace {
 
   /// Stops this trace.
   Future<void> stop() {
-    assert(!_hasStopped, "Trace has already been stopped.");
-    assert(_hasStarted, "Trace has not been started.");
+    assert(!_hasStopped, "Trace '$_name' has already stopped, should not stop again!");
+    assert(_hasStarted, "Trace '$_name' has not been started so unable to stop!");
 
     final Map<String, dynamic> data = <String, dynamic>{
       'id': _id,
@@ -84,14 +81,14 @@ class Trace {
   ///
   /// [incrementBy]: Amount by which the counter has to be incremented.
   void incrementCounter(String name, [int incrementBy = 1]) {
-    assert(!_hasStopped, "Trace has already been stopped.");
-    assert(name != null, "Counter name is null.");
+    assert(!_hasStopped, "Connot increment counter $name. Trace '$_name' has already stopped!");
+    assert(name != null, "Cannot increment counter. Counter name is invalid. (Counter name must not be null)");
     assert(!name.startsWith(new RegExp(r'[_\s]')),
-    "Counter name '$name' starts with an underscore or space.");
+    "Cannot increment counter $name. Counter name is invalid. (Counter name must not start with '_' or space)");
     assert(!name.contains(new RegExp(r'[_\s]$')),
-    "Counter name '$name' ends with an underscore or space.");
-    assert(name.length <= maxCounterKeyLength,
-    "Counter name '$name' has length greater than $maxCounterKeyLength.");
+    "Cannot increment counter $name. Counter name is invalid. (Counter name must not end with '_' or space)");
+    assert(name.length <= 32,
+    "Cannot increment counter $name. Counter name is invalid. (Counter name must not exceed 32 characters)");
 
     _counters.putIfAbsent(name, () => 0);
     _counters[name] += incrementBy;
@@ -110,19 +107,18 @@ class Trace {
   /// [value]: Value of the attribute. Max length of [maxAttributeValueLength]
   /// characters.
   void putAttribute(String attribute, String value) {
-    assert(!_hasStopped, "Trace has already been stopped.");
-    assert(!_hasStopped, "Trace has already been stopped.");
-    assert(attribute != null, "Counter name is null.");
+    assert(!_hasStopped, "Can not set attriubte $attribute. Trace '$_name' has already stopped!");
+    assert(attribute != null, "Can not set attriubte. Attribute name is invalid. (Attribute name must not be null)");
     assert(!attribute.startsWith(new RegExp(r'[_\s]')),
-    "Attribute key '$attribute' starts with an underscore or space.");
+    "Can not set attriubte $attribute. Attribute name is invalid. (Attribute name must not start with '_' or space)");
     assert(!attribute.contains(new RegExp(r'[_\s]$')),
-    "Atribute key '$attribute' ends with an underscore or space.");
+    "Can not set attriubte $attribute. Attribute name is invalid. (Attribute name must not end with '_' or space)");
     assert(attribute.length <= maxAttributeKeyLength,
-    "Attribute key '$attribute' has length greater than $maxAttributeKeyLength.");
+    "Can not set attriubte $attribute. Attribute name is invalid. (Attribute name must not exceed $maxAttributeKeyLength characters)");
     assert(value.length <= maxAttributeValueLength,
-    "Value '$value' has length greater than $maxAttributeValueLength.");
-    assert(_attributes.length <= maxTraceCustomAttributes,
-    "Maximum number of attributes ($maxTraceCustomAttributes) have already been added.");
+    "Can not set attriubte $attribute with value $value. Value is invalid. (Value must not exceed $maxAttributeValueLength characters)");
+    assert(_attributes.length < maxTraceCustomAttributes,
+    "Can not set attriubte $attribute with value $value. (Exceeds max limit of number of attributes - $maxTraceCustomAttributes");
 
     _attributes.putIfAbsent(attribute, () => value);
     _attributes[attribute] = value;
@@ -133,7 +129,7 @@ class Trace {
   /// Removes an already added attribute from the Traces. If the trace has been
   /// stopped, this method returns without removing the attribute.
   void removeAttribute(String attribute) {
-    assert(!_hasStopped, "Trace has already been stopped.");
+    assert(!_hasStopped, "Can not remove attriubte $attribute. Trace '$_name' has already stopped!");
 
     _attributes.remove(attribute);
   }
