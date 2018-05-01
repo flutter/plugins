@@ -12,16 +12,18 @@ import 'page.dart';
 class PlaceMarkerPage extends Page {
   PlaceMarkerPage() : super(const Icon(Icons.place), "Place marker");
 
-  final GoogleMapsOverlayController controller =
-      new GoogleMapsOverlayController.fromSize(width: 300.0, height: 200.0)
-        ..mapsController.moveCamera(CameraUpdate.newLatLngZoom(
-          const LatLng(-33.852, 151.211),
-          11.0,
-        ));
-
   @override
-  PlatformOverlayController get overlayController =>
-      controller.overlayController;
+  final GoogleMapOverlayController controller =
+      new GoogleMapOverlayController.fromSize(
+    width: 300.0,
+    height: 200.0,
+    options: const GoogleMapOptions(
+      cameraPosition: const CameraPosition(
+        target: const LatLng(-33.852, 151.211),
+        zoom: 11.0,
+      ),
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +32,7 @@ class PlaceMarkerPage extends Page {
 }
 
 class PlaceMarkerBody extends StatefulWidget {
-  final GoogleMapsOverlayController controller;
+  final GoogleMapOverlayController controller;
 
   const PlaceMarkerBody(this.controller);
 
@@ -41,151 +43,128 @@ class PlaceMarkerBody extends StatefulWidget {
 class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
   static const LatLng center = const LatLng(-33.86711, 151.1947171);
 
-  final List<Future<Marker>> markers = <Future<Marker>>[];
-  int _nextAlpha = 1;
-  int _nextHue = 1;
-  int _nextPosition = 1;
-  int _nextRotation = 1;
-  int _nextAnchor = 1;
-  int _nextInfoWindowAnchor = 7;
-  int _nextTitle = 1;
-  int _nextZIndex = 1;
+  int _markerCount = 0;
+  Marker _selectedMarker;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.controller.mapController.onMarkerTapped.add((Marker marker) {
+      if (_selectedMarker != null) {
+        _selectedMarker
+            .update(const MarkerOptions(icon: BitmapDescriptor.defaultMarker));
+      }
+      setState(() {
+        _selectedMarker = marker;
+      });
+      _selectedMarker.update(new MarkerOptions(
+          icon: BitmapDescriptor
+              .defaultMarkerWithHue(BitmapDescriptor.hueGreen)));
+    });
+  }
 
   void _add() {
+    widget.controller.mapController.addMarker(new MarkerOptions(
+      position: new LatLng(
+        center.latitude + sin(_markerCount * pi / 6.0) / 20.0,
+        center.longitude + cos(_markerCount * pi / 6.0) / 20.0,
+      ),
+      infoWindowText: new InfoWindowText('Marker #${_markerCount + 1}', '*'),
+    ));
     setState(() {
-      markers.add(
-        widget.controller.mapsController.addMarker(
-          new MarkerOptions(
-            position: new LatLng(
-              center.latitude + sin(markers.length * pi / 6.0) / 20.0,
-              center.longitude + cos(markers.length * pi / 6.0) / 20.0,
-            ),
-            zIndex: markers.length.toDouble(),
-            icon: BitmapDescriptor.defaultMarkerWithHue(30.0 * markers.length),
-          ),
-        ),
-      );
+      _markerCount += 1;
     });
   }
 
-  Future<void> _remove() async {
-    final Marker marker = await markers.last;
+  void _remove() {
+    _selectedMarker.remove();
     setState(() {
-      markers.removeLast();
+      _selectedMarker = null;
+      _markerCount -= 1;
     });
-    await marker.remove();
   }
 
-  Future<void> _showInfo() async {
-    final Marker marker = await markers.last;
-    await marker.showInfoWindow();
-  }
-
-  Future<void> _hideInfo() async {
-    final Marker marker = await markers.last;
-    await marker.hideInfoWindow();
-  }
-
-  Future<void> _changePosition() async {
-    final Marker marker = await markers.last;
-    final LatLng position = new LatLng(
-      center.latitude + sin(_nextPosition * pi / 6.0) / 20.0,
-      center.longitude + cos(_nextPosition * pi / 6.0) / 20.0,
-    );
-    setState(() {
-      _nextPosition = (_nextPosition + 1) % 12;
-    });
-    await marker.update(marker.options.copyWith(position: position));
-  }
-
-  Future<void> _changeAnchor() async {
-    final Marker marker = await markers.last;
+  void _changePosition() {
+    final LatLng current = _selectedMarker.options.position;
     final Offset offset = new Offset(
-      (sin(_nextAnchor * pi / 6.0) + 1.0) / 2.0,
-      (cos(_nextAnchor * pi / 6.0) + 1.0) / 2.0,
+      center.latitude - current.latitude,
+      center.longitude - current.longitude,
     );
-    setState(() {
-      _nextAnchor = (_nextAnchor + 1) % 12;
-    });
-    await marker.update(marker.options.copyWith(anchor: offset));
+    _selectedMarker.update(
+      new MarkerOptions(
+        position: new LatLng(
+          center.latitude + offset.dy,
+          center.longitude + offset.dx,
+        ),
+      ),
+    );
+  }
+
+  void _changeAnchor() {
+    final Offset currentAnchor = _selectedMarker.options.anchor;
+    final Offset newAnchor =
+        new Offset(1.0 - currentAnchor.dy, currentAnchor.dx);
+    _selectedMarker.update(new MarkerOptions(anchor: newAnchor));
   }
 
   Future<void> _changeInfoAnchor() async {
-    final Marker marker = await markers.last;
-    final Offset offset = new Offset(
-      (sin(_nextInfoWindowAnchor * pi / 6.0) + 1.0) / 2.0,
-      (cos(_nextInfoWindowAnchor * pi / 6.0) + 1.0) / 2.0,
-    );
-    setState(() {
-      _nextInfoWindowAnchor = (_nextInfoWindowAnchor + 1) % 12;
-    });
-    await marker.update(marker.options.copyWith(infoWindowAnchor: offset));
+    final Offset currentAnchor = _selectedMarker.options.infoWindowAnchor;
+    final Offset newAnchor =
+        new Offset(1.0 - currentAnchor.dy, currentAnchor.dx);
+    _selectedMarker.update(new MarkerOptions(infoWindowAnchor: newAnchor));
   }
 
   Future<void> _toggleDraggable() async {
-    final Marker marker = await markers.last;
-    await marker.update(
-      marker.options.copyWith(draggable: !marker.options.draggable),
-    );
+    _selectedMarker.update(
+        new MarkerOptions(draggable: !_selectedMarker.options.draggable));
   }
 
   Future<void> _toggleFlat() async {
-    final Marker marker = await markers.last;
-    await marker.update(
-      marker.options.copyWith(flat: !marker.options.flat),
-    );
+    _selectedMarker
+        .update(new MarkerOptions(flat: !_selectedMarker.options.flat));
   }
 
   Future<void> _changeInfo() async {
-    final Marker marker = await markers.last;
-    final String title = _nextTitle == 0 ? null : 'Title $_nextTitle';
-    final String snippet = _nextTitle % 2 == 0 ? null : 'Snippet $_nextTitle';
-    setState(() {
-      _nextTitle = (_nextTitle + 1) % 12;
-    });
-    await marker.update(
-      marker.options.copyWith(title: title, snippet: snippet),
-    );
+    final InfoWindowText currentInfo = _selectedMarker.options.infoWindowText;
+    _selectedMarker.update(new MarkerOptions(
+      infoWindowText: new InfoWindowText(
+        currentInfo.title,
+        currentInfo.snippet + '*',
+      ),
+    ));
   }
 
-  Future<void> _changeIcon() async {
-    final Marker marker = await markers.last;
-    final BitmapDescriptor icon = BitmapDescriptor.defaultMarkerWithHue(
-      _nextHue * 30.0,
+  Future<void> _toggleInfoShown() async {
+    _selectedMarker.update(
+      new MarkerOptions(
+          infoWindowShown: !_selectedMarker.options.infoWindowShown),
     );
-    setState(() {
-      _nextHue = (_nextHue + 1) % 12;
-    });
-    await marker.update(marker.options.copyWith(icon: icon));
   }
 
   Future<void> _changeAlpha() async {
-    final Marker marker = await markers.last;
-    final double alpha = 1.0 - _nextAlpha / 12.0;
-    setState(() {
-      _nextAlpha = (_nextAlpha + 1) % 12;
-    });
-    await marker.update(marker.options.copyWith(alpha: alpha));
-  }
-
-  Future<void> _changeRotation() async {
-    final Marker marker = await markers.last;
-    final double rotation = _nextRotation * 30.0;
-    setState(() {
-      _nextRotation = (_nextRotation + 1) % 12;
-    });
-    await marker.update(
-      marker.options.copyWith(rotation: rotation),
+    final double current = _selectedMarker.options.alpha;
+    _selectedMarker.update(
+      new MarkerOptions(alpha: current < 0.1 ? 1.0 : current * 0.75),
     );
   }
 
+  Future<void> _changeRotation() async {
+    final double current = _selectedMarker.options.rotation;
+    _selectedMarker.update(
+      new MarkerOptions(rotation: current == 330.0 ? 0.0 : current + 30.0),
+    );
+  }
+
+  Future<void> _toggleVisible() async {
+    _selectedMarker
+        .update(new MarkerOptions(visible: !_selectedMarker.options.visible));
+  }
+
   Future<void> _changeZIndex() async {
-    final Marker marker = await markers.last;
-    final double zIndex = _nextZIndex.toDouble();
-    setState(() {
-      _nextZIndex = (_nextZIndex + 1) % 12;
-    });
-    await marker.update(marker.options.copyWith(zIndex: zIndex));
+    final double current = _selectedMarker.options.zIndex;
+    _selectedMarker.update(
+      new MarkerOptions(zIndex: current == 12.0 ? 0.0 : current + 1.0),
+    );
   }
 
   @override
@@ -194,7 +173,7 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        new Center(child: new GoogleMapsOverlay(controller: widget.controller)),
+        new Center(child: new GoogleMapOverlay(controller: widget.controller)),
         new Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
@@ -204,63 +183,68 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
                   children: <Widget>[
                     new FlatButton(
                       child: const Text('add'),
-                      onPressed: (markers.length == 12) ? null : _add,
+                      onPressed: (_markerCount == 12) ? null : _add,
                     ),
                     new FlatButton(
                       child: const Text('remove'),
-                      onPressed: (markers.isEmpty) ? null : _remove,
+                      onPressed: (_selectedMarker == null) ? null : _remove,
                     ),
                     new FlatButton(
-                      child: const Text('show info'),
-                      onPressed: (markers.isEmpty) ? null : _showInfo,
+                      child: const Text('change info'),
+                      onPressed: (_selectedMarker == null) ? null : _changeInfo,
                     ),
                     new FlatButton(
-                      child: const Text('hide info'),
-                      onPressed: (markers.isEmpty) ? null : _hideInfo,
+                      child: const Text('change info anchor'),
+                      onPressed:
+                          (_selectedMarker == null) ? null : _changeInfoAnchor,
+                    ),
+                    new FlatButton(
+                      child: const Text('toggle info shown'),
+                      onPressed:
+                          (_selectedMarker == null) ? null : _toggleInfoShown,
                     ),
                   ],
                 ),
                 new Column(
                   children: <Widget>[
                     new FlatButton(
-                      child: const Text('change position'),
-                      onPressed: (markers.isEmpty) ? null : _changePosition,
+                      child: const Text('change alpha'),
+                      onPressed:
+                          (_selectedMarker == null) ? null : _changeAlpha,
                     ),
                     new FlatButton(
                       child: const Text('change anchor'),
-                      onPressed: (markers.isEmpty) ? null : _changeAnchor,
-                    ),
-                    new FlatButton(
-                      child: const Text('change info anchor'),
-                      onPressed: (markers.isEmpty) ? null : _changeInfoAnchor,
+                      onPressed:
+                          (_selectedMarker == null) ? null : _changeAnchor,
                     ),
                     new FlatButton(
                       child: const Text('toggle draggable'),
-                      onPressed: (markers.isEmpty) ? null : _toggleDraggable,
+                      onPressed:
+                          (_selectedMarker == null) ? null : _toggleDraggable,
                     ),
                     new FlatButton(
                       child: const Text('toggle flat'),
-                      onPressed: (markers.isEmpty) ? null : _toggleFlat,
+                      onPressed: (_selectedMarker == null) ? null : _toggleFlat,
                     ),
                     new FlatButton(
-                      child: const Text('change info'),
-                      onPressed: (markers.isEmpty) ? null : _changeInfo,
-                    ),
-                    new FlatButton(
-                      child: const Text('change color'),
-                      onPressed: (markers.isEmpty) ? null : _changeIcon,
-                    ),
-                    new FlatButton(
-                      child: const Text('change alpha'),
-                      onPressed: (markers.isEmpty) ? null : _changeAlpha,
+                      child: const Text('change position'),
+                      onPressed:
+                          (_selectedMarker == null) ? null : _changePosition,
                     ),
                     new FlatButton(
                       child: const Text('change rotation'),
-                      onPressed: (markers.isEmpty) ? null : _changeRotation,
+                      onPressed:
+                          (_selectedMarker == null) ? null : _changeRotation,
+                    ),
+                    new FlatButton(
+                      child: const Text('toggle visible'),
+                      onPressed:
+                          (_selectedMarker == null) ? null : _toggleVisible,
                     ),
                     new FlatButton(
                       child: const Text('change zIndex'),
-                      onPressed: (markers.isEmpty) ? null : _changeZIndex,
+                      onPressed:
+                          (_selectedMarker == null) ? null : _changeZIndex,
                     ),
                   ],
                 ),

@@ -4,127 +4,134 @@
 
 part of google_mobile_maps;
 
+/// An icon placed at a particular point on the map's surface. A marker icon is
+/// drawn oriented against the device's screen rather than the map's surface;
+/// that is, it will not necessarily change orientation due to map rotations,
+/// tilting, or zooming.
+///
+/// Markers are owned by a single [GoogleMapController] which fires change
+/// events when markers are added, updated, or removed.
 class Marker {
-  Marker._(this.mapId, this.id, MarkerOptions options) : _options = options;
+  Marker._(this._mapController, this.id, this._options);
 
-  final int mapId;
+  final GoogleMapController _mapController;
   final String id;
   MarkerOptions _options;
 
-  Future<void> update(MarkerOptions options) async {
-    assert(options != null);
-    _options = options;
-    await _channel.invokeMethod('marker#update', <String, dynamic>{
-      'map': mapId,
-      'marker': id,
-      'markerOptions': options._toJson(),
-    });
+  Future<void> remove() {
+    return _mapController._removeMarker(this);
   }
 
+  Future<void> update(MarkerOptions changes) {
+    return _mapController._updateMarker(this, changes);
+  }
+
+  /// The configuration options most recently applied programmatically.
+  ///
+  /// The returned value does not reflect any changes made to the marker through
+  /// touch events. Add listeners to track those.
   MarkerOptions get options => _options;
-
-  Future<void> remove() async {
-    await _channel.invokeMethod('marker#remove', <String, dynamic>{
-      'map': mapId,
-      'marker': id,
-    });
-  }
-
-  Future<void> hideInfoWindow() async {
-    await _channel.invokeMethod('marker#hideInfoWindow', <String, dynamic>{
-      'map': mapId,
-      'marker': id,
-    });
-  }
-
-  Future<void> showInfoWindow() async {
-    await _channel.invokeMethod('marker#showInfoWindow', <String, dynamic>{
-      'map': mapId,
-      'marker': id,
-    });
-  }
 }
 
+dynamic _offsetToJson(Offset offset) =>
+    offset == null ? null : <dynamic>[offset.dx, offset.dy];
+
+/// Text labels for a [Marker] info window.
+class InfoWindowText {
+  const InfoWindowText(this.title, this.snippet);
+
+  static const InfoWindowText noText = const InfoWindowText(null, null);
+
+  final String title;
+  final String snippet;
+
+  dynamic _toJson() => <dynamic>[title, snippet];
+}
+
+/// Configuration options for [Marker] instances.
+///
+/// When used to change configuration, null values will be interpreted as
+/// "do not change this configuration item". When used to represent current
+/// configuration, all values will be non-null.
 class MarkerOptions {
-  static const String unspecified = 'Unspecified';
-  final LatLng position;
   final double alpha;
   final Offset anchor;
+  final bool consumesTapEvents;
   final bool draggable;
   final bool flat;
   final BitmapDescriptor icon;
   final Offset infoWindowAnchor;
+  final bool infoWindowShown;
+  final InfoWindowText infoWindowText;
+  final LatLng position;
   final double rotation;
-  final String snippet;
-  final String title;
   final bool visible;
   final double zIndex;
 
   const MarkerOptions({
-    @required this.position,
-    this.alpha = 1.0,
-    this.anchor = const Offset(0.5, 1.0),
-    this.draggable = false,
-    this.flat = false,
-    this.icon = BitmapDescriptor.defaultMarker,
-    this.infoWindowAnchor = const Offset(0.5, 0.0),
-    this.rotation = 0.0,
-    this.snippet,
-    this.title,
-    this.visible = true,
-    this.zIndex = 0.0,
-  })  : assert(position != null),
-        assert(alpha != null),
-        assert(anchor != null),
-        assert(draggable != null),
-        assert(flat != null),
-        assert(icon != null),
-        assert(infoWindowAnchor != null),
-        assert(rotation != null),
-        assert(zIndex != null),
-        assert(visible != null);
+    this.alpha,
+    this.anchor,
+    this.consumesTapEvents,
+    this.draggable,
+    this.flat,
+    this.icon,
+    this.infoWindowAnchor,
+    this.infoWindowShown,
+    this.infoWindowText,
+    this.position,
+    this.rotation,
+    this.visible,
+    this.zIndex,
+  });
 
-  MarkerOptions copyWith({
-    LatLng position,
-    double alpha,
-    Offset anchor,
-    bool draggable,
-    bool flat,
-    BitmapDescriptor icon,
-    Offset infoWindowAnchor,
-    double rotation,
-    String snippet = unspecified,
-    String title = unspecified,
-    double zIndex,
-    bool visible,
-  }) =>
-      new MarkerOptions(
-        position: position ?? this.position,
-        alpha: alpha ?? this.alpha,
-        anchor: anchor ?? this.anchor,
-        draggable: draggable ?? this.draggable,
-        flat: flat ?? this.flat,
-        icon: icon ?? this.icon,
-        infoWindowAnchor: infoWindowAnchor ?? this.infoWindowAnchor,
-        rotation: rotation ?? this.rotation,
-        snippet: identical(snippet, unspecified) ? this.snippet : snippet,
-        title: identical(title, unspecified) ? this.title : title,
-        zIndex: zIndex ?? this.zIndex,
-        visible: visible ?? this.visible,
-      );
+  static const MarkerOptions defaultOptions = const MarkerOptions(
+    alpha: 1.0,
+    anchor: const Offset(0.5, 1.0),
+    consumesTapEvents: false,
+    draggable: false,
+    flat: false,
+    icon: BitmapDescriptor.defaultMarker,
+    infoWindowAnchor: const Offset(0.5, 0.0),
+    infoWindowShown: false,
+    infoWindowText: InfoWindowText.noText,
+    rotation: 0.0,
+    visible: true,
+    zIndex: 0.0,
+  );
 
-  dynamic _toJson() => <String, dynamic>{
-        'position': position._toJson(),
-        'alpha': alpha,
-        'anchor': <double>[anchor.dx, anchor.dy],
-        'draggable': draggable,
-        'flat': flat,
-        'icon': icon._toJson(),
-        'infoWindowAnchor': <double>[infoWindowAnchor.dx, infoWindowAnchor.dy],
-        'rotation': rotation,
-        'snippet': snippet,
-        'title': title,
-        'visible': visible,
-        'zIndex': zIndex,
-      };
+  MarkerOptions _updateWith(MarkerOptions changes) {
+    return new MarkerOptions(
+      alpha: changes.alpha ?? alpha,
+      anchor: changes.anchor ?? anchor,
+      consumesTapEvents: changes.consumesTapEvents ?? consumesTapEvents,
+      draggable: changes.draggable ?? draggable,
+      flat: changes.flat ?? flat,
+      icon: changes.icon ?? icon,
+      infoWindowAnchor: changes.infoWindowAnchor ?? infoWindowAnchor,
+      infoWindowShown: changes.infoWindowShown ?? infoWindowShown,
+      infoWindowText: changes.infoWindowText ?? infoWindowText,
+      position: changes.position ?? position,
+      rotation: changes.rotation ?? rotation,
+      visible: changes.visible ?? visible,
+      zIndex: changes.zIndex ?? zIndex,
+    );
+  }
+
+  dynamic _toJson() {
+    return <String, dynamic>{
+      'alpha': alpha,
+      'anchor': _offsetToJson(anchor),
+      'consumesTapEvents': consumesTapEvents,
+      'draggable': draggable,
+      'flat': flat,
+      'icon': icon?._toJson(),
+      'infoWindowAnchor': _offsetToJson(infoWindowAnchor),
+      'infoWindowShown': infoWindowShown,
+      'infoWindowText': infoWindowText?._toJson(),
+      'position': position?._toJson(),
+      'rotation': rotation,
+      'visible': visible,
+      'zIndex': zIndex,
+    };
+  }
 }

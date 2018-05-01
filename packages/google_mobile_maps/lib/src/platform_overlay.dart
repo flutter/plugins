@@ -4,7 +4,7 @@
 
 part of google_mobile_maps;
 
-/// Controller of platform overlays, supporting a limited form
+/// Controller of platform overlays, supporting a very limited form
 /// of compositing with Flutter Widgets.
 ///
 /// Platform overlays are normal platform-specific views that are
@@ -207,19 +207,19 @@ class PlatformOverlayController extends NavigatorObserver
 
 /// Platform overlay.
 abstract class PlatformOverlay {
-  /// Create a platform view of the specified [physicalSize] (in device pixels).
+  /// Creates a platform view of the specified [physicalSize] (in device pixels).
   ///
   /// The platform view should remain hidden until explicitly shown by calling
   /// [showOverlay].
   Future<int> create(Size physicalSize);
 
-  /// Show the platform view at the specified [physicalOffset] (in device
+  /// Shows the platform view at the specified [physicalOffset] (in device
   /// pixels).
   Future<void> show(Offset physicalOffset);
 
-  /// Hide the platform view.
+  /// Hides the platform view.
   Future<void> hide();
 
-  /// Dispose of the platform view.
+  /// Disposes of the platform view.
   Future<void> dispose();
 }

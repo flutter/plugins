@@ -19,9 +19,13 @@ import android.os.Bundle;
 import android.view.Surface;
 import android.widget.FrameLayout;
 import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import io.flutter.plugin.common.MethodChannel;
@@ -38,9 +42,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 /** Controller of a single GoogleMaps MapView instance. */
 final class GoogleMapController
     implements Application.ActivityLifecycleCallbacks,
+        GoogleMapOptionsSink,
         OnMapReadyCallback,
         GoogleMap.SnapshotReadyCallback,
+        GoogleMap.OnMarkerClickListener,
         GoogleMap.OnCameraMoveStartedListener,
+        GoogleMap.OnCameraMoveListener,
         GoogleMap.OnCameraIdleListener {
   private final AtomicInteger activityState;
   private final FrameLayout parent;
@@ -52,10 +59,12 @@ final class GoogleMapController
   private final int height;
   private final MethodChannel.Result result;
   private final Timer timer;
-  private final Map<String, Marker> markers;
-  private final Map<String, Object> optionsStorage;
+  private final Map<String, MarkerController> markers;
+  private OnMarkerTappedListener onMarkerTappedListener;
+  private OnCameraMoveListener onCameraMoveListener;
   private GoogleMap googleMap;
   private Surface surface;
+  private boolean trackCameraPosition = false;
   private boolean disposed = false;
 
   GoogleMapController(
@@ -63,7 +72,7 @@ final class GoogleMapController
       PluginRegistry.Registrar registrar,
       int width,
       int height,
-      Object options,
+      GoogleMapOptions options,
       MethodChannel.Result result) {
     this.activityState = activityState;
     this.registrar = registrar;
@@ -75,11 +84,17 @@ final class GoogleMapController
     this.textureEntry = registrar.textures().createSurfaceTexture();
     this.surface = new Surface(textureEntry.surfaceTexture());
     textureEntry.surfaceTexture().setDefaultBufferSize(width, height);
-    this.mapView = new MapView(registrar.activity(), Convert.toGoogleMapOptions(options));
+    this.mapView = new MapView(registrar.activity(), options);
     this.timer = new Timer();
     this.markers = new HashMap<>();
-    this.optionsStorage = new HashMap<>();
-    Convert.setMapOptionsWithNoGetters(options, optionsStorage);
+  }
+
+  void setOnCameraMoveListener(OnCameraMoveListener listener) {
+    this.onCameraMoveListener = listener;
+  }
+
+  void setOnMarkerTappedListener(OnMarkerTappedListener listener) {
+    this.onMarkerTappedListener = listener;
   }
 
   void init() {
@@ -140,15 +155,6 @@ final class GoogleMapController
     parent.addView(mapView, 0);
   }
 
-  void setMapOptions(Object json) {
-    Convert.setMapOptions(json, googleMap);
-    Convert.setMapOptionsWithNoGetters(json, optionsStorage);
-  }
-
-  Object getMapOptions() {
-    return Convert.getMapOptions(googleMap, optionsStorage);
-  }
-
   void moveCamera(CameraUpdate cameraUpdate) {
     googleMap.moveCamera(cameraUpdate);
   }
@@ -157,47 +163,26 @@ final class GoogleMapController
     googleMap.animateCamera(cameraUpdate);
   }
 
-  String addMarker(MarkerOptions options) {
-    final Marker marker = googleMap.addMarker(options);
-    markers.put(marker.getId(), marker);
-    return marker.getId();
+  MarkerBuilder newMarkerBuilder() {
+    return new MarkerBuilder(this);
+  }
+
+  Marker addMarker(MarkerOptions markerOptions, boolean consumesTapEvents) {
+    final Marker marker = googleMap.addMarker(markerOptions);
+    markers.put(
+        marker.getId(), new MarkerController(marker, consumesTapEvents, onMarkerTappedListener));
+    return marker;
   }
 
   void removeMarker(String markerId) {
-    final Marker marker = markers.remove(markerId);
-    if (marker != null) {
-      marker.remove();
+    final MarkerController markerController = markers.remove(markerId);
+    if (markerController != null) {
+      markerController.remove();
     }
   }
 
-  void showMarkerInfoWindow(String markerId) {
-    final Marker marker = marker(markerId);
-    marker.showInfoWindow();
-  }
-
-  void hideMarkerInfoWindow(String markerId) {
-    final Marker marker = marker(markerId);
-    marker.hideInfoWindow();
-  }
-
-  void updateMarker(String markerId, MarkerOptions options) {
-    final Marker marker = marker(markerId);
-    marker.setPosition(options.getPosition());
-    marker.setAlpha(options.getAlpha());
-    marker.setAnchor(options.getAnchorU(), options.getAnchorV());
-    marker.setDraggable(options.isDraggable());
-    marker.setFlat(options.isFlat());
-    marker.setIcon(options.getIcon());
-    marker.setInfoWindowAnchor(options.getInfoWindowAnchorU(), options.getInfoWindowAnchorV());
-    marker.setRotation(options.getRotation());
-    marker.setSnippet(options.getSnippet());
-    marker.setTitle(options.getTitle());
-    marker.setVisible(options.isVisible());
-    marker.setZIndex(options.getZIndex());
-  }
-
-  private Marker marker(String markerId) {
-    final Marker marker = markers.get(markerId);
+  MarkerController marker(String markerId) {
+    final MarkerController marker = markers.get(markerId);
     if (marker == null) {
       throw new IllegalArgumentException("Unknown marker: " + markerId);
     }
@@ -218,7 +203,9 @@ final class GoogleMapController
     this.googleMap = googleMap;
     result.success(id());
     googleMap.setOnCameraMoveStartedListener(this);
+    googleMap.setOnCameraMoveListener(this);
     googleMap.setOnCameraIdleListener(this);
+    googleMap.setOnMarkerClickListener(this);
     // Take snapshots until the dust settles.
     timer.schedule(newSnapshotTask(), 0);
     timer.schedule(newSnapshotTask(), 500);
@@ -229,15 +216,30 @@ final class GoogleMapController
 
   @Override
   public void onCameraMoveStarted(int reason) {
+    onCameraMoveListener.onCameraMoveStarted(reason);
     cancelSnapshotTimerTasks();
   }
 
   @Override
+  public void onCameraMove() {
+    if (trackCameraPosition && onCameraMoveListener != null) {
+      onCameraMoveListener.onCameraMove(googleMap.getCameraPosition());
+    }
+  }
+
+  @Override
   public void onCameraIdle() {
+    onCameraMoveListener.onCameraIdle();
     // Take snapshots until the dust settles.
     timer.schedule(newSnapshotTask(), 500);
     timer.schedule(newSnapshotTask(), 1500);
     timer.schedule(newSnapshotTask(), 4000);
+  }
+
+  @Override
+  public boolean onMarkerClick(Marker marker) {
+    final MarkerController markerController = markers.get(marker.getId());
+    return (markerController != null && markerController.onTap());
   }
 
   @Override
@@ -336,5 +338,63 @@ final class GoogleMapController
       }
       googleMap.snapshot(GoogleMapController.this, bitmap);
     }
+  }
+
+  // GoogleMapOptionsSink methods
+
+  @Override
+  public void setCameraPosition(CameraPosition position) {
+    googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(position));
+  }
+
+  @Override
+  public void setCompassEnabled(boolean compassEnabled) {
+    googleMap.getUiSettings().setCompassEnabled(compassEnabled);
+  }
+
+  @Override
+  public void setMapType(int mapType) {
+    googleMap.setMapType(mapType);
+  }
+
+  @Override
+  public void setLatLngBoundsForCameraTarget(LatLngBounds bounds) {
+    googleMap.setLatLngBoundsForCameraTarget(bounds);
+  }
+
+  @Override
+  public void setTrackCameraPosition(boolean trackCameraPosition) {
+    this.trackCameraPosition = trackCameraPosition;
+  }
+
+  @Override
+  public void setRotateGesturesEnabled(boolean rotateGesturesEnabled) {
+    googleMap.getUiSettings().setRotateGesturesEnabled(rotateGesturesEnabled);
+  }
+
+  @Override
+  public void setScrollGesturesEnabled(boolean scrollGesturesEnabled) {
+    googleMap.getUiSettings().setScrollGesturesEnabled(scrollGesturesEnabled);
+  }
+
+  @Override
+  public void setTiltGesturesEnabled(boolean tiltGesturesEnabled) {
+    googleMap.getUiSettings().setTiltGesturesEnabled(tiltGesturesEnabled);
+  }
+
+  @Override
+  public void setMinMaxZoomPreference(Float min, Float max) {
+    googleMap.resetMinMaxZoomPreference();
+    if (min != null) {
+      googleMap.setMinZoomPreference(min);
+    }
+    if (max != null) {
+      googleMap.setMaxZoomPreference(max);
+    }
+  }
+
+  @Override
+  public void setZoomGesturesEnabled(boolean zoomGesturesEnabled) {
+    googleMap.getUiSettings().setZoomGesturesEnabled(zoomGesturesEnabled);
   }
 }
