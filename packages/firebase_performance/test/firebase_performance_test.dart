@@ -12,7 +12,7 @@ void main() {
     final FirebasePerformance performance = FirebasePerformance.instance;
     final List<MethodCall> log = <MethodCall>[];
     bool performanceCollectionEnable = true;
-    int currentTraceid;
+    int currentTraceId;
 
     setUp(() {
       FirebasePerformance.channel
@@ -25,7 +25,7 @@ void main() {
             performanceCollectionEnable = methodCall.arguments;
             return null;
           case 'Trace#start':
-            currentTraceid = methodCall.arguments["id"];
+            currentTraceId = methodCall.arguments["id"];
             return null;
           case 'Trace#stop':
             return null;
@@ -67,7 +67,7 @@ void main() {
 
       expect(log, <Matcher>[
         isMethodCall('Trace#start', arguments: <String, Object>{
-          'id': currentTraceid,
+          'id': currentTraceId,
           'name': 'test-trace',
         })
       ]);
@@ -78,7 +78,7 @@ void main() {
 
       expect(log, <Matcher>[
         isMethodCall('Trace#start', arguments: <String, Object>{
-          'id': currentTraceid,
+          'id': currentTraceId,
           'name': 'startTrace-test',
         })
       ]);
@@ -96,7 +96,7 @@ void main() {
 
         expect(log, <Matcher>[
           isMethodCall('Trace#start', arguments: <String, Object>{
-            'id': currentTraceid,
+            'id': currentTraceId,
             'name': 'test',
           })
         ]);
@@ -108,11 +108,11 @@ void main() {
 
         expect(log, <Matcher>[
           isMethodCall('Trace#start', arguments: <String, Object>{
-            'id': currentTraceid,
+            'id': currentTraceId,
             'name': 'test',
           }),
           isMethodCall('Trace#stop', arguments: <String, dynamic>{
-            'id': currentTraceid,
+            'id': currentTraceId,
             'name': 'test',
             'counters': <String, int>{},
             'attributes': <String, String>{},
@@ -137,11 +137,11 @@ void main() {
 
         expect(log, <Matcher>[
           isMethodCall('Trace#start', arguments: <String, Object>{
-            'id': currentTraceid,
+            'id': currentTraceId,
             'name': 'test',
           }),
           isMethodCall('Trace#stop', arguments: <String, dynamic>{
-            'id': currentTraceid,
+            'id': currentTraceId,
             'name': 'test',
             'counters': <String, int>{
               'counter1': 1,

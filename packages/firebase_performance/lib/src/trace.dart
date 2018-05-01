@@ -39,9 +39,13 @@ class Trace {
   final HashMap<String, String> _attributes = new HashMap<String, String>();
 
   /// Map of all the attributes added to this trace.
-  Map<String, String> get attributes => Map<String, String>.from(_attributes);
+  Map<String, String> get attributes =>
+      Map<String, String>.unmodifiable(_attributes);
 
   /// Starts this trace.
+  ///
+  /// Using 'await' with this method is only necessary when accurate timing
+  /// is relevant.
   Future<void> start() {
     assert(!_hasStarted,
         "Trace '$_name' has already started, should not start again!");
@@ -55,6 +59,9 @@ class Trace {
   }
 
   /// Stops this trace.
+  ///
+  /// Using 'await' with this method is only necessary when accurate timing
+  /// is relevant.
   Future<void> stop() {
     assert(!_hasStopped,
         "Trace '$_name' has already stopped, should not stop again!");
