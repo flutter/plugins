@@ -309,6 +309,20 @@ class FirebaseAuth {
     return currentUser;
   }
 
+  Future<FirebaseUser> linkWithFacebookCredential({
+    @required String accessToken,
+  }) async {
+    assert(accessToken != null);
+    final Map<dynamic, dynamic> data = await channel.invokeMethod(
+      'linkWithFacebookCredential',
+      <String, String>{
+        'accessToken': accessToken,
+      },
+    );
+    final FirebaseUser currentUser = new FirebaseUser._(data);
+    return currentUser;
+  }
+
   Future<Null> _callHandler(MethodCall call) async {
     switch (call.method) {
       case "onAuthStateChanged":
