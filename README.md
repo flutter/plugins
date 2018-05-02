@@ -1,6 +1,7 @@
 # Flutter plugins
 
 [![Build Status](https://travis-ci.org/flutter/plugins.svg?branch=master)](https://travis-ci.org/flutter/plugins)
+[![Build Status](https://api.cirrus-ci.com/github/flutter/plugins.svg)](https://cirrus-ci.com/github/flutter/plugins)
 
 This repo is a companion repo to the main [flutter
 repo](https://github.com/flutter/flutter). It contains the source code for
@@ -23,7 +24,7 @@ repo](https://github.com/flutter/flutter/issues/new).
 
 If you wish to contribute a new plugin to the Flutter ecosystem, please
 see the documentation for [developing packages](https://flutter.io/developing-packages/) and
-[platform channels](https://flutter.io/platform-channels/). You can store 
+[platform channels](https://flutter.io/platform-channels/). You can store
 your plugin source code in any GitHub repository (the present repo is only
 intended for plugins developed by the core Flutter team). Once your plugin
 is ready you can [publish](https://flutter.io/developing-packages/#publish)
@@ -34,7 +35,7 @@ please review our [contribution guide](https://github.com/flutter/plugins/blob/m
 and send a [pull request](https://github.com/flutter/plugins/pulls).
 
 ## Plugins
-These are the available plugins in this repository. 
+These are the available plugins in this repository.
 
 | Plugin | Pub |
 |--------|-----|
