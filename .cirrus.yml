@@ -17,5 +17,7 @@ task:
       test_script: ./script/incremental_build.sh test
     - name: analyze
       script: ./script/incremental_build.sh analyze
-    - name: build-apks
-      script: ./script/incremental_build.sh build-examples --apk
+    - name: build-apks+java-test
+      script:
+        - ./script/incremental_build.sh build-examples --apk
+        - ./script/incremental_build.sh java-test  # must come after apk build

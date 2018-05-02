@@ -42,14 +42,26 @@
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"StorageReference#putFile" isEqualToString:call.method]) {
     [self putFile:call result:result];
+  } else if ([@"StorageReference#putData" isEqualToString:call.method]) {
+    [self putData:call result:result];
   } else if ([@"StorageReference#getData" isEqualToString:call.method]) {
     [self getData:call result:result];
+  } else if ([@"StorageReference#getBucket" isEqualToString:call.method]) {
+    [self getBucket:call result:result];
+  } else if ([@"StorageReference#getPath" isEqualToString:call.method]) {
+    [self getPath:call result:result];
+  } else if ([@"StorageReference#getName" isEqualToString:call.method]) {
+    [self getName:call result:result];
   } else if ([@"StorageReference#getDownloadUrl" isEqualToString:call.method]) {
     [self getDownloadUrl:call result:result];
   } else if ([@"StorageReference#delete" isEqualToString:call.method]) {
     [self delete:call result:result];
   } else if ([@"StorageReference#getMetadata" isEqualToString:call.method]) {
     [self getMetadata:call result:result];
+  } else if ([@"StorageReference#updateMetadata" isEqualToString:call.method]) {
+    [self updateMetadata:call result:result];
+  } else if ([@"StorageReference#writeToFile" isEqualToString:call.method]) {
+    [self writeToFile:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -57,6 +69,15 @@
 
 - (void)putFile:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSData *data = [NSData dataWithContentsOfFile:call.arguments[@"filename"]];
+  [self put:data call:call result:result];
+}
+
+- (void)putData:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSData *data = [(FlutterStandardTypedData *)call.arguments[@"data"] data];
+  [self put:data call:call result:result];
+}
+
+- (void)put:(NSData *)data call:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSString *path = call.arguments[@"path"];
   NSDictionary *metadataDictionary = call.arguments[@"metadata"];
   FIRStorageMetadata *metadata;
@@ -93,6 +114,29 @@
   return metadata;
 }
 
+- (NSDictionary *)buildDictionaryFromMetadata:(FIRStorageMetadata *)metadata {
+  NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+  [dictionary setValue:[metadata bucket] forKey:@"bucket"];
+  [dictionary setValue:[NSString stringWithFormat:@"%lld", [metadata generation]]
+                forKey:@"generation"];
+  [dictionary setValue:[NSString stringWithFormat:@"%lld", [metadata metageneration]]
+                forKey:@"metadataGeneration"];
+  [dictionary setValue:[metadata path] forKey:@"path"];
+  [dictionary setValue:@((long)([[metadata timeCreated] timeIntervalSince1970] * 1000.0))
+                forKey:@"creationTimeMillis"];
+  [dictionary setValue:@((long)([[metadata updated] timeIntervalSince1970] * 1000.0))
+                forKey:@"updatedTimeMillis"];
+  [dictionary setValue:@([metadata size]) forKey:@"sizeBytes"];
+  [dictionary setValue:[metadata md5Hash] forKey:@"md5Hash"];
+  [dictionary setValue:[metadata cacheControl] forKey:@"cacheControl"];
+  [dictionary setValue:[metadata contentDisposition] forKey:@"contentDisposition"];
+  [dictionary setValue:[metadata contentEncoding] forKey:@"contentEncoding"];
+  [dictionary setValue:[metadata contentLanguage] forKey:@"contentLanguage"];
+  [dictionary setValue:[metadata contentType] forKey:@"contentType"];
+  [dictionary setValue:[metadata name] forKey:@"name"];
+  return dictionary;
+}
+
 - (void)getData:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSNumber *maxSize = call.arguments[@"maxSize"];
   NSString *path = call.arguments[@"path"];
@@ -114,6 +158,24 @@
             }];
 }
 
+- (void)writeToFile:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSString *path = call.arguments[@"path"];
+  NSString *filePath = call.arguments[@"filePath"];
+  NSURL *localURL = [NSURL fileURLWithPath:filePath];
+  FIRStorageReference *ref = [[FIRStorage storage].reference child:path];
+  FIRStorageDownloadTask *task = [ref writeToFile:localURL];
+  [task observeStatus:FIRStorageTaskStatusSuccess
+              handler:^(FIRStorageTaskSnapshot *snapshot) {
+                result(@(snapshot.progress.totalUnitCount));
+              }];
+  [task observeStatus:FIRStorageTaskStatusFailure
+              handler:^(FIRStorageTaskSnapshot *snapshot) {
+                if (snapshot.error != nil) {
+                  result(snapshot.error.flutterError);
+                }
+              }];
+}
+
 - (void)getMetadata:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSString *path = call.arguments[@"path"];
   FIRStorageReference *ref = [[FIRStorage storage].reference child:path];
@@ -121,28 +183,41 @@
     if (error != nil) {
       result(error.flutterError);
     } else {
-      NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
-      [dictionary setValue:[metadata bucket] forKey:@"bucket"];
-      [dictionary setValue:[NSString stringWithFormat:@"%lld", [metadata generation]]
-                    forKey:@"generation"];
-      [dictionary setValue:[NSString stringWithFormat:@"%lld", [metadata metageneration]]
-                    forKey:@"metadataGeneration"];
-      [dictionary setValue:[metadata path] forKey:@"path"];
-      [dictionary setValue:@((long)([[metadata timeCreated] timeIntervalSince1970] * 1000.0))
-                    forKey:@"creationTimeMillis"];
-      [dictionary setValue:@((long)([[metadata updated] timeIntervalSince1970] * 1000.0))
-                    forKey:@"updatedTimeMillis"];
-      [dictionary setValue:@([metadata size]) forKey:@"sizeBytes"];
-      [dictionary setValue:[metadata md5Hash] forKey:@"md5Hash"];
-      [dictionary setValue:[metadata cacheControl] forKey:@"cacheControl"];
-      [dictionary setValue:[metadata contentDisposition] forKey:@"contentDisposition"];
-      [dictionary setValue:[metadata contentEncoding] forKey:@"contentEncoding"];
-      [dictionary setValue:[metadata contentLanguage] forKey:@"contentLanguage"];
-      [dictionary setValue:[metadata contentType] forKey:@"contentType"];
-      [dictionary setValue:[metadata name] forKey:@"name"];
-      result(dictionary);
+      result([self buildDictionaryFromMetadata:metadata]);
     }
   }];
+}
+
+- (void)updateMetadata:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSString *path = call.arguments[@"path"];
+  NSDictionary *metadataDictionary = call.arguments[@"metadata"];
+  FIRStorageReference *ref = [[FIRStorage storage].reference child:path];
+  [ref updateMetadata:[self buildMetadataFromDictionary:metadataDictionary]
+           completion:^(FIRStorageMetadata *metadata, NSError *error) {
+             if (error != nil) {
+               result(error.flutterError);
+             } else {
+               result([self buildDictionaryFromMetadata:metadata]);
+             }
+           }];
+}
+
+- (void)getBucket:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSString *path = call.arguments[@"path"];
+  FIRStorageReference *ref = [[FIRStorage storage].reference child:path];
+  result([ref bucket]);
+}
+
+- (void)getName:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSString *path = call.arguments[@"path"];
+  FIRStorageReference *ref = [[FIRStorage storage].reference child:path];
+  result([ref name]);
+}
+
+- (void)getPath:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSString *path = call.arguments[@"path"];
+  FIRStorageReference *ref = [[FIRStorage storage].reference child:path];
+  result([ref fullPath]);
 }
 
 - (void)getDownloadUrl:(FlutterMethodCall *)call result:(FlutterResult)result {
