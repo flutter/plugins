@@ -1,3 +1,7 @@
+## 0.5.6
+
+* Added support for linkWithFacebookCredential
+
 ## 0.5.5
 
 * Updated Google Play Services dependencies to version 15.0.0.
