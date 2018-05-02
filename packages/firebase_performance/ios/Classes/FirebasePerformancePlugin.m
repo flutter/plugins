@@ -4,7 +4,7 @@
 
 #import "FirebasePerformancePlugin.h"
 
-#import "Firebase/Firebase.h"
+#import <Firebase/Firebase.h>
 
 @interface FLTFirebasePerformancePlugin ()
 @property(nonatomic, retain) NSMutableDictionary *traces;
@@ -34,39 +34,32 @@
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"FirebasePerformance#isPerformanceCollectionEnabled" isEqualToString:call.method]) {
     result(@([[FIRPerformance sharedInstance] isDataCollectionEnabled]));
-
   } else if ([@"FirebasePerformance#setPerformanceCollectionEnabled" isEqualToString:call.method]) {
     NSNumber *enable = call.arguments;
     [[FIRPerformance sharedInstance] setDataCollectionEnabled:[enable boolValue]];
-
     result(nil);
-
   } else if ([@"Trace#start" isEqualToString:call.method]) {
     [self handleTraceStart:call result:result];
-
   } else if ([@"Trace#stop" isEqualToString:call.method]) {
     [self handleTraceStop:call result:result];
-
   } else {
     result(FlutterMethodNotImplemented);
   }
 }
 
 - (void)handleTraceStart:(FlutterMethodCall *)call result:(FlutterResult)result {
-  NSNumber *id = call.arguments[@"id"];
+  NSNumber *handle = call.arguments[@"handle"];
   NSString *name = call.arguments[@"name"];
 
   FIRTrace *trace = [[FIRPerformance sharedInstance] traceWithName:name];
-
-  [_traces setObject:trace forKey:id];
-
+  [_traces setObject:trace forKey:handle];
   [trace start];
   result(nil);
 }
 
 - (void)handleTraceStop:(FlutterMethodCall *)call result:(FlutterResult)result {
-  NSNumber *id = call.arguments[@"id"];
-  FIRTrace *trace = [_traces objectForKey:id];
+  NSNumber *handle = call.arguments[@"handle"];
+  FIRTrace *trace = [_traces objectForKey:handle];
 
   NSDictionary *counters = call.arguments[@"counters"];
   [counters enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSNumber *value, BOOL *stop) {
@@ -79,8 +72,7 @@
   }];
 
   [trace stop];
-  [_traces removeObjectForKey:id];
-
+  [_traces removeObjectForKey:handle];
   result(nil);
 }
 

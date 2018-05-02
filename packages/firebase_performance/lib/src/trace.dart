@@ -6,7 +6,7 @@ part of firebase_performance;
 
 /// Trace allows you to set beginning and end of a certain action in your app.
 class Trace {
-  Trace._(this._id, this._name) {
+  Trace._(this._handle, this._name) {
     assert(
         _name != null, "Trace name is invalid. (Trace name must not be null)");
     assert(!_name.startsWith(new RegExp(r'[_\s]')),
@@ -17,19 +17,19 @@ class Trace {
         "Trace '$_name' is invalid. (Trace name must not exceed $maxTraceNameLength characters)");
   }
 
-  /// Maximum allowed length of the Key of the [Trace] attribute.
+  /// Maximum allowed length of a key passed to [putAttribute].
   static const int maxAttributeKeyLength = 40;
 
-  /// Maximum allowed length of the Value of the [Trace] attribute.
+  /// Maximum allowed length of a value passed to [putAttribute].
   static const int maxAttributeValueLength = 100;
 
-  /// Maximum allowed number of attributes allowed in a trace.
+  /// Maximum allowed number of attributes that can be added.
   static const int maxTraceCustomAttributes = 5;
 
-  /// Maximum allowed length of the name of the [Trace].
+  /// Maximum allowed length of the name of a [Trace].
   static const int maxTraceNameLength = 100;
 
-  final int _id;
+  final int _handle;
   final String _name;
 
   bool _hasStarted = false;
@@ -38,13 +38,13 @@ class Trace {
   final HashMap<String, int> _counters = new HashMap<String, int>();
   final HashMap<String, String> _attributes = new HashMap<String, String>();
 
-  /// Map of all the attributes added to this trace.
+  /// All the attributes added to this trace.
   Map<String, String> get attributes =>
       Map<String, String>.unmodifiable(_attributes);
 
   /// Starts this trace.
   ///
-  /// Using 'await' with this method is only necessary when accurate timing
+  /// Using ```await``` with this method is only necessary when accurate timing
   /// is relevant.
   Future<void> start() {
     assert(!_hasStarted,
@@ -53,14 +53,14 @@ class Trace {
     _hasStarted = true;
     return FirebasePerformance.channel
         .invokeMethod('Trace#start', <String, dynamic>{
-      'id': _id,
+      'handle': _handle,
       'name': _name,
     });
   }
 
   /// Stops this trace.
   ///
-  /// Using 'await' with this method is only necessary when accurate timing
+  /// Using ```await``` with this method is only necessary when accurate timing
   /// is relevant.
   Future<void> stop() {
     assert(!_hasStopped,
@@ -69,7 +69,7 @@ class Trace {
         _hasStarted, "Trace '$_name' has not been started so unable to stop!");
 
     final Map<String, dynamic> data = <String, dynamic>{
-      'id': _id,
+      'handle': _handle,
       'name': _name,
       'counters': _counters,
       'attributes': _attributes,
@@ -79,18 +79,16 @@ class Trace {
     return FirebasePerformance.channel.invokeMethod('Trace#stop', data);
   }
 
-  /// Increments the counter in this trace with the given [name] by given value.
+  /// Increments the counter with the given [name] by [incrementBy].
   ///
-  /// Increments the counter in this trace with the given name by given value.
-  /// If a counter does not already exist, a new one will be created. If the
-  /// trace has not been started or has already been stopped, returns
-  /// immediately without taking action.
+  /// The counter is incremented by 1 if [incrementBy] was not passed. If a
+  /// counter does not already exist, a new one will be created. If the trace
+  /// has not been started or has already been stopped, returns immediately
+  /// without taking action.
   ///
-  /// [name]: Name of the counter to be incremented. Requires no leading or
-  /// trailing whitespace, no leading underscore _ character, max length of
-  /// [maxCounterKeyLength] characters.
-  ///
-  /// [incrementBy]: Amount by which the counter has to be incremented.
+  /// The name of the counter requires no leading or
+  /// trailing whitespace, no leading underscore _ character, and max length of
+  /// 32 characters.
   void incrementCounter(String name, [int incrementBy = 1]) {
     assert(!_hasStopped,
         "Connot increment counter $name. Trace '$_name' has already stopped!");
@@ -109,16 +107,14 @@ class Trace {
 
   /// Sets a String [value] for the specified [attribute].
   ///
-  /// Sets a String value for the specified attribute. Updates the value of the
-  /// attribute if the attribute already exists. If the trace has been stopped,
-  /// this method returns without adding the attribute. The maximum number of
-  /// attributes that can be added to a Trace are [maxTraceCustomAttributes].
+  /// Updates the value of the attribute if the attribute already exists. If the
+  /// trace has been stopped, this method returns without adding the attribute.
+  /// The maximum number of attributes that can be added to a Trace are
+  /// [maxTraceCustomAttributes].
   ///
-  /// [attribute]: Name of the attribute. Max length of [maxAttributeKeyLength]
-  /// characters.
-  ///
-  /// [value]: Value of the attribute. Max length of [maxAttributeValueLength]
-  /// characters.
+  /// Name of the attribute has max length of [maxAttributeKeyLength]
+  /// characters. Value of the attribute has max length of
+  /// [maxAttributeValueLength] characters.
   void putAttribute(String attribute, String value) {
     assert(!_hasStopped,
         "Can not set attriubte $attribute. Trace '$_name' has already stopped!");
@@ -139,10 +135,10 @@ class Trace {
     _attributes[attribute] = value;
   }
 
-  /// Removes an already added [attribute] from the [Trace].
+  /// Removes an already added [attribute].
   ///
-  /// Removes an already added attribute from the Traces. If the trace has been
-  /// stopped, this method returns without removing the attribute.
+  /// If the trace has been stopped, this method returns without removing the
+  /// attribute.
   void removeAttribute(String attribute) {
     assert(!_hasStopped,
         "Can not remove attriubte $attribute. Trace '$_name' has already stopped!");

@@ -55,12 +55,12 @@ public class FirebasePerformancePlugin implements MethodCallHandler {
   private void handleTraceStart(MethodCall call, Result result) {
     Map<String, Object> arguments = call.arguments();
 
-    int id = (int) arguments.get("id");
+    int handle = (int) arguments.get("handle");
     String name = (String) arguments.get("name");
 
     Trace trace = firebasePerformance.newTrace(name);
 
-    traces.put(id, trace);
+    traces.put(handle, trace);
 
     trace.start();
     result.success(null);
@@ -69,8 +69,8 @@ public class FirebasePerformancePlugin implements MethodCallHandler {
   private void handleTraceStop(MethodCall call, Result result) {
     Map<String, Object> arguments = call.arguments();
 
-    int id = (int) arguments.get("id");
-    Trace trace = traces.get(id);
+    int handle = (int) arguments.get("handle");
+    Trace trace = traces.get(handle);
 
     @SuppressWarnings("unchecked")
     Map<String, Integer> counters = (Map<String, Integer>) arguments.get("counters");
@@ -85,7 +85,7 @@ public class FirebasePerformancePlugin implements MethodCallHandler {
     }
 
     trace.stop();
-    traces.remove(id);
+    traces.remove(handle);
     result.success(null);
   }
 }
