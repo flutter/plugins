@@ -7,16 +7,43 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
+import 'package:firebase_core/firebase_core.dart';
 
+/// FirebaseStorage is a service that supports uploading and downloading large
+/// objects to Google Cloud Storage.
 class FirebaseStorage {
   static const MethodChannel channel =
       const MethodChannel('plugins.flutter.io/firebase_storage');
 
-  static FirebaseStorage get instance => new FirebaseStorage();
+  /// Returns the [FirebaseStorage] instance, initialized with a custom
+  /// [FirebaseApp] if [app] is specified and a custom Google Cloud Storage
+  /// bucket if [storageBucket] is specified.
+  ///
+  /// The [storageBucket] argument is the gs:// url to the custom Firebase
+  /// Storage Bucket.
+  ///
+  /// The [app] argument is the custom [FirebaseApp].
+  FirebaseStorage({this.app, this.storageBucket});
 
-  StorageReference ref() {
-    return new StorageReference._(const <String>[], this);
-  }
+  static FirebaseStorage _instance = new FirebaseStorage();
+
+  /// The [FirebaseApp] instance to which this [FirebaseStorage] belongs.
+  ///
+  /// If null, the default [FirebaseApp] is used.
+  final FirebaseApp app;
+
+  /// The Google Cloud Storage bucket to which this [FirebaseStorage] belongs.
+  ///
+  /// If null, the storage bucket of the specified [FirebaseApp] is used.
+  final String storageBucket;
+
+  /// Returns the [FirebaseStorage] instance, initialized with the default
+  /// [FirebaseApp].
+  static FirebaseStorage get instance => _instance;
+
+  /// Creates a new [StorageReference] initialized at the root
+  /// Firebase Storage location.
+  StorageReference ref() => new StorageReference._(const <String>[], this);
 }
 
 class StorageReference {
@@ -73,8 +100,8 @@ class StorageReference {
   /// Asynchronously uploads a file to the currently specified
   /// [StorageReference], with an optional [metadata].
   StorageUploadTask putFile(File file, [StorageMetadata metadata]) {
-    final StorageFileUploadTask task =
-        new StorageFileUploadTask._(file, _pathComponents.join("/"), metadata);
+    final StorageFileUploadTask task = new StorageFileUploadTask._(
+        file, _firebaseStorage, _pathComponents.join("/"), metadata);
     task._start();
     return task;
   }
@@ -82,8 +109,8 @@ class StorageReference {
   /// Asynchronously uploads byte data to the currently specified
   /// [StorageReference], with an optional [metadata].
   StorageUploadTask putData(Uint8List data, [StorageMetadata metadata]) {
-    final StorageUploadTask task =
-        new StorageDataUploadTask._(data, _pathComponents.join("/"), metadata);
+    final StorageUploadTask task = new StorageDataUploadTask._(
+        data, _firebaseStorage, _pathComponents.join("/"), metadata);
     task._start();
     return task;
   }
@@ -92,6 +119,8 @@ class StorageReference {
   Future<String> getBucket() async {
     return await FirebaseStorage.channel
         .invokeMethod("StorageReference#getBucket", <String, String>{
+      'app': _firebaseStorage.app?.name,
+      'bucket': _firebaseStorage.storageBucket,
       'path': _pathComponents.join("/"),
     });
   }
@@ -101,6 +130,8 @@ class StorageReference {
   Future<String> getPath() async {
     return await FirebaseStorage.channel
         .invokeMethod("StorageReference#getPath", <String, String>{
+      'app': _firebaseStorage.app?.name,
+      'bucket': _firebaseStorage.storageBucket,
       'path': _pathComponents.join("/"),
     });
   }
@@ -109,6 +140,8 @@ class StorageReference {
   Future<String> getName() async {
     return await FirebaseStorage.channel
         .invokeMethod("StorageReference#getName", <String, String>{
+      'app': _firebaseStorage.app?.name,
+      'bucket': _firebaseStorage.storageBucket,
       'path': _pathComponents.join("/"),
     });
   }
@@ -119,6 +152,8 @@ class StorageReference {
     return await FirebaseStorage.channel.invokeMethod(
       "StorageReference#getData",
       <String, dynamic>{
+        'app': _firebaseStorage.app?.name,
+        'bucket': _firebaseStorage.storageBucket,
         'maxSize': maxSize,
         'path': _pathComponents.join("/"),
       },
@@ -128,8 +163,8 @@ class StorageReference {
   /// Asynchronously downloads the object at this [StorageReference] to a
   /// specified system file.
   StorageFileDownloadTask writeToFile(File file) {
-    final StorageFileDownloadTask task =
-        new StorageFileDownloadTask._(_pathComponents.join("/"), file);
+    final StorageFileDownloadTask task = new StorageFileDownloadTask._(
+        _firebaseStorage, _pathComponents.join("/"), file);
     task._start();
     return task;
   }
@@ -140,19 +175,27 @@ class StorageReference {
   Future<dynamic> getDownloadURL() async {
     return await FirebaseStorage.channel
         .invokeMethod("StorageReference#getDownloadUrl", <String, String>{
+      'app': _firebaseStorage.app?.name,
+      'bucket': _firebaseStorage.storageBucket,
       'path': _pathComponents.join("/"),
     });
   }
 
   Future<void> delete() {
-    return FirebaseStorage.channel.invokeMethod("StorageReference#delete",
-        <String, String>{'path': _pathComponents.join("/")});
+    return FirebaseStorage.channel
+        .invokeMethod("StorageReference#delete", <String, String>{
+      'app': _firebaseStorage.app?.name,
+      'bucket': _firebaseStorage.storageBucket,
+      'path': _pathComponents.join("/")
+    });
   }
 
   /// Retrieves metadata associated with an object at this [StorageReference].
   Future<StorageMetadata> getMetadata() async {
     return new StorageMetadata._fromMap(await FirebaseStorage.channel
         .invokeMethod("StorageReference#getMetadata", <String, String>{
+      'app': _firebaseStorage.app?.name,
+      'bucket': _firebaseStorage.storageBucket,
       'path': _pathComponents.join("/"),
     }));
   }
@@ -167,6 +210,8 @@ class StorageReference {
   Future<StorageMetadata> updateMetadata(StorageMetadata metadata) async {
     return new StorageMetadata._fromMap(await FirebaseStorage.channel
         .invokeMethod("StorageReference#updateMetadata", <String, dynamic>{
+      'app': _firebaseStorage.app?.name,
+      'bucket': _firebaseStorage.storageBucket,
       'path': _pathComponents.join("/"),
       'metadata': metadata == null ? null : _buildMetadataUploadMap(metadata),
     }));
@@ -255,15 +300,18 @@ class StorageMetadata {
 }
 
 class StorageFileDownloadTask {
+  final FirebaseStorage _firebaseStorage;
   final String _path;
   final File _file;
 
-  StorageFileDownloadTask._(this._path, this._file);
+  StorageFileDownloadTask._(this._firebaseStorage, this._path, this._file);
 
   Future<void> _start() async {
     final int totalByteCount = await FirebaseStorage.channel.invokeMethod(
       "StorageReference#writeToFile",
       <String, dynamic>{
+        'app': _firebaseStorage.app?.name,
+        'bucket': _firebaseStorage.storageBucket,
         'filePath': _file.absolute.path,
         'path': _path,
       },
@@ -278,10 +326,11 @@ class StorageFileDownloadTask {
 }
 
 abstract class StorageUploadTask {
+  final FirebaseStorage _firebaseStorage;
   final String _path;
   final StorageMetadata _metadata;
 
-  StorageUploadTask._(this._path, this._metadata);
+  StorageUploadTask._(this._firebaseStorage, this._path, this._metadata);
   Future<void> _start();
 
   Completer<UploadTaskSnapshot> _completer =
@@ -291,14 +340,17 @@ abstract class StorageUploadTask {
 
 class StorageFileUploadTask extends StorageUploadTask {
   final File _file;
-  StorageFileUploadTask._(this._file, String path, StorageMetadata metadata)
-      : super._(path, metadata);
+  StorageFileUploadTask._(this._file, FirebaseStorage firebaseStorage,
+      String path, StorageMetadata metadata)
+      : super._(firebaseStorage, path, metadata);
 
   @override
   Future<void> _start() async {
     final String downloadUrl = await FirebaseStorage.channel.invokeMethod(
       'StorageReference#putFile',
       <String, dynamic>{
+        'app': _firebaseStorage.app?.name,
+        'bucket': _firebaseStorage.storageBucket,
         'filename': _file.absolute.path,
         'path': _path,
         'metadata':
@@ -312,14 +364,17 @@ class StorageFileUploadTask extends StorageUploadTask {
 
 class StorageDataUploadTask extends StorageUploadTask {
   final Uint8List _bytes;
-  StorageDataUploadTask._(this._bytes, String path, StorageMetadata metadata)
-      : super._(path, metadata);
+  StorageDataUploadTask._(this._bytes, FirebaseStorage firebaseStorage,
+      String path, StorageMetadata metadata)
+      : super._(firebaseStorage, path, metadata);
 
   @override
   Future<void> _start() async {
     final String downloadUrl = await FirebaseStorage.channel.invokeMethod(
       'StorageReference#putData',
       <String, dynamic>{
+        'app': _firebaseStorage.app?.name,
+        'bucket': _firebaseStorage.storageBucket,
         'data': _bytes,
         'path': _path,
         'metadata':
