@@ -462,6 +462,9 @@
     if (error) {
       result([error flutterError]);
     } else {
+        if (_camera) {
+            [_camera close];
+        }
       int64_t textureId = [_registry registerTexture:cam];
       _camera = cam;
       cam.onFrameAvailable = ^{
