@@ -47,7 +47,7 @@ Otherwise you will not be able to use Firebase Remote Config.
 
 Add the following imports to your Dart code:
 ```
-import 'package:firebase_auth/firebase_remote_config.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 ```
 
 Initialize `RemoteConfig`:
