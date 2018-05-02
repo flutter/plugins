@@ -83,7 +83,7 @@ FLTRewardedVideoAdStatus _rewardedStatus;
   NSLog(@"interstitial:didFailToReceiveAdWithError: %@ (MobileAd %@)", [error localizedDescription],
         self);
   _rewardedStatus = FLTRewardedVideoAdStatusFailed;
-  [_rewardedChannel invokeMethod:@"onAdFailedToLoad" arguments:@{}];
+  [_rewardedChannel invokeMethod:@"onRewardedVideoAdFailedToLoad" arguments:@{}];
 }
 
 - (void)rewardBasedVideoAdDidReceiveAd:(nonnull GADRewardBasedVideoAd *)rewardBasedVideoAd {
