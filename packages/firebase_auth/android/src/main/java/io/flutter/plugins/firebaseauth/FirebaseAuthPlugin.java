@@ -210,9 +210,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     String accessToken = arguments.get("accessToken");
     AuthCredential credential = FacebookAuthProvider.getCredential(accessToken);
     firebaseAuth
-            .getCurrentUser()
-            .linkWithCredential(credential)
-            .addOnCompleteListener(new SignInCompleteListener(result));
+        .getCurrentUser()
+        .linkWithCredential(credential)
+        .addOnCompleteListener(new SignInCompleteListener(result));
   }
 
   private void handleSignInWithFacebook(MethodCall call, final Result result) {
