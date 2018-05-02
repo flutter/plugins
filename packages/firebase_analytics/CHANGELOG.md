@@ -1,3 +1,7 @@
+## 0.3.3
+
+* Updated Google Play Services dependencies to version 15.0.0.
+
 ## 0.3.2
 
 * Updated package channel name

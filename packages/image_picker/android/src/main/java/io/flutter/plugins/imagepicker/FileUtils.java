@@ -31,10 +31,8 @@ import android.provider.MediaStore;
 import android.text.TextUtils;
 
 class FileUtils {
-  private FileUtils() {}
-
   @SuppressLint("NewApi")
-  static String getPathFromUri(final Context context, final Uri uri) {
+  String getPathFromUri(final Context context, final Uri uri) {
     final boolean isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
 
     if (isKitKat && DocumentsContract.isDocumentUri(context, uri)) {
