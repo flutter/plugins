@@ -65,7 +65,7 @@ public class RewardedVideoAdWrapper implements RewardedVideoAdListener {
   public void onRewardedVideoAdFailedToLoad(int errorCode) {
     Log.w(TAG, "onRewardedVideoAdFailedToLoad: " + errorCode);
     status = Status.FAILED;
-    channel.invokeMethod("onAdFailedToLoad", argumentsMap("errorCode", errorCode));
+    channel.invokeMethod("onRewardedVideoAdFailedToLoad", argumentsMap("errorCode", errorCode));
   }
 
   enum Status {

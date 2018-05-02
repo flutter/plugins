@@ -1,3 +1,7 @@
+## 0.5.4
+
+* Fixed a bug that was causing rewarded video failure event to be called on the wrong listener.
+
 ## 0.5.3
 
 * Updated Google Play Services dependencies to version 15.0.0.
