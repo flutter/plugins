@@ -424,6 +424,9 @@
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"init" isEqualToString:call.method]) {
+      if (_camera) {
+          [_camera close];
+      }
     result(nil);
   } else if ([@"availableCameras" isEqualToString:call.method]) {
     AVCaptureDeviceDiscoverySession *discoverySession = [AVCaptureDeviceDiscoverySession
