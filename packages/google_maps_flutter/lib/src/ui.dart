@@ -50,8 +50,7 @@ class MinMaxZoomPreference {
 /// Configuration options for the GoogleMaps user interface.
 ///
 /// When used to change configuration, null values will be interpreted as
-/// "do not change this configuration item". When used to represent current
-/// configuration, all values will be non-null.
+/// "do not change this configuration item".
 class GoogleMapOptions {
   final CameraPosition cameraPosition;
   final bool compassEnabled;
@@ -109,17 +108,26 @@ class GoogleMapOptions {
 
   dynamic _toJson() {
     final Map<String, dynamic> json = <String, dynamic>{};
-    json['cameraPosition'] = cameraPosition?._toJson();
-    json['compassEnabled'] = compassEnabled;
-    json['latLngCameraTargetBounds'] = latLngCameraTargetBounds?._toJson();
-    json['mapType'] = mapType?.index;
-    json['minMaxZoomPreference'] = minMaxZoomPreference?._toJson();
-    json['reportCameraMoveEvents'] = trackCameraPosition;
-    json['rotateGesturesEnabled'] = rotateGesturesEnabled;
-    json['scrollGesturesEnabled'] = scrollGesturesEnabled;
-    json['tiltGesturesEnabled'] = tiltGesturesEnabled;
-    json['trackCameraPosition'] = trackCameraPosition;
-    json['zoomGesturesEnabled'] = zoomGesturesEnabled;
+    if (cameraPosition != null)
+      json['cameraPosition'] = cameraPosition._toJson();
+    if (compassEnabled != null)
+      json['compassEnabled'] = compassEnabled;
+    if (latLngCameraTargetBounds != null)
+      json['latLngCameraTargetBounds'] = latLngCameraTargetBounds._toJson();
+    if (mapType != null)
+      json['mapType'] = mapType.index;
+    if (minMaxZoomPreference != null)
+      json['minMaxZoomPreference'] = minMaxZoomPreference._toJson();
+    if (rotateGesturesEnabled != null)
+      json['rotateGesturesEnabled'] = rotateGesturesEnabled;
+    if (scrollGesturesEnabled != null)
+      json['scrollGesturesEnabled'] = scrollGesturesEnabled;
+    if (tiltGesturesEnabled != null)
+      json['tiltGesturesEnabled'] = tiltGesturesEnabled;
+    if (trackCameraPosition != null)
+      json['trackCameraPosition'] = trackCameraPosition;
+    if (zoomGesturesEnabled != null)
+      json['zoomGesturesEnabled'] = zoomGesturesEnabled;
     return json;
   }
 }
