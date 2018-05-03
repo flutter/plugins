@@ -12,7 +12,7 @@ void main() {
     final FirebasePerformance performance = FirebasePerformance.instance;
     final List<MethodCall> log = <MethodCall>[];
     bool performanceCollectionEnable = true;
-    int currentTraceId;
+    int currentTraceHandle;
 
     setUp(() {
       FirebasePerformance.channel
@@ -25,7 +25,7 @@ void main() {
             performanceCollectionEnable = methodCall.arguments;
             return null;
           case 'Trace#start':
-            currentTraceId = methodCall.arguments["id"];
+            currentTraceHandle = methodCall.arguments['handle'];
             return null;
           case 'Trace#stop':
             return null;
@@ -42,7 +42,7 @@ void main() {
       expect(performanceCollectionEnable, enabled);
       expect(log, <Matcher>[
         isMethodCall('FirebasePerformance#isPerformanceCollectionEnabled',
-            arguments: null)
+            arguments: null),
       ]);
     });
 
@@ -57,7 +57,7 @@ void main() {
         isMethodCall('FirebasePerformance#setPerformanceCollectionEnabled',
             arguments: true),
         isMethodCall('FirebasePerformance#setPerformanceCollectionEnabled',
-            arguments: false)
+            arguments: false),
       ]);
     });
 
@@ -67,9 +67,9 @@ void main() {
 
       expect(log, <Matcher>[
         isMethodCall('Trace#start', arguments: <String, Object>{
-          'id': currentTraceId,
+          'handle': currentTraceHandle,
           'name': 'test-trace',
-        })
+        }),
       ]);
     });
 
@@ -78,9 +78,9 @@ void main() {
 
       expect(log, <Matcher>[
         isMethodCall('Trace#start', arguments: <String, Object>{
-          'id': currentTraceId,
+          'handle': currentTraceHandle,
           'name': 'startTrace-test',
-        })
+        }),
       ]);
     });
 
@@ -96,9 +96,9 @@ void main() {
 
         expect(log, <Matcher>[
           isMethodCall('Trace#start', arguments: <String, Object>{
-            'id': currentTraceId,
+            'handle': currentTraceHandle,
             'name': 'test',
-          })
+          }),
         ]);
       });
 
@@ -108,15 +108,15 @@ void main() {
 
         expect(log, <Matcher>[
           isMethodCall('Trace#start', arguments: <String, Object>{
-            'id': currentTraceId,
+            'handle': currentTraceHandle,
             'name': 'test',
           }),
           isMethodCall('Trace#stop', arguments: <String, dynamic>{
-            'id': currentTraceId,
+            'handle': currentTraceHandle,
             'name': 'test',
             'counters': <String, int>{},
             'attributes': <String, String>{},
-          })
+          }),
         ]);
       });
 
@@ -137,11 +137,11 @@ void main() {
 
         expect(log, <Matcher>[
           isMethodCall('Trace#start', arguments: <String, Object>{
-            'id': currentTraceId,
+            'handle': currentTraceHandle,
             'name': 'test',
           }),
           isMethodCall('Trace#stop', arguments: <String, dynamic>{
-            'id': currentTraceId,
+            'handle': currentTraceHandle,
             'name': 'test',
             'counters': <String, int>{
               'counter1': 1,
@@ -150,7 +150,7 @@ void main() {
               'counter4': -5,
             },
             'attributes': <String, String>{},
-          })
+          }),
         ]);
       });
 
