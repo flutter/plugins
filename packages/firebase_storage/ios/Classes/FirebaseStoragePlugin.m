@@ -19,6 +19,8 @@
 @end
 
 @implementation FLTFirebaseStoragePlugin {
+  NSMutableDictionary<NSString * /* app name */,
+                      NSMutableDictionary<NSString * /* bucket */, FIRStorage*> *> *_storageMap;
   FIRStorage *storage;
 }
 
@@ -36,24 +38,26 @@
     if (![FIRApp defaultApp]) {
       [FIRApp configure];
     }
+    _storageMap = [[NSMutableDictionary alloc] init];
   }
   return self;
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
-  NSString *appName = call.arguments[@"app"];
-  NSString *storageBucket = call.arguments[@"bucket"];
-  if ([appName isEqual:[NSNull null]] && [storageBucket isEqual:[NSNull null]]) {
-    storage = [FIRStorage storage];
-  } else if ([appName isEqual:[NSNull null]]) {
-    storage = [FIRStorage storageWithURL:storageBucket];
-  } else if ([storageBucket isEqual:[NSNull null]]) {
-    storage = [FIRStorage storageForApp:[FIRApp appNamed:appName]];
-  } else {
-    storage = [FIRStorage storageForApp:[FIRApp appNamed:appName] URL:storageBucket];
-  }
-
-  if ([@"StorageReference#putFile" isEqualToString:call.method]) {
+  storage = [self getStorage:call];
+  if ([@"FirebaseStorage#getMaxDownloadRetryTime" isEqualToString:call.method]) {
+    result(@((long)storage.maxDownloadRetryTime * 1000.0));
+  } else if ([@"FirebaseStorage#getMaxUploadRetryTime" isEqualToString:call.method]) {
+    result(@((long)storage.maxUploadRetryTime * 1000.0));
+  } else if ([@"FirebaseStorage#getMaxOperationRetryTime" isEqualToString:call.method]) {
+    result(@((long)storage.maxOperationRetryTime * 1000.0));
+  } else if ([@"FirebaseStorage#setMaxDownloadRetryTime" isEqualToString:call.method]) {
+    [self setMaxDownloadRetryTime:call result:result];
+  } else if ([@"FirebaseStorage#setMaxUploadRetryTime" isEqualToString:call.method]) {
+    [self setMaxUploadRetryTime:call result:result];
+  } else if ([@"FirebaseStorage#setMaxOperationRetryTime" isEqualToString:call.method]) {
+    [self setMaxOperationRetryTime:call result:result];
+  } else if ([@"StorageReference#putFile" isEqualToString:call.method]) {
     [self putFile:call result:result];
   } else if ([@"StorageReference#putData" isEqualToString:call.method]) {
     [self putData:call result:result];
@@ -78,6 +82,68 @@
   } else {
     result(FlutterMethodNotImplemented);
   }
+}
+
+- (FIRStorage *)getStorage:(FlutterMethodCall *)call {
+  NSString *appName = call.arguments[@"app"];
+  NSString *bucketUrl = call.arguments[@"bucket"];
+  FIRApp *app;
+
+  if ([appName isEqual:[NSNull null]]) {
+    app = [FIRApp defaultApp];
+  } else {
+    app = [FIRApp appNamed:appName];
+  }
+
+  if ([bucketUrl isEqual:[NSNull null]]) {
+    if (app.options.storageBucket) {
+      bucketUrl = [app.options.storageBucket isEqualToString:@""]
+                      ? @""
+                      : [@"gs://" stringByAppendingString:app.options.storageBucket];
+    } else {
+      bucketUrl = nil;
+    }
+  }
+
+  NSURL *url = [NSURL URLWithString:bucketUrl];
+  if (!url) {
+    // Call storage constructor to raise proper exception.
+    [FIRStorage storageForApp:app URL:bucketUrl];
+  }
+
+  NSMutableDictionary *bucketMap = _storageMap[app.name];
+  if (!bucketMap) {
+    bucketMap = [[NSMutableDictionary alloc] init];
+    _storageMap[app.name] = bucketMap;
+  }
+
+  NSString *bucketName = [url host];
+  FIRStorage *storage = bucketMap[bucketName];
+  if (!storage) {
+    // Raises an exception if bucketUrl is invalid.
+    storage = [FIRStorage storageForApp:app URL:bucketUrl];
+    bucketMap[bucketName] = storage;
+  }
+
+  return storage;
+}
+
+- (void)setMaxDownloadRetryTime:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSNumber *time = call.arguments[@"time"];
+  storage.maxDownloadRetryTime = [time longLongValue] / 1000;
+  result(nil);
+}
+
+- (void)setMaxUploadRetryTime:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSNumber *time = call.arguments[@"time"];
+  storage.maxUploadRetryTime = [time longLongValue] / 1000;
+  result(nil);
+}
+
+- (void)setMaxOperationRetryTime:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSNumber *time = call.arguments[@"time"];
+  storage.maxOperationRetryTime = [time longLongValue] / 1000;
+  result(nil);
 }
 
 - (void)putFile:(FlutterMethodCall *)call result:(FlutterResult)result {
