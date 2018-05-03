@@ -72,22 +72,22 @@ class GoogleMapController extends ChangeNotifier {
 
   void _handleMethodCall(MethodCall call) {
     switch (call.method) {
-      case "marker#onTap":
+      case 'marker#onTap':
         final String markerId = call.arguments['marker'];
         final Marker marker = _markers[markerId];
         if (marker != null) {
           onMarkerTapped(marker);
         }
         break;
-      case "map#onCameraMoveStarted":
+      case 'map#onCameraMoveStarted':
         _isCameraMoving = true;
         notifyListeners();
         break;
-      case "map#onCameraMove":
+      case 'map#onCameraMove':
         _cameraPosition = CameraPosition._fromJson(call.arguments['position']);
         notifyListeners();
         break;
-      case "map#onCameraIdle":
+      case 'map#onCameraIdle':
         _isCameraMoving = false;
         notifyListeners();
         break;

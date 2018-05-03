@@ -128,7 +128,7 @@ class MarkerOptions {
     if (flat != null)
       json['flat'] = flat;
     if (icon != null)
-      json['icon'] = icon?._toJson();
+      json['icon'] = icon._toJson();
     if (infoWindowAnchor != null)
       json['infoWindowAnchor'] = _offsetToJson(infoWindowAnchor);
     if (infoWindowShown != null)

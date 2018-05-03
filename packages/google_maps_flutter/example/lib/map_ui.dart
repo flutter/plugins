@@ -47,6 +47,7 @@ class MapUiBody extends StatefulWidget {
 class MapUiBodyState extends State<MapUiBody> {
   CameraPosition _position;
   GoogleMapOptions _options;
+  bool _isMoving;
 
   @override
   void initState() {
@@ -56,10 +57,12 @@ class MapUiBodyState extends State<MapUiBody> {
       setState(() {
         _options = mapController.options;
         _position = mapController.cameraPosition;
+        _isMoving = mapController.isCameraMoving;
       });
     });
     _options = mapController.options;
     _position = mapController.cameraPosition;
+    _isMoving = mapController.isCameraMoving;
   }
 
   Widget _compassToggler() {
@@ -200,6 +203,7 @@ class MapUiBodyState extends State<MapUiBody> {
                 '${_position.target.longitude.toStringAsFixed(4)}'),
             new Text('camera zoom: ${_position.zoom}'),
             new Text('camera tilt: ${_position.tilt}'),
+            new Text(_isMoving ? '(Camera moving)' : '(Camera idle)'),
             _compassToggler(),
             _latLngBoundsToggler(),
             _mapTypeCycler(),

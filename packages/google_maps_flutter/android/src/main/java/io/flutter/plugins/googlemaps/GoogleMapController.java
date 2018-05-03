@@ -216,7 +216,7 @@ final class GoogleMapController
 
   @Override
   public void onCameraMoveStarted(int reason) {
-    onCameraMoveListener.onCameraMoveStarted(reason);
+    onCameraMoveListener.onCameraMoveStarted(reason == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE);
     cancelSnapshotTimerTasks();
   }
 

@@ -78,10 +78,10 @@ public class GoogleMapsPlugin implements MethodCallHandler, Application.Activity
           controller.setOnCameraMoveListener(
               new OnCameraMoveListener() {
                 @Override
-                public void onCameraMoveStarted(int reason) {
+                public void onCameraMoveStarted(boolean isGesture) {
                   final Map<String, Object> arguments = new HashMap<>(2);
                   arguments.put("map", controller.id());
-                  arguments.put("reason", reason);
+                  arguments.put("isGesture", isGesture);
                   channel.invokeMethod("map#onCameraMoveStarted", arguments);
                 }
 
