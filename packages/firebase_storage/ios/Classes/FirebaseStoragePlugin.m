@@ -19,6 +19,7 @@
 @end
 
 @implementation FLTFirebaseStoragePlugin {
+  FIRStorage *storage;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -40,6 +41,18 @@
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSString *appName = call.arguments[@"app"];
+  NSString *storageBucket = call.arguments[@"bucket"];
+  if ([appName isEqual:[NSNull null]] && [storageBucket isEqual:[NSNull null]]) {
+    storage = [FIRStorage storage];
+  } else if ([appName isEqual:[NSNull null]]) {
+    storage = [FIRStorage storageWithURL:storageBucket];
+  } else if ([storageBucket isEqual:[NSNull null]]) {
+    storage = [FIRStorage storageForApp:[FIRApp appNamed:appName]];
+  } else {
+    storage = [FIRStorage storageForApp:[FIRApp appNamed:appName] URL:storageBucket];
+  }
+
   if ([@"StorageReference#putFile" isEqualToString:call.method]) {
     [self putFile:call result:result];
   } else if ([@"StorageReference#putData" isEqualToString:call.method]) {
@@ -84,7 +97,7 @@
   if (![metadataDictionary isEqual:[NSNull null]]) {
     metadata = [self buildMetadataFromDictionary:metadataDictionary];
   }
-  FIRStorageReference *fileRef = [[FIRStorage storage].reference child:path];
+  FIRStorageReference *fileRef = [storage.reference child:path];
   [fileRef putData:data
           metadata:metadata
         completion:^(FIRStorageMetadata *metadata, NSError *error) {
@@ -140,7 +153,7 @@
 - (void)getData:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSNumber *maxSize = call.arguments[@"maxSize"];
   NSString *path = call.arguments[@"path"];
-  FIRStorageReference *ref = [[FIRStorage storage].reference child:path];
+  FIRStorageReference *ref = [storage.reference child:path];
   [ref dataWithMaxSize:[maxSize longLongValue]
             completion:^(NSData *_Nullable data, NSError *_Nullable error) {
               if (error != nil) {
@@ -162,7 +175,7 @@
   NSString *path = call.arguments[@"path"];
   NSString *filePath = call.arguments[@"filePath"];
   NSURL *localURL = [NSURL fileURLWithPath:filePath];
-  FIRStorageReference *ref = [[FIRStorage storage].reference child:path];
+  FIRStorageReference *ref = [storage.reference child:path];
   FIRStorageDownloadTask *task = [ref writeToFile:localURL];
   [task observeStatus:FIRStorageTaskStatusSuccess
               handler:^(FIRStorageTaskSnapshot *snapshot) {
@@ -178,7 +191,7 @@
 
 - (void)getMetadata:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSString *path = call.arguments[@"path"];
-  FIRStorageReference *ref = [[FIRStorage storage].reference child:path];
+  FIRStorageReference *ref = [storage.reference child:path];
   [ref metadataWithCompletion:^(FIRStorageMetadata *metadata, NSError *error) {
     if (error != nil) {
       result(error.flutterError);
@@ -191,7 +204,7 @@
 - (void)updateMetadata:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSString *path = call.arguments[@"path"];
   NSDictionary *metadataDictionary = call.arguments[@"metadata"];
-  FIRStorageReference *ref = [[FIRStorage storage].reference child:path];
+  FIRStorageReference *ref = [storage.reference child:path];
   [ref updateMetadata:[self buildMetadataFromDictionary:metadataDictionary]
            completion:^(FIRStorageMetadata *metadata, NSError *error) {
              if (error != nil) {
@@ -204,25 +217,25 @@
 
 - (void)getBucket:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSString *path = call.arguments[@"path"];
-  FIRStorageReference *ref = [[FIRStorage storage].reference child:path];
+  FIRStorageReference *ref = [storage.reference child:path];
   result([ref bucket]);
 }
 
 - (void)getName:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSString *path = call.arguments[@"path"];
-  FIRStorageReference *ref = [[FIRStorage storage].reference child:path];
+  FIRStorageReference *ref = [storage.reference child:path];
   result([ref name]);
 }
 
 - (void)getPath:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSString *path = call.arguments[@"path"];
-  FIRStorageReference *ref = [[FIRStorage storage].reference child:path];
+  FIRStorageReference *ref = [storage.reference child:path];
   result([ref fullPath]);
 }
 
 - (void)getDownloadUrl:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSString *path = call.arguments[@"path"];
-  FIRStorageReference *ref = [[FIRStorage storage].reference child:path];
+  FIRStorageReference *ref = [storage.reference child:path];
   [ref downloadURLWithCompletion:^(NSURL *URL, NSError *error) {
     if (error != nil) {
       result(error.flutterError);
@@ -234,7 +247,7 @@
 
 - (void) delete:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSString *path = call.arguments[@"path"];
-  FIRStorageReference *ref = [[FIRStorage storage].reference child:path];
+  FIRStorageReference *ref = [storage.reference child:path];
   [ref deleteWithCompletion:^(NSError *error) {
     if (error != nil) {
       result(error.flutterError);
