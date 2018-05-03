@@ -101,7 +101,7 @@ int nextHandle = 0;
                                 }];
   } else if ([@"sendEmailVerification" isEqualToString:call.method]) {
     [[FIRAuth auth].currentUser sendEmailVerificationWithCompletion:^(NSError *_Nullable error) {
-        [self sendResult:result forProviders:nil error:error];
+      [self sendResult:result forProviders:nil error:error];
     }];
 
   } else if ([@"sendPasswordResetEmail" isEqualToString:call.method]) {

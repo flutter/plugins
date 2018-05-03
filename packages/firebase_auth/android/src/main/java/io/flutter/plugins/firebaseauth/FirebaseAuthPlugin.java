@@ -175,9 +175,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
 
   private void handleSendEmailVerification(MethodCall call, final Result result) {
     firebaseAuth
-            .getCurrentUser()
-            .sendEmailVerification()
-            .addOnCompleteListener(new TaskVoidCompleteListener(result));
+        .getCurrentUser()
+        .sendEmailVerification()
+        .addOnCompleteListener(new TaskVoidCompleteListener(result));
   }
 
   private void handleSignInWithEmailAndPassword(MethodCall call, final Result result) {
