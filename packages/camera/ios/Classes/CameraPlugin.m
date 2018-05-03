@@ -181,14 +181,14 @@
     });
     return;
   }
-  if (_videoWriter.status == AVAssetWriterStatusFailed) {
-    _eventSink(@{
-      @"event" : @"error",
-      @"errorDescription" : @"AVAssetWriter failed! File may already exist at given path."
-    });
-    return;
-  }
-  if (_isRecording == YES) {
+  if (_isRecording) {
+    if (_videoWriter.status == AVAssetWriterStatusFailed) {
+      _eventSink(@{
+        @"event" : @"error",
+        @"errorDescription" : [NSString stringWithFormat:@"%@", _videoWriter.error]
+      });
+      return;
+    }
     CMTime lastSampleTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer);
     if (_videoWriter.status != AVAssetWriterStatusWriting) {
       [_videoWriter startWriting];
@@ -203,12 +203,13 @@
 }
 
 - (void)newVideoSample:(CMSampleBufferRef)sampleBuffer {
-  if (_videoWriter.status > AVAssetWriterStatusWriting) {
-    if (_videoWriter.status == AVAssetWriterStatusFailed)
+  if (_videoWriter.status != AVAssetWriterStatusWriting) {
+    if (_videoWriter.status == AVAssetWriterStatusFailed) {
       _eventSink(@{
         @"event" : @"error",
         @"errorDescription" : [NSString stringWithFormat:@"%@", _videoWriter.error]
       });
+    }
     return;
   }
   if (_videoWriterInput.readyForMoreMediaData) {
@@ -223,12 +224,13 @@
 }
 
 - (void)newAudioSample:(CMSampleBufferRef)sampleBuffer {
-  if (_videoWriter.status > AVAssetWriterStatusWriting) {
-    if (_videoWriter.status == AVAssetWriterStatusFailed)
+  if (_videoWriter.status != AVAssetWriterStatusWriting) {
+    if (_videoWriter.status == AVAssetWriterStatusFailed) {
       _eventSink(@{
         @"event" : @"error",
         @"errorDescription" : [NSString stringWithFormat:@"%@", _videoWriter.error]
       });
+    }
     return;
   }
   if (_audioWriterInput.readyForMoreMediaData) {
@@ -321,19 +323,15 @@
   if (path != nil) {
     outputURL = [NSURL fileURLWithPath:path];
   } else {
-    NSArray *paths =
-        NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectoryPath = [paths objectAtIndex:0];
-    time_t unixTime = (time_t)[[NSDate date] timeIntervalSince1970];
-    NSString *timestamp = [NSString stringWithFormat:@"%ld", unixTime];
-    NSString *filename = [NSString stringWithFormat:@"iPhoneVideo_%@.mp4", timestamp];
-    outputURL =
-        [NSURL fileURLWithPath:[documentsDirectoryPath stringByAppendingPathComponent:filename]];
+    return NO;
   }
   _videoWriter =
       [[AVAssetWriter alloc] initWithURL:outputURL fileType:AVFileTypeQuickTimeMovie error:&error];
   NSParameterAssert(_videoWriter);
-
+  if (error) {
+    _eventSink(@{@"event" : @"error", @"errorDescription" : error.description});
+    return NO;
+  }
   NSDictionary *videoSettings = [NSDictionary
       dictionaryWithObjectsAndKeys:AVVideoCodecH264, AVVideoCodecKey,
                                    [NSNumber numberWithInt:_previewSize.height], AVVideoWidthKey,
