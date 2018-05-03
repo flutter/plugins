@@ -36,11 +36,22 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
 
   private FirebaseStoragePlugin(Registrar registrar) {
     FirebaseApp.initializeApp(registrar.context());
-    this.firebaseStorage = FirebaseStorage.getInstance();
   }
 
   @Override
   public void onMethodCall(MethodCall call, final Result result) {
+    String app = call.argument("app");
+    String storageBucket = call.argument("bucket");
+    if (app == null && storageBucket == null) {
+      firebaseStorage = FirebaseStorage.getInstance();
+    } else if (storageBucket == null) {
+      firebaseStorage = FirebaseStorage.getInstance(FirebaseApp.getInstance(app));
+    } else if (app == null) {
+      firebaseStorage = FirebaseStorage.getInstance(storageBucket);
+    } else {
+      firebaseStorage = FirebaseStorage.getInstance(FirebaseApp.getInstance(app), storageBucket);
+    }
+
     switch (call.method) {
       case "StorageReference#putFile":
         putFile(call, result);
