@@ -208,7 +208,8 @@ class CameraController extends ValueNotifier<CameraValue> {
         new EventChannel('flutter.io/cameraPlugin/cameraEvents$_textureId')
             .receiveBroadcastStream()
             .listen(_listener);
-    _creatingCompleter.future;
+    _creatingCompleter.complete(null);
+    return _creatingCompleter.future;
   }
 
   /// Listen to events from the native plugins.

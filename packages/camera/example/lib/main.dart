@@ -45,37 +45,40 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
       appBar: new AppBar(
         title: const Text('Camera example'),
       ),
-      body: new Column(children: <Widget>[
-        new Expanded(
-          child: new Container(
-            child: new Padding(
-              padding: const EdgeInsets.all(1.0),
-              child: new Center(
-                child: _cameraPreviewWidget(),
+      body: new Column(
+        children: <Widget>[
+          new Expanded(
+            child: new Container(
+              child: new Padding(
+                padding: const EdgeInsets.all(1.0),
+                child: new Center(
+                  child: _cameraPreviewWidget(),
+                ),
               ),
-            ),
-            decoration: new BoxDecoration(
-              color: Colors.black,
-              border: new Border.all(
-                color: controller != null && controller.value.isRecordingVideo
-                    ? Colors.redAccent
-                    : Colors.grey,
-                width: 3.0,
+              decoration: new BoxDecoration(
+                color: Colors.black,
+                border: new Border.all(
+                  color: controller != null && controller.value.isRecordingVideo
+                      ? Colors.redAccent
+                      : Colors.grey,
+                  width: 3.0,
+                ),
               ),
             ),
           ),
-        ),
-        new Padding(
-          padding: const EdgeInsets.all(5.0),
-          child: new Row(
+          _captureControlRowWidget(),
+          new Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: new Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 _cameraTogglesRowWidget(),
                 _thumbnailWidget(),
-              ]),
-        ),
-        _captureControlRowWidget(),
-      ]),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -175,12 +178,14 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
           new SizedBox(
             width: 90.0,
             child: new RadioListTile<CameraDescription>(
-                title: new Icon(
-                    getCameraLensIcon(cameraDescription.lensDirection)),
-                groupValue: controller?.description,
-                value: cameraDescription,
-                onChanged: (CameraDescription newValue) async =>
-                    onNewCameraSelected(newValue)),
+              title:
+                  new Icon(getCameraLensIcon(cameraDescription.lensDirection)),
+              groupValue: controller?.description,
+              value: cameraDescription,
+              onChanged: controller != null && controller.value.isRecordingVideo
+                  ? null
+                  : onNewCameraSelected,
+            ),
           ),
         );
       }
@@ -229,7 +234,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
           videoController?.dispose();
           videoController = null;
         });
-        if (imagePath != null) showInSnackBar('Picture saved to $imagePath');
+        if (filePath != null) showInSnackBar('Picture saved to $filePath');
       }
     });
   }
@@ -237,7 +242,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
   void onVideoRecordButtonPressed() {
     startVideoRecording().then((String filePath) {
       if (mounted) setState(() {});
-      if (imagePath != null) showInSnackBar('Saving video to $filePath');
+      if (filePath != null) showInSnackBar('Saving video to $filePath');
     });
   }
 
