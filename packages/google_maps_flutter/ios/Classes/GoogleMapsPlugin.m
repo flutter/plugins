@@ -95,7 +95,7 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
       result(markerId);
     } else if ([call.method isEqualToString:@"marker#update"]) {
       interpretMarkerOptions(call.arguments[@"options"],
-                         [controller markerWithId:call.arguments[@"marker"]], _registrar);
+                             [controller markerWithId:call.arguments[@"marker"]], _registrar);
       result(nil);
     } else if ([call.method isEqualToString:@"marker#remove"]) {
       [controller removeMarkerWithId:call.arguments[@"marker"]];
