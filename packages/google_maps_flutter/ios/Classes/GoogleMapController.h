@@ -29,7 +29,7 @@
 @end
 
 // Defines map overlay controllable from Flutter.
-@interface FLTGoogleMapController : NSObject <GMSMapViewDelegate, FLTGoogleMapOptionsSink>
+@interface FLTGoogleMapController : NSObject<GMSMapViewDelegate, FLTGoogleMapOptionsSink>
 @property(atomic) id<FLTGoogleMapDelegate> delegate;
 @property(atomic, readonly) id mapId;
 + (instancetype)controllerWithWidth:(CGFloat)width
