@@ -65,6 +65,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       case "sendPasswordResetEmail":
         handleSendPasswordResetEmail(call, result);
         break;
+      case "sendEmailVerification":
+        handleSendEmailVerification(call, result);
+        break;
       case "signInWithEmailAndPassword":
         handleSignInWithEmailAndPassword(call, result);
         break;
@@ -167,6 +170,13 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
 
     firebaseAuth
         .sendPasswordResetEmail(email)
+        .addOnCompleteListener(new TaskVoidCompleteListener(result));
+  }
+
+  private void handleSendEmailVerification(MethodCall call, final Result result) {
+    firebaseAuth
+        .getCurrentUser()
+        .sendEmailVerification()
         .addOnCompleteListener(new TaskVoidCompleteListener(result));
   }
 

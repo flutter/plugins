@@ -1,3 +1,7 @@
+## 0.5.7
+
+* Added support to sendEmailVerification
+
 ## 0.5.6
 
 * Added support for linkWithFacebookCredential

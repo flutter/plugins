@@ -99,6 +99,11 @@ int nextHandle = 0;
                                 completion:^(NSArray<NSString *> *providers, NSError *error) {
                                   [self sendResult:result forProviders:providers error:error];
                                 }];
+  } else if ([@"sendEmailVerification" isEqualToString:call.method]) {
+    [[FIRAuth auth].currentUser sendEmailVerificationWithCompletion:^(NSError *_Nullable error) {
+      [self sendResult:result forProviders:nil error:error];
+    }];
+
   } else if ([@"sendPasswordResetEmail" isEqualToString:call.method]) {
     NSString *email = call.arguments[@"email"];
     [[FIRAuth auth] sendPasswordResetWithEmail:email
