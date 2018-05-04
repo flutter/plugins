@@ -216,7 +216,8 @@ final class GoogleMapController
 
   @Override
   public void onCameraMoveStarted(int reason) {
-    onCameraMoveListener.onCameraMoveStarted(reason);
+    onCameraMoveListener.onCameraMoveStarted(
+        reason == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE);
     cancelSnapshotTimerTasks();
   }
 
@@ -348,6 +349,11 @@ final class GoogleMapController
   }
 
   @Override
+  public void setCameraTargetBounds(LatLngBounds bounds) {
+    googleMap.setLatLngBoundsForCameraTarget(bounds);
+  }
+
+  @Override
   public void setCompassEnabled(boolean compassEnabled) {
     googleMap.getUiSettings().setCompassEnabled(compassEnabled);
   }
@@ -355,11 +361,6 @@ final class GoogleMapController
   @Override
   public void setMapType(int mapType) {
     googleMap.setMapType(mapType);
-  }
-
-  @Override
-  public void setLatLngBoundsForCameraTarget(LatLngBounds bounds) {
-    googleMap.setLatLngBoundsForCameraTarget(bounds);
   }
 
   @Override

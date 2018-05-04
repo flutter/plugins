@@ -37,10 +37,6 @@ class Convert {
           return BitmapDescriptorFactory.fromAsset(
               FlutterMain.getLookupKeyForAsset(toString(data.get(1)), toString(data.get(2))));
         }
-      case "fromFile":
-        return BitmapDescriptorFactory.fromFile(toString(data.get(1)));
-      case "fromPath":
-        return BitmapDescriptorFactory.fromPath(toString(data.get(1)));
     }
     throw new IllegalArgumentException("Cannot interpret " + o + " as BitmapDescriptor");
   }
@@ -59,7 +55,7 @@ class Convert {
     return builder.build();
   }
 
-  static CameraUpdate toCameraUpdate(Object o) {
+  static CameraUpdate toCameraUpdate(Object o, float density) {
     final List<?> data = toList(o);
     switch (toString(data.get(0))) {
       case "newCameraPosition":
@@ -67,16 +63,19 @@ class Convert {
       case "newLatLng":
         return CameraUpdateFactory.newLatLng(toLatLng(data.get(1)));
       case "newLatLngBounds":
-        return CameraUpdateFactory.newLatLngBounds(toLatLngBounds(data.get(1)), toInt(data.get(2)));
+        return CameraUpdateFactory.newLatLngBounds(
+            toLatLngBounds(data.get(1)), toPixels(data.get(2), density));
       case "newLatLngZoom":
         return CameraUpdateFactory.newLatLngZoom(toLatLng(data.get(1)), toFloat(data.get(2)));
       case "scrollBy":
-        return CameraUpdateFactory.scrollBy(toFloat(data.get(1)), toFloat(data.get(2)));
+        return CameraUpdateFactory.scrollBy( //
+            toFractionalPixels(data.get(1), density), //
+            toFractionalPixels(data.get(2), density));
       case "zoomBy":
         if (data.size() == 2) {
           return CameraUpdateFactory.zoomBy(toFloat(data.get(1)));
         } else {
-          return CameraUpdateFactory.zoomBy(toFloat(data.get(1)), toPoint(data.get(2)));
+          return CameraUpdateFactory.zoomBy(toFloat(data.get(1)), toPoint(data.get(2), density));
         }
       case "zoomIn":
         return CameraUpdateFactory.zoomIn();
@@ -142,9 +141,17 @@ class Convert {
     return (Map<?, ?>) o;
   }
 
-  private static Point toPoint(Object o) {
+  private static float toFractionalPixels(Object o, float density) {
+    return toFloat(o) * density;
+  }
+
+  static int toPixels(Object o, float density) {
+    return (int) toFractionalPixels(o, density);
+  }
+
+  private static Point toPoint(Object o, float density) {
     final List<?> data = toList(o);
-    return new Point(toInt(data.get(0)), toInt(data.get(1)));
+    return new Point(toPixels(data.get(0), density), toPixels(data.get(1), density));
   }
 
   private static String toString(Object o) {
@@ -157,14 +164,14 @@ class Convert {
     if (cameraPosition != null) {
       sink.setCameraPosition(toCameraPosition(cameraPosition));
     }
+    final Object cameraTargetBounds = data.get("cameraTargetBounds");
+    if (cameraTargetBounds != null) {
+      final List<?> targetData = toList(cameraTargetBounds);
+      sink.setCameraTargetBounds(toLatLngBounds(targetData.get(0)));
+    }
     final Object compassEnabled = data.get("compassEnabled");
     if (compassEnabled != null) {
       sink.setCompassEnabled(toBoolean(compassEnabled));
-    }
-    final Object latLngCameraTargetBounds = data.get("latLngCameraTargetBounds");
-    if (latLngCameraTargetBounds != null) {
-      final List<?> targetData = toList(latLngCameraTargetBounds);
-      sink.setLatLngBoundsForCameraTarget(toLatLngBounds(targetData.get(0)));
     }
     final Object mapType = data.get("mapType");
     if (mapType != null) {
@@ -212,7 +219,7 @@ class Convert {
     }
     final Object consumesTapEvents = data.get("consumesTapEvents");
     if (consumesTapEvents != null) {
-      sink.setConsumesTapEvents(toBoolean(consumesTapEvents));
+      sink.setConsumeTapEvents(toBoolean(consumesTapEvents));
     }
     final Object draggable = data.get("draggable");
     if (draggable != null) {
@@ -230,10 +237,6 @@ class Convert {
     if (infoWindowAnchor != null) {
       final List<?> anchorData = toList(infoWindowAnchor);
       sink.setInfoWindowAnchor(toFloat(anchorData.get(0)), toFloat(anchorData.get(1)));
-    }
-    final Object infoWindowShown = data.get("infoWindowShown");
-    if (infoWindowShown != null) {
-      sink.setInfoWindowShown(toBoolean(infoWindowShown));
     }
     final Object infoWindowText = data.get("infoWindowText");
     if (infoWindowText != null) {

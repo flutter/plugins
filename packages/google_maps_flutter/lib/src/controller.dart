@@ -72,22 +72,22 @@ class GoogleMapController extends ChangeNotifier {
 
   void _handleMethodCall(MethodCall call) {
     switch (call.method) {
-      case "marker#onTap":
+      case 'marker#onTap':
         final String markerId = call.arguments['marker'];
         final Marker marker = _markers[markerId];
         if (marker != null) {
           onMarkerTapped(marker);
         }
         break;
-      case "map#onCameraMoveStarted":
+      case 'map#onCameraMoveStarted':
         _isCameraMoving = true;
         notifyListeners();
         break;
-      case "map#onCameraMove":
+      case 'map#onCameraMove':
         _cameraPosition = CameraPosition._fromJson(call.arguments['position']);
         notifyListeners();
         break;
-      case "map#onCameraIdle":
+      case 'map#onCameraIdle':
         _isCameraMoving = false;
         notifyListeners();
         break;
@@ -99,7 +99,7 @@ class GoogleMapController extends ChangeNotifier {
   Future<void> updateMapOptions(GoogleMapOptions options) async {
     assert(options != null);
     final int id = await this.id;
-    await _channel.invokeMethod('setMapOptions', <String, dynamic>{
+    await _channel.invokeMethod('updateMapOptions', <String, dynamic>{
       'map': id,
       'options': options._toJson(),
     });
@@ -220,22 +220,22 @@ class _GoogleMapsPlatformOverlay extends PlatformOverlay {
   Completer<int> _textureId = new Completer<int>();
 
   @override
-  Future<int> create(Size physicalSize) {
+  Future<int> create(Size size) {
     _textureId.complete(_channel.invokeMethod('createMap', <String, dynamic>{
-      'width': physicalSize.width,
-      'height': physicalSize.height,
+      'width': size.width,
+      'height': size.height,
       'options': options._toJson(),
     }).then<int>((dynamic value) => value));
     return _textureId.future;
   }
 
   @override
-  Future<void> show(Offset physicalOffset) async {
+  Future<void> show(Offset offset) async {
     final int id = await _textureId.future;
     _channel.invokeMethod('showMapOverlay', <String, dynamic>{
       'map': id,
-      'x': physicalOffset.dx,
-      'y': physicalOffset.dy,
+      'x': offset.dx,
+      'y': offset.dy,
     });
   }
 

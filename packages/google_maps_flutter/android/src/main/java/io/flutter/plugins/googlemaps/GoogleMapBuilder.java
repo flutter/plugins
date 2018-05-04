@@ -39,7 +39,7 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   }
 
   @Override
-  public void setLatLngBoundsForCameraTarget(LatLngBounds bounds) {
+  public void setCameraTargetBounds(LatLngBounds bounds) {
     options.latLngBoundsForCameraTarget(bounds);
   }
 

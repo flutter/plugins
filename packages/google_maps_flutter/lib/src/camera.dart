@@ -59,7 +59,7 @@ class CameraUpdate {
     return new CameraUpdate._(<dynamic>[
       'newLatLngBounds',
       bounds._toJson(),
-      padding * window.devicePixelRatio,
+      padding,
     ]);
   }
 
@@ -69,13 +69,9 @@ class CameraUpdate {
     );
   }
 
-  static CameraUpdate scrollBy(double xPixel, double yPixel) {
+  static CameraUpdate scrollBy(double dx, double dy) {
     return new CameraUpdate._(
-      <dynamic>[
-        'scrollBy',
-        xPixel * window.devicePixelRatio,
-        yPixel * window.devicePixelRatio,
-      ],
+      <dynamic>['scrollBy', dx, dy],
     );
   }
 
@@ -83,7 +79,6 @@ class CameraUpdate {
     if (focus == null) {
       return new CameraUpdate._(<dynamic>['zoomBy', amount]);
     } else {
-      focus *= window.devicePixelRatio;
       return new CameraUpdate._(<dynamic>[
         'zoomBy',
         amount,
