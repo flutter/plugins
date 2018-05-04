@@ -6,9 +6,9 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 void main() async {
@@ -74,7 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
 
-    final Uri downloadUrl = (await uploadTask.future).downloadUrl;
+    final Uri downloadUrl = await uploadTask.downloadUrl;
     final http.Response downloadData = await http.get(downloadUrl);
     final String name = await ref.getName();
     final String bucket = await ref.getBucket();
