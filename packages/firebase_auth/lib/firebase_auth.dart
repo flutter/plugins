@@ -79,7 +79,7 @@ class FirebaseUser extends UserInfo {
   }
 
   Future<void> sendEmailVerification() async {
-    return await FirebaseAuth.channel.invokeMethod('sendEmailVerification');
+    await FirebaseAuth.channel.invokeMethod('sendEmailVerification');
   }
 
   @override
