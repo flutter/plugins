@@ -63,8 +63,7 @@ class PlatformOverlayController extends NavigatorObserver
         return;
       }
       if (!_overlayIdCompleter.isCompleted) {
-        _overlayIdCompleter.complete(
-            overlay.create(new Size(width, height) * window.devicePixelRatio));
+        _overlayIdCompleter.complete(overlay.create(new Size(width, height)));
       }
     });
   }
@@ -88,7 +87,7 @@ class PlatformOverlayController extends NavigatorObserver
         final RenderObject object = _context?.findRenderObject();
         Offset offset;
         if (object is RenderBox) {
-          offset = object.localToGlobal(Offset.zero) * window.devicePixelRatio;
+          offset = object.localToGlobal(Offset.zero);
         } else {
           offset = Offset.zero;
         }
@@ -207,15 +206,14 @@ class PlatformOverlayController extends NavigatorObserver
 
 /// Platform overlay.
 abstract class PlatformOverlay {
-  /// Creates a platform view of the specified [physicalSize] (in device pixels).
+  /// Creates a platform view of the specified [size].
   ///
   /// The platform view should remain hidden until explicitly shown by calling
   /// [showOverlay].
-  Future<int> create(Size physicalSize);
+  Future<int> create(Size size);
 
-  /// Shows the platform view at the specified [physicalOffset] (in device
-  /// pixels).
-  Future<void> show(Offset physicalOffset);
+  /// Shows the platform view at the specified [offset].
+  Future<void> show(Offset offset);
 
   /// Hides the platform view.
   Future<void> hide();

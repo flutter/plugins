@@ -36,6 +36,7 @@ public class GoogleMapsPlugin implements MethodCallHandler, Application.Activity
   private final Map<Long, GoogleMapController> googleMaps = new HashMap<>();
   private final Registrar registrar;
   private final MethodChannel channel;
+  private final float density;
   private final AtomicInteger state = new AtomicInteger(0);
 
   public static void registerWith(Registrar registrar) {
@@ -49,6 +50,7 @@ public class GoogleMapsPlugin implements MethodCallHandler, Application.Activity
   private GoogleMapsPlugin(Registrar registrar, MethodChannel channel) {
     this.registrar = registrar;
     this.channel = channel;
+    this.density = registrar.context().getResources().getDisplayMetrics().density;
   }
 
   @Override
@@ -65,8 +67,8 @@ public class GoogleMapsPlugin implements MethodCallHandler, Application.Activity
         }
       case "createMap":
         {
-          final int width = Convert.toInt(call.argument("width"));
-          final int height = Convert.toInt(call.argument("height"));
+          final int width = Convert.toPixels(call.argument("width"), density);
+          final int height = Convert.toPixels(call.argument("height"), density);
           final Map<?, ?> options = Convert.toMap(call.argument("options"));
           final GoogleMapBuilder builder = new GoogleMapBuilder();
           Convert.interpretGoogleMapOptions(options, builder);
@@ -76,10 +78,10 @@ public class GoogleMapsPlugin implements MethodCallHandler, Application.Activity
           controller.setOnCameraMoveListener(
               new OnCameraMoveListener() {
                 @Override
-                public void onCameraMoveStarted(int reason) {
+                public void onCameraMoveStarted(boolean isGesture) {
                   final Map<String, Object> arguments = new HashMap<>(2);
                   arguments.put("map", controller.id());
-                  arguments.put("reason", reason);
+                  arguments.put("isGesture", isGesture);
                   channel.invokeMethod("map#onCameraMoveStarted", arguments);
                 }
 
@@ -107,10 +109,11 @@ public class GoogleMapsPlugin implements MethodCallHandler, Application.Activity
                   channel.invokeMethod("marker#onTap", arguments);
                 }
               });
-          // result.success is called from controller when the GoogleMaps instance is ready
+          // result.success is called from controller when the GoogleMaps instance
+          // is ready
           break;
         }
-      case "setMapOptions":
+      case "updateMapOptions":
         {
           final GoogleMapController controller = mapsController(call);
           Convert.interpretGoogleMapOptions(call.argument("options"), controller);
@@ -120,7 +123,8 @@ public class GoogleMapsPlugin implements MethodCallHandler, Application.Activity
       case "moveCamera":
         {
           final GoogleMapController controller = mapsController(call);
-          final CameraUpdate cameraUpdate = Convert.toCameraUpdate(call.argument("cameraUpdate"));
+          final CameraUpdate cameraUpdate =
+              Convert.toCameraUpdate(call.argument("cameraUpdate"), density);
           controller.moveCamera(cameraUpdate);
           result.success(null);
           break;
@@ -128,7 +132,8 @@ public class GoogleMapsPlugin implements MethodCallHandler, Application.Activity
       case "animateCamera":
         {
           final GoogleMapController controller = mapsController(call);
-          final CameraUpdate cameraUpdate = Convert.toCameraUpdate(call.argument("cameraUpdate"));
+          final CameraUpdate cameraUpdate =
+              Convert.toCameraUpdate(call.argument("cameraUpdate"), density);
           controller.animateCamera(cameraUpdate);
           result.success(null);
           break;
@@ -162,8 +167,8 @@ public class GoogleMapsPlugin implements MethodCallHandler, Application.Activity
       case "showMapOverlay":
         {
           final GoogleMapController controller = mapsController(call);
-          final int x = Convert.toInt(call.argument("x"));
-          final int y = Convert.toInt(call.argument("y"));
+          final int x = Convert.toPixels(call.argument("x"), density);
+          final int y = Convert.toPixels(call.argument("y"), density);
           controller.showOverlay(x, y);
           result.success(null);
           break;
