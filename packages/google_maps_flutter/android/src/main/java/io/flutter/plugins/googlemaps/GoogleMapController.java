@@ -41,10 +41,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /** Controller of a single GoogleMaps MapView instance. */
 final class GoogleMapController
-    implements Application.ActivityLifecycleCallbacks, GoogleMapOptionsSink, OnMapReadyCallback,
-               GoogleMap.SnapshotReadyCallback, GoogleMap.OnMarkerClickListener,
-               GoogleMap.OnCameraMoveStartedListener, GoogleMap.OnCameraMoveListener,
-               GoogleMap.OnCameraIdleListener {
+    implements Application.ActivityLifecycleCallbacks,
+        GoogleMapOptionsSink,
+        OnMapReadyCallback,
+        GoogleMap.SnapshotReadyCallback,
+        GoogleMap.OnMarkerClickListener,
+        GoogleMap.OnCameraMoveStartedListener,
+        GoogleMap.OnCameraMoveListener,
+        GoogleMap.OnCameraIdleListener {
   private final AtomicInteger activityState;
   private final FrameLayout parent;
   private final PluginRegistry.Registrar registrar;
@@ -63,8 +67,13 @@ final class GoogleMapController
   private boolean trackCameraPosition = false;
   private boolean disposed = false;
 
-  GoogleMapController(AtomicInteger activityState, PluginRegistry.Registrar registrar, int width,
-      int height, GoogleMapOptions options, MethodChannel.Result result) {
+  GoogleMapController(
+      AtomicInteger activityState,
+      PluginRegistry.Registrar registrar,
+      int width,
+      int height,
+      GoogleMapOptions options,
+      MethodChannel.Result result) {
     this.activityState = activityState;
     this.registrar = registrar;
     this.width = width;
