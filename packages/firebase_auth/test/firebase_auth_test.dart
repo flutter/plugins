@@ -190,6 +190,24 @@ void main() {
       );
     });
 
+    test('linkWithFacebookCredential', () async {
+      final FirebaseUser user = await auth.linkWithFacebookCredential(
+        accessToken: kMockAccessToken,
+      );
+      verifyUser(user);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'linkWithFacebookCredential',
+            arguments: <String, String>{
+              'accessToken': kMockAccessToken,
+            },
+          ),
+        ],
+      );
+    });
+
     test('signInWithFacebook', () async {
       final FirebaseUser user = await auth.signInWithFacebook(
         accessToken: kMockAccessToken,
