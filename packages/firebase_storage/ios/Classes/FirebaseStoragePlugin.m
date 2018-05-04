@@ -20,7 +20,7 @@
 
 @implementation FLTFirebaseStoragePlugin {
   NSMutableDictionary<NSString * /* app name */,
-                      NSMutableDictionary<NSString * /* bucket */, FIRStorage*> *> *_storageMap;
+                      NSMutableDictionary<NSString * /* bucket */, FIRStorage *> *> *_storageMap;
   FIRStorage *storage;
 }
 
@@ -46,11 +46,11 @@
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   storage = [self getStorage:call];
   if ([@"FirebaseStorage#getMaxDownloadRetryTime" isEqualToString:call.method]) {
-    result(@((long)storage.maxDownloadRetryTime * 1000.0));
+    result(@((int64_t)(storage.maxDownloadRetryTime * 1000.0)));
   } else if ([@"FirebaseStorage#getMaxUploadRetryTime" isEqualToString:call.method]) {
-    result(@((long)storage.maxUploadRetryTime * 1000.0));
+    result(@((int64_t)(storage.maxUploadRetryTime * 1000.0)));
   } else if ([@"FirebaseStorage#getMaxOperationRetryTime" isEqualToString:call.method]) {
-    result(@((long)storage.maxOperationRetryTime * 1000.0));
+    result(@((int64_t)(storage.maxOperationRetryTime * 1000.0)));
   } else if ([@"FirebaseStorage#setMaxDownloadRetryTime" isEqualToString:call.method]) {
     [self setMaxDownloadRetryTime:call result:result];
   } else if ([@"FirebaseStorage#setMaxUploadRetryTime" isEqualToString:call.method]) {
@@ -130,19 +130,19 @@
 
 - (void)setMaxDownloadRetryTime:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSNumber *time = call.arguments[@"time"];
-  storage.maxDownloadRetryTime = [time longLongValue] / 1000;
+  storage.maxDownloadRetryTime = [time longLongValue] / 1000.0;
   result(nil);
 }
 
 - (void)setMaxUploadRetryTime:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSNumber *time = call.arguments[@"time"];
-  storage.maxUploadRetryTime = [time longLongValue] / 1000;
+  storage.maxUploadRetryTime = [time longLongValue] / 1000.0;
   result(nil);
 }
 
 - (void)setMaxOperationRetryTime:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSNumber *time = call.arguments[@"time"];
-  storage.maxOperationRetryTime = [time longLongValue] / 1000;
+  storage.maxOperationRetryTime = [time longLongValue] / 1000.0;
   result(nil);
 }
 

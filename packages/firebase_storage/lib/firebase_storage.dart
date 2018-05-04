@@ -50,30 +50,27 @@ class FirebaseStorage {
   StorageReference ref() => new StorageReference._(const <String>[], this);
 
   Future<int> getMaxDownloadRetryTimeMillis() async {
-    final num n = await channel.invokeMethod(
+    return await channel.invokeMethod(
         "FirebaseStorage#getMaxDownloadRetryTime", <String, dynamic>{
       'app': app?.name,
       'bucket': storageBucket,
     });
-    return n.toInt();
   }
 
   Future<int> getMaxUploadRetryTimeMillis() async {
-    final num n = await channel.invokeMethod(
+    return await channel.invokeMethod(
         "FirebaseStorage#getMaxUploadRetryTime", <String, dynamic>{
       'app': app?.name,
       'bucket': storageBucket,
     });
-    return n.toInt();
   }
 
   Future<int> getMaxOperationRetryTimeMillis() async {
-    final num n = await channel.invokeMethod(
+    return await channel.invokeMethod(
         "FirebaseStorage#getMaxOperationRetryTime", <String, dynamic>{
       'app': app?.name,
       'bucket': storageBucket,
     });
-    return n.toInt();
   }
 
   Future<void> setMaxDownloadRetryTimeMillis(int time) {
