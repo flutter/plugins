@@ -34,16 +34,18 @@ class DocumentReference {
   String get documentID => _pathComponents.last;
 
   /// Writes to the document referred to by this [DocumentReference]. If the
-  /// document does not yet exist, it will be created. If you pass [SetOptions],
-  /// the provided data will be merged into an existing document.
-  Future<void> setData(Map<String, dynamic> data, [SetOptions options]) {
+  /// document does not yet exist, it will be created.
+  ///
+  /// If [merge] is true, the provided data will be merged into an
+  /// existing document.
+  Future<void> setData(Map<String, dynamic> data, { bool merge: false }) {
     return Firestore.channel.invokeMethod(
       'DocumentReference#setData',
       <String, dynamic>{
         'app': firestore.app.name,
         'path': path,
         'data': data,
-        'options': options?._data,
+        'options': <String, bool>{'merge': merge},
       },
     );
   }
@@ -95,7 +97,7 @@ class DocumentReference {
 
   /// Notifies of documents at this location
   // TODO(jackson): Reduce code duplication with [Query]
-  Stream<DocumentSnapshot> get snapshots {
+  Stream<DocumentSnapshot> snapshots() {
     Future<int> _handle;
     // It's fine to let the StreamController be garbage collected once all the
     // subscribers have cancelled; this analyzer warning is safe to ignore.
