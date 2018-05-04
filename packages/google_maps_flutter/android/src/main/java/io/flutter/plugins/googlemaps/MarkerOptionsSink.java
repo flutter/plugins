@@ -13,7 +13,7 @@ interface MarkerOptionsSink {
 
   void setAnchor(float u, float v);
 
-  void setConsumesTapEvents(boolean consumesTapEvents);
+  void setConsumeTapEvents(boolean consumesTapEvents);
 
   void setDraggable(boolean draggable);
 
@@ -22,8 +22,6 @@ interface MarkerOptionsSink {
   void setIcon(BitmapDescriptor bitmapDescriptor);
 
   void setInfoWindowAnchor(float u, float v);
-
-  void setInfoWindowShown(boolean shown);
 
   void setInfoWindowText(String title, String snippet);
 

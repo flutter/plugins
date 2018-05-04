@@ -47,6 +47,7 @@ class MapUiBody extends StatefulWidget {
 class MapUiBodyState extends State<MapUiBody> {
   CameraPosition _position;
   GoogleMapOptions _options;
+  bool _isMoving;
 
   @override
   void initState() {
@@ -56,10 +57,12 @@ class MapUiBodyState extends State<MapUiBody> {
       setState(() {
         _options = mapController.options;
         _position = mapController.cameraPosition;
+        _isMoving = mapController.isCameraMoving;
       });
     });
     _options = mapController.options;
     _position = mapController.cameraPosition;
+    _isMoving = mapController.isCameraMoving;
   }
 
   Widget _compassToggler() {
@@ -77,17 +80,16 @@ class MapUiBodyState extends State<MapUiBody> {
   Widget _latLngBoundsToggler() {
     return new FlatButton(
       child: new Text(
-        _options.latLngCameraTargetBounds.bounds == null
+        _options.cameraTargetBounds.bounds == null
             ? 'bound camera target'
             : 'release camera target',
       ),
       onPressed: () {
         widget.controller.mapController.updateMapOptions(
           new GoogleMapOptions(
-            latLngCameraTargetBounds:
-                _options.latLngCameraTargetBounds.bounds == null
-                    ? const LatLngCameraTargetBounds(sydneyBounds)
-                    : LatLngCameraTargetBounds.unbounded,
+            cameraTargetBounds: _options.cameraTargetBounds.bounds == null
+                ? const CameraTargetBounds(sydneyBounds)
+                : CameraTargetBounds.unbounded,
           ),
         );
       },
@@ -200,6 +202,7 @@ class MapUiBodyState extends State<MapUiBody> {
                 '${_position.target.longitude.toStringAsFixed(4)}'),
             new Text('camera zoom: ${_position.zoom}'),
             new Text('camera tilt: ${_position.tilt}'),
+            new Text(_isMoving ? '(Camera moving)' : '(Camera idle)'),
             _compassToggler(),
             _latLngBoundsToggler(),
             _mapTypeCycler(),

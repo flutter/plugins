@@ -13,7 +13,6 @@ class MarkerBuilder implements MarkerOptionsSink {
   private final GoogleMapController mapController;
   private final MarkerOptions markerOptions;
   private boolean consumesTapEvents;
-  private boolean infoWindowShown;
 
   MarkerBuilder(GoogleMapController mapController) {
     this.mapController = mapController;
@@ -22,9 +21,6 @@ class MarkerBuilder implements MarkerOptionsSink {
 
   String build() {
     final Marker marker = mapController.addMarker(markerOptions, consumesTapEvents);
-    if (infoWindowShown) {
-      marker.showInfoWindow();
-    }
     return marker.getId();
   }
 
@@ -39,7 +35,7 @@ class MarkerBuilder implements MarkerOptionsSink {
   }
 
   @Override
-  public void setConsumesTapEvents(boolean consumesTapEvents) {
+  public void setConsumeTapEvents(boolean consumesTapEvents) {
     this.consumesTapEvents = consumesTapEvents;
   }
 
@@ -61,11 +57,6 @@ class MarkerBuilder implements MarkerOptionsSink {
   @Override
   public void setInfoWindowAnchor(float u, float v) {
     markerOptions.infoWindowAnchor(u, v);
-  }
-
-  @Override
-  public void setInfoWindowShown(boolean infoWindowShown) {
-    this.infoWindowShown = infoWindowShown;
   }
 
   @Override
