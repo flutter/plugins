@@ -38,7 +38,7 @@ class DocumentReference {
   ///
   /// If [merge] is true, the provided data will be merged into an
   /// existing document.
-  Future<void> setData(Map<String, dynamic> data, { bool merge: false }) {
+  Future<void> setData(Map<String, dynamic> data, {bool merge: false}) {
     return Firestore.channel.invokeMethod(
       'DocumentReference#setData',
       <String, dynamic>{

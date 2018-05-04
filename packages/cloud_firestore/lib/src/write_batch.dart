@@ -64,7 +64,7 @@ class WriteBatch {
   /// If [merge] is true, the provided data will be merged into an
   /// existing document.
   void setData(DocumentReference document, Map<String, dynamic> data,
-  { bool merge: false }) {
+      {bool merge: false}) {
     if (!_committed) {
       _handle.then((dynamic handle) {
         _actions.add(
