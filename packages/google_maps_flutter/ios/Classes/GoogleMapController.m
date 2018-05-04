@@ -61,7 +61,7 @@ static uint64_t _nextMapId = 0;
 
 - (NSString*)addMarkerWithPosition:(CLLocationCoordinate2D)position {
   FLTGoogleMapMarkerController* markerController =
-  [[FLTGoogleMapMarkerController alloc] initWithPosition:position mapView:_mapView];
+      [[FLTGoogleMapMarkerController alloc] initWithPosition:position mapView:_mapView];
   _markers[markerController.markerId] = markerController;
   return markerController.markerId;
 }

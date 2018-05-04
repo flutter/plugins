@@ -87,10 +87,9 @@ class MapUiBodyState extends State<MapUiBody> {
       onPressed: () {
         widget.controller.mapController.updateMapOptions(
           new GoogleMapOptions(
-            cameraTargetBounds:
-                _options.cameraTargetBounds.bounds == null
-                    ? const CameraTargetBounds(sydneyBounds)
-                    : CameraTargetBounds.unbounded,
+            cameraTargetBounds: _options.cameraTargetBounds.bounds == null
+                ? const CameraTargetBounds(sydneyBounds)
+                : CameraTargetBounds.unbounded,
           ),
         );
       },
