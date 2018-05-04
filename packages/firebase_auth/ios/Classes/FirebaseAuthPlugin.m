@@ -103,7 +103,10 @@ int nextHandle = 0;
     [[FIRAuth auth].currentUser sendEmailVerificationWithCompletion:^(NSError *_Nullable error) {
       [self sendResult:result forProviders:nil error:error];
     }];
-
+  } else if ([@"reload" isEqualToString:call.method]) {
+    [[FIRAuth auth].currentUser reloadWithCompletion:^(NSError *_Nullable error) {
+      [self sendResult:result forProviders:nil error:error];
+    }];
   } else if ([@"sendPasswordResetEmail" isEqualToString:call.method]) {
     NSString *email = call.arguments[@"email"];
     [[FIRAuth auth] sendPasswordResetWithEmail:email
