@@ -117,32 +117,22 @@ class MarkerOptions {
 
   dynamic _toJson() {
     final Map<String, dynamic> json = <String, dynamic>{};
-    if (alpha != null)
-      json['alpha'] = alpha;
-    if (anchor != null)
-      json['anchor'] = _offsetToJson(anchor);
+    if (alpha != null) json['alpha'] = alpha;
+    if (anchor != null) json['anchor'] = _offsetToJson(anchor);
     if (consumesTapEvents != null)
       json['consumesTapEvents'] = consumesTapEvents;
-    if (draggable != null)
-      json['draggable'] = draggable;
-    if (flat != null)
-      json['flat'] = flat;
-    if (icon != null)
-      json['icon'] = icon._toJson();
+    if (draggable != null) json['draggable'] = draggable;
+    if (flat != null) json['flat'] = flat;
+    if (icon != null) json['icon'] = icon._toJson();
     if (infoWindowAnchor != null)
       json['infoWindowAnchor'] = _offsetToJson(infoWindowAnchor);
-    if (infoWindowShown != null)
-      json['infoWindowShown'] = infoWindowShown;
+    if (infoWindowShown != null) json['infoWindowShown'] = infoWindowShown;
     if (infoWindowText != null)
       json['infoWindowText'] = infoWindowText._toJson();
-    if (position != null)
-      json['position'] = position._toJson();
-    if (rotation != null)
-      json['rotation'] = rotation;
-    if (visible != null)
-      json['visible'] = visible;
-    if (zIndex != null)
-      json['zIndex'] = zIndex;
+    if (position != null) json['position'] = position._toJson();
+    if (rotation != null) json['rotation'] = rotation;
+    if (visible != null) json['visible'] = visible;
+    if (zIndex != null) json['zIndex'] = zIndex;
     return json;
   }
 }

@@ -110,12 +110,10 @@ class GoogleMapOptions {
     final Map<String, dynamic> json = <String, dynamic>{};
     if (cameraPosition != null)
       json['cameraPosition'] = cameraPosition._toJson();
-    if (compassEnabled != null)
-      json['compassEnabled'] = compassEnabled;
+    if (compassEnabled != null) json['compassEnabled'] = compassEnabled;
     if (latLngCameraTargetBounds != null)
       json['latLngCameraTargetBounds'] = latLngCameraTargetBounds._toJson();
-    if (mapType != null)
-      json['mapType'] = mapType.index;
+    if (mapType != null) json['mapType'] = mapType.index;
     if (minMaxZoomPreference != null)
       json['minMaxZoomPreference'] = minMaxZoomPreference._toJson();
     if (rotateGesturesEnabled != null)

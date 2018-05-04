@@ -12,13 +12,14 @@ static uint64_t _nextMapId = 0;
   BOOL _trackCameraPosition;
 }
 
-+(instancetype)controllerWithWidth:(CGFloat)width height:(CGFloat)height camera:(GMSCameraPosition*)camera {
-  GMSMapView* mapView = [GMSMapView mapWithFrame:CGRectMake(0.0, 0.0, width, height)
-                                          camera:camera];
++ (instancetype)controllerWithWidth:(CGFloat)width
+                             height:(CGFloat)height
+                             camera:(GMSCameraPosition*)camera {
+  GMSMapView* mapView = [GMSMapView mapWithFrame:CGRectMake(0.0, 0.0, width, height) camera:camera];
   return [[FLTGoogleMapController alloc] initWithMapView:mapView mapId:@(_nextMapId++)];
 }
 
--(instancetype)initWithMapView:(GMSMapView*)mapView mapId:(id)mapId {
+- (instancetype)initWithMapView:(GMSMapView*)mapView mapId:(id)mapId {
   self = [super init];
   if (self) {
     _mapView = mapView;
@@ -29,85 +30,87 @@ static uint64_t _nextMapId = 0;
   return self;
 }
 
--(void)addToView:(UIView*)view {
+- (void)addToView:(UIView*)view {
   _mapView.hidden = YES;
   _mapView.delegate = self;
   [view addSubview:_mapView];
 }
 
--(void)removeFromView {
+- (void)removeFromView {
   [_mapView removeFromSuperview];
   _mapView.delegate = nil;
 }
 
--(void)showAtX:(CGFloat)x Y:(CGFloat)y {
-  _mapView.frame = CGRectMake(x, y, CGRectGetWidth(_mapView.frame), CGRectGetHeight(_mapView.frame));
+- (void)showAtX:(CGFloat)x Y:(CGFloat)y {
+  _mapView.frame =
+      CGRectMake(x, y, CGRectGetWidth(_mapView.frame), CGRectGetHeight(_mapView.frame));
   _mapView.hidden = NO;
 }
 
--(void)hide {
+- (void)hide {
   _mapView.hidden = YES;
 }
 
--(void)setCamera:(GMSCameraPosition*)camera {
+- (void)setCamera:(GMSCameraPosition*)camera {
   _mapView.camera = camera;
 }
 
--(void)setCameraTargetBounds:(GMSCoordinateBounds*)bounds {
+- (void)setCameraTargetBounds:(GMSCoordinateBounds*)bounds {
   _mapView.cameraTargetBounds = bounds;
 }
 
--(void)setCompassEnabled:(BOOL)enabled {
+- (void)setCompassEnabled:(BOOL)enabled {
   _mapView.settings.compassButton = enabled;
 }
 
--(void)setMapType:(GMSMapViewType)mapType {
+- (void)setMapType:(GMSMapViewType)mapType {
   _mapView.mapType = mapType;
 }
 
--(void)setMinZoom:(float)minZoom maxZoom:(float)maxZoom {
+- (void)setMinZoom:(float)minZoom maxZoom:(float)maxZoom {
   [_mapView setMinZoom:minZoom maxZoom:maxZoom];
 }
 
--(void)setRotateGesturesEnabled:(BOOL)enabled {
+- (void)setRotateGesturesEnabled:(BOOL)enabled {
   _mapView.settings.rotateGestures = enabled;
 }
 
--(void)setScrollGesturesEnabled:(BOOL)enabled {
+- (void)setScrollGesturesEnabled:(BOOL)enabled {
   _mapView.settings.scrollGestures = enabled;
 }
 
--(void)setTiltGesturesEnabled:(BOOL)enabled {
+- (void)setTiltGesturesEnabled:(BOOL)enabled {
   _mapView.settings.tiltGestures = enabled;
 }
 
--(void)setTrackCameraPosition:(BOOL)enabled {
+- (void)setTrackCameraPosition:(BOOL)enabled {
   _trackCameraPosition = enabled;
 }
 
--(void)setZoomGesturesEnabled:(BOOL)enabled {
+- (void)setZoomGesturesEnabled:(BOOL)enabled {
   _mapView.settings.zoomGestures = enabled;
 }
 
--(void)animateWithCameraUpdate:(GMSCameraUpdate*)cameraUpdate {
+- (void)animateWithCameraUpdate:(GMSCameraUpdate*)cameraUpdate {
   [_mapView animateWithCameraUpdate:cameraUpdate];
 }
 
--(void)moveWithCameraUpdate:(GMSCameraUpdate*)cameraUpdate {
+- (void)moveWithCameraUpdate:(GMSCameraUpdate*)cameraUpdate {
   [_mapView moveCamera:cameraUpdate];
 }
 
--(NSString*)addMarkerWithPosition:(CLLocationCoordinate2D)position {
-  FLTGoogleMapMarkerController* markerController = [[FLTGoogleMapMarkerController alloc] initWithPosition:position mapView:_mapView];
+- (NSString*)addMarkerWithPosition:(CLLocationCoordinate2D)position {
+  FLTGoogleMapMarkerController* markerController =
+      [[FLTGoogleMapMarkerController alloc] initWithPosition:position mapView:_mapView];
   _markers[markerController.markerId] = markerController;
   return markerController.markerId;
 }
 
--(FLTGoogleMapMarkerController*)markerWithId:(NSString*)markerId {
+- (FLTGoogleMapMarkerController*)markerWithId:(NSString*)markerId {
   return _markers[markerId];
 }
 
--(void)removeMarkerWithId:(NSString*)markerId {
+- (void)removeMarkerWithId:(NSString*)markerId {
   FLTGoogleMapMarkerController* markerController = _markers[markerId];
   if (markerController) {
     [markerController setVisible:NO];
@@ -137,4 +140,3 @@ static uint64_t _nextMapId = 0;
   return [marker.userData[1] boolValue];
 }
 @end
-

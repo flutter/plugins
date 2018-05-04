@@ -56,134 +56,123 @@ public class GoogleMapsPlugin implements MethodCallHandler, Application.Activity
   @Override
   public void onMethodCall(MethodCall call, Result result) {
     switch (call.method) {
-      case "init":
-        {
-          for (GoogleMapController controller : googleMaps.values()) {
-            controller.dispose();
-          }
-          googleMaps.clear();
-          result.success(null);
-          break;
-        }
-      case "createMap":
-        {
-          final int width = Convert.toPixels(call.argument("width"), density);
-          final int height = Convert.toPixels(call.argument("height"), density);
-          final Map<?, ?> options = Convert.toMap(call.argument("options"));
-          final GoogleMapBuilder builder = new GoogleMapBuilder();
-          Convert.interpretGoogleMapOptions(options, builder);
-          final GoogleMapController controller =
-              builder.build(state, registrar, width, height, result);
-          googleMaps.put(controller.id(), controller);
-          controller.setOnCameraMoveListener(
-              new OnCameraMoveListener() {
-                @Override
-                public void onCameraMoveStarted(boolean isGesture) {
-                  final Map<String, Object> arguments = new HashMap<>(2);
-                  arguments.put("map", controller.id());
-                  arguments.put("isGesture", isGesture);
-                  channel.invokeMethod("map#onCameraMoveStarted", arguments);
-                }
-
-                @Override
-                public void onCameraMove(CameraPosition position) {
-                  final Map<String, Object> arguments = new HashMap<>(2);
-                  arguments.put("map", controller.id());
-                  arguments.put("position", Convert.toJson(position));
-                  channel.invokeMethod("map#onCameraMove", arguments);
-                }
-
-                @Override
-                public void onCameraIdle() {
-                  channel.invokeMethod(
-                      "map#onCameraIdle", Collections.singletonMap("map", controller.id()));
-                }
-              });
-          controller.setOnMarkerTappedListener(
-              new OnMarkerTappedListener() {
-                @Override
-                public void onMarkerTapped(Marker marker) {
-                  final Map<String, Object> arguments = new HashMap<>(2);
-                  arguments.put("map", controller.id());
-                  arguments.put("marker", marker.getId());
-                  channel.invokeMethod("marker#onTap", arguments);
-                }
-              });
-          // result.success is called from controller when the GoogleMaps instance is ready
-          break;
-        }
-      case "updateMapOptions":
-        {
-          final GoogleMapController controller = mapsController(call);
-          Convert.interpretGoogleMapOptions(call.argument("options"), controller);
-          result.success(null);
-          break;
-        }
-      case "moveCamera":
-        {
-          final GoogleMapController controller = mapsController(call);
-          final CameraUpdate cameraUpdate = Convert.toCameraUpdate(call.argument("cameraUpdate"), density);
-          controller.moveCamera(cameraUpdate);
-          result.success(null);
-          break;
-        }
-      case "animateCamera":
-        {
-          final GoogleMapController controller = mapsController(call);
-          final CameraUpdate cameraUpdate = Convert.toCameraUpdate(call.argument("cameraUpdate"), density);
-          controller.animateCamera(cameraUpdate);
-          result.success(null);
-          break;
-        }
-      case "addMarker":
-        {
-          final GoogleMapController controller = mapsController(call);
-          final MarkerBuilder markerBuilder = controller.newMarkerBuilder();
-          Convert.interpretMarkerOptions(call.argument("options"), markerBuilder);
-          final String markerId = markerBuilder.build();
-          result.success(markerId);
-          break;
-        }
-      case "marker#remove":
-        {
-          final GoogleMapController controller = mapsController(call);
-          final String markerId = call.argument("marker");
-          controller.removeMarker(markerId);
-          result.success(null);
-          break;
-        }
-      case "marker#update":
-        {
-          final GoogleMapController controller = mapsController(call);
-          final String markerId = call.argument("marker");
-          final MarkerController marker = controller.marker(markerId);
-          Convert.interpretMarkerOptions(call.argument("options"), marker);
-          result.success(null);
-          break;
-        }
-      case "showMapOverlay":
-        {
-          final GoogleMapController controller = mapsController(call);
-          final int x = Convert.toPixels(call.argument("x"), density);
-          final int y = Convert.toPixels(call.argument("y"), density);
-          controller.showOverlay(x, y);
-          result.success(null);
-          break;
-        }
-      case "hideMapOverlay":
-        {
-          final GoogleMapController controller = mapsController(call);
-          controller.hideOverlay();
-          result.success(null);
-          break;
-        }
-      case "disposeMap":
-        {
-          final GoogleMapController controller = mapsController(call);
+      case "init": {
+        for (GoogleMapController controller : googleMaps.values()) {
           controller.dispose();
-          result.success(null);
-          break;
         }
+        googleMaps.clear();
+        result.success(null);
+        break;
+      }
+      case "createMap": {
+        final int width = Convert.toPixels(call.argument("width"), density);
+        final int height = Convert.toPixels(call.argument("height"), density);
+        final Map<?, ?> options = Convert.toMap(call.argument("options"));
+        final GoogleMapBuilder builder = new GoogleMapBuilder();
+        Convert.interpretGoogleMapOptions(options, builder);
+        final GoogleMapController controller =
+            builder.build(state, registrar, width, height, result);
+        googleMaps.put(controller.id(), controller);
+        controller.setOnCameraMoveListener(new OnCameraMoveListener() {
+          @Override
+          public void onCameraMoveStarted(boolean isGesture) {
+            final Map<String, Object> arguments = new HashMap<>(2);
+            arguments.put("map", controller.id());
+            arguments.put("isGesture", isGesture);
+            channel.invokeMethod("map#onCameraMoveStarted", arguments);
+          }
+
+          @Override
+          public void onCameraMove(CameraPosition position) {
+            final Map<String, Object> arguments = new HashMap<>(2);
+            arguments.put("map", controller.id());
+            arguments.put("position", Convert.toJson(position));
+            channel.invokeMethod("map#onCameraMove", arguments);
+          }
+
+          @Override
+          public void onCameraIdle() {
+            channel.invokeMethod(
+                "map#onCameraIdle", Collections.singletonMap("map", controller.id()));
+          }
+        });
+        controller.setOnMarkerTappedListener(new OnMarkerTappedListener() {
+          @Override
+          public void onMarkerTapped(Marker marker) {
+            final Map<String, Object> arguments = new HashMap<>(2);
+            arguments.put("map", controller.id());
+            arguments.put("marker", marker.getId());
+            channel.invokeMethod("marker#onTap", arguments);
+          }
+        });
+        // result.success is called from controller when the GoogleMaps instance is ready
+        break;
+      }
+      case "updateMapOptions": {
+        final GoogleMapController controller = mapsController(call);
+        Convert.interpretGoogleMapOptions(call.argument("options"), controller);
+        result.success(null);
+        break;
+      }
+      case "moveCamera": {
+        final GoogleMapController controller = mapsController(call);
+        final CameraUpdate cameraUpdate =
+            Convert.toCameraUpdate(call.argument("cameraUpdate"), density);
+        controller.moveCamera(cameraUpdate);
+        result.success(null);
+        break;
+      }
+      case "animateCamera": {
+        final GoogleMapController controller = mapsController(call);
+        final CameraUpdate cameraUpdate =
+            Convert.toCameraUpdate(call.argument("cameraUpdate"), density);
+        controller.animateCamera(cameraUpdate);
+        result.success(null);
+        break;
+      }
+      case "addMarker": {
+        final GoogleMapController controller = mapsController(call);
+        final MarkerBuilder markerBuilder = controller.newMarkerBuilder();
+        Convert.interpretMarkerOptions(call.argument("options"), markerBuilder);
+        final String markerId = markerBuilder.build();
+        result.success(markerId);
+        break;
+      }
+      case "marker#remove": {
+        final GoogleMapController controller = mapsController(call);
+        final String markerId = call.argument("marker");
+        controller.removeMarker(markerId);
+        result.success(null);
+        break;
+      }
+      case "marker#update": {
+        final GoogleMapController controller = mapsController(call);
+        final String markerId = call.argument("marker");
+        final MarkerController marker = controller.marker(markerId);
+        Convert.interpretMarkerOptions(call.argument("options"), marker);
+        result.success(null);
+        break;
+      }
+      case "showMapOverlay": {
+        final GoogleMapController controller = mapsController(call);
+        final int x = Convert.toPixels(call.argument("x"), density);
+        final int y = Convert.toPixels(call.argument("y"), density);
+        controller.showOverlay(x, y);
+        result.success(null);
+        break;
+      }
+      case "hideMapOverlay": {
+        final GoogleMapController controller = mapsController(call);
+        controller.hideOverlay();
+        result.success(null);
+        break;
+      }
+      case "disposeMap": {
+        final GoogleMapController controller = mapsController(call);
+        controller.dispose();
+        result.success(null);
+        break;
+      }
       default:
         result.notImplemented();
     }

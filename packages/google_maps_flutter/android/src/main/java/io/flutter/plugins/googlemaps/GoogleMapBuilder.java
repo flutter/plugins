@@ -15,12 +15,8 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   private final GoogleMapOptions options = new GoogleMapOptions();
   private boolean trackCameraPosition = false;
 
-  GoogleMapController build(
-      AtomicInteger state,
-      PluginRegistry.Registrar registrar,
-      int width,
-      int height,
-      MethodChannel.Result result) {
+  GoogleMapController build(AtomicInteger state, PluginRegistry.Registrar registrar, int width,
+      int height, MethodChannel.Result result) {
     final GoogleMapController controller =
         new GoogleMapController(state, registrar, width, height, options, result);
     controller.init();

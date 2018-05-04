@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "GoogleMapsPlugin.h"
 #import "GoogleMapController.h"
 #import "GoogleMapMarkerController.h"
-#import "GoogleMapsPlugin.h"
 
 // Conversion functions between iOS types and JSON-like values sent via platform channels.
 // Forward declarations.
@@ -16,7 +16,8 @@ static GMSCameraPosition* toOptionalCameraPosition(id json);
 static GMSCoordinateBounds* toOptionalBounds(id json);
 static GMSCameraUpdate* toCameraUpdate(id json);
 static void writeMapOptions(id json, id<FLTGoogleMapOptionsSink> sink);
-static void writeMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> sink, NSObject<FlutterPluginRegistrar>* registrar);
+static void writeMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> sink,
+                               NSObject<FlutterPluginRegistrar>* registrar);
 
 // GoogleMaps plugin implementation
 
@@ -30,11 +31,13 @@ static void writeMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> sink, 
   FlutterMethodChannel* channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/google_maps"
                                   binaryMessenger:[registrar messenger]];
-  FLTGoogleMapsPlugin* instance = [[FLTGoogleMapsPlugin alloc] initWithRegistrar:registrar channel:channel];
+  FLTGoogleMapsPlugin* instance =
+      [[FLTGoogleMapsPlugin alloc] initWithRegistrar:registrar channel:channel];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
-- (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar channel:(FlutterMethodChannel*)channel {
+- (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar
+                          channel:(FlutterMethodChannel*)channel {
   self = [super init];
   if (self) {
     _registrar = registrar;
@@ -54,9 +57,10 @@ static void writeMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> sink, 
   } else if ([call.method isEqualToString:@"createMap"]) {
     NSDictionary* options = call.arguments[@"options"];
     GMSCameraPosition* camera = toOptionalCameraPosition(options[@"cameraPosition"]);
-    FLTGoogleMapController* controller = [FLTGoogleMapController controllerWithWidth:toDouble(call.arguments[@"width"])
-                                                                              height:toDouble(call.arguments[@"height"])
-                                                                              camera:camera];
+    FLTGoogleMapController* controller =
+        [FLTGoogleMapController controllerWithWidth:toDouble(call.arguments[@"width"])
+                                             height:toDouble(call.arguments[@"height"])
+                                             camera:camera];
     _mapControllers[controller.mapId] = controller;
     writeMapOptions(options, controller);
     UIView* flutterView = [UIApplication sharedApplication].delegate.window.rootViewController.view;
@@ -123,7 +127,8 @@ static void writeMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> sink, 
     FlutterError* error;
     FLTGoogleMapController* controller = [self mapFromCall:call error:&error];
     if (controller) {
-      writeMarkerOptions(call.arguments[@"options"], [controller markerWithId:call.arguments[@"marker"]], _registrar);
+      writeMarkerOptions(call.arguments[@"options"],
+                         [controller markerWithId:call.arguments[@"marker"]], _registrar);
       result(nil);
     } else {
       result(error);
@@ -142,7 +147,7 @@ static void writeMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> sink, 
   }
 }
 
-- (FLTGoogleMapController*) mapFromCall:(FlutterMethodCall*)call error:(FlutterError**)error {
+- (FLTGoogleMapController*)mapFromCall:(FlutterMethodCall*)call error:(FlutterError**)error {
   id mapId = call.arguments[@"map"];
   FLTGoogleMapController* controller = _mapControllers[mapId];
   if (!controller && error) {
@@ -153,36 +158,41 @@ static void writeMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> sink, 
 
 // FLTGoogleMapsDelegate methods, used to send platform messages to Flutter.
 
--(void)onCameraMoveStartedOnMap:(id)mapId gesture:(BOOL)gesture {
-  [_channel invokeMethod:@"map#onCameraMoveStarted" arguments:@{@"map":mapId, @"isGesture":@(gesture)}];
+- (void)onCameraMoveStartedOnMap:(id)mapId gesture:(BOOL)gesture {
+  [_channel invokeMethod:@"map#onCameraMoveStarted"
+               arguments:@{
+                 @"map" : mapId,
+                 @"isGesture" : @(gesture)
+               }];
 }
 
--(void)onCameraMoveOnMap:(id)mapId cameraPosition:(GMSCameraPosition*)cameraPosition {
-  [_channel invokeMethod:@"map#onCameraMove" arguments:@{@"map":mapId, @"position":positionToJson(cameraPosition)}];
+- (void)onCameraMoveOnMap:(id)mapId cameraPosition:(GMSCameraPosition*)cameraPosition {
+  [_channel invokeMethod:@"map#onCameraMove"
+               arguments:@{@"map" : mapId, @"position" : positionToJson(cameraPosition)}];
 }
 
--(void)onCameraIdleOnMap:(id)mapId {
-  [_channel invokeMethod:@"map#onCameraIdle" arguments:@{@"map":mapId}];
+- (void)onCameraIdleOnMap:(id)mapId {
+  [_channel invokeMethod:@"map#onCameraIdle" arguments:@{@"map" : mapId}];
 }
 
--(void)onMarkerTappedOnMap:(id)mapId marker:(NSString*)markerId {
-  [_channel invokeMethod:@"marker#onTap" arguments:@{@"map":mapId, @"marker":markerId}];
+- (void)onMarkerTappedOnMap:(id)mapId marker:(NSString*)markerId {
+  [_channel invokeMethod:@"marker#onTap" arguments:@{@"map" : mapId, @"marker" : markerId}];
 }
 @end
 
 // Implementations of JSON conversion functions.
 
 static id locationToJson(CLLocationCoordinate2D position) {
-  return @[@(position.latitude), @(position.longitude)];
+  return @[ @(position.latitude), @(position.longitude) ];
 }
 
 static id positionToJson(GMSCameraPosition* position) {
   return @{
-           @"target": locationToJson([position target]),
-           @"zoom": @([position zoom]),
-           @"bearing": @([position bearing]),
-           @"tilt": @([position viewingAngle]),
-           };
+    @"target" : locationToJson([position target]),
+    @"zoom" : @([position zoom]),
+    @"bearing" : @([position bearing]),
+    @"tilt" : @([position viewingAngle]),
+  };
 }
 
 static bool toBool(id json) {
@@ -229,7 +239,8 @@ static GMSCameraPosition* toOptionalCameraPosition(id json) {
 
 static GMSCoordinateBounds* toBounds(id json) {
   NSArray* data = json;
-  return [[GMSCoordinateBounds alloc] initWithCoordinate:toLocation(data[0]) coordinate:toLocation(data[1])];
+  return [[GMSCoordinateBounds alloc] initWithCoordinate:toLocation(data[0])
+                                              coordinate:toLocation(data[1])];
 }
 
 static GMSCoordinateBounds* toOptionalBounds(id json) {
@@ -243,7 +254,7 @@ static GMSCoordinateBounds* toOptionalBounds(id json) {
 
 static GMSMapViewType toMapViewType(id json) {
   int value = toInt(json);
-  return (GMSMapViewType) (value == 0 ? 5 : value);
+  return (GMSMapViewType)(value == 0 ? 5 : value);
 }
 
 static GMSCameraUpdate* toCameraUpdate(id json) {
@@ -328,7 +339,8 @@ static void writeMapOptions(id json, id<FLTGoogleMapOptionsSink> sink) {
   }
 }
 
-static void writeMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> sink, NSObject<FlutterPluginRegistrar>* registrar) {
+static void writeMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> sink,
+                               NSObject<FlutterPluginRegistrar>* registrar) {
   NSDictionary* data = json;
   id alpha = data[@"alpha"];
   if (alpha) {
@@ -356,7 +368,8 @@ static void writeMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> sink, 
       if (iconData.count == 2) {
         image = [UIImage imageNamed:[registrar lookupKeyForAsset:iconData[1]]];
       } else {
-        image = [UIImage imageNamed:[registrar lookupKeyForAsset:iconData[1] fromPackage:iconData[2]]];
+        image =
+            [UIImage imageNamed:[registrar lookupKeyForAsset:iconData[1] fromPackage:iconData[2]]];
       }
     }
     [sink setIcon:image];
