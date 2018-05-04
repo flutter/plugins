@@ -51,6 +51,35 @@ static uint64_t _nextMapId = 0;
   _mapView.hidden = YES;
 }
 
+- (void)animateWithCameraUpdate:(GMSCameraUpdate*)cameraUpdate {
+  [_mapView animateWithCameraUpdate:cameraUpdate];
+}
+
+- (void)moveWithCameraUpdate:(GMSCameraUpdate*)cameraUpdate {
+  [_mapView moveCamera:cameraUpdate];
+}
+
+- (NSString*)addMarkerWithPosition:(CLLocationCoordinate2D)position {
+  FLTGoogleMapMarkerController* markerController =
+  [[FLTGoogleMapMarkerController alloc] initWithPosition:position mapView:_mapView];
+  _markers[markerController.markerId] = markerController;
+  return markerController.markerId;
+}
+
+- (FLTGoogleMapMarkerController*)markerWithId:(NSString*)markerId {
+  return _markers[markerId];
+}
+
+- (void)removeMarkerWithId:(NSString*)markerId {
+  FLTGoogleMapMarkerController* markerController = _markers[markerId];
+  if (markerController) {
+    [markerController setVisible:NO];
+    [_markers removeObjectForKey:markerId];
+  }
+}
+
+#pragma mark - FLTGoogleMapOptionsSink methods
+
 - (void)setCamera:(GMSCameraPosition*)camera {
   _mapView.camera = camera;
 }
@@ -91,34 +120,7 @@ static uint64_t _nextMapId = 0;
   _mapView.settings.zoomGestures = enabled;
 }
 
-- (void)animateWithCameraUpdate:(GMSCameraUpdate*)cameraUpdate {
-  [_mapView animateWithCameraUpdate:cameraUpdate];
-}
-
-- (void)moveWithCameraUpdate:(GMSCameraUpdate*)cameraUpdate {
-  [_mapView moveCamera:cameraUpdate];
-}
-
-- (NSString*)addMarkerWithPosition:(CLLocationCoordinate2D)position {
-  FLTGoogleMapMarkerController* markerController =
-      [[FLTGoogleMapMarkerController alloc] initWithPosition:position mapView:_mapView];
-  _markers[markerController.markerId] = markerController;
-  return markerController.markerId;
-}
-
-- (FLTGoogleMapMarkerController*)markerWithId:(NSString*)markerId {
-  return _markers[markerId];
-}
-
-- (void)removeMarkerWithId:(NSString*)markerId {
-  FLTGoogleMapMarkerController* markerController = _markers[markerId];
-  if (markerController) {
-    [markerController setVisible:NO];
-    [_markers removeObjectForKey:markerId];
-  }
-}
-
-// GMSMapViewDelegate methods
+#pragma mark - GMSMapViewDelegate methods
 
 - (void)mapView:(GMSMapView*)mapView willMove:(BOOL)gesture {
   [_delegate onCameraMoveStartedOnMap:_mapId gesture:gesture];

@@ -80,17 +80,17 @@ class MapUiBodyState extends State<MapUiBody> {
   Widget _latLngBoundsToggler() {
     return new FlatButton(
       child: new Text(
-        _options.latLngCameraTargetBounds.bounds == null
+        _options.cameraTargetBounds.bounds == null
             ? 'bound camera target'
             : 'release camera target',
       ),
       onPressed: () {
         widget.controller.mapController.updateMapOptions(
           new GoogleMapOptions(
-            latLngCameraTargetBounds:
-                _options.latLngCameraTargetBounds.bounds == null
-                    ? const LatLngCameraTargetBounds(sydneyBounds)
-                    : LatLngCameraTargetBounds.unbounded,
+            cameraTargetBounds:
+                _options.cameraTargetBounds.bounds == null
+                    ? const CameraTargetBounds(sydneyBounds)
+                    : CameraTargetBounds.unbounded,
           ),
         );
       },

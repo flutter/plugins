@@ -37,10 +37,6 @@ class Convert {
           return BitmapDescriptorFactory.fromAsset(
               FlutterMain.getLookupKeyForAsset(toString(data.get(1)), toString(data.get(2))));
         }
-      case "fromFile":
-        return BitmapDescriptorFactory.fromFile(toString(data.get(1)));
-      case "fromPath":
-        return BitmapDescriptorFactory.fromPath(toString(data.get(1)));
     }
     throw new IllegalArgumentException("Cannot interpret " + o + " as BitmapDescriptor");
   }
@@ -168,14 +164,14 @@ class Convert {
     if (cameraPosition != null) {
       sink.setCameraPosition(toCameraPosition(cameraPosition));
     }
+    final Object cameraTargetBounds = data.get("cameraTargetBounds");
+    if (cameraTargetBounds != null) {
+      final List<?> targetData = toList(cameraTargetBounds);
+      sink.setCameraTargetBounds(toLatLngBounds(targetData.get(0)));
+    }
     final Object compassEnabled = data.get("compassEnabled");
     if (compassEnabled != null) {
       sink.setCompassEnabled(toBoolean(compassEnabled));
-    }
-    final Object latLngCameraTargetBounds = data.get("latLngCameraTargetBounds");
-    if (latLngCameraTargetBounds != null) {
-      final List<?> targetData = toList(latLngCameraTargetBounds);
-      sink.setLatLngBoundsForCameraTarget(toLatLngBounds(targetData.get(0)));
     }
     final Object mapType = data.get("mapType");
     if (mapType != null) {
@@ -223,7 +219,7 @@ class Convert {
     }
     final Object consumesTapEvents = data.get("consumesTapEvents");
     if (consumesTapEvents != null) {
-      sink.setConsumesTapEvents(toBoolean(consumesTapEvents));
+      sink.setConsumeTapEvents(toBoolean(consumesTapEvents));
     }
     final Object draggable = data.get("draggable");
     if (draggable != null) {
@@ -241,10 +237,6 @@ class Convert {
     if (infoWindowAnchor != null) {
       final List<?> anchorData = toList(infoWindowAnchor);
       sink.setInfoWindowAnchor(toFloat(anchorData.get(0)), toFloat(anchorData.get(1)));
-    }
-    final Object infoWindowShown = data.get("infoWindowShown");
-    if (infoWindowShown != null) {
-      sink.setInfoWindowShown(toBoolean(infoWindowShown));
     }
     final Object infoWindowText = data.get("infoWindowText");
     if (infoWindowText != null) {

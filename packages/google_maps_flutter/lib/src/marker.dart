@@ -33,7 +33,12 @@ class Marker {
   MarkerOptions get options => _options;
 }
 
-dynamic _offsetToJson(Offset offset) => <dynamic>[offset.dx, offset.dy];
+dynamic _offsetToJson(Offset offset) {
+  if (offset == null) {
+    return null;
+  }
+  return <dynamic>[offset.dx, offset.dy];
+}
 
 /// Text labels for a [Marker] info window.
 class InfoWindowText {
@@ -54,12 +59,11 @@ class InfoWindowText {
 class MarkerOptions {
   final double alpha;
   final Offset anchor;
-  final bool consumesTapEvents;
+  final bool consumeTapEvents;
   final bool draggable;
   final bool flat;
   final BitmapDescriptor icon;
   final Offset infoWindowAnchor;
-  final bool infoWindowShown;
   final InfoWindowText infoWindowText;
   final LatLng position;
   final double rotation;
@@ -69,12 +73,11 @@ class MarkerOptions {
   const MarkerOptions({
     this.alpha,
     this.anchor,
-    this.consumesTapEvents,
+    this.consumeTapEvents,
     this.draggable,
     this.flat,
     this.icon,
     this.infoWindowAnchor,
-    this.infoWindowShown,
     this.infoWindowText,
     this.position,
     this.rotation,
@@ -85,12 +88,11 @@ class MarkerOptions {
   static const MarkerOptions defaultOptions = const MarkerOptions(
     alpha: 1.0,
     anchor: const Offset(0.5, 1.0),
-    consumesTapEvents: false,
+    consumeTapEvents: false,
     draggable: false,
     flat: false,
     icon: BitmapDescriptor.defaultMarker,
     infoWindowAnchor: const Offset(0.5, 0.0),
-    infoWindowShown: false,
     infoWindowText: InfoWindowText.noText,
     rotation: 0.0,
     visible: true,
@@ -101,12 +103,11 @@ class MarkerOptions {
     return new MarkerOptions(
       alpha: changes.alpha ?? alpha,
       anchor: changes.anchor ?? anchor,
-      consumesTapEvents: changes.consumesTapEvents ?? consumesTapEvents,
+      consumeTapEvents: changes.consumeTapEvents ?? consumeTapEvents,
       draggable: changes.draggable ?? draggable,
       flat: changes.flat ?? flat,
       icon: changes.icon ?? icon,
       infoWindowAnchor: changes.infoWindowAnchor ?? infoWindowAnchor,
-      infoWindowShown: changes.infoWindowShown ?? infoWindowShown,
       infoWindowText: changes.infoWindowText ?? infoWindowText,
       position: changes.position ?? position,
       rotation: changes.rotation ?? rotation,
@@ -117,22 +118,25 @@ class MarkerOptions {
 
   dynamic _toJson() {
     final Map<String, dynamic> json = <String, dynamic>{};
-    if (alpha != null) json['alpha'] = alpha;
-    if (anchor != null) json['anchor'] = _offsetToJson(anchor);
-    if (consumesTapEvents != null)
-      json['consumesTapEvents'] = consumesTapEvents;
-    if (draggable != null) json['draggable'] = draggable;
-    if (flat != null) json['flat'] = flat;
-    if (icon != null) json['icon'] = icon._toJson();
-    if (infoWindowAnchor != null)
-      json['infoWindowAnchor'] = _offsetToJson(infoWindowAnchor);
-    if (infoWindowShown != null) json['infoWindowShown'] = infoWindowShown;
-    if (infoWindowText != null)
-      json['infoWindowText'] = infoWindowText._toJson();
-    if (position != null) json['position'] = position._toJson();
-    if (rotation != null) json['rotation'] = rotation;
-    if (visible != null) json['visible'] = visible;
-    if (zIndex != null) json['zIndex'] = zIndex;
+
+    void addIfPresent(String fieldName, dynamic value) {
+      if (value != null) {
+        json[fieldName] = value;
+      }
+    }
+
+    addIfPresent('alpha', alpha);
+    addIfPresent('anchor', _offsetToJson(anchor));
+    addIfPresent('consumeTapEvents', consumeTapEvents);
+    addIfPresent('draggable', draggable);
+    addIfPresent('flat', flat);
+    addIfPresent('icon', icon?._toJson());
+    addIfPresent('infoWindowAnchor', _offsetToJson(infoWindowAnchor));
+    addIfPresent('infoWindowText', infoWindowText?._toJson());
+    addIfPresent('position', position?._toJson());
+    addIfPresent('rotation', rotation);
+    addIfPresent('visible', visible);
+    addIfPresent('zIndex', zIndex);
     return json;
   }
 }

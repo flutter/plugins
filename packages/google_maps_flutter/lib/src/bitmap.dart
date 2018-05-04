@@ -43,17 +43,6 @@ class BitmapDescriptor {
     }
   }
 
-  /// Creates a BitmapDescriptor using the name of a bitmap image file located
-  /// in storage private to the app.
-  static BitmapDescriptor fromFile(String fileName) {
-    return new BitmapDescriptor._(<dynamic>['fromFile', fileName]);
-  }
-
-  /// Creates a BitmapDescriptor from the absolute file path of a bitmap image.
-  static BitmapDescriptor fromPath(String path) {
-    return new BitmapDescriptor._(<dynamic>['fromPath', path]);
-  }
-
   final dynamic _json;
 
   dynamic _toJson() => _json;

@@ -134,13 +134,6 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
     ));
   }
 
-  Future<void> _toggleInfoShown() async {
-    _selectedMarker.update(
-      new MarkerOptions(
-          infoWindowShown: !_selectedMarker.options.infoWindowShown),
-    );
-  }
-
   Future<void> _changeAlpha() async {
     final double current = _selectedMarker.options.alpha;
     _selectedMarker.update(
@@ -197,11 +190,6 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
                       child: const Text('change info anchor'),
                       onPressed:
                           (_selectedMarker == null) ? null : _changeInfoAnchor,
-                    ),
-                    new FlatButton(
-                      child: const Text('toggle info shown'),
-                      onPressed:
-                          (_selectedMarker == null) ? null : _toggleInfoShown,
                     ),
                   ],
                 ),

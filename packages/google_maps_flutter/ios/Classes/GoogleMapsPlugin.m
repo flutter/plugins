@@ -6,8 +6,7 @@
 #import "GoogleMapController.h"
 #import "GoogleMapMarkerController.h"
 
-// Conversion functions between iOS types and JSON-like values sent via platform channels.
-// Forward declarations.
+#pragma mark - Conversion of JSON-like values sent via platform channels. Forward declarations.
 
 static id positionToJson(GMSCameraPosition* position);
 static double toDouble(id json);
@@ -19,7 +18,7 @@ static void writeMapOptions(id json, id<FLTGoogleMapOptionsSink> sink);
 static void writeMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> sink,
                                NSObject<FlutterPluginRegistrar>* registrar);
 
-// GoogleMaps plugin implementation
+#pragma mark - GoogleMaps plugin implementation
 
 @implementation FLTGoogleMapsPlugin {
   NSObject<FlutterPluginRegistrar>* _registrar;
@@ -156,7 +155,7 @@ static void writeMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> sink,
   return controller;
 }
 
-// FLTGoogleMapsDelegate methods, used to send platform messages to Flutter.
+#pragma mark - FLTGoogleMapsDelegate methods, used to send platform messages to Flutter
 
 - (void)onCameraMoveStartedOnMap:(id)mapId gesture:(BOOL)gesture {
   [_channel invokeMethod:@"map#onCameraMoveStarted"
@@ -180,7 +179,7 @@ static void writeMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> sink,
 }
 @end
 
-// Implementations of JSON conversion functions.
+#pragma mark - Implementations of JSON conversion functions.
 
 static id locationToJson(CLLocationCoordinate2D position) {
   return @[ @(position.latitude), @(position.longitude) ];
@@ -292,13 +291,13 @@ static void writeMapOptions(id json, id<FLTGoogleMapOptionsSink> sink) {
   if (cameraPosition) {
     [sink setCamera:toCameraPosition(cameraPosition)];
   }
+  id cameraTargetBounds = data[@"cameraTargetBounds"];
+  if (cameraTargetBounds) {
+    [sink setCameraTargetBounds:toOptionalBounds(cameraTargetBounds)];
+  }
   id compassEnabled = data[@"compassEnabled"];
   if (compassEnabled) {
     [sink setCompassEnabled:toBool(compassEnabled)];
-  }
-  id cameraTargetBounds = data[@"latLngCameraTargetBounds"];
-  if (cameraTargetBounds) {
-    [sink setCameraTargetBounds:toOptionalBounds(cameraTargetBounds)];
   }
   id mapType = data[@"mapType"];
   if (mapType) {

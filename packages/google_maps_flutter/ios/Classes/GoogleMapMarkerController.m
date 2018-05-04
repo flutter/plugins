@@ -20,6 +20,9 @@ static uint64_t _nextMarkerId = 0;
   }
   return self;
 }
+
+#pragma mark - FLTGoogleMapMarkerOptionsSink methods
+
 - (void)setAlpha:(float)alpha {
   _marker.opacity = alpha;
 }
