@@ -44,7 +44,7 @@
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
-  storage = [self getStorage:call];
+  storage = [self getStorage:call result:result];
   if ([@"FirebaseStorage#getMaxDownloadRetryTime" isEqualToString:call.method]) {
     result(@((int64_t)(storage.maxDownloadRetryTime * 1000.0)));
   } else if ([@"FirebaseStorage#getMaxUploadRetryTime" isEqualToString:call.method]) {
@@ -84,7 +84,10 @@
   }
 }
 
-- (FIRStorage *)getStorage:(FlutterMethodCall *)call {
+// Returns a [FIRStorage] instance which is a singleton given a fixed app and bucket.
+// This is to be consistent with the Android API so that repated calls to getters/setters
+// affect the right [FIRStorage] instance.
+- (FIRStorage *)getStorage:(FlutterMethodCall *)call  result:(FlutterResult)result {
   NSString *appName = call.arguments[@"app"];
   NSString *bucketUrl = call.arguments[@"bucket"];
   FIRApp *app;
@@ -107,13 +110,19 @@
 
   NSURL *url = [NSURL URLWithString:bucketUrl];
   if (!url) {
-    // Call storage constructor to raise proper exception.
-    [FIRStorage storageForApp:app URL:bucketUrl];
+    @try {
+      // Call storage constructor to raise proper exception.
+      storage = [FIRStorage storageForApp:app URL:bucketUrl];
+    } @catch (NSException *exception) {
+      result([FlutterError errorWithCode:@"storage_error"
+                                 message:[exception name]
+                                 details:[exception reason]]);
+    }
   }
 
   NSMutableDictionary *bucketMap = _storageMap[app.name];
   if (!bucketMap) {
-    bucketMap = [[NSMutableDictionary alloc] init];
+    bucketMap = [NSMutableDictionary dictionaryWithCapacity:1];
     _storageMap[app.name] = bucketMap;
   }
 
@@ -121,7 +130,13 @@
   FIRStorage *storage = bucketMap[bucketName];
   if (!storage) {
     // Raises an exception if bucketUrl is invalid.
-    storage = [FIRStorage storageForApp:app URL:bucketUrl];
+    @try {
+      storage = [FIRStorage storageForApp:app URL:bucketUrl];
+    } @catch (NSException *exception) {
+      result([FlutterError errorWithCode:@"storage_error"
+                                 message:[exception name]
+                                 details:[exception reason]]);
+    }
     bucketMap[bucketName] = storage;
   }
 
