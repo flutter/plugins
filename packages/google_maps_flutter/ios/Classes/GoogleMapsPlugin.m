@@ -14,9 +14,9 @@ static CLLocationCoordinate2D toLocation(id json);
 static GMSCameraPosition* toOptionalCameraPosition(id json);
 static GMSCoordinateBounds* toOptionalBounds(id json);
 static GMSCameraUpdate* toCameraUpdate(id json);
-static void writeMapOptions(id json, id<FLTGoogleMapOptionsSink> sink);
-static void writeMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> sink,
-                               NSObject<FlutterPluginRegistrar>* registrar);
+static void interpretMapOptions(id json, id<FLTGoogleMapOptionsSink> sink);
+static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> sink,
+                                   NSObject<FlutterPluginRegistrar>* registrar);
 
 #pragma mark - GoogleMaps plugin implementation
 
@@ -61,88 +61,48 @@ static void writeMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> sink,
                                              height:toDouble(call.arguments[@"height"])
                                              camera:camera];
     _mapControllers[controller.mapId] = controller;
-    writeMapOptions(options, controller);
+    interpretMapOptions(options, controller);
     UIView* flutterView = [UIApplication sharedApplication].delegate.window.rootViewController.view;
     [controller addToView:flutterView];
     controller.delegate = self;
     result(controller.mapId);
-  } else if ([call.method isEqualToString:@"showMapOverlay"]) {
+  } else {
     FlutterError* error;
     FLTGoogleMapController* controller = [self mapFromCall:call error:&error];
-    if (controller) {
+    if (!controller) {
+      result(error);
+      return;
+    }
+    if ([call.method isEqualToString:@"showMapOverlay"]) {
       [controller showAtX:toDouble(call.arguments[@"x"]) Y:toDouble(call.arguments[@"y"])];
       result(nil);
-    } else {
-      result(error);
-    }
-  } else if ([call.method isEqualToString:@"hideMapOverlay"]) {
-    FlutterError* error;
-    FLTGoogleMapController* controller = [self mapFromCall:call error:&error];
-    if (controller) {
+    } else if ([call.method isEqualToString:@"hideMapOverlay"]) {
       [controller hide];
       result(nil);
-    } else {
-      result(error);
-    }
-  } else if ([call.method isEqualToString:@"animateCamera"]) {
-    FlutterError* error;
-    FLTGoogleMapController* controller = [self mapFromCall:call error:&error];
-    if (controller) {
+    } else if ([call.method isEqualToString:@"animateCamera"]) {
       [controller animateWithCameraUpdate:toCameraUpdate(call.arguments[@"cameraUpdate"])];
       result(nil);
-    } else {
-      result(error);
-    }
-  } else if ([call.method isEqualToString:@"moveCamera"]) {
-    FlutterError* error;
-    FLTGoogleMapController* controller = [self mapFromCall:call error:&error];
-    if (controller) {
+    } else if ([call.method isEqualToString:@"moveCamera"]) {
       [controller moveWithCameraUpdate:toCameraUpdate(call.arguments[@"cameraUpdate"])];
       result(nil);
-    } else {
-      result(error);
-    }
-  } else if ([call.method isEqualToString:@"updateMapOptions"]) {
-    FlutterError* error;
-    FLTGoogleMapController* controller = [self mapFromCall:call error:&error];
-    if (controller) {
-      writeMapOptions(call.arguments[@"options"], controller);
+    } else if ([call.method isEqualToString:@"updateMapOptions"]) {
+      interpretMapOptions(call.arguments[@"options"], controller);
       result(nil);
-    } else {
-      result(error);
-    }
-  } else if ([call.method isEqualToString:@"addMarker"]) {
-    NSDictionary* options = call.arguments[@"options"];
-    FlutterError* error;
-    FLTGoogleMapController* controller = [self mapFromCall:call error:&error];
-    if (controller) {
+    } else if ([call.method isEqualToString:@"addMarker"]) {
+      NSDictionary* options = call.arguments[@"options"];
       NSString* markerId = [controller addMarkerWithPosition:toLocation(options[@"position"])];
-      writeMarkerOptions(options, [controller markerWithId:markerId], _registrar);
+      interpretMarkerOptions(options, [controller markerWithId:markerId], _registrar);
       result(markerId);
-    } else {
-      result(error);
-    }
-  } else if ([call.method isEqualToString:@"marker#update"]) {
-    FlutterError* error;
-    FLTGoogleMapController* controller = [self mapFromCall:call error:&error];
-    if (controller) {
-      writeMarkerOptions(call.arguments[@"options"],
+    } else if ([call.method isEqualToString:@"marker#update"]) {
+      interpretMarkerOptions(call.arguments[@"options"],
                          [controller markerWithId:call.arguments[@"marker"]], _registrar);
       result(nil);
-    } else {
-      result(error);
-    }
-  } else if ([call.method isEqualToString:@"marker#remove"]) {
-    FlutterError* error;
-    FLTGoogleMapController* controller = [self mapFromCall:call error:&error];
-    if (controller) {
+    } else if ([call.method isEqualToString:@"marker#remove"]) {
       [controller removeMarkerWithId:call.arguments[@"marker"]];
       result(nil);
     } else {
-      result(error);
+      result(FlutterMethodNotImplemented);
     }
-  } else {
-    result(FlutterMethodNotImplemented);
   }
 }
 
@@ -244,11 +204,7 @@ static GMSCoordinateBounds* toBounds(id json) {
 
 static GMSCoordinateBounds* toOptionalBounds(id json) {
   NSArray* data = json;
-  if ([data[0] isEqual:[NSNull null]]) {
-    return nil;
-  } else {
-    return toBounds(data[0]);
-  }
+  return (data[0] == [NSNull null]) ? nil : toBounds(data[0]);
 }
 
 static GMSMapViewType toMapViewType(id json) {
@@ -285,7 +241,7 @@ static GMSCameraUpdate* toCameraUpdate(id json) {
   return nil;
 }
 
-static void writeMapOptions(id json, id<FLTGoogleMapOptionsSink> sink) {
+static void interpretMapOptions(id json, id<FLTGoogleMapOptionsSink> sink) {
   NSDictionary* data = json;
   id cameraPosition = data[@"cameraPosition"];
   if (cameraPosition) {
@@ -306,14 +262,8 @@ static void writeMapOptions(id json, id<FLTGoogleMapOptionsSink> sink) {
   id minMaxZoomPreference = data[@"minMaxZoomPreference"];
   if (minMaxZoomPreference) {
     NSArray* zoomData = minMaxZoomPreference;
-    float minZoom = kGMSMinZoomLevel;
-    float maxZoom = kGMSMaxZoomLevel;
-    if (![zoomData[0] isEqual:[NSNull null]]) {
-      minZoom = toFloat(zoomData[0]);
-    }
-    if (![zoomData[1] isEqual:[NSNull null]]) {
-      maxZoom = toFloat(zoomData[1]);
-    }
+    float minZoom = (zoomData[0] == [NSNull null]) ? kGMSMinZoomLevel : toFloat(zoomData[0]);
+    float maxZoom = (zoomData[1] == [NSNull null]) ? kGMSMaxZoomLevel : toFloat(zoomData[1]);
     [sink setMinZoom:minZoom maxZoom:maxZoom];
   }
   id rotateGesturesEnabled = data[@"rotateGesturesEnabled"];
@@ -338,8 +288,8 @@ static void writeMapOptions(id json, id<FLTGoogleMapOptionsSink> sink) {
   }
 }
 
-static void writeMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> sink,
-                               NSObject<FlutterPluginRegistrar>* registrar) {
+static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> sink,
+                                   NSObject<FlutterPluginRegistrar>* registrar) {
   NSDictionary* data = json;
   id alpha = data[@"alpha"];
   if (alpha) {
@@ -384,8 +334,8 @@ static void writeMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> sink,
   id infoWindowText = data[@"infoWindowText"];
   if (infoWindowText) {
     NSArray* infoWindowTextData = infoWindowText;
-    NSString* title = [infoWindowTextData[0] isEqual:[NSNull null]] ? nil : infoWindowTextData[0];
-    NSString* snippet = [infoWindowTextData[1] isEqual:[NSNull null]] ? nil : infoWindowTextData[1];
+    NSString* title = (infoWindowTextData[0] == [NSNull null]) ? nil : infoWindowTextData[0];
+    NSString* snippet = (infoWindowTextData[1] == [NSNull null]) ? nil : infoWindowTextData[1];
     [sink setInfoWindowTitle:title snippet:snippet];
   }
   id rotation = data[@"rotation"];
