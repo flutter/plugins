@@ -89,6 +89,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       case "linkWithGoogleCredential":
         handleLinkWithGoogleCredential(call, result);
         break;
+      case "linkWithFacebookCredential":
+        handleLinkWithFacebookCredential(call, result);
+        break;
       case "updateProfile":
         handleUpdateProfile(call, result);
         break;
@@ -195,6 +198,17 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     String idToken = arguments.get("idToken");
     String accessToken = arguments.get("accessToken");
     AuthCredential credential = GoogleAuthProvider.getCredential(idToken, accessToken);
+    firebaseAuth
+        .getCurrentUser()
+        .linkWithCredential(credential)
+        .addOnCompleteListener(new SignInCompleteListener(result));
+  }
+
+  private void handleLinkWithFacebookCredential(MethodCall call, final Result result) {
+    @SuppressWarnings("unchecked")
+    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    String accessToken = arguments.get("accessToken");
+    AuthCredential credential = FacebookAuthProvider.getCredential(accessToken);
     firebaseAuth
         .getCurrentUser()
         .linkWithCredential(credential)

@@ -146,6 +146,13 @@ int nextHandle = 0;
                                         completion:^(FIRUser *user, NSError *error) {
                                           [self sendResult:result forUser:user error:error];
                                         }];
+  } else if ([@"linkWithFacebookCredential" isEqualToString:call.method]) {
+    NSString *accessToken = call.arguments[@"accessToken"];
+    FIRAuthCredential *credential = [FIRFacebookAuthProvider credentialWithAccessToken:accessToken];
+    [[FIRAuth auth].currentUser linkWithCredential:credential
+                                        completion:^(FIRUser *user, NSError *error) {
+                                          [self sendResult:result forUser:user error:error];
+                                        }];
   } else if ([@"updateProfile" isEqualToString:call.method]) {
     FIRUserProfileChangeRequest *changeRequest = [[FIRAuth auth].currentUser profileChangeRequest];
     if (call.arguments[@"displayName"]) {
