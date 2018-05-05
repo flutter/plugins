@@ -4,7 +4,7 @@ A plugin for [Flutter](https://flutter.io) that supports loading and
 displaying banner, interstitial (full-screen), and rewarded video ads using the
 [Firebase AdMob API](https://firebase.google.com/docs/admob/).
 
-*Note*: This plugin is is beta, and may still have a few issues and missing APIs.
+*Note*: This plugin is in beta, and may still have a few issues and missing APIs.
 [Feedback](https://github.com/flutter/flutter/issues) and
 [Pull Requests](https://github.com/flutter/plugins/pulls) are welcome.
 
