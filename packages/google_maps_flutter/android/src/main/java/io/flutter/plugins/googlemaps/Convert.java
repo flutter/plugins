@@ -104,6 +104,9 @@ class Convert {
   }
 
   static Object toJson(CameraPosition position) {
+    if (position == null) {
+      return null;
+    }
     final Map<String, Object> data = new HashMap<>();
     data.put("bearing", position.bearing);
     data.put("target", toJson(position.target));

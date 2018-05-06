@@ -6,12 +6,24 @@ part of google_maps_flutter;
 
 /// A pair of latitude and longitude coordinates, stored as degrees.
 class LatLng {
+  /// The latitude in degrees between -90.0 and 90.0, both inclusive.
   final double latitude;
+
+  /// The longitude in degrees between -180.0 (inclusive) and 180.0 (exclusive).
   final double longitude;
 
-  const LatLng(this.latitude, this.longitude)
+  /// Creates a geographical location specified in degrees [latitude] and
+  /// [longitude].
+  ///
+  /// The latitude is clamped to the inclusive interval from -90.0 to +90.0.
+  ///
+  /// The longitude is normalized to the half-open interval from -180.0
+  /// (inclusive) to +180.0 (exclusive)
+  LatLng(double latitude, double longitude)
       : assert(latitude != null),
-        assert(longitude != null);
+        assert(longitude != null),
+        latitude = latitude.clamp(-90.0, 90.0),
+        longitude = (longitude + 180.0) % 360.0 - 180.0;
 
   dynamic _toJson() {
     return <double>[latitude, longitude];
@@ -38,14 +50,32 @@ class LatLng {
   int get hashCode => hashValues(latitude, longitude);
 }
 
-/// A latitude/longitude aligned rectangle.
+/// A latitude/longitude aligned rectangle
+///
+/// The rectangle conceptually includes all points where
+/// * the latitude is between `southwest.latitude` and `northeast.latitude`,
+///   and
+/// * the longitude is
+///   * between `southwest.longitude` and `northeast.longitude`, if
+///     `southwest.longitude` ≤ `northeast.longitude`, or
+///   * between `southwest.longitude` and 180.0 or
+///     between `-180.0` and `northeast.longitude`, if
+///     `northeast.longitude` < `southwest.longitude`.
 class LatLngBounds {
+  /// The southwest corner of the rectangle.
   final LatLng southwest;
+
+  /// The northeast corner of the rectangle.
   final LatLng northeast;
 
-  const LatLngBounds({@required this.southwest, @required this.northeast})
+  /// Creates geographical bounding box with the specified corners.
+  ///
+  /// The latitude of the southwest corner cannot be larger than the
+  /// latitude of the northeast corner.
+  LatLngBounds({@required this.southwest, @required this.northeast})
       : assert(southwest != null),
-        assert(northeast != null);
+        assert(northeast != null),
+        assert(southwest.latitude <= northeast.latitude);
 
   dynamic _toJson() {
     return <dynamic>[southwest._toJson(), northeast._toJson()];
