@@ -53,6 +53,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       case "currentUser":
         handleCurrentUser(call, result);
         break;
+      case "currentUserReload":
+        handleCurrentUserReload(call, result);
+        break;
       case "signInAnonymously":
         handleSignInAnonymously(call, result);
         break;
@@ -137,6 +140,14 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
 
     firebaseAuth.addAuthStateListener(listener);
   }
+
+  private void handleCurrentUserReload(MethodCall call, final Result result) {
+    firebaseAuth
+        .getCurrentUser()
+        .reload()
+        .addOnCompleteListener(new TaskVoidCompleteListener(result));
+  }
+
 
   private void handleSignInAnonymously(MethodCall call, final Result result) {
     firebaseAuth.signInAnonymously().addOnCompleteListener(new SignInCompleteListener(result));
