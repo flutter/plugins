@@ -215,6 +215,21 @@ class FirebaseAuth {
     return currentUser;
   }
 
+  Future<FirebaseUser> signInWithTwitter({
+    @required String authToken,
+    @required String authTokenSecret,
+  }) async {
+    assert(authToken != null);
+    assert(authTokenSecret != null);
+    final Map<dynamic, dynamic> data =
+    await channel.invokeMethod('signInWithTwitter', <String, String>{
+      'authToken': authToken,
+      'authTokenSecret': authTokenSecret,
+    });
+    final FirebaseUser currentUser = new FirebaseUser._(data);
+    return currentUser;
+  }
+
   Future<FirebaseUser> signInWithGoogle({
     @required String idToken,
     @required String accessToken,
