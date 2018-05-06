@@ -16,7 +16,7 @@ class AnimateCameraPage extends Page {
       GoogleMapOverlayController.fromSize(
     width: 300.0,
     height: 200.0,
-    adjustments: GoogleMapOptions.defaultOptions,
+    adjustments: GoogleMapOptions(),
   );
 
   @override
