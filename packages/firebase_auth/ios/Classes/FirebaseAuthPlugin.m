@@ -88,7 +88,8 @@ int nextHandle = 0;
   } else if ([@"signInWithTwitter" isEqualToString:call.method]) {
     NSString *authToken = call.arguments[@"authToken"];
     NSString *authTokenSecret = call.arguments[@"authTokenSecret"];
-    FIRAuthCredential *credential = [FIRTwitterAuthProvider credentialWithToken:authToken secret:authTokenSecret];
+    FIRAuthCredential *credential =
+        [FIRTwitterAuthProvider credentialWithToken:authToken secret:authTokenSecret];
     [[FIRAuth auth] signInWithCredential:credential
                               completion:^(FIRUser *user, NSError *error) {
                                 [self sendResult:result forUser:user error:error];

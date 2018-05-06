@@ -245,8 +245,8 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     String authTokenSecret = arguments.get("authTokenSecret");
     AuthCredential credential = TwitterAuthProvider.getCredential(authToken, authTokenSecret);
     firebaseAuth
-            .signInWithCredential(credential)
-            .addOnCompleteListener(new SignInCompleteListener(result));
+        .signInWithCredential(credential)
+        .addOnCompleteListener(new SignInCompleteListener(result));
   }
 
   private void handleSignInWithCustomToken(MethodCall call, final Result result) {

@@ -222,7 +222,7 @@ class FirebaseAuth {
     assert(authToken != null);
     assert(authTokenSecret != null);
     final Map<dynamic, dynamic> data =
-    await channel.invokeMethod('signInWithTwitter', <String, String>{
+        await channel.invokeMethod('signInWithTwitter', <String, String>{
       'authToken': authToken,
       'authTokenSecret': authTokenSecret,
     });
