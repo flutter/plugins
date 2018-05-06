@@ -1,3 +1,7 @@
+## 0.6.4
+
+* Fixes crash on Android if a FirebaseFirestoreException happened.
+
 ## 0.6.3
 
 * Updated Google Play Services dependencies to version 15.0.0.
