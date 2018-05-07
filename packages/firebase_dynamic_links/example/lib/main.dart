@@ -12,33 +12,17 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
 
-  @override
-  initState() {
-    super.initState();
-    initPlatformState();
-  }
+  Future<void> _getDynamicLink() async {
+    final DynamicLinkComponents components = new DynamicLinkComponents(
+        domain: "cx4k7.app.goo.gl", link: Uri.parse("https://google.com"));
 
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<Null> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    try {
-      platformVersion = await FirebaseDynamicLinks.platformVersion;
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
+    final AndroidParameters androidParameters = new AndroidParameters(
+        packageName: "io.flutter.plugins.firebasedynamiclinksexample");
+    components.androidParameters = androidParameters;
 
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted)
-      return;
-
-    setState(() {
-      _platformVersion = platformVersion;
-    });
+    final Uri uri = await components.uri;
+    print(uri.toString());
   }
 
   @override
@@ -46,10 +30,11 @@ class _MyAppState extends State<MyApp> {
     return new MaterialApp(
       home: new Scaffold(
         appBar: new AppBar(
-          title: new Text('Plugin example app'),
+          title: const Text('Plugin example app'),
         ),
         body: new Center(
-          child: new Text('Running on: $_platformVersion\n'),
+          child: new RaisedButton(
+              onPressed: _getDynamicLink, child: const Text("Create Link")),
         ),
       ),
     );

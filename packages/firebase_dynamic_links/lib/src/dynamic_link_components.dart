@@ -29,17 +29,17 @@ class DynamicLinkComponents {
 
   Future<Uri> _generateUri() async {
     final Map<String, dynamic> data = <String, dynamic>{
-      'androidParameters': androidParameters._data,
+      'androidParameters': androidParameters?._data,
       'domain': domain,
-      'dynamicLinkComponentsOptions': dynamicLinkComponentsOptions._data,
-      'googleAnalyticsParameters': googleAnalyticsParameters._data,
-      'iosParameters': iosParameters._data,
+      'dynamicLinkComponentsOptions': dynamicLinkComponentsOptions?._data,
+      'googleAnalyticsParameters': googleAnalyticsParameters?._data,
+      'iosParameters': iosParameters?._data,
       'itunesConnectAnalyticsParameters':
-          itunesConnectAnalyticsParameters._data,
+          itunesConnectAnalyticsParameters?._data,
       'link': link.toString(),
-      'longLink': longLink.toString(),
-      'navigationInfoParameters': navigationInfoParameters._data,
-      'socialMetaTagParameters': socialMetaTagParameters._data,
+      'longLink': longLink?.toString(),
+      'navigationInfoParameters': navigationInfoParameters?._data,
+      'socialMetaTagParameters': socialMetaTagParameters?._data,
     };
 
     final String url = await FirebaseDynamicLinks.channel

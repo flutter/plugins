@@ -23,9 +23,9 @@ class IosParameters {
         'appStoreId': appStoreId,
         'bundleId': bundleId,
         'customScheme': customScheme,
-        'fallbackUri': fallbackUri.toString(),
+        'fallbackUri': fallbackUri,
         'ipadBundleId': ipadBundleId,
-        'ipadFallbackUri': ipadFallbackUri.toString(),
+        'ipadFallbackUri': ipadFallbackUri,
         'minimumVersion': minimumVersion,
       };
 }

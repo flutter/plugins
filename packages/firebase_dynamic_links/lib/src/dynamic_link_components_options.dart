@@ -8,6 +8,6 @@ class DynamicLinkComponentsOptions {
   ShortDynamicLinkPathLength shortDynamicLinkPathLength;
 
   Map<String, dynamic> get _data => <String, dynamic>{
-        'shortDynamicLinkPathLength': shortDynamicLinkPathLength.index,
+        'shortDynamicLinkPathLength': shortDynamicLinkPathLength?.index,
       };
 }

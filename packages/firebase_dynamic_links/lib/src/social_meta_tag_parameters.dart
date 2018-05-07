@@ -9,7 +9,7 @@ class SocialMetaTagParameters {
 
   Map<String, dynamic> get _data => <String, dynamic>{
         'description': description,
-        'imageUrl': imageUrl.toString(),
+        'imageUrl': imageUrl?.toString(),
         'title': title,
       };
 }

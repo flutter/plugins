@@ -9,8 +9,8 @@ class AndroidParameters {
   final String packageName;
 
   Map<String, dynamic> get _data => <String, dynamic>{
-        'fallbackUri': fallbackUri.toString(),
-        'minimumVersion': minimumVersion,
+        'fallbackUri': fallbackUri?.toString(),
+        'minimumVersion': minimumVersion?.toString(),
         'packageName': packageName,
       };
 }
