@@ -84,35 +84,35 @@ a `GoogleMapOverlay` widget. Client code will have to change once the plugin
 stops using platform overlays.
 
 Once added as an overlay, the map view can be controlled via the
-`GoogleMapController` property of the overlay controller. Client code written
-against the `GoogleMapController` interface will be unaffected by the change
-away from platform overlays.
+`GoogleMapController` that you obtain as the `mapController` property of
+the overlay controller. Client code written against the `GoogleMapController`
+interface will be unaffected by the change away from platform overlays.
 
 ```dart
-  final GoogleMapOverlayController controller =
-      GoogleMapOverlayController.fromSize(width: 300.0, height: 200.0);
+final GoogleMapOverlayController controller =
+    GoogleMapOverlayController.fromSize(width: 300.0, height: 200.0);
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(children: <Widget>[
-      Center(child: GoogleMapOverlay(controller: controller)),
-      FlatButton(
-        child: const Text('Go to London')
-        onPressed: () {
-          controller.mapController.animateCamera(
-            CameraUpdate.newCameraPosition(
-              const CameraPosition(
-                bearing: 270.0,
-                target: LatLng(51.5160895, -0.1294527),
-                tilt: 30.0,
-                zoom: 17.0,
-              ),
-            )
-          );
-        }
-      ),
-    ]);
-  }
+@override
+Widget build(BuildContext context) {
+  return Column(children: <Widget>[
+    Center(child: GoogleMapOverlay(controller: controller)),
+    FlatButton(
+      child: const Text('Go to London'),
+      onPressed: () {
+        controller.mapController.animateCamera(
+          CameraUpdate.newCameraPosition(
+            const CameraPosition(
+              bearing: 270.0,
+              target: LatLng(51.5160895, -0.1294527),
+              tilt: 30.0,
+              zoom: 17.0,
+            ),
+          )
+        );
+      }
+    ),
+  ]);
+}
 ```
 
-See the `example` directory for a complete sample app using Google Maps.
+See the `example` directory for a complete sample app.
