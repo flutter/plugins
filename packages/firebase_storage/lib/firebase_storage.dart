@@ -17,7 +17,11 @@ class FirebaseStorage {
 
   /// Returns the [FirebaseStorage] instance, initialized with a custom
   /// [FirebaseApp] if [app] is specified and a custom Google Cloud Storage
-  /// bucket if [storageBucket] is specified.
+  /// bucket if [storageBucket] is specified. Otherwise the instance will be
+  /// initialized with the default [FirebaseApp].
+  ///
+  /// The [FirebaseStorage] instance is a singleton for fixed [app] and
+  /// [storageBucket].
   ///
   /// The [storageBucket] argument is the gs:// url to the custom Firebase
   /// Storage Bucket.
@@ -44,6 +48,57 @@ class FirebaseStorage {
   /// Creates a new [StorageReference] initialized at the root
   /// Firebase Storage location.
   StorageReference ref() => new StorageReference._(const <String>[], this);
+
+  Future<int> getMaxDownloadRetryTimeMillis() async {
+    return await channel.invokeMethod(
+        "FirebaseStorage#getMaxDownloadRetryTime", <String, dynamic>{
+      'app': app?.name,
+      'bucket': storageBucket,
+    });
+  }
+
+  Future<int> getMaxUploadRetryTimeMillis() async {
+    return await channel.invokeMethod(
+        "FirebaseStorage#getMaxUploadRetryTime", <String, dynamic>{
+      'app': app?.name,
+      'bucket': storageBucket,
+    });
+  }
+
+  Future<int> getMaxOperationRetryTimeMillis() async {
+    return await channel.invokeMethod(
+        "FirebaseStorage#getMaxOperationRetryTime", <String, dynamic>{
+      'app': app?.name,
+      'bucket': storageBucket,
+    });
+  }
+
+  Future<void> setMaxDownloadRetryTimeMillis(int time) {
+    return channel.invokeMethod(
+        "FirebaseStorage#setMaxDownloadRetryTime", <String, dynamic>{
+      'app': app?.name,
+      'bucket': storageBucket,
+      'time': time,
+    });
+  }
+
+  Future<void> setMaxUploadRetryTimeMillis(int time) {
+    return channel.invokeMethod(
+        "FirebaseStorage#setMaxUploadRetryTime", <String, dynamic>{
+      'app': app?.name,
+      'bucket': storageBucket,
+      'time': time,
+    });
+  }
+
+  Future<void> setMaxOperationRetryTimeMillis(int time) {
+    return channel.invokeMethod(
+        "FirebaseStorage#setMaxOperationRetryTime", <String, dynamic>{
+      'app': app?.name,
+      'bucket': storageBucket,
+      'time': time,
+    });
+  }
 }
 
 class StorageReference {
