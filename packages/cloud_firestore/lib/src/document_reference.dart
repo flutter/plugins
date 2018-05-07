@@ -33,11 +33,12 @@ class DocumentReference {
   /// This document's given or generated ID in the collection.
   String get documentID => _pathComponents.last;
 
-  /// Writes to the document referred to by this [DocumentReference]. If the
-  /// document does not yet exist, it will be created.
+  /// Writes to the document referred to by this [DocumentReference].
+  ///
+  /// If the document does not yet exist, it will be created.
   ///
   /// If [merge] is true, the provided data will be merged into an
-  /// existing document.
+  /// existing document instead of overwriting.
   Future<void> setData(Map<String, dynamic> data, {bool merge: false}) {
     return Firestore.channel.invokeMethod(
       'DocumentReference#setData',

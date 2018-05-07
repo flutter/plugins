@@ -62,7 +62,7 @@ class WriteBatch {
   /// If the document does not yet exist, it will be created.
   ///
   /// If [merge] is true, the provided data will be merged into an
-  /// existing document.
+  /// existing document instead of overwriting.
   void setData(DocumentReference document, Map<String, dynamic> data,
       {bool merge: false}) {
     if (!_committed) {

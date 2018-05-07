@@ -1,7 +1,7 @@
 ## 0.7.0
 
-* **Breaking change**. snapshots is now a method instead of a getter.
-* **Breaking change**. setData uses optional arguments instead of SetOptions.
+* **Breaking change**. `snapshots` is now a method instead of a getter.
+* **Breaking change**. `setData` uses named arguments instead of `SetOptions`.
 
 ## 0.6.3
 
