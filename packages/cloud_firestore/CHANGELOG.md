@@ -1,3 +1,19 @@
+## 0.6.3
+
+* Updated Google Play Services dependencies to version 15.0.0.
+
+## 0.6.2
+
+* Support for BLOB data type.
+
+## 0.6.1
+
+* Simplified podspec for Cocoapods 1.5.0, avoiding link issues in app archives.
+
+## 0.6.0
+
+* **Breaking change**. Renamed 'getCollection()' to 'collection().'
+
 ## 0.5.1
 
 * Expose the Firebase app corresponding to a Firestore

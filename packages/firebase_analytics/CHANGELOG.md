@@ -1,3 +1,15 @@
+## 0.3.3
+
+* Updated Google Play Services dependencies to version 15.0.0.
+
+## 0.3.2
+
+* Updated package channel name
+
+## 0.3.1
+
+* Simplified podspec for Cocoapods 1.5.0, avoiding link issues in app archives.
+
 ## 0.3.0
 
 * **Breaking change**. Set SDK constraints to match the Flutter beta release.

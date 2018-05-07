@@ -1,3 +1,16 @@
+## 0.5.4
+
+* Fixed a bug that was causing rewarded video failure event to be called on the wrong listener.
+
+## 0.5.3
+
+* Updated Google Play Services dependencies to version 15.0.0.
+* Added handling of rewarded video completion event.
+
+## 0.5.2
+
+* Simplified podspec for Cocoapods 1.5.0, avoiding link issues in app archives.
+
 ## 0.5.1
 
 * Fixed Dart 2 type errors.

@@ -23,7 +23,8 @@ class FirebaseMessaging {
         _platform = platform;
 
   static final FirebaseMessaging _instance = new FirebaseMessaging.private(
-      const MethodChannel('firebase_messaging'), const LocalPlatform());
+      const MethodChannel('plugins.flutter.io/firebase_messaging'),
+      const LocalPlatform());
 
   final MethodChannel _channel;
   final Platform _platform;
@@ -107,8 +108,8 @@ class FirebaseMessaging {
         }
         return null;
       case "onIosSettingsRegistered":
-        _iosSettingsStreamController
-            .add(new IosNotificationSettings._fromMap(call.arguments));
+        _iosSettingsStreamController.add(new IosNotificationSettings._fromMap(
+            call.arguments.cast<String, bool>()));
         return null;
       case "onMessage":
         return _onMessage(call.arguments.cast<String, dynamic>());

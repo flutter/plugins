@@ -1,3 +1,19 @@
+## 0.4.6
+
+* Allow null value for `startAt`, `endAt` and `equalTo` queries on Android.
+
+## 0.4.5
+
+* Updated Google Play Services dependencies to version 15.0.0.
+
+## 0.4.4
+
+* Updated firebase_core dependency to ^0.2.2
+
+## 0.4.3
+
+* Simplified podspec for Cocoapods 1.5.0, avoiding link issues in app archives.
+
 ## 0.4.2
 
 * Updated `firebase_core` dependency.

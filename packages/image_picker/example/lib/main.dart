@@ -67,14 +67,14 @@ class _MyHomePageState extends State<MyHomePage> {
           new FloatingActionButton(
             onPressed: () => _onImageButtonPressed(ImageSource.gallery),
             tooltip: 'Pick Image from gallery',
-            child: new Icon(Icons.photo_library),
+            child: const Icon(Icons.photo_library),
           ),
           new Padding(
             padding: const EdgeInsets.only(top: 16.0),
             child: new FloatingActionButton(
               onPressed: () => _onImageButtonPressed(ImageSource.camera),
               tooltip: 'Take a Photo',
-              child: new Icon(Icons.camera_alt),
+              child: const Icon(Icons.camera_alt),
             ),
           ),
         ],

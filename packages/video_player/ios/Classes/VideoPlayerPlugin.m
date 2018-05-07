@@ -298,7 +298,7 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
     if (dataSource) {
       NSString* assetPath;
       NSString* package = argsMap[@"package"];
-      if (package) {
+      if (![package isEqual:[NSNull null]]) {
         assetPath = [_registrar lookupKeyForAsset:dataSource fromPackage:package];
       } else {
         assetPath = [_registrar lookupKeyForAsset:dataSource];
@@ -328,7 +328,7 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
       [_players removeObjectForKey:@(textureId)];
       [player dispose];
     } else if ([@"setLooping" isEqualToString:call.method]) {
-      [player setIsLooping:[argsMap objectForKey:@"looping"]];
+      [player setIsLooping:[[argsMap objectForKey:@"looping"] boolValue]];
       result(nil);
     } else if ([@"setVolume" isEqualToString:call.method]) {
       [player setVolume:[[argsMap objectForKey:@"volume"] doubleValue]];

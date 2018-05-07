@@ -7,24 +7,44 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:http/http.dart' as http;
 
-void main() {
-  runApp(new MyApp());
+void main() async {
+  final FirebaseApp app = await FirebaseApp.configure(
+    name: 'test',
+    options: new FirebaseOptions(
+      googleAppID: Platform.isIOS
+          ? '1:159623150305:ios:4a213ef3dbd8997b'
+          : '1:159623150305:android:ef48439a0cc0263d',
+      gcmSenderID: '159623150305',
+      apiKey: 'AIzaSyChk3KEG7QYrs4kQPLP1tjJNxBTbfCAdgg',
+      projectID: 'flutter-firebase-plugins',
+    ),
+  );
+  final FirebaseStorage storage = new FirebaseStorage(
+      app: app, storageBucket: 'gs://flutter-firebase-plugins.appspot.com');
+  runApp(new MyApp(storage: storage));
 }
 
 class MyApp extends StatelessWidget {
+  MyApp({this.storage});
+  final FirebaseStorage storage;
+
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
       title: 'Flutter Storage Example',
-      home: new MyHomePage(),
+      home: new MyHomePage(storage: storage),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
+  MyHomePage({this.storage});
+  final FirebaseStorage storage;
+
   @override
   _MyHomePageState createState() => new _MyHomePageState();
 }
@@ -33,6 +53,10 @@ const String kTestString = "Hello world!";
 
 class _MyHomePageState extends State<MyHomePage> {
   String _fileContents;
+  String _name;
+  String _bucket;
+  String _path;
+  String _tempFileContents;
 
   Future<Null> _uploadFile() async {
     final Directory systemTempDir = Directory.systemTemp;
@@ -41,12 +65,34 @@ class _MyHomePageState extends State<MyHomePage> {
     assert(await file.readAsString() == kTestString);
     final String rand = "${new Random().nextInt(10000)}";
     final StorageReference ref =
-        FirebaseStorage.instance.ref().child("foo$rand.txt");
-    final StorageUploadTask uploadTask = ref.put(file);
+        widget.storage.ref().child('text').child('foo$rand.txt');
+    final StorageUploadTask uploadTask =
+        ref.putFile(file, const StorageMetadata(contentLanguage: "en"));
+
     final Uri downloadUrl = (await uploadTask.future).downloadUrl;
     final http.Response downloadData = await http.get(downloadUrl);
+    final String name = await ref.getName();
+    final String bucket = await ref.getBucket();
+    final String path = await ref.getPath();
+
+    final File tempFile = new File('${systemTempDir.path}/tmp.txt');
+    if (tempFile.existsSync()) {
+      await tempFile.delete();
+    }
+    await tempFile.create();
+    assert(await tempFile.readAsString() == "");
+    final StorageFileDownloadTask task = ref.writeToFile(tempFile);
+    final int byteCount = (await task.future).totalByteCount;
+    final String tempFileContents = await tempFile.readAsString();
+    assert(tempFileContents == kTestString);
+    assert(byteCount == kTestString.length);
+
     setState(() {
       _fileContents = downloadData.body;
+      _name = name;
+      _path = path;
+      _bucket = bucket;
+      _tempFileContents = tempFileContents;
     });
   }
 
@@ -61,9 +107,12 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             _fileContents == null
-                ? const Text('Press the button to upload a file')
+                ? const Text('Press the button to upload a file \n '
+                    'and download its contents to tmp.txt')
                 : new Text(
-                    'Success!\n\nFile contents: "$_fileContents"',
+                    'Success!\n Uploaded $_name \n to bucket: $_bucket\n '
+                        'at path: $_path \n\nFile contents: "$_fileContents" \n'
+                        'Wrote "$_tempFileContents" to tmp.txt',
                     style: const TextStyle(
                         color: const Color.fromARGB(255, 0, 155, 0)),
                   )
@@ -73,7 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: new FloatingActionButton(
         onPressed: _uploadFile,
         tooltip: 'Upload',
-        child: new Icon(Icons.file_upload),
+        child: const Icon(Icons.file_upload),
       ),
     );
   }

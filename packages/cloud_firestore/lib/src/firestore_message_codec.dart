@@ -11,6 +11,7 @@ class FirestoreMessageCodec extends StandardMessageCodec {
   static const int _kDateTime = 128;
   static const int _kGeoPoint = 129;
   static const int _kDocumentReference = 130;
+  static const int _kBlob = 131;
 
   @override
   void writeValue(WriteBuffer buffer, dynamic value) {
@@ -29,6 +30,10 @@ class FirestoreMessageCodec extends StandardMessageCodec {
       final List<int> bytes = utf8.encoder.convert(value.path);
       writeSize(buffer, bytes.length);
       buffer.putUint8List(bytes);
+    } else if (value is Blob) {
+      buffer.putUint8(_kBlob);
+      writeSize(buffer, value.bytes.length);
+      buffer.putUint8List(value.bytes);
     } else {
       super.writeValue(buffer, value);
     }
@@ -51,6 +56,10 @@ class FirestoreMessageCodec extends StandardMessageCodec {
         final String path =
             utf8.decoder.convert(buffer.getUint8List(pathLength));
         return firestore.document(path);
+      case _kBlob:
+        final int length = readSize(buffer);
+        final List<int> bytes = buffer.getUint8List(length);
+        return new Blob(bytes);
       default:
         return super.readValueOfType(type, buffer);
     }

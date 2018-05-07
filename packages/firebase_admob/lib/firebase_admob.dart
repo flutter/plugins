@@ -297,7 +297,7 @@ class InterstitialAd extends MobileAd {
 /// [RewardedVideoAd] status changes reported to [RewardedVideoAdListener]s.
 ///
 /// The [rewarded] event is particularly important, since it indicates that the
-/// user has watched a video to completion and should be given an in-app reward.
+/// user has watched a video for long enough to be given an in-app reward.
 enum RewardedVideoAdEvent {
   loaded,
   failedToLoad,
@@ -306,6 +306,7 @@ enum RewardedVideoAdEvent {
   closed,
   rewarded,
   started,
+  completed,
 }
 
 /// Signature for a [RewardedVideoAd] status change callback. The optional
@@ -448,6 +449,7 @@ class FirebaseAdMob {
     'onRewardedVideoAdLoaded': RewardedVideoAdEvent.loaded,
     'onRewardedVideoAdOpened': RewardedVideoAdEvent.opened,
     'onRewardedVideoStarted': RewardedVideoAdEvent.started,
+    'onRewardedVideoCompleted': RewardedVideoAdEvent.completed,
   };
 
   /// Initialize this plugin for the AdMob app specified by `appId`.

@@ -1,3 +1,19 @@
+## 0.5.7
+
+* Added support to sendEmailVerification
+
+## 0.5.6
+
+* Added support for linkWithFacebookCredential
+
+## 0.5.5
+
+* Updated Google Play Services dependencies to version 15.0.0.
+
+## 0.5.4
+
+* Simplified podspec for Cocoapods 1.5.0, avoiding link issues in app archives.
+
 ## 0.5.3
 
 * Secure fetchProvidersForEmail (no providers)

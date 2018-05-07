@@ -14,6 +14,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.firestore.Blob;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
@@ -567,6 +568,7 @@ final class FirestoreMessageCodec extends StandardMessageCodec {
   private static final byte DATE_TIME = (byte) 128;
   private static final byte GEO_POINT = (byte) 129;
   private static final byte DOCUMENT_REFERENCE = (byte) 130;
+  private static final byte BLOB = (byte) 131;
 
   @Override
   protected void writeValue(ByteArrayOutputStream stream, Object value) {
@@ -583,6 +585,9 @@ final class FirestoreMessageCodec extends StandardMessageCodec {
       writeBytes(
           stream, ((DocumentReference) value).getFirestore().getApp().getName().getBytes(UTF8));
       writeBytes(stream, ((DocumentReference) value).getPath().getBytes(UTF8));
+    } else if (value instanceof Blob) {
+      stream.write(BLOB);
+      writeBytes(stream, ((Blob) value).toBytes());
     } else {
       super.writeValue(stream, value);
     }
@@ -604,6 +609,9 @@ final class FirestoreMessageCodec extends StandardMessageCodec {
         final byte[] pathBytes = readBytes(buffer);
         final String path = new String(pathBytes, UTF8);
         return firestore.document(path);
+      case BLOB:
+        final byte[] bytes = readBytes(buffer);
+        return Blob.fromBytes(bytes);
       default:
         return super.readValueOfType(type, buffer);
     }

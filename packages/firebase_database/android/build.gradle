@@ -23,7 +23,7 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 27
-    
+
     defaultConfig {
         minSdkVersion 16
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -32,8 +32,6 @@ android {
         disable 'InvalidPackage'
     }
     dependencies {
-        api 'com.google.firebase:firebase-core:11.+'
-        api 'com.google.firebase:firebase-auth:11.+'
-        api 'com.google.firebase:firebase-database:11.+'
+        api 'com.google.firebase:firebase-database:15.+'
     }
 }

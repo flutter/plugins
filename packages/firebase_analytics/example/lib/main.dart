@@ -316,7 +316,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       floatingActionButton: new FloatingActionButton(
-          child: new Icon(Icons.tab),
+          child: const Icon(Icons.tab),
           onPressed: () {
             Navigator.of(context).push(new MaterialPageRoute<TabsPage>(
                 settings: const RouteSettings(name: TabsPage.routeName),

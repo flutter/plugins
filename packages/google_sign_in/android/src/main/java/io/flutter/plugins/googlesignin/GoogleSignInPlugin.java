@@ -16,6 +16,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
@@ -54,6 +55,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
   private static final String METHOD_GET_TOKENS = "getTokens";
   private static final String METHOD_SIGN_OUT = "signOut";
   private static final String METHOD_DISCONNECT = "disconnect";
+  private static final String METHOD_IS_SIGNED_IN = "isSignedIn";
 
   private final IDelegate delegate;
 
@@ -71,9 +73,10 @@ public class GoogleSignInPlugin implements MethodCallHandler {
   public void onMethodCall(MethodCall call, Result result) {
     switch (call.method) {
       case METHOD_INIT:
+        String signInOption = call.argument("signInOption");
         List<String> requestedScopes = call.argument("scopes");
         String hostedDomain = call.argument("hostedDomain");
-        delegate.init(result, requestedScopes, hostedDomain);
+        delegate.init(result, signInOption, requestedScopes, hostedDomain);
         break;
 
       case METHOD_SIGN_IN_SILENTLY:
@@ -97,6 +100,10 @@ public class GoogleSignInPlugin implements MethodCallHandler {
         delegate.disconnect(result);
         break;
 
+      case METHOD_IS_SIGNED_IN:
+        delegate.isSignedIn(result);
+        break;
+
       default:
         result.notImplemented();
     }
@@ -109,7 +116,8 @@ public class GoogleSignInPlugin implements MethodCallHandler {
    */
   public interface IDelegate {
     /** Initializes this delegate so that it is ready to perform other operations. */
-    public void init(Result result, List<String> requestedScopes, String hostedDomain);
+    public void init(
+        Result result, String signInOption, List<String> requestedScopes, String hostedDomain);
 
     /**
      * Returns the account information for the user who is signed in to this app. If no user is
@@ -137,6 +145,9 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 
     /** Signs the user out, and revokes their credentials. */
     public void disconnect(Result result);
+
+    /** Checks if there is a signed in user. */
+    public void isSignedIn(Result result);
   }
 
   /**
@@ -155,8 +166,15 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     private static final String ERROR_REASON_EXCEPTION = "exception";
     private static final String ERROR_REASON_STATUS = "status";
     private static final String ERROR_REASON_CONNECTION_FAILED = "connection_failed";
+    // These error codes must match with ones declared on iOS and Dart sides.
+    private static final String ERROR_REASON_SIGN_IN_CANCELED = "sign_in_canceled";
+    private static final String ERROR_REASON_SIGN_IN_REQUIRED = "sign_in_required";
+    private static final String ERROR_REASON_SIGN_IN_FAILED = "sign_in_failed";
 
     private static final String STATE_RESOLVING_ERROR = "resolving_error";
+
+    private static final String DEFAULT_SIGN_IN = "SignInOption.standard";
+    private static final String DEFAULT_GAMES_SIGN_IN = "SignInOption.games";
 
     private final PluginRegistry.Registrar registrar;
     private final Handler handler = new Handler();
@@ -193,14 +211,28 @@ public class GoogleSignInPlugin implements MethodCallHandler {
      * guarantees that this will be called and completed before any other methods are invoked.
      */
     @Override
-    public void init(Result result, List<String> requestedScopes, String hostedDomain) {
+    public void init(
+        Result result, String signInOption, List<String> requestedScopes, String hostedDomain) {
       // We're not initialized until we receive `onConnected`.
       // If initialization fails, we'll receive `onConnectionFailed`
       checkAndSetPendingOperation(METHOD_INIT, result);
 
       try {
-        GoogleSignInOptions.Builder optionsBuilder =
-            new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail();
+        GoogleSignInOptions.Builder optionsBuilder;
+
+        switch (signInOption) {
+          case DEFAULT_GAMES_SIGN_IN:
+            optionsBuilder =
+                new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN);
+            break;
+          case DEFAULT_SIGN_IN:
+            optionsBuilder =
+                new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail();
+            break;
+          default:
+            throw new IllegalStateException("Unknown signInOption");
+        }
+
         // Only requests a clientId if google-services.json was present and parsed
         // by the google-services Gradle script.
         // TODO(jackson): Perhaps we should provide a mechanism to override this
@@ -350,10 +382,18 @@ public class GoogleSignInPlugin implements MethodCallHandler {
               new ResultCallback<Status>() {
                 @Override
                 public void onResult(@NonNull Status status) {
+                  currentAccount = null;
                   // TODO(tvolkert): communicate status back to user
                   finishWithSuccess(null);
                 }
               });
+    }
+
+    /** Checks if there is a signed in user. */
+    @Override
+    public void isSignedIn(final Result result) {
+      boolean value = GoogleSignIn.getLastSignedInAccount(registrar.context()) != null;
+      result.success(value);
     }
 
     private void onSignInResult(GoogleSignInResult result) {
@@ -369,13 +409,20 @@ public class GoogleSignInPlugin implements MethodCallHandler {
           response.put("photoUrl", account.getPhotoUrl().toString());
         }
         finishWithSuccess(response);
-      } else if (result.getStatus().getStatusCode() == CommonStatusCodes.SIGN_IN_REQUIRED
-          || result.getStatus().getStatusCode() == GoogleSignInStatusCodes.SIGN_IN_CANCELLED) {
-        // This isn't an error from the caller's (Dart's) perspective; this just
-        // means that the user didn't sign in.
-        finishWithSuccess(null);
       } else {
-        finishWithError(ERROR_REASON_STATUS, result.getStatus().toString());
+        // Forward all errors and let Dart side decide how to handle.
+        String errorCode = errorCodeForStatus(result.getStatus().getStatusCode());
+        finishWithError(errorCode, result.getStatus().toString());
+      }
+    }
+
+    private String errorCodeForStatus(int statusCode) {
+      if (statusCode == GoogleSignInStatusCodes.SIGN_IN_CANCELLED) {
+        return ERROR_REASON_SIGN_IN_CANCELED;
+      } else if (statusCode == CommonStatusCodes.SIGN_IN_REQUIRED) {
+        return ERROR_REASON_SIGN_IN_REQUIRED;
+      } else {
+        return ERROR_REASON_SIGN_IN_FAILED;
       }
     }
 

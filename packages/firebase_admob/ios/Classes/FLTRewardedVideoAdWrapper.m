@@ -83,7 +83,7 @@ FLTRewardedVideoAdStatus _rewardedStatus;
   NSLog(@"interstitial:didFailToReceiveAdWithError: %@ (MobileAd %@)", [error localizedDescription],
         self);
   _rewardedStatus = FLTRewardedVideoAdStatusFailed;
-  [_rewardedChannel invokeMethod:@"onAdFailedToLoad" arguments:@{}];
+  [_rewardedChannel invokeMethod:@"onRewardedVideoAdFailedToLoad" arguments:@{}];
 }
 
 - (void)rewardBasedVideoAdDidReceiveAd:(nonnull GADRewardBasedVideoAd *)rewardBasedVideoAd {
@@ -97,6 +97,10 @@ FLTRewardedVideoAdStatus _rewardedStatus;
 
 - (void)rewardBasedVideoAdDidStartPlaying:(nonnull GADRewardBasedVideoAd *)rewardBasedVideoAd {
   [_rewardedChannel invokeMethod:@"onRewardedVideoStarted" arguments:@{}];
+}
+
+- (void)rewardBasedVideoAdDidCompletePlaying:(nonnull GADRewardBasedVideoAd *)rewardBasedVideoAd {
+  [_rewardedChannel invokeMethod:@"onRewardedVideoCompleted" arguments:@{}];
 }
 
 - (void)rewardBasedVideoAdDidClose:(nonnull GADRewardBasedVideoAd *)rewardBasedVideoAd {

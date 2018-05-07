@@ -6,6 +6,7 @@ library cloud_firestore;
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 import 'dart:ui' show hashValues, hashList;
 
 import 'package:firebase_core/firebase_core.dart';
@@ -17,6 +18,7 @@ import 'package:collection/collection.dart';
 import 'src/utils/push_id_generator.dart';
 
 part 'src/collection_reference.dart';
+part 'src/blob.dart';
 part 'src/document_change.dart';
 part 'src/document_snapshot.dart';
 part 'src/document_reference.dart';

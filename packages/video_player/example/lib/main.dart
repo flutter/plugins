@@ -27,7 +27,7 @@ class VideoPlayPause extends StatefulWidget {
 
 class _VideoPlayPauseState extends State<VideoPlayPause> {
   FadeAnimation imageFadeAnim =
-      new FadeAnimation(child: new Icon(Icons.play_arrow, size: 100.0));
+      new FadeAnimation(child: const Icon(Icons.play_arrow, size: 100.0));
   VoidCallback listener;
 
   _VideoPlayPauseState() {
@@ -64,11 +64,11 @@ class _VideoPlayPauseState extends State<VideoPlayPause> {
           }
           if (controller.value.isPlaying) {
             imageFadeAnim =
-                new FadeAnimation(child: new Icon(Icons.pause, size: 100.0));
+                new FadeAnimation(child: const Icon(Icons.pause, size: 100.0));
             controller.pause();
           } else {
             imageFadeAnim = new FadeAnimation(
-                child: new Icon(Icons.play_arrow, size: 100.0));
+                child: const Icon(Icons.play_arrow, size: 100.0));
             controller.play();
           }
         },
@@ -359,11 +359,11 @@ void main() {
         child: new Scaffold(
           appBar: new AppBar(
             title: const Text('Video player example'),
-            bottom: new TabBar(
+            bottom: const TabBar(
               isScrollable: true,
-              tabs: <Widget>[
-                new Tab(icon: new Icon(Icons.fullscreen)),
-                new Tab(icon: new Icon(Icons.list)),
+              tabs: const <Widget>[
+                const Tab(icon: const Icon(Icons.fullscreen)),
+                const Tab(icon: const Icon(Icons.list)),
               ],
             ),
           ),

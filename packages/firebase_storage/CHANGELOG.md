@@ -1,3 +1,41 @@
+## 0.3.3
+
+* Added support for initialization with a custom Firebase app.
+
+## 0.3.2
+
+* Added support for StorageReference `writeToFile`.
+
+## 0.3.1
+
+* Added support for StorageReference functions: `getParent`, `getRoot`, `getStorage`, `getName`, `getPath`, `getBucket`.
+
+## 0.3.0
+
+* **Breaking change**. Changed StorageUploadTask to abstract, removed the 'file' field, and made 'path' and 'metadata'
+  private. Added two subclasses: StorageFileUploadTask and StorageDataUploadTask.
+* Deprecated the `put` function and added `putFile` and `putData` to upload files and bytes respectively.
+
+## 0.2.6
+
+* Added support for updateMetadata.
+
+## 0.2.5
+
+* Added StorageMetadata class, support for getMetadata, and support for uploading file with metadata.
+
+## 0.2.4
+
+* Updated Google Play Services dependencies to version 15.0.0.
+
+## 0.2.3
+
+* Updated package channel name and made channel visible for testing
+
+## 0.2.2
+
+* Simplified podspec for Cocoapods 1.5.0, avoiding link issues in app archives.
+
 ## 0.2.1
 
 * Added support for getDownloadUrl.

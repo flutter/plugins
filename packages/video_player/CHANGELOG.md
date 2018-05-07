@@ -1,3 +1,13 @@
+## 0.5.1
+
+* Fixed bug on video loop feature for ios.
+
+## 0.5.0
+
+* Added the constructor `VideoPlayerController.file`.
+* **Breaking change**. Changed `VideoPlayerController.isNetwork` to
+  an enum `VideoPlayerController.dataSourceType`.
+
 ## 0.4.1
 
 * Updated Flutter SDK constraint to reflect the changes in v0.4.0.

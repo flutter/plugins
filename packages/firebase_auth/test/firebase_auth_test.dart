@@ -190,6 +190,24 @@ void main() {
       );
     });
 
+    test('linkWithFacebookCredential', () async {
+      final FirebaseUser user = await auth.linkWithFacebookCredential(
+        accessToken: kMockAccessToken,
+      );
+      verifyUser(user);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'linkWithFacebookCredential',
+            arguments: <String, String>{
+              'accessToken': kMockAccessToken,
+            },
+          ),
+        ],
+      );
+    });
+
     test('signInWithFacebook', () async {
       final FirebaseUser user = await auth.signInWithFacebook(
         accessToken: kMockAccessToken,
@@ -223,6 +241,25 @@ void main() {
               'email': kMockEmail,
               'password': kMockPassword,
             },
+          ),
+        ],
+      );
+    });
+
+    test('sendEmailVerification', () async {
+      final FirebaseUser user = await auth.currentUser();
+      await user.sendEmailVerification();
+
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'currentUser',
+            arguments: null,
+          ),
+          isMethodCall(
+            'sendEmailVerification',
+            arguments: null,
           ),
         ],
       );

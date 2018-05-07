@@ -77,7 +77,7 @@ class SharedPreferencesDemoState extends State<SharedPreferencesDemo> {
       floatingActionButton: new FloatingActionButton(
         onPressed: _incrementCounter,
         tooltip: 'Increment',
-        child: new Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }
