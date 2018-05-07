@@ -80,8 +80,13 @@ Supply your API key in the application delegate `ios/Runner/AppDelegate.m`:
 ### Both
 
 You can now instantiate a `GoogleMapOverlayController` and use it to configure
-a `GoogleMapOverlay` widget. The GoogleMap view is displayed as an overlay and
-can be controlled via a `GoogleMapController`:
+a `GoogleMapOverlay` widget. Client code will have to change once the plugin
+stops using platform overlays.
+
+Once added as an overlay, the map view can be controlled via the
+`GoogleMapController` property of the overlay controller. Client code written
+against the `GoogleMapController` interface will be unaffected by the change
+away from platform overlays.
 
 ```dart
   final GoogleMapOverlayController controller =
