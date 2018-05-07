@@ -19,6 +19,174 @@ void main() {
     final FirebaseStorage storage =
         new FirebaseStorage(app: app, storageBucket: storageBucket);
 
+    group('getMaxDownloadRetryTimeMillis', () {
+      final List<MethodCall> log = <MethodCall>[];
+
+      setUp(() {
+        FirebaseStorage.channel
+            .setMockMethodCallHandler((MethodCall methodCall) async {
+          log.add(methodCall);
+          return 1000;
+        });
+      });
+
+      test('invokes correct method', () async {
+        await storage.getMaxDownloadRetryTimeMillis();
+
+        expect(log, <Matcher>[
+          isMethodCall(
+            'FirebaseStorage#getMaxDownloadRetryTime',
+            arguments: <String, String>{
+              'app': 'testApp',
+              'bucket': 'gs://fake-storage-bucket-url.com',
+            },
+          ),
+        ]);
+      });
+
+      test('returns correct result', () async {
+        expect(await storage.getMaxDownloadRetryTimeMillis(), 1000);
+      });
+    });
+
+    group('getMaxUploadRetryTimeMillis', () {
+      final List<MethodCall> log = <MethodCall>[];
+
+      setUp(() {
+        FirebaseStorage.channel
+            .setMockMethodCallHandler((MethodCall methodCall) async {
+          log.add(methodCall);
+          return 2000;
+        });
+      });
+
+      test('invokes correct method', () async {
+        await storage.getMaxUploadRetryTimeMillis();
+
+        expect(log, <Matcher>[
+          isMethodCall(
+            'FirebaseStorage#getMaxUploadRetryTime',
+            arguments: <String, String>{
+              'app': 'testApp',
+              'bucket': 'gs://fake-storage-bucket-url.com',
+            },
+          ),
+        ]);
+      });
+
+      test('returns correct result', () async {
+        expect(await storage.getMaxUploadRetryTimeMillis(), 2000);
+      });
+    });
+
+    group('getMaxOperationRetryTimeMillis', () {
+      final List<MethodCall> log = <MethodCall>[];
+
+      setUp(() {
+        FirebaseStorage.channel
+            .setMockMethodCallHandler((MethodCall methodCall) async {
+          log.add(methodCall);
+          return 3000;
+        });
+      });
+
+      test('invokes correct method', () async {
+        await storage.getMaxOperationRetryTimeMillis();
+
+        expect(log, <Matcher>[
+          isMethodCall(
+            'FirebaseStorage#getMaxOperationRetryTime',
+            arguments: <String, String>{
+              'app': 'testApp',
+              'bucket': 'gs://fake-storage-bucket-url.com',
+            },
+          ),
+        ]);
+      });
+
+      test('returns correct result', () async {
+        expect(await storage.getMaxOperationRetryTimeMillis(), 3000);
+      });
+    });
+
+    group('setMaxDownloadRetryTimeMillis', () {
+      final List<MethodCall> log = <MethodCall>[];
+
+      setUp(() {
+        FirebaseStorage.channel
+            .setMockMethodCallHandler((MethodCall methodCall) async {
+          log.add(methodCall);
+        });
+      });
+
+      test('invokes correct method', () async {
+        await storage.setMaxDownloadRetryTimeMillis(1000);
+
+        expect(log, <Matcher>[
+          isMethodCall(
+            'FirebaseStorage#setMaxDownloadRetryTime',
+            arguments: <String, dynamic>{
+              'app': 'testApp',
+              'bucket': 'gs://fake-storage-bucket-url.com',
+              'time': 1000,
+            },
+          ),
+        ]);
+      });
+    });
+
+    group('setMaxUploadRetryTimeMillis', () {
+      final List<MethodCall> log = <MethodCall>[];
+
+      setUp(() {
+        FirebaseStorage.channel
+            .setMockMethodCallHandler((MethodCall methodCall) async {
+          log.add(methodCall);
+        });
+      });
+
+      test('invokes correct method', () async {
+        await storage.setMaxUploadRetryTimeMillis(2000);
+
+        expect(log, <Matcher>[
+          isMethodCall(
+            'FirebaseStorage#setMaxUploadRetryTime',
+            arguments: <String, dynamic>{
+              'app': 'testApp',
+              'bucket': 'gs://fake-storage-bucket-url.com',
+              'time': 2000,
+            },
+          ),
+        ]);
+      });
+    });
+
+    group('setMaxOperationRetryTimeMillis', () {
+      final List<MethodCall> log = <MethodCall>[];
+
+      setUp(() {
+        FirebaseStorage.channel
+            .setMockMethodCallHandler((MethodCall methodCall) async {
+          log.add(methodCall);
+        });
+      });
+
+      test('invokes correct method', () async {
+        await storage.setMaxOperationRetryTimeMillis(3000);
+
+        expect(log, <Matcher>[
+          isMethodCall(
+            'FirebaseStorage#setMaxOperationRetryTime',
+            arguments: <String, dynamic>{
+              'app': 'testApp',
+              'bucket': 'gs://fake-storage-bucket-url.com',
+              'time': 3000,
+            },
+          ),
+        ]);
+      });
+    });
+
     group('StorageReference', () {
       group('getData', () {
         final List<MethodCall> log = <MethodCall>[];
