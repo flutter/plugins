@@ -26,7 +26,6 @@ part 'src/firestore.dart';
 part 'src/geo_point.dart';
 part 'src/query.dart';
 part 'src/query_snapshot.dart';
-part 'src/set_options.dart';
 part 'src/firestore_message_codec.dart';
 part 'src/snapshot_metadata.dart';
 part 'src/transaction.dart';

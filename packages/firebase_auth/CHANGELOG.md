@@ -1,6 +1,10 @@
-## 0.5.8
+## 0.5.9
 
 * Added support to signinWithTwitter
+
+## 0.5.8
+
+* Added support to reload firebase user
 
 ## 0.5.7
 

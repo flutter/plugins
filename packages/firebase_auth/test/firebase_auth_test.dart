@@ -265,6 +265,25 @@ void main() {
       );
     });
 
+    test('reload', () async {
+      final FirebaseUser user = await auth.currentUser();
+      await user.reload();
+
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'currentUser',
+            arguments: null,
+          ),
+          isMethodCall(
+            'reload',
+            arguments: null,
+          ),
+        ],
+      );
+    });
+
     test('sendPasswordResetEmail', () async {
       await auth.sendPasswordResetEmail(
         email: kMockEmail,

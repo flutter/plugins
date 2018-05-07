@@ -61,10 +61,10 @@ class WriteBatch {
   ///
   /// If the document does not yet exist, it will be created.
   ///
-  /// If you pass [SetOptions], the provided data will be merged into an
-  /// existing document.
+  /// If [merge] is true, the provided data will be merged into an
+  /// existing document instead of overwriting.
   void setData(DocumentReference document, Map<String, dynamic> data,
-      [SetOptions options]) {
+      {bool merge: false}) {
     if (!_committed) {
       _handle.then((dynamic handle) {
         _actions.add(
@@ -75,7 +75,7 @@ class WriteBatch {
               'handle': handle,
               'path': document.path,
               'data': data,
-              'options': options?._data,
+              'options': <String, bool>{'merge': merge},
             },
           ),
         );

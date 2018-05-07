@@ -82,6 +82,11 @@ class FirebaseUser extends UserInfo {
     await FirebaseAuth.channel.invokeMethod('sendEmailVerification');
   }
 
+  /// Manually refreshes the data of the current user (for example, attached providers, display name, and so on).
+  Future<void> reload() async {
+    await FirebaseAuth.channel.invokeMethod('reload');
+  }
+
   @override
   String toString() {
     return '$runtimeType($_data)';
