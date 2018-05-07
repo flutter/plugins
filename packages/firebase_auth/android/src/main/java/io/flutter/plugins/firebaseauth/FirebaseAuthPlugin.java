@@ -239,10 +239,8 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
   }
 
   private void handleSignInWithTwitter(MethodCall call, final Result result) {
-    @SuppressWarnings("unchecked")
-    Map<String, String> arguments = (Map<String, String>) call.arguments;
-    String authToken = arguments.get("authToken");
-    String authTokenSecret = arguments.get("authTokenSecret");
+    String authToken = call.argument("authToken");
+    String authTokenSecret = call.argument("authTokenSecret");
     AuthCredential credential = TwitterAuthProvider.getCredential(authToken, authTokenSecret);
     firebaseAuth
         .signInWithCredential(credential)
