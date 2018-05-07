@@ -22,7 +22,9 @@ final MethodChannel _channel =
 class GoogleMapController extends ChangeNotifier {
   @visibleForTesting
   GoogleMapController(this._id, GoogleMapOptions options)
-      : assert(!options.trackCameraPosition || options.cameraPosition != null),
+      : assert(_id != null),
+        assert(options != null),
+        assert(options.cameraPosition != null),
         _options = options {
     _id.then((int id) {
       _controllers[id] = this;
