@@ -116,7 +116,7 @@ class MarkerOptions {
   ///
   /// By default, every non-specified field is null, meaning no desire to change
   /// marker defaults or current configuration.
-  MarkerOptions({
+  const MarkerOptions({
     this.alpha,
     this.anchor,
     this.consumeTapEvents,
@@ -129,7 +129,7 @@ class MarkerOptions {
     this.rotation,
     this.visible,
     this.zIndex,
-  }) : assert(alpha == null || 0.0 <= alpha && alpha <= 1.0);
+  }) : assert(alpha == null || (0.0 <= alpha && alpha <= 1.0));
 
   /// Default marker options.
   ///
@@ -146,7 +146,7 @@ class MarkerOptions {
   /// * has an axis-aligned icon; [rotation] is 0.0
   /// * is visible; [visible] is true
   /// * is placed at the base of the drawing order; [zIndex] is 0.0
-  static final MarkerOptions defaultOptions = MarkerOptions(
+  static const MarkerOptions defaultOptions = MarkerOptions(
     alpha: 1.0,
     anchor: const Offset(0.5, 1.0),
     consumeTapEvents: false,
@@ -163,7 +163,12 @@ class MarkerOptions {
 
   /// Creates a new options object whose values are the same as this instance,
   /// unless overwritten by the specified [changes].
+  ///
+  /// Returns this instance, if [changes] is null.
   MarkerOptions copyWith(MarkerOptions changes) {
+    if (changes == null) {
+      return this;
+    }
     return new MarkerOptions(
       alpha: changes.alpha ?? alpha,
       anchor: changes.anchor ?? anchor,

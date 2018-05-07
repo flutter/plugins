@@ -111,7 +111,7 @@ class GoogleMapController extends ChangeNotifier {
   /// Change listeners are notified once the update has been made on the
   /// platform side.
   ///
-  /// The returned future completes after listeners have been notified.
+  /// The returned [Future] completes after listeners have been notified.
   Future<void> updateMapOptions(GoogleMapOptions changes) async {
     assert(changes != null);
     final int id = await _id;
@@ -129,7 +129,7 @@ class GoogleMapController extends ChangeNotifier {
 
   /// Starts an animated change of the map camera position.
   ///
-  /// The returned future completes after the change has been started on the
+  /// The returned [Future] completes after the change has been started on the
   /// platform side.
   Future<void> animateCamera(CameraUpdate cameraUpdate) async {
     final int id = await _id;
@@ -141,7 +141,7 @@ class GoogleMapController extends ChangeNotifier {
 
   /// Changes the map camera position.
   ///
-  /// The returned future completes after the change has been made on the
+  /// The returned [Future] completes after the change has been made on the
   /// platform side.
   Future<void> moveCamera(CameraUpdate cameraUpdate) async {
     final int id = await _id;
@@ -151,27 +151,25 @@ class GoogleMapController extends ChangeNotifier {
     });
   }
 
-  /// Adds a marker to the map, configured using the specified [adjustments]
-  /// from marker defaults, typically involving at least a custom position.
+  /// Adds a marker to the map, configured using the specified custom [options].
   ///
   /// Change listeners are notified once the marker has been added on the
   /// platform side.
   ///
-  /// The returned future completes with the added marker once listeners are
-  /// notified.
-  Future<Marker> addMarker(MarkerOptions adjustments) async {
-    assert(adjustments != null);
+  /// The returned [Future] completes with the added marker once listeners have
+  /// been notified.
+  Future<Marker> addMarker(MarkerOptions options) async {
     final int id = await _id;
-    final MarkerOptions options =
-        MarkerOptions.defaultOptions.copyWith(adjustments);
+    final MarkerOptions effectiveOptions =
+        MarkerOptions.defaultOptions.copyWith(options);
     final String markerId = await _channel.invokeMethod(
       'marker#add',
       <String, dynamic>{
         'map': id,
-        'options': options._toJson(),
+        'options': effectiveOptions._toJson(),
       },
     );
-    final Marker marker = new Marker(markerId, options);
+    final Marker marker = new Marker(markerId, effectiveOptions);
     _markers[markerId] = marker;
     notifyListeners();
     return marker;
@@ -183,7 +181,7 @@ class GoogleMapController extends ChangeNotifier {
   /// Change listeners are notified once the marker has been updated on the
   /// platform side.
   ///
-  /// The returned future completes once listeners are notified.
+  /// The returned [Future] completes once listeners have been notified.
   Future<void> updateMarker(Marker marker, MarkerOptions changes) async {
     assert(marker != null);
     assert(_markers[marker._id] == marker);
@@ -204,7 +202,7 @@ class GoogleMapController extends ChangeNotifier {
   /// Change listeners are notified once the marker has been removed on the
   /// platform side.
   ///
-  /// The returned future completes once listeners are notified.
+  /// The returned [Future] completes once listeners have been notified.
   Future<void> removeMarker(Marker marker) async {
     assert(marker != null);
     assert(_markers[marker._id] == marker);
@@ -237,21 +235,20 @@ class GoogleMapOverlayController {
   GoogleMapOverlayController._(this.mapController, this.overlayController);
 
   /// Creates a controller for a GoogleMaps of the specified size and with the
-  /// specified [adjustments] from the default user interface options.
+  /// specified custom [options], if any.
   factory GoogleMapOverlayController.fromSize({
     @required double width,
     @required double height,
-    @required GoogleMapOptions adjustments,
+    GoogleMapOptions options,
   }) {
     assert(width != null);
     assert(height != null);
-    assert(adjustments != null);
-    final GoogleMapOptions options =
-        GoogleMapOptions.defaultOptions.copyWith(adjustments);
+    final GoogleMapOptions effectiveOptions =
+        GoogleMapOptions.defaultOptions.copyWith(options);
     final _GoogleMapsPlatformOverlay overlay =
-        new _GoogleMapsPlatformOverlay(options);
+        new _GoogleMapsPlatformOverlay(effectiveOptions);
     return new GoogleMapOverlayController._(
-      new GoogleMapController(overlay._textureId.future, options),
+      new GoogleMapController(overlay._textureId.future, effectiveOptions),
       new PlatformOverlayController(width, height, overlay),
     );
   }

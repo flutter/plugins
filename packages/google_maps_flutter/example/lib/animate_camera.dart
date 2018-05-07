@@ -13,11 +13,7 @@ class AnimateCameraPage extends Page {
 
   @override
   final GoogleMapOverlayController controller =
-      GoogleMapOverlayController.fromSize(
-    width: 300.0,
-    height: 200.0,
-    adjustments: GoogleMapOptions(),
-  );
+      GoogleMapOverlayController.fromSize(width: 300.0, height: 200.0);
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +31,7 @@ class AnimateCameraPage extends Page {
                   onPressed: () {
                     controller.mapController.animateCamera(
                       CameraUpdate.newCameraPosition(
-                        CameraPosition(
+                        const CameraPosition(
                           bearing: 270.0,
                           target: LatLng(51.5160895, -0.1294527),
                           tilt: 30.0,
@@ -50,7 +46,7 @@ class AnimateCameraPage extends Page {
                   onPressed: () {
                     controller.mapController.animateCamera(
                       CameraUpdate.newLatLng(
-                        LatLng(56.1725505, 10.1850512),
+                        const LatLng(56.1725505, 10.1850512),
                       ),
                     );
                   },
@@ -61,8 +57,8 @@ class AnimateCameraPage extends Page {
                     controller.mapController.animateCamera(
                       CameraUpdate.newLatLngBounds(
                         LatLngBounds(
-                          southwest: LatLng(-38.483935, 113.248673),
-                          northeast: LatLng(-8.982446, 153.823821),
+                          southwest: const LatLng(-38.483935, 113.248673),
+                          northeast: const LatLng(-8.982446, 153.823821),
                         ),
                         10.0,
                       ),
@@ -74,7 +70,7 @@ class AnimateCameraPage extends Page {
                   onPressed: () {
                     controller.mapController.animateCamera(
                       CameraUpdate.newLatLngZoom(
-                        LatLng(37.4231613, -122.087159),
+                        const LatLng(37.4231613, -122.087159),
                         11.0,
                       ),
                     );

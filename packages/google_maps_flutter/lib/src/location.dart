@@ -19,10 +19,11 @@ class LatLng {
   ///
   /// The longitude is normalized to the half-open interval from -180.0
   /// (inclusive) to +180.0 (exclusive)
-  LatLng(double latitude, double longitude)
+  const LatLng(double latitude, double longitude)
       : assert(latitude != null),
         assert(longitude != null),
-        latitude = latitude.clamp(-90.0, 90.0),
+        latitude =
+            (latitude < -90.0 ? -90.0 : (90.0 < latitude ? 90.0 : latitude)),
         longitude = (longitude + 180.0) % 360.0 - 180.0;
 
   dynamic _toJson() {
@@ -50,17 +51,14 @@ class LatLng {
   int get hashCode => hashValues(latitude, longitude);
 }
 
-/// A latitude/longitude aligned rectangle
+/// A latitude/longitude aligned rectangle.
 ///
-/// The rectangle conceptually includes all points where
-/// * the latitude is between `southwest.latitude` and `northeast.latitude`,
-///   and
-/// * the longitude is
-///   * between `southwest.longitude` and `northeast.longitude`, if
-///     `southwest.longitude` ≤ `northeast.longitude`, or
-///   * between `southwest.longitude` and 180.0 or
-///     between `-180.0` and `northeast.longitude`, if
-///     `northeast.longitude` < `southwest.longitude`.
+/// The rectangle conceptually includes all points (lat, lng) where
+/// * lat ∈ [`southwest.latitude`, `northeast.latitude`]
+/// * lng ∈ [`southwest.longitude`, `northeast.longitude`],
+///   if `southwest.longitude` ≤ `northeast.longitude`,
+/// * lng ∈ [-180, `northeast.longitude`] ∪ [`southwest.longitude`, 180[,
+///   if `northeast.longitude` < `southwest.longitude`
 class LatLngBounds {
   /// The southwest corner of the rectangle.
   final LatLng southwest;

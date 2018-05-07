@@ -17,8 +17,8 @@ class PlaceMarkerPage extends Page {
       GoogleMapOverlayController.fromSize(
     width: 300.0,
     height: 200.0,
-    adjustments: GoogleMapOptions(
-      cameraPosition: CameraPosition(
+    options: GoogleMapOptions(
+      cameraPosition: const CameraPosition(
         target: LatLng(-33.852, 151.211),
         zoom: 11.0,
       ),
@@ -43,7 +43,7 @@ class PlaceMarkerBody extends StatefulWidget {
 }
 
 class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
-  static final LatLng center = LatLng(-33.86711, 151.1947171);
+  static final LatLng center = const LatLng(-33.86711, 151.1947171);
 
   PlaceMarkerBodyState(this.controller);
 
@@ -57,7 +57,7 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
     controller.onMarkerTapped.add((Marker marker) {
       if (_selectedMarker != null) {
         _updateSelectedMarker(
-          MarkerOptions(icon: BitmapDescriptor.defaultMarker),
+          const MarkerOptions(icon: BitmapDescriptor.defaultMarker),
         );
       }
       setState(() {

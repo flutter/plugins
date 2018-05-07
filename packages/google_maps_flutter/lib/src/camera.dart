@@ -8,7 +8,7 @@ part of google_maps_flutter;
 /// shown in the map view. Aggregates the camera's [target] geographical
 /// location, its [zoom] level, [tilt] angle, and [bearing].
 class CameraPosition {
-  CameraPosition({
+  const CameraPosition({
     this.bearing = 0.0,
     @required this.target,
     this.tilt = 0.0,

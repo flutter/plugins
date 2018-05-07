@@ -8,11 +8,11 @@ part of google_maps_flutter;
 /// limited situations*, of in-line compositing of platform views with Flutter
 /// widgets.
 ///
-/// Platform overlays are normal platform-specific views that are displayed on
-/// top of the Flutter view when so directed by the Flutter app's Dart code.
-/// The platform overlay is placed on top of a [Texture] widget acting as a
-/// non-interactive stand in while the conditions for correctly displaying
-/// the overlay are not met. Those conditions are:
+/// Platform overlays are normal platform views that are displayed on top of the
+/// Flutter view when so directed by the Flutter app's Dart code. The platform
+/// overlay is placed on top of a [Texture] widget acting as a non-interactive
+/// stand in while the conditions for correctly displaying the overlay are not
+/// met. Those conditions are:
 ///
 /// * the widget must be stationary
 /// * the widget must be rendered on top of all other widgets within bounds

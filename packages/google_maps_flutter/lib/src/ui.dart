@@ -140,7 +140,7 @@ class GoogleMapOptions {
   /// * responds to zoom gestures; [zoomGesturesEnabled] is true
   static final GoogleMapOptions defaultOptions = GoogleMapOptions(
     compassEnabled: true,
-    cameraPosition: CameraPosition(target: new LatLng(0.0, 0.0)),
+    cameraPosition: const CameraPosition(target: LatLng(0.0, 0.0)),
     cameraTargetBounds: CameraTargetBounds.unbounded,
     mapType: MapType.normal,
     minMaxZoomPreference: MinMaxZoomPreference.unbounded,
@@ -153,7 +153,12 @@ class GoogleMapOptions {
 
   /// Creates a new options object whose values are the same as this instance,
   /// unless overwritten by the specified [changes].
+  ///
+  /// Returns this instance, if [changes] is null.
   GoogleMapOptions copyWith(GoogleMapOptions change) {
+    if (change == null) {
+      return this;
+    }
     return new GoogleMapOptions(
       cameraPosition: change.cameraPosition ?? cameraPosition,
       compassEnabled: change.compassEnabled ?? compassEnabled,
