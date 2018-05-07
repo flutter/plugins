@@ -1,3 +1,7 @@
+## 0.5.8
+
+* Added support to signinWithTwitter
+
 ## 0.5.7
 
 * Added support to sendEmailVerification
