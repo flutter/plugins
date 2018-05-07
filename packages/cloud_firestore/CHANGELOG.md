@@ -1,3 +1,7 @@
+## 0.6.3+1
+
+* Add transactions example to README.
+
 ## 0.6.3
 
 * Updated Google Play Services dependencies to version 15.0.0.
