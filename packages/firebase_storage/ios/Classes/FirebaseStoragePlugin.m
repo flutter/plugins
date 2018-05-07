@@ -87,7 +87,7 @@
 // Returns a [FIRStorage] instance which is a singleton given a fixed app and bucket.
 // This is to be consistent with the Android API so that repated calls to getters/setters
 // affect the right [FIRStorage] instance.
-- (FIRStorage *)getStorage:(FlutterMethodCall *)call  result:(FlutterResult)result {
+- (FIRStorage *)getStorage:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSString *appName = call.arguments[@"app"];
   NSString *bucketUrl = call.arguments[@"bucket"];
   FIRApp *app;
