@@ -7,7 +7,7 @@ iOS and Android apps.
 
 ## Caveat
 
-This plugin provides an *unpublished preview* of the Flutter API for GoogleMaps:
+This plugin provides an *unpublished preview* of the Flutter API for Google Maps:
 * Dart APIs for controlling and interacting with a GoogleMap view from Flutter
   code are still being consolidated and expanded. The intention is to grow
   current coverage into a complete offering. Issues and pull requests aimed to
@@ -44,4 +44,75 @@ as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/
 
 ## Getting Started
 
-See the `example` directory for a complete sample app using Google Maps.
+Get an API key at <https://cloud.google.com/maps-platform/>.
+
+### Android
+
+Specify your API key in the application manifest `android/src/main/AndroidManifest.xml`:
+
+```xml
+<manifest ...
+  <application ...
+    <meta-data android:name="com.google.android.geo.API_KEY"
+               android:value="YOUR KEY HERE"/>
+```
+
+### iOS
+
+Supply your API key in the application delegate `ios/Runner/AppDelegate.m`:
+
+```objectivec
+#include "AppDelegate.h"
+#include "GeneratedPluginRegistrant.h"
+#import "GoogleMaps/GoogleMaps.h"
+
+@implementation AppDelegate
+
+- (BOOL)application:(UIApplication *)application
+    didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+  [GMSServices provideAPIKey:@"YOUR KEY HERE"];
+  [GeneratedPluginRegistrant registerWithRegistry:self];
+  return [super application:application didFinishLaunchingWithOptions:launchOptions];
+}
+@end
+```
+
+### Both
+
+You can now instantiate a `GoogleMapOverlayController` and use it to configure
+a `GoogleMapOverlay` widget. Client code will have to change once the plugin
+stops using platform overlays.
+
+Once added as an overlay, the map view can be controlled via the
+`GoogleMapController` that you obtain as the `mapController` property of
+the overlay controller. Client code written against the `GoogleMapController`
+interface will be unaffected by the change away from platform overlays.
+
+```dart
+final GoogleMapOverlayController controller =
+    GoogleMapOverlayController.fromSize(width: 300.0, height: 200.0);
+
+@override
+Widget build(BuildContext context) {
+  return Column(children: <Widget>[
+    Center(child: GoogleMapOverlay(controller: controller)),
+    FlatButton(
+      child: const Text('Go to London'),
+      onPressed: () {
+        controller.mapController.animateCamera(
+          CameraUpdate.newCameraPosition(
+            const CameraPosition(
+              bearing: 270.0,
+              target: LatLng(51.5160895, -0.1294527),
+              tilt: 30.0,
+              zoom: 17.0,
+            ),
+          )
+        );
+      }
+    ),
+  ]);
+}
+```
+
+See the `example` directory for a complete sample app.
