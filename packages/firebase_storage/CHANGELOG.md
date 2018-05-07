@@ -1,3 +1,7 @@
+## 0.3.4
+
+* Added timeout properties to FirebaseStorage
+
 ## 0.3.3
 
 * Added support for initialization with a custom Firebase app.
