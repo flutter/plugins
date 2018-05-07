@@ -23,6 +23,7 @@ The plugins are still under development, and some APIs might not be available ye
 | [firebase_messaging][messaging_pub] | ![pub package][messaging_badge] | [Firebase Cloud Messaging][messaging_product] | [`packages/firebase_messaging`][messaging_code] |
 | [firebase_storage][storage_pub] | ![pub package][storage_badge] | [Firebase Cloud Storage][storage_product] | [`packages/firebase_storage`][storage_code] |
 | [firebase_performance][performance_pub] | ![pub package][performance_badge] | [Firebase Performance Monitoring][performance_product] | [`packages/firebase_performance`][performance_code] |
+| [firebase_remote_config][remote_config_pub] | ![pub package][remote_config_badge] | [Firebase Remote Config][remote_config_product] | [`packages/firebase_remote_config`][remote_config_code] |
 
 [admob_pub]: https://pub.dartlang.org/packages/firebase_admob
 [admob_product]: https://firebase.google.com/docs/admob/
@@ -68,3 +69,8 @@ The plugins are still under development, and some APIs might not be available ye
 [performance_product]: https://firebase.google.com/products/performance/
 [performance_code]: https://github.com/flutter/plugins/tree/master/packages/firebase_performance
 [performance_badge]: https://img.shields.io/pub/v/firebase_performance.svg
+
+[remote_config_pub]: https://pub.dartlang.org/packages/firebase_remote_config
+[remote_config_product]: https://firebase.google.com/products/remote-config/
+[remote_config_code]: https://github.com/flutter/plugins/tree/master/packages/firebase_remote_config
+[remote_config_badge]: https://img.shields.io/pub/v/firebase_remote_config.svg
