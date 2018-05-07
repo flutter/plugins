@@ -62,6 +62,18 @@ class BookList extends StatelessWidget {
 }
 ```
 
+Running a transaction:
+
+```dart
+final DocumentReference postRef = Firestore.instance.document('posts/123');
+Firestore.instance.runTransaction((Transaction tx) async {
+  DocumentSnapshot postSnapshot = await tx.get(postRef);
+  if (postSnapshot.exists) {
+    tx.update(postRef, <String, dynamic>{'likesCount': postSnapshot.data['likesCount'] + 1});
+  }
+});
+```
+
 ## Getting Started
 
 See the `example` directory for a complete sample app using Cloud Firestore.
