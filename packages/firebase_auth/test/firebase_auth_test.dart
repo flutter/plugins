@@ -265,7 +265,7 @@ void main() {
       );
     });
 
-    test('currentUserReload', () async {
+    test('reload', () async {
       final FirebaseUser user = await auth.currentUser();
       await user.reload();
 
@@ -277,13 +277,12 @@ void main() {
             arguments: null,
           ),
           isMethodCall(
-            'currentUserReload',
+            'reload',
             arguments: null,
           ),
         ],
       );
     });
-
 
     test('sendPasswordResetEmail', () async {
       await auth.sendPasswordResetEmail(

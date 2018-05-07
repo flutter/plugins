@@ -47,7 +47,7 @@ class Query {
 
   /// Notifies of query results at this location
   // TODO(jackson): Reduce code duplication with [DocumentReference]
-  Stream<QuerySnapshot> get snapshots {
+  Stream<QuerySnapshot> snapshots() {
     Future<int> _handle;
     // It's fine to let the StreamController be garbage collected once all the
     // subscribers have cancelled; this analyzer warning is safe to ignore.

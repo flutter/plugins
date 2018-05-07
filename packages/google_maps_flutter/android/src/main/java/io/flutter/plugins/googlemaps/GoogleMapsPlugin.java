@@ -65,7 +65,7 @@ public class GoogleMapsPlugin implements MethodCallHandler, Application.Activity
           result.success(null);
           break;
         }
-      case "createMap":
+      case "map#create":
         {
           final int width = Convert.toPixels(call.argument("width"), density);
           final int height = Convert.toPixels(call.argument("height"), density);
@@ -82,7 +82,7 @@ public class GoogleMapsPlugin implements MethodCallHandler, Application.Activity
                   final Map<String, Object> arguments = new HashMap<>(2);
                   arguments.put("map", controller.id());
                   arguments.put("isGesture", isGesture);
-                  channel.invokeMethod("map#onCameraMoveStarted", arguments);
+                  channel.invokeMethod("camera#onMoveStarted", arguments);
                 }
 
                 @Override
@@ -90,13 +90,13 @@ public class GoogleMapsPlugin implements MethodCallHandler, Application.Activity
                   final Map<String, Object> arguments = new HashMap<>(2);
                   arguments.put("map", controller.id());
                   arguments.put("position", Convert.toJson(position));
-                  channel.invokeMethod("map#onCameraMove", arguments);
+                  channel.invokeMethod("camera#onMove", arguments);
                 }
 
                 @Override
                 public void onCameraIdle() {
                   channel.invokeMethod(
-                      "map#onCameraIdle", Collections.singletonMap("map", controller.id()));
+                      "camera#onIdle", Collections.singletonMap("map", controller.id()));
                 }
               });
           controller.setOnMarkerTappedListener(
@@ -113,14 +113,14 @@ public class GoogleMapsPlugin implements MethodCallHandler, Application.Activity
           // is ready
           break;
         }
-      case "updateMapOptions":
+      case "map#update":
         {
           final GoogleMapController controller = mapsController(call);
           Convert.interpretGoogleMapOptions(call.argument("options"), controller);
-          result.success(null);
+          result.success(Convert.toJson(controller.getCameraPosition()));
           break;
         }
-      case "moveCamera":
+      case "camera#move":
         {
           final GoogleMapController controller = mapsController(call);
           final CameraUpdate cameraUpdate =
@@ -129,7 +129,7 @@ public class GoogleMapsPlugin implements MethodCallHandler, Application.Activity
           result.success(null);
           break;
         }
-      case "animateCamera":
+      case "camera#animate":
         {
           final GoogleMapController controller = mapsController(call);
           final CameraUpdate cameraUpdate =
@@ -138,7 +138,7 @@ public class GoogleMapsPlugin implements MethodCallHandler, Application.Activity
           result.success(null);
           break;
         }
-      case "addMarker":
+      case "marker#add":
         {
           final GoogleMapController controller = mapsController(call);
           final MarkerBuilder markerBuilder = controller.newMarkerBuilder();
@@ -164,7 +164,7 @@ public class GoogleMapsPlugin implements MethodCallHandler, Application.Activity
           result.success(null);
           break;
         }
-      case "showMapOverlay":
+      case "map#show":
         {
           final GoogleMapController controller = mapsController(call);
           final int x = Convert.toPixels(call.argument("x"), density);
@@ -173,14 +173,14 @@ public class GoogleMapsPlugin implements MethodCallHandler, Application.Activity
           result.success(null);
           break;
         }
-      case "hideMapOverlay":
+      case "map#hide":
         {
           final GoogleMapController controller = mapsController(call);
           controller.hideOverlay();
           result.success(null);
           break;
         }
-      case "disposeMap":
+      case "map#dispose":
         {
           final GoogleMapController controller = mapsController(call);
           controller.dispose();

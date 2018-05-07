@@ -9,31 +9,31 @@ import 'page.dart';
 
 class AnimateCameraPage extends Page {
   AnimateCameraPage()
-      : super(const Icon(Icons.map), "Camera control, animated");
+      : super(const Icon(Icons.map), 'Camera control, animated');
 
   @override
   final GoogleMapOverlayController controller =
-      new GoogleMapOverlayController.fromSize(width: 300.0, height: 200.0);
+      GoogleMapOverlayController.fromSize(width: 300.0, height: 200.0);
 
   @override
   Widget build(BuildContext context) {
-    return new Column(
+    return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        new Center(child: new GoogleMapOverlay(controller: controller)),
-        new Row(
+        Center(child: GoogleMapOverlay(controller: controller)),
+        Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            new Column(
+            Column(
               children: <Widget>[
-                new FlatButton(
+                FlatButton(
                   onPressed: () {
                     controller.mapController.animateCamera(
                       CameraUpdate.newCameraPosition(
                         const CameraPosition(
                           bearing: 270.0,
-                          target: const LatLng(51.5160895, -0.1294527),
+                          target: LatLng(51.5160895, -0.1294527),
                           tilt: 30.0,
                           zoom: 17.0,
                         ),
@@ -42,7 +42,7 @@ class AnimateCameraPage extends Page {
                   },
                   child: const Text('newCameraPosition'),
                 ),
-                new FlatButton(
+                FlatButton(
                   onPressed: () {
                     controller.mapController.animateCamera(
                       CameraUpdate.newLatLng(
@@ -52,11 +52,11 @@ class AnimateCameraPage extends Page {
                   },
                   child: const Text('newLatLng'),
                 ),
-                new FlatButton(
+                FlatButton(
                   onPressed: () {
                     controller.mapController.animateCamera(
                       CameraUpdate.newLatLngBounds(
-                        const LatLngBounds(
+                        LatLngBounds(
                           southwest: const LatLng(-38.483935, 113.248673),
                           northeast: const LatLng(-8.982446, 153.823821),
                         ),
@@ -66,7 +66,7 @@ class AnimateCameraPage extends Page {
                   },
                   child: const Text('newLatLngBounds'),
                 ),
-                new FlatButton(
+                FlatButton(
                   onPressed: () {
                     controller.mapController.animateCamera(
                       CameraUpdate.newLatLngZoom(
@@ -77,7 +77,7 @@ class AnimateCameraPage extends Page {
                   },
                   child: const Text('newLatLngZoom'),
                 ),
-                new FlatButton(
+                FlatButton(
                   onPressed: () {
                     controller.mapController.animateCamera(
                       CameraUpdate.scrollBy(150.0, -225.0),
@@ -87,9 +87,9 @@ class AnimateCameraPage extends Page {
                 ),
               ],
             ),
-            new Column(
+            Column(
               children: <Widget>[
-                new FlatButton(
+                FlatButton(
                   onPressed: () {
                     controller.mapController.animateCamera(
                       CameraUpdate.zoomBy(
@@ -100,7 +100,7 @@ class AnimateCameraPage extends Page {
                   },
                   child: const Text('zoomBy with focus'),
                 ),
-                new FlatButton(
+                FlatButton(
                   onPressed: () {
                     controller.mapController.animateCamera(
                       CameraUpdate.zoomBy(-0.5),
@@ -108,7 +108,7 @@ class AnimateCameraPage extends Page {
                   },
                   child: const Text('zoomBy'),
                 ),
-                new FlatButton(
+                FlatButton(
                   onPressed: () {
                     controller.mapController.animateCamera(
                       CameraUpdate.zoomIn(),
@@ -116,7 +116,7 @@ class AnimateCameraPage extends Page {
                   },
                   child: const Text('zoomIn'),
                 ),
-                new FlatButton(
+                FlatButton(
                   onPressed: () {
                     controller.mapController.animateCamera(
                       CameraUpdate.zoomOut(),
@@ -124,7 +124,7 @@ class AnimateCameraPage extends Page {
                   },
                   child: const Text('zoomOut'),
                 ),
-                new FlatButton(
+                FlatButton(
                   onPressed: () {
                     controller.mapController.animateCamera(
                       CameraUpdate.zoomTo(16.0),

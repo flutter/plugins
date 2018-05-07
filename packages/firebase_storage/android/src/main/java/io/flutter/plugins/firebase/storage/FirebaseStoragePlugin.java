@@ -53,6 +53,24 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
     }
 
     switch (call.method) {
+      case "FirebaseStorage#getMaxDownloadRetryTime":
+        result.success(firebaseStorage.getMaxDownloadRetryTimeMillis());
+        break;
+      case "FirebaseStorage#getMaxUploadRetryTime":
+        result.success(firebaseStorage.getMaxUploadRetryTimeMillis());
+        break;
+      case "FirebaseStorage#getMaxOperationRetryTime":
+        result.success(firebaseStorage.getMaxOperationRetryTimeMillis());
+        break;
+      case "FirebaseStorage#setMaxDownloadRetryTime":
+        setMaxDownloadRetryTimeMillis(call, result);
+        break;
+      case "FirebaseStorage#setMaxUploadRetryTime":
+        setMaxUploadRetryTimeMillis(call, result);
+        break;
+      case "FirebaseStorage#setMaxOperationRetryTime":
+        setMaxOperationTimeMillis(call, result);
+        break;
       case "StorageReference#putFile":
         putFile(call, result);
         break;
@@ -90,6 +108,24 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
         result.notImplemented();
         break;
     }
+  }
+
+  private void setMaxDownloadRetryTimeMillis(MethodCall call, Result result) {
+    Number time = call.argument("time");
+    firebaseStorage.setMaxDownloadRetryTimeMillis(time.longValue());
+    result.success(null);
+  }
+
+  private void setMaxUploadRetryTimeMillis(MethodCall call, Result result) {
+    Number time = call.argument("time");
+    firebaseStorage.setMaxUploadRetryTimeMillis(time.longValue());
+    result.success(null);
+  }
+
+  private void setMaxOperationTimeMillis(MethodCall call, Result result) {
+    Number time = call.argument("time");
+    firebaseStorage.setMaxOperationRetryTimeMillis(time.longValue());
+    result.success(null);
   }
 
   private void getMetadata(MethodCall call, final Result result) {

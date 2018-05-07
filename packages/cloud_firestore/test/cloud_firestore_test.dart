@@ -246,7 +246,7 @@ void main() {
       });
       test('listen', () async {
         final QuerySnapshot snapshot =
-            await collectionReference.snapshots.first;
+            await collectionReference.snapshots().first;
         final DocumentSnapshot document = snapshot.documents[0];
         expect(document.documentID, equals('0'));
         expect(document.reference.path, equals('foo/0'));
@@ -275,7 +275,7 @@ void main() {
         final StreamSubscription<QuerySnapshot> subscription =
             collectionReference
                 .where('createdAt', isLessThan: 100)
-                .snapshots
+                .snapshots()
                 .listen((QuerySnapshot querySnapshot) {});
         subscription.cancel();
         await new Future<Null>.delayed(Duration.zero);
@@ -306,7 +306,7 @@ void main() {
         final StreamSubscription<QuerySnapshot> subscription =
             collectionReference
                 .where('profile', isNull: true)
-                .snapshots
+                .snapshots()
                 .listen((QuerySnapshot querySnapshot) {});
         subscription.cancel();
         await new Future<Null>.delayed(Duration.zero);
@@ -337,7 +337,7 @@ void main() {
         final StreamSubscription<QuerySnapshot> subscription =
             collectionReference
                 .orderBy('createdAt')
-                .snapshots
+                .snapshots()
                 .listen((QuerySnapshot querySnapshot) {});
         subscription.cancel();
         await new Future<Null>.delayed(Duration.zero);
@@ -369,7 +369,7 @@ void main() {
     group('DocumentReference', () {
       test('listen', () async {
         final DocumentSnapshot snapshot =
-            await firestore.document('path/to/foo').snapshots.first;
+            await firestore.document('path/to/foo').snapshots().first;
         expect(snapshot.documentID, equals('foo'));
         expect(snapshot.reference.path, equals('path/to/foo'));
         expect(snapshot.data, equals(kMockDocumentSnapshotData));
@@ -405,7 +405,7 @@ void main() {
                 'app': app.name,
                 'path': 'foo/bar',
                 'data': <String, String>{'bazKey': 'quxValue'},
-                'options': null,
+                'options': <String, bool>{'merge': false},
               },
             ),
           ],
@@ -414,8 +414,7 @@ void main() {
       test('merge set', () async {
         await collectionReference
             .document('bar')
-            .setData(<String, String>{'bazKey': 'quxValue'}, SetOptions.merge);
-        expect(SetOptions.merge, isNotNull);
+            .setData(<String, String>{'bazKey': 'quxValue'}, merge: true);
         expect(
           log,
           <Matcher>[
@@ -576,7 +575,7 @@ void main() {
                 'handle': 1,
                 'path': 'foo/bar',
                 'data': <String, String>{'bazKey': 'quxValue'},
-                'options': null,
+                'options': <String, bool>{'merge': false},
               },
             ),
             isMethodCall(
@@ -593,10 +592,9 @@ void main() {
         batch.setData(
           collectionReference.document('bar'),
           <String, String>{'bazKey': 'quxValue'},
-          SetOptions.merge,
+          merge: true,
         );
         await batch.commit();
-        expect(SetOptions.merge, isNotNull);
         expect(
           log,
           <Matcher>[

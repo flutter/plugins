@@ -59,6 +59,14 @@ static uint64_t _nextMapId = 0;
   [_mapView moveCamera:cameraUpdate];
 }
 
+- (GMSCameraPosition*)cameraPosition {
+  if (_trackCameraPosition) {
+    return _mapView.camera;
+  } else {
+    return nil;
+  }
+}
+
 - (NSString*)addMarkerWithPosition:(CLLocationCoordinate2D)position {
   FLTGoogleMapMarkerController* markerController =
       [[FLTGoogleMapMarkerController alloc] initWithPosition:position mapView:_mapView];
