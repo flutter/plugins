@@ -1,6 +1,11 @@
-## 0.6.3+1
+## 0.7.0+1
 
 * Add transactions example to README.
+
+## 0.7.0
+
+* **Breaking change**. `snapshots` is now a method instead of a getter.
+* **Breaking change**. `setData` uses named arguments instead of `SetOptions`.
 
 ## 0.6.3
 
