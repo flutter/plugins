@@ -12,7 +12,7 @@
             android:value="@integer/google_play_services_version" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key" />
+            android:value="AIzaSyA81lRAuYToAhii3Wohpx7KrkoDhW_4XV0" />
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

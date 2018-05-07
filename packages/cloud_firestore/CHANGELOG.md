@@ -4,6 +4,10 @@
 * Support for QuerySnapshot query and length
 * Fixes multiple app support in Transaction.get, QuerySnapshot, DocumentReference.get
 
+## 0.7.0+2
+
+* Update transactions example in README to add `await`.
+
 ## 0.7.0+1
 
 * Add transactions example to README.

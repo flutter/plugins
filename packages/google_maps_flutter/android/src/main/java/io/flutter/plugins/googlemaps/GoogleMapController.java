@@ -163,6 +163,10 @@ final class GoogleMapController
     googleMap.animateCamera(cameraUpdate);
   }
 
+  CameraPosition getCameraPosition() {
+    return trackCameraPosition ? googleMap.getCameraPosition() : null;
+  }
+
   MarkerBuilder newMarkerBuilder() {
     return new MarkerBuilder(this);
   }
