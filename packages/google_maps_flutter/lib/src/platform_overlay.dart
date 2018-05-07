@@ -4,25 +4,48 @@
 
 part of google_maps_flutter;
 
-/// Controller of platform overlays, supporting a very limited form
-/// of compositing with Flutter Widgets.
+/// Controller of platform overlays used for creating the illusion, in *very
+/// limited situations*, of in-line compositing of platform views with Flutter
+/// widgets.
 ///
-/// Platform overlays are normal platform-specific views that are
-/// created, shown on top of the Flutter view, or hidden below it,
-/// under control of the Flutter app. The platform overlay is
-/// typically placed on top of a [Texture] widget acting as stand-in
-/// while Flutter movement or transformations are ongoing.
+/// Platform overlays are normal platform views that are displayed on top of the
+/// Flutter view when so directed by the Flutter app's Dart code. The platform
+/// overlay is placed on top of a [Texture] widget acting as a non-interactive
+/// stand in while the conditions for correctly displaying the overlay are not
+/// met. Those conditions are:
 ///
-/// Overlays are attached to a [BuildContext] when used in a Widget and
-/// are deactivated when the ambient ModalRoute (if any) is not on top of the
-/// navigator stack.
+/// * the widget must be stationary
+/// * the widget must be rendered on top of all other widgets within bounds
+/// * touch events originating within the widget's bounds can be safely ignored
+///   by Flutter code (they will be intercepted by the platform overlay)
 ///
-/// *Warning*: Platform overlays cannot be freely composed with
-/// over widgets.
+/// These conditions severely restrict the contexts in which platform overlays
+/// can be used. Worse, there is no easy way of learning if a given widget
+/// currently satisfies those conditions, so they must be explicitly enforced
+/// by the app author. Examples include avoiding placing the widget on a
+/// scrollable view; hiding the overlay during animated transitions or while a
+/// drawer is being shown on top; avoiding placing the widget at the edge of
+/// the screen where the platform view would interfere with edge swipes; etc.
+/// The app author should expect little help from existing widgets in this
+/// endeavor; some widgets (Material Scaffold being a prime example) do not
+/// offer to notify clients before and after they display Flutter overlays or
+/// animate to new configurations. Using platform overlays may require custom
+/// implementations of such widgets.
 ///
-/// Limitations and caveats:
+/// *Warning*: Platform overlays cannot be freely composed with other widgets.
 ///
-/// * TODO(mravn)
+/// For the above reasons, *the use of platform overlays is generally
+/// discouraged*. Still, overlays provide an interim solution in situations
+/// where one wants to create the illusion of in-line compositing of native
+/// platform views (such as GoogleMaps) for which no API exists for connecting a
+/// Texture widget directly to the native OpenGL rendering pipeline.
+///
+/// Overlays may be attached to the [BuildContext] in which the Texture widget
+/// is built and are then automatically hidden when the ambient ModalRoute (if
+/// any) is not on top of the navigator stack. This is currently the *only*
+/// built-in mechanism for helping the app author ensure that the overlay
+/// conditions mentioned above are met. Making use of this mechanism requires
+/// the overlay controller to be added as an observer of the main Navigator.
 class PlatformOverlayController extends NavigatorObserver
     with WidgetsBindingObserver {
   final double width;
@@ -184,11 +207,6 @@ class PlatformOverlayController extends NavigatorObserver
     }
   }
 
-  @override
-  void didRemove(Route<dynamic> route, Route<dynamic> previousRoute) {
-    // TODO(mravn)
-  }
-
   void dispose() {
     if (!_disposed) {
       overlay.dispose();
@@ -204,12 +222,14 @@ class PlatformOverlayController extends NavigatorObserver
   }
 }
 
-/// Platform overlay.
+/// Interface of platform overlay implementations. Typical implementation use
+/// a [MethodChannel] to communicate with platform-specific code and have it
+/// manage a collection of related platform overlays.
 abstract class PlatformOverlay {
   /// Creates a platform view of the specified [size].
   ///
   /// The platform view should remain hidden until explicitly shown by calling
-  /// [showOverlay].
+  /// [show].
   Future<int> create(Size size);
 
   /// Shows the platform view at the specified [offset].

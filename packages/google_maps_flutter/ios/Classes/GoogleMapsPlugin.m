@@ -53,7 +53,7 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
     }
     [_mapControllers removeAllObjects];
     result(nil);
-  } else if ([call.method isEqualToString:@"createMap"]) {
+  } else if ([call.method isEqualToString:@"map#create"]) {
     NSDictionary* options = call.arguments[@"options"];
     GMSCameraPosition* camera = toOptionalCameraPosition(options[@"cameraPosition"]);
     FLTGoogleMapController* controller =
@@ -73,22 +73,22 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
       result(error);
       return;
     }
-    if ([call.method isEqualToString:@"showMapOverlay"]) {
+    if ([call.method isEqualToString:@"map#show"]) {
       [controller showAtX:toDouble(call.arguments[@"x"]) Y:toDouble(call.arguments[@"y"])];
       result(nil);
-    } else if ([call.method isEqualToString:@"hideMapOverlay"]) {
+    } else if ([call.method isEqualToString:@"map#hide"]) {
       [controller hide];
       result(nil);
-    } else if ([call.method isEqualToString:@"animateCamera"]) {
+    } else if ([call.method isEqualToString:@"camera#animate"]) {
       [controller animateWithCameraUpdate:toCameraUpdate(call.arguments[@"cameraUpdate"])];
       result(nil);
-    } else if ([call.method isEqualToString:@"moveCamera"]) {
+    } else if ([call.method isEqualToString:@"camera#move"]) {
       [controller moveWithCameraUpdate:toCameraUpdate(call.arguments[@"cameraUpdate"])];
       result(nil);
-    } else if ([call.method isEqualToString:@"updateMapOptions"]) {
+    } else if ([call.method isEqualToString:@"map#update"]) {
       interpretMapOptions(call.arguments[@"options"], controller);
-      result(nil);
-    } else if ([call.method isEqualToString:@"addMarker"]) {
+      result(positionToJson([controller cameraPosition]));
+    } else if ([call.method isEqualToString:@"marker#add"]) {
       NSDictionary* options = call.arguments[@"options"];
       NSString* markerId = [controller addMarkerWithPosition:toLocation(options[@"position"])];
       interpretMarkerOptions(options, [controller markerWithId:markerId], _registrar);
@@ -118,7 +118,7 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
 #pragma mark - FLTGoogleMapsDelegate methods, used to send platform messages to Flutter
 
 - (void)onCameraMoveStartedOnMap:(id)mapId gesture:(BOOL)gesture {
-  [_channel invokeMethod:@"map#onCameraMoveStarted"
+  [_channel invokeMethod:@"camera#onMoveStarted"
                arguments:@{
                  @"map" : mapId,
                  @"isGesture" : @(gesture)
@@ -126,12 +126,12 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
 }
 
 - (void)onCameraMoveOnMap:(id)mapId cameraPosition:(GMSCameraPosition*)cameraPosition {
-  [_channel invokeMethod:@"map#onCameraMove"
+  [_channel invokeMethod:@"camera#onMove"
                arguments:@{@"map" : mapId, @"position" : positionToJson(cameraPosition)}];
 }
 
 - (void)onCameraIdleOnMap:(id)mapId {
-  [_channel invokeMethod:@"map#onCameraIdle" arguments:@{@"map" : mapId}];
+  [_channel invokeMethod:@"camera#onIdle" arguments:@{@"map" : mapId}];
 }
 
 - (void)onMarkerTappedOnMap:(id)mapId marker:(NSString*)markerId {
@@ -146,6 +146,9 @@ static id locationToJson(CLLocationCoordinate2D position) {
 }
 
 static id positionToJson(GMSCameraPosition* position) {
+  if (!position) {
+    return nil;
+  }
   return @{
     @"target" : locationToJson([position target]),
     @"zoom" : @([position zoom]),
@@ -337,6 +340,10 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
     NSString* title = (infoWindowTextData[0] == [NSNull null]) ? nil : infoWindowTextData[0];
     NSString* snippet = (infoWindowTextData[1] == [NSNull null]) ? nil : infoWindowTextData[1];
     [sink setInfoWindowTitle:title snippet:snippet];
+  }
+  id position = data[@"position"];
+  if (position) {
+    [sink setPosition:toLocation(position)];
   }
   id rotation = data[@"rotation"];
   if (rotation) {
