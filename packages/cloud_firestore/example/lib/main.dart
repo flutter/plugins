@@ -32,7 +32,7 @@ class MessageList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new StreamBuilder<QuerySnapshot>(
-      stream: firestore.collection('messages').snapshots,
+      stream: firestore.collection('messages').snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (!snapshot.hasData) return const Text('Loading...');
         final int messageCount = snapshot.data.documents.length;
