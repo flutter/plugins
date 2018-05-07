@@ -18,8 +18,18 @@ void main() {
     final List<MethodCall> log = <MethodCall>[];
     CollectionReference collectionReference;
     Transaction transaction;
-    const Map<String, dynamic> kMockDocumentSnapshotData =
-        const <String, dynamic>{'1': 2};
+    const Map<dynamic, dynamic> kMockDocumentSnapshotData =
+        const <dynamic, dynamic>{'1': 2};
+    const Map<dynamic, dynamic> kMockMetadata =
+        const <dynamic, dynamic>{
+          'hasPendingWrites': false, 'isFromCache': true,
+        };
+    const Map<dynamic, dynamic> kMockDocumentSnapshot =
+        const <dynamic, dynamic>{
+          'path': 'foo/0',
+          'data': kMockDocumentSnapshotData,
+          'metadata': kMockMetadata,
+        };
 
     setUp(() async {
       mockHandleId = 0;
@@ -47,23 +57,37 @@ void main() {
               Firestore.channel.codec.encodeMethodCall(
                 new MethodCall('QuerySnapshot', <String, dynamic>{
                   'app': app.name,
+                  'query': methodCall.arguments['query'],
                   'handle': handle,
-                  'paths': <String>["${methodCall.arguments['path']}/0"],
-                  'documents': <dynamic>[kMockDocumentSnapshotData],
+                  'documents': <dynamic>[kMockDocumentSnapshot],
                   'documentChanges': <dynamic>[
                     <String, dynamic>{
                       'oldIndex': -1,
                       'newIndex': 0,
                       'type': 'DocumentChangeType.added',
-                      'document': kMockDocumentSnapshotData,
+                      'document': kMockDocumentSnapshot,
                     },
                   ],
+                  'metadata': kMockMetadata,
                 }),
               ),
               (_) {},
             );
             return handle;
-          case 'Query#addDocumentListener':
+          case 'Query#getDocuments':
+            return <String, dynamic>{
+              'documents': <dynamic>[kMockDocumentSnapshot],
+              'documentChanges': <dynamic>[
+                <String, dynamic>{
+                  'oldIndex': -1,
+                  'newIndex': 0,
+                  'type': 'DocumentChangeType.added',
+                  'document': kMockDocumentSnapshot,
+                  'metadata': kMockMetadata,
+                },
+              ],
+            };
+          case 'DocumentReference#addDocumentListener':
             final int handle = mockHandleId++;
             BinaryMessages.handlePlatformMessage(
               Firestore.channel.name,
@@ -72,31 +96,20 @@ void main() {
                   'handle': handle,
                   'path': methodCall.arguments['path'],
                   'data': kMockDocumentSnapshotData,
+                  'metadata': kMockMetadata,
                 }),
               ),
-              (_) {},
+                  (_) {},
             );
             return handle;
-          case 'Query#getDocuments':
-            return <String, dynamic>{
-              'paths': <String>["${methodCall.arguments['path']}/0"],
-              'documents': <dynamic>[kMockDocumentSnapshotData],
-              'documentChanges': <dynamic>[
-                <String, dynamic>{
-                  'oldIndex': -1,
-                  'newIndex': 0,
-                  'type': 'DocumentChangeType.added',
-                  'document': kMockDocumentSnapshotData,
-                },
-              ],
-            };
           case 'DocumentReference#setData':
             return true;
           case 'DocumentReference#get':
             if (methodCall.arguments['path'] == 'foo/bar') {
               return <String, dynamic>{
                 'path': 'foo/bar',
-                'data': <String, dynamic>{'key1': 'val1'}
+                'data': <String, dynamic>{'key1': 'val1'},
+                'metadata': kMockMetadata,
               };
             } else if (methodCall.arguments['path'] == 'foo/notExists') {
               return <String, dynamic>{'path': 'foo/notExists', 'data': null};
@@ -107,7 +120,8 @@ void main() {
           case 'Transaction#get':
             return <String, dynamic>{
               'path': 'foo/bar',
-              'data': <String, dynamic>{'key1': 'val1'}
+              'data': <String, dynamic>{'key1': 'val1'},
+              'metadata': kMockMetadata,
             };
           case 'Transaction#set':
             return null;
@@ -149,7 +163,7 @@ void main() {
       test('get', () async {
         final DocumentReference documentReference =
             firestore.document('foo/bar');
-        await transaction.get(documentReference);
+        final DocumentSnapshot result = await transaction.get(documentReference);
         expect(log, <Matcher>[
           isMethodCall('Transaction#get', arguments: <String, dynamic>{
             'app': app.name,
@@ -157,6 +171,11 @@ void main() {
             'path': documentReference.path
           })
         ]);
+        expect(result.reference.firestore.app, equals(app));
+        expect(result.reference.path, equals('foo/bar'));
+        expect(result.data, equals(<String, dynamic>{'key1': 'val1'}));
+        expect(result.metadata.hasPendingWrites, equals(kMockMetadata['hasPendingWrites']));
+        expect(result.metadata.isFromCache, equals(kMockMetadata['isFromCache']));
       });
 
       test('delete', () async {
@@ -251,6 +270,8 @@ void main() {
         expect(document.documentID, equals('0'));
         expect(document.reference.path, equals('foo/0'));
         expect(document.data, equals(kMockDocumentSnapshotData));
+        expect(document.metadata.hasPendingWrites, equals(kMockMetadata['hasPendingWrites']));
+        expect(document.metadata.isFromCache, equals(kMockMetadata['isFromCache']));
         // Flush the async removeListener call
         await new Future<Null>.delayed(Duration.zero);
         expect(log, <Matcher>[

@@ -1,3 +1,9 @@
+## 0.7.1
+
+* Support for listening to Query and DocumentReference metadata changes
+* Support for QuerySnapshot query and length
+* Fixes multiple app support in Transaction.get, QuerySnapshot, DocumentReference.get
+
 ## 0.7.0+1
 
 * Add transactions example to README.

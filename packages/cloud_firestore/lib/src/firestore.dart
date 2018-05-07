@@ -4,6 +4,9 @@
 
 part of cloud_firestore;
 
+typedef _ListenCallback(int handle);
+typedef _CancelCallback(int handle);
+
 /// The entry point for accessing a Firestore.
 ///
 /// You can get an instance by calling [Firestore.instance].
@@ -14,40 +17,54 @@ class Firestore {
     const StandardMethodCodec(const FirestoreMessageCodec()),
   );
 
-  static final Map<int, StreamController<QuerySnapshot>> _queryObservers =
-      <int, StreamController<QuerySnapshot>>{};
-
-  static final Map<int, StreamController<DocumentSnapshot>> _documentObservers =
-      <int, StreamController<DocumentSnapshot>>{};
+  static int _nextHandle = 0;
+  static final Map<int, StreamController<Map<dynamic, dynamic>>> _streamControllers =
+      <int, StreamController<Map<dynamic, dynamic>>>{};
 
   static final Map<int, TransactionHandler> _transactionHandlers =
       <int, TransactionHandler>{};
   static int _transactionHandlerId = 0;
 
-  static bool _initialized = false;
+  static Future<void> _handleMethodCall(MethodCall call) async {
+    final Map<dynamic, dynamic> result = call.arguments;
+    final FirebaseApp app = await FirebaseApp.appNamed(result['app']);
+    final Firestore firestore = new Firestore(app: app);
+    if (call.method == 'QuerySnapshot' || call.method == 'DocumentSnapshot') {
+      final int handle = call.arguments['handle'];
+      _streamControllers[handle]?.add(result['snapshot']);
+    } else if (call.method == 'DoTransaction') {
+      final int transactionId = result['transactionId'];
+      return _transactionHandlers[transactionId](
+        new Transaction(transactionId, firestore),
+      );
+    }
+  }
+
+  // Utility method used by Query and DocumentReference to retrieve a stream
+  // of snapshots
+  static Stream<Map<dynamic, dynamic>> _snapshots({
+    _ListenCallback onListen,
+    _CancelCallback onCancel,
+  }) {
+    final int handle = _nextHandle++;
+    // It's fine to let the StreamController be garbage collected once all the
+    // subscribers have cancelled; this analyzer warning is safe to ignore.
+    StreamController<Map<dynamic, dynamic>> controller; // ignore: close_sinks
+    controller = new StreamController<Map<dynamic, dynamic>>.broadcast(
+      onListen: () {
+        _streamControllers[handle] = controller;
+        onListen(handle);
+      },
+      onCancel: () {
+        _streamControllers.remove(handle);
+        onCancel(handle);
+      },
+    );
+    return controller.stream;
+  }
 
   Firestore({FirebaseApp app}) : this.app = app ?? FirebaseApp.instance {
-    if (_initialized) return;
-    channel.setMethodCallHandler((MethodCall call) {
-      if (call.method == 'QuerySnapshot') {
-        final QuerySnapshot snapshot =
-            new QuerySnapshot._(call.arguments, this);
-        _queryObservers[call.arguments['handle']].add(snapshot);
-      } else if (call.method == 'DocumentSnapshot') {
-        final DocumentSnapshot snapshot = new DocumentSnapshot._(
-          call.arguments['path'],
-          _asStringKeyedMap(call.arguments['data']),
-          this,
-        );
-        _documentObservers[call.arguments['handle']].add(snapshot);
-      } else if (call.method == 'DoTransaction') {
-        final int transactionId = call.arguments['transactionId'];
-        return _transactionHandlers[transactionId](
-          new Transaction(transactionId, this),
-        );
-      }
-    });
-    _initialized = true;
+    channel.setMethodCallHandler(_handleMethodCall);
   }
 
   /// Gets the instance of Firestore for the default Firebase app.

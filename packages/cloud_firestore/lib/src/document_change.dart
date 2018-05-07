@@ -23,19 +23,13 @@ enum DocumentChangeType {
 /// It contains the document affected and the type of change that occurred
 /// (added, modified, or removed).
 class DocumentChange {
-  DocumentChange._(Map<dynamic, dynamic> data, this._firestore)
-      : oldIndex = data['oldIndex'],
-        newIndex = data['newIndex'],
-        document = new DocumentSnapshot._(
-          data['path'],
-          _asStringKeyedMap(data['document']),
-          _firestore,
-        ),
+  DocumentChange._(Map<dynamic, dynamic> arguments, Query query)
+      : oldIndex = arguments['oldIndex'],
+        newIndex = arguments['newIndex'],
+        document = new DocumentSnapshot._(arguments['document'], query.firestore),
         type = DocumentChangeType.values.firstWhere((DocumentChangeType type) {
-          return type.toString() == data['type'];
+          return type.toString() == arguments['type'];
         });
-
-  final Firestore _firestore;
 
   /// The type of change that occurred (added, modified, or removed).
   final DocumentChangeType type;
