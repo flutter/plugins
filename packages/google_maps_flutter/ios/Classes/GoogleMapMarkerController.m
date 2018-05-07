@@ -48,6 +48,9 @@ static uint64_t _nextMarkerId = 0;
   _marker.title = title;
   _marker.snippet = snippet;
 }
+- (void)setPosition:(CLLocationCoordinate2D)position {
+  _marker.position = position;
+}
 - (void)setRotation:(CLLocationDegrees)rotation {
   _marker.rotation = rotation;
 }
