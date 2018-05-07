@@ -2,7 +2,7 @@
 
 * Update iOS plugin so that it returns fetch status
   as a String instead of an int.
-* Bump Android library version to 15+. The Android plugins for
+* Bump Android library version to 15.+. The Android plugins for
   FlutterFire need to all be on the same version. Updating
   Remote Config to match other FlutterFire plugins.
 
