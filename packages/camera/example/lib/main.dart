@@ -246,12 +246,11 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
     });
   }
 
-  Future<void> onStopButtonPressed() async {
-    await stopVideoRecording();
-    if (!mounted) {
-      return null;
-    }
-    showInSnackBar('Video recorded to: $videoPath');
+  void onStopButtonPressed() {
+    stopVideoRecording().then((_) {
+      if (mounted) setState(() {});
+      showInSnackBar('Video recorded to: $videoPath');
+    });
   }
 
   Future<String> startVideoRecording() async {
@@ -281,34 +280,41 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
   }
 
   Future<void> stopVideoRecording() async {
-    if (controller.value.isRecordingVideo) {
-      try {
-        await controller.stopVideoRecording();
-      } on CameraException catch (e) {
-        _showCameraException(e);
+    if (!controller.value.isRecordingVideo) {
+      return null;
+    }
+
+    try {
+      await controller.stopVideoRecording();
+    } on CameraException catch (e) {
+      _showCameraException(e);
+      return null;
+    }
+
+    await _startVideoPlayer();
+  }
+
+  Future<void> _startVideoPlayer() async {
+    final VideoPlayerController vcontroller =
+        new VideoPlayerController.file(new File(videoPath));
+    videoPlayerListener = () {
+      if (videoController != null && videoController.value.size != null) {
+        // Refreshing the state to update video player with the correct ratio.
+        if (mounted) setState(() {});
+        videoController.removeListener(videoPlayerListener);
       }
-      final VideoPlayerController vcontroller =
-          new VideoPlayerController.file(new File(videoPath));
-      vcontroller.play();
-      vcontroller.setLooping(true);
-      videoPlayerListener = () {
-        if (videoController != null && videoController.value.size != null) {
-          videoController.removeListener(videoPlayerListener);
-          // Refreshing the state to update video player with the correct ratio.
-          if (mounted) setState(() {});
-        }
-      };
-      vcontroller.addListener(videoPlayerListener);
-      await vcontroller.initialize();
-      if (!mounted) {
-        return null;
-      }
+    };
+    vcontroller.addListener(videoPlayerListener);
+    await vcontroller.setLooping(true);
+    await vcontroller.initialize();
+    await videoController?.dispose();
+    if (mounted) {
       setState(() {
         imagePath = null;
-        videoController?.dispose();
         videoController = vcontroller;
       });
     }
+    await vcontroller.play();
   }
 
   Future<String> takePicture() async {
