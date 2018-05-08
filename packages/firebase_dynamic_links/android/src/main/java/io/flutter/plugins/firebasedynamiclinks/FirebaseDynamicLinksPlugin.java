@@ -150,7 +150,7 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
         (Map<String, Object>) arguments.get("socialMetaTagParameters");
     if (socialMetaTagParameters != null) {
       Object description = socialMetaTagParameters.get("description");
-      Object imageUrl = socialMetaTagParameters.get("description");
+      Object imageUrl = socialMetaTagParameters.get("imageUrl");
       Object title = socialMetaTagParameters.get("title");
 
       DynamicLink.SocialMetaTagParameters.Builder builder =
