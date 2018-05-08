@@ -12,12 +12,12 @@ import com.google.android.gms.maps.model.Marker;
 class MarkerController implements MarkerOptionsSink {
   private final Marker marker;
   private final OnMarkerTappedListener onTappedListener;
-  private boolean consumesTapEvents;
+  private boolean consumeTapEvents;
 
   MarkerController(
-      Marker marker, boolean consumesTapEvents, OnMarkerTappedListener onTappedListener) {
+      Marker marker, boolean consumeTapEvents, OnMarkerTappedListener onTappedListener) {
     this.marker = marker;
-    this.consumesTapEvents = consumesTapEvents;
+    this.consumeTapEvents = consumeTapEvents;
     this.onTappedListener = onTappedListener;
   }
 
@@ -25,7 +25,7 @@ class MarkerController implements MarkerOptionsSink {
     if (onTappedListener != null) {
       onTappedListener.onMarkerTapped(marker);
     }
-    return consumesTapEvents;
+    return consumeTapEvents;
   }
 
   void remove() {
@@ -43,8 +43,8 @@ class MarkerController implements MarkerOptionsSink {
   }
 
   @Override
-  public void setConsumesTapEvents(boolean consumesTapEvents) {
-    this.consumesTapEvents = consumesTapEvents;
+  public void setConsumeTapEvents(boolean consumeTapEvents) {
+    this.consumeTapEvents = consumeTapEvents;
   }
 
   @Override
@@ -65,15 +65,6 @@ class MarkerController implements MarkerOptionsSink {
   @Override
   public void setInfoWindowAnchor(float u, float v) {
     marker.setInfoWindowAnchor(u, v);
-  }
-
-  @Override
-  public void setInfoWindowShown(boolean infoWindowShown) {
-    if (infoWindowShown) {
-      marker.showInfoWindow();
-    } else {
-      marker.hideInfoWindow();
-    }
   }
 
   @Override

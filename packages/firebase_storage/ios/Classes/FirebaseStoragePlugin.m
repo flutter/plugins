@@ -19,6 +19,9 @@
 @end
 
 @implementation FLTFirebaseStoragePlugin {
+  NSMutableDictionary<NSString * /* app name */,
+                      NSMutableDictionary<NSString * /* bucket */, FIRStorage *> *> *_storageMap;
+  FIRStorage *storage;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -35,12 +38,26 @@
     if (![FIRApp defaultApp]) {
       [FIRApp configure];
     }
+    _storageMap = [[NSMutableDictionary alloc] init];
   }
   return self;
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
-  if ([@"StorageReference#putFile" isEqualToString:call.method]) {
+  storage = [self getStorage:call result:result];
+  if ([@"FirebaseStorage#getMaxDownloadRetryTime" isEqualToString:call.method]) {
+    result(@((int64_t)(storage.maxDownloadRetryTime * 1000.0)));
+  } else if ([@"FirebaseStorage#getMaxUploadRetryTime" isEqualToString:call.method]) {
+    result(@((int64_t)(storage.maxUploadRetryTime * 1000.0)));
+  } else if ([@"FirebaseStorage#getMaxOperationRetryTime" isEqualToString:call.method]) {
+    result(@((int64_t)(storage.maxOperationRetryTime * 1000.0)));
+  } else if ([@"FirebaseStorage#setMaxDownloadRetryTime" isEqualToString:call.method]) {
+    [self setMaxDownloadRetryTime:call result:result];
+  } else if ([@"FirebaseStorage#setMaxUploadRetryTime" isEqualToString:call.method]) {
+    [self setMaxUploadRetryTime:call result:result];
+  } else if ([@"FirebaseStorage#setMaxOperationRetryTime" isEqualToString:call.method]) {
+    [self setMaxOperationRetryTime:call result:result];
+  } else if ([@"StorageReference#putFile" isEqualToString:call.method]) {
     [self putFile:call result:result];
   } else if ([@"StorageReference#putData" isEqualToString:call.method]) {
     [self putData:call result:result];
@@ -67,6 +84,83 @@
   }
 }
 
+// Returns a [FIRStorage] instance which is a singleton given a fixed app and bucket.
+// This is to be consistent with the Android API so that repated calls to getters/setters
+// affect the right [FIRStorage] instance.
+- (FIRStorage *)getStorage:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSString *appName = call.arguments[@"app"];
+  NSString *bucketUrl = call.arguments[@"bucket"];
+  FIRApp *app;
+
+  if ([appName isEqual:[NSNull null]]) {
+    app = [FIRApp defaultApp];
+  } else {
+    app = [FIRApp appNamed:appName];
+  }
+
+  if ([bucketUrl isEqual:[NSNull null]]) {
+    if (app.options.storageBucket) {
+      bucketUrl = [app.options.storageBucket isEqualToString:@""]
+                      ? @""
+                      : [@"gs://" stringByAppendingString:app.options.storageBucket];
+    } else {
+      bucketUrl = nil;
+    }
+  }
+
+  NSURL *url = [NSURL URLWithString:bucketUrl];
+  if (!url) {
+    @try {
+      // Call storage constructor to raise proper exception.
+      storage = [FIRStorage storageForApp:app URL:bucketUrl];
+    } @catch (NSException *exception) {
+      result([FlutterError errorWithCode:@"storage_error"
+                                 message:[exception name]
+                                 details:[exception reason]]);
+    }
+  }
+
+  NSMutableDictionary *bucketMap = _storageMap[app.name];
+  if (!bucketMap) {
+    bucketMap = [NSMutableDictionary dictionaryWithCapacity:1];
+    _storageMap[app.name] = bucketMap;
+  }
+
+  NSString *bucketName = [url host];
+  FIRStorage *storage = bucketMap[bucketName];
+  if (!storage) {
+    // Raises an exception if bucketUrl is invalid.
+    @try {
+      storage = [FIRStorage storageForApp:app URL:bucketUrl];
+    } @catch (NSException *exception) {
+      result([FlutterError errorWithCode:@"storage_error"
+                                 message:[exception name]
+                                 details:[exception reason]]);
+    }
+    bucketMap[bucketName] = storage;
+  }
+
+  return storage;
+}
+
+- (void)setMaxDownloadRetryTime:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSNumber *time = call.arguments[@"time"];
+  storage.maxDownloadRetryTime = [time longLongValue] / 1000.0;
+  result(nil);
+}
+
+- (void)setMaxUploadRetryTime:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSNumber *time = call.arguments[@"time"];
+  storage.maxUploadRetryTime = [time longLongValue] / 1000.0;
+  result(nil);
+}
+
+- (void)setMaxOperationRetryTime:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSNumber *time = call.arguments[@"time"];
+  storage.maxOperationRetryTime = [time longLongValue] / 1000.0;
+  result(nil);
+}
+
 - (void)putFile:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSData *data = [NSData dataWithContentsOfFile:call.arguments[@"filename"]];
   [self put:data call:call result:result];
@@ -84,7 +178,7 @@
   if (![metadataDictionary isEqual:[NSNull null]]) {
     metadata = [self buildMetadataFromDictionary:metadataDictionary];
   }
-  FIRStorageReference *fileRef = [[FIRStorage storage].reference child:path];
+  FIRStorageReference *fileRef = [storage.reference child:path];
   [fileRef putData:data
           metadata:metadata
         completion:^(FIRStorageMetadata *metadata, NSError *error) {
@@ -140,7 +234,7 @@
 - (void)getData:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSNumber *maxSize = call.arguments[@"maxSize"];
   NSString *path = call.arguments[@"path"];
-  FIRStorageReference *ref = [[FIRStorage storage].reference child:path];
+  FIRStorageReference *ref = [storage.reference child:path];
   [ref dataWithMaxSize:[maxSize longLongValue]
             completion:^(NSData *_Nullable data, NSError *_Nullable error) {
               if (error != nil) {
@@ -162,7 +256,7 @@
   NSString *path = call.arguments[@"path"];
   NSString *filePath = call.arguments[@"filePath"];
   NSURL *localURL = [NSURL fileURLWithPath:filePath];
-  FIRStorageReference *ref = [[FIRStorage storage].reference child:path];
+  FIRStorageReference *ref = [storage.reference child:path];
   FIRStorageDownloadTask *task = [ref writeToFile:localURL];
   [task observeStatus:FIRStorageTaskStatusSuccess
               handler:^(FIRStorageTaskSnapshot *snapshot) {
@@ -178,7 +272,7 @@
 
 - (void)getMetadata:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSString *path = call.arguments[@"path"];
-  FIRStorageReference *ref = [[FIRStorage storage].reference child:path];
+  FIRStorageReference *ref = [storage.reference child:path];
   [ref metadataWithCompletion:^(FIRStorageMetadata *metadata, NSError *error) {
     if (error != nil) {
       result(error.flutterError);
@@ -191,7 +285,7 @@
 - (void)updateMetadata:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSString *path = call.arguments[@"path"];
   NSDictionary *metadataDictionary = call.arguments[@"metadata"];
-  FIRStorageReference *ref = [[FIRStorage storage].reference child:path];
+  FIRStorageReference *ref = [storage.reference child:path];
   [ref updateMetadata:[self buildMetadataFromDictionary:metadataDictionary]
            completion:^(FIRStorageMetadata *metadata, NSError *error) {
              if (error != nil) {
@@ -204,25 +298,25 @@
 
 - (void)getBucket:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSString *path = call.arguments[@"path"];
-  FIRStorageReference *ref = [[FIRStorage storage].reference child:path];
+  FIRStorageReference *ref = [storage.reference child:path];
   result([ref bucket]);
 }
 
 - (void)getName:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSString *path = call.arguments[@"path"];
-  FIRStorageReference *ref = [[FIRStorage storage].reference child:path];
+  FIRStorageReference *ref = [storage.reference child:path];
   result([ref name]);
 }
 
 - (void)getPath:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSString *path = call.arguments[@"path"];
-  FIRStorageReference *ref = [[FIRStorage storage].reference child:path];
+  FIRStorageReference *ref = [storage.reference child:path];
   result([ref fullPath]);
 }
 
 - (void)getDownloadUrl:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSString *path = call.arguments[@"path"];
-  FIRStorageReference *ref = [[FIRStorage storage].reference child:path];
+  FIRStorageReference *ref = [storage.reference child:path];
   [ref downloadURLWithCompletion:^(NSURL *URL, NSError *error) {
     if (error != nil) {
       result(error.flutterError);
@@ -234,7 +328,7 @@
 
 - (void) delete:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSString *path = call.arguments[@"path"];
-  FIRStorageReference *ref = [[FIRStorage storage].reference child:path];
+  FIRStorageReference *ref = [storage.reference child:path];
   [ref deleteWithCompletion:^(NSError *error) {
     if (error != nil) {
       result(error.flutterError);
