@@ -1,6 +1,6 @@
 ## 0.5.9
 
-* Added support to signinWithTwitter
+* Added support for signing in with a Twitter account.
 
 ## 0.5.8
 

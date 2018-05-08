@@ -220,11 +220,9 @@ class FirebaseAuth {
     return currentUser;
   }
 
-  /// Creates new user with twitter account and returns [Future<FirebaseUser>]
+  /// Signs in with a Twitter account using the specified credentials.
   ///
-  /// throws [PlatformException] when
-  /// 1. twitter email address is already used
-  /// Detailed documentation on possible error causes can be found in [Android docs](https://firebase.google.com/docs/reference/android/com/google/firebase/auth/FirebaseUser#exceptions_5) and [iOS docs](https://firebase.google.com/docs/reference/ios/firebaseauth/api/reference/Classes/FIRAuth#/c:objc(cs)FIRAuth(im)signInWithCredential:completion:)
+  /// The returned future completes with the signed-in user or a [PlatformException], if sign in failed.
   Future<FirebaseUser> signInWithTwitter({
     @required String authToken,
     @required String authTokenSecret,
