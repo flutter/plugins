@@ -42,7 +42,7 @@
 
     FIRDynamicLinkAndroidParameters *androidParams = [FIRDynamicLinkAndroidParameters parametersWithPackageName: params[@"packageName"]];
 
-    NSString *fallbackUrl = params[@"fallbackUri"];
+    NSString *fallbackUrl = params[@"fallbackUrl"];
     NSNumber *minimumVersion = params[@"minimumVersion"];
 
     if (![fallbackUrl isEqual:[NSNull null]]) androidParams.fallbackURL = [NSURL URLWithString:fallbackUrl];
@@ -80,9 +80,9 @@
 
     NSString *appStoreID = params[@"appStoreId"];
     NSString *customScheme = params[@"customScheme"];
-    NSString *fallbackURL = params[@"fallbackURL"];
+    NSString *fallbackURL = params[@"fallbackUrl"];
     NSString *iPadBundleID = params[@"ipadBundleId"];
-    NSString *iPadFallbackURL = params[@"ipadFallbackUri"];
+    NSString *iPadFallbackURL = params[@"ipadFallbackUrl"];
     NSString *minimumAppVersion = params[@"minimumVersion"];
 
     if (![appStoreID isEqual:[NSNull null]]) iosParameters.appStoreID = appStoreID;
@@ -131,7 +131,7 @@
 
     NSString *descriptionText = params[@"description"];
     NSString *imageURL = params[@"imageUrl"];
-    NSString *title = params[@"campaign"];
+    NSString *title = params[@"title"];
 
     if (![descriptionText isEqual:[NSNull null]]) socialMetaTagParameters.descriptionText = descriptionText;
     if (![imageURL isEqual:[NSNull null]]) socialMetaTagParameters.imageURL = [NSURL URLWithString:imageURL];

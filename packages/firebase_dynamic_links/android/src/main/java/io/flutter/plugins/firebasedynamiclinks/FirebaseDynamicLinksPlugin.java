@@ -56,13 +56,13 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
     Map<String, Object> androidParameters =
         (Map<String, Object>) arguments.get("androidParameters");
     if (androidParameters != null) {
-      Object fallbackUri = androidParameters.get("fallbackUri");
-      Object minimumVersion = androidParameters.get("minimumVersion");
-
       DynamicLink.AndroidParameters.Builder builder =
           new DynamicLink.AndroidParameters.Builder((String) androidParameters.get("packageName"));
 
-      if (fallbackUri != null) builder.setFallbackUrl(Uri.parse((String) fallbackUri));
+      Object fallbackUrl = androidParameters.get("fallbackUrl");
+      Object minimumVersion = androidParameters.get("minimumVersion");
+
+      if (fallbackUrl != null) builder.setFallbackUrl(Uri.parse((String) fallbackUrl));
       if (minimumVersion != null) builder.setMinimumVersion((int) minimumVersion);
 
       dynamicLinkBuilder.setAndroidParameters(builder.build());
@@ -95,8 +95,9 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
     if(iosParameters != null) {
       Object appStoreId = iosParameters.get("appStoreId");
       Object customScheme = iosParameters.get("customScheme");
-      Object fallbackUri = iosParameters.get("fallbackUri");
-      Object ipadFallbackUri = iosParameters.get("ipadFallbackUri");
+      Object fallbackUrl = iosParameters.get("fallbackUrl");
+      Object ipadBundleId = iosParameters.get("ipadBundleId");
+      Object ipadFallbackUrl = iosParameters.get("ipadFallbackUrl");
       Object minimumVersion = iosParameters.get("minimumVersion");
 
       DynamicLink.IosParameters.Builder builder =
@@ -104,8 +105,9 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
 
       if (appStoreId != null) builder.setAppStoreId((String) appStoreId);
       if (customScheme != null) builder.setCustomScheme((String) customScheme);
-      if (fallbackUri != null) builder.setFallbackUrl(Uri.parse((String) fallbackUri));
-      if (ipadFallbackUri != null) builder.setIpadBundleId((String) ipadFallbackUri);
+      if (fallbackUrl != null) builder.setFallbackUrl(Uri.parse((String) fallbackUrl));
+      if (ipadBundleId != null) builder.setIpadBundleId((String) ipadBundleId);
+      if (ipadFallbackUrl != null) builder.setIpadFallbackUrl(Uri.parse((String) ipadFallbackUrl));
       if (minimumVersion != null) builder.setMinimumVersion((String) minimumVersion);
 
       dynamicLinkBuilder.setIosParameters(builder.build());

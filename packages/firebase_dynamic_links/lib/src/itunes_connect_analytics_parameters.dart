@@ -1,7 +1,7 @@
 part of firebase_dynamic_links;
 
 class ItunesConnectAnalyticsParameters {
-  ItunesConnectAnalyticsParameters._(
+  ItunesConnectAnalyticsParameters(
       {this.affiliateToken, this.campaignToken, this.providerToken});
 
   final String affiliateToken;

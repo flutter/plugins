@@ -1,7 +1,7 @@
 part of firebase_dynamic_links;
 
 class SocialMetaTagParameters {
-  SocialMetaTagParameters._({this.description, this.imageUrl, this.title});
+  SocialMetaTagParameters({this.description, this.imageUrl, this.title});
 
   final String description;
   final Uri imageUrl;

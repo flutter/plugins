@@ -36,7 +36,7 @@ class DynamicLinkComponents {
       'iosParameters': iosParameters?._data,
       'itunesConnectAnalyticsParameters':
           itunesConnectAnalyticsParameters?._data,
-      'link': link.toString(),
+      'link': link?.toString(),
       'longLink': longLink?.toString(),
       'navigationInfoParameters': navigationInfoParameters?._data,
       'socialMetaTagParameters': socialMetaTagParameters?._data,

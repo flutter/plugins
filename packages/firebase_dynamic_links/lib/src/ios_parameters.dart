@@ -1,31 +1,31 @@
 part of firebase_dynamic_links;
 
 class IosParameters {
-  IosParameters._({
+  IosParameters({
     this.appStoreId,
     @required this.bundleId,
     this.customScheme,
-    this.fallbackUri,
+    this.fallbackUrl,
     this.ipadBundleId,
-    this.ipadFallbackUri,
+    this.ipadFallbackUrl,
     this.minimumVersion,
   });
 
   final String appStoreId;
   final String bundleId;
   final String customScheme;
-  final Uri fallbackUri;
+  final Uri fallbackUrl;
   final String ipadBundleId;
-  final Uri ipadFallbackUri;
+  final Uri ipadFallbackUrl;
   final String minimumVersion;
 
   Map<String, dynamic> get _data => <String, dynamic>{
         'appStoreId': appStoreId,
         'bundleId': bundleId,
         'customScheme': customScheme,
-        'fallbackUri': fallbackUri,
+        'fallbackUrl': fallbackUrl?.toString(),
         'ipadBundleId': ipadBundleId,
-        'ipadFallbackUri': ipadFallbackUri,
+        'ipadFallbackUrl': ipadFallbackUrl?.toString(),
         'minimumVersion': minimumVersion,
       };
 }

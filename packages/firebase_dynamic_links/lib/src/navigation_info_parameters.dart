@@ -1,7 +1,7 @@
 part of firebase_dynamic_links;
 
 class NavigationInfoParameters {
-  NavigationInfoParameters._({this.forcedRedirectEnabled});
+  NavigationInfoParameters({this.forcedRedirectEnabled});
 
   final bool forcedRedirectEnabled;
 
