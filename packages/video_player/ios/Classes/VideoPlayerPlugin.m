@@ -290,6 +290,7 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
       [[_players objectForKey:textureId] dispose];
     }
     [_players removeAllObjects];
+    result(nil);
   } else if ([@"create" isEqualToString:call.method]) {
     NSDictionary* argsMap = call.arguments;
     FLTFrameUpdater* frameUpdater = [[FLTFrameUpdater alloc] initWithRegistry:_registry];
@@ -327,6 +328,7 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
       [_registry unregisterTexture:textureId];
       [_players removeObjectForKey:@(textureId)];
       [player dispose];
+      result(nil);
     } else if ([@"setLooping" isEqualToString:call.method]) {
       [player setIsLooping:[[argsMap objectForKey:@"looping"] boolValue]];
       result(nil);
