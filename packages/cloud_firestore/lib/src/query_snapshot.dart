@@ -6,29 +6,37 @@ part of cloud_firestore;
 
 /// A QuerySnapshot contains zero or more DocumentSnapshot objects.
 class QuerySnapshot {
-  /// Gets a list of all the documents included in this snapshot
+  /// All the documents included in this snapshot.
   final List<DocumentSnapshot> documents;
 
-  /// An array of the documents that changed since the last snapshot. If this
-  /// is the first snapshot, all documents will be in the list as Added changes.
+  /// An array of the documents that changed since the last snapshot.
+  ///
+  /// If this is the first snapshot, all documents will be in the list as Added
+  /// changes.
   final List<DocumentChange> documentChanges;
 
-  final Firestore _firestore;
+  /// Metadata about this snapshot, concerning its source and if it has local
+  /// modifications.
+  final SnapshotMetadata metadata;
 
-  QuerySnapshot._(Map<dynamic, dynamic> data, this._firestore)
+  /// The number of documents.
+  int get size => documents.length;
+
+  /// The [Query] you used to get this.
+  final Query query;
+
+  QuerySnapshot._(Map<dynamic, dynamic> data, this.query)
       : documents = new List<DocumentSnapshot>.generate(
             data['documents'].length, (int index) {
-          return new DocumentSnapshot._(
-            data['paths'][index],
-            _asStringKeyedMap(data['documents'][index]),
-            _firestore,
-          );
+          final Map<dynamic, dynamic> document = data['documents'][index];
+          return new DocumentSnapshot._(document, query.firestore);
         }),
         documentChanges = new List<DocumentChange>.generate(
             data['documentChanges'].length, (int index) {
           return new DocumentChange._(
             data['documentChanges'][index],
-            _firestore,
+            query,
           );
-        });
+        }),
+        metadata = new SnapshotMetadata._(data['metadata']);
 }

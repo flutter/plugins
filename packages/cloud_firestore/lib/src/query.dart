@@ -46,37 +46,32 @@ class Query {
   }
 
   /// Notifies of query results at this location
-  // TODO(jackson): Reduce code duplication with [DocumentReference]
-  Stream<QuerySnapshot> snapshots() {
-    Future<int> _handle;
-    // It's fine to let the StreamController be garbage collected once all the
-    // subscribers have cancelled; this analyzer warning is safe to ignore.
-    StreamController<QuerySnapshot> controller; // ignore: close_sinks
-    controller = new StreamController<QuerySnapshot>.broadcast(
-      onListen: () {
-        _handle = Firestore.channel.invokeMethod(
+  ///
+  /// If [includeMetadataChanges] is true, raises an event even if only metadata
+  /// of the query or a document in the query results changes
+  Stream<QuerySnapshot> snapshots({ bool includeMetadataChanges: false }) {
+    return Firestore._snapshots(
+      onListen: (int handle) {
+        Firestore.channel.invokeMethod(
           'Query#addSnapshotListener',
           <String, dynamic>{
+            'handle': handle,
             'app': firestore.app.name,
             'path': _path,
             'parameters': _parameters,
+            'includeMetadataChanges': includeMetadataChanges,
           },
-        ).then<int>((dynamic result) => result);
-        _handle.then((int handle) {
-          Firestore._queryObservers[handle] = controller;
-        });
+        );
       },
-      onCancel: () {
-        _handle.then((int handle) async {
-          await Firestore.channel.invokeMethod(
-            'Query#removeListener',
-            <String, dynamic>{'handle': handle},
-          );
-          Firestore._queryObservers.remove(handle);
-        });
+      onCancel: (int handle) {
+        Firestore.channel.invokeMethod(
+          'Query#removeListener',
+          <String, dynamic>{'handle': handle},
+        );
       },
-    );
-    return controller.stream;
+    ).map((Map<dynamic, dynamic> snapshot) {
+      return new QuerySnapshot._(snapshot, this);
+    });
   }
 
   /// Fetch the documents for this query
@@ -89,7 +84,7 @@ class Query {
         'parameters': _parameters,
       },
     );
-    return new QuerySnapshot._(data, firestore);
+    return new QuerySnapshot._(data, this);
   }
 
   /// Obtains a CollectionReference corresponding to this query's location.
@@ -102,25 +97,25 @@ class Query {
   /// Only documents satisfying provided condition are included in the result
   /// set.
   Query where(
-    String field, {
-    dynamic isEqualTo,
-    dynamic isLessThan,
-    dynamic isLessThanOrEqualTo,
-    dynamic isGreaterThan,
-    dynamic isGreaterThanOrEqualTo,
-    bool isNull,
-  }) {
+      String field, {
+        dynamic isEqualTo,
+        dynamic isLessThan,
+        dynamic isLessThanOrEqualTo,
+        dynamic isGreaterThan,
+        dynamic isGreaterThanOrEqualTo,
+        bool isNull,
+      }) {
     final ListEquality<dynamic> equality = const ListEquality<dynamic>();
     final List<List<dynamic>> conditions =
-        new List<List<dynamic>>.from(_parameters['where']);
+    new List<List<dynamic>>.from(_parameters['where']);
 
     void addCondition(String field, String operator, dynamic value) {
       final List<dynamic> condition = <dynamic>[field, operator, value];
       assert(
-          conditions
-              .where((List<dynamic> item) => equality.equals(condition, item))
-              .isEmpty,
-          'Condition $condition already exists in this query.');
+      conditions
+          .where((List<dynamic> item) => equality.equals(condition, item))
+          .isEmpty,
+      'Condition $condition already exists in this query.');
       conditions.add(condition);
     }
 
@@ -133,8 +128,8 @@ class Query {
       addCondition(field, '>=', isGreaterThanOrEqualTo);
     if (isNull != null) {
       assert(
-          isNull,
-          'isNull can only be set to true. '
+      isNull,
+      'isNull can only be set to true. '
           'Use isEqualTo to filter on non-null values.');
       addCondition(field, '==', null);
     }
@@ -146,11 +141,11 @@ class Query {
   /// [field].
   Query orderBy(String field, {bool descending: false}) {
     final List<List<dynamic>> orders =
-        new List<List<dynamic>>.from(_parameters['orderBy']);
+    new List<List<dynamic>>.from(_parameters['orderBy']);
 
     final List<dynamic> order = <dynamic>[field, descending];
     assert(orders.where((List<dynamic> item) => field == item[0]).isEmpty,
-        'OrderBy $field already exists in this query');
+    'OrderBy $field already exists in this query');
     orders.add(order);
     return _copyWithParameters(<String, dynamic>{'orderBy': orders});
   }

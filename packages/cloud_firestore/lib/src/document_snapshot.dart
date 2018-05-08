@@ -10,7 +10,10 @@ part of cloud_firestore;
 /// The data can be extracted with the data property or by using subscript
 /// syntax to access a specific field.
 class DocumentSnapshot {
-  DocumentSnapshot._(this._path, this.data, this._firestore);
+  DocumentSnapshot._(Map<dynamic, dynamic> arguments, this._firestore)
+      : _path = arguments['path'],
+    this.data = arguments['data'] == null ? null : new Map<String, dynamic>.from(arguments['data']),
+    this.metadata = new SnapshotMetadata._(arguments['metadata']);
 
   final String _path;
   final Firestore _firestore;
@@ -21,6 +24,10 @@ class DocumentSnapshot {
   /// Contains all the data of this snapshot
   final Map<String, dynamic> data;
 
+  /// Metadata about the DocumentSnapshot, including information about its
+  /// source and local modifications.
+  final SnapshotMetadata metadata;
+
   /// Reads individual values from the snapshot
   dynamic operator [](String key) => data[key];
 
@@ -29,13 +36,4 @@ class DocumentSnapshot {
 
   /// Returns `true` if the document exists.
   bool get exists => data != null;
-}
-
-Map<String, dynamic> _asStringKeyedMap(Map<dynamic, dynamic> map) {
-  if (map == null) return null;
-  if (map is Map<String, dynamic>) {
-    return map;
-  } else {
-    return new Map<String, dynamic>.from(map);
-  }
 }

@@ -6,6 +6,10 @@ part of cloud_firestore;
 
 /// Metadata about a snapshot, describing the state of the snapshot.
 class SnapshotMetadata {
+  SnapshotMetadata._(Map<dynamic, dynamic> data)
+      : hasPendingWrites = data['hasPendingWrites'],
+        isFromCache = data['isFromCache'];
+
   /// Whether the snapshot contains the result of local writes that have not yet
   /// been committed to the backend.
   ///
@@ -24,5 +28,10 @@ class SnapshotMetadata {
   /// up-to-date data from the backend.
   final bool isFromCache;
 
-  SnapshotMetadata._(this.hasPendingWrites, this.isFromCache);
+  @override
+  bool operator ==(dynamic o) =>
+      o is SnapshotMetadata && o.hasPendingWrites == hasPendingWrites && o.isFromCache == isFromCache;
+
+  @override
+  int get hashCode => hashValues(hasPendingWrites, isFromCache);
 }

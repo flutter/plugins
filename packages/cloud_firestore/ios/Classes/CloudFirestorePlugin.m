@@ -18,19 +18,30 @@
 }
 @end
 
-FIRFirestore *getFirestore(NSDictionary *arguments) {
-  FIRApp *app = [FIRApp appNamed:arguments[@"app"]];
+@interface NSDictionary (CloudFirestorePlugin)
+- (FIRFirestore *)firestore;
+- (FIRDocumentReference *)documentReference;
+- (FIRQuery *)query;
++ (NSDictionary *)dictionaryWithDocumentChange:(FIRDocumentChange *)documentChange;
++ (NSDictionary *)dictionaryWithSnapshotMetadata:(FIRSnapshotMetadata *)metadata;
++ (NSDictionary *)dictionaryWithDocumentSnapshot:(FIRDocumentSnapshot *)snapshot;
++ (NSDictionary *)dictionaryWithQuerySnapshot:(FIRQuerySnapshot *)snapshot;
+@end
+
+@implementation NSDictionary (CloudFirestorePlugin)
+- (FIRFirestore *)firestore {
+  FIRApp *app = [FIRApp appNamed:self[@"app"]];
   return [FIRFirestore firestoreForApp:app];
 }
 
-FIRDocumentReference *getDocumentReference(NSDictionary *arguments) {
-  return [getFirestore(arguments) documentWithPath:arguments[@"path"]];
+- (FIRDocumentReference *)documentReference {
+  return [self.firestore documentWithPath:self[@"path"]];
 }
 
-FIRQuery *getQuery(NSDictionary *arguments) {
-  FIRQuery *query = [getFirestore(arguments) collectionWithPath:arguments[@"path"]];
-  NSDictionary *parameters = arguments[@"parameters"];
-  NSArray *whereConditions = parameters[@"where"];
+- (FIRQuery *)query {
+  FIRQuery *query = [self.firestore collectionWithPath:self[@"path"]];
+  NSDictionary *parameters = self[@"parameters"];
+  NSArray *whereConditions = self[@"where"];
   for (id item in whereConditions) {
     NSArray *condition = item;
     NSString *fieldName = condition[0];
@@ -87,41 +98,60 @@ FIRQuery *getQuery(NSDictionary *arguments) {
   return query;
 }
 
-NSDictionary *parseQuerySnapshot(FIRQuerySnapshot *snapshot) {
-  NSMutableArray *paths = [NSMutableArray array];
++ (NSDictionary *)dictionaryWithDocumentChange:(FIRDocumentChange *)documentChange
+{
+  NSString *type;
+  switch (documentChange.type) {
+    case FIRDocumentChangeTypeAdded:
+      type = @"DocumentChangeType.added";
+      break;
+    case FIRDocumentChangeTypeModified:
+      type = @"DocumentChangeType.modified";
+      break;
+    case FIRDocumentChangeTypeRemoved:
+      type = @"DocumentChangeType.removed";
+      break;
+  }
+  return @{
+     @"type" : type,
+     @"document" : [NSDictionary dictionaryWithDocumentSnapshot:documentChange.document],
+     @"oldIndex" : [NSNumber numberWithUnsignedLong:documentChange.oldIndex],
+     @"newIndex" : [NSNumber numberWithUnsignedLong:documentChange.newIndex],
+   };
+}
+
++ (NSDictionary *)dictionaryWithSnapshotMetadata:(FIRSnapshotMetadata *)metadata
+{
+  return @{
+           @"hasPendingWrites": [NSNumber numberWithBool:metadata.hasPendingWrites],
+           @"isFromCache": [NSNumber numberWithBool:metadata.isFromCache],
+           };
+}
+
++ (NSDictionary *)dictionaryWithDocumentSnapshot:(FIRDocumentSnapshot *)snapshot {
+  return @{
+    @"path": snapshot.reference.path,
+    @"data": snapshot.exists ? snapshot.data : [NSNull null],
+    @"metadata": [NSDictionary dictionaryWithSnapshotMetadata:snapshot.metadata],
+  };
+}
+
++ (NSDictionary *)dictionaryWithQuerySnapshot:(FIRQuerySnapshot *)snapshot {
   NSMutableArray *documents = [NSMutableArray array];
   for (FIRDocumentSnapshot *document in snapshot.documents) {
-    [paths addObject:document.reference.path];
-    [documents addObject:document.data];
+    [documents addObject:[NSDictionary dictionaryWithDocumentSnapshot:document]];
   }
   NSMutableArray *documentChanges = [NSMutableArray array];
   for (FIRDocumentChange *documentChange in snapshot.documentChanges) {
-    NSString *type;
-    switch (documentChange.type) {
-      case FIRDocumentChangeTypeAdded:
-        type = @"DocumentChangeType.added";
-        break;
-      case FIRDocumentChangeTypeModified:
-        type = @"DocumentChangeType.modified";
-        break;
-      case FIRDocumentChangeTypeRemoved:
-        type = @"DocumentChangeType.removed";
-        break;
-    }
-    [documentChanges addObject:@{
-      @"type" : type,
-      @"document" : documentChange.document.data,
-      @"path" : documentChange.document.reference.path,
-      @"oldIndex" : [NSNumber numberWithInt:documentChange.oldIndex],
-      @"newIndex" : [NSNumber numberWithInt:documentChange.newIndex],
-    }];
+    [documentChanges addObject:[NSDictionary dictionaryWithDocumentChange:documentChange]];
   }
   return @{
-    @"paths" : paths,
     @"documentChanges" : documentChanges,
     @"documents" : documents,
+    @"metadata": [NSDictionary dictionaryWithSnapshotMetadata:snapshot.metadata],
   };
 }
+@end
 
 const UInt8 DATE_TIME = 128;
 const UInt8 GEO_POINT = 129;
@@ -157,7 +187,7 @@ const UInt8 BLOB = 131;
   } else if ([value isKindOfClass:[NSData class]]) {
     NSData *blob = value;
     [self writeByte:BLOB];
-    [self writeSize:blob.length];
+    [self writeSize:(UInt32)blob.length];
     [self writeData:blob];
   } else {
     [super writeValue:value];
@@ -222,7 +252,6 @@ const UInt8 BLOB = 131;
 
 @implementation FLTCloudFirestorePlugin {
   NSMutableDictionary<NSNumber *, id<FIRListenerRegistration>> *_listeners;
-  int _nextListenerHandle;
   NSMutableDictionary *transactions;
   NSMutableDictionary *transactionResults;
   NSMutableDictionary<NSNumber *, FIRWriteBatch *> *_batches;
@@ -249,7 +278,6 @@ const UInt8 BLOB = 131;
     }
     _listeners = [NSMutableDictionary<NSNumber *, id<FIRListenerRegistration>> dictionary];
     _batches = [NSMutableDictionary<NSNumber *, FIRWriteBatch *> dictionary];
-    _nextListenerHandle = 0;
     _nextBatchHandle = 0;
     transactions = [NSMutableDictionary<NSNumber *, FIRTransaction *> dictionary];
     transactionResults = [NSMutableDictionary<NSNumber *, id> dictionary];
@@ -261,27 +289,28 @@ const UInt8 BLOB = 131;
   void (^defaultCompletionBlock)(NSError *) = ^(NSError *error) {
     result(error.flutterError);
   };
+  NSDictionary *arguments = call.arguments;
   if ([@"Firestore#runTransaction" isEqualToString:call.method]) {
-    [getFirestore(call.arguments) runTransactionWithBlock:^id(FIRTransaction *transaction,
+    [arguments.firestore runTransactionWithBlock:^id(FIRTransaction *transaction,
                                                               NSError **pError) {
-      NSNumber *transactionId = call.arguments[@"transactionId"];
-      NSNumber *transactionTimeout = call.arguments[@"transactionTimeout"];
+      NSNumber *transactionId = arguments[@"transactionId"];
+      NSNumber *transactionTimeout = arguments[@"transactionTimeout"];
 
-      transactions[transactionId] = transaction;
+      self->transactions[transactionId] = transaction;
 
       dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
 
       [self.channel invokeMethod:@"DoTransaction"
-                       arguments:call.arguments
+                       arguments:arguments
                           result:^(id doTransactionResult) {
-                            transactionResults[transactionId] = doTransactionResult;
+                            self->transactionResults[transactionId] = doTransactionResult;
                             dispatch_semaphore_signal(semaphore);
                           }];
 
       dispatch_semaphore_wait(
           semaphore, dispatch_time(DISPATCH_TIME_NOW, [transactionTimeout integerValue] * 1000000));
 
-      return transactionResults[transactionId];
+      return self->transactionResults[transactionId];
     }
         completion:^(id transactionResult, NSError *error) {
           if (error != nil) {
@@ -293,12 +322,11 @@ const UInt8 BLOB = 131;
         }];
   } else if ([@"Transaction#get" isEqualToString:call.method]) {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-      NSNumber *transactionId = call.arguments[@"transactionId"];
-      FIRDocumentReference *document = getDocumentReference(call.arguments);
-      FIRTransaction *transaction = transactions[transactionId];
+      NSNumber *transactionId = arguments[@"transactionId"];
+      FIRTransaction *transaction = self->transactions[transactionId];
       NSError *error = [[NSError alloc] init];
 
-      FIRDocumentSnapshot *snapshot = [transaction getDocument:document error:&error];
+      FIRDocumentSnapshot *snapshot = [transaction getDocument:arguments.documentReference error:&error];
 
       if (error != nil) {
         result([FlutterError errorWithCode:[NSString stringWithFormat:@"%tu", [error code]]
@@ -317,99 +345,97 @@ const UInt8 BLOB = 131;
     });
   } else if ([@"Transaction#update" isEqualToString:call.method]) {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-      NSNumber *transactionId = call.arguments[@"transactionId"];
-      FIRDocumentReference *document = getDocumentReference(call.arguments);
-      FIRTransaction *transaction = transactions[transactionId];
+      NSNumber *transactionId = arguments[@"transactionId"];
+      FIRTransaction *transaction = self->transactions[transactionId];
 
-      [transaction updateData:call.arguments[@"data"] forDocument:document];
+      [transaction updateData:arguments[@"data"] forDocument:arguments.documentReference];
       result(nil);
     });
   } else if ([@"Transaction#set" isEqualToString:call.method]) {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-      NSNumber *transactionId = call.arguments[@"transactionId"];
-      FIRDocumentReference *document = getDocumentReference(call.arguments);
-      FIRTransaction *transaction = transactions[transactionId];
+      NSNumber *transactionId = arguments[@"transactionId"];
+      FIRDocumentReference *document = arguments.documentReference;
+      FIRTransaction *transaction = self->transactions[transactionId];
 
-      [transaction setData:call.arguments[@"data"] forDocument:document];
+      [transaction setData:arguments[@"data"] forDocument:document];
       result(nil);
     });
   } else if ([@"Transaction#delete" isEqualToString:call.method]) {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-      NSNumber *transactionId = call.arguments[@"transactionId"];
-      FIRDocumentReference *document = getDocumentReference(call.arguments);
-      FIRTransaction *transaction = transactions[transactionId];
-
-      [transaction deleteDocument:document];
+      NSNumber *transactionId = arguments[@"transactionId"];
+      FIRTransaction *transaction = self->transactions[transactionId];
+      [transaction deleteDocument:arguments.documentReference];
       result(nil);
     });
   } else if ([@"DocumentReference#setData" isEqualToString:call.method]) {
-    NSDictionary *options = call.arguments[@"options"];
-    FIRDocumentReference *document = getDocumentReference(call.arguments);
-    if (![options isEqual:[NSNull null]] &&
-        [options[@"merge"] isEqual:[NSNumber numberWithBool:YES]]) {
-      [document setData:call.arguments[@"data"]
+    NSDictionary *options = arguments[@"options"];
+    FIRDocumentReference *document = arguments.documentReference;
+    if ([options[@"merge"] isEqual:[NSNumber numberWithBool:YES]]) {
+      [document setData:arguments[@"data"]
                 options:[FIRSetOptions merge]
              completion:defaultCompletionBlock];
     } else {
-      [document setData:call.arguments[@"data"] completion:defaultCompletionBlock];
+      [document setData:arguments[@"data"] completion:defaultCompletionBlock];
     }
   } else if ([@"DocumentReference#updateData" isEqualToString:call.method]) {
-    FIRDocumentReference *document = getDocumentReference(call.arguments);
-    [document updateData:call.arguments[@"data"] completion:defaultCompletionBlock];
+    [arguments.documentReference updateData:arguments[@"data"] completion:defaultCompletionBlock];
   } else if ([@"DocumentReference#delete" isEqualToString:call.method]) {
-    FIRDocumentReference *document = getDocumentReference(call.arguments);
-    [document deleteDocumentWithCompletion:defaultCompletionBlock];
+    [arguments.documentReference deleteDocumentWithCompletion:defaultCompletionBlock];
   } else if ([@"DocumentReference#get" isEqualToString:call.method]) {
-    FIRDocumentReference *document = getDocumentReference(call.arguments);
-    [document getDocumentWithCompletion:^(FIRDocumentSnapshot *_Nullable snapshot,
+    [arguments.documentReference getDocumentWithCompletion:^(FIRDocumentSnapshot *_Nullable snapshot,
                                           NSError *_Nullable error) {
       if (error) {
         result(error.flutterError);
       } else {
-        result(@{
-          @"path" : snapshot.reference.path,
-          @"data" : snapshot.exists ? snapshot.data : [NSNull null]
-        });
+        result([NSDictionary dictionaryWithDocumentSnapshot:snapshot]);
       }
     }];
   } else if ([@"Query#addSnapshotListener" isEqualToString:call.method]) {
-    __block NSNumber *handle = [NSNumber numberWithInt:_nextListenerHandle++];
+    __block NSNumber *handle = arguments[@"handle"];
     FIRQuery *query;
     @try {
-      query = getQuery(call.arguments);
+      query = arguments.query;
     } @catch (NSException *exception) {
       result([FlutterError errorWithCode:@"invalid_query"
                                  message:[exception name]
                                  details:[exception reason]]);
     }
+    FIRQueryListenOptions *options = [FIRQueryListenOptions options];
+    [options includeQueryMetadataChanges:arguments[@"includeMetadataChanges"]];
+    [options includeDocumentMetadataChanges:arguments[@"includeMetadataChanges"]];
     id<FIRListenerRegistration> listener = [query
-        addSnapshotListener:^(FIRQuerySnapshot *_Nullable snapshot, NSError *_Nullable error) {
+                                            addSnapshotListenerWithOptions:options
+                                            listener:^(FIRQuerySnapshot *_Nullable snapshot, NSError *_Nullable error) {
           if (error) result(error.flutterError);
-          NSMutableDictionary *arguments = [parseQuerySnapshot(snapshot) mutableCopy];
-          [arguments setObject:handle forKey:@"handle"];
-          [self.channel invokeMethod:@"QuerySnapshot" arguments:arguments];
+          NSDictionary *result = @{
+            @"handle": handle,
+            @"snapshot": [NSDictionary dictionaryWithQuerySnapshot:snapshot],
+          };
+          [self.channel invokeMethod:@"QuerySnapshot"
+                           arguments:result];
         }];
     _listeners[handle] = listener;
     result(handle);
-  } else if ([@"Query#addDocumentListener" isEqualToString:call.method]) {
-    __block NSNumber *handle = [NSNumber numberWithInt:_nextListenerHandle++];
-    FIRDocumentReference *document = getDocumentReference(call.arguments);
+  } else if ([@"DocumentReference#addDocumentListener" isEqualToString:call.method]) {
+    __block NSNumber *handle = arguments[@"handle"];
+    FIRDocumentListenOptions *options = [[FIRDocumentListenOptions options] includeMetadataChanges:arguments[@"includeMetadataChanges"]];
     id<FIRListenerRegistration> listener =
-        [document addSnapshotListener:^(FIRDocumentSnapshot *snapshot, NSError *_Nullable error) {
+        [arguments.documentReference addSnapshotListenerWithOptions:options
+                                                           listener:^(FIRDocumentSnapshot *snapshot, NSError *_Nullable error) {
           if (error) result(error.flutterError);
+          NSDictionary *result = @{
+                                      @"handle" : handle,
+                                      @"snapshot": [NSDictionary dictionaryWithDocumentSnapshot:snapshot],
+                                    };
           [self.channel invokeMethod:@"DocumentSnapshot"
-                           arguments:@{
-                             @"handle" : handle,
-                             @"path" : snapshot.reference.path,
-                             @"data" : snapshot.exists ? snapshot.data : [NSNull null],
-                           }];
+                           arguments:result];
         }];
     _listeners[handle] = listener;
     result(handle);
   } else if ([@"Query#getDocuments" isEqualToString:call.method]) {
     FIRQuery *query;
     @try {
-      query = getQuery(call.arguments);
+      query = arguments.query;
     } @catch (NSException *exception) {
       result([FlutterError errorWithCode:@"invalid_query"
                                  message:[exception name]
@@ -418,44 +444,42 @@ const UInt8 BLOB = 131;
     [query getDocumentsWithCompletion:^(FIRQuerySnapshot *_Nullable snapshot,
                                         NSError *_Nullable error) {
       if (error) result(error.flutterError);
-      result(parseQuerySnapshot(snapshot));
+      result([NSDictionary dictionaryWithQuerySnapshot:snapshot]);
     }];
   } else if ([@"Query#removeListener" isEqualToString:call.method]) {
-    NSNumber *handle = call.arguments[@"handle"];
+    NSNumber *handle = arguments[@"handle"];
     [[_listeners objectForKey:handle] remove];
     [_listeners removeObjectForKey:handle];
     result(nil);
   } else if ([@"WriteBatch#create" isEqualToString:call.method]) {
     __block NSNumber *handle = [NSNumber numberWithInt:_nextBatchHandle++];
-    FIRWriteBatch *batch = [getFirestore(call.arguments) batch];
+    FIRWriteBatch *batch = [arguments.firestore batch];
     _batches[handle] = batch;
     result(handle);
   } else if ([@"WriteBatch#setData" isEqualToString:call.method]) {
-    NSNumber *handle = call.arguments[@"handle"];
-    NSDictionary *options = call.arguments[@"options"];
-    FIRDocumentReference *document = getDocumentReference(call.arguments);
+    NSNumber *handle = arguments[@"handle"];
+    NSDictionary *options = arguments[@"options"];
+    FIRDocumentReference *document = arguments.documentReference;
     FIRWriteBatch *batch = [_batches objectForKey:handle];
     if (![options isEqual:[NSNull null]] &&
         [options[@"merge"] isEqual:[NSNumber numberWithBool:YES]]) {
-      [batch setData:call.arguments[@"data"] forDocument:document options:[FIRSetOptions merge]];
+      [batch setData:arguments[@"data"] forDocument:document options:[FIRSetOptions merge]];
     } else {
-      [batch setData:call.arguments[@"data"] forDocument:document];
+      [batch setData:arguments[@"data"] forDocument:document];
     }
     result(nil);
   } else if ([@"WriteBatch#updateData" isEqualToString:call.method]) {
-    NSNumber *handle = call.arguments[@"handle"];
-    FIRDocumentReference *document = getDocumentReference(call.arguments);
+    NSNumber *handle = arguments[@"handle"];
     FIRWriteBatch *batch = [_batches objectForKey:handle];
-    [batch updateData:call.arguments[@"data"] forDocument:document];
+    [batch updateData:arguments[@"data"] forDocument:arguments.documentReference];
     result(nil);
   } else if ([@"WriteBatch#delete" isEqualToString:call.method]) {
-    NSNumber *handle = call.arguments[@"handle"];
-    FIRDocumentReference *document = getDocumentReference(call.arguments);
+    NSNumber *handle = arguments[@"handle"];
     FIRWriteBatch *batch = [_batches objectForKey:handle];
-    [batch deleteDocument:document];
+    [batch deleteDocument:arguments.documentReference];
     result(nil);
   } else if ([@"WriteBatch#commit" isEqualToString:call.method]) {
-    NSNumber *handle = call.arguments[@"handle"];
+    NSNumber *handle = arguments[@"handle"];
     FIRWriteBatch *batch = [_batches objectForKey:handle];
     [batch commitWithCompletion:defaultCompletionBlock];
     [_batches removeObjectForKey:handle];

@@ -69,15 +69,11 @@ class DocumentReference {
   ///
   /// If no document exists, the read will return null.
   Future<DocumentSnapshot> get() async {
-    final Map<dynamic, dynamic> data = await Firestore.channel.invokeMethod(
+    final Map<dynamic, dynamic> result = await Firestore.channel.invokeMethod(
       'DocumentReference#get',
       <String, dynamic>{'app': firestore.app.name, 'path': path},
     );
-    return new DocumentSnapshot._(
-      data['path'],
-      _asStringKeyedMap(data['data']),
-      Firestore.instance,
-    );
+    return new DocumentSnapshot._(result, firestore);
   }
 
   /// Deletes the document referred to by this [DocumentReference].
@@ -96,36 +92,32 @@ class DocumentReference {
     );
   }
 
-  /// Notifies of documents at this location
-  // TODO(jackson): Reduce code duplication with [Query]
-  Stream<DocumentSnapshot> snapshots() {
-    Future<int> _handle;
-    // It's fine to let the StreamController be garbage collected once all the
-    // subscribers have cancelled; this analyzer warning is safe to ignore.
-    StreamController<DocumentSnapshot> controller; // ignore: close_sinks
-    controller = new StreamController<DocumentSnapshot>.broadcast(
-      onListen: () {
-        _handle = Firestore.channel.invokeMethod(
-          'Query#addDocumentListener',
+  /// [DocumentSnapshot] events corresponding to this reference's location
+  ///
+  /// If [includeMetadataChanges] is true, both document and query metadata
+  /// changes are included.
+
+  Stream<DocumentSnapshot> snapshots({ bool includeMetadataChanges: false }) {
+    return Firestore._snapshots(
+      onListen: (int handle) {
+        Firestore.channel.invokeMethod(
+          'DocumentReference#addDocumentListener',
           <String, dynamic>{
+            'handle': handle,
             'app': firestore.app.name,
             'path': path,
+            'includeMetadataChanges': includeMetadataChanges,
           },
-        ).then<int>((dynamic result) => result);
-        _handle.then((int handle) {
-          Firestore._documentObservers[handle] = controller;
-        });
+        );
       },
-      onCancel: () {
-        _handle.then((int handle) async {
-          await Firestore.channel.invokeMethod(
-            'Query#removeListener',
-            <String, dynamic>{'handle': handle},
-          );
-          Firestore._queryObservers.remove(handle);
-        });
+      onCancel: (int handle) {
+        Firestore.channel.invokeMethod(
+          'DocumentReference#removeListener',
+          <String, dynamic>{'handle': handle},
+        );
       },
-    );
-    return controller.stream;
+    ).map((Map<dynamic, dynamic> snapshot) {
+      return new DocumentSnapshot._(snapshot, this.firestore);
+    });
   }
 }
