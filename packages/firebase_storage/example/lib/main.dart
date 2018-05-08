@@ -66,8 +66,11 @@ class _MyHomePageState extends State<MyHomePage> {
     final String rand = "${new Random().nextInt(10000)}";
     final StorageReference ref =
         widget.storage.ref().child('text').child('foo$rand.txt');
-    final StorageUploadTask uploadTask =
-        ref.putFile(file, const StorageMetadata(contentLanguage: "en"));
+    final StorageUploadTask uploadTask = ref.putFile(
+        file,
+        const StorageMetadata(
+            contentLanguage: 'en',
+            customMetadata: <String, String>{'activity': 'test'}));
 
     final Uri downloadUrl = (await uploadTask.future).downloadUrl;
     final http.Response downloadData = await http.get(downloadUrl);

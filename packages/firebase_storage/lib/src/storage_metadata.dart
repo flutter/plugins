@@ -13,6 +13,7 @@ class StorageMetadata {
     this.contentEncoding,
     this.contentLanguage,
     this.contentType,
+    this.customMetadata,
   })  : bucket = null,
         generation = null,
         metadataGeneration = null,
@@ -37,7 +38,8 @@ class StorageMetadata {
         contentDisposition = map['contentDisposition'],
         contentLanguage = map['contentLanguage'],
         contentType = map['contentType'],
-        contentEncoding = map['contentEncoding'];
+        contentEncoding = map['contentEncoding'],
+        customMetadata = map['customMetadata']?.cast<String, String>();
 
   /// The owning Google Cloud Storage bucket for the [StorageReference].
   final String bucket;
@@ -81,4 +83,7 @@ class StorageMetadata {
 
   /// The content type (MIME type) of the [StorageReference].
   final String contentType;
+
+  /// Custom metadata for the [StorageReference].
+  final Map<String, String> customMetadata;
 }

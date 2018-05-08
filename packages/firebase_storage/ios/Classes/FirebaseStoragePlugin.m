@@ -208,6 +208,8 @@
     metadata.contentLanguage = dictionary[@"contentLanguage"];
   if (![dictionary[@"contentType"] isEqual:[NSNull null]])
     metadata.contentType = dictionary[@"contentType"];
+  if (![dictionary[@"customMetadata"] isEqual:[NSNull null]])
+    metadata.customMetadata = dictionary[@"customMetadata"];
   return metadata;
 }
 
@@ -231,6 +233,7 @@
   [dictionary setValue:[metadata contentLanguage] forKey:@"contentLanguage"];
   [dictionary setValue:[metadata contentType] forKey:@"contentType"];
   [dictionary setValue:[metadata name] forKey:@"name"];
+  [dictionary setValue:[metadata customMetadata] forKey:@"customMetadata"];
   return dictionary;
 }
 
