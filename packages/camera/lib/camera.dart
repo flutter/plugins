@@ -107,6 +107,9 @@ class CameraValue {
   /// True after [CameraController.initialize] has completed successfully.
   final bool isInitialized;
 
+  /// True when a picture capture request has been sent but as not yet returned.
+  final bool isTakingPicture;
+
   /// True when the camera is recording (not the same as previewing).
   final bool isRecordingVideo;
 
@@ -117,14 +120,19 @@ class CameraValue {
   /// Is `null` until  [isInitialized] is `true`.
   final Size previewSize;
 
-  const CameraValue(
-      {this.isInitialized,
-      this.errorDescription,
-      this.previewSize,
-      this.isRecordingVideo});
+  const CameraValue({
+    this.isInitialized,
+    this.errorDescription,
+    this.previewSize,
+    this.isRecordingVideo,
+    this.isTakingPicture,
+  });
 
   const CameraValue.uninitialized()
-      : this(isInitialized: false, isRecordingVideo: false);
+      : this(
+            isInitialized: false,
+            isRecordingVideo: false,
+            isTakingPicture: false);
 
   /// Convenience getter for `previewSize.height / previewSize.width`.
   ///
@@ -136,6 +144,7 @@ class CameraValue {
   CameraValue copyWith({
     bool isInitialized,
     bool isRecordingVideo,
+    bool isTakingPicture,
     String errorDescription,
     Size previewSize,
   }) {
@@ -144,14 +153,16 @@ class CameraValue {
       errorDescription: errorDescription,
       previewSize: previewSize ?? this.previewSize,
       isRecordingVideo: isRecordingVideo ?? this.isRecordingVideo,
+      isTakingPicture: isTakingPicture ?? this.isTakingPicture,
     );
   }
 
   @override
   String toString() {
     return '$runtimeType('
-        'recordingVideo: $isRecordingVideo, '
-        'initialized: $isInitialized, '
+        'isRecordingVideo: $isRecordingVideo, '
+        'isRecordingVideo: $isRecordingVideo, '
+        'isInitialized: $isInitialized, '
         'errorDescription: $errorDescription, '
         'previewSize: $previewSize)';
   }
@@ -201,7 +212,6 @@ class CameraController extends ValueNotifier<CameraValue> {
         ),
       );
     } on PlatformException catch (e) {
-      value = value.copyWith(errorDescription: e.message);
       throw new CameraException(e.code, e.message);
     }
     _eventSubscription =
@@ -243,17 +253,25 @@ class CameraController extends ValueNotifier<CameraValue> {
   Future<Null> takePicture(String path) async {
     if (!value.isInitialized || _isDisposed) {
       throw new CameraException(
-        'Uninitialized capture()',
-        'capture() was called on uninitialized CameraController',
+        'Uninitialized CameraController.',
+        'takePicture was called on uninitialized CameraController',
+      );
+    }
+    if (value.isTakingPicture) {
+      throw new CameraException(
+        'Previous capture has not returned yet.',
+        'takePicture was called before the previous capture returned.',
       );
     }
     try {
+      value = value.copyWith(isTakingPicture: true);
       await _channel.invokeMethod(
         'takePicture',
         <String, dynamic>{'textureId': _textureId, 'path': path},
       );
+      value = value.copyWith(isTakingPicture: false);
     } on PlatformException catch (e) {
-      value = value.copyWith(errorDescription: e.message);
+      value = value.copyWith(isTakingPicture: false);
       throw new CameraException(e.code, e.message);
     }
   }
@@ -275,6 +293,12 @@ class CameraController extends ValueNotifier<CameraValue> {
         'startVideoRecording was called on uninitialized CameraController',
       );
     }
+    if (value.isRecordingVideo) {
+      throw new CameraException(
+        'A video recording is already started.',
+        'startVideoRecording was called when a recording is already started.',
+      );
+    }
     try {
       await _channel.invokeMethod(
         'startVideoRecording',
@@ -282,7 +306,6 @@ class CameraController extends ValueNotifier<CameraValue> {
       );
       value = value.copyWith(isRecordingVideo: true);
     } on PlatformException catch (e) {
-      value = value.copyWith(errorDescription: e.message);
       throw new CameraException(e.code, e.message);
     }
   }
@@ -295,6 +318,12 @@ class CameraController extends ValueNotifier<CameraValue> {
         'stopVideoRecording was called on uninitialized CameraController',
       );
     }
+    if (!value.isRecordingVideo) {
+      throw new CameraException(
+        'No video is recording',
+        'stopVideoRecording was called when no video is recording.',
+      );
+    }
     try {
       value = value.copyWith(isRecordingVideo: false);
       await _channel.invokeMethod(
@@ -302,7 +331,6 @@ class CameraController extends ValueNotifier<CameraValue> {
         <String, dynamic>{'textureId': _textureId},
       );
     } on PlatformException catch (e) {
-      value = value.copyWith(errorDescription: e.message);
       throw new CameraException(e.code, e.message);
     }
   }

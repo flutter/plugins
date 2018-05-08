@@ -218,7 +218,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
     try {
       await controller.initialize();
     } on CameraException catch (e) {
-      logError(e.code, e.description);
+      _showCameraException(e);
     }
 
     if (mounted) {
@@ -259,15 +259,22 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
       showInSnackBar('Error: select a camera first.');
       return null;
     }
+
     final Directory extDir = await getApplicationDocumentsDirectory();
     final String dirPath = '${extDir.path}/Movies/flutter_test';
     await new Directory(dirPath).create(recursive: true);
     final String filePath = '$dirPath/${timestamp()}.mp4';
+
+    if (controller.value.isRecordingVideo) {
+      // A recording is already started, do nothing.
+      return null;
+    }
+
     try {
       videoPath = filePath;
       await controller.startVideoRecording(filePath);
     } on CameraException catch (e) {
-      logError(e.code, e.description);
+      _showCameraException(e);
       return null;
     }
     return filePath;
@@ -278,7 +285,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
       try {
         await controller.stopVideoRecording();
       } on CameraException catch (e) {
-        logError(e.code, e.description);
+        _showCameraException(e);
       }
       final VideoPlayerController vcontroller =
           new VideoPlayerController.file(new File(videoPath));
@@ -313,13 +320,24 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
     final String dirPath = '${extDir.path}/Pictures/flutter_test';
     await new Directory(dirPath).create(recursive: true);
     final String filePath = '$dirPath/${timestamp()}.jpg';
+
+    if (controller.value.isTakingPicture) {
+      // A capture is already pending, do nothing.
+      return null;
+    }
+
     try {
       await controller.takePicture(filePath);
     } on CameraException catch (e) {
-      logError(e.code, e.description);
+      _showCameraException(e);
       return null;
     }
     return filePath;
+  }
+
+  void _showCameraException(CameraException e) {
+    logError(e.code, e.description);
+    showInSnackBar('Error: ${e.code}\n${e.description}');
   }
 }
 
