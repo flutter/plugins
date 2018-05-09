@@ -23,8 +23,9 @@ class StorageMetadata {
         creationTimeMillis = null,
         updatedTimeMillis = null,
         md5Hash = null,
-        customMetadata =
-            customMetadata == null ? null : Map.unmodifiable(customMetadata);
+        customMetadata = customMetadata == null
+            ? null
+            : Map<String, String>.unmodifiable(customMetadata);
 
   StorageMetadata._fromMap(Map<dynamic, dynamic> map)
       : bucket = map['bucket'],
@@ -43,7 +44,7 @@ class StorageMetadata {
         contentEncoding = map['contentEncoding'],
         customMetadata = map['customMetadata'] == null
             ? null
-            : new Map.unmodifiable(
+            : new Map<String, String>.unmodifiable(
                 map['customMetadata'].cast<String, String>());
 
   /// The owning Google Cloud Storage bucket for the [StorageReference].
