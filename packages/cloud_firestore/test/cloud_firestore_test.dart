@@ -42,40 +42,48 @@ void main() {
         switch (methodCall.method) {
           case 'Query#addSnapshotListener':
             final int handle = mockHandleId++;
-            BinaryMessages.handlePlatformMessage(
-              Firestore.channel.name,
-              Firestore.channel.codec.encodeMethodCall(
-                new MethodCall('QuerySnapshot', <String, dynamic>{
-                  'app': app.name,
-                  'handle': handle,
-                  'paths': <String>["${methodCall.arguments['path']}/0"],
-                  'documents': <dynamic>[kMockDocumentSnapshotData],
-                  'documentChanges': <dynamic>[
-                    <String, dynamic>{
-                      'oldIndex': -1,
-                      'newIndex': 0,
-                      'type': 'DocumentChangeType.added',
-                      'document': kMockDocumentSnapshotData,
-                    },
-                  ],
-                }),
-              ),
-              (_) {},
-            );
+            // Wait for a microtask before sending a message back.
+            // Otherwise the first request didn't have the time to finish.
+            scheduleMicrotask(() {
+              BinaryMessages.handlePlatformMessage(
+                Firestore.channel.name,
+                Firestore.channel.codec.encodeMethodCall(
+                  new MethodCall('QuerySnapshot', <String, dynamic>{
+                    'app': app.name,
+                    'handle': handle,
+                    'paths': <String>["${methodCall.arguments['path']}/0"],
+                    'documents': <dynamic>[kMockDocumentSnapshotData],
+                    'documentChanges': <dynamic>[
+                      <String, dynamic>{
+                        'oldIndex': -1,
+                        'newIndex': 0,
+                        'type': 'DocumentChangeType.added',
+                        'document': kMockDocumentSnapshotData,
+                      },
+                    ],
+                  }),
+                ),
+                (_) {},
+              );
+            });
             return handle;
           case 'Query#addDocumentListener':
             final int handle = mockHandleId++;
-            BinaryMessages.handlePlatformMessage(
-              Firestore.channel.name,
-              Firestore.channel.codec.encodeMethodCall(
-                new MethodCall('DocumentSnapshot', <String, dynamic>{
-                  'handle': handle,
-                  'path': methodCall.arguments['path'],
-                  'data': kMockDocumentSnapshotData,
-                }),
-              ),
-              (_) {},
-            );
+            // Wait for a microtask before sending a message back.
+            // Otherwise the first request didn't have the time to finish.
+            scheduleMicrotask(() {
+              BinaryMessages.handlePlatformMessage(
+                Firestore.channel.name,
+                Firestore.channel.codec.encodeMethodCall(
+                  new MethodCall('DocumentSnapshot', <String, dynamic>{
+                    'handle': handle,
+                    'path': methodCall.arguments['path'],
+                    'data': kMockDocumentSnapshotData,
+                  }),
+                ),
+                (_) {},
+              );
+            });
             return handle;
           case 'Query#getDocuments':
             return <String, dynamic>{
