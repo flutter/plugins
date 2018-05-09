@@ -65,6 +65,10 @@ int nextHandle = 0;
           [self sendResult:result forUser:user error:nil];
           [auth removeAuthStateDidChangeListener:listener];
         }];
+  } else if ([@"currentUserReload" isEqualToString:call.method]) {
+      [[FIRAuth auth].currentUser reloadWithCompletion:^(NSError *_Nullable error) {
+        [self sendResult:result forProviders:nil error:error];
+      }];
   } else if ([@"signInAnonymously" isEqualToString:call.method]) {
     [[FIRAuth auth] signInAnonymouslyWithCompletion:^(FIRUser *user, NSError *error) {
       [self sendResult:result forUser:user error:error];
