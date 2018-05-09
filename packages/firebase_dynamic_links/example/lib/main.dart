@@ -11,53 +11,38 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  String _linkMessage;
+  bool _isCreatingLink = false;
 
-  Future<void> _getDynamicLink() async {
+  Future<void> _createDynamicLink(bool short) async {
+    setState(() {
+      _isCreatingLink = true;
+    });
+
     final DynamicLinkComponents components = new DynamicLinkComponents(
-        domain: "cx4k7.app.goo.gl", link: Uri.parse("https://google.com"));
-
-    components.androidParameters = new AndroidParameters(
-      packageName: "io.flutter.plugins.firebasedynamiclinksexample",
-      fallbackUrl: Uri.parse("google.com"),
-      minimumVersion: 23,
+      domain: "cx4k7.app.goo.gl",
+      link: Uri.parse("https://google.com"),
+      androidParameters: new AndroidParameters(
+        packageName: "io.flutter.plugins.firebasedynamiclinksexample",
+      ),
+      dynamicLinkComponentsOptions: new DynamicLinkComponentsOptions(
+          shortDynamicLinkPathLength: ShortDynamicLinkPathLength.short),
+      iosParameters: new IosParameters(
+        bundleId: "io.flutter.plugins.firebaseDynamicLinksExample",
+      ),
     );
 
-    components.googleAnalyticsParameters = new GoogleAnalyticsParameters(
-      campaign: "champagne",
-      medium: "middle",
-      source: "src",
-      content: "tentpent",
-      term: "midterm",
-    );
+    Uri url;
+    if (short) {
+      url = await components.shortUrl;
+    } else {
+      url = await components.url;
+    }
 
-    components.iosParameters = new IosParameters(
-      bundleId: "poopId",
-      appStoreId: "storeApp",
-      customScheme: "schleme",
-      fallbackUrl: Uri.parse("uallback"),
-      ipadBundleId: "budleIpad",
-      ipadFallbackUrl: Uri.parse("fallbackurlipad"),
-      minimumVersion: "version16",
-    );
-
-    components.itunesConnectAnalyticsParameters = new ItunesConnectAnalyticsParameters(
-      affiliateToken: "affi",
-      campaignToken: "campagne",
-      providerToken: "provide",
-    );
-
-    components.navigationInfoParameters = new NavigationInfoParameters(
-      forcedRedirectEnabled: true,
-    );
-
-    components.socialMetaTagParameters = new SocialMetaTagParameters(
-      description: "describe",
-      imageUrl: Uri.parse("internet"),
-      title: "tits",
-    );
-
-    final Uri uri = await components.uri;
-    print(uri.toString());
+    setState(() {
+      _linkMessage = url.toString();
+      _isCreatingLink = false;
+    });
   }
 
   @override
@@ -65,11 +50,29 @@ class _MyAppState extends State<MyApp> {
     return new MaterialApp(
       home: new Scaffold(
         appBar: new AppBar(
-          title: const Text('Plugin example app'),
+          title: const Text("Dynamic Links Example"),
         ),
         body: new Center(
-          child: new RaisedButton(
-              onPressed: _getDynamicLink, child: const Text("Create Link")),
+          child: new Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              new ButtonBar(
+                alignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  new RaisedButton(
+                      onPressed:
+                      !_isCreatingLink ? () => _createDynamicLink(false) : null,
+                      child: const Text("Get Long Link")),
+                  new RaisedButton(
+                      onPressed:
+                      !_isCreatingLink ? () => _createDynamicLink(true) : null,
+                      child: const Text("Get Short Link")),
+                ]),
+              new Text(_linkMessage ?? "",
+                textAlign: TextAlign.center,
+              ),
+            ],
+          )
         ),
       ),
     );
