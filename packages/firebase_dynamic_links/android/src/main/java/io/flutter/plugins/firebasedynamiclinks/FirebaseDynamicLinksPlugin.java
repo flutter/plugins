@@ -1,9 +1,13 @@
 package io.flutter.plugins.firebasedynamiclinks;
 
 import android.net.Uri;
+import android.support.annotation.NonNull;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.dynamiclinks.DynamicLink;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
+import com.google.firebase.dynamiclinks.ShortDynamicLink;
 
 import java.util.Map;
 
@@ -34,15 +38,56 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
-    if (call.method.equals("DynamicLinkComponents#uri")) {
-      Uri uri = createDynamicLink((Map<String, Object>) call.arguments());
-      result.success(uri.toString());
+    if (call.method.equals("DynamicLinkComponents#url")) {
+      DynamicLink.Builder builder = setupParameters((Map<String, Object>) call.arguments());
+      result.success(builder.buildDynamicLink().getUri().toString());
+    } else if (call.method.equals("DynamicLinkComponents#shortUrl")) {
+      buildShortDynamicLink((Map<String, Object>) call.arguments(), result);
     } else {
       result.notImplemented();
     }
   }
 
-  private Uri createDynamicLink(Map<String, Object> arguments) {
+  private void buildShortDynamicLink(Map<String, Object> arguments, final Result result) {
+    DynamicLink.Builder builder = setupParameters(arguments);
+
+    Integer suffix = null;
+
+    @SuppressWarnings("unchecked")
+    Map<String, Object> dynamicLinkComponentsOptions =
+        (Map<String, Object>) arguments.get("dynamicLinkComponentsOptions");
+    if (dynamicLinkComponentsOptions != null) {
+      Object shortDynamicLinkPathLength = dynamicLinkComponentsOptions.get("shortDynamicLinkPathLength");
+
+      if (shortDynamicLinkPathLength != null) {
+        switch((int) shortDynamicLinkPathLength) {
+          case 0:
+            suffix = ShortDynamicLink.Suffix.UNGUESSABLE;
+            break;
+          case 1:
+            suffix = ShortDynamicLink.Suffix.SHORT;
+            break;
+          default:
+            break;
+        }
+      }
+    }
+
+    OnCompleteListener<ShortDynamicLink> onCompleteListener = new OnCompleteListener<ShortDynamicLink>() {
+      @Override
+      public void onComplete(@NonNull Task<ShortDynamicLink> task) {
+        result.success(task.getResult().getShortLink().toString());
+      }
+    };
+
+    if (suffix != null) {
+      builder.buildShortDynamicLink(suffix).addOnCompleteListener(onCompleteListener);
+    } else {
+      builder.buildShortDynamicLink().addOnCompleteListener(onCompleteListener);
+    }
+  }
+
+  private DynamicLink.Builder setupParameters(Map<String, Object> arguments) {
     DynamicLink.Builder dynamicLinkBuilder = FirebaseDynamicLinks.getInstance().createDynamicLink();
 
     // These two don't require null check because app should crash if these are null.
@@ -165,6 +210,6 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
       dynamicLinkBuilder.setSocialMetaTagParameters(builder.build());
     }
 
-    return dynamicLinkBuilder.buildDynamicLink().getUri();
+    return dynamicLinkBuilder;
   }
 }

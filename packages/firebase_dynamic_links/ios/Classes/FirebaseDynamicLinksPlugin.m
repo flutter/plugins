@@ -22,15 +22,26 @@
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
-  if ([@"DynamicLinkComponents#uri" isEqualToString:call.method]) {
-    NSURL *url = [self createLink:call.arguments];
-    result([url absoluteString]);
+  if ([@"DynamicLinkComponents#url" isEqualToString:call.method]) {
+    FIRDynamicLinkComponents *components = [self setupParameters:call.arguments];
+    result([components.url absoluteString]);
+  } else if ([@"DynamicLinkComponents#shortUrl" isEqualToString:call.method]) {
+    FIRDynamicLinkComponents *components = [self setupParameters:call.arguments];
+    [components shortenWithCompletion:^(NSURL *_Nullable shortURL,
+                                        NSArray *_Nullable warnings,
+                                        NSError *_Nullable error) {
+      if (error) {
+        NSLog(@"Error generating short link: %@", error.description);
+        return;
+      }
+      result([shortURL absoluteString]);
+    }];
   } else {
     result(FlutterMethodNotImplemented);
   }
 }
 
-- (NSURL *)createLink:(NSDictionary *)arguments {
+- (FIRDynamicLinkComponents *)setupParameters:(NSDictionary *)arguments {
   NSURL *link = [NSURL URLWithString:arguments[@"link"]];
   NSString *domain = arguments[@"domain"];
 
@@ -49,6 +60,28 @@
     if (![minimumVersion isEqual:[NSNull null]]) androidParams.minimumVersion = ((NSNumber *) minimumVersion).integerValue;
 
     components.androidParameters = androidParams;
+  }
+
+  if (![arguments[@"dynamicLinkComponentsOptions"] isEqual:[NSNull null]]) {
+    NSDictionary *params = arguments[@"dynamicLinkComponentsOptions"];
+
+    FIRDynamicLinkComponentsOptions *options = [FIRDynamicLinkComponentsOptions options];
+
+    NSNumber *shortDynamicLinkPathLength = params[@"shortDynamicLinkPathLength"];
+    if (![shortDynamicLinkPathLength isEqual:[NSNull null]]) {
+      switch (shortDynamicLinkPathLength.intValue) {
+        case 0:
+          options.pathLength = FIRShortDynamicLinkPathLengthUnguessable;
+          break;
+        case 1:
+          options.pathLength = FIRShortDynamicLinkPathLengthShort;
+          break;
+        default:
+          break;
+      }
+    }
+
+    components.options = options;
   }
 
   if (![arguments[@"googleAnalyticsParameters"] isEqual:[NSNull null]]) {
@@ -140,7 +173,7 @@
     components.socialMetaTagParameters = socialMetaTagParameters;
   }
 
-  return components.url;
+  return components;
 }
 
 @end

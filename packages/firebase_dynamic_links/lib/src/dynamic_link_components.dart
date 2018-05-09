@@ -25,25 +25,32 @@ class DynamicLinkComponents {
   NavigationInfoParameters navigationInfoParameters;
   SocialMetaTagParameters socialMetaTagParameters;
 
-  Future<Uri> get uri => _generateUri();
+  Future<Uri> get url => _generateUrl();
+  Future<Uri> get shortUrl => _generateShortUrl();
 
-  Future<Uri> _generateUri() async {
-    final Map<String, dynamic> data = <String, dynamic>{
-      'androidParameters': androidParameters?._data,
-      'domain': domain,
-      'dynamicLinkComponentsOptions': dynamicLinkComponentsOptions?._data,
-      'googleAnalyticsParameters': googleAnalyticsParameters?._data,
-      'iosParameters': iosParameters?._data,
-      'itunesConnectAnalyticsParameters':
-          itunesConnectAnalyticsParameters?._data,
-      'link': link?.toString(),
-      'longLink': longLink?.toString(),
-      'navigationInfoParameters': navigationInfoParameters?._data,
-      'socialMetaTagParameters': socialMetaTagParameters?._data,
-    };
+  Map<String, dynamic> get _data => <String, dynamic>{
+    'androidParameters': androidParameters?._data,
+    'domain': domain,
+    'dynamicLinkComponentsOptions': dynamicLinkComponentsOptions?._data,
+    'googleAnalyticsParameters': googleAnalyticsParameters?._data,
+    'iosParameters': iosParameters?._data,
+    'itunesConnectAnalyticsParameters':
+    itunesConnectAnalyticsParameters?._data,
+    'link': link?.toString(),
+    'longLink': longLink?.toString(),
+    'navigationInfoParameters': navigationInfoParameters?._data,
+    'socialMetaTagParameters': socialMetaTagParameters?._data,
+  };
 
+  Future<Uri> _generateUrl() async {
     final String url = await FirebaseDynamicLinks.channel
-        .invokeMethod("DynamicLinkComponents#uri", data);
+        .invokeMethod("DynamicLinkComponents#url", _data);
     return Uri.parse(url);
+  }
+
+  Future<Uri> _generateShortUrl() async {
+    final String shortUrl = await FirebaseDynamicLinks.channel
+        .invokeMethod("DynamicLinkComponents#shortUrl", _data);
+    return Uri.parse(shortUrl);
   }
 }
