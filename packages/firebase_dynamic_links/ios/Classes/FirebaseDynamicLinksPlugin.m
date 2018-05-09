@@ -36,6 +36,38 @@
       }
       result([shortURL absoluteString]);
     }];
+  } else if ([@"DynamicLinkComponents#shortenUrl" isEqualToString:call.method]) {
+    FIRDynamicLinkComponentsOptions *options;
+    if (![call.arguments[@"dynamicLinkComponentsOptions"] isEqual:[NSNull null]]) {
+      NSDictionary *params = call.arguments[@"dynamicLinkComponentsOptions"];
+
+      options = [FIRDynamicLinkComponentsOptions options];
+
+      NSNumber *shortDynamicLinkPathLength = params[@"shortDynamicLinkPathLength"];
+      if (![shortDynamicLinkPathLength isEqual:[NSNull null]]) {
+        switch (shortDynamicLinkPathLength.intValue) {
+          case 0:
+            options.pathLength = FIRShortDynamicLinkPathLengthUnguessable;
+            break;
+          case 1:
+            options.pathLength = FIRShortDynamicLinkPathLengthShort;
+            break;
+          default:
+            break;
+        }
+      }
+    }
+    NSURL *url = [NSURL URLWithString:call.arguments[@"url"]];
+    [FIRDynamicLinkComponents shortenURL:url options:options
+                              completion:^(NSURL * _Nullable shortURL,
+                                           NSArray<NSString *> * _Nullable warnings,
+                                           NSError * _Nullable error) {
+      if (error) {
+        NSLog(@"Error generating short link: %@", error.description);
+        return;
+      }
+      result([shortURL absoluteString]);
+    }];
   } else {
     result(FlutterMethodNotImplemented);
   }

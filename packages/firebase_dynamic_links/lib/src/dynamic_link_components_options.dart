@@ -5,7 +5,7 @@ enum ShortDynamicLinkPathLength {unguessable, short}
 class DynamicLinkComponentsOptions {
   DynamicLinkComponentsOptions({this.shortDynamicLinkPathLength});
 
-  ShortDynamicLinkPathLength shortDynamicLinkPathLength;
+  final ShortDynamicLinkPathLength shortDynamicLinkPathLength;
 
   Map<String, dynamic> get _data => <String, dynamic>{
         'shortDynamicLinkPathLength': shortDynamicLinkPathLength?.index,

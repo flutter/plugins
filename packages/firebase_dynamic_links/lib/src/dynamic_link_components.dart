@@ -9,7 +9,6 @@ class DynamicLinkComponents {
     this.iosParameters,
     this.itunesConnectAnalyticsParameters,
     @required this.link,
-    this.longLink,
     this.navigationInfoParameters,
     this.socialMetaTagParameters,
   });
@@ -21,26 +20,34 @@ class DynamicLinkComponents {
   IosParameters iosParameters;
   ItunesConnectAnalyticsParameters itunesConnectAnalyticsParameters;
   Uri link;
-  Uri longLink;
   NavigationInfoParameters navigationInfoParameters;
   SocialMetaTagParameters socialMetaTagParameters;
+
+  static Future<Uri> shortenUrl(Uri url,
+      [DynamicLinkComponentsOptions options]) async {
+    final String shortUrl = await FirebaseDynamicLinks.channel
+        .invokeMethod("DynamicLinkComponents#shortenUrl", <String, dynamic>{
+      'url': url.toString(),
+      'dynamicLinkComponentsOptions': options?._data,
+    });
+    return Uri.parse(shortUrl);
+  }
 
   Future<Uri> get url => _generateUrl();
   Future<Uri> get shortUrl => _generateShortUrl();
 
   Map<String, dynamic> get _data => <String, dynamic>{
-    'androidParameters': androidParameters?._data,
-    'domain': domain,
-    'dynamicLinkComponentsOptions': dynamicLinkComponentsOptions?._data,
-    'googleAnalyticsParameters': googleAnalyticsParameters?._data,
-    'iosParameters': iosParameters?._data,
-    'itunesConnectAnalyticsParameters':
-    itunesConnectAnalyticsParameters?._data,
-    'link': link?.toString(),
-    'longLink': longLink?.toString(),
-    'navigationInfoParameters': navigationInfoParameters?._data,
-    'socialMetaTagParameters': socialMetaTagParameters?._data,
-  };
+        'androidParameters': androidParameters?._data,
+        'domain': domain,
+        'dynamicLinkComponentsOptions': dynamicLinkComponentsOptions?._data,
+        'googleAnalyticsParameters': googleAnalyticsParameters?._data,
+        'iosParameters': iosParameters?._data,
+        'itunesConnectAnalyticsParameters':
+            itunesConnectAnalyticsParameters?._data,
+        'link': link?.toString(),
+        'navigationInfoParameters': navigationInfoParameters?._data,
+        'socialMetaTagParameters': socialMetaTagParameters?._data,
+      };
 
   Future<Uri> _generateUrl() async {
     final String url = await FirebaseDynamicLinks.channel

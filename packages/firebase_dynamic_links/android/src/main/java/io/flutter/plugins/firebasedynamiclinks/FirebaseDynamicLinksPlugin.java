@@ -42,15 +42,21 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
       DynamicLink.Builder builder = setupParameters((Map<String, Object>) call.arguments());
       result.success(builder.buildDynamicLink().getUri().toString());
     } else if (call.method.equals("DynamicLinkComponents#shortUrl")) {
-      buildShortDynamicLink((Map<String, Object>) call.arguments(), result);
+      Map<String, Object> arguments = (Map<String, Object>) call.arguments();
+      DynamicLink.Builder builder = setupParameters(arguments);
+      buildShortDynamicLink(builder, (Map<String, Object>) call.arguments(), result);
+    } else if (call.method.equals("DynamicLinkComponents#shortenUrl")) {
+      Map<String, Object> arguments = (Map<String, Object>) call.arguments();
+      DynamicLink.Builder builder = FirebaseDynamicLinks.getInstance().createDynamicLink();
+      Uri url = Uri.parse((String) arguments.get("url"));
+      builder.setLongLink(url);
+      buildShortDynamicLink(builder, arguments, result);
     } else {
       result.notImplemented();
     }
   }
 
-  private void buildShortDynamicLink(Map<String, Object> arguments, final Result result) {
-    DynamicLink.Builder builder = setupParameters(arguments);
-
+  private void buildShortDynamicLink(DynamicLink.Builder builder, Map<String, Object> arguments, final Result result) {
     Integer suffix = null;
 
     @SuppressWarnings("unchecked")
@@ -93,9 +99,6 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
     // These two don't require null check because app should crash if these are null.
     dynamicLinkBuilder.setDynamicLinkDomain((String) arguments.get("domain"));
     dynamicLinkBuilder.setLink(Uri.parse((String) arguments.get("link")));
-
-    Object longLink = arguments.get("longLink");
-    if (longLink != null) dynamicLinkBuilder.setLongLink(Uri.parse((String) longLink));
 
     @SuppressWarnings("unchecked")
     Map<String, Object> androidParameters =
