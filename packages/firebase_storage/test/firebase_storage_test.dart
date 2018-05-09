@@ -292,7 +292,7 @@ void main() {
         });
 
         test('invokes correct method', () async {
-          await ref.updateMetadata(const StorageMetadata(
+          await ref.updateMetadata(new StorageMetadata(
             contentLanguage: 'en',
             customMetadata: <String, String>{'activity': 'test'},
           ));
@@ -321,7 +321,7 @@ void main() {
           expect((await ref.getMetadata()).contentLanguage, null);
           expect(
               (await ref.updateMetadata(
-                      const StorageMetadata(contentLanguage: 'en')))
+                      new StorageMetadata(contentLanguage: 'en')))
                   .contentLanguage,
               'en');
         });
