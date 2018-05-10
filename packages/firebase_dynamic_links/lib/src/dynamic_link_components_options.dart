@@ -7,7 +7,7 @@ part of firebase_dynamic_links;
 enum ShortDynamicLinkPathLength {unguessable, short}
 
 class DynamicLinkComponentsOptions {
-  DynamicLinkComponentsOptions([this.shortDynamicLinkPathLength]);
+  DynamicLinkComponentsOptions({this.shortDynamicLinkPathLength});
 
   final ShortDynamicLinkPathLength shortDynamicLinkPathLength;
 

@@ -29,8 +29,8 @@ class _MyAppState extends State<MyApp> {
       androidParameters: new AndroidParameters(
         packageName: "io.flutter.plugins.firebasedynamiclinksexample",
       ),
-      dynamicLinkComponentsOptions:
-          new DynamicLinkComponentsOptions(ShortDynamicLinkPathLength.short),
+      dynamicLinkComponentsOptions: new DynamicLinkComponentsOptions(
+          shortDynamicLinkPathLength: ShortDynamicLinkPathLength.short),
       iosParameters: new IosParameters(
         bundleId: "io.flutter.plugins.firebaseDynamicLinksExample",
       ),

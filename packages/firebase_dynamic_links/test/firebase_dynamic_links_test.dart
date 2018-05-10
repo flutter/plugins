@@ -41,7 +41,8 @@ void main() {
         final Uri url = Uri.parse("google.com");
         final DynamicLinkComponentsOptions options =
             new DynamicLinkComponentsOptions(
-                ShortDynamicLinkPathLength.unguessable);
+                shortDynamicLinkPathLength:
+                    ShortDynamicLinkPathLength.unguessable);
 
         await DynamicLinkComponents.shortenUrl(url, options);
 
@@ -105,7 +106,8 @@ void main() {
 
       test('$DynamicLinkComponentsOptions', () async {
         components.dynamicLinkComponentsOptions =
-            new DynamicLinkComponentsOptions(ShortDynamicLinkPathLength.short);
+            new DynamicLinkComponentsOptions(
+                shortDynamicLinkPathLength: ShortDynamicLinkPathLength.short);
 
         await components.url;
         await components.shortUrl;
@@ -303,7 +305,7 @@ void main() {
 
       test('$NavigationInfoParameters', () async {
         components.navigationInfoParameters =
-            new NavigationInfoParameters(true);
+            new NavigationInfoParameters(forcedRedirectEnabled: true);
 
         await components.url;
         await components.shortUrl;
