@@ -325,6 +325,9 @@
   } else {
     return NO;
   }
+  if (!_isAudioSetup) {
+    [self setUpCaptureSessionForAudio];
+  }
   _videoWriter =
       [[AVAssetWriter alloc] initWithURL:outputURL fileType:AVFileTypeQuickTimeMovie error:&error];
   NSParameterAssert(_videoWriter);
