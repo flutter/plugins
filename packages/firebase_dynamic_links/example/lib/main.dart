@@ -1,3 +1,7 @@
+// Copyright 2017, the Flutter project authors.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -25,8 +29,8 @@ class _MyAppState extends State<MyApp> {
       androidParameters: new AndroidParameters(
         packageName: "io.flutter.plugins.firebasedynamiclinksexample",
       ),
-      dynamicLinkComponentsOptions: new DynamicLinkComponentsOptions(
-          shortDynamicLinkPathLength: ShortDynamicLinkPathLength.short),
+      dynamicLinkComponentsOptions:
+          new DynamicLinkComponentsOptions(ShortDynamicLinkPathLength.short),
       iosParameters: new IosParameters(
         bundleId: "io.flutter.plugins.firebaseDynamicLinksExample",
       ),
@@ -53,27 +57,29 @@ class _MyAppState extends State<MyApp> {
           title: const Text("Dynamic Links Example"),
         ),
         body: new Center(
-          child: new Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              new ButtonBar(
+            child: new Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            new ButtonBar(
                 alignment: MainAxisAlignment.center,
                 children: <Widget>[
                   new RaisedButton(
-                      onPressed:
-                      !_isCreatingLink ? () => _createDynamicLink(false) : null,
+                      onPressed: !_isCreatingLink
+                          ? () => _createDynamicLink(false)
+                          : null,
                       child: const Text("Get Long Link")),
                   new RaisedButton(
-                      onPressed:
-                      !_isCreatingLink ? () => _createDynamicLink(true) : null,
+                      onPressed: !_isCreatingLink
+                          ? () => _createDynamicLink(true)
+                          : null,
                       child: const Text("Get Short Link")),
                 ]),
-              new Text(_linkMessage ?? "",
-                textAlign: TextAlign.center,
-              ),
-            ],
-          )
-        ),
+            new Text(
+              _linkMessage ?? "",
+              textAlign: TextAlign.center,
+            ),
+          ],
+        )),
       ),
     );
   }

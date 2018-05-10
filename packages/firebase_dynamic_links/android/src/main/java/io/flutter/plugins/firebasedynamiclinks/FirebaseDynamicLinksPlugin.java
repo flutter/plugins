@@ -17,23 +17,13 @@ import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 
-/**
- * FirebaseDynamicLinksPlugin
- */
+/** FirebaseDynamicLinksPlugin */
 public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
-  private Registrar registrar;
 
-  /**
-   * Plugin registration.
-   */
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel = new MethodChannel(registrar.messenger(),
         "plugins.flutter.io/firebase_dynamic_links");
-    channel.setMethodCallHandler(new FirebaseDynamicLinksPlugin(registrar));
-  }
-
-  FirebaseDynamicLinksPlugin(Registrar registrar) {
-    this.registrar = registrar;
+    channel.setMethodCallHandler(new FirebaseDynamicLinksPlugin());
   }
 
   @Override

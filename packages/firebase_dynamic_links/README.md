@@ -1,10 +1,80 @@
-# firebase_dynamic_links
+# Google Dynamic Links for Firebase
 
-A new Flutter plugin.
+[![pub package](https://img.shields.io/pub/v/firebase_dynamic_links.svg)](https://pub.dartlang.org/packages/firebase_dynamic_links)
+
+A Flutter plugin to use the [Google Dynamic Links for Firebase API](https://firebase.google.com/docs/dynamic-links/).
+
+For Flutter plugins for other Firebase products, see [FlutterFire.md](https://github.com/flutter/plugins/blob/master/FlutterFire.md).
+
+*Note*: This plugin is still under development, and some APIs might not be available yet. [Feedback](https://github.com/flutter/flutter/issues) and [Pull Requests](https://github.com/flutter/plugins/pulls) are most welcome!
+
+## Usage
+To use this plugin, add `firebase_dynamic_links` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/). You must also configure firebase dynamic links for each platform project: Android and iOS (see the example folder or https://codelabs.developers.google.com/codelabs/flutter-firebase/#4 for step by step details).
+
+## Create Dynamic Links
+
+You can create short or long Dynamic Links with the Firebase Dynamic Links Builder API. This API accepts either a long Dynamic Link or an object containing Dynamic Link parameters, and returns a URL like the following example:
+
+```dart
+
+https://abc123.app.goo.gl/WXYZ
+
+```
+
+You can create a Dynamic Link programmatically by setting the following parameters and getting the DynamicLinkComponents.url parameter.
+
+```dart
+
+final DynamicLinkComponents components = new DynamicLinkComponents(
+    domain: 'abc123.app.goo.gl',
+    link: Uri.parse('https://example.com/'),
+    androidParameters: new AndroidParameters(
+        packageName: 'com.example.android',
+        minimumVersion: 125,
+    ),
+    iosParameters: new IosParameters(
+        bundleId: 'com.example.ios',
+        minimumVersion: '1.0.1',
+        appStoreId: '123456789',
+    ),
+    googleAnalyticsParameters: new GoogleAnalyticsParameters(
+        campaign: 'example-promo',
+        medium: 'social',
+        source: 'orkut',
+    ),
+    itunesConnectAnalyticsParameters: new ItunesConnectAnalyticsParameters(
+      providerToken: '123456',
+      campaignToken: 'example-promo',
+    ),
+    socialMetaTagParameters:  new SocialMetaTagParameters(
+      title: 'Example of a Dynamic Link',
+      description: 'This link works whether app is installed or not!',
+    ),
+);
+
+final Uri dynamicLink = await components.url;
+
+```
+
+To create a short Dynamic Link, build DynamicLinkComponents the same way, but use get the link from the DynamicLinkComponents.shortUrl parameter.
+
+```dart
+
+final Uri shortDynamicLink = await components.shortUrl;
+
+```
+
+To shorten a long Dynamic Link, use the DynamicLinkComponents.shortenUrl method.
+
+```dart
+
+Uri shortenedLink = DynamicLinkComponents.shortenUrl(
+    Uri.parse('https://abc123.app.goo.gl/?link=https://example.com/&apn=com.example.android&ibn=com.example.ios'),
+    new DynamicLinkComponentsOptions(ShortDynamicLinkPathLength.short),
+);
+
+```
 
 ## Getting Started
 
-For help getting started with Flutter, view our online
-[documentation](https://flutter.io/).
-
-For help on editing plugin code, view the [documentation](https://flutter.io/platform-plugins/#edit-code).
+See the `example` directory for a complete sample app using Google Dynamic Links for Firebase.
