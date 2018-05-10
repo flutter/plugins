@@ -2,12 +2,12 @@
 
 #import "Firebase/Firebase.h"
 
-@implementation FirebaseDynamicLinksPlugin
+@implementation FLTFirebaseDynamicLinksPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   FlutterMethodChannel* channel = [FlutterMethodChannel
       methodChannelWithName:@"plugins.flutter.io/firebase_dynamic_links"
             binaryMessenger:[registrar messenger]];
-  FirebaseDynamicLinksPlugin* instance = [[FirebaseDynamicLinksPlugin alloc] init];
+  FLTFirebaseDynamicLinksPlugin* instance = [[FLTFirebaseDynamicLinksPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 

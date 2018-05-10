@@ -16,6 +16,7 @@ dev_dependencies:
 flutter:
   plugin:
     androidPackage: io.flutter.plugins.firebasedynamiclinks
+    iosPrefix: FLT
     pluginClass: FirebaseDynamicLinksPlugin
 
 environment:

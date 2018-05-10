@@ -4,6 +4,7 @@
 
 part of firebase_dynamic_links;
 
+/// The Dynamic Link analytics parameters.
 class GoogleAnalyticsParameters {
   GoogleAnalyticsParameters({
     @required this.campaign,
@@ -20,10 +21,19 @@ class GoogleAnalyticsParameters {
         source = null,
         term = null;
 
+  /// The utm_campaign analytics parameter.
   final String campaign;
+
+  /// The utm_content analytics parameter.
   final String content;
+
+  /// The utm_medium analytics parameter.
   final String medium;
+
+  /// The utm_source analytics parameter.
   final String source;
+
+  /// The utm_term analytics parameter.
   final String term;
 
   Map<String, dynamic> get _data => <String, dynamic>{

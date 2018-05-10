@@ -4,11 +4,14 @@
 
 part of firebase_dynamic_links;
 
+/// For specifying length for short Dynamic Links.
 enum ShortDynamicLinkPathLength {unguessable, short}
 
+/// Options class for defining how Dynamic Link URLs are generated.
 class DynamicLinkComponentsOptions {
   DynamicLinkComponentsOptions({this.shortDynamicLinkPathLength});
 
+  /// Specifies the length of the path component of a short Dynamic Link.
   final ShortDynamicLinkPathLength shortDynamicLinkPathLength;
 
   Map<String, dynamic> get _data => <String, dynamic>{

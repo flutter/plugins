@@ -1,4 +1,4 @@
 #import <Flutter/Flutter.h>
 
-@interface FirebaseDynamicLinksPlugin : NSObject<FlutterPlugin>
+@interface FLTFirebaseDynamicLinksPlugin : NSObject<FlutterPlugin>
 @end

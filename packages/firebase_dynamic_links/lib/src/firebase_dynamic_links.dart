@@ -4,6 +4,9 @@
 
 part of firebase_dynamic_links;
 
+/// Firebase Dynamic Links API.
+///
+/// You can get an instance by calling [FirebaseDynamicLinks.instance].
 class FirebaseDynamicLinks {
   FirebaseDynamicLinks._();
 
@@ -11,5 +14,6 @@ class FirebaseDynamicLinks {
   static const MethodChannel channel =
       const MethodChannel('plugins.flutter.io/firebase_dynamic_links');
 
+  /// Singleton of [FirebaseDynamicLinks].
   static final FirebaseDynamicLinks instance = new FirebaseDynamicLinks._();
 }
