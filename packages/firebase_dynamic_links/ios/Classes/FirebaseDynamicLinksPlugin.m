@@ -4,9 +4,9 @@
 
 @implementation FLTFirebaseDynamicLinksPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  FlutterMethodChannel* channel = [FlutterMethodChannel
-      methodChannelWithName:@"plugins.flutter.io/firebase_dynamic_links"
-            binaryMessenger:[registrar messenger]];
+  FlutterMethodChannel *channel =
+      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/firebase_dynamic_links"
+                                  binaryMessenger:[registrar messenger]];
   FLTFirebaseDynamicLinksPlugin* instance = [[FLTFirebaseDynamicLinksPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
@@ -36,8 +36,7 @@
 
 - (void)handleShortUrl:(FlutterMethodCall *)call result:(FlutterResult)result {
   FIRDynamicLinkComponents *components = [self setupParameters:call.arguments];
-  [components shortenWithCompletion:^(NSURL *_Nullable shortURL,
-                                      NSArray *_Nullable warnings,
+  [components shortenWithCompletion:^(NSURL *_Nullable shortURL, NSArray *_Nullable warnings,
                                       NSError *_Nullable error) {
     if (error) {
       NSLog(@"Error generating short link: %@", error.description);
@@ -51,16 +50,18 @@
 - (void)handleShortenUrl:(FlutterMethodCall *)call result:(FlutterResult)result {
   FIRDynamicLinkComponentsOptions *options = [self setupOptions:call.arguments];
   NSURL *url = [NSURL URLWithString:call.arguments[@"url"]];
-  [FIRDynamicLinkComponents shortenURL:url options:options completion:^(NSURL * _Nullable shortURL,
-                                                                        NSArray<NSString *> * _Nullable warnings,
-                                                                        NSError * _Nullable error) {
-    if (error) {
-      NSLog(@"Error generating short link: %@", error.description);
-      result(nil);
-      return;
-    }
-    result([shortURL absoluteString]);
-  }];
+  [FIRDynamicLinkComponents
+      shortenURL:url
+         options:options
+      completion:^(NSURL * _Nullable shortURL, NSArray<NSString *> * _Nullable warnings,
+                   NSError * _Nullable error) {
+        if (error) {
+          NSLog(@"Error generating short link: %@", error.description);
+          result(nil);
+          return;
+        }
+        result([shortURL absoluteString]);
+      }];
 }
 
 - (FIRDynamicLinkComponentsOptions *)setupOptions:(NSDictionary *)arguments {
@@ -98,13 +99,16 @@
   if (![arguments[@"androidParameters"] isEqual:[NSNull null]]) {
     NSDictionary *params = arguments[@"androidParameters"];
 
-    FIRDynamicLinkAndroidParameters *androidParams = [FIRDynamicLinkAndroidParameters parametersWithPackageName: params[@"packageName"]];
+    FIRDynamicLinkAndroidParameters *androidParams =
+        [FIRDynamicLinkAndroidParameters parametersWithPackageName: params[@"packageName"]];
 
     NSString *fallbackUrl = params[@"fallbackUrl"];
     NSNumber *minimumVersion = params[@"minimumVersion"];
 
-    if (![fallbackUrl isEqual:[NSNull null]]) androidParams.fallbackURL = [NSURL URLWithString:fallbackUrl];
-    if (![minimumVersion isEqual:[NSNull null]]) androidParams.minimumVersion = ((NSNumber *) minimumVersion).integerValue;
+    if (![fallbackUrl isEqual:[NSNull null]])
+      androidParams.fallbackURL = [NSURL URLWithString:fallbackUrl];
+    if (![minimumVersion isEqual:[NSNull null]])
+      androidParams.minimumVersion = ((NSNumber *) minimumVersion).integerValue;
 
     components.androidParameters = androidParams;
   }
@@ -149,10 +153,13 @@
 
     if (![appStoreID isEqual:[NSNull null]]) iosParameters.appStoreID = appStoreID;
     if (![customScheme isEqual:[NSNull null]]) iosParameters.customScheme = customScheme;
-    if (![fallbackURL isEqual:[NSNull null]]) iosParameters.fallbackURL = [NSURL URLWithString:fallbackURL];
+    if (![fallbackURL isEqual:[NSNull null]])
+      iosParameters.fallbackURL = [NSURL URLWithString:fallbackURL];
     if (![iPadBundleID isEqual:[NSNull null]]) iosParameters.iPadBundleID = iPadBundleID;
-    if (![iPadFallbackURL isEqual:[NSNull null]]) iosParameters.iPadFallbackURL = [NSURL URLWithString:iPadFallbackURL];
-    if (![minimumAppVersion isEqual:[NSNull null]]) iosParameters.minimumAppVersion = minimumAppVersion;
+    if (![iPadFallbackURL isEqual:[NSNull null]])
+      iosParameters.iPadFallbackURL = [NSURL URLWithString:iPadFallbackURL];
+    if (![minimumAppVersion isEqual:[NSNull null]])
+      iosParameters.minimumAppVersion = minimumAppVersion;
 
     components.iOSParameters = iosParameters;
   }
@@ -160,15 +167,19 @@
   if (![arguments[@"itunesConnectAnalyticsParameters"] isEqual:[NSNull null]]) {
     NSDictionary *params = arguments[@"itunesConnectAnalyticsParameters"];
 
-    FIRDynamicLinkItunesConnectAnalyticsParameters *itunesConnectAnalyticsParameters = [FIRDynamicLinkItunesConnectAnalyticsParameters parameters];
+    FIRDynamicLinkItunesConnectAnalyticsParameters *itunesConnectAnalyticsParameters =
+        [FIRDynamicLinkItunesConnectAnalyticsParameters parameters];
 
     NSString *affiliateToken = params[@"affiliateToken"];
     NSString *campaignToken = params[@"campaignToken"];
     NSString *providerToken = params[@"providerToken"];
 
-    if (![affiliateToken isEqual:[NSNull null]]) itunesConnectAnalyticsParameters.affiliateToken = affiliateToken;
-    if (![campaignToken isEqual:[NSNull null]]) itunesConnectAnalyticsParameters.campaignToken = campaignToken;
-    if (![providerToken isEqual:[NSNull null]]) itunesConnectAnalyticsParameters.providerToken = providerToken;
+    if (![affiliateToken isEqual:[NSNull null]])
+      itunesConnectAnalyticsParameters.affiliateToken = affiliateToken;
+    if (![campaignToken isEqual:[NSNull null]])
+      itunesConnectAnalyticsParameters.campaignToken = campaignToken;
+    if (![providerToken isEqual:[NSNull null]])
+      itunesConnectAnalyticsParameters.providerToken = providerToken;
 
     components.iTunesConnectParameters = itunesConnectAnalyticsParameters;
   }
@@ -180,7 +191,8 @@
         [FIRDynamicLinkNavigationInfoParameters parameters];
 
     NSNumber *forcedRedirectEnabled = params[@"forcedRedirectEnabled"];
-    if (![forcedRedirectEnabled isEqual:[NSNull null]]) navigationInfoParameters.forcedRedirectEnabled = [forcedRedirectEnabled boolValue];
+    if (![forcedRedirectEnabled isEqual:[NSNull null]])
+      navigationInfoParameters.forcedRedirectEnabled = [forcedRedirectEnabled boolValue];
 
     components.navigationInfoParameters = navigationInfoParameters;
   }
@@ -195,8 +207,10 @@
     NSString *imageURL = params[@"imageUrl"];
     NSString *title = params[@"title"];
 
-    if (![descriptionText isEqual:[NSNull null]]) socialMetaTagParameters.descriptionText = descriptionText;
-    if (![imageURL isEqual:[NSNull null]]) socialMetaTagParameters.imageURL = [NSURL URLWithString:imageURL];
+    if (![descriptionText isEqual:[NSNull null]])
+      socialMetaTagParameters.descriptionText = descriptionText;
+    if (![imageURL isEqual:[NSNull null]])
+      socialMetaTagParameters.imageURL = [NSURL URLWithString:imageURL];
     if (![title isEqual:[NSNull null]]) socialMetaTagParameters.title = title;
 
     components.socialMetaTagParameters = socialMetaTagParameters;

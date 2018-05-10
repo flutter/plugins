@@ -9,20 +9,19 @@ import com.google.firebase.dynamiclinks.DynamicLink;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.dynamiclinks.ShortDynamicLink;
 
-import java.util.Map;
-
+import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
+import java.util.Map;
 
 /** FirebaseDynamicLinksPlugin */
 public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
 
   public static void registerWith(Registrar registrar) {
-    final MethodChannel channel = new MethodChannel(registrar.messenger(),
-        "plugins.flutter.io/firebase_dynamic_links");
+    final MethodChannel channel =
+        new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_dynamic_links");
     channel.setMethodCallHandler(new FirebaseDynamicLinksPlugin());
   }
 
@@ -45,12 +44,13 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
     DynamicLink.Builder builder = setupParameters(arguments);
 
     final Result finalResult = result;
-    OnCompleteListener<ShortDynamicLink> listener = new OnCompleteListener<ShortDynamicLink>() {
-      @Override
-      public void onComplete(@NonNull Task<ShortDynamicLink> task) {
-        finalResult.success(task.getResult().getShortLink().toString());
-      }
-    };
+    OnCompleteListener<ShortDynamicLink> listener =
+        new OnCompleteListener<ShortDynamicLink>() {
+          @Override
+          public void onComplete(@NonNull Task<ShortDynamicLink> task) {
+            finalResult.success(task.getResult().getShortLink().toString());
+          }
+        };
 
     buildShortDynamicLink(builder, (Map<String, Object>) call.arguments(), listener);
   }
@@ -64,29 +64,31 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
     builder.setLongLink(url);
 
     final Result finalResult = result;
-    OnCompleteListener<ShortDynamicLink> listener = new OnCompleteListener<ShortDynamicLink>() {
-      @Override
-      public void onComplete(@NonNull Task<ShortDynamicLink> task) {
-        finalResult.success(task.getResult().getShortLink().toString());
-      }
-    };
+    OnCompleteListener<ShortDynamicLink> listener =
+        new OnCompleteListener<ShortDynamicLink>() {
+          @Override
+          public void onComplete(@NonNull Task<ShortDynamicLink> task) {
+            finalResult.success(task.getResult().getShortLink().toString());
+          }
+        };
 
     buildShortDynamicLink(builder, arguments, listener);
   }
 
-  private void buildShortDynamicLink(DynamicLink.Builder builder,
-                                     Map<String, Object> arguments,
-                                     OnCompleteListener<ShortDynamicLink> listener) {
+  private void buildShortDynamicLink(
+      DynamicLink.Builder builder,
+      Map<String, Object> arguments,
+      OnCompleteListener<ShortDynamicLink> listener) {
     Integer suffix = null;
 
     @SuppressWarnings("unchecked")
     Map<String, Object> dynamicLinkComponentsOptions =
         (Map<String, Object>) arguments.get("dynamicLinkComponentsOptions");
     if (dynamicLinkComponentsOptions != null) {
-      Object shortDynamicLinkPathLength = dynamicLinkComponentsOptions.get("shortDynamicLinkPathLength");
-
+      Object shortDynamicLinkPathLength =
+          dynamicLinkComponentsOptions.get("shortDynamicLinkPathLength");
       if (shortDynamicLinkPathLength != null) {
-        switch((int) shortDynamicLinkPathLength) {
+        switch ((int) shortDynamicLinkPathLength) {
           case 0:
             suffix = ShortDynamicLink.Suffix.UNGUESSABLE;
             break;
@@ -153,7 +155,7 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
 
     @SuppressWarnings("unchecked")
     Map<String, Object> iosParameters = (Map<String, Object>) arguments.get("iosParameters");
-    if(iosParameters != null) {
+    if (iosParameters != null) {
       Object appStoreId = iosParameters.get("appStoreId");
       Object customScheme = iosParameters.get("customScheme");
       Object fallbackUrl = iosParameters.get("fallbackUrl");
@@ -177,7 +179,7 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
     @SuppressWarnings("unchecked")
     Map<String, Object> itunesConnectAnalyticsParameters =
         (Map<String, Object>) arguments.get("itunesConnectAnalyticsParameters");
-    if(itunesConnectAnalyticsParameters != null) {
+    if (itunesConnectAnalyticsParameters != null) {
       Object affiliateToken = itunesConnectAnalyticsParameters.get("affiliateToken");
       Object campaignToken = itunesConnectAnalyticsParameters.get("campaignToken");
       Object providerToken = itunesConnectAnalyticsParameters.get("providerToken");

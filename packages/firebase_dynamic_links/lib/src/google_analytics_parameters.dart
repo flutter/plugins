@@ -14,8 +14,8 @@ class GoogleAnalyticsParameters {
     this.term,
   });
 
-  GoogleAnalyticsParameters.empty() :
-        campaign = null,
+  GoogleAnalyticsParameters.empty()
+      : campaign = null,
         content = null,
         medium = null,
         source = null,
