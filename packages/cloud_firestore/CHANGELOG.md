@@ -1,6 +1,19 @@
-## 0.6.4
+## 0.7.0+3
 
 * Fixes crash on Android if a FirebaseFirestoreException happened.
+
+## 0.7.0+2
+
+* Update transactions example in README to add `await`.
+
+## 0.7.0+1
+
+* Add transactions example to README.
+
+## 0.7.0
+
+* **Breaking change**. `snapshots` is now a method instead of a getter.
+* **Breaking change**. `setData` uses named arguments instead of `SetOptions`.
 
 ## 0.6.3
 

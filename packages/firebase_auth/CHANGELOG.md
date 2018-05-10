@@ -1,3 +1,11 @@
+## 0.5.9
+
+* Added support for signing in with a Twitter account.
+
+## 0.5.8
+
+* Added support to reload firebase user
+
 ## 0.5.7
 
 * Added support to sendEmailVerification

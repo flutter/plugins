@@ -1,3 +1,7 @@
+## 0.5.4+1
+
+* Graduate to beta.
+
 ## 0.5.4
 
 * Fixed a bug that was causing rewarded video failure event to be called on the wrong listener.
