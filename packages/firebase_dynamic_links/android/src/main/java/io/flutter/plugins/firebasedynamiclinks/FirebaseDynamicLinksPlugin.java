@@ -32,21 +32,51 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
       DynamicLink.Builder builder = setupParameters((Map<String, Object>) call.arguments());
       result.success(builder.buildDynamicLink().getUri().toString());
     } else if (call.method.equals("DynamicLinkComponents#shortUrl")) {
-      Map<String, Object> arguments = (Map<String, Object>) call.arguments();
-      DynamicLink.Builder builder = setupParameters(arguments);
-      buildShortDynamicLink(builder, (Map<String, Object>) call.arguments(), result);
+      handleShortUrl(call, result);
     } else if (call.method.equals("DynamicLinkComponents#shortenUrl")) {
-      Map<String, Object> arguments = (Map<String, Object>) call.arguments();
-      DynamicLink.Builder builder = FirebaseDynamicLinks.getInstance().createDynamicLink();
-      Uri url = Uri.parse((String) arguments.get("url"));
-      builder.setLongLink(url);
-      buildShortDynamicLink(builder, arguments, result);
+      handleShortenUrl(call, result);
     } else {
       result.notImplemented();
     }
   }
 
-  private void buildShortDynamicLink(DynamicLink.Builder builder, Map<String, Object> arguments, final Result result) {
+  private void handleShortUrl(MethodCall call, Result result) {
+    Map<String, Object> arguments = (Map<String, Object>) call.arguments();
+    DynamicLink.Builder builder = setupParameters(arguments);
+
+    final Result finalResult = result;
+    OnCompleteListener<ShortDynamicLink> listener = new OnCompleteListener<ShortDynamicLink>() {
+      @Override
+      public void onComplete(@NonNull Task<ShortDynamicLink> task) {
+        finalResult.success(task.getResult().getShortLink().toString());
+      }
+    };
+
+    buildShortDynamicLink(builder, (Map<String, Object>) call.arguments(), listener);
+  }
+
+  private void handleShortenUrl(MethodCall call, Result result) {
+    Map<String, Object> arguments = (Map<String, Object>) call.arguments();
+
+    DynamicLink.Builder builder = FirebaseDynamicLinks.getInstance().createDynamicLink();
+
+    Uri url = Uri.parse((String) arguments.get("url"));
+    builder.setLongLink(url);
+
+    final Result finalResult = result;
+    OnCompleteListener<ShortDynamicLink> listener = new OnCompleteListener<ShortDynamicLink>() {
+      @Override
+      public void onComplete(@NonNull Task<ShortDynamicLink> task) {
+        finalResult.success(task.getResult().getShortLink().toString());
+      }
+    };
+
+    buildShortDynamicLink(builder, arguments, listener);
+  }
+
+  private void buildShortDynamicLink(DynamicLink.Builder builder,
+                                     Map<String, Object> arguments,
+                                     OnCompleteListener<ShortDynamicLink> listener) {
     Integer suffix = null;
 
     @SuppressWarnings("unchecked")
@@ -69,17 +99,10 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
       }
     }
 
-    OnCompleteListener<ShortDynamicLink> onCompleteListener = new OnCompleteListener<ShortDynamicLink>() {
-      @Override
-      public void onComplete(@NonNull Task<ShortDynamicLink> task) {
-        result.success(task.getResult().getShortLink().toString());
-      }
-    };
-
     if (suffix != null) {
-      builder.buildShortDynamicLink(suffix).addOnCompleteListener(onCompleteListener);
+      builder.buildShortDynamicLink(suffix).addOnCompleteListener(listener);
     } else {
-      builder.buildShortDynamicLink().addOnCompleteListener(onCompleteListener);
+      builder.buildShortDynamicLink().addOnCompleteListener(listener);
     }
   }
 

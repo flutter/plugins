@@ -26,51 +26,66 @@
     FIRDynamicLinkComponents *components = [self setupParameters:call.arguments];
     result([components.url absoluteString]);
   } else if ([@"DynamicLinkComponents#shortUrl" isEqualToString:call.method]) {
-    FIRDynamicLinkComponents *components = [self setupParameters:call.arguments];
-    [components shortenWithCompletion:^(NSURL *_Nullable shortURL,
-                                        NSArray *_Nullable warnings,
-                                        NSError *_Nullable error) {
-      if (error) {
-        NSLog(@"Error generating short link: %@", error.description);
-        return;
-      }
-      result([shortURL absoluteString]);
-    }];
+    [self handleShortUrl:call result:result];
   } else if ([@"DynamicLinkComponents#shortenUrl" isEqualToString:call.method]) {
-    FIRDynamicLinkComponentsOptions *options;
-    if (![call.arguments[@"dynamicLinkComponentsOptions"] isEqual:[NSNull null]]) {
-      NSDictionary *params = call.arguments[@"dynamicLinkComponentsOptions"];
-
-      options = [FIRDynamicLinkComponentsOptions options];
-
-      NSNumber *shortDynamicLinkPathLength = params[@"shortDynamicLinkPathLength"];
-      if (![shortDynamicLinkPathLength isEqual:[NSNull null]]) {
-        switch (shortDynamicLinkPathLength.intValue) {
-          case 0:
-            options.pathLength = FIRShortDynamicLinkPathLengthUnguessable;
-            break;
-          case 1:
-            options.pathLength = FIRShortDynamicLinkPathLengthShort;
-            break;
-          default:
-            break;
-        }
-      }
-    }
-    NSURL *url = [NSURL URLWithString:call.arguments[@"url"]];
-    [FIRDynamicLinkComponents shortenURL:url options:options
-                              completion:^(NSURL * _Nullable shortURL,
-                                           NSArray<NSString *> * _Nullable warnings,
-                                           NSError * _Nullable error) {
-      if (error) {
-        NSLog(@"Error generating short link: %@", error.description);
-        return;
-      }
-      result([shortURL absoluteString]);
-    }];
+    [self handleShortenUrl:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
+}
+
+- (void)handleShortUrl:(FlutterMethodCall *)call result:(FlutterResult)result {
+  FIRDynamicLinkComponents *components = [self setupParameters:call.arguments];
+  [components shortenWithCompletion:^(NSURL *_Nullable shortURL,
+                                      NSArray *_Nullable warnings,
+                                      NSError *_Nullable error) {
+    if (error) {
+      NSLog(@"Error generating short link: %@", error.description);
+      result(nil);
+      return;
+    }
+    result([shortURL absoluteString]);
+  }];
+}
+
+- (void)handleShortenUrl:(FlutterMethodCall *)call result:(FlutterResult)result {
+  FIRDynamicLinkComponentsOptions *options = [self setupOptions:call.arguments];
+  NSURL *url = [NSURL URLWithString:call.arguments[@"url"]];
+  [FIRDynamicLinkComponents shortenURL:url options:options completion:^(NSURL * _Nullable shortURL,
+                                                                        NSArray<NSString *> * _Nullable warnings,
+                                                                        NSError * _Nullable error) {
+    if (error) {
+      NSLog(@"Error generating short link: %@", error.description);
+      result(nil);
+      return;
+    }
+    result([shortURL absoluteString]);
+  }];
+}
+
+- (FIRDynamicLinkComponentsOptions *)setupOptions:(NSDictionary *)arguments {
+  FIRDynamicLinkComponentsOptions *options;
+  if (![arguments[@"dynamicLinkComponentsOptions"] isEqual:[NSNull null]]) {
+    NSDictionary *params = arguments[@"dynamicLinkComponentsOptions"];
+
+    options = [FIRDynamicLinkComponentsOptions options];
+
+    NSNumber *shortDynamicLinkPathLength = params[@"shortDynamicLinkPathLength"];
+    if (![shortDynamicLinkPathLength isEqual:[NSNull null]]) {
+      switch (shortDynamicLinkPathLength.intValue) {
+        case 0:
+          options.pathLength = FIRShortDynamicLinkPathLengthUnguessable;
+          break;
+        case 1:
+          options.pathLength = FIRShortDynamicLinkPathLengthShort;
+          break;
+        default:
+          break;
+      }
+    }
+  }
+
+  return options;
 }
 
 - (FIRDynamicLinkComponents *)setupParameters:(NSDictionary *)arguments {
@@ -95,25 +110,7 @@
   }
 
   if (![arguments[@"dynamicLinkComponentsOptions"] isEqual:[NSNull null]]) {
-    NSDictionary *params = arguments[@"dynamicLinkComponentsOptions"];
-
-    FIRDynamicLinkComponentsOptions *options = [FIRDynamicLinkComponentsOptions options];
-
-    NSNumber *shortDynamicLinkPathLength = params[@"shortDynamicLinkPathLength"];
-    if (![shortDynamicLinkPathLength isEqual:[NSNull null]]) {
-      switch (shortDynamicLinkPathLength.intValue) {
-        case 0:
-          options.pathLength = FIRShortDynamicLinkPathLengthUnguessable;
-          break;
-        case 1:
-          options.pathLength = FIRShortDynamicLinkPathLengthShort;
-          break;
-        default:
-          break;
-      }
-    }
-
-    components.options = options;
+    components.options = [self setupOptions:arguments];
   }
 
   if (![arguments[@"googleAnalyticsParameters"] isEqual:[NSNull null]]) {
