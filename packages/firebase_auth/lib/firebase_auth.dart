@@ -78,6 +78,15 @@ class FirebaseUser extends UserInfo {
     });
   }
 
+  Future<void> sendEmailVerification() async {
+    await FirebaseAuth.channel.invokeMethod('sendEmailVerification');
+  }
+
+  /// Manually refreshes the data of the current user (for example, attached providers, display name, and so on).
+  Future<void> reload() async {
+    await FirebaseAuth.channel.invokeMethod('reload');
+  }
+
   @override
   String toString() {
     return '$runtimeType($_data)';
@@ -211,6 +220,24 @@ class FirebaseAuth {
     return currentUser;
   }
 
+  /// Signs in with a Twitter account using the specified credentials.
+  ///
+  /// The returned future completes with the signed-in user or a [PlatformException], if sign in failed.
+  Future<FirebaseUser> signInWithTwitter({
+    @required String authToken,
+    @required String authTokenSecret,
+  }) async {
+    assert(authToken != null);
+    assert(authTokenSecret != null);
+    final Map<dynamic, dynamic> data =
+        await channel.invokeMethod('signInWithTwitter', <String, String>{
+      'authToken': authToken,
+      'authTokenSecret': authTokenSecret,
+    });
+    final FirebaseUser currentUser = new FirebaseUser._(data);
+    return currentUser;
+  }
+
   Future<FirebaseUser> signInWithGoogle({
     @required String idToken,
     @required String accessToken,
@@ -302,6 +329,20 @@ class FirebaseAuth {
       'linkWithGoogleCredential',
       <String, String>{
         'idToken': idToken,
+        'accessToken': accessToken,
+      },
+    );
+    final FirebaseUser currentUser = new FirebaseUser._(data);
+    return currentUser;
+  }
+
+  Future<FirebaseUser> linkWithFacebookCredential({
+    @required String accessToken,
+  }) async {
+    assert(accessToken != null);
+    final Map<dynamic, dynamic> data = await channel.invokeMethod(
+      'linkWithFacebookCredential',
+      <String, String>{
         'accessToken': accessToken,
       },
     );

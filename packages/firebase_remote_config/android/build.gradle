@@ -32,7 +32,6 @@ android {
         disable 'InvalidPackage'
     }
     dependencies {
-        api 'com.google.firebase:firebase-config:[11.4.0,12.0['
-        api 'com.google.firebase:firebase-core:[11.4.0,12.0['
+        api 'com.google.firebase:firebase-config:15.+'
     }
 }

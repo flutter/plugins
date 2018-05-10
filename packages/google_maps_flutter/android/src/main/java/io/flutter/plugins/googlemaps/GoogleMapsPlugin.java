@@ -36,6 +36,7 @@ public class GoogleMapsPlugin implements MethodCallHandler, Application.Activity
   private final Map<Long, GoogleMapController> googleMaps = new HashMap<>();
   private final Registrar registrar;
   private final MethodChannel channel;
+  private final float density;
   private final AtomicInteger state = new AtomicInteger(0);
 
   public static void registerWith(Registrar registrar) {
@@ -49,6 +50,7 @@ public class GoogleMapsPlugin implements MethodCallHandler, Application.Activity
   private GoogleMapsPlugin(Registrar registrar, MethodChannel channel) {
     this.registrar = registrar;
     this.channel = channel;
+    this.density = registrar.context().getResources().getDisplayMetrics().density;
   }
 
   @Override
@@ -63,10 +65,10 @@ public class GoogleMapsPlugin implements MethodCallHandler, Application.Activity
           result.success(null);
           break;
         }
-      case "createMap":
+      case "map#create":
         {
-          final int width = Convert.toInt(call.argument("width"));
-          final int height = Convert.toInt(call.argument("height"));
+          final int width = Convert.toPixels(call.argument("width"), density);
+          final int height = Convert.toPixels(call.argument("height"), density);
           final Map<?, ?> options = Convert.toMap(call.argument("options"));
           final GoogleMapBuilder builder = new GoogleMapBuilder();
           Convert.interpretGoogleMapOptions(options, builder);
@@ -76,11 +78,11 @@ public class GoogleMapsPlugin implements MethodCallHandler, Application.Activity
           controller.setOnCameraMoveListener(
               new OnCameraMoveListener() {
                 @Override
-                public void onCameraMoveStarted(int reason) {
+                public void onCameraMoveStarted(boolean isGesture) {
                   final Map<String, Object> arguments = new HashMap<>(2);
                   arguments.put("map", controller.id());
-                  arguments.put("reason", reason);
-                  channel.invokeMethod("map#onCameraMoveStarted", arguments);
+                  arguments.put("isGesture", isGesture);
+                  channel.invokeMethod("camera#onMoveStarted", arguments);
                 }
 
                 @Override
@@ -88,13 +90,13 @@ public class GoogleMapsPlugin implements MethodCallHandler, Application.Activity
                   final Map<String, Object> arguments = new HashMap<>(2);
                   arguments.put("map", controller.id());
                   arguments.put("position", Convert.toJson(position));
-                  channel.invokeMethod("map#onCameraMove", arguments);
+                  channel.invokeMethod("camera#onMove", arguments);
                 }
 
                 @Override
                 public void onCameraIdle() {
                   channel.invokeMethod(
-                      "map#onCameraIdle", Collections.singletonMap("map", controller.id()));
+                      "camera#onIdle", Collections.singletonMap("map", controller.id()));
                 }
               });
           controller.setOnMarkerTappedListener(
@@ -107,33 +109,36 @@ public class GoogleMapsPlugin implements MethodCallHandler, Application.Activity
                   channel.invokeMethod("marker#onTap", arguments);
                 }
               });
-          // result.success is called from controller when the GoogleMaps instance is ready
+          // result.success is called from controller when the GoogleMaps instance
+          // is ready
           break;
         }
-      case "setMapOptions":
+      case "map#update":
         {
           final GoogleMapController controller = mapsController(call);
           Convert.interpretGoogleMapOptions(call.argument("options"), controller);
-          result.success(null);
+          result.success(Convert.toJson(controller.getCameraPosition()));
           break;
         }
-      case "moveCamera":
+      case "camera#move":
         {
           final GoogleMapController controller = mapsController(call);
-          final CameraUpdate cameraUpdate = Convert.toCameraUpdate(call.argument("cameraUpdate"));
+          final CameraUpdate cameraUpdate =
+              Convert.toCameraUpdate(call.argument("cameraUpdate"), density);
           controller.moveCamera(cameraUpdate);
           result.success(null);
           break;
         }
-      case "animateCamera":
+      case "camera#animate":
         {
           final GoogleMapController controller = mapsController(call);
-          final CameraUpdate cameraUpdate = Convert.toCameraUpdate(call.argument("cameraUpdate"));
+          final CameraUpdate cameraUpdate =
+              Convert.toCameraUpdate(call.argument("cameraUpdate"), density);
           controller.animateCamera(cameraUpdate);
           result.success(null);
           break;
         }
-      case "addMarker":
+      case "marker#add":
         {
           final GoogleMapController controller = mapsController(call);
           final MarkerBuilder markerBuilder = controller.newMarkerBuilder();
@@ -159,23 +164,23 @@ public class GoogleMapsPlugin implements MethodCallHandler, Application.Activity
           result.success(null);
           break;
         }
-      case "showMapOverlay":
+      case "map#show":
         {
           final GoogleMapController controller = mapsController(call);
-          final int x = Convert.toInt(call.argument("x"));
-          final int y = Convert.toInt(call.argument("y"));
+          final int x = Convert.toPixels(call.argument("x"), density);
+          final int y = Convert.toPixels(call.argument("y"), density);
           controller.showOverlay(x, y);
           result.success(null);
           break;
         }
-      case "hideMapOverlay":
+      case "map#hide":
         {
           final GoogleMapController controller = mapsController(call);
           controller.hideOverlay();
           result.success(null);
           break;
         }
-      case "disposeMap":
+      case "map#dispose":
         {
           final GoogleMapController controller = mapsController(call);
           controller.dispose();

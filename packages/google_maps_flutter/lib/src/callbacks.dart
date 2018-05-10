@@ -11,10 +11,17 @@ typedef void ArgumentCallback<T>(T argument);
 ///
 /// Additions and removals happening during a single [call] invocation do not
 /// change who gets a callback until the next such invocation.
+///
+/// Optimized for the singleton case.
 class ArgumentCallbacks<T> {
   final List<ArgumentCallback<T>> _callbacks = <ArgumentCallback<T>>[];
-  VoidCallback _onEmptyChanged;
 
+  /// Callback method. Invokes the corresponding method on each callback
+  /// in this collection.
+  ///
+  /// The list of callbacks being invoked is computed at the start of the
+  /// method and is unaffected by any changes subsequently made to this
+  /// collection.
   void call(T argument) {
     final int length = _callbacks.length;
     if (length == 1) {
@@ -27,18 +34,22 @@ class ArgumentCallbacks<T> {
     }
   }
 
+  /// Adds a callback to this collection.
   void add(ArgumentCallback<T> callback) {
+    assert(callback != null);
     _callbacks.add(callback);
-    if (_onEmptyChanged != null && _callbacks.length == 1) _onEmptyChanged();
   }
 
+  /// Removes a callback from this collection.
+  ///
+  /// Does nothing, if the callback was not present.
   void remove(ArgumentCallback<T> callback) {
-    final bool removed = _callbacks.remove(callback);
-    if (_onEmptyChanged != null && removed && _callbacks.isEmpty)
-      _onEmptyChanged();
+    _callbacks.remove(callback);
   }
 
+  /// Whether this collection is empty.
   bool get isEmpty => _callbacks.isEmpty;
 
+  /// Whether this collection is non-empty.
   bool get isNotEmpty => _callbacks.isNotEmpty;
 }

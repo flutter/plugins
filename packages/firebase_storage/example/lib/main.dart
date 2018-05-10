@@ -7,24 +7,44 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:http/http.dart' as http;
 
-void main() {
-  runApp(new MyApp());
+void main() async {
+  final FirebaseApp app = await FirebaseApp.configure(
+    name: 'test',
+    options: new FirebaseOptions(
+      googleAppID: Platform.isIOS
+          ? '1:159623150305:ios:4a213ef3dbd8997b'
+          : '1:159623150305:android:ef48439a0cc0263d',
+      gcmSenderID: '159623150305',
+      apiKey: 'AIzaSyChk3KEG7QYrs4kQPLP1tjJNxBTbfCAdgg',
+      projectID: 'flutter-firebase-plugins',
+    ),
+  );
+  final FirebaseStorage storage = new FirebaseStorage(
+      app: app, storageBucket: 'gs://flutter-firebase-plugins.appspot.com');
+  runApp(new MyApp(storage: storage));
 }
 
 class MyApp extends StatelessWidget {
+  MyApp({this.storage});
+  final FirebaseStorage storage;
+
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
       title: 'Flutter Storage Example',
-      home: new MyHomePage(),
+      home: new MyHomePage(storage: storage),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
+  MyHomePage({this.storage});
+  final FirebaseStorage storage;
+
   @override
   _MyHomePageState createState() => new _MyHomePageState();
 }
@@ -45,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
     assert(await file.readAsString() == kTestString);
     final String rand = "${new Random().nextInt(10000)}";
     final StorageReference ref =
-        FirebaseStorage.instance.ref().child('text').child('foo$rand.txt');
+        widget.storage.ref().child('text').child('foo$rand.txt');
     final StorageUploadTask uploadTask =
         ref.putFile(file, const StorageMetadata(contentLanguage: "en"));
 
