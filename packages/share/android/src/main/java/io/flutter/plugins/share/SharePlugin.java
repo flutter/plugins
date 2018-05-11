@@ -5,6 +5,7 @@
 package io.flutter.plugins.share;
 
 import android.content.Intent;
+import android.net.Uri;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
@@ -36,6 +37,14 @@ public class SharePlugin implements MethodChannel.MethodCallHandler {
       // Android does not support showing the share sheet at a particular point on screen.
       share((String) call.argument("text"));
       result.success(null);
+
+    } else if (call.method.equals("shareFile")) {
+      if (!(call.arguments instanceof Map)) {
+        throw new IllegalArgumentException("Map argument expected");
+      }
+      shareFile((String) call.argument("uri"), (String) call.argument("mimeType"));
+      result.success(null);
+
     } else {
       result.notImplemented();
     }
@@ -50,6 +59,28 @@ public class SharePlugin implements MethodChannel.MethodCallHandler {
     shareIntent.setAction(Intent.ACTION_SEND);
     shareIntent.putExtra(Intent.EXTRA_TEXT, text);
     shareIntent.setType("text/plain");
+    Intent chooserIntent = Intent.createChooser(shareIntent, null /* dialog title optional */);
+    if (mRegistrar.activity() != null) {
+      mRegistrar.activity().startActivity(chooserIntent);
+    } else {
+      chooserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      mRegistrar.context().startActivity(chooserIntent);
+    }
+  }
+
+  private void shareFile(String uri, String mimeType) {
+    if (uri == null || uri.isEmpty()){
+      throw new IllegalArgumentException("Non-empty uri expected");
+    }
+
+    if (mimeType == null || mimeType.isEmpty()) {
+      throw new IllegalArgumentException("Non-empty mimeType expected");
+    }
+
+    Intent shareIntent = new Intent();
+    shareIntent.setAction(Intent.ACTION_SEND);
+    shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(uri));
+    shareIntent.setType(mimeType);
     Intent chooserIntent = Intent.createChooser(shareIntent, null /* dialog title optional */);
     if (mRegistrar.activity() != null) {
       mRegistrar.activity().startActivity(chooserIntent);

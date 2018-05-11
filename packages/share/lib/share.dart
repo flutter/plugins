@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/services.dart';
@@ -42,5 +43,18 @@ class Share {
     }
 
     return channel.invokeMethod('share', params);
+  }
+
+  static Future<void> shareFile(Uri uri, String mimeType) {
+    assert(uri != null);
+    assert(new File(uri.toFilePath()).existsSync());
+    assert(mimeType != null);
+    assert(mimeType.isNotEmpty);
+    final Map<String, dynamic> params = <String, dynamic>{
+      'uri': uri.toString(),
+      'mimeType': mimeType,
+    };
+
+    return channel.invokeMethod('shareFile', params);
   }
 }
