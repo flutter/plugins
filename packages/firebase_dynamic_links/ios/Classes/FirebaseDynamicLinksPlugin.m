@@ -3,11 +3,11 @@
 #import "Firebase/Firebase.h"
 
 @implementation FLTFirebaseDynamicLinksPlugin
-+ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
++ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/firebase_dynamic_links"
                                   binaryMessenger:[registrar messenger]];
-  FLTFirebaseDynamicLinksPlugin* instance = [[FLTFirebaseDynamicLinksPlugin alloc] init];
+  FLTFirebaseDynamicLinksPlugin *instance = [[FLTFirebaseDynamicLinksPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
@@ -39,11 +39,10 @@
   [components shortenWithCompletion:^(NSURL *_Nullable shortURL, NSArray *_Nullable warnings,
                                       NSError *_Nullable error) {
     if (error) {
-      NSLog(@"Error generating short link: %@", error.description);
-      result(nil);
-      return;
+      result(@{@"code" : @-1, @"errMsg" : error.description});
+    } else {
+      result(@{@"code" : @1, @"url" : [shortURL absoluteString]});
     }
-    result([shortURL absoluteString]);
   }];
 }
 
@@ -53,14 +52,13 @@
   [FIRDynamicLinkComponents
       shortenURL:url
          options:options
-      completion:^(NSURL * _Nullable shortURL, NSArray<NSString *> * _Nullable warnings,
-                   NSError * _Nullable error) {
+      completion:^(NSURL *_Nullable shortURL, NSArray<NSString *> * _Nullable warnings,
+                   NSError *_Nullable error) {
         if (error) {
-          NSLog(@"Error generating short link: %@", error.description);
-          result(nil);
-          return;
+          result(@{@"code" : @-1, @"errMsg" : error.description});
+        } else {
+          result(@{@"code" : @1, @"url" : [shortURL absoluteString]});
         }
-        result([shortURL absoluteString]);
       }];
 }
 
@@ -100,7 +98,7 @@
     NSDictionary *params = arguments[@"androidParameters"];
 
     FIRDynamicLinkAndroidParameters *androidParams =
-        [FIRDynamicLinkAndroidParameters parametersWithPackageName: params[@"packageName"]];
+        [FIRDynamicLinkAndroidParameters parametersWithPackageName:params[@"packageName"]];
 
     NSString *fallbackUrl = params[@"fallbackUrl"];
     NSNumber *minimumVersion = params[@"minimumVersion"];
@@ -108,7 +106,7 @@
     if (![fallbackUrl isEqual:[NSNull null]])
       androidParams.fallbackURL = [NSURL URLWithString:fallbackUrl];
     if (![minimumVersion isEqual:[NSNull null]])
-      androidParams.minimumVersion = ((NSNumber *) minimumVersion).integerValue;
+      androidParams.minimumVersion = ((NSNumber *)minimumVersion).integerValue;
 
     components.androidParameters = androidParams;
   }

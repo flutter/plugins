@@ -2,6 +2,7 @@ package io.flutter.plugins.firebasedynamiclinks;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -14,6 +15,8 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
+
+import java.util.HashMap;
 import java.util.Map;
 
 /** FirebaseDynamicLinksPlugin */
@@ -48,7 +51,23 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
         new OnCompleteListener<ShortDynamicLink>() {
           @Override
           public void onComplete(@NonNull Task<ShortDynamicLink> task) {
-            finalResult.success(task.getResult().getShortLink().toString());
+            Map<String, Object> url = new HashMap<>();
+            if (task.isSuccessful()) {
+              url.put("code", 1);
+              url.put("url", task.getResult().getShortLink().toString());
+            } else {
+              url.put("code", -1);
+
+              Exception exception = task.getException();
+              String errMsg = null;
+              if (exception != null && exception.getMessage() != null) {
+                errMsg = exception.getMessage();
+              }
+
+              url.put("errMsg", errMsg);
+            }
+
+            finalResult.success(url);
           }
         };
 
@@ -68,7 +87,23 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
         new OnCompleteListener<ShortDynamicLink>() {
           @Override
           public void onComplete(@NonNull Task<ShortDynamicLink> task) {
-            finalResult.success(task.getResult().getShortLink().toString());
+            Map<String, Object> url = new HashMap<>();
+            if (task.isSuccessful()) {
+              url.put("code", 1);
+              url.put("url", task.getResult().getShortLink().toString());
+            } else {
+              url.put("code", -1);
+
+              Exception exception = task.getException();
+              String errMsg = null;
+              if (exception != null && exception.getMessage() != null) {
+                errMsg = exception.getMessage();
+              }
+
+              url.put("errMsg", errMsg);
+            }
+
+            finalResult.success(url);
           }
         };
 

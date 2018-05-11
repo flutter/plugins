@@ -4,6 +4,15 @@
 
 part of firebase_dynamic_links;
 
+/// Thrown to indicate an error occurred when creating a short Dynamic Link.
+class ShortLinkException implements Exception {
+  final String message;
+  ShortLinkException(this.message);
+
+  @override
+  String toString() => '$runtimeType($message)';
+}
+
 /// The class used for Dynamic Link URL generation.
 ///
 /// Supports creation of short and long Dynamic Link URLs. Short URLs will have
@@ -62,20 +71,30 @@ class DynamicLinkComponents {
   ///
   /// This method may be used for shortening a custom URL that was not generated
   /// using DynamicLinkComponents.
+  ///
+  /// May throw a [ShortLinkException].
   static Future<Uri> shortenUrl(Uri url,
       [DynamicLinkComponentsOptions options]) async {
-    final String shortUrl = await FirebaseDynamicLinks.channel
+    final Map<dynamic, dynamic> ret = await FirebaseDynamicLinks.channel
         .invokeMethod("DynamicLinkComponents#shortenUrl", <String, dynamic>{
       'url': url.toString(),
       'dynamicLinkComponentsOptions': options?._data,
     });
-    return Uri.parse(shortUrl);
+
+    if (ret["code"] >= 0) {
+      return Uri.parse(ret["url"]);
+    } else {
+      throw ShortLinkException(
+          ret["errMsg"] ?? "Unable to create short Dynamic Link.");
+    }
   }
 
   /// A generated long Dynamic Link URL.
   Future<Uri> get url => _generateUrl();
 
   /// A generated short Dynamic Link URL.
+  ///
+  /// May throw a [ShortLinkException].
   Future<Uri> get shortUrl => _generateShortUrl();
 
   Map<String, dynamic> get _data => <String, dynamic>{
@@ -98,8 +117,14 @@ class DynamicLinkComponents {
   }
 
   Future<Uri> _generateShortUrl() async {
-    final String shortUrl = await FirebaseDynamicLinks.channel
+    final Map<dynamic, dynamic> ret = await FirebaseDynamicLinks.channel
         .invokeMethod("DynamicLinkComponents#shortUrl", _data);
-    return Uri.parse(shortUrl);
+
+    if (ret["code"] >= 0) {
+      return Uri.parse(ret["url"]);
+    } else {
+      throw ShortLinkException(
+          ret["errMsg"] ?? "Unable to create short Dynamic Link.");
+    }
   }
 }
