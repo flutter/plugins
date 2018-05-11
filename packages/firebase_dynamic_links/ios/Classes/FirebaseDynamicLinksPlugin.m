@@ -39,9 +39,9 @@
   [components shortenWithCompletion:^(NSURL *_Nullable shortURL, NSArray *_Nullable warnings,
                                       NSError *_Nullable error) {
     if (error) {
-      result(@{@"code" : @-1, @"errMsg" : error.description});
+      result(@{ @"code" : @-1, @"errMsg" : error.description });
     } else {
-      result(@{@"code" : @1, @"url" : [shortURL absoluteString]});
+      result(@{ @"code" : @1, @"url" : [shortURL absoluteString] });
     }
   }];
 }
@@ -52,12 +52,12 @@
   [FIRDynamicLinkComponents
       shortenURL:url
          options:options
-      completion:^(NSURL *_Nullable shortURL, NSArray<NSString *> * _Nullable warnings,
+      completion:^(NSURL *_Nullable shortURL, NSArray<NSString *> *_Nullable warnings,
                    NSError *_Nullable error) {
         if (error) {
-          result(@{@"code" : @-1, @"errMsg" : error.description});
+          result(@{ @"code" : @-1, @"errMsg" : error.description });
         } else {
-          result(@{@"code" : @1, @"url" : [shortURL absoluteString]});
+          result(@{ @"code" : @1, @"url" : [shortURL absoluteString] });
         }
       }];
 }
