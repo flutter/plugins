@@ -69,7 +69,7 @@ public class SharePlugin implements MethodChannel.MethodCallHandler {
   }
 
   private void shareFile(String uri, String mimeType) {
-    if (uri == null || uri.isEmpty()){
+    if (uri == null || uri.isEmpty()) {
       throw new IllegalArgumentException("Non-empty uri expected");
     }
 
