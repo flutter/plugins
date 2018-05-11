@@ -180,6 +180,66 @@ public class ImagePickerDelegate
     this.fileUtils = fileUtils;
   }
 
+  // -- Video --
+  // Choose Video From Gallery
+  public void chooseVideoFromGallery(MethodCall methodCall, MethodChannel.Result result) {
+    if (!setPendingMethodCallAndResult(methodCall, result)) {
+      finishWithAlreadyActiveError();
+      return;
+    }
+
+    if (!permissionManager.isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+      permissionManager.askForPermission(
+          Manifest.permission.READ_EXTERNAL_STORAGE, REQUEST_EXTERNAL_STORAGE_PERMISSION);
+      return;
+    }
+
+    launchPickVideoFromGalleryIntent();
+  }
+
+  private void launchPickVideoFromGalleryIntent() {
+    Intent pickImageIntent = new Intent(Intent.ACTION_GET_CONTENT);
+    pickImageIntent.setType("video/*");
+
+    activity.startActivityForResult(pickImageIntent, REQUEST_CODE_CHOOSE_FROM_GALLERY);
+  }
+
+  // Take a New Video
+  public void takeVideoWithCamera(MethodCall methodCall, MethodChannel.Result result) {
+    if (!setPendingMethodCallAndResult(methodCall, result)) {
+      finishWithAlreadyActiveError();
+      return;
+    }
+
+    if (!permissionManager.isPermissionGranted(Manifest.permission.CAMERA)) {
+      permissionManager.askForPermission(Manifest.permission.CAMERA, REQUEST_CAMERA_PERMISSION);
+      return;
+    }
+
+    launchTakeVideoWithCameraIntent();
+  }
+
+  private void launchTakeVideoWithCameraIntent() {
+    Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+    boolean canTakePhotos = intentResolver.resolveActivity(intent);
+
+    if (!canTakePhotos) {
+      finishWithError("no_available_camera", "No cameras available for taking pictures.");
+      return;
+    }
+
+    File imageFile = createTemporaryWritableImageFile();
+    pendingCameraImageUri = Uri.parse("file:" + imageFile.getAbsolutePath());
+
+    Uri imageUri = fileUriResolver.resolveFileProviderUriForFile(fileProviderName, imageFile);
+    intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+    grantUriPermissions(intent, imageUri);
+
+    activity.startActivityForResult(intent, REQUEST_CODE_TAKE_WITH_CAMERA);
+  }
+
+  // -- Photo --
+  // Choose Photo from Gallery
   public void chooseImageFromGallery(MethodCall methodCall, MethodChannel.Result result) {
     if (!setPendingMethodCallAndResult(methodCall, result)) {
       finishWithAlreadyActiveError();
@@ -202,6 +262,7 @@ public class ImagePickerDelegate
     activity.startActivityForResult(pickImageIntent, REQUEST_CODE_CHOOSE_FROM_GALLERY);
   }
 
+  // Take New Photo
   public void takeImageWithCamera(MethodCall methodCall, MethodChannel.Result result) {
     if (!setPendingMethodCallAndResult(methodCall, result)) {
       finishWithAlreadyActiveError();
@@ -234,7 +295,7 @@ public class ImagePickerDelegate
 
     activity.startActivityForResult(intent, REQUEST_CODE_TAKE_WITH_CAMERA);
   }
-
+  
   private File createTemporaryWritableImageFile() {
     String filename = UUID.randomUUID().toString();
     File image;

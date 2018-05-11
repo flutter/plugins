@@ -55,4 +55,29 @@ class ImagePicker {
 
     return path != null ? new File(path) : null;
   }
+  static Future<File> pickVideo({
+    @required ImageSource source,
+    double maxWidth,
+    double maxHeight,
+  }) async {
+    assert(source != null);
+
+    if (maxWidth != null && maxWidth < 0) {
+      throw new ArgumentError.value(maxWidth, 'maxWidth can\'t be negative');
+    }
+
+    if (maxHeight != null && maxHeight < 0) {
+      throw new ArgumentError.value(maxHeight, 'maxHeight can\'t be negative');
+    }
+
+    final String path = await _channel.invokeMethod(
+      'pickVideo',
+      <String, dynamic>{
+        'source': source.index,
+        'maxWidth': maxWidth,
+        'maxHeight': maxHeight,
+      },
+    );
+     return path != null ? new File(path) : null;
+  }
 }
