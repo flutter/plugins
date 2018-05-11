@@ -56,7 +56,7 @@ final Uri dynamicLink = await components.url;
 
 ```
 
-To create a short Dynamic Link, build DynamicLinkComponents the same way, but use get the link from the DynamicLinkComponents.shortUrl parameter.
+To create a short Dynamic Link, build DynamicLinkComponents the same way, but use the DynamicLinkComponents.shortUrl parameter.
 
 ```dart
 
