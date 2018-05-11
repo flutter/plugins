@@ -66,9 +66,10 @@ int nextHandle = 0;
           [auth removeAuthStateDidChangeListener:listener];
         }];
   } else if ([@"signInAnonymously" isEqualToString:call.method]) {
-    [[FIRAuth auth] signInAnonymouslyWithCompletion:^(FIRAuthDataResult *dataResult, NSError *error) {
-      [self sendResult:result forUser:dataResult.user error:error];
-    }];
+    [[FIRAuth auth]
+        signInAnonymouslyWithCompletion:^(FIRAuthDataResult *dataResult, NSError *error) {
+          [self sendResult:result forUser:dataResult.user error:error];
+        }];
   } else if ([@"signInWithGoogle" isEqualToString:call.method]) {
     NSString *idToken = call.arguments[@"idToken"];
     NSString *accessToken = call.arguments[@"accessToken"];
