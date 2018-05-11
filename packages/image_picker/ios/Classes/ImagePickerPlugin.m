@@ -25,7 +25,7 @@ static const int SOURCE_GALLERY = 1;
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/image_picker"
-                              binaryMessenger:[registrar messenger]];
+                                  binaryMessenger:[registrar messenger]];
   UIViewController *viewController =
       [UIApplication sharedApplication].delegate.window.rootViewController;
   FLTImagePickerPlugin *instance =
@@ -53,7 +53,7 @@ static const int SOURCE_GALLERY = 1;
   if ([@"pickImage" isEqualToString:call.method]) {
     _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
     _imagePickerController.delegate = self;
-    _imagePickerController.mediaTypes = @[ (NSString*)kUTTypeImage ];
+    _imagePickerController.mediaTypes = @[ (NSString *)kUTTypeImage ];
 
     _result = result;
     _arguments = call.arguments;
@@ -77,8 +77,8 @@ static const int SOURCE_GALLERY = 1;
     _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
     _imagePickerController.delegate = self;
     _imagePickerController.mediaTypes = @[
-      (NSString*)kUTTypeMovie, (NSString*)kUTTypeAVIMovie, (NSString*)kUTTypeVideo,
-      (NSString*)kUTTypeMPEG4
+      (NSString *)kUTTypeMovie, (NSString *)kUTTypeAVIMovie, (NSString *)kUTTypeVideo,
+      (NSString *)kUTTypeMPEG4
     ];
     _imagePickerController.videoQuality = UIImagePickerControllerQualityTypeHigh;
 
@@ -242,5 +242,3 @@ static const int SOURCE_GALLERY = 1;
 }
 
 @end
-
-
