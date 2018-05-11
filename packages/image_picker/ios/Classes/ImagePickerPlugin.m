@@ -140,10 +140,9 @@ static const int SOURCE_GALLERY = 1;
     }
     
     if (videoURL != nil) {
-        NSLog(@"MediaURL = %@", videoURL);
         NSData *data = [NSData dataWithContentsOfURL:videoURL];
         NSString *guid = [[NSProcessInfo processInfo] globallyUniqueString];
-        NSString *tmpFile = [NSString stringWithFormat:@"video_picker_%@.MOV", guid];
+        NSString *tmpFile = [NSString stringWithFormat:@"image_picker_%@.MOV", guid];
         NSString *tmpDirectory = NSTemporaryDirectory();
         NSString *tmpPath = [tmpDirectory stringByAppendingPathComponent:tmpFile];
 
@@ -155,7 +154,6 @@ static const int SOURCE_GALLERY = 1;
                                         details:nil]);
         }
     } else {
-       
         NSData *data = UIImageJPEGRepresentation(image, 1.0);
         NSString *guid = [[NSProcessInfo processInfo] globallyUniqueString];
         NSString *tmpFile = [NSString stringWithFormat:@"image_picker_%@.jpg", guid];
