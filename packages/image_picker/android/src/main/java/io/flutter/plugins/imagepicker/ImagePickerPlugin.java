@@ -49,8 +49,8 @@ public class ImagePickerPlugin implements MethodChannel.MethodCallHandler {
       result.error("no_activity", "image_picker plugin requires a foreground activity.", null);
       return;
     }
-    int imageSource = call.argument("source");
     if (call.method.equals("pickImage")) {
+      int imageSource = call.argument("source");
       switch (imageSource) {
         case SOURCE_GALLERY:
           delegate.chooseImageFromGallery(call, result);
@@ -62,6 +62,7 @@ public class ImagePickerPlugin implements MethodChannel.MethodCallHandler {
           throw new IllegalArgumentException("Invalid image source: " + imageSource);
       }
     } else if (call.method.equals("pickVideo")) {
+      int imageSource = call.argument("source");
       switch (imageSource) {
         case SOURCE_GALLERY:
           delegate.chooseVideoFromGallery(call, result);
