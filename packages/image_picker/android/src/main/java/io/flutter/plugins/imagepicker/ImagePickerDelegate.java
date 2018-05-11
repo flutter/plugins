@@ -295,7 +295,7 @@ public class ImagePickerDelegate
 
     activity.startActivityForResult(intent, REQUEST_CODE_TAKE_WITH_CAMERA);
   }
-
+  
   private File createTemporaryWritableImageFile() {
     String filename = UUID.randomUUID().toString();
     File image;
