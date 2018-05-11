@@ -15,13 +15,17 @@ void main() {
       FirebaseDynamicLinks.channel
           .setMockMethodCallHandler((MethodCall methodCall) async {
         log.add(methodCall);
+        final Map<dynamic, dynamic> returnUrl = <dynamic, dynamic>{
+          'code': 1,
+          'url': 'google.com',
+        };
         switch (methodCall.method) {
           case 'DynamicLinkComponents#url':
-            return 'google.com';
+            return "google.com";
           case 'DynamicLinkComponents#shortUrl':
-            return 'google.com';
+            return returnUrl;
           case 'DynamicLinkComponents#shortenUrl':
-            return 'google.com';
+            return returnUrl;
           default:
             return null;
         }

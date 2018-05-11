@@ -76,16 +76,16 @@ class DynamicLinkComponents {
   static Future<Uri> shortenUrl(Uri url,
       [DynamicLinkComponentsOptions options]) async {
     final Map<dynamic, dynamic> ret = await FirebaseDynamicLinks.channel
-        .invokeMethod("DynamicLinkComponents#shortenUrl", <String, dynamic>{
+        .invokeMethod('DynamicLinkComponents#shortenUrl', <String, dynamic>{
       'url': url.toString(),
       'dynamicLinkComponentsOptions': options?._data,
     });
 
-    if (ret["code"] >= 0) {
-      return Uri.parse(ret["url"]);
+    if (ret['code'] >= 0) {
+      return Uri.parse(ret['url']);
     } else {
       throw ShortLinkException(
-          ret["errMsg"] ?? "Unable to create short Dynamic Link.");
+          ret['errMsg'] ?? 'Unable to create short Dynamic Link.');
     }
   }
 
@@ -112,19 +112,19 @@ class DynamicLinkComponents {
 
   Future<Uri> _generateUrl() async {
     final String url = await FirebaseDynamicLinks.channel
-        .invokeMethod("DynamicLinkComponents#url", _data);
+        .invokeMethod('DynamicLinkComponents#url', _data);
     return Uri.parse(url);
   }
 
   Future<Uri> _generateShortUrl() async {
     final Map<dynamic, dynamic> ret = await FirebaseDynamicLinks.channel
-        .invokeMethod("DynamicLinkComponents#shortUrl", _data);
+        .invokeMethod('DynamicLinkComponents#shortUrl', _data);
 
-    if (ret["code"] >= 0) {
-      return Uri.parse(ret["url"]);
+    if (ret['code'] >= 0) {
+      return Uri.parse(ret['url']);
     } else {
       throw ShortLinkException(
-          ret["errMsg"] ?? "Unable to create short Dynamic Link.");
+          ret['errMsg'] ?? 'Unable to create short Dynamic Link.');
     }
   }
 }
