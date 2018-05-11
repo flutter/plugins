@@ -61,7 +61,7 @@ public class ImagePickerPlugin implements MethodChannel.MethodCallHandler {
         default:
           throw new IllegalArgumentException("Invalid image source: " + imageSource);
       }
-    }  else if (call.method.equals("pickVideo")) {
+    } else if (call.method.equals("pickVideo")) {
       switch (imageSource) {
         case SOURCE_GALLERY:
           delegate.chooseVideoFromGallery(call, result);
