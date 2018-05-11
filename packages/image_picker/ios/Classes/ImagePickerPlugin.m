@@ -24,12 +24,12 @@ static const int SOURCE_GALLERY = 1;
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
-  [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/image_picker"
+      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/image_picker"
                               binaryMessenger:[registrar messenger]];
   UIViewController *viewController =
-  [UIApplication sharedApplication].delegate.window.rootViewController;
+      [UIApplication sharedApplication].delegate.window.rootViewController;
   FLTImagePickerPlugin *instance =
-  [[FLTImagePickerPlugin alloc] initWithViewController:viewController];
+      [[FLTImagePickerPlugin alloc] initWithViewController:viewController];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
@@ -49,18 +49,17 @@ static const int SOURCE_GALLERY = 1;
                                 details:nil]);
     _result = nil;
   }
-  
+
   if ([@"pickImage" isEqualToString:call.method]) {
     _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
     _imagePickerController.delegate = self;
-    _imagePickerController.mediaTypes = @[(NSString*)kUTTypeImage];
-    
-    
+    _imagePickerController.mediaTypes = @[ (NSString*)kUTTypeImage ];
+
     _result = result;
     _arguments = call.arguments;
-    
+
     int imageSource = [[_arguments objectForKey:@"source"] intValue];
-    
+
     switch (imageSource) {
       case SOURCE_CAMERA:
         [self showCamera];
@@ -77,14 +76,17 @@ static const int SOURCE_GALLERY = 1;
   } else if ([@"pickVideo" isEqualToString:call.method]) {
     _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
     _imagePickerController.delegate = self;
-    _imagePickerController.mediaTypes = @[(NSString*)kUTTypeMovie, (NSString*)kUTTypeAVIMovie, (NSString*)kUTTypeVideo, (NSString*)kUTTypeMPEG4];
+    _imagePickerController.mediaTypes = @[
+      (NSString*)kUTTypeMovie, (NSString*)kUTTypeAVIMovie, (NSString*)kUTTypeVideo,
+      (NSString*)kUTTypeMPEG4
+    ];
     _imagePickerController.videoQuality = UIImagePickerControllerQualityTypeHigh;
-    
+
     _result = result;
     _arguments = call.arguments;
-    
+
     int imageSource = [[_arguments objectForKey:@"source"] intValue];
-    
+
     switch (imageSource) {
       case SOURCE_CAMERA:
         [self showCamera];
@@ -124,7 +126,7 @@ static const int SOURCE_GALLERY = 1;
 }
 
 - (void)imagePickerController:(UIImagePickerController *)picker
-didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info {
+    didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info {
   NSURL *videoURL = [info objectForKey:UIImagePickerControllerMediaURL];
   UIImage *image = [info objectForKey:UIImagePickerControllerEditedImage];
   [_imagePickerController dismissViewControllerAnimated:YES completion:nil];
@@ -132,21 +134,21 @@ didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info {
     image = [info objectForKey:UIImagePickerControllerOriginalImage];
   }
   image = [self normalizedImage:image];
-  
+
   NSNumber *maxWidth = [_arguments objectForKey:@"maxWidth"];
   NSNumber *maxHeight = [_arguments objectForKey:@"maxHeight"];
-  
+
   if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
     image = [self scaledImage:image maxWidth:maxWidth maxHeight:maxHeight];
   }
-  
+
   if (videoURL != nil) {
     NSData *data = [NSData dataWithContentsOfURL:videoURL];
     NSString *guid = [[NSProcessInfo processInfo] globallyUniqueString];
     NSString *tmpFile = [NSString stringWithFormat:@"image_picker_%@.MOV", guid];
     NSString *tmpDirectory = NSTemporaryDirectory();
     NSString *tmpPath = [tmpDirectory stringByAppendingPathComponent:tmpFile];
-    
+
     if ([[NSFileManager defaultManager] createFileAtPath:tmpPath contents:data attributes:nil]) {
       _result(tmpPath);
     } else {
@@ -160,7 +162,7 @@ didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info {
     NSString *tmpFile = [NSString stringWithFormat:@"image_picker_%@.jpg", guid];
     NSString *tmpDirectory = NSTemporaryDirectory();
     NSString *tmpPath = [tmpDirectory stringByAppendingPathComponent:tmpFile];
-    
+
     if ([[NSFileManager defaultManager] createFileAtPath:tmpPath contents:data attributes:nil]) {
       _result(tmpPath);
     } else {
@@ -169,7 +171,7 @@ didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info {
                                   details:nil]);
     }
   }
-  
+
   _result = nil;
   _arguments = nil;
 }
@@ -181,7 +183,7 @@ didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info {
 // TODO(goderbauer): investigate how to preserve EXIF data.
 - (UIImage *)normalizedImage:(UIImage *)image {
   if (image.imageOrientation == UIImageOrientationUp) return image;
-  
+
   UIGraphicsBeginImageContextWithOptions(image.size, NO, image.scale);
   [image drawInRect:(CGRect){0, 0, image.size}];
   UIImage *normalizedImage = UIGraphicsGetImageFromCurrentImageContext();
@@ -194,21 +196,21 @@ didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info {
                maxHeight:(NSNumber *)maxHeight {
   double originalWidth = image.size.width;
   double originalHeight = image.size.height;
-  
+
   bool hasMaxWidth = maxWidth != (id)[NSNull null];
   bool hasMaxHeight = maxHeight != (id)[NSNull null];
-  
+
   double width = hasMaxWidth ? MIN([maxWidth doubleValue], originalWidth) : originalWidth;
   double height = hasMaxHeight ? MIN([maxHeight doubleValue], originalHeight) : originalHeight;
-  
+
   bool shouldDownscaleWidth = hasMaxWidth && [maxWidth doubleValue] < originalWidth;
   bool shouldDownscaleHeight = hasMaxHeight && [maxHeight doubleValue] < originalHeight;
   bool shouldDownscale = shouldDownscaleWidth || shouldDownscaleHeight;
-  
+
   if (shouldDownscale) {
     double downscaledWidth = (height / originalHeight) * originalWidth;
     double downscaledHeight = (width / originalWidth) * originalHeight;
-    
+
     if (width < height) {
       if (!hasMaxWidth) {
         width = downscaledWidth;
@@ -229,14 +231,16 @@ didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info {
       }
     }
   }
-  
+
   UIGraphicsBeginImageContextWithOptions(CGSizeMake(width, height), NO, 1.0);
   [image drawInRect:CGRectMake(0, 0, width, height)];
-  
+
   UIImage *scaledImage = UIGraphicsGetImageFromCurrentImageContext();
   UIGraphicsEndImageContext();
-  
+
   return scaledImage;
 }
 
 @end
+
+
