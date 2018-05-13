@@ -185,10 +185,13 @@
           if (error != nil) {
             result(error.flutterError);
           } else {
-            // Metadata contains file metadata such as size,
-            // content-type, and download URL.
-            NSURL *downloadURL = metadata.downloadURL;
-            result(downloadURL.absoluteString);
+            [fileRef downloadURLWithCompletion:^(NSURL *URL, NSError *error) {
+              if (error != nil) {
+                result(error.flutterError);
+              } else {
+                result(URL.absoluteString);
+              }
+            }];
           }
         }];
 }
