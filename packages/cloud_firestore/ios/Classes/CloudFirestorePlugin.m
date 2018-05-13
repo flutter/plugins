@@ -347,9 +347,7 @@ const UInt8 BLOB = 131;
     FIRDocumentReference *document = getDocumentReference(call.arguments);
     if (![options isEqual:[NSNull null]] &&
         [options[@"merge"] isEqual:[NSNumber numberWithBool:YES]]) {
-      [document setData:call.arguments[@"data"]
-                  merge:YES
-             completion:defaultCompletionBlock];
+      [document setData:call.arguments[@"data"] merge:YES completion:defaultCompletionBlock];
     } else {
       [document setData:call.arguments[@"data"] completion:defaultCompletionBlock];
     }
