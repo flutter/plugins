@@ -348,7 +348,7 @@ const UInt8 BLOB = 131;
     if (![options isEqual:[NSNull null]] &&
         [options[@"merge"] isEqual:[NSNumber numberWithBool:YES]]) {
       [document setData:call.arguments[@"data"]
-                options:[FIRSetOptions merge]
+                  merge:YES
              completion:defaultCompletionBlock];
     } else {
       [document setData:call.arguments[@"data"] completion:defaultCompletionBlock];
@@ -437,7 +437,7 @@ const UInt8 BLOB = 131;
     FIRWriteBatch *batch = [_batches objectForKey:handle];
     if (![options isEqual:[NSNull null]] &&
         [options[@"merge"] isEqual:[NSNumber numberWithBool:YES]]) {
-      [batch setData:call.arguments[@"data"] forDocument:document options:[FIRSetOptions merge]];
+      [batch setData:call.arguments[@"data"] forDocument:document merge:YES];
     } else {
       [batch setData:call.arguments[@"data"] forDocument:document];
     }
