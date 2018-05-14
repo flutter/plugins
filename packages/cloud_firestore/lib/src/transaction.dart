@@ -22,7 +22,7 @@ class Transaction {
     });
     if (result != null) {
       return new DocumentSnapshot._(documentReference.path,
-          result['data'].cast<String, dynamic>(), Firestore.instance);
+          result['data']?.cast<String, dynamic>(), Firestore.instance);
     } else {
       return null;
     }
