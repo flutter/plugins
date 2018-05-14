@@ -198,16 +198,18 @@
 
 - (FIRStorageMetadata *)buildMetadataFromDictionary:(NSDictionary *)dictionary {
   FIRStorageMetadata *metadata = [[FIRStorageMetadata alloc] init];
-  if (![dictionary[@"cacheControl"] isEqual:[NSNull null]])
+  if (dictionary[@"cacheControl"] != [NSNull null])
     metadata.cacheControl = dictionary[@"cacheControl"];
-  if (![dictionary[@"contentDisposition"] isEqual:[NSNull null]])
+  if (dictionary[@"contentDisposition"] != [NSNull null])
     metadata.contentDisposition = dictionary[@"contentDisposition"];
-  if (![dictionary[@"contentEncoding"] isEqual:[NSNull null]])
+  if (dictionary[@"contentEncoding"] != [NSNull null])
     metadata.contentEncoding = dictionary[@"contentEncoding"];
-  if (![dictionary[@"contentLanguage"] isEqual:[NSNull null]])
+  if (dictionary[@"contentLanguage"] != [NSNull null])
     metadata.contentLanguage = dictionary[@"contentLanguage"];
-  if (![dictionary[@"contentType"] isEqual:[NSNull null]])
+  if (dictionary[@"contentType"] != [NSNull null])
     metadata.contentType = dictionary[@"contentType"];
+  if (dictionary[@"customMetadata"] != [NSNull null])
+    metadata.customMetadata = dictionary[@"customMetadata"];
   return metadata;
 }
 
@@ -231,6 +233,7 @@
   [dictionary setValue:[metadata contentLanguage] forKey:@"contentLanguage"];
   [dictionary setValue:[metadata contentType] forKey:@"contentType"];
   [dictionary setValue:[metadata name] forKey:@"name"];
+  [dictionary setValue:[metadata customMetadata] forKey:@"customMetadata"];
   return dictionary;
 }
 
