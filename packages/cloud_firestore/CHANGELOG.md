@@ -1,6 +1,6 @@
 ## 0.7.1
 
-* Reflect Firebase API changes in iOS implementation.
+* Updated iOS implementation to reflect Firebase API changes.
 * Fixed bug in Transaction.get that would fail on no data.
 * Fixed error in README.md code sample.
 

@@ -1,6 +1,6 @@
 ## 0.5.10
 
-* Reflect Firebase API changes in iOS implementation.
+* Updated iOS implementation to reflect Firebase API changes.
 
 ## 0.5.9
 
