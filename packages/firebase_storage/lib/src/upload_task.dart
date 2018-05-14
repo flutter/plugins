@@ -72,6 +72,7 @@ Map<String, dynamic> _buildMetadataUploadMap(StorageMetadata metadata) {
     'contentLanguage': metadata.contentLanguage,
     'contentType': metadata.contentType,
     'contentEncoding': metadata.contentEncoding,
+    'customMetadata': metadata.customMetadata,
   };
 }
 
