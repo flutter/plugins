@@ -1,7 +1,7 @@
 ## [0.0.3]
 
-* Added missing await in setDefaults
-* Fixed example code in README
+* Added missing await in setDefaults.
+* Fixed example code in README.
 
 ## [0.0.2]
 
