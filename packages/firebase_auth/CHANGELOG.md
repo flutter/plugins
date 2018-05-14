@@ -1,3 +1,7 @@
+## 0.5.10
+
+* Reflect Firebase API changes in iOS implementation.
+
 ## 0.5.9
 
 * Added support for signing in with a Twitter account.
