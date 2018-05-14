@@ -1,6 +1,12 @@
-## 0.7.0+3
+## 0.7.2
 
 * Fixes crash on Android if a FirebaseFirestoreException happened.
+
+## 0.7.1
+
+* Updated iOS implementation to reflect Firebase API changes.
+* Fixed bug in Transaction.get that would fail on no data.
+* Fixed error in README.md code sample.
 
 ## 0.7.0+2
 

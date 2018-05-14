@@ -114,8 +114,10 @@ public class VideoPlayerPlugin implements MethodCallHandler {
           new MediaPlayer.OnErrorListener() {
             @Override
             public boolean onError(MediaPlayer mp, int what, int extra) {
-              eventSink.error(
-                  "VideoError", "Video player had error " + what + " extra " + extra, null);
+              if (eventSink != null) {
+                eventSink.error(
+                    "VideoError", "Video player had error " + what + " extra " + extra, null);
+              }
               return true;
             }
           });
