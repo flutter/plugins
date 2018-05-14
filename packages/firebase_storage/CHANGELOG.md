@@ -1,3 +1,7 @@
+## 0.3.5
+
+* Updated iOS implementation to reflect Firebase API changes.
+
 ## 0.3.4
 
 * Added timeout properties to FirebaseStorage
