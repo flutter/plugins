@@ -25,41 +25,30 @@
   if ([@"DynamicLinkComponents#url" isEqualToString:call.method]) {
     FIRDynamicLinkComponents *components = [self setupParameters:call.arguments];
     result([components.url absoluteString]);
-  } else if ([@"DynamicLinkComponents#shortUrl" isEqualToString:call.method]) {
-    [self handleShortUrl:call result:result];
+  } else if ([@"DynamicLinkComponents#shortLink" isEqualToString:call.method]) {
+    FIRDynamicLinkComponents *components = [self setupParameters:call.arguments];
+    [components shortenWithCompletion:[self createShortLinkCompletion:result]];
   } else if ([@"DynamicLinkComponents#shortenUrl" isEqualToString:call.method]) {
-    [self handleShortenUrl:call result:result];
+    FIRDynamicLinkComponentsOptions *options = [self setupOptions:call.arguments];
+    NSURL *url = [NSURL URLWithString:call.arguments[@"url"]];
+    [FIRDynamicLinkComponents
+     shortenURL:url
+     options:options
+     completion:[self createShortLinkCompletion:result]];
   } else {
     result(FlutterMethodNotImplemented);
   }
 }
 
-- (void)handleShortUrl:(FlutterMethodCall *)call result:(FlutterResult)result {
-  FIRDynamicLinkComponents *components = [self setupParameters:call.arguments];
-  [components shortenWithCompletion:^(NSURL *_Nullable shortURL, NSArray *_Nullable warnings,
-                                      NSError *_Nullable error) {
+- (FIRDynamicLinkShortenerCompletion)createShortLinkCompletion:(FlutterResult) result {
+  return ^(NSURL *_Nullable shortURL, NSArray *_Nullable warnings,
+           NSError *_Nullable error){
     if (error) {
-      result(@{ @"code" : @-1, @"errMsg" : error.description });
+      result(@{ @"success" : @-1, @"errMsg" : error.description });
     } else {
-      result(@{ @"code" : @1, @"url" : [shortURL absoluteString] });
+      result(@{ @"success" : @1, @"url" : [shortURL absoluteString], @"warnings" : warnings });
     }
-  }];
-}
-
-- (void)handleShortenUrl:(FlutterMethodCall *)call result:(FlutterResult)result {
-  FIRDynamicLinkComponentsOptions *options = [self setupOptions:call.arguments];
-  NSURL *url = [NSURL URLWithString:call.arguments[@"url"]];
-  [FIRDynamicLinkComponents
-      shortenURL:url
-         options:options
-      completion:^(NSURL *_Nullable shortURL, NSArray<NSString *> *_Nullable warnings,
-                   NSError *_Nullable error) {
-        if (error) {
-          result(@{ @"code" : @-1, @"errMsg" : error.description });
-        } else {
-          result(@{ @"code" : @1, @"url" : [shortURL absoluteString] });
-        }
-      }];
+  };
 }
 
 - (FIRDynamicLinkComponentsOptions *)setupOptions:(NSDictionary *)arguments {

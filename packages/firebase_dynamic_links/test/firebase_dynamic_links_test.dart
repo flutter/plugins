@@ -16,13 +16,14 @@ void main() {
           .setMockMethodCallHandler((MethodCall methodCall) async {
         log.add(methodCall);
         final Map<dynamic, dynamic> returnUrl = <dynamic, dynamic>{
-          'code': 1,
+          'success': 1,
           'url': 'google.com',
+          'warnings': <dynamic>['This is only a test link'],
         };
         switch (methodCall.method) {
           case 'DynamicLinkComponents#url':
             return "google.com";
-          case 'DynamicLinkComponents#shortUrl':
+          case 'DynamicLinkComponents#shortLink':
             return returnUrl;
           case 'DynamicLinkComponents#shortenUrl':
             return returnUrl;
@@ -70,7 +71,7 @@ void main() {
         );
 
         await components.url;
-        await components.shortUrl;
+        await components.shortLink;
 
         expect(log, <Matcher>[
           isMethodCall('DynamicLinkComponents#url',
@@ -89,7 +90,7 @@ void main() {
                 'navigationInfoParameters': null,
                 'socialMetaTagParameters': null,
               }),
-          isMethodCall('DynamicLinkComponents#shortUrl',
+          isMethodCall('DynamicLinkComponents#shortLink',
               arguments: <String, dynamic>{
                 'androidParameters': <String, dynamic>{
                   'fallbackUrl': 'test-url',
@@ -114,7 +115,7 @@ void main() {
                 shortDynamicLinkPathLength: ShortDynamicLinkPathLength.short);
 
         await components.url;
-        await components.shortUrl;
+        await components.shortLink;
 
         expect(log, <Matcher>[
           isMethodCall('DynamicLinkComponents#url',
@@ -132,7 +133,7 @@ void main() {
                 'navigationInfoParameters': null,
                 'socialMetaTagParameters': null,
               }),
-          isMethodCall('DynamicLinkComponents#shortUrl',
+          isMethodCall('DynamicLinkComponents#shortLink',
               arguments: <String, dynamic>{
                 'androidParameters': null,
                 'domain': 'test-domain',
@@ -160,7 +161,7 @@ void main() {
         );
 
         await components.url;
-        await components.shortUrl;
+        await components.shortLink;
 
         expect(log, <Matcher>[
           isMethodCall('DynamicLinkComponents#url',
@@ -181,7 +182,7 @@ void main() {
                 'navigationInfoParameters': null,
                 'socialMetaTagParameters': null,
               }),
-          isMethodCall('DynamicLinkComponents#shortUrl',
+          isMethodCall('DynamicLinkComponents#shortLink',
               arguments: <String, dynamic>{
                 'androidParameters': null,
                 'domain': 'test-domain',
@@ -214,7 +215,7 @@ void main() {
         );
 
         await components.url;
-        await components.shortUrl;
+        await components.shortLink;
 
         expect(log, <Matcher>[
           isMethodCall('DynamicLinkComponents#url',
@@ -237,7 +238,7 @@ void main() {
                 'navigationInfoParameters': null,
                 'socialMetaTagParameters': null,
               }),
-          isMethodCall('DynamicLinkComponents#shortUrl',
+          isMethodCall('DynamicLinkComponents#shortLink',
               arguments: <String, dynamic>{
                 'androidParameters': null,
                 'domain': 'test-domain',
@@ -269,7 +270,7 @@ void main() {
         );
 
         await components.url;
-        await components.shortUrl;
+        await components.shortLink;
 
         expect(log, <Matcher>[
           isMethodCall('DynamicLinkComponents#url',
@@ -288,7 +289,7 @@ void main() {
                 'navigationInfoParameters': null,
                 'socialMetaTagParameters': null,
               }),
-          isMethodCall('DynamicLinkComponents#shortUrl',
+          isMethodCall('DynamicLinkComponents#shortLink',
               arguments: <String, dynamic>{
                 'androidParameters': null,
                 'domain': 'test-domain',
@@ -312,7 +313,7 @@ void main() {
             new NavigationInfoParameters(forcedRedirectEnabled: true);
 
         await components.url;
-        await components.shortUrl;
+        await components.shortLink;
 
         expect(log, <Matcher>[
           isMethodCall('DynamicLinkComponents#url',
@@ -329,7 +330,7 @@ void main() {
                 },
                 'socialMetaTagParameters': null,
               }),
-          isMethodCall('DynamicLinkComponents#shortUrl',
+          isMethodCall('DynamicLinkComponents#shortLink',
               arguments: <String, dynamic>{
                 'androidParameters': null,
                 'domain': 'test-domain',
@@ -354,7 +355,7 @@ void main() {
         );
 
         await components.url;
-        await components.shortUrl;
+        await components.shortLink;
 
         expect(log, <Matcher>[
           isMethodCall('DynamicLinkComponents#url',
@@ -373,7 +374,7 @@ void main() {
                   'title': 'bro',
                 },
               }),
-          isMethodCall('DynamicLinkComponents#shortUrl',
+          isMethodCall('DynamicLinkComponents#shortLink',
               arguments: <String, dynamic>{
                 'androidParameters': null,
                 'domain': 'test-domain',

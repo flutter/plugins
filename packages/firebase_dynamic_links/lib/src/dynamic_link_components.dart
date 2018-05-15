@@ -73,20 +73,14 @@ class DynamicLinkComponents {
   /// using DynamicLinkComponents.
   ///
   /// May throw a [ShortLinkException].
-  static Future<Uri> shortenUrl(Uri url,
+  static Future<ShortDynamicLink> shortenUrl(Uri url,
       [DynamicLinkComponentsOptions options]) async {
-    final Map<dynamic, dynamic> ret = await FirebaseDynamicLinks.channel
+    final Map<dynamic, dynamic> reply = await FirebaseDynamicLinks.channel
         .invokeMethod('DynamicLinkComponents#shortenUrl', <String, dynamic>{
       'url': url.toString(),
       'dynamicLinkComponentsOptions': options?._data,
     });
-
-    if (ret['code'] >= 0) {
-      return Uri.parse(ret['url']);
-    } else {
-      throw ShortLinkException(
-          ret['errMsg'] ?? 'Unable to create short Dynamic Link.');
-    }
+    return _parseShortLink(reply);
   }
 
   /// A generated long Dynamic Link URL.
@@ -95,7 +89,7 @@ class DynamicLinkComponents {
   /// A generated short Dynamic Link URL.
   ///
   /// May throw a [ShortLinkException].
-  Future<Uri> get shortUrl => _generateShortUrl();
+  Future<ShortDynamicLink> get shortLink => _generateShortLink();
 
   Map<String, dynamic> get _data => <String, dynamic>{
         'androidParameters': androidParameters?._data,
@@ -116,15 +110,19 @@ class DynamicLinkComponents {
     return Uri.parse(url);
   }
 
-  Future<Uri> _generateShortUrl() async {
-    final Map<dynamic, dynamic> ret = await FirebaseDynamicLinks.channel
-        .invokeMethod('DynamicLinkComponents#shortUrl', _data);
+  Future<ShortDynamicLink> _generateShortLink() async {
+    final Map<dynamic, dynamic> reply = await FirebaseDynamicLinks.channel
+        .invokeMethod('DynamicLinkComponents#shortLink', _data);
+    return _parseShortLink(reply);
+  }
 
-    if (ret['code'] >= 0) {
-      return Uri.parse(ret['url']);
-    } else {
-      throw ShortLinkException(
-          ret['errMsg'] ?? 'Unable to create short Dynamic Link.');
+  static ShortDynamicLink _parseShortLink(Map<dynamic, dynamic> reply) {
+    if (reply['success'] > 0) {
+      final List<dynamic> warnings = reply['warnings'];
+      return ShortDynamicLink._(Uri.parse(reply['url']), warnings?.cast());
     }
+
+    throw ShortLinkException(
+        reply['errMsg'] ?? 'Unable to create short Dynamic Link.');
   }
 }

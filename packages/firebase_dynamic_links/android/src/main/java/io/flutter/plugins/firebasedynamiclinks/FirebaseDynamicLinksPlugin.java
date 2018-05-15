@@ -12,12 +12,14 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /** FirebaseDynamicLinksPlugin */
 public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
-
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_dynamic_links");
@@ -29,30 +31,39 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
     if (call.method.equals("DynamicLinkComponents#url")) {
       DynamicLink.Builder builder = setupParameters((Map<String, Object>) call.arguments());
       result.success(builder.buildDynamicLink().getUri().toString());
-    } else if (call.method.equals("DynamicLinkComponents#shortUrl")) {
-      handleShortUrl(call, result);
+    } else if (call.method.equals("DynamicLinkComponents#shortLink")) {
+      Map<String, Object> arguments = (Map<String, Object>) call.arguments();
+      DynamicLink.Builder builder = setupParameters(arguments);
+      buildShortDynamicLink(builder, (Map<String, Object>) call.arguments(), createShortLinkListener(result));
     } else if (call.method.equals("DynamicLinkComponents#shortenUrl")) {
-      handleShortenUrl(call, result);
+      Map<String, Object> arguments = (Map<String, Object>) call.arguments();
+
+      DynamicLink.Builder builder = FirebaseDynamicLinks.getInstance().createDynamicLink();
+
+      Uri url = Uri.parse((String) arguments.get("url"));
+      builder.setLongLink(url);
+      buildShortDynamicLink(builder, arguments, createShortLinkListener(result));
     } else {
       result.notImplemented();
     }
   }
 
-  private void handleShortUrl(MethodCall call, Result result) {
-    Map<String, Object> arguments = (Map<String, Object>) call.arguments();
-    DynamicLink.Builder builder = setupParameters(arguments);
-
-    final Result finalResult = result;
-    OnCompleteListener<ShortDynamicLink> listener =
-        new OnCompleteListener<ShortDynamicLink>() {
+  private OnCompleteListener<ShortDynamicLink> createShortLinkListener(final Result result) {
+    return new OnCompleteListener<ShortDynamicLink>() {
           @Override
           public void onComplete(@NonNull Task<ShortDynamicLink> task) {
             Map<String, Object> url = new HashMap<>();
             if (task.isSuccessful()) {
-              url.put("code", 1);
+              url.put("success", 1);
               url.put("url", task.getResult().getShortLink().toString());
+
+              List<String> warnings = new ArrayList<>();
+              for (ShortDynamicLink.Warning warning : task.getResult().getWarnings()) {
+                warnings.add(warning.getMessage());
+              }
+              url.put("warnings", warnings);
             } else {
-              url.put("code", -1);
+              url.put("success", -1);
 
               Exception exception = task.getException();
               String errMsg = null;
@@ -63,47 +74,9 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
               url.put("errMsg", errMsg);
             }
 
-            finalResult.success(url);
+            result.success(url);
           }
         };
-
-    buildShortDynamicLink(builder, (Map<String, Object>) call.arguments(), listener);
-  }
-
-  private void handleShortenUrl(MethodCall call, Result result) {
-    Map<String, Object> arguments = (Map<String, Object>) call.arguments();
-
-    DynamicLink.Builder builder = FirebaseDynamicLinks.getInstance().createDynamicLink();
-
-    Uri url = Uri.parse((String) arguments.get("url"));
-    builder.setLongLink(url);
-
-    final Result finalResult = result;
-    OnCompleteListener<ShortDynamicLink> listener =
-        new OnCompleteListener<ShortDynamicLink>() {
-          @Override
-          public void onComplete(@NonNull Task<ShortDynamicLink> task) {
-            Map<String, Object> url = new HashMap<>();
-            if (task.isSuccessful()) {
-              url.put("code", 1);
-              url.put("url", task.getResult().getShortLink().toString());
-            } else {
-              url.put("code", -1);
-
-              Exception exception = task.getException();
-              String errMsg = null;
-              if (exception != null && exception.getMessage() != null) {
-                errMsg = exception.getMessage();
-              }
-
-              url.put("errMsg", errMsg);
-            }
-
-            finalResult.success(url);
-          }
-        };
-
-    buildShortDynamicLink(builder, arguments, listener);
   }
 
   private void buildShortDynamicLink(

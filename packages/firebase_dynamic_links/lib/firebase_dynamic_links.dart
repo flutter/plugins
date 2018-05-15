@@ -17,4 +17,5 @@ part 'src/google_analytics_parameters.dart';
 part 'src/ios_parameters.dart';
 part 'src/itunes_connect_analytics_parameters.dart';
 part 'src/navigation_info_parameters.dart';
+part 'src/short_dynamic_link.dart';
 part 'src/social_meta_tag_parameters.dart';
