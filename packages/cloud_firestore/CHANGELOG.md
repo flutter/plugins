@@ -1,3 +1,7 @@
+## 0.7.2
+
+* Fixes crash on Android if a FirebaseFirestoreException happened.
+
 ## 0.7.1
 
 * Updated iOS implementation to reflect Firebase API changes.
