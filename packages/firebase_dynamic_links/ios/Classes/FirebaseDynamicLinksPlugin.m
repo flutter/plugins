@@ -40,7 +40,7 @@
 }
 
 - (FIRDynamicLinkShortenerCompletion)createShortLinkCompletion:(FlutterResult)result {
-  return ^(NSURL *_Nullable shortURL, NSArray *_Nullable warnings, NSError *_Nullable error){
+  return ^(NSURL *_Nullable shortURL, NSArray *_Nullable warnings, NSError *_Nullable error) {
     if (error) {
       result(@{ @"success" : @-1, @"errMsg" : error.description });
     } else {
