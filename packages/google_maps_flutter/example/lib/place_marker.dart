@@ -54,23 +54,31 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
   @override
   void initState() {
     super.initState();
-    controller.onMarkerTapped.add((Marker marker) {
-      if (_selectedMarker != null) {
-        _updateSelectedMarker(
-          const MarkerOptions(icon: BitmapDescriptor.defaultMarker),
-        );
-      }
-      setState(() {
-        _selectedMarker = marker;
-      });
+    controller.onMarkerTapped.add(_onMarkerTapped);
+  }
+
+  @override
+  void dispose() {
+    controller.onMarkerTapped.remove(_onMarkerTapped);
+    super.dispose();
+  }
+
+  void _onMarkerTapped(Marker marker) {
+    if (_selectedMarker != null) {
       _updateSelectedMarker(
-        MarkerOptions(
-          icon: BitmapDescriptor.defaultMarkerWithHue(
-            BitmapDescriptor.hueGreen,
-          ),
-        ),
+        const MarkerOptions(icon: BitmapDescriptor.defaultMarker),
       );
+    }
+    setState(() {
+      _selectedMarker = marker;
     });
+    _updateSelectedMarker(
+      MarkerOptions(
+        icon: BitmapDescriptor.defaultMarkerWithHue(
+          BitmapDescriptor.hueGreen,
+        ),
+      ),
+    );
   }
 
   void _updateSelectedMarker(MarkerOptions changes) {
