@@ -4,9 +4,13 @@
 
 part of firebase_dynamic_links;
 
+/// Response from creating a short dynamic link with [DynamicLinkComponents].
 class ShortDynamicLink {
   ShortDynamicLink._(this.shortUrl, this.warnings);
 
+  /// Short url value.
   final Uri shortUrl;
+
+  /// Gets information about potential warnings on link creation.
   final List<String> warnings;
 }

@@ -86,7 +86,7 @@ class DynamicLinkComponents {
   /// A generated long Dynamic Link URL.
   Future<Uri> get url => _generateUrl();
 
-  /// A generated short Dynamic Link URL.
+  /// A generated short Dynamic Link.
   ///
   /// May throw a [ShortLinkException].
   Future<ShortDynamicLink> get shortLink => _generateShortLink();
