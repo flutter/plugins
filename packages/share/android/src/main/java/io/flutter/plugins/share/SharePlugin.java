@@ -30,19 +30,15 @@ public class SharePlugin implements MethodChannel.MethodCallHandler {
 
   @Override
   public void onMethodCall(MethodCall call, MethodChannel.Result result) {
-    if (call.method.equals("share")) {
-      if (!(call.arguments instanceof Map)) {
-        throw new IllegalArgumentException("Map argument expected");
-      }
-      // Android does not support showing the share sheet at a particular point on screen.
+    // Android does not support showing the share sheet at a particular point on screen.
+    if ("share".equals(call.method)) {
       share((String) call.argument("text"));
       result.success(null);
 
-    } else if (call.method.equals("shareFile")) {
-      if (!(call.arguments instanceof Map)) {
-        throw new IllegalArgumentException("Map argument expected");
-      }
-      shareFile((String) call.argument("uri"), (String) call.argument("mimeType"));
+    } else if ("shareFile".equals(call.method)) {
+      Uri uri = Uri.parse((String) call.argument("uri"));
+      String mimeType = call.argument("mimeType");
+      shareFile(uri, mimeType);
       result.success(null);
 
     } else {
@@ -50,43 +46,28 @@ public class SharePlugin implements MethodChannel.MethodCallHandler {
     }
   }
 
-  private void share(String text) {
-    if (text == null || text.isEmpty()) {
-      throw new IllegalArgumentException("Non-empty text expected");
+  private void sendIntent(Intent intent) {
+    if (mRegistrar.activity() != null) {
+      mRegistrar.activity().startActivity(intent);
+    } else {
+      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      mRegistrar.context().startActivity(intent);
     }
+  }
 
+  private void share(String text) {
     Intent shareIntent = new Intent();
     shareIntent.setAction(Intent.ACTION_SEND);
     shareIntent.putExtra(Intent.EXTRA_TEXT, text);
     shareIntent.setType("text/plain");
-    Intent chooserIntent = Intent.createChooser(shareIntent, null /* dialog title optional */);
-    if (mRegistrar.activity() != null) {
-      mRegistrar.activity().startActivity(chooserIntent);
-    } else {
-      chooserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      mRegistrar.context().startActivity(chooserIntent);
-    }
+    sendIntent(Intent.createChooser(shareIntent, null /* dialog title optional */));
   }
 
-  private void shareFile(String uri, String mimeType) {
-    if (uri == null || uri.isEmpty()) {
-      throw new IllegalArgumentException("Non-empty uri expected");
-    }
-
-    if (mimeType == null || mimeType.isEmpty()) {
-      throw new IllegalArgumentException("Non-empty mimeType expected");
-    }
-
+  private void shareFile(Uri uri, String mimeType) {
     Intent shareIntent = new Intent();
     shareIntent.setAction(Intent.ACTION_SEND);
-    shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(uri));
+    shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
     shareIntent.setType(mimeType);
-    Intent chooserIntent = Intent.createChooser(shareIntent, null /* dialog title optional */);
-    if (mRegistrar.activity() != null) {
-      mRegistrar.activity().startActivity(chooserIntent);
-    } else {
-      chooserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      mRegistrar.context().startActivity(chooserIntent);
-    }
+    sendIntent(Intent.createChooser(shareIntent, null /* dialog title optional */));
   }
 }

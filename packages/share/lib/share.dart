@@ -45,13 +45,14 @@ class Share {
     return channel.invokeMethod('share', params);
   }
 
-  static Future<void> shareFile(Uri uri, String mimeType) {
-    assert(uri != null);
-    assert(new File(uri.toFilePath()).existsSync());
+  static Future<void> shareFile(String filepath, String mimeType) {
+    assert(filepath != null);
+    assert(filepath.isNotEmpty);
+    assert(new File(filepath).existsSync());
     assert(mimeType != null);
     assert(mimeType.isNotEmpty);
     final Map<String, dynamic> params = <String, dynamic>{
-      'uri': uri.toString(),
+      'uri': new Uri.file(filepath).toString(),
       'mimeType': mimeType,
     };
 
