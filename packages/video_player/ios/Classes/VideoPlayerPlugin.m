@@ -59,7 +59,22 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
   _isInitialized = false;
   _isPlaying = false;
   _disposed = false;
-  _player = [[AVPlayer alloc] init];
+
+  AVPlayerItem* item = [AVPlayerItem playerItemWithURL:url];
+  [item addObserver:self
+         forKeyPath:@"loadedTimeRanges"
+            options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
+            context:timeRangeContext];
+  [item addObserver:self
+         forKeyPath:@"status"
+            options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
+            context:statusContext];
+  [item addObserver:self
+         forKeyPath:@"playbackLikelyToKeepUp"
+            options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
+            context:playbackLikelyToKeepUpContext];
+
+  _player = [AVPlayer playerWithPlayerItem:item];
   _player.actionAtItemEnd = AVPlayerActionAtItemEndNone;
   [[NSNotificationCenter defaultCenter] addObserverForName:AVPlayerItemDidPlayToEndTimeNotification
                                                     object:[_player currentItem]
@@ -79,20 +94,6 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
     (id)kCVPixelBufferIOSurfacePropertiesKey : @{}
   };
   _videoOutput = [[AVPlayerItemVideoOutput alloc] initWithPixelBufferAttributes:pixBuffAttributes];
-  AVPlayerItem* item = [AVPlayerItem playerItemWithURL:url];
-
-  [item addObserver:self
-         forKeyPath:@"loadedTimeRanges"
-            options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
-            context:timeRangeContext];
-  [item addObserver:self
-         forKeyPath:@"status"
-            options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
-            context:statusContext];
-  [item addObserver:self
-         forKeyPath:@"playbackLikelyToKeepUp"
-            options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
-            context:playbackLikelyToKeepUpContext];
 
   AVAsset* asset = [item asset];
   void (^assetCompletionHandler)(void) = ^{
