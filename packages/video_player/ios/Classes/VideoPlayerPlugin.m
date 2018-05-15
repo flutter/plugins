@@ -138,25 +138,25 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
       _eventSink(@{@"event" : @"bufferingUpdate", @"values" : values});
     }
   } else if (context == statusContext) {
-    if (_eventSink != nil) {
-      AVPlayerItem* item = (AVPlayerItem*)object;
-      switch (item.status) {
-        case AVPlayerStatusFailed:
+    AVPlayerItem* item = (AVPlayerItem*)object;
+    switch (item.status) {
+      case AVPlayerStatusFailed:
+        if (_eventSink != nil) {
           _eventSink([FlutterError
               errorWithCode:@"VideoError"
                     message:[@"Failed to load video: "
                                 stringByAppendingString:[item.error localizedDescription]]
                     details:nil]);
-          break;
-        case AVPlayerItemStatusUnknown:
-          break;
-        case AVPlayerItemStatusReadyToPlay:
-          _isInitialized = true;
-          [item addOutput:_videoOutput];
-          [self sendInitialized];
-          [self updatePlayingState];
-          break;
-      }
+        }
+        break;
+      case AVPlayerItemStatusUnknown:
+        break;
+      case AVPlayerItemStatusReadyToPlay:
+        _isInitialized = true;
+        [item addOutput:_videoOutput];
+        [self sendInitialized];
+        [self updatePlayingState];
+        break;
     }
   } else if (context == playbackLikelyToKeepUpContext) {
     if ([[_player currentItem] isPlaybackLikelyToKeepUp]) {
