@@ -155,7 +155,7 @@ class RemoteConfig extends ChangeNotifier {
   ///
   /// Default config parameters should be set then when changes are needed the
   /// parameters should be updated in the Firebase console.
-  void setDefaults(Map<String, dynamic> defaults) async {
+  Future<void> setDefaults(Map<String, dynamic> defaults) async {
     // Make defaults available even if fetch fails.
     defaults.forEach((String key, dynamic value) {
       if (!_parameters.containsKey(key)) {
@@ -167,7 +167,7 @@ class RemoteConfig extends ChangeNotifier {
         _parameters[key] = remoteConfigValue;
       }
     });
-    channel.invokeMethod(
+    await channel.invokeMethod(
         'RemoteConfig#setDefaults', <String, dynamic>{'defaults': defaults});
   }
 

@@ -1,3 +1,8 @@
+## [0.0.3]
+
+* Added missing await in setDefaults.
+* Fixed example code in README.
+
 ## [0.0.2]
 
 * Update iOS plugin so that it returns fetch status
