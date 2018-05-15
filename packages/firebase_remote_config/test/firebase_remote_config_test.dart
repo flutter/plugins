@@ -113,22 +113,19 @@ void main() {
     });
 
     test('setDefaults', () async {
-      await remoteConfig.setDefaults(<String, dynamic> {
+      await remoteConfig.setDefaults(<String, dynamic>{
         "foo": "bar",
       });
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall(
-              "RemoteConfig#setDefaults",
-              arguments: <String, dynamic> {
-                "defaults": <String, dynamic> {
-                  "foo": "bar",
-                },
-              },
-          ),
-        ]
-      );
+      expect(log, <Matcher>[
+        isMethodCall(
+          "RemoteConfig#setDefaults",
+          arguments: <String, dynamic>{
+            "defaults": <String, dynamic>{
+              "foo": "bar",
+            },
+          },
+        ),
+      ]);
     });
 
     test('fetch', () async {
