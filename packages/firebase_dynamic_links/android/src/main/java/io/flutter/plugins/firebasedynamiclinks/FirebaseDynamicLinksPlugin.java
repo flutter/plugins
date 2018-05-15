@@ -34,7 +34,8 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
     } else if (call.method.equals("DynamicLinkComponents#shortLink")) {
       Map<String, Object> arguments = (Map<String, Object>) call.arguments();
       DynamicLink.Builder builder = setupParameters(arguments);
-      buildShortDynamicLink(builder, (Map<String, Object>) call.arguments(), createShortLinkListener(result));
+      buildShortDynamicLink(
+          builder, (Map<String, Object>) call.arguments(), createShortLinkListener(result));
     } else if (call.method.equals("DynamicLinkComponents#shortenUrl")) {
       Map<String, Object> arguments = (Map<String, Object>) call.arguments();
 
@@ -50,33 +51,33 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
 
   private OnCompleteListener<ShortDynamicLink> createShortLinkListener(final Result result) {
     return new OnCompleteListener<ShortDynamicLink>() {
-          @Override
-          public void onComplete(@NonNull Task<ShortDynamicLink> task) {
-            Map<String, Object> url = new HashMap<>();
-            if (task.isSuccessful()) {
-              url.put("success", 1);
-              url.put("url", task.getResult().getShortLink().toString());
+      @Override
+      public void onComplete(@NonNull Task<ShortDynamicLink> task) {
+        Map<String, Object> url = new HashMap<>();
+        if (task.isSuccessful()) {
+          url.put("success", 1);
+          url.put("url", task.getResult().getShortLink().toString());
 
-              List<String> warnings = new ArrayList<>();
-              for (ShortDynamicLink.Warning warning : task.getResult().getWarnings()) {
-                warnings.add(warning.getMessage());
-              }
-              url.put("warnings", warnings);
-            } else {
-              url.put("success", -1);
-
-              Exception exception = task.getException();
-              String errMsg = null;
-              if (exception != null && exception.getMessage() != null) {
-                errMsg = exception.getMessage();
-              }
-
-              url.put("errMsg", errMsg);
-            }
-
-            result.success(url);
+          List<String> warnings = new ArrayList<>();
+          for (ShortDynamicLink.Warning warning : task.getResult().getWarnings()) {
+            warnings.add(warning.getMessage());
           }
-        };
+          url.put("warnings", warnings);
+        } else {
+          url.put("success", -1);
+
+          Exception exception = task.getException();
+          String errMsg = null;
+          if (exception != null && exception.getMessage() != null) {
+            errMsg = exception.getMessage();
+          }
+
+          url.put("errMsg", errMsg);
+        }
+
+        result.success(url);
+      }
+    };
   }
 
   private void buildShortDynamicLink(

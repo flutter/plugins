@@ -31,18 +31,16 @@
   } else if ([@"DynamicLinkComponents#shortenUrl" isEqualToString:call.method]) {
     FIRDynamicLinkComponentsOptions *options = [self setupOptions:call.arguments];
     NSURL *url = [NSURL URLWithString:call.arguments[@"url"]];
-    [FIRDynamicLinkComponents
-     shortenURL:url
-     options:options
-     completion:[self createShortLinkCompletion:result]];
+    [FIRDynamicLinkComponents shortenURL:url
+                                 options:options
+                              completion:[self createShortLinkCompletion:result]];
   } else {
     result(FlutterMethodNotImplemented);
   }
 }
 
-- (FIRDynamicLinkShortenerCompletion)createShortLinkCompletion:(FlutterResult) result {
-  return ^(NSURL *_Nullable shortURL, NSArray *_Nullable warnings,
-           NSError *_Nullable error){
+- (FIRDynamicLinkShortenerCompletion)createShortLinkCompletion:(FlutterResult)result {
+  return ^(NSURL *_Nullable shortURL, NSArray *_Nullable warnings, NSError *_Nullable error){
     if (error) {
       result(@{ @"success" : @-1, @"errMsg" : error.description });
     } else {

@@ -38,10 +38,11 @@ class _MyAppState extends State<MyApp> {
 
     Uri url;
     if (short) {
-      final ShortDynamicLink shortLink = await components.shortLink;
+      final ShortDynamicLink shortLink = await DynamicLinkComponents.shortenUrl(Uri.parse('https://cx4k7.app.goo.gl?apn=io.flutter.plugins.firebasedynamiclinksexample&ibi=io.flutter.plugins.firebaseDynamicLinksExample&link=https%3A%2F%2Fgoogle.com'));
       url = shortLink.shortUrl;
     } else {
       url = await components.url;
+      print(url.toString());
     }
 
     setState(() {
