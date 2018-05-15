@@ -59,7 +59,22 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
   _isInitialized = false;
   _isPlaying = false;
   _disposed = false;
-  _player = [[AVPlayer alloc] init];
+
+  AVPlayerItem* item = [AVPlayerItem playerItemWithURL:url];
+  [item addObserver:self
+         forKeyPath:@"loadedTimeRanges"
+            options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
+            context:timeRangeContext];
+  [item addObserver:self
+         forKeyPath:@"status"
+            options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
+            context:statusContext];
+  [item addObserver:self
+         forKeyPath:@"playbackLikelyToKeepUp"
+            options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
+            context:playbackLikelyToKeepUpContext];
+
+  _player = [AVPlayer playerWithPlayerItem:item];
   _player.actionAtItemEnd = AVPlayerActionAtItemEndNone;
   [[NSNotificationCenter defaultCenter] addObserverForName:AVPlayerItemDidPlayToEndTimeNotification
                                                     object:[_player currentItem]
@@ -79,20 +94,6 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
     (id)kCVPixelBufferIOSurfacePropertiesKey : @{}
   };
   _videoOutput = [[AVPlayerItemVideoOutput alloc] initWithPixelBufferAttributes:pixBuffAttributes];
-  AVPlayerItem* item = [AVPlayerItem playerItemWithURL:url];
-
-  [item addObserver:self
-         forKeyPath:@"loadedTimeRanges"
-            options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
-            context:timeRangeContext];
-  [item addObserver:self
-         forKeyPath:@"status"
-            options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
-            context:statusContext];
-  [item addObserver:self
-         forKeyPath:@"playbackLikelyToKeepUp"
-            options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
-            context:playbackLikelyToKeepUpContext];
 
   AVAsset* asset = [item asset];
   void (^assetCompletionHandler)(void) = ^{
@@ -137,25 +138,25 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
       _eventSink(@{@"event" : @"bufferingUpdate", @"values" : values});
     }
   } else if (context == statusContext) {
-    if (_eventSink != nil) {
-      AVPlayerItem* item = (AVPlayerItem*)object;
-      switch (item.status) {
-        case AVPlayerStatusFailed:
+    AVPlayerItem* item = (AVPlayerItem*)object;
+    switch (item.status) {
+      case AVPlayerStatusFailed:
+        if (_eventSink != nil) {
           _eventSink([FlutterError
               errorWithCode:@"VideoError"
                     message:[@"Failed to load video: "
                                 stringByAppendingString:[item.error localizedDescription]]
                     details:nil]);
-          break;
-        case AVPlayerItemStatusUnknown:
-          break;
-        case AVPlayerItemStatusReadyToPlay:
-          _isInitialized = true;
-          [item addOutput:_videoOutput];
-          [self sendInitialized];
-          [self updatePlayingState];
-          break;
-      }
+        }
+        break;
+      case AVPlayerItemStatusUnknown:
+        break;
+      case AVPlayerItemStatusReadyToPlay:
+        _isInitialized = true;
+        [item addOutput:_videoOutput];
+        [self sendInitialized];
+        [self updatePlayingState];
+        break;
     }
   } else if (context == playbackLikelyToKeepUpContext) {
     if ([[_player currentItem] isPlaybackLikelyToKeepUp]) {
@@ -290,6 +291,7 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
       [[_players objectForKey:textureId] dispose];
     }
     [_players removeAllObjects];
+    result(nil);
   } else if ([@"create" isEqualToString:call.method]) {
     NSDictionary* argsMap = call.arguments;
     FLTFrameUpdater* frameUpdater = [[FLTFrameUpdater alloc] initWithRegistry:_registry];
@@ -327,6 +329,7 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
       [_registry unregisterTexture:textureId];
       [_players removeObjectForKey:@(textureId)];
       [player dispose];
+      result(nil);
     } else if ([@"setLooping" isEqualToString:call.method]) {
       [player setIsLooping:[[argsMap objectForKey:@"looping"] boolValue]];
       result(nil);
