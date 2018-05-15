@@ -280,6 +280,13 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
     builder.setContentDisposition((String) map.get("contentDisposition"));
     builder.setContentLanguage((String) map.get("contentLanguage"));
     builder.setContentType((String) map.get("contentType"));
+
+    Map<String, String> customMetadata = (Map<String, String>) map.get("customMetadata");
+    if (customMetadata != null) {
+      for (String key : customMetadata.keySet()) {
+        builder.setCustomMetadata(key, customMetadata.get(key));
+      }
+    }
     return builder.build();
   }
 
@@ -299,6 +306,12 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
     map.put("contentEncoding", storageMetadata.getContentEncoding());
     map.put("contentLanguage", storageMetadata.getContentLanguage());
     map.put("contentType", storageMetadata.getContentType());
+
+    Map<String, String> customMetadata = new HashMap<>();
+    for (String key : storageMetadata.getCustomMetadataKeys()) {
+      customMetadata.put(key, storageMetadata.getCustomMetadata(key));
+    }
+    map.put("customMetadata", customMetadata);
     return map;
   }
 
