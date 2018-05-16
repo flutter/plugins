@@ -84,7 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {});
     };
   }
-  
+
   Widget _previewVideo(VideoPlayerController controller) {
     if (controller == null) {
       return const Text(
