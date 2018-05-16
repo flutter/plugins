@@ -85,7 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
     };
   }
   
-   Widget _previewVideo(VideoPlayerController controller) {
+  Widget _previewVideo(VideoPlayerController controller) {
     if (controller == null) {
       return const Text(
         'You have not yet picked a video',
