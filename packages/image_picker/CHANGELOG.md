@@ -1,3 +1,8 @@
+## 0.4.2
+
+* Added Video Capability with `pickVideo`. 
+* Updated Example for Preview of Video Captured
+
 ## 0.4.1
 
 * Bugfix: the `pickImage` method will now return null when the user cancels picking the image, instead of hanging indefinitely.
