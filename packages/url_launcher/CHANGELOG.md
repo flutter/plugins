@@ -1,3 +1,7 @@
+## 3.0.1
+
+* Fix a crash during Safari view controller dismiss.
+
 ## 3.0.0
 
 * **Breaking change**. Set SDK constraints to match the Flutter beta release.

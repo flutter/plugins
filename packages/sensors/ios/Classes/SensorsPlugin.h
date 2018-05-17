@@ -7,6 +7,9 @@
 @interface FLTSensorsPlugin : NSObject<FlutterPlugin>
 @end
 
+@interface FLTUserAccelStreamHandler : NSObject<FlutterStreamHandler>
+@end
+
 @interface FLTAccelerometerStreamHandler : NSObject<FlutterStreamHandler>
 @end
 
