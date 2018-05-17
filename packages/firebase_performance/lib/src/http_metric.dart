@@ -7,8 +7,6 @@ part of firebase_performance;
 class HttpMetric {
   HttpMetric._(this._handle, this._url, this._httpMethod);
 
-  // TODO(bmparr): Constant locations?
-
   final int _handle;
   final String _url;
   final HttpMethod _httpMethod;
@@ -76,9 +74,9 @@ class HttpMetric {
   /// Updates the value of the attribute if the attribute already exists. If the
   /// [HttpMetric] has been stopped, this method returns without adding the
   /// attribute. The maximum number of attributes that can be added to a
-  /// [HttpMetric] are [maxTraceCustomAttributes].
+  /// [HttpMetric] are [Trace.maxTraceCustomAttributes].
   ///
-  /// Name of the attribute has max length of [maxAttributeKeyLength]
+  /// Name of the attribute has max length of [Trace.maxAttributeKeyLength]
   /// characters. Value of the attribute has max length of
   /// [maxAttributeValueLength] characters.
   void putAttribute(String attribute, String value) {
