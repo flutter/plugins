@@ -4,6 +4,7 @@
 
 import 'dart:async';
 
+import 'package:http/http.dart';
 import 'package:flutter/material.dart';
 
 import 'package:firebase_performance/firebase_performance.dart';
@@ -21,6 +22,7 @@ class _MyAppState extends State<MyApp> {
   String _performanceCollectionMessage =
       'Unknown status of performance collection.';
   bool _traceHasRan = false;
+  bool _httpMetricHasRan = false;
 
   @override
   void initState() {
@@ -42,6 +44,10 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _testTrace() async {
+    setState(() {
+      _traceHasRan = false;
+    });
+
     final Trace trace = _performance.newTrace("test");
     trace.incrementCounter("counter1", 16);
     trace.putAttribute("favorite_color", "blue");
@@ -61,8 +67,33 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  Future<void> _testHttpMetric() async {
+    setState(() {
+      _httpMetricHasRan = false;
+    });
+
+    final HttpMetric metric = _performance.newHttpMetric(
+        'https://jsonplaceholder.typicode.com/posts/1', HttpMethod.Get);
+
+    await metric.start();
+
+    final Response response =
+        await get('https://jsonplaceholder.typicode.com/posts/1');
+    metric.responsePayloadSize = response.contentLength;
+    metric.responseContentType = 'application/json';
+    metric.httpResponseCode = response.statusCode;
+
+    await metric.stop();
+
+    setState(() {
+      _httpMetricHasRan = true;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final TextStyle textStyle = const TextStyle(
+        color: Colors.lightGreenAccent, fontSize: 25.0);
     return new MaterialApp(
       home: new Scaffold(
         appBar: new AppBar(
@@ -82,9 +113,16 @@ class _MyAppState extends State<MyApp> {
             ),
             new Text(
               _traceHasRan ? 'Trace Ran!' : '',
-              style: const TextStyle(
-                  color: Colors.lightGreenAccent, fontSize: 25.0),
-            )
+              style: textStyle,
+            ),
+            new RaisedButton(
+              onPressed: _testHttpMetric,
+              child: const Text('Run HttpMetric'),
+            ),
+            new Text(
+              _httpMetricHasRan ? 'HttpMetric Ran!' : '',
+              style: textStyle,
+            ),
           ],
         )),
       ),

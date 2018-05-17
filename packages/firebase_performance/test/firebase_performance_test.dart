@@ -250,8 +250,6 @@ void main() {
           }),
           isMethodCall('HttpMetric#stop', arguments: <String, dynamic>{
             'handle': currentHttpMetricHandle,
-            'url': 'https://google.com',
-            'httpMethod': HttpMethod.Get,
             'httpResponseCode': 1,
             'requestPayloadSize': 5000000,
             'responseContentType': 'text/html',

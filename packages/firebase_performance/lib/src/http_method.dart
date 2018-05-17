@@ -5,6 +5,8 @@
 part of firebase_performance;
 
 class HttpMethod {
+  HttpMethod._();
+
   static const String Connect = 'CONNECT';
   static const String Delete = 'DELETE';
   static const String Get = 'GET';

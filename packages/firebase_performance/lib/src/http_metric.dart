@@ -60,8 +60,6 @@ class HttpMetric {
 
     final Map<String, dynamic> data = <String, dynamic>{
       'handle': _handle,
-      'url': _url,
-      'httpMethod': _httpMethod,
       'httpResponseCode': httpResponseCode,
       'requestPayloadSize': requestPayloadSize,
       'responseContentType': responseContentType,

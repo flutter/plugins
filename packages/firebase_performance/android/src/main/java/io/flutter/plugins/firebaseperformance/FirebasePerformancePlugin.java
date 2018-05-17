@@ -7,6 +7,7 @@ package io.flutter.plugins.firebaseperformance;
 import android.util.SparseArray;
 import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.Trace;
+import com.google.firebase.perf.metrics.HttpMetric;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -19,6 +20,7 @@ public class FirebasePerformancePlugin implements MethodCallHandler {
   private FirebasePerformance firebasePerformance;
 
   private final SparseArray<Trace> traces = new SparseArray<>();
+  private final SparseArray<HttpMetric> httpMetrics = new SparseArray<>();
 
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel =
@@ -46,6 +48,12 @@ public class FirebasePerformancePlugin implements MethodCallHandler {
         break;
       case "Trace#stop":
         handleTraceStop(call, result);
+        break;
+      case "HttpMetric#start":
+        handleHttpMetricStart(call, result);
+        break;
+      case "HttpMetric#stop":
+        handleHttpMetricStop(call, result);
         break;
       default:
         result.notImplemented();
@@ -86,6 +94,62 @@ public class FirebasePerformancePlugin implements MethodCallHandler {
 
     trace.stop();
     traces.remove(handle);
+    result.success(null);
+  }
+
+  private void handleHttpMetricStart(MethodCall call, Result result) {
+    Map<String, Object> arguments = call.arguments();
+
+    int handle = (int) arguments.get("handle");
+    String url = (String) arguments.get("url");
+    String httpMethod = (String) arguments.get("httpMethod");
+
+
+    HttpMetric metric = firebasePerformance.newHttpMetric(url, httpMethod);
+
+    httpMetrics.put(handle, metric);
+
+    metric.start();
+    result.success(null);
+  }
+
+  private void handleHttpMetricStop(MethodCall call, Result result) {
+    Map<String, Object> arguments = call.arguments();
+
+    int handle = (int) arguments.get("handle");
+    HttpMetric metric = httpMetrics.get(handle);
+
+    Object httpResponseCode = arguments.get("httpResponseCode");
+    Object requestPayloadSize = arguments.get("requestPayloadSize");
+    Object responseContentType = arguments.get("responseContentType");
+    Object responsePayloadSize = arguments.get("responsePayloadSize");
+
+    if (requestPayloadSize != null) {
+      if (requestPayloadSize instanceof Integer) {
+        metric.setRequestPayloadSize((int) requestPayloadSize);
+      } else {
+        metric.setRequestPayloadSize((long) requestPayloadSize);
+      }
+    }
+
+    if (httpResponseCode != null) metric.setHttpResponseCode((int) httpResponseCode);
+    if (responseContentType != null) metric.setResponseContentType((String) responseContentType);
+    if (responsePayloadSize != null) {
+      if (responsePayloadSize instanceof Integer) {
+        metric.setResponsePayloadSize((int) responsePayloadSize);
+      } else {
+        metric.setResponsePayloadSize((long) responsePayloadSize);
+      }
+    }
+
+    @SuppressWarnings("unchecked")
+    Map<String, String> attributes = (Map<String, String>) arguments.get("attributes");
+    for (Map.Entry<String, String> entry : attributes.entrySet()) {
+      metric.putAttribute(entry.getKey(), entry.getValue());
+    }
+
+    metric.stop();
+    httpMetrics.remove(handle);
     result.success(null);
   }
 }
