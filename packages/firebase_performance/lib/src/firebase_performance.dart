@@ -11,6 +11,7 @@ class FirebasePerformance {
   FirebasePerformance._();
 
   static int _traceCount = 0;
+  static int _httpMetricCount = 0;
 
   @visibleForTesting
   static const MethodChannel channel =
@@ -42,17 +43,22 @@ class FirebasePerformance {
 
   /// Creates a [Trace] object with given [name].
   ///
-  /// [name]: name of the trace. Requires no leading or trailing whitespace, no
-  /// leading underscore _ character, max length of [Trace.maxTraceNameLength]
+  /// The [name] requires no leading or trailing whitespace, no leading
+  /// underscore _ character, max length of [Trace.maxTraceNameLength]
   /// characters.
   Trace newTrace(String name) {
     return new Trace._(_traceCount++, name);
   }
 
+  /// Creates [HttpMetric] for collecting performance for one request/response.
+  HttpMetric newHttpMetric(String url, String httpMethod) {
+    return new HttpMetric._(_httpMetricCount++, url, httpMethod);
+  }
+
   /// Creates a [Trace] object with given [name] and start the trace.
   ///
-  /// [name]: name of the trace. Requires no leading or trailing whitespace, no
-  /// leading underscore _ character, max length of [Trace.maxTraceNameLength]
+  /// The [name] requires no leading or trailing whitespace, no leading
+  /// underscore _ character, max length of [Trace.maxTraceNameLength]
   /// characters.
   static Future<Trace> startTrace(String name) async {
     final Trace trace = instance.newTrace(name);

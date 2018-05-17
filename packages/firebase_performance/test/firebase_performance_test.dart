@@ -13,6 +13,7 @@ void main() {
     final List<MethodCall> log = <MethodCall>[];
     bool performanceCollectionEnable = true;
     int currentTraceHandle;
+    int currentHttpMetricHandle;
 
     setUp(() {
       FirebasePerformance.channel
@@ -28,6 +29,11 @@ void main() {
             currentTraceHandle = methodCall.arguments['handle'];
             return null;
           case 'Trace#stop':
+            return null;
+          case 'HttpMetric#start':
+            currentHttpMetricHandle = methodCall.arguments['handle'];
+            return null;
+          case 'HttpMetric#stop':
             return null;
           default:
             return null;
@@ -69,6 +75,20 @@ void main() {
         isMethodCall('Trace#start', arguments: <String, Object>{
           'handle': currentTraceHandle,
           'name': 'test-trace',
+        }),
+      ]);
+    });
+
+    test('newHttpMetric', () async {
+      final HttpMetric metric =
+          performance.newHttpMetric('https://google.com', HttpMethod.Connect);
+      await metric.start();
+
+      expect(log, <Matcher>[
+        isMethodCall('HttpMetric#start', arguments: <String, Object>{
+          'handle': currentTraceHandle,
+          'url': 'https://google.com',
+          'httpMethod': HttpMethod.Connect,
         }),
       ]);
     });
@@ -190,6 +210,93 @@ void main() {
         expect(testTrace.getAttribute('attr1'), 'apple');
 
         expect(testTrace.getAttribute('attr3'), isNull);
+      });
+    });
+
+    group('$HttpMetric', () {
+      HttpMetric testMetric;
+
+      setUp(() {
+        testMetric =
+            performance.newHttpMetric('https://google.com', HttpMethod.Get);
+      });
+
+      test('start', () async {
+        await testMetric.start();
+
+        expect(log, <Matcher>[
+          isMethodCall('HttpMetric#start', arguments: <String, Object>{
+            'handle': currentHttpMetricHandle,
+            'url': 'https://google.com',
+            'httpMethod': HttpMethod.Get,
+          }),
+        ]);
+      });
+
+      test('stop', () async {
+        testMetric.httpResponseCode = 1;
+        testMetric.requestPayloadSize = 5000000;
+        testMetric.responseContentType = 'text/html';
+        testMetric.responsePayloadSize = 1992304820934820;
+
+        await testMetric.start();
+        await testMetric.stop();
+
+        expect(log, <Matcher>[
+          isMethodCall('HttpMetric#start', arguments: <String, Object>{
+            'handle': currentHttpMetricHandle,
+            'url': 'https://google.com',
+            'httpMethod': HttpMethod.Get,
+          }),
+          isMethodCall('HttpMetric#stop', arguments: <String, dynamic>{
+            'handle': currentHttpMetricHandle,
+            'url': 'https://google.com',
+            'httpMethod': HttpMethod.Get,
+            'httpResponseCode': 1,
+            'requestPayloadSize': 5000000,
+            'responseContentType': 'text/html',
+            'responsePayloadSize': 1992304820934820,
+            'attributes': <String, String>{},
+          }),
+        ]);
+      });
+
+      test('putAttribute', () async {
+        testMetric.putAttribute('attr1', 'apple');
+        testMetric.putAttribute('attr2', 'are');
+        expect(testMetric.attributes, <String, String>{
+          'attr1': 'apple',
+          'attr2': 'are',
+        });
+
+        testMetric.putAttribute('attr1', 'delicious');
+        expect(testMetric.attributes, <String, String>{
+          'attr1': 'delicious',
+          'attr2': 'are',
+        });
+      });
+
+      test('removeAttribute', () async {
+        testMetric.putAttribute('attr1', 'apple');
+        testMetric.putAttribute('attr2', 'are');
+        testMetric.removeAttribute('no-attr');
+        expect(testMetric.attributes, <String, String>{
+          'attr1': 'apple',
+          'attr2': 'are',
+        });
+
+        testMetric.removeAttribute('attr1');
+        expect(testMetric.attributes, <String, String>{
+          'attr2': 'are',
+        });
+      });
+
+      test('getAttribute', () {
+        testMetric.putAttribute('attr1', 'apple');
+        testMetric.putAttribute('attr2', 'are');
+        expect(testMetric.getAttribute('attr1'), 'apple');
+
+        expect(testMetric.getAttribute('attr3'), isNull);
       });
     });
   });
