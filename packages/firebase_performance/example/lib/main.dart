@@ -92,8 +92,8 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    final TextStyle textStyle = const TextStyle(
-        color: Colors.lightGreenAccent, fontSize: 25.0);
+    final TextStyle textStyle =
+        const TextStyle(color: Colors.lightGreenAccent, fontSize: 25.0);
     return new MaterialApp(
       home: new Scaffold(
         appBar: new AppBar(

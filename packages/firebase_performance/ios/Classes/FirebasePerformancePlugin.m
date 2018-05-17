@@ -88,31 +88,31 @@
   NSNumber *httpMethod = call.arguments[@"httpMethod"];
   FIRHTTPMethod method;
   switch ([httpMethod intValue]) {
-      case 0:
+    case 0:
       method = FIRHTTPMethodCONNECT;
       break;
-      case 1:
+    case 1:
       method = FIRHTTPMethodDELETE;
       break;
-      case 2:
+    case 2:
       method = FIRHTTPMethodGET;
       break;
-      case 3:
+    case 3:
       method = FIRHTTPMethodHEAD;
       break;
-      case 4:
+    case 4:
       method = FIRHTTPMethodOPTIONS;
       break;
-      case 5:
+    case 5:
       method = FIRHTTPMethodPATCH;
       break;
-      case 6:
+    case 6:
       method = FIRHTTPMethodPOST;
       break;
-      case 7:
+    case 7:
       method = FIRHTTPMethodPUT;
       break;
-      case 8:
+    case 8:
       method = FIRHTTPMethodTRACE;
       break;
     default:
@@ -136,9 +136,12 @@
   NSNumber *responsePayloadSize = call.arguments[@"responsePayloadSize"];
 
   if (![responseCode isEqual:[NSNull null]]) metric.responseCode = [responseCode integerValue];
-  if (![requestPayloadSize isEqual:[NSNull null]]) metric.requestPayloadSize = [requestPayloadSize longValue];
-  if (![responseContentType isEqual:[NSNull null]]) metric.responseContentType = responseContentType;
-  if (![responsePayloadSize isEqual:[NSNull null]]) metric.responsePayloadSize = [responsePayloadSize longValue];
+  if (![requestPayloadSize isEqual:[NSNull null]])
+    metric.requestPayloadSize = [requestPayloadSize longValue];
+  if (![responseContentType isEqual:[NSNull null]])
+    metric.responseContentType = responseContentType;
+  if (![responsePayloadSize isEqual:[NSNull null]])
+    metric.responsePayloadSize = [responsePayloadSize longValue];
 
   NSDictionary *attributes = call.arguments[@"attributes"];
   [attributes enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {

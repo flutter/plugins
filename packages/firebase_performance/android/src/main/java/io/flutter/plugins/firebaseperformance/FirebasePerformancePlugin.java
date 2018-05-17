@@ -6,8 +6,8 @@ package io.flutter.plugins.firebaseperformance;
 
 import android.util.SparseArray;
 import com.google.firebase.perf.FirebasePerformance;
-import com.google.firebase.perf.metrics.Trace;
 import com.google.firebase.perf.metrics.HttpMetric;
+import com.google.firebase.perf.metrics.Trace;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
