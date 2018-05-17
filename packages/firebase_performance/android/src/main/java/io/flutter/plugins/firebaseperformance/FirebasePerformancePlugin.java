@@ -102,10 +102,43 @@ public class FirebasePerformancePlugin implements MethodCallHandler {
 
     int handle = (int) arguments.get("handle");
     String url = (String) arguments.get("url");
-    String httpMethod = (String) arguments.get("httpMethod");
 
+    int httpMethod = (int) arguments.get("httpMethod");
+    String httpMethodStr;
+    switch (httpMethod) {
+      case 0:
+        httpMethodStr = FirebasePerformance.HttpMethod.CONNECT;
+        break;
+      case 1:
+        httpMethodStr = FirebasePerformance.HttpMethod.DELETE;
+        break;
+      case 2:
+        httpMethodStr = FirebasePerformance.HttpMethod.GET;
+        break;
+      case 3:
+        httpMethodStr = FirebasePerformance.HttpMethod.HEAD;
+        break;
+      case 4:
+        httpMethodStr = FirebasePerformance.HttpMethod.OPTIONS;
+        break;
+      case 5:
+        httpMethodStr = FirebasePerformance.HttpMethod.PATCH;
+        break;
+      case 6:
+        httpMethodStr = FirebasePerformance.HttpMethod.POST;
+        break;
+      case 7:
+        httpMethodStr = FirebasePerformance.HttpMethod.PUT;
+        break;
+      case 8:
+        httpMethodStr = FirebasePerformance.HttpMethod.TRACE;
+        break;
+      default:
+        httpMethodStr = null;
+        break;
+    }
 
-    HttpMetric metric = firebasePerformance.newHttpMetric(url, httpMethod);
+    HttpMetric metric = firebasePerformance.newHttpMetric(url, httpMethodStr);
 
     httpMetrics.put(handle, metric);
 

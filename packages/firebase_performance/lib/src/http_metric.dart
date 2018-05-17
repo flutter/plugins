@@ -11,7 +11,7 @@ class HttpMetric {
 
   final int _handle;
   final String _url;
-  final String _httpMethod;
+  final HttpMethod _httpMethod;
 
   bool _hasStarted = false;
   bool _hasStopped = false;
@@ -46,7 +46,7 @@ class HttpMetric {
         .invokeMethod('HttpMetric#start', <String, dynamic>{
       'handle': _handle,
       'url': _url,
-      'httpMethod': _httpMethod,
+      'httpMethod': _httpMethod.index,
     });
   }
 

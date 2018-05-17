@@ -85,7 +85,42 @@
   NSNumber *handle = call.arguments[@"handle"];
   NSURL *url = [NSURL URLWithString:call.arguments[@"url"]];
 
-  FIRHTTPMetric *metric = [[FIRHTTPMetric alloc] initWithURL:url HTTPMethod:FIRHTTPMethodGET];
+  NSNumber *httpMethod = call.arguments[@"httpMethod"];
+  FIRHTTPMethod method;
+  switch ([httpMethod intValue]) {
+      case 0:
+      method = FIRHTTPMethodCONNECT;
+      break;
+      case 1:
+      method = FIRHTTPMethodDELETE;
+      break;
+      case 2:
+      method = FIRHTTPMethodGET;
+      break;
+      case 3:
+      method = FIRHTTPMethodHEAD;
+      break;
+      case 4:
+      method = FIRHTTPMethodOPTIONS;
+      break;
+      case 5:
+      method = FIRHTTPMethodPATCH;
+      break;
+      case 6:
+      method = FIRHTTPMethodPOST;
+      break;
+      case 7:
+      method = FIRHTTPMethodPUT;
+      break;
+      case 8:
+      method = FIRHTTPMethodTRACE;
+      break;
+    default:
+      method = [httpMethod intValue];
+      break;
+  }
+
+  FIRHTTPMetric *metric = [[FIRHTTPMetric alloc] initWithURL:url HTTPMethod:method];
   [_httpMetrics setObject:metric forKey:handle];
   [metric start];
   result(nil);

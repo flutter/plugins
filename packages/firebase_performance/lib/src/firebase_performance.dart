@@ -4,6 +4,8 @@
 
 part of firebase_performance;
 
+enum HttpMethod { Connect, Delete, Get, Head, Options, Patch, Post, Put, Trace }
+
 /// The Firebase Performance API.
 ///
 /// You can get an instance by calling [FirebasePerformance.instance].
@@ -51,7 +53,7 @@ class FirebasePerformance {
   }
 
   /// Creates [HttpMetric] for collecting performance for one request/response.
-  HttpMetric newHttpMetric(String url, String httpMethod) {
+  HttpMetric newHttpMetric(String url, HttpMethod httpMethod) {
     return new HttpMetric._(_httpMetricCount++, url, httpMethod);
   }
 

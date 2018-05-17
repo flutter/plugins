@@ -88,7 +88,7 @@ void main() {
         isMethodCall('HttpMetric#start', arguments: <String, Object>{
           'handle': currentTraceHandle,
           'url': 'https://google.com',
-          'httpMethod': HttpMethod.Connect,
+          'httpMethod': HttpMethod.Connect.index,
         }),
       ]);
     });
@@ -102,6 +102,18 @@ void main() {
           'name': 'startTrace-test',
         }),
       ]);
+    });
+
+    test('$HttpMethod', () async {
+      expect(HttpMethod.Connect.index, 0);
+      expect(HttpMethod.Delete.index, 1);
+      expect(HttpMethod.Get.index, 2);
+      expect(HttpMethod.Head.index, 3);
+      expect(HttpMethod.Options.index, 4);
+      expect(HttpMethod.Patch.index, 5);
+      expect(HttpMethod.Post.index, 6);
+      expect(HttpMethod.Put.index, 7);
+      expect(HttpMethod.Trace.index, 8);
     });
 
     group('$Trace', () {
@@ -228,7 +240,7 @@ void main() {
           isMethodCall('HttpMetric#start', arguments: <String, Object>{
             'handle': currentHttpMetricHandle,
             'url': 'https://google.com',
-            'httpMethod': HttpMethod.Get,
+            'httpMethod': HttpMethod.Get.index,
           }),
         ]);
       });
@@ -246,7 +258,7 @@ void main() {
           isMethodCall('HttpMetric#start', arguments: <String, Object>{
             'handle': currentHttpMetricHandle,
             'url': 'https://google.com',
-            'httpMethod': HttpMethod.Get,
+            'httpMethod': HttpMethod.Get.index,
           }),
           isMethodCall('HttpMetric#stop', arguments: <String, dynamic>{
             'handle': currentHttpMetricHandle,

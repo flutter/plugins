@@ -31,6 +31,28 @@ myTrace.stop();
 
 ```
 
+## Add monitoring for specific network requests
+
+Performance Monitoring collects network requests automatically. Although this includes most network requests for your app, some might not be reported. To include specific network requests in Performance Monitoring, add the following code to your app:
+
+```dart
+
+final HttpMetric metric = FirebasePerformance.instance.newHttpMetric(
+    'https://jsonplaceholder.typicode.com/posts/1', HttpMethod.Get);
+
+await metric.start();
+
+final Response response =
+    await get('https://jsonplaceholder.typicode.com/posts/1');
+
+metric.responsePayloadSize = response.contentLength;
+metric.responseContentType = 'application/json';
+metric.httpResponseCode = response.statusCode;
+
+await metric.stop();
+
+```
+
 ## Getting Started
 
 See the `example` directory for a complete sample app using Google Performance Monitoring for Firebase.
