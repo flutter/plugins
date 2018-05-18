@@ -151,6 +151,11 @@ void main() {
         ]);
       });
 
+      test('$ShortDynamicLinkPathLength', () {
+        expect(ShortDynamicLinkPathLength.unguessable.index, 0);
+        expect(ShortDynamicLinkPathLength.short.index, 1);
+      });
+
       test('$GoogleAnalyticsParameters', () async {
         components.googleAnalyticsParameters = new GoogleAnalyticsParameters(
           campaign: 'where',
