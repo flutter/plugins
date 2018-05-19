@@ -20,7 +20,7 @@ const String kMockCustomToken = '12345';
 
 void main() {
   group('$FirebaseAuth', () {
-    final FirebaseAuth auth = FirebaseAuth.instance;
+    final FirebaseAuth auth = FirebaseAuth();
     final List<MethodCall> log = <MethodCall>[];
 
     int mockHandleId = 0;
