@@ -17,6 +17,8 @@ const String kMockPassword = 'passw0rd';
 const String kMockIdToken = '12345';
 const String kMockAccessToken = '67890';
 const String kMockCustomToken = '12345';
+const String kMockPhoneNumber = '1-123-456-7890';
+const String kMockVerificationCode = '123456';
 
 void main() {
   group('$FirebaseAuth', () {
@@ -327,6 +329,50 @@ void main() {
         <Matcher>[
           isMethodCall('signInWithCustomToken', arguments: <String, String>{
             'token': kMockCustomToken,
+          })
+        ],
+      );
+    });
+
+    test('signInWithPhoneNumber', () async {
+      final FirebaseUser user =
+          await auth.signInWithPhoneNumber(phoneNumber: kMockPhoneNumber);
+      verifyUser(user);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall('signInWithPhoneNumber', arguments: <String, dynamic>{
+            'phoneNumber': kMockPhoneNumber,
+            'timeout': 60
+          })
+        ],
+      );
+    });
+
+    test('verifyPhoneNumber', () async {
+      final FirebaseUser user =
+          await auth.verifyPhoneNumber(code: kMockVerificationCode);
+      verifyUser(user);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall('verifyPhoneNumber', arguments: <String, String>{
+            'code': kMockVerificationCode,
+          })
+        ],
+      );
+    });
+
+    test('resendVerificationCode', () async {
+      final FirebaseUser user =
+          await auth.resendVerificationCode(phoneNumber: kMockPhoneNumber);
+      verifyUser(user);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall('resendVerificationCode', arguments: <String, dynamic>{
+            'phoneNumber': kMockPhoneNumber,
+            'timeout': 60
           })
         ],
       );
