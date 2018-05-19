@@ -63,10 +63,6 @@ int nextHandle = 0;
     return [FIRAuth authWithApp:[FIRApp appNamed:appName]];
 }
 
-- (NSString *)getApp:(NSDictionary *)args {
-    return [args objectForKey:@"app"];
-}
-
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"currentUser" isEqualToString:call.method]) {
     id __block listener = [[self getAuth:call.arguments]
