@@ -1,3 +1,7 @@
+## 1.0.0
+
+* Bump to released version
+
 ## 0.2.5
 
 * Fixed Dart 2 type error.

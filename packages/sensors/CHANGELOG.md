@@ -1,3 +1,7 @@
+## 0.3.2
+
+* Added user acceleration sensor events (i.e. accelerometer without gravity).
+
 ## 0.3.1
 
 * Fixed Dart 2 type error with iOS sensor events.
