@@ -2,6 +2,18 @@
 
 #import "Firebase/Firebase.h"
 
+@interface NSError (FlutterError)
+@property(readonly, nonatomic) FlutterError *flutterError;
+@end
+
+@implementation NSError (FlutterError)
+- (FlutterError *)flutterError {
+  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %d", (int)self.code]
+           message:self.domain
+           details:self.localizedDescription];
+}
+@end
+
 @implementation FLTFirebaseDynamicLinksPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
@@ -42,9 +54,9 @@
 - (FIRDynamicLinkShortenerCompletion)createShortLinkCompletion:(FlutterResult)result {
   return ^(NSURL *_Nullable shortURL, NSArray *_Nullable warnings, NSError *_Nullable error) {
     if (error) {
-      result(@{ @"success" : @-1, @"errMsg" : error.description });
+      result([error flutterError]);
     } else {
-      result(@{ @"success" : @1, @"url" : [shortURL absoluteString], @"warnings" : warnings });
+      result(@{@"url" : [shortURL absoluteString], @"warnings" : warnings });
     }
   };
 }

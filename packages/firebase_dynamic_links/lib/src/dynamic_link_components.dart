@@ -4,15 +4,6 @@
 
 part of firebase_dynamic_links;
 
-/// Thrown to indicate an error occurred when creating a short Dynamic Link.
-class ShortLinkException implements Exception {
-  final String message;
-  ShortLinkException(this.message);
-
-  @override
-  String toString() => '$runtimeType($message)';
-}
-
 /// The class used for Dynamic Link URL generation.
 ///
 /// Supports creation of short and long Dynamic Link URLs. Short URLs will have
@@ -117,12 +108,7 @@ class DynamicLinkComponents {
   }
 
   static ShortDynamicLink _parseShortLink(Map<dynamic, dynamic> reply) {
-    if (reply['success'] > 0) {
-      final List<dynamic> warnings = reply['warnings'];
-      return ShortDynamicLink._(Uri.parse(reply['url']), warnings?.cast());
-    }
-
-    throw ShortLinkException(
-        reply['errMsg'] ?? 'Unable to create short Dynamic Link.');
+    final List<dynamic> warnings = reply['warnings'];
+    return ShortDynamicLink._(Uri.parse(reply['url']), warnings?.cast());
   }
 }

@@ -52,9 +52,8 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
     return new OnCompleteListener<ShortDynamicLink>() {
       @Override
       public void onComplete(@NonNull Task<ShortDynamicLink> task) {
-        Map<String, Object> url = new HashMap<>();
         if (task.isSuccessful()) {
-          url.put("success", 1);
+          Map<String, Object> url = new HashMap<>();
           url.put("url", task.getResult().getShortLink().toString());
 
           List<String> warnings = new ArrayList<>();
@@ -62,19 +61,16 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
             warnings.add(warning.getMessage());
           }
           url.put("warnings", warnings);
+
+          result.success(url);
         } else {
-          url.put("success", -1);
-
           Exception exception = task.getException();
-          String errMsg = null;
+          String errMsg = "Unable to create short link";
           if (exception != null && exception.getMessage() != null) {
-            errMsg = exception.getMessage();
+            errMsg = exception.getLocalizedMessage();
           }
-
-          url.put("errMsg", errMsg);
+          result.error("short_link_error", errMsg, null);
         }
-
-        result.success(url);
       }
     };
   }
