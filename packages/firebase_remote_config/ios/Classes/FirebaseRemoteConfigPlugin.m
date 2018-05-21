@@ -34,13 +34,12 @@
 
     resultDict[@"lastFetchTime"] = [[NSNumber alloc]
         initWithLong:(long)[[remoteConfig lastFetchTime] timeIntervalSince1970] * 1000];
-    resultDict[@"lastFetchStatus"] = [[NSNumber alloc]
-        initWithInt:[self mapLastFetchStatus:(FIRRemoteConfigFetchStatus)[remoteConfig
-                                                                              lastFetchStatus]]];
+    resultDict[@"lastFetchStatus"] =
+        [self mapLastFetchStatus:(FIRRemoteConfigFetchStatus)[remoteConfig lastFetchStatus]];
     resultDict[@"inDebugMode"] =
         [[NSNumber alloc] initWithBool:[firRemoteConfigSettings isDeveloperModeEnabled]];
 
-    resultDict[@"parameters", [self getConfigParameters]];
+    resultDict[@"parameters"] = [self getConfigParameters];
 
     result(resultDict);
   } else if ([@"RemoteConfig#setConfigSettings" isEqualToString:call.method]) {
@@ -60,9 +59,9 @@
                     NSNumber *lastFetchTime = [[NSNumber alloc]
                         initWithLong:(long)[[remoteConfig lastFetchTime] timeIntervalSince1970] *
                                      1000];
-                    NSNumber *lastFetchStatus = [[NSNumber alloc]
-                        initWithInt:[self mapLastFetchStatus:(FIRRemoteConfigFetchStatus)
-                                                                 [remoteConfig lastFetchStatus]]];
+                    NSString *lastFetchStatus =
+                        [self mapLastFetchStatus:(FIRRemoteConfigFetchStatus)[remoteConfig
+                                                                                  lastFetchStatus]];
                     NSMutableDictionary *resultDict = [[NSMutableDictionary alloc] init];
                     resultDict[@"lastFetchTime"] = lastFetchTime;
                     resultDict[@"lastFetchStatus"] = lastFetchStatus;
@@ -95,9 +94,12 @@
                     }
                   }];
   } else if ([@"RemoteConfig#activate" isEqualToString:call.method]) {
-    bool newConfig = [[FIRRemoteConfig remoteConfig] activateFetched];
+    BOOL newConfig = [[FIRRemoteConfig remoteConfig] activateFetched];
     NSDictionary *parameters = [self getConfigParameters];
-    result(@{@"newConfig" : [[NSNumber init] initWithBool:newConfig], @"parameters" : parameters});
+    NSMutableDictionary *resultDict = [[NSMutableDictionary alloc] init];
+    resultDict[@"newConfig"] = [NSNumber numberWithBool:newConfig];
+    resultDict[@"parameters"] = parameters;
+    result(resultDict);
   } else if ([@"RemoteConfig#setDefaults" isEqualToString:call.method]) {
     FIRRemoteConfig *remoteConfig = [FIRRemoteConfig remoteConfig];
     NSDictionary *defaults = call.arguments[@"defaults"];
@@ -111,8 +113,7 @@
 - (NSMutableDictionary *)createRemoteConfigValueDict:(FIRRemoteConfigValue *)remoteConfigValue {
   NSMutableDictionary *valueDict = [[NSMutableDictionary alloc] init];
   valueDict[@"value"] = [FlutterStandardTypedData typedDataWithBytes:[remoteConfigValue dataValue]];
-  valueDict[@"source"] =
-      [[NSNumber alloc] initWithInt:[self mapValueSource:[remoteConfigValue source]]];
+  valueDict[@"source"] = [self mapValueSource:[remoteConfigValue source]];
   return valueDict;
 }
 

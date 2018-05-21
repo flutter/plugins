@@ -45,7 +45,7 @@ class BookList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance.collection('books').snapshots,
+      stream: Firestore.instance.collection('books').snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (!snapshot.hasData) return new Text('Loading...');
         return new ListView(
@@ -60,6 +60,18 @@ class BookList extends StatelessWidget {
     );
   }
 }
+```
+
+Running a transaction:
+
+```dart
+final DocumentReference postRef = Firestore.instance.document('posts/123');
+Firestore.instance.runTransaction((Transaction tx) async {
+  DocumentSnapshot postSnapshot = await tx.get(postRef);
+  if (postSnapshot.exists) {
+    await tx.update(postRef, <String, dynamic>{'likesCount': postSnapshot.data['likesCount'] + 1});
+  }
+});
 ```
 
 ## Getting Started

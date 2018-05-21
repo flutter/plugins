@@ -18,7 +18,7 @@ part 'src/bitmap.dart';
 part 'src/callbacks.dart';
 part 'src/camera.dart';
 part 'src/controller.dart';
-part 'src/ui.dart';
 part 'src/marker.dart';
 part 'src/location.dart';
 part 'src/platform_overlay.dart';
+part 'src/ui.dart';

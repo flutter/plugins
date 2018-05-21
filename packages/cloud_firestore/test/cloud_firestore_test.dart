@@ -42,40 +42,48 @@ void main() {
         switch (methodCall.method) {
           case 'Query#addSnapshotListener':
             final int handle = mockHandleId++;
-            BinaryMessages.handlePlatformMessage(
-              Firestore.channel.name,
-              Firestore.channel.codec.encodeMethodCall(
-                new MethodCall('QuerySnapshot', <String, dynamic>{
-                  'app': app.name,
-                  'handle': handle,
-                  'paths': <String>["${methodCall.arguments['path']}/0"],
-                  'documents': <dynamic>[kMockDocumentSnapshotData],
-                  'documentChanges': <dynamic>[
-                    <String, dynamic>{
-                      'oldIndex': -1,
-                      'newIndex': 0,
-                      'type': 'DocumentChangeType.added',
-                      'document': kMockDocumentSnapshotData,
-                    },
-                  ],
-                }),
-              ),
-              (_) {},
-            );
+            // Wait for a microtask before sending a message back.
+            // Otherwise the first request didn't have the time to finish.
+            scheduleMicrotask(() {
+              BinaryMessages.handlePlatformMessage(
+                Firestore.channel.name,
+                Firestore.channel.codec.encodeMethodCall(
+                  new MethodCall('QuerySnapshot', <String, dynamic>{
+                    'app': app.name,
+                    'handle': handle,
+                    'paths': <String>["${methodCall.arguments['path']}/0"],
+                    'documents': <dynamic>[kMockDocumentSnapshotData],
+                    'documentChanges': <dynamic>[
+                      <String, dynamic>{
+                        'oldIndex': -1,
+                        'newIndex': 0,
+                        'type': 'DocumentChangeType.added',
+                        'document': kMockDocumentSnapshotData,
+                      },
+                    ],
+                  }),
+                ),
+                (_) {},
+              );
+            });
             return handle;
           case 'Query#addDocumentListener':
             final int handle = mockHandleId++;
-            BinaryMessages.handlePlatformMessage(
-              Firestore.channel.name,
-              Firestore.channel.codec.encodeMethodCall(
-                new MethodCall('DocumentSnapshot', <String, dynamic>{
-                  'handle': handle,
-                  'path': methodCall.arguments['path'],
-                  'data': kMockDocumentSnapshotData,
-                }),
-              ),
-              (_) {},
-            );
+            // Wait for a microtask before sending a message back.
+            // Otherwise the first request didn't have the time to finish.
+            scheduleMicrotask(() {
+              BinaryMessages.handlePlatformMessage(
+                Firestore.channel.name,
+                Firestore.channel.codec.encodeMethodCall(
+                  new MethodCall('DocumentSnapshot', <String, dynamic>{
+                    'handle': handle,
+                    'path': methodCall.arguments['path'],
+                    'data': kMockDocumentSnapshotData,
+                  }),
+                ),
+                (_) {},
+              );
+            });
             return handle;
           case 'Query#getDocuments':
             return <String, dynamic>{
@@ -105,10 +113,15 @@ void main() {
           case 'Firestore#runTransaction':
             return <String, dynamic>{'1': 3};
           case 'Transaction#get':
-            return <String, dynamic>{
-              'path': 'foo/bar',
-              'data': <String, dynamic>{'key1': 'val1'}
-            };
+            if (methodCall.arguments['path'] == 'foo/bar') {
+              return <String, dynamic>{
+                'path': 'foo/bar',
+                'data': <String, dynamic>{'key1': 'val1'}
+              };
+            } else if (methodCall.arguments['path'] == 'foo/notExists') {
+              return <String, dynamic>{'path': 'foo/notExists', 'data': null};
+            }
+            throw new PlatformException(code: 'UNKNOWN_PATH');
           case 'Transaction#set':
             return null;
           case 'Transaction#update':
@@ -149,6 +162,19 @@ void main() {
       test('get', () async {
         final DocumentReference documentReference =
             firestore.document('foo/bar');
+        await transaction.get(documentReference);
+        expect(log, <Matcher>[
+          isMethodCall('Transaction#get', arguments: <String, dynamic>{
+            'app': app.name,
+            'transactionId': 0,
+            'path': documentReference.path
+          })
+        ]);
+      });
+
+      test('get notExists', () async {
+        final DocumentReference documentReference =
+            firestore.document('foo/notExists');
         await transaction.get(documentReference);
         expect(log, <Matcher>[
           isMethodCall('Transaction#get', arguments: <String, dynamic>{
@@ -246,7 +272,7 @@ void main() {
       });
       test('listen', () async {
         final QuerySnapshot snapshot =
-            await collectionReference.snapshots.first;
+            await collectionReference.snapshots().first;
         final DocumentSnapshot document = snapshot.documents[0];
         expect(document.documentID, equals('0'));
         expect(document.reference.path, equals('foo/0'));
@@ -275,7 +301,7 @@ void main() {
         final StreamSubscription<QuerySnapshot> subscription =
             collectionReference
                 .where('createdAt', isLessThan: 100)
-                .snapshots
+                .snapshots()
                 .listen((QuerySnapshot querySnapshot) {});
         subscription.cancel();
         await new Future<Null>.delayed(Duration.zero);
@@ -306,7 +332,7 @@ void main() {
         final StreamSubscription<QuerySnapshot> subscription =
             collectionReference
                 .where('profile', isNull: true)
-                .snapshots
+                .snapshots()
                 .listen((QuerySnapshot querySnapshot) {});
         subscription.cancel();
         await new Future<Null>.delayed(Duration.zero);
@@ -337,7 +363,7 @@ void main() {
         final StreamSubscription<QuerySnapshot> subscription =
             collectionReference
                 .orderBy('createdAt')
-                .snapshots
+                .snapshots()
                 .listen((QuerySnapshot querySnapshot) {});
         subscription.cancel();
         await new Future<Null>.delayed(Duration.zero);
@@ -369,7 +395,7 @@ void main() {
     group('DocumentReference', () {
       test('listen', () async {
         final DocumentSnapshot snapshot =
-            await firestore.document('path/to/foo').snapshots.first;
+            await firestore.document('path/to/foo').snapshots().first;
         expect(snapshot.documentID, equals('foo'));
         expect(snapshot.reference.path, equals('path/to/foo'));
         expect(snapshot.data, equals(kMockDocumentSnapshotData));
@@ -405,7 +431,7 @@ void main() {
                 'app': app.name,
                 'path': 'foo/bar',
                 'data': <String, String>{'bazKey': 'quxValue'},
-                'options': null,
+                'options': <String, bool>{'merge': false},
               },
             ),
           ],
@@ -414,8 +440,7 @@ void main() {
       test('merge set', () async {
         await collectionReference
             .document('bar')
-            .setData(<String, String>{'bazKey': 'quxValue'}, SetOptions.merge);
-        expect(SetOptions.merge, isNotNull);
+            .setData(<String, String>{'bazKey': 'quxValue'}, merge: true);
         expect(
           log,
           <Matcher>[
@@ -576,7 +601,7 @@ void main() {
                 'handle': 1,
                 'path': 'foo/bar',
                 'data': <String, String>{'bazKey': 'quxValue'},
-                'options': null,
+                'options': <String, bool>{'merge': false},
               },
             ),
             isMethodCall(
@@ -593,10 +618,9 @@ void main() {
         batch.setData(
           collectionReference.document('bar'),
           <String, String>{'bazKey': 'quxValue'},
-          SetOptions.merge,
+          merge: true,
         );
         await batch.commit();
-        expect(SetOptions.merge, isNotNull);
         expect(
           log,
           <Matcher>[

@@ -15,6 +15,7 @@
 - (void)setIcon:(UIImage*)icon;
 - (void)setInfoWindowAnchor:(CGPoint)anchor;
 - (void)setInfoWindowTitle:(NSString*)title snippet:(NSString*)snippet;
+- (void)setPosition:(CLLocationCoordinate2D)position;
 - (void)setRotation:(CLLocationDegrees)rotation;
 - (void)setVisible:(BOOL)visible;
 - (void)setZIndex:(int)zIndex;

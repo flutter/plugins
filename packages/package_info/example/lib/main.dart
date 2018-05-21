@@ -33,6 +33,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   PackageInfo _packageInfo = new PackageInfo(
+    appName: 'Unknown',
     packageName: 'Unknown',
     version: 'Unknown',
     buildNumber: 'Unknown',
@@ -67,6 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: new Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
+          _infoTile('App name', _packageInfo.appName),
           _infoTile('Package name', _packageInfo.packageName),
           _infoTile('App version', _packageInfo.version),
           _infoTile('Build number', _packageInfo.buildNumber),

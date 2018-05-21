@@ -14,8 +14,11 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 /** SensorsPlugin */
 public class SensorsPlugin implements EventChannel.StreamHandler {
-  private static final String ACCELEROMETER_CHANNEL_NAME = "plugins.flutter.io/accelerometer";
-  private static final String GYROSCOPE_CHANNEL_NAME = "plugins.flutter.io/gyroscope";
+  private static final String ACCELEROMETER_CHANNEL_NAME =
+      "plugins.flutter.io/sensors/accelerometer";
+  private static final String GYROSCOPE_CHANNEL_NAME = "plugins.flutter.io/sensors/gyroscope";
+  private static final String USER_ACCELEROMETER_CHANNEL_NAME =
+      "plugins.flutter.io/sensors/user_accel";
 
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
@@ -23,6 +26,11 @@ public class SensorsPlugin implements EventChannel.StreamHandler {
         new EventChannel(registrar.messenger(), ACCELEROMETER_CHANNEL_NAME);
     accelerometerChannel.setStreamHandler(
         new SensorsPlugin(registrar.context(), Sensor.TYPE_ACCELEROMETER));
+
+    final EventChannel userAccelChannel =
+        new EventChannel(registrar.messenger(), USER_ACCELEROMETER_CHANNEL_NAME);
+    userAccelChannel.setStreamHandler(
+        new SensorsPlugin(registrar.context(), Sensor.TYPE_LINEAR_ACCELERATION));
 
     final EventChannel gyroscopeChannel =
         new EventChannel(registrar.messenger(), GYROSCOPE_CHANNEL_NAME);
