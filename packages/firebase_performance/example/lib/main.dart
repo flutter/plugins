@@ -16,6 +16,34 @@ class MyApp extends StatefulWidget {
   _MyAppState createState() => new _MyAppState();
 }
 
+class _MetricHttpClient extends BaseClient {
+  _MetricHttpClient(this._inner);
+
+  final Client _inner;
+
+  @override
+  Future<StreamedResponse> send(BaseRequest request) async {
+    final HttpMetric metric = FirebasePerformance.instance
+        .newHttpMetric(request.url.toString(), HttpMethod.Get);
+
+    await metric.start();
+
+    StreamedResponse response;
+    try {
+      response = await _inner.send(request);
+      metric
+        ..responsePayloadSize = response.contentLength
+        ..responseContentType = response.headers['Content-Type']
+        ..requestPayloadSize = request.contentLength
+        ..httpResponseCode = response.statusCode;
+    } finally {
+      await metric.stop();
+    }
+
+    return response;
+  }
+}
+
 class _MyAppState extends State<MyApp> {
   FirebasePerformance _performance = FirebasePerformance.instance;
   bool _isPerformanceCollectionEnabled = false;
@@ -72,18 +100,11 @@ class _MyAppState extends State<MyApp> {
       _httpMetricHasRan = false;
     });
 
-    final HttpMetric metric = _performance.newHttpMetric(
-        'https://jsonplaceholder.typicode.com/posts/1', HttpMethod.Get);
-
-    await metric.start();
-
-    final Response response =
-        await get('https://jsonplaceholder.typicode.com/posts/1');
-    metric.responsePayloadSize = response.contentLength;
-    metric.responseContentType = 'application/json';
-    metric.httpResponseCode = response.statusCode;
-
-    await metric.stop();
+    final _MetricHttpClient metricHttpClient =
+        new _MetricHttpClient(new Client());
+    final Request request =
+        new Request("SEND", Uri.parse("https://www.google.com"));
+    metricHttpClient.send(request);
 
     setState(() {
       _httpMetricHasRan = true;

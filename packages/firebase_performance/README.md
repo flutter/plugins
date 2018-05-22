@@ -37,19 +37,51 @@ Performance Monitoring collects network requests automatically. Although this in
 
 ```dart
 
-final HttpMetric metric = FirebasePerformance.instance.newHttpMetric(
-    'https://jsonplaceholder.typicode.com/posts/1', HttpMethod.Get);
+class _MetricHttpClient extends BaseClient {
+  _MetricHttpClient(this._inner);
 
-await metric.start();
+  final Client _inner;
 
-final Response response =
-    await get('https://jsonplaceholder.typicode.com/posts/1');
+  @override
+  Future<StreamedResponse> send(BaseRequest request) async {
+    final HttpMetric metric = FirebasePerformance.instance
+        .newHttpMetric(request.url.toString(), HttpMethod.Get);
 
-metric.responsePayloadSize = response.contentLength;
-metric.responseContentType = 'application/json';
-metric.httpResponseCode = response.statusCode;
+    await metric.start();
 
-await metric.stop();
+    StreamedResponse response;
+    try {
+      response = await _inner.send(request);
+      metric
+        ..responsePayloadSize = response.contentLength
+        ..responseContentType = response.headers['Content-Type']
+        ..requestPayloadSize = request.contentLength
+        ..httpResponseCode = response.statusCode;
+    } finally {
+      await metric.stop();
+    }
+
+    return response;
+  }
+}
+
+class _MyAppState extends State<MyApp> {
+.
+.
+.
+  Future<void> testHttpMetric() async {
+    final _MetricHttpClient metricHttpClient =
+        new _MetricHttpClient(new Client());
+
+    final Request request =
+        new Request("SEND", Uri.parse("https://www.google.com"));
+
+    metricHttpClient.send(request);
+  }
+.
+.
+.
+}
 
 ```
 
