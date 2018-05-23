@@ -10,8 +10,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 part 'src/android_parameters.dart';
-part 'src/dynamic_link_components.dart';
-part 'src/dynamic_link_components_options.dart';
+part 'src/dynamic_link_parameters.dart';
+part 'src/dynamic_link_parameters_options.dart';
 part 'src/firebase_dynamic_links.dart';
 part 'src/google_analytics_parameters.dart';
 part 'src/ios_parameters.dart';

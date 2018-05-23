@@ -8,8 +8,8 @@ part of firebase_dynamic_links;
 enum ShortDynamicLinkPathLength { unguessable, short }
 
 /// Options class for defining how Dynamic Link URLs are generated.
-class DynamicLinkComponentsOptions {
-  DynamicLinkComponentsOptions({this.shortDynamicLinkPathLength});
+class DynamicLinkParametersOptions {
+  DynamicLinkParametersOptions({this.shortDynamicLinkPathLength});
 
   /// Specifies the length of the path component of a short Dynamic Link.
   final ShortDynamicLinkPathLength shortDynamicLinkPathLength;

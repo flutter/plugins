@@ -28,15 +28,15 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
   @Override
   public void onMethodCall(MethodCall call, Result result) {
     switch (call.method) {
-      case "DynamicLinkComponents#url":
+      case "DynamicLinkParameters#buildUrl":
         DynamicLink.Builder urlBuilder = setupParameters(call);
         result.success(urlBuilder.buildDynamicLink().getUri().toString());
         break;
-      case "DynamicLinkComponents#shortLink":
+      case "DynamicLinkParameters#buildShortLink":
         DynamicLink.Builder shortLinkBuilder = setupParameters(call);
         buildShortDynamicLink(shortLinkBuilder, call, createShortLinkListener(result));
         break;
-      case "DynamicLinkComponents#shortenUrl":
+      case "DynamicLinkParameters#shortenUrl":
         DynamicLink.Builder builder = FirebaseDynamicLinks.getInstance().createDynamicLink();
 
         Uri url = Uri.parse((String) call.argument("url"));
@@ -80,13 +80,13 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
       DynamicLink.Builder builder, MethodCall call, OnCompleteListener<ShortDynamicLink> listener) {
     Integer suffix = null;
 
-    Map<String, Object> dynamicLinkComponentsOptions =
-        call.argument("dynamicLinkComponentsOptions");
-    if (dynamicLinkComponentsOptions != null) {
-      Object shortDynamicLinkPathLength =
-          dynamicLinkComponentsOptions.get("shortDynamicLinkPathLength");
+    Map<String, Object> dynamicLinkParametersOptions =
+        call.argument("dynamicLinkParametersOptions");
+    if (dynamicLinkParametersOptions != null) {
+      Integer shortDynamicLinkPathLength =
+          (Integer) dynamicLinkParametersOptions.get("shortDynamicLinkPathLength");
       if (shortDynamicLinkPathLength != null) {
-        switch ((int) shortDynamicLinkPathLength) {
+        switch (shortDynamicLinkPathLength) {
           case 0:
             suffix = ShortDynamicLink.Suffix.UNGUESSABLE;
             break;

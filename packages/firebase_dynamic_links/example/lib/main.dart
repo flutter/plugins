@@ -23,13 +23,13 @@ class _MyAppState extends State<MyApp> {
       _isCreatingLink = true;
     });
 
-    final DynamicLinkComponents components = new DynamicLinkComponents(
+    final DynamicLinkParameters parameters = new DynamicLinkParameters(
       domain: 'cx4k7.app.goo.gl',
       link: Uri.parse('https://google.com'),
       androidParameters: new AndroidParameters(
         packageName: 'io.flutter.plugins.firebasedynamiclinksexample',
       ),
-      dynamicLinkComponentsOptions: new DynamicLinkComponentsOptions(
+      dynamicLinkParametersOptions: new DynamicLinkParametersOptions(
           shortDynamicLinkPathLength: ShortDynamicLinkPathLength.short),
       iosParameters: new IosParameters(
         bundleId: 'io.flutter.plugins.firebaseDynamicLinksExample',
@@ -38,10 +38,10 @@ class _MyAppState extends State<MyApp> {
 
     Uri url;
     if (short) {
-      final ShortDynamicLink shortLink = await components.buildShortLink();
+      final ShortDynamicLink shortLink = await parameters.buildShortLink();
       url = shortLink.shortUrl;
     } else {
-      url = await components.buildUrl();
+      url = await parameters.buildUrl();
     }
 
     setState(() {

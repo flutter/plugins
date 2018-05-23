@@ -9,11 +9,11 @@ part of firebase_dynamic_links;
 /// Supports creation of short and long Dynamic Link URLs. Short URLs will have
 /// a domain and a randomized path. Long URLs will have a domain and a query
 /// that contains all of the Dynamic Link parameters.
-class DynamicLinkComponents {
-  DynamicLinkComponents({
+class DynamicLinkParameters {
+  DynamicLinkParameters({
     this.androidParameters,
     @required this.domain,
-    this.dynamicLinkComponentsOptions,
+    this.dynamicLinkParametersOptions,
     this.googleAnalyticsParameters,
     this.iosParameters,
     this.itunesConnectAnalyticsParameters,
@@ -32,7 +32,7 @@ class DynamicLinkComponents {
   final String domain;
 
   /// Defines behavior for generating Dynamic Link URLs
-  final DynamicLinkComponentsOptions dynamicLinkComponentsOptions;
+  final DynamicLinkParametersOptions dynamicLinkParametersOptions;
 
   /// Applies Analytics parameters to a generated Dynamic Link URL.
   final GoogleAnalyticsParameters googleAnalyticsParameters;
@@ -61,15 +61,15 @@ class DynamicLinkComponents {
   /// Shortens a Dynamic Link URL.
   ///
   /// This method may be used for shortening a custom URL that was not generated
-  /// using DynamicLinkComponents.
+  /// using DynamicLinkParameters.
   ///
   /// May throw a [ShortLinkException].
   static Future<ShortDynamicLink> shortenUrl(Uri url,
-      [DynamicLinkComponentsOptions options]) async {
+      [DynamicLinkParametersOptions options]) async {
     final Map<dynamic, dynamic> reply = await FirebaseDynamicLinks.channel
-        .invokeMethod('DynamicLinkComponents#shortenUrl', <String, dynamic>{
+        .invokeMethod('DynamicLinkParameters#shortenUrl', <String, dynamic>{
       'url': url.toString(),
-      'dynamicLinkComponentsOptions': options?._data,
+      'dynamicLinkParametersOptions': options?._data,
     });
     return _parseShortLink(reply);
   }
@@ -77,7 +77,7 @@ class DynamicLinkComponents {
   Map<String, dynamic> get _data => <String, dynamic>{
         'androidParameters': androidParameters?._data,
         'domain': domain,
-        'dynamicLinkComponentsOptions': dynamicLinkComponentsOptions?._data,
+        'dynamicLinkParametersOptions': dynamicLinkParametersOptions?._data,
         'googleAnalyticsParameters': googleAnalyticsParameters?._data,
         'iosParameters': iosParameters?._data,
         'itunesConnectAnalyticsParameters':
@@ -90,7 +90,7 @@ class DynamicLinkComponents {
   /// A generated long Dynamic Link URL.
   Future<Uri> buildUrl() async {
     final String url = await FirebaseDynamicLinks.channel
-        .invokeMethod('DynamicLinkComponents#url', _data);
+        .invokeMethod('DynamicLinkParameters#buildUrl', _data);
     return Uri.parse(url);
   }
 
@@ -99,7 +99,7 @@ class DynamicLinkComponents {
   /// May throw a [ShortLinkException].
   Future<ShortDynamicLink> buildShortLink() async {
     final Map<dynamic, dynamic> reply = await FirebaseDynamicLinks.channel
-        .invokeMethod('DynamicLinkComponents#shortLink', _data);
+        .invokeMethod('DynamicLinkParameters#buildShortLink', _data);
     return _parseShortLink(reply);
   }
 

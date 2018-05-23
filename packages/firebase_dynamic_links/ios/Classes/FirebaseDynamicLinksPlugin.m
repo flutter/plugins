@@ -34,13 +34,13 @@
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
-  if ([@"DynamicLinkComponents#url" isEqualToString:call.method]) {
+  if ([@"DynamicLinkParameters#buildUrl" isEqualToString:call.method]) {
     FIRDynamicLinkComponents *components = [self setupParameters:call.arguments];
     result([components.url absoluteString]);
-  } else if ([@"DynamicLinkComponents#shortLink" isEqualToString:call.method]) {
+  } else if ([@"DynamicLinkParameters#buildShortLink" isEqualToString:call.method]) {
     FIRDynamicLinkComponents *components = [self setupParameters:call.arguments];
     [components shortenWithCompletion:[self createShortLinkCompletion:result]];
-  } else if ([@"DynamicLinkComponents#shortenUrl" isEqualToString:call.method]) {
+  } else if ([@"DynamicLinkParameters#shortenUrl" isEqualToString:call.method]) {
     FIRDynamicLinkComponentsOptions *options = [self setupOptions:call.arguments];
     NSURL *url = [NSURL URLWithString:call.arguments[@"url"]];
     [FIRDynamicLinkComponents shortenURL:url
@@ -63,8 +63,8 @@
 
 - (FIRDynamicLinkComponentsOptions *)setupOptions:(NSDictionary *)arguments {
   FIRDynamicLinkComponentsOptions *options;
-  if (![arguments[@"dynamicLinkComponentsOptions"] isEqual:[NSNull null]]) {
-    NSDictionary *params = arguments[@"dynamicLinkComponentsOptions"];
+  if (![arguments[@"dynamicLinkParametersOptions"] isEqual:[NSNull null]]) {
+    NSDictionary *params = arguments[@"dynamicLinkParametersOptions"];
 
     options = [FIRDynamicLinkComponentsOptions options];
 

@@ -21,11 +21,11 @@ void main() {
           'warnings': <dynamic>['This is only a test link'],
         };
         switch (methodCall.method) {
-          case 'DynamicLinkComponents#url':
+          case 'DynamicLinkParameters#buildUrl':
             return 'google.com';
-          case 'DynamicLinkComponents#shortLink':
+          case 'DynamicLinkParameters#buildShortLink':
             return returnUrl;
-          case 'DynamicLinkComponents#shortenUrl':
+          case 'DynamicLinkParameters#shortenUrl':
             return returnUrl;
           default:
             return null;
@@ -34,21 +34,21 @@ void main() {
       log.clear();
     });
 
-    group('$DynamicLinkComponents', () {
+    group('$DynamicLinkParameters', () {
       test('shortenUrl', () async {
         final Uri url = Uri.parse('google.com');
-        final DynamicLinkComponentsOptions options =
-            new DynamicLinkComponentsOptions(
+        final DynamicLinkParametersOptions options =
+            new DynamicLinkParametersOptions(
                 shortDynamicLinkPathLength:
                     ShortDynamicLinkPathLength.unguessable);
 
-        await DynamicLinkComponents.shortenUrl(url, options);
+        await DynamicLinkParameters.shortenUrl(url, options);
 
         expect(log, <Matcher>[
-          isMethodCall('DynamicLinkComponents#shortenUrl',
+          isMethodCall('DynamicLinkParameters#shortenUrl',
               arguments: <String, dynamic>{
                 'url': url.toString(),
-                'dynamicLinkComponentsOptions': <String, dynamic>{
+                'dynamicLinkParametersOptions': <String, dynamic>{
                   'shortDynamicLinkPathLength':
                       ShortDynamicLinkPathLength.unguessable.index,
                 }
@@ -57,7 +57,7 @@ void main() {
       });
 
       test('$AndroidParameters', () async {
-        final DynamicLinkComponents components = new DynamicLinkComponents(
+        final DynamicLinkParameters components = new DynamicLinkParameters(
             domain: 'test-domain',
             link: Uri.parse('test-link.com'),
             androidParameters: new AndroidParameters(
@@ -70,7 +70,7 @@ void main() {
         await components.buildShortLink();
 
         expect(log, <Matcher>[
-          isMethodCall('DynamicLinkComponents#url',
+          isMethodCall('DynamicLinkParameters#buildUrl',
               arguments: <String, dynamic>{
                 'androidParameters': <String, dynamic>{
                   'fallbackUrl': 'test-url',
@@ -78,7 +78,7 @@ void main() {
                   'packageName': 'test-package',
                 },
                 'domain': 'test-domain',
-                'dynamicLinkComponentsOptions': null,
+                'dynamicLinkParametersOptions': null,
                 'googleAnalyticsParameters': null,
                 'iosParameters': null,
                 'itunesConnectAnalyticsParameters': null,
@@ -86,7 +86,7 @@ void main() {
                 'navigationInfoParameters': null,
                 'socialMetaTagParameters': null,
               }),
-          isMethodCall('DynamicLinkComponents#shortLink',
+          isMethodCall('DynamicLinkParameters#buildShortLink',
               arguments: <String, dynamic>{
                 'androidParameters': <String, dynamic>{
                   'fallbackUrl': 'test-url',
@@ -94,7 +94,7 @@ void main() {
                   'packageName': 'test-package',
                 },
                 'domain': 'test-domain',
-                'dynamicLinkComponentsOptions': null,
+                'dynamicLinkParametersOptions': null,
                 'googleAnalyticsParameters': null,
                 'iosParameters': null,
                 'itunesConnectAnalyticsParameters': null,
@@ -105,22 +105,22 @@ void main() {
         ]);
       });
 
-      test('$DynamicLinkComponentsOptions', () async {
-        final DynamicLinkComponents components = new DynamicLinkComponents(
+      test('$DynamicLinkParametersOptions', () async {
+        final DynamicLinkParameters components = new DynamicLinkParameters(
             domain: 'test-domain',
             link: Uri.parse('test-link.com'),
-            dynamicLinkComponentsOptions: new DynamicLinkComponentsOptions(
+            dynamicLinkParametersOptions: new DynamicLinkParametersOptions(
                 shortDynamicLinkPathLength: ShortDynamicLinkPathLength.short));
 
         await components.buildUrl();
         await components.buildShortLink();
 
         expect(log, <Matcher>[
-          isMethodCall('DynamicLinkComponents#url',
+          isMethodCall('DynamicLinkParameters#buildUrl',
               arguments: <String, dynamic>{
                 'androidParameters': null,
                 'domain': 'test-domain',
-                'dynamicLinkComponentsOptions': <String, dynamic>{
+                'dynamicLinkParametersOptions': <String, dynamic>{
                   'shortDynamicLinkPathLength':
                       ShortDynamicLinkPathLength.short.index,
                 },
@@ -131,11 +131,11 @@ void main() {
                 'navigationInfoParameters': null,
                 'socialMetaTagParameters': null,
               }),
-          isMethodCall('DynamicLinkComponents#shortLink',
+          isMethodCall('DynamicLinkParameters#buildShortLink',
               arguments: <String, dynamic>{
                 'androidParameters': null,
                 'domain': 'test-domain',
-                'dynamicLinkComponentsOptions': <String, dynamic>{
+                'dynamicLinkParametersOptions': <String, dynamic>{
                   'shortDynamicLinkPathLength':
                       ShortDynamicLinkPathLength.short.index,
                 },
@@ -155,7 +155,7 @@ void main() {
       });
 
       test('$GoogleAnalyticsParameters', () async {
-        final DynamicLinkComponents components = new DynamicLinkComponents(
+        final DynamicLinkParameters components = new DynamicLinkParameters(
             domain: 'test-domain',
             link: Uri.parse('test-link.com'),
             googleAnalyticsParameters: new GoogleAnalyticsParameters(
@@ -170,11 +170,11 @@ void main() {
         await components.buildShortLink();
 
         expect(log, <Matcher>[
-          isMethodCall('DynamicLinkComponents#url',
+          isMethodCall('DynamicLinkParameters#buildUrl',
               arguments: <String, dynamic>{
                 'androidParameters': null,
                 'domain': 'test-domain',
-                'dynamicLinkComponentsOptions': null,
+                'dynamicLinkParametersOptions': null,
                 'googleAnalyticsParameters': <String, dynamic>{
                   'campaign': 'where',
                   'content': 'is',
@@ -188,11 +188,11 @@ void main() {
                 'navigationInfoParameters': null,
                 'socialMetaTagParameters': null,
               }),
-          isMethodCall('DynamicLinkComponents#shortLink',
+          isMethodCall('DynamicLinkParameters#buildShortLink',
               arguments: <String, dynamic>{
                 'androidParameters': null,
                 'domain': 'test-domain',
-                'dynamicLinkComponentsOptions': null,
+                'dynamicLinkParametersOptions': null,
                 'googleAnalyticsParameters': <String, dynamic>{
                   'campaign': 'where',
                   'content': 'is',
@@ -210,7 +210,7 @@ void main() {
       });
 
       test('$IosParameters', () async {
-        final DynamicLinkComponents components = new DynamicLinkComponents(
+        final DynamicLinkParameters components = new DynamicLinkParameters(
             domain: 'test-domain',
             link: Uri.parse('test-link.com'),
             iosParameters: IosParameters(
@@ -227,11 +227,11 @@ void main() {
         await components.buildShortLink();
 
         expect(log, <Matcher>[
-          isMethodCall('DynamicLinkComponents#url',
+          isMethodCall('DynamicLinkParameters#buildUrl',
               arguments: <String, dynamic>{
                 'androidParameters': null,
                 'domain': 'test-domain',
-                'dynamicLinkComponentsOptions': null,
+                'dynamicLinkParametersOptions': null,
                 'googleAnalyticsParameters': null,
                 'iosParameters': <String, dynamic>{
                   'appStoreId': 'is',
@@ -247,11 +247,11 @@ void main() {
                 'navigationInfoParameters': null,
                 'socialMetaTagParameters': null,
               }),
-          isMethodCall('DynamicLinkComponents#shortLink',
+          isMethodCall('DynamicLinkParameters#buildShortLink',
               arguments: <String, dynamic>{
                 'androidParameters': null,
                 'domain': 'test-domain',
-                'dynamicLinkComponentsOptions': null,
+                'dynamicLinkParametersOptions': null,
                 'googleAnalyticsParameters': null,
                 'iosParameters': <String, dynamic>{
                   'appStoreId': 'is',
@@ -271,7 +271,7 @@ void main() {
       });
 
       test('$ItunesConnectAnalyticsParameters', () async {
-        final DynamicLinkComponents components = new DynamicLinkComponents(
+        final DynamicLinkParameters components = new DynamicLinkParameters(
             domain: 'test-domain',
             link: Uri.parse('test-link.com'),
             itunesConnectAnalyticsParameters:
@@ -285,11 +285,11 @@ void main() {
         await components.buildShortLink();
 
         expect(log, <Matcher>[
-          isMethodCall('DynamicLinkComponents#url',
+          isMethodCall('DynamicLinkParameters#buildUrl',
               arguments: <String, dynamic>{
                 'androidParameters': null,
                 'domain': 'test-domain',
-                'dynamicLinkComponentsOptions': null,
+                'dynamicLinkParametersOptions': null,
                 'googleAnalyticsParameters': null,
                 'iosParameters': null,
                 'itunesConnectAnalyticsParameters': <String, dynamic>{
@@ -301,11 +301,11 @@ void main() {
                 'navigationInfoParameters': null,
                 'socialMetaTagParameters': null,
               }),
-          isMethodCall('DynamicLinkComponents#shortLink',
+          isMethodCall('DynamicLinkParameters#buildShortLink',
               arguments: <String, dynamic>{
                 'androidParameters': null,
                 'domain': 'test-domain',
-                'dynamicLinkComponentsOptions': null,
+                'dynamicLinkParametersOptions': null,
                 'googleAnalyticsParameters': null,
                 'iosParameters': null,
                 'itunesConnectAnalyticsParameters': <String, dynamic>{
@@ -321,7 +321,7 @@ void main() {
       });
 
       test('$NavigationInfoParameters', () async {
-        final DynamicLinkComponents components = new DynamicLinkComponents(
+        final DynamicLinkParameters components = new DynamicLinkParameters(
             domain: 'test-domain',
             link: Uri.parse('test-link.com'),
             navigationInfoParameters:
@@ -331,11 +331,11 @@ void main() {
         await components.buildShortLink();
 
         expect(log, <Matcher>[
-          isMethodCall('DynamicLinkComponents#url',
+          isMethodCall('DynamicLinkParameters#buildUrl',
               arguments: <String, dynamic>{
                 'androidParameters': null,
                 'domain': 'test-domain',
-                'dynamicLinkComponentsOptions': null,
+                'dynamicLinkParametersOptions': null,
                 'googleAnalyticsParameters': null,
                 'iosParameters': null,
                 'itunesConnectAnalyticsParameters': null,
@@ -345,11 +345,11 @@ void main() {
                 },
                 'socialMetaTagParameters': null,
               }),
-          isMethodCall('DynamicLinkComponents#shortLink',
+          isMethodCall('DynamicLinkParameters#buildShortLink',
               arguments: <String, dynamic>{
                 'androidParameters': null,
                 'domain': 'test-domain',
-                'dynamicLinkComponentsOptions': null,
+                'dynamicLinkParametersOptions': null,
                 'googleAnalyticsParameters': null,
                 'iosParameters': null,
                 'itunesConnectAnalyticsParameters': null,
@@ -363,7 +363,7 @@ void main() {
       });
 
       test('$SocialMetaTagParameters', () async {
-        final DynamicLinkComponents components = new DynamicLinkComponents(
+        final DynamicLinkParameters components = new DynamicLinkParameters(
             domain: 'test-domain',
             link: Uri.parse('test-link.com'),
             socialMetaTagParameters: SocialMetaTagParameters(
@@ -376,11 +376,11 @@ void main() {
         await components.buildShortLink();
 
         expect(log, <Matcher>[
-          isMethodCall('DynamicLinkComponents#url',
+          isMethodCall('DynamicLinkParameters#buildUrl',
               arguments: <String, dynamic>{
                 'androidParameters': null,
                 'domain': 'test-domain',
-                'dynamicLinkComponentsOptions': null,
+                'dynamicLinkParametersOptions': null,
                 'googleAnalyticsParameters': null,
                 'iosParameters': null,
                 'itunesConnectAnalyticsParameters': null,
@@ -392,11 +392,11 @@ void main() {
                   'title': 'bro',
                 },
               }),
-          isMethodCall('DynamicLinkComponents#shortLink',
+          isMethodCall('DynamicLinkParameters#buildShortLink',
               arguments: <String, dynamic>{
                 'androidParameters': null,
                 'domain': 'test-domain',
-                'dynamicLinkComponentsOptions': null,
+                'dynamicLinkParametersOptions': null,
                 'googleAnalyticsParameters': null,
                 'iosParameters': null,
                 'itunesConnectAnalyticsParameters': null,
