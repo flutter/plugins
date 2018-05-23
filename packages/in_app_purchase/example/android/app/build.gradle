@@ -23,7 +23,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "com.example.inapppurchaseexample"
+        applicationId "io.flutter.plugins.inapppurchaseexample"
         minSdkVersion 16
         targetSdkVersion 27
         versionCode 1

@@ -1,4 +1,4 @@
-package com.example.inapppurchaseexample;
+package io.flutter.plugins.inapppurchaseexample;
 
 import android.os.Bundle;
 

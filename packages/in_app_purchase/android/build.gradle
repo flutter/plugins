@@ -1,4 +1,4 @@
-group 'com.example.inapppurchase'
+group 'io.flutter.plugins.inapppurchase'
 version '1.0-SNAPSHOT'
 
 buildscript {

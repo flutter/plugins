@@ -1,6 +1,6 @@
 # in_app_purchase
 
-A new flutter plugin project.
+A Flutter plugin for in-app purchases.
 
 ## Getting Started
 

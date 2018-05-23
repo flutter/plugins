@@ -1,4 +1,4 @@
-package com.example.inapppurchase;
+package io.flutter.plugins.inapppurchase;
 
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
