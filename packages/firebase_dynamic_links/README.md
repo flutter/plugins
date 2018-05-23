@@ -20,10 +20,10 @@ You can create short or long Dynamic Links with the Firebase Dynamic Links Build
 https://abc123.app.goo.gl/WXYZ
 ```
 
-You can create a Dynamic Link programmatically by setting the following parameters and getting the DynamicLinkComponents.url parameter.
+You can create a Dynamic Link programmatically by setting the following parameters and getting the DynamicLinkParameters.url parameter.
 
 ```dart
-final DynamicLinkComponents components = new DynamicLinkComponents(
+final DynamicLinkParameters components = new DynamicLinkParameters(
   domain: 'abc123.app.goo.gl',
   link: Uri.parse('https://example.com/'),
   androidParameters: new AndroidParameters(
@@ -53,18 +53,18 @@ final DynamicLinkComponents components = new DynamicLinkComponents(
 final Uri dynamicLink = await components.buildUrl();
 ```
 
-To create a short Dynamic Link, build DynamicLinkComponents the same way, but use the DynamicLinkComponents.shortUrl parameter.
+To create a short Dynamic Link, build DynamicLinkParameters the same way, but use the DynamicLinkParameters.shortUrl parameter.
 
 ```dart
 final ShortDynamicLink shortDynamicLink = await components.buildShortLink();
 ```
 
-To shorten a long Dynamic Link, use the DynamicLinkComponents.shortenUrl method.
+To shorten a long Dynamic Link, use the DynamicLinkParameters.shortenUrl method.
 
 ```dart
-final ShortDynamicLink shortenedLink = await DynamicLinkComponents.shortenUrl(
+final ShortDynamicLink shortenedLink = await DynamicLinkParameters.shortenUrl(
   Uri.parse('https://abc123.app.goo.gl/?link=https://example.com/&apn=com.example.android&ibn=com.example.ios'),
-  new DynamicLinkComponentsOptions(ShortDynamicLinkPathLength.short),
+  new DynamicLinkParametersOptions(ShortDynamicLinkPathLength.short),
 );
 ```
 
