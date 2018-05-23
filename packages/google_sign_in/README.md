@@ -67,8 +67,9 @@ GoogleSignIn _googleSignIn = new GoogleSignIn(
   ],
 );
 ```
+[Full list of available scopes](https://developers.google.com/identity/protocols/googlescopes).
 
-You can now use the `GoogleSignIn` class to authenticate in your Dart code, e.g. 
+You can now use the `GoogleSignIn` class to authenticate in your Dart code, e.g.
 
 ```
 Future<Null> _handleSignIn() async {
