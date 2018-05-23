@@ -34,8 +34,7 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
         break;
       case "DynamicLinkComponents#shortLink":
         DynamicLink.Builder shortLinkBuilder = setupParameters(call);
-        buildShortDynamicLink(
-            shortLinkBuilder, call, createShortLinkListener(result));
+        buildShortDynamicLink(shortLinkBuilder, call, createShortLinkListener(result));
         break;
       case "DynamicLinkComponents#shortenUrl":
         DynamicLink.Builder builder = FirebaseDynamicLinks.getInstance().createDynamicLink();
@@ -78,9 +77,7 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
   }
 
   private void buildShortDynamicLink(
-      DynamicLink.Builder builder,
-      MethodCall call,
-      OnCompleteListener<ShortDynamicLink> listener) {
+      DynamicLink.Builder builder, MethodCall call, OnCompleteListener<ShortDynamicLink> listener) {
     Integer suffix = null;
 
     Map<String, Object> dynamicLinkComponentsOptions =
@@ -190,7 +187,8 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
 
     Map<String, Object> navigationInfoParameters = call.argument("navigationInfoParameters");
     if (navigationInfoParameters != null) {
-      Boolean forcedRedirectEnabled = (Boolean) navigationInfoParameters.get("forcedRedirectEnabled");
+      Boolean forcedRedirectEnabled =
+          (Boolean) navigationInfoParameters.get("forcedRedirectEnabled");
 
       DynamicLink.NavigationInfoParameters.Builder builder =
           new DynamicLink.NavigationInfoParameters.Builder();
