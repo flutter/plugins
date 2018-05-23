@@ -109,8 +109,11 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
   private DynamicLink.Builder setupParameters(MethodCall call) {
     DynamicLink.Builder dynamicLinkBuilder = FirebaseDynamicLinks.getInstance().createDynamicLink();
 
-    dynamicLinkBuilder.setDynamicLinkDomain((String) call.argument("domain"));
-    dynamicLinkBuilder.setLink(Uri.parse((String) call.argument("link")));
+    String domain = call.argument("domain");
+    String link = call.argument("link");
+
+    dynamicLinkBuilder.setDynamicLinkDomain(domain);
+    dynamicLinkBuilder.setLink(Uri.parse(link));
 
     Map<String, Object> androidParameters = call.argument("androidParameters");
     if (androidParameters != null) {
