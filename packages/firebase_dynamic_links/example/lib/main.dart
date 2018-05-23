@@ -61,7 +61,7 @@ class _MyAppState extends State<MyApp> {
             child: new Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-              new ButtonBar(
+            new ButtonBar(
                 alignment: MainAxisAlignment.center,
                 children: <Widget>[
                   new RaisedButton(
