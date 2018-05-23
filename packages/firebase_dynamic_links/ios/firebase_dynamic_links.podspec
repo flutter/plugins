@@ -17,4 +17,5 @@ Firebase Dynamic Links plugin for Flutter.
   s.dependency 'Flutter'
   s.dependency 'Firebase/DynamicLinks'
   s.ios.deployment_target = '8.0'
+  s.static_framework = true
 end

@@ -6,7 +6,3 @@
 .DS_Store
 /build
 /captures
-
-/gradle/wrapper/gradle-wrapper.jar
-/gradlew
-/gradlew.bat

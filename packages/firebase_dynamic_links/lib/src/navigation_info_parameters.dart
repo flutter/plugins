@@ -8,7 +8,7 @@ part of firebase_dynamic_links;
 class NavigationInfoParameters {
   NavigationInfoParameters({this.forcedRedirectEnabled});
 
-  /// Should forced non-interactive redirect be used when link is tapped on mobile device.
+  /// Whether forced non-interactive redirect be used when link is tapped on mobile device.
   ///
   /// Default behavior is to disable force redirect and show interstitial page
   /// where user tap will initiate navigation to the App

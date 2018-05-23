@@ -24,15 +24,15 @@ class _MyAppState extends State<MyApp> {
     });
 
     final DynamicLinkComponents components = new DynamicLinkComponents(
-      domain: "cx4k7.app.goo.gl",
-      link: Uri.parse("https://google.com"),
+      domain: 'cx4k7.app.goo.gl',
+      link: Uri.parse('https://google.com'),
       androidParameters: new AndroidParameters(
-        packageName: "io.flutter.plugins.firebasedynamiclinksexample",
+        packageName: 'io.flutter.plugins.firebasedynamiclinksexample',
       ),
       dynamicLinkComponentsOptions: new DynamicLinkComponentsOptions(
-          shortDynamicLinkPathLength: ShortDynamicLinkPathLength.short),
+        shortDynamicLinkPathLength: ShortDynamicLinkPathLength.short),
       iosParameters: new IosParameters(
-        bundleId: "io.flutter.plugins.firebaseDynamicLinksExample",
+        bundleId: 'io.flutter.plugins.firebaseDynamicLinksExample',
       ),
     );
 
@@ -55,32 +55,33 @@ class _MyAppState extends State<MyApp> {
     return new MaterialApp(
       home: new Scaffold(
         appBar: new AppBar(
-          title: const Text("Dynamic Links Example"),
+          title: const Text('Dynamic Links Example'),
         ),
         body: new Center(
-            child: new Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            new ButtonBar(
+          child: new Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              new ButtonBar(
                 alignment: MainAxisAlignment.center,
                 children: <Widget>[
                   new RaisedButton(
-                      onPressed: !_isCreatingLink
-                          ? () => _createDynamicLink(false)
-                          : null,
-                      child: const Text("Get Long Link")),
+                    onPressed: !_isCreatingLink
+                        ? () => _createDynamicLink(false)
+                        : null,
+                    child: const Text('Get Long Link')),
                   new RaisedButton(
-                      onPressed: !_isCreatingLink
-                          ? () => _createDynamicLink(true)
-                          : null,
-                      child: const Text("Get Short Link")),
+                    onPressed: !_isCreatingLink
+                        ? () => _createDynamicLink(true)
+                        : null,
+                    child: const Text('Get Short Link')),
                 ]),
-            new Text(
-              _linkMessage ?? "",
-              textAlign: TextAlign.center,
-            ),
-          ],
-        )),
+              new Text(
+                _linkMessage ?? '',
+                textAlign: TextAlign.center,
+              ),
+            ],
+          )
+        ),
       ),
     );
   }

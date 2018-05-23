@@ -11,6 +11,6 @@ class ShortDynamicLink {
   /// Short url value.
   final Uri shortUrl;
 
-  /// Gets information about potential warnings on link creation.
+  /// Information about potential warnings on link creation.
   final List<String> warnings;
 }

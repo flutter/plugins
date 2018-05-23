@@ -22,7 +22,7 @@ void main() {
         };
         switch (methodCall.method) {
           case 'DynamicLinkComponents#url':
-            return "google.com";
+            return 'google.com';
           case 'DynamicLinkComponents#shortLink':
             return returnUrl;
           case 'DynamicLinkComponents#shortenUrl':
@@ -36,7 +36,7 @@ void main() {
 
     group('$DynamicLinkComponents', () {
       test('shortenUrl', () async {
-        final Uri url = Uri.parse("google.com");
+        final Uri url = Uri.parse('google.com');
         final DynamicLinkComponentsOptions options =
             new DynamicLinkComponentsOptions(
                 shortDynamicLinkPathLength:
@@ -45,7 +45,7 @@ void main() {
         await DynamicLinkComponents.shortenUrl(url, options);
 
         expect(log, <Matcher>[
-          isMethodCall("DynamicLinkComponents#shortenUrl",
+          isMethodCall('DynamicLinkComponents#shortenUrl',
               arguments: <String, dynamic>{
                 'url': url.toString(),
                 'dynamicLinkComponentsOptions': <String, dynamic>{

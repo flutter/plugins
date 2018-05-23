@@ -42,3 +42,5 @@ Icon?
 /ServiceDefinitions.json
 
 Pods/
+PodFile
+.symlinks/

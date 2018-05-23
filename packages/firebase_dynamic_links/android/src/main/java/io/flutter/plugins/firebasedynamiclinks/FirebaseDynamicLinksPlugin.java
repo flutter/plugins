@@ -27,24 +27,26 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
-    if (call.method.equals("DynamicLinkComponents#url")) {
-      DynamicLink.Builder builder = setupParameters((Map<String, Object>) call.arguments());
-      result.success(builder.buildDynamicLink().getUri().toString());
-    } else if (call.method.equals("DynamicLinkComponents#shortLink")) {
-      Map<String, Object> arguments = (Map<String, Object>) call.arguments();
-      DynamicLink.Builder builder = setupParameters(arguments);
-      buildShortDynamicLink(
-          builder, (Map<String, Object>) call.arguments(), createShortLinkListener(result));
-    } else if (call.method.equals("DynamicLinkComponents#shortenUrl")) {
-      Map<String, Object> arguments = (Map<String, Object>) call.arguments();
+    switch (call.method) {
+      case "DynamicLinkComponents#url":
+        DynamicLink.Builder urlBuilder = setupParameters(call);
+        result.success(urlBuilder.buildDynamicLink().getUri().toString());
+        break;
+      case "DynamicLinkComponents#shortLink":
+        DynamicLink.Builder shortLinkBuilder = setupParameters(call);
+        buildShortDynamicLink(
+            shortLinkBuilder, call, createShortLinkListener(result));
+        break;
+      case "DynamicLinkComponents#shortenUrl":
+        DynamicLink.Builder builder = FirebaseDynamicLinks.getInstance().createDynamicLink();
 
-      DynamicLink.Builder builder = FirebaseDynamicLinks.getInstance().createDynamicLink();
-
-      Uri url = Uri.parse((String) arguments.get("url"));
-      builder.setLongLink(url);
-      buildShortDynamicLink(builder, arguments, createShortLinkListener(result));
-    } else {
-      result.notImplemented();
+        Uri url = Uri.parse((String) call.argument("url"));
+        builder.setLongLink(url);
+        buildShortDynamicLink(builder, call, createShortLinkListener(result));
+        break;
+      default:
+        result.notImplemented();
+        break;
     }
   }
 
@@ -66,7 +68,7 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
         } else {
           Exception exception = task.getException();
           String errMsg = "Unable to create short link";
-          if (exception != null && exception.getMessage() != null) {
+          if (exception != null && exception.getLocalizedMessage() != null) {
             errMsg = exception.getLocalizedMessage();
           }
           result.error("short_link_error", errMsg, null);
@@ -77,13 +79,12 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
 
   private void buildShortDynamicLink(
       DynamicLink.Builder builder,
-      Map<String, Object> arguments,
+      MethodCall call,
       OnCompleteListener<ShortDynamicLink> listener) {
     Integer suffix = null;
 
-    @SuppressWarnings("unchecked")
     Map<String, Object> dynamicLinkComponentsOptions =
-        (Map<String, Object>) arguments.get("dynamicLinkComponentsOptions");
+        call.argument("dynamicLinkComponentsOptions");
     if (dynamicLinkComponentsOptions != null) {
       Object shortDynamicLinkPathLength =
           dynamicLinkComponentsOptions.get("shortDynamicLinkPathLength");
@@ -108,122 +109,111 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
     }
   }
 
-  private DynamicLink.Builder setupParameters(Map<String, Object> arguments) {
+  private DynamicLink.Builder setupParameters(MethodCall call) {
     DynamicLink.Builder dynamicLinkBuilder = FirebaseDynamicLinks.getInstance().createDynamicLink();
 
-    // These two don't require null check because app should crash if these are null.
-    dynamicLinkBuilder.setDynamicLinkDomain((String) arguments.get("domain"));
-    dynamicLinkBuilder.setLink(Uri.parse((String) arguments.get("link")));
+    dynamicLinkBuilder.setDynamicLinkDomain((String) call.argument("domain"));
+    dynamicLinkBuilder.setLink(Uri.parse((String) call.argument("link")));
 
-    @SuppressWarnings("unchecked")
-    Map<String, Object> androidParameters =
-        (Map<String, Object>) arguments.get("androidParameters");
+    Map<String, Object> androidParameters = call.argument("androidParameters");
     if (androidParameters != null) {
       DynamicLink.AndroidParameters.Builder builder =
           new DynamicLink.AndroidParameters.Builder((String) androidParameters.get("packageName"));
 
-      Object fallbackUrl = androidParameters.get("fallbackUrl");
-      Object minimumVersion = androidParameters.get("minimumVersion");
+      String fallbackUrl = (String) androidParameters.get("fallbackUrl");
+      Integer minimumVersion = (Integer) androidParameters.get("minimumVersion");
 
-      if (fallbackUrl != null) builder.setFallbackUrl(Uri.parse((String) fallbackUrl));
-      if (minimumVersion != null) builder.setMinimumVersion((int) minimumVersion);
+      if (fallbackUrl != null) builder.setFallbackUrl(Uri.parse(fallbackUrl));
+      if (minimumVersion != null) builder.setMinimumVersion(minimumVersion);
 
       dynamicLinkBuilder.setAndroidParameters(builder.build());
     }
 
-    @SuppressWarnings("unchecked")
-    Map<String, Object> googleAnalyticsParameters =
-        (Map<String, Object>) arguments.get("googleAnalyticsParameters");
+    Map<String, Object> googleAnalyticsParameters = call.argument("googleAnalyticsParameters");
     if (googleAnalyticsParameters != null) {
-      Object campaign = googleAnalyticsParameters.get("campaign");
-      Object content = googleAnalyticsParameters.get("content");
-      Object medium = googleAnalyticsParameters.get("medium");
-      Object source = googleAnalyticsParameters.get("source");
-      Object term = googleAnalyticsParameters.get("term");
+      String campaign = (String) googleAnalyticsParameters.get("campaign");
+      String content = (String) googleAnalyticsParameters.get("content");
+      String medium = (String) googleAnalyticsParameters.get("medium");
+      String source = (String) googleAnalyticsParameters.get("source");
+      String term = (String) googleAnalyticsParameters.get("term");
 
       DynamicLink.GoogleAnalyticsParameters.Builder builder =
           new DynamicLink.GoogleAnalyticsParameters.Builder();
 
-      if (campaign != null) builder.setCampaign((String) campaign);
-      if (content != null) builder.setContent((String) content);
-      if (medium != null) builder.setMedium((String) medium);
-      if (source != null) builder.setSource((String) source);
-      if (term != null) builder.setTerm((String) term);
+      if (campaign != null) builder.setCampaign(campaign);
+      if (content != null) builder.setContent(content);
+      if (medium != null) builder.setMedium(medium);
+      if (source != null) builder.setSource(source);
+      if (term != null) builder.setTerm(term);
 
       dynamicLinkBuilder.setGoogleAnalyticsParameters(builder.build());
     }
 
-    @SuppressWarnings("unchecked")
-    Map<String, Object> iosParameters = (Map<String, Object>) arguments.get("iosParameters");
+    Map<String, Object> iosParameters = call.argument("iosParameters");
     if (iosParameters != null) {
-      Object appStoreId = iosParameters.get("appStoreId");
-      Object customScheme = iosParameters.get("customScheme");
-      Object fallbackUrl = iosParameters.get("fallbackUrl");
-      Object ipadBundleId = iosParameters.get("ipadBundleId");
-      Object ipadFallbackUrl = iosParameters.get("ipadFallbackUrl");
-      Object minimumVersion = iosParameters.get("minimumVersion");
+      String appStoreId = (String) iosParameters.get("appStoreId");
+      String customScheme = (String) iosParameters.get("customScheme");
+      String fallbackUrl = (String) iosParameters.get("fallbackUrl");
+      String ipadBundleId = (String) iosParameters.get("ipadBundleId");
+      String ipadFallbackUrl = (String) iosParameters.get("ipadFallbackUrl");
+      String minimumVersion = (String) iosParameters.get("minimumVersion");
 
       DynamicLink.IosParameters.Builder builder =
           new DynamicLink.IosParameters.Builder((String) iosParameters.get("bundleId"));
 
-      if (appStoreId != null) builder.setAppStoreId((String) appStoreId);
-      if (customScheme != null) builder.setCustomScheme((String) customScheme);
-      if (fallbackUrl != null) builder.setFallbackUrl(Uri.parse((String) fallbackUrl));
-      if (ipadBundleId != null) builder.setIpadBundleId((String) ipadBundleId);
-      if (ipadFallbackUrl != null) builder.setIpadFallbackUrl(Uri.parse((String) ipadFallbackUrl));
-      if (minimumVersion != null) builder.setMinimumVersion((String) minimumVersion);
+      if (appStoreId != null) builder.setAppStoreId(appStoreId);
+      if (customScheme != null) builder.setCustomScheme(customScheme);
+      if (fallbackUrl != null) builder.setFallbackUrl(Uri.parse(fallbackUrl));
+      if (ipadBundleId != null) builder.setIpadBundleId(ipadBundleId);
+      if (ipadFallbackUrl != null) builder.setIpadFallbackUrl(Uri.parse(ipadFallbackUrl));
+      if (minimumVersion != null) builder.setMinimumVersion(minimumVersion);
 
       dynamicLinkBuilder.setIosParameters(builder.build());
     }
 
-    @SuppressWarnings("unchecked")
     Map<String, Object> itunesConnectAnalyticsParameters =
-        (Map<String, Object>) arguments.get("itunesConnectAnalyticsParameters");
+        call.argument("itunesConnectAnalyticsParameters");
     if (itunesConnectAnalyticsParameters != null) {
-      Object affiliateToken = itunesConnectAnalyticsParameters.get("affiliateToken");
-      Object campaignToken = itunesConnectAnalyticsParameters.get("campaignToken");
-      Object providerToken = itunesConnectAnalyticsParameters.get("providerToken");
+      String affiliateToken = (String) itunesConnectAnalyticsParameters.get("affiliateToken");
+      String campaignToken = (String) itunesConnectAnalyticsParameters.get("campaignToken");
+      String providerToken = (String) itunesConnectAnalyticsParameters.get("providerToken");
 
       DynamicLink.ItunesConnectAnalyticsParameters.Builder builder =
           new DynamicLink.ItunesConnectAnalyticsParameters.Builder();
 
-      if (affiliateToken != null) builder.setAffiliateToken((String) affiliateToken);
-      if (campaignToken != null) builder.setCampaignToken((String) campaignToken);
-      if (providerToken != null) builder.setProviderToken((String) providerToken);
+      if (affiliateToken != null) builder.setAffiliateToken(affiliateToken);
+      if (campaignToken != null) builder.setCampaignToken(campaignToken);
+      if (providerToken != null) builder.setProviderToken(providerToken);
 
       dynamicLinkBuilder.setItunesConnectAnalyticsParameters(builder.build());
     }
 
-    @SuppressWarnings("unchecked")
-    Map<String, Object> navigationInfoParameters =
-        (Map<String, Object>) arguments.get("navigationInfoParameters");
+    Map<String, Object> navigationInfoParameters = call.argument("navigationInfoParameters");
     if (navigationInfoParameters != null) {
-      Object forcedRedirectEnabled = navigationInfoParameters.get("forcedRedirectEnabled");
+      Boolean forcedRedirectEnabled = (Boolean) navigationInfoParameters.get("forcedRedirectEnabled");
 
       DynamicLink.NavigationInfoParameters.Builder builder =
           new DynamicLink.NavigationInfoParameters.Builder();
 
       if (forcedRedirectEnabled != null) {
-        builder.setForcedRedirectEnabled((boolean) forcedRedirectEnabled);
+        builder.setForcedRedirectEnabled(forcedRedirectEnabled);
       }
 
       dynamicLinkBuilder.setNavigationInfoParameters(builder.build());
     }
 
-    @SuppressWarnings("unchecked")
-    Map<String, Object> socialMetaTagParameters =
-        (Map<String, Object>) arguments.get("socialMetaTagParameters");
+    Map<String, Object> socialMetaTagParameters = call.argument("socialMetaTagParameters");
     if (socialMetaTagParameters != null) {
-      Object description = socialMetaTagParameters.get("description");
-      Object imageUrl = socialMetaTagParameters.get("imageUrl");
-      Object title = socialMetaTagParameters.get("title");
+      String description = (String) socialMetaTagParameters.get("description");
+      String imageUrl = (String) socialMetaTagParameters.get("imageUrl");
+      String title = (String) socialMetaTagParameters.get("title");
 
       DynamicLink.SocialMetaTagParameters.Builder builder =
           new DynamicLink.SocialMetaTagParameters.Builder();
 
-      if (description != null) builder.setDescription((String) description);
-      if (imageUrl != null) builder.setImageUrl(Uri.parse((String) imageUrl));
-      if (title != null) builder.setTitle((String) title);
+      if (description != null) builder.setDescription(description);
+      if (imageUrl != null) builder.setImageUrl(Uri.parse(imageUrl));
+      if (title != null) builder.setTitle(title);
 
       dynamicLinkBuilder.setSocialMetaTagParameters(builder.build());
     }
