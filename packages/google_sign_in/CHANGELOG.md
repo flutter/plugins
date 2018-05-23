@@ -1,3 +1,7 @@
+## 3.0.3+1
+
+* Added documentation on where to find the list of available scopes.
+
 ## 3.0.3
 
 * Added support for games sign in on Android.
