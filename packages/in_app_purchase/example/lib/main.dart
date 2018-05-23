@@ -15,7 +15,7 @@ class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
 
   @override
-  initState() {
+  void initState() {
     super.initState();
     initPlatformState();
   }
@@ -45,7 +45,7 @@ class _MyAppState extends State<MyApp> {
     return new MaterialApp(
       home: new Scaffold(
         appBar: new AppBar(
-          title: new Text('Plugin example app'),
+          title: const Text('Plugin example app'),
         ),
         body: new Center(
           child: new Text('Running on: $_platformVersion\n'),
