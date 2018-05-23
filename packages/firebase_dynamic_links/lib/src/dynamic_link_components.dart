@@ -23,25 +23,25 @@ class DynamicLinkComponents {
   });
 
   /// Applies Android parameters to a generated Dynamic Link URL.
-  AndroidParameters androidParameters;
+  final AndroidParameters androidParameters;
 
   /// The Firebase project’s Dynamic Links domain.
   ///
   /// You can find this value in the Dynamic Links section of the Firebase
   /// console. https://console.firebase.google.com/
-  String domain;
+  final String domain;
 
   /// Defines behavior for generating Dynamic Link URLs
-  DynamicLinkComponentsOptions dynamicLinkComponentsOptions;
+  final DynamicLinkComponentsOptions dynamicLinkComponentsOptions;
 
   /// Applies Analytics parameters to a generated Dynamic Link URL.
-  GoogleAnalyticsParameters googleAnalyticsParameters;
+  final GoogleAnalyticsParameters googleAnalyticsParameters;
 
   /// Applies iOS parameters to a generated Dynamic Link URL.
-  IosParameters iosParameters;
+  final IosParameters iosParameters;
 
   /// Applies iTunes Connect parameters to a generated Dynamic Link URL.
-  ItunesConnectAnalyticsParameters itunesConnectAnalyticsParameters;
+  final ItunesConnectAnalyticsParameters itunesConnectAnalyticsParameters;
 
   /// The link the target app will open.
   ///
@@ -50,13 +50,13 @@ class DynamicLinkComponents {
   /// the user with a coupon, or displaying a specific welcome screen.
   /// This link must be a well-formatted URL, be properly URL-encoded, and use
   /// the HTTP or HTTPS scheme.
-  Uri link;
+  final Uri link;
 
   /// Applies Navigation Info parameters to a generated Dynamic Link URL.
-  NavigationInfoParameters navigationInfoParameters;
+  final NavigationInfoParameters navigationInfoParameters;
 
   /// Applies Social Meta Tag parameters to a generated Dynamic Link URL.
-  SocialMetaTagParameters socialMetaTagParameters;
+  final SocialMetaTagParameters socialMetaTagParameters;
 
   /// Shortens a Dynamic Link URL.
   ///
@@ -74,14 +74,6 @@ class DynamicLinkComponents {
     return _parseShortLink(reply);
   }
 
-  /// A generated long Dynamic Link URL.
-  Future<Uri> get url => _generateUrl();
-
-  /// A generated short Dynamic Link.
-  ///
-  /// May throw a [ShortLinkException].
-  Future<ShortDynamicLink> get shortLink => _generateShortLink();
-
   Map<String, dynamic> get _data => <String, dynamic>{
         'androidParameters': androidParameters?._data,
         'domain': domain,
@@ -95,13 +87,17 @@ class DynamicLinkComponents {
         'socialMetaTagParameters': socialMetaTagParameters?._data,
       };
 
-  Future<Uri> _generateUrl() async {
+  /// A generated long Dynamic Link URL.
+  Future<Uri> buildUrl() async {
     final String url = await FirebaseDynamicLinks.channel
         .invokeMethod('DynamicLinkComponents#url', _data);
     return Uri.parse(url);
   }
 
-  Future<ShortDynamicLink> _generateShortLink() async {
+  /// A generated short Dynamic Link.
+  ///
+  /// May throw a [ShortLinkException].
+  Future<ShortDynamicLink> buildShortLink() async {
     final Map<dynamic, dynamic> reply = await FirebaseDynamicLinks.channel
         .invokeMethod('DynamicLinkComponents#shortLink', _data);
     return _parseShortLink(reply);

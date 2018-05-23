@@ -38,10 +38,10 @@ class _MyAppState extends State<MyApp> {
 
     Uri url;
     if (short) {
-      final ShortDynamicLink shortLink = await components.shortLink;
+      final ShortDynamicLink shortLink = await components.buildShortLink();
       url = shortLink.shortUrl;
     } else {
-      url = await components.url;
+      url = await components.buildUrl();
     }
 
     setState(() {

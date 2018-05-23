@@ -50,19 +50,19 @@ final DynamicLinkComponents components = new DynamicLinkComponents(
   ),
 );
 
-final Uri dynamicLink = await components.url;
+final Uri dynamicLink = await components.buildUrl();
 ```
 
 To create a short Dynamic Link, build DynamicLinkComponents the same way, but use the DynamicLinkComponents.shortUrl parameter.
 
 ```dart
-final Uri shortDynamicLink = await components.shortUrl;
+final ShortDynamicLink shortDynamicLink = await components.buildShortLink();
 ```
 
 To shorten a long Dynamic Link, use the DynamicLinkComponents.shortenUrl method.
 
 ```dart
-Uri shortenedLink = DynamicLinkComponents.shortenUrl(
+final ShortDynamicLink shortenedLink = await DynamicLinkComponents.shortenUrl(
   Uri.parse('https://abc123.app.goo.gl/?link=https://example.com/&apn=com.example.android&ibn=com.example.ios'),
   new DynamicLinkComponentsOptions(ShortDynamicLinkPathLength.short),
 );
