@@ -13,3 +13,5 @@ GeneratedPluginRegistrant.m
 GeneratedPluginRegistrant.java
 
 .dart_tool
+packages/image_picker/.vscode/launch.json
+packages/image_picker/.vscode/settings.json
