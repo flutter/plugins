@@ -81,7 +81,7 @@ class _CameraAppState extends State<CameraApp> {
 
   @override
   Widget build(BuildContext context) {
-    if (!controller.value.initialized) {
+    if (!controller.value.isInitialized) {
       return new Container();
     }
     return new AspectRatio(
