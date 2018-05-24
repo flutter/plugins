@@ -1,7 +1,7 @@
 ## 0.4.2
 
-* Added Video Capability with `pickVideo`. 
-* Updated Example for Preview of Video Captured
+* Added support for picking videos.
+* Updated example app to show video preview.
 
 ## 0.4.1
 
