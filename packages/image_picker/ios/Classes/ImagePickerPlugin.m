@@ -145,17 +145,17 @@ static const int SOURCE_GALLERY = 1;
                                   details:nil]);
     }
   } else {
-  if (image == nil) {
-    image = [info objectForKey:UIImagePickerControllerOriginalImage];
-  }
-  image = [self normalizedImage:image];
+    if (image == nil) {
+      image = [info objectForKey:UIImagePickerControllerOriginalImage];
+    }
+    image = [self normalizedImage:image];
 
-  NSNumber *maxWidth = [_arguments objectForKey:@"maxWidth"];
-  NSNumber *maxHeight = [_arguments objectForKey:@"maxHeight"];
+    NSNumber *maxWidth = [_arguments objectForKey:@"maxWidth"];
+    NSNumber *maxHeight = [_arguments objectForKey:@"maxHeight"];
 
-  if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
-    image = [self scaledImage:image maxWidth:maxWidth maxHeight:maxHeight];
-  }
+    if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
+      image = [self scaledImage:image maxWidth:maxWidth maxHeight:maxHeight];
+    }
 
     NSData *data = UIImageJPEGRepresentation(image, 1.0);
     NSString *guid = [[NSProcessInfo processInfo] globallyUniqueString];
