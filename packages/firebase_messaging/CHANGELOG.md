@@ -1,3 +1,7 @@
+## 1.0.1
+
+* Fix for Android where the onLaunch event is not triggered when the Activity is killed by the OS (or if the Don't keep activities toggle is enabled)
+
 ## 1.0.0
 
 * Bump to released version
