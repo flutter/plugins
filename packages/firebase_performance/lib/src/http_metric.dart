@@ -50,8 +50,7 @@ class HttpMetric {
 
   /// Stops this httpMetric.
   ///
-  /// Using ```await``` with this method is only necessary when accurate timing
-  /// is relevant.
+  /// Not necessary to use ```await``` with this method.
   Future<void> stop() {
     assert(!_hasStopped);
     assert(_hasStarted);
@@ -78,7 +77,7 @@ class HttpMetric {
   ///
   /// Name of the attribute has max length of [Trace.maxAttributeKeyLength]
   /// characters. Value of the attribute has max length of
-  /// [maxAttributeValueLength] characters.
+  /// [Trace.maxAttributeValueLength] characters.
   void putAttribute(String attribute, String value) {
     assert(!_hasStopped);
     assert(attribute != null);
@@ -94,8 +93,8 @@ class HttpMetric {
 
   /// Removes an already added [attribute].
   ///
-  /// If the [HttpMetric] has been stopped, this method returns without removing
-  /// the attribute.
+  /// If the [HttpMetric] has been stopped, this method throws an assertion
+  /// error.
   void removeAttribute(String attribute) {
     assert(!_hasStopped);
 

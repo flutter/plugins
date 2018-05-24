@@ -4,6 +4,11 @@
 
 part of firebase_performance;
 
+/// Valid HttpMethods for manual network APIs
+///
+/// ```dart
+/// HttpMethod method = HttpMethod.Connect;
+/// ```
 enum HttpMethod { Connect, Delete, Get, Head, Options, Patch, Post, Put, Trace }
 
 /// The Firebase Performance API.

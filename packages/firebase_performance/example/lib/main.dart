@@ -121,31 +121,32 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Firebase Performance Example'),
         ),
         body: new Center(
-            child: new Column(
-          children: <Widget>[
-            new Text(_performanceCollectionMessage),
-            new RaisedButton(
-              onPressed: _togglePerformanceCollection,
-              child: const Text('Toggle Data Collection'),
-            ),
-            new RaisedButton(
-              onPressed: _testTrace,
-              child: const Text('Run Trace'),
-            ),
-            new Text(
-              _traceHasRan ? 'Trace Ran!' : '',
-              style: textStyle,
-            ),
-            new RaisedButton(
-              onPressed: _testHttpMetric,
-              child: const Text('Run HttpMetric'),
-            ),
-            new Text(
-              _httpMetricHasRan ? 'HttpMetric Ran!' : '',
-              style: textStyle,
-            ),
-          ],
-        )),
+          child: new Column(
+            children: <Widget>[
+              new Text(_performanceCollectionMessage),
+              new RaisedButton(
+                onPressed: _togglePerformanceCollection,
+                child: const Text('Toggle Data Collection'),
+              ),
+              new RaisedButton(
+                onPressed: _testTrace,
+                child: const Text('Run Trace'),
+              ),
+              new Text(
+                _traceHasRan ? 'Trace Ran!' : '',
+                style: textStyle,
+              ),
+              new RaisedButton(
+                onPressed: _testHttpMetric,
+                child: const Text('Run HttpMetric'),
+              ),
+              new Text(
+                _httpMetricHasRan ? 'HttpMetric Ran!' : '',
+                style: textStyle,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

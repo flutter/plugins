@@ -9,6 +9,7 @@ For Flutter plugins for other Firebase products, see [FlutterFire.md](https://gi
 *Note*: This plugin is still under development, and some APIs might not be available yet. [Feedback](https://github.com/flutter/flutter/issues) and [Pull Requests](https://github.com/flutter/plugins/pulls) are most welcome!
 
 ## Usage
+
 To use this plugin, add `firebase_performance` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/). You must also configure firebase performance monitoring for each platform project: Android and iOS (see the example folder or https://codelabs.developers.google.com/codelabs/flutter-firebase/#4 for step by step details).
 
 ## Define a Custom Trace
@@ -16,7 +17,6 @@ To use this plugin, add `firebase_performance` as a [dependency in your pubspec.
 A custom trace is a report of performance data associated with some of the code in your app. To learn more about custom traces, see the [Performance Monitoring overview](https://firebase.google.com/docs/perf-mon/#how_does_it_work).
 
 ```dart
-
 Trace myTrace = FirebasePerformance.instance.newTrace("test_trace");
 myTrace.start();
 
@@ -28,7 +28,6 @@ if (item != null) {
 }
 
 myTrace.stop();
-
 ```
 
 ## Add monitoring for specific network requests
@@ -36,7 +35,6 @@ myTrace.stop();
 Performance Monitoring collects network requests automatically. Although this includes most network requests for your app, some might not be reported. To include specific network requests in Performance Monitoring, add the following code to your app:
 
 ```dart
-
 class _MetricHttpClient extends BaseClient {
   _MetricHttpClient(this._inner);
 
@@ -82,7 +80,6 @@ class _MyAppState extends State<MyApp> {
 .
 .
 }
-
 ```
 
 ## Getting Started
