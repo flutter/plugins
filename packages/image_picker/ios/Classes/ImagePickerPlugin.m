@@ -129,17 +129,6 @@ static const int SOURCE_GALLERY = 1;
   NSURL *videoURL = [info objectForKey:UIImagePickerControllerMediaURL];
   UIImage *image = [info objectForKey:UIImagePickerControllerEditedImage];
   [_imagePickerController dismissViewControllerAnimated:YES completion:nil];
-  if (image == nil) {
-    image = [info objectForKey:UIImagePickerControllerOriginalImage];
-  }
-  image = [self normalizedImage:image];
-
-  NSNumber *maxWidth = [_arguments objectForKey:@"maxWidth"];
-  NSNumber *maxHeight = [_arguments objectForKey:@"maxHeight"];
-
-  if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
-    image = [self scaledImage:image maxWidth:maxWidth maxHeight:maxHeight];
-  }
 
   if (videoURL != nil) {
     NSData *data = [NSData dataWithContentsOfURL:videoURL];
@@ -156,6 +145,18 @@ static const int SOURCE_GALLERY = 1;
                                   details:nil]);
     }
   } else {
+  if (image == nil) {
+    image = [info objectForKey:UIImagePickerControllerOriginalImage];
+  }
+  image = [self normalizedImage:image];
+
+  NSNumber *maxWidth = [_arguments objectForKey:@"maxWidth"];
+  NSNumber *maxHeight = [_arguments objectForKey:@"maxHeight"];
+
+  if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
+    image = [self scaledImage:image maxWidth:maxWidth maxHeight:maxHeight];
+  }
+
     NSData *data = UIImageJPEGRepresentation(image, 1.0);
     NSString *guid = [[NSProcessInfo processInfo] globallyUniqueString];
     NSString *tmpFile = [NSString stringWithFormat:@"image_picker_%@.jpg", guid];
