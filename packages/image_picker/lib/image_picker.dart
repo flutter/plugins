@@ -37,11 +37,11 @@ class ImagePicker {
     assert(source != null);
 
     if (maxWidth != null && maxWidth < 0) {
-      throw new ArgumentError.value(maxWidth, 'maxWidth can\'t be negative');
+      throw new ArgumentError.value(maxWidth, 'maxWidth cannot be negative');
     }
 
     if (maxHeight != null && maxHeight < 0) {
-      throw new ArgumentError.value(maxHeight, 'maxHeight can\'t be negative');
+      throw new ArgumentError.value(maxHeight, 'maxHeight cannot be negative');
     }
 
     final String path = await _channel.invokeMethod(
@@ -64,11 +64,11 @@ class ImagePicker {
     assert(source != null);
 
     if (maxWidth != null && maxWidth < 0) {
-      throw new ArgumentError.value(maxWidth, 'maxWidth can\'t be negative');
+      throw new ArgumentError.value(maxWidth, 'maxWidth cannot be negative');
     }
 
     if (maxHeight != null && maxHeight < 0) {
-      throw new ArgumentError.value(maxHeight, 'maxHeight can\'t be negative');
+      throw new ArgumentError.value(maxHeight, 'maxHeight cannot be negative');
     }
 
     final String path = await _channel.invokeMethod(
