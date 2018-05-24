@@ -2,6 +2,7 @@
 .atom/
 .idea
 .packages
+.dart_tool/
 .pub/
 build/
 ios/.generated/
