@@ -53,7 +53,7 @@ class ImagePicker {
       },
     );
 
-    return path != null ? new File(path) : null;
+    return path == null ? null : new File(path);
   }
 
   static Future<File> pickVideo({
@@ -79,6 +79,6 @@ class ImagePicker {
         'maxHeight': maxHeight,
       },
     );
-    return path != null ? new File(path) : null;
+    return path == null ? null : new File(path);
   }
 }

@@ -33,7 +33,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Future<File> _mediaFile;
+  Future<File> _imageFile;
   bool isVideo = false;
   VideoPlayerController _controller;
   VoidCallback listener;
@@ -45,17 +45,19 @@ class _MyHomePageState extends State<MyHomePage> {
         _controller.removeListener(listener);
       }
       if (isVideo) {
-        _mediaFile = ImagePicker.pickVideo(source: source).then((File _file) {
-          _controller = VideoPlayerController.file(_file)
+        ImagePicker.pickVideo(source: source).then((File file) {
+          if (file != null) {
+            _controller = VideoPlayerController.file(file)
             ..addListener(listener)
             ..setVolume(1.0)
             ..initialize()
             ..setLooping(true)
             ..play();
           setState(() {});
+          }
         });
       } else {
-        _mediaFile = ImagePicker.pickImage(source: source);
+        _imageFile = ImagePicker.pickImage(source: source);
       }
     });
   }
@@ -106,7 +108,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget _previewImage() {
     return FutureBuilder<File>(
-        future: _mediaFile,
+        future: _imageFile,
         builder: (BuildContext context, AsyncSnapshot<File> snapshot) {
           if (snapshot.connectionState == ConnectionState.done &&
               snapshot.data != null) {
