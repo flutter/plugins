@@ -132,6 +132,29 @@ public class VideoPlayerPlugin implements MethodCallHandler {
             }
           });
 
+      mediaPlayer.setOnInfoListener(
+          new MediaPlayer.OnInfoListener() {
+            @Override
+            public boolean onInfo(MediaPlayer mediaPlayer, int what, int extra) {
+              Map<String, Object> event = new HashMap<>();
+              switch (what) {
+                case MediaPlayer.MEDIA_INFO_BUFFERING_START:
+                  {
+                    event.put("event", "bufferingStart");
+                    eventSink.success(event);
+                    return true;
+                  }
+                case MediaPlayer.MEDIA_INFO_BUFFERING_END:
+                  {
+                    event.put("event", "bufferingEnd");
+                    eventSink.success(event);
+                    return true;
+                  }
+              }
+              return false;
+            }
+          });
+
       mediaPlayer.prepareAsync();
 
       Map<String, Object> reply = new HashMap<>();
