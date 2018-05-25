@@ -171,6 +171,9 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
   } else if (context == playbackLikelyToKeepUpContext) {
     if ([[_player currentItem] isPlaybackLikelyToKeepUp]) {
       [self updatePlayingState];
+      if (_eventSink != nil){
+        _eventSink(@{@"event" : @"bufferingEnd"});
+      }
     }
   } else if (context == playbackBufferEmptyContext) {
     if (_eventSink != nil) {
