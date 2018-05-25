@@ -40,6 +40,7 @@ class _MyHomePageState extends State<MyHomePage> {
   static const double _snakeCellSize = 10.0;
 
   List<double> _accelerometerValues;
+  List<double> _userAccelerometerValues;
   List<double> _gyroscopeValues;
   List<StreamSubscription<dynamic>> _streamSubscriptions =
       <StreamSubscription<dynamic>>[];
@@ -50,6 +51,9 @@ class _MyHomePageState extends State<MyHomePage> {
         _accelerometerValues?.map((double v) => v.toStringAsFixed(1))?.toList();
     final List<String> gyroscope =
         _gyroscopeValues?.map((double v) => v.toStringAsFixed(1))?.toList();
+    final List<String> userAccelerometer = _userAccelerometerValues
+        ?.map((double v) => v.toStringAsFixed(1))
+        ?.toList();
 
     return new Scaffold(
       appBar: new AppBar(
@@ -79,6 +83,15 @@ class _MyHomePageState extends State<MyHomePage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 new Text('Accelerometer: $accelerometer'),
+              ],
+            ),
+            padding: const EdgeInsets.all(16.0),
+          ),
+          new Padding(
+            child: new Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                new Text('UserAccelerometer: $userAccelerometer'),
               ],
             ),
             padding: const EdgeInsets.all(16.0),
@@ -117,6 +130,12 @@ class _MyHomePageState extends State<MyHomePage> {
     _streamSubscriptions.add(gyroscopeEvents.listen((GyroscopeEvent event) {
       setState(() {
         _gyroscopeValues = <double>[event.x, event.y, event.z];
+      });
+    }));
+    _streamSubscriptions
+        .add(userAccelerometerEvents.listen((UserAccelerometerEvent event) {
+      setState(() {
+        _userAccelerometerValues = <double>[event.x, event.y, event.z];
       });
     }));
   }

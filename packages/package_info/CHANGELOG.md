@@ -1,3 +1,7 @@
+## 0.3.1
+
+* Added `appName` field to `PackageInfo` for getting the display name of the app.
+
 ## 0.3.0
 
 * **Breaking change**. Set SDK constraints to match the Flutter beta release.

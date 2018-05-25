@@ -15,13 +15,18 @@ First, add `camera` as a [dependency in your pubspec.yaml file](https://flutter.
 
 ### iOS
 
-Add a row to the `ios/Runner/Info.plist` of your app with the key `Privacy - Camera Usage Description` and a usage description.
+Add two rows to the `ios/Runner/Info.plist`:
+
+* one with the key `Privacy - Camera Usage Description` and a usage description.
+* and one with the key `Privacy - Microphone Usage Description` and a usage description.
 
 Or in text format add the key:
 
 ```xml
 <key>NSCameraUsageDescription</key>
 <string>Can I use the camera please?</string>
+<key>NSMicrophoneUsageDescription</key>
+<string>Can I use the mic please?</string>
 ```
 
 ### Android
@@ -76,7 +81,7 @@ class _CameraAppState extends State<CameraApp> {
 
   @override
   Widget build(BuildContext context) {
-    if (!controller.value.initialized) {
+    if (!controller.value.isInitialized) {
       return new Container();
     }
     return new AspectRatio(

@@ -1,3 +1,7 @@
+## 1.0.0
+
+* Bump to released version
+
 ## 0.4.6
 
 * Allow null value for `startAt`, `endAt` and `equalTo` queries on Android.

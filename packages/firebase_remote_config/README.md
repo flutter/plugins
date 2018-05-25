@@ -61,7 +61,7 @@ final defaults = <String, dynamic>{'welcome': 'default welcome'};
 await remoteConfig.setDefaults(defaults);
 
 await remoteConfig.fetch(expiration: const Duration(hours: 5));
-await remoteConfig.activate();
+await remoteConfig.activateFetched();
 print('welcome message: ' + remoteConfig.getString('welcome'));
 ```
 

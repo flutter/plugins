@@ -81,6 +81,10 @@ class _VideoPlayPauseState extends State<VideoPlayPause> {
         ),
       ),
       new Center(child: imageFadeAnim),
+      new Center(
+          child: controller.value.isBuffering
+              ? const CircularProgressIndicator()
+              : null),
     ];
 
     return new Stack(

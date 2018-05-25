@@ -113,10 +113,15 @@ void main() {
           case 'Firestore#runTransaction':
             return <String, dynamic>{'1': 3};
           case 'Transaction#get':
-            return <String, dynamic>{
-              'path': 'foo/bar',
-              'data': <String, dynamic>{'key1': 'val1'}
-            };
+            if (methodCall.arguments['path'] == 'foo/bar') {
+              return <String, dynamic>{
+                'path': 'foo/bar',
+                'data': <String, dynamic>{'key1': 'val1'}
+              };
+            } else if (methodCall.arguments['path'] == 'foo/notExists') {
+              return <String, dynamic>{'path': 'foo/notExists', 'data': null};
+            }
+            throw new PlatformException(code: 'UNKNOWN_PATH');
           case 'Transaction#set':
             return null;
           case 'Transaction#update':
@@ -157,6 +162,19 @@ void main() {
       test('get', () async {
         final DocumentReference documentReference =
             firestore.document('foo/bar');
+        await transaction.get(documentReference);
+        expect(log, <Matcher>[
+          isMethodCall('Transaction#get', arguments: <String, dynamic>{
+            'app': app.name,
+            'transactionId': 0,
+            'path': documentReference.path
+          })
+        ]);
+      });
+
+      test('get notExists', () async {
+        final DocumentReference documentReference =
+            firestore.document('foo/notExists');
         await transaction.get(documentReference);
         expect(log, <Matcher>[
           isMethodCall('Transaction#get', arguments: <String, dynamic>{

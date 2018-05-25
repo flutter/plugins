@@ -41,10 +41,14 @@ class MapUiBody extends StatefulWidget {
   const MapUiBody(this.controller);
 
   @override
-  State<StatefulWidget> createState() => MapUiBodyState();
+  State<StatefulWidget> createState() =>
+      MapUiBodyState(controller.mapController);
 }
 
 class MapUiBodyState extends State<MapUiBody> {
+  MapUiBodyState(this.mapController);
+
+  final GoogleMapController mapController;
   CameraPosition _position;
   GoogleMapOptions _options;
   bool _isMoving;
@@ -52,24 +56,33 @@ class MapUiBodyState extends State<MapUiBody> {
   @override
   void initState() {
     super.initState();
-    final GoogleMapController mapController = widget.controller.mapController;
-    mapController.addListener(() {
-      setState(() {
-        _options = mapController.options;
-        _position = mapController.cameraPosition;
-        _isMoving = mapController.isCameraMoving;
-      });
+    mapController.addListener(_onMapChanged);
+    _extractMapInfo();
+  }
+
+  void _onMapChanged() {
+    setState(() {
+      _extractMapInfo();
     });
+  }
+
+  void _extractMapInfo() {
     _options = mapController.options;
     _position = mapController.cameraPosition;
     _isMoving = mapController.isCameraMoving;
+  }
+
+  @override
+  void dispose() {
+    mapController.removeListener(_onMapChanged);
+    super.dispose();
   }
 
   Widget _compassToggler() {
     return FlatButton(
       child: Text('${_options.compassEnabled ? 'disable' : 'enable'} compass'),
       onPressed: () {
-        widget.controller.mapController.updateMapOptions(
+        mapController.updateMapOptions(
           GoogleMapOptions(compassEnabled: !_options.compassEnabled),
         );
       },
@@ -84,7 +97,7 @@ class MapUiBodyState extends State<MapUiBody> {
             : 'release camera target',
       ),
       onPressed: () {
-        widget.controller.mapController.updateMapOptions(
+        mapController.updateMapOptions(
           GoogleMapOptions(
             cameraTargetBounds: _options.cameraTargetBounds.bounds == null
                 ? CameraTargetBounds(sydneyBounds)
@@ -101,7 +114,7 @@ class MapUiBodyState extends State<MapUiBody> {
           ? 'bound zoom'
           : 'release zoom'),
       onPressed: () {
-        widget.controller.mapController.updateMapOptions(
+        mapController.updateMapOptions(
           GoogleMapOptions(
             minMaxZoomPreference: _options.minMaxZoomPreference.minZoom == null
                 ? const MinMaxZoomPreference(12.0, 16.0)
@@ -118,7 +131,7 @@ class MapUiBodyState extends State<MapUiBody> {
     return FlatButton(
       child: Text('change map type to $nextType'),
       onPressed: () {
-        widget.controller.mapController.updateMapOptions(
+        mapController.updateMapOptions(
           GoogleMapOptions(mapType: nextType),
         );
       },
@@ -130,7 +143,7 @@ class MapUiBodyState extends State<MapUiBody> {
       child: Text(
           '${_options.rotateGesturesEnabled ? 'disable' : 'enable'} rotate'),
       onPressed: () {
-        widget.controller.mapController.updateMapOptions(
+        mapController.updateMapOptions(
           GoogleMapOptions(
             rotateGesturesEnabled: !_options.rotateGesturesEnabled,
           ),
@@ -144,7 +157,7 @@ class MapUiBodyState extends State<MapUiBody> {
       child: Text(
           '${_options.scrollGesturesEnabled ? 'disable' : 'enable'} scroll'),
       onPressed: () {
-        widget.controller.mapController.updateMapOptions(
+        mapController.updateMapOptions(
           GoogleMapOptions(
             scrollGesturesEnabled: !_options.scrollGesturesEnabled,
           ),
@@ -158,7 +171,7 @@ class MapUiBodyState extends State<MapUiBody> {
       child:
           Text('${_options.tiltGesturesEnabled ? 'disable' : 'enable'} tilt'),
       onPressed: () {
-        widget.controller.mapController.updateMapOptions(
+        mapController.updateMapOptions(
           GoogleMapOptions(
             tiltGesturesEnabled: !_options.tiltGesturesEnabled,
           ),
@@ -172,7 +185,7 @@ class MapUiBodyState extends State<MapUiBody> {
       child:
           Text('${_options.zoomGesturesEnabled ? 'disable' : 'enable'} zoom'),
       onPressed: () {
-        widget.controller.mapController.updateMapOptions(
+        mapController.updateMapOptions(
           GoogleMapOptions(
             zoomGesturesEnabled: !_options.zoomGesturesEnabled,
           ),

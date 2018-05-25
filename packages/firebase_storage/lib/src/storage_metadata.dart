@@ -7,12 +7,13 @@ part of firebase_storage;
 /// Metadata for a [StorageReference]. Metadata stores default attributes such as
 /// size and content type.
 class StorageMetadata {
-  const StorageMetadata({
+  StorageMetadata({
     this.cacheControl,
     this.contentDisposition,
     this.contentEncoding,
     this.contentLanguage,
     this.contentType,
+    Map<String, String> customMetadata,
   })  : bucket = null,
         generation = null,
         metadataGeneration = null,
@@ -21,7 +22,10 @@ class StorageMetadata {
         sizeBytes = null,
         creationTimeMillis = null,
         updatedTimeMillis = null,
-        md5Hash = null;
+        md5Hash = null,
+        customMetadata = customMetadata == null
+            ? null
+            : Map<String, String>.unmodifiable(customMetadata);
 
   StorageMetadata._fromMap(Map<dynamic, dynamic> map)
       : bucket = map['bucket'],
@@ -37,7 +41,11 @@ class StorageMetadata {
         contentDisposition = map['contentDisposition'],
         contentLanguage = map['contentLanguage'],
         contentType = map['contentType'],
-        contentEncoding = map['contentEncoding'];
+        contentEncoding = map['contentEncoding'],
+        customMetadata = map['customMetadata'] == null
+            ? null
+            : new Map<String, String>.unmodifiable(
+                map['customMetadata'].cast<String, String>());
 
   /// The owning Google Cloud Storage bucket for the [StorageReference].
   final String bucket;
@@ -81,4 +89,7 @@ class StorageMetadata {
 
   /// The content type (MIME type) of the [StorageReference].
   final String contentType;
+
+  /// An unmodifiable map with custom metadata for the [StorageReference].
+  final Map<String, String> customMetadata;
 }

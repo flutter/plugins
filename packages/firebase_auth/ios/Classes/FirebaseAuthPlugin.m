@@ -66,9 +66,10 @@ int nextHandle = 0;
           [auth removeAuthStateDidChangeListener:listener];
         }];
   } else if ([@"signInAnonymously" isEqualToString:call.method]) {
-    [[FIRAuth auth] signInAnonymouslyWithCompletion:^(FIRUser *user, NSError *error) {
-      [self sendResult:result forUser:user error:error];
-    }];
+    [[FIRAuth auth]
+        signInAnonymouslyWithCompletion:^(FIRAuthDataResult *dataResult, NSError *error) {
+          [self sendResult:result forUser:dataResult.user error:error];
+        }];
   } else if ([@"signInWithGoogle" isEqualToString:call.method]) {
     NSString *idToken = call.arguments[@"idToken"];
     NSString *accessToken = call.arguments[@"accessToken"];
@@ -99,8 +100,8 @@ int nextHandle = 0;
     NSString *password = call.arguments[@"password"];
     [[FIRAuth auth] createUserWithEmail:email
                                password:password
-                             completion:^(FIRUser *user, NSError *error) {
-                               [self sendResult:result forUser:user error:error];
+                             completion:^(FIRAuthDataResult *dataResult, NSError *error) {
+                               [self sendResult:result forUser:dataResult.user error:error];
                              }];
   } else if ([@"fetchProvidersForEmail" isEqualToString:call.method]) {
     NSString *email = call.arguments[@"email"];
@@ -127,8 +128,8 @@ int nextHandle = 0;
     NSString *password = call.arguments[@"password"];
     [[FIRAuth auth] signInWithEmail:email
                            password:password
-                         completion:^(FIRUser *user, NSError *error) {
-                           [self sendResult:result forUser:user error:error];
+                         completion:^(FIRAuthDataResult *dataResult, NSError *error) {
+                           [self sendResult:result forUser:dataResult.user error:error];
                          }];
   } else if ([@"signOut" isEqualToString:call.method]) {
     NSError *signOutError;
@@ -184,8 +185,8 @@ int nextHandle = 0;
   } else if ([@"signInWithCustomToken" isEqualToString:call.method]) {
     NSString *token = call.arguments[@"token"];
     [[FIRAuth auth] signInWithCustomToken:token
-                               completion:^(FIRUser *user, NSError *error) {
-                                 [self sendResult:result forUser:user error:error];
+                               completion:^(FIRAuthDataResult *dataResult, NSError *error) {
+                                 [self sendResult:result forUser:dataResult.user error:error];
                                }];
 
   } else if ([@"startListeningAuthState" isEqualToString:call.method]) {
