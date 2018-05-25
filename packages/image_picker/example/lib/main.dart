@@ -46,14 +46,15 @@ class _MyHomePageState extends State<MyHomePage> {
       }
       if (isVideo) {
         ImagePicker.pickVideo(source: source).then((File file) {
-          if (file != null) {
-            _controller = VideoPlayerController.file(file)
-              ..addListener(listener)
-              ..setVolume(1.0)
-              ..initialize()
-              ..setLooping(true)
-              ..play();
-            setState(() {});
+          if (file != null && mounted) {
+            setState(() {
+              _controller = VideoPlayerController.file(file)
+                ..addListener(listener)
+                ..setVolume(1.0)
+                ..initialize()
+                ..setLooping(true)
+                ..play();
+            });
           }
         });
       } else {
