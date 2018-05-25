@@ -238,4 +238,3 @@ class AspectRatioVideoState extends State<AspectRatioVideo> {
     }
   }
 }
-
