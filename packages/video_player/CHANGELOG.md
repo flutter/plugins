@@ -1,3 +1,7 @@
+## 0.5.3
+
+* Added video buffering status.
+
 ## 0.5.2
 
 * Fixed a bug on iOS that could lead to missing initialization.
