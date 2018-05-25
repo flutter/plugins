@@ -46,6 +46,8 @@ int64_t FLTCMTimeToMillis(CMTime time) { return time.value * 1000 / time.timesca
 static void* timeRangeContext = &timeRangeContext;
 static void* statusContext = &statusContext;
 static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
+static void* playbackBufferEmptyContext = &playbackBufferEmptyContext;
+static void* playbackBufferFullContext = &playbackBufferFullContext;
 
 @implementation FLTVideoPlayer
 - (instancetype)initWithAsset:(NSString*)asset frameUpdater:(FLTFrameUpdater*)frameUpdater {
@@ -73,6 +75,14 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
          forKeyPath:@"playbackLikelyToKeepUp"
             options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
             context:playbackLikelyToKeepUpContext];
+  [item addObserver:self
+         forKeyPath:@"playbackBufferEmpty"
+            options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
+            context:playbackBufferEmptyContext];
+  [item addObserver:self
+         forKeyPath:@"playbackBufferFull"
+            options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
+            context:playbackBufferFullContext];
 
   _player = [AVPlayer playerWithPlayerItem:item];
   _player.actionAtItemEnd = AVPlayerActionAtItemEndNone;
@@ -161,6 +171,17 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
   } else if (context == playbackLikelyToKeepUpContext) {
     if ([[_player currentItem] isPlaybackLikelyToKeepUp]) {
       [self updatePlayingState];
+      if (_eventSink != nil) {
+        _eventSink(@{@"event" : @"bufferingEnd"});
+      }
+    }
+  } else if (context == playbackBufferEmptyContext) {
+    if (_eventSink != nil) {
+      _eventSink(@{@"event" : @"bufferingStart"});
+    }
+  } else if (context == playbackBufferFullContext) {
+    if (_eventSink != nil) {
+      _eventSink(@{@"event" : @"bufferingEnd"});
     }
   }
 }
