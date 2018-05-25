@@ -3,6 +3,7 @@
 .idea
 .packages
 .pub/
+.dart_tool/
 build/
 ios/.generated/
 packages

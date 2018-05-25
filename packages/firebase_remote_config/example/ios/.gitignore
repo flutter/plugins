@@ -39,4 +39,7 @@ Icon?
 /Flutter/Generated.xcconfig
 /ServiceDefinitions.json
 
+Podfile
+Podfile.lock
+.symlinks/
 Pods/

@@ -39,4 +39,6 @@ Icon?
 /ServiceDefinitions.json
 
 Podfile
+Podfile.lock
+.symlinks/
 Pods/

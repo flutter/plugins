@@ -4,6 +4,7 @@
 .packages
 .pub/
 build/
+.dart_tool/
 ios/.generated/
 packages
 pubspec.lock

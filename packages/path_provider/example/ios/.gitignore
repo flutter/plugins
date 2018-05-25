@@ -38,4 +38,5 @@ Icon?
 
 Podfile
 Podfile.lock
-Pods
+.symlinks/
+Pods/

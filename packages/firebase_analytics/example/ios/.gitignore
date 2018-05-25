@@ -38,6 +38,8 @@ Icon?
 
 Podfile
 Podfile.lock
-Pods
+.symlinks/
+Pods/
+
 /Runner/GeneratedPluginRegistrant.h
 /Runner/GeneratedPluginRegistrant.m

@@ -29,9 +29,10 @@ xcuserdata
 Icon?
 .tags*
 
-Pods/
 Podfile
 Podfile.lock
+.symlinks/
+Pods/
 
 /Flutter/app.zip
 /Flutter/App.framework
