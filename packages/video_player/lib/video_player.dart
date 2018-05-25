@@ -238,14 +238,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           );
           break;
         case 'bufferingStart':
-          value = value.copyWith(
-            isBuffering: true,
-          );
+          value = value.copyWith(isBuffering: true);
           break;
         case 'bufferingEnd':
-          value = value.copyWith(
-            isBuffering: false,
-          );
+          value = value.copyWith(isBuffering: false);
           break;
       }
     }
