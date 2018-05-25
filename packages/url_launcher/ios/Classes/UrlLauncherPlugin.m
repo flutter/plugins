@@ -37,8 +37,6 @@
 
 - (void)safariViewControllerDidFinish:(SFSafariViewController *)controller {
   [controller dismissViewControllerAnimated:YES completion:nil];
-  _url = nil;
-  _flutterResult = nil;
 }
 
 @end

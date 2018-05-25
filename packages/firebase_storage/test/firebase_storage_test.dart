@@ -277,9 +277,10 @@ void main() {
                 };
                 break;
               case 'StorageReference#updateMetadata':
-                return <String, String>{
+                return <String, dynamic>{
                   'name': 'image.jpg',
-                  'contentLanguage': 'en'
+                  'contentLanguage': 'en',
+                  'customMetadata': <String, String>{'activity': 'test'},
                 };
                 break;
               default:
@@ -291,8 +292,10 @@ void main() {
         });
 
         test('invokes correct method', () async {
-          await ref
-              .updateMetadata(const StorageMetadata(contentLanguage: 'en'));
+          await ref.updateMetadata(new StorageMetadata(
+            contentLanguage: 'en',
+            customMetadata: <String, String>{'activity': 'test'},
+          ));
 
           expect(log, <Matcher>[
             isMethodCall(
@@ -301,12 +304,13 @@ void main() {
                 'app': 'testApp',
                 'bucket': 'gs://fake-storage-bucket-url.com',
                 'path': 'avatars/large/image.jpg',
-                'metadata': <String, String>{
+                'metadata': <String, dynamic>{
                   'cacheControl': null,
                   'contentDisposition': null,
                   'contentLanguage': 'en',
                   'contentType': null,
-                  'contentEncoding': null
+                  'contentEncoding': null,
+                  'customMetadata': <String, String>{'activity': 'test'},
                 },
               },
             ),
@@ -317,7 +321,7 @@ void main() {
           expect((await ref.getMetadata()).contentLanguage, null);
           expect(
               (await ref.updateMetadata(
-                      const StorageMetadata(contentLanguage: 'en')))
+                      new StorageMetadata(contentLanguage: 'en')))
                   .contentLanguage,
               'en');
         });

@@ -114,8 +114,10 @@ public class VideoPlayerPlugin implements MethodCallHandler {
           new MediaPlayer.OnErrorListener() {
             @Override
             public boolean onError(MediaPlayer mp, int what, int extra) {
-              eventSink.error(
-                  "VideoError", "Video player had error " + what + " extra " + extra, null);
+              if (eventSink != null) {
+                eventSink.error(
+                    "VideoError", "Video player had error " + what + " extra " + extra, null);
+              }
               return true;
             }
           });
@@ -127,6 +129,29 @@ public class VideoPlayerPlugin implements MethodCallHandler {
               Map<String, Object> event = new HashMap<>();
               event.put("event", "completed");
               eventSink.success(event);
+            }
+          });
+
+      mediaPlayer.setOnInfoListener(
+          new MediaPlayer.OnInfoListener() {
+            @Override
+            public boolean onInfo(MediaPlayer mediaPlayer, int what, int extra) {
+              Map<String, Object> event = new HashMap<>();
+              switch (what) {
+                case MediaPlayer.MEDIA_INFO_BUFFERING_START:
+                  {
+                    event.put("event", "bufferingStart");
+                    eventSink.success(event);
+                    return true;
+                  }
+                case MediaPlayer.MEDIA_INFO_BUFFERING_END:
+                  {
+                    event.put("event", "bufferingEnd");
+                    eventSink.success(event);
+                    return true;
+                  }
+              }
+              return false;
             }
           });
 

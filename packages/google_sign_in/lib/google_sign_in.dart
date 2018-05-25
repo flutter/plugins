@@ -146,7 +146,9 @@ class GoogleSignIn {
   ///
   /// The list of [scopes] are OAuth scope codes to request when signing in.
   /// These scope codes will determine the level of data access that is granted
-  /// to your application by the user.
+  /// to your application by the user. The full list of available scopes can
+  /// be found here:
+  /// <https://developers.google.com/identity/protocols/googlescopes>
   ///
   /// The [hostedDomain] argument specifies a hosted domain restriction. By
   /// setting this, sign in will be restricted to accounts of the user in the

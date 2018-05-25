@@ -1,6 +1,15 @@
+## 0.5.3
+
+* Added video buffering status.
+
+## 0.5.2
+
+* Fixed a bug on iOS that could lead to missing initialization.
+* Added support for HLS video on iOS.
+
 ## 0.5.1
 
-* Fixed bug on video loop feature for ios.
+* Fixed bug on video loop feature for iOS.
 
 ## 0.5.0
 
