@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-@import UIKit;
-
 #import "ImagePickerPlugin.h"
+
+#import <MobileCoreServices/MobileCoreServices.h>
+#import <Photos/Photos.h>
+#import <UIKit/UIKit.h>
 
 @interface FLTImagePickerPlugin ()<UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 @end
@@ -50,6 +52,7 @@ static const int SOURCE_GALLERY = 1;
   if ([@"pickImage" isEqualToString:call.method]) {
     _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
     _imagePickerController.delegate = self;
+    _imagePickerController.mediaTypes = @[ (NSString *)kUTTypeImage ];
 
     _result = result;
     _arguments = call.arguments;
@@ -66,6 +69,33 @@ static const int SOURCE_GALLERY = 1;
       default:
         result([FlutterError errorWithCode:@"invalid_source"
                                    message:@"Invalid image source."
+                                   details:nil]);
+        break;
+    }
+  } else if ([@"pickVideo" isEqualToString:call.method]) {
+    _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
+    _imagePickerController.delegate = self;
+    _imagePickerController.mediaTypes = @[
+      (NSString *)kUTTypeMovie, (NSString *)kUTTypeAVIMovie, (NSString *)kUTTypeVideo,
+      (NSString *)kUTTypeMPEG4
+    ];
+    _imagePickerController.videoQuality = UIImagePickerControllerQualityTypeHigh;
+
+    _result = result;
+    _arguments = call.arguments;
+
+    int imageSource = [[_arguments objectForKey:@"source"] intValue];
+
+    switch (imageSource) {
+      case SOURCE_CAMERA:
+        [self showCamera];
+        break;
+      case SOURCE_GALLERY:
+        [self showPhotoLibrary];
+        break;
+      default:
+        result([FlutterError errorWithCode:@"invalid_source"
+                                   message:@"Invalid video source."
                                    details:nil]);
         break;
     }
@@ -96,34 +126,52 @@ static const int SOURCE_GALLERY = 1;
 
 - (void)imagePickerController:(UIImagePickerController *)picker
     didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info {
-  [_imagePickerController dismissViewControllerAnimated:YES completion:nil];
+  NSURL *videoURL = [info objectForKey:UIImagePickerControllerMediaURL];
   UIImage *image = [info objectForKey:UIImagePickerControllerEditedImage];
-  if (image == nil) {
-    image = [info objectForKey:UIImagePickerControllerOriginalImage];
-  }
-  image = [self normalizedImage:image];
+  [_imagePickerController dismissViewControllerAnimated:YES completion:nil];
 
-  NSNumber *maxWidth = [_arguments objectForKey:@"maxWidth"];
-  NSNumber *maxHeight = [_arguments objectForKey:@"maxHeight"];
+  if (videoURL != nil) {
+    NSData *data = [NSData dataWithContentsOfURL:videoURL];
+    NSString *guid = [[NSProcessInfo processInfo] globallyUniqueString];
+    NSString *tmpFile = [NSString stringWithFormat:@"image_picker_%@.MOV", guid];
+    NSString *tmpDirectory = NSTemporaryDirectory();
+    NSString *tmpPath = [tmpDirectory stringByAppendingPathComponent:tmpFile];
 
-  if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
-    image = [self scaledImage:image maxWidth:maxWidth maxHeight:maxHeight];
-  }
-
-  NSData *data = UIImageJPEGRepresentation(image, 1.0);
-  NSString *tmpDirectory = NSTemporaryDirectory();
-  NSString *guid = [[NSProcessInfo processInfo] globallyUniqueString];
-  // TODO(jackson): Using the cache directory might be better than temporary
-  // directory.
-  NSString *tmpFile = [NSString stringWithFormat:@"image_picker_%@.jpg", guid];
-  NSString *tmpPath = [tmpDirectory stringByAppendingPathComponent:tmpFile];
-  if ([[NSFileManager defaultManager] createFileAtPath:tmpPath contents:data attributes:nil]) {
-    _result(tmpPath);
+    if ([[NSFileManager defaultManager] createFileAtPath:tmpPath contents:data attributes:nil]) {
+      _result(tmpPath);
+    } else {
+      _result([FlutterError errorWithCode:@"create_error"
+                                  message:@"Temporary file could not be created"
+                                  details:nil]);
+    }
   } else {
-    _result([FlutterError errorWithCode:@"create_error"
-                                message:@"Temporary file could not be created"
-                                details:nil]);
+    if (image == nil) {
+      image = [info objectForKey:UIImagePickerControllerOriginalImage];
+    }
+    image = [self normalizedImage:image];
+
+    NSNumber *maxWidth = [_arguments objectForKey:@"maxWidth"];
+    NSNumber *maxHeight = [_arguments objectForKey:@"maxHeight"];
+
+    if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
+      image = [self scaledImage:image maxWidth:maxWidth maxHeight:maxHeight];
+    }
+
+    NSData *data = UIImageJPEGRepresentation(image, 1.0);
+    NSString *guid = [[NSProcessInfo processInfo] globallyUniqueString];
+    NSString *tmpFile = [NSString stringWithFormat:@"image_picker_%@.jpg", guid];
+    NSString *tmpDirectory = NSTemporaryDirectory();
+    NSString *tmpPath = [tmpDirectory stringByAppendingPathComponent:tmpFile];
+
+    if ([[NSFileManager defaultManager] createFileAtPath:tmpPath contents:data attributes:nil]) {
+      _result(tmpPath);
+    } else {
+      _result([FlutterError errorWithCode:@"create_error"
+                                  message:@"Temporary file could not be created"
+                                  details:nil]);
+    }
   }
+
   _result = nil;
   _arguments = nil;
 }
