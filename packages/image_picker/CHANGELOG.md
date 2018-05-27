@@ -1,3 +1,8 @@
+## 0.4.2
+
+* Added support for picking videos.
+* Updated example app to show video preview.
+
 ## 0.4.1
 
 * Bugfix: the `pickImage` method will now return null when the user cancels picking the image, instead of hanging indefinitely.

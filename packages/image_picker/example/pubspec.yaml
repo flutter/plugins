@@ -2,6 +2,7 @@ name: image_picker_example
 description: Demonstrates how to use the image_picker plugin.
 
 dependencies:
+  video_player: "0.5.2"
   flutter:
     sdk: flutter
   image_picker:
