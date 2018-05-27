@@ -1,3 +1,7 @@
+## 3.0.4
+
+* Updated Gradle tooling to match Android Studio 3.1.2.
+
 ## 3.0.3+1
 
 * Added documentation on where to find the list of available scopes.

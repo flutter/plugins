@@ -1,3 +1,7 @@
+## 0.5.5
+
+* Updated Gradle tooling to match Android Studio 3.1.2.
+
 ## 0.5.4+1
 
 * Graduate to beta.

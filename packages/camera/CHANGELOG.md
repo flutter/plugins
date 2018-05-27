@@ -1,3 +1,7 @@
+## 0.2.1
+
+* Updated Gradle tooling to match Android Studio 3.1.2.
+
 ## 0.2.0
 
 * Added support for video recording.

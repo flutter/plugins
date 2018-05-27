@@ -1,3 +1,7 @@
+## 0.3.7
+
+* Updated Gradle tooling to match Android Studio 3.1.2.
+
 ## 0.3.6
 
 * Added support for custom metadata.
