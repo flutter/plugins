@@ -160,8 +160,7 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
       String ipadFallbackUrl = valueFor("ipadFallbackUrl", iosParameters);
       String minimumVersion = valueFor("minimumVersion", iosParameters);
 
-      DynamicLink.IosParameters.Builder builder =
-          new DynamicLink.IosParameters.Builder(bundleId);
+      DynamicLink.IosParameters.Builder builder = new DynamicLink.IosParameters.Builder(bundleId);
 
       if (appStoreId != null) builder.setAppStoreId(appStoreId);
       if (customScheme != null) builder.setCustomScheme(customScheme);
@@ -192,15 +191,12 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
 
     Map<String, Object> navigationInfoParameters = call.argument("navigationInfoParameters");
     if (navigationInfoParameters != null) {
-      Boolean forcedRedirectEnabled =
-          valueFor("forcedRedirectEnabled", navigationInfoParameters);
+      Boolean forcedRedirectEnabled = valueFor("forcedRedirectEnabled", navigationInfoParameters);
 
       DynamicLink.NavigationInfoParameters.Builder builder =
           new DynamicLink.NavigationInfoParameters.Builder();
 
-      if (forcedRedirectEnabled != null) {
-        builder.setForcedRedirectEnabled(forcedRedirectEnabled);
-      }
+      if (forcedRedirectEnabled != null) builder.setForcedRedirectEnabled(forcedRedirectEnabled);
 
       dynamicLinkBuilder.setNavigationInfoParameters(builder.build());
     }
