@@ -18,5 +18,5 @@ Firebase Performance plugin for Flutter.
   s.dependency 'Firebase/Core'
   s.dependency 'Firebase/Performance'
   s.ios.deployment_target = '8.0'
+  s.static_framework = true
 end
-

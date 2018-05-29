@@ -32,6 +32,6 @@ android {
         disable 'InvalidPackage'
     }
     dependencies {
-        api 'com.google.firebase:firebase-perf:15.0.0'
+        api 'com.google.firebase:firebase-perf:15.+'
     }
 }
