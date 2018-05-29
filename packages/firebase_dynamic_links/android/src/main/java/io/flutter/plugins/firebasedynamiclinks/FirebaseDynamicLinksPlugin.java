@@ -117,11 +117,12 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
 
     Map<String, Object> androidParameters = call.argument("androidParameters");
     if (androidParameters != null) {
-      DynamicLink.AndroidParameters.Builder builder =
-          new DynamicLink.AndroidParameters.Builder((String) androidParameters.get("packageName"));
+      String packageName = valueFor("packageName", androidParameters);
+      String fallbackUrl = valueFor("fallbackUrl", androidParameters);
+      Integer minimumVersion = valueFor("minimumVersion", androidParameters);
 
-      String fallbackUrl = (String) androidParameters.get("fallbackUrl");
-      Integer minimumVersion = (Integer) androidParameters.get("minimumVersion");
+      DynamicLink.AndroidParameters.Builder builder =
+          new DynamicLink.AndroidParameters.Builder(packageName);
 
       if (fallbackUrl != null) builder.setFallbackUrl(Uri.parse(fallbackUrl));
       if (minimumVersion != null) builder.setMinimumVersion(minimumVersion);
@@ -131,11 +132,11 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
 
     Map<String, Object> googleAnalyticsParameters = call.argument("googleAnalyticsParameters");
     if (googleAnalyticsParameters != null) {
-      String campaign = (String) googleAnalyticsParameters.get("campaign");
-      String content = (String) googleAnalyticsParameters.get("content");
-      String medium = (String) googleAnalyticsParameters.get("medium");
-      String source = (String) googleAnalyticsParameters.get("source");
-      String term = (String) googleAnalyticsParameters.get("term");
+      String campaign = valueFor("campaign", googleAnalyticsParameters);
+      String content = valueFor("content", googleAnalyticsParameters);
+      String medium = valueFor("medium", googleAnalyticsParameters);
+      String source = valueFor("source", googleAnalyticsParameters);
+      String term = valueFor("term", googleAnalyticsParameters);
 
       DynamicLink.GoogleAnalyticsParameters.Builder builder =
           new DynamicLink.GoogleAnalyticsParameters.Builder();
@@ -151,15 +152,16 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
 
     Map<String, Object> iosParameters = call.argument("iosParameters");
     if (iosParameters != null) {
-      String appStoreId = (String) iosParameters.get("appStoreId");
-      String customScheme = (String) iosParameters.get("customScheme");
-      String fallbackUrl = (String) iosParameters.get("fallbackUrl");
-      String ipadBundleId = (String) iosParameters.get("ipadBundleId");
-      String ipadFallbackUrl = (String) iosParameters.get("ipadFallbackUrl");
-      String minimumVersion = (String) iosParameters.get("minimumVersion");
+      String bundleId = valueFor("bundleId", iosParameters);
+      String appStoreId = valueFor("appStoreId", iosParameters);
+      String customScheme = valueFor("customScheme", iosParameters);
+      String fallbackUrl = valueFor("fallbackUrl", iosParameters);
+      String ipadBundleId = valueFor("ipadBundleId", iosParameters);
+      String ipadFallbackUrl = valueFor("ipadFallbackUrl", iosParameters);
+      String minimumVersion = valueFor("minimumVersion", iosParameters);
 
       DynamicLink.IosParameters.Builder builder =
-          new DynamicLink.IosParameters.Builder((String) iosParameters.get("bundleId"));
+          new DynamicLink.IosParameters.Builder(bundleId);
 
       if (appStoreId != null) builder.setAppStoreId(appStoreId);
       if (customScheme != null) builder.setCustomScheme(customScheme);
@@ -174,9 +176,9 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
     Map<String, Object> itunesConnectAnalyticsParameters =
         call.argument("itunesConnectAnalyticsParameters");
     if (itunesConnectAnalyticsParameters != null) {
-      String affiliateToken = (String) itunesConnectAnalyticsParameters.get("affiliateToken");
-      String campaignToken = (String) itunesConnectAnalyticsParameters.get("campaignToken");
-      String providerToken = (String) itunesConnectAnalyticsParameters.get("providerToken");
+      String affiliateToken = valueFor("affiliateToken", itunesConnectAnalyticsParameters);
+      String campaignToken = valueFor("campaignToken", itunesConnectAnalyticsParameters);
+      String providerToken = valueFor("providerToken", itunesConnectAnalyticsParameters);
 
       DynamicLink.ItunesConnectAnalyticsParameters.Builder builder =
           new DynamicLink.ItunesConnectAnalyticsParameters.Builder();
@@ -191,7 +193,7 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
     Map<String, Object> navigationInfoParameters = call.argument("navigationInfoParameters");
     if (navigationInfoParameters != null) {
       Boolean forcedRedirectEnabled =
-          (Boolean) navigationInfoParameters.get("forcedRedirectEnabled");
+          valueFor("forcedRedirectEnabled", navigationInfoParameters);
 
       DynamicLink.NavigationInfoParameters.Builder builder =
           new DynamicLink.NavigationInfoParameters.Builder();
@@ -205,9 +207,9 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
 
     Map<String, Object> socialMetaTagParameters = call.argument("socialMetaTagParameters");
     if (socialMetaTagParameters != null) {
-      String description = (String) socialMetaTagParameters.get("description");
-      String imageUrl = (String) socialMetaTagParameters.get("imageUrl");
-      String title = (String) socialMetaTagParameters.get("title");
+      String description = valueFor("description", socialMetaTagParameters);
+      String imageUrl = valueFor("imageUrl", socialMetaTagParameters);
+      String title = valueFor("title", socialMetaTagParameters);
 
       DynamicLink.SocialMetaTagParameters.Builder builder =
           new DynamicLink.SocialMetaTagParameters.Builder();
@@ -220,5 +222,11 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
     }
 
     return dynamicLinkBuilder;
+  }
+
+  private static <T> T valueFor(String key, Map<String, Object> map) {
+    @SuppressWarnings("unchecked")
+    T result = (T) map.get(key);
+    return result;
   }
 }

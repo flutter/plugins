@@ -16,7 +16,6 @@ void main() {
           .setMockMethodCallHandler((MethodCall methodCall) async {
         log.add(methodCall);
         final Map<dynamic, dynamic> returnUrl = <dynamic, dynamic>{
-          'success': 1,
           'url': 'google.com',
           'warnings': <dynamic>['This is only a test link'],
         };
