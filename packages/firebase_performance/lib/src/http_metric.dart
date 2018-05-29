@@ -5,7 +5,7 @@
 part of firebase_performance;
 
 /// Metric used to collect data for network requests/responses.
-class HttpMetric {
+class HttpMetric extends PerformanceAttributable {
   HttpMetric._(this._handle, this._url, this._httpMethod);
 
   final int _handle;
@@ -14,8 +14,6 @@ class HttpMetric {
 
   bool _hasStarted = false;
   bool _hasStopped = false;
-
-  final HashMap<String, String> _attributes = new HashMap<String, String>();
 
   /// HttpResponse code of the request
   int httpResponseCode;
@@ -28,10 +26,6 @@ class HttpMetric {
 
   /// Size of the response payload
   int responsePayloadSize;
-
-  /// All the attributes added.
-  Map<String, String> get attributes =>
-      Map<String, String>.unmodifiable(_attributes);
 
   /// Starts this httpMetric.
   ///
@@ -72,36 +66,27 @@ class HttpMetric {
   /// Sets a String [value] for the specified [attribute].
   ///
   /// Updates the value of the attribute if the attribute already exists. If the
-  /// [HttpMetric] has been stopped, this method returns without adding the
-  /// attribute. The maximum number of attributes that can be added to a
-  /// [HttpMetric] are [Trace.maxTraceCustomAttributes].
+  /// trace has been stopped, this method returns without adding the attribute.
+  /// The maximum number of attributes that can be added to a Trace are
+  /// [PerformanceAttributable.maxTraceCustomAttributes].
   ///
-  /// Name of the attribute has max length of [Trace.maxAttributeKeyLength]
-  /// characters. Value of the attribute has max length of
-  /// [Trace.maxAttributeValueLength] characters.
+  /// Name of the attribute has max length of
+  /// [PerformanceAttributable.maxAttributeKeyLength] characters. Value of the
+  /// attribute has max length of
+  /// [PerformanceAttributable.maxAttributeValueLength] characters.
+  @override
   void putAttribute(String attribute, String value) {
     assert(!_hasStopped);
-    assert(attribute != null);
-    assert(!attribute.startsWith(new RegExp(r'[_\s]')));
-    assert(!attribute.contains(new RegExp(r'[_\s]$')));
-    assert(attribute.length <= Trace.maxAttributeKeyLength);
-    assert(value.length <= Trace.maxAttributeValueLength);
-    assert(_attributes.length < Trace.maxTraceCustomAttributes);
-
-    _attributes.putIfAbsent(attribute, () => value);
-    _attributes[attribute] = value;
+    super.putAttribute(attribute, value);
   }
 
   /// Removes an already added [attribute].
   ///
-  /// If the [HttpMetric] has been stopped, this method throws an assertion
+  /// If the trace has been stopped, this method throws an assertion
   /// error.
+  @override
   void removeAttribute(String attribute) {
     assert(!_hasStopped);
-
-    _attributes.remove(attribute);
+    super.removeAttribute(attribute);
   }
-
-  /// Returns the value of an [attribute].
-  String getAttribute(String attribute) => _attributes[attribute];
 }

@@ -5,22 +5,13 @@
 part of firebase_performance;
 
 /// Trace allows you to set beginning and end of a certain action in your app.
-class Trace {
+class Trace extends PerformanceAttributable {
   Trace._(this._handle, this._name) {
     assert(_name != null);
     assert(!_name.startsWith(new RegExp(r'[_\s]')));
     assert(!_name.contains(new RegExp(r'[_\s]$')));
     assert(_name.length <= maxTraceNameLength);
   }
-
-  /// Maximum allowed length of a key passed to [putAttribute].
-  static const int maxAttributeKeyLength = 40;
-
-  /// Maximum allowed length of a value passed to [putAttribute].
-  static const int maxAttributeValueLength = 100;
-
-  /// Maximum allowed number of attributes that can be added.
-  static const int maxTraceCustomAttributes = 5;
 
   /// Maximum allowed length of the name of a [Trace].
   static const int maxTraceNameLength = 100;
@@ -32,11 +23,6 @@ class Trace {
   bool _hasStopped = false;
 
   final HashMap<String, int> _counters = new HashMap<String, int>();
-  final HashMap<String, String> _attributes = new HashMap<String, String>();
-
-  /// All the attributes added to this trace.
-  Map<String, String> get attributes =>
-      Map<String, String>.unmodifiable(_attributes);
 
   /// Starts this trace.
   ///
@@ -97,34 +83,25 @@ class Trace {
   /// Updates the value of the attribute if the attribute already exists. If the
   /// trace has been stopped, this method returns without adding the attribute.
   /// The maximum number of attributes that can be added to a Trace are
-  /// [maxTraceCustomAttributes].
+  /// [PerformanceAttributable.maxTraceCustomAttributes].
   ///
-  /// Name of the attribute has max length of [maxAttributeKeyLength]
-  /// characters. Value of the attribute has max length of
-  /// [maxAttributeValueLength] characters.
+  /// Name of the attribute has max length of
+  /// [PerformanceAttributable.maxAttributeKeyLength] characters. Value of the
+  /// attribute has max length of
+  /// [PerformanceAttributable.maxAttributeValueLength] characters.
+  @override
   void putAttribute(String attribute, String value) {
     assert(!_hasStopped);
-    assert(attribute != null);
-    assert(!attribute.startsWith(new RegExp(r'[_\s]')));
-    assert(!attribute.contains(new RegExp(r'[_\s]$')));
-    assert(attribute.length <= maxAttributeKeyLength);
-    assert(value.length <= maxAttributeValueLength);
-    assert(_attributes.length < maxTraceCustomAttributes);
-
-    _attributes.putIfAbsent(attribute, () => value);
-    _attributes[attribute] = value;
+    super.putAttribute(attribute, value);
   }
 
   /// Removes an already added [attribute].
   ///
   /// If the trace has been stopped, this method throws an assertion
   /// error.
+  @override
   void removeAttribute(String attribute) {
     assert(!_hasStopped);
-
-    _attributes.remove(attribute);
+    super.removeAttribute(attribute);
   }
-
-  /// Returns the value of an [attribute].
-  String getAttribute(String attribute) => _attributes[attribute];
 }
