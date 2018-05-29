@@ -1,0 +1,12 @@
+name: firebase_dynamic_links_example
+description: Demonstrates how to use the firebase_dynamic_links plugin.
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  firebase_dynamic_links:
+    path: ../
+
+flutter:
+  uses-material-design: true
