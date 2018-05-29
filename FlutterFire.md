@@ -19,6 +19,7 @@ The plugins are still under development, and some APIs might not be available ye
 | [firebase_auth][auth_pub] | ![pub package][auth_badge] | [Firebase Authentication][auth_product] | [`packages/firebase_auth`][auth_code] |
 | [firebase_core][core_pub] | ![pub package][core_badge] | [Firebase Core][core_product] | [`packages/firebase_core`][core_code] |
 | [firebase_database][database_pub] | ![pub package][database_badge] | [Firebase Realtime Database][database_product] | [`packages/firebase_database`][database_code] |
+| [firebase_dynamic_links][dynamic_links_pub] | ![pub package][dynamic_links_badge] | [Firebase Dynamic Links][dynamic_links_product] | [`packages/firebase_dynamic_links`][dynamic_links_code] |
 | [cloud_firestore][firestore_pub] | ![pub package][firestore_badge] | [Cloud Firestore][firestore_product] | [`packages/cloud_firestore`][firestore_code] |
 | [firebase_messaging][messaging_pub] | ![pub package][messaging_badge] | [Firebase Cloud Messaging][messaging_product] | [`packages/firebase_messaging`][messaging_code] |
 | [firebase_storage][storage_pub] | ![pub package][storage_badge] | [Firebase Cloud Storage][storage_product] | [`packages/firebase_storage`][storage_code] |
@@ -74,3 +75,8 @@ The plugins are still under development, and some APIs might not be available ye
 [remote_config_product]: https://firebase.google.com/products/remote-config/
 [remote_config_code]: https://github.com/flutter/plugins/tree/master/packages/firebase_remote_config
 [remote_config_badge]: https://img.shields.io/pub/v/firebase_remote_config.svg
+
+[dynamic_links_pub]: https://pub.dartlang.org/packages/firebase_dynamic_links
+[dynamic_links_product]: https://firebase.google.com/products/dynamic-links/
+[dynamic_links_code]: https://github.com/flutter/plugins/tree/master/packages/firebase_dynamic_links
+[dynamic_links_badge]: https://img.shields.io/pub/v/firebase_dynamic_links.svg
