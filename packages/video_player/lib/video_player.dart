@@ -52,6 +52,9 @@ class VideoPlayerValue {
   /// True if the video is looping.
   final bool isLooping;
 
+  /// True if the video is currently buffering.
+  final bool isBuffering;
+
   /// The current volume of the playback.
   final double volume;
 
@@ -72,6 +75,7 @@ class VideoPlayerValue {
     this.buffered: const <DurationRange>[],
     this.isPlaying: false,
     this.isLooping: false,
+    this.isBuffering: false,
     this.volume: 1.0,
     this.errorDescription,
   });
@@ -92,6 +96,7 @@ class VideoPlayerValue {
     List<DurationRange> buffered,
     bool isPlaying,
     bool isLooping,
+    bool isBuffering,
     double volume,
     String errorDescription,
   }) {
@@ -102,6 +107,7 @@ class VideoPlayerValue {
       buffered: buffered ?? this.buffered,
       isPlaying: isPlaying ?? this.isPlaying,
       isLooping: isLooping ?? this.isLooping,
+      isBuffering: isBuffering ?? this.isBuffering,
       volume: volume ?? this.volume,
       errorDescription: errorDescription ?? this.errorDescription,
     );
@@ -116,6 +122,7 @@ class VideoPlayerValue {
         'buffered: [${buffered.join(', ')}], '
         'isPlaying: $isPlaying, '
         'isLooping: $isLooping, '
+        'isBuffering: $isBuffering'
         'volume: $volume, '
         'errorDescription: $errorDescription)';
   }
@@ -229,6 +236,12 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           value = value.copyWith(
             buffered: values.map<DurationRange>(toDurationRange).toList(),
           );
+          break;
+        case 'bufferingStart':
+          value = value.copyWith(isBuffering: true);
+          break;
+        case 'bufferingEnd':
+          value = value.copyWith(isBuffering: false);
           break;
       }
     }

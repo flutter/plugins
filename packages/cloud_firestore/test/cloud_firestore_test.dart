@@ -42,9 +42,9 @@ void main() {
         switch (methodCall.method) {
           case 'Query#addSnapshotListener':
             final int handle = mockHandleId++;
-            // Wait for a microtask before sending a message back.
+            // Wait before sending a message back.
             // Otherwise the first request didn't have the time to finish.
-            scheduleMicrotask(() {
+            new Future<void>.delayed(Duration.zero).then<void>((_) {
               BinaryMessages.handlePlatformMessage(
                 Firestore.channel.name,
                 Firestore.channel.codec.encodeMethodCall(
@@ -69,9 +69,9 @@ void main() {
             return handle;
           case 'Query#addDocumentListener':
             final int handle = mockHandleId++;
-            // Wait for a microtask before sending a message back.
+            // Wait before sending a message back.
             // Otherwise the first request didn't have the time to finish.
-            scheduleMicrotask(() {
+            new Future<void>.delayed(Duration.zero).then<void>((_) {
               BinaryMessages.handlePlatformMessage(
                 Firestore.channel.name,
                 Firestore.channel.codec.encodeMethodCall(
