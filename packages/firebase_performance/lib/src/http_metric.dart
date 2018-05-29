@@ -4,6 +4,7 @@
 
 part of firebase_performance;
 
+/// Metric used to collect data for network requests/responses.
 class HttpMetric {
   HttpMetric._(this._handle, this._url, this._httpMethod);
 
