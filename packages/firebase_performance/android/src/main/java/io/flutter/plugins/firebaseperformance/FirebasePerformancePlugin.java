@@ -61,10 +61,8 @@ public class FirebasePerformancePlugin implements MethodCallHandler {
   }
 
   private void handleTraceStart(MethodCall call, Result result) {
-    Map<String, Object> arguments = call.arguments();
-
-    int handle = (int) arguments.get("handle");
-    String name = (String) arguments.get("name");
+    Integer handle = call.argument("handle");
+    String name = call.argument("name");
 
     Trace trace = firebasePerformance.newTrace(name);
 
@@ -75,19 +73,15 @@ public class FirebasePerformancePlugin implements MethodCallHandler {
   }
 
   private void handleTraceStop(MethodCall call, Result result) {
-    Map<String, Object> arguments = call.arguments();
-
-    int handle = (int) arguments.get("handle");
+    Integer handle = call.argument("handle");
     Trace trace = traces.get(handle);
 
-    @SuppressWarnings("unchecked")
-    Map<String, Integer> counters = (Map<String, Integer>) arguments.get("counters");
+    Map<String, Integer> counters = call.argument("counters");
     for (Map.Entry<String, Integer> entry : counters.entrySet()) {
       trace.incrementCounter(entry.getKey(), entry.getValue());
     }
 
-    @SuppressWarnings("unchecked")
-    Map<String, String> attributes = (Map<String, String>) arguments.get("attributes");
+    Map<String, String> attributes = call.argument("attributes");
     for (Map.Entry<String, String> entry : attributes.entrySet()) {
       trace.putAttribute(entry.getKey(), entry.getValue());
     }
@@ -98,12 +92,10 @@ public class FirebasePerformancePlugin implements MethodCallHandler {
   }
 
   private void handleHttpMetricStart(MethodCall call, Result result) {
-    Map<String, Object> arguments = call.arguments();
+    Integer handle = call.argument("handle");
+    String url = call.argument("url");
 
-    int handle = (int) arguments.get("handle");
-    String url = (String) arguments.get("url");
-
-    int httpMethod = (int) arguments.get("httpMethod");
+    int httpMethod = call.argument("httpMethod");
     String httpMethodStr;
     switch (httpMethod) {
       case 0:
@@ -147,15 +139,13 @@ public class FirebasePerformancePlugin implements MethodCallHandler {
   }
 
   private void handleHttpMetricStop(MethodCall call, Result result) {
-    Map<String, Object> arguments = call.arguments();
-
-    int handle = (int) arguments.get("handle");
+    Integer handle = call.argument("handle");
     HttpMetric metric = httpMetrics.get(handle);
 
-    Object httpResponseCode = arguments.get("httpResponseCode");
-    Object requestPayloadSize = arguments.get("requestPayloadSize");
-    Object responseContentType = arguments.get("responseContentType");
-    Object responsePayloadSize = arguments.get("responsePayloadSize");
+    Integer httpResponseCode = call.argument("httpResponseCode");
+    Object requestPayloadSize = call.argument("requestPayloadSize");
+    String responseContentType = call.argument("responseContentType");
+    Object responsePayloadSize = call.argument("responsePayloadSize");
 
     if (requestPayloadSize != null) {
       if (requestPayloadSize instanceof Integer) {
@@ -165,8 +155,8 @@ public class FirebasePerformancePlugin implements MethodCallHandler {
       }
     }
 
-    if (httpResponseCode != null) metric.setHttpResponseCode((int) httpResponseCode);
-    if (responseContentType != null) metric.setResponseContentType((String) responseContentType);
+    if (httpResponseCode != null) metric.setHttpResponseCode(httpResponseCode);
+    if (responseContentType != null) metric.setResponseContentType(responseContentType);
     if (responsePayloadSize != null) {
       if (responsePayloadSize instanceof Integer) {
         metric.setResponsePayloadSize((int) responsePayloadSize);
@@ -175,8 +165,7 @@ public class FirebasePerformancePlugin implements MethodCallHandler {
       }
     }
 
-    @SuppressWarnings("unchecked")
-    Map<String, String> attributes = (Map<String, String>) arguments.get("attributes");
+    Map<String, String> attributes = call.argument("attributes");
     for (Map.Entry<String, String> entry : attributes.entrySet()) {
       metric.putAttribute(entry.getKey(), entry.getValue());
     }
