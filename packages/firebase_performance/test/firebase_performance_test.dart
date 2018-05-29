@@ -176,7 +176,7 @@ void main() {
       });
 
       test('incrementCounter', () async {
-        final Trace trace = performance.newTrace("test");
+        final Trace trace = performance.newTrace('test');
         trace.incrementCounter('counter1');
 
         trace.incrementCounter('counter2');
