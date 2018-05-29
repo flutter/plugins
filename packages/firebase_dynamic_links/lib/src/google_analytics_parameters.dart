@@ -12,7 +12,9 @@ class GoogleAnalyticsParameters {
     @required this.medium,
     @required this.source,
     this.term,
-  });
+  })  : assert(campaign != null),
+        assert(medium != null),
+        assert(source != null);
 
   GoogleAnalyticsParameters.empty()
       : campaign = null,

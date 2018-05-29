@@ -7,7 +7,8 @@ part of firebase_dynamic_links;
 /// The Dynamic Link Android parameters.
 class AndroidParameters {
   AndroidParameters(
-      {this.fallbackUrl, this.minimumVersion, @required this.packageName});
+      {this.fallbackUrl, this.minimumVersion, @required this.packageName})
+      : assert(packageName != null);
 
   /// The link to open when the app isn’t installed.
   ///

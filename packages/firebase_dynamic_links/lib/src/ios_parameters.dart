@@ -14,7 +14,7 @@ class IosParameters {
     this.ipadBundleId,
     this.ipadFallbackUrl,
     this.minimumVersion,
-  });
+  }) : assert(bundleId != null);
 
   /// The appStore ID of the iOS app in AppStore.
   final String appStoreId;

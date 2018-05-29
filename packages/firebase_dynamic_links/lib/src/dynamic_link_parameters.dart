@@ -20,7 +20,8 @@ class DynamicLinkParameters {
     @required this.link,
     this.navigationInfoParameters,
     this.socialMetaTagParameters,
-  });
+  })  : assert(domain != null),
+        assert(link != null);
 
   /// Applies Android parameters to a generated Dynamic Link URL.
   final AndroidParameters androidParameters;
