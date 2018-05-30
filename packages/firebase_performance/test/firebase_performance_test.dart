@@ -7,6 +7,8 @@ import 'package:flutter/services.dart';
 import 'package:firebase_performance/firebase_performance.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+class MockPerformanceAttributable extends PerformanceAttributable {}
+
 void main() {
   group('$FirebasePerformance', () {
     final FirebasePerformance performance = FirebasePerformance.instance;
@@ -214,44 +216,6 @@ void main() {
           ),
         ]);
       });
-
-      test('putAttribute', () async {
-        testTrace.putAttribute('attr1', 'apple');
-        testTrace.putAttribute('attr2', 'are');
-        expect(testTrace.attributes, <String, String>{
-          'attr1': 'apple',
-          'attr2': 'are',
-        });
-
-        testTrace.putAttribute('attr1', 'delicious');
-        expect(testTrace.attributes, <String, String>{
-          'attr1': 'delicious',
-          'attr2': 'are',
-        });
-      });
-
-      test('removeAttribute', () async {
-        testTrace.putAttribute('attr1', 'apple');
-        testTrace.putAttribute('attr2', 'are');
-        testTrace.removeAttribute('no-attr');
-        expect(testTrace.attributes, <String, String>{
-          'attr1': 'apple',
-          'attr2': 'are',
-        });
-
-        testTrace.removeAttribute('attr1');
-        expect(testTrace.attributes, <String, String>{
-          'attr2': 'are',
-        });
-      });
-
-      test('getAttribute', () {
-        testTrace.putAttribute('attr1', 'apple');
-        testTrace.putAttribute('attr2', 'are');
-        expect(testTrace.getAttribute('attr1'), 'apple');
-
-        expect(testTrace.getAttribute('attr3'), isNull);
-      });
     });
 
     group('$HttpMetric', () {
@@ -310,43 +274,51 @@ void main() {
           ),
         ]);
       });
+    });
+
+    group('$PerformanceAttributable', () {
+      PerformanceAttributable attributable;
+
+      setUp(() {
+        attributable = new MockPerformanceAttributable();
+      });
 
       test('putAttribute', () async {
-        testMetric.putAttribute('attr1', 'apple');
-        testMetric.putAttribute('attr2', 'are');
-        expect(testMetric.attributes, <String, String>{
+        attributable.putAttribute('attr1', 'apple');
+        attributable.putAttribute('attr2', 'are');
+        expect(attributable.attributes, <String, String>{
           'attr1': 'apple',
           'attr2': 'are',
         });
 
-        testMetric.putAttribute('attr1', 'delicious');
-        expect(testMetric.attributes, <String, String>{
+        attributable.putAttribute('attr1', 'delicious');
+        expect(attributable.attributes, <String, String>{
           'attr1': 'delicious',
           'attr2': 'are',
         });
       });
 
       test('removeAttribute', () async {
-        testMetric.putAttribute('attr1', 'apple');
-        testMetric.putAttribute('attr2', 'are');
-        testMetric.removeAttribute('no-attr');
-        expect(testMetric.attributes, <String, String>{
+        attributable.putAttribute('attr1', 'apple');
+        attributable.putAttribute('attr2', 'are');
+        attributable.removeAttribute('no-attr');
+        expect(attributable.attributes, <String, String>{
           'attr1': 'apple',
           'attr2': 'are',
         });
 
-        testMetric.removeAttribute('attr1');
-        expect(testMetric.attributes, <String, String>{
+        attributable.removeAttribute('attr1');
+        expect(attributable.attributes, <String, String>{
           'attr2': 'are',
         });
       });
 
       test('getAttribute', () {
-        testMetric.putAttribute('attr1', 'apple');
-        testMetric.putAttribute('attr2', 'are');
-        expect(testMetric.getAttribute('attr1'), 'apple');
+        attributable.putAttribute('attr1', 'apple');
+        attributable.putAttribute('attr2', 'are');
+        expect(attributable.getAttribute('attr1'), 'apple');
 
-        expect(testMetric.getAttribute('attr3'), isNull);
+        expect(attributable.getAttribute('attr3'), isNull);
       });
     });
   });
