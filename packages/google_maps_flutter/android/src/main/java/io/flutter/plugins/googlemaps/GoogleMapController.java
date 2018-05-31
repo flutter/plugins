@@ -98,6 +98,7 @@ final class GoogleMapController
   void setOnMarkerTappedListener(OnMarkerTappedListener listener) {
     this.onMarkerTappedListener = listener;
   }
+
   void setOnInfoWindowTappedListener(OnInfoWindowTappedListener listener) {
     this.onInfoWindowTappedListener = listener;
   }
