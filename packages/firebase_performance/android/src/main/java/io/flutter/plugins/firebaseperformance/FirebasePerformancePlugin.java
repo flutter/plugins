@@ -143,27 +143,14 @@ public class FirebasePerformancePlugin implements MethodCallHandler {
     HttpMetric metric = httpMetrics.get(handle);
 
     Integer httpResponseCode = call.argument("httpResponseCode");
-    Object requestPayloadSize = call.argument("requestPayloadSize");
+    Number requestPayloadSize = call.argument("requestPayloadSize");
     String responseContentType = call.argument("responseContentType");
-    Object responsePayloadSize = call.argument("responsePayloadSize");
+    Number responsePayloadSize = call.argument("responsePayloadSize");
 
-    if (requestPayloadSize != null) {
-      if (requestPayloadSize instanceof Integer) {
-        metric.setRequestPayloadSize((int) requestPayloadSize);
-      } else {
-        metric.setRequestPayloadSize((long) requestPayloadSize);
-      }
-    }
-
+    if (requestPayloadSize != null) metric.setRequestPayloadSize(requestPayloadSize.longValue());
     if (httpResponseCode != null) metric.setHttpResponseCode(httpResponseCode);
     if (responseContentType != null) metric.setResponseContentType(responseContentType);
-    if (responsePayloadSize != null) {
-      if (responsePayloadSize instanceof Integer) {
-        metric.setResponsePayloadSize((int) responsePayloadSize);
-      } else {
-        metric.setResponsePayloadSize((long) responsePayloadSize);
-      }
-    }
+    if (responsePayloadSize != null) metric.setResponsePayloadSize(responsePayloadSize.longValue());
 
     Map<String, String> attributes = call.argument("attributes");
     for (Map.Entry<String, String> entry : attributes.entrySet()) {
