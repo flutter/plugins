@@ -14,6 +14,10 @@
 }
 @end
 
+@interface FLTFirebaseDynamicLinksPlugin ()
+@property(nonatomic, retain) FIRDynamicLink *dynamicLink;
+@end
+
 @implementation FLTFirebaseDynamicLinksPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
@@ -21,6 +25,7 @@
                                   binaryMessenger:[registrar messenger]];
   FLTFirebaseDynamicLinksPlugin *instance = [[FLTFirebaseDynamicLinksPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
+  [registrar addApplicationDelegate:instance];
 }
 
 - (instancetype)init {
@@ -46,9 +51,22 @@
     [FIRDynamicLinkComponents shortenURL:url
                                  options:options
                               completion:[self createShortLinkCompletion:result]];
+  } else if ([@"FirebaseDynamicLinks#retrieveDynamicLink" isEqualToString:call.method]) {
+    result([[_dynamicLink url] absoluteString]);
   } else {
     result(FlutterMethodNotImplemented);
   }
+}
+
+- (BOOL)application:(UIApplication *)application
+continueUserActivity:(NSUserActivity *)userActivity
+ restorationHandler:(void (^)(NSArray *))restorationHandler {
+  BOOL handled = [[FIRDynamicLinks dynamicLinks] handleUniversalLink:userActivity.webpageURL
+            completion:^(FIRDynamicLink * _Nullable dynamicLink,
+                         NSError * _Nullable error) {
+              self.dynamicLink = dynamicLink;
+            }];
+  return handled;
 }
 
 - (FIRDynamicLinkShortenerCompletion)createShortLinkCompletion:(FlutterResult)result {
