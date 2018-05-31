@@ -37,6 +37,8 @@ class GoogleMapController extends ChangeNotifier {
   /// Callbacks to receive tap events for markers placed on this map.
   final ArgumentCallbacks<Marker> onMarkerTapped =
       new ArgumentCallbacks<Marker>();
+  final ArgumentCallbacks<Marker> onInfoWindowTapped =
+      new ArgumentCallbacks<Marker>();
 
   /// The configuration options most recently applied via controller
   /// initialization or [updateMapOptions].
@@ -82,6 +84,14 @@ class GoogleMapController extends ChangeNotifier {
 
   void _handleMethodCall(MethodCall call) {
     switch (call.method) {
+      case 'infowindow#onTap':
+        final String markerId = call.arguments['marker'];
+        final Marker marker = _markers[markerId];
+        if (marker != null) {
+          onInfoWindowTapped(marker);
+        }
+        break;
+
       case 'marker#onTap':
         final String markerId = call.arguments['marker'];
         final Marker marker = _markers[markerId];
