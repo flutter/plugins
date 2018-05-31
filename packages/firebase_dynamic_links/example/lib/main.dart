@@ -15,8 +15,25 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _linkMessage;
+  String _linkMessage = 'Not opened by dynamic link!';
   bool _isCreatingLink = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _retrieveDynamicLink();
+  }
+
+  Future<void> _retrieveDynamicLink() async {
+    final PendingDynamicLinkData data =
+        await FirebaseDynamicLinks.instance.retrieveDynamicLink();
+
+    setState(() {
+      if (data != null) {
+        _linkMessage = 'Deeplink: ${data.link.toString()}';
+      }
+    });
+  }
 
   Future<void> _createDynamicLink(bool short) async {
     setState(() {
@@ -33,7 +50,7 @@ class _MyAppState extends State<MyApp> {
         shortDynamicLinkPathLength: ShortDynamicLinkPathLength.short,
       ),
       iosParameters: new IosParameters(
-        bundleId: 'io.flutter.plugins.firebaseDynamicLinksExample',
+        bundleId: 'com.google.FirebaseCppDynamicLinksTestApp.dev',
       ),
     );
 

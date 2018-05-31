@@ -16,4 +16,13 @@ class FirebaseDynamicLinks {
 
   /// Singleton of [FirebaseDynamicLinks].
   static final FirebaseDynamicLinks instance = new FirebaseDynamicLinks._();
+
+  Future<PendingDynamicLinkData> retrieveDynamicLink() async {
+    final String reply =
+        await channel.invokeMethod("FirebaseDynamicLinks#retrieveDynamicLink");
+
+    if (reply == null) return null;
+
+    return PendingDynamicLinkData._(Uri.parse(reply));
+  }
 }
