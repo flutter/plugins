@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:firebase_performance/firebase_performance.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-class MockPerformanceAttributable extends PerformanceAttributable {}
+class MockPerformanceAttributes extends PerformanceAttributes {}
 
 void main() {
   group('$FirebasePerformance', () {
@@ -276,11 +276,11 @@ void main() {
       });
     });
 
-    group('$PerformanceAttributable', () {
-      PerformanceAttributable attributable;
+    group('$PerformanceAttributes', () {
+      PerformanceAttributes attributes;
 
       setUp(() {
-        attributable = new MockPerformanceAttributable();
+        attributes = new MockPerformanceAttributes();
       });
 
       test('putAttribute', () async {

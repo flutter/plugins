@@ -15,7 +15,7 @@ part of firebase_performance;
 ///
 /// Data collected is automatically sent to the associated Firebase console
 /// after stop() is called.
-class Trace extends PerformanceAttributable {
+class Trace extends PerformanceAttributes {
   Trace._(this._handle, this._name) {
     assert(_name != null);
     assert(!_name.startsWith(new RegExp(r'[_\s]')));
@@ -99,7 +99,7 @@ class Trace extends PerformanceAttributable {
   /// If the trace has been stopped, this method throws an assertion
   /// error.
   ///
-  /// See [PerformanceAttributable.putAttribute].
+  /// See [PerformanceAttributes.putAttribute].
   @override
   void putAttribute(String attribute, String value) {
     assert(!_hasStopped);
@@ -111,7 +111,7 @@ class Trace extends PerformanceAttributable {
   /// If the trace has been stopped, this method throws an assertion
   /// error.
   ///
-  /// See [PerformanceAttributable.removeAttribute].
+  /// See [PerformanceAttributes.removeAttribute].
   @override
   void removeAttribute(String attribute) {
     assert(!_hasStopped);

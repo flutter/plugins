@@ -12,5 +12,5 @@ import 'package:flutter/foundation.dart';
 
 part 'src/firebase_performance.dart';
 part 'src/http_metric.dart';
-part 'src/performance_attributable.dart';
+part 'src/performance_attributes.dart';
 part 'src/trace.dart';

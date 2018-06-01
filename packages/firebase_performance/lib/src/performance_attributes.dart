@@ -8,7 +8,7 @@ part of firebase_performance;
 ///
 /// Enforces constraints for adding attributes and values required by
 /// FirebasePerformance API. See [putAttribute].
-abstract class PerformanceAttributable {
+abstract class PerformanceAttributes {
   /// Maximum allowed length of a key passed to [putAttribute].
   static const int maxAttributeKeyLength = 40;
 

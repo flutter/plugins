@@ -12,7 +12,7 @@ part of firebase_performance;
 ///
 /// Data collected is automatically sent to the associated Firebase console
 /// after stop() is called.
-class HttpMetric extends PerformanceAttributable {
+class HttpMetric extends PerformanceAttributes {
   HttpMetric._(this._handle, this._url, this._httpMethod);
 
   final int _handle;
@@ -81,7 +81,7 @@ class HttpMetric extends PerformanceAttributable {
   /// If the httpmetric has been stopped, this method throws an assertion
   /// error.
   ///
-  /// See [PerformanceAttributable.putAttribute].
+  /// See [PerformanceAttributes.putAttribute].
   @override
   void putAttribute(String attribute, String value) {
     assert(!_hasStopped);
@@ -93,7 +93,7 @@ class HttpMetric extends PerformanceAttributable {
   /// If the httpmetric has been stopped, this method throws an assertion
   /// error.
   ///
-  /// See [PerformanceAttributable.removeAttribute].
+  /// See [PerformanceAttributes.removeAttribute].
   @override
   void removeAttribute(String attribute) {
     assert(!_hasStopped);
