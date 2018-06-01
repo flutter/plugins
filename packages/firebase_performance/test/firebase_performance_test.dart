@@ -284,41 +284,41 @@ void main() {
       });
 
       test('putAttribute', () async {
-        attributable.putAttribute('attr1', 'apple');
-        attributable.putAttribute('attr2', 'are');
-        expect(attributable.attributes, <String, String>{
+        attributes.putAttribute('attr1', 'apple');
+        attributes.putAttribute('attr2', 'are');
+        expect(attributes.attributes, <String, String>{
           'attr1': 'apple',
           'attr2': 'are',
         });
 
-        attributable.putAttribute('attr1', 'delicious');
-        expect(attributable.attributes, <String, String>{
+        attributes.putAttribute('attr1', 'delicious');
+        expect(attributes.attributes, <String, String>{
           'attr1': 'delicious',
           'attr2': 'are',
         });
       });
 
       test('removeAttribute', () async {
-        attributable.putAttribute('attr1', 'apple');
-        attributable.putAttribute('attr2', 'are');
-        attributable.removeAttribute('no-attr');
-        expect(attributable.attributes, <String, String>{
+        attributes.putAttribute('attr1', 'apple');
+        attributes.putAttribute('attr2', 'are');
+        attributes.removeAttribute('no-attr');
+        expect(attributes.attributes, <String, String>{
           'attr1': 'apple',
           'attr2': 'are',
         });
 
-        attributable.removeAttribute('attr1');
-        expect(attributable.attributes, <String, String>{
+        attributes.removeAttribute('attr1');
+        expect(attributes.attributes, <String, String>{
           'attr2': 'are',
         });
       });
 
       test('getAttribute', () {
-        attributable.putAttribute('attr1', 'apple');
-        attributable.putAttribute('attr2', 'are');
-        expect(attributable.getAttribute('attr1'), 'apple');
+        attributes.putAttribute('attr1', 'apple');
+        attributes.putAttribute('attr2', 'are');
+        expect(attributes.getAttribute('attr1'), 'apple');
 
-        expect(attributable.getAttribute('attr3'), isNull);
+        expect(attributes.getAttribute('attr3'), isNull);
       });
     });
   });
