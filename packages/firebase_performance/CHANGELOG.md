@@ -1,3 +1,7 @@
+## 0.0.4
+
+* Formatted code and removed unnecessary files.
+
 ## 0.0.3
 
 * Updated Gradle tooling to match Android Studio 3.1.2.
