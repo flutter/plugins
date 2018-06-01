@@ -4,7 +4,10 @@
 
 part of firebase_performance;
 
-/// Defines the interface that allows adding/removing attributes to any object.
+/// Abstract class that allows adding/removing attributes to any object.
+///
+/// Maintains constraints for adding attributes and values required by
+/// FirebasePerformance API. See [putAttribute].
 abstract class PerformanceAttributable {
   /// Maximum allowed length of a key passed to [putAttribute].
   static const int maxAttributeKeyLength = 40;
@@ -13,20 +16,19 @@ abstract class PerformanceAttributable {
   static const int maxAttributeValueLength = 100;
 
   /// Maximum allowed number of attributes that can be added.
-  static const int maxTraceCustomAttributes = 5;
+  static const int maxCustomAttributes = 5;
 
-  final HashMap<String, String> _attributes = new HashMap<String, String>();
+  final Map<String, String> _attributes = <String, String>{};
 
-  /// All the attributes added to this trace.
+  /// All the attributes added.
   Map<String, String> get attributes =>
       Map<String, String>.unmodifiable(_attributes);
 
   /// Sets a String [value] for the specified [attribute].
   ///
-  /// Updates the value of the attribute if the attribute already exists. If the
-  /// trace has been stopped, this method returns without adding the attribute.
-  /// The maximum number of attributes that can be added to a Trace are
-  /// [maxTraceCustomAttributes].
+  /// Updates the value of the attribute if the attribute already exists.
+  /// The maximum number of attributes that can be added are
+  /// [maxCustomAttributes].
   ///
   /// Name of the attribute has max length of [maxAttributeKeyLength]
   /// characters. Value of the attribute has max length of
@@ -37,16 +39,12 @@ abstract class PerformanceAttributable {
     assert(!attribute.contains(new RegExp(r'[_\s]$')));
     assert(attribute.length <= maxAttributeKeyLength);
     assert(value.length <= maxAttributeValueLength);
-    assert(_attributes.length < maxTraceCustomAttributes);
+    assert(_attributes.length < maxCustomAttributes);
 
-    _attributes.putIfAbsent(attribute, () => value);
     _attributes[attribute] = value;
   }
 
   /// Removes an already added [attribute].
-  ///
-  /// If the trace has been stopped, this method throws an assertion
-  /// error.
   void removeAttribute(String attribute) {
     _attributes.remove(attribute);
   }

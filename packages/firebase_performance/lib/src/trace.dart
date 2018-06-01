@@ -4,7 +4,17 @@
 
 part of firebase_performance;
 
-/// Trace allows you to set beginning and end of a certain action in your app.
+/// Trace allows you to set the beginning and end of a custom trace in your app.
+///
+/// A trace is a report of performance data associated with some of the
+/// code in your app. You can have multiple custom traces, and it is
+/// possible to have more than one custom trace running at a time. Each custom
+/// trace can have multiple counters and attributes added to help measure
+/// performance related events. A trace also measures the time between calling
+/// start() and stop().
+///
+/// Data collected is automatically sent to the associated Firebase console
+/// after stop() is called.
 class Trace extends PerformanceAttributable {
   Trace._(this._handle, this._name) {
     assert(_name != null);
@@ -26,6 +36,8 @@ class Trace extends PerformanceAttributable {
 
   /// Starts this trace.
   ///
+  /// Can only be called once, otherwise assertion error is thrown.
+  ///
   /// Using ```await``` with this method is only necessary when accurate timing
   /// is relevant.
   Future<void> start() {
@@ -40,6 +52,10 @@ class Trace extends PerformanceAttributable {
   }
 
   /// Stops this trace.
+  ///
+  /// Can only be called once and only after start(), otherwise assertion error
+  /// is thrown. Data collected is automatically sent to the associated Firebase
+  /// console after stop() is called.
   ///
   /// Not necessary to use ```await``` with this method.
   Future<void> stop() {
@@ -80,15 +96,10 @@ class Trace extends PerformanceAttributable {
 
   /// Sets a String [value] for the specified [attribute].
   ///
-  /// Updates the value of the attribute if the attribute already exists. If the
-  /// trace has been stopped, this method returns without adding the attribute.
-  /// The maximum number of attributes that can be added to a Trace are
-  /// [PerformanceAttributable.maxTraceCustomAttributes].
+  /// If the trace has been stopped, this method throws an assertion
+  /// error.
   ///
-  /// Name of the attribute has max length of
-  /// [PerformanceAttributable.maxAttributeKeyLength] characters. Value of the
-  /// attribute has max length of
-  /// [PerformanceAttributable.maxAttributeValueLength] characters.
+  /// See [PerformanceAttributable.putAttribute].
   @override
   void putAttribute(String attribute, String value) {
     assert(!_hasStopped);
@@ -99,6 +110,8 @@ class Trace extends PerformanceAttributable {
   ///
   /// If the trace has been stopped, this method throws an assertion
   /// error.
+  ///
+  /// See [PerformanceAttributable.removeAttribute].
   @override
   void removeAttribute(String attribute) {
     assert(!_hasStopped);

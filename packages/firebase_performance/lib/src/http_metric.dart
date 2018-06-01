@@ -5,6 +5,13 @@
 part of firebase_performance;
 
 /// Metric used to collect data for network requests/responses.
+///
+/// It is possible to have more than one httpmetric running at a time.
+/// Attributes can also be added to help measure performance related events. A
+/// httpmetric also measures the time between calling start() and stop().
+///
+/// Data collected is automatically sent to the associated Firebase console
+/// after stop() is called.
 class HttpMetric extends PerformanceAttributable {
   HttpMetric._(this._handle, this._url, this._httpMethod);
 
@@ -15,19 +22,21 @@ class HttpMetric extends PerformanceAttributable {
   bool _hasStarted = false;
   bool _hasStopped = false;
 
-  /// HttpResponse code of the request
+  /// HttpResponse code of the request.
   int httpResponseCode;
 
-  /// Size of the request payload
+  /// Size of the request payload.
   int requestPayloadSize;
 
   /// Content type of the response such as text/html, application/json, etc...
   String responseContentType;
 
-  /// Size of the response payload
+  /// Size of the response payload.
   int responsePayloadSize;
 
-  /// Starts this httpMetric.
+  /// Starts this httpmetric.
+  ///
+  /// Can only be called once, otherwise assertion error is thrown.
   ///
   /// Using ```await``` with this method is only necessary when accurate timing
   /// is relevant.
@@ -44,6 +53,10 @@ class HttpMetric extends PerformanceAttributable {
   }
 
   /// Stops this httpMetric.
+  ///
+  /// Can only be called once and only after start(), otherwise assertion error
+  /// is thrown. Data collected is automatically sent to the associated
+  /// Firebase console after stop() is called.
   ///
   /// Not necessary to use ```await``` with this method.
   Future<void> stop() {
@@ -65,15 +78,10 @@ class HttpMetric extends PerformanceAttributable {
 
   /// Sets a String [value] for the specified [attribute].
   ///
-  /// Updates the value of the attribute if the attribute already exists. If the
-  /// trace has been stopped, this method returns without adding the attribute.
-  /// The maximum number of attributes that can be added to a Trace are
-  /// [PerformanceAttributable.maxTraceCustomAttributes].
+  /// If the httpmetric has been stopped, this method throws an assertion
+  /// error.
   ///
-  /// Name of the attribute has max length of
-  /// [PerformanceAttributable.maxAttributeKeyLength] characters. Value of the
-  /// attribute has max length of
-  /// [PerformanceAttributable.maxAttributeValueLength] characters.
+  /// See [PerformanceAttributable.putAttribute].
   @override
   void putAttribute(String attribute, String value) {
     assert(!_hasStopped);
@@ -82,8 +90,10 @@ class HttpMetric extends PerformanceAttributable {
 
   /// Removes an already added [attribute].
   ///
-  /// If the trace has been stopped, this method throws an assertion
+  /// If the httpmetric has been stopped, this method throws an assertion
   /// error.
+  ///
+  /// See [PerformanceAttributable.removeAttribute].
   @override
   void removeAttribute(String attribute) {
     assert(!_hasStopped);
