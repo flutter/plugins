@@ -1,3 +1,7 @@
+## 0.5.4
+
+* Updated Gradle tooling to match Android Studio 3.1.2.
+
 ## 0.5.3
 
 * Added video buffering status.

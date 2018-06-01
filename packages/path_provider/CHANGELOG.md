@@ -1,3 +1,7 @@
+## 0.4.1
+
+* Updated Gradle tooling to match Android Studio 3.1.2.
+
 ## 0.4.0
 
 * **Breaking change**. Set SDK constraints to match the Flutter beta release.
