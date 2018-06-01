@@ -6,7 +6,7 @@ part of firebase_performance;
 
 /// Abstract class that allows adding/removing attributes to any object.
 ///
-/// Maintains constraints for adding attributes and values required by
+/// Enforces constraints for adding attributes and values required by
 /// FirebasePerformance API. See [putAttribute].
 abstract class PerformanceAttributable {
   /// Maximum allowed length of a key passed to [putAttribute].
@@ -22,7 +22,7 @@ abstract class PerformanceAttributable {
 
   /// All the attributes added.
   Map<String, String> get attributes =>
-      Map<String, String>.unmodifiable(_attributes);
+      Map<String, String>.from(_attributes);
 
   /// Sets a String [value] for the specified [attribute].
   ///
