@@ -77,8 +77,8 @@ class Trace extends PerformanceAttributes {
   ///
   /// The counter is incremented by 1 if [incrementBy] was not passed. If a
   /// counter does not already exist, a new one will be created. If the trace
-  /// has not been started or has already been stopped, returns immediately
-  /// without taking action.
+  /// has not been started or has already been stopped, an assertion error is
+  /// thrown.
   ///
   /// The name of the counter requires no leading or
   /// trailing whitespace, no leading underscore _ character, and max length of

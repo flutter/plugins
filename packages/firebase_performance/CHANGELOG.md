@@ -1,6 +1,6 @@
 ## 0.0.4
 
-* Formatted code and removed unnecessary files.
+* Formatted code, updated comments, and removed unnecessary files.
 
 ## 0.0.3
 

@@ -4,11 +4,7 @@
 
 part of firebase_performance;
 
-/// Valid HttpMethods for manual network APIs
-///
-/// ```dart
-/// HttpMethod method = HttpMethod.Connect;
-/// ```
+/// Valid HttpMethods for manual network APIs.
 enum HttpMethod { Connect, Delete, Get, Head, Options, Patch, Post, Put, Trace }
 
 /// The Firebase Performance API.
@@ -29,7 +25,7 @@ class FirebasePerformance {
 
   /// Determines whether performance monitoring is enabled or disabled.
   ///
-  /// true if performance monitoring is enabled and false if performance
+  /// True if performance monitoring is enabled and false if performance
   /// monitoring is disabled. This is for dynamic enable/disable state. This
   /// does not reflect whether instrumentation is enabled/disabled.
   Future<bool> isPerformanceCollectionEnabled() async {
@@ -40,9 +36,8 @@ class FirebasePerformance {
 
   /// Enables or disables performance monitoring.
   ///
-  /// Enables or disables performance monitoring. This setting is persisted and
-  /// applied on future invocations of your application. By default, performance
-  /// monitoring is enabled.
+  /// This setting is persisted and applied on future invocations of your
+  /// application. By default, performance monitoring is enabled.
   Future<void> setPerformanceCollectionEnabled(bool enable) async {
     await channel.invokeMethod(
         'FirebasePerformance#setPerformanceCollectionEnabled', enable);
