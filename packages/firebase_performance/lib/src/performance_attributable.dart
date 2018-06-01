@@ -20,9 +20,8 @@ abstract class PerformanceAttributable {
 
   final Map<String, String> _attributes = <String, String>{};
 
-  /// All the attributes added.
-  Map<String, String> get attributes =>
-      Map<String, String>.from(_attributes);
+  /// Copy of all the attributes added.
+  Map<String, String> get attributes => Map<String, String>.from(_attributes);
 
   /// Sets a String [value] for the specified [attribute].
   ///
