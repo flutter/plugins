@@ -1,3 +1,7 @@
+## 0.3.2
+
+* Updated Gradle tooling to match Android Studio 3.1.2.
+
 ## 0.3.1
 
 * Added `appName` field to `PackageInfo` for getting the display name of the app.

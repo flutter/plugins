@@ -1,8 +1,8 @@
 name: in_app_purchase
 description: A Flutter plugin for in-app purchases.
-version: 0.0.1
 author:  Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/in_app_purchase
+version: 0.0.1
 
 dependencies:
   flutter:

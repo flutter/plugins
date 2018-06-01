@@ -176,6 +176,14 @@ static const int SOURCE_GALLERY = 1;
   _arguments = nil;
 }
 
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
+  [_imagePickerController dismissViewControllerAnimated:YES completion:nil];
+  _result(nil);
+
+  _result = nil;
+  _arguments = nil;
+}
+
 // The way we save images to the tmp dir currently throws away all EXIF data
 // (including the orientation of the image). That means, pics taken in portrait
 // will not be orientated correctly as is. To avoid that, we rotate the actual

@@ -1,9 +1,9 @@
 name: path_provider
 description: Flutter plugin for getting commonly used locations on the Android &
   iOS file systems, such as the temp and app data directories.
-version: 0.4.0
 author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/path_provider
+version: 0.4.1
 
 flutter:
   plugin:
