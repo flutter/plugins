@@ -60,20 +60,23 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
   }
 
   private void handleRetrieveDynamicLink(final Result result) {
-    FirebaseDynamicLinks.getInstance().getDynamicLink(registrar.activity().getIntent())
-        .addOnCompleteListener(registrar.activity(), new OnCompleteListener<PendingDynamicLinkData>() {
-          @Override
-          public void onComplete(@NonNull Task<PendingDynamicLinkData> task) {
-            if (task.isSuccessful()) {
-              PendingDynamicLinkData data = task.getResult();
-              if (data != null) {
-                result.success(data.getLink().toString());
-                return;
+    FirebaseDynamicLinks.getInstance()
+        .getDynamicLink(registrar.activity().getIntent())
+        .addOnCompleteListener(
+            registrar.activity(),
+            new OnCompleteListener<PendingDynamicLinkData>() {
+              @Override
+              public void onComplete(@NonNull Task<PendingDynamicLinkData> task) {
+                if (task.isSuccessful()) {
+                  PendingDynamicLinkData data = task.getResult();
+                  if (data != null) {
+                    result.success(data.getLink().toString());
+                    return;
+                  }
+                }
+                result.success(null);
               }
-            }
-            result.success(null);
-          }
-        });
+            });
   }
 
   private OnCompleteListener<ShortDynamicLink> createShortLinkListener(final Result result) {
