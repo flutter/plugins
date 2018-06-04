@@ -70,7 +70,15 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
                 if (task.isSuccessful()) {
                   PendingDynamicLinkData data = task.getResult();
                   if (data != null) {
-                    result.success(data.getLink().toString());
+                    Map<String, Object> dynamicLink = new HashMap<>();
+                    dynamicLink.put("link", data.getLink().toString());
+
+                    Map<String, Object> androidData = new HashMap<>();
+                    androidData.put("clickTimestamp", data.getClickTimestamp());
+                    androidData.put("minimumVersion", data.getMinimumAppVersion());
+
+                    dynamicLink.put("android", androidData);
+                    result.success(dynamicLink);
                     return;
                   }
                 }

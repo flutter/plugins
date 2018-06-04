@@ -5,13 +5,7 @@
 part of firebase_dynamic_links;
 
 class PendingDynamicLinkData {
-  PendingDynamicLinkData._(this.link)
-      : android = defaultTargetPlatform == TargetPlatform.android
-            ? PendingDynamicLinkDataAndroid._()
-            : null,
-        ios = defaultTargetPlatform == TargetPlatform.iOS
-            ? PendingDynamicLinkDataIOS._()
-            : null;
+  PendingDynamicLinkData._(this.link, this.android, this.ios);
 
   final PendingDynamicLinkDataAndroid android;
   final PendingDynamicLinkDataIOS ios;
@@ -20,7 +14,13 @@ class PendingDynamicLinkData {
 }
 
 class PendingDynamicLinkDataAndroid {
-  PendingDynamicLinkDataAndroid._();
+  PendingDynamicLinkDataAndroid._(
+    this.clickTimestamp,
+    this.minimumVersion,
+  );
+
+  final int clickTimestamp;
+  final int minimumVersion;
 }
 
 class PendingDynamicLinkDataIOS {

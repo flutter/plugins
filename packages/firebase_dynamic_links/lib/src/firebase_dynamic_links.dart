@@ -18,11 +18,30 @@ class FirebaseDynamicLinks {
   static final FirebaseDynamicLinks instance = new FirebaseDynamicLinks._();
 
   Future<PendingDynamicLinkData> retrieveDynamicLink() async {
-    final String reply =
-        await channel.invokeMethod("FirebaseDynamicLinks#retrieveDynamicLink");
+    final Map<dynamic, dynamic> linkData =
+        await channel.invokeMethod('FirebaseDynamicLinks#retrieveDynamicLink');
 
-    if (reply == null) return null;
+    if (linkData == null) return null;
 
-    return PendingDynamicLinkData._(Uri.parse(reply));
+    PendingDynamicLinkDataAndroid androidData;
+    if (linkData['android'] != null) {
+      final Map<dynamic, dynamic> data = linkData['android'];
+      androidData = PendingDynamicLinkDataAndroid._(
+        data['clickTimestamp'],
+        data['minimumVersion'],
+      );
+    }
+
+    PendingDynamicLinkDataIOS iosData;
+    if (linkData['ios'] != null) {
+      Map<dynamic, dynamic> data = linkData['android'];
+      iosData = PendingDynamicLinkDataIOS._();
+    }
+
+    return PendingDynamicLinkData._(
+      Uri.parse(linkData['link']),
+      androidData,
+      iosData,
+    );
   }
 }

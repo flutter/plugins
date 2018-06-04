@@ -31,6 +31,11 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       if (data != null) {
         _linkMessage = 'Deeplink: ${data.link.toString()}';
+        if (data.android != null) {
+          _linkMessage += 'Android: ';
+          _linkMessage += '${data.android.clickTimestamp},';
+          _linkMessage += '${data.android.minimumVersion}';
+        }
       }
     });
   }
@@ -45,6 +50,7 @@ class _MyAppState extends State<MyApp> {
       link: Uri.parse('https://google.com'),
       androidParameters: new AndroidParameters(
         packageName: 'io.flutter.plugins.firebasedynamiclinksexample',
+        minimumVersion: 13,
       ),
       dynamicLinkParametersOptions: new DynamicLinkParametersOptions(
         shortDynamicLinkPathLength: ShortDynamicLinkPathLength.short,
