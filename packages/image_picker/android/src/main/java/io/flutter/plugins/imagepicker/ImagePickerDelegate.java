@@ -225,7 +225,7 @@ public class ImagePickerDelegate
       return;
     }
 
-    File imageFile = createTemporaryWritableImageFile();
+    File imageFile = createTemporaryWritableVideoFile();
     pendingCameraImageUri = Uri.parse("file:" + imageFile.getAbsolutePath());
 
     Uri imageUri = fileUriResolver.resolveFileProviderUriForFile(fileProviderName, imageFile);
@@ -291,11 +291,19 @@ public class ImagePickerDelegate
   }
 
   private File createTemporaryWritableImageFile() {
+    return createTemporaryWritableFile(".jpg");
+  }
+
+  private File createTemporaryWritableVideoFile() {
+    return createTemporaryWritableFile(".mp4");
+  }
+
+  private File createTemporaryWritableFile(String suffix) {
     String filename = UUID.randomUUID().toString();
     File image;
 
     try {
-      image = File.createTempFile(filename, ".png", externalFilesDirectory);
+      image = File.createTempFile(filename, suffix, externalFilesDirectory);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
