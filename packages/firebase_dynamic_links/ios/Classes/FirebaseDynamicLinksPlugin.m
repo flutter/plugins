@@ -52,9 +52,26 @@
                                  options:options
                               completion:[self createShortLinkCompletion:result]];
   } else if ([@"FirebaseDynamicLinks#retrieveDynamicLink" isEqualToString:call.method]) {
-    result([[_dynamicLink url] absoluteString]);
+    result([self retrieveDynamicLink]);
   } else {
     result(FlutterMethodNotImplemented);
+  }
+}
+
+- (NSMutableDictionary *)retrieveDynamicLink {
+  if (_dynamicLink != nil) {
+    NSMutableDictionary *dynamicLink = [[NSMutableDictionary alloc] init];
+    dynamicLink[@"link"] = [[_dynamicLink url] absoluteString];
+
+    NSMutableDictionary *iosData = [[NSMutableDictionary alloc] init];
+    if (![[_dynamicLink minimumAppVersion] isEqual:[NSNull null]]) {
+      iosData[@"minimumVersion"] = [_dynamicLink minimumAppVersion];
+    }
+
+    dynamicLink[@"ios"] = iosData;
+    return dynamicLink;
+  } else {
+    return nil;
   }
 }
 

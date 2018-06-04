@@ -24,5 +24,7 @@ class PendingDynamicLinkDataAndroid {
 }
 
 class PendingDynamicLinkDataIOS {
-  PendingDynamicLinkDataIOS._();
+  PendingDynamicLinkDataIOS._(this.minimumVersion);
+
+  final String minimumVersion;
 }

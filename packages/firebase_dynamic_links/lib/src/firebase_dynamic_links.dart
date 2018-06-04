@@ -34,8 +34,8 @@ class FirebaseDynamicLinks {
 
     PendingDynamicLinkDataIOS iosData;
     if (linkData['ios'] != null) {
-      Map<dynamic, dynamic> data = linkData['android'];
-      iosData = PendingDynamicLinkDataIOS._();
+      final Map<dynamic, dynamic> data = linkData['ios'];
+      iosData = PendingDynamicLinkDataIOS._(data['minimumVersion']);
     }
 
     return PendingDynamicLinkData._(

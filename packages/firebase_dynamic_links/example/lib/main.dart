@@ -35,6 +35,9 @@ class _MyAppState extends State<MyApp> {
           _linkMessage += 'Android: ';
           _linkMessage += '${data.android.clickTimestamp},';
           _linkMessage += '${data.android.minimumVersion}';
+        } else if (data.ios != null) {
+          _linkMessage += 'iOS: ';
+          _linkMessage += '${data.ios.minimumVersion}';
         }
       }
     });
@@ -57,6 +60,7 @@ class _MyAppState extends State<MyApp> {
       ),
       iosParameters: new IosParameters(
         bundleId: 'com.google.FirebaseCppDynamicLinksTestApp.dev',
+        minimumVersion: "version 12",
       ),
     );
 
