@@ -101,7 +101,7 @@ public class ImagePickerDelegateTest {
     verify(mockPermissionManager)
         .askForPermission(
             Manifest.permission.READ_EXTERNAL_STORAGE,
-            ImagePickerDelegate.REQUEST_EXTERNAL_STORAGE_PERMISSION);
+            ImagePickerDelegate.REQUEST_EXTERNAL_IMAGE_STORAGE_PERMISSION);
   }
 
   @Test
@@ -137,7 +137,7 @@ public class ImagePickerDelegateTest {
 
     verify(mockPermissionManager)
         .askForPermission(
-            Manifest.permission.CAMERA, ImagePickerDelegate.REQUEST_CAMERA_PERMISSION);
+            Manifest.permission.CAMERA, ImagePickerDelegate.REQUEST_CAMERA_IMAGE_PERMISSION);
   }
 
   @Test
@@ -174,7 +174,7 @@ public class ImagePickerDelegateTest {
     ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
 
     delegate.onRequestPermissionsResult(
-        ImagePickerDelegate.REQUEST_EXTERNAL_STORAGE_PERMISSION,
+        ImagePickerDelegate.REQUEST_EXTERNAL_IMAGE_STORAGE_PERMISSION,
         new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
         new int[] {PackageManager.PERMISSION_DENIED});
 
@@ -188,7 +188,7 @@ public class ImagePickerDelegateTest {
     ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
 
     delegate.onRequestPermissionsResult(
-        ImagePickerDelegate.REQUEST_EXTERNAL_STORAGE_PERMISSION,
+        ImagePickerDelegate.REQUEST_EXTERNAL_IMAGE_STORAGE_PERMISSION,
         new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
         new int[] {PackageManager.PERMISSION_GRANTED});
 
@@ -202,7 +202,7 @@ public class ImagePickerDelegateTest {
     ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
 
     delegate.onRequestPermissionsResult(
-        ImagePickerDelegate.REQUEST_CAMERA_PERMISSION,
+        ImagePickerDelegate.REQUEST_CAMERA_IMAGE_PERMISSION,
         new String[] {Manifest.permission.CAMERA},
         new int[] {PackageManager.PERMISSION_DENIED});
 
@@ -217,7 +217,7 @@ public class ImagePickerDelegateTest {
 
     ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
     delegate.onRequestPermissionsResult(
-        ImagePickerDelegate.REQUEST_CAMERA_PERMISSION,
+        ImagePickerDelegate.REQUEST_CAMERA_IMAGE_PERMISSION,
         new String[] {Manifest.permission.CAMERA},
         new int[] {PackageManager.PERMISSION_GRANTED});
 

@@ -67,8 +67,10 @@ public class ImagePickerDelegate
         PluginRegistry.RequestPermissionsResultListener {
   @VisibleForTesting static final int REQUEST_CODE_CHOOSE_FROM_GALLERY = 2342;
   @VisibleForTesting static final int REQUEST_CODE_TAKE_WITH_CAMERA = 2343;
-  @VisibleForTesting static final int REQUEST_EXTERNAL_STORAGE_PERMISSION = 2344;
-  @VisibleForTesting static final int REQUEST_CAMERA_PERMISSION = 2345;
+  @VisibleForTesting static final int REQUEST_EXTERNAL_IMAGE_STORAGE_PERMISSION = 2344;
+  @VisibleForTesting static final int REQUEST_CAMERA_IMAGE_PERMISSION = 2345;
+  @VisibleForTesting static final int REQUEST_EXTERNAL_VIDEO_STORAGE_PERMISSION = 2354;
+  @VisibleForTesting static final int REQUEST_CAMERA_VIDEO_PERMISSION = 2355;
 
   @VisibleForTesting final String fileProviderName;
 
@@ -188,7 +190,7 @@ public class ImagePickerDelegate
 
     if (!permissionManager.isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)) {
       permissionManager.askForPermission(
-          Manifest.permission.READ_EXTERNAL_STORAGE, REQUEST_EXTERNAL_STORAGE_PERMISSION);
+          Manifest.permission.READ_EXTERNAL_STORAGE, REQUEST_EXTERNAL_VIDEO_STORAGE_PERMISSION);
       return;
     }
 
@@ -209,7 +211,8 @@ public class ImagePickerDelegate
     }
 
     if (!permissionManager.isPermissionGranted(Manifest.permission.CAMERA)) {
-      permissionManager.askForPermission(Manifest.permission.CAMERA, REQUEST_CAMERA_PERMISSION);
+      permissionManager.askForPermission(
+          Manifest.permission.CAMERA, REQUEST_CAMERA_VIDEO_PERMISSION);
       return;
     }
 
@@ -243,7 +246,7 @@ public class ImagePickerDelegate
 
     if (!permissionManager.isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)) {
       permissionManager.askForPermission(
-          Manifest.permission.READ_EXTERNAL_STORAGE, REQUEST_EXTERNAL_STORAGE_PERMISSION);
+          Manifest.permission.READ_EXTERNAL_STORAGE, REQUEST_EXTERNAL_IMAGE_STORAGE_PERMISSION);
       return;
     }
 
@@ -264,7 +267,8 @@ public class ImagePickerDelegate
     }
 
     if (!permissionManager.isPermissionGranted(Manifest.permission.CAMERA)) {
-      permissionManager.askForPermission(Manifest.permission.CAMERA, REQUEST_CAMERA_PERMISSION);
+      permissionManager.askForPermission(
+          Manifest.permission.CAMERA, REQUEST_CAMERA_IMAGE_PERMISSION);
       return;
     }
 
@@ -330,22 +334,36 @@ public class ImagePickerDelegate
     boolean permissionGranted =
         grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED;
 
-    if (requestCode == REQUEST_EXTERNAL_STORAGE_PERMISSION) {
-      if (permissionGranted) {
-        launchPickImageFromGalleryIntent();
-      } else {
-        finishWithSuccess(null);
-      }
-      return true;
-    } else if (requestCode == REQUEST_CAMERA_PERMISSION) {
-      if (permissionGranted) {
-        launchTakeImageWithCameraIntent();
-      } else {
-        finishWithSuccess(null);
-      }
-      return true;
+    switch (requestCode) {
+      case REQUEST_EXTERNAL_IMAGE_STORAGE_PERMISSION:
+        if (permissionGranted) {
+          launchPickImageFromGalleryIntent();
+        }
+        break;
+      case REQUEST_EXTERNAL_VIDEO_STORAGE_PERMISSION:
+        if (permissionGranted) {
+          launchPickVideoFromGalleryIntent();
+        }
+        break;
+      case REQUEST_CAMERA_IMAGE_PERMISSION:
+        if (permissionGranted) {
+          launchTakeImageWithCameraIntent();
+        }
+        break;
+      case REQUEST_CAMERA_VIDEO_PERMISSION:
+        if (permissionGranted) {
+          launchTakeVideoWithCameraIntent();
+        }
+        break;
+      default:
+        return false;
     }
-    return false;
+
+    if (!permissionGranted) {
+      finishWithSuccess(null);
+    }
+
+    return true;
   }
 
   @Override
