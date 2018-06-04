@@ -1,3 +1,7 @@
+## 0.7.3
+
+* Updated Gradle tooling to match Android Studio 3.1.2.
+
 ## 0.7.2
 
 * Fixes crash on Android if a FirebaseFirestoreException happened.
