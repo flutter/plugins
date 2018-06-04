@@ -12,9 +12,7 @@ import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.STOPPED;
 
 import android.app.Activity;
 import android.app.Application;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.Surface;
@@ -35,12 +33,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.view.TextureRegistry;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /** Controller of a single GoogleMaps MapView instance. */
@@ -48,7 +42,6 @@ final class GoogleMapController
     implements Application.ActivityLifecycleCallbacks,
         GoogleMapOptionsSink,
         OnMapReadyCallback,
-        GoogleMap.SnapshotReadyCallback,
         GoogleMap.OnMarkerClickListener,
         GoogleMap.OnCameraMoveStartedListener,
         GoogleMap.OnCameraMoveListener,
@@ -58,11 +51,9 @@ final class GoogleMapController
   private final PluginRegistry.Registrar registrar;
   private final TextureRegistry.SurfaceTextureEntry textureEntry;
   private final MapView mapView;
-  private final Bitmap bitmap;
   private final int width;
   private final int height;
   private final MethodChannel.Result result;
-  private final Timer timer;
   private final Map<String, MarkerController> markers;
   private OnMarkerTappedListener onMarkerTappedListener;
   private OnCameraMoveListener onCameraMoveListener;
@@ -83,7 +74,6 @@ final class GoogleMapController
     this.width = width;
     this.height = height;
     this.result = result;
-    this.bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
     this.parent = (FrameLayout) registrar.view().getParent();
     this.textureEntry = registrar.textures().createSurfaceTexture();
     this.surface = new Surface(textureEntry.surfaceTexture());
@@ -114,7 +104,6 @@ final class GoogleMapController
         draw(null);
       }
     };
-    this.timer = new Timer();
     this.markers = new HashMap<>();
   }
 
@@ -164,24 +153,13 @@ final class GoogleMapController
     return textureEntry.id();
   }
 
+  @SuppressWarnings("unused")
   void showOverlay(int x, int y) {
-    //if (disposed) {
-    //  return;
-    //}
-    //parent.removeView(mapView);
-    //final FrameLayout.LayoutParams layout = new FrameLayout.LayoutParams(width, height);
-    //layout.leftMargin = x;
-    //layout.topMargin = y;
-    //parent.addView(mapView, layout);
+    // ignored
   }
 
   void hideOverlay() {
-    //if (disposed) {
-    //  return;
-    //}
-    //googleMap.stopAnimation();
-    //parent.removeView(mapView);
-    //parent.addView(mapView, 0);
+    // ignored
   }
 
   void moveCamera(CameraUpdate cameraUpdate) {
@@ -222,15 +200,6 @@ final class GoogleMapController
     return marker;
   }
 
-  private void updateTexture() {
-    if (disposed) {
-      return;
-    }
-    final Canvas canvas = surface.lockCanvas(null);
-    canvas.drawBitmap(bitmap, 0, 0, new Paint());
-    surface.unlockCanvasAndPost(canvas);
-  }
-
   @Override
   public void onMapReady(GoogleMap googleMap) {
     this.googleMap = googleMap;
@@ -239,19 +208,12 @@ final class GoogleMapController
     googleMap.setOnCameraMoveListener(this);
     googleMap.setOnCameraIdleListener(this);
     googleMap.setOnMarkerClickListener(this);
-    // Take snapshots until the dust settles.
-    //timer.schedule(newSnapshotTask(), 0);
-    //timer.schedule(newSnapshotTask(), 500);
-    //timer.schedule(newSnapshotTask(), 1000);
-    //timer.schedule(newSnapshotTask(), 2000);
-    //timer.schedule(newSnapshotTask(), 4000);
   }
 
   @Override
   public void onCameraMoveStarted(int reason) {
     onCameraMoveListener.onCameraMoveStarted(
         reason == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE);
-    cancelSnapshotTimerTasks();
   }
 
   @Override
@@ -264,10 +226,6 @@ final class GoogleMapController
   @Override
   public void onCameraIdle() {
     onCameraMoveListener.onCameraIdle();
-    // Take snapshots until the dust settles.
-    //timer.schedule(newSnapshotTask(), 500);
-    //timer.schedule(newSnapshotTask(), 1500);
-    //timer.schedule(newSnapshotTask(), 4000);
   }
 
   @Override
@@ -276,17 +234,11 @@ final class GoogleMapController
     return (markerController != null && markerController.onTap());
   }
 
-  @Override
-  public void onSnapshotReady(Bitmap bitmap) {
-    updateTexture();
-  }
-
   void dispose() {
     if (disposed) {
       return;
     }
     disposed = true;
-    timer.cancel();
     parent.removeView(mapView);
     textureEntry.release();
     mapView.onDestroy();
@@ -347,31 +299,6 @@ final class GoogleMapController
       return;
     }
     mapView.onDestroy();
-  }
-
-  private List<SnapshotTimerTask> snapshotTasks = new ArrayList<>();
-
-  private SnapshotTimerTask newSnapshotTask() {
-    final SnapshotTimerTask task = new SnapshotTimerTask();
-    snapshotTasks.add(task);
-    return task;
-  }
-
-  private void cancelSnapshotTimerTasks() {
-    for (SnapshotTimerTask task : snapshotTasks) {
-      task.cancel();
-    }
-    snapshotTasks.clear();
-  }
-
-  class SnapshotTimerTask extends TimerTask {
-    @Override
-    public void run() {
-      if (disposed || activityState.get() != RESUMED) {
-        return;
-      }
-      googleMap.snapshot(GoogleMapController.this, bitmap);
-    }
   }
 
   // GoogleMapOptionsSink methods
