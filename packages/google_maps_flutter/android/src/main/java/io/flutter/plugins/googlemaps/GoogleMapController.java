@@ -16,8 +16,12 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.Surface;
+import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -84,7 +88,32 @@ final class GoogleMapController
     this.textureEntry = registrar.textures().createSurfaceTexture();
     this.surface = new Surface(textureEntry.surfaceTexture());
     textureEntry.surfaceTexture().setDefaultBufferSize(width, height);
-    this.mapView = new MapView(registrar.activity(), options);
+    this.mapView = new MapView(registrar.activity(), options) {
+      private boolean isDrawing = false;
+
+      @Override
+      public void draw(Canvas canvas) {
+        if (isDrawing) {
+          return;
+        }
+        isDrawing = true;
+        try {
+          final Canvas surfaceCanvas = surface.lockHardwareCanvas();
+          super.draw(surfaceCanvas);
+          surface.unlockCanvasAndPost(surfaceCanvas);
+        } finally {
+          isDrawing = false;
+        }
+      }
+
+      @Override
+      public void onDescendantInvalidated(@NonNull View child, @NonNull View target) {
+        super.onDescendantInvalidated(child, target);
+        // TODO(mravn): This is not right; we should draw only once per frame.
+        // However, invalidate() is not enough here. Possibly because we're drawing off-screen.
+        draw(null);
+      }
+    };
     this.timer = new Timer();
     this.markers = new HashMap<>();
   }
@@ -126,7 +155,7 @@ final class GoogleMapController
         break;
     }
     registrar.activity().getApplication().registerActivityLifecycleCallbacks(this);
-    final FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(width, height);
+    final LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(width, height);
     parent.addView(mapView, 0, layoutParams);
     mapView.getMapAsync(this);
   }
@@ -136,23 +165,23 @@ final class GoogleMapController
   }
 
   void showOverlay(int x, int y) {
-    if (disposed) {
-      return;
-    }
-    parent.removeView(mapView);
-    final FrameLayout.LayoutParams layout = new FrameLayout.LayoutParams(width, height);
-    layout.leftMargin = x;
-    layout.topMargin = y;
-    parent.addView(mapView, layout);
+    //if (disposed) {
+    //  return;
+    //}
+    //parent.removeView(mapView);
+    //final FrameLayout.LayoutParams layout = new FrameLayout.LayoutParams(width, height);
+    //layout.leftMargin = x;
+    //layout.topMargin = y;
+    //parent.addView(mapView, layout);
   }
 
   void hideOverlay() {
-    if (disposed) {
-      return;
-    }
-    googleMap.stopAnimation();
-    parent.removeView(mapView);
-    parent.addView(mapView, 0);
+    //if (disposed) {
+    //  return;
+    //}
+    //googleMap.stopAnimation();
+    //parent.removeView(mapView);
+    //parent.addView(mapView, 0);
   }
 
   void moveCamera(CameraUpdate cameraUpdate) {
@@ -211,11 +240,11 @@ final class GoogleMapController
     googleMap.setOnCameraIdleListener(this);
     googleMap.setOnMarkerClickListener(this);
     // Take snapshots until the dust settles.
-    timer.schedule(newSnapshotTask(), 0);
-    timer.schedule(newSnapshotTask(), 500);
-    timer.schedule(newSnapshotTask(), 1000);
-    timer.schedule(newSnapshotTask(), 2000);
-    timer.schedule(newSnapshotTask(), 4000);
+    //timer.schedule(newSnapshotTask(), 0);
+    //timer.schedule(newSnapshotTask(), 500);
+    //timer.schedule(newSnapshotTask(), 1000);
+    //timer.schedule(newSnapshotTask(), 2000);
+    //timer.schedule(newSnapshotTask(), 4000);
   }
 
   @Override
@@ -236,9 +265,9 @@ final class GoogleMapController
   public void onCameraIdle() {
     onCameraMoveListener.onCameraIdle();
     // Take snapshots until the dust settles.
-    timer.schedule(newSnapshotTask(), 500);
-    timer.schedule(newSnapshotTask(), 1500);
-    timer.schedule(newSnapshotTask(), 4000);
+    //timer.schedule(newSnapshotTask(), 500);
+    //timer.schedule(newSnapshotTask(), 1500);
+    //timer.schedule(newSnapshotTask(), 4000);
   }
 
   @Override

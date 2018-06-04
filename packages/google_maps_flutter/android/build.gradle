@@ -25,7 +25,7 @@ android {
     compileSdkVersion 27
 
     defaultConfig {
-        minSdkVersion 16
+        minSdkVersion 23
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     lintOptions {
@@ -33,6 +33,6 @@ android {
     }
 
     dependencies {
-        implementation 'com.google.android.gms:play-services-maps:11.8.0'
+        implementation 'com.google.android.gms:play-services-maps:15.0.1'
     }
 }
