@@ -75,6 +75,28 @@
   }
 }
 
+- (BOOL)application:(UIApplication*)application
+            openURL:(NSURL*)url
+            options:(NSDictionary<UIApplicationOpenURLOptionsKey, id>*)options {
+  return [self checkForDynamicLink:url];
+}
+
+- (BOOL)application:(UIApplication*)application
+            openURL:(NSURL*)url
+  sourceApplication:(NSString*)sourceApplication
+         annotation:(id)annotation {
+  return [self checkForDynamicLink:url];
+}
+
+- (BOOL)checkForDynamicLink:(NSURL *)url {
+  FIRDynamicLink *dynamicLink = [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:url];
+  if (dynamicLink) {
+    if (dynamicLink.url) _dynamicLink = dynamicLink;
+    return YES;
+  }
+  return NO;
+}
+
 - (BOOL)application:(UIApplication *)application
     continueUserActivity:(NSUserActivity *)userActivity
       restorationHandler:(void (^)(NSArray *))restorationHandler {
