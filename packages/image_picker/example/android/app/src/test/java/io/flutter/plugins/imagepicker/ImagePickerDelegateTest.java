@@ -184,7 +184,7 @@ public class ImagePickerDelegateTest {
 
   @Test
   public void
-      onRequestPermissionsResult_WhenReadExternalStorageGranted_LaunchesChooseFromGalleryIntent() {
+      onRequestChooseImagePermissionsResult_WhenReadExternalStorageGranted_LaunchesChooseImageFromGalleryIntent() {
     ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
 
     delegate.onRequestPermissionsResult(
@@ -195,6 +195,21 @@ public class ImagePickerDelegateTest {
     verify(mockActivity)
         .startActivityForResult(
             any(Intent.class), eq(ImagePickerDelegate.REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY));
+  }
+
+  @Test
+  public void
+      onRequestChooseVideoPermissionsResult_WhenReadExternalStorageGranted_LaunchesChooseVideoFromGalleryIntent() {
+    ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
+
+    delegate.onRequestPermissionsResult(
+        ImagePickerDelegate.REQUEST_EXTERNAL_VIDEO_STORAGE_PERMISSION,
+        new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
+        new int[] {PackageManager.PERMISSION_GRANTED});
+
+    verify(mockActivity)
+        .startActivityForResult(
+            any(Intent.class), eq(ImagePickerDelegate.REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY));
   }
 
   @Test
@@ -212,7 +227,23 @@ public class ImagePickerDelegateTest {
 
   @Test
   public void
-      onRequestPermissionsResult_WhenCameraPermissionGranted_LaunchesTakeWithCameraIntent() {
+      onRequestTakeVideoPermissionsResult_WhenCameraPermissionGranted_LaunchesTakeVideoWithCameraIntent() {
+    when(mockIntentResolver.resolveActivity(any(Intent.class))).thenReturn(true);
+
+    ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
+    delegate.onRequestPermissionsResult(
+        ImagePickerDelegate.REQUEST_CAMERA_VIDEO_PERMISSION,
+        new String[] {Manifest.permission.CAMERA},
+        new int[] {PackageManager.PERMISSION_GRANTED});
+
+    verify(mockActivity)
+        .startActivityForResult(
+            any(Intent.class), eq(ImagePickerDelegate.REQUEST_CODE_TAKE_VIDEO_WITH_CAMERA));
+  }
+
+  @Test
+  public void
+      onRequestTakeImagePermissionsResult_WhenCameraPermissionGranted_LaunchesTakeWithCameraIntent() {
     when(mockIntentResolver.resolveActivity(any(Intent.class))).thenReturn(true);
 
     ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
@@ -263,6 +294,19 @@ public class ImagePickerDelegateTest {
   }
 
   @Test
+  public void
+      onActivityResult_WhenVideoPickedFromGallery_AndResizeParametersSupplied_FinishesWithFilePath() {
+    when(mockMethodCall.argument("maxWidth")).thenReturn(WIDTH);
+
+    ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
+    delegate.onActivityResult(
+        ImagePickerDelegate.REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY, Activity.RESULT_OK, mockIntent);
+
+    verify(mockResult).success("pathFromUri");
+    verifyNoMoreInteractions(mockResult);
+  }
+
+  @Test
   public void onActivityResult_WhenTakeImageWithCameraCanceled_FinishesWithNull() {
     ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
 
@@ -294,6 +338,19 @@ public class ImagePickerDelegateTest {
         ImagePickerDelegate.REQUEST_CODE_TAKE_IMAGE_WITH_CAMERA, Activity.RESULT_OK, mockIntent);
 
     verify(mockResult).success("scaledPath");
+    verifyNoMoreInteractions(mockResult);
+  }
+
+  @Test
+  public void
+      onActivityResult_WhenVideoTakenWithCamera_AndResizeParametersSupplied_FinishesWithFilePath() {
+    when(mockMethodCall.argument("maxWidth")).thenReturn(WIDTH);
+
+    ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
+    delegate.onActivityResult(
+        ImagePickerDelegate.REQUEST_CODE_TAKE_VIDEO_WITH_CAMERA, Activity.RESULT_OK, mockIntent);
+
+    verify(mockResult).success("pathFromUri");
     verifyNoMoreInteractions(mockResult);
   }
 
