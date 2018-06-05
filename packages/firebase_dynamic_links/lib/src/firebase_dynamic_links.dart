@@ -17,6 +17,10 @@ class FirebaseDynamicLinks {
   /// Singleton of [FirebaseDynamicLinks].
   static final FirebaseDynamicLinks instance = new FirebaseDynamicLinks._();
 
+  /// Attempts to retrieve a pending dynamic link.
+  ///
+  /// If there is no pending dynamic link, returns null. Otherwise, returns
+  /// access to dynamic link parameters.
   Future<PendingDynamicLinkData> retrieveDynamicLink() async {
     final Map<dynamic, dynamic> linkData =
         await channel.invokeMethod('FirebaseDynamicLinks#retrieveDynamicLink');
