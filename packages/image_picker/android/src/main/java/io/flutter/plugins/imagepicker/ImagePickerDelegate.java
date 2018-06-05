@@ -65,10 +65,12 @@ import java.util.UUID;
 public class ImagePickerDelegate
     implements PluginRegistry.ActivityResultListener,
         PluginRegistry.RequestPermissionsResultListener {
-  @VisibleForTesting static final int REQUEST_CODE_CHOOSE_FROM_GALLERY = 2342;
-  @VisibleForTesting static final int REQUEST_CODE_TAKE_WITH_CAMERA = 2343;
+  @VisibleForTesting static final int REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY = 2342;
+  @VisibleForTesting static final int REQUEST_CODE_TAKE_IMAGE_WITH_CAMERA = 2343;
   @VisibleForTesting static final int REQUEST_EXTERNAL_IMAGE_STORAGE_PERMISSION = 2344;
   @VisibleForTesting static final int REQUEST_CAMERA_IMAGE_PERMISSION = 2345;
+  @VisibleForTesting static final int REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY = 2352;
+  @VisibleForTesting static final int REQUEST_CODE_TAKE_VIDEO_WITH_CAMERA = 2353;
   @VisibleForTesting static final int REQUEST_EXTERNAL_VIDEO_STORAGE_PERMISSION = 2354;
   @VisibleForTesting static final int REQUEST_CAMERA_VIDEO_PERMISSION = 2355;
 
@@ -201,7 +203,7 @@ public class ImagePickerDelegate
     Intent pickImageIntent = new Intent(Intent.ACTION_GET_CONTENT);
     pickImageIntent.setType("video/*");
 
-    activity.startActivityForResult(pickImageIntent, REQUEST_CODE_CHOOSE_FROM_GALLERY);
+    activity.startActivityForResult(pickImageIntent, REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY);
   }
 
   public void takeVideoWithCamera(MethodCall methodCall, MethodChannel.Result result) {
@@ -235,7 +237,7 @@ public class ImagePickerDelegate
     intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
     grantUriPermissions(intent, imageUri);
 
-    activity.startActivityForResult(intent, REQUEST_CODE_TAKE_WITH_CAMERA);
+    activity.startActivityForResult(intent, REQUEST_CODE_TAKE_VIDEO_WITH_CAMERA);
   }
 
   public void chooseImageFromGallery(MethodCall methodCall, MethodChannel.Result result) {
@@ -257,7 +259,7 @@ public class ImagePickerDelegate
     Intent pickImageIntent = new Intent(Intent.ACTION_GET_CONTENT);
     pickImageIntent.setType("image/*");
 
-    activity.startActivityForResult(pickImageIntent, REQUEST_CODE_CHOOSE_FROM_GALLERY);
+    activity.startActivityForResult(pickImageIntent, REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY);
   }
 
   public void takeImageWithCamera(MethodCall methodCall, MethodChannel.Result result) {
@@ -291,7 +293,7 @@ public class ImagePickerDelegate
     intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
     grantUriPermissions(intent, imageUri);
 
-    activity.startActivityForResult(intent, REQUEST_CODE_TAKE_WITH_CAMERA);
+    activity.startActivityForResult(intent, REQUEST_CODE_TAKE_IMAGE_WITH_CAMERA);
   }
 
   private File createTemporaryWritableImageFile() {
@@ -368,21 +370,30 @@ public class ImagePickerDelegate
 
   @Override
   public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
-    if (requestCode == REQUEST_CODE_CHOOSE_FROM_GALLERY) {
-      handleChoosePictureResult(resultCode, data);
-      return true;
-    } else if (requestCode == REQUEST_CODE_TAKE_WITH_CAMERA) {
-      handleTakePictureResult(resultCode);
-      return true;
+    switch (requestCode) {
+      case REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY:
+        handleChooseMediaResult(resultCode, data, true);
+        break;
+      case REQUEST_CODE_TAKE_IMAGE_WITH_CAMERA:
+        handleCaptureMediaResult(resultCode, true);
+        break;
+      case REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY:
+        handleChooseMediaResult(resultCode, data, false);
+        break;
+      case REQUEST_CODE_TAKE_VIDEO_WITH_CAMERA:
+        handleCaptureMediaResult(resultCode, false);
+        break;
+      default:
+        return false;
     }
 
-    return false;
+    return true;
   }
 
-  private void handleChoosePictureResult(int resultCode, Intent data) {
+  private void handleChooseMediaResult(int resultCode, Intent data, boolean isResizable) {
     if (resultCode == Activity.RESULT_OK && data != null) {
       String path = fileUtils.getPathFromUri(activity, data.getData());
-      handleResult(path);
+      handleResult(path, isResizable);
       return;
     }
 
@@ -390,14 +401,14 @@ public class ImagePickerDelegate
     finishWithSuccess(null);
   }
 
-  private void handleTakePictureResult(int resultCode) {
+  private void handleCaptureMediaResult(int resultCode, final boolean isResizable) {
     if (resultCode == Activity.RESULT_OK) {
       fileUriResolver.getFullImagePath(
           pendingCameraImageUri,
           new OnPathReadyListener() {
             @Override
             public void onPathReady(String path) {
-              handleResult(path);
+              handleResult(path, isResizable);
             }
           });
       return;
@@ -407,13 +418,17 @@ public class ImagePickerDelegate
     finishWithSuccess(null);
   }
 
-  private void handleResult(String path) {
+  private void handleResult(String path, boolean isResizable) {
     if (pendingResult != null) {
-      Double maxWidth = methodCall.argument("maxWidth");
-      Double maxHeight = methodCall.argument("maxHeight");
+      if (isResizable) {
+        Double maxWidth = methodCall.argument("maxWidth");
+        Double maxHeight = methodCall.argument("maxHeight");
 
-      String finalImagePath = imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight);
-      finishWithSuccess(finalImagePath);
+        String finalImagePath = imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight);
+        finishWithSuccess(finalImagePath);
+      } else {
+        finishWithSuccess(path);
+      }
     } else {
       throw new IllegalStateException("Received images from picker that were not requested");
     }
