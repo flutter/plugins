@@ -32,12 +32,10 @@ class _MyAppState extends State<MyApp> {
       if (data != null) {
         _linkMessage = 'Deeplink: ${data.link.toString()}';
         if (data.android != null) {
-          _linkMessage += 'Android: ';
-          _linkMessage += '${data.android.clickTimestamp},';
-          _linkMessage += '${data.android.minimumVersion}';
+          _linkMessage += '''\nAndroid Timestamp: ${data.android.clickTimestamp}
+              Android Min Version: ${data.android.minimumVersion}''';
         } else if (data.ios != null) {
-          _linkMessage += 'iOS: ';
-          _linkMessage += '${data.ios.minimumVersion}';
+          _linkMessage += '\niOS Min Version: ${data.ios.minimumVersion}';
         }
       }
     });
@@ -53,14 +51,14 @@ class _MyAppState extends State<MyApp> {
       link: Uri.parse('https://google.com'),
       androidParameters: new AndroidParameters(
         packageName: 'io.flutter.plugins.firebasedynamiclinksexample',
-        minimumVersion: 13,
+        minimumVersion: 0,
       ),
       dynamicLinkParametersOptions: new DynamicLinkParametersOptions(
         shortDynamicLinkPathLength: ShortDynamicLinkPathLength.short,
       ),
       iosParameters: new IosParameters(
         bundleId: 'com.google.FirebaseCppDynamicLinksTestApp.dev',
-        minimumVersion: "version 12",
+        minimumVersion: "version 0",
       ),
     );
 
