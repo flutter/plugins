@@ -74,14 +74,14 @@ final Uri shortUrl = shortenedLink.shortUrl;
 ## Handle Received Dynamic Links
 
 1. In the [Firebase Console](https://console.firebase.google.com), open the Dynamic Links section.
-  a. Accept the terms of service if you are prompted to do so.
-  b. Take note of your project's Dynamic Links domain, which is displayed at the top of the Dynamic Links page. You need your project's Dynamic Links domain to programmatically create Dynamic Links. A Dynamic Links domain looks like `APP_CODE.app.goo.gl`.
+  - Accept the terms of service if you are prompted to do so.
+  - Take note of your project's Dynamic Links domain, which is displayed at the top of the Dynamic Links page. You need your project's Dynamic Links domain to programmatically create Dynamic Links. A Dynamic Links domain looks like `APP_CODE.app.goo.gl`.
 
 Receiving dynamic links on *iOS* requires a couple more steps than *android*. If you only want to receive dynamic links on *android*, skip to step 4. You can follow a video on the next two steps [here.](https://youtu.be/sFPo296OQqk?t=2m40s)
 
 2. In the **Info** tab of your *iOS* app's Xcode project:
-  a. Create a new **URL Type** to be used for Dynamic Links.
-  b. Set the **Identifier** field to a unique value and the **URL Schemes** field to be your bundle identifier, which is the default URL scheme used by Dynamic Links.
+  - Create a new **URL Type** to be used for Dynamic Links.
+  - Set the **Identifier** field to a unique value and the **URL Schemes** field to be your bundle identifier, which is the default URL scheme used by Dynamic Links.
 
 3. In the **Capabilities** tab of your app's Xcode project, enable **Associated Domains** and add the following to the Associated Domains list:
 
