@@ -23,7 +23,7 @@ class DynamicLinkParameters {
   })  : assert(domain != null),
         assert(link != null);
 
-  /// Applies Android parameters to a generated Dynamic Link URL.
+  /// Android parameters for a generated Dynamic Link URL.
   final AndroidParameters androidParameters;
 
   /// The Firebase project’s Dynamic Links domain.
@@ -32,16 +32,16 @@ class DynamicLinkParameters {
   /// console. https://console.firebase.google.com/
   final String domain;
 
-  /// Defines behavior for generating Dynamic Link URLs
+  /// Defines behavior for generating Dynamic Link URLs.
   final DynamicLinkParametersOptions dynamicLinkParametersOptions;
 
-  /// Applies Analytics parameters to a generated Dynamic Link URL.
+  /// Analytics parameters for a generated Dynamic Link URL.
   final GoogleAnalyticsParameters googleAnalyticsParameters;
 
-  /// Applies iOS parameters to a generated Dynamic Link URL.
+  /// iOS parameters for a generated Dynamic Link URL.
   final IosParameters iosParameters;
 
-  /// Applies iTunes Connect parameters to a generated Dynamic Link URL.
+  /// iTunes Connect parameters for a generated Dynamic Link URL.
   final ItunesConnectAnalyticsParameters itunesConnectAnalyticsParameters;
 
   /// The link the target app will open.
@@ -53,18 +53,16 @@ class DynamicLinkParameters {
   /// the HTTP or HTTPS scheme.
   final Uri link;
 
-  /// Applies Navigation Info parameters to a generated Dynamic Link URL.
+  /// Navigation Info parameters for a generated Dynamic Link URL.
   final NavigationInfoParameters navigationInfoParameters;
 
-  /// Applies Social Meta Tag parameters to a generated Dynamic Link URL.
+  /// Social Meta Tag parameters for a generated Dynamic Link URL.
   final SocialMetaTagParameters socialMetaTagParameters;
 
   /// Shortens a Dynamic Link URL.
   ///
   /// This method may be used for shortening a custom URL that was not generated
-  /// using DynamicLinkParameters.
-  ///
-  /// May throw a [ShortLinkException].
+  /// using [DynamicLinkParameters].
   static Future<ShortDynamicLink> shortenUrl(Uri url,
       [DynamicLinkParametersOptions options]) async {
     final Map<dynamic, dynamic> reply = await FirebaseDynamicLinks.channel
@@ -88,16 +86,14 @@ class DynamicLinkParameters {
         'socialMetaTagParameters': socialMetaTagParameters?._data,
       };
 
-  /// A generated long Dynamic Link URL.
+  /// Generate a long Dynamic Link URL.
   Future<Uri> buildUrl() async {
     final String url = await FirebaseDynamicLinks.channel
         .invokeMethod('DynamicLinkParameters#buildUrl', _data);
     return Uri.parse(url);
   }
 
-  /// A generated short Dynamic Link.
-  ///
-  /// May throw a [ShortLinkException].
+  /// Generate a short Dynamic Link.
   Future<ShortDynamicLink> buildShortLink() async {
     final Map<dynamic, dynamic> reply = await FirebaseDynamicLinks.channel
         .invokeMethod('DynamicLinkParameters#buildShortLink', _data);

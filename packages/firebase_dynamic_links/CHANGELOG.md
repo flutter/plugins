@@ -1,3 +1,7 @@
+## 0.0.4
+
+* Fixed dynamic link dartdoc generation.
+
 ## 0.0.3
 
 * Fixed incorrect homepage link in pubspec.
