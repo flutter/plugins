@@ -110,14 +110,6 @@ public class VideoPlayerPlugin implements MethodCallHandler {
 
       exoPlayer.addListener(
           new DefaultEventListener() {
-            @Override
-            public void onLoadingChanged(final boolean isLoading) {
-              super.onLoadingChanged(isLoading);
-              if (!isLoading) {
-                isInitialized = true;
-                sendInitialized();
-              }
-            }
 
             @Override
             public void onPlayerStateChanged(final boolean playWhenReady, final int playbackState) {
@@ -131,6 +123,9 @@ public class VideoPlayerPlugin implements MethodCallHandler {
                   event.put("values", Collections.singletonList(range));
                   eventSink.success(event);
                 }
+              } else if (playbackState == Player.STATE_READY && !isInitialized) {
+                isInitialized = true;
+                sendInitialized();
               }
             }
 
