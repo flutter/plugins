@@ -75,15 +75,15 @@
   }
 }
 
-- (BOOL)application:(UIApplication*)application
-            openURL:(NSURL*)url
-            options:(NSDictionary<UIApplicationOpenURLOptionsKey, id>*)options {
+- (BOOL)application:(UIApplication *)application
+            openURL:(NSURL *)url
+            options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options {
   return [self checkForDynamicLink:url];
 }
 
-- (BOOL)application:(UIApplication*)application
-            openURL:(NSURL*)url
-  sourceApplication:(NSString*)sourceApplication
+- (BOOL)application:(UIApplication *)application
+            openURL:(NSURL *)url
+  sourceApplication:(NSString *)sourceApplication
          annotation:(id)annotation {
   return [self checkForDynamicLink:url];
 }
@@ -102,7 +102,7 @@
       restorationHandler:(void (^)(NSArray *))restorationHandler {
   BOOL handled = [[FIRDynamicLinks dynamicLinks]
       handleUniversalLink:userActivity.webpageURL
-               completion:^(FIRDynamicLink * _Nullable dynamicLink, NSError * _Nullable error) {
+               completion:^(FIRDynamicLink *_Nullable dynamicLink, NSError *_Nullable error) {
                  self.dynamicLink = dynamicLink;
                }];
   return handled;
