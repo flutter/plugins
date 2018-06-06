@@ -8,13 +8,17 @@ import static com.google.android.exoplayer2.Player.REPEAT_MODE_ALL;
 import static com.google.android.exoplayer2.Player.REPEAT_MODE_OFF;
 
 import android.content.Context;
+import android.media.AudioManager;
 import android.net.Uri;
+import android.os.Build;
 import android.view.Surface;
+import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.Player.DefaultEventListener;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.audio.AudioAttributes;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
@@ -107,6 +111,7 @@ public class VideoPlayerPlugin implements MethodCallHandler {
       surface = new Surface(textureEntry.surfaceTexture());
       exoPlayer.setVideoSurface(surface);
       exoPlayer.setPlayWhenReady(true);
+      setAudioAttributes(exoPlayer);
 
       exoPlayer.addListener(
           new DefaultEventListener() {
@@ -141,6 +146,16 @@ public class VideoPlayerPlugin implements MethodCallHandler {
       Map<String, Object> reply = new HashMap<>();
       reply.put("textureId", textureEntry.id());
       result.success(reply);
+    }
+
+    @SuppressWarnings("deprecation")
+    private static void setAudioAttributes(SimpleExoPlayer mediaPlayer) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        mediaPlayer.setAudioAttributes(
+            new AudioAttributes.Builder().setContentType(C.CONTENT_TYPE_MOVIE).build());
+      } else {
+        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+      }
     }
 
     void play() {
