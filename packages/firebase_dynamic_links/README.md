@@ -73,19 +73,21 @@ final Uri shortUrl = shortenedLink.shortUrl;
 
 ## Handle Received Dynamic Links
 
-Receiving dynamic links on `iOS` requires a couple more steps than `android`. If you only want to receive dynamic links on `android`, skip to step 3.
+1. In the [Firebase Console](https://console.firebase.google.com), open the Dynamic Links section.
 
-1. In the Info tab of your iOS app's Xcode project, create a new URL type to be used for Dynamic Links. Set the Identifier field to a unique value and the URL scheme field to be your bundle identifier, which is the default URL scheme used by Dynamic Links.
+2. Accept the terms of service if you are prompted to do so. Take note of your project's Dynamic Links domain, which is displayed at the top of the Dynamic Links page. You need your project's Dynamic Links domain to programmatically create Dynamic Links. A Dynamic Links domain looks like app_code.app.goo.gl.
 
-2. In the Capabilities tab of your app's Xcode project, enable Associated Domains and add the following to the Associated Domains list:
+Receiving dynamic links on iOS requires a couple more steps than android. If you only want to receive dynamic links on android, skip to step 5. You can follow a video on the next two steps [here.](https://youtu.be/sFPo296OQqk?t=2m40s)
+
+3. In the Info tab of your iOS app's Xcode project, create a new URL type to be used for Dynamic Links. Set the Identifier field to a unique value and the URL scheme field to be your bundle identifier, which is the default URL scheme used by Dynamic Links.
+
+4. In the Capabilities tab of your app's Xcode project, enable Associated Domains and add the following to the Associated Domains list (replacing APP_CODE with your app's domain from the Firebase Console):
 
 ```
 applinks:APP_CODE.app.goo.gl
 ```
 
-You can follow a video on these steps [here.](https://youtu.be/sFPo296OQqk?t=2m40s)
-
-3. To receive a dynamic link, call the `retrieveDynamicLink()` method from `FirebaseDynamicLinks`:
+5. To receive a dynamic link, call the `retrieveDynamicLink()` method from `FirebaseDynamicLinks`:
 
 ```dart
 final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.retrieveDynamicLink();
