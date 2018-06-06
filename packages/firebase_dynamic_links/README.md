@@ -71,6 +71,16 @@ final ShortDynamicLink shortenedLink = await DynamicLinkParameters.shortenUrl(
 final Uri shortUrl = shortenedLink.shortUrl;
 ```
 
+## Handle Received Dynamic Links
+
+### Android
+
+Start of explanation.
+
+### iOS
+
+Start of explanation.
+
 ## Getting Started
 
 See the `example` directory for a complete sample app using Google Dynamic Links for Firebase.
