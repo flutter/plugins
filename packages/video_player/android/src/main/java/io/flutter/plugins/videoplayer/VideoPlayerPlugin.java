@@ -4,10 +4,12 @@
 
 package io.flutter.plugins.videoplayer;
 
+import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Build;
 import android.view.Surface;
 import io.flutter.plugin.common.EventChannel;
@@ -28,6 +30,7 @@ public class VideoPlayerPlugin implements MethodCallHandler {
   private static class VideoPlayer {
     private final TextureRegistry.SurfaceTextureEntry textureEntry;
     private final MediaPlayer mediaPlayer;
+    private Map<String, String> headers;
     private EventChannel.EventSink eventSink;
     private final EventChannel eventChannel;
     private boolean isInitialized = false;
@@ -49,15 +52,18 @@ public class VideoPlayerPlugin implements MethodCallHandler {
     }
 
     VideoPlayer(
+        Context context,
         EventChannel eventChannel,
         TextureRegistry.SurfaceTextureEntry textureEntry,
         String dataSource,
-        Result result) {
+        Result result,
+        Map<String, String> headers) {
       this.eventChannel = eventChannel;
       this.mediaPlayer = new MediaPlayer();
       this.textureEntry = textureEntry;
+      this.headers = headers;
       try {
-        mediaPlayer.setDataSource(dataSource);
+        mediaPlayer.setDataSource(context, Uri.parse(dataSource), headers);
         setupVideoPlayer(eventChannel, textureEntry, mediaPlayer, result);
       } catch (IOException e) {
         result.error("VideoError", "IOError when initializing video player " + e.toString(), null);
@@ -284,7 +290,14 @@ public class VideoPlayerPlugin implements MethodCallHandler {
                   null);
             }
           } else {
-            player = new VideoPlayer(eventChannel, handle, (String) call.argument("uri"), result);
+            player =
+                new VideoPlayer(
+                    registrar.activeContext(),
+                    eventChannel,
+                    handle,
+                    (String) call.argument("uri"),
+                    result,
+                    (Map<String, String>) call.argument("headers"));
             videoPlayers.put(handle.id(), player);
           }
           break;
