@@ -73,13 +73,28 @@ final Uri shortUrl = shortenedLink.shortUrl;
 
 ## Handle Received Dynamic Links
 
-### Android
+Receiving dynamic links on `iOS` requires a couple more steps than `android`. If you only want to receive dynamic links on `android`, skip to step 3.
 
-Start of explanation.
+1. In the Info tab of your iOS app's Xcode project, create a new URL type to be used for Dynamic Links. Set the Identifier field to a unique value and the URL scheme field to be your bundle identifier, which is the default URL scheme used by Dynamic Links.
 
-### iOS
+2. In the Capabilities tab of your app's Xcode project, enable Associated Domains and add the following to the Associated Domains list:
 
-Start of explanation.
+```
+applinks:APP_CODE.app.goo.gl
+```
+
+You can follow a video on these steps [here.](https://youtu.be/sFPo296OQqk?t=2m40s)
+
+3. To receive a dynamic link, call the `retrieveDynamicLink()` method from `FirebaseDynamicLinks`:
+
+```dart
+final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.retrieveDynamicLink();
+
+final Uri deepLink = data.link;
+goToRouteUsingDeepLink(deepLink);
+```
+
+If your app did not open from a dynamic link, `retrieveDynamicLink()` will return `null`;
 
 ## Getting Started
 
