@@ -83,7 +83,7 @@ Receiving dynamic links on *iOS* requires a couple more steps than *android*. If
   - Create a new **URL Type** to be used for Dynamic Links.
   - Set the **Identifier** field to a unique value and the **URL Schemes** field to be your bundle identifier, which is the default URL scheme used by Dynamic Links.
 
-3. In the **Capabilities** tab of your app's Xcode project, enable **Associated Domains** and add the following to the Associated Domains list:
+3. In the **Capabilities** tab of your app's Xcode project, enable **Associated Domains** and add the following to the **Associated Domains** list:
 
 ```
 applinks:APP_CODE.app.goo.gl
