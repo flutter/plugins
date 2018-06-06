@@ -20,7 +20,7 @@ You can create short or long Dynamic Links with the Firebase Dynamic Links Build
 https://abc123.app.goo.gl/WXYZ
 ```
 
-You can create a Dynamic Link programmatically by setting the following parameters and getting the DynamicLinkParameters.url parameter.
+You can create a Dynamic Link programmatically by setting the following parameters and getting the `DynamicLinkParameters.url` parameter.
 
 ```dart
 final DynamicLinkParameters components = new DynamicLinkParameters(
@@ -53,7 +53,7 @@ final DynamicLinkParameters components = new DynamicLinkParameters(
 final Uri dynamicLink = await components.buildUrl();
 ```
 
-To create a short Dynamic Link, build DynamicLinkParameters the same way, but use the DynamicLinkParameters.shortUrl parameter.
+To create a short Dynamic Link, build `DynamicLinkParameters` the same way, but use the `DynamicLinkParameters.shortUrl` parameter.
 
 ```dart
 final ShortDynamicLink shortDynamicLink = await components.buildShortLink();
@@ -75,13 +75,17 @@ final Uri shortUrl = shortenedLink.shortUrl;
 
 1. In the [Firebase Console](https://console.firebase.google.com), open the Dynamic Links section.
 
-2. Accept the terms of service if you are prompted to do so. Take note of your project's Dynamic Links domain, which is displayed at the top of the Dynamic Links page. You need your project's Dynamic Links domain to programmatically create Dynamic Links. A Dynamic Links domain looks like app_code.app.goo.gl.
+2. a. Accept the terms of service if you are prompted to do so.
 
-Receiving dynamic links on iOS requires a couple more steps than android. If you only want to receive dynamic links on android, skip to step 5. You can follow a video on the next two steps [here.](https://youtu.be/sFPo296OQqk?t=2m40s)
+b. Take note of your project's Dynamic Links domain, which is displayed at the top of the Dynamic Links page. You need your project's Dynamic Links domain to programmatically create Dynamic Links. A Dynamic Links domain looks like `APP_CODE.app.goo.gl`.
 
-3. In the Info tab of your iOS app's Xcode project, create a new URL type to be used for Dynamic Links. Set the Identifier field to a unique value and the URL scheme field to be your bundle identifier, which is the default URL scheme used by Dynamic Links.
+Receiving dynamic links on **iOS** requires a couple more steps than **android**. If you only want to receive dynamic links on **android**, skip to step 5. You can follow a video on the next two steps [here.](https://youtu.be/sFPo296OQqk?t=2m40s)
 
-4. In the Capabilities tab of your app's Xcode project, enable Associated Domains and add the following to the Associated Domains list (replacing APP_CODE with your app's domain from the Firebase Console):
+3. a. In the **Info** tab of your **iOS** app's Xcode project, create a new **URL Types** to be used for Dynamic Links.
+
+b. Set the **Identifier** field to a unique value and the **URL Schemes** field to be your bundle identifier, which is the default URL scheme used by Dynamic Links.
+
+4. In the **Capabilities** tab of your app's Xcode project, enable **Associated Domains## and add the following to the Associated Domains list; (replacing `APP_CODE` with your app's domain from the [Firebase Console](https://console.firebase.google.com)):
 
 ```
 applinks:APP_CODE.app.goo.gl
