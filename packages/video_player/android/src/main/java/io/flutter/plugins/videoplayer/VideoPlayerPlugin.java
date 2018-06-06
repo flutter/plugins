@@ -12,16 +12,12 @@ import android.net.Uri;
 import android.view.Surface;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;
-import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.Player.EventListener;
+import com.google.android.exoplayer2.Player.DefaultEventListener;
 import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
-import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
@@ -113,29 +109,19 @@ public class VideoPlayerPlugin implements MethodCallHandler {
       exoPlayer.setPlayWhenReady(true);
 
       exoPlayer.addListener(
-          new EventListener() {
-            @Override
-            public void onTimelineChanged(
-                final Timeline timeline, final Object manifest, final int reason) {}
-
-            @Override
-            public void onTracksChanged(
-                final TrackGroupArray trackGroups, final TrackSelectionArray trackSelections) {}
-
+          new DefaultEventListener() {
             @Override
             public void onLoadingChanged(final boolean isLoading) {
-
+              super.onLoadingChanged(isLoading);
               if (!isLoading) {
-
                 isInitialized = true;
                 sendInitialized();
-              } else {
-                setVolume(0.0);
               }
             }
 
             @Override
             public void onPlayerStateChanged(final boolean playWhenReady, final int playbackState) {
+              super.onPlayerStateChanged(playWhenReady, playbackState);
               if (playbackState == Player.STATE_BUFFERING) {
                 if (eventSink != null) {
                   Map<String, Object> event = new HashMap<>();
@@ -149,26 +135,12 @@ public class VideoPlayerPlugin implements MethodCallHandler {
             }
 
             @Override
-            public void onRepeatModeChanged(final int repeatMode) {}
-
-            @Override
-            public void onShuffleModeEnabledChanged(final boolean shuffleModeEnabled) {}
-
-            @Override
             public void onPlayerError(final ExoPlaybackException error) {
+              super.onPlayerError(error);
               if (eventSink != null) {
                 eventSink.error("VideoError", "Video player had error " + error, null);
               }
             }
-
-            @Override
-            public void onPositionDiscontinuity(final int reason) {}
-
-            @Override
-            public void onPlaybackParametersChanged(final PlaybackParameters playbackParameters) {}
-
-            @Override
-            public void onSeekProcessed() {}
           });
 
       Map<String, Object> reply = new HashMap<>();
@@ -342,9 +314,6 @@ public class VideoPlayerPlugin implements MethodCallHandler {
         player.dispose();
         videoPlayers.remove(textureId);
         result.success(null);
-        break;
-      case "orientation":
-        result.success(0);
         break;
       default:
         result.notImplemented();

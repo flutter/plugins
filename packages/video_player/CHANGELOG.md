@@ -1,6 +1,6 @@
 ## 0.5.5
 
-* Android: use ExoPlayer instead of MediaPlayer for better video compatibility
+* Android: use ExoPlayer instead of MediaPlayer for better video format support.
 
 ## 0.5.4
 
