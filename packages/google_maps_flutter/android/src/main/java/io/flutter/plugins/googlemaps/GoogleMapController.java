@@ -45,6 +45,7 @@ final class GoogleMapController
         GoogleMapOptionsSink,
         OnMapReadyCallback,
         GoogleMap.SnapshotReadyCallback,
+        GoogleMap.OnInfoWindowClickListener,
         GoogleMap.OnMarkerClickListener,
         GoogleMap.OnCameraMoveStartedListener,
         GoogleMap.OnCameraMoveListener,
@@ -62,6 +63,7 @@ final class GoogleMapController
   private final Map<String, MarkerController> markers;
   private OnMarkerTappedListener onMarkerTappedListener;
   private OnCameraMoveListener onCameraMoveListener;
+  private OnInfoWindowTappedListener onInfoWindowTappedListener;
   private GoogleMap googleMap;
   private Surface surface;
   private boolean trackCameraPosition = false;
@@ -95,6 +97,10 @@ final class GoogleMapController
 
   void setOnMarkerTappedListener(OnMarkerTappedListener listener) {
     this.onMarkerTappedListener = listener;
+  }
+
+  void setOnInfoWindowTappedListener(OnInfoWindowTappedListener listener) {
+    this.onInfoWindowTappedListener = listener;
   }
 
   void init() {
@@ -206,6 +212,7 @@ final class GoogleMapController
   public void onMapReady(GoogleMap googleMap) {
     this.googleMap = googleMap;
     result.success(id());
+    googleMap.setOnInfoWindowClickListener(this);
     googleMap.setOnCameraMoveStartedListener(this);
     googleMap.setOnCameraMoveListener(this);
     googleMap.setOnCameraIdleListener(this);
@@ -223,6 +230,11 @@ final class GoogleMapController
     onCameraMoveListener.onCameraMoveStarted(
         reason == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE);
     cancelSnapshotTimerTasks();
+  }
+
+  @Override
+  public void onInfoWindowClick(Marker marker) {
+    onInfoWindowTappedListener.onInfoWindowTapped(marker);
   }
 
   @Override
