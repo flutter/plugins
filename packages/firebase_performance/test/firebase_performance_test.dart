@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@ import 'package:flutter/services.dart';
 
 import 'package:firebase_performance/firebase_performance.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+class MockPerformanceAttributes extends PerformanceAttributes {}
 
 void main() {
   group('$FirebasePerformance', () {
@@ -47,8 +49,10 @@ void main() {
 
       expect(performanceCollectionEnable, enabled);
       expect(log, <Matcher>[
-        isMethodCall('FirebasePerformance#isPerformanceCollectionEnabled',
-            arguments: null),
+        isMethodCall(
+          'FirebasePerformance#isPerformanceCollectionEnabled',
+          arguments: null,
+        ),
       ]);
     });
 
@@ -60,10 +64,14 @@ void main() {
       performanceCollectionEnable = false;
 
       expect(log, <Matcher>[
-        isMethodCall('FirebasePerformance#setPerformanceCollectionEnabled',
-            arguments: true),
-        isMethodCall('FirebasePerformance#setPerformanceCollectionEnabled',
-            arguments: false),
+        isMethodCall(
+          'FirebasePerformance#setPerformanceCollectionEnabled',
+          arguments: true,
+        ),
+        isMethodCall(
+          'FirebasePerformance#setPerformanceCollectionEnabled',
+          arguments: false,
+        ),
       ]);
     });
 
@@ -72,24 +80,32 @@ void main() {
       await trace.start();
 
       expect(log, <Matcher>[
-        isMethodCall('Trace#start', arguments: <String, Object>{
-          'handle': currentTraceHandle,
-          'name': 'test-trace',
-        }),
+        isMethodCall(
+          'Trace#start',
+          arguments: <String, Object>{
+            'handle': currentTraceHandle,
+            'name': 'test-trace',
+          },
+        ),
       ]);
     });
 
     test('newHttpMetric', () async {
-      final HttpMetric metric =
-          performance.newHttpMetric('https://google.com', HttpMethod.Connect);
+      final HttpMetric metric = performance.newHttpMetric(
+        'https://google.com',
+        HttpMethod.Connect,
+      );
       await metric.start();
 
       expect(log, <Matcher>[
-        isMethodCall('HttpMetric#start', arguments: <String, Object>{
-          'handle': currentTraceHandle,
-          'url': 'https://google.com',
-          'httpMethod': HttpMethod.Connect.index,
-        }),
+        isMethodCall(
+          'HttpMetric#start',
+          arguments: <String, Object>{
+            'handle': currentTraceHandle,
+            'url': 'https://google.com',
+            'httpMethod': HttpMethod.Connect.index,
+          },
+        ),
       ]);
     });
 
@@ -97,10 +113,13 @@ void main() {
       await FirebasePerformance.startTrace('startTrace-test');
 
       expect(log, <Matcher>[
-        isMethodCall('Trace#start', arguments: <String, Object>{
-          'handle': currentTraceHandle,
-          'name': 'startTrace-test',
-        }),
+        isMethodCall(
+          'Trace#start',
+          arguments: <String, Object>{
+            'handle': currentTraceHandle,
+            'name': 'startTrace-test',
+          },
+        ),
       ]);
     });
 
@@ -127,10 +146,13 @@ void main() {
         await testTrace.start();
 
         expect(log, <Matcher>[
-          isMethodCall('Trace#start', arguments: <String, Object>{
-            'handle': currentTraceHandle,
-            'name': 'test',
-          }),
+          isMethodCall(
+            'Trace#start',
+            arguments: <String, Object>{
+              'handle': currentTraceHandle,
+              'name': 'test',
+            },
+          ),
         ]);
       });
 
@@ -143,17 +165,20 @@ void main() {
             'handle': currentTraceHandle,
             'name': 'test',
           }),
-          isMethodCall('Trace#stop', arguments: <String, dynamic>{
-            'handle': currentTraceHandle,
-            'name': 'test',
-            'counters': <String, int>{},
-            'attributes': <String, String>{},
-          }),
+          isMethodCall(
+            'Trace#stop',
+            arguments: <String, dynamic>{
+              'handle': currentTraceHandle,
+              'name': 'test',
+              'counters': <String, int>{},
+              'attributes': <String, String>{},
+            },
+          ),
         ]);
       });
 
       test('incrementCounter', () async {
-        final Trace trace = performance.newTrace("test");
+        final Trace trace = performance.newTrace('test');
         trace.incrementCounter('counter1');
 
         trace.incrementCounter('counter2');
@@ -168,60 +193,28 @@ void main() {
         await trace.stop();
 
         expect(log, <Matcher>[
-          isMethodCall('Trace#start', arguments: <String, Object>{
-            'handle': currentTraceHandle,
-            'name': 'test',
-          }),
-          isMethodCall('Trace#stop', arguments: <String, dynamic>{
-            'handle': currentTraceHandle,
-            'name': 'test',
-            'counters': <String, int>{
-              'counter1': 1,
-              'counter2': 2,
-              'counter3': 10,
-              'counter4': -5,
+          isMethodCall(
+            'Trace#start',
+            arguments: <String, Object>{
+              'handle': currentTraceHandle,
+              'name': 'test',
             },
-            'attributes': <String, String>{},
-          }),
+          ),
+          isMethodCall(
+            'Trace#stop',
+            arguments: <String, dynamic>{
+              'handle': currentTraceHandle,
+              'name': 'test',
+              'counters': <String, int>{
+                'counter1': 1,
+                'counter2': 2,
+                'counter3': 10,
+                'counter4': -5,
+              },
+              'attributes': <String, String>{},
+            },
+          ),
         ]);
-      });
-
-      test('putAttribute', () async {
-        testTrace.putAttribute('attr1', 'apple');
-        testTrace.putAttribute('attr2', 'are');
-        expect(testTrace.attributes, <String, String>{
-          'attr1': 'apple',
-          'attr2': 'are',
-        });
-
-        testTrace.putAttribute('attr1', 'delicious');
-        expect(testTrace.attributes, <String, String>{
-          'attr1': 'delicious',
-          'attr2': 'are',
-        });
-      });
-
-      test('removeAttribute', () async {
-        testTrace.putAttribute('attr1', 'apple');
-        testTrace.putAttribute('attr2', 'are');
-        testTrace.removeAttribute('no-attr');
-        expect(testTrace.attributes, <String, String>{
-          'attr1': 'apple',
-          'attr2': 'are',
-        });
-
-        testTrace.removeAttribute('attr1');
-        expect(testTrace.attributes, <String, String>{
-          'attr2': 'are',
-        });
-      });
-
-      test('getAttribute', () {
-        testTrace.putAttribute('attr1', 'apple');
-        testTrace.putAttribute('attr2', 'are');
-        expect(testTrace.getAttribute('attr1'), 'apple');
-
-        expect(testTrace.getAttribute('attr3'), isNull);
       });
     });
 
@@ -229,19 +222,24 @@ void main() {
       HttpMetric testMetric;
 
       setUp(() {
-        testMetric =
-            performance.newHttpMetric('https://google.com', HttpMethod.Get);
+        testMetric = performance.newHttpMetric(
+          'https://google.com',
+          HttpMethod.Get,
+        );
       });
 
       test('start', () async {
         await testMetric.start();
 
         expect(log, <Matcher>[
-          isMethodCall('HttpMetric#start', arguments: <String, Object>{
-            'handle': currentHttpMetricHandle,
-            'url': 'https://google.com',
-            'httpMethod': HttpMethod.Get.index,
-          }),
+          isMethodCall(
+            'HttpMetric#start',
+            arguments: <String, Object>{
+              'handle': currentHttpMetricHandle,
+              'url': 'https://google.com',
+              'httpMethod': HttpMethod.Get.index,
+            },
+          ),
         ]);
       });
 
@@ -255,58 +253,72 @@ void main() {
         await testMetric.stop();
 
         expect(log, <Matcher>[
-          isMethodCall('HttpMetric#start', arguments: <String, Object>{
-            'handle': currentHttpMetricHandle,
-            'url': 'https://google.com',
-            'httpMethod': HttpMethod.Get.index,
-          }),
-          isMethodCall('HttpMetric#stop', arguments: <String, dynamic>{
-            'handle': currentHttpMetricHandle,
-            'httpResponseCode': 1,
-            'requestPayloadSize': 5000000,
-            'responseContentType': 'text/html',
-            'responsePayloadSize': 1992304820934820,
-            'attributes': <String, String>{},
-          }),
+          isMethodCall(
+            'HttpMetric#start',
+            arguments: <String, Object>{
+              'handle': currentHttpMetricHandle,
+              'url': 'https://google.com',
+              'httpMethod': HttpMethod.Get.index,
+            },
+          ),
+          isMethodCall(
+            'HttpMetric#stop',
+            arguments: <String, dynamic>{
+              'handle': currentHttpMetricHandle,
+              'httpResponseCode': 1,
+              'requestPayloadSize': 5000000,
+              'responseContentType': 'text/html',
+              'responsePayloadSize': 1992304820934820,
+              'attributes': <String, String>{},
+            },
+          ),
         ]);
+      });
+    });
+
+    group('$PerformanceAttributes', () {
+      PerformanceAttributes attributes;
+
+      setUp(() {
+        attributes = new MockPerformanceAttributes();
       });
 
       test('putAttribute', () async {
-        testMetric.putAttribute('attr1', 'apple');
-        testMetric.putAttribute('attr2', 'are');
-        expect(testMetric.attributes, <String, String>{
+        attributes.putAttribute('attr1', 'apple');
+        attributes.putAttribute('attr2', 'are');
+        expect(attributes.attributes, <String, String>{
           'attr1': 'apple',
           'attr2': 'are',
         });
 
-        testMetric.putAttribute('attr1', 'delicious');
-        expect(testMetric.attributes, <String, String>{
+        attributes.putAttribute('attr1', 'delicious');
+        expect(attributes.attributes, <String, String>{
           'attr1': 'delicious',
           'attr2': 'are',
         });
       });
 
       test('removeAttribute', () async {
-        testMetric.putAttribute('attr1', 'apple');
-        testMetric.putAttribute('attr2', 'are');
-        testMetric.removeAttribute('no-attr');
-        expect(testMetric.attributes, <String, String>{
+        attributes.putAttribute('attr1', 'apple');
+        attributes.putAttribute('attr2', 'are');
+        attributes.removeAttribute('no-attr');
+        expect(attributes.attributes, <String, String>{
           'attr1': 'apple',
           'attr2': 'are',
         });
 
-        testMetric.removeAttribute('attr1');
-        expect(testMetric.attributes, <String, String>{
+        attributes.removeAttribute('attr1');
+        expect(attributes.attributes, <String, String>{
           'attr2': 'are',
         });
       });
 
       test('getAttribute', () {
-        testMetric.putAttribute('attr1', 'apple');
-        testMetric.putAttribute('attr2', 'are');
-        expect(testMetric.getAttribute('attr1'), 'apple');
+        attributes.putAttribute('attr1', 'apple');
+        attributes.putAttribute('attr2', 'are');
+        expect(attributes.getAttribute('attr1'), 'apple');
 
-        expect(testMetric.getAttribute('attr3'), isNull);
+        expect(attributes.getAttribute('attr3'), isNull);
       });
     });
   });

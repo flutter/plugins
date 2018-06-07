@@ -1,26 +1,27 @@
-// Copyright 2017, the Flutter project authors.  Please see the AUTHORS file
+// Copyright 2018, the Flutter project authors.  Please see the AUTHORS file
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
 part of firebase_performance;
 
-/// Trace allows you to set beginning and end of a certain action in your app.
-class Trace {
+/// Trace allows you to set the beginning and end of a custom trace in your app.
+///
+/// A trace is a report of performance data associated with some of the
+/// code in your app. You can have multiple custom traces, and it is
+/// possible to have more than one custom trace running at a time. Each custom
+/// trace can have multiple counters and attributes added to help measure
+/// performance related events. A trace also measures the time between calling
+/// start() and stop().
+///
+/// Data collected is automatically sent to the associated Firebase console
+/// after stop() is called.
+class Trace extends PerformanceAttributes {
   Trace._(this._handle, this._name) {
     assert(_name != null);
     assert(!_name.startsWith(new RegExp(r'[_\s]')));
     assert(!_name.contains(new RegExp(r'[_\s]$')));
     assert(_name.length <= maxTraceNameLength);
   }
-
-  /// Maximum allowed length of a key passed to [putAttribute].
-  static const int maxAttributeKeyLength = 40;
-
-  /// Maximum allowed length of a value passed to [putAttribute].
-  static const int maxAttributeValueLength = 100;
-
-  /// Maximum allowed number of attributes that can be added.
-  static const int maxTraceCustomAttributes = 5;
 
   /// Maximum allowed length of the name of a [Trace].
   static const int maxTraceNameLength = 100;
@@ -32,13 +33,10 @@ class Trace {
   bool _hasStopped = false;
 
   final HashMap<String, int> _counters = new HashMap<String, int>();
-  final HashMap<String, String> _attributes = new HashMap<String, String>();
-
-  /// All the attributes added to this trace.
-  Map<String, String> get attributes =>
-      Map<String, String>.unmodifiable(_attributes);
 
   /// Starts this trace.
+  ///
+  /// Can only be called once, otherwise assertion error is thrown.
   ///
   /// Using ```await``` with this method is only necessary when accurate timing
   /// is relevant.
@@ -54,6 +52,10 @@ class Trace {
   }
 
   /// Stops this trace.
+  ///
+  /// Can only be called once and only after start(), otherwise assertion error
+  /// is thrown. Data collected is automatically sent to the associated Firebase
+  /// console after stop() is called.
   ///
   /// Not necessary to use ```await``` with this method.
   Future<void> stop() {
@@ -75,8 +77,8 @@ class Trace {
   ///
   /// The counter is incremented by 1 if [incrementBy] was not passed. If a
   /// counter does not already exist, a new one will be created. If the trace
-  /// has not been started or has already been stopped, returns immediately
-  /// without taking action.
+  /// has not been started or has already been stopped, an assertion error is
+  /// thrown.
   ///
   /// The name of the counter requires no leading or
   /// trailing whitespace, no leading underscore _ character, and max length of
@@ -94,37 +96,25 @@ class Trace {
 
   /// Sets a String [value] for the specified [attribute].
   ///
-  /// Updates the value of the attribute if the attribute already exists. If the
-  /// trace has been stopped, this method returns without adding the attribute.
-  /// The maximum number of attributes that can be added to a Trace are
-  /// [maxTraceCustomAttributes].
+  /// If the trace has been stopped, this method throws an assertion
+  /// error.
   ///
-  /// Name of the attribute has max length of [maxAttributeKeyLength]
-  /// characters. Value of the attribute has max length of
-  /// [maxAttributeValueLength] characters.
+  /// See [PerformanceAttributes.putAttribute].
+  @override
   void putAttribute(String attribute, String value) {
     assert(!_hasStopped);
-    assert(attribute != null);
-    assert(!attribute.startsWith(new RegExp(r'[_\s]')));
-    assert(!attribute.contains(new RegExp(r'[_\s]$')));
-    assert(attribute.length <= maxAttributeKeyLength);
-    assert(value.length <= maxAttributeValueLength);
-    assert(_attributes.length < maxTraceCustomAttributes);
-
-    _attributes.putIfAbsent(attribute, () => value);
-    _attributes[attribute] = value;
+    super.putAttribute(attribute, value);
   }
 
   /// Removes an already added [attribute].
   ///
   /// If the trace has been stopped, this method throws an assertion
   /// error.
+  ///
+  /// See [PerformanceAttributes.removeAttribute].
+  @override
   void removeAttribute(String attribute) {
     assert(!_hasStopped);
-
-    _attributes.remove(attribute);
+    super.removeAttribute(attribute);
   }
-
-  /// Returns the value of an [attribute].
-  String getAttribute(String attribute) => _attributes[attribute];
 }

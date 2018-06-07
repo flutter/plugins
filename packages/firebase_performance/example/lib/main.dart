@@ -1,4 +1,4 @@
-// Copyright 2017, the Flutter project authors.  Please see the AUTHORS file
+// Copyright 2018, the Flutter project authors.  Please see the AUTHORS file
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
@@ -102,8 +102,12 @@ class _MyAppState extends State<MyApp> {
 
     final _MetricHttpClient metricHttpClient =
         new _MetricHttpClient(new Client());
-    final Request request =
-        new Request("SEND", Uri.parse("https://www.google.com"));
+
+    final Request request = new Request(
+      "SEND",
+      Uri.parse("https://www.google.com"),
+    );
+
     metricHttpClient.send(request);
 
     setState(() {

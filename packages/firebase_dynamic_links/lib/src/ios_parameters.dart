@@ -48,9 +48,6 @@ class IosParameters {
 
   /// The the minimum version of your app that can open the link.
   ///
-  /// If the installed app is an older version, the user is taken to the
-  /// AppStore to upgrade the app.
-  ///
   /// It is app’s developer responsibility to open AppStore when received link
   /// declares higher [minimumVersion] than currently installed.
   final String minimumVersion;

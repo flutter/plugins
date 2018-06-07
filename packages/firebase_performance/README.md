@@ -17,10 +17,10 @@ To use this plugin, add `firebase_performance` as a [dependency in your pubspec.
 A custom trace is a report of performance data associated with some of the code in your app. To learn more about custom traces, see the [Performance Monitoring overview](https://firebase.google.com/docs/perf-mon/#how_does_it_work).
 
 ```dart
-Trace myTrace = FirebasePerformance.instance.newTrace("test_trace");
+final Trace myTrace = FirebasePerformance.instance.newTrace("test_trace");
 myTrace.start();
 
-Item item = cache.fetch("item");
+final Item item = cache.fetch("item");
 if (item != null) {
   myTrace.incrementCounter("item_cache_hit");
 } else {
