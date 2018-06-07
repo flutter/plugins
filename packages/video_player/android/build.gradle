@@ -31,4 +31,8 @@ android {
     lintOptions {
         disable 'InvalidPackage'
     }
+
+    dependencies {
+        implementation 'com.google.android.exoplayer:exoplayer-core:2.8.0'
+    }
 }
