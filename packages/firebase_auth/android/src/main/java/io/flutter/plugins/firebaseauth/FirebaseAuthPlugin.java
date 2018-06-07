@@ -21,7 +21,6 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -131,14 +130,15 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
   }
 
   private void handleSignInWithPhoneNumber(MethodCall call, Result result) {
-      Map<String, String> arguments = (Map<String, String>) call.arguments;
-      String verificationId = arguments.get("verificationId");
-      String smsCode = arguments.get("smsCode");
+    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    String verificationId = arguments.get("verificationId");
+    String smsCode = arguments.get("smsCode");
 
-      PhoneAuthCredential phoneAuthCredential = PhoneAuthProvider.getCredential(verificationId, smsCode);
-      firebaseAuth
-              .signInWithCredential(phoneAuthCredential)
-              .addOnCompleteListener(new SignInCompleteListener(result));
+    PhoneAuthCredential phoneAuthCredential =
+        PhoneAuthProvider.getCredential(verificationId, smsCode);
+    firebaseAuth
+        .signInWithCredential(phoneAuthCredential)
+        .addOnCompleteListener(new SignInCompleteListener(result));
   }
 
   private void handleVerifyPhoneNumber(MethodCall call, Result result) {
@@ -147,46 +147,62 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     String phoneNumber = call.argument("phoneNumber");
     int timeout = call.argument("timeout");
 
-    PhoneAuthProvider.OnVerificationStateChangedCallbacks verificationCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-      @Override
-      public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
-        Map<String, Object> arguments = new HashMap<>();
-        arguments.put("handle", handle);
-        channel.invokeMethod("phoneVerificationCompleted", arguments);
-      }
+    PhoneAuthProvider.OnVerificationStateChangedCallbacks verificationCallbacks =
+        new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+          @Override
+          public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
+            Map<String, Object> arguments = new HashMap<>();
+            arguments.put("handle", handle);
+            channel.invokeMethod("phoneVerificationCompleted", arguments);
+          }
 
-      @Override
-      public void onVerificationFailed(FirebaseException e) {
-        Map<String, Object> arguments = new HashMap<>();
-        arguments.put("handle", handle);
-        arguments.put("exception", getVerifyPhoneNumberExceptionMap(e));
-        channel.invokeMethod("phoneVerificationFailed", arguments);
-      }
+          @Override
+          public void onVerificationFailed(FirebaseException e) {
+            Map<String, Object> arguments = new HashMap<>();
+            arguments.put("handle", handle);
+            arguments.put("exception", getVerifyPhoneNumberExceptionMap(e));
+            channel.invokeMethod("phoneVerificationFailed", arguments);
+          }
 
-      @Override
-      public void onCodeSent(String verificationId, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
-        Map<String, Object> arguments = new HashMap<>();
-        arguments.put("handle", handle);
-        arguments.put("verificationId", verificationId);
-        arguments.put("forceResendingToken", forceResendingToken.hashCode());
-        channel.invokeMethod("phoneCodeSent", arguments);
-      }
+          @Override
+          public void onCodeSent(
+              String verificationId, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+            Map<String, Object> arguments = new HashMap<>();
+            arguments.put("handle", handle);
+            arguments.put("verificationId", verificationId);
+            arguments.put("forceResendingToken", forceResendingToken.hashCode());
+            channel.invokeMethod("phoneCodeSent", arguments);
+          }
 
-      @Override
-      public void onCodeAutoRetrievalTimeOut(String verificationId) {
-        Map<String, Object> arguments = new HashMap<>();
-        arguments.put("handle", handle);
-        arguments.put("verificationId", verificationId);
-        channel.invokeMethod("phoneCodeAutoRetrievalTimeout", arguments);
-      }
-    };
+          @Override
+          public void onCodeAutoRetrievalTimeOut(String verificationId) {
+            Map<String, Object> arguments = new HashMap<>();
+            arguments.put("handle", handle);
+            arguments.put("verificationId", verificationId);
+            channel.invokeMethod("phoneCodeAutoRetrievalTimeout", arguments);
+          }
+        };
 
     if (call.argument("forceResendingToken") != null) {
       int forceResendingTokenKey = call.argument("forceResendingToken");
-      PhoneAuthProvider.ForceResendingToken forceResendingToken = forceResendingTokens.get(forceResendingTokenKey);
-      PhoneAuthProvider.getInstance().verifyPhoneNumber(phoneNumber, timeout, TimeUnit.MILLISECONDS, registrar.activity(), verificationCallbacks, forceResendingToken);
+      PhoneAuthProvider.ForceResendingToken forceResendingToken =
+          forceResendingTokens.get(forceResendingTokenKey);
+      PhoneAuthProvider.getInstance()
+          .verifyPhoneNumber(
+              phoneNumber,
+              timeout,
+              TimeUnit.MILLISECONDS,
+              registrar.activity(),
+              verificationCallbacks,
+              forceResendingToken);
     } else {
-      PhoneAuthProvider.getInstance().verifyPhoneNumber(phoneNumber, timeout, TimeUnit.MILLISECONDS, registrar.activity(), verificationCallbacks);
+      PhoneAuthProvider.getInstance()
+          .verifyPhoneNumber(
+              phoneNumber,
+              timeout,
+              TimeUnit.MILLISECONDS,
+              registrar.activity(),
+              verificationCallbacks);
     }
   }
 
@@ -198,7 +214,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       errorCode = "invalidCredential";
     } else if (e instanceof FirebaseAuthException) {
       errorCode = "firebaseAuth";
-    } else if (e instanceof FirebaseTooManyRequestsException){
+    } else if (e instanceof FirebaseTooManyRequestsException) {
       errorCode = "quotaExceeded";
     } else if (e instanceof FirebaseApiNotAvailableException) {
       errorCode = "apiNotAvailable";
@@ -529,10 +545,10 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       ImmutableList.Builder<ImmutableMap<String, Object>> providerDataBuilder =
           ImmutableList.<ImmutableMap<String, Object>>builder();
       for (UserInfo userInfo : user.getProviderData()) {
-          // Ignore phone provider since firebase provider is a super set of the phone provider.
-          if (userInfo.getProviderId().equals("phone")) {
-              continue;
-          }
+        // Ignore phone provider since firebase provider is a super set of the phone provider.
+        if (userInfo.getProviderId().equals("phone")) {
+          continue;
+        }
         providerDataBuilder.add(userInfoToMap(userInfo).build());
       }
       ImmutableMap<String, Object> userMap =

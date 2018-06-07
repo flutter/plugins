@@ -114,7 +114,8 @@ class FirebaseAuth {
       <int, StreamController<FirebaseUser>>{};
 
   static int nextHandle = 0;
-  final Map<int, Map<String, dynamic>> _phoneAuthCallbacks = <int, Map<String, dynamic>>{};
+  final Map<int, Map<String, dynamic>> _phoneAuthCallbacks =
+      <int, Map<String, dynamic>>{};
 
   /// Provides an instance of this class corresponding to the default app.
   ///
@@ -293,7 +294,7 @@ class FirebaseAuth {
     @required PhoneCodeSent codeSent,
     @required PhoneCodeAutoRetrievalTimeout codeAutoRetrievalTimeout,
   }) async {
-    final Map<String, dynamic> callbacks = <String, dynamic> {
+    final Map<String, dynamic> callbacks = <String, dynamic>{
       'PhoneVerificationCompleted': verificationCompleted,
       'PhoneVerificationFailed': verificationFailed,
       'PhoneCodeSent': codeSent,
@@ -302,7 +303,7 @@ class FirebaseAuth {
     nextHandle += 1;
     _phoneAuthCallbacks[nextHandle] = callbacks;
 
-    final Map<String, dynamic> params = <String, dynamic> {
+    final Map<String, dynamic> params = <String, dynamic>{
       'handle': nextHandle,
       'phoneNumber': phoneNumber,
       'timeout': timeout.inMilliseconds,
@@ -414,21 +415,25 @@ class FirebaseAuth {
         break;
       case 'phoneVerificationCompleted':
         final int handle = call.arguments['handle'];
-        final PhoneVerificationCompleted verificationCompleted = _phoneAuthCallbacks[handle]['PhoneVerificationCompleted'];
+        final PhoneVerificationCompleted verificationCompleted =
+            _phoneAuthCallbacks[handle]['PhoneVerificationCompleted'];
         verificationCompleted(await currentUser());
         break;
       case 'phoneVerificationFailed':
         final int handle = call.arguments['handle'];
-        final PhoneVerificationFailed verificationFailed = _phoneAuthCallbacks[handle]['PhoneVerificationFailed'];
+        final PhoneVerificationFailed verificationFailed =
+            _phoneAuthCallbacks[handle]['PhoneVerificationFailed'];
         final Map<String, String> exception = call.arguments['exception'];
-        verificationFailed(new AuthException(exception['code'], exception['message']));
+        verificationFailed(
+            new AuthException(exception['code'], exception['message']));
         break;
       case 'phoneCodeSent':
         final int handle = call.arguments['handle'];
         final String verificationId = call.arguments['verificationId'];
         final int forceResendingToken = call.arguments['forceResendingToken'];
 
-        final PhoneCodeSent codeSent = _phoneAuthCallbacks[handle]['PhoneCodeSent'];
+        final PhoneCodeSent codeSent =
+            _phoneAuthCallbacks[handle]['PhoneCodeSent'];
         if (forceResendingToken == null) {
           codeSent(verificationId);
         } else {
@@ -437,7 +442,8 @@ class FirebaseAuth {
         break;
       case 'phoneCodeAutoRetrievalTimeout':
         final int handle = call.arguments['handle'];
-        final PhoneCodeAutoRetrievalTimeout codeAutoRetrievalTimeout = _phoneAuthCallbacks[handle]['PhoneCodeAutoRetrievealTimeout'];
+        final PhoneCodeAutoRetrievalTimeout codeAutoRetrievalTimeout =
+            _phoneAuthCallbacks[handle]['PhoneCodeAutoRetrievealTimeout'];
         final String verificationId = call.arguments['verificationId'];
         codeAutoRetrievalTimeout(verificationId);
         break;

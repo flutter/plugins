@@ -222,27 +222,32 @@ int nextHandle = 0;
   } else if ([@"verifyPhoneNumber" isEqualToString:call.method]) {
     NSString *phoneNumber = call.arguments[@"phoneNumber"];
     NSNumber *handle = call.arguments[@"handle"];
-    [[FIRPhoneAuthProvider provider] verifyPhoneNumber:phoneNumber UIDelegate:nil completion:^(NSString *verificationID, NSError *error) {
-      if (error) {
-        [self.channel invokeMethod:@"phoneVerificationFailed" arguments:@{
-            @"exception": [self mapVerifyPhoneError:error],
-            @"handle": handle
-        }];
-      } else {
-        [self.channel invokeMethod:@"phoneCodeSent" arguments:@{
-            @"verificationId": verificationID,
-            @"handle": handle
-        }];
-      }
-    }];
+    [[FIRPhoneAuthProvider provider]
+        verifyPhoneNumber:phoneNumber
+               UIDelegate:nil
+               completion:^(NSString *verificationID, NSError *error) {
+                 if (error) {
+                   [self.channel invokeMethod:@"phoneVerificationFailed"
+                                    arguments:@{
+                                      @"exception" : [self mapVerifyPhoneError:error],
+                                      @"handle" : handle
+                                    }];
+                 } else {
+                   [self.channel
+                       invokeMethod:@"phoneCodeSent"
+                          arguments:@{@"verificationId" : verificationID, @"handle" : handle}];
+                 }
+               }];
   } else if ([@"signInWithPhoneNumber" isEqualToString:call.method]) {
     NSString *verificationId = call.arguments[@"verificationId"];
     NSString *smsCode = call.arguments[@"smsCode"];
 
-    FIRPhoneAuthCredential *credential = [[FIRPhoneAuthProvider provider] credentialWithVerificationID:verificationId verificationCode:smsCode];
+    FIRPhoneAuthCredential *credential =
+        [[FIRPhoneAuthProvider provider] credentialWithVerificationID:verificationId
+                                                     verificationCode:smsCode];
     [[FIRAuth auth] signInWithCredential:credential
                               completion:^(FIRUser *user, NSError *error) {
-                                  [self sendResult:result forUser:user error:error];
+                                [self sendResult:result forUser:user error:error];
                               }];
   } else {
     result(FlutterMethodNotImplemented);
@@ -296,9 +301,6 @@ int nextHandle = 0;
   } else if (error.code == FIRAuthErrorCodeMissingPhoneNumber) {
     errorCode = @"missingPhoneNumber";
   }
-  return @{
-      @"code": errorCode,
-      @"message": error.localizedDescription
-  };
+  return @{@"code" : errorCode, @"message" : error.localizedDescription};
 }
 @end

@@ -92,20 +92,24 @@ class _MyHomePageState extends State<MyHomePage> {
     };
 
     PhoneVerificationFailed verificationFailed = (AuthException authException) {
-      _message = Future<String>.value('Phone numbber verification failed. Code: ${authException.code}. Message: ${authException.message}');
+      _message = Future<String>.value(
+          'Phone numbber verification failed. Code: ${authException.code}. Message: ${authException.message}');
     };
 
-    PhoneCodeSent codeSent = (String verificationId, [int forceResendingToken]) async {
+    PhoneCodeSent codeSent =
+        (String verificationId, [int forceResendingToken]) async {
       this.verificationId = verificationId;
       smsCodeController.text = testSmsCode;
     };
 
-    PhoneCodeAutoRetrievalTimeout codeAutoRetrievalTimeout = (String verificationId) {
+    PhoneCodeAutoRetrievalTimeout codeAutoRetrievalTimeout =
+        (String verificationId) {
       this.verificationId = verificationId;
       smsCodeController.text = testSmsCode;
     };
 
-    await _auth.verifyPhoneNumber(phoneNumber: testPhoneNumber,
+    await _auth.verifyPhoneNumber(
+        phoneNumber: testPhoneNumber,
         timeout: const Duration(seconds: 0),
         verificationCompleted: verificationCompleted,
         verificationFailed: verificationFailed,
@@ -115,8 +119,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<String> _testSignInWithPhoneNumber(String smsCode) async {
     final FirebaseUser user = await _auth.signInWithPhoneNumber(
-        verificationId: verificationId,
-        smsCode: smsCode,
+      verificationId: verificationId,
+      smsCode: smsCode,
     );
 
     final FirebaseUser currentUser = await _auth.currentUser();
@@ -150,12 +154,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 });
               }),
           new MaterialButton(
-            child: const Text('Test verifyPhoneNumber'),
-            onPressed: () {
-              _testVerifyPhoneNumber();
-            }),
+              child: const Text('Test verifyPhoneNumber'),
+              onPressed: () {
+                _testVerifyPhoneNumber();
+              }),
           new Container(
-            margin: const EdgeInsets.only(top: 8.0, bottom: 8.0, left: 16.0, right: 16.0),
+            margin: const EdgeInsets.only(
+                top: 8.0, bottom: 8.0, left: 16.0, right: 16.0),
             child: new TextField(
               controller: smsCodeController,
               decoration: const InputDecoration(

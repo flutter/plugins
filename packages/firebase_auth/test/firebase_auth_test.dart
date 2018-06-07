@@ -177,43 +177,32 @@ void main() {
     });
 
     test('signInWithPhoneNumber', () async {
-      await auth.signInWithPhoneNumber(verificationId: kMockVerificationId,
-          smsCode: kMockSmsCode);
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall(
-            'signInWithPhoneNumber',
-            arguments: <String, dynamic> {
-              'verificationId': kMockVerificationId,
-              'smsCode': kMockSmsCode,
-            }
-          )
-        ]
-      );
+      await auth.signInWithPhoneNumber(
+          verificationId: kMockVerificationId, smsCode: kMockSmsCode);
+      expect(log, <Matcher>[
+        isMethodCall('signInWithPhoneNumber', arguments: <String, dynamic>{
+          'verificationId': kMockVerificationId,
+          'smsCode': kMockSmsCode,
+        })
+      ]);
     });
 
     test('verifyPhoneNumber', () async {
-      await auth.verifyPhoneNumber(phoneNumber: kMockPhoneNumber,
+      await auth.verifyPhoneNumber(
+          phoneNumber: kMockPhoneNumber,
           timeout: const Duration(seconds: 5),
           verificationCompleted: null,
           verificationFailed: null,
           codeSent: null,
           codeAutoRetrievalTimeout: null);
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall(
-            'verifyPhoneNumber',
-            arguments: <String, dynamic>{
-              'handle': 1,
-              'phoneNumber': kMockPhoneNumber,
-              'timeout': 5000,
-              'forceResendingToken': null,
-            }
-          )
-        ]
-      );
+      expect(log, <Matcher>[
+        isMethodCall('verifyPhoneNumber', arguments: <String, dynamic>{
+          'handle': 1,
+          'phoneNumber': kMockPhoneNumber,
+          'timeout': 5000,
+          'forceResendingToken': null,
+        })
+      ]);
     });
 
     test('linkWithGoogleCredential', () async {
