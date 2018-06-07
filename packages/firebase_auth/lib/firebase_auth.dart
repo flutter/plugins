@@ -28,6 +28,9 @@ class UserInfo {
   /// The user’s email address.
   String get email => _data['email'];
 
+  /// The user's phone number.
+  String get phoneNumber => _data['phoneNumber'];
+
   @override
   String toString() {
     return '$runtimeType($_data)';
@@ -93,14 +96,67 @@ class FirebaseUser extends UserInfo {
   }
 }
 
+enum PhoneSignInError {
+  INVALID_REQUEST,
+  SMS_QUOTA_EXCEEDED,
+  UNAUTHORIZED,
+  API_NOT_AVAILABLE,
+  NO_FOREGROUND_ACTIVITY
+}
+
+enum PhoneSignInEvent {
+  /// Triggers when an SMS has been sent to the user's phone.
+  CODE_SENT,
+
+  /// Triggers when SMS auto-retrieval times out.
+  ///
+  /// Auto-verification by Google Play services could not be completed
+  /// in the provided timeout.
+  CODE_AUTO_RETRIEVAL_TIMEOUT
+}
+
+PhoneSignInEvent stringToPhoneSignInEventEnum(String event) {
+  switch (event) {
+    case 'CODE_SENT':
+      return PhoneSignInEvent.CODE_SENT;
+    case 'CODE_AUTO_RETRIEVAL_TIMEOUT':
+      return PhoneSignInEvent.CODE_AUTO_RETRIEVAL_TIMEOUT;
+    default:
+      throw new ArgumentError('$event is not a valid PhoneSignInEventType.');
+  }
+}
+
+PhoneSignInError stringToPhoneSignInErrorEnum(String error) {
+  switch (error) {
+    case "exception":
+    case 'INVALID_REQUEST':
+      return PhoneSignInError.INVALID_REQUEST;
+    case 'SMS_QUOTA_EXCEEDED':
+      return PhoneSignInError.SMS_QUOTA_EXCEEDED;
+    case "UNAUTHORIZED":
+      return PhoneSignInError.UNAUTHORIZED;
+    case "API_NOT_AVAILABLE":
+      return PhoneSignInError.API_NOT_AVAILABLE;
+    case "NO_FOREGROUND_ACTIVITY":
+      return PhoneSignInError.NO_FOREGROUND_ACTIVITY;
+    default:
+      throw new ArgumentError('$error is not a valid PhoneSignInError.');
+  }
+}
+
 class FirebaseAuth {
   @visibleForTesting
   static const MethodChannel channel = const MethodChannel(
     'plugins.flutter.io/firebase_auth',
   );
 
+  static const EventChannel phoneSignInEventChannel =
+      const EventChannel('plugins.flutter.io/firebase_auth_phone_sign_in');
+
   final Map<int, StreamController<FirebaseUser>> _authStateChangedControllers =
       <int, StreamController<FirebaseUser>>{};
+
+  Stream<PhoneSignInEvent> _phoneSignInEventStream;
 
   /// Provides an instance of this class corresponding to the default app.
   ///
@@ -132,6 +188,15 @@ class FirebaseAuth {
     });
 
     return controller.stream;
+  }
+
+  Stream<PhoneSignInEvent> get onPhoneSignInEvents {
+    if (_phoneSignInEventStream == null) {
+      _phoneSignInEventStream = phoneSignInEventChannel
+          .receiveBroadcastStream()
+          .map((dynamic event) => stringToPhoneSignInEventEnum(event));
+    }
+    return _phoneSignInEventStream;
   }
 
   /// Asynchronously creates and becomes an anonymous user.
@@ -267,7 +332,117 @@ class FirebaseAuth {
     return currentUser;
   }
 
-  Future<void> signOut() async {
+  /// Signs in a user by sending a verification code to the user's [phoneNumber].
+  ///
+  /// The [timeout] is the maximum amount of time in seconds you are willing
+  /// to wait for SMS auto-retrieval to be completed.
+  /// Maximum allowed value is 2 minutes. Use 0 to disable SMS-auto-retrieval.
+  /// If you specify a positive value less than 30 seconds,
+  /// it'll default to 30 seconds.
+  ///
+  /// To start the authentication process call [signInWithPhoneNumber].
+  /// The call only returns when the user has been successfully authenticated or
+  /// when an error occurs.
+  ///
+  /// Successful authentication can happen using different means:
+  /// - Instant verification. In some cases the phone number can be instantly
+  ///   verified without needing to send or enter a verification code.
+  /// - Auto-retrieval. On some devices Google Play services can automatically
+  ///   detect the incoming verification SMS and perform verification without
+  ///   user action.
+  /// - User entered verification code. Call [verifyPhoneNumber] to validate the
+  /// user's phone number using the verification code.
+  /// If the verification code needs to be resent call [resendVerificationCode].
+  ///
+  /// When the code sent to the user is automatically verified by
+  /// Google Play services, the call to [signInWithPhoneNumber] returns
+  /// successfully and the user doesn't need to manually enter it.
+  /// (the view to enter the verification code should be hidden from the user)
+  ///
+  /// If the authentication requires sending a verification code, you must
+  /// subscribe to an event stream: `StreamSubscription<PhoneSignInEvent>` to be
+  /// notified when the code has been sent to allow the user to enter it.
+  /// (if not already verified by Google Play services in the meantime)
+  ///
+  /// For example:
+  /// ```dart
+  /// class PhoneNumberSignInPage extends StatefulWidget {
+  ///   const PhoneNumberSignInPage({Key key}) : super(key: key);
+  ///
+  ///   @override
+  ///   _PhoneNumberSignInPageState createState() =>
+  ///     new _PhoneNumberSignInPageState();
+  ///   }
+  /// }
+  ///
+  /// class _PhoneNumberSignInPageState extends State<PhoneNumberSignInPage> {
+  ///   StreamSubscription<PhoneSignInEvent> _phoneSignInEventSubscription;
+  ///
+  ///   @override
+  ///   void initState() {
+  ///     super.initState();
+  ///     _phoneSignInEventSubscription =
+  ///       _auth.onPhoneSignInEvents.listen((PhoneSignInEvent phoneSignInEvent) {
+  ///         switch (phoneSignInEvent) {
+  ///           case PhoneSignInEvent.CODE_SENT:
+  ///             print("[UI] Code sent event - Display view to let the user enter it");
+  ///             break;
+  ///
+  ///           case PhoneSignInEvent.CODE_AUTO_RETRIEVAL_TIMEOUT:
+  ///             print("[UI] Code auto retrieval timeout event");
+  ///             break;
+  ///         }
+  ///       });
+  ///   }
+  ///
+  ///   @override
+  ///   void dispose() {
+  ///     super.dispose();
+  ///     if (_phoneSignInEventSubscription != null) {
+  ///       _phoneSignInEventSubscription.cancel();
+  ///     }
+  ///  }
+  /// ```
+  ///
+  /// Throws [PlatformException] when
+  /// 1. There is no foreground activity.
+  /// 2. When the phone number or the verification code is invalid.
+  /// 3. The SMS quota for the project has been exceeded.
+  /// 4. The app is not authorized to use Firebase Authentication.
+  /// 5. No Google Play Services installed on the device.
+  Future<FirebaseUser> signInWithPhoneNumber(
+      {@required String phoneNumber, int timeout = 60}) async {
+    assert(phoneNumber != null && phoneNumber.isNotEmpty);
+    assert(timeout >= 0);
+    final Map<String, dynamic> data = await channel.invokeMethod(
+        'signInWithPhoneNumber',
+        <String, dynamic>{'phoneNumber': phoneNumber, 'timeout': timeout});
+    final FirebaseUser currentUser = new FirebaseUser._(data);
+    return currentUser;
+  }
+
+  /// Verify the authenticity of the phone number using the provided [code].
+  Future<FirebaseUser> verifyPhoneNumber({@required String code}) async {
+    assert(code != null && code.isNotEmpty);
+    final Map<String, dynamic> data = await channel
+        .invokeMethod('verifyPhoneNumber', <String, String>{'code': code});
+    final FirebaseUser currentUser = new FirebaseUser._(data);
+    return currentUser;
+  }
+
+  /// Resend the verification code for the provided [phoneNumber].
+  Future<FirebaseUser> resendVerificationCode(
+      {@required String phoneNumber, int timeout = 60}) async {
+    assert(phoneNumber != null && phoneNumber.isNotEmpty);
+    assert(timeout >= 0);
+    final Map<String, dynamic> data = await channel.invokeMethod(
+        'resendVerificationCode',
+        <String, dynamic>{'phoneNumber': phoneNumber, 'timeout': timeout});
+    final FirebaseUser currentUser = new FirebaseUser._(data);
+    return currentUser;
+  }
+
+  Future<Null> signOut() async {
     return await channel.invokeMethod("signOut");
   }
 
