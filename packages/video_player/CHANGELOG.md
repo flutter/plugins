@@ -1,3 +1,8 @@
+## 0.5.5
+
+* **Breaking change** `VideoPlayerController.initialize()` now only completes after the controller is initialized.
+* Updated example in README.md.
+
 ## 0.5.4
 
 * Updated Gradle tooling to match Android Studio 3.1.2.
