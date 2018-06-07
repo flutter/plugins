@@ -7,6 +7,17 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
+class AuthException implements Exception {
+  final String code;
+  final String message;
+  const AuthException(this.code, this.message);
+}
+
+typedef void PhoneVerificationCompleted(FirebaseUser firebaseUser);
+typedef void PhoneVerificationFailed(AuthException error);
+typedef void PhoneCodeSent(String verificationId);
+typedef void PhoneCodeAutoRetrievalTimeout(String verificationId);
+
 /// Represents user data returned from an identity provider.
 class UserInfo {
   final Map<dynamic, dynamic> _data;
@@ -27,6 +38,8 @@ class UserInfo {
 
   /// The user’s email address.
   String get email => _data['email'];
+
+  String get phoneNumber => _data['phoneNumber'];
 
   @override
   String toString() {
@@ -265,6 +278,46 @@ class FirebaseAuth {
     );
     final FirebaseUser currentUser = new FirebaseUser._(data);
     return currentUser;
+  }
+
+  Future<Null> verifyPhoneNumber({
+    @required String phoneNumber,
+    @required Duration timeout,
+    bool resend = false,
+    @required PhoneVerificationCompleted verificationCompleted,
+    @required PhoneVerificationFailed verificationFailed,
+    @required PhoneCodeSent codeSent,
+    @required PhoneCodeAutoRetrievalTimeout codeAutoRetrievalTimeout,
+  }) async {
+    final Map<String, dynamic> response = await channel.invokeMethod(
+        'verifyPhoneNumber', <String, String>{phoneNumber: phoneNumber});
+
+    switch (response["status"]) {
+      case "verificationCompleted":
+        verificationCompleted(await currentUser());
+        break;
+      case "verificationFailed":
+        verificationFailed(response["error"]);
+        break;
+      case "codeSent":
+        codeSent(response["verificationID"]);
+        break;
+      case "codeAutoRetrievalTimeout":
+        codeAutoRetrievalTimeout(response["verificationID"]);
+    }
+  }
+
+  Future<FirebaseUser> signInWithPhoneNumber({
+    @required String verificationID,
+    @required String enteredCode,
+  }) async {
+    final Map<String, String> response = await channel.invokeMethod(
+        'signInWithPhoneNumber', <String, String>{
+      'verificationID': verificationID,
+      'enteredCode': enteredCode
+    });
+    final FirebaseUser user = FirebaseUser._(response);
+    return user;
   }
 
   Future<void> signOut() async {
