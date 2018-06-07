@@ -148,12 +148,12 @@ public class VideoPlayerPlugin implements MethodCallHandler {
     }
 
     @SuppressWarnings("deprecation")
-    private static void setAudioAttributes(SimpleExoPlayer mediaPlayer) {
+    private static void setAudioAttributes(SimpleExoPlayer exoPlayer) {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        mediaPlayer.setAudioAttributes(
+        exoPlayer.setAudioAttributes(
             new AudioAttributes.Builder().setContentType(C.CONTENT_TYPE_MOVIE).build());
       } else {
-        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        exoPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
       }
     }
 
