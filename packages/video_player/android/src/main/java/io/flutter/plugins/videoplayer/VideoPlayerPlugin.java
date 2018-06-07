@@ -110,7 +110,6 @@ public class VideoPlayerPlugin implements MethodCallHandler {
 
       surface = new Surface(textureEntry.surfaceTexture());
       exoPlayer.setVideoSurface(surface);
-      exoPlayer.setPlayWhenReady(true);
       setAudioAttributes(exoPlayer);
 
       exoPlayer.addListener(
