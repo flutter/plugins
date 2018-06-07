@@ -116,7 +116,7 @@ public class GoogleMapsPlugin implements MethodCallHandler, Application.Activity
                   final Map<String, Object> arguments = new HashMap<>(2);
                   arguments.put("map", controller.id());
                   arguments.put("marker", marker.getId());
-                  channel.invokeMethod("infowindow#onTap", arguments);
+                  channel.invokeMethod("infoWindow#onTap", arguments);
                 }
               });
           // result.success is called from controller when the GoogleMaps instance
