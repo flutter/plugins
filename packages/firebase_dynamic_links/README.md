@@ -94,16 +94,16 @@ applinks:APP_CODE.app.goo.gl
 ```dart
 Future<void> main() async {
   final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.retrieveDynamicLink();
-  final Uri deepLink = data?.link;
-  runApp(widgetFor(deepLink));
-}
+  final Uri deepLink = data?.link; // https://dynamic.link.example/helloworld
 
-Widget widgetFor(Uri deepLink) {
-  if (deepLink == null) {
-    // return app landing page
-  } else {
-    // calculate and return some page based on the deep link
-  }
+  runApp(new MaterialApp(
+    title: 'Dynamic Links Example',
+    routes: <String, WidgetBuilder>{
+      '/': (BuildContext context) => new MyHomeWidget(),
+      '/helloworld': (BuildContext context) => new MyHelloWorldWidget(),
+    },
+    initialRoute: deepLink?.path, // if path is null or not found, default route == '/'
+  ));
 }
 ```
 

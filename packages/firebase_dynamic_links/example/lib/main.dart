@@ -7,38 +7,35 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 
-void main() => runApp(new MyApp());
+Future<void> main() async {
+  final PendingDynamicLinkData data =
+      await FirebaseDynamicLinks.instance.retrieveDynamicLink();
+  final Uri deepLink = data?.link;
 
-class MyApp extends StatefulWidget {
-  @override
-  _MyAppState createState() => new _MyAppState();
+  runApp(new MaterialApp(
+    title: 'Dynamic Links Example',
+    routes: <String, WidgetBuilder>{
+      '/': (BuildContext context) => new _MainScreen(),
+      '/helloworld': (BuildContext context) => new _DynamicLinkScreen(),
+    },
+    initialRoute: deepLink?.path,
+  ));
 }
 
-class _MyAppState extends State<MyApp> {
-  String _linkMessage = 'Not opened by dynamic link!';
+class _MainScreen extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => new _MainScreenState();
+}
+
+class _MainScreenState extends State<_MainScreen> {
+  String _linkMessage;
   bool _isCreatingLink = false;
+  @override
+  BuildContext get context => super.context;
 
   @override
   void initState() {
     super.initState();
-    _retrieveDynamicLink();
-  }
-
-  Future<void> _retrieveDynamicLink() async {
-    final PendingDynamicLinkData data =
-        await FirebaseDynamicLinks.instance.retrieveDynamicLink();
-
-    setState(() {
-      if (data != null) {
-        _linkMessage = 'Deeplink: ${data.link.toString()}';
-        if (data.android != null) {
-          _linkMessage += '''\nAndroid Timestamp: ${data.android.clickTimestamp}
-              Android Min Version: ${data.android.minimumVersion}''';
-        } else if (data.ios != null) {
-          _linkMessage += '\niOS Min Version: ${data.ios.minimumVersion}';
-        }
-      }
-    });
   }
 
   Future<void> _createDynamicLink(bool short) async {
@@ -48,7 +45,7 @@ class _MyAppState extends State<MyApp> {
 
     final DynamicLinkParameters parameters = new DynamicLinkParameters(
       domain: 'cx4k7.app.goo.gl',
-      link: Uri.parse('https://google.com'),
+      link: Uri.parse('https://dynamic.link.example/helloworld'),
       androidParameters: new AndroidParameters(
         packageName: 'io.flutter.plugins.firebasedynamiclinksexample',
         minimumVersion: 0,
@@ -79,6 +76,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
+      title: 'Dynamic Links Example',
       home: new Scaffold(
         appBar: new AppBar(
           title: const Text('Dynamic Links Example'),
@@ -111,6 +109,17 @@ class _MyAppState extends State<MyApp> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _DynamicLinkScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return const Material(
+      child: const Center(
+        child: const Text('Hello world!'),
       ),
     );
   }
