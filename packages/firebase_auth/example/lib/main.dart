@@ -87,11 +87,13 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _testVerifyPhoneNumber() async {
-    final PhoneVerificationCompleted verificationCompleted = (FirebaseUser user) {
+    final PhoneVerificationCompleted verificationCompleted =
+        (FirebaseUser user) {
       _message = Future<String>.value('signInWithPhoneNumber succeeded: $user');
     };
 
-    final PhoneVerificationFailed verificationFailed = (AuthException authException) {
+    final PhoneVerificationFailed verificationFailed =
+        (AuthException authException) {
       _message = Future<String>.value(
           'Phone numbber verification failed. Code: ${authException.code}. Message: ${authException.message}');
     };
