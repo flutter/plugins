@@ -2,9 +2,9 @@
 
 @implementation FirebaseMlVisionPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  FlutterMethodChannel* channel = [FlutterMethodChannel
-      methodChannelWithName:@"firebase_ml_vision"
-            binaryMessenger:[registrar messenger]];
+  FlutterMethodChannel* channel =
+      [FlutterMethodChannel methodChannelWithName:@"firebase_ml_vision"
+                    binaryMessenger:[registrar messenger]];
   FirebaseMlVisionPlugin* instance = [[FirebaseMlVisionPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
