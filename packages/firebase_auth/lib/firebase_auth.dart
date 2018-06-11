@@ -28,6 +28,9 @@ class UserInfo {
   /// The user’s email address.
   String get email => _data['email'];
 
+  /// The user's phone number.
+  String get phoneNumber => _data['phoneNumber'];
+
   @override
   String toString() {
     return '$runtimeType($_data)';

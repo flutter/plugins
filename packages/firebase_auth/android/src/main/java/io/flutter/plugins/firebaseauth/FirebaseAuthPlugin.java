@@ -537,6 +537,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     if (userInfo.getEmail() != null) {
       builder.put("email", userInfo.getEmail());
     }
+    if (userInfo.getPhoneNumber() != null) {
+      builder.put("phoneNumber", userInfo.getPhoneNumber());
+    }
     return builder;
   }
 
