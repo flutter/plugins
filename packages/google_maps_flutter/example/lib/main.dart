@@ -5,6 +5,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'animate_camera.dart';
+import 'large_map.dart';
 import 'map_ui.dart';
 import 'move_camera.dart';
 import 'page.dart';
@@ -15,6 +16,7 @@ final List<Page> _allPages = <Page>[
   AnimateCameraPage(),
   MoveCameraPage(),
   PlaceMarkerPage(),
+  LargeMapPage(),
 ];
 
 class MapsDemo extends StatelessWidget {

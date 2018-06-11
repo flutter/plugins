@@ -15,6 +15,7 @@ import android.app.Application;
 import android.graphics.Canvas;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -45,7 +46,8 @@ final class GoogleMapController
         GoogleMap.OnMarkerClickListener,
         GoogleMap.OnCameraMoveStartedListener,
         GoogleMap.OnCameraMoveListener,
-        GoogleMap.OnCameraIdleListener {
+        GoogleMap.OnCameraIdleListener,
+        View.OnTouchListener {
   private final AtomicInteger activityState;
   private final FrameLayout parent;
   private final PluginRegistry.Registrar registrar;
@@ -61,6 +63,9 @@ final class GoogleMapController
   private Surface surface;
   private boolean trackCameraPosition = false;
   private boolean disposed = false;
+  private int x;
+  private int y;
+  private boolean isDispatchingToMapView = false;
 
   GoogleMapController(
       AtomicInteger activityState,
@@ -153,13 +158,37 @@ final class GoogleMapController
     return textureEntry.id();
   }
 
-  @SuppressWarnings("unused")
-  void showOverlay(int x, int y) {
-    // ignored
+  @Override
+  public boolean onTouch(View v, MotionEvent event) {
+    final float ex = event.getX();
+    final float ey = event.getY();
+    final boolean isInsideMapView = (x <= ex && ex <= x + width && y <= ey && ey <= y + height);
+    if (!isDispatchingToMapView && isInsideMapView && event.getAction() == MotionEvent.ACTION_DOWN) {
+      isDispatchingToMapView = true;
+    }
+    if (isDispatchingToMapView) {
+      MotionEvent translated = MotionEvent.obtain(event);
+      translated.offsetLocation(-x, -y);
+      final boolean consumed = mapView.dispatchTouchEvent(translated);
+      if (event.getAction() == MotionEvent.ACTION_CANCEL || event.getAction() == MotionEvent.ACTION_OUTSIDE || event.getAction() == MotionEvent.ACTION_UP) {
+        isDispatchingToMapView = false;
+      }
+      translated.recycle();
+      return consumed;
+    }
+    else {
+      return false;
+    }
+  }
+
+  void showOverlay(final int x, final int y) {
+    this.x = x;
+    this.y = y;
+    registrar.view().setOnTouchListener(this);
   }
 
   void hideOverlay() {
-    // ignored
+    registrar.view().setOnTouchListener(null);
   }
 
   void moveCamera(CameraUpdate cameraUpdate) {
@@ -238,6 +267,7 @@ final class GoogleMapController
     if (disposed) {
       return;
     }
+    registrar.view().setOnTouchListener(null);
     disposed = true;
     parent.removeView(mapView);
     textureEntry.release();
