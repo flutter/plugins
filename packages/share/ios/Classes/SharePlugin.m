@@ -16,8 +16,9 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
   [shareChannel setMethodCallHandler:^(FlutterMethodCall *call, FlutterResult result) {
     if ([@"share" isEqualToString:call.method]) {
       NSDictionary *arguments = [call arguments];
+      NSString *shareText = arguments[@"text"];
 
-      if ([arguments[@"text"] length] == 0) {
+      if (shareText.length == 0) {
         result(
             [FlutterError errorWithCode:@"error" message:@"Non-empty text expected" details:nil]);
         return;
@@ -34,7 +35,7 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
                                 [originWidth doubleValue], [originHeight doubleValue]);
       }
 
-      [self share:call.arguments
+      [self share:shareText
           withController:[UIApplication sharedApplication].keyWindow.rootViewController
                 atSource:originRect];
       result(nil);
