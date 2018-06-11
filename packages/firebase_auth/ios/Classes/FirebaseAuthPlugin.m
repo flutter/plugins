@@ -25,7 +25,7 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
     @"uid" : userInfo.uid ?: [NSNull null],
     @"photoUrl" : userInfo.photoURL.absoluteString ?: [NSNull null],
     @"email" : userInfo.email ?: [NSNull null],
-    @"phoneNumber": userInfo.phoneNumber ?: [NSNull null],
+    @"phoneNumber" : userInfo.phoneNumber ?: [NSNull null],
   };
 }
 
