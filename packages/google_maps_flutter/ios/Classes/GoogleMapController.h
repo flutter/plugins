@@ -12,6 +12,7 @@
 - (void)onCameraMoveOnMap:(id)mapId cameraPosition:(GMSCameraPosition*)cameraPosition;
 - (void)onCameraIdleOnMap:(id)mapId;
 - (void)onMarkerTappedOnMap:(id)mapId marker:(NSString*)markerId;
+- (void)onInfoWindowTappedOnMap:(id)mapId marker:(NSString*)markerId;
 @end
 
 // Defines map UI options writable from Flutter.

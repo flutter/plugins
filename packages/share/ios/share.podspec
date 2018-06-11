@@ -3,7 +3,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'share'
-  s.version          = '0.0.1'
+  s.version          = '0.5.2'
   s.summary          = 'A Flutter plugin for sharing content from the Flutter app via the platform share sheet.'
   s.description      = <<-DESC
 A Flutter plugin for sharing content from the Flutter app via the platform share sheet.

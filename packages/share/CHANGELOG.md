@@ -1,3 +1,7 @@
+## 0.5.2
+
+* Fixes iOS sharing
+
 ## 0.5.1
 
 * Updated Gradle tooling to match Android Studio 3.1.2.

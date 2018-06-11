@@ -109,6 +109,16 @@ public class GoogleMapsPlugin implements MethodCallHandler, Application.Activity
                   channel.invokeMethod("marker#onTap", arguments);
                 }
               });
+          controller.setOnInfoWindowTappedListener(
+              new OnInfoWindowTappedListener() {
+                @Override
+                public void onInfoWindowTapped(Marker marker) {
+                  final Map<String, Object> arguments = new HashMap<>(2);
+                  arguments.put("map", controller.id());
+                  arguments.put("marker", marker.getId());
+                  channel.invokeMethod("infoWindow#onTap", arguments);
+                }
+              });
           // result.success is called from controller when the GoogleMaps instance
           // is ready
           break;
