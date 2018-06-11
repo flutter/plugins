@@ -29,10 +29,21 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import java.io.File;
+import java.io.IOException;
 
 class FileUtils {
-  @SuppressLint("NewApi")
+
   String getPathFromUri(final Context context, final Uri uri) {
+    String path = getPathFromLocalUri(context, uri);
+    if (path == null) {
+      path = getPathFromRemoteUri(context, uri);
+    }
+    return path;
+  }
+
+  @SuppressLint("NewApi")
+  private String getPathFromLocalUri(final Context context, final Uri uri) {
     final boolean isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
 
     if (isKitKat && DocumentsContract.isDocumentUri(context, uri)) {
@@ -108,6 +119,37 @@ class FileUtils {
     } finally {
       if (cursor != null) {
         cursor.close();
+      }
+    }
+    return null;
+  }
+
+  private static String getPathFromRemoteUri(final Context context, final Uri uri) {
+    InputStream inputStream = null;
+    OutputStream outputStream = null;
+    try {
+      inputStream = context.getContentResolver().openInputStream(uri);
+      File file = File.createTempFile("cachedImage", "jpg", context.getCacheDir());
+      outputStream = new FileOutputStream(file);
+      if (inputStream != null) {
+        byte[] buffer = new byte[4 * 1024];
+        int read;
+        while ((read = inputStream.read(buffer)) != -1) {
+          outputStream.write(buffer, 0, read);
+        }
+        outputStream.flush();
+        return file.getPath();
+      }
+    } catch (FileNotFoundException ignored) {
+    } catch (IOException ignored) {
+    } finally {
+      try {
+        if (inputStream != null) inputStream.close();
+      } catch (IOException ignored) {
+      }
+      try {
+        if (outputStream != null) outputStream.close();
+      } catch (IOException ignored) {
       }
     }
     return null;
