@@ -16,10 +16,7 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
   [shareChannel setMethodCallHandler:^(FlutterMethodCall *call, FlutterResult result) {
     if ([@"share" isEqualToString:call.method]) {
       NSDictionary *arguments = [call arguments];
-      NSString *shareText;
-      if ([arguments[@"text"] isKindOfClass:[NSString class]] == YES) {
-        shareText = arguments[@"text"];
-      }
+      NSString *shareText = arguments[@"text"];
 
       if (shareText.length == 0) {
         result(
