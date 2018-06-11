@@ -158,15 +158,17 @@ typedef Widget VideoWidgetBuilder(
 abstract class PlayerLifeCycle extends StatefulWidget {
   final VideoWidgetBuilder childBuilder;
   final String dataSource;
+  final bool isHls;
 
-  PlayerLifeCycle(this.dataSource, this.childBuilder);
+  PlayerLifeCycle(this.dataSource, this.isHls, this.childBuilder);
 }
 
 /// A widget connecting its life cycle to a [VideoPlayerController] using
 /// a data source from the network.
 class NetworkPlayerLifeCycle extends PlayerLifeCycle {
-  NetworkPlayerLifeCycle(String dataSource, VideoWidgetBuilder childBuilder)
-      : super(dataSource, childBuilder);
+  NetworkPlayerLifeCycle(
+      String dataSource, bool isHls, VideoWidgetBuilder childBuilder)
+      : super(dataSource, isHls, childBuilder);
 
   @override
   _NetworkPlayerLifeCycleState createState() =>
@@ -176,8 +178,9 @@ class NetworkPlayerLifeCycle extends PlayerLifeCycle {
 /// A widget connecting its life cycle to a [VideoPlayerController] using
 /// an asset as data source
 class AssetPlayerLifeCycle extends PlayerLifeCycle {
-  AssetPlayerLifeCycle(String dataSource, VideoWidgetBuilder childBuilder)
-      : super(dataSource, childBuilder);
+  AssetPlayerLifeCycle(
+      String dataSource, bool isHls, VideoWidgetBuilder childBuilder)
+      : super(dataSource, isHls, childBuilder);
 
   @override
   _AssetPlayerLifeCycleState createState() => new _AssetPlayerLifeCycleState();
@@ -225,14 +228,16 @@ abstract class _PlayerLifeCycleState extends State<PlayerLifeCycle> {
 class _NetworkPlayerLifeCycleState extends _PlayerLifeCycleState {
   @override
   VideoPlayerController createVideoPlayerController() {
-    return new VideoPlayerController.network(widget.dataSource);
+    return new VideoPlayerController.network(widget.dataSource,
+        isHls: widget.isHls);
   }
 }
 
 class _AssetPlayerLifeCycleState extends _PlayerLifeCycleState {
   @override
   VideoPlayerController createVideoPlayerController() {
-    return new VideoPlayerController.asset(widget.dataSource);
+    return new VideoPlayerController.asset(widget.dataSource,
+        isHls: widget.isHls);
   }
 }
 
@@ -373,13 +378,25 @@ void main() {
           ),
           body: new TabBarView(
             children: <Widget>[
-              new NetworkPlayerLifeCycle(
-                'http://www.sample-videos.com/video/mp4/720/big_buck_bunny_720p_20mb.mp4',
-                (BuildContext context, VideoPlayerController controller) =>
-                    new AspectRatioVideo(controller),
+              new Column(
+                children: <Widget>[
+                  new NetworkPlayerLifeCycle(
+                    'http://www.sample-videos.com/video/mp4/720/big_buck_bunny_720p_20mb.mp4',
+                    false,
+                    (BuildContext context, VideoPlayerController controller) =>
+                        new AspectRatioVideo(controller),
+                  ),
+                  new NetworkPlayerLifeCycle(
+                    'http://live.cloud6.in:1935/simskasri/limitless/playlist.m3u8',
+                    true,
+                    (BuildContext context, VideoPlayerController controller) =>
+                        new AspectRatioVideo(controller),
+                  ),
+                ],
               ),
               new AssetPlayerLifeCycle(
                   'assets/Butterfly-209.mp4',
+                  false,
                   (BuildContext context, VideoPlayerController controller) =>
                       new VideoInListOfCards(controller)),
             ],

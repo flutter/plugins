@@ -143,6 +143,7 @@ enum DataSourceType { asset, network, file }
 class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   int _textureId;
   final String dataSource;
+  final bool isHls;
 
   /// Describes the type of data source this [VideoPlayerController]
   /// is constructed with.
@@ -160,7 +161,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// The name of the asset is given by the [dataSource] argument and must not be
   /// null. The [package] argument must be non-null when the asset comes from a
   /// package and null otherwise.
-  VideoPlayerController.asset(this.dataSource, {this.package})
+  VideoPlayerController.asset(this.dataSource,
+      {this.package, this.isHls = false})
       : dataSourceType = DataSourceType.asset,
         super(new VideoPlayerValue(duration: null));
 
@@ -169,7 +171,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   ///
   /// The URI for the video is given by the [dataSource] argument and must not be
   /// null.
-  VideoPlayerController.network(this.dataSource)
+  VideoPlayerController.network(this.dataSource, {this.isHls = false})
       : dataSourceType = DataSourceType.network,
         super(new VideoPlayerValue(duration: null));
 
@@ -177,7 +179,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   ///
   /// This will load the file from the file-URI given by:
   /// `'file://${file.path}'`.
-  VideoPlayerController.file(File file)
+  VideoPlayerController.file(File file, {this.isHls = false})
       : dataSource = 'file://${file.path}',
         dataSourceType = DataSourceType.file,
         super(new VideoPlayerValue(duration: null));
@@ -191,14 +193,21 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       case DataSourceType.asset:
         dataSourceDescription = <String, dynamic>{
           'asset': dataSource,
-          'package': package
+          'package': package,
+          'isHls': isHls,
         };
         break;
       case DataSourceType.network:
-        dataSourceDescription = <String, dynamic>{'uri': dataSource};
+        dataSourceDescription = <String, dynamic>{
+          'uri': dataSource,
+          'isHls': isHls
+        };
         break;
       case DataSourceType.file:
-        dataSourceDescription = <String, dynamic>{'uri': dataSource};
+        dataSourceDescription = <String, dynamic>{
+          'uri': dataSource,
+          'isHls': isHls
+        };
     }
     final Map<dynamic, dynamic> response = await _channel.invokeMethod(
       'create',
