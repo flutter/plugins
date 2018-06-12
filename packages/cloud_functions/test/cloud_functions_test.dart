@@ -32,14 +32,14 @@ void main() {
         log,
         <Matcher>[
           isMethodCall(
-            'FirebaseFunctions#call',
+            'CloudFunctions#call',
             arguments: <String, dynamic>{
               'functionName': 'baz',
               'parameters': null,
             },
           ),
           isMethodCall(
-            'FirebaseFunctions#call',
+            'CloudFunctions#call',
             arguments: <String, dynamic>{
               'functionName': 'qux',
               'parameters': <String, dynamic>{
