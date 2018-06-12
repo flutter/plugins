@@ -1,3 +1,7 @@
+## 0.4.5
+
+* Bugfixes, code cleanup, more test coverage.
+
 ## 0.4.4
 
 * Updated Gradle tooling to match Android Studio 3.1.2.
