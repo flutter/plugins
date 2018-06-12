@@ -104,7 +104,7 @@ public class ImagePickerDelegate
     void onPathReady(String path);
   }
 
-  private Uri pendingCameraImageUri;
+  private Uri pendingCameraMediaUri;
   private MethodChannel.Result pendingResult;
   private MethodCall methodCall;
 
@@ -200,10 +200,10 @@ public class ImagePickerDelegate
   }
 
   private void launchPickVideoFromGalleryIntent() {
-    Intent pickImageIntent = new Intent(Intent.ACTION_GET_CONTENT);
-    pickImageIntent.setType("video/*");
+    Intent pickVideoIntent = new Intent(Intent.ACTION_GET_CONTENT);
+    pickVideoIntent.setType("video/*");
 
-    activity.startActivityForResult(pickImageIntent, REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY);
+    activity.startActivityForResult(pickVideoIntent, REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY);
   }
 
   public void takeVideoWithCamera(MethodCall methodCall, MethodChannel.Result result) {
@@ -230,12 +230,12 @@ public class ImagePickerDelegate
       return;
     }
 
-    File imageFile = createTemporaryWritableVideoFile();
-    pendingCameraImageUri = Uri.parse("file:" + imageFile.getAbsolutePath());
+    File videoFile = createTemporaryWritableVideoFile();
+    pendingCameraMediaUri = Uri.parse("file:" + videoFile.getAbsolutePath());
 
-    Uri imageUri = fileUriResolver.resolveFileProviderUriForFile(fileProviderName, imageFile);
-    intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-    grantUriPermissions(intent, imageUri);
+    Uri videoUri = fileUriResolver.resolveFileProviderUriForFile(fileProviderName, videoFile);
+    intent.putExtra(MediaStore.EXTRA_OUTPUT, videoUri);
+    grantUriPermissions(intent, videoUri);
 
     activity.startActivityForResult(intent, REQUEST_CODE_TAKE_VIDEO_WITH_CAMERA);
   }
@@ -287,7 +287,7 @@ public class ImagePickerDelegate
     }
 
     File imageFile = createTemporaryWritableImageFile();
-    pendingCameraImageUri = Uri.parse("file:" + imageFile.getAbsolutePath());
+    pendingCameraMediaUri = Uri.parse("file:" + imageFile.getAbsolutePath());
 
     Uri imageUri = fileUriResolver.resolveFileProviderUriForFile(fileProviderName, imageFile);
     intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
@@ -372,16 +372,16 @@ public class ImagePickerDelegate
   public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
     switch (requestCode) {
       case REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY:
-        handleChooseMediaResult(resultCode, data, true);
+        handleChooseImageResult(resultCode, data);
         break;
       case REQUEST_CODE_TAKE_IMAGE_WITH_CAMERA:
-        handleCaptureMediaResult(resultCode, true);
+        handleCaptureImageResult(resultCode);
         break;
       case REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY:
-        handleChooseMediaResult(resultCode, data, false);
+        handleChooseVideoResult(resultCode, data);
         break;
       case REQUEST_CODE_TAKE_VIDEO_WITH_CAMERA:
-        handleCaptureMediaResult(resultCode, false);
+        handleCaptureVideoResult(resultCode);
         break;
       default:
         return false;
@@ -390,10 +390,10 @@ public class ImagePickerDelegate
     return true;
   }
 
-  private void handleChooseMediaResult(int resultCode, Intent data, boolean isResizable) {
+  private void handleChooseImageResult(int resultCode, Intent data) {
     if (resultCode == Activity.RESULT_OK && data != null) {
       String path = fileUtils.getPathFromUri(activity, data.getData());
-      handleResult(path, isResizable);
+      handleImageResult(path);
       return;
     }
 
@@ -401,14 +401,25 @@ public class ImagePickerDelegate
     finishWithSuccess(null);
   }
 
-  private void handleCaptureMediaResult(int resultCode, final boolean isResizable) {
+  private void handleChooseVideoResult(int resultCode, Intent data) {
+    if (resultCode == Activity.RESULT_OK && data != null) {
+      String path = fileUtils.getPathFromUri(activity, data.getData());
+      handleVideoResult(path);
+      return;
+    }
+
+    // User cancelled choosing a picture.
+    finishWithSuccess(null);
+  }
+
+  private void handleCaptureImageResult(int resultCode) {
     if (resultCode == Activity.RESULT_OK) {
       fileUriResolver.getFullImagePath(
-          pendingCameraImageUri,
+          pendingCameraMediaUri,
           new OnPathReadyListener() {
             @Override
             public void onPathReady(String path) {
-              handleResult(path, isResizable);
+              handleImageResult(path);
             }
           });
       return;
@@ -418,17 +429,38 @@ public class ImagePickerDelegate
     finishWithSuccess(null);
   }
 
-  private void handleResult(String path, boolean isResizable) {
-    if (pendingResult != null) {
-      if (isResizable) {
-        Double maxWidth = methodCall.argument("maxWidth");
-        Double maxHeight = methodCall.argument("maxHeight");
+  private void handleCaptureVideoResult(int resultCode) {
+    if (resultCode == Activity.RESULT_OK) {
+      fileUriResolver.getFullImagePath(
+          pendingCameraMediaUri,
+          new OnPathReadyListener() {
+            @Override
+            public void onPathReady(String path) {
+              handleVideoResult(path);
+            }
+          });
+      return;
+    }
 
-        String finalImagePath = imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight);
-        finishWithSuccess(finalImagePath);
-      } else {
-        finishWithSuccess(path);
-      }
+    // User cancelled taking a picture.
+    finishWithSuccess(null);
+  }
+
+  private void handleImageResult(String path) {
+    if (pendingResult != null) {
+      Double maxWidth = methodCall.argument("maxWidth");
+      Double maxHeight = methodCall.argument("maxHeight");
+
+      String finalImagePath = imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight);
+      finishWithSuccess(finalImagePath);
+    } else {
+      throw new IllegalStateException("Received images from picker that were not requested");
+    }
+  }
+
+  private void handleVideoResult(String path) {
+    if (pendingResult != null) {
+      finishWithSuccess(path);
     } else {
       throw new IllegalStateException("Received images from picker that were not requested");
     }
