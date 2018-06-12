@@ -1,7 +1,11 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 #import "CloudFunctionsPlugin.h"
 
-#import "Firebase/Firebase.h"
 #import "FIRFunctions+Internal.h"
+#import "Firebase/Firebase.h"
 
 @interface CloudFunctionsPlugin ()
 @property(nonatomic, retain) FlutterMethodChannel *_channel;
@@ -9,11 +13,11 @@
 
 @implementation CloudFunctionsPlugin
 
-+ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  FlutterMethodChannel* channel = [FlutterMethodChannel
-      methodChannelWithName:@"cloud_functions"
-            binaryMessenger:[registrar messenger]];
-  CloudFunctionsPlugin* instance = [[CloudFunctionsPlugin alloc] init];
++ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
+  FlutterMethodChannel *channel =
+      [FlutterMethodChannel methodChannelWithName:@"cloud_functions"
+                                  binaryMessenger:[registrar messenger]];
+  CloudFunctionsPlugin *instance = [[CloudFunctionsPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
@@ -27,37 +31,41 @@
   return self;
 }
 
-- (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
+- (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"CloudFunctions#call" isEqualToString:call.method]) {
     NSString *functionName = call.arguments[@"functionName"];
     NSObject *parameters = call.arguments[@"parameters"];
-    [[FIRFunctions functions] callFunction:functionName
-                                withObject:parameters
-                                completion:^(FIRHTTPSCallableResult *callableResult, NSError *error) {
-      if (error) {
-        FlutterError *flutterError;
-        if (error.domain == FIRFunctionsErrorDomain) {
-          flutterError = [FlutterError errorWithCode:@"functionsError"
-                                             message:@"Firebase function failed with exception."
-                                             details:@{
-              @"code": [self mapFunctionsErrorCodes:error.code],
-              @"message": error.localizedDescription,
-              @"details": error.userInfo[FIRFunctionsErrorDetailsKey]
+    [[FIRFunctions functions]
+        callFunction:functionName
+          withObject:parameters
+          completion:^(FIRHTTPSCallableResult *callableResult, NSError *error) {
+            if (error) {
+              FlutterError *flutterError;
+              if (error.domain == FIRFunctionsErrorDomain) {
+                flutterError =
+                    [FlutterError errorWithCode:@"functionsError"
+                                        message:@"Firebase function failed with exception."
+                                        details:@{
+                                          @"code" : [self mapFunctionsErrorCodes:error.code],
+                                          @"message" : error.localizedDescription,
+                                          @"details" : error.userInfo[FIRFunctionsErrorDetailsKey]
+                                        }];
+              } else {
+                flutterError =
+                    [FlutterError errorWithCode:nil message:error.localizedDescription details:nil];
+              }
+              result(flutterError);
+            } else {
+              result(callableResult.data);
+            }
           }];
-        } else {
-          flutterError = [FlutterError errorWithCode:nil message:error.localizedDescription details:nil];
-        }
-        result(flutterError);
-      } else {
-        result(callableResult.data);
-      }
-    }];
   } else {
     result(FlutterMethodNotImplemented);
   }
 }
 
-- (NSString*)mapFunctionsErrorCodes:(FIRFunctionsErrorCode)code {
+// Map function error code objects to Strings that match error names on Android.
+- (NSString *)mapFunctionsErrorCodes:(FIRFunctionsErrorCode)code {
   if (code == FIRFunctionsErrorCodeAborted) {
     return @"ABORTED";
   } else if (code == FIRFunctionsErrorCodeAlreadyExists) {

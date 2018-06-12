@@ -1,3 +1,7 @@
+// Copyright 2018, the Chromium project authors.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
 import 'dart:async';
 
 import 'package:flutter/services.dart';
@@ -11,18 +15,26 @@ class CloudFunctionsException implements Exception {
   CloudFunctionsException._(this.code, this.message, this.details);
 }
 
+/// The entry point for accessing a CloudFunctions.
+///
+/// You can get an instance by calling [CloudFunctions.instance].
 class CloudFunctions {
   @visibleForTesting
-  static const MethodChannel channel =
-  const MethodChannel('cloud_functions');
+  static const MethodChannel channel = const MethodChannel('cloud_functions');
 
   static CloudFunctions _instance = new CloudFunctions();
 
   static CloudFunctions get instance => _instance;
 
-  Future<dynamic> call({@required String functionName, Map<String, dynamic> parameters}) async {
+  /// Executes this Callable HTTPS trigger asynchronously.
+  ///
+  /// @param functionName The name of the callable function being triggered.
+  /// @param parameters Parameters to be passed to the callable function.
+  Future<dynamic> call(
+      {@required String functionName, Map<String, dynamic> parameters}) async {
     try {
-      final dynamic response = await channel.invokeMethod('CloudFunctions#call', <String, dynamic> {
+      final dynamic response =
+          await channel.invokeMethod('CloudFunctions#call', <String, dynamic>{
         'functionName': functionName,
         'parameters': parameters,
       });

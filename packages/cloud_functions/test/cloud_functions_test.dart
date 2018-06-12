@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-
   group('$CloudFunctions', () {
     final List<MethodCall> log = <MethodCall>[];
 
@@ -25,10 +24,10 @@ void main() {
 
     test('call', () async {
       await CloudFunctions.instance.call(functionName: 'baz');
-      await CloudFunctions.instance.call(functionName: 'qux',
-          parameters: <String, dynamic> {
-            'quux': 'quuz',
-          });
+      await CloudFunctions.instance
+          .call(functionName: 'qux', parameters: <String, dynamic>{
+        'quux': 'quuz',
+      });
       expect(
         log,
         <Matcher>[
@@ -43,7 +42,7 @@ void main() {
             'FirebaseFunctions#call',
             arguments: <String, dynamic>{
               'functionName': 'qux',
-              'parameters': <String, dynamic> {
+              'parameters': <String, dynamic>{
                 'quux': 'quuz',
               },
             },
