@@ -8,10 +8,12 @@ class FirebaseVision {
   FirebaseVision._();
 
   @visibleForTesting
-  static const MethodChannel _channel =
+  static const MethodChannel channel =
       const MethodChannel('plugins.flutter.io/firebase_ml_vision');
 
   static final FirebaseVision instance = new FirebaseVision._();
+
+  TextDetector getTextDetector() => new TextDetector._();
 }
 
 class FirebaseVisionImage {

@@ -5,43 +5,45 @@
 part of firebase_ml_vision;
 
 class TextDetector implements FirebaseVisionDetector {
+  TextDetector._();
+
   @override
   Future<List<TextBlock>> detectInImage(FirebaseVisionImage visionImage) async {
     final List<dynamic> reply =
-        await FirebaseVision._channel.invokeMethod(
+        await FirebaseVision.channel.invokeMethod(
       'TextDetector#detectInImage',
       visionImage.image.path,
     );
 
-    final List<TextContainer> containers = <TextContainer>[];
+    final List<TextBlock> blocks = <TextBlock>[];
     reply.forEach((dynamic data) {
-      containers.add(new TextBlock._(data));
+      blocks.add(new TextBlock._(data));
     });
 
-    return containers;
+    return blocks;
   }
 }
 
 abstract class TextContainer {
   TextContainer._(Map<dynamic, dynamic> data)
       : text = data['text'],
-        boundingBox = Rect.fromLTRB(
+        boundingBox = Rectangle<num>(
           data['left'],
           data['top'],
-          data['right'],
-          data['bottom'],
+          data['width'],
+          data['height'],
         ),
         cornerPoints = data['points'] == null
             ? null
             : data['points']
                 .map<Point<num>>((dynamic item) => Point<num>(
-                      item['x'],
-                      item['y'],
+                      item[0],
+                      item[1],
                     ))
                 .toList();
 
   final String text;
-  final Rect boundingBox;
+  final Rectangle<num> boundingBox;
   final List<Point<num>> cornerPoints;
 }
 
