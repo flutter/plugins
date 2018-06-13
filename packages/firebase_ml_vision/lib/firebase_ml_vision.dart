@@ -5,7 +5,12 @@
 library firebase_ml_vision;
 
 import 'dart:async';
+import 'dart:io';
+import 'dart:math';
+import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 part 'src/firebase_vision.dart';
+part 'src/text_detector.dart';
