@@ -4,9 +4,13 @@
 
 package io.flutter.plugins.firebase.cloudfunctions.cloudfunctions;
 
+import android.support.annotation.NonNull;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.FirebaseFunctionsException;
 import com.google.firebase.functions.HttpsCallableReference;
+import com.google.firebase.functions.HttpsCallableResult;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -34,22 +38,27 @@ public class CloudFunctionsPlugin implements MethodCallHandler {
         httpsCallableReference
             .call(parameters)
             .addOnCompleteListener(
-                task -> {
-                  if (task.isSuccessful()) {
-                    result.success(task.getResult().getData());
-                  } else {
-                    if (task.getException() instanceof FirebaseFunctionsException) {
-                      FirebaseFunctionsException exception =
-                          (FirebaseFunctionsException) task.getException();
-                      Map<String, Object> exceptionMap = new HashMap<>();
-                      exceptionMap.put("code", exception.getCode().name());
-                      exceptionMap.put("message", exception.getMessage());
-                      exceptionMap.put("details", exception.getDetails());
-                      result.error(
-                          "functionsError", "Cloud function failed with exception.", exceptionMap);
+                new OnCompleteListener<HttpsCallableResult>() {
+                  @Override
+                  public void onComplete(@NonNull Task<HttpsCallableResult> task) {
+                    if (task.isSuccessful()) {
+                      result.success(task.getResult().getData());
                     } else {
-                      Exception exception = task.getException();
-                      result.error(null, exception.getMessage(), null);
+                      if (task.getException() instanceof FirebaseFunctionsException) {
+                        FirebaseFunctionsException exception =
+                            (FirebaseFunctionsException) task.getException();
+                        Map<String, Object> exceptionMap = new HashMap<>();
+                        exceptionMap.put("code", exception.getCode().name());
+                        exceptionMap.put("message", exception.getMessage());
+                        exceptionMap.put("details", exception.getDetails());
+                        result.error(
+                            "functionsError",
+                            "Cloud function failed with exception.",
+                            exceptionMap);
+                      } else {
+                        Exception exception = task.getException();
+                        result.error(null, exception.getMessage(), null);
+                      }
                     }
                   }
                 });
