@@ -81,7 +81,7 @@ void main() {
 
         final TextDetector detector = FirebaseVision.instance.getTextDetector();
         final FirebaseVisionImage image =
-            new FirebaseVisionImage(File('empty'));
+            new FirebaseVisionImage.fromFilePath('empty');
 
         final List<TextBlock> blocks = await detector.detectInImage(image);
 
