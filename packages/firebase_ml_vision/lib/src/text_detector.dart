@@ -25,8 +25,8 @@ class TextDetector implements FirebaseVisionDetector {
     );
 
     final List<TextBlock> blocks = <TextBlock>[];
-    reply.forEach((dynamic data) {
-      blocks.add(new TextBlock._(data));
+    reply.forEach((dynamic block) {
+      blocks.add(new TextBlock._(block));
     });
 
     return blocks;
