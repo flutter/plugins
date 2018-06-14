@@ -21,6 +21,7 @@ import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.audio.AudioAttributes;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.hls.HlsMediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.upstream.DataSource;
@@ -55,15 +56,18 @@ public class VideoPlayerPlugin implements MethodCallHandler {
     private final EventChannel eventChannel;
 
     private boolean isInitialized = false;
+    private boolean isHls = false;
 
     VideoPlayer(
         Context context,
         EventChannel eventChannel,
         TextureRegistry.SurfaceTextureEntry textureEntry,
         String dataSource,
+        boolean isHls,
         Result result) {
       this.eventChannel = eventChannel;
       this.textureEntry = textureEntry;
+      this.isHls = isHls;
 
       TrackSelector trackSelector = new DefaultTrackSelector();
       exoPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
@@ -82,9 +86,13 @@ public class VideoPlayerPlugin implements MethodCallHandler {
                 DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS,
                 true);
       }
+      MediaSource mediaSource;
+      if (isHls) {
+        mediaSource = new HlsMediaSource.Factory(dataSourceFactory).createMediaSource(uri);
+      } else {
+        mediaSource = new ExtractorMediaSource.Factory(dataSourceFactory).createMediaSource(uri);
+      }
 
-      MediaSource mediaSource =
-          new ExtractorMediaSource.Factory(dataSourceFactory).createMediaSource(uri);
       exoPlayer.prepare(mediaSource);
 
       setupVideoPlayer(eventChannel, textureEntry, result);
@@ -262,6 +270,7 @@ public class VideoPlayerPlugin implements MethodCallHandler {
                     eventChannel,
                     handle,
                     "asset:///" + assetLookupKey,
+                    (boolean) call.argument("isHls"),
                     result);
             videoPlayers.put(handle.id(), player);
           } else {
@@ -271,6 +280,7 @@ public class VideoPlayerPlugin implements MethodCallHandler {
                     eventChannel,
                     handle,
                     (String) call.argument("uri"),
+                    (boolean) call.argument("isHls"),
                     result);
             videoPlayers.put(handle.id(), player);
           }

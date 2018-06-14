@@ -60,6 +60,7 @@ class _VideoAppState extends State<VideoApp> {
   @override
   void initState() {
     super.initState();
+    // Note: if you are trying to play a .m3u8 file you need to pass an additional optional parameter isHls: true.
     _controller = VideoPlayerController.network(
       'http://www.sample-videos.com/video/mp4/720/big_buck_bunny_720p_20mb.mp4',
     )
