@@ -19,8 +19,7 @@ class TextDetector implements FirebaseVisionDetector {
   /// The OCR is performed asynchronously.
   @override
   Future<List<TextBlock>> detectInImage(FirebaseVisionImage visionImage) async {
-    final List<dynamic> reply =
-        await FirebaseVision.channel.invokeMethod(
+    final List<dynamic> reply = await FirebaseVision.channel.invokeMethod(
       'TextDetector#detectInImage',
       visionImage.imageFile.path,
     );
@@ -34,23 +33,22 @@ class TextDetector implements FirebaseVisionDetector {
   }
 }
 
+/// Abstract class representing dimensions of recognized text in an image.
 abstract class TextContainer {
   TextContainer._(Map<dynamic, dynamic> data)
-      : text = data['text'],
-        boundingBox = Rectangle<num>(
+      : boundingBox = Rectangle<num>(
           data['left'],
           data['top'],
           data['width'],
           data['height'],
         ),
-        cornerPoints = data['points'] == null
-            ? null
-            : data['points']
-                .map<Point<num>>((dynamic item) => Point<num>(
-                      item[0],
-                      item[1],
-                    ))
-                .toList();
+        cornerPoints = data['points']
+            .map<Point<num>>((dynamic item) => Point<num>(
+                  item[0],
+                  item[1],
+                ))
+            .toList(),
+        text = data['text'];
 
   /// Axis-aligned bounding rectangle of the detected text.
   final Rectangle<num> boundingBox;
@@ -70,34 +68,37 @@ abstract class TextContainer {
 
 /// A block of text (think of it as a paragraph) as deemed by the OCR engine.
 class TextBlock extends TextContainer {
-  TextBlock._(Map<dynamic, dynamic> data)
-      : _lines = data['lines'] == null
-      ? null
-      : data['lines']
-      .map<TextLine>((dynamic item) => TextLine._(item))
-      .toList(),
-        super._(data);
+  TextBlock._(Map<dynamic, dynamic> block)
+      : _lines = block['lines']
+            .map<TextLine>((dynamic line) => TextLine._(line))
+            .toList(),
+        super._(block);
 
   final List<TextLine> _lines;
 
   List<TextLine> get lines => List<TextLine>.from(_lines);
 }
 
-
+/// Represents a line of text.
 class TextLine extends TextContainer {
-  TextLine._(Map<dynamic, dynamic> data)
-      : _elements = data['elements'] == null
-      ? null
-      : data['elements']
-      .map<TextElement>((dynamic item) => TextElement._(item))
-      .toList(),
-        super._(data);
+  TextLine._(Map<dynamic, dynamic> line)
+      : _elements = line['elements']
+            .map<TextElement>((dynamic element) => TextElement._(element))
+            .toList(),
+        super._(line);
 
   final List<TextElement> _elements;
 
   List<TextElement> get elements => List<TextElement>.from(_elements);
 }
 
+/// Roughly equivalent to a space-separated "word."
+///
+/// Separates elements into words in most Latin languages, but could separate
+/// by characters in others.
+///
+/// If a word is split between two lines by a hyphen, each part is encoded as a
+/// separate element.
 class TextElement extends TextContainer {
-  TextElement._(Map<dynamic, dynamic> data) : super._(data);
+  TextElement._(Map<dynamic, dynamic> element) : super._(element);
 }

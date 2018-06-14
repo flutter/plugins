@@ -34,7 +34,7 @@ class FirebaseVision {
 
 /// Represents an image object used for both on-device and cloud API detectors.
 ///
-/// Create an instance by calling one the factory constructors.
+/// Create an instance by calling one of the factory constructors.
 class FirebaseVisionImage {
   FirebaseVisionImage._(this.imageFile);
 
