@@ -31,4 +31,7 @@ android {
     lintOptions {
         disable 'InvalidPackage'
     }
+    dependencies {
+        api 'com.google.firebase:firebase-ml-vision:15.+'
+    }
 }
