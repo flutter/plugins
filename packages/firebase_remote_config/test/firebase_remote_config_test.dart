@@ -71,6 +71,8 @@ void main() {
           .setMockMethodCallHandler((MethodCall methodCall) async {
         log.add(methodCall);
         switch (methodCall.method) {
+          case 'RemoteConfig#setDefaults':
+            return null;
           case 'RemoteConfig#fetch':
             return <String, dynamic>{
               'lastFetchTime': lastFetchTime,
@@ -108,6 +110,22 @@ void main() {
       });
       remoteConfig = await RemoteConfig.instance;
       log.clear();
+    });
+
+    test('setDefaults', () async {
+      await remoteConfig.setDefaults(<String, dynamic>{
+        'foo': 'bar',
+      });
+      expect(log, <Matcher>[
+        isMethodCall(
+          'RemoteConfig#setDefaults',
+          arguments: <String, dynamic>{
+            'defaults': <String, dynamic>{
+              'foo': 'bar',
+            },
+          },
+        ),
+      ]);
     });
 
     test('fetch', () async {
