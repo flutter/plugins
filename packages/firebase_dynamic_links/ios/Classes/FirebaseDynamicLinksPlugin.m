@@ -61,11 +61,11 @@
 - (NSMutableDictionary *)retrieveDynamicLink {
   if (_dynamicLink != nil) {
     NSMutableDictionary *dynamicLink = [[NSMutableDictionary alloc] init];
-    dynamicLink[@"link"] = [[_dynamicLink url] absoluteString];
+    dynamicLink[@"link"] = _dynamicLink.url.absoluteString;
 
     NSMutableDictionary *iosData = [[NSMutableDictionary alloc] init];
-    if (![[_dynamicLink minimumAppVersion] isEqual:[NSNull null]]) {
-      iosData[@"minimumVersion"] = [_dynamicLink minimumAppVersion];
+    if (_dynamicLink.minimumAppVersion) {
+      iosData[@"minimumVersion"] = _dynamicLink.minimumAppVersion;
     }
 
     dynamicLink[@"ios"] = iosData;
