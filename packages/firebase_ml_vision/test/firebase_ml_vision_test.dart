@@ -23,8 +23,7 @@ void main() {
           case 'TextDetector#detectInImage':
             return returnValue;
           default:
-            throw new PlatformException(
-                code: 'Method not implemted: ${methodCall.method}');
+            return null;
         }
       });
       log.clear();
