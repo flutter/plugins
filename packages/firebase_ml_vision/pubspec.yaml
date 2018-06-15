@@ -1,0 +1,18 @@
+name: firebase_ml_vision
+description: A new Flutter plugin.
+version: 0.0.1
+author:
+homepage:
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  plugin:
+    androidPackage: io.flutter.plugins.firebasemlvision
+    pluginClass: FirebaseMlVisionPlugin
