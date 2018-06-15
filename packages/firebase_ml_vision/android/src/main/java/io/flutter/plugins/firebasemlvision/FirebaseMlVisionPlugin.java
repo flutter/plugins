@@ -10,7 +10,8 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 public class FirebaseMlVisionPlugin implements MethodCallHandler {
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
-    final MethodChannel channel = new MethodChannel(registrar.messenger(), "firebase_ml_vision");
+    final MethodChannel channel =
+        new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_ml_vision");
     channel.setMethodCallHandler(new FirebaseMlVisionPlugin());
   }
 
