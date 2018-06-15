@@ -12,6 +12,7 @@ import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.text.FirebaseVisionText;
 import com.google.firebase.ml.vision.text.FirebaseVisionTextDetector;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,12 +50,13 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
   }
 
   private void handleTextDetectionResult(MethodCall call, final Result result) {
-    Uri file = Uri.parse((String) call.arguments);
+    File file = new File((String) call.arguments);
 
     FirebaseVisionImage image;
     try {
-      image = FirebaseVisionImage.fromFilePath(registrar.context(), file);
+      image = FirebaseVisionImage.fromFilePath(registrar.context(), Uri.fromFile(file));
     } catch (IOException exception) {
+      exception.printStackTrace();
       result.error("TextDetector#detectInImage", exception.getLocalizedMessage(), null);
       return;
     }
