@@ -5,10 +5,8 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.ml.vision.FirebaseVision;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.text.FirebaseVisionText;
@@ -68,28 +66,24 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
         List<Map<String, Object>> blocks = new ArrayList<>();
         for (FirebaseVisionText.Block block : firebaseVisionText.getBlocks()) {
           Map<String, Object> blockData = new HashMap<>();
-
-          blockData.put("left", block.getBoundingBox().left);
-          blockData.put("top", block.getBoundingBox().top);
-          blockData.put("width", block.getBoundingBox().width());
-          blockData.put("height", block.getBoundingBox().height());
-          blockData.put("text", block.getText());
-
-          List<int[]> blockPoints = new ArrayList<>();
-          for (Point point : block.getCornerPoints()) {
-            blockPoints.add(new int[]{point.x, point.y});
-          }
-          blockData.put("points", blockPoints);
+          addTextData(blockData, block.getBoundingBox(), block.getCornerPoints(), block.getText());
 
           List<Map<String, Object>> lines = new ArrayList<>();
           for (FirebaseVisionText.Line line : block.getLines()) {
+            Map<String, Object> lineData = new HashMap<>();
+            addTextData(lineData, line.getBoundingBox(), line.getCornerPoints(), line.getText());
 
             List<Map<String, Object>> elements = new ArrayList<>();
             for (FirebaseVisionText.Element element : line.getElements()) {
-
+              Map<String, Object> elementData = new HashMap<>();
+              addTextData(elementData, element.getBoundingBox(), element.getCornerPoints(), element.getText());
+              elements.add(elementData);
             }
+            lines.add(lineData);
           }
+          blocks.add(blockData);
         }
+        result.success(blocks);
       }
     }).addOnFailureListener(new OnFailureListener() {
       @Override
@@ -97,5 +91,20 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
         result.error("TextDetector#detectInImage", e.getLocalizedMessage(), null);
       }
     });
+  }
+
+  private void addTextData(Map<String, Object> addTo, Rect boundingBox, Point[] cornerPoints, String text) {
+    addTo.put("text", text);
+
+    addTo.put("left", boundingBox.left);
+    addTo.put("top", boundingBox.top);
+    addTo.put("width", boundingBox.width());
+    addTo.put("height", boundingBox.height());
+
+    List<int[]> points = new ArrayList<>();
+    for (Point point : cornerPoints) {
+      points.add(new int[]{point.x, point.y});
+    }
+    addTo.put("points", points);
   }
 }
