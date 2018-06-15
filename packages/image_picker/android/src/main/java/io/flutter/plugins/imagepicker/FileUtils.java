@@ -30,7 +30,6 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -129,22 +128,19 @@ class FileUtils {
   }
 
   private static String getPathFromRemoteUri(final Context context, final Uri uri) {
+    // The code below is why Java now has try-with-resources and the Files utility.
+    File file = null;
     InputStream inputStream = null;
     OutputStream outputStream = null;
+    boolean success = false;
     try {
       inputStream = context.getContentResolver().openInputStream(uri);
-      File file = File.createTempFile("cachedImage", "jpg", context.getCacheDir());
+      file = File.createTempFile("image_picker", "jpg", context.getCacheDir());
       outputStream = new FileOutputStream(file);
       if (inputStream != null) {
-        byte[] buffer = new byte[4 * 1024];
-        int read;
-        while ((read = inputStream.read(buffer)) != -1) {
-          outputStream.write(buffer, 0, read);
-        }
-        outputStream.flush();
-        return file.getPath();
+        copy(inputStream, outputStream);
+        success = true;
       }
-    } catch (FileNotFoundException ignored) {
     } catch (IOException ignored) {
     } finally {
       try {
@@ -154,9 +150,22 @@ class FileUtils {
       try {
         if (outputStream != null) outputStream.close();
       } catch (IOException ignored) {
+        // If closing the output stream fails, we cannot be sure that the
+        // target file was written in full. Flushing the stream merely moves
+        // the bytes into the OS, not necessarily to the file.
+        success = false;
       }
     }
-    return null;
+    return success ? file.getPath() : null;
+  }
+
+  private static void copy(InputStream in, OutputStream out) throws IOException {
+    final byte[] buffer = new byte[4 * 1024];
+    int bytesRead;
+    while ((bytesRead = in.read(buffer)) != -1) {
+      out.write(buffer, 0, bytesRead);
+    }
+    out.flush();
   }
 
   private static boolean isExternalStorageDocument(Uri uri) {

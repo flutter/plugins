@@ -1,3 +1,7 @@
+## 0.4.6
+
+* Added support for picking remote images.
+
 ## 0.4.5
 
 * Bugfixes, code cleanup, more test coverage.
