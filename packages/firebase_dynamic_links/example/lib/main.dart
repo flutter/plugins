@@ -75,9 +75,8 @@ class _MainScreenState extends State<_MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
-      title: 'Dynamic Links Example',
-      home: new Scaffold(
+    return new Material(
+      child: new Scaffold(
         appBar: new AppBar(
           title: const Text('Dynamic Links Example'),
         ),
@@ -117,9 +116,14 @@ class _MainScreenState extends State<_MainScreen> {
 class _DynamicLinkScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return const Material(
-      child: const Center(
-        child: const Text('Hello world!'),
+    return new Material(
+      child: new Scaffold(
+        appBar: new AppBar(
+          title: const Text('Hello World DeepLink'),
+        ),
+        body: const Center(
+          child: const Text('Hello, World!'),
+        ),
       ),
     );
   }
