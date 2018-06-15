@@ -454,7 +454,7 @@ public class ImagePickerDelegate
       String finalImagePath = imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight);
       finishWithSuccess(finalImagePath);
     } else {
-      throw new IllegalStateException("Received images from picker that were not requested");
+      throw new IllegalStateException("Received image from picker that was not requested");
     }
   }
 
@@ -462,7 +462,7 @@ public class ImagePickerDelegate
     if (pendingResult != null) {
       finishWithSuccess(path);
     } else {
-      throw new IllegalStateException("Received images from picker that were not requested");
+      throw new IllegalStateException("Received video from picker that was not requested");
     }
   }
 
