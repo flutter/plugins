@@ -1,3 +1,26 @@
+# :heavy_exclamation_mark: This repository is workaround for https://github.com/flutter/flutter/issues/16585 :heavy_exclamation_mark:
+
+In this repository, I fixed only `packages/cloud_store/ios/cloud_firestore.podspec` file.
+[Same problem occurs in React Native.](https://stackoverflow.com/a/50774299)
+
+To avoid this problem, you can specify this repository in `podspec.yaml` as below:
+
+```
+dependencies:
+  flutter:
+    sdk: flutter
+  #cloud_firestore: ^0.7.0
+  cloud_firestore:
+    git:
+      url: https://github.com/koyachi/flutter_plugins.git
+      ref: temporary-fix/specify-firestore-5.1.0
+      path: packages/cloud_firestore
+```
+
+
+---
+
+
 # Flutter plugins
 
 [![Build Status](https://travis-ci.org/flutter/plugins.svg?branch=master)](https://travis-ci.org/flutter/plugins)
