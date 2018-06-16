@@ -12,7 +12,7 @@ dependencies:
   #cloud_firestore: ^0.7.0
   cloud_firestore:
     git:
-      url: https://github.com/koyachi/flutter_plugins.git
+      url: git://github.com/koyachi/flutter_plugins.git
       ref: temporary-fix/specify-firestore-5.1.0
       path: packages/cloud_firestore
 ```
