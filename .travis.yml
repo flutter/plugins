@@ -82,7 +82,7 @@ matrix:
             - libstdc++6
             - fonts-droid
       before_script:
-        - ./script/before_build_apk.sh
+        - ./script/before_build_apks.sh
       script:
         - ./script/plugin_tools.sh build-examples --apk
         - ./script/plugin_tools.sh java-test  # must come after apk build
