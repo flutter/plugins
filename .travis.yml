@@ -48,6 +48,9 @@ matrix:
     - os: linux
       env:
         - SHARD=Build-example-APKs+Java-Tests
+        # Divide plugins into two shards to keep job length down.
+        - PLUGIN_SHARDING="--shardIndex 0 --shardCount 2"
+        - PLUGIN_SHARDING="--shardIndex 1 --shardCount 2"
       jdk: oraclejdk8
       sudo: false
       addons:
