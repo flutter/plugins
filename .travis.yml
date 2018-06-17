@@ -47,7 +47,7 @@ matrix:
     # Job 3.1) Build example APKs and run Java tests, shard 1/2
     - os: linux
       env:
-        - SHARD=Build-example-APKs+Java-Tests
+        - SHARD="Build example apks 1/2"
         - PLUGIN_SHARDING="--shardIndex 0 --shardCount 2"
       jdk: oraclejdk8
       sudo: false
@@ -70,7 +70,7 @@ matrix:
     # Job 3.2) Build example APKs and run Java tests, shard 2/2
     - os: linux
       env:
-        - SHARD=Build-example-APKs+Java-Tests
+        - SHARD="Build example apks 2/2"
         - PLUGIN_SHARDING="--shardIndex 1 --shardCount 2"
       jdk: oraclejdk8
       sudo: false
@@ -93,7 +93,7 @@ matrix:
     # Job 4.1) Build example IPAs, shard 1/2
     - os: osx
       env:
-        - SHARD=Build-example-IPAs
+        - SHARD="Build example ipas 1/2"
         - PLUGIN_SHARDING="--shardIndex 0 --shardCount 2"
       language: generic
       osx_image: xcode9.3
@@ -105,7 +105,7 @@ matrix:
     # Job 4.2) Build example IPAs, shard 2/2
     - os: osx
       env:
-        - SHARD=Build-example-IPAs
+        - SHARD="Build example ipas 2/2"
         - PLUGIN_SHARDING="--shardIndex 1 --shardCount 2"
       language: generic
       osx_image: xcode9.3
