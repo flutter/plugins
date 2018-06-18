@@ -98,7 +98,7 @@ class _MyHomePageState extends State<_MyHomePage> {
       floatingActionButton: new FloatingActionButton(
         onPressed: () async {
           await _getImage();
-          _scanImage();
+          if (_imageFile != null) _scanImage();
         },
         tooltip: 'Pick Image',
         child: const Icon(Icons.add_a_photo),
