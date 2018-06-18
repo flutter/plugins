@@ -17,19 +17,37 @@ class _MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<_MyHomePage> {
-  Image _image;
-  List<TextBlock> _blocks;
+  File _imageFile;
+  Size _imageSize;
+  List<TextBlock> _textLocations;
 
   Future<void> _getImage() async {
-    final File image = await ImagePicker.pickImage(source: ImageSource.camera);
+    setState(() {
+      _imageFile = null;
+      _imageSize = null;
+      _textLocations = null;
+    });
 
-    final FirebaseVisionImage visionImage = FirebaseVisionImage.fromFile(image);
+    final File imageFile =
+        await ImagePicker.pickImage(source: ImageSource.camera);
+
+    setState(() {
+      _imageFile = imageFile;
+    });
+  }
+
+  Future<void> _scanImage() async {
+    final FirebaseVisionImage visionImage =
+        FirebaseVisionImage.fromFile(_imageFile);
     final TextDetector detector = FirebaseVision.instance.getTextDetector();
     final List<TextBlock> blocks = await detector.detectInImage(visionImage);
 
+    final Image image = Image.file(_imageFile);
+    final Size imageSize = await _getImageSize(image);
+
     setState(() {
-      _image = Image.file(image);
-      _blocks = blocks;
+      _textLocations = blocks;
+      _imageSize = imageSize;
     });
   }
 
@@ -44,44 +62,27 @@ class _MyHomePageState extends State<_MyHomePage> {
     return completer.future;
   }
 
-  List<Widget> buildTextDetectionStack(Size imageSize) {
-    final List<Widget> textDetection = <Widget>[];
-    textDetection.add(_image);
-
-    final Size screenSize = MediaQuery.of(context).size;
-    final Size scale = new Size(
-      screenSize.width / imageSize.width,
-      screenSize.height / imageSize.height,
-    );
-
-    for (TextBlock block in _blocks) {
-      print('Text block text: ${block.text}');
-
-      textDetection.add(new Positioned(
-        left: block.boundingBox.left * scale.width,
-        top: block.boundingBox.top * scale.height,
-        right: screenSize.width - (block.boundingBox.right * scale.width),
-        bottom: screenSize.height - (block.boundingBox.bottom * scale.height),
-        child: new Container(
-          decoration: new BoxDecoration(
-            color: Colors.transparent,
-            border: new Border.all(
-              width: 2.0,
-              color: Colors.red,
-            ),
-          ),
+  Widget _buildImage() {
+    return new Container(
+      constraints: const BoxConstraints.expand(),
+      decoration: new BoxDecoration(
+        image: new DecorationImage(
+          image: Image.file(_imageFile).image,
+          fit: BoxFit.fill,
         ),
-      ));
-    }
-
-    return textDetection;
-  }
-
-  Future<Stack> _buildStack() async {
-    final Size size = await _getImageSize(_image);
-
-    return new Stack(
-      children: buildTextDetectionStack(size),
+      ),
+      child: _imageSize == null || _textLocations == null
+          ? const Center(
+              child: const Text(
+              "Scanning...",
+              style: const TextStyle(
+                color: Colors.green,
+                fontSize: 30.0,
+              ),
+            ))
+          : new CustomPaint(
+              painter: new ScannedTextPainter(_imageSize, _textLocations),
+            ),
     );
   }
 
@@ -89,29 +90,64 @@ class _MyHomePageState extends State<_MyHomePage> {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: const Text('Image Picker Example'),
+        title: const Text('ML Vision Example'),
       ),
-      body: _image == null
-          ? const Center(
-              child: const Text("No image selected."),
-            )
-          : new FutureBuilder<Stack>(
-              future: _buildStack(),
-              builder: (BuildContext context, AsyncSnapshot<Stack> snapshot) {
-                if (snapshot.hasData) {
-                  return snapshot.data;
-                } else {
-                  return const Center(
-                    child: const Text("Scanning for text..."),
-                  );
-                }
-              },
-            ),
+      body: _imageFile == null
+          ? const Center(child: const Text("No image selected."))
+          : _buildImage(),
       floatingActionButton: new FloatingActionButton(
-        onPressed: _getImage,
+        onPressed: () async {
+          await _getImage();
+          _scanImage();
+        },
         tooltip: 'Pick Image',
         child: const Icon(Icons.add_a_photo),
       ),
     );
   }
+}
+
+class ScannedTextPainter extends CustomPainter {
+  ScannedTextPainter(this.absoluteImageSize, this.textLocations);
+
+  final Size absoluteImageSize;
+  final List<TextBlock> textLocations;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final double scaleX = size.width / absoluteImageSize.width;
+    final double scaleY = size.height / absoluteImageSize.height;
+
+    Rect scaleRect(TextContainer container) {
+      return new Rect.fromLTRB(
+        container.boundingBox.left * scaleX,
+        container.boundingBox.top * scaleY,
+        container.boundingBox.right * scaleX,
+        container.boundingBox.bottom * scaleY,
+      );
+    }
+
+    final Paint paint = new Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.0;
+
+    for (TextBlock block in textLocations) {
+      for (TextLine line in block.lines) {
+
+        for (TextElement element in line.elements) {
+          paint.color = Colors.green;
+          canvas.drawRect(scaleRect(element), paint);
+        }
+
+        paint.color = Colors.yellow;
+        canvas.drawRect(scaleRect(line), paint);
+      }
+
+      paint.color = Colors.red;
+      canvas.drawRect(scaleRect(block), paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }

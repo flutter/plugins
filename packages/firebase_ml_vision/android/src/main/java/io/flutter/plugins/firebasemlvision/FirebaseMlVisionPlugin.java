@@ -81,8 +81,10 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
               addTextData(elementData, element.getBoundingBox(), element.getCornerPoints(), element.getText());
               elements.add(elementData);
             }
+            lineData.put("elements", elements);
             lines.add(lineData);
           }
+          blockData.put("lines", lines);
           blocks.add(blockData);
         }
         result.success(blocks);

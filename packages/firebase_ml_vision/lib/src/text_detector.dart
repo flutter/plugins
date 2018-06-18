@@ -69,11 +69,9 @@ abstract class TextContainer {
 /// A block of text (think of it as a paragraph) as deemed by the OCR engine.
 class TextBlock extends TextContainer {
   TextBlock._(Map<dynamic, dynamic> block)
-      : _lines = block['lines'] != null
-            ? block['lines']
-                .map<TextLine>((dynamic line) => TextLine._(line))
-                .toList()
-            : null,
+      : _lines = block['lines']
+            .map<TextLine>((dynamic line) => TextLine._(line))
+            .toList(),
         super._(block);
 
   final List<TextLine> _lines;
@@ -84,11 +82,9 @@ class TextBlock extends TextContainer {
 /// Represents a line of text.
 class TextLine extends TextContainer {
   TextLine._(Map<dynamic, dynamic> line)
-      : _elements = line['elements'] != null
-            ? line['elements']
-                .map<TextElement>((dynamic element) => TextElement._(element))
-                .toList()
-            : null,
+      : _elements = line['elements']
+            .map<TextElement>((dynamic element) => TextElement._(element))
+            .toList(),
         super._(line);
 
   final List<TextElement> _elements;
