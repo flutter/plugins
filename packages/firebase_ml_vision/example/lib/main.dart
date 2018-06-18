@@ -133,7 +133,6 @@ class ScannedTextPainter extends CustomPainter {
 
     for (TextBlock block in textLocations) {
       for (TextLine line in block.lines) {
-
         for (TextElement element in line.elements) {
           paint.color = Colors.green;
           canvas.drawRect(scaleRect(element), paint);
