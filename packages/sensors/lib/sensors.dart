@@ -79,7 +79,8 @@ Stream<AccelerometerEvent> get accelerometerEvents {
   if (_accelerometerEvents == null) {
     _accelerometerEvents = _accelerometerEventChannel
         .receiveBroadcastStream()
-        .map((dynamic event) => _listToAccelerometerEvent(event));
+        .map(
+            (dynamic event) => _listToAccelerometerEvent(event.cast<double>()));
   }
   return _accelerometerEvents;
 }
@@ -89,7 +90,7 @@ Stream<GyroscopeEvent> get gyroscopeEvents {
   if (_gyroscopeEvents == null) {
     _gyroscopeEvents = _gyroscopeEventChannel
         .receiveBroadcastStream()
-        .map((dynamic event) => _listToGyroscopeEvent(event));
+        .map((dynamic event) => _listToGyroscopeEvent(event.cast<double>()));
   }
   return _gyroscopeEvents;
 }
@@ -99,7 +100,8 @@ Stream<UserAccelerometerEvent> get userAccelerometerEvents {
   if (_userAccelerometerEvents == null) {
     _userAccelerometerEvents = _userAccelerometerEventChannel
         .receiveBroadcastStream()
-        .map((dynamic event) => _listToUserAccelerometerEvent(event));
+        .map((dynamic event) =>
+            _listToUserAccelerometerEvent(event.cast<double>()));
   }
   return _userAccelerometerEvents;
 }
