@@ -271,6 +271,12 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
   [[_player currentItem] removeObserver:self
                              forKeyPath:@"playbackLikelyToKeepUp"
                                 context:playbackLikelyToKeepUpContext];
+  [[_player currentItem] removeObserver:self
+                             forKeyPath:@"playbackBufferEmpty"
+                                context:playbackBufferEmptyContext];
+  [[_player currentItem] removeObserver:self
+                             forKeyPath:@"playbackBufferFull"
+                                context:playbackBufferFullContext];
   [_player replaceCurrentItemWithPlayerItem:nil];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [_eventChannel setStreamHandler:nil];

@@ -1,3 +1,7 @@
+## 0.6.1
+
+* iOS: add missing observer removals to prevent crashes on deallocation. 
+
 ## 0.6.0
 
 * Android: use ExoPlayer instead of MediaPlayer for better video format support.

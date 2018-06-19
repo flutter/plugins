@@ -157,7 +157,7 @@
 }
 
 - (void)messaging:(nonnull FIRMessaging *)messaging
-    didRefreshRegistrationToken:(nonnull NSString *)fcmToken {
+    didReceiveRegistrationToken:(nonnull NSString *)fcmToken {
   [_channel invokeMethod:@"onToken" arguments:fcmToken];
 }
 
