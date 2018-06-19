@@ -19,7 +19,7 @@
 @end
 
 @implementation FLTFirebaseMlVisionPlugin
-+ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
++ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/firebase_ml_vision"
                                   binaryMessenger:[registrar messenger]];
@@ -65,58 +65,58 @@
            }
 
            NSMutableArray *blocks = [NSMutableArray array];
-           for (id <FIRVisionText> feature in features) {
+           for (id<FIRVisionText> feature in features) {
              NSMutableDictionary *blockData = [NSMutableDictionary dictionary];
-               if ([feature isKindOfClass:[FIRVisionTextBlock class]]) {
-                 FIRVisionTextBlock *block = (FIRVisionTextBlock *)feature;
+             if ([feature isKindOfClass:[FIRVisionTextBlock class]]) {
+               FIRVisionTextBlock *block = (FIRVisionTextBlock *)feature;
 
-                 [blockData addEntriesFromDictionary:[self getTextData:block.frame
-                                                          cornerPoints:block.cornerPoints
-                                                                  text:block.text]];
-                 blockData[@"lines"] = [self getLineData:block.lines];
-               } else if ([feature isKindOfClass:[FIRVisionTextBlock class]]) {
-                 // We structure the return data to have the line be inside a FIRVisionTextBlock.
-                 FIRVisionTextLine *line = (FIRVisionTextLine *)feature;
+               [blockData addEntriesFromDictionary:[self getTextData:block.frame
+                                                        cornerPoints:block.cornerPoints
+                                                                text:block.text]];
+               blockData[@"lines"] = [self getLineData:block.lines];
+             } else if ([feature isKindOfClass:[FIRVisionTextBlock class]]) {
+               // We structure the return data to have the line be inside a FIRVisionTextBlock.
+               FIRVisionTextLine *line = (FIRVisionTextLine *)feature;
 
-                 [blockData addEntriesFromDictionary:[self getTextData:line.frame
-                                                          cornerPoints:line.cornerPoints
-                                                                  text:line.text]];
-                 NSArray<FIRVisionTextLine *> *lines = @[ line ];
-                 blockData[@"lines"] = [self getLineData:lines];
-               } else if ([feature isKindOfClass:[FIRVisionTextElement class]]) {
-                 // We structure the return data to have the element inside a FIRVisionTextLine
-                 // that is inside a FIRVisionTextBlock.
-                 FIRVisionTextElement *element = (FIRVisionTextElement *)feature;
+               [blockData addEntriesFromDictionary:[self getTextData:line.frame
+                                                        cornerPoints:line.cornerPoints
+                                                                text:line.text]];
+               NSArray<FIRVisionTextLine *> *lines = @[ line ];
+               blockData[@"lines"] = [self getLineData:lines];
+             } else if ([feature isKindOfClass:[FIRVisionTextElement class]]) {
+               // We structure the return data to have the element inside a FIRVisionTextLine
+               // that is inside a FIRVisionTextBlock.
+               FIRVisionTextElement *element = (FIRVisionTextElement *)feature;
 
-                 [blockData addEntriesFromDictionary:[self getTextData:element.frame
-                                                          cornerPoints:element.cornerPoints
-                                                                  text:element.text]];
+               [blockData addEntriesFromDictionary:[self getTextData:element.frame
+                                                        cornerPoints:element.cornerPoints
+                                                                text:element.text]];
 
-                 NSMutableDictionary *lineData = [NSMutableDictionary dictionary];
-                 [lineData addEntriesFromDictionary:[self getTextData:element.frame
-                                                         cornerPoints:element.cornerPoints
-                                                                 text:element.text]];
+               NSMutableDictionary *lineData = [NSMutableDictionary dictionary];
+               [lineData addEntriesFromDictionary:[self getTextData:element.frame
+                                                       cornerPoints:element.cornerPoints
+                                                               text:element.text]];
 
-                 NSArray<FIRVisionTextElement *> *elements = @[ element ];
-                 lineData[@"elements"] = [self getElementData:elements];
+               NSArray<FIRVisionTextElement *> *elements = @[ element ];
+               lineData[@"elements"] = [self getElementData:elements];
 
-                 blockData[@"lines"] = lineData;
-               }
-
-               [blocks addObject:blockData];
+               blockData[@"lines"] = lineData;
              }
 
-             result(blocks);
-           }];
+             [blocks addObject:blockData];
+           }
+
+           result(blocks);
+         }];
 }
 
 - (NSDictionary *)getTextData:(CGRect)frame
                  cornerPoints:(NSArray<NSValue *> *)cornerPoints
                          text:(NSString *)text {
-  __block NSMutableArray<NSArray  *> *points = [NSMutableArray array];
+  __block NSMutableArray<NSArray *> *points = [NSMutableArray array];
   [cornerPoints enumerateObjectsUsingBlock:^(NSValue *_Nonnull point, NSUInteger idx,
                                              BOOL *_Nonnull stop) {
-    [points addObject:@[@(((__bridge CGPoint *)point)->x), @(((__bridge CGPoint *)point)->y)]];
+    [points addObject:@[ @(((__bridge CGPoint *)point)->x), @(((__bridge CGPoint *)point)->y) ]];
   }];
 
   return @{
