@@ -1,4 +1,4 @@
 #import <Flutter/Flutter.h>
 
-@interface FirebaseMlVisionPlugin : NSObject<FlutterPlugin>
+@interface FLTFirebaseMlVisionPlugin : NSObject<FlutterPlugin>
 @end

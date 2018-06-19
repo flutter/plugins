@@ -15,4 +15,5 @@ dev_dependencies:
 flutter:
   plugin:
     androidPackage: io.flutter.plugins.firebasemlvision
+    iosPrefix: FLT
     pluginClass: FirebaseMlVisionPlugin
