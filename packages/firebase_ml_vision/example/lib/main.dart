@@ -148,5 +148,8 @@ class ScannedTextPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(CustomPainter oldDelegate) => false;
+  bool shouldRepaint(ScannedTextPainter oldDelegate) {
+    return oldDelegate.absoluteImageSize != absoluteImageSize ||
+        oldDelegate.textLocations != textLocations;
+  }
 }
