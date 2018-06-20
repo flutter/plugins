@@ -24,7 +24,7 @@ void main() {
   test('sharing null fails', () {
     expect(
       () => Share.share(null),
-      throwsA(const isInstanceOf<AssertionError>()),
+      throwsA(const TypeMatcher<AssertionError>()),
     );
     verifyZeroInteractions(mockChannel);
   });
@@ -32,7 +32,7 @@ void main() {
   test('sharing empty fails', () {
     expect(
       () => Share.share(''),
-      throwsA(const isInstanceOf<AssertionError>()),
+      throwsA(const TypeMatcher<AssertionError>()),
     );
     verifyZeroInteractions(mockChannel);
   });
