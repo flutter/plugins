@@ -53,8 +53,7 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
     try {
       image = FirebaseVisionImage.fromFilePath(registrar.context(), Uri.fromFile(file));
     } catch (IOException exception) {
-      exception.printStackTrace();
-      result.error("TextDetector#detectInImage", exception.getLocalizedMessage(), null);
+      result.error("textDetectorError", exception.getLocalizedMessage(), null);
       return;
     }
 
@@ -100,7 +99,7 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
             new OnFailureListener() {
               @Override
               public void onFailure(@NonNull Exception e) {
-                result.error("TextDetector#detectInImage", e.getLocalizedMessage(), null);
+                result.error("textDetectorError", e.getLocalizedMessage(), null);
               }
             });
   }

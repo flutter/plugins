@@ -29,7 +29,7 @@ class _MyHomePageState extends State<_MyHomePage> {
     });
 
     final File imageFile =
-        await ImagePicker.pickImage(source: ImageSource.camera);
+        await ImagePicker.pickImage(source: ImageSource.gallery);
 
     setState(() {
       _imageFile = imageFile;
@@ -148,5 +148,8 @@ class ScannedTextPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(CustomPainter oldDelegate) => false;
+  bool shouldRepaint(ScannedTextPainter oldDelegate) {
+    return oldDelegate.absoluteImageSize != absoluteImageSize ||
+        oldDelegate.textLocations != textLocations;
+  }
 }
