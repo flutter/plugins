@@ -29,7 +29,7 @@ class _MyHomePageState extends State<_MyHomePage> {
     });
 
     final File imageFile =
-        await ImagePicker.pickImage(source: ImageSource.camera);
+        await ImagePicker.pickImage(source: ImageSource.gallery);
 
     setState(() {
       _imageFile = imageFile;
