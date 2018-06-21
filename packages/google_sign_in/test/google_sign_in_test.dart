@@ -287,8 +287,7 @@ void main() {
         }
         return new Future<dynamic>.value(responses[methodCall.method]);
       });
-      expect(googleSignIn.signIn(),
-          throwsA(isInstanceOf<PlatformException>()));
+      expect(googleSignIn.signIn(), throwsA(isInstanceOf<PlatformException>()));
       expect(await googleSignIn.signIn(), isNotNull);
     });
 
