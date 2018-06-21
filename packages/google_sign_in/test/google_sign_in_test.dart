@@ -273,7 +273,7 @@ void main() {
         throw "I am an error";
       });
       expect(googleSignIn.signInSilently(suppressErrors: false),
-          throwsA(const isInstanceOf<PlatformException>()));
+          throwsA(isInstanceOf<PlatformException>()));
     });
 
     test('can sign in after init failed before', () async {
@@ -287,8 +287,7 @@ void main() {
         }
         return new Future<dynamic>.value(responses[methodCall.method]);
       });
-      expect(googleSignIn.signIn(),
-          throwsA(const isInstanceOf<PlatformException>()));
+      expect(googleSignIn.signIn(), throwsA(isInstanceOf<PlatformException>()));
       expect(await googleSignIn.signIn(), isNotNull);
     });
 
