@@ -1,3 +1,7 @@
+// Copyright 2018, the Chromium project authors.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
 import 'package:flutter/material.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 
@@ -30,11 +34,12 @@ class _MyAppState extends State<MyApp> {
                   onPressed: () async {
                     try {
                       final dynamic resp = await CloudFunctions.instance.call(
-                          functionName: 'repeat',
-                          parameters: <String, dynamic>{
-                            'message': 'hello world!',
-                            'count': _responseCount,
-                          });
+                        functionName: 'repeat',
+                        parameters: <String, dynamic>{
+                          'message': 'hello world!',
+                          'count': _responseCount,
+                        },
+                      );
                       print(resp);
                       setState(() {
                         _response = resp['repeat_message'];
