@@ -38,23 +38,25 @@
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
-  NSString *filePath = call.arguments;
-  UIImage *image = [UIImage imageWithContentsOfFile:filePath];
-  FIRVisionImage *visionImage = [[FIRVisionImage alloc] initWithImage:image];
-
   if ([@"TextDetector#detectInImage" isEqualToString:call.method]) {
-    [self handleTextDetectionResult:visionImage result:result];
+    [self handleTextDetectionResult:call result:result];
+  } else if ([@"TextDetector#close" isEqualToString:call.method]) {
+    result(_textDetector = nil);
   } else {
     result(FlutterMethodNotImplemented);
   }
 }
 
-- (void)handleTextDetectionResult:(FIRVisionImage *)image result:(FlutterResult)result {
+- (void)handleTextDetectionResult:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSString *filePath = call.arguments;
+  UIImage *image = [UIImage imageWithContentsOfFile:filePath];
+  FIRVisionImage *visionImage = [[FIRVisionImage alloc] initWithImage:image];
+
   FIRVision *vision = [FIRVision vision];
   if (_textDetector == nil) _textDetector = [vision textDetector];
 
   [_textDetector
-      detectInImage:image
+      detectInImage:visionImage
          completion:^(NSArray<id<FIRVisionText>> *_Nullable features, NSError *_Nullable error) {
            if (error) {
              result([error flutterError]);

@@ -42,24 +42,28 @@ class _MyHomePageState extends State<_MyHomePage> {
     final TextDetector detector = FirebaseVision.instance.getTextDetector();
     final List<TextBlock> blocks = await detector.detectInImage(visionImage);
 
-    final Image image = Image.file(_imageFile);
-    final Size imageSize = await _getImageSize(image);
-
     setState(() {
       _textLocations = blocks;
-      _imageSize = imageSize;
     });
+
+    detector.close();
   }
 
-  Future<Size> _getImageSize(Image image) {
+  Future<void> _getImageSize(Image image) async {
     final Completer<Size> completer = new Completer<Size>();
-    image.image
-        .resolve(const ImageConfiguration())
-        .addListener((ImageInfo info, bool _) => completer.complete(Size(
-              info.image.width.toDouble(),
-              info.image.height.toDouble(),
-            )));
-    return completer.future;
+    image.image.resolve(const ImageConfiguration()).addListener(
+      (ImageInfo info, bool _) {
+        completer.complete(Size(
+          info.image.width.toDouble(),
+          info.image.height.toDouble(),
+        ));
+      },
+    );
+
+    final Size imageSize = await completer.future;
+    setState(() {
+      _imageSize = imageSize;
+    });
   }
 
   Widget _buildImage() {
@@ -98,7 +102,10 @@ class _MyHomePageState extends State<_MyHomePage> {
       floatingActionButton: new FloatingActionButton(
         onPressed: () async {
           await _getImage();
-          if (_imageFile != null) _scanImage();
+          if (_imageFile != null) {
+            _getImageSize(Image.file(_imageFile));
+            _scanImage();
+          }
         },
         tooltip: 'Pick Image',
         child: const Icon(Icons.add_a_photo),
@@ -107,6 +114,7 @@ class _MyHomePageState extends State<_MyHomePage> {
   }
 }
 
+// Paints rectangles around all the text in the image.
 class ScannedTextPainter extends CustomPainter {
   ScannedTextPainter(this.absoluteImageSize, this.textLocations);
 
