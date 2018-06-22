@@ -8,17 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 
 Future<void> main() async {
-  final PendingDynamicLinkData data =
-      await FirebaseDynamicLinks.instance.retrieveDynamicLink();
-  final Uri deepLink = data?.link;
-
   runApp(new MaterialApp(
     title: 'Dynamic Links Example',
     routes: <String, WidgetBuilder>{
       '/': (BuildContext context) => new _MainScreen(),
       '/helloworld': (BuildContext context) => new _DynamicLinkScreen(),
     },
-    initialRoute: deepLink?.path,
   ));
 }
 
@@ -36,6 +31,17 @@ class _MainScreenState extends State<_MainScreen> {
   @override
   void initState() {
     super.initState();
+    _retrieveDynamicLink();
+  }
+
+  Future<void> _retrieveDynamicLink() async {
+    final PendingDynamicLinkData data =
+    await FirebaseDynamicLinks.instance.retrieveDynamicLink();
+    final Uri deepLink = data?.link;
+
+    if (deepLink != null) {
+      Navigator.pushNamed(context, deepLink.path);
+    }
   }
 
   Future<void> _createDynamicLink(bool short) async {
@@ -55,7 +61,7 @@ class _MainScreenState extends State<_MainScreen> {
       ),
       iosParameters: new IosParameters(
         bundleId: 'com.google.FirebaseCppDynamicLinksTestApp.dev',
-        minimumVersion: "version 0",
+        minimumVersion: '0',
       ),
     );
 
