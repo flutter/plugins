@@ -191,7 +191,7 @@
 						ProvisioningStyle = Manual;
 						SystemCapabilities = {
 							com.apple.SafariKeychain = {
-								enabled = 1;
+								enabled = 0;
 							};
 						};
 					};
@@ -255,7 +255,7 @@
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-Runner/Pods-Runner-frameworks.sh",
-				"${PODS_ROOT}/../.symlinks/flutter/ios_debug_unopt/Flutter.framework",
+				"${PODS_ROOT}/../.symlinks/flutter/ios/Flutter.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
@@ -441,7 +441,6 @@
 			buildSettings = {
 				ARCHS = arm64;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = EQHXZ8M8AV;
@@ -458,8 +457,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.google.FirebaseCppDynamicLinksTestApp.dev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "3be379b2-7394-453a-8c84-211b2026061d";
-				PROVISIONING_PROFILE_SPECIFIER = "Firebase Cpp Dynamic Links Test App Dev";
+				PROVISIONING_PROFILE = "68196199-a1b7-4e55-888a-1e4f53b58d80";
+				PROVISIONING_PROFILE_SPECIFIER = "Google Development";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -470,7 +469,6 @@
 			buildSettings = {
 				ARCHS = arm64;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = EQHXZ8M8AV;
@@ -487,8 +485,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.google.FirebaseCppDynamicLinksTestApp.dev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "3be379b2-7394-453a-8c84-211b2026061d";
-				PROVISIONING_PROFILE_SPECIFIER = "Firebase Cpp Dynamic Links Test App Dev";
+				PROVISIONING_PROFILE = "68196199-a1b7-4e55-888a-1e4f53b58d80";
+				PROVISIONING_PROFILE_SPECIFIER = "Google Development";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
