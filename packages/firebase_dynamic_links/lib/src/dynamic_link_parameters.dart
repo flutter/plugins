@@ -140,10 +140,10 @@ class AndroidParameters {
   final String packageName;
 
   Map<String, dynamic> get _data => <String, dynamic>{
-    'fallbackUrl': fallbackUrl?.toString(),
-    'minimumVersion': minimumVersion,
-    'packageName': packageName,
-  };
+        'fallbackUrl': fallbackUrl?.toString(),
+        'minimumVersion': minimumVersion,
+        'packageName': packageName,
+      };
 }
 
 /// For specifying length for short Dynamic Links.
@@ -157,8 +157,8 @@ class DynamicLinkParametersOptions {
   final ShortDynamicLinkPathLength shortDynamicLinkPathLength;
 
   Map<String, dynamic> get _data => <String, dynamic>{
-    'shortDynamicLinkPathLength': shortDynamicLinkPathLength?.index,
-  };
+        'shortDynamicLinkPathLength': shortDynamicLinkPathLength?.index,
+      };
 }
 
 /// The Dynamic Link analytics parameters.
@@ -196,12 +196,12 @@ class GoogleAnalyticsParameters {
   final String term;
 
   Map<String, dynamic> get _data => <String, dynamic>{
-    'campaign': campaign,
-    'content': content,
-    'medium': medium,
-    'source': source,
-    'term': term,
-  };
+        'campaign': campaign,
+        'content': content,
+        'medium': medium,
+        'source': source,
+        'term': term,
+      };
 }
 
 /// The Dynamic Link iOS parameters.
@@ -253,14 +253,14 @@ class IosParameters {
   final String minimumVersion;
 
   Map<String, dynamic> get _data => <String, dynamic>{
-    'appStoreId': appStoreId,
-    'bundleId': bundleId,
-    'customScheme': customScheme,
-    'fallbackUrl': fallbackUrl?.toString(),
-    'ipadBundleId': ipadBundleId,
-    'ipadFallbackUrl': ipadFallbackUrl?.toString(),
-    'minimumVersion': minimumVersion,
-  };
+        'appStoreId': appStoreId,
+        'bundleId': bundleId,
+        'customScheme': customScheme,
+        'fallbackUrl': fallbackUrl?.toString(),
+        'ipadBundleId': ipadBundleId,
+        'ipadFallbackUrl': ipadFallbackUrl?.toString(),
+        'minimumVersion': minimumVersion,
+      };
 }
 
 /// The Dynamic Link iTunes Connect parameters.
@@ -278,10 +278,10 @@ class ItunesConnectAnalyticsParameters {
   final String providerToken;
 
   Map<String, dynamic> get _data => <String, dynamic>{
-    'affiliateToken': affiliateToken,
-    'campaignToken': campaignToken,
-    'providerToken': providerToken,
-  };
+        'affiliateToken': affiliateToken,
+        'campaignToken': campaignToken,
+        'providerToken': providerToken,
+      };
 }
 
 /// Options class for defining navigation behavior of the Dynamic Link.
@@ -300,8 +300,8 @@ class NavigationInfoParameters {
   final bool forcedRedirectEnabled;
 
   Map<String, dynamic> get _data => <String, dynamic>{
-    'forcedRedirectEnabled': forcedRedirectEnabled,
-  };
+        'forcedRedirectEnabled': forcedRedirectEnabled,
+      };
 }
 
 /// The Dynamic Link Social Meta Tag parameters.
@@ -318,8 +318,8 @@ class SocialMetaTagParameters {
   final String title;
 
   Map<String, dynamic> get _data => <String, dynamic>{
-    'description': description,
-    'imageUrl': imageUrl?.toString(),
-    'title': title,
-  };
+        'description': description,
+        'imageUrl': imageUrl?.toString(),
+        'title': title,
+      };
 }

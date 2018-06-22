@@ -36,7 +36,7 @@ class _MainScreenState extends State<_MainScreen> {
 
   Future<void> _retrieveDynamicLink() async {
     final PendingDynamicLinkData data =
-    await FirebaseDynamicLinks.instance.retrieveDynamicLink();
+        await FirebaseDynamicLinks.instance.retrieveDynamicLink();
     final Uri deepLink = data?.link;
 
     if (deepLink != null) {
