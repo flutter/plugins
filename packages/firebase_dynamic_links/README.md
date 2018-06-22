@@ -104,13 +104,13 @@ void main() {
   runApp(new MaterialApp(
     title: 'Dynamic Links Example',
     routes: <String, WidgetBuilder>{
-      '/': (BuildContext context) => new MyHomeWidget(),
+      '/': (BuildContext context) => new MyHomeWidget(), // Default home route
       '/helloworld': (BuildContext context) => new MyHelloWorldWidget(),
     },
   ));
 }
 
-class _MainScreenState extends State<_MainScreen> {
+class _MyHomeWidgetState extends State<_MyHomeWidget> {
   .
   .
   .
@@ -125,7 +125,7 @@ class _MainScreenState extends State<_MainScreen> {
     final Uri deepLink = data?.link;
 
     if (deepLink != null) {
-      Navigator.pushNamed(context, deepLink.path);
+      Navigator.pushNamed(context, deepLink.path); // '/helloworld'
     }
   }
   .

@@ -73,9 +73,9 @@ class PendingDynamicLinkData {
 /// Provides android specific data from received dynamic link.
 class PendingDynamicLinkDataAndroid {
   PendingDynamicLinkDataAndroid._(
-      this.clickTimestamp,
-      this.minimumVersion,
-      );
+    this.clickTimestamp,
+    this.minimumVersion,
+  );
 
   /// The time the user clicked on the dynamic link.
   ///
