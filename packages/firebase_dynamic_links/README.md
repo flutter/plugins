@@ -100,18 +100,37 @@ applinks:YOUR_SUBDOMAIN.page.link
 4. To receive a dynamic link, call the `retrieveDynamicLink()` method from `FirebaseDynamicLinks`:
 
 ```dart
-Future<void> main() async {
-  final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.retrieveDynamicLink();
-  final Uri deepLink = data?.link; // https://dynamic.link.example/helloworld
-
+void main() {
   runApp(new MaterialApp(
     title: 'Dynamic Links Example',
     routes: <String, WidgetBuilder>{
       '/': (BuildContext context) => new MyHomeWidget(),
       '/helloworld': (BuildContext context) => new MyHelloWorldWidget(),
     },
-    initialRoute: deepLink?.path, // If path is null or not found, default route equals '/'
   ));
+}
+
+class _MainScreenState extends State<_MainScreen> {
+  .
+  .
+  .
+  @override
+  void initState() {
+    super.initState();
+    _retrieveDynamicLink();
+  }
+
+  Future<void> _retrieveDynamicLink() async {
+    final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.retrieveDynamicLink();
+    final Uri deepLink = data?.link;
+
+    if (deepLink != null) {
+      Navigator.pushNamed(context, deepLink.path);
+    }
+  }
+  .
+  .
+  .
 }
 ```
 

@@ -7,7 +7,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 
-Future<void> main() async {
+void main() {
   runApp(new MaterialApp(
     title: 'Dynamic Links Example',
     routes: <String, WidgetBuilder>{
