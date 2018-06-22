@@ -1,0 +1,23 @@
+name: cloud_functions
+description: Flutter plugin for Cloud Functions.
+version: 0.0.1
+author: Flutter Team <flutter-dev@googlegroups.com>
+homepage: https://github.com/flutter/plugins/tree/master/packages/cloud_functions
+
+flutter:
+  plugin:
+    androidPackage: io.flutter.plugins.firebase.cloudfunctions.cloudfunctions
+    pluginClass: CloudFunctionsPlugin
+
+dependencies:
+  flutter:
+    sdk: flutter
+  firebase_core: "^0.2.2"
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+environment:
+  sdk: ">=2.0.0-dev.28.0 <3.0.0"
+  flutter: ">=0.2.4 <2.0.0"

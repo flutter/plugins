@@ -88,6 +88,6 @@ void main() {
 
   test('cannot launch a non-web in webview', () async {
     expect(() async => await launch('tel:555-555-5555', forceWebView: true),
-        throwsA(const isInstanceOf<PlatformException>()));
+        throwsA(isInstanceOf<PlatformException>()));
   });
 }
