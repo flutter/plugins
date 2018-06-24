@@ -69,5 +69,6 @@ These are the available plugins in this repository.
 | [firebase_performance](./packages/firebase_performance/) | [![pub package](https://img.shields.io/pub/v/firebase_performance.svg)](https://pub.dartlang.org/packages/firebase_performance) |
 | [firebase_remote_config](./packages/firebase_remote_config/) | [![pub package](https://img.shields.io/pub/v/firebase_remote_config.svg)](https://pub.dartlang.org/packages/firebase_remote_config) |
 | [firebase_dynamic_links](./packages/firebase_dynamic_links/) | [![pub package](https://img.shields.io/pub/v/firebase_dynamic_links.svg)](https://pub.dartlang.org/packages/firebase_dynamic_links) |
+| [cloud_functions](./packages/cloud_functions/) | [![pub package](https://img.shields.io/pub/v/cloud_functions.svg)](https://pub.dartlang.org/packages/cloud_functions) |
 
 Learn more about [FlutterFire](https://github.com/flutter/plugins/blob/master/FlutterFire.md).
