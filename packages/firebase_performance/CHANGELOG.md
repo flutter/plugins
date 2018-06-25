@@ -1,3 +1,7 @@
+## 0.0.5
+
+Added comments explaining the time it takes to see performance results.
+
 ## 0.0.4
 
 * Formatted code, updated comments, and removed unnecessary files.
