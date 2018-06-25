@@ -25,6 +25,7 @@ The plugins are still under development, and some APIs might not be available ye
 | [firebase_storage][storage_pub] | ![pub package][storage_badge] | [Firebase Cloud Storage][storage_product] | [`packages/firebase_storage`][storage_code] |
 | [firebase_performance][performance_pub] | ![pub package][performance_badge] | [Firebase Performance Monitoring][performance_product] | [`packages/firebase_performance`][performance_code] |
 | [firebase_remote_config][remote_config_pub] | ![pub package][remote_config_badge] | [Firebase Remote Config][remote_config_product] | [`packages/firebase_remote_config`][remote_config_code] |
+| [cloud_functions][functions_pub] | ![pub package][functions_badge] | [Cloud Functions][functions_product] | [`packages/cloud_functions`][functions_code] |
 | [firebase_ml_vision][ml_vision_pub] | ![pub package][ml_vision_badge] | [Firebase ML Kit][ml_vision_product] | [`packages/firebase_ml_vision`][ml_vision_code] |
 
 [admob_pub]: https://pub.dartlang.org/packages/firebase_admob
@@ -81,6 +82,11 @@ The plugins are still under development, and some APIs might not be available ye
 [dynamic_links_product]: https://firebase.google.com/products/dynamic-links/
 [dynamic_links_code]: https://github.com/flutter/plugins/tree/master/packages/firebase_dynamic_links
 [dynamic_links_badge]: https://img.shields.io/pub/v/firebase_dynamic_links.svg
+
+[functions_pub]: https://pub.dartlang.org/packages/cloud_functions
+[functions_product]: https://firebase.google.com/products/functions/
+[functions_code]: https://github.com/flutter/plugins/tree/master/packages/cloud_functions
+[functions_badge]: https://img.shields.io/pub/v/cloud_functions.svg
 
 [ml_vision_pub]: https://pub.dartlang.org/packages/firebase_ml_vision
 [ml_vision_product]: https://firebase.google.com/products/ml-kit/

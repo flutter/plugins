@@ -76,7 +76,7 @@
                                                         cornerPoints:block.cornerPoints
                                                                 text:block.text]];
                blockData[@"lines"] = [self getLineData:block.lines];
-             } else if ([feature isKindOfClass:[FIRVisionTextBlock class]]) {
+             } else if ([feature isKindOfClass:[FIRVisionTextLine class]]) {
                // We structure the return data to have the line be inside a FIRVisionTextBlock.
                FIRVisionTextLine *line = (FIRVisionTextLine *)feature;
 
@@ -116,10 +116,10 @@
                  cornerPoints:(NSArray<NSValue *> *)cornerPoints
                          text:(NSString *)text {
   __block NSMutableArray<NSArray *> *points = [NSMutableArray array];
-  [cornerPoints enumerateObjectsUsingBlock:^(NSValue *_Nonnull point, NSUInteger idx,
-                                             BOOL *_Nonnull stop) {
+
+  for (NSValue *point in points) {
     [points addObject:@[ @(((__bridge CGPoint *)point)->x), @(((__bridge CGPoint *)point)->y) ]];
-  }];
+  }
 
   return @{
     @"text" : text,
@@ -134,27 +134,26 @@
 - (NSMutableArray *)getLineData:(NSArray<FIRVisionTextLine *> *)lines {
   NSMutableArray *lineDataArray = [NSMutableArray array];
 
-  [lines enumerateObjectsUsingBlock:^(FIRVisionTextLine *_Nonnull line, NSUInteger idx,
-                                      BOOL *_Nonnull stop) {
+  for (FIRVisionTextLine *line in lines) {
     NSMutableDictionary *lineData = [NSMutableDictionary dictionary];
     [lineData addEntriesFromDictionary:[self getTextData:line.frame
                                             cornerPoints:line.cornerPoints
                                                     text:line.text]];
     lineData[@"elements"] = [self getElementData:line.elements];
     [lineDataArray addObject:lineData];
-  }];
+  }
 
   return lineDataArray;
 }
 
 - (NSMutableArray *)getElementData:(NSArray<FIRVisionTextElement *> *)elements {
   NSMutableArray *elementDataArray = [NSMutableArray array];
-  [elements enumerateObjectsUsingBlock:^(FIRVisionTextElement *_Nonnull element, NSUInteger idx,
-                                         BOOL *_Nonnull stop) {
+
+  for (FIRVisionTextElement *element in elements) {
     [elementDataArray addObject:[self getTextData:element.frame
                                      cornerPoints:element.cornerPoints
                                              text:element.text]];
-  }];
+  }
 
   return elementDataArray;
 }

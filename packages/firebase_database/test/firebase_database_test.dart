@@ -277,7 +277,7 @@ void main() {
                 (MutableData mutableData) {},
                 timeout: const Duration(milliseconds: 0),
               ),
-          throwsA(const isInstanceOf<AssertionError>()),
+          throwsA(isInstanceOf<AssertionError>()),
         );
       });
     });
