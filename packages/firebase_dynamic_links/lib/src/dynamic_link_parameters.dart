@@ -105,3 +105,221 @@ class DynamicLinkParameters {
     return ShortDynamicLink._(Uri.parse(reply['url']), warnings?.cast());
   }
 }
+
+/// Response from creating a short dynamic link with [DynamicLinkParameters].
+class ShortDynamicLink {
+  ShortDynamicLink._(this.shortUrl, this.warnings);
+
+  /// Short url value.
+  final Uri shortUrl;
+
+  /// Information about potential warnings on link creation.
+  final List<String> warnings;
+}
+
+/// The Dynamic Link Android parameters.
+class AndroidParameters {
+  AndroidParameters(
+      {this.fallbackUrl, this.minimumVersion, @required this.packageName})
+      : assert(packageName != null);
+
+  /// The link to open when the app isn’t installed.
+  ///
+  /// Specify this to do something other than install the app from the Play
+  /// Store when the app isn’t installed, such as open the mobile web version of
+  /// the content, or display a promotional page for the app.
+  final Uri fallbackUrl;
+
+  /// The version of the minimum version of your app that can open the link.
+  ///
+  /// If the installed app is an older version, the user is taken to the Play
+  /// Store to upgrade the app.
+  final int minimumVersion;
+
+  /// The Android app’s package name.
+  final String packageName;
+
+  Map<String, dynamic> get _data => <String, dynamic>{
+        'fallbackUrl': fallbackUrl?.toString(),
+        'minimumVersion': minimumVersion,
+        'packageName': packageName,
+      };
+}
+
+/// For specifying length for short Dynamic Links.
+enum ShortDynamicLinkPathLength { unguessable, short }
+
+/// Options class for defining how Dynamic Link URLs are generated.
+class DynamicLinkParametersOptions {
+  DynamicLinkParametersOptions({this.shortDynamicLinkPathLength});
+
+  /// Specifies the length of the path component of a short Dynamic Link.
+  final ShortDynamicLinkPathLength shortDynamicLinkPathLength;
+
+  Map<String, dynamic> get _data => <String, dynamic>{
+        'shortDynamicLinkPathLength': shortDynamicLinkPathLength?.index,
+      };
+}
+
+/// The Dynamic Link analytics parameters.
+class GoogleAnalyticsParameters {
+  GoogleAnalyticsParameters({
+    @required this.campaign,
+    this.content,
+    @required this.medium,
+    @required this.source,
+    this.term,
+  })  : assert(campaign != null),
+        assert(medium != null),
+        assert(source != null);
+
+  GoogleAnalyticsParameters.empty()
+      : campaign = null,
+        content = null,
+        medium = null,
+        source = null,
+        term = null;
+
+  /// The utm_campaign analytics parameter.
+  final String campaign;
+
+  /// The utm_content analytics parameter.
+  final String content;
+
+  /// The utm_medium analytics parameter.
+  final String medium;
+
+  /// The utm_source analytics parameter.
+  final String source;
+
+  /// The utm_term analytics parameter.
+  final String term;
+
+  Map<String, dynamic> get _data => <String, dynamic>{
+        'campaign': campaign,
+        'content': content,
+        'medium': medium,
+        'source': source,
+        'term': term,
+      };
+}
+
+/// The Dynamic Link iOS parameters.
+class IosParameters {
+  IosParameters({
+    this.appStoreId,
+    @required this.bundleId,
+    this.customScheme,
+    this.fallbackUrl,
+    this.ipadBundleId,
+    this.ipadFallbackUrl,
+    this.minimumVersion,
+  }) : assert(bundleId != null);
+
+  /// The appStore ID of the iOS app in AppStore.
+  final String appStoreId;
+
+  /// The bundle ID of the iOS app to use to open the link.
+  final String bundleId;
+
+  /// The target app’s custom URL scheme.
+  ///
+  /// Defined to be something other than the app’s bundle ID.
+  final String customScheme;
+
+  /// The link to open when the app isn’t installed.
+  ///
+  /// Specify this to do something other than install the app from the App Store
+  /// when the app isn’t installed, such as open the mobile web version of the
+  /// content, or display a promotional page for the app.
+  final Uri fallbackUrl;
+
+  /// The bundle ID of the iOS app to use on iPads to open the link.
+  ///
+  /// This is only required if there are separate iPhone and iPad applications.
+  final String ipadBundleId;
+
+  /// The link to open on iPads when the app isn’t installed.
+  ///
+  /// Specify this to do something other than install the app from the App Store
+  /// when the app isn’t installed, such as open the web version of the content,
+  /// or display a promotional page for the app.
+  final Uri ipadFallbackUrl;
+
+  /// The the minimum version of your app that can open the link.
+  ///
+  /// It is app’s developer responsibility to open AppStore when received link
+  /// declares higher [minimumVersion] than currently installed.
+  final String minimumVersion;
+
+  Map<String, dynamic> get _data => <String, dynamic>{
+        'appStoreId': appStoreId,
+        'bundleId': bundleId,
+        'customScheme': customScheme,
+        'fallbackUrl': fallbackUrl?.toString(),
+        'ipadBundleId': ipadBundleId,
+        'ipadFallbackUrl': ipadFallbackUrl?.toString(),
+        'minimumVersion': minimumVersion,
+      };
+}
+
+/// The Dynamic Link iTunes Connect parameters.
+class ItunesConnectAnalyticsParameters {
+  ItunesConnectAnalyticsParameters(
+      {this.affiliateToken, this.campaignToken, this.providerToken});
+
+  /// The iTunes Connect affiliate token.
+  final String affiliateToken;
+
+  /// The iTunes Connect campaign token.
+  final String campaignToken;
+
+  /// The iTunes Connect provider token.
+  final String providerToken;
+
+  Map<String, dynamic> get _data => <String, dynamic>{
+        'affiliateToken': affiliateToken,
+        'campaignToken': campaignToken,
+        'providerToken': providerToken,
+      };
+}
+
+/// Options class for defining navigation behavior of the Dynamic Link.
+class NavigationInfoParameters {
+  NavigationInfoParameters({this.forcedRedirectEnabled});
+
+  /// Whether forced non-interactive redirect it to be used.
+  ///
+  /// Forced non-interactive redirect occurs when link is tapped on mobile
+  /// device.
+  ///
+  /// Default behavior is to disable force redirect and show interstitial page
+  /// where user tap will initiate navigation to the App (or AppStore if not
+  /// installed). Disabled force redirect normally improves reliability of the
+  /// click.
+  final bool forcedRedirectEnabled;
+
+  Map<String, dynamic> get _data => <String, dynamic>{
+        'forcedRedirectEnabled': forcedRedirectEnabled,
+      };
+}
+
+/// The Dynamic Link Social Meta Tag parameters.
+class SocialMetaTagParameters {
+  SocialMetaTagParameters({this.description, this.imageUrl, this.title});
+
+  /// The description to use when the Dynamic Link is shared in a social post.
+  final String description;
+
+  /// The URL to an image related to this link.
+  final Uri imageUrl;
+
+  /// The title to use when the Dynamic Link is shared in a social post.
+  final String title;
+
+  Map<String, dynamic> get _data => <String, dynamic>{
+        'description': description,
+        'imageUrl': imageUrl?.toString(),
+        'title': title,
+      };
+}

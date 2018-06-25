@@ -7,16 +7,42 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 
-void main() => runApp(new MyApp());
-
-class MyApp extends StatefulWidget {
-  @override
-  _MyAppState createState() => new _MyAppState();
+void main() {
+  runApp(new MaterialApp(
+    title: 'Dynamic Links Example',
+    routes: <String, WidgetBuilder>{
+      '/': (BuildContext context) => new _MainScreen(),
+      '/helloworld': (BuildContext context) => new _DynamicLinkScreen(),
+    },
+  ));
 }
 
-class _MyAppState extends State<MyApp> {
+class _MainScreen extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => new _MainScreenState();
+}
+
+class _MainScreenState extends State<_MainScreen> {
   String _linkMessage;
   bool _isCreatingLink = false;
+  @override
+  BuildContext get context => super.context;
+
+  @override
+  void initState() {
+    super.initState();
+    _retrieveDynamicLink();
+  }
+
+  Future<void> _retrieveDynamicLink() async {
+    final PendingDynamicLinkData data =
+        await FirebaseDynamicLinks.instance.retrieveDynamicLink();
+    final Uri deepLink = data?.link;
+
+    if (deepLink != null) {
+      Navigator.pushNamed(context, deepLink.path);
+    }
+  }
 
   Future<void> _createDynamicLink(bool short) async {
     setState(() {
@@ -25,15 +51,17 @@ class _MyAppState extends State<MyApp> {
 
     final DynamicLinkParameters parameters = new DynamicLinkParameters(
       domain: 'cx4k7.app.goo.gl',
-      link: Uri.parse('https://google.com'),
+      link: Uri.parse('https://dynamic.link.example/helloworld'),
       androidParameters: new AndroidParameters(
         packageName: 'io.flutter.plugins.firebasedynamiclinksexample',
+        minimumVersion: 0,
       ),
       dynamicLinkParametersOptions: new DynamicLinkParametersOptions(
         shortDynamicLinkPathLength: ShortDynamicLinkPathLength.short,
       ),
       iosParameters: new IosParameters(
-        bundleId: 'io.flutter.plugins.firebaseDynamicLinksExample',
+        bundleId: 'com.google.FirebaseCppDynamicLinksTestApp.dev',
+        minimumVersion: '0',
       ),
     );
 
@@ -53,8 +81,8 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
-      home: new Scaffold(
+    return new Material(
+      child: new Scaffold(
         appBar: new AppBar(
           title: const Text('Dynamic Links Example'),
         ),
@@ -85,6 +113,22 @@ class _MyAppState extends State<MyApp> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DynamicLinkScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return new Material(
+      child: new Scaffold(
+        appBar: new AppBar(
+          title: const Text('Hello World DeepLink'),
+        ),
+        body: const Center(
+          child: const Text('Hello, World!'),
         ),
       ),
     );
