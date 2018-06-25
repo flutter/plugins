@@ -4,8 +4,7 @@ Demonstrates how to use the firebase_dynamic_links plugin.
 
 ## *Important*
 
-The example app for this plugin only runs on Android. Xcode has signing constraints that prevent it
-from running on external devices. Check the `firebase_dynamic_links/README.md` for more details.
+The example app for this plugin only receives links on Android. Xcode has signing requirements that must be configured with an iOS app developer team id. Check the `firebase_dynamic_links/README.md` for more details.
 
 ## Getting Started
 
