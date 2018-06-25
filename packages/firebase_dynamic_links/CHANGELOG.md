@@ -1,3 +1,7 @@
+## 0.0.5
+
+* Added capability to receive dynamic links.
+
 ## 0.0.4
 
 * Fixed dynamic link dartdoc generation.
