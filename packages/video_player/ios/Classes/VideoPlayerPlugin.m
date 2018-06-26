@@ -229,7 +229,9 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
 }
 
 - (void)seekTo:(int)location {
-  [_player seekToTime:CMTimeMake(location, 1000)];
+  [_player seekToTime:CMTimeMake(location, 1000)
+      toleranceBefore:kCMTimeZero
+       toleranceAfter:kCMTimeZero];
 }
 
 - (void)setIsLooping:(bool)isLooping {
@@ -313,6 +315,9 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
   if ([@"init" isEqualToString:call.method]) {
+    // Allow audio playback when the Ring/Silent switch is set to silent
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
+
     for (NSNumber* textureId in _players) {
       [_registry unregisterTexture:[textureId unsignedIntegerValue]];
       [[_players objectForKey:textureId] dispose];

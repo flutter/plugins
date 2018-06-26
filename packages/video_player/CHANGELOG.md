@@ -1,6 +1,14 @@
-## 0.6.3
+## 0.6.4
 
 * Android: add support for hls, dash and ss video formats.
+
+## 0.6.3
+
+* iOS: Allow audio playback in silent mode.
+
+## 0.6.2
+
+* `VideoPlayerController.seekTo()` is now frame accurate on both platforms.
 
 ## 0.6.1
 
