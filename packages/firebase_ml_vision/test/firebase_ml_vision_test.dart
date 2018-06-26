@@ -131,7 +131,7 @@ void main() {
           ),
         ]);
 
-        expect(blocks, <TextBlock>[]);
+        expect(blocks, isEmpty);
       });
 
       test('close', () async {

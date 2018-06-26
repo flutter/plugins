@@ -10,7 +10,7 @@ For Flutter plugins for other Firebase products, see [FlutterFire.md](https://gi
 
 ## Usage
 
-To use this plugin, add `firebase_ml_vision` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/). You must also configure firebase for each platform project: Android and iOS (see the example folder or https://codelabs.developers.google.com/codelabs/flutter-firebase/#4 for step by step details).
+To use this plugin, add `firebase_ml_vision` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/). You must also configure Firebase for each platform project: Android and iOS (see the example folder or https://codelabs.developers.google.com/codelabs/flutter-firebase/#4 for step by step details).
 
 ### Android
 Optional but recommended: If you use the on-device API, configure your app to automatically download the ML model to the device after your app is installed from the Play Store. To do so, add the following declaration to your app's AndroidManifest.xml file:
@@ -29,7 +29,7 @@ Optional but recommended: If you use the on-device API, configure your app to au
 
 To use the on-device text recognition model, run the text detector as described below:
 
-1. Create a FirebaseVisionImage object from your image.
+1. Create a `FirebaseVisionImage` object from your image.
 
 To create a `FirebaseVisionImage` from an image `File` object:
 
@@ -56,10 +56,10 @@ for (TextBlock block in textLocations) {
   final String text = block.text;
 
   for (TextLine line in block.lines) {
-    // ....
+    // ...
 
     for (TextElement element in line.elements) {
-      //...
+      // ...
     }
   }
 }

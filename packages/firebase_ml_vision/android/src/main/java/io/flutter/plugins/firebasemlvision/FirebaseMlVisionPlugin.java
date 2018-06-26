@@ -48,13 +48,13 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
         if (textDetector != null) {
           try {
             textDetector.close();
+            result.success(null);
           } catch (IOException exception) {
             result.error("textDetectorError", exception.getLocalizedMessage(), null);
-          } finally {
-            textDetector = null;
           }
+
+          textDetector = null;
         }
-        result.success(null);
         break;
       default:
         result.notImplemented();
