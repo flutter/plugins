@@ -251,11 +251,15 @@ Widget buildCard(String title) {
             children: <Widget>[
               new FlatButton(
                 child: const Text('BUY TICKETS'),
-                onPressed: () {/* ... */},
+                onPressed: () {
+                  /* ... */
+                },
               ),
               new FlatButton(
                 child: const Text('SELL TICKETS'),
-                onPressed: () {/* ... */},
+                onPressed: () {
+                  /* ... */
+                },
               ),
             ],
           ),
@@ -373,6 +377,23 @@ void main() {
           ),
           body: new TabBarView(
             children: <Widget>[
+              new Column(
+                children: <Widget>[
+                  new NetworkPlayerLifeCycle(
+                    'http://www.sample-videos.com/video/mp4/720/big_buck_bunny_720p_20mb.mp4',
+                    (BuildContext context, VideoPlayerController controller) =>
+                        new AspectRatioVideo(controller),
+                  ),
+                  new Container(
+                    padding: const EdgeInsets.only(top: 20.0),
+                  ),
+                  new NetworkPlayerLifeCycle(
+                    'http://184.72.239.149/vod/smil:BigBuckBunny.smil/playlist.m3u8',
+                    (BuildContext context, VideoPlayerController controller) =>
+                        new AspectRatioVideo(controller),
+                  ),
+                ],
+              ),
               new NetworkPlayerLifeCycle(
                 'http://www.sample-videos.com/video/mp4/720/big_buck_bunny_720p_20mb.mp4',
                 (BuildContext context, VideoPlayerController controller) =>
