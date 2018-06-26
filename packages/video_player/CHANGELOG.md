@@ -1,3 +1,7 @@
+## 0.6.2
+
+* iOS: Allow audio playback in silent mode.
+
 ## 0.6.1
 
 * iOS: add missing observer removals to prevent crashes on deallocation. 
