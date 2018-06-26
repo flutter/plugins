@@ -1,6 +1,7 @@
 ## 0.6.2
 
 * iOS: Allow audio playback in silent mode.
+* `VideoPlayerController.seekTo.()` is now frame accurate on both platforms.
 
 ## 0.6.1
 
