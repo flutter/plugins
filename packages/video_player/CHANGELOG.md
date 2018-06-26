@@ -1,3 +1,7 @@
+## 0.6.4
+
+* Android: add support for hls, dash and ss video formats.
+
 ## 0.6.3
 
 * iOS: Allow audio playback in silent mode.
