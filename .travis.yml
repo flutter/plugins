@@ -19,7 +19,7 @@ matrix:
         - flutter doctor
         - pub global activate flutter_plugin_tools
       script:
-        - ./script/plugin_tools.sh analyze
+        - ./script/incremental_build.sh analyze
     # Job 2) Check format and run tests
     - os: linux
       env:
@@ -42,8 +42,8 @@ matrix:
         - flutter doctor
         - pub global activate flutter_plugin_tools
       script:
-        - ./script/plugin_tools.sh format --travis --clang-format=clang-format-5.0
-        - ./script/plugin_tools.sh test
+        - ./script/incremental_build.sh format --travis --clang-format=clang-format-5.0
+        - ./script/incremental_build.sh test
     # Job 3.1) Build example APKs and run Java tests, shard 1/2
     - os: linux
       env:
@@ -65,8 +65,8 @@ matrix:
         - export ANDROID_HOME=`pwd`/android-sdk
         - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
       script:
-        - ./script/plugin_tools.sh build-examples --apk
-        - ./script/plugin_tools.sh java-test  # must come after apk build
+        - ./script/incremental_build.sh build-examples --apk
+        - ./script/incremental_build.sh java-test  # must come after apk build
     # Job 3.2) Build example APKs and run Java tests, shard 2/2
     - os: linux
       env:
@@ -88,8 +88,8 @@ matrix:
         - export ANDROID_HOME=`pwd`/android-sdk
         - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
       script:
-        - ./script/plugin_tools.sh build-examples --apk
-        - ./script/plugin_tools.sh java-test  # must come after apk build
+        - ./script/incremental_build.sh build-examples --apk
+        - ./script/incremental_build.sh java-test  # must come after apk build
     # Job 4.1) Build example IPAs, shard 1/2
     - os: osx
       env:
@@ -101,7 +101,7 @@ matrix:
         - ./script/before_build_ipas.sh
         - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
       script:
-        - ./script/plugin_tools.sh build-examples --ipa
+        - ./script/incremental_build.sh build-examples --ipa
     # Job 4.2) Build example IPAs, shard 2/2
     - os: osx
       env:
@@ -113,7 +113,7 @@ matrix:
         - ./script/before_build_ipas.sh
         - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
       script:
-        - ./script/plugin_tools.sh build-examples --ipa
+        - ./script/incremental_build.sh build-examples --ipa
 
 cache:
   directories:

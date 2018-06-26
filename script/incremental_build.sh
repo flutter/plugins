@@ -6,7 +6,7 @@ BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
 
 if [ "${BRANCH_NAME}" = "master" ]; then
   echo "Running for all packages"
-  pub global run flutter_plugin_tools "$@"
+  pub global run flutter_plugin_tools "$@" $PLUGIN_SHARDING
 else
   # Make sure there is up-to-date master.
   git fetch origin master
@@ -27,7 +27,7 @@ else
 
   if [ "${FLUTTER_CHANGED_PACKAGES}" = "" ] || [ $FLUTTER_CHANGED_GLOBAL -gt 0 ]; then
     echo "Running for all packages"
-    pub global run flutter_plugin_tools "$@"
+    pub global run flutter_plugin_tools "$@" $PLUGIN_SHARDING
   else
     echo "Running only for $FLUTTER_CHANGED_PACKAGES"
     pub global run flutter_plugin_tools "$@" --plugins=$FLUTTER_CHANGED_PACKAGES

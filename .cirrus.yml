@@ -1,7 +1,6 @@
-container:
-  image: cirrusci/flutter:latest
-
 task:
+  container:
+    image: cirrusci/flutter:latest
   upgrade_script:
     - flutter channel master
     - flutter upgrade
@@ -18,6 +17,33 @@ task:
     - name: analyze
       script: ./script/incremental_build.sh analyze
     - name: build-apks+java-test
+      env:
+        matrix:
+          PLUGIN_SHARDING: "--shardIndex 0 --shardCount 2"
+          PLUGIN_SHARDING: "--shardIndex 1 --shardCount 2"
       script:
         - ./script/incremental_build.sh build-examples --apk
         - ./script/incremental_build.sh java-test  # must come after apk build
+
+task:
+  name: build-ipas
+  osx_instance:
+    image: high-sierra-xcode-9.4
+  env:
+    PATH: $PATH:/usr/local/bin
+    matrix:
+      PLUGIN_SHARDING: "--shardIndex 0 --shardCount 2"
+      PLUGIN_SHARDING: "--shardIndex 1 --shardCount 2"
+  setup_script:
+    - brew update
+    - brew install libimobiledevice
+    - brew install ideviceinstaller
+    - brew install ios-deploy
+    - pod repo update
+    - git clone https://github.com/flutter/flutter.git
+    - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
+    - flutter doctor
+    - pub global activate flutter_plugin_tools
+  build_script:
+    - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
+    - ./script/incremental_build.sh build-examples --ipa
