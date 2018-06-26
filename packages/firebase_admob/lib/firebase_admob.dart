@@ -47,6 +47,7 @@ class MobileAdTargetingInfo {
     this.designedForFamilies,
     this.childDirected,
     this.testDevices,
+    this.nonPersonalizedAds
   });
 
   final List<String> keywords;
@@ -56,6 +57,7 @@ class MobileAdTargetingInfo {
   final bool designedForFamilies;
   final bool childDirected;
   final List<String> testDevices;
+  final bool nonPersonalizedAds;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> json = <String, dynamic>{
@@ -66,6 +68,8 @@ class MobileAdTargetingInfo {
       assert(keywords.every((String s) => s != null && s.isNotEmpty));
       json['keywords'] = keywords;
     }
+    if (nonPersonalizedAds != null)
+      json['nonPersonalizedAds'] = nonPersonalizedAds;
     if (contentUrl != null && contentUrl.isNotEmpty)
       json['contentUrl'] = contentUrl;
     if (birthday != null) json['birthday'] = birthday.millisecondsSinceEpoch;
