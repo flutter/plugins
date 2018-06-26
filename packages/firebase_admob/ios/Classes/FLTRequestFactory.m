@@ -4,8 +4,8 @@
 
 #import "FLTRequestFactory.h"
 #import "FirebaseAdMobPlugin.h"
-#import "GoogleMobileAds/GoogleMobileAds.h"
 #import "GoogleMobileAds/GADExtras.h"
+#import "GoogleMobileAds/GoogleMobileAds.h"
 
 @implementation FLTRequestFactory
 
@@ -121,10 +121,11 @@ NSDictionary *_targetingInfo;
     request.requestAgent = requestAgent;
   }
 
-  NSNumber *nonPersonalizedAds = [self targetingInfoBoolForKey:@"nonPersonalizedAds" info:_targetingInfo];
+  NSNumber *nonPersonalizedAds =
+      [self targetingInfoBoolForKey:@"nonPersonalizedAds" info:_targetingInfo];
   if (nonPersonalizedAds != nil && [nonPersonalizedAds boolValue]) {
     GADExtras *extras = [[GADExtras alloc] init];
-    extras.additionalParameters = @{@"npa": @"1"};
+    extras.additionalParameters = @{@"npa" : @"1"};
     [request registerAdNetworkExtras:extras];
   }
 

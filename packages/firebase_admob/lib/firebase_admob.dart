@@ -39,16 +39,15 @@ typedef void MobileAdListener(MobileAdEvent event);
 /// This class's properties mirror the native AdRequest API. See for example:
 /// [AdRequest.Builder for Android](https://firebase.google.com/docs/reference/android/com/google/android/gms/ads/AdRequest.Builder).
 class MobileAdTargetingInfo {
-  const MobileAdTargetingInfo({
-    this.keywords,
-    this.contentUrl,
-    this.birthday,
-    this.gender,
-    this.designedForFamilies,
-    this.childDirected,
-    this.testDevices,
-    this.nonPersonalizedAds
-  });
+  const MobileAdTargetingInfo(
+      {this.keywords,
+      this.contentUrl,
+      this.birthday,
+      this.gender,
+      this.designedForFamilies,
+      this.childDirected,
+      this.testDevices,
+      this.nonPersonalizedAds});
 
   final List<String> keywords;
   final String contentUrl;
