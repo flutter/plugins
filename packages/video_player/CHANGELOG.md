@@ -1,3 +1,7 @@
+## 0.6.2
+
+* Android: add support for hls, dash and ss video formats.
+
 ## 0.6.1
 
 * iOS: add missing observer removals to prevent crashes on deallocation. 
