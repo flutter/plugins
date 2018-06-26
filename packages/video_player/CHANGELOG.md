@@ -1,3 +1,7 @@
+## 0.6.2
+
+* `VideoPlayerController.seekTo.()` is now frame accurate on both platforms.
+
 ## 0.6.1
 
 * iOS: add missing observer removals to prevent crashes on deallocation. 
