@@ -50,8 +50,8 @@ void main() {
           'width': 7,
           'height': 8,
           'points': <dynamic>[
-            <dynamic>[9.0, 10.0],
-            <dynamic>[11.0, 12.0],
+            <dynamic>[9, 10],
+            <dynamic>[11, 12],
           ],
           'elements': <dynamic>[
             textElement,

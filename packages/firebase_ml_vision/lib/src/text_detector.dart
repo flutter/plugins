@@ -43,7 +43,7 @@ class TextDetector implements FirebaseVisionDetector {
 abstract class TextContainer {
   TextContainer._(Map<dynamic, dynamic> data)
       : boundingBox = data['left'] != null
-            ? Rectangle<num>(
+            ? Rectangle<int>(
                 data['left'],
                 data['top'],
                 data['width'],
@@ -51,19 +51,19 @@ abstract class TextContainer {
               )
             : null,
         _cornerPoints = data['points']
-            .map<Point<num>>((dynamic item) => Point<num>(
+            .map<Point<int>>((dynamic item) => Point<int>(
                   item[0],
                   item[1],
                 ))
             .toList(),
         text = data['text'];
 
-  final List<Point<num>> _cornerPoints;
+  final List<Point<int>> _cornerPoints;
 
   /// Axis-aligned bounding rectangle of the detected text.
   ///
   /// Could be null even if text is found.
-  final Rectangle<num> boundingBox;
+  final Rectangle<int> boundingBox;
 
   /// The recognized text as a string.
   ///
@@ -77,7 +77,7 @@ abstract class TextContainer {
   /// rectangle. Parts of the region could be outside of the image.
   ///
   /// Could be empty even if text is found.
-  List<Point<num>> get cornerPoints => List<Point<num>>.from(_cornerPoints);
+  List<Point<int>> get cornerPoints => List<Point<int>>.from(_cornerPoints);
 }
 
 /// A block of text (think of it as a paragraph) as deemed by the OCR engine.
