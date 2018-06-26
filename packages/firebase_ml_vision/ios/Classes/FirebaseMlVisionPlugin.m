@@ -123,10 +123,10 @@
 
   return @{
     @"text" : text,
-    @"left" : [NSNumber numberWithInt:[@(frame.origin.x)  intValue]],
-    @"top" : [NSNumber numberWithInt:[@(frame.origin.y)  intValue]],
-    @"width" : [NSNumber numberWithInt:[@(frame.size.width)  intValue]],
-    @"height" : [NSNumber numberWithInt:[@(frame.size.height)  intValue]],
+    @"left" : [NSNumber numberWithInt:[@(frame.origin.x) intValue]],
+    @"top" : [NSNumber numberWithInt:[@(frame.origin.y) intValue]],
+    @"width" : [NSNumber numberWithInt:[@(frame.size.width) intValue]],
+    @"height" : [NSNumber numberWithInt:[@(frame.size.height) intValue]],
     @"points" : points,
   };
 }
