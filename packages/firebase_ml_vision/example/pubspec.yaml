@@ -1,0 +1,18 @@
+name: firebase_ml_vision_example
+description: Demonstrates how to use the firebase_ml_vision plugin.
+
+version: 1.0.0+1
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  image_picker: "^0.4.5"
+  cupertino_icons: ^0.1.2
+
+dev_dependencies:
+  firebase_ml_vision:
+    path: ../
+
+flutter:
+  uses-material-design: true

@@ -1,3 +1,7 @@
+## 0.3.4
+
+* Make sensors Dart 2 compliant.
+
 ## 0.3.3
 
 * Updated Gradle tooling to match Android Studio 3.1.2.

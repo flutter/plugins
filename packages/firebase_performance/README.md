@@ -12,6 +12,8 @@ For Flutter plugins for other Firebase products, see [FlutterFire.md](https://gi
 
 To use this plugin, add `firebase_performance` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/). You must also configure firebase performance monitoring for each platform project: Android and iOS (see the example folder or https://codelabs.developers.google.com/codelabs/flutter-firebase/#4 for step by step details).
 
+You can confirm that Performance Monitoring results appear in the [Firebase console.](https://console.firebase.google.com/) Results should appear within 12 hours.
+
 ## Define a Custom Trace
 
 A custom trace is a report of performance data associated with some of the code in your app. To learn more about custom traces, see the [Performance Monitoring overview](https://firebase.google.com/docs/perf-mon/#how_does_it_work).

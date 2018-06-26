@@ -26,11 +26,41 @@ void main() {
             return returnUrl;
           case 'DynamicLinkParameters#shortenUrl':
             return returnUrl;
+          case 'FirebaseDynamicLinks#retrieveDynamicLink':
+            return <dynamic, dynamic>{
+              'link': 'https://google.com',
+              'android': <dynamic, dynamic>{
+                'clickTimestamp': 1234567,
+                'minimumVersion': 12,
+              },
+              'ios': <dynamic, dynamic>{
+                'minimumVersion': 'Version 12',
+              },
+            };
           default:
             return null;
         }
       });
       log.clear();
+    });
+
+    test('retrieveDynamicLink', () async {
+      final PendingDynamicLinkData data =
+          await FirebaseDynamicLinks.instance.retrieveDynamicLink();
+
+      expect(data.link, Uri.parse('https://google.com'));
+
+      expect(data.android.clickTimestamp, 1234567);
+      expect(data.android.minimumVersion, 12);
+
+      expect(data.ios.minimumVersion, 'Version 12');
+
+      expect(log, <Matcher>[
+        isMethodCall(
+          'FirebaseDynamicLinks#retrieveDynamicLink',
+          arguments: null,
+        )
+      ]);
     });
 
     group('$DynamicLinkParameters', () {
