@@ -6,10 +6,10 @@ package io.flutter.plugins.deviceinfo;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.provider.Settings;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
+import android.provider.Settings;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -87,9 +87,11 @@ public class DeviceInfoPlugin implements MethodCallHandler {
   }
 
   /**
-   * Simple call to get the android hardware device Id that is unique between the device + user and app signing.
-   * This key will change if the app is uninstalled or its data is cleared. Device factory reset will also result in a value change
-   * @return
+   * Simple call to get the android hardware device Id that is unique between the device + user and
+   * app signing. This key will change if the app is uninstalled or its data is cleared. Device
+   * factory reset will also result in a value change
+   *
+   * @return The device ID
    */
   @SuppressLint("HardwareIds")
   private String getDeviceId() {
