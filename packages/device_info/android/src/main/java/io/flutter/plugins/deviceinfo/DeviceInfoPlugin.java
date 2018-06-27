@@ -4,6 +4,9 @@
 
 package io.flutter.plugins.deviceinfo;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.provider.Settings;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
@@ -18,6 +21,7 @@ import java.util.Map;
 
 /** DeviceInfoPlugin */
 public class DeviceInfoPlugin implements MethodCallHandler {
+  private final Activity activity;
 
   /** Substitute for missing values. */
   private static final String[] EMPTY_STRING_LIST = new String[] {};
@@ -26,11 +30,13 @@ public class DeviceInfoPlugin implements MethodCallHandler {
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/device_info");
-    channel.setMethodCallHandler(new DeviceInfoPlugin());
+    channel.setMethodCallHandler(new DeviceInfoPlugin(registrar.activity()));
   }
 
   /** Do not allow direct instantiation. */
-  private DeviceInfoPlugin() {}
+  private DeviceInfoPlugin(Activity activity) {
+    this.activity = activity;
+  }
 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
@@ -60,6 +66,7 @@ public class DeviceInfoPlugin implements MethodCallHandler {
       build.put("tags", Build.TAGS);
       build.put("type", Build.TYPE);
       build.put("isPhysicalDevice", !isEmulator());
+      build.put("deviceId", getDeviceId());
 
       Map<String, Object> version = new HashMap<>();
       if (VERSION.SDK_INT >= VERSION_CODES.M) {
@@ -77,6 +84,16 @@ public class DeviceInfoPlugin implements MethodCallHandler {
     } else {
       result.notImplemented();
     }
+  }
+
+  /**
+   * Simple call to get the android hardware device Id that is unique between the device + user and app signing.
+   * This key will change if the app is uninstalled or its data is cleared. Device factory reset will also result in a value change
+   * @return
+   */
+  @SuppressLint("HardwareIds")
+  private String getDeviceId() {
+    return Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
   }
 
   /**
