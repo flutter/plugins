@@ -67,24 +67,26 @@ class _MyHomePageState extends State<_MyHomePage> {
     final FirebaseVisionImage visionImage =
         FirebaseVisionImage.fromFile(_imageFile);
 
-    List<dynamic> results;
+    FirebaseVisionDetector detector;
     switch (_currentDetector) {
       case Detector.Barcode:
-        results = <dynamic>[];
+        detector = FirebaseVision.instance.getBarcodeDetector(null);
         break;
       case Detector.Face:
-        results = <dynamic>[];
+        detector = FirebaseVision.instance.getFaceDetector(null);
         break;
       case Detector.Label:
-        results = <dynamic>[];
+        detector = FirebaseVision.instance.getLabelDetector(null);
         break;
       case Detector.Text:
-        final TextDetector detector = FirebaseVision.instance.getTextDetector();
-        results = await detector.detectInImage(visionImage);
+        detector = FirebaseVision.instance.getTextDetector();
         break;
       default:
-        break;
+        return;
     }
+
+    List<dynamic> results =
+        await detector.detectInImage(visionImage) ?? <dynamic>[];
 
     setState(() {
       _scanResults = results;

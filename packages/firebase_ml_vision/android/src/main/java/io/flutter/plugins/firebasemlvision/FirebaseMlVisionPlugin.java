@@ -41,6 +41,18 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
   @Override
   public void onMethodCall(MethodCall call, Result result) {
     switch (call.method) {
+      case "BarcodeDetector#detectInImage":
+        break;
+      case "BarcodeDetector#close":
+        break;
+      case "FaceDetector#detectInImage":
+        break;
+      case "FaceDetector#close":
+        break;
+      case "LabelDetector#detectInImage":
+        break;
+      case "LabelDetector#close":
+        break;
       case "TextDetector#detectInImage":
         handleTextDetectionResult(call, result);
         break;
@@ -61,6 +73,13 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
     }
   }
 
+  /////////////// Barcode Detector ///////////////
+
+  /////////////// Face Detector ///////////////
+
+  /////////////// Label Detector ///////////////
+
+  /////////////// Text Detector ///////////////
   private void handleTextDetectionResult(MethodCall call, final Result result) {
     File file = new File((String) call.arguments);
 

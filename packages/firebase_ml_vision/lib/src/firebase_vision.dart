@@ -52,11 +52,13 @@ class FirebaseVisionImage {
 
   /// Construct a [FirebaseVisionImage] from a file.
   factory FirebaseVisionImage.fromFile(File imageFile) {
+    assert(imageFile != null);
     return FirebaseVisionImage._(imageFile);
   }
 
   /// Construct a [FirebaseVisionImage] from a file path.
   factory FirebaseVisionImage.fromFilePath(String imagePath) {
+    assert(imagePath != null);
     return FirebaseVisionImage._(new File(imagePath));
   }
 

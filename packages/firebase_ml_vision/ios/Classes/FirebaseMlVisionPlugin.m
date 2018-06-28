@@ -15,6 +15,9 @@
 @end
 
 @interface FLTFirebaseMlVisionPlugin ()
+@property(nonatomic, retain) FIRVisionBarcodeDetector *barcodeDetector;
+@property(nonatomic, retain) FIRVisionFaceDetector *faceDetector;
+@property(nonatomic, retain) FIRVisionLabelDetector *labelDetector;
 @property(nonatomic, retain) FIRVisionTextDetector *textDetector;
 @end
 
@@ -38,7 +41,13 @@
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
-  if ([@"TextDetector#detectInImage" isEqualToString:call.method]) {
+  if ([@"BarcodeDetector#detectInImage" isEqualToString:call.method]) {
+  } else if ([@"BarcodeDetector#close" isEqualToString:call.method]) {
+  } else if ([@"FaceDetector#detectInImage" isEqualToString:call.method]) {
+  } else if ([@"FaceDetector#close" isEqualToString:call.method]) {
+  } else if ([@"LabelDetector#detectInImage" isEqualToString:call.method]) {
+  } else if ([@"LabelDetector#close" isEqualToString:call.method]) {
+  } else if ([@"TextDetector#detectInImage" isEqualToString:call.method]) {
     [self handleTextDetectionResult:call result:result];
   } else if ([@"TextDetector#close" isEqualToString:call.method]) {
     result(_textDetector = nil);
@@ -47,6 +56,13 @@
   }
 }
 
+/////////////// Barcode Detector ///////////////
+
+/////////////// Face Detector ///////////////
+
+/////////////// Label Detector ///////////////
+
+/////////////// Text Detector ///////////////
 - (void)handleTextDetectionResult:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSString *filePath = call.arguments;
   UIImage *image = [UIImage imageWithContentsOfFile:filePath];
