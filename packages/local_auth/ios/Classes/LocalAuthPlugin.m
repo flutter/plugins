@@ -123,8 +123,6 @@
   result(options);
 }
 
-
-
 - (void)handleErrors:(NSError *)authError
      flutterArguments:(NSDictionary *)arguments
     withFlutterResult:(FlutterResult)result {
