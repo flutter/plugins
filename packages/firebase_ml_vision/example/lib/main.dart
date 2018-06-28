@@ -33,8 +33,8 @@ class _MyHomePageState extends State<_MyHomePage> {
         await ImagePicker.pickImage(source: ImageSource.gallery);
 
     if (imageFile != null) {
-      _getImageSize(new Image.file(imageFile));
-      _scanImage();
+      _getImageSize(imageFile);
+      _scanImage(imageFile);
     }
 
     setState(() {
@@ -42,8 +42,10 @@ class _MyHomePageState extends State<_MyHomePage> {
     });
   }
 
-  Future<void> _getImageSize(Image image) async {
+  Future<void> _getImageSize(File imageFile) async {
     final Completer<Size> completer = new Completer<Size>();
+
+    final Image image = new Image.file(imageFile);
     image.image.resolve(const ImageConfiguration()).addListener(
       (ImageInfo info, bool _) {
         completer.complete(Size(
@@ -59,13 +61,13 @@ class _MyHomePageState extends State<_MyHomePage> {
     });
   }
 
-  Future<void> _scanImage() async {
+  Future<void> _scanImage(File imageFile) async {
     setState(() {
       _scanResults = null;
     });
 
     final FirebaseVisionImage visionImage =
-        FirebaseVisionImage.fromFile(_imageFile);
+        FirebaseVisionImage.fromFile(imageFile);
 
     FirebaseVisionDetector detector;
     switch (_currentDetector) {
@@ -150,7 +152,7 @@ class _MyHomePageState extends State<_MyHomePage> {
           new PopupMenuButton<Detector>(
             onSelected: (Detector result) {
               _currentDetector = result;
-              if (_imageFile != null) _scanImage();
+              if (_imageFile != null) _scanImage(_imageFile);
             },
             itemBuilder: (BuildContext context) => <PopupMenuEntry<Detector>>[
                   const PopupMenuItem<Detector>(
