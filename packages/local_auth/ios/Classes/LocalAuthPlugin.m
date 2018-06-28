@@ -21,6 +21,8 @@
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"authenticateWithBiometrics" isEqualToString:call.method]) {
     [self authenticateWithBiometrics:call.arguments withFlutterResult:result];
+  } else if ([@"getBiometricOptions" isEqualToString:call.method]) {
+    [self getBiometricOptions:call.arguments withFlutterResult:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -101,6 +103,28 @@
     [self handleErrors:authError flutterArguments:arguments withFlutterResult:result];
   }
 }
+
+- (void)getBiometricOptions:(NSDictionary *)arguments
+          withFlutterResult:(FlutterResult)result {
+  LAContext *context = [[LAContext alloc] init];
+  NSError *authError = nil;
+  NSMutableArray *options = [NSMutableArray array];
+
+  if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
+                           error:&authError]) {
+    NSString *type = @"fingerprint";
+    if (@available(iOS 11.0, *)) {
+      if (context.biometryType == LABiometryTypeFaceID) {
+        type = @"face";
+      }
+    }
+    [options addObject:type];
+  }
+
+  result(options);
+}
+
+
 
 - (void)handleErrors:(NSError *)authError
      flutterArguments:(NSDictionary *)arguments

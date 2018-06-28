@@ -5,12 +5,17 @@
 package io.flutter.plugins.localauth;
 
 import android.app.Activity;
+import android.app.KeyguardManager;
+import android.content.Context;
+import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.plugins.localauth.AuthenticationHelper.AuthCompletionHandler;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** LocalAuthPlugin */
@@ -72,6 +77,19 @@ public class LocalAuthPlugin implements MethodCallHandler {
                 }
               });
       authenticationHelper.authenticate();
+    } else if (call.method.equals("getBiometricOptions")) {
+      Activity activity = registrar.activity();
+      KeyguardManager keyguardManager = (KeyguardManager) activity.getSystemService(Context.KEYGUARD_SERVICE);
+      FingerprintManagerCompat fingerprintManager = FingerprintManagerCompat.from(activity);
+      List<String> options = new ArrayList<>();
+
+      if (fingerprintManager.isHardwareDetected()) {
+        if (keyguardManager.isKeyguardSecure() && fingerprintManager.hasEnrolledFingerprints()) {
+          options.add("fingerprint");
+        }
+      }
+
+      result.success(options);
     } else {
       result.notImplemented();
     }
