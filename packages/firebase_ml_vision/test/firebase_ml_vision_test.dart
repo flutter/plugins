@@ -29,6 +29,18 @@ void main() {
       log.clear();
     });
 
+    group('$BarcodeDetector', () {
+
+    });
+
+    group('$FaceDetector', () {
+
+    });
+
+    group('$LabelDetector', () {
+
+    });
+
     group('$TextDetector', () {
       test('detectInImage', () async {
         final Map<dynamic, dynamic> textElement = <dynamic, dynamic>{
