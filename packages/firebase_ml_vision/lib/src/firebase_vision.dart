@@ -28,7 +28,19 @@ class FirebaseVision {
   /// ```
   static final FirebaseVision instance = new FirebaseVision._();
 
-  /// Creates an instance of [TextDetector];
+  /// Creates an instance of [BarcodeDetector].
+  BarcodeDetector getBarcodeDetector(BarcodeDetectorOptions options) =>
+      new BarcodeDetector._(options);
+
+  /// Creates an instance of [FaceDetector].
+  FaceDetector getFaceDetector(FaceDetectorOptions options) =>
+      new FaceDetector._(options);
+
+  /// Creates an instance of [LabelDetector].
+  LabelDetector getLabelDetector(LabelDetectorOptions options) =>
+      new LabelDetector._(options);
+
+  /// Creates an instance of [TextDetector].
   TextDetector getTextDetector() => new TextDetector._();
 }
 

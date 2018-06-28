@@ -50,9 +50,9 @@ detector.close();
 3. Extract text and text locations from blocks of recognized text.
 
 ```dart
-for (TextBlock block in textLocations) {
-  final Rectangle<num> boundingBox = block.boundingBox;
-  final List<Point<num>> cornerPoints = block.cornerPoints;
+for (TextBlock block in blocks) {
+  final Rectangle<int> boundingBox = block.boundingBox;
+  final List<Point<int>> cornerPoints = block.cornerPoints;
   final String text = block.text;
 
   for (TextLine line in block.lines) {

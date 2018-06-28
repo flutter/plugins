@@ -5,6 +5,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:firebase_ml_vision_example/detector_painters.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
@@ -19,34 +20,26 @@ class _MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<_MyHomePage> {
   File _imageFile;
   Size _imageSize;
-  List<TextBlock> _textLocations;
+  List<dynamic> _scanResults;
+  Detector _currentDetector = Detector.Text;
 
-  Future<void> _getImage() async {
+  Future<void> _getAndScanImage() async {
     setState(() {
       _imageFile = null;
       _imageSize = null;
-      _textLocations = null;
     });
 
     final File imageFile =
         await ImagePicker.pickImage(source: ImageSource.gallery);
 
+    if (imageFile != null) {
+      _getImageSize(new Image.file(imageFile));
+      _scanImage();
+    }
+
     setState(() {
       _imageFile = imageFile;
     });
-  }
-
-  Future<void> _scanImage() async {
-    final FirebaseVisionImage visionImage =
-        FirebaseVisionImage.fromFile(_imageFile);
-    final TextDetector detector = FirebaseVision.instance.getTextDetector();
-    final List<TextBlock> blocks = await detector.detectInImage(visionImage);
-
-    setState(() {
-      _textLocations = blocks;
-    });
-
-    detector.close();
   }
 
   Future<void> _getImageSize(Image image) async {
@@ -66,6 +59,63 @@ class _MyHomePageState extends State<_MyHomePage> {
     });
   }
 
+  Future<void> _scanImage() async {
+    setState(() {
+      _scanResults = null;
+    });
+
+    final FirebaseVisionImage visionImage =
+        FirebaseVisionImage.fromFile(_imageFile);
+
+    List<dynamic> results;
+    switch (_currentDetector) {
+      case Detector.Barcode:
+        results = <dynamic>[];
+        break;
+      case Detector.Face:
+        results = <dynamic>[];
+        break;
+      case Detector.Label:
+        results = <dynamic>[];
+        break;
+      case Detector.Text:
+        final TextDetector detector = FirebaseVision.instance.getTextDetector();
+        results = await detector.detectInImage(visionImage);
+        break;
+      default:
+        break;
+    }
+
+    setState(() {
+      _scanResults = results;
+    });
+  }
+
+  CustomPaint _buildResults(Size imageSize, List<dynamic> results) {
+    CustomPainter painter;
+
+    switch (_currentDetector) {
+      case Detector.Barcode:
+        painter = new BarcodeDetectorPainter(_imageSize, results);
+        break;
+      case Detector.Face:
+        painter = new FaceDetectorPainter(_imageSize, results);
+        break;
+      case Detector.Label:
+        painter = new LabelDetectorPainter(_imageSize, results);
+        break;
+      case Detector.Text:
+        painter = new TextDetectorPainter(_imageSize, results);
+        break;
+      default:
+        break;
+    }
+
+    return new CustomPaint(
+      painter: painter,
+    );
+  }
+
   Widget _buildImage() {
     return new Container(
       constraints: const BoxConstraints.expand(),
@@ -75,18 +125,17 @@ class _MyHomePageState extends State<_MyHomePage> {
           fit: BoxFit.fill,
         ),
       ),
-      child: _imageSize == null || _textLocations == null
+      child: _imageSize == null || _scanResults == null
           ? const Center(
               child: const Text(
-              "Scanning...",
-              style: const TextStyle(
-                color: Colors.green,
-                fontSize: 30.0,
+                'Scanning...',
+                style: const TextStyle(
+                  color: Colors.green,
+                  fontSize: 30.0,
+                ),
               ),
-            ))
-          : new CustomPaint(
-              painter: new ScannedTextPainter(_imageSize, _textLocations),
-            ),
+            )
+          : _buildResults(_imageSize, _scanResults),
     );
   }
 
@@ -95,69 +144,41 @@ class _MyHomePageState extends State<_MyHomePage> {
     return new Scaffold(
       appBar: new AppBar(
         title: const Text('ML Vision Example'),
+        actions: <Widget>[
+          new PopupMenuButton<Detector>(
+            onSelected: (Detector result) {
+              _currentDetector = result;
+              if (_imageFile != null) _scanImage();
+            },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<Detector>>[
+                  const PopupMenuItem<Detector>(
+                    child: const Text('Detect Barcode'),
+                    value: Detector.Barcode,
+                  ),
+                  const PopupMenuItem<Detector>(
+                    child: const Text('Detect Face'),
+                    value: Detector.Face,
+                  ),
+                  const PopupMenuItem<Detector>(
+                    child: const Text('Detect Label'),
+                    value: Detector.Label,
+                  ),
+                  const PopupMenuItem<Detector>(
+                    child: const Text('Detect Text'),
+                    value: Detector.Text,
+                  ),
+                ],
+          ),
+        ],
       ),
       body: _imageFile == null
-          ? const Center(child: const Text("No image selected."))
+          ? const Center(child: const Text('No image selected.'))
           : _buildImage(),
       floatingActionButton: new FloatingActionButton(
-        onPressed: () async {
-          await _getImage();
-          if (_imageFile != null) {
-            _getImageSize(Image.file(_imageFile));
-            _scanImage();
-          }
-        },
+        onPressed: _getAndScanImage,
         tooltip: 'Pick Image',
         child: const Icon(Icons.add_a_photo),
       ),
     );
-  }
-}
-
-// Paints rectangles around all the text in the image.
-class ScannedTextPainter extends CustomPainter {
-  ScannedTextPainter(this.absoluteImageSize, this.textLocations);
-
-  final Size absoluteImageSize;
-  final List<TextBlock> textLocations;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final double scaleX = size.width / absoluteImageSize.width;
-    final double scaleY = size.height / absoluteImageSize.height;
-
-    Rect scaleRect(TextContainer container) {
-      return new Rect.fromLTRB(
-        container.boundingBox.left * scaleX,
-        container.boundingBox.top * scaleY,
-        container.boundingBox.right * scaleX,
-        container.boundingBox.bottom * scaleY,
-      );
-    }
-
-    final Paint paint = new Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.0;
-
-    for (TextBlock block in textLocations) {
-      for (TextLine line in block.lines) {
-        for (TextElement element in line.elements) {
-          paint.color = Colors.green;
-          canvas.drawRect(scaleRect(element), paint);
-        }
-
-        paint.color = Colors.yellow;
-        canvas.drawRect(scaleRect(line), paint);
-      }
-
-      paint.color = Colors.red;
-      canvas.drawRect(scaleRect(block), paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(ScannedTextPainter oldDelegate) {
-    return oldDelegate.absoluteImageSize != absoluteImageSize ||
-        oldDelegate.textLocations != textLocations;
   }
 }
