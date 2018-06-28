@@ -25,6 +25,7 @@ import java.util.Map;
 /** FirebaseMlVisionPlugin */
 public class FirebaseMlVisionPlugin implements MethodCallHandler {
   private Registrar registrar;
+  private FirebaseVisionTextDetector textDetector;
 
   private FirebaseMlVisionPlugin(Registrar registrar) {
     this.registrar = registrar;
@@ -39,10 +40,24 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
-    if (call.method.equals("TextDetector#detectInImage")) {
-      handleTextDetectionResult(call, result);
-    } else {
-      result.notImplemented();
+    switch (call.method) {
+      case "TextDetector#detectInImage":
+        handleTextDetectionResult(call, result);
+        break;
+      case "TextDetector#close":
+        if (textDetector != null) {
+          try {
+            textDetector.close();
+            result.success(null);
+          } catch (IOException exception) {
+            result.error("textDetectorError", exception.getLocalizedMessage(), null);
+          }
+
+          textDetector = null;
+        }
+        break;
+      default:
+        result.notImplemented();
     }
   }
 
@@ -57,8 +72,8 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
       return;
     }
 
-    FirebaseVisionTextDetector detector = FirebaseVision.getInstance().getVisionTextDetector();
-    detector
+    if (textDetector == null) textDetector = FirebaseVision.getInstance().getVisionTextDetector();
+    textDetector
         .detectInImage(image)
         .addOnSuccessListener(
             new OnSuccessListener<FirebaseVisionText>() {
@@ -98,8 +113,8 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
         .addOnFailureListener(
             new OnFailureListener() {
               @Override
-              public void onFailure(@NonNull Exception e) {
-                result.error("textDetectorError", e.getLocalizedMessage(), null);
+              public void onFailure(@NonNull Exception exception) {
+                result.error("textDetectorError", exception.getLocalizedMessage(), null);
               }
             });
   }
@@ -108,14 +123,18 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
       Map<String, Object> addTo, Rect boundingBox, Point[] cornerPoints, String text) {
     addTo.put("text", text);
 
-    addTo.put("left", boundingBox.left);
-    addTo.put("top", boundingBox.top);
-    addTo.put("width", boundingBox.width());
-    addTo.put("height", boundingBox.height());
+    if (boundingBox != null) {
+      addTo.put("left", boundingBox.left);
+      addTo.put("top", boundingBox.top);
+      addTo.put("width", boundingBox.width());
+      addTo.put("height", boundingBox.height());
+    }
 
     List<int[]> points = new ArrayList<>();
-    for (Point point : cornerPoints) {
-      points.add(new int[] {point.x, point.y});
+    if (cornerPoints != null) {
+      for (Point point : cornerPoints) {
+        points.add(new int[] {point.x, point.y});
+      }
     }
     addTo.put("points", points);
   }

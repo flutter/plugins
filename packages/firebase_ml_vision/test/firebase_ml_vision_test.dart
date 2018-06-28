@@ -50,8 +50,8 @@ void main() {
           'width': 7,
           'height': 8,
           'points': <dynamic>[
-            <dynamic>[9.0, 10.0],
-            <dynamic>[11.0, 12.0],
+            <dynamic>[9, 10],
+            <dynamic>[11, 12],
           ],
           'elements': <dynamic>[
             textElement,
@@ -112,6 +112,71 @@ void main() {
         expect(element.cornerPoints, <Point<num>>[
           const Point<num>(5, 6),
           const Point<num>(7, 8),
+        ]);
+      });
+
+      test('detectInImage no blocks', () async {
+        returnValue = <dynamic>[];
+
+        final TextDetector detector = FirebaseVision.instance.getTextDetector();
+        final FirebaseVisionImage image =
+            new FirebaseVisionImage.fromFilePath('empty');
+
+        final List<TextBlock> blocks = await detector.detectInImage(image);
+
+        expect(log, <Matcher>[
+          isMethodCall(
+            'TextDetector#detectInImage',
+            arguments: 'empty',
+          ),
+        ]);
+
+        expect(blocks, isEmpty);
+      });
+
+      test('close', () async {
+        final TextDetector detector = FirebaseVision.instance.getTextDetector();
+        await detector.close();
+
+        expect(log, <Matcher>[
+          isMethodCall(
+            'TextDetector#close',
+            arguments: null,
+          ),
+        ]);
+      });
+
+      test('detectInImage no bounding box', () async {
+        returnValue = <dynamic>[
+          <dynamic, dynamic>{
+            'text': 'potato',
+            'points': <dynamic>[
+              <dynamic>[17, 18],
+              <dynamic>[19, 20],
+            ],
+            'lines': <dynamic>[],
+          },
+        ];
+
+        final TextDetector detector = FirebaseVision.instance.getTextDetector();
+        final FirebaseVisionImage image =
+            new FirebaseVisionImage.fromFilePath('empty');
+
+        final List<TextBlock> blocks = await detector.detectInImage(image);
+
+        expect(log, <Matcher>[
+          isMethodCall(
+            'TextDetector#detectInImage',
+            arguments: 'empty',
+          ),
+        ]);
+
+        final TextBlock block = blocks[0];
+        expect(block.boundingBox, null);
+        expect(block.text, 'potato');
+        expect(block.cornerPoints, <Point<num>>[
+          const Point<num>(17, 18),
+          const Point<num>(19, 20),
         ]);
       });
     });
