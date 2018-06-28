@@ -83,7 +83,7 @@ void main() {
 
         returnValue = textBlocks;
 
-        final TextDetector detector = FirebaseVision.instance.getTextDetector();
+        final TextDetector detector = FirebaseVision.instance.textDetector();
         final FirebaseVisionImage image =
             new FirebaseVisionImage.fromFilePath('empty');
 
@@ -124,7 +124,7 @@ void main() {
       test('detectInImage no blocks', () async {
         returnValue = <dynamic>[];
 
-        final TextDetector detector = FirebaseVision.instance.getTextDetector();
+        final TextDetector detector = FirebaseVision.instance.textDetector();
         final FirebaseVisionImage image =
             new FirebaseVisionImage.fromFilePath('empty');
 
@@ -141,7 +141,7 @@ void main() {
       });
 
       test('close', () async {
-        final TextDetector detector = FirebaseVision.instance.getTextDetector();
+        final TextDetector detector = FirebaseVision.instance.textDetector();
         await detector.close();
 
         expect(log, <Matcher>[
@@ -164,7 +164,7 @@ void main() {
           },
         ];
 
-        final TextDetector detector = FirebaseVision.instance.getTextDetector();
+        final TextDetector detector = FirebaseVision.instance.textDetector();
         final FirebaseVisionImage image =
             new FirebaseVisionImage.fromFilePath('empty');
 

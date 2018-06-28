@@ -21,7 +21,7 @@ class _MyHomePageState extends State<_MyHomePage> {
   File _imageFile;
   Size _imageSize;
   List<dynamic> _scanResults;
-  Detector _currentDetector = Detector.Text;
+  Detector _currentDetector = Detector.text;
 
   Future<void> _getAndScanImage() async {
     setState(() {
@@ -71,17 +71,17 @@ class _MyHomePageState extends State<_MyHomePage> {
 
     FirebaseVisionDetector detector;
     switch (_currentDetector) {
-      case Detector.Barcode:
-        detector = FirebaseVision.instance.getBarcodeDetector(null);
+      case Detector.barcode:
+        detector = FirebaseVision.instance.barcodeDetector(null);
         break;
-      case Detector.Face:
-        detector = FirebaseVision.instance.getFaceDetector(null);
+      case Detector.face:
+        detector = FirebaseVision.instance.faceDetector(null);
         break;
-      case Detector.Label:
-        detector = FirebaseVision.instance.getLabelDetector(null);
+      case Detector.label:
+        detector = FirebaseVision.instance.labelDetector(null);
         break;
-      case Detector.Text:
-        detector = FirebaseVision.instance.getTextDetector();
+      case Detector.text:
+        detector = FirebaseVision.instance.textDetector();
         break;
       default:
         return;
@@ -99,16 +99,16 @@ class _MyHomePageState extends State<_MyHomePage> {
     CustomPainter painter;
 
     switch (_currentDetector) {
-      case Detector.Barcode:
+      case Detector.barcode:
         painter = new BarcodeDetectorPainter(_imageSize, results);
         break;
-      case Detector.Face:
+      case Detector.face:
         painter = new FaceDetectorPainter(_imageSize, results);
         break;
-      case Detector.Label:
+      case Detector.label:
         painter = new LabelDetectorPainter(_imageSize, results);
         break;
-      case Detector.Text:
+      case Detector.text:
         painter = new TextDetectorPainter(_imageSize, results);
         break;
       default:
@@ -157,19 +157,19 @@ class _MyHomePageState extends State<_MyHomePage> {
             itemBuilder: (BuildContext context) => <PopupMenuEntry<Detector>>[
                   const PopupMenuItem<Detector>(
                     child: const Text('Detect Barcode'),
-                    value: Detector.Barcode,
+                    value: Detector.barcode,
                   ),
                   const PopupMenuItem<Detector>(
                     child: const Text('Detect Face'),
-                    value: Detector.Face,
+                    value: Detector.face,
                   ),
                   const PopupMenuItem<Detector>(
                     child: const Text('Detect Label'),
-                    value: Detector.Label,
+                    value: Detector.label,
                   ),
                   const PopupMenuItem<Detector>(
                     child: const Text('Detect Text'),
-                    value: Detector.Text,
+                    value: Detector.text,
                   ),
                 ],
           ),

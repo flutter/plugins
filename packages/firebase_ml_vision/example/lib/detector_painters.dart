@@ -5,7 +5,7 @@
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:flutter/material.dart';
 
-enum Detector { Barcode, Face, Label, Text }
+enum Detector { barcode, face, label, text }
 
 class BarcodeDetectorPainter extends CustomPainter {
   BarcodeDetectorPainter(this.absoluteImageSize, this.results);
