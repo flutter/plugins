@@ -15,40 +15,70 @@ import android.os.IBinder;
 import android.util.Log;
 import io.flutter.app.FlutterActivity;
 import io.flutter.app.FlutterApplication;
+import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry.PluginRegistrantCallback;
+import io.flutter.view.FlutterIsolateStartedEvent;
 import io.flutter.view.FlutterMain;
 import io.flutter.view.FlutterNativeView;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AlarmService extends Service {
   public static final String TAG = "AlarmService";
+  private static AtomicBoolean sStarted;
   private static FlutterNativeView sSharedFlutterView;
+  private static MethodChannel sBackgroundChannel;
+  private static OnStartedCallback sOnStartedCallback;
   private static PluginRegistrantCallback sPluginRegistrantCallback;
 
-  private FlutterNativeView mFlutterView;
-  private String appBundlePath;
+  private String mAppBundlePath;
 
-  public static void setOneShot(
-      Context context,
-      int requestCode,
-      boolean exact,
-      boolean wakeup,
-      long startMillis,
-      String entrypoint) {
-    final boolean repeating = false;
-    scheduleAlarm(context, requestCode, repeating, exact, wakeup, startMillis, 0, entrypoint);
+  private static class OnStartedCallback implements FlutterIsolateStartedEvent {
+    public void onStarted(boolean success) {
+      if (!success) {
+        Log.e(TAG, "AlarmService start failed. Bailing out.");
+        return;
+      }
+      sStarted.set(true);
+    }
   }
 
-  public static void setPeriodic(
-      Context context,
-      int requestCode,
-      boolean exact,
-      boolean wakeup,
-      long startMillis,
-      long intervalMillis,
-      String entrypoint) {
+  public static void startAlarmService(Context context, String entrypoint,
+                                       String libraryPath) {
+    FlutterMain.ensureInitializationComplete(context, null);
+    String mAppBundlePath = FlutterMain.findAppBundlePath(context);
+    sSharedFlutterView = new FlutterNativeView(context, true);
+    sStarted = new AtomicBoolean(false);
+    if (mAppBundlePath != null && !sStarted.get()) {
+      Log.i(TAG, "Starting AlarmService...");
+      sOnStartedCallback = new OnStartedCallback();
+      sSharedFlutterView.runFromBundle(mAppBundlePath, null, entrypoint,
+                                       libraryPath, false, sOnStartedCallback);
+      sPluginRegistrantCallback.registerWith(
+          sSharedFlutterView.getPluginRegistry());
+    }
+  }
+
+  public static void setBackgroundChannel(MethodChannel channel) {
+    sBackgroundChannel = channel;
+  }
+
+  public static void setOneShot(Context context, int requestCode, boolean exact,
+                                boolean wakeup, long startMillis,
+                                String entrypoint, String className,
+                                String libraryPath) {
+    final boolean repeating = false;
+    scheduleAlarm(context, requestCode, repeating, exact, wakeup, startMillis,
+                  0, entrypoint, className, libraryPath);
+  }
+
+  public static void setPeriodic(Context context, int requestCode,
+                                 boolean exact, boolean wakeup,
+                                 long startMillis, long intervalMillis,
+                                 String entrypoint, String className,
+                                 String libraryPath) {
     final boolean repeating = true;
-    scheduleAlarm(
-        context, requestCode, repeating, exact, wakeup, startMillis, intervalMillis, entrypoint);
+    scheduleAlarm(context, requestCode, repeating, exact, wakeup, startMillis,
+                  intervalMillis, entrypoint, className, libraryPath);
   }
 
   public static void cancel(Context context, int requestCode) {
@@ -72,35 +102,12 @@ public class AlarmService extends Service {
       Log.i(TAG, "setSharedFlutterView tried to overwrite an existing FlutterNativeView");
       return false;
     }
-    Log.i(TAG, "setSharedFlutterView set");
     sSharedFlutterView = view;
     return true;
   }
 
   public static void setPluginRegistrant(PluginRegistrantCallback callback) {
     sPluginRegistrantCallback = callback;
-  }
-
-  private void ensureFlutterView() {
-    if (mFlutterView != null) {
-      return;
-    }
-
-    if (sSharedFlutterView != null) {
-      mFlutterView = sSharedFlutterView;
-      return;
-    }
-
-    // mFlutterView and sSharedFlutterView are both null. That likely means that
-    // no FlutterView has ever been created in this process before. So, we'll
-    // make one, and assign it to both mFlutterView and sSharedFlutterView.
-    mFlutterView = new FlutterNativeView(getApplicationContext());
-    sSharedFlutterView = mFlutterView;
-
-    // If there was no FlutterNativeView before now, then we also must
-    // initialize the PluginRegistry.
-    sPluginRegistrantCallback.registerWith(mFlutterView.getPluginRegistry());
-    return;
   }
 
   // This returns the FlutterView for the main FlutterActivity if there is one.
@@ -128,45 +135,32 @@ public class AlarmService extends Service {
   public void onCreate() {
     super.onCreate();
     Context context = getApplicationContext();
-    mFlutterView = viewFromAppContext(context);
     FlutterMain.ensureInitializationComplete(context, null);
-    if (appBundlePath == null) {
-      appBundlePath = FlutterMain.findAppBundlePath(context);
-    }
-  }
-
-  @Override
-  public void onDestroy() {
-    // Try to find the native view of the main activity if there is one.
-    Context context = getApplicationContext();
-    FlutterNativeView nativeView = viewFromAppContext(context);
-
-    // Don't destroy mFlutterView if it is the same as the native view for the
-    // main activity, or the same as the shared native view.
-    if (mFlutterView != nativeView && mFlutterView != sSharedFlutterView) {
-      mFlutterView.destroy();
-    }
-    mFlutterView = null;
-
-    // Don't destroy the shared native view if it is the same native view as
-    // for the main activity.
-    if (sSharedFlutterView != nativeView) {
-      sSharedFlutterView.destroy();
-    }
-    sSharedFlutterView = null;
+    mAppBundlePath = FlutterMain.findAppBundlePath(context);
   }
 
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
-    ensureFlutterView();
-    String entrypoint = intent.getStringExtra("entrypoint");
-    if (entrypoint == null) {
-      Log.i(TAG, "onStartCommand got a null entrypoint. Bailing out");
+    if (!sStarted.get()) {
+      Log.i(TAG, "AlarmService has not yet started.");
+      // TODO(bkonyi): queue up alarm events.
       return START_NOT_STICKY;
     }
-    if (appBundlePath != null) {
-      mFlutterView.runFromBundle(appBundlePath, null, entrypoint, true);
+    String entrypoint = intent.getStringExtra("entrypoint");
+    String className = intent.getStringExtra("className");
+    String libraryPath = intent.getStringExtra("libraryPath");
+    if (entrypoint == null) {
+      Log.e(TAG, "onStartCommand got a null entrypoint. Bailing out.");
+      return START_NOT_STICKY;
     }
+    if (sBackgroundChannel == null) {
+      Log.e(TAG,
+            "setBackgroundChannel was not called before alarms were scheduled."
+                + " Bailing out.");
+      return START_NOT_STICKY;
+    }
+    sBackgroundChannel.invokeMethod(
+        "", new Object[] {entrypoint, libraryPath, className});
     return START_NOT_STICKY;
   }
 
@@ -175,18 +169,16 @@ public class AlarmService extends Service {
     return null;
   }
 
-  private static void scheduleAlarm(
-      Context context,
-      int requestCode,
-      boolean repeating,
-      boolean exact,
-      boolean wakeup,
-      long startMillis,
-      long intervalMillis,
-      String entrypoint) {
+  private static void scheduleAlarm(Context context, int requestCode,
+                                    boolean repeating, boolean exact,
+                                    boolean wakeup, long startMillis,
+                                    long intervalMillis, String entrypoint,
+                                    String className, String libraryPath) {
     // Create an Intent for the alarm and set the desired Dart entrypoint.
     Intent alarm = new Intent(context, AlarmService.class);
     alarm.putExtra("entrypoint", entrypoint);
+    alarm.putExtra("className", className);
+    alarm.putExtra("libraryPath", libraryPath);
     PendingIntent pendingIntent =
         PendingIntent.getService(context, requestCode, alarm, PendingIntent.FLAG_UPDATE_CURRENT);
 

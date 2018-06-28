@@ -3,8 +3,53 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io';
+import 'dart:ui';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+const String _backgroundName =
+    'plugins.flutter.io/android_alarm_manager_background';
+
+void _alarmManagerCallbackDispatcher() {
+  const MethodChannel _channel =
+      const MethodChannel(_backgroundName, const JSONMethodCodec());
+  final Map<String, Function> _callbackCache = new Map<String, Function>();
+  WidgetsFlutterBinding.ensureInitialized();
+  _channel.setMethodCallHandler((MethodCall call) async {
+    final args = call.arguments;
+    // args[0].runtimeType == List<dynamic>
+    // pair[0] = closure name
+    // pair[1] = closure library path
+    // pair[2] = closure containing class
+    final pair = args.cast<String>();
+    final cacheKey = pair.join('@');
+    Function closure;
+    // To avoid making repeated lookups of our callback, store the resulting
+    // closure in a cache based on the closure name and its library path.
+    if (_callbackCache.containsKey(cacheKey)) {
+      closure = _callbackCache[cacheKey];
+    } else {
+      // PluginUtilities.getClosureByName performs a lookup based on the name
+      // of a closure as well as its library Uri.
+      closure = PluginUtilities.getClosureByName(
+          name: pair[0],
+          libraryPath: pair[1],
+          className: (pair[2] == 'null') ? null : pair[2]);
+
+      if (closure == null) {
+        print('Could not find closure: ${pair[0]} in ${pair[1]}.');
+        print('Either ${pair[0]} does not exist or it is an instance method.');
+        exit(-1);
+      }
+      _callbackCache[cacheKey] = closure;
+    }
+    assert(
+        closure != null, 'Could not find closure: ${pair[0]} in ${pair[1]}.');
+    closure();
+  });
+}
 
 /// A Flutter plugin for registering Dart callbacks with the Android
 /// AlarmManager service.
@@ -15,14 +60,32 @@ class AndroidAlarmManager {
   static const MethodChannel _channel =
       MethodChannel(_channelName, JSONMethodCodec());
 
+  /// Starts the [AndroidAlarmManager] service. This must be called before
+  /// setting any alarms.
+  ///
+  /// Returns a [Future] that resolves to `true` on success and `false` on
+  /// failure.
+  static Future<bool> initialize() async {
+    final String functionName =
+        PluginUtilities.getNameOfFunction(_alarmManagerCallbackDispatcher);
+    final String libraryPath = PluginUtilities
+        .getPathForFunctionLibrary(_alarmManagerCallbackDispatcher);
+    if (functionName == null) {
+      return false;
+    }
+    final dynamic r = await _channel.invokeMethod(
+        'AlarmService.start', <dynamic>[functionName, libraryPath]);
+    return r ?? false;
+  }
+
   /// Schedules a one-shot timer to run `callback` after time `delay`.
   ///
   /// The `callback` will run whether or not the main application is running or
-  /// in the foreground. It will run in the same Isolate as the main application
-  /// if one is available, otherwise a new Isolate will be created.
+  /// in the foreground. It will run in the Isolate owned by the
+  /// AndroidAlarmManager service.
   ///
-  /// `callback` must be a top-level function in the application's root library
-  /// (that is, in the same library as the application's `main()` function).
+  /// `callback` must be either a top-level function or a static method from a
+  /// class.
   ///
   /// The timer is uniquely identified by `id`. Calling this function again
   /// again with the same `id` will cancel and replace the existing timer.
@@ -46,23 +109,39 @@ class AndroidAlarmManager {
   }) async {
     final int now = new DateTime.now().millisecondsSinceEpoch;
     final int first = now + delay.inMilliseconds;
-    final String functionName = _nameOfFunction(callback);
+    final String functionName = PluginUtilities.getNameOfFunction(callback);
+    final String className = PluginUtilities.getNameOfFunctionClass(callback);
+    final String libraryPath =
+        PluginUtilities.getPathForFunctionLibrary(callback);
+
     if (functionName == null) {
       return false;
     }
-    final dynamic r = await _channel.invokeMethod(
-        'Alarm.oneShot', <dynamic>[id, exact, wakeup, first, functionName]);
+
+    if (libraryPath == null) {
+      return false;
+    }
+
+    final dynamic r = await _channel.invokeMethod('Alarm.oneShot', <dynamic>[
+      id,
+      exact,
+      wakeup,
+      first,
+      functionName,
+      className,
+      libraryPath
+    ]);
     return (r == null) ? false : r;
   }
 
   /// Schedules a repeating timer to run `callback` with period `duration`.
   ///
   /// The `callback` will run whether or not the main application is running or
-  /// in the foreground. It will run in the same Isolate as the main application
-  /// if one is available, otherwise a new Isolate will be created.
+  /// in the foreground. It will run in the Isolate owned by the
+  /// AndroidAlarmManager service.
   ///
-  /// `callback` must be a top-level function in the application's root library
-  /// (that is, in the same library as the application's `main()` function).
+  /// `callback` must be either a top-level function or a static method from a
+  /// class.
   ///
   /// The repeating timer is uniquely identified by `id`. Calling this function
   /// again with the same `id` will cancel and replace the existing timer.
@@ -87,12 +166,29 @@ class AndroidAlarmManager {
     final int now = new DateTime.now().millisecondsSinceEpoch;
     final int period = duration.inMilliseconds;
     final int first = now + period;
-    final String functionName = _nameOfFunction(callback);
+    final String functionName = PluginUtilities.getNameOfFunction(callback);
+    final String className = PluginUtilities.getNameOfFunctionClass(callback);
+    final String libraryPath =
+        PluginUtilities.getPathForFunctionLibrary(callback);
+
     if (functionName == null) {
       return false;
     }
-    final dynamic r = await _channel.invokeMethod('Alarm.periodic',
-        <dynamic>[id, exact, wakeup, first, period, functionName]);
+
+    if (libraryPath == null) {
+      return false;
+    }
+
+    final dynamic r = await _channel.invokeMethod('Alarm.periodic', <dynamic>[
+      id,
+      exact,
+      wakeup,
+      first,
+      period,
+      functionName,
+      className,
+      libraryPath
+    ]);
     return (r == null) ? false : r;
   }
 
@@ -107,21 +203,5 @@ class AndroidAlarmManager {
     final dynamic r =
         await _channel.invokeMethod('Alarm.cancel', <dynamic>[id]);
     return (r == null) ? false : r;
-  }
-
-  // Extracts the name of a top-level function from the .toString() of its
-  // closure-ization. The Java side of this plugin accepts the entrypoint into
-  // Dart code as a string. However, the Dart side of this API can't use a
-  // string to specify the entrypoint, otherwise it won't be visited by Dart's
-  // AOT compiler.
-  static String _nameOfFunction(dynamic Function() callback) {
-    final String longName = callback.toString();
-    final int functionIndex = longName.indexOf('Function');
-    if (functionIndex == -1) return null;
-    final int openQuote = longName.indexOf("'", functionIndex + 1);
-    if (openQuote == -1) return null;
-    final int closeQuote = longName.indexOf("'", openQuote + 1);
-    if (closeQuote == -1) return null;
-    return longName.substring(openQuote + 1, closeQuote);
   }
 }
