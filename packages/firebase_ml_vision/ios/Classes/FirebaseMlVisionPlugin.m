@@ -123,10 +123,10 @@
 
   return @{
     @"text" : text,
-    @"left" : @((int) frame.origin.x),
-    @"top" : @((int) frame.origin.y),
-    @"width" : @((int) frame.size.width),
-    @"height" : @((int) frame.size.height),
+    @"left" : @((int)frame.origin.x),
+    @"top" : @((int)frame.origin.y),
+    @"width" : @((int)frame.size.width),
+    @"height" : @((int)frame.size.height),
     @"points" : points,
   };
 }
