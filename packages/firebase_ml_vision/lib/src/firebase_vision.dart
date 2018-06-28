@@ -38,18 +38,25 @@ class FirebaseVision {
 class FirebaseVisionImage {
   FirebaseVisionImage._(this.imageFile);
 
+  /// Construct a [FirebaseVisionImage] from a file.
   factory FirebaseVisionImage.fromFile(File imageFile) {
     return FirebaseVisionImage._(imageFile);
   }
 
+  /// Construct a [FirebaseVisionImage] from a file path.
   factory FirebaseVisionImage.fromFilePath(String imagePath) {
     return FirebaseVisionImage._(new File(imagePath));
   }
 
+  /// The file location of the image.
   final File imageFile;
 }
 
 /// Abstract class for detectors in [FirebaseVision] API.
 abstract class FirebaseVisionDetector {
+  /// Uses machine learning model to detect objects of interest in an image.
   Future<dynamic> detectInImage(FirebaseVisionImage visionImage);
+
+  /// Release model resources for the detector.
+  Future<void> close();
 }
