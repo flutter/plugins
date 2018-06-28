@@ -29,17 +29,11 @@ void main() {
       log.clear();
     });
 
-    group('$BarcodeDetector', () {
+    group('$BarcodeDetector', () {});
 
-    });
+    group('$FaceDetector', () {});
 
-    group('$FaceDetector', () {
-
-    });
-
-    group('$LabelDetector', () {
-
-    });
+    group('$LabelDetector', () {});
 
     group('$TextDetector', () {
       test('detectInImage', () async {

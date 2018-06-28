@@ -85,7 +85,7 @@ class _MyHomePageState extends State<_MyHomePage> {
         return;
     }
 
-    List<dynamic> results =
+    final List<dynamic> results =
         await detector.detectInImage(visionImage) ?? <dynamic>[];
 
     setState(() {
