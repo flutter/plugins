@@ -79,7 +79,8 @@ public class LocalAuthPlugin implements MethodCallHandler {
       authenticationHelper.authenticate();
     } else if (call.method.equals("getBiometricOptions")) {
       Activity activity = registrar.activity();
-      KeyguardManager keyguardManager = (KeyguardManager) activity.getSystemService(Context.KEYGUARD_SERVICE);
+      KeyguardManager keyguardManager =
+          (KeyguardManager) activity.getSystemService(Context.KEYGUARD_SERVICE);
       FingerprintManagerCompat fingerprintManager = FingerprintManagerCompat.from(activity);
       List<String> options = new ArrayList<>();
 

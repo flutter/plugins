@@ -104,8 +104,7 @@
   }
 }
 
-- (void)getBiometricOptions:(NSDictionary *)arguments
-          withFlutterResult:(FlutterResult)result {
+- (void)getBiometricOptions:(NSDictionary *)arguments withFlutterResult:(FlutterResult)result {
   LAContext *context = [[LAContext alloc] init];
   NSError *authError = nil;
   NSMutableArray *options = [NSMutableArray array];
