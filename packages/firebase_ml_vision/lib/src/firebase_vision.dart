@@ -28,8 +28,20 @@ class FirebaseVision {
   /// ```
   static final FirebaseVision instance = new FirebaseVision._();
 
-  /// Creates an instance of [TextDetector];
-  TextDetector getTextDetector() => new TextDetector._();
+  /// Creates an instance of [BarcodeDetector].
+  BarcodeDetector barcodeDetector(BarcodeDetectorOptions options) =>
+      new BarcodeDetector._(options);
+
+  /// Creates an instance of [FaceDetector].
+  FaceDetector faceDetector(FaceDetectorOptions options) =>
+      new FaceDetector._(options);
+
+  /// Creates an instance of [LabelDetector].
+  LabelDetector labelDetector(LabelDetectorOptions options) =>
+      new LabelDetector._(options);
+
+  /// Creates an instance of [TextDetector].
+  TextDetector textDetector() => new TextDetector._();
 }
 
 /// Represents an image object used for both on-device and cloud API detectors.
@@ -40,11 +52,13 @@ class FirebaseVisionImage {
 
   /// Construct a [FirebaseVisionImage] from a file.
   factory FirebaseVisionImage.fromFile(File imageFile) {
+    assert(imageFile != null);
     return FirebaseVisionImage._(imageFile);
   }
 
   /// Construct a [FirebaseVisionImage] from a file path.
   factory FirebaseVisionImage.fromFilePath(String imagePath) {
+    assert(imagePath != null);
     return FirebaseVisionImage._(new File(imagePath));
   }
 

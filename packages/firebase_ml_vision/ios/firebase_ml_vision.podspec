@@ -17,6 +17,9 @@ A new Flutter plugin.
   s.dependency 'Flutter'
   s.dependency 'Firebase/Core'
   s.dependency 'Firebase/MLVision'
+  s.dependency 'Firebase/MLVisionBarcodeModel'
+  s.dependency 'Firebase/MLVisionFaceModel'
+  s.dependency 'Firebase/MLVisionLabelModel'
   s.dependency 'Firebase/MLVisionTextModel'
   s.ios.deployment_target = '8.0'
   s.static_framework = true

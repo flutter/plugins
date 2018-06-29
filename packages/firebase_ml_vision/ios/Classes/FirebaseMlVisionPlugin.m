@@ -1,7 +1,5 @@
 #import "FirebaseMlVisionPlugin.h"
 
-#import "Firebase/Firebase.h"
-
 @interface NSError (FlutterError)
 @property(readonly, nonatomic) FlutterError *flutterError;
 @end
@@ -14,11 +12,11 @@
 }
 @end
 
-@interface FLTFirebaseMlVisionPlugin ()
-@property(nonatomic, retain) FIRVisionTextDetector *textDetector;
-@end
-
 @implementation FLTFirebaseMlVisionPlugin
++ (void)handleError:(NSError *)error result:(FlutterResult)result {
+  result([error flutterError]);
+}
+
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/firebase_ml_vision"
@@ -38,123 +36,24 @@
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
-  if ([@"TextDetector#detectInImage" isEqualToString:call.method]) {
-    [self handleTextDetectionResult:call result:result];
+  if ([@"BarcodeDetector#detectInImage" isEqualToString:call.method]) {
+  } else if ([@"BarcodeDetector#close" isEqualToString:call.method]) {
+  } else if ([@"FaceDetector#detectInImage" isEqualToString:call.method]) {
+  } else if ([@"FaceDetector#close" isEqualToString:call.method]) {
+  } else if ([@"LabelDetector#detectInImage" isEqualToString:call.method]) {
+  } else if ([@"LabelDetector#close" isEqualToString:call.method]) {
+  } else if ([@"TextDetector#detectInImage" isEqualToString:call.method]) {
+    FIRVisionImage *image = [self filePathToVisionImage:call.arguments];
+    [TextDetector handleDetection:image result:result];
   } else if ([@"TextDetector#close" isEqualToString:call.method]) {
-    result(_textDetector = nil);
+    [TextDetector close];
   } else {
     result(FlutterMethodNotImplemented);
   }
 }
 
-- (void)handleTextDetectionResult:(FlutterMethodCall *)call result:(FlutterResult)result {
-  NSString *filePath = call.arguments;
-  UIImage *image = [UIImage imageWithContentsOfFile:filePath];
-  FIRVisionImage *visionImage = [[FIRVisionImage alloc] initWithImage:image];
-
-  FIRVision *vision = [FIRVision vision];
-  if (_textDetector == nil) _textDetector = [vision textDetector];
-
-  [_textDetector
-      detectInImage:visionImage
-         completion:^(NSArray<id<FIRVisionText>> *_Nullable features, NSError *_Nullable error) {
-           if (error) {
-             result([error flutterError]);
-             return;
-           } else if (!features) {
-             result(@[]);
-             return;
-           }
-
-           NSMutableArray *blocks = [NSMutableArray array];
-           for (id<FIRVisionText> feature in features) {
-             NSMutableDictionary *blockData = [NSMutableDictionary dictionary];
-             if ([feature isKindOfClass:[FIRVisionTextBlock class]]) {
-               FIRVisionTextBlock *block = (FIRVisionTextBlock *)feature;
-
-               [blockData addEntriesFromDictionary:[self getTextData:block.frame
-                                                        cornerPoints:block.cornerPoints
-                                                                text:block.text]];
-               blockData[@"lines"] = [self getLineData:block.lines];
-             } else if ([feature isKindOfClass:[FIRVisionTextLine class]]) {
-               // We structure the return data to have the line be inside a FIRVisionTextBlock.
-               FIRVisionTextLine *line = (FIRVisionTextLine *)feature;
-
-               [blockData addEntriesFromDictionary:[self getTextData:line.frame
-                                                        cornerPoints:line.cornerPoints
-                                                                text:line.text]];
-               NSArray<FIRVisionTextLine *> *lines = @[ line ];
-               blockData[@"lines"] = [self getLineData:lines];
-             } else if ([feature isKindOfClass:[FIRVisionTextElement class]]) {
-               // We structure the return data to have the element inside a FIRVisionTextLine
-               // that is inside a FIRVisionTextBlock.
-               FIRVisionTextElement *element = (FIRVisionTextElement *)feature;
-
-               [blockData addEntriesFromDictionary:[self getTextData:element.frame
-                                                        cornerPoints:element.cornerPoints
-                                                                text:element.text]];
-
-               NSMutableDictionary *lineData = [NSMutableDictionary dictionary];
-               [lineData addEntriesFromDictionary:[self getTextData:element.frame
-                                                       cornerPoints:element.cornerPoints
-                                                               text:element.text]];
-
-               NSArray<FIRVisionTextElement *> *elements = @[ element ];
-               lineData[@"elements"] = [self getElementData:elements];
-
-               blockData[@"lines"] = lineData;
-             }
-
-             [blocks addObject:blockData];
-           }
-
-           result(blocks);
-         }];
-}
-
-- (NSDictionary *)getTextData:(CGRect)frame
-                 cornerPoints:(NSArray<NSValue *> *)cornerPoints
-                         text:(NSString *)text {
-  __block NSMutableArray<NSArray *> *points = [NSMutableArray array];
-
-  for (NSValue *point in points) {
-    [points addObject:@[ @(((__bridge CGPoint *)point)->x), @(((__bridge CGPoint *)point)->y) ]];
-  }
-
-  return @{
-    @"text" : text,
-    @"left" : @((int)frame.origin.x),
-    @"top" : @((int)frame.origin.y),
-    @"width" : @((int)frame.size.width),
-    @"height" : @((int)frame.size.height),
-    @"points" : points,
-  };
-}
-
-- (NSMutableArray *)getLineData:(NSArray<FIRVisionTextLine *> *)lines {
-  NSMutableArray *lineDataArray = [NSMutableArray array];
-
-  for (FIRVisionTextLine *line in lines) {
-    NSMutableDictionary *lineData = [NSMutableDictionary dictionary];
-    [lineData addEntriesFromDictionary:[self getTextData:line.frame
-                                            cornerPoints:line.cornerPoints
-                                                    text:line.text]];
-    lineData[@"elements"] = [self getElementData:line.elements];
-    [lineDataArray addObject:lineData];
-  }
-
-  return lineDataArray;
-}
-
-- (NSMutableArray *)getElementData:(NSArray<FIRVisionTextElement *> *)elements {
-  NSMutableArray *elementDataArray = [NSMutableArray array];
-
-  for (FIRVisionTextElement *element in elements) {
-    [elementDataArray addObject:[self getTextData:element.frame
-                                     cornerPoints:element.cornerPoints
-                                             text:element.text]];
-  }
-
-  return elementDataArray;
+- (FIRVisionImage *)filePathToVisionImage:(NSString *)path {
+  UIImage *image = [UIImage imageWithContentsOfFile:path];
+  return [[FIRVisionImage alloc] initWithImage:image];
 }
 @end
