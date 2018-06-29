@@ -19,14 +19,21 @@ import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.Player.DefaultEventListener;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.audio.AudioAttributes;
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.dash.DashMediaSource;
+import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource;
+import com.google.android.exoplayer2.source.hls.HlsMediaSource;
+import com.google.android.exoplayer2.source.smoothstreaming.DefaultSsChunkSource;
+import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
+import com.google.android.exoplayer2.util.Util;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -83,11 +90,31 @@ public class VideoPlayerPlugin implements MethodCallHandler {
                 true);
       }
 
-      MediaSource mediaSource =
-          new ExtractorMediaSource.Factory(dataSourceFactory).createMediaSource(uri);
+      MediaSource mediaSource = buildMediaSource(uri, dataSourceFactory);
       exoPlayer.prepare(mediaSource);
 
       setupVideoPlayer(eventChannel, textureEntry, result);
+    }
+
+    private MediaSource buildMediaSource(Uri uri, DataSource.Factory mediaDataSourceFactory) {
+      int type = Util.inferContentType(uri.getLastPathSegment());
+      switch (type) {
+        case C.TYPE_SS:
+          return new SsMediaSource(
+              uri, null, new DefaultSsChunkSource.Factory(mediaDataSourceFactory), null, null);
+        case C.TYPE_DASH:
+          return new DashMediaSource(
+              uri, null, new DefaultDashChunkSource.Factory(mediaDataSourceFactory), null, null);
+        case C.TYPE_HLS:
+          return new HlsMediaSource(uri, mediaDataSourceFactory, null, null);
+        case C.TYPE_OTHER:
+          return new ExtractorMediaSource(
+              uri, mediaDataSourceFactory, new DefaultExtractorsFactory(), null, null);
+        default:
+          {
+            throw new IllegalStateException("Unsupported type: " + type);
+          }
+      }
     }
 
     private void setupVideoPlayer(

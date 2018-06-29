@@ -55,7 +55,7 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<!-- Copied from GoogleServices-Info.plist key REVERSE_CLIENT_ID -->
+				<!-- Copied from GoogleServices-Info.plist key REVERSED_CLIENT_ID -->
 				<string>com.googleusercontent.apps.159623150305-kpfutmlf03mmgfbp50771s90mphu1uop</string>
 			</array>
 		</dict>

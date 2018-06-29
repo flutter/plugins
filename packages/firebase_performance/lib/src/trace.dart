@@ -15,6 +15,9 @@ part of firebase_performance;
 ///
 /// Data collected is automatically sent to the associated Firebase console
 /// after stop() is called.
+///
+/// You can confirm that Performance Monitoring results appear in the Firebase
+/// console. Results should appear within 12 hours.
 class Trace extends PerformanceAttributes {
   Trace._(this._handle, this._name) {
     assert(_name != null);

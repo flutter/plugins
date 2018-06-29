@@ -37,7 +37,7 @@ enable the [Google People API](https://developers.google.com/people/).
 		<key>CFBundleURLSchemes</key>
 		<array>
 			<!-- TODO Replace this value: -->
-			<!-- Copied from GoogleServices-Info.plist key REVERSE_CLIENT_ID -->
+			<!-- Copied from GoogleServices-Info.plist key REVERSED_CLIENT_ID -->
 			<string>com.googleusercontent.apps.861823949799-vc35cprkp249096uujjn0vvnmcvjppkn</string>
 		</array>
 	</dict>

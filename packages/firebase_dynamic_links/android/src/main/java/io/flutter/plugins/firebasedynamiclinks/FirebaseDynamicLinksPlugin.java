@@ -6,6 +6,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.dynamiclinks.DynamicLink;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
+import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 import com.google.firebase.dynamiclinks.ShortDynamicLink;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -19,10 +20,16 @@ import java.util.Map;
 
 /** FirebaseDynamicLinksPlugin */
 public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
+  private Registrar registrar;
+
+  private FirebaseDynamicLinksPlugin(Registrar registrar) {
+    this.registrar = registrar;
+  }
+
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_dynamic_links");
-    channel.setMethodCallHandler(new FirebaseDynamicLinksPlugin());
+    channel.setMethodCallHandler(new FirebaseDynamicLinksPlugin(registrar));
   }
 
   @Override
@@ -43,10 +50,41 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
         builder.setLongLink(url);
         buildShortDynamicLink(builder, call, createShortLinkListener(result));
         break;
+      case "FirebaseDynamicLinks#retrieveDynamicLink":
+        handleRetrieveDynamicLink(result);
+        break;
       default:
         result.notImplemented();
         break;
     }
+  }
+
+  private void handleRetrieveDynamicLink(final Result result) {
+    FirebaseDynamicLinks.getInstance()
+        .getDynamicLink(registrar.activity().getIntent())
+        .addOnCompleteListener(
+            registrar.activity(),
+            new OnCompleteListener<PendingDynamicLinkData>() {
+              @Override
+              public void onComplete(@NonNull Task<PendingDynamicLinkData> task) {
+                if (task.isSuccessful()) {
+                  PendingDynamicLinkData data = task.getResult();
+                  if (data != null) {
+                    Map<String, Object> dynamicLink = new HashMap<>();
+                    dynamicLink.put("link", data.getLink().toString());
+
+                    Map<String, Object> androidData = new HashMap<>();
+                    androidData.put("clickTimestamp", data.getClickTimestamp());
+                    androidData.put("minimumVersion", data.getMinimumAppVersion());
+
+                    dynamicLink.put("android", androidData);
+                    result.success(dynamicLink);
+                    return;
+                  }
+                }
+                result.success(null);
+              }
+            });
   }
 
   private OnCompleteListener<ShortDynamicLink> createShortLinkListener(final Result result) {
