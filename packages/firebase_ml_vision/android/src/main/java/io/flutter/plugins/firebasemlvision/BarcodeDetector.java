@@ -1,3 +1,17 @@
 package io.flutter.plugins.firebasemlvision;
 
-public class BarcodeDetector {}
+import com.google.firebase.ml.vision.common.FirebaseVisionImage;
+
+import io.flutter.plugin.common.MethodChannel;
+
+class BarcodeDetector implements Detector {
+  @Override
+  public void handleDetection(FirebaseVisionImage image, MethodChannel.Result result) {
+
+  }
+
+  @Override
+  public void close(MethodChannel.Result result) {
+
+  }
+}

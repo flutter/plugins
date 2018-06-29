@@ -45,10 +45,10 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
         break;
       case "TextDetector#detectInImage":
         FirebaseVisionImage image = filePathToVisionImage((String) call.arguments, result);
-        if (image != null) TextDetector.handleDetection(image, result);
+        if (image != null) TextDetector.instance.handleDetection(image, result);
         break;
       case "TextDetector#close":
-        TextDetector.close(result);
+        TextDetector.instance.close(result);
         break;
       default:
         result.notImplemented();

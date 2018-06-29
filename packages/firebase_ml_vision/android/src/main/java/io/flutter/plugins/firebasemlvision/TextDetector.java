@@ -19,10 +19,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class TextDetector {
+public class TextDetector implements Detector {
+  public static final TextDetector instance = new TextDetector();
   private static FirebaseVisionTextDetector textDetector;
 
-  protected static void handleDetection(
+  private TextDetector() {}
+
+  public void handleDetection(
       FirebaseVisionImage image, final MethodChannel.Result result) {
     if (textDetector == null) textDetector = FirebaseVision.getInstance().getVisionTextDetector();
     textDetector
@@ -71,7 +74,7 @@ public class TextDetector {
             });
   }
 
-  protected static void close(MethodChannel.Result result) {
+  public void close(MethodChannel.Result result) {
     if (textDetector != null) {
       try {
         textDetector.close();
@@ -84,7 +87,7 @@ public class TextDetector {
     }
   }
 
-  private static void addTextData(
+  private void addTextData(
       Map<String, Object> addTo, Rect boundingBox, Point[] cornerPoints, String text) {
     addTo.put("text", text);
 
