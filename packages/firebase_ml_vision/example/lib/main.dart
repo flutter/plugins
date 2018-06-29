@@ -75,7 +75,7 @@ class _MyHomePageState extends State<_MyHomePage> {
         detector = FirebaseVision.instance.barcodeDetector(null);
         break;
       case Detector.face:
-        detector = FirebaseVision.instance.faceDetector(null);
+        detector = FirebaseVision.instance.faceDetector(FaceDetectorOptions());
         break;
       case Detector.label:
         detector = FirebaseVision.instance.labelDetector(null);

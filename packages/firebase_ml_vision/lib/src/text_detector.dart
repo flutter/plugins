@@ -6,10 +6,10 @@ part of firebase_ml_vision;
 
 /// Detector for performing optical character recognition(OCR) on an input image.
 ///
-/// A text detector is created via getVisionTextDetector() in [FirebaseVision]:
+/// A text detector is created via `textDetector()` in [FirebaseVision]:
 ///
 /// ```dart
-/// TextDetector textDetector = FirebaseVision.instance.getTextDetector();
+/// TextDetector textDetector = FirebaseVision.instance.textDetector();
 /// ```
 class TextDetector implements FirebaseVisionDetector {
   TextDetector._();

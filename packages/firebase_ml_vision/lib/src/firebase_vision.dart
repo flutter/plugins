@@ -10,7 +10,7 @@ part of firebase_ml_vision;
 /// a detector from the instance:
 ///
 /// ```dart
-/// TextDetector textDetector = FirebaseVision.instance.getTextDetector();
+/// TextDetector textDetector = FirebaseVision.instance.textDetector();
 /// ```
 class FirebaseVision {
   FirebaseVision._();
