@@ -77,56 +77,53 @@ public class CameraPlugin implements MethodCallHandler {
 
     registrar.addRequestPermissionsResultListener(new CameraRequestPermissionsListener());
 
-    this.activityLifecycleCallbacks = new Application.ActivityLifecycleCallbacks() {
-      @Override
-      public void onActivityCreated(Activity activity, Bundle savedInstanceState) {}
+    this.activityLifecycleCallbacks =
+        new Application.ActivityLifecycleCallbacks() {
+          @Override
+          public void onActivityCreated(Activity activity, Bundle savedInstanceState) {}
 
-      @Override
-      public void onActivityStarted(Activity activity) {}
+          @Override
+          public void onActivityStarted(Activity activity) {}
 
-      @Override
-      public void onActivityResumed(Activity activity) {
-        if (requestingPermission) {
-          requestingPermission = false;
-          return;
-        }
-        if (activity == CameraPlugin.this.activity) {
-          if (camera != null) {
-            camera.open(null);
+          @Override
+          public void onActivityResumed(Activity activity) {
+            if (requestingPermission) {
+              requestingPermission = false;
+              return;
+            }
+            if (activity == CameraPlugin.this.activity) {
+              if (camera != null) {
+                camera.open(null);
+              }
+            }
           }
-        }
-      }
 
-      @Override
-      public void onActivityPaused(Activity activity) {
-        if (activity == CameraPlugin.this.activity) {
-          if (camera != null) {
-            camera.close();
+          @Override
+          public void onActivityPaused(Activity activity) {
+            if (activity == CameraPlugin.this.activity) {
+              if (camera != null) {
+                camera.close();
+              }
+            }
           }
-        }
-      }
 
-      @Override
-      public void onActivityStopped(Activity activity) {
-        if (activity == CameraPlugin.this.activity) {
-          if (camera != null) {
-            camera.close();
+          @Override
+          public void onActivityStopped(Activity activity) {
+            if (activity == CameraPlugin.this.activity) {
+              if (camera != null) {
+                camera.close();
+              }
+            }
           }
-        }
-      }
 
-      @Override
-      public void onActivitySaveInstanceState(Activity activity, Bundle outState) {}
+          @Override
+          public void onActivitySaveInstanceState(Activity activity, Bundle outState) {}
 
-      @Override
-      public void onActivityDestroyed(Activity activity) {}
-    };
+          @Override
+          public void onActivityDestroyed(Activity activity) {}
+        };
 
-    activity
-        .getApplication()
-        .registerActivityLifecycleCallbacks(
-            this.activityLifecycleCallbacks
-        );
+    activity.getApplication().registerActivityLifecycleCallbacks(this.activityLifecycleCallbacks);
   }
 
   public static void registerWith(Registrar registrar) {
@@ -210,8 +207,8 @@ public class CameraPlugin implements MethodCallHandler {
           }
           if (this.activity != null && this.activityLifecycleCallbacks != null) {
             this.activity
-              .getApplication()
-              .unregisterActivityLifecycleCallbacks(this.activityLifecycleCallbacks);
+                .getApplication()
+                .unregisterActivityLifecycleCallbacks(this.activityLifecycleCallbacks);
           }
           result.success(null);
           break;
