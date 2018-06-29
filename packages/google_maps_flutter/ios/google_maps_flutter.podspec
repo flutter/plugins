@@ -17,5 +17,6 @@ A new flutter plugin project.
   s.dependency 'Flutter'
   s.dependency 'GoogleMaps'
   s.static_framework = true
+  s.compiler_flags = '-fno-modules'
   s.ios.deployment_target = '8.0'
 end
