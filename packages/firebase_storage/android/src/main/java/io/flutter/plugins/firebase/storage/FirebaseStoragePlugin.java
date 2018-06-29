@@ -256,12 +256,31 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
     addResultListeners(uploadTask, result);
   }
 
-  private void addResultListeners(UploadTask uploadTask, final Result result) {
+  private void addResultListeners(final UploadTask uploadTask, final Result result) {
     uploadTask.addOnSuccessListener(
         new OnSuccessListener<UploadTask.TaskSnapshot>() {
           @Override
           public void onSuccess(UploadTask.TaskSnapshot snapshot) {
-            result.success(snapshot.getDownloadUrl().toString());
+            StorageMetadata metadata = snapshot.getMetadata();
+            if (metadata != null && metadata.getReference() != null) {
+              Task<Uri> downloadUriTask = metadata.getReference().getDownloadUrl();
+              downloadUriTask.addOnSuccessListener(
+                  new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                      result.success(uri.toString());
+                    }
+                  });
+              downloadUriTask.addOnFailureListener(
+                  new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                      result.error("upload_error", e.getMessage(), null);
+                    }
+                  });
+            } else {
+              result.error("upload_error", "reference not found", null);
+            }
           }
         });
     uploadTask.addOnFailureListener(
