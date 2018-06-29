@@ -11,17 +11,17 @@ import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.text.FirebaseVisionText;
 import com.google.firebase.ml.vision.text.FirebaseVisionTextDetector;
 
+import io.flutter.plugin.common.MethodChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.flutter.plugin.common.MethodChannel;
-
 public class TextDetector {
   protected static FirebaseVisionTextDetector textDetector;
 
-  protected static void handleTextDetectionResult(FirebaseVisionImage image, final MethodChannel.Result result) {
+  protected static void handleTextDetectionResult(
+      FirebaseVisionImage image, final MethodChannel.Result result) {
     if (textDetector == null) textDetector = FirebaseVision.getInstance().getVisionTextDetector();
     textDetector
         .detectInImage(image)

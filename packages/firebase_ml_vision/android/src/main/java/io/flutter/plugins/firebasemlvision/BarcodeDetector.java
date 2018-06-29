@@ -1,4 +1,3 @@
 package io.flutter.plugins.firebasemlvision;
 
-public class BarcodeDetector {
-}
+public class BarcodeDetector {}
