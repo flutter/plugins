@@ -45,19 +45,10 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
         break;
       case "TextDetector#detectInImage":
         FirebaseVisionImage image = filePathToVisionImage((String) call.arguments, result);
-        if (image != null) TextDetector.handleTextDetectionResult(image, result);
+        if (image != null) TextDetector.handleDetection(image, result);
         break;
       case "TextDetector#close":
-        if (TextDetector.textDetector != null) {
-          try {
-            TextDetector.textDetector.close();
-            result.success(null);
-          } catch (IOException exception) {
-            result.error("textDetectorError", exception.getLocalizedMessage(), null);
-          }
-
-          TextDetector.textDetector = null;
-        }
+        TextDetector.close(result);
         break;
       default:
         result.notImplemented();
@@ -71,7 +62,8 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
       return FirebaseVisionImage.fromFilePath(registrar.context(), Uri.fromFile(file));
     } catch (IOException exception) {
       result.error("textDetectorIOError", exception.getLocalizedMessage(), null);
-      return null;
     }
+
+    return null;
   }
 }
