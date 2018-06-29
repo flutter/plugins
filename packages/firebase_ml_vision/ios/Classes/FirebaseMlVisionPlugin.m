@@ -13,7 +13,7 @@
 @end
 
 @implementation FLTFirebaseMlVisionPlugin
-+ (void)handleError:(NSError *) error result:(FlutterResult)result {
++ (void)handleError:(NSError *)error result:(FlutterResult)result {
   result([error flutterError]);
 }
 

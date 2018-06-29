@@ -3,13 +3,13 @@
 #import "Firebase/Firebase.h"
 
 @interface FLTFirebaseMlVisionPlugin : NSObject<FlutterPlugin>
-+ (void)handleError:(NSError *) error result:(FlutterResult)result;
++ (void)handleError:(NSError *)error result:(FlutterResult)result;
 @end
 
 @protocol Detector
 @required
-+(void)handleDetection:(FIRVisionImage *)image result:(FlutterResult)result;
-+(void)close;
++ (void)handleDetection:(FIRVisionImage *)image result:(FlutterResult)result;
++ (void)close;
 @optional
 @end
 

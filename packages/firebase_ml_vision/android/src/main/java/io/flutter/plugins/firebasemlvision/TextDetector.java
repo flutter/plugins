@@ -3,16 +3,13 @@ package io.flutter.plugins.firebasemlvision;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
-
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.ml.vision.FirebaseVision;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.text.FirebaseVisionText;
 import com.google.firebase.ml.vision.text.FirebaseVisionTextDetector;
-
 import io.flutter.plugin.common.MethodChannel;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,8 +22,7 @@ public class TextDetector implements Detector {
 
   private TextDetector() {}
 
-  public void handleDetection(
-      FirebaseVisionImage image, final MethodChannel.Result result) {
+  public void handleDetection(FirebaseVisionImage image, final MethodChannel.Result result) {
     if (textDetector == null) textDetector = FirebaseVision.getInstance().getVisionTextDetector();
     textDetector
         .detectInImage(image)
