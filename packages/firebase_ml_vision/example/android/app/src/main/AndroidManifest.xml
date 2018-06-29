@@ -37,6 +37,6 @@
         </activity>
         <meta-data
           android:name="com.google.firebase.ml.vision.DEPENDENCIES"
-          android:value="text" />
+          android:value="barcode|face|label|text" />
     </application>
 </manifest>
