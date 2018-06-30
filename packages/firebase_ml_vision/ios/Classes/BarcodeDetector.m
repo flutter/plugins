@@ -54,14 +54,14 @@ NSDictionary *visionBarcodeToDictionary(FIRVisionBarcode *barcode) {
     @"geo_point" : barcode.geoPoint ? visionBarcodeGeoPointToDictionary(barcode.geoPoint)
                                     : [NSNull null],
     @"contact_info" : barcode.contactInfo
-        ? visionBarcodeContactInfoToDictionary(barcode.contactInfo)
-        : [NSNull null],
+                          ? visionBarcodeContactInfoToDictionary(barcode.contactInfo)
+                          : [NSNull null],
     @"calendar_event" : barcode.calendarEvent
-        ? visionBarcodeCalendarEventToDictionary(barcode.calendarEvent)
-        : [NSNull null],
+                            ? visionBarcodeCalendarEventToDictionary(barcode.calendarEvent)
+                            : [NSNull null],
     @"driver_license" : barcode.driverLicense
-        ? visionBarcodeDriverLicenseToDictionary(barcode.driverLicense)
-        : [NSNull null],
+                            ? visionBarcodeDriverLicenseToDictionary(barcode.driverLicense)
+                            : [NSNull null],
   };
 }
 
