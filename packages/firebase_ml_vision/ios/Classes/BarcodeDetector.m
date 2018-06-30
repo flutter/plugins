@@ -10,7 +10,7 @@ static FIRVisionBarcodeDetector *barcodeDetector;
   }
   NSMutableArray *ret = [NSMutableArray array];
   [barcodeDetector detectInImage:image
-                      completion:^(NSArray<FIRVisionBarcode *> *barcodes,NSError *error) {
+                      completion:^(NSArray<FIRVisionBarcode *> *barcodes, NSError *error) {
                         if (error) {
                           [FLTFirebaseMlVisionPlugin handleError:error result:result];
                           return;
