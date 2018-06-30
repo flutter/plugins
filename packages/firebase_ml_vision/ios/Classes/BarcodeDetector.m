@@ -10,21 +10,21 @@ static FIRVisionBarcodeDetector *barcodeDetector;
   }
   NSMutableArray *ret = [NSMutableArray array];
   [barcodeDetector detectInImage:image
-                       completion:^(NSArray<FIRVisionBarcode *> *barcodes,NSError *error) {
-                         if (error) {
-                           [FLTFirebaseMlVisionPlugin handleError:error result:result];
-                           return;
-                         } else if (!barcodes) {
-                           result(@[]);
-                           return;
-                         }
+                      completion:^(NSArray<FIRVisionBarcode *> *barcodes,NSError *error) {
+                        if (error) {
+                          [FLTFirebaseMlVisionPlugin handleError:error result:result];
+                          return;
+                        } else if (!barcodes) {
+                          result(@[]);
+                          return;
+                        }
 
-                         // Scaned barcode
-                         for (FIRVisionBarcode *barcode in barcodes) {
-                           [ret addObject:visionBarcodeToDictionary(barcode)];
-                         }
-                         result(ret);
-                       }];
+                        // Scaned barcode
+                        for (FIRVisionBarcode *barcode in barcodes) {
+                          [ret addObject:visionBarcodeToDictionary(barcode)];
+                        }
+                        result(ret);
+                      }];
 }
 + (void)close {
   barcodeDetector = nil;
@@ -65,7 +65,7 @@ NSDictionary *visionBarcodeToDictionary(FIRVisionBarcode *barcode) {
   };
 }
 
-NSDictionary *visionBarcodeWiFiToDictionary(FIRVisionBarcodeWiFi* wifi) {
+NSDictionary *visionBarcodeWiFiToDictionary(FIRVisionBarcodeWiFi *wifi) {
   return @{
     @"ssid" : wifi.ssid,
     @"password" : wifi.password,
@@ -111,23 +111,23 @@ NSDictionary *visionBarcodeGeoPointToDictionary(FIRVisionBarcodeGeoPoint *geo) {
 }
 
 NSDictionary *visionBarcodeContactInfoToDictionary(FIRVisionBarcodeContactInfo *contact) {
-  __block NSMutableArray<NSDictionary *> *addresses =[NSMutableArray array];
-  [contact.addresses enumerateObjectsUsingBlock:^(FIRVisionBarcodeAddress * _Nonnull address,
-                                                  NSUInteger idx, BOOL * _Nonnull stop) {
-    __block NSMutableArray<NSString *> *addressLines =[NSMutableArray array];
-    [address.addressLines enumerateObjectsUsingBlock:^(NSString * _Nonnull addressLine,
-                                                       NSUInteger idx, BOOL * _Nonnull stop) {
+  __block NSMutableArray<NSDictionary *> *addresses = [NSMutableArray array];
+  [contact.addresses enumerateObjectsUsingBlock:^(FIRVisionBarcodeAddress *_Nonnull address,
+                                                  NSUInteger idx, BOOL *_Nonnull stop) {
+    __block NSMutableArray<NSString *> *addressLines = [NSMutableArray array];
+    [address.addressLines enumerateObjectsUsingBlock:^(NSString *_Nonnull addressLine,
+                                                       NSUInteger idx, BOOL *_Nonnull stop) {
       [addressLines addObject:addressLine];
     }];
     [addresses addObject:@{
-      @"address_lines": addressLines,
-      @"type": @(address.type),
+      @"address_lines" : addressLines,
+      @"type" : @(address.type),
     }];
   }];
     
   __block NSMutableArray<NSDictionary *> *emails = [NSMutableArray array];
-  [contact.emails enumerateObjectsUsingBlock:^(FIRVisionBarcodeEmail * _Nonnull email,
-                                               NSUInteger idx, BOOL * _Nonnull stop) {
+  [contact.emails enumerateObjectsUsingBlock:^(FIRVisionBarcodeEmail *_Nonnull email,
+                                               NSUInteger idx, BOOL *_Nonnull stop) {
     [emails addObject:@{
       @"address" : email.address,
       @"body" : email.body,
@@ -137,15 +137,15 @@ NSDictionary *visionBarcodeContactInfoToDictionary(FIRVisionBarcodeContactInfo *
   }];
 
   __block NSMutableArray<NSDictionary *> *phones = [NSMutableArray array];
-  [contact.phones enumerateObjectsUsingBlock:^(FIRVisionBarcodePhone * _Nonnull phone,
-                                               NSUInteger idx, BOOL * _Nonnull stop) {
+  [contact.phones enumerateObjectsUsingBlock:^(FIRVisionBarcodePhone *_Nonnull phone,
+                                               NSUInteger idx, BOOL *_Nonnull stop) {
     [phones addObject:@{
-      @"number": phone.number,
-      @"type": @(phone.type),
+      @"number" : phone.number,
+      @"type" : @(phone.type),
     }];
   }];
 
-  __block NSMutableArray<NSString *> *urls =[NSMutableArray array];
+  __block NSMutableArray<NSString *> *urls = [NSMutableArray array];
   [contact.urls
       enumerateObjectsUsingBlock:^(NSString *_Nonnull url, NSUInteger idx, BOOL *_Nonnull stop) {
         [urls addObject:url];
@@ -169,7 +169,7 @@ NSDictionary *visionBarcodeContactInfoToDictionary(FIRVisionBarcodeContactInfo *
   };
 }
 
-NSDictionary  * visionBarcodeCalendarEventToDictionary(FIRVisionBarcodeCalendarEvent* calendar) {
+NSDictionary *visionBarcodeCalendarEventToDictionary(FIRVisionBarcodeCalendarEvent *calendar) {
   return @{
     @"event_description" : calendar.eventDescription,
     @"location" : calendar.location,
@@ -181,7 +181,7 @@ NSDictionary  * visionBarcodeCalendarEventToDictionary(FIRVisionBarcodeCalendarE
   };
 }
 
-NSDictionary *visionBarcodeDriverLicenseToDictionary(FIRVisionBarcodeDriverLicense* license) {
+NSDictionary *visionBarcodeDriverLicenseToDictionary(FIRVisionBarcodeDriverLicense *license) {
   return @{
     @"first_name" : license.firstName,
     @"middle_name" : license.middleName,
@@ -190,12 +190,12 @@ NSDictionary *visionBarcodeDriverLicenseToDictionary(FIRVisionBarcodeDriverLicen
     @"address_city" : license.addressCity,
     @"address_state" : license.addressState,
     @"address_zip" : license.addressZip,
-    @"birth_date": license.birthDate,
-    @"document_type": license.documentType,
-    @"license_number": license.licenseNumber,
-    @"expiry_date": license.expiryDate,
-    @"issuing_date": license.issuingDate,
-    @"issuing_country": license.issuingCountry,
+    @"birth_date" : license.birthDate,
+    @"document_type" : license.documentType,
+    @"license_number" : license.licenseNumber,
+    @"expiry_date" : license.expiryDate,
+    @"issuing_date" : license.issuingDate,
+    @"issuing_country" : license.issuingCountry,
   };
 }
 
