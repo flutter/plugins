@@ -55,9 +55,9 @@ NSDictionary *visionBarcodeToDictionary(FIRVisionBarcode *barcode) {
                                     : [NSNull null],
     @"contact_info" : barcode.contactInfo ? barcodeContactInfoToDictionary(barcode.contactInfo)
                                           : [NSNull null],
-    @"calendar_event" : barcode.calendarEvent ? barcodeCalendarEventToDictionary(barcode.calendarEvent)
+    @"calendar_event" : barcode.calendarEvent ? calendarEventToDictionary(barcode.calendarEvent)
                                               : [NSNull null],
-    @"driver_license" : barcode.driverLicense ? barcodeDriverLicenseToDictionary(barcode.driverLicense)
+    @"driver_license" : barcode.driverLicense ? driverLicenseToDictionary(barcode.driverLicense)
                                               : [NSNull null],
   };
 }
@@ -166,7 +166,7 @@ NSDictionary *barcodeContactInfoToDictionary(FIRVisionBarcodeContactInfo *contac
   };
 }
 
-NSDictionary *barcodeCalendarEventToDictionary(FIRVisionBarcodeCalendarEvent *calendar) {
+NSDictionary *calendarEventToDictionary(FIRVisionBarcodeCalendarEvent *calendar) {
   return @{
     @"event_description" : calendar.eventDescription,
     @"location" : calendar.location,
@@ -178,7 +178,7 @@ NSDictionary *barcodeCalendarEventToDictionary(FIRVisionBarcodeCalendarEvent *ca
   };
 }
 
-NSDictionary *barcodeDriverLicenseToDictionary(FIRVisionBarcodeDriverLicense *license) {
+NSDictionary *driverLicenseToDictionary(FIRVisionBarcodeDriverLicense *license) {
   return @{
     @"first_name" : license.firstName,
     @"middle_name" : license.middleName,
