@@ -53,15 +53,12 @@ NSDictionary *visionBarcodeToDictionary(FIRVisionBarcode *barcode) {
     @"url" : barcode.URL ? visionBarcodeURLToDictionary(barcode.URL) : [NSNull null],
     @"geo_point" : barcode.geoPoint ? visionBarcodeGeoPointToDictionary(barcode.geoPoint)
                                     : [NSNull null],
-    @"contact_info" : barcode.contactInfo
-        ? visionBarcodeContactInfoToDictionary(barcode.contactInfo)
-        : [NSNull null],
-    @"calendar_event" : barcode.calendarEvent
-        ? visionBarcodeCalendarEventToDictionary(barcode.calendarEvent)
-        : [NSNull null],
-    @"driver_license" : barcode.driverLicense
-        ? visionBarcodeDriverLicenseToDictionary(barcode.driverLicense)
-        : [NSNull null],
+    @"contact_info" : barcode.contactInfo ? barcodeContactInfoToDictionary(barcode.contactInfo)
+                                          : [NSNull null],
+    @"calendar_event" : barcode.calendarEvent ? barcodeCalendarEventToDictionary(barcode.calendarEvent)
+                                              : [NSNull null],
+    @"driver_license" : barcode.driverLicense ? barcodeDriverLicenseToDictionary(barcode.driverLicense)
+                                              : [NSNull null],
   };
 }
 
@@ -110,7 +107,7 @@ NSDictionary *visionBarcodeGeoPointToDictionary(FIRVisionBarcodeGeoPoint *geo) {
   };
 }
 
-NSDictionary *visionBarcodeContactInfoToDictionary(FIRVisionBarcodeContactInfo *contact) {
+NSDictionary *barcodeContactInfoToDictionary(FIRVisionBarcodeContactInfo *contact) {
   __block NSMutableArray<NSDictionary *> *addresses = [NSMutableArray array];
   [contact.addresses enumerateObjectsUsingBlock:^(FIRVisionBarcodeAddress *_Nonnull address,
                                                   NSUInteger idx, BOOL *_Nonnull stop) {
@@ -169,7 +166,7 @@ NSDictionary *visionBarcodeContactInfoToDictionary(FIRVisionBarcodeContactInfo *
   };
 }
 
-NSDictionary *visionBarcodeCalendarEventToDictionary(FIRVisionBarcodeCalendarEvent *calendar) {
+NSDictionary *barcodeCalendarEventToDictionary(FIRVisionBarcodeCalendarEvent *calendar) {
   return @{
     @"event_description" : calendar.eventDescription,
     @"location" : calendar.location,
@@ -181,7 +178,7 @@ NSDictionary *visionBarcodeCalendarEventToDictionary(FIRVisionBarcodeCalendarEve
   };
 }
 
-NSDictionary *visionBarcodeDriverLicenseToDictionary(FIRVisionBarcodeDriverLicense *license) {
+NSDictionary *barcodeDriverLicenseToDictionary(FIRVisionBarcodeDriverLicense *license) {
   return @{
     @"first_name" : license.firstName,
     @"middle_name" : license.middleName,
