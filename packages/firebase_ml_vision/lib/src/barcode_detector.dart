@@ -63,8 +63,8 @@ class VisionBarcode {
           _data['width'],
           _data['height'],
         ),
-        rawValue = _data['raw_value'] ?? null,
-        displayValue = _data['display_value'] ?? null,
+        rawValue = _data['raw_value'] != null ? _data['raw_value'] : null,
+        displayValue = _data['display_value'] ? _data['display_value'] : null,
         format = VisionBarcodeFormat._(_data['format']),
         cornerPoints = _data['points'] == null
             ? null
@@ -106,7 +106,7 @@ class VisionBarcode {
 //   https://firebase.google.com/docs/reference/android/com/google/firebase/ml/vision/barcode/FirebaseVisionBarcode.BarcodeFormat
 class VisionBarcodeFormat {
   final int value;
-  const VisionBarcodeFormat._(int value) : value = value;
+  const VisionBarcodeFormat._(int _value) : value = _value;
 
   static const All = const VisionBarcodeFormat._(0xFFFF);
   static const UnKnown = const VisionBarcodeFormat._(0);
