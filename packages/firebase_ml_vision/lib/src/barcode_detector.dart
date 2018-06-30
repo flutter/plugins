@@ -40,8 +40,6 @@ class BarcodeDetector extends FirebaseVisionDetector {
 }
 
 class VisionBarcode {
-  final Map<dynamic, dynamic> _data;
-
   final Rectangle<int> rect;
   final String rawValue;
   final String displayValue;
@@ -58,7 +56,7 @@ class VisionBarcode {
   final VisionBarcodeCalendarEvent calendarEvent;
   final VisionBarcodeDriverLicense driverLicense;
 
-  VisionBarcode._(this._data)
+  VisionBarcode._(Map<dynamic, dynamic> _data)
       : rect = Rectangle<int>(
           _data['left'],
           _data['top'],

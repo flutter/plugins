@@ -6,11 +6,10 @@ import android.support.annotation.NonNull;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.ml.vision.FirebaseVision;
-import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode;
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetector;
+import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.MethodChannel.Result;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,7 +24,8 @@ class BarcodeDetector implements Detector {
 
   @Override
   public void handleDetection(FirebaseVisionImage image, final MethodChannel.Result result) {
-    if (barcodeDetector == null) barcodeDetector = FirebaseVision.getInstance().getVisionBarcodeDetector();
+    if (barcodeDetector == null)
+      barcodeDetector = FirebaseVision.getInstance().getVisionBarcodeDetector();
     barcodeDetector
         .detectInImage(image)
         .addOnSuccessListener(
@@ -34,7 +34,7 @@ class BarcodeDetector implements Detector {
               public void onSuccess(List<FirebaseVisionBarcode> firebaseVisionBarcodes) {
                 List<Map<String, Object>> barcodes = new ArrayList<>();
 
-                for (FirebaseVisionBarcode barcode: firebaseVisionBarcodes) {
+                for (FirebaseVisionBarcode barcode : firebaseVisionBarcodes) {
                   Map<String, Object> barcodeMap = new HashMap<>();
 
                   Rect bounds = barcode.getBoundingBox();
@@ -46,7 +46,7 @@ class BarcodeDetector implements Detector {
                   List<int[]> points = new ArrayList<>();
                   if (barcode.getCornerPoints() != null) {
                     for (Point point : barcode.getCornerPoints()) {
-                      points.add(new int[]{point.x, point.y});
+                      points.add(new int[] {point.x, point.y});
                     }
                   }
                   barcodeMap.put("points", points);
@@ -93,7 +93,8 @@ class BarcodeDetector implements Detector {
                       break;
                     case FirebaseVisionBarcode.TYPE_CONTACT_INFO:
                       List<Map<String, Object>> addresses = new ArrayList<>();
-                      for (FirebaseVisionBarcode.Address address : barcode.getContactInfo().getAddresses()) {
+                      for (FirebaseVisionBarcode.Address address :
+                          barcode.getContactInfo().getAddresses()) {
                         Map<String, Object> addressMap = new HashMap();
                         addressMap.put("address_lines", address.getAddressLines());
                         addressMap.put("type", address.getType());
@@ -102,7 +103,8 @@ class BarcodeDetector implements Detector {
                       typeValue.put("addresses", addresses);
 
                       List<Map<String, Object>> emails = new ArrayList<>();
-                      for (FirebaseVisionBarcode.Email email : barcode.getContactInfo().getEmails()) {
+                      for (FirebaseVisionBarcode.Email email :
+                          barcode.getContactInfo().getEmails()) {
                         Map<String, Object> emailMap = new HashMap();
                         emailMap.put("address", email.getAddress());
                         emailMap.put("type", email.getType());
@@ -113,18 +115,21 @@ class BarcodeDetector implements Detector {
                       typeValue.put("emails", emails);
 
                       Map<String, Object> name = new HashMap();
-                      name.put("formatted_name", barcode.getContactInfo().getName().getFormattedName());
+                      name.put(
+                          "formatted_name", barcode.getContactInfo().getName().getFormattedName());
                       name.put("first", barcode.getContactInfo().getName().getFirst());
                       name.put("last", barcode.getContactInfo().getName().getLast());
                       name.put("middle", barcode.getContactInfo().getName().getMiddle());
                       name.put("prefix", barcode.getContactInfo().getName().getPrefix());
-                      name.put("pronounciation", barcode.getContactInfo().getName().getPronunciation());
+                      name.put(
+                          "pronounciation", barcode.getContactInfo().getName().getPronunciation());
                       name.put("suffix", barcode.getContactInfo().getName().getSuffix());
                       typeValue.put("name", name);
 
 
                       List<Map<String, Object>> phones = new ArrayList<>();
-                      for (FirebaseVisionBarcode.Phone phone : barcode.getContactInfo().getPhones()) {
+                      for (FirebaseVisionBarcode.Phone phone :
+                          barcode.getContactInfo().getPhones()) {
                         Map<String, Object> phoneMap = new HashMap();
                         phoneMap.put("number", phone.getNumber());
                         phoneMap.put("type", phone.getType());
@@ -139,7 +144,8 @@ class BarcodeDetector implements Detector {
                       barcodeMap.put("contact_info", typeValue);
                       break;
                     case FirebaseVisionBarcode.TYPE_CALENDAR_EVENT:
-                      typeValue.put("event_description", barcode.getCalendarEvent().getDescription());
+                      typeValue.put(
+                          "event_description", barcode.getCalendarEvent().getDescription());
                       typeValue.put("location", barcode.getCalendarEvent().getLocation());
                       typeValue.put("organizer", barcode.getCalendarEvent().getOrganizer());
                       typeValue.put("status", barcode.getCalendarEvent().getStatus());
@@ -158,10 +164,12 @@ class BarcodeDetector implements Detector {
                       typeValue.put("address_zip", barcode.getDriverLicense().getAddressZip());
                       typeValue.put("birth_date", barcode.getDriverLicense().getBirthDate());
                       typeValue.put("document_type", barcode.getDriverLicense().getDocumentType());
-                      typeValue.put("license_number", barcode.getDriverLicense().getLicenseNumber());
+                      typeValue.put(
+                          "license_number", barcode.getDriverLicense().getLicenseNumber());
                       typeValue.put("expiry_date", barcode.getDriverLicense().getExpiryDate());
                       typeValue.put("issuing_date", barcode.getDriverLicense().getIssueDate());
-                      typeValue.put("issuing_country", barcode.getDriverLicense().getIssuingCountry());
+                      typeValue.put(
+                          "issuing_country", barcode.getDriverLicense().getIssuingCountry());
                       barcodeMap.put("calendar_event", typeValue);
                       break;
                   }
