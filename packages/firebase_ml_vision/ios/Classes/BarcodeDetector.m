@@ -124,7 +124,7 @@ NSDictionary *visionBarcodeContactInfoToDictionary(FIRVisionBarcodeContactInfo *
       @"type" : @(address.type),
     }];
   }];
-    
+
   __block NSMutableArray<NSDictionary *> *emails = [NSMutableArray array];
   [contact.emails enumerateObjectsUsingBlock:^(FIRVisionBarcodeEmail *_Nonnull email,
                                                NSUInteger idx, BOOL *_Nonnull stop) {
