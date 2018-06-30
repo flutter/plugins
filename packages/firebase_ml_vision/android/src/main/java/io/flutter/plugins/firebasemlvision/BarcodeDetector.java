@@ -126,7 +126,6 @@ class BarcodeDetector implements Detector {
                       name.put("suffix", barcode.getContactInfo().getName().getSuffix());
                       typeValue.put("name", name);
 
-
                       List<Map<String, Object>> phones = new ArrayList<>();
                       for (FirebaseVisionBarcode.Phone phone :
                           barcode.getContactInfo().getPhones()) {
