@@ -189,9 +189,10 @@ int nextHandle = 0;
     }];
   } else if ([@"updateEmail" isEqualToString:call.method]) {
     NSString *toEmail = call.arguments[@"email"];
-    [[FIRAuth auth].currentUser updateEmail:toEmail completion:^(NSError *_Nullable error) {
-      [self sendResult:result forUser:nil error:error];
-    }];
+    [[FIRAuth auth].currentUser updateEmail:toEmail
+                                 completion:^(NSError *_Nullable error) {
+                                   [self sendResult:result forUser:nil error:error];
+                                 }];
   } else if ([@"signInWithCustomToken" isEqualToString:call.method]) {
     NSString *token = call.arguments[@"token"];
     [[FIRAuth auth] signInWithCustomToken:token
