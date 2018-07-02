@@ -1,3 +1,7 @@
+## 0.5.12
+
+* Fixed ArrayIndexOutOfBoundsException in handleStopListeningAuthState
+
 ## 0.5.11
 
 * Updated Gradle tooling to match Android Studio 3.1.2.
