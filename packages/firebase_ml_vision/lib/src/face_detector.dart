@@ -8,7 +8,7 @@ part of firebase_ml_vision;
 ///
 /// Accurate tends to detect more faces and may be more precise in determining
 /// values such as position, at the cost of speed.
-enum FaceDetectorMode { fast, accurate }
+enum FaceDetectorMode { accurate, fast }
 
 /// Available face landmarks detected by [FaceDetector].
 enum FaceLandmarkType {
@@ -47,6 +47,10 @@ class FaceDetector extends FirebaseVisionDetector {
   /// Detects faces in the input image.
   @override
   Future<List<Face>> detectInImage(FirebaseVisionImage visionImage) async {
+    return <Face>[];
+    // TODO(bmparr): undo after android implementation
+
+    /*
     final List<dynamic> reply = await FirebaseVision.channel.invokeMethod(
       'FaceDetector#detectInImage',
       <String, dynamic>{
@@ -55,7 +59,7 @@ class FaceDetector extends FirebaseVisionDetector {
         'enableLandmarks': options.enableLandmarks,
         'enableTracking': options.enableTracking,
         'minFaceSize': options.minFaceSize,
-        'mode': options.mode.index,
+        'mode': options.mode == FaceDetectorMode.fast ? 'fast' : 'accurate',
       },
     );
 
@@ -64,7 +68,9 @@ class FaceDetector extends FirebaseVisionDetector {
       faces.add(new Face._(data));
     });
 
+
     return faces;
+    */
   }
 }
 
@@ -178,7 +184,7 @@ Map<FaceLandmarkType, FaceLandmark> _getLandmarks(dynamic data) {
   final Map<FaceLandmarkType, FaceLandmark> landmarks =
       <FaceLandmarkType, FaceLandmark>{};
 
-  data.forEach((String key, List<dynamic> value) {
+  data.forEach((dynamic key, dynamic point) {
     FaceLandmarkType landmarkType;
     switch (key) {
       case 'bottomMouth':
@@ -218,7 +224,7 @@ Map<FaceLandmarkType, FaceLandmark> _getLandmarks(dynamic data) {
 
     landmarks[landmarkType] = FaceLandmark._(
       landmarkType,
-      Point<int>(value[0], value[1]),
+      Point<int>(point[0], point[1]),
     );
   });
 
