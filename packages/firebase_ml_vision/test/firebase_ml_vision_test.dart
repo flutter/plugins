@@ -192,6 +192,34 @@ void main() {
           const Point<int>(18, 19),
         );
       });
+
+      test('detectInImage no faces', () async {
+        returnValue = <dynamic>[];
+
+        final FaceDetector detector = FirebaseVision.instance.faceDetector(
+          new FaceDetectorOptions(),
+        );
+        final FirebaseVisionImage image = new FirebaseVisionImage.fromFilePath(
+          'empty',
+        );
+
+        final List<Face> faces = await detector.detectInImage(image);
+        expect(faces, isEmpty);
+      });
+
+      test('close', () async {
+        final FaceDetector detector = FirebaseVision.instance.faceDetector(
+          new FaceDetectorOptions(),
+        );
+        await detector.close();
+
+        expect(log, <Matcher>[
+          isMethodCall(
+            'FaceDetector#close',
+            arguments: null,
+          ),
+        ]);
+      });
     });
 
     group('$LabelDetector', () {});
@@ -290,14 +318,6 @@ void main() {
             new FirebaseVisionImage.fromFilePath('empty');
 
         final List<TextBlock> blocks = await detector.detectInImage(image);
-
-        expect(log, <Matcher>[
-          isMethodCall(
-            'TextDetector#detectInImage',
-            arguments: 'empty',
-          ),
-        ]);
-
         expect(blocks, isEmpty);
       });
 
