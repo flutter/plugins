@@ -4,21 +4,13 @@
 
 part of firebase_ml_vision;
 
-/// Whether to run additional classifiers for characterizing attributes.
-///
-/// E.g. "smiling" and "eyes open".
-enum FaceDetectorClassification { none, all }
-
-/// Whether to detect no landmarks or all landmarks.
-enum FaceDetectorLandmark { none, all }
-
 /// Option for controlling additional trade-offs in performing face detection.
 ///
 /// Accurate tends to detect more faces and may be more precise in determining
 /// values such as position, at the cost of speed.
 enum FaceDetectorMode { fast, accurate }
 
-/// Available face landmarks.
+/// Available face landmarks detected by [FaceDetector].
 enum FaceLandmarkType {
   bottomMouth,
   leftCheek,
@@ -59,11 +51,11 @@ class FaceDetector extends FirebaseVisionDetector {
       'FaceDetector#detectInImage',
       <String, dynamic>{
         'path': visionImage.imageFile.path,
-        'classification': options.classification.index,
-        'landmarks': options.landmarks.index,
+        'enableClassification': options.enableClassification,
+        'enableLandmarks': options.enableLandmarks,
+        'enableTracking': options.enableTracking,
         'minFaceSize': options.minFaceSize,
         'mode': options.mode.index,
-        'trackingEnabled': options.trackingEnabled,
       },
     );
 
@@ -79,19 +71,27 @@ class FaceDetector extends FirebaseVisionDetector {
 /// Options for [FaceDetector].
 class FaceDetectorOptions {
   FaceDetectorOptions({
-    this.classification = FaceDetectorClassification.none,
-    this.landmarks = FaceDetectorLandmark.none,
+    this.enableClassification = false,
+    this.enableLandmarks = false,
+    this.enableTracking = false,
     this.minFaceSize = 0.1,
     this.mode = FaceDetectorMode.fast,
-    this.trackingEnabled = false,
   })  : assert(minFaceSize >= 0.0),
         assert(minFaceSize <= 1.0);
 
   /// Whether to run additional classifiers for characterizing attributes.
-  final FaceDetectorClassification classification;
+  ///
+  /// E.g. "smiling" and "eyes open".
+  final bool enableClassification;
 
-  /// Whether to detect no landmarks or all landmarks.
-  final FaceDetectorLandmark landmarks;
+  /// Whether to detect [FaceLandmark]s.
+  final bool enableLandmarks;
+
+  /// Whether to enable face tracking.
+  ///
+  /// If enabled, the detector will maintain a consistent ID for each face when
+  /// processing consecutive frames.
+  final bool enableTracking;
 
   /// The smallest desired face size.
   ///
@@ -100,12 +100,6 @@ class FaceDetectorOptions {
 
   /// Option for controlling additional accuracy / speed trade-offs.
   final FaceDetectorMode mode;
-
-  /// Whether to enable face tracking.
-  ///
-  /// If enabled, the detector will maintain a consistent ID for each face when
-  /// processing consecutive frames.
-  final bool trackingEnabled;
 }
 
 /// Represents a face detected by [FaceDetector].
@@ -119,10 +113,10 @@ class Face {
         ),
         headEulerAngleY = data['headEulerAngleY'],
         headEulerAngleZ = data['headEulerAngleZ'],
-        leftEyeOpenProbability = data['leftEyeOpenProbability'] ?? -1.0,
-        rightEyeOpenProbability = data['rightEyeOpenProbability'] ?? -1.0,
-        smilingProbability = data['smilingProbability'] ?? -1.0,
-        trackingId = data['trackingId'] ?? -1,
+        leftEyeOpenProbability = data['leftEyeOpenProbability'],
+        rightEyeOpenProbability = data['rightEyeOpenProbability'],
+        smilingProbability = data['smilingProbability'],
+        trackingId = data['trackingId'],
         _landmarks = _getLandmarks(data['landmarks']);
 
   final Map<FaceLandmarkType, FaceLandmark> _landmarks;
@@ -138,20 +132,25 @@ class Face {
 
   /// Probability that the face's left eye is open.
   ///
-  /// A value between 0.0 and 1.0.
+  /// Returns a value between 0.0 and 1.0. Returns `null` if probability was not
+  /// computed.
   final double leftEyeOpenProbability;
 
   /// Probability that the face's right eye is open.
   ///
-  /// A value between 0.0 and 1.0.
+  /// Returns a value between 0.0 and 1.0. Returns `null` if probability was not
+  /// computed.
   final double rightEyeOpenProbability;
 
   /// Probability that the face is smiling.
   ///
-  /// A value between 0.0 and 1.0.
+  /// Returns a value between 0.0 and 1.0. Returns `null` if probability was not
+  /// computed.
   final double smilingProbability;
 
   /// The tracking ID if the tracking is enabled.
+  ///
+  /// Returns `null` if tracking was not enabled.
   final int trackingId;
 
   /// Gets the landmark based on the provided [FaceLandmarkType].
