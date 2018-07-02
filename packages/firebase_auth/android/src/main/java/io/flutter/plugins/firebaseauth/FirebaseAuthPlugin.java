@@ -348,7 +348,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     FirebaseAuth.AuthStateListener listener = authStateListeners.get(id);
     if (listener != null) {
       FirebaseAuth.getInstance().removeAuthStateListener(listener);
-      authStateListeners.removeAt(id);
+      authStateListeners.remove(id);
       result.success(null);
     } else {
       result.error(
