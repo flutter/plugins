@@ -166,7 +166,12 @@ class Face {
 class FaceLandmark {
   FaceLandmark._(this.type, this.position);
 
+  /// The [FaceLandmarkType] of this landmark.
   final FaceLandmarkType type;
+
+  /// Gets a 2D point for landmark position.
+  ///
+  /// The point (0, 0) is defined as the upper-left corner of the image.
   final Point<int> position;
 }
 
