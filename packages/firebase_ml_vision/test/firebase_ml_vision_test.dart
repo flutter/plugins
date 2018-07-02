@@ -82,6 +82,7 @@ void main() {
           isMethodCall(
             'FaceDetector#detectInImage',
             arguments: <String, dynamic>{
+              'handle': 0,
               'path': 'empty',
               'enableClassification': true,
               'enableLandmarks': true,

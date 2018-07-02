@@ -33,7 +33,11 @@ enum FaceLandmarkType {
 /// FaceDetector faceDetector = FirebaseVision.instance.faceDetector(options);
 /// ```
 class FaceDetector extends FirebaseVisionDetector {
-  FaceDetector._(this.options);
+  FaceDetector._(this.options) : _handle = _nextHandle++;
+
+  static int _nextHandle = 0;
+
+  final int _handle;
 
   /// The options for the face detector.
   final FaceDetectorOptions options;
@@ -47,14 +51,11 @@ class FaceDetector extends FirebaseVisionDetector {
   /// Detects faces in the input image.
   @override
   Future<List<Face>> detectInImage(FirebaseVisionImage visionImage) async {
-    return <Face>[];
-    // TODO(bmparr): undo after android implementation
-
-    /*
     final List<dynamic> reply = await FirebaseVision.channel.invokeMethod(
       'FaceDetector#detectInImage',
       <String, dynamic>{
         'path': visionImage.imageFile.path,
+        'handle': _handle,
         'enableClassification': options.enableClassification,
         'enableLandmarks': options.enableLandmarks,
         'enableTracking': options.enableTracking,
@@ -68,9 +69,7 @@ class FaceDetector extends FirebaseVisionDetector {
       faces.add(new Face._(data));
     });
 
-
     return faces;
-    */
   }
 }
 
