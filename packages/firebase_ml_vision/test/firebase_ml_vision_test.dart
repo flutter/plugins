@@ -34,8 +34,10 @@ void main() {
     group('$BarcodeDetector', () {});
 
     group('$FaceDetector', () {
-      test('detectInImage', () async {
-        returnValue = <dynamic>[
+      List<dynamic> testFaces;
+
+      setUp(() {
+        testFaces = <dynamic>[
           <dynamic, dynamic>{
             'left': 0,
             'top': 1,
@@ -61,6 +63,10 @@ void main() {
             },
           },
         ];
+      });
+
+      test('detectInImage', () async {
+        returnValue = testFaces;
 
         final FaceDetector detector = FirebaseVision.instance.faceDetector(
           new FaceDetectorOptions(
@@ -102,95 +108,40 @@ void main() {
         expect(face.smilingProbability, 0.2);
         expect(face.trackingId, 8);
 
-        expect(
-          face.landmark(FaceLandmarkType.bottomMouth).type,
-          FaceLandmarkType.bottomMouth,
+        for (FaceLandmarkType type in FaceLandmarkType.values) {
+          expect(face.landmark(type).type, type);
+        }
+
+        Point<int> p(FaceLandmarkType type) {
+          return face.landmark(type).position;
+        }
+
+        expect(p(FaceLandmarkType.bottomMouth), const Point<int>(0, 1));
+        expect(p(FaceLandmarkType.leftCheek), const Point<int>(2, 3));
+        expect(p(FaceLandmarkType.leftEar), const Point<int>(4, 5));
+        expect(p(FaceLandmarkType.leftEye), const Point<int>(6, 7));
+        expect(p(FaceLandmarkType.leftMouth), const Point<int>(8, 9));
+        expect(p(FaceLandmarkType.noseBase), const Point<int>(10, 11));
+        expect(p(FaceLandmarkType.rightCheek), const Point<int>(12, 13));
+        expect(p(FaceLandmarkType.rightEar), const Point<int>(14, 15));
+        expect(p(FaceLandmarkType.rightEye), const Point<int>(16, 17));
+        expect(p(FaceLandmarkType.rightMouth), const Point<int>(18, 19));
+      });
+
+      test('detectInImage with null landmark', () async {
+        testFaces[0]['landmarks']['bottomMouth'] = null;
+        returnValue = testFaces;
+
+        final FaceDetector detector = FirebaseVision.instance.faceDetector(
+          new FaceDetectorOptions(),
         );
-        expect(
-          face.landmark(FaceLandmarkType.bottomMouth).position,
-          const Point<int>(0, 1),
+        final FirebaseVisionImage image = new FirebaseVisionImage.fromFilePath(
+          'empty',
         );
 
-        expect(
-          face.landmark(FaceLandmarkType.leftCheek).type,
-          FaceLandmarkType.leftCheek,
-        );
-        expect(
-          face.landmark(FaceLandmarkType.leftCheek).position,
-          const Point<int>(2, 3),
-        );
+        final List<Face> faces = await detector.detectInImage(image);
 
-        expect(
-          face.landmark(FaceLandmarkType.leftEar).type,
-          FaceLandmarkType.leftEar,
-        );
-        expect(
-          face.landmark(FaceLandmarkType.leftEar).position,
-          const Point<int>(4, 5),
-        );
-
-        expect(
-          face.landmark(FaceLandmarkType.leftEye).type,
-          FaceLandmarkType.leftEye,
-        );
-        expect(
-          face.landmark(FaceLandmarkType.leftEye).position,
-          const Point<int>(6, 7),
-        );
-
-        expect(
-          face.landmark(FaceLandmarkType.leftMouth).type,
-          FaceLandmarkType.leftMouth,
-        );
-        expect(
-          face.landmark(FaceLandmarkType.leftMouth).position,
-          const Point<int>(8, 9),
-        );
-
-        expect(
-          face.landmark(FaceLandmarkType.noseBase).type,
-          FaceLandmarkType.noseBase,
-        );
-        expect(
-          face.landmark(FaceLandmarkType.noseBase).position,
-          const Point<int>(10, 11),
-        );
-
-        expect(
-          face.landmark(FaceLandmarkType.rightCheek).type,
-          FaceLandmarkType.rightCheek,
-        );
-        expect(
-          face.landmark(FaceLandmarkType.rightCheek).position,
-          const Point<int>(12, 13),
-        );
-
-        expect(
-          face.landmark(FaceLandmarkType.rightEar).type,
-          FaceLandmarkType.rightEar,
-        );
-        expect(
-          face.landmark(FaceLandmarkType.rightEar).position,
-          const Point<int>(14, 15),
-        );
-
-        expect(
-          face.landmark(FaceLandmarkType.rightEye).type,
-          FaceLandmarkType.rightEye,
-        );
-        expect(
-          face.landmark(FaceLandmarkType.rightEye).position,
-          const Point<int>(16, 17),
-        );
-
-        expect(
-          face.landmark(FaceLandmarkType.rightMouth).type,
-          FaceLandmarkType.rightMouth,
-        );
-        expect(
-          face.landmark(FaceLandmarkType.rightMouth).position,
-          const Point<int>(18, 19),
-        );
+        expect(faces[0].landmark(FaceLandmarkType.bottomMouth), null);
       });
 
       test('detectInImage no faces', () async {
@@ -288,25 +239,25 @@ void main() {
         final TextBlock block = blocks[0];
         expect(block.boundingBox, const Rectangle<int>(13, 14, 15, 16));
         expect(block.text, 'friend');
-        expect(block.cornerPoints, <Point<int>>[
-          const Point<int>(17, 18),
-          const Point<int>(19, 20),
+        expect(block.cornerPoints, const <Point<int>>[
+          Point<int>(17, 18),
+          Point<int>(19, 20),
         ]);
 
         final TextLine line = block.lines[0];
         expect(line.boundingBox, const Rectangle<int>(5, 6, 7, 8));
         expect(line.text, 'my');
-        expect(line.cornerPoints, <Point<int>>[
-          const Point<int>(9, 10),
-          const Point<int>(11, 12),
+        expect(line.cornerPoints, const <Point<int>>[
+          Point<int>(9, 10),
+          Point<int>(11, 12),
         ]);
 
         final TextElement element = line.elements[0];
         expect(element.boundingBox, const Rectangle<int>(1, 2, 3, 4));
         expect(element.text, 'hello');
-        expect(element.cornerPoints, <Point<int>>[
-          const Point<int>(5, 6),
-          const Point<int>(7, 8),
+        expect(element.cornerPoints, const <Point<int>>[
+          Point<int>(5, 6),
+          Point<int>(7, 8),
         ]);
       });
 
@@ -361,9 +312,9 @@ void main() {
         final TextBlock block = blocks[0];
         expect(block.boundingBox, null);
         expect(block.text, 'potato');
-        expect(block.cornerPoints, <Point<int>>[
-          const Point<int>(17, 18),
-          const Point<int>(19, 20),
+        expect(block.cornerPoints, const <Point<int>>[
+          Point<int>(17, 18),
+          Point<int>(19, 20),
         ]);
       });
     });

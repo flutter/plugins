@@ -26,7 +26,7 @@ enum FaceLandmarkType {
 
 /// Detector for detecting faces in an input image.
 ///
-/// A face detector is created via `faceDetector(FaceDetectorOptions options)`
+/// A face detector is created via faceDetector(FaceDetectorOptions options)
 /// in [FirebaseVision]:
 ///
 /// ```dart
@@ -44,7 +44,7 @@ class FaceDetector extends FirebaseVisionDetector {
   /// The options for the face detector.
   final FaceDetectorOptions options;
 
-  /// Closes the face detector and release its model resources.
+  /// Closes the face detector and releases its model resources.
   @override
   Future<void> close() async {
     return FirebaseVision.channel.invokeMethod('FaceDetector#close');
@@ -62,21 +62,27 @@ class FaceDetector extends FirebaseVisionDetector {
         'enableLandmarks': options.enableLandmarks,
         'enableTracking': options.enableTracking,
         'minFaceSize': options.minFaceSize,
-        'mode': options.mode == FaceDetectorMode.fast ? 'fast' : 'accurate',
+        'mode': _enumToString(options.mode),
       },
     );
 
     final List<Face> faces = <Face>[];
-    reply.forEach((dynamic data) {
-      faces.add(new Face._(data));
-    });
+    for (dynamic data in reply) {
+      faces.add(Face._(data));
+    }
 
     return faces;
   }
 }
 
 /// Options for [FaceDetector].
+///
+/// Used to configure the features of the [FaceDetector], such as
+/// classification, face tracking, speed, etc.
 class FaceDetectorOptions {
+  /// Constructor for [FaceDetectorOptions].
+  ///
+  /// The parameter minFaceValue must be between 0.0 and 1.0, inclusive.
   FaceDetectorOptions({
     this.enableClassification = false,
     this.enableLandmarks = false,
@@ -103,6 +109,8 @@ class FaceDetectorOptions {
   /// The smallest desired face size.
   ///
   /// Expressed as a proportion of the width of the head to the image width.
+  ///
+  /// Must be a value between 0.0 and 1.0.
   final double minFaceSize;
 
   /// Option for controlling additional accuracy / speed trade-offs.
@@ -124,45 +132,82 @@ class Face {
         rightEyeOpenProbability = data['rightEyeOpenProbability'],
         smilingProbability = data['smilingProbability'],
         trackingId = data['trackingId'],
-        _landmarks = _getLandmarks(data['landmarks']);
+        _landmarks = Map<FaceLandmarkType, FaceLandmark>.fromIterables(
+          FaceLandmarkType.values,
+          List<FaceLandmark>.generate(
+            FaceLandmarkType.values.length,
+            (int index) {
+              final FaceLandmarkType type = FaceLandmarkType.values[index];
+              final dynamic landmarkMap = data['landmarks'];
+              final String typeString = _enumToString(type);
+
+              if (landmarkMap[typeString] == null) return null;
+              return FaceLandmark._(
+                type,
+                Point<int>(
+                  landmarkMap[typeString][0],
+                  landmarkMap[typeString][1],
+                ),
+              );
+            },
+          ),
+        );
 
   final Map<FaceLandmarkType, FaceLandmark> _landmarks;
 
   /// The axis-aligned bounding rectangle of the detected face.
+  ///
+  /// The point (0, 0) is defined as the upper-left corner of the image.
   final Rectangle<int> boundingBox;
 
   /// The rotation of the face about the vertical axis of the image.
+  ///
+  /// Represented in degrees.
+  ///
+  /// A face with a positive Euler Y angle is turned to the camera's right and
+  /// to its left.
+  ///
+  /// The Euler Y angle is available only when using the "accurate" mode setting
+  /// of the face detector (as opposed to the "fast" mode setting, which takes
+  /// some shortcuts to make detection faster).
   final double headEulerAngleY;
 
   /// The rotation of the face about the axis pointing out of the image.
+  ///
+  /// Represented in degrees.
+  ///
+  /// A face with a positive Euler Z angle is rotated counter-clockwise relative
+  /// to the camera.
+  ///
+  /// ML Kit always reports the Euler Z angle of a detected face.
   final double headEulerAngleZ;
 
   /// Probability that the face's left eye is open.
   ///
-  /// Returns a value between 0.0 and 1.0. Returns `null` if probability was not
+  /// A value between 0.0 and 1.0 inclusive, or null if probability was not
   /// computed.
   final double leftEyeOpenProbability;
 
   /// Probability that the face's right eye is open.
   ///
-  /// Returns a value between 0.0 and 1.0. Returns `null` if probability was not
+  /// A value between 0.0 and 1.0 inclusive, or null if probability was not
   /// computed.
   final double rightEyeOpenProbability;
 
   /// Probability that the face is smiling.
   ///
-  /// Returns a value between 0.0 and 1.0. Returns `null` if probability was not
+  /// A value between 0.0 and 1.0 inclusive, or null if probability was not
   /// computed.
   final double smilingProbability;
 
   /// The tracking ID if the tracking is enabled.
   ///
-  /// Returns `null` if tracking was not enabled.
+  /// Null if tracking was not enabled.
   final int trackingId;
 
   /// Gets the landmark based on the provided [FaceLandmarkType].
   ///
-  /// Returns null if landmark was not detected.
+  /// Null if landmark was not detected.
   FaceLandmark landmark(FaceLandmarkType landmark) => _landmarks[landmark];
 }
 
@@ -181,53 +226,7 @@ class FaceLandmark {
   final Point<int> position;
 }
 
-Map<FaceLandmarkType, FaceLandmark> _getLandmarks(dynamic data) {
-  final Map<FaceLandmarkType, FaceLandmark> landmarks =
-      <FaceLandmarkType, FaceLandmark>{};
-
-  data.forEach((dynamic key, dynamic point) {
-    FaceLandmarkType landmarkType;
-    switch (key) {
-      case 'bottomMouth':
-        landmarkType = FaceLandmarkType.bottomMouth;
-        break;
-      case 'leftCheek':
-        landmarkType = FaceLandmarkType.leftCheek;
-        break;
-      case 'leftEar':
-        landmarkType = FaceLandmarkType.leftEar;
-        break;
-      case 'leftEye':
-        landmarkType = FaceLandmarkType.leftEye;
-        break;
-      case 'leftMouth':
-        landmarkType = FaceLandmarkType.leftMouth;
-        break;
-      case 'noseBase':
-        landmarkType = FaceLandmarkType.noseBase;
-        break;
-      case 'rightCheek':
-        landmarkType = FaceLandmarkType.rightCheek;
-        break;
-      case 'rightEar':
-        landmarkType = FaceLandmarkType.rightEar;
-        break;
-      case 'rightEye':
-        landmarkType = FaceLandmarkType.rightEye;
-        break;
-      case 'rightMouth':
-        landmarkType = FaceLandmarkType.rightMouth;
-        break;
-      default:
-        throw new ArgumentError.value(
-            key, 'Landmark name', 'Not valid landmark.');
-    }
-
-    landmarks[landmarkType] = FaceLandmark._(
-      landmarkType,
-      Point<int>(point[0], point[1]),
-    );
-  });
-
-  return landmarks;
+String _enumToString(dynamic enumValue) {
+  final String enumString = enumValue.toString();
+  return enumString.substring(enumString.indexOf('.') + 1);
 }

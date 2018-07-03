@@ -32,7 +32,7 @@ class TextDetector implements FirebaseVisionDetector {
     return blocks;
   }
 
-  /// Closes the text detector and release its model resources.
+  /// Closes the text detector and releases its model resources.
   @override
   Future<void> close() {
     return FirebaseVision.channel.invokeMethod('TextDetector#close');
@@ -61,6 +61,8 @@ abstract class TextContainer {
   final List<Point<int>> _cornerPoints;
 
   /// Axis-aligned bounding rectangle of the detected text.
+  ///
+  /// The point (0, 0) is defined as the upper-left corner of the image.
   ///
   /// Could be null even if text is found.
   final Rectangle<int> boundingBox;
