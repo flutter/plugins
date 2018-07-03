@@ -39,6 +39,7 @@ class BarcodeDetector extends FirebaseVisionDetector {
   }
 }
 
+/// Represents a single recognized barcode and its value.
 class VisionBarcode {
   VisionBarcode._(Map<dynamic, dynamic> _data)
       : boundingBox = Rectangle<int>(
@@ -85,51 +86,132 @@ class VisionBarcode {
             ? null
             : VisionBarcodeDriverLicense._(_data['driver_license']);
 
+  /// Gets the bounding rectangle of the detected barcode.
+  ///
+  /// Returns null if the bounding rectangle can not be determined.
   final Rectangle<int> boundingBox;
+
+  /// Returns barcode value as it was encoded in the barcode.
+  /// Structured values are not parsed, for example: 'MEBKM:TITLE:Google;URL://www.google.com;;'.
+  ///
+  /// Returns null if nothing found.
   final String rawValue;
+
+  /// Returns barcode value in a user-friendly format.
+  /// May omit some of the information encoded in the barcode.
+  /// For example, if getRawValue() returns 'MEBKM:TITLE:Google;URL://www.google.com;;',
+  /// the display_value might be '//www.google.com'.
+  /// If valueFormat==TEXT, this field will be equal to getRawValue().
+  ///
+  /// This value may be multiline, for example, when line breaks are encoded into the original TEXT barcode value.
+  /// May include the supplement value.
+  ///
+  /// Returns null if nothing found.
   final String displayValue;
+
+  /// Returns barcode format, for example [VisionBarcodeFormat.EAN13].
   final VisionBarcodeFormat format;
+
+  /// Returns four corner points in clockwise direction starting with top-left.
+  ///
+  /// Due to the possible perspective distortions, this is not necessarily a rectangle.
   final List<Point<int>> cornerPoints;
+
+  /// Returns format type of the barcode value.
+  ///
+  /// For example, [VisionBarcodeValueType.Text], [VisionBarcodeValueType.Product], [VisionBarcodeValueType.URL], etc.
+  ///
+  /// If the value structure cannot be parsed, TYPE_TEXT will be returned.
+  /// If the recognized structure type is not defined in your current version of SDK, TYPE_UNKNOWN will be returned.
+  ///
+  /// Note that the built-in parsers only recognize a few popular value structures.
+  /// For your specific use case, you might want to directly consume getRawValue()
+  /// and implement your own parsing logic.
   final VisionBarcodeValueType valueType;
+
+  /// Gets parsed email details (set iff [valueType] is [VisionBarcodeValueType.Email].
   final VisionBarcodeEmail email;
+
+  /// Gets parsed phone details (set iff [valueType] is [VisionBarcodeValueType.Phone]).
   final VisionBarcodePhone phone;
+
+  /// Gets parsed SMS details (set iff [valueType] is [VisionBarcodeValueType.SMS]).
   final VisionBarcodeSMS sms;
+
+  /// Gets parsed URL bookmark details (set iff [valueType] is [VisionBarcodeValueType.URL]).
   final VisionBarcodeURLBookmark url;
+
+  /// Gets parsed WiFi AP details (set iff [valueType] is [VisionBarcodeValueType.WiFi]).
   final VisionBarcodeWiFi wifi;
+
+  /// Gets parsed geo coordinates (set iff [valueType] is [VisionBarcodeValueType.GeographicCoordinates]).
   final VisionBarcodeGeoPoint geoPoint;
+
+  /// Gets parsed contact details (set iff [valueType] is [VisionBarcodeValueType.ContactInfo]).
   final VisionBarcodeContactInfo contactInfo;
+
+  /// Gets parsed calendar event details (set iff [valueType] is [VisionBarcodeValueType.CalendarEvent]).
   final VisionBarcodeCalendarEvent calendarEvent;
+
+  /// Gets parsed driver's license details (set iff [valueType] is [VisionBarcodeValueType.DriversLicense]).
   final VisionBarcodeDriverLicense driverLicense;
 }
 
-// ios:
-//   https://firebase.google.com/docs/reference/ios/firebasemlvision/api/reference/Enums/FIRVisionBarcodeFormat
-// android:
-//   https://firebase.google.com/docs/reference/android/com/google/firebase/ml/vision/barcode/FirebaseVisionBarcode.BarcodeFormat
+/// Barcode format constants - enumeration of supported barcode formats.
 class VisionBarcodeFormat {
   final int value;
   const VisionBarcodeFormat._(this.value);
 
+  /// Barcode format constant representing the union of all supported formats.
   static const VisionBarcodeFormat All = const VisionBarcodeFormat._(0xFFFF);
+
+  /// Barcode format unknown to the current SDK, but understood by Google Play services.
   static const VisionBarcodeFormat UnKnown = const VisionBarcodeFormat._(0);
+
+  /// Barcode format constant for Code 128.
   static const VisionBarcodeFormat Code128 =
       const VisionBarcodeFormat._(0x0001);
+
+  /// Barcode format constant for Code 39.
   static const VisionBarcodeFormat Code39 = const VisionBarcodeFormat._(0x0002);
+
+  /// Barcode format constant for Code 93.
   static const VisionBarcodeFormat Code93 = const VisionBarcodeFormat._(0x0004);
+
+  /// Barcode format constant for Codabar.
   static const VisionBarcodeFormat CodaBar =
       const VisionBarcodeFormat._(0x0008);
+
+  /// Barcode format constant for Data Matrix.
   static const VisionBarcodeFormat DataMatrix =
       const VisionBarcodeFormat._(0x0010);
+
+  /// Barcode format constant for EAN-13.
   static const VisionBarcodeFormat EAN13 = const VisionBarcodeFormat._(0x0020);
+
+  /// Barcode format constant for EAN-8.
   static const VisionBarcodeFormat EAN8 = const VisionBarcodeFormat._(0x0040);
+
+  /// Barcode format constant for ITF (Interleaved Two-of-Five).
   static const VisionBarcodeFormat ITF = const VisionBarcodeFormat._(0x0080);
+
+  /// Barcode format constant for QR Code.
   static const VisionBarcodeFormat QRCode = const VisionBarcodeFormat._(0x0100);
+
+  /// Barcode format constant for UPC-A.
   static const VisionBarcodeFormat UPCA = const VisionBarcodeFormat._(0x0200);
+
+  /// Barcode format constant for UPC-E.
   static const VisionBarcodeFormat UPCE = const VisionBarcodeFormat._(0x0400);
+
+  /// Barcode format constant for PDF-417.
   static const VisionBarcodeFormat PDF417 = const VisionBarcodeFormat._(0x0800);
+
+  /// Barcode format constant for AZTEC.
   static const VisionBarcodeFormat Aztec = const VisionBarcodeFormat._(0x1000);
 }
 
+/// Barcode value type constants - enumeration of supported barcode content value types
 enum VisionBarcodeValueType {
   /// Unknown Barcode value types.
   Unknown,
@@ -171,10 +253,7 @@ enum VisionBarcodeValueType {
   DriversLicense,
 }
 
-// ios
-//   https://firebase.google.com/docs/reference/ios/firebasemlvision/api/reference/Classes/FIRVisionBarcodeEmail
-// android
-//   https://firebase.google.com/docs/reference/android/com/google/firebase/ml/vision/barcode/FirebaseVisionBarcode.Email
+/// An email message from a 'MAILTO:' or similar QRCode type.
 class VisionBarcodeEmail {
   VisionBarcodeEmail._(Map<dynamic, dynamic> data)
       : type = VisionBarcodeEmailType.values.elementAt(data['type']),
@@ -182,9 +261,16 @@ class VisionBarcodeEmail {
         body = data['body'],
         subject = data['subject'];
 
+  /// Gets email's address.
   final String address;
+
+  /// Gets email's body.
   final String body;
+
+  /// Gets email's subject.
   final String subject;
+
+  /// Gets type of the email.
   final VisionBarcodeEmailType type;
 }
 
@@ -199,12 +285,19 @@ enum VisionBarcodeEmailType {
   Home,
 }
 
+/// Phone number info.
 class VisionBarcodePhone {
-  final String number;
-  final VisionBarcodePhoneType type;
   VisionBarcodePhone._(Map<dynamic, dynamic> data)
       : number = data['number'],
         type = VisionBarcodePhoneType.values.elementAt(data['type']);
+
+  /// Gets phone number
+  final String number;
+
+  /// Gets type of the phone number
+  ///
+  /// See also [VisionBarcodePhoneType]
+  final VisionBarcodePhoneType type;
 }
 
 enum VisionBarcodePhoneType {
@@ -224,34 +317,27 @@ enum VisionBarcodePhoneType {
   Mobile,
 }
 
-// ios
-//   https://firebase.google.com/docs/reference/ios/firebasemlvision/api/reference/Classes/FIRVisionBarcodeURLBookmark
-// android
-//   https://firebase.google.com/docs/reference/android/com/google/firebase/ml/vision/barcode/FirebaseVisionBarcode.Sms
+/// An sms message from an 'SMS:' or similar QRCode type.
 class VisionBarcodeSMS {
   VisionBarcodeSMS._(Map<dynamic, dynamic> data)
       : message = data['message'],
         phoneNumber = data['phone_number'];
+
   final String message;
   final String phoneNumber;
 }
 
-// ios
-//   https://firebase.google.com/docs/reference/ios/firebasemlvision/api/reference/Classes/FIRVisionBarcodeURLBookmark
-// android
-//   https://firebase.google.com/docs/reference/android/com/google/firebase/ml/vision/barcode/FirebaseVisionBarcode.UrlBookmark
+/// A URL and title from a 'MEBKM:' or similar QRCode type.
 class VisionBarcodeURLBookmark {
   VisionBarcodeURLBookmark._(Map<dynamic, dynamic> data)
       : title = data['title'],
         url = data['url'];
+
   final String title;
   final String url;
 }
 
-// ios
-//   https://firebase.google.com/docs/reference/ios/firebasemlvision/api/reference/Classes/FIRVisionBarcodeWiFi
-// android
-//   https://firebase.google.com/docs/reference/android/com/google/firebase/ml/vision/barcode/FirebaseVisionBarcode.WiFi
+/// A wifi network parameters from a 'WIFI:' or similar QRCode type.
 class VisionBarcodeWiFi {
   VisionBarcodeWiFi._(Map<dynamic, dynamic> data)
       : ssid = data['ssid'],
@@ -261,13 +347,14 @@ class VisionBarcodeWiFi {
 
   final String ssid;
   final String password;
+
+  /// Gets the encryption type of the WIFI
+  ///
+  /// See all [VisionBarcodeWiFiEncryptionType]
   final VisionBarcodeWiFiEncryptionType encryptionType;
 }
 
-// ios
-//   https://firebase.google.com/docs/reference/ios/firebasemlvision/api/reference/Enums/FIRVisionBarcodeWiFiEncryptionType
-// android
-//   https://firebase.google.com/docs/reference/android/com/google/firebase/ml/vision/barcode/FirebaseVisionBarcode.WiFi.EncryptionType
+/// Wifi encryption type constants.
 enum VisionBarcodeWiFiEncryptionType {
   /// Barcode unknown Wi-Fi encryption type.
   Unknown,
@@ -282,10 +369,7 @@ enum VisionBarcodeWiFiEncryptionType {
   WEP,
 }
 
-// ios
-//   https://firebase.google.com/docs/reference/ios/firebasemlvision/api/reference/Classes/FIRVisionBarcodeGeoPoint
-// android
-//   https://firebase.google.com/docs/reference/android/com/google/firebase/ml/vision/barcode/FirebaseVisionBarcode.GeoPoint
+/// GPS coordinates from a 'GEO:' or similar QRCode type.
 class VisionBarcodeGeoPoint {
   VisionBarcodeGeoPoint._(Map<dynamic, dynamic> data)
       : latitude = data['latitude'],
@@ -294,10 +378,7 @@ class VisionBarcodeGeoPoint {
   final double longitude;
 }
 
-// ios
-//   https://firebase.google.com/docs/reference/ios/firebasemlvision/api/reference/Classes/FIRVisionBarcodeContactInfo
-// android
-//   https://firebase.google.com/docs/reference/android/com/google/firebase/ml/vision/barcode/FirebaseVisionBarcode.ContactInfo
+/// A person's or organization's business card.
 class VisionBarcodeContactInfo {
   VisionBarcodeContactInfo._(Map<dynamic, dynamic> data)
       : addresses = data['addresses'] == null
@@ -326,32 +407,51 @@ class VisionBarcodeContactInfo {
             : data['urls'].map<String>((dynamic item) => item).toList(),
         jobTitle = data['job_title'],
         organization = data['organization'];
+
+  /// Gets contact person's addresses.
+  ///
+  /// Returns an empty list if nothing found.
   final List<VisionBarcodeAddress> addresses;
+
+  /// Gets contact person's emails.
+  ///
+  /// Returns an empty list if nothing found.
   final List<VisionBarcodeEmail> emails;
+
+  /// Gets contact person's name.
   final VisionBarcodePersonName name;
+
+  /// Gets contact person's phones.
+  ///
+  /// Returns an empty list if nothing found.
   final List<VisionBarcodePhone> phones;
   final List<String> urls;
+
+  /// Gets contact person's title.
   final String jobTitle;
+
+  /// Gets contact person's organization.
   final String organization;
 }
 
-// ios
-//   https://firebase.google.com/docs/reference/ios/firebasemlvision/api/reference/Classes/FIRVisionBarcodeAddress
-// android
-//   https://firebase.google.com/docs/reference/android/com/google/firebase/ml/vision/barcode/FirebaseVisionBarcode.Address
+/// An address.
 class VisionBarcodeAddress {
   VisionBarcodeAddress._(Map<dynamic, dynamic> data)
       : addressLines =
             data['address_lines'].map<String>((dynamic item) => item).toList(),
         type = VisionBarcodeAddressType.values.elementAt(data['type']);
+
+  /// Gets formatted address, multiple lines when appropriate.
+  /// This field always contains at least one line.
   final List<String> addressLines;
+
+  /// Gets type of the address.
+  ///
+  /// See also [VisionBarcodeAddressType]
   final VisionBarcodeAddressType type;
 }
 
-// ios
-//   https://firebase.google.com/docs/reference/ios/firebasemlvision/api/reference/Enums/FIRVisionBarcodeAddressType
-// android
-//   https://firebase.google.com/docs/reference/android/com/google/firebase/ml/vision/barcode/FirebaseVisionBarcode.Address.AddressType
+/// Address type constants.
 enum VisionBarcodeAddressType {
   /// Barcode unknown address type.
   Unknown,
@@ -363,10 +463,7 @@ enum VisionBarcodeAddressType {
   Home,
 }
 
-// ios
-//   https://firebase.google.com/docs/reference/ios/firebasemlvision/api/reference/Classes/FIRVisionBarcodePersonName
-// android
-//   https://firebase.google.com/docs/reference/android/com/google/firebase/ml/vision/barcode/FirebaseVisionBarcode.PersonName
+/// A person's name, both formatted version and individual name components.
 class VisionBarcodePersonName {
   VisionBarcodePersonName._(Map<dynamic, dynamic> data)
       : formattedName = data['formatted_name'],
@@ -376,19 +473,30 @@ class VisionBarcodePersonName {
         prefix = data['prefix'],
         pronounciation = data['pronounciation'],
         suffix = data['suffix'];
+
+  /// Gets the properly formatted name.
   final String formattedName;
+
+  /// Gets first name
   final String first;
+
+  /// Gets last name
   final String last;
+
+  /// Gets middle name
   final String middle;
+
+  /// Gets prefix of the name
   final String prefix;
+
+  /// Designates a text string to be set as the kana name in the phonebook. Used for Japanese contacts.
   final String pronounciation;
+
+  /// Gets suffix of the person's name
   final String suffix;
 }
 
-// ios
-//   https://firebase.google.com/docs/reference/ios/firebasemlvision/api/reference/Classes/FIRVisionBarcodeCalendarEvent
-// android
-//   https://firebase.google.com/docs/reference/android/com/google/firebase/ml/vision/barcode/FirebaseVisionBarcode.CalendarEvent
+/// DateTime data type used in calendar events
 class VisionBarcodeCalendarEvent {
   VisionBarcodeCalendarEvent._(Map<dynamic, dynamic> data)
       : eventDescription = data['event_description'],
@@ -398,19 +506,30 @@ class VisionBarcodeCalendarEvent {
         summary = data['summary'],
         start = data['start'],
         end = data['end'];
+
+  /// Gets the description of the calendar event.
   final String eventDescription;
+
+  /// Gets the location of the calendar event.
   final String location;
+
+  /// Gets the organizer of the calendar event.
   final String organizer;
+
+  /// Gets the status of the calendar event.
   final String status;
+
+  /// Gets the summary of the calendar event.
   final String summary;
+
+  /// Gets the start date time of the calendar event.
   final DateTime start;
+
+  /// Gets the end date time of the calendar event.
   final DateTime end;
 }
 
-// ios
-//   https://firebase.google.com/docs/reference/ios/firebasemlvision/api/reference/Classes/FIRVisionBarcodeDriverLicense
-// android
-//   https://firebase.google.com/docs/reference/android/com/google/firebase/ml/vision/barcode/FirebaseVisionBarcode.DriverLicense
+/// A driver license or ID card.
 class VisionBarcodeDriverLicense {
   VisionBarcodeDriverLicense._(Map<dynamic, dynamic> data)
       : firstName = data['first_name'],
@@ -419,6 +538,7 @@ class VisionBarcodeDriverLicense {
         gender = data['gender'],
         addressCity = data['address_city'],
         addressState = data['address_state'],
+        addressStreet = data['address_street'],
         addressZip = data['address_zip'],
         birthDate = data['birth_date'],
         documentType = data['document_type'],
@@ -426,17 +546,48 @@ class VisionBarcodeDriverLicense {
         expiryDate = data['expiry_date'],
         issuingDate = data['issuing_date'],
         issuingCountry = data['issuing_country'];
+
+  /// Gets holder's first name.
   final String firstName;
+
+  /// Gets holder's middle name.
   final String middleName;
+
+  /// Gets holder's last name.
   final String lastName;
+
+  /// Gets holder's gender. 1 - male, 2 - female.
   final String gender;
+
+  /// Gets city of holder's address.
   final String addressCity;
+
+  /// Gets state of holder's address.
   final String addressState;
+
+  /// Gets holder's street address.
+  final String addressStreet;
+
+  /// Gets zip code of holder's address.
   final String addressZip;
+
+  /// Gets birth date of the holder.
   final String birthDate;
+
+  /// Gets "DL" for driver licenses, "ID" for ID cards.
   final String documentType;
+
+  /// Gets driver license ID number.
   final String licenseNumber;
+
+  /// Gets expiry date of the license.
   final String expiryDate;
+
+  /// Gets issue date of the license.
+  ///
+  /// The date format depends on the issuing country. MMDDYYYY for the US, YYYYMMDD for Canada.
   final String issuingDate;
+
+  /// Gets country in which DL/ID was issued. US = "USA", Canada = "CAN".
   final String issuingCountry;
 }

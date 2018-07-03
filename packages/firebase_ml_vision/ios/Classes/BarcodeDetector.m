@@ -185,6 +185,7 @@ NSDictionary *driverLicenseToDictionary(FIRVisionBarcodeDriverLicense *license) 
     @"last_name" : license.lastName,
     @"gender" : license.gender,
     @"address_city" : license.addressCity,
+    @"address_street" : license.addressStreet,
     @"address_state" : license.addressState,
     @"address_zip" : license.addressZip,
     @"birth_date" : license.birthDate,
