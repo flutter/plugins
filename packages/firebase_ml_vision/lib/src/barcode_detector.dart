@@ -24,7 +24,8 @@ class BarcodeDetector extends FirebaseVisionDetector {
   ///
   /// The OCR is performed asynchronously.
   @override
-  Future<void> detectInImage(FirebaseVisionImage visionImage) async {
+  Future<List<VisionBarcode>> detectInImage(
+      FirebaseVisionImage visionImage) async {
     final List<dynamic> reply = await FirebaseVision.channel.invokeMethod(
       'BarcodeDetector#detectInImage',
       visionImage.imageFile.path,
@@ -42,12 +43,14 @@ class BarcodeDetector extends FirebaseVisionDetector {
 /// Represents a single recognized barcode and its value.
 class VisionBarcode {
   VisionBarcode._(Map<dynamic, dynamic> _data)
-      : boundingBox = Rectangle<int>(
-          _data['left'],
-          _data['top'],
-          _data['width'],
-          _data['height'],
-        ),
+      : boundingBox = _data['left'] != null
+            ? Rectangle<int>(
+                _data['left'],
+                _data['top'],
+                _data['width'],
+                _data['height'],
+              )
+            : null,
         rawValue = _data['raw_value'],
         displayValue = _data['display_value'],
         format = VisionBarcodeFormat._(_data['format']),
@@ -405,7 +408,9 @@ class VisionBarcodeContactInfo {
                 .toList(),
         urls = data['urls'] == null
             ? null
-            : data['urls'].map<String>((dynamic item) => item).toList(),
+            : data['urls']
+                .map<String>((dynamic item) => item as String)
+                .toList(),
         jobTitle = data['job_title'],
         organization = data['organization'];
 
@@ -438,8 +443,9 @@ class VisionBarcodeContactInfo {
 /// An address.
 class VisionBarcodeAddress {
   VisionBarcodeAddress._(Map<dynamic, dynamic> data)
-      : addressLines =
-            data['address_lines'].map<String>((dynamic item) => item).toList(),
+      : addressLines = data['address_lines']
+            .map<String>((dynamic item) => item as String)
+            .toList(),
         type = VisionBarcodeAddressType.values.elementAt(data['type']);
 
   /// Gets formatted address, multiple lines when appropriate.
