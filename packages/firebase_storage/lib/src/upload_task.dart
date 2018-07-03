@@ -17,9 +17,9 @@ abstract class StorageUploadTask {
   Future<UploadTaskSnapshot> get future => _completer.future;
 }
 
-class StorageFileUploadTask extends StorageUploadTask {
+class _StorageFileUploadTask extends StorageUploadTask {
   final File _file;
-  StorageFileUploadTask._(this._file, FirebaseStorage firebaseStorage,
+  _StorageFileUploadTask._(this._file, FirebaseStorage firebaseStorage,
       String path, StorageMetadata metadata)
       : super._(firebaseStorage, path, metadata);
 
@@ -41,9 +41,9 @@ class StorageFileUploadTask extends StorageUploadTask {
   }
 }
 
-class StorageDataUploadTask extends StorageUploadTask {
+class _StorageDataUploadTask extends StorageUploadTask {
   final Uint8List _bytes;
-  StorageDataUploadTask._(this._bytes, FirebaseStorage firebaseStorage,
+  _StorageDataUploadTask._(this._bytes, FirebaseStorage firebaseStorage,
       String path, StorageMetadata metadata)
       : super._(firebaseStorage, path, metadata);
 
