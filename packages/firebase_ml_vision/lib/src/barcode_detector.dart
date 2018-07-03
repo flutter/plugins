@@ -30,21 +30,21 @@ class BarcodeDetector extends FirebaseVisionDetector {
       visionImage.imageFile.path,
     );
 
-    final List<TextBlock> blocks = <TextBlock>[];
-    reply.forEach((dynamic block) {
-      blocks.add(new TextBlock._(block));
+    final List<VisionBarcode> barcodes = <VisionBarcode>[];
+    reply.forEach((dynamic barcode) {
+      barcodes.add(new VisionBarcode._(barcode));
     });
 
-    return blocks;
+    return barcodes;
   }
 }
 
 class VisionBarcode {
-  final Rectangle<int> rect;
+  final Rectangle<int> boundingBox;
   final String rawValue;
   final String displayValue;
   final VisionBarcodeFormat format;
-  final List<Point<num>> cornerPoints;
+  final List<Point<int>> cornerPoints;
   final VisionBarcodeValueType valueType;
   final VisionBarcodeEmail email;
   final VisionBarcodePhone phone;
@@ -57,20 +57,23 @@ class VisionBarcode {
   final VisionBarcodeDriverLicense driverLicense;
 
   VisionBarcode._(Map<dynamic, dynamic> _data)
-      : rect = Rectangle<int>(
+      : boundingBox = Rectangle<int>(
           _data['left'],
           _data['top'],
           _data['width'],
           _data['height'],
         ),
         rawValue = _data['raw_value'] != null ? _data['raw_value'] : null,
-        displayValue = _data['display_value'] ? _data['display_value'] : null,
+        displayValue =
+            _data['display_value'] != null ? _data['display_value'] : null,
         format = VisionBarcodeFormat._(_data['format']),
         cornerPoints = _data['points'] == null
             ? null
             : _data['points']
-                .map<Point<num>>(
-                    (dynamic item) => Point<num>(item['x'], item['y']))
+                .map<Point<int>>((dynamic item) => Point<int>(
+                      item[0],
+                      item[1],
+                    ))
                 .toList(),
         valueType =
             VisionBarcodeValueType.values.elementAt(_data['value_type']),

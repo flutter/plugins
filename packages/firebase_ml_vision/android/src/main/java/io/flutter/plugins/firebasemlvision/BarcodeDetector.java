@@ -175,6 +175,7 @@ class BarcodeDetector implements Detector {
 
                   barcodes.add(barcodeMap);
                 }
+                result.success(barcodes);
               }
             })
         .addOnFailureListener(
