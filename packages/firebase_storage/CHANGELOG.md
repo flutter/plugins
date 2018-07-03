@@ -1,3 +1,8 @@
+## 1.0.0
+
+* **Breaking change**. Make StorageUploadTask implementation classes private.
+* Bump to released version
+
 ## 0.3.7
 
 * Updated Gradle tooling to match Android Studio 3.1.2.
