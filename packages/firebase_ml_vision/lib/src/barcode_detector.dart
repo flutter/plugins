@@ -274,6 +274,7 @@ class VisionBarcodeEmail {
   final VisionBarcodeEmailType type;
 }
 
+/// The type of email for [VisionBarcodeEmail]
 enum VisionBarcodeEmailType {
   /// Unknown email type.
   Unknown,

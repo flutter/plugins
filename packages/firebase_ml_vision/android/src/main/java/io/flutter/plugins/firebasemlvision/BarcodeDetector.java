@@ -159,7 +159,8 @@ class BarcodeDetector implements Detector {
                       typeValue.put("last_name", barcode.getDriverLicense().getLastName());
                       typeValue.put("gender", barcode.getDriverLicense().getGender());
                       typeValue.put("address_city", barcode.getDriverLicense().getAddressCity());
-                      typeValue.put("address_street", barcode.getDriverLicense().getAddressStreet());
+                      typeValue.put(
+                          "address_street", barcode.getDriverLicense().getAddressStreet());
                       typeValue.put("address_state", barcode.getDriverLicense().getAddressState());
                       typeValue.put("address_zip", barcode.getDriverLicense().getAddressZip());
                       typeValue.put("birth_date", barcode.getDriverLicense().getBirthDate());
