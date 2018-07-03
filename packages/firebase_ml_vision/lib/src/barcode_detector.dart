@@ -40,22 +40,6 @@ class BarcodeDetector extends FirebaseVisionDetector {
 }
 
 class VisionBarcode {
-  final Rectangle<int> boundingBox;
-  final String rawValue;
-  final String displayValue;
-  final VisionBarcodeFormat format;
-  final List<Point<int>> cornerPoints;
-  final VisionBarcodeValueType valueType;
-  final VisionBarcodeEmail email;
-  final VisionBarcodePhone phone;
-  final VisionBarcodeSMS sms;
-  final VisionBarcodeURLBookmark url;
-  final VisionBarcodeWiFi wifi;
-  final VisionBarcodeGeoPoint geoPoint;
-  final VisionBarcodeContactInfo contactInfo;
-  final VisionBarcodeCalendarEvent calendarEvent;
-  final VisionBarcodeDriverLicense driverLicense;
-
   VisionBarcode._(Map<dynamic, dynamic> _data)
       : boundingBox = Rectangle<int>(
           _data['left'],
@@ -63,9 +47,8 @@ class VisionBarcode {
           _data['width'],
           _data['height'],
         ),
-        rawValue = _data['raw_value'] != null ? _data['raw_value'] : null,
-        displayValue =
-            _data['display_value'] != null ? _data['display_value'] : null,
+        rawValue = _data['raw_value'],
+        displayValue = _data['display_value'],
         format = VisionBarcodeFormat._(_data['format']),
         cornerPoints = _data['points'] == null
             ? null
@@ -101,6 +84,22 @@ class VisionBarcode {
         driverLicense = _data['driver_license'] == null
             ? null
             : VisionBarcodeDriverLicense._(_data['driver_license']);
+
+  final Rectangle<int> boundingBox;
+  final String rawValue;
+  final String displayValue;
+  final VisionBarcodeFormat format;
+  final List<Point<int>> cornerPoints;
+  final VisionBarcodeValueType valueType;
+  final VisionBarcodeEmail email;
+  final VisionBarcodePhone phone;
+  final VisionBarcodeSMS sms;
+  final VisionBarcodeURLBookmark url;
+  final VisionBarcodeWiFi wifi;
+  final VisionBarcodeGeoPoint geoPoint;
+  final VisionBarcodeContactInfo contactInfo;
+  final VisionBarcodeCalendarEvent calendarEvent;
+  final VisionBarcodeDriverLicense driverLicense;
 }
 
 // ios:
@@ -179,9 +178,9 @@ enum VisionBarcodeValueType {
 class VisionBarcodeEmail {
   VisionBarcodeEmail._(Map<dynamic, dynamic> data)
       : type = VisionBarcodeEmailType.values.elementAt(data['type']),
-        address = data['address'] != null ? data['address'] : null,
-        body = data['body'] != null ? data['body'] : null,
-        subject = data['subject'] != null ? data['subject'] : null;
+        address = data['address'],
+        body = data['body'],
+        subject = data['subject'];
 
   final String address;
   final String body;
@@ -204,7 +203,7 @@ class VisionBarcodePhone {
   final String number;
   final VisionBarcodePhoneType type;
   VisionBarcodePhone._(Map<dynamic, dynamic> data)
-      : number = data['number'] != null ? data['number'] : null,
+      : number = data['number'],
         type = VisionBarcodePhoneType.values.elementAt(data['type']);
 }
 
@@ -231,9 +230,8 @@ enum VisionBarcodePhoneType {
 //   https://firebase.google.com/docs/reference/android/com/google/firebase/ml/vision/barcode/FirebaseVisionBarcode.Sms
 class VisionBarcodeSMS {
   VisionBarcodeSMS._(Map<dynamic, dynamic> data)
-      : message = data['message'] != null ? data['message'] : null,
-        phoneNumber =
-            data['phone_number'] != null ? data['phone_number'] : null;
+      : message = data['message'],
+        phoneNumber = data['phone_number'];
   final String message;
   final String phoneNumber;
 }
@@ -244,8 +242,8 @@ class VisionBarcodeSMS {
 //   https://firebase.google.com/docs/reference/android/com/google/firebase/ml/vision/barcode/FirebaseVisionBarcode.UrlBookmark
 class VisionBarcodeURLBookmark {
   VisionBarcodeURLBookmark._(Map<dynamic, dynamic> data)
-      : title = data['title'] != null ? data['title'] : null,
-        url = data['url'] != null ? data['url'] : null;
+      : title = data['title'],
+        url = data['url'];
   final String title;
   final String url;
 }
@@ -326,9 +324,8 @@ class VisionBarcodeContactInfo {
         urls = data['urls'] == null
             ? null
             : data['urls'].map<String>((dynamic item) => item).toList(),
-        jobTitle = data['job_title'] != null ? data['job_title'] : null,
-        organization =
-            data['organization'] != null ? data['organization'] : null;
+        jobTitle = data['job_title'],
+        organization = data['organization'];
   final List<VisionBarcodeAddress> addresses;
   final List<VisionBarcodeEmail> emails;
   final VisionBarcodePersonName name;
@@ -372,15 +369,13 @@ enum VisionBarcodeAddressType {
 //   https://firebase.google.com/docs/reference/android/com/google/firebase/ml/vision/barcode/FirebaseVisionBarcode.PersonName
 class VisionBarcodePersonName {
   VisionBarcodePersonName._(Map<dynamic, dynamic> data)
-      : formattedName =
-            data['formatted_name'] != null ? data['formatted_name'] : null,
-        first = data['first'] != null ? data['first'] : null,
-        last = data['last'] != null ? data['last'] : null,
-        middle = data['middle'] != null ? data['middle'] : null,
-        prefix = data['prefix'] != null ? data['prefix'] : null,
-        pronounciation =
-            data['pronounciation'] != null ? data['pronounciation'] : null,
-        suffix = data['suffix'] != null ? data['suffix'] : null;
+      : formattedName = data['formatted_name'],
+        first = data['first'],
+        last = data['last'],
+        middle = data['middle'],
+        prefix = data['prefix'],
+        pronounciation = data['pronounciation'],
+        suffix = data['suffix'];
   final String formattedName;
   final String first;
   final String last;
@@ -396,15 +391,13 @@ class VisionBarcodePersonName {
 //   https://firebase.google.com/docs/reference/android/com/google/firebase/ml/vision/barcode/FirebaseVisionBarcode.CalendarEvent
 class VisionBarcodeCalendarEvent {
   VisionBarcodeCalendarEvent._(Map<dynamic, dynamic> data)
-      : eventDescription = data['event_description'] != null
-            ? data['event_description']
-            : null,
-        location = data['location'] != null ? data['location'] : null,
-        organizer = data['organizer'] != null ? data['organizer'] : null,
-        status = data['status'] != null ? data['status'] : null,
-        summary = data['summary'] != null ? data['summary'] : null,
-        start = data['start'] != null ? data['start'] : null,
-        end = data['end'] != null ? data['end'] : null;
+      : eventDescription = data['event_description'],
+        location = data['location'],
+        organizer = data['organizer'],
+        status = data['status'],
+        summary = data['summary'],
+        start = data['start'],
+        end = data['end'];
   final String eventDescription;
   final String location;
   final String organizer;
@@ -420,25 +413,19 @@ class VisionBarcodeCalendarEvent {
 //   https://firebase.google.com/docs/reference/android/com/google/firebase/ml/vision/barcode/FirebaseVisionBarcode.DriverLicense
 class VisionBarcodeDriverLicense {
   VisionBarcodeDriverLicense._(Map<dynamic, dynamic> data)
-      : firstName = data['first_name'] != null ? data['first_name'] : null,
-        middleName = data['middle_name'] != null ? data['middle_name'] : null,
-        lastName = data['last_name'] != null ? data['last_name'] : null,
-        gender = data['gender'] != null ? data['gender'] : null,
-        addressCity =
-            data['address_city'] != null ? data['address_city'] : null,
-        addressState =
-            data['address_state'] != null ? data['address_state'] : null,
-        addressZip = data['address_zip'] != null ? data['address_zip'] : null,
-        birthDate = data['birth_date'] != null ? data['birth_date'] : null,
-        documentType =
-            data['document_type'] != null ? data['document_type'] : null,
-        licenseNumber =
-            data['license_number'] != null ? data['license_number'] : null,
-        expiryDate = data['expiry_date'] != null ? data['expiry_date'] : null,
-        issuingDate =
-            data['issuing_date'] != null ? data['issuing_date'] : null,
-        issuingCountry =
-            data['issuing_country'] != null ? data['issuing_country'] : null;
+      : firstName = data['first_name'],
+        middleName = data['middle_name'],
+        lastName = data['last_name'],
+        gender = data['gender'],
+        addressCity = data['address_city'],
+        addressState = data['address_state'],
+        addressZip = data['address_zip'],
+        birthDate = data['birth_date'],
+        documentType = data['document_type'],
+        licenseNumber = data['license_number'],
+        expiryDate = data['expiry_date'],
+        issuingDate = data['issuing_date'],
+        issuingCountry = data['issuing_country'];
   final String firstName;
   final String middleName;
   final String lastName;

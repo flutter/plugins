@@ -19,7 +19,7 @@ static FIRVisionBarcodeDetector *barcodeDetector;
                           return;
                         }
 
-                        // Scaned barcode
+                        // Scanned barcode
                         for (FIRVisionBarcode *barcode in barcodes) {
                           [ret addObject:visionBarcodeToDictionary(barcode)];
                         }
