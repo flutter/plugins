@@ -228,6 +228,12 @@ abstract class MobileAd {
     _allAds[id] = null;
     return _invokeBooleanMethod("disposeAd", <String, dynamic>{'id': id});
   }
+
+  Future<bool> isLoaded() {
+    return _invokeBooleanMethod("isAdLoaded", <String, dynamic> {
+      'id': id,
+    });
+  }
 }
 
 /// A banner ad for the [FirebaseAdMobPlugin].
