@@ -190,7 +190,7 @@ abstract class MobileAd {
   final String adUnitId;
 
   /// Called when the status of the ad changes.
-  final MobileAdListener listener;
+  MobileAdListener listener;
 
   /// An internal id that identifies this mobile ad to the native AdMob plugin.
   ///
