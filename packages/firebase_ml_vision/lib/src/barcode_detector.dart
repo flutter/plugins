@@ -409,7 +409,7 @@ class VisionBarcodeContactInfo {
         urls = data['urls'] == null
             ? null
             : data['urls'].map<String>((dynamic item) {
-                String s = item;
+                final String s = item;
                 return s;
               }).toList(),
         jobTitle = data['job_title'],
@@ -445,7 +445,7 @@ class VisionBarcodeContactInfo {
 class VisionBarcodeAddress {
   VisionBarcodeAddress._(Map<dynamic, dynamic> data)
       : addressLines = data['address_lines'].map<String>((dynamic item) {
-          String s = item;
+          final String s = item;
           return s;
         }).toList(),
         type = VisionBarcodeAddressType.values.elementAt(data['type']);

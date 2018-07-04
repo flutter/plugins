@@ -383,13 +383,13 @@ void main() {
 
       test('detectInImage contact_info', () async {
         final Map<dynamic, dynamic> contact = <dynamic, dynamic>{
-          'addresses': [
+          'addresses': <dynamic>[
             <dynamic, dynamic>{
-              'address_lines': ['al'],
+              'address_lines': <String>['al'],
               'type': 0,
             }
           ],
-          'emails': [
+          'emails': <dynamic>[
             <dynamic, dynamic>{
               'type': 0,
               'address': 'a',
@@ -406,13 +406,13 @@ void main() {
             'pronounciation': 'pn',
             'suffix': 's',
           },
-          'phones': [
+          'phones': <dynamic>[
             <dynamic, dynamic>{
               'number': '012',
               'type': 0,
             }
           ],
-          'urls': ['url'],
+          'urls': <String>['url'],
           'job_title': 'j',
           'organization': 'o'
         };
