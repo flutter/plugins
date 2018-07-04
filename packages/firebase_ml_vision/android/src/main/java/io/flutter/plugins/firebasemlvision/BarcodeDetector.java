@@ -149,8 +149,8 @@ class BarcodeDetector implements Detector {
                       typeValue.put("organizer", barcode.getCalendarEvent().getOrganizer());
                       typeValue.put("status", barcode.getCalendarEvent().getStatus());
                       typeValue.put("summary", barcode.getCalendarEvent().getSummary());
-                      typeValue.put("start", barcode.getCalendarEvent().getStart());
-                      typeValue.put("end", barcode.getCalendarEvent().getEnd());
+                      typeValue.put("start", barcode.getCalendarEvent().getStart().getRawValue());
+                      typeValue.put("end", barcode.getCalendarEvent().getEnd().getRawValue());
                       typeValue.put("calendar_event", typeValue);
                       break;
                     case FirebaseVisionBarcode.TYPE_DRIVER_LICENSE:

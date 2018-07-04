@@ -408,9 +408,10 @@ class VisionBarcodeContactInfo {
                 .toList(),
         urls = data['urls'] == null
             ? null
-            : data['urls']
-                .map<String>((dynamic item) => item as String)
-                .toList(),
+            : data['urls'].map<String>((dynamic item) {
+                String s = item;
+                return s;
+              }).toList(),
         jobTitle = data['job_title'],
         organization = data['organization'];
 
@@ -443,9 +444,10 @@ class VisionBarcodeContactInfo {
 /// An address.
 class VisionBarcodeAddress {
   VisionBarcodeAddress._(Map<dynamic, dynamic> data)
-      : addressLines = data['address_lines']
-            .map<String>((dynamic item) => item as String)
-            .toList(),
+      : addressLines = data['address_lines'].map<String>((dynamic item) {
+          String s = item;
+          return s;
+        }).toList(),
         type = VisionBarcodeAddressType.values.elementAt(data['type']);
 
   /// Gets formatted address, multiple lines when appropriate.
@@ -511,8 +513,8 @@ class VisionBarcodeCalendarEvent {
         organizer = data['organizer'],
         status = data['status'],
         summary = data['summary'],
-        start = data['start'],
-        end = data['end'];
+        start = DateTime.parse(data['start']),
+        end = DateTime.parse(data['end']);
 
   /// Gets the description of the calendar event.
   final String eventDescription;

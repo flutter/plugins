@@ -480,6 +480,141 @@ void main() {
         expect(barcode.contactInfo.organization, 'o');
       });
 
+      test('detectInImage calendar_event', () async {
+        final Map<dynamic, dynamic> calendar = <dynamic, dynamic>{
+          'event_description': 'e',
+          'location': 'l',
+          'organizer': 'o',
+          'status': 'st',
+          'summary': 'sm',
+          'start': '2017-07-04 12:34:56.123',
+          'end': '2018-08-05 01:23:45.456',
+        };
+        final Map<dynamic, dynamic> _barcode = <dynamic, dynamic>{
+          'raw_value': 'calendar:raw',
+          'display_value': 'calendar:display',
+          'value_type': 0,
+          'format': 0,
+          'left': 1,
+          'top': 2,
+          'width': 3,
+          'height': 4,
+          'points': <dynamic>[
+            <dynamic>[5, 6],
+            <dynamic>[7, 8],
+          ],
+          'calendar_event': calendar
+        };
+
+        returnValue = <dynamic>[_barcode];
+
+        final BarcodeDetector detector =
+            FirebaseVision.instance.barcodeDetector();
+        final FirebaseVisionImage image =
+            new FirebaseVisionImage.fromFilePath('empty');
+
+        final List<VisionBarcode> barcodes =
+            await detector.detectInImage(image);
+
+        expect(log, <Matcher>[
+          isMethodCall(
+            'BarcodeDetector#detectInImage',
+            arguments: 'empty',
+          ),
+        ]);
+
+        final VisionBarcode barcode = barcodes[0];
+        expect(barcode.boundingBox, const Rectangle<num>(1, 2, 3, 4));
+        expect(barcode.rawValue, 'calendar:raw');
+        expect(barcode.displayValue, 'calendar:display');
+        expect(barcode.cornerPoints, <Point<num>>[
+          const Point<num>(5, 6),
+          const Point<num>(7, 8),
+        ]);
+        expect(barcode.calendarEvent.eventDescription, 'e');
+        expect(barcode.calendarEvent.location, 'l');
+        expect(barcode.calendarEvent.organizer, 'o');
+        expect(barcode.calendarEvent.status, 'st');
+        expect(barcode.calendarEvent.summary, 'sm');
+        expect(
+            barcode.calendarEvent.start, DateTime(2017, 7, 4, 12, 34, 56, 123));
+        expect(barcode.calendarEvent.end, DateTime(2018, 8, 5, 1, 23, 45, 456));
+      });
+
+      test('detectInImage driver_license', () async {
+        final Map<dynamic, dynamic> driver = <dynamic, dynamic>{
+          'first_name': 'fn',
+          'middle_name': 'mn',
+          'last_name': 'ln',
+          'gender': 'g',
+          'address_city': 'ac',
+          'address_state': 'a',
+          'address_street': 'st',
+          'address_zip': 'az',
+          'birth_date': 'bd',
+          'document_type': 'dt',
+          'license_number': 'l',
+          'expiry_date': 'ed',
+          'issuing_date': 'id',
+          'issuing_country': 'ic'
+        };
+        final Map<dynamic, dynamic> _barcode = <dynamic, dynamic>{
+          'raw_value': 'driver:raw',
+          'display_value': 'driver:display',
+          'value_type': 0,
+          'format': 0,
+          'left': 1,
+          'top': 2,
+          'width': 3,
+          'height': 4,
+          'points': <dynamic>[
+            <dynamic>[5, 6],
+            <dynamic>[7, 8],
+          ],
+          'driver_license': driver
+        };
+
+        returnValue = <dynamic>[_barcode];
+
+        final BarcodeDetector detector =
+            FirebaseVision.instance.barcodeDetector();
+        final FirebaseVisionImage image =
+            new FirebaseVisionImage.fromFilePath('empty');
+
+        final List<VisionBarcode> barcodes =
+            await detector.detectInImage(image);
+
+        expect(log, <Matcher>[
+          isMethodCall(
+            'BarcodeDetector#detectInImage',
+            arguments: 'empty',
+          ),
+        ]);
+
+        final VisionBarcode barcode = barcodes[0];
+        expect(barcode.boundingBox, const Rectangle<num>(1, 2, 3, 4));
+        expect(barcode.rawValue, 'driver:raw');
+        expect(barcode.displayValue, 'driver:display');
+        expect(barcode.cornerPoints, <Point<num>>[
+          const Point<num>(5, 6),
+          const Point<num>(7, 8),
+        ]);
+        expect(barcode.driverLicense.firstName, 'fn');
+        expect(barcode.driverLicense.middleName, 'mn');
+        expect(barcode.driverLicense.lastName, 'ln');
+        expect(barcode.driverLicense.gender, 'g');
+        expect(barcode.driverLicense.addressCity, 'ac');
+        expect(barcode.driverLicense.addressState, 'a');
+        expect(barcode.driverLicense.addressStreet, 'st');
+        expect(barcode.driverLicense.addressZip, 'az');
+        expect(barcode.driverLicense.birthDate, 'bd');
+        expect(barcode.driverLicense.documentType, 'dt');
+        expect(barcode.driverLicense.licenseNumber, 'l');
+        expect(barcode.driverLicense.expiryDate, 'ed');
+        expect(barcode.driverLicense.issuingDate, 'id');
+        expect(barcode.driverLicense.issuingCountry, 'ic');
+      });
+
       test('detectInImage no blocks', () async {
         returnValue = <dynamic>[];
 

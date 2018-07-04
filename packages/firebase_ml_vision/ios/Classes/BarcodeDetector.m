@@ -167,14 +167,18 @@ NSDictionary *barcodeContactInfoToDictionary(FIRVisionBarcodeContactInfo *contac
 }
 
 NSDictionary *calendarEventToDictionary(FIRVisionBarcodeCalendarEvent *calendar) {
+  NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+  dateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
+  dateFormatter.dateFormat = @"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'";
+  dateFormatter.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
   return @{
     @"event_description" : calendar.eventDescription,
     @"location" : calendar.location,
     @"organizer" : calendar.organizer,
     @"status" : calendar.status,
     @"summary" : calendar.summary,
-    @"start" : calendar.start,
-    @"end" : calendar.end,
+    @"start" : [dateFormatter stringFromDate:calendar.start],
+    @"end" : [dateFormatter stringFromDate:calendar.end],
   };
 }
 
