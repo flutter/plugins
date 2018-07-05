@@ -110,9 +110,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final children = <Widget>[];
-    _files.forEach((ref, task) {
-      final tile = UploadTaskListTile(
+    final List<Widget> children = <Widget>[];
+    _files.forEach((StorageReference ref, StorageUploadTask task) {
+      final Widget tile = UploadTaskListTile(
         task: task,
         onDismissed: () => setState(() => _files.remove(ref)),
         onDownload: () => _downloadFile(ref, task.lastSnapshot.downloadUrl),
@@ -125,7 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: const Text('Flutter Storage Example'),
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.clear_all),
+            icon: const Icon(Icons.clear_all),
             onPressed:
                 _files.isNotEmpty ? () => setState(() => _files.clear()) : null,
           )
@@ -186,10 +186,10 @@ class UploadTaskListTile extends StatelessWidget {
           final StorageTaskSnapshot snapshot = event.snapshot;
           subtitle = Text('$status: ${_bytesTransferred(snapshot)} bytes sent');
         } else {
-          subtitle = Text('Starting...');
+          subtitle = const Text('Starting...');
         }
         return Dismissible(
-          key: Key(task.hashCode.toString()),
+          key: new Key(task.hashCode.toString()),
           onDismissed: (_) => onDismissed(),
           child: ListTile(
             title: Text('Upload Task #${task.hashCode}'),
@@ -200,28 +200,28 @@ class UploadTaskListTile extends StatelessWidget {
                 Offstage(
                   offstage: !task.isInProgress,
                   child: IconButton(
-                    icon: Icon(Icons.pause),
+                    icon: const Icon(Icons.pause),
                     onPressed: () => task.pause(),
                   ),
                 ),
                 Offstage(
                   offstage: !task.isPaused,
                   child: IconButton(
-                    icon: Icon(Icons.file_upload),
+                    icon: const Icon(Icons.file_upload),
                     onPressed: () => task.resume(),
                   ),
                 ),
                 Offstage(
                   offstage: task.isComplete,
                   child: IconButton(
-                    icon: Icon(Icons.cancel),
+                    icon: const Icon(Icons.cancel),
                     onPressed: () => task.cancel(),
                   ),
                 ),
                 Offstage(
                   offstage: !(task.isComplete && task.isSuccessful),
                   child: IconButton(
-                    icon: Icon(Icons.file_download),
+                    icon: const Icon(Icons.file_download),
                     onPressed: onDownload,
                   ),
                 ),
