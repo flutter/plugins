@@ -8,6 +8,7 @@ dependencies:
   firebase_storage:
     path: ../
   firebase_core: "^0.2.3"
+  uuid: "^1.0.0"
   http: ^0.11.3
 
 flutter:
