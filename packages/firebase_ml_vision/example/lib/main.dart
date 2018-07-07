@@ -5,10 +5,11 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:firebase_ml_vision_example/detector_painters.dart';
+import 'package:firebase_ml_vision_example/live_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 
 void main() => runApp(new MaterialApp(home: _MyHomePage()));
 
@@ -17,11 +18,28 @@ class _MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => new _MyHomePageState();
 }
 
-class _MyHomePageState extends State<_MyHomePage> {
+class _MyHomePageState extends State<_MyHomePage>
+    with SingleTickerProviderStateMixin {
   File _imageFile;
   Size _imageSize;
   List<dynamic> _scanResults;
   Detector _currentDetector = Detector.text;
+  TabController _tabController;
+  int _selectedPageIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = new TabController(vsync: this, length: 2);
+    _tabController.addListener(_handleTabSelection);
+    _selectedPageIndex = 0;
+  }
+
+  void _handleTabSelection() {
+    setState(() {
+      _selectedPageIndex = _tabController.index;
+    });
+  }
 
   Future<void> _getAndScanImage() async {
     setState(() {
@@ -151,8 +169,10 @@ class _MyHomePageState extends State<_MyHomePage> {
         actions: <Widget>[
           new PopupMenuButton<Detector>(
             onSelected: (Detector result) {
-              _currentDetector = result;
-              if (_imageFile != null) _scanImage(_imageFile);
+              setState(() {
+                _currentDetector = result;
+                if (_imageFile != null) _scanImage(_imageFile);
+              });
             },
             itemBuilder: (BuildContext context) => <PopupMenuEntry<Detector>>[
                   const PopupMenuItem<Detector>(
@@ -174,15 +194,34 @@ class _MyHomePageState extends State<_MyHomePage> {
                 ],
           ),
         ],
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: <Tab>[
+            const Tab(
+              icon: const Icon(Icons.photo),
+            ),
+            const Tab(
+              icon: const Icon(Icons.camera),
+            )
+          ],
+        ),
       ),
-      body: _imageFile == null
-          ? const Center(child: const Text('No image selected.'))
-          : _buildImage(),
-      floatingActionButton: new FloatingActionButton(
-        onPressed: _getAndScanImage,
-        tooltip: 'Pick Image',
-        child: const Icon(Icons.add_a_photo),
+      body: TabBarView(
+        controller: _tabController,
+        children: <Widget>[
+          _imageFile == null
+              ? const Center(child: const Text('No image selected.'))
+              : _buildImage(),
+          LivePreview(_currentDetector),
+        ],
       ),
+      floatingActionButton: _selectedPageIndex == 0
+          ? new FloatingActionButton(
+              onPressed: _getAndScanImage,
+              tooltip: 'Pick Image',
+              child: const Icon(Icons.add_a_photo),
+            )
+          : null,
     );
   }
 }
