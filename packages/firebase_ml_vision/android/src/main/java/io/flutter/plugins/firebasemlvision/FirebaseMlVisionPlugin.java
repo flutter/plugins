@@ -29,8 +29,11 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
   public void onMethodCall(MethodCall call, Result result) {
     switch (call.method) {
       case "BarcodeDetector#detectInImage":
+        FirebaseVisionImage image = filePathToVisionImage((String) call.arguments, result);
+        if (image != null) BarcodeDetector.instance.handleDetection(image, result);
         break;
       case "BarcodeDetector#close":
+        BarcodeDetector.instance.close(result);
         break;
       case "FaceDetector#detectInImage":
         break;
@@ -41,7 +44,7 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
       case "LabelDetector#close":
         break;
       case "TextDetector#detectInImage":
-        FirebaseVisionImage image = filePathToVisionImage((String) call.arguments, result);
+        image = filePathToVisionImage((String) call.arguments, result);
         if (image != null) TextDetector.instance.handleDetection(image, result);
         break;
       case "TextDetector#close":

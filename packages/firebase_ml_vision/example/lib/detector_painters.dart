@@ -11,17 +11,36 @@ class BarcodeDetectorPainter extends CustomPainter {
   BarcodeDetectorPainter(this.absoluteImageSize, this.results);
 
   final Size absoluteImageSize;
-  final List<dynamic> results;
+  final List<BarcodeContainer> results;
 
   @override
   void paint(Canvas canvas, Size size) {
-    // TODO: implement paint
+    final double scaleX = size.width / absoluteImageSize.width;
+    final double scaleY = size.height / absoluteImageSize.height;
+
+    Rect scaleRect(BarcodeContainer container) {
+      return new Rect.fromLTRB(
+        container.boundingBox.left * scaleX,
+        container.boundingBox.top * scaleY,
+        container.boundingBox.right * scaleX,
+        container.boundingBox.bottom * scaleY,
+      );
+    }
+
+    final Paint paint = new Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.0;
+
+    for (BarcodeContainer barcode in results) {
+      paint.color = Colors.red;
+      canvas.drawRect(scaleRect(barcode), paint);
+    }
   }
 
   @override
-  bool shouldRepaint(CustomPainter oldDelegate) {
-    // TODO: implement shouldRepaint
-    return false;
+  bool shouldRepaint(BarcodeDetectorPainter oldDelegate) {
+    return oldDelegate.absoluteImageSize != absoluteImageSize ||
+        oldDelegate.results != results;
   }
 }
 

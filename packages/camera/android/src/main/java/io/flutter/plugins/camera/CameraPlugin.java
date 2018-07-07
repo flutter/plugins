@@ -131,6 +131,7 @@ public class CameraPlugin implements MethodCallHandler {
 
     cameraManager = (CameraManager) registrar.activity().getSystemService(Context.CAMERA_SERVICE);
 
+
     channel.setMethodCallHandler(
         new CameraPlugin(registrar, registrar.view(), registrar.activity()));
   }
@@ -735,5 +736,6 @@ public class CameraPlugin implements MethodCallHandler {
       close();
       textureEntry.release();
     }
+
   }
 }

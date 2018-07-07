@@ -9,13 +9,33 @@ class BarcodeDetector extends FirebaseVisionDetector {
 
   @override
   Future<void> close() async {
-    // TODO: implement close
+    return FirebaseVision.channel.invokeMethod('BarcodeDetector#close');
   }
 
   @override
-  Future<void> detectInImage(FirebaseVisionImage visionImage) async {
-    // TODO: implement detectInImage
+  Future<List<BarcodeContainer>> detectInImage(
+      FirebaseVisionImage visionImage) async {
+    final List<dynamic> reply = await FirebaseVision.channel.invokeMethod(
+        'BarcodeDetector#detectInImage', visionImage.imageFile.path);
+    final List<BarcodeContainer> barcodes = <BarcodeContainer>[];
+    reply.forEach((dynamic barcodeMap) {
+      barcodes.add(new BarcodeContainer._(barcodeMap));
+    });
+    return barcodes;
   }
+}
+
+class BarcodeContainer {
+  final Rectangle<int> boundingBox;
+  final int valueType;
+  final String displayValue;
+  final String rawValue;
+
+  BarcodeContainer._(Map<dynamic, dynamic> data)
+      : boundingBox = VisionModelUtils.mlRectToRectangle(data),
+        valueType = data[barcodeValueType],
+        displayValue = data[barcodeDisplayValue],
+        rawValue = data[barcodeRawValue];
 }
 
 class BarcodeDetectorOptions {}
