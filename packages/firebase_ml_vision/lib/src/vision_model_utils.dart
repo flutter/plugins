@@ -8,7 +8,12 @@ class VisionModelUtils {
 
   static Rectangle<int> mlRectToRectangle(Map<dynamic, dynamic> data) {
     if (data != null) {
-      return Rectangle<int>(data[rectLeft], data[rectTop], data[rectWidth], data[rectHeight]);
+      return Rectangle<int>(
+        data[rectLeft],
+        data[rectTop],
+        data[rectWidth],
+        data[rectHeight],
+      );
     } else {
       return null;
     }
