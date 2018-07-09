@@ -49,6 +49,13 @@ class LivePreviewState extends State<LivePreview> {
     }
   }
 
+
+  @override
+  void dispose() {
+    super.dispose();
+    _readyLoadState?.controller.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return new StreamBuilder<LiveViewCameraLoadState>(

@@ -14,13 +14,18 @@ import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureRequest;
+import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
+import android.media.Image;
 import android.media.ImageReader;
 import android.media.MediaRecorder;
 import android.os.Build;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.util.Log;
 import android.util.Size;
 import android.view.Surface;
 
@@ -57,6 +62,9 @@ public class Camera {
   private PluginRegistry.Registrar registrar;
   private Activity activity;
   private CameraManager cameraManager;
+  private HandlerThread mBackgroundThread;
+  private Handler mBackgroundHandler;
+  private Surface imageReaderSurface;
 
   public Camera(PluginRegistry.Registrar registrar, final String cameraName, @NonNull final String resolutionPreset, @NonNull final MethodChannel.Result result) {
 
@@ -200,14 +208,53 @@ public class Camera {
         new CompareSizesByArea());
   }
 
+  /**
+   * Starts a background thread and its {@link Handler}.
+   */
+  private void startBackgroundThread() {
+    mBackgroundThread = new HandlerThread("CameraBackground");
+    mBackgroundThread.start();
+    mBackgroundHandler = new Handler(mBackgroundThread.getLooper());
+  }
+
+  /**
+   * Stops the background thread and its {@link Handler}.
+   */
+  private void stopBackgroundThread() {
+    mBackgroundThread.quitSafely();
+    try {
+      mBackgroundThread.join();
+      mBackgroundThread = null;
+      mBackgroundHandler = null;
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+  }
+
+  ImageReader.OnImageAvailableListener imageAvailable = new ImageReader.OnImageAvailableListener() {
+    @Override
+    public void onImageAvailable(ImageReader reader) {
+      Image image = reader.acquireLatestImage();
+      if (image == null)
+        return;
+
+      Log.d("ML", "got an image from the image reader");
+
+      image.close();
+    }
+  };
+
   public void open(@Nullable final MethodChannel.Result result) {
     if (!hasCameraPermission()) {
       if (result != null) result.error("cameraPermission", "Camera permission not granted", null);
     } else {
       try {
+        startBackgroundThread();
         imageReader =
           ImageReader.newInstance(
-            captureSize.getWidth(), captureSize.getHeight(), ImageFormat.JPEG, 2);
+            captureSize.getWidth(), captureSize.getHeight(), ImageFormat.YUV_420_888, 4);
+        imageReaderSurface = imageReader.getSurface();
+        imageReader.setOnImageAvailableListener(imageAvailable, mBackgroundHandler);
         cameraManager.openCamera(
           cameraName,
           new CameraDevice.StateCallback() {
@@ -293,7 +340,8 @@ public class Camera {
     surfaces.add(previewSurface);
     captureRequestBuilder.addTarget(previewSurface);
 
-    surfaces.add(imageReader.getSurface());
+    surfaces.add(imageReaderSurface);
+    captureRequestBuilder.addTarget(imageReaderSurface);
 
     cameraDevice.createCaptureSession(
       surfaces,
@@ -333,7 +381,9 @@ public class Camera {
   }
 
   public void close() {
-
+    if (cameraCaptureSession != null) {
+      cameraCaptureSession.close();
+    }
     if (cameraDevice != null) {
       cameraDevice.close();
       cameraDevice = null;
@@ -347,6 +397,7 @@ public class Camera {
       mediaRecorder.release();
       mediaRecorder = null;
     }
+    stopBackgroundThread();
   }
 
   public void dispose() {
