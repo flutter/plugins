@@ -271,7 +271,7 @@ public class Camera {
     mediaRecorder.prepare();
   }
 
-  private void open(@Nullable final MethodChannel.Result result) {
+  public void open(@Nullable final MethodChannel.Result result) {
     if (!hasCameraPermission()) {
       if (result != null) result.error("cameraPermission", "Camera permission not granted", null);
     } else {

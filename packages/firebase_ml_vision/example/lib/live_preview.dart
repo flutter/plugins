@@ -39,6 +39,7 @@ class LivePreviewState extends State<LivePreview> {
           await controller.initialize();
           yield new LiveViewCameraLoadStateReady(controller);
         } on LiveViewCameraException catch (e) {
+          print("got an error: $e");
           yield new LiveViewCameraLoadStateFailed(
               "error initializing camera controller: ${e.toString()}");
         }
@@ -50,58 +51,38 @@ class LivePreviewState extends State<LivePreview> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isShowingPreview) {
-      return new StreamBuilder(
-        stream: _prepareCameraPreview(),
-        builder: (BuildContext context,
-            AsyncSnapshot<LiveViewCameraLoadState> snapshot) {
-          print("snapshot data: ${snapshot.data}");
-          final loadState = snapshot.data;
-          if (loadState != null) {
-            if (loadState is LiveViewCameraLoadStateLoading) {
-              return const Text("loading camera preview…");
-            } else if (loadState is LiveViewCameraLoadStateLoaded) {
-              // get rid of previous controller if there is one
-              return new Text("loaded camera name: ${loadState
-                  .cameraDescription
-                  .name}");
-            } else if (loadState is LiveViewCameraLoadStateReady) {
-              ////// BINGO!!!, the camera is ready to present
-              if (_readyLoadState != loadState) {
-                _readyLoadState?.dispose();
-                _readyLoadState = loadState;
-              }
-              return new AspectRatio(
-                aspectRatio: _readyLoadState.controller.value.aspectRatio,
-                child: new LiveView(_readyLoadState.controller),
-              );
-            } else if (loadState is LiveViewCameraLoadStateFailed) {
-              return new Text("error loading camera ${loadState
-                  .errorMessage}");
-            } else {
-              return const Text("Unknown Camera error");
-            }
-          } else {
-            return new Text("Camera error: ${snapshot.error.toString()}");
+    return new StreamBuilder<LiveViewCameraLoadState>(
+      stream: _prepareCameraPreview(),
+      initialData: new LiveViewCameraLoadStateLoading(),
+      builder: (BuildContext context,
+          AsyncSnapshot<LiveViewCameraLoadState> snapshot) {
+        final loadState = snapshot.data;
+        if (loadState != null) {
+          if (loadState is LiveViewCameraLoadStateLoading ||
+              loadState is LiveViewCameraLoadStateLoaded) {
+            return const Text("loading camera preview…");
           }
-        },
-      );
-    } else {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Text("Current detector: ${widget.detector}"),
-          RaisedButton(
-            onPressed: () {
-              setState(() {
-                _isShowingPreview = true;
-              });
-            },
-            child: new Text("Start Live View"),
-          ),
-        ],
-      );
-    }
+          if (loadState is LiveViewCameraLoadStateReady) {
+            ////// BINGO!!!, the camera is ready to present
+            if (_readyLoadState != loadState) {
+              _readyLoadState?.dispose();
+              _readyLoadState = loadState;
+            }
+            return new AspectRatio(
+              aspectRatio: _readyLoadState.controller.value.aspectRatio,
+              child: new LiveView(_readyLoadState.controller),
+            );
+          } else if (loadState is LiveViewCameraLoadStateFailed) {
+            return new Text("error loading camera ${loadState
+                .errorMessage}");
+          } else {
+            return const Text("Unknown Camera error");
+          }
+        } else {
+          return new Text("Camera error: ${snapshot.error.toString()}");
+        }
+      },
+    );
   }
 }
 

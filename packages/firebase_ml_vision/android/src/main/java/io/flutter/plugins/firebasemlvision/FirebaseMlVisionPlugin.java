@@ -64,12 +64,11 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
               camera.setRequestingPermission(false);
               return;
             }
-            // TODO: figure out how to open camera iff the app is presenting a live preview
-//            if (activity == FirebaseMlVisionPlugin.this.activity) {
-//              if (camera != null) {
-//                camera.open(null);
-//              }
-//            }
+            if (activity == FirebaseMlVisionPlugin.this.activity) {
+              if (camera != null) {
+                camera.open(null);
+              }
+            }
           }
 
           @Override
@@ -137,6 +136,7 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
       case "dispose": {
         if (camera != null) {
           camera.dispose();
+          camera = null;
         }
         result.success(null);
         break;
