@@ -14,7 +14,6 @@ import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureRequest;
-import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
@@ -27,8 +26,19 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.util.Size;
+import android.util.SparseIntArray;
 import android.view.Surface;
+import android.view.WindowManager;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.ml.vision.FirebaseVision;
+import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode;
+import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetector;
+import com.google.firebase.ml.vision.common.FirebaseVisionImage;
+import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata;
+
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,6 +46,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodChannel;
@@ -46,6 +57,14 @@ import static io.flutter.plugins.firebasemlvision.FirebaseMlVisionPlugin.CAMERA_
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class Camera {
+  private static final SparseIntArray ORIENTATIONS = new SparseIntArray(4);
+
+  static {
+    ORIENTATIONS.append(Surface.ROTATION_0, 90);
+    ORIENTATIONS.append(Surface.ROTATION_90, 0);
+    ORIENTATIONS.append(Surface.ROTATION_180, 270);
+    ORIENTATIONS.append(Surface.ROTATION_270, 180);
+  }
 
   private final FlutterView.SurfaceTextureEntry textureEntry;
   private CameraDevice cameraDevice;
@@ -65,6 +84,8 @@ public class Camera {
   private HandlerThread mBackgroundThread;
   private Handler mBackgroundHandler;
   private Surface imageReaderSurface;
+  private CameraCharacteristics cameraCharacteristics;
+  private WindowManager windowManager;
 
   public Camera(PluginRegistry.Registrar registrar, final String cameraName, @NonNull final String resolutionPreset, @NonNull final MethodChannel.Result result) {
 
@@ -92,9 +113,10 @@ public class Camera {
           throw new IllegalArgumentException("Unknown preset: " + resolutionPreset);
       }
 
-      CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(cameraName);
+      cameraCharacteristics = cameraManager.getCameraCharacteristics(cameraName);
       StreamConfigurationMap streamConfigurationMap =
-        characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+        cameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+
       computeBestCaptureSize(streamConfigurationMap);
       computeBestPreviewAndRecordingSize(streamConfigurationMap, minPreviewSize, captureSize);
 
@@ -231,16 +253,115 @@ public class Camera {
     }
   }
 
+  private static ByteBuffer YUV_420_888toNV21(Image image) {
+    byte[] nv21;
+    ByteBuffer yBuffer = image.getPlanes()[0].getBuffer();
+    ByteBuffer uBuffer = image.getPlanes()[1].getBuffer();
+    ByteBuffer vBuffer = image.getPlanes()[2].getBuffer();
+
+    int ySize = yBuffer.remaining();
+    int uSize = uBuffer.remaining();
+    int vSize = vBuffer.remaining();
+
+    ByteBuffer output = ByteBuffer.allocate(ySize + uSize + vSize)
+      .put(yBuffer)
+      .put(vBuffer)
+      .put(uBuffer);
+    return output;
+
+//    nv21 = new byte[ySize + uSize + vSize];
+//
+//    //U and V are swapped
+//    yBuffer.get(nv21, 0, ySize);
+//    vBuffer.get(nv21, ySize, vSize);
+//    uBuffer.get(nv21, ySize + vSize, uSize);
+//
+//    return nv21;
+  }
+
+  private int getRotation() {
+    if (windowManager == null) {
+      windowManager = (WindowManager) activity.getSystemService(Context.WINDOW_SERVICE);
+    }
+    int degrees = 0;
+    int rotation = windowManager.getDefaultDisplay().getRotation();
+    switch (rotation) {
+      case Surface.ROTATION_0:
+        degrees = 0;
+        break;
+      case Surface.ROTATION_90:
+        degrees = 90;
+        break;
+      case Surface.ROTATION_180:
+        degrees = 180;
+        break;
+      case Surface.ROTATION_270:
+        degrees = 270;
+        break;
+      default:
+        Log.e("ML", "Bad rotation value: $rotation");
+    }
+
+    try {
+      int angle;
+      int displayAngle; // TODO? setDisplayOrientation?
+      CameraCharacteristics cameraCharacteristics = cameraManager.getCameraCharacteristics(cameraName);
+      Integer orientation = cameraCharacteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
+      // back-facing
+      angle = (orientation - degrees + 360) % 360;
+      displayAngle = angle;
+      int translatedAngle = angle / 90;
+      Log.d("ML", "Translated angle: " + translatedAngle);
+      return translatedAngle; // this corresponds to the rotation constants
+    } catch (CameraAccessException e) {
+      return 0;
+    }
+  }
+
+  private AtomicBoolean shouldThrottle = new AtomicBoolean(false);
+
+  private void processImage(Image image) {
+    if (shouldThrottle.get()) {
+//      Log.d("ML", "should throttle");
+      return;
+    }
+    Log.d("ML", "about to process a vision frame");
+    shouldThrottle.set(true);
+    ByteBuffer imageBuffer = YUV_420_888toNV21(image);
+    FirebaseVisionImageMetadata metadata = new FirebaseVisionImageMetadata.Builder()
+      .setFormat(FirebaseVisionImageMetadata.IMAGE_FORMAT_NV21)
+      .setWidth(image.getWidth())
+      .setHeight(image.getHeight())
+      .setRotation(getRotation())
+      .build();
+    FirebaseVisionImage firebaseVisionImage = FirebaseVisionImage.fromByteBuffer(imageBuffer, metadata);
+
+    FirebaseVisionBarcodeDetector visionBarcodeDetector = FirebaseVision.getInstance().getVisionBarcodeDetector();
+    visionBarcodeDetector.detectInImage(firebaseVisionImage).addOnSuccessListener(new OnSuccessListener<List<FirebaseVisionBarcode>>() {
+      @Override
+      public void onSuccess(List<FirebaseVisionBarcode> firebaseVisionBarcodes) {
+        shouldThrottle.set(false);
+        Log.d("ML", "barcode scan success, got codes: " + firebaseVisionBarcodes.size());
+      }
+    }).addOnFailureListener(new OnFailureListener() {
+      @Override
+      public void onFailure(@NonNull Exception e) {
+        shouldThrottle.set(false);
+        Log.d("ML", "barcode scan failure, message: " + e.getMessage());
+      }
+    });
+    Log.d("ML", "got an image from the image reader");
+  }
+
   ImageReader.OnImageAvailableListener imageAvailable = new ImageReader.OnImageAvailableListener() {
     @Override
     public void onImageAvailable(ImageReader reader) {
       Image image = reader.acquireLatestImage();
-      if (image == null)
-        return;
-
-      Log.d("ML", "got an image from the image reader");
-
-      image.close();
+      if (image != null) {
+//        Log.d("ML", "image was not null");
+        processImage(image);
+        image.close();
+      }
     }
   };
 
