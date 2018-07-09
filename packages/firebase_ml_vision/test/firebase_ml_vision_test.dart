@@ -140,18 +140,6 @@ void main() {
         expect(blocks, isEmpty);
       });
 
-      test('close', () async {
-        final TextDetector detector = FirebaseVision.instance.textDetector();
-        await detector.close();
-
-        expect(log, <Matcher>[
-          isMethodCall(
-            'TextDetector#close',
-            arguments: null,
-          ),
-        ]);
-      });
-
       test('detectInImage no bounding box', () async {
         returnValue = <dynamic>[
           <dynamic, dynamic>{

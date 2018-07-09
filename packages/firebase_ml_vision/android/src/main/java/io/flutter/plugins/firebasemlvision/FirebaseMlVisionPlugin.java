@@ -31,22 +31,13 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
     switch (call.method) {
       case "BarcodeDetector#detectInImage":
         break;
-      case "BarcodeDetector#close":
-        break;
       case "FaceDetector#detectInImage":
         break;
-      case "FaceDetector#close":
-        break;
       case "LabelDetector#detectInImage":
-        break;
-      case "LabelDetector#close":
         break;
       case "TextDetector#detectInImage":
         image = filePathToVisionImage((String) call.argument("path"), result);
         if (image != null) TextDetector.instance.handleDetection(image, null, result);
-        break;
-      case "TextDetector#close":
-        TextDetector.instance.close(result);
         break;
       default:
         result.notImplemented();

@@ -73,19 +73,6 @@ public class TextDetector implements Detector {
             });
   }
 
-  public void close(MethodChannel.Result result) {
-    if (textDetector != null) {
-      try {
-        textDetector.close();
-        result.success(null);
-      } catch (IOException exception) {
-        result.error("textDetectorError", exception.getLocalizedMessage(), null);
-      }
-
-      textDetector = null;
-    }
-  }
-
   private void addTextData(
       Map<String, Object> addTo, Rect boundingBox, Point[] cornerPoints, String text) {
     addTo.put("text", text);

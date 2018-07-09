@@ -11,7 +11,4 @@ import io.flutter.plugin.common.MethodChannel;
 class FaceDetector implements Detector {
   @Override
   public void handleDetection(FirebaseVisionImage image, @Nullable Map<String, Object> options, final MethodChannel.Result result) {}
-
-  @Override
-  public void close(MethodChannel.Result result) {}
 }

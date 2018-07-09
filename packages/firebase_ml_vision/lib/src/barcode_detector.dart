@@ -8,11 +8,6 @@ class BarcodeDetector extends FirebaseVisionDetector {
   BarcodeDetector._(BarcodeDetectorOptions options);
 
   @override
-  Future<void> close() async {
-    // TODO: implement close
-  }
-
-  @override
   Future<void> detectInImage(FirebaseVisionImage visionImage) async {
     // TODO: implement detectInImage
   }

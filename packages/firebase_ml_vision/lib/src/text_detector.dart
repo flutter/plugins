@@ -31,12 +31,6 @@ class TextDetector implements FirebaseVisionDetector {
 
     return blocks;
   }
-
-  /// Closes the text detector and release its model resources.
-  @override
-  Future<void> close() {
-    return FirebaseVision.channel.invokeMethod('TextDetector#close');
-  }
 }
 
 /// Abstract class representing dimensions of recognized text in an image.

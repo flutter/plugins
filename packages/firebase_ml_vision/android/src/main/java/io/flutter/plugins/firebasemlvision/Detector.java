@@ -10,7 +10,5 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 
 interface Detector {
-  void close(MethodChannel.Result result);
-
   void handleDetection(FirebaseVisionImage image, @Nullable Map<String, Object> options, final MethodChannel.Result result);
 }

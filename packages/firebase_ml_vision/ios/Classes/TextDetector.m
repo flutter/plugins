@@ -66,10 +66,6 @@ static FIRVisionTextDetector *textDetector;
          }];
 }
 
-+ (void)close {
-  textDetector = nil;
-}
-
 + (NSDictionary *)getTextData:(CGRect)frame
                  cornerPoints:(NSArray<NSValue *> *)cornerPoints
                          text:(NSString *)text {

@@ -70,7 +70,4 @@ class FirebaseVisionImage {
 abstract class FirebaseVisionDetector {
   /// Uses machine learning model to detect objects of interest in an image.
   Future<dynamic> detectInImage(FirebaseVisionImage visionImage);
-
-  /// Release model resources for the detector.
-  Future<void> close();
 }
