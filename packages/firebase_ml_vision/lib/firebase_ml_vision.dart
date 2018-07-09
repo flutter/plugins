@@ -9,6 +9,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:firebase_ml_vision/src/vision_model_utils.dart';
+import 'package:firebase_ml_vision/src/live_view.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
