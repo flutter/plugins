@@ -51,11 +51,13 @@ class FaceDetector extends FirebaseVisionDetector {
       'FaceDetector#detectInImage',
       <String, dynamic>{
         'path': visionImage.imageFile.path,
-        'enableClassification': options.enableClassification,
-        'enableLandmarks': options.enableLandmarks,
-        'enableTracking': options.enableTracking,
-        'minFaceSize': options.minFaceSize,
-        'mode': _enumToString(options.mode),
+        'options': <String, dynamic>{
+          'enableClassification': options.enableClassification,
+          'enableLandmarks': options.enableLandmarks,
+          'enableTracking': options.enableTracking,
+          'minFaceSize': options.minFaceSize,
+          'mode': _enumToString(options.mode),
+        },
       },
     );
 

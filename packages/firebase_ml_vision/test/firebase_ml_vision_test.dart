@@ -88,13 +88,14 @@ void main() {
           isMethodCall(
             'FaceDetector#detectInImage',
             arguments: <String, dynamic>{
-              'handle': 0,
               'path': 'empty',
-              'enableClassification': true,
-              'enableLandmarks': true,
-              'enableTracking': false,
-              'minFaceSize': 0.5,
-              'mode': 'accurate',
+              'options': <String, dynamic>{
+                'enableClassification': true,
+                'enableLandmarks': true,
+                'enableTracking': false,
+                'minFaceSize': 0.5,
+                'mode': 'accurate',
+              },
             },
           ),
         ]);
