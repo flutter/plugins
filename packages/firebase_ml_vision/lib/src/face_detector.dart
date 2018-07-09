@@ -33,13 +33,7 @@ enum FaceLandmarkType {
 /// FaceDetector faceDetector = FirebaseVision.instance.faceDetector(options);
 /// ```
 class FaceDetector extends FirebaseVisionDetector {
-  FaceDetector._(this.options)
-      : _handle = _nextHandle++,
-        assert(options != null);
-
-  static int _nextHandle = 0;
-
-  final int _handle;
+  FaceDetector._(this.options) : assert(options != null);
 
   /// The options for the face detector.
   final FaceDetectorOptions options;
@@ -57,7 +51,6 @@ class FaceDetector extends FirebaseVisionDetector {
       'FaceDetector#detectInImage',
       <String, dynamic>{
         'path': visionImage.imageFile.path,
-        'handle': _handle,
         'enableClassification': options.enableClassification,
         'enableLandmarks': options.enableLandmarks,
         'enableTracking': options.enableTracking,
