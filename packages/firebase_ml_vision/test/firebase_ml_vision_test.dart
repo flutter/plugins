@@ -112,20 +112,20 @@ void main() {
           expect(face.landmark(type).type, type);
         }
 
-        Point<int> p(FaceLandmarkType type) {
+        Point<int> position(FaceLandmarkType type) {
           return face.landmark(type).position;
         }
 
-        expect(p(FaceLandmarkType.bottomMouth), const Point<int>(0, 1));
-        expect(p(FaceLandmarkType.leftCheek), const Point<int>(2, 3));
-        expect(p(FaceLandmarkType.leftEar), const Point<int>(4, 5));
-        expect(p(FaceLandmarkType.leftEye), const Point<int>(6, 7));
-        expect(p(FaceLandmarkType.leftMouth), const Point<int>(8, 9));
-        expect(p(FaceLandmarkType.noseBase), const Point<int>(10, 11));
-        expect(p(FaceLandmarkType.rightCheek), const Point<int>(12, 13));
-        expect(p(FaceLandmarkType.rightEar), const Point<int>(14, 15));
-        expect(p(FaceLandmarkType.rightEye), const Point<int>(16, 17));
-        expect(p(FaceLandmarkType.rightMouth), const Point<int>(18, 19));
+        expect(position(FaceLandmarkType.bottomMouth), const Point<int>(0, 1));
+        expect(position(FaceLandmarkType.leftCheek), const Point<int>(2, 3));
+        expect(position(FaceLandmarkType.leftEar), const Point<int>(4, 5));
+        expect(position(FaceLandmarkType.leftEye), const Point<int>(6, 7));
+        expect(position(FaceLandmarkType.leftMouth), const Point<int>(8, 9));
+        expect(position(FaceLandmarkType.noseBase), const Point<int>(10, 11));
+        expect(position(FaceLandmarkType.rightCheek), const Point<int>(12, 13));
+        expect(position(FaceLandmarkType.rightEar), const Point<int>(14, 15));
+        expect(position(FaceLandmarkType.rightEye), const Point<int>(16, 17));
+        expect(position(FaceLandmarkType.rightMouth), const Point<int>(18, 19));
       });
 
       test('detectInImage with null landmark', () async {

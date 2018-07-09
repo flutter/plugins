@@ -133,25 +133,16 @@ class Face {
         smilingProbability = data['smilingProbability'],
         trackingId = data['trackingId'],
         _landmarks = Map<FaceLandmarkType, FaceLandmark>.fromIterables(
-          FaceLandmarkType.values,
-          List<FaceLandmark>.generate(
-            FaceLandmarkType.values.length,
-            (int index) {
-              final FaceLandmarkType type = FaceLandmarkType.values[index];
-              final dynamic landmarkMap = data['landmarks'];
-              final String typeString = _enumToString(type);
-
-              if (landmarkMap[typeString] == null) return null;
-              return FaceLandmark._(
-                type,
-                Point<int>(
-                  landmarkMap[typeString][0],
-                  landmarkMap[typeString][1],
-                ),
-              );
-            },
-          ),
-        );
+            FaceLandmarkType.values,
+            FaceLandmarkType.values.map((FaceLandmarkType type) {
+          final List<dynamic> pos = data['landmarks'][_enumToString(type)];
+          return (pos == null)
+              ? null
+              : FaceLandmark._(
+                  type,
+                  Point<int>(pos[0], pos[1]),
+                );
+        }));
 
   final Map<FaceLandmarkType, FaceLandmark> _landmarks;
 
