@@ -43,8 +43,8 @@
   } else if ([@"LabelDetector#detectInImage" isEqualToString:call.method]) {
   } else if ([@"LabelDetector#close" isEqualToString:call.method]) {
   } else if ([@"TextDetector#detectInImage" isEqualToString:call.method]) {
-    FIRVisionImage *image = [self filePathToVisionImage:call.arguments];
-    [TextDetector handleDetection:image result:result];
+    FIRVisionImage *image = [self filePathToVisionImage:call.arguments[@"path"]];
+    [TextDetector handleDetection:image options:nil result:result];
   } else if ([@"TextDetector#close" isEqualToString:call.method]) {
     [TextDetector close];
   } else {

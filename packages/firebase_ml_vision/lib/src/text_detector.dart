@@ -21,7 +21,7 @@ class TextDetector implements FirebaseVisionDetector {
   Future<List<TextBlock>> detectInImage(FirebaseVisionImage visionImage) async {
     final List<dynamic> reply = await FirebaseVision.channel.invokeMethod(
       'TextDetector#detectInImage',
-      visionImage.imageFile.path,
+      <String, String>{'path': visionImage.imageFile.path},
     );
 
     final List<TextBlock> blocks = <TextBlock>[];
