@@ -286,7 +286,7 @@ void main() {
       test('set', () async {
         final dynamic value = <String, dynamic>{'hello': 'world'};
         final int priority = 42;
-        DatabaseReference ref = database.reference();
+        final DatabaseReference ref = database.reference();
         await ref.child('foo').onDisconnect().set(value);
         await ref.child('bar').onDisconnect().set(value, priority: priority);
         await ref.child('psi').onDisconnect().set(value, priority: 'priority');
