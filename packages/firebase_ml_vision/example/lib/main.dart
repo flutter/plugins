@@ -144,7 +144,7 @@ class _MyHomePageState extends State<_MyHomePage>
       decoration: new BoxDecoration(
         image: new DecorationImage(
           image: Image.file(_imageFile).image,
-          fit: BoxFit.cover,
+          fit: BoxFit.fill,
         ),
       ),
       child: _imageSize == null || _scanResults == null
