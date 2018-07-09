@@ -3,7 +3,9 @@
 @implementation TextDetector
 static FIRVisionTextDetector *textDetector;
 
-+ (void)handleDetection:(FIRVisionImage *)image options:(NSDictionary *)options result:(FlutterResult)result {
++ (void)handleDetection:(FIRVisionImage *)image
+                options:(NSDictionary *)options
+                 result:(FlutterResult)result {
   if (textDetector == nil) {
     FIRVision *vision = [FIRVision vision];
     textDetector = [vision textDetector];

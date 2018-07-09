@@ -92,7 +92,7 @@ void main() {
         expect(log, <Matcher>[
           isMethodCall(
             'TextDetector#detectInImage',
-            arguments: 'empty',
+            arguments: <String, dynamic>{'path': 'empty'},
           ),
         ]);
 
@@ -133,7 +133,7 @@ void main() {
         expect(log, <Matcher>[
           isMethodCall(
             'TextDetector#detectInImage',
-            arguments: 'empty',
+            arguments: <String, dynamic>{'path': 'empty'},
           ),
         ]);
 
@@ -161,7 +161,7 @@ void main() {
         expect(log, <Matcher>[
           isMethodCall(
             'TextDetector#detectInImage',
-            arguments: 'empty',
+            arguments: <String, dynamic>{'path': 'empty'},
           ),
         ]);
 
