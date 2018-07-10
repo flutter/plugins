@@ -3,7 +3,6 @@ package io.flutter.plugins.firebasemlvision;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.ml.vision.FirebaseVision;
@@ -24,9 +23,7 @@ public class TextDetector implements Detector {
 
   @Override
   public void handleDetection(
-      FirebaseVisionImage image,
-      @Nullable Map<String, Object> options,
-      final MethodChannel.Result result) {
+      FirebaseVisionImage image, Map<String, Object> options, final MethodChannel.Result result) {
     if (textDetector == null) textDetector = FirebaseVision.getInstance().getVisionTextDetector();
     textDetector
         .detectInImage(image)

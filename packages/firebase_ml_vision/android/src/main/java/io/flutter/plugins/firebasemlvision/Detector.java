@@ -1,13 +1,10 @@
 package io.flutter.plugins.firebasemlvision;
 
-import android.support.annotation.Nullable;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import io.flutter.plugin.common.MethodChannel;
 import java.util.Map;
 
 interface Detector {
   void handleDetection(
-      FirebaseVisionImage image,
-      @Nullable Map<String, Object> options,
-      final MethodChannel.Result result);
+      FirebaseVisionImage image, Map<String, Object> options, final MethodChannel.Result result);
 }
