@@ -170,7 +170,7 @@ public class Camera {
 
   private void registerEventChannel() {
     new EventChannel(
-      registrar.messenger(), "flutter.io/cameraPlugin/cameraEvents" + textureEntry.id())
+      registrar.messenger(), "plugins.flutter.io/firebase_ml_vision/liveViewEvents" + textureEntry.id())
       .setStreamHandler(
         new EventChannel.StreamHandler() {
           @Override
@@ -243,13 +243,15 @@ public class Camera {
    * Stops the background thread and its {@link Handler}.
    */
   private void stopBackgroundThread() {
-    mBackgroundThread.quitSafely();
-    try {
-      mBackgroundThread.join();
-      mBackgroundThread = null;
-      mBackgroundHandler = null;
-    } catch (InterruptedException e) {
-      e.printStackTrace();
+    if (mBackgroundThread != null) {
+      mBackgroundThread.quitSafely();
+      try {
+        mBackgroundThread.join();
+        mBackgroundThread = null;
+        mBackgroundHandler = null;
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
     }
   }
 
@@ -341,12 +343,14 @@ public class Camera {
       @Override
       public void onSuccess(List<FirebaseVisionBarcode> firebaseVisionBarcodes) {
         shouldThrottle.set(false);
+        sendRecognizedCount(firebaseVisionBarcodes.size());
         Log.d("ML", "barcode scan success, got codes: " + firebaseVisionBarcodes.size());
       }
     }).addOnFailureListener(new OnFailureListener() {
       @Override
       public void onFailure(@NonNull Exception e) {
         shouldThrottle.set(false);
+        sendErrorEvent(e.getLocalizedMessage());
         Log.d("ML", "barcode scan failure, message: " + e.getMessage());
       }
     });
@@ -373,7 +377,7 @@ public class Camera {
         startBackgroundThread();
         imageReader =
           ImageReader.newInstance(
-            captureSize.getWidth(), captureSize.getHeight(), ImageFormat.YUV_420_888, 4);
+            previewSize.getWidth(), previewSize.getHeight(), ImageFormat.YUV_420_888, 4);
         imageReaderSurface = imageReader.getSurface();
         imageReader.setOnImageAvailableListener(imageAvailable, mBackgroundHandler);
         cameraManager.openCamera(
@@ -490,6 +494,15 @@ public class Camera {
         }
       },
       null);
+  }
+
+  private void sendRecognizedCount(int count) {
+    if (eventSink != null) {
+      Map<String, String> event = new HashMap<>();
+      event.put("eventType", "recognized");
+      event.put("count", String.valueOf(count));
+      eventSink.success(event);
+    }
   }
 
   private void sendErrorEvent(String errorDescription) {

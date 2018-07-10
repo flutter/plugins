@@ -87,15 +87,74 @@ class LiveViewCameraException implements Exception {
 }
 
 // Build the UI texture view of the video data with textureId.
-class LiveView extends StatelessWidget {
+class LiveView extends StatefulWidget {
   final LiveViewCameraController controller;
 
   const LiveView(this.controller);
 
   @override
+  LiveViewState createState() {
+    return new LiveViewState();
+  }
+}
+
+class LiveViewState extends State<LiveView> {
+  List<BarcodeContainer> scannedCodeContainers = [];
+  int scannedCodes = 0;
+  StreamSubscription _eventSubscription;
+
+  bool _isDisposed = false;
+
+//  void _listener(dynamic event) {
+//    print("liveView state got an event: $event");
+//    final Map<dynamic, dynamic> map = event;
+//    if (_isDisposed) {
+//      return;
+//    }
+//
+//    switch (map['eventType']) {
+//      case 'recognized':
+//        // TODO: parse barcode
+//        final int recognizedCount = int.parse(event['count']);
+//        print("got $recognizedCount codes");
+//        scannedItemStreamController.add(recognizedCount);
+//        break;
+//      case 'cameraClosing':
+//        scannedItemStreamController.close();
+//        break;
+//    }
+//  }
+
+  @override
+  void initState() {
+    super.initState();
+    widget.controller.addListener(() {
+      setState(() {
+        scannedCodes = widget.controller.value.recognizedCount;
+      });
+    });
+  }
+//
+//  @override
+//  void dispose() {
+//    super.dispose();
+//    _isDisposed = true;
+//    _eventSubscription?.cancel();
+//  }
+
+  @override
   Widget build(BuildContext context) {
-    return controller.value.isInitialized
-        ? new Texture(textureId: controller._textureId)
+    return widget.controller.value.isInitialized
+        ? new Stack(
+                children: <Widget>[
+                  new Texture(textureId: widget.controller._textureId),
+                  new Center(
+                    child: new Text(scannedCodes == 0
+                        ? "No codes"
+                        : "Got ${scannedCodes} codes!!!"),
+                  ),
+                ],
+              )
         : new Container();
   }
 }
@@ -112,10 +171,13 @@ class LiveViewCameraValue {
   /// Is `null` until  [isInitialized] is `true`.
   final Size previewSize;
 
+  final int recognizedCount;
+
   const LiveViewCameraValue({
     this.isInitialized,
     this.errorDescription,
     this.previewSize,
+    this.recognizedCount,
   });
 
   const LiveViewCameraValue.uninitialized()
@@ -136,11 +198,13 @@ class LiveViewCameraValue {
     bool isTakingPicture,
     String errorDescription,
     Size previewSize,
+    int recognizedCount,
   }) {
     return new LiveViewCameraValue(
       isInitialized: isInitialized ?? this.isInitialized,
       errorDescription: errorDescription,
       previewSize: previewSize ?? this.previewSize,
+      recognizedCount: recognizedCount ?? this.recognizedCount,
     );
   }
 
@@ -181,7 +245,8 @@ class LiveViewCameraController extends ValueNotifier<LiveViewCameraValue> {
     }
     try {
       _creatingCompleter = new Completer<Null>();
-      final Map<dynamic, dynamic> reply = await FirebaseVision.channel.invokeMethod(
+      final Map<dynamic, dynamic> reply =
+          await FirebaseVision.channel.invokeMethod(
         'initialize',
         <String, dynamic>{
           'cameraName': description.name,
@@ -199,10 +264,10 @@ class LiveViewCameraController extends ValueNotifier<LiveViewCameraValue> {
     } on PlatformException catch (e) {
       throw new LiveViewCameraException(e.code, e.message);
     }
-    _eventSubscription =
-        new EventChannel('flutter.io/cameraPlugin/cameraEvents$_textureId')
-            .receiveBroadcastStream()
-            .listen(_listener);
+    _eventSubscription = new EventChannel(
+            'plugins.flutter.io/firebase_ml_vision/liveViewEvents$_textureId')
+        .receiveBroadcastStream()
+        .listen(_listener);
     _creatingCompleter.complete(null);
     return _creatingCompleter.future;
   }
@@ -215,8 +280,12 @@ class LiveViewCameraController extends ValueNotifier<LiveViewCameraValue> {
     if (_isDisposed) {
       return;
     }
-
+    print("got an event: $event");
     switch (map['eventType']) {
+      case 'recognized':
+        final int recognizedCount = int.parse(event['count']);
+        value = value.copyWith(recognizedCount: recognizedCount);
+        break;
       case 'error':
         value = value.copyWith(errorDescription: event['errorDescription']);
         break;
