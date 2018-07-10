@@ -7,7 +7,7 @@
 #import "UrlLauncherPlugin.h"
 
 @interface FLTUrlLaunchSession : NSObject<SFSafariViewControllerDelegate>
-@property (nonatomic) UIStatusBarStyle previousStatusBarStyle;
+@property(nonatomic) UIStatusBarStyle previousStatusBarStyle;
 @end
 
 @implementation FLTUrlLaunchSession {

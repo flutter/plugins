@@ -27,14 +27,14 @@ const MethodChannel _channel =
 /// always launched with the default browser on device. If set to true, the URL
 /// is launched in a webview. Unlike iOS, browser context is shared across
 /// WebViews.
-/// 
+///
 /// Note that if any of the above are set to true but the URL is not a web URL,
 /// this will throw a [PlatformException].
-/// 
+///
 /// [statusBarBrightness] is only used in iOS. Sets the status bar brightness
-/// of the application after opening a link. The previous value will be 
-/// automatically restored if used with `forceSafariVC` or on iOS version 10.0 
-/// and greater. Defaults to [Brightness.light] if unset, or does nothing if 
+/// of the application after opening a link. The previous value will be
+/// automatically restored if used with `forceSafariVC` or on iOS version 10.0
+/// and greater. Defaults to [Brightness.light] if unset, or does nothing if
 /// null is passed.
 Future<void> launch(
   String urlString, {
