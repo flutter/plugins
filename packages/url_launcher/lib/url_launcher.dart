@@ -32,10 +32,10 @@ const MethodChannel _channel =
 /// this will throw a [PlatformException].
 ///
 /// [statusBarBrightness] is only used in iOS. Sets the status bar brightness
-/// of the application after opening a link. The previous value will be
-/// automatically restored if used with `forceSafariVC` or on iOS version 10.0
-/// and greater. Defaults to [Brightness.light] if unset, or does nothing if
-/// null is passed.
+/// of the application after opening a link. The previous value of the status
+/// bar is stored on the platform side and restored when returning to Flutter
+/// if used with `forceSafariVC` or on iOS version 10.0 and greater. Defaults
+/// to [Brightness.light] if unset, or does nothing if null is passed.
 Future<void> launch(
   String urlString, {
   bool forceSafariVC,
