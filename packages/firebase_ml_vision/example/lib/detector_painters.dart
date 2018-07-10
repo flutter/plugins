@@ -7,6 +7,32 @@ import 'package:flutter/material.dart';
 
 enum Detector { barcode, face, label, text }
 
+CustomPaint customPaintForResults(
+    Detector detector, Size imageSize, List<dynamic> results) {
+  CustomPainter painter;
+
+  switch (detector) {
+    case Detector.barcode:
+      painter = new BarcodeDetectorPainter(imageSize, results);
+      break;
+    case Detector.face:
+      painter = new FaceDetectorPainter(imageSize, results);
+      break;
+    case Detector.label:
+      painter = new LabelDetectorPainter(imageSize, results);
+      break;
+    case Detector.text:
+      painter = new TextDetectorPainter(imageSize, results);
+      break;
+    default:
+      break;
+  }
+
+  return new CustomPaint(
+    painter: painter,
+  );
+}
+
 class BarcodeDetectorPainter extends CustomPainter {
   BarcodeDetectorPainter(this.absoluteImageSize, this.results);
 

@@ -19,7 +19,7 @@ class BarcodeDetector extends FirebaseVisionDetector {
         'BarcodeDetector#detectInImage', visionImage.imageFile.path);
     final List<BarcodeContainer> barcodes = <BarcodeContainer>[];
     reply.forEach((dynamic barcodeMap) {
-      barcodes.add(new BarcodeContainer._(barcodeMap));
+      barcodes.add(new BarcodeContainer(barcodeMap));
     });
     return barcodes;
   }
@@ -31,11 +31,19 @@ class BarcodeContainer {
   final String displayValue;
   final String rawValue;
 
-  BarcodeContainer._(Map<dynamic, dynamic> data)
+  BarcodeContainer(Map<dynamic, dynamic> data)
       : boundingBox = VisionModelUtils.mlRectToRectangle(data),
         valueType = data[barcodeValueType],
         displayValue = data[barcodeDisplayValue],
         rawValue = data[barcodeRawValue];
+
+  @override
+  String toString() {
+    return 'BarcodeContainer{boundingBox: $boundingBox,'
+        ' valueType: $valueType,'
+        ' displayValue: $displayValue,'
+        ' rawValue: $rawValue}';
+  }
 }
 
 class BarcodeDetectorOptions {}

@@ -113,31 +113,6 @@ class _MyHomePageState extends State<_MyHomePage>
     });
   }
 
-  CustomPaint _buildResults(Size imageSize, List<dynamic> results) {
-    CustomPainter painter;
-
-    switch (_currentDetector) {
-      case Detector.barcode:
-        painter = new BarcodeDetectorPainter(_imageSize, results);
-        break;
-      case Detector.face:
-        painter = new FaceDetectorPainter(_imageSize, results);
-        break;
-      case Detector.label:
-        painter = new LabelDetectorPainter(_imageSize, results);
-        break;
-      case Detector.text:
-        painter = new TextDetectorPainter(_imageSize, results);
-        break;
-      default:
-        break;
-    }
-
-    return new CustomPaint(
-      painter: painter,
-    );
-  }
-
   Widget _buildImage() {
     return new Container(
       constraints: const BoxConstraints.expand(),
@@ -157,7 +132,7 @@ class _MyHomePageState extends State<_MyHomePage>
                 ),
               ),
             )
-          : _buildResults(_imageSize, _scanResults),
+          : customPaintForResults(_currentDetector, _imageSize, _scanResults),
     );
   }
 

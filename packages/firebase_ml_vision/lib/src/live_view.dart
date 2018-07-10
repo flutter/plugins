@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
@@ -86,11 +87,15 @@ class LiveViewCameraException implements Exception {
   String toString() => '$runtimeType($code, $description)';
 }
 
+typedef Widget OverlayBuilder(BuildContext context, Size previewImageSize,
+    List<BarcodeContainer> barcodes);
+
 // Build the UI texture view of the video data with textureId.
 class LiveView extends StatefulWidget {
   final LiveViewCameraController controller;
+  final OverlayBuilder overlayBuilder;
 
-  const LiveView(this.controller);
+  const LiveView({this.controller, this.overlayBuilder});
 
   @override
   LiveViewState createState() {
@@ -99,62 +104,31 @@ class LiveView extends StatefulWidget {
 }
 
 class LiveViewState extends State<LiveView> {
-  List<BarcodeContainer> scannedCodeContainers = [];
-  int scannedCodes = 0;
-  StreamSubscription _eventSubscription;
-
-  bool _isDisposed = false;
-
-//  void _listener(dynamic event) {
-//    print("liveView state got an event: $event");
-//    final Map<dynamic, dynamic> map = event;
-//    if (_isDisposed) {
-//      return;
-//    }
-//
-//    switch (map['eventType']) {
-//      case 'recognized':
-//        // TODO: parse barcode
-//        final int recognizedCount = int.parse(event['count']);
-//        print("got $recognizedCount codes");
-//        scannedItemStreamController.add(recognizedCount);
-//        break;
-//      case 'cameraClosing':
-//        scannedItemStreamController.close();
-//        break;
-//    }
-//  }
+  List<BarcodeContainer> scannedCodes = <BarcodeContainer>[];
 
   @override
   void initState() {
     super.initState();
     widget.controller.addListener(() {
       setState(() {
-        scannedCodes = widget.controller.value.recognizedCount;
+        scannedCodes = widget.controller.value.scannedBarcodes;
       });
     });
   }
-//
-//  @override
-//  void dispose() {
-//    super.dispose();
-//    _isDisposed = true;
-//    _eventSubscription?.cancel();
-//  }
 
   @override
   Widget build(BuildContext context) {
     return widget.controller.value.isInitialized
         ? new Stack(
-                children: <Widget>[
-                  new Texture(textureId: widget.controller._textureId),
-                  new Center(
-                    child: new Text(scannedCodes == 0
-                        ? "No codes"
-                        : "Got ${scannedCodes} codes!!!"),
-                  ),
-                ],
+            children: <Widget>[
+              new Texture(textureId: widget.controller._textureId),
+              new Container(
+                constraints: const BoxConstraints.expand(),
+                child: widget.overlayBuilder(
+                    context, widget.controller.value.previewSize, scannedCodes),
               )
+            ],
+          )
         : new Container();
   }
 }
@@ -171,13 +145,13 @@ class LiveViewCameraValue {
   /// Is `null` until  [isInitialized] is `true`.
   final Size previewSize;
 
-  final int recognizedCount;
+  final List<BarcodeContainer> scannedBarcodes;
 
   const LiveViewCameraValue({
     this.isInitialized,
     this.errorDescription,
     this.previewSize,
-    this.recognizedCount,
+    this.scannedBarcodes,
   });
 
   const LiveViewCameraValue.uninitialized()
@@ -198,13 +172,13 @@ class LiveViewCameraValue {
     bool isTakingPicture,
     String errorDescription,
     Size previewSize,
-    int recognizedCount,
+    List<BarcodeContainer> scannedBarcodes,
   }) {
     return new LiveViewCameraValue(
       isInitialized: isInitialized ?? this.isInitialized,
       errorDescription: errorDescription,
       previewSize: previewSize ?? this.previewSize,
-      recognizedCount: recognizedCount ?? this.recognizedCount,
+      scannedBarcodes: scannedBarcodes ?? this.scannedBarcodes,
     );
   }
 
@@ -213,7 +187,8 @@ class LiveViewCameraValue {
     return '$runtimeType('
         'isInitialized: $isInitialized, '
         'errorDescription: $errorDescription, '
-        'previewSize: $previewSize)';
+        'previewSize: $previewSize, '
+        'scannedBarcodes: $scannedBarcodes)';
   }
 }
 
@@ -280,11 +255,17 @@ class LiveViewCameraController extends ValueNotifier<LiveViewCameraValue> {
     if (_isDisposed) {
       return;
     }
-    print("got an event: $event");
     switch (map['eventType']) {
       case 'recognized':
-        final int recognizedCount = int.parse(event['count']);
-        value = value.copyWith(recognizedCount: recognizedCount);
+        String recognitionType = event['recognitionType'];
+        if (recognitionType == "barcode") {
+          final List<dynamic> reply = event['barcodeData'];
+          final List<BarcodeContainer> barcodes = <BarcodeContainer>[];
+          reply.forEach((dynamic barcodeMap) {
+            barcodes.add(new BarcodeContainer(barcodeMap));
+          });
+          value = value.copyWith(scannedBarcodes: barcodes);
+        }
         break;
       case 'error':
         value = value.copyWith(errorDescription: event['errorDescription']);

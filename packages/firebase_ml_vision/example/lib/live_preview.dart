@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:firebase_ml_vision/src/live_view.dart';
 import 'package:firebase_ml_vision_example/detector_painters.dart';
 import 'package:flutter/material.dart';
@@ -49,7 +50,6 @@ class LivePreviewState extends State<LivePreview> {
     }
   }
 
-
   @override
   void dispose() {
     super.dispose();
@@ -70,14 +70,30 @@ class LivePreviewState extends State<LivePreview> {
             return const Text("loading camera preview…");
           }
           if (loadState is LiveViewCameraLoadStateReady) {
-            ////// BINGO!!!, the camera is ready to present
             if (_readyLoadState != loadState) {
               _readyLoadState?.dispose();
               _readyLoadState = loadState;
             }
             return new AspectRatio(
               aspectRatio: _readyLoadState.controller.value.aspectRatio,
-              child: new LiveView(_readyLoadState.controller),
+              child: new LiveView(
+                controller: _readyLoadState.controller,
+                overlayBuilder: (BuildContext context, Size previewSize,
+                    List<BarcodeContainer> barcodes) {
+                  return barcodes == null
+                      ? const Center(
+                          child: const Text(
+                            'Scanning...',
+                            style: const TextStyle(
+                              color: Colors.green,
+                              fontSize: 30.0,
+                            ),
+                          ),
+                        )
+                      : customPaintForResults(
+                          Detector.barcode, previewSize, barcodes);
+                },
+              ),
             );
           } else if (loadState is LiveViewCameraLoadStateFailed) {
             return new Text("error loading camera ${loadState

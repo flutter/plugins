@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
+import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
@@ -51,9 +52,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
+import io.flutter.plugins.firebasemlvision.util.DetectedItemUtils;
 import io.flutter.view.FlutterView;
 
 import static io.flutter.plugins.firebasemlvision.FirebaseMlVisionPlugin.CAMERA_REQUEST_ID;
+import static io.flutter.plugins.firebasemlvision.constants.VisionBarcodeConstants.BARCODE_DISPLAY_VALUE;
+import static io.flutter.plugins.firebasemlvision.constants.VisionBarcodeConstants.BARCODE_RAW_VALUE;
+import static io.flutter.plugins.firebasemlvision.constants.VisionBarcodeConstants.BARCODE_VALUE_TYPE;
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class Camera {
@@ -343,7 +348,7 @@ public class Camera {
       @Override
       public void onSuccess(List<FirebaseVisionBarcode> firebaseVisionBarcodes) {
         shouldThrottle.set(false);
-        sendRecognizedCount(firebaseVisionBarcodes.size());
+        sendRecognizedBarcodes(firebaseVisionBarcodes);
         Log.d("ML", "barcode scan success, got codes: " + firebaseVisionBarcodes.size());
       }
     }).addOnFailureListener(new OnFailureListener() {
@@ -496,11 +501,24 @@ public class Camera {
       null);
   }
 
-  private void sendRecognizedCount(int count) {
+  private void sendRecognizedBarcodes(List<FirebaseVisionBarcode> barcodes) {
     if (eventSink != null) {
-      Map<String, String> event = new HashMap<>();
+      List<Map<String, Object>> outputMap = new ArrayList<>();
+      for (FirebaseVisionBarcode barcode : barcodes) {
+        Map<String, Object> barcodeData = new HashMap<>();
+        Rect boundingBox = barcode.getBoundingBox();
+        if (boundingBox != null) {
+          barcodeData.putAll(DetectedItemUtils.rectToFlutterMap(boundingBox));
+        }
+        barcodeData.put(BARCODE_VALUE_TYPE, barcode.getValueType());
+        barcodeData.put(BARCODE_DISPLAY_VALUE, barcode.getDisplayValue());
+        barcodeData.put(BARCODE_RAW_VALUE, barcode.getRawValue());
+        outputMap.add(barcodeData);
+      }
+      Map<String, Object> event = new HashMap<>();
       event.put("eventType", "recognized");
-      event.put("count", String.valueOf(count));
+      event.put("recognitionType", "barcode");
+      event.put("barcodeData", outputMap);
       eventSink.success(event);
     }
   }
