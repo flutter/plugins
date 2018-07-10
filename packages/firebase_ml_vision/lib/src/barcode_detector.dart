@@ -24,16 +24,15 @@ class BarcodeDetector extends FirebaseVisionDetector {
   ///
   /// The barcode scanning is performed asynchronously.
   @override
-  Future<List<VisionBarcode>> detectInImage(
-      FirebaseVisionImage visionImage) async {
+  Future<List<Barcode>> detectInImage(FirebaseVisionImage visionImage) async {
     final List<dynamic> reply = await FirebaseVision.channel.invokeMethod(
       'BarcodeDetector#detectInImage',
       visionImage.imageFile.path,
     );
 
-    final List<VisionBarcode> barcodes = <VisionBarcode>[];
+    final List<Barcode> barcodes = <Barcode>[];
     reply.forEach((dynamic barcode) {
-      barcodes.add(new VisionBarcode._(barcode));
+      barcodes.add(new Barcode._(barcode));
     });
 
     return barcodes;
@@ -41,8 +40,8 @@ class BarcodeDetector extends FirebaseVisionDetector {
 }
 
 /// Represents a single recognized barcode and its value.
-class VisionBarcode {
-  VisionBarcode._(Map<dynamic, dynamic> _data)
+class Barcode {
+  Barcode._(Map<dynamic, dynamic> _data)
       : boundingBox = _data['left'] != null
             ? Rectangle<int>(
                 _data['left'],
@@ -53,7 +52,7 @@ class VisionBarcode {
             : null,
         rawValue = _data['raw_value'],
         displayValue = _data['display_value'],
-        format = VisionBarcodeFormat._(_data['format']),
+        format = BarcodeFormat._(_data['format']),
         cornerPoints = _data['points'] == null
             ? null
             : _data['points']
@@ -62,32 +61,24 @@ class VisionBarcode {
                       item[1],
                     ))
                 .toList(),
-        valueType =
-            VisionBarcodeValueType.values.elementAt(_data['value_type']),
-        email = _data['email'] == null
-            ? null
-            : VisionBarcodeEmail._(_data['email']),
-        phone = _data['phone'] == null
-            ? null
-            : VisionBarcodePhone._(_data['phone']),
-        sms = _data['sms'] == null ? null : VisionBarcodeSMS._(_data['sms']),
-        url = _data['url'] == null
-            ? null
-            : VisionBarcodeURLBookmark._(_data['url']),
-        wifi =
-            _data['wifi'] == null ? null : VisionBarcodeWiFi._(_data['wifi']),
+        valueType = BarcodeValueType.values.elementAt(_data['value_type']),
+        email = _data['email'] == null ? null : BarcodeEmail._(_data['email']),
+        phone = _data['phone'] == null ? null : BarcodePhone._(_data['phone']),
+        sms = _data['sms'] == null ? null : BarcodeSMS._(_data['sms']),
+        url = _data['url'] == null ? null : BarcodeURLBookmark._(_data['url']),
+        wifi = _data['wifi'] == null ? null : BarcodeWiFi._(_data['wifi']),
         geoPoint = _data['geo_point'] == null
             ? null
-            : VisionBarcodeGeoPoint._(_data['geo_point']),
+            : BarcodeGeoPoint._(_data['geo_point']),
         contactInfo = _data['contact_info'] == null
             ? null
-            : VisionBarcodeContactInfo._(_data['contact_info']),
+            : BarcodeContactInfo._(_data['contact_info']),
         calendarEvent = _data['calendar_event'] == null
             ? null
-            : VisionBarcodeCalendarEvent._(_data['calendar_event']),
+            : BarcodeCalendarEvent._(_data['calendar_event']),
         driverLicense = _data['driver_license'] == null
             ? null
-            : VisionBarcodeDriverLicense._(_data['driver_license']);
+            : BarcodeDriverLicense._(_data['driver_license']);
 
   /// Gets the bounding rectangle of the detected barcode.
   ///
@@ -114,8 +105,8 @@ class VisionBarcode {
   /// Returns null if nothing found.
   final String displayValue;
 
-  /// The barcode format, for example [VisionBarcodeFormat.EAN13].
-  final VisionBarcodeFormat format;
+  /// The barcode format, for example [BarcodeFormat.EAN13].
+  final BarcodeFormat format;
 
   /// The four corner points in clockwise direction starting with top-left.
   ///
@@ -124,7 +115,7 @@ class VisionBarcode {
 
   /// The format type of the barcode value.
   ///
-  /// For example, [VisionBarcodeValueType.Text], [VisionBarcodeValueType.Product], [VisionBarcodeValueType.URL], etc.
+  /// For example, [BarcodeValueType.Text], [BarcodeValueType.Product], [BarcodeValueType.URL], etc.
   ///
   /// If the value structure cannot be parsed, TYPE_TEXT will be returned.
   /// If the recognized structure type is not defined in your current version of SDK, TYPE_UNKNOWN will be returned.
@@ -132,92 +123,89 @@ class VisionBarcode {
   /// Note that the built-in parsers only recognize a few popular value structures.
   /// For your specific use case, you might want to directly consume getRawValue()
   /// and implement your own parsing logic.
-  final VisionBarcodeValueType valueType;
+  final BarcodeValueType valueType;
 
-  /// Parsed email details. (set iff [valueType] is [VisionBarcodeValueType.Email])
-  final VisionBarcodeEmail email;
+  /// Parsed email details. (set iff [valueType] is [BarcodeValueType.Email])
+  final BarcodeEmail email;
 
-  /// Parsed phone details. (set iff [valueType] is [VisionBarcodeValueType.Phone])
-  final VisionBarcodePhone phone;
+  /// Parsed phone details. (set iff [valueType] is [BarcodeValueType.Phone])
+  final BarcodePhone phone;
 
-  /// Parsed SMS details. (set iff [valueType] is [VisionBarcodeValueType.SMS])
-  final VisionBarcodeSMS sms;
+  /// Parsed SMS details. (set iff [valueType] is [BarcodeValueType.SMS])
+  final BarcodeSMS sms;
 
-  /// Parsed URL bookmark details. (set iff [valueType] is [VisionBarcodeValueType.URL])
-  final VisionBarcodeURLBookmark url;
+  /// Parsed URL bookmark details. (set iff [valueType] is [BarcodeValueType.URL])
+  final BarcodeURLBookmark url;
 
-  /// Parsed WiFi AP details. (set iff [valueType] is [VisionBarcodeValueType.WiFi])
-  final VisionBarcodeWiFi wifi;
+  /// Parsed WiFi AP details. (set iff [valueType] is [BarcodeValueType.WiFi])
+  final BarcodeWiFi wifi;
 
-  /// Parsed geo coordinates. (set iff [valueType] is [VisionBarcodeValueType.GeographicCoordinates])
-  final VisionBarcodeGeoPoint geoPoint;
+  /// Parsed geo coordinates. (set iff [valueType] is [BarcodeValueType.GeographicCoordinates])
+  final BarcodeGeoPoint geoPoint;
 
-  /// Parsed contact details. (set iff [valueType] is [VisionBarcodeValueType.ContactInfo])
-  final VisionBarcodeContactInfo contactInfo;
+  /// Parsed contact details. (set iff [valueType] is [BarcodeValueType.ContactInfo])
+  final BarcodeContactInfo contactInfo;
 
-  /// Parsed calendar event details. (set iff [valueType] is [VisionBarcodeValueType.CalendarEvent])
-  final VisionBarcodeCalendarEvent calendarEvent;
+  /// Parsed calendar event details. (set iff [valueType] is [BarcodeValueType.CalendarEvent])
+  final BarcodeCalendarEvent calendarEvent;
 
-  /// Parsed driver's license details. (set iff [valueType] is [VisionBarcodeValueType.DriversLicense])
-  final VisionBarcodeDriverLicense driverLicense;
+  /// Parsed driver's license details. (set iff [valueType] is [BarcodeValueType.DriversLicense])
+  final BarcodeDriverLicense driverLicense;
 }
 
 /// Barcode format constants - enumeration of supported barcode formats.
-class VisionBarcodeFormat {
+class BarcodeFormat {
   final int value;
-  const VisionBarcodeFormat._(this.value);
+  const BarcodeFormat._(this.value);
 
   /// Barcode format constant representing the union of all supported formats.
-  static const VisionBarcodeFormat All = const VisionBarcodeFormat._(0xFFFF);
+  static const BarcodeFormat All = const BarcodeFormat._(0xFFFF);
 
   /// Barcode format unknown to the current SDK, but understood by Google Play services.
-  static const VisionBarcodeFormat UnKnown = const VisionBarcodeFormat._(0);
+  static const BarcodeFormat UnKnown = const BarcodeFormat._(0);
 
   /// Barcode format constant for Code 128.
-  static const VisionBarcodeFormat Code128 =
-      const VisionBarcodeFormat._(0x0001);
+  static const BarcodeFormat Code128 = const BarcodeFormat._(0x0001);
 
   /// Barcode format constant for Code 39.
-  static const VisionBarcodeFormat Code39 = const VisionBarcodeFormat._(0x0002);
+  static const BarcodeFormat Code39 = const BarcodeFormat._(0x0002);
 
   /// Barcode format constant for Code 93.
-  static const VisionBarcodeFormat Code93 = const VisionBarcodeFormat._(0x0004);
+  static const BarcodeFormat Code93 = const BarcodeFormat._(0x0004);
 
   /// Barcode format constant for Codabar.
-  static const VisionBarcodeFormat CodaBar =
-      const VisionBarcodeFormat._(0x0008);
+  static const BarcodeFormat CodaBar = const BarcodeFormat._(0x0008);
 
   /// Barcode format constant for Data Matrix.
-  static const VisionBarcodeFormat DataMatrix =
-      const VisionBarcodeFormat._(0x0010);
+  static const BarcodeFormat DataMatrix = const BarcodeFormat._(0x0010);
 
   /// Barcode format constant for EAN-13.
-  static const VisionBarcodeFormat EAN13 = const VisionBarcodeFormat._(0x0020);
+  static const BarcodeFormat EAN13 = const BarcodeFormat._(0x0020);
 
   /// Barcode format constant for EAN-8.
-  static const VisionBarcodeFormat EAN8 = const VisionBarcodeFormat._(0x0040);
+  static const BarcodeFormat EAN8 = const BarcodeFormat._(0x0040);
 
   /// Barcode format constant for ITF (Interleaved Two-of-Five).
-  static const VisionBarcodeFormat ITF = const VisionBarcodeFormat._(0x0080);
+  static const BarcodeFormat ITF = const BarcodeFormat._(0x0080);
 
   /// Barcode format constant for QR Code.
-  static const VisionBarcodeFormat QRCode = const VisionBarcodeFormat._(0x0100);
+  static const BarcodeFormat QRCode = const BarcodeFormat._(0x0100);
 
   /// Barcode format constant for UPC-A.
-  static const VisionBarcodeFormat UPCA = const VisionBarcodeFormat._(0x0200);
+  static const BarcodeFormat UPCA = const BarcodeFormat._(0x0200);
 
   /// Barcode format constant for UPC-E.
-  static const VisionBarcodeFormat UPCE = const VisionBarcodeFormat._(0x0400);
+  static const BarcodeFormat UPCE = const BarcodeFormat._(0x0400);
 
   /// Barcode format constant for PDF-417.
-  static const VisionBarcodeFormat PDF417 = const VisionBarcodeFormat._(0x0800);
+  static const BarcodeFormat PDF417 = const BarcodeFormat._(0x0800);
 
   /// Barcode format constant for AZTEC.
-  static const VisionBarcodeFormat Aztec = const VisionBarcodeFormat._(0x1000);
+  static const BarcodeFormat Aztec = const BarcodeFormat._(0x1000);
 }
 
 /// Barcode value type constants - enumeration of supported barcode content value types
-enum VisionBarcodeValueType {
+enum BarcodeValueType {
   /// Unknown Barcode value types.
   Unknown,
 
@@ -259,9 +247,9 @@ enum VisionBarcodeValueType {
 }
 
 /// An email message from a 'MAILTO:' or similar QRCode type.
-class VisionBarcodeEmail {
-  VisionBarcodeEmail._(Map<dynamic, dynamic> data)
-      : type = VisionBarcodeEmailType.values.elementAt(data['type']),
+class BarcodeEmail {
+  BarcodeEmail._(Map<dynamic, dynamic> data)
+      : type = BarcodeEmailType.values.elementAt(data['type']),
         address = data['address'],
         body = data['body'],
         subject = data['subject'];
@@ -276,11 +264,11 @@ class VisionBarcodeEmail {
   final String subject;
 
   /// The type of the email.
-  final VisionBarcodeEmailType type;
+  final BarcodeEmailType type;
 }
 
-/// The type of email for [VisionBarcodeEmail]
-enum VisionBarcodeEmailType {
+/// The type of email for [BarcodeEmail]
+enum BarcodeEmailType {
   /// Unknown email type.
   Unknown,
 
@@ -292,21 +280,21 @@ enum VisionBarcodeEmailType {
 }
 
 /// Phone number info.
-class VisionBarcodePhone {
-  VisionBarcodePhone._(Map<dynamic, dynamic> data)
+class BarcodePhone {
+  BarcodePhone._(Map<dynamic, dynamic> data)
       : number = data['number'],
-        type = VisionBarcodePhoneType.values.elementAt(data['type']);
+        type = BarcodePhoneType.values.elementAt(data['type']);
 
   /// Gets phone number
   final String number;
 
   /// Gets type of the phone number
   ///
-  /// See also [VisionBarcodePhoneType]
-  final VisionBarcodePhoneType type;
+  /// See also [BarcodePhoneType]
+  final BarcodePhoneType type;
 }
 
-enum VisionBarcodePhoneType {
+enum BarcodePhoneType {
   /// Unknown phone type.
   Unknown,
 
@@ -324,8 +312,8 @@ enum VisionBarcodePhoneType {
 }
 
 /// An sms message from an 'SMS:' or similar QRCode type.
-class VisionBarcodeSMS {
-  VisionBarcodeSMS._(Map<dynamic, dynamic> data)
+class BarcodeSMS {
+  BarcodeSMS._(Map<dynamic, dynamic> data)
       : message = data['message'],
         phoneNumber = data['phone_number'];
 
@@ -334,8 +322,8 @@ class VisionBarcodeSMS {
 }
 
 /// A URL and title from a 'MEBKM:' or similar QRCode type.
-class VisionBarcodeURLBookmark {
-  VisionBarcodeURLBookmark._(Map<dynamic, dynamic> data)
+class BarcodeURLBookmark {
+  BarcodeURLBookmark._(Map<dynamic, dynamic> data)
       : title = data['title'],
         url = data['url'];
 
@@ -344,24 +332,24 @@ class VisionBarcodeURLBookmark {
 }
 
 /// A wifi network parameters from a 'WIFI:' or similar QRCode type.
-class VisionBarcodeWiFi {
-  VisionBarcodeWiFi._(Map<dynamic, dynamic> data)
+class BarcodeWiFi {
+  BarcodeWiFi._(Map<dynamic, dynamic> data)
       : ssid = data['ssid'],
         password = data['password'],
-        encryptionType = VisionBarcodeWiFiEncryptionType.values
-            .elementAt(data['encryption_type']);
+        encryptionType =
+            BarcodeWiFiEncryptionType.values.elementAt(data['encryption_type']);
 
   final String ssid;
   final String password;
 
   /// Gets the encryption type of the WIFI
   ///
-  /// See all [VisionBarcodeWiFiEncryptionType]
-  final VisionBarcodeWiFiEncryptionType encryptionType;
+  /// See all [BarcodeWiFiEncryptionType]
+  final BarcodeWiFiEncryptionType encryptionType;
 }
 
 /// Wifi encryption type constants.
-enum VisionBarcodeWiFiEncryptionType {
+enum BarcodeWiFiEncryptionType {
   /// Barcode unknown Wi-Fi encryption type.
   Unknown,
 
@@ -376,8 +364,8 @@ enum VisionBarcodeWiFiEncryptionType {
 }
 
 /// GPS coordinates from a 'GEO:' or similar QRCode type.
-class VisionBarcodeGeoPoint {
-  VisionBarcodeGeoPoint._(Map<dynamic, dynamic> data)
+class BarcodeGeoPoint {
+  BarcodeGeoPoint._(Map<dynamic, dynamic> data)
       : latitude = data['latitude'],
         longitude = data['longitude'];
   final double latitude;
@@ -385,28 +373,23 @@ class VisionBarcodeGeoPoint {
 }
 
 /// A person's or organization's business card.
-class VisionBarcodeContactInfo {
-  VisionBarcodeContactInfo._(Map<dynamic, dynamic> data)
+class BarcodeContactInfo {
+  BarcodeContactInfo._(Map<dynamic, dynamic> data)
       : addresses = data['addresses'] == null
             ? null
             : data['addresses']
-                .map<VisionBarcodeAddress>(
-                    (dynamic item) => VisionBarcodeAddress._(item))
+                .map<BarcodeAddress>((dynamic item) => BarcodeAddress._(item))
                 .toList(),
         emails = data['emails'] == null
             ? null
             : data['emails']
-                .map<VisionBarcodeEmail>(
-                    (dynamic item) => VisionBarcodeEmail._(item))
+                .map<BarcodeEmail>((dynamic item) => BarcodeEmail._(item))
                 .toList(),
-        name = data['name'] == null
-            ? null
-            : VisionBarcodePersonName._(data['name']),
+        name = data['name'] == null ? null : BarcodePersonName._(data['name']),
         phones = data['phones'] == null
             ? null
             : data['phones']
-                .map<VisionBarcodePhone>(
-                    (dynamic item) => VisionBarcodePhone._(item))
+                .map<BarcodePhone>((dynamic item) => BarcodePhone._(item))
                 .toList(),
         urls = data['urls'] == null
             ? null
@@ -420,20 +403,20 @@ class VisionBarcodeContactInfo {
   /// Gets contact person's addresses.
   ///
   /// Returns an empty list if nothing found.
-  final List<VisionBarcodeAddress> addresses;
+  final List<BarcodeAddress> addresses;
 
   /// Gets contact person's emails.
   ///
   /// Returns an empty list if nothing found.
-  final List<VisionBarcodeEmail> emails;
+  final List<BarcodeEmail> emails;
 
   /// Gets contact person's name.
-  final VisionBarcodePersonName name;
+  final BarcodePersonName name;
 
   /// Gets contact person's phones.
   ///
   /// Returns an empty list if nothing found.
-  final List<VisionBarcodePhone> phones;
+  final List<BarcodePhone> phones;
   final List<String> urls;
 
   /// Gets contact person's title.
@@ -444,13 +427,13 @@ class VisionBarcodeContactInfo {
 }
 
 /// An address.
-class VisionBarcodeAddress {
-  VisionBarcodeAddress._(Map<dynamic, dynamic> data)
+class BarcodeAddress {
+  BarcodeAddress._(Map<dynamic, dynamic> data)
       : addressLines = data['address_lines'].map<String>((dynamic item) {
           final String s = item;
           return s;
         }).toList(),
-        type = VisionBarcodeAddressType.values.elementAt(data['type']);
+        type = BarcodeAddressType.values.elementAt(data['type']);
 
   /// Gets formatted address, multiple lines when appropriate.
   ///
@@ -459,12 +442,12 @@ class VisionBarcodeAddress {
 
   /// Gets type of the address.
   ///
-  /// See also [VisionBarcodeAddressType]
-  final VisionBarcodeAddressType type;
+  /// See also [BarcodeAddressType]
+  final BarcodeAddressType type;
 }
 
 /// Address type constants.
-enum VisionBarcodeAddressType {
+enum BarcodeAddressType {
   /// Barcode unknown address type.
   Unknown,
 
@@ -476,8 +459,8 @@ enum VisionBarcodeAddressType {
 }
 
 /// A person's name, both formatted version and individual name components.
-class VisionBarcodePersonName {
-  VisionBarcodePersonName._(Map<dynamic, dynamic> data)
+class BarcodePersonName {
+  BarcodePersonName._(Map<dynamic, dynamic> data)
       : formattedName = data['formatted_name'],
         first = data['first'],
         last = data['last'],
@@ -509,8 +492,8 @@ class VisionBarcodePersonName {
 }
 
 /// DateTime data type used in calendar events
-class VisionBarcodeCalendarEvent {
-  VisionBarcodeCalendarEvent._(Map<dynamic, dynamic> data)
+class BarcodeCalendarEvent {
+  BarcodeCalendarEvent._(Map<dynamic, dynamic> data)
       : eventDescription = data['event_description'],
         location = data['location'],
         organizer = data['organizer'],
@@ -542,8 +525,8 @@ class VisionBarcodeCalendarEvent {
 }
 
 /// A driver license or ID card.
-class VisionBarcodeDriverLicense {
-  VisionBarcodeDriverLicense._(Map<dynamic, dynamic> data)
+class BarcodeDriverLicense {
+  BarcodeDriverLicense._(Map<dynamic, dynamic> data)
       : firstName = data['first_name'],
         middleName = data['middle_name'],
         lastName = data['last_name'],

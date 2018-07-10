@@ -54,8 +54,7 @@ void main() {
         final FirebaseVisionImage image =
             new FirebaseVisionImage.fromFilePath('empty');
 
-        final List<VisionBarcode> barcodes =
-            await detector.detectInImage(image);
+        final List<Barcode> barcodes = await detector.detectInImage(image);
 
         expect(log, <Matcher>[
           isMethodCall(
@@ -64,7 +63,7 @@ void main() {
           ),
         ]);
 
-        final VisionBarcode barcode = barcodes[0];
+        final Barcode barcode = barcodes[0];
         expect(barcode.boundingBox, const Rectangle<num>(1, 2, 3, 4));
         expect(barcode.rawValue, 'hello:raw');
         expect(barcode.displayValue, 'hello:display');
@@ -104,8 +103,7 @@ void main() {
         final FirebaseVisionImage image =
             new FirebaseVisionImage.fromFilePath('empty');
 
-        final List<VisionBarcode> barcodes =
-            await detector.detectInImage(image);
+        final List<Barcode> barcodes = await detector.detectInImage(image);
 
         expect(log, <Matcher>[
           isMethodCall(
@@ -114,7 +112,7 @@ void main() {
           ),
         ]);
 
-        final VisionBarcode barcode = barcodes[0];
+        final Barcode barcode = barcodes[0];
         expect(barcode.boundingBox, const Rectangle<num>(1, 2, 3, 4));
         expect(barcode.rawValue, 'email:raw');
         expect(barcode.displayValue, 'email:display');
@@ -125,7 +123,7 @@ void main() {
         expect(barcode.email.address, 'a');
         expect(barcode.email.body, 'b');
         expect(barcode.email.subject, 's');
-        expect(barcode.email.type, VisionBarcodeEmailType.Unknown);
+        expect(barcode.email.type, BarcodeEmailType.Unknown);
       });
 
       test('detectInImage phone', () async {
@@ -156,8 +154,7 @@ void main() {
         final FirebaseVisionImage image =
             new FirebaseVisionImage.fromFilePath('empty');
 
-        final List<VisionBarcode> barcodes =
-            await detector.detectInImage(image);
+        final List<Barcode> barcodes = await detector.detectInImage(image);
 
         expect(log, <Matcher>[
           isMethodCall(
@@ -166,7 +163,7 @@ void main() {
           ),
         ]);
 
-        final VisionBarcode barcode = barcodes[0];
+        final Barcode barcode = barcodes[0];
         expect(barcode.boundingBox, const Rectangle<num>(1, 2, 3, 4));
         expect(barcode.rawValue, 'phone:raw');
         expect(barcode.displayValue, 'phone:display');
@@ -175,7 +172,7 @@ void main() {
           const Point<num>(7, 8),
         ]);
         expect(barcode.phone.number, '000');
-        expect(barcode.phone.type, VisionBarcodePhoneType.Unknown);
+        expect(barcode.phone.type, BarcodePhoneType.Unknown);
       });
 
       test('detectInImage sms', () async {
@@ -206,8 +203,7 @@ void main() {
         final FirebaseVisionImage image =
             new FirebaseVisionImage.fromFilePath('empty');
 
-        final List<VisionBarcode> barcodes =
-            await detector.detectInImage(image);
+        final List<Barcode> barcodes = await detector.detectInImage(image);
 
         expect(log, <Matcher>[
           isMethodCall(
@@ -216,7 +212,7 @@ void main() {
           ),
         ]);
 
-        final VisionBarcode barcode = barcodes[0];
+        final Barcode barcode = barcodes[0];
         expect(barcode.boundingBox, const Rectangle<num>(1, 2, 3, 4));
         expect(barcode.rawValue, 'sms:raw');
         expect(barcode.displayValue, 'sms:display');
@@ -256,8 +252,7 @@ void main() {
         final FirebaseVisionImage image =
             new FirebaseVisionImage.fromFilePath('empty');
 
-        final List<VisionBarcode> barcodes =
-            await detector.detectInImage(image);
+        final List<Barcode> barcodes = await detector.detectInImage(image);
 
         expect(log, <Matcher>[
           isMethodCall(
@@ -266,7 +261,7 @@ void main() {
           ),
         ]);
 
-        final VisionBarcode barcode = barcodes[0];
+        final Barcode barcode = barcodes[0];
         expect(barcode.boundingBox, const Rectangle<num>(1, 2, 3, 4));
         expect(barcode.rawValue, 'url:raw');
         expect(barcode.displayValue, 'url:display');
@@ -307,8 +302,7 @@ void main() {
         final FirebaseVisionImage image =
             new FirebaseVisionImage.fromFilePath('empty');
 
-        final List<VisionBarcode> barcodes =
-            await detector.detectInImage(image);
+        final List<Barcode> barcodes = await detector.detectInImage(image);
 
         expect(log, <Matcher>[
           isMethodCall(
@@ -317,7 +311,7 @@ void main() {
           ),
         ]);
 
-        final VisionBarcode barcode = barcodes[0];
+        final Barcode barcode = barcodes[0];
         expect(barcode.boundingBox, const Rectangle<num>(1, 2, 3, 4));
         expect(barcode.rawValue, 'wifi:raw');
         expect(barcode.displayValue, 'wifi:display');
@@ -327,8 +321,7 @@ void main() {
         ]);
         expect(barcode.wifi.ssid, 's');
         expect(barcode.wifi.password, 'p');
-        expect(barcode.wifi.encryptionType,
-            VisionBarcodeWiFiEncryptionType.Unknown);
+        expect(barcode.wifi.encryptionType, BarcodeWiFiEncryptionType.Unknown);
       });
 
       test('detectInImage geo_point', () async {
@@ -359,8 +352,7 @@ void main() {
         final FirebaseVisionImage image =
             new FirebaseVisionImage.fromFilePath('empty');
 
-        final List<VisionBarcode> barcodes =
-            await detector.detectInImage(image);
+        final List<Barcode> barcodes = await detector.detectInImage(image);
 
         expect(log, <Matcher>[
           isMethodCall(
@@ -369,7 +361,7 @@ void main() {
           ),
         ]);
 
-        final VisionBarcode barcode = barcodes[0];
+        final Barcode barcode = barcodes[0];
         expect(barcode.boundingBox, const Rectangle<num>(1, 2, 3, 4));
         expect(barcode.rawValue, 'geo:raw');
         expect(barcode.displayValue, 'geo:display');
@@ -439,8 +431,7 @@ void main() {
         final FirebaseVisionImage image =
             new FirebaseVisionImage.fromFilePath('empty');
 
-        final List<VisionBarcode> barcodes =
-            await detector.detectInImage(image);
+        final List<Barcode> barcodes = await detector.detectInImage(image);
 
         expect(log, <Matcher>[
           isMethodCall(
@@ -449,7 +440,7 @@ void main() {
           ),
         ]);
 
-        final VisionBarcode barcode = barcodes[0];
+        final Barcode barcode = barcodes[0];
         expect(barcode.boundingBox, const Rectangle<num>(1, 2, 3, 4));
         expect(barcode.rawValue, 'contact:raw');
         expect(barcode.displayValue, 'contact:display');
@@ -457,11 +448,10 @@ void main() {
           const Point<num>(5, 6),
           const Point<num>(7, 8),
         ]);
-        expect(barcode.contactInfo.addresses[0].type,
-            VisionBarcodeAddressType.Unknown);
-        expect(barcode.contactInfo.addresses[0].addressLines[0], 'al');
         expect(
-            barcode.contactInfo.emails[0].type, VisionBarcodeEmailType.Unknown);
+            barcode.contactInfo.addresses[0].type, BarcodeAddressType.Unknown);
+        expect(barcode.contactInfo.addresses[0].addressLines[0], 'al');
+        expect(barcode.contactInfo.emails[0].type, BarcodeEmailType.Unknown);
         expect(barcode.contactInfo.emails[0].address, 'a');
         expect(barcode.contactInfo.emails[0].body, 'b');
         expect(barcode.contactInfo.emails[0].subject, 's');
@@ -472,8 +462,7 @@ void main() {
         expect(barcode.contactInfo.name.prefix, 'p');
         expect(barcode.contactInfo.name.suffix, 's');
         expect(barcode.contactInfo.name.pronounciation, 'pn');
-        expect(
-            barcode.contactInfo.phones[0].type, VisionBarcodePhoneType.Unknown);
+        expect(barcode.contactInfo.phones[0].type, BarcodePhoneType.Unknown);
         expect(barcode.contactInfo.phones[0].number, '012');
         expect(barcode.contactInfo.urls[0], 'url');
         expect(barcode.contactInfo.jobTitle, 'j');
@@ -513,8 +502,7 @@ void main() {
         final FirebaseVisionImage image =
             new FirebaseVisionImage.fromFilePath('empty');
 
-        final List<VisionBarcode> barcodes =
-            await detector.detectInImage(image);
+        final List<Barcode> barcodes = await detector.detectInImage(image);
 
         expect(log, <Matcher>[
           isMethodCall(
@@ -523,7 +511,7 @@ void main() {
           ),
         ]);
 
-        final VisionBarcode barcode = barcodes[0];
+        final Barcode barcode = barcodes[0];
         expect(barcode.boundingBox, const Rectangle<num>(1, 2, 3, 4));
         expect(barcode.rawValue, 'calendar:raw');
         expect(barcode.displayValue, 'calendar:display');
@@ -581,8 +569,7 @@ void main() {
         final FirebaseVisionImage image =
             new FirebaseVisionImage.fromFilePath('empty');
 
-        final List<VisionBarcode> barcodes =
-            await detector.detectInImage(image);
+        final List<Barcode> barcodes = await detector.detectInImage(image);
 
         expect(log, <Matcher>[
           isMethodCall(
@@ -591,7 +578,7 @@ void main() {
           ),
         ]);
 
-        final VisionBarcode barcode = barcodes[0];
+        final Barcode barcode = barcodes[0];
         expect(barcode.boundingBox, const Rectangle<num>(1, 2, 3, 4));
         expect(barcode.rawValue, 'driver:raw');
         expect(barcode.displayValue, 'driver:display');
@@ -623,7 +610,7 @@ void main() {
         final FirebaseVisionImage image =
             new FirebaseVisionImage.fromFilePath('empty');
 
-        final List<VisionBarcode> blocks = await detector.detectInImage(image);
+        final List<Barcode> blocks = await detector.detectInImage(image);
 
         expect(log, <Matcher>[
           isMethodCall(
@@ -667,8 +654,7 @@ void main() {
         final FirebaseVisionImage image =
             new FirebaseVisionImage.fromFilePath('empty');
 
-        final List<VisionBarcode> barcodes =
-            await detector.detectInImage(image);
+        final List<Barcode> barcodes = await detector.detectInImage(image);
 
         expect(log, <Matcher>[
           isMethodCall(
@@ -677,7 +663,7 @@ void main() {
           ),
         ]);
 
-        final VisionBarcode barcode = barcodes[0];
+        final Barcode barcode = barcodes[0];
         expect(barcode.boundingBox, null);
         expect(barcode.rawValue, 'potato:raw');
         expect(barcode.displayValue, 'potato:display');
