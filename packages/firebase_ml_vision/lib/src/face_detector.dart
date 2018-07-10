@@ -135,7 +135,7 @@ class Face {
               ? null
               : FaceLandmark._(
                   type,
-                  Point<int>(pos[0], pos[1]),
+                  Point<double>(pos[0], pos[1]),
                 );
         }));
 
@@ -209,7 +209,7 @@ class FaceLandmark {
   /// Gets a 2D point for landmark position.
   ///
   /// The point (0, 0) is defined as the upper-left corner of the image.
-  final Point<int> position;
+  final Point<double> position;
 }
 
 String _enumToString(dynamic enumValue) {

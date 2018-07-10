@@ -50,16 +50,16 @@ void main() {
             'smilingProbability': 0.2,
             'trackingId': 8,
             'landmarks': <dynamic, dynamic>{
-              'bottomMouth': <dynamic>[0, 1],
-              'leftCheek': <dynamic>[2, 3],
-              'leftEar': <dynamic>[4, 5],
-              'leftEye': <dynamic>[6, 7],
-              'leftMouth': <dynamic>[8, 9],
-              'noseBase': <dynamic>[10, 11],
-              'rightCheek': <dynamic>[12, 13],
-              'rightEar': <dynamic>[14, 15],
-              'rightEye': <dynamic>[16, 17],
-              'rightMouth': <dynamic>[18, 19],
+              'bottomMouth': <dynamic>[0.1, 1.1],
+              'leftCheek': <dynamic>[2.1, 3.1],
+              'leftEar': <dynamic>[4.1, 5.1],
+              'leftEye': <dynamic>[6.1, 7.1],
+              'leftMouth': <dynamic>[8.1, 9.1],
+              'noseBase': <dynamic>[10.1, 11.1],
+              'rightCheek': <dynamic>[12.1, 13.1],
+              'rightEar': <dynamic>[14.1, 15.1],
+              'rightEye': <dynamic>[16.1, 17.1],
+              'rightMouth': <dynamic>[18.1, 19.1],
             },
           },
         ];
@@ -113,20 +113,20 @@ void main() {
           expect(face.landmark(type).type, type);
         }
 
-        Point<int> position(FaceLandmarkType type) {
+        Point<double> p(FaceLandmarkType type) {
           return face.landmark(type).position;
         }
 
-        expect(position(FaceLandmarkType.bottomMouth), const Point<int>(0, 1));
-        expect(position(FaceLandmarkType.leftCheek), const Point<int>(2, 3));
-        expect(position(FaceLandmarkType.leftEar), const Point<int>(4, 5));
-        expect(position(FaceLandmarkType.leftEye), const Point<int>(6, 7));
-        expect(position(FaceLandmarkType.leftMouth), const Point<int>(8, 9));
-        expect(position(FaceLandmarkType.noseBase), const Point<int>(10, 11));
-        expect(position(FaceLandmarkType.rightCheek), const Point<int>(12, 13));
-        expect(position(FaceLandmarkType.rightEar), const Point<int>(14, 15));
-        expect(position(FaceLandmarkType.rightEye), const Point<int>(16, 17));
-        expect(position(FaceLandmarkType.rightMouth), const Point<int>(18, 19));
+        expect(p(FaceLandmarkType.bottomMouth), const Point<double>(0.1, 1.1));
+        expect(p(FaceLandmarkType.leftCheek), const Point<double>(2.1, 3.1));
+        expect(p(FaceLandmarkType.leftEar), const Point<double>(4.1, 5.1));
+        expect(p(FaceLandmarkType.leftEye), const Point<double>(6.1, 7.1));
+        expect(p(FaceLandmarkType.leftMouth), const Point<double>(8.1, 9.1));
+        expect(p(FaceLandmarkType.noseBase), const Point<double>(10.1, 11.1));
+        expect(p(FaceLandmarkType.rightCheek), const Point<double>(12.1, 13.1));
+        expect(p(FaceLandmarkType.rightEar), const Point<double>(14.1, 15.1));
+        expect(p(FaceLandmarkType.rightEye), const Point<double>(16.1, 17.1));
+        expect(p(FaceLandmarkType.rightMouth), const Point<double>(18.1, 19.1));
       });
 
       test('detectInImage with null landmark', () async {
