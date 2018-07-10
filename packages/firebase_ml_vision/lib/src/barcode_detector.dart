@@ -4,9 +4,9 @@
 
 part of firebase_ml_vision;
 
-/// Detector for performing optical character recognition(OCR) on an input image.
+/// Detector for performing barcode scanning on an input image.
 ///
-/// A barcode detector is created via getVisionBarcodeDetector() in [FirebaseVision]:
+/// A barcode detector is created via barcodeDetector() in [FirebaseVision]:
 ///
 /// ```dart
 /// BarcodeDetector barcodeDetector = FirebaseVision.instance.barcodeDetector();
@@ -14,7 +14,7 @@ part of firebase_ml_vision;
 class BarcodeDetector extends FirebaseVisionDetector {
   BarcodeDetector._();
 
-  /// Closes the barcode detector and release its model resources.
+  /// Closes the barcode detector and releases its model resources.
   @override
   Future<void> close() async {
     return FirebaseVision.channel.invokeMethod('BarcodeDetector#close');
@@ -22,7 +22,7 @@ class BarcodeDetector extends FirebaseVisionDetector {
 
   /// Detects barcode in the input image.
   ///
-  /// The OCR is performed asynchronously.
+  /// The barcode scanning is performed asynchronously.
   @override
   Future<List<VisionBarcode>> detectInImage(
       FirebaseVisionImage visionImage) async {
@@ -95,12 +95,14 @@ class VisionBarcode {
   final Rectangle<int> boundingBox;
 
   /// Returns barcode value as it was encoded in the barcode.
+  ///
   /// Structured values are not parsed, for example: 'MEBKM:TITLE:Google;URL://www.google.com;;'.
   ///
   /// Returns null if nothing found.
   final String rawValue;
 
   /// Returns barcode value in a user-friendly format.
+  ///
   /// May omit some of the information encoded in the barcode.
   /// For example, if getRawValue() returns 'MEBKM:TITLE:Google;URL://www.google.com;;',
   /// the display_value might be '//www.google.com'.
@@ -112,15 +114,15 @@ class VisionBarcode {
   /// Returns null if nothing found.
   final String displayValue;
 
-  /// Returns barcode format, for example [VisionBarcodeFormat.EAN13].
+  /// The barcode format, for example [VisionBarcodeFormat.EAN13].
   final VisionBarcodeFormat format;
 
-  /// Returns four corner points in clockwise direction starting with top-left.
+  /// The four corner points in clockwise direction starting with top-left.
   ///
   /// Due to the possible perspective distortions, this is not necessarily a rectangle.
   final List<Point<int>> cornerPoints;
 
-  /// Returns format type of the barcode value.
+  /// The format type of the barcode value.
   ///
   /// For example, [VisionBarcodeValueType.Text], [VisionBarcodeValueType.Product], [VisionBarcodeValueType.URL], etc.
   ///
@@ -132,31 +134,31 @@ class VisionBarcode {
   /// and implement your own parsing logic.
   final VisionBarcodeValueType valueType;
 
-  /// Gets parsed email details (set iff [valueType] is [VisionBarcodeValueType.Email].
+  /// Parsed email details. (set iff [valueType] is [VisionBarcodeValueType.Email])
   final VisionBarcodeEmail email;
 
-  /// Gets parsed phone details (set iff [valueType] is [VisionBarcodeValueType.Phone]).
+  /// Parsed phone details. (set iff [valueType] is [VisionBarcodeValueType.Phone])
   final VisionBarcodePhone phone;
 
-  /// Gets parsed SMS details (set iff [valueType] is [VisionBarcodeValueType.SMS]).
+  /// Parsed SMS details. (set iff [valueType] is [VisionBarcodeValueType.SMS])
   final VisionBarcodeSMS sms;
 
-  /// Gets parsed URL bookmark details (set iff [valueType] is [VisionBarcodeValueType.URL]).
+  /// Parsed URL bookmark details. (set iff [valueType] is [VisionBarcodeValueType.URL])
   final VisionBarcodeURLBookmark url;
 
-  /// Gets parsed WiFi AP details (set iff [valueType] is [VisionBarcodeValueType.WiFi]).
+  /// Parsed WiFi AP details. (set iff [valueType] is [VisionBarcodeValueType.WiFi])
   final VisionBarcodeWiFi wifi;
 
-  /// Gets parsed geo coordinates (set iff [valueType] is [VisionBarcodeValueType.GeographicCoordinates]).
+  /// Parsed geo coordinates. (set iff [valueType] is [VisionBarcodeValueType.GeographicCoordinates])
   final VisionBarcodeGeoPoint geoPoint;
 
-  /// Gets parsed contact details (set iff [valueType] is [VisionBarcodeValueType.ContactInfo]).
+  /// Parsed contact details. (set iff [valueType] is [VisionBarcodeValueType.ContactInfo])
   final VisionBarcodeContactInfo contactInfo;
 
-  /// Gets parsed calendar event details (set iff [valueType] is [VisionBarcodeValueType.CalendarEvent]).
+  /// Parsed calendar event details. (set iff [valueType] is [VisionBarcodeValueType.CalendarEvent])
   final VisionBarcodeCalendarEvent calendarEvent;
 
-  /// Gets parsed driver's license details (set iff [valueType] is [VisionBarcodeValueType.DriversLicense]).
+  /// Parsed driver's license details. (set iff [valueType] is [VisionBarcodeValueType.DriversLicense])
   final VisionBarcodeDriverLicense driverLicense;
 }
 
@@ -264,16 +266,16 @@ class VisionBarcodeEmail {
         body = data['body'],
         subject = data['subject'];
 
-  /// Gets email's address.
+  /// The email's address.
   final String address;
 
-  /// Gets email's body.
+  /// The email's body.
   final String body;
 
-  /// Gets email's subject.
+  /// The email's subject.
   final String subject;
 
-  /// Gets type of the email.
+  /// The type of the email.
   final VisionBarcodeEmailType type;
 }
 
@@ -451,6 +453,7 @@ class VisionBarcodeAddress {
         type = VisionBarcodeAddressType.values.elementAt(data['type']);
 
   /// Gets formatted address, multiple lines when appropriate.
+  ///
   /// This field always contains at least one line.
   final List<String> addressLines;
 
