@@ -39,6 +39,7 @@ void main() {
           'url': 'http://example.com/',
           'useSafariVC': true,
           'useWebView': false,
+          'statusBarBrightness': Brightness.light.toString(),
         })
       ],
     );
@@ -53,6 +54,7 @@ void main() {
           'url': 'http://example.com/',
           'useSafariVC': true,
           'useWebView': false,
+          'statusBarBrightness': Brightness.light.toString(),
         })
       ],
     );
@@ -67,6 +69,7 @@ void main() {
           'url': 'http://example.com/',
           'useSafariVC': true,
           'useWebView': true,
+          'statusBarBrightness': Brightness.light.toString(),
         })
       ],
     );
@@ -81,6 +84,7 @@ void main() {
           'url': 'http://example.com/',
           'useSafariVC': false,
           'useWebView': false,
+          'statusBarBrightness': Brightness.light.toString(),
         })
       ],
     );
