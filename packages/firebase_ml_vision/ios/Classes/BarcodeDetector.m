@@ -3,7 +3,7 @@
 @implementation BarcodeDetector
 static FIRVisionBarcodeDetector *barcodeDetector;
 
-+ (void)handleDetection:(FIRVisionImage *)image result:(FlutterResult)result {
++ (void)handleDetection:(FIRVisionImage *)image result:(FlutterResult)result resultWrapper:(FlutterResultWrapper)wrapper {
   if (barcodeDetector == nil) {
     FIRVision *vision = [FIRVision vision];
     barcodeDetector = [vision barcodeDetector];
@@ -26,8 +26,14 @@ static FIRVisionBarcodeDetector *barcodeDetector;
        [blocks addObject:barcodeData];
      }
      
-     result(blocks);
+     result(wrapper(blocks));
    }];
+}
+
++ (void)handleDetection:(FIRVisionImage *)image result:(FlutterResult)result {
+  [BarcodeDetector handleDetection:image result:result resultWrapper:^id(id  _Nullable result) {
+    return result;
+  }];
 }
 
 + (void)close {

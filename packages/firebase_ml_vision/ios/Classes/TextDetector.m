@@ -3,67 +3,73 @@
 @implementation TextDetector
 static FIRVisionTextDetector *textDetector;
 
-+ (void)handleDetection:(FIRVisionImage *)image result:(FlutterResult)result {
++ (void)handleDetection:(FIRVisionImage *)image result:(FlutterResult)result resultWrapper:(FlutterResultWrapper)wrapper {
   if (textDetector == nil) {
     FIRVision *vision = [FIRVision vision];
     textDetector = [vision textDetector];
   }
-
+  
   [textDetector
-      detectInImage:image
-         completion:^(NSArray<id<FIRVisionText>> *_Nullable features, NSError *_Nullable error) {
-           if (error) {
-             [FLTFirebaseMlVisionPlugin handleError:error result:result];
-             return;
-           } else if (!features) {
-             result(@[]);
-             return;
-           }
+   detectInImage:image
+   completion:^(NSArray<id<FIRVisionText>> *_Nullable features, NSError *_Nullable error) {
+     if (error) {
+       [FLTFirebaseMlVisionPlugin handleError:error result:result];
+       return;
+     } else if (!features) {
+       result(@[]);
+       return;
+     }
+     
+     NSMutableArray *blocks = [NSMutableArray array];
+     for (id<FIRVisionText> feature in features) {
+       NSMutableDictionary *blockData = [NSMutableDictionary dictionary];
+       if ([feature isKindOfClass:[FIRVisionTextBlock class]]) {
+         FIRVisionTextBlock *block = (FIRVisionTextBlock *)feature;
+         
+         [blockData addEntriesFromDictionary:[self getTextData:block.frame
+                                                  cornerPoints:block.cornerPoints
+                                                          text:block.text]];
+         blockData[@"lines"] = [self getLineData:block.lines];
+       } else if ([feature isKindOfClass:[FIRVisionTextLine class]]) {
+         // We structure the return data to have the line be inside a FIRVisionTextBlock.
+         FIRVisionTextLine *line = (FIRVisionTextLine *)feature;
+         
+         [blockData addEntriesFromDictionary:[self getTextData:line.frame
+                                                  cornerPoints:line.cornerPoints
+                                                          text:line.text]];
+         NSArray<FIRVisionTextLine *> *lines = @[ line ];
+         blockData[@"lines"] = [self getLineData:lines];
+       } else if ([feature isKindOfClass:[FIRVisionTextElement class]]) {
+         // We structure the return data to have the element inside a FIRVisionTextLine
+         // that is inside a FIRVisionTextBlock.
+         FIRVisionTextElement *element = (FIRVisionTextElement *)feature;
+         
+         [blockData addEntriesFromDictionary:[self getTextData:element.frame
+                                                  cornerPoints:element.cornerPoints
+                                                          text:element.text]];
+         
+         NSMutableDictionary *lineData = [NSMutableDictionary dictionary];
+         [lineData addEntriesFromDictionary:[self getTextData:element.frame
+                                                 cornerPoints:element.cornerPoints
+                                                         text:element.text]];
+         
+         NSArray<FIRVisionTextElement *> *elements = @[ element ];
+         lineData[@"elements"] = [self getElementData:elements];
+         
+         blockData[@"lines"] = lineData;
+       }
+       
+       [blocks addObject:blockData];
+     }
+     
+     result(wrapper(blocks));
+   }];
+}
 
-           NSMutableArray *blocks = [NSMutableArray array];
-           for (id<FIRVisionText> feature in features) {
-             NSMutableDictionary *blockData = [NSMutableDictionary dictionary];
-             if ([feature isKindOfClass:[FIRVisionTextBlock class]]) {
-               FIRVisionTextBlock *block = (FIRVisionTextBlock *)feature;
-
-               [blockData addEntriesFromDictionary:[self getTextData:block.frame
-                                                        cornerPoints:block.cornerPoints
-                                                                text:block.text]];
-               blockData[@"lines"] = [self getLineData:block.lines];
-             } else if ([feature isKindOfClass:[FIRVisionTextLine class]]) {
-               // We structure the return data to have the line be inside a FIRVisionTextBlock.
-               FIRVisionTextLine *line = (FIRVisionTextLine *)feature;
-
-               [blockData addEntriesFromDictionary:[self getTextData:line.frame
-                                                        cornerPoints:line.cornerPoints
-                                                                text:line.text]];
-               NSArray<FIRVisionTextLine *> *lines = @[ line ];
-               blockData[@"lines"] = [self getLineData:lines];
-             } else if ([feature isKindOfClass:[FIRVisionTextElement class]]) {
-               // We structure the return data to have the element inside a FIRVisionTextLine
-               // that is inside a FIRVisionTextBlock.
-               FIRVisionTextElement *element = (FIRVisionTextElement *)feature;
-
-               [blockData addEntriesFromDictionary:[self getTextData:element.frame
-                                                        cornerPoints:element.cornerPoints
-                                                                text:element.text]];
-
-               NSMutableDictionary *lineData = [NSMutableDictionary dictionary];
-               [lineData addEntriesFromDictionary:[self getTextData:element.frame
-                                                       cornerPoints:element.cornerPoints
-                                                               text:element.text]];
-
-               NSArray<FIRVisionTextElement *> *elements = @[ element ];
-               lineData[@"elements"] = [self getElementData:elements];
-
-               blockData[@"lines"] = lineData;
-             }
-
-             [blocks addObject:blockData];
-           }
-
-           result(blocks);
-         }];
++ (void)handleDetection:(FIRVisionImage *)image result:(FlutterResult)result {
+  [TextDetector handleDetection:image result:result resultWrapper:^id(id  _Nullable result) {
+    return result;
+  }];
 }
 
 + (void)close {
