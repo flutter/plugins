@@ -153,9 +153,9 @@ class Face {
   /// A face with a positive Euler Y angle is turned to the camera's right and
   /// to its left.
   ///
-  /// The Euler Y angle is available only when using the "accurate" mode setting
-  /// of the face detector (as opposed to the "fast" mode setting, which takes
-  /// some shortcuts to make detection faster).
+  /// The Euler Y angle is guaranteed only when using the "accurate" mode
+  /// setting of the face detector (as opposed to the "fast" mode setting, which
+  /// takes some shortcuts to make detection faster).
   final double headEulerAngleY;
 
   /// The rotation of the face about the axis pointing out of the image.
