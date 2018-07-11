@@ -283,6 +283,16 @@ id roundDoubles(id value) {
             @"snapshot" : @{@"key" : snapshot.key ?: [NSNull null], @"value" : snapshot.value}
           });
         }];
+  } else if ([@"OnDisconnect#set" isEqualToString:call.method]) {
+    [getReference(database, call.arguments) onDisconnectSetValue:call.arguments[@"value"]
+                                                     andPriority:call.arguments[@"priority"]
+                                             withCompletionBlock:defaultCompletionBlock];
+  } else if ([@"OnDisconnect#update" isEqualToString:call.method]) {
+    [getReference(database, call.arguments) onDisconnectUpdateChildValues:call.arguments[@"value"]
+                                                      withCompletionBlock:defaultCompletionBlock];
+  } else if ([@"OnDisconnect#cancel" isEqualToString:call.method]) {
+    [getReference(database, call.arguments)
+        cancelDisconnectOperationsWithCompletionBlock:defaultCompletionBlock];
   } else if ([@"Query#observe" isEqualToString:call.method]) {
     FIRDataEventType eventType = parseEventType(call.arguments[@"eventType"]);
     __block FIRDatabaseHandle handle = [getDatabaseQuery(database, call.arguments)
