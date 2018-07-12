@@ -53,7 +53,7 @@ class Barcode {
         rawValue = _data['raw_value'],
         displayValue = _data['display_value'],
         format = BarcodeFormat._(_data['format']),
-        cornerPoints = _data['points'] == null
+        _cornerPoints = _data['points'] == null
             ? null
             : _data['points']
                 .map<Point<int>>((dynamic item) => Point<int>(
@@ -80,29 +80,31 @@ class Barcode {
             ? null
             : BarcodeDriverLicense._(_data['driver_license']);
 
-  /// Gets the bounding rectangle of the detected barcode.
+  final List<Point<int>> _cornerPoints;
+
+  /// The bounding rectangle of the detected barcode.
   ///
-  /// Returns null if the bounding rectangle can not be determined.
+  /// Could be null if the bounding rectangle can not be determined.
   final Rectangle<int> boundingBox;
 
-  /// Returns barcode value as it was encoded in the barcode.
+  /// Barcode value as it was encoded in the barcode.
   ///
   /// Structured values are not parsed, for example: 'MEBKM:TITLE:Google;URL://www.google.com;;'.
   ///
-  /// Returns null if nothing found.
+  /// Could be null if nothing found.
   final String rawValue;
 
-  /// Returns barcode value in a user-friendly format.
+  /// Barcode value in a user-friendly format.
   ///
   /// May omit some of the information encoded in the barcode.
-  /// For example, if getRawValue() returns 'MEBKM:TITLE:Google;URL://www.google.com;;',
+  /// For example, if rawValue is 'MEBKM:TITLE:Google;URL://www.google.com;;',
   /// the display_value might be '//www.google.com'.
-  /// If valueFormat==TEXT, this field will be equal to getRawValue().
+  /// If valueFormat==TEXT, this field will be equal to rawValue.
   ///
   /// This value may be multiline, for example, when line breaks are encoded into the original TEXT barcode value.
   /// May include the supplement value.
   ///
-  /// Returns null if nothing found.
+  /// Could be null if nothing found.
   final String displayValue;
 
   /// The barcode format, for example [BarcodeFormat.EAN13].
@@ -111,7 +113,7 @@ class Barcode {
   /// The four corner points in clockwise direction starting with top-left.
   ///
   /// Due to the possible perspective distortions, this is not necessarily a rectangle.
-  final List<Point<int>> cornerPoints;
+  List<Point<int>> get cornerPoints => List<Point<int>>.from(_cornerPoints);
 
   /// The format type of the barcode value.
   ///
@@ -121,7 +123,7 @@ class Barcode {
   /// If the recognized structure type is not defined in your current version of SDK, TYPE_UNKNOWN will be returned.
   ///
   /// Note that the built-in parsers only recognize a few popular value structures.
-  /// For your specific use case, you might want to directly consume getRawValue()
+  /// For your specific use case, you might want to directly consume rawValue
   /// and implement your own parsing logic.
   final BarcodeValueType valueType;
 
@@ -155,8 +157,10 @@ class Barcode {
 
 /// Barcode format constants - enumeration of supported barcode formats.
 class BarcodeFormat {
-  final int value;
   const BarcodeFormat._(this.value);
+
+  /// Raw BarcodeFormat value.
+  final int value;
 
   /// Barcode format constant representing the union of all supported formats.
   static const BarcodeFormat All = const BarcodeFormat._(0xFFFF);
@@ -285,10 +289,10 @@ class BarcodePhone {
       : number = data['number'],
         type = BarcodePhoneType.values.elementAt(data['type']);
 
-  /// Gets phone number
+  /// Phone number
   final String number;
 
-  /// Gets type of the phone number
+  /// Type of the phone number
   ///
   /// See also [BarcodePhoneType]
   final BarcodePhoneType type;
@@ -317,7 +321,10 @@ class BarcodeSMS {
       : message = data['message'],
         phoneNumber = data['phone_number'];
 
+  /// An SMS message body.
   final String message;
+
+  /// An SMS message phone number.
   final String phoneNumber;
 }
 
@@ -327,7 +334,10 @@ class BarcodeURLBookmark {
       : title = data['title'],
         url = data['url'];
 
+  /// A URL bookmark title.
   final String title;
+
+  /// A URL bookmark url.
   final String url;
 }
 
@@ -339,10 +349,13 @@ class BarcodeWiFi {
         encryptionType =
             BarcodeWiFiEncryptionType.values.elementAt(data['encryption_type']);
 
+  /// A Wi-Fi access point SSID.
   final String ssid;
+
+  /// A Wi-Fi access point password.
   final String password;
 
-  /// Gets the encryption type of the WIFI
+  /// The encryption type of the WIFI
   ///
   /// See all [BarcodeWiFiEncryptionType]
   final BarcodeWiFiEncryptionType encryptionType;
@@ -368,7 +381,11 @@ class BarcodeGeoPoint {
   BarcodeGeoPoint._(Map<dynamic, dynamic> data)
       : latitude = data['latitude'],
         longitude = data['longitude'];
+
+  /// A location latitude.
   final double latitude;
+
+  /// A location longitude.
   final double longitude;
 }
 
@@ -400,29 +417,29 @@ class BarcodeContactInfo {
         jobTitle = data['job_title'],
         organization = data['organization'];
 
-  /// Gets contact person's addresses.
+  /// Contact person's addresses.
   ///
-  /// Returns an empty list if nothing found.
+  /// Could be an empty list if nothing found.
   final List<BarcodeAddress> addresses;
 
-  /// Gets contact person's emails.
+  /// Contact person's emails.
   ///
-  /// Returns an empty list if nothing found.
+  /// Could be an empty list if nothing found.
   final List<BarcodeEmail> emails;
 
-  /// Gets contact person's name.
+  /// Contact person's name.
   final BarcodePersonName name;
 
-  /// Gets contact person's phones.
+  /// Contact person's phones.
   ///
-  /// Returns an empty list if nothing found.
+  /// Could be an empty list if nothing found.
   final List<BarcodePhone> phones;
   final List<String> urls;
 
-  /// Gets contact person's title.
+  /// Contact person's title.
   final String jobTitle;
 
-  /// Gets contact person's organization.
+  /// Contact person's organization.
   final String organization;
 }
 
@@ -435,12 +452,12 @@ class BarcodeAddress {
         }).toList(),
         type = BarcodeAddressType.values.elementAt(data['type']);
 
-  /// Gets formatted address, multiple lines when appropriate.
+  /// Formatted address, multiple lines when appropriate.
   ///
   /// This field always contains at least one line.
   final List<String> addressLines;
 
-  /// Gets type of the address.
+  /// Type of the address.
   ///
   /// See also [BarcodeAddressType]
   final BarcodeAddressType type;
@@ -469,25 +486,25 @@ class BarcodePersonName {
         pronounciation = data['pronounciation'],
         suffix = data['suffix'];
 
-  /// Gets the properly formatted name.
+  /// The properly formatted name.
   final String formattedName;
 
-  /// Gets first name
+  /// Tirst name
   final String first;
 
-  /// Gets last name
+  /// Last name
   final String last;
 
-  /// Gets middle name
+  /// Middle name
   final String middle;
 
-  /// Gets prefix of the name
+  /// Prefix of the name
   final String prefix;
 
   /// Designates a text string to be set as the kana name in the phonebook. Used for Japanese contacts.
   final String pronounciation;
 
-  /// Gets suffix of the person's name
+  /// Suffix of the person's name
   final String suffix;
 }
 
@@ -502,25 +519,25 @@ class BarcodeCalendarEvent {
         start = DateTime.parse(data['start']),
         end = DateTime.parse(data['end']);
 
-  /// Gets the description of the calendar event.
+  /// The description of the calendar event.
   final String eventDescription;
 
-  /// Gets the location of the calendar event.
+  /// The location of the calendar event.
   final String location;
 
-  /// Gets the organizer of the calendar event.
+  /// The organizer of the calendar event.
   final String organizer;
 
-  /// Gets the status of the calendar event.
+  /// The status of the calendar event.
   final String status;
 
-  /// Gets the summary of the calendar event.
+  /// The summary of the calendar event.
   final String summary;
 
-  /// Gets the start date time of the calendar event.
+  /// The start date time of the calendar event.
   final DateTime start;
 
-  /// Gets the end date time of the calendar event.
+  /// The end date time of the calendar event.
   final DateTime end;
 }
 
@@ -542,47 +559,47 @@ class BarcodeDriverLicense {
         issuingDate = data['issuing_date'],
         issuingCountry = data['issuing_country'];
 
-  /// Gets holder's first name.
+  /// Holder's first name.
   final String firstName;
 
-  /// Gets holder's middle name.
+  /// Holder's middle name.
   final String middleName;
 
-  /// Gets holder's last name.
+  /// Holder's last name.
   final String lastName;
 
-  /// Gets holder's gender. 1 - male, 2 - female.
+  /// Holder's gender. 1 - male, 2 - female.
   final String gender;
 
-  /// Gets city of holder's address.
+  /// City of holder's address.
   final String addressCity;
 
-  /// Gets state of holder's address.
+  /// State of holder's address.
   final String addressState;
 
-  /// Gets holder's street address.
+  /// Holder's street address.
   final String addressStreet;
 
-  /// Gets zip code of holder's address.
+  /// Zip code of holder's address.
   final String addressZip;
 
-  /// Gets birth date of the holder.
+  /// Birth date of the holder.
   final String birthDate;
 
-  /// Gets "DL" for driver licenses, "ID" for ID cards.
+  /// "DL" for driver licenses, "ID" for ID cards.
   final String documentType;
 
-  /// Gets driver license ID number.
+  /// Driver license ID number.
   final String licenseNumber;
 
-  /// Gets expiry date of the license.
+  /// Expiry date of the license.
   final String expiryDate;
 
-  /// Gets issue date of the license.
+  /// Issue date of the license.
   ///
   /// The date format depends on the issuing country. MMDDYYYY for the US, YYYYMMDD for Canada.
   final String issuingDate;
 
-  /// Gets country in which DL/ID was issued. US = "USA", Canada = "CAN".
+  /// Country in which DL/ID was issued. US = "USA", Canada = "CAN".
   final String issuingCountry;
 }
