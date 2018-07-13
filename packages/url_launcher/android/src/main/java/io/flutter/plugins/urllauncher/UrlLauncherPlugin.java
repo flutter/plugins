@@ -23,7 +23,6 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 /** UrlLauncherPlugin */
 public class UrlLauncherPlugin implements MethodCallHandler {
   private final Registrar mRegistrar;
-  private Intent launchIntent = null;
 
   public static void registerWith(Registrar registrar) {
     MethodChannel channel =
@@ -42,6 +41,7 @@ public class UrlLauncherPlugin implements MethodCallHandler {
     if (call.method.equals("canLaunch")) {
       canLaunch(url, result);
     } else if (call.method.equals("launch")) {
+      Intent launchIntent;
       boolean useWebView = call.argument("useWebView");
       Context context;
       if (mRegistrar.activity() != null) {
@@ -82,7 +82,7 @@ public class UrlLauncherPlugin implements MethodCallHandler {
   }
 
   private void closeWebView(Result result) {
-
+    
   }
 
   /*  Launches WebView activity */
