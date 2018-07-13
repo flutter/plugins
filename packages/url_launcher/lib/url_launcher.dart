@@ -83,4 +83,4 @@ Future<bool> canLaunch(String urlString) async {
 /// WebView available to be closed.
 Future<void> closeWebView() async {
   return await _channel.invokeMethod('closeWebView');
-} 
+}
