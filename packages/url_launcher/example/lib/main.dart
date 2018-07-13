@@ -88,6 +88,14 @@ class _MyHomePageState extends State<MyHomePage> {
               child: const Text('Launch in app'),
             ),
             const Padding(padding: const EdgeInsets.all(16.0)),
+            new RaisedButton(
+              onPressed: () => setState(() {
+                    _launched = _launchInWebViewOrVC(toLaunch);
+                    new Timer(const Duration(seconds: 15), closeWebView);
+                  }),
+              child: const Text('Launch in app + close after 15 seconds'),
+            ),
+            const Padding(padding: const EdgeInsets.all(16.0)),
             new FutureBuilder<Null>(future: _launched, builder: _launchStatus),
           ],
         ),
