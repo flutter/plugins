@@ -416,7 +416,7 @@ void main() {
             'last': 'l',
             'middle': 'm',
             'prefix': 'p',
-            'pronounciation': 'pn',
+            'pronunciation': 'pn',
             'suffix': 's',
           },
           'phones': <dynamic>[
@@ -485,7 +485,7 @@ void main() {
         expect(barcode.contactInfo.name.formattedName, 'fn');
         expect(barcode.contactInfo.name.prefix, 'p');
         expect(barcode.contactInfo.name.suffix, 's');
-        expect(barcode.contactInfo.name.pronounciation, 'pn');
+        expect(barcode.contactInfo.name.pronunciation, 'pn');
         expect(barcode.contactInfo.phones[0].type, BarcodePhoneType.Unknown);
         expect(barcode.contactInfo.phones[0].number, '012');
         expect(barcode.contactInfo.urls[0], 'url');

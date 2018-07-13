@@ -153,7 +153,7 @@ NSDictionary *barcodeContactInfoToDictionary(FIRVisionBarcodeContactInfo *contac
       @"last" : contact.name.last,
       @"middle" : contact.name.middle,
       @"prefix" : contact.name.prefix,
-      @"pronounciation" : contact.name.pronounciation,
+      @"pronunciation" : contact.name.pronounciation,
       @"suffix" : contact.name.suffix,
     },
     @"phones" : phones,

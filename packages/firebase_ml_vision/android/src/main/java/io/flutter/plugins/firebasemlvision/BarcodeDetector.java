@@ -122,7 +122,7 @@ class BarcodeDetector implements Detector {
                       name.put("middle", barcode.getContactInfo().getName().getMiddle());
                       name.put("prefix", barcode.getContactInfo().getName().getPrefix());
                       name.put(
-                          "pronounciation", barcode.getContactInfo().getName().getPronunciation());
+                          "pronunciation", barcode.getContactInfo().getName().getPronunciation());
                       name.put("suffix", barcode.getContactInfo().getName().getSuffix());
                       typeValue.put("name", name);
 
