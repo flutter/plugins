@@ -37,7 +37,10 @@
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"BarcodeDetector#detectInImage" isEqualToString:call.method]) {
+    FIRVisionImage *image = [self filePathToVisionImage:call.arguments];
+    [BarcodeDetector handleDetection:image result:result];
   } else if ([@"BarcodeDetector#close" isEqualToString:call.method]) {
+    [BarcodeDetector close];
   } else if ([@"FaceDetector#detectInImage" isEqualToString:call.method]) {
   } else if ([@"FaceDetector#close" isEqualToString:call.method]) {
   } else if ([@"LabelDetector#detectInImage" isEqualToString:call.method]) {

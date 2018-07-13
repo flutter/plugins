@@ -8,20 +8,39 @@ import 'package:flutter/material.dart';
 enum Detector { barcode, face, label, text }
 
 class BarcodeDetectorPainter extends CustomPainter {
-  BarcodeDetectorPainter(this.absoluteImageSize, this.results);
+  BarcodeDetectorPainter(this.absoluteImageSize, this.barcodeLocations);
 
   final Size absoluteImageSize;
-  final List<dynamic> results;
+  final List<Barcode> barcodeLocations;
 
   @override
   void paint(Canvas canvas, Size size) {
-    // TODO: implement paint
+    final double scaleX = size.width / absoluteImageSize.width;
+    final double scaleY = size.height / absoluteImageSize.height;
+
+    Rect scaleRect(Barcode barcode) {
+      return new Rect.fromLTRB(
+        barcode.boundingBox.left * scaleX,
+        barcode.boundingBox.top * scaleY,
+        barcode.boundingBox.right * scaleX,
+        barcode.boundingBox.bottom * scaleY,
+      );
+    }
+
+    final Paint paint = new Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.0;
+
+    for (Barcode barcode in barcodeLocations) {
+      paint.color = Colors.green;
+      canvas.drawRect(scaleRect(barcode), paint);
+    }
   }
 
   @override
-  bool shouldRepaint(CustomPainter oldDelegate) {
-    // TODO: implement shouldRepaint
-    return false;
+  bool shouldRepaint(BarcodeDetectorPainter oldDelegate) {
+    return oldDelegate.absoluteImageSize != absoluteImageSize ||
+        oldDelegate.barcodeLocations != barcodeLocations;
   }
 }
 
