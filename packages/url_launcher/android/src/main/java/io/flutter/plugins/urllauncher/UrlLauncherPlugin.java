@@ -82,7 +82,11 @@ public class UrlLauncherPlugin implements MethodCallHandler {
   }
 
   private void closeWebView(Result result) {
-    
+    Activity activity = mRegistrar.activity();
+
+    if (activity != null) {
+      activity.finish();
+    }
   }
 
   /*  Launches WebView activity */
