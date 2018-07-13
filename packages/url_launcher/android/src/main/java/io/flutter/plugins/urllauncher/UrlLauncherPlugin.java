@@ -62,7 +62,7 @@ public class UrlLauncherPlugin implements MethodCallHandler {
       context.startActivity(launchIntent);
       result.success(null);
     } else if (call.method.equals("closeWebView")) {
-      closeWebView();
+      closeWebView(result);
     } else {
       result.notImplemented();
     }
