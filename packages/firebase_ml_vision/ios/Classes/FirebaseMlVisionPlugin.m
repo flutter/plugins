@@ -39,6 +39,7 @@
   FIRVisionImage *image = [self filePathToVisionImage:call.arguments[@"path"]];
   NSDictionary *options = call.arguments[@"options"];
   if ([@"BarcodeDetector#detectInImage" isEqualToString:call.method]) {
+    [BarcodeDetector handleDetection:image options:options result:result];
   } else if ([@"FaceDetector#detectInImage" isEqualToString:call.method]) {
   } else if ([@"LabelDetector#detectInImage" isEqualToString:call.method]) {
   } else if ([@"TextDetector#detectInImage" isEqualToString:call.method]) {

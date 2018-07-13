@@ -1,3 +1,7 @@
+## 1.0.2
+
+* Add `onDisconnect` support.
+
 ## 1.0.1
 
 * Updated Gradle tooling to match Android Studio 3.1.2.

@@ -1,6 +1,7 @@
 package io.flutter.plugins.firebasemlvision;
 
 import android.net.Uri;
+
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -32,6 +33,14 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
     FirebaseVisionImage image;
     switch (call.method) {
       case "BarcodeDetector#detectInImage":
+        try {
+          image = filePathToVisionImage((String) call.argument("path"));
+          BarcodeDetector.instance.handleDetection(image, options, result);
+        } catch (IOException e) {
+          result.error("barcodeDetectorIOError", e.getLocalizedMessage(), null);
+        } catch (Exception e) {
+          result.error("barcodeDetectorError", e.getLocalizedMessage(), null);
+        }
         break;
       case "FaceDetector#detectInImage":
         break;

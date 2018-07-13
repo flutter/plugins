@@ -24,13 +24,12 @@ class FirebaseVision {
   /// Use this get an instance of a detector:
   ///
   /// ```dart
-  /// TextDetector textDetector = FirebaseVision.instance.getTextDetector();
+  /// TextDetector textDetector = FirebaseVision.instance.textDetector();
   /// ```
   static final FirebaseVision instance = new FirebaseVision._();
 
   /// Creates an instance of [BarcodeDetector].
-  BarcodeDetector barcodeDetector(BarcodeDetectorOptions options) =>
-      new BarcodeDetector._(options);
+  BarcodeDetector barcodeDetector() => new BarcodeDetector._();
 
   /// Creates an instance of [FaceDetector].
   FaceDetector faceDetector(FaceDetectorOptions options) =>
