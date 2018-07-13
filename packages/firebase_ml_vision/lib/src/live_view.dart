@@ -87,8 +87,8 @@ class LiveViewCameraException implements Exception {
   String toString() => '$runtimeType($code, $description)';
 }
 
-typedef Widget OverlayBuilder(BuildContext context, Size previewImageSize,
-    List<BarcodeContainer> barcodes);
+typedef Widget OverlayBuilder(
+    BuildContext context, Size previewImageSize, dynamic data);
 
 // Build the UI texture view of the video data with textureId.
 class LiveView extends StatefulWidget {
@@ -104,14 +104,14 @@ class LiveView extends StatefulWidget {
 }
 
 class LiveViewState extends State<LiveView> {
-  List<BarcodeContainer> scannedCodes = <BarcodeContainer>[];
+  List<dynamic> scannedCodes = <dynamic>[];
 
   @override
   void initState() {
     super.initState();
     widget.controller.addListener(() {
       setState(() {
-        scannedCodes = widget.controller.value.scannedBarcodes;
+        scannedCodes = widget.controller.value.detectedData;
       });
     });
   }
@@ -145,13 +145,16 @@ class LiveViewCameraValue {
   /// Is `null` until  [isInitialized] is `true`.
   final Size previewSize;
 
-  final List<BarcodeContainer> scannedBarcodes;
+  final List<dynamic> detectedData;
+
+  final FirebaseVisionDetectorType recognizerType;
 
   const LiveViewCameraValue({
     this.isInitialized,
     this.errorDescription,
     this.previewSize,
-    this.scannedBarcodes,
+    this.detectedData,
+    this.recognizerType,
   });
 
   const LiveViewCameraValue.uninitialized()
@@ -172,13 +175,15 @@ class LiveViewCameraValue {
     bool isTakingPicture,
     String errorDescription,
     Size previewSize,
-    List<BarcodeContainer> scannedBarcodes,
+    List<dynamic> detectedData,
+    FirebaseVisionDetectorType recognizerType,
   }) {
     return new LiveViewCameraValue(
       isInitialized: isInitialized ?? this.isInitialized,
       errorDescription: errorDescription,
       previewSize: previewSize ?? this.previewSize,
-      scannedBarcodes: scannedBarcodes ?? this.scannedBarcodes,
+      detectedData: detectedData ?? this.detectedData,
+      recognizerType: recognizerType ?? this.recognizerType,
     );
   }
 
@@ -188,7 +193,7 @@ class LiveViewCameraValue {
         'isInitialized: $isInitialized, '
         'errorDescription: $errorDescription, '
         'previewSize: $previewSize, '
-        'scannedBarcodes: $scannedBarcodes)';
+        'scannedBarcodes: $detectedData)';
   }
 }
 
@@ -247,6 +252,12 @@ class LiveViewCameraController extends ValueNotifier<LiveViewCameraValue> {
     return _creatingCompleter.future;
   }
 
+  Future<Null> setRecognizer(
+      FirebaseVisionDetectorType recognizerType) async {
+    await FirebaseVision.instance.setLiveViewRecognizer(recognizerType);
+    value = value.copyWith(recognizerType: recognizerType);
+  }
+
   /// Listen to events from the native plugins.
   ///
   /// A "cameraClosing" event is sent when the camera is closed automatically by the system (for example when the app go to background). The plugin will try to reopen the camera automatically but any ongoing recording will end.
@@ -264,7 +275,13 @@ class LiveViewCameraController extends ValueNotifier<LiveViewCameraValue> {
           reply.forEach((dynamic barcodeMap) {
             barcodes.add(new BarcodeContainer(barcodeMap));
           });
-          value = value.copyWith(scannedBarcodes: barcodes);
+          value = value.copyWith(detectedData: barcodes);
+        } else if (recognitionType == "text") {
+          final List<dynamic> reply = event['textData'];
+          final detectedData = reply.map((dynamic block) {
+            return TextBlock.fromBlockData(block);
+          }).toList();
+          value = value.copyWith(detectedData: detectedData);
         }
         break;
       case 'error':

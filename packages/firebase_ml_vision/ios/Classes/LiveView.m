@@ -4,8 +4,12 @@
 #import <AVFoundation/AVFoundation.h>
 #import <libkern/OSAtomic.h>
 
+static NSString *const sessionQueueLabel = @"io.flutter.plugins.firebaseml.visiondetector.SessionQueue";
+static NSString *const videoDataOutputQueueLabel = @"io.flutter.plugins.firebaseml.visiondetector.VideoDataOutputQueue";
+
 @interface FLTCam ()
 @property (assign, atomic) BOOL isRecognizing;
+@property (nonatomic) dispatch_queue_t sessionQueue;
 @end
 
 @implementation FLTCam
@@ -14,58 +18,113 @@
                              error:(NSError **)error {
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
+  
+  // Configure Captgure Session
+  
   _isUsingFrontCamera = NO;
   _captureSession = [[AVCaptureSession alloc] init];
-  AVCaptureSessionPreset preset;
-  if ([resolutionPreset isEqualToString:@"high"]) {
-    preset = AVCaptureSessionPresetHigh;
-  } else if ([resolutionPreset isEqualToString:@"medium"]) {
-    preset = AVCaptureSessionPresetMedium;
-  } else {
-    NSAssert([resolutionPreset isEqualToString:@"low"], @"Unknown resolution preset %@",
-             resolutionPreset);
-    preset = AVCaptureSessionPresetLow;
-  }
-  _captureSession.sessionPreset = preset;
-  _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraName];
-  NSError *localError = nil;
-  _captureVideoInput =
-  [AVCaptureDeviceInput deviceInputWithDevice:_captureDevice error:&localError];
-  if (localError) {
-    *error = localError;
-    return nil;
-  }
-  CMVideoDimensions dimensions =
-  CMVideoFormatDescriptionGetDimensions([[_captureDevice activeFormat] formatDescription]);
-  _previewSize = CGSizeMake(dimensions.width, dimensions.height);
+  _sessionQueue = dispatch_queue_create(sessionQueueLabel.UTF8String, nil);
   
-  _captureVideoOutput = [AVCaptureVideoDataOutput new];
-  _captureVideoOutput.videoSettings =
-  @{(NSString *)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_32BGRA) };
-  [_captureVideoOutput setAlwaysDiscardsLateVideoFrames:YES];
-  [_captureVideoOutput setSampleBufferDelegate:self queue:dispatch_get_main_queue()];
+  // base example uses AVCaptureVideoPreviewLayer here and the layer is added to a view, Flutter Texture works differently here
+  [self setUpCaptureSessionOutputWithResolutionPreset:resolutionPreset];
+  [self setUpCaptureSessionInputWithCameraName:cameraName];
   
-  AVCaptureConnection *connection =
-  [AVCaptureConnection connectionWithInputPorts:_captureVideoInput.ports
-                                         output:_captureVideoOutput];
-  if ([_captureDevice position] == AVCaptureDevicePositionFront) {
-    connection.videoMirrored = YES;
-  }
-  connection.videoOrientation = AVCaptureVideoOrientationPortrait;
-  [_captureSession addInputWithNoConnections:_captureVideoInput];
-  [_captureSession addOutputWithNoConnections:_captureVideoOutput];
-  [_captureSession addConnection:connection];
-  _capturePhotoOutput = [AVCapturePhotoOutput new];
-  [_captureSession addOutput:_capturePhotoOutput];
+  
+  // Probably unnecessary
+//  CMVideoDimensions dimensions =
+//  CMVideoFormatDescriptionGetDimensions([[_captureDevice activeFormat] formatDescription]);
+//  _previewSize = CGSizeMake(dimensions.width, dimensions.height);
+
+//  _capturePhotoOutput = [AVCapturePhotoOutput new];
+//  [_captureSession addOutput:_capturePhotoOutput];
   return self;
 }
 
+- (AVCaptureSessionPreset) resolutionPresetForPreference:(NSString *)preference {
+  AVCaptureSessionPreset preset;
+  if ([preference isEqualToString:@"high"]) {
+    preset = AVCaptureSessionPresetHigh;
+  } else if ([preference isEqualToString:@"medium"]) {
+    preset = AVCaptureSessionPresetMedium;
+  } else {
+    NSAssert([preference isEqualToString:@"low"], @"Unknown resolution preset %@",
+             preference);
+    preset = AVCaptureSessionPresetLow;
+  }
+  return preset;
+}
+
+- (void)setUpCaptureSessionOutputWithResolutionPreset:(NSString *)resolutionPreset {
+  dispatch_async(_sessionQueue, ^{
+    [self->_captureSession beginConfiguration];
+    self->_captureSession.sessionPreset = [self resolutionPresetForPreference:resolutionPreset];
+    
+    _captureVideoOutput = [[AVCaptureVideoDataOutput alloc] init];
+    _captureVideoOutput.videoSettings = @{(id)kCVPixelBufferPixelFormatTypeKey: [NSNumber numberWithUnsignedInt:kCVPixelFormatType_32BGRA]};
+    dispatch_queue_t outputQueue = dispatch_queue_create(videoDataOutputQueueLabel.UTF8String, nil);
+    [_captureVideoOutput setSampleBufferDelegate:self queue:outputQueue];
+    if ([self.captureSession canAddOutput:_captureVideoOutput]) {
+      [self.captureSession addOutputWithNoConnections:_captureVideoOutput];
+      [self.captureSession commitConfiguration];
+    } else {
+      NSLog(@"%@", @"Failed to add capture session output.");
+    }
+  });
+}
+
+- (void)setUpCaptureSessionInputWithCameraName:(NSString *)cameraName {
+  dispatch_async(_sessionQueue, ^{
+    AVCaptureDevice *device = [AVCaptureDevice deviceWithUniqueID:cameraName];
+    CMVideoDimensions dimensions =
+    CMVideoFormatDescriptionGetDimensions([[device activeFormat] formatDescription]);
+    _previewSize = CGSizeMake(dimensions.width, dimensions.height);
+    if (_onSizeAvailable) {
+      _onSizeAvailable();
+    }
+    if (device) {
+      NSArray<AVCaptureInput *> *currentInputs = self.captureSession.inputs;
+      for (AVCaptureInput *input in currentInputs) {
+        [self.captureSession removeInput:input];
+      }
+      NSError *error;
+      _captureVideoInput = [AVCaptureDeviceInput deviceInputWithDevice:device error:&error];
+
+      if (error) {
+        NSLog(@"Failed to create capture device input: %@", error.localizedDescription);
+        return;
+      } else {
+        // TODO? ACaptureConnection?
+        AVCaptureConnection *connection =
+        [AVCaptureConnection connectionWithInputPorts:_captureVideoInput.ports
+                                               output:_captureVideoOutput];
+        if ([_captureDevice position] == AVCaptureDevicePositionFront) {
+          connection.videoMirrored = YES;
+        }
+//        connection.videoOrientation = AVCaptureVideoOrientationPortrait;
+        [_captureSession addInputWithNoConnections:_captureVideoInput];
+        [_captureSession addConnection:connection];
+//        if ([self.captureSession canAddInput:_captureVideoInput]) {
+//          [self.captureSession addInput:_captureVideoInput];
+//        } else {
+//          NSLog(@"%@", @"Failed to add capture session input.");
+//        }
+      }
+    } else {
+      NSLog(@"Failed to get capture device for camera position: %ld", cameraName);
+    }
+  });
+}
+
 - (void)start {
-  [_captureSession startRunning];
+  dispatch_async(_sessionQueue, ^{
+    [self->_captureSession startRunning];
+  });
 }
 
 - (void)stop {
-  [_captureSession stopRunning];
+  dispatch_async(_sessionQueue, ^{
+    [self->_captureSession stopRunning];
+  });
 }
 
 - (void)captureToFile:(NSString *)path result:(FlutterResult)result {
@@ -76,21 +135,14 @@
 }
 
 - (void)captureOutput:(AVCaptureOutput *)output
-didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
+            didOutput:(CMSampleBufferRef)sampleBuffer
        fromConnection:(AVCaptureConnection *)connection {
-  if (output == _captureVideoOutput) {
-    CVPixelBufferRef newBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
-    CFRetain(newBuffer);
-    CVPixelBufferRef old = _latestPixelBuffer;
-    while (!OSAtomicCompareAndSwapPtrBarrier(old, newBuffer, (void **)&_latestPixelBuffer)) {
-      old = _latestPixelBuffer;
-    }
-    if (old != nil) {
-      CFRelease(old);
-    }
-    if (_onFrameAvailable) {
-      _onFrameAvailable();
-    }
+  NSLog(@"Got Here!!!!");
+}
+
+- (void)captureOutput:(AVCaptureOutput *)output didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
+  CVImageBufferRef newBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+  if (newBuffer) {
     if (!_isRecognizing) {
       _isRecognizing = YES;
       FIRVisionImage *visionImage = [[FIRVisionImage alloc] initWithBuffer:sampleBuffer];
@@ -102,11 +154,27 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
       visionImage.metadata = metadata;
       CGFloat imageWidth = CVPixelBufferGetWidth(newBuffer);
       CGFloat imageHeight = CVPixelBufferGetHeight(newBuffer);
-      [BarcodeDetector handleDetection:visionImage result:_eventSink resultWrapper:^id(id  _Nullable result) {
+      [TextDetector handleDetection:visionImage result:_eventSink resultWrapper:^id(id  _Nullable result) {
         _isRecognizing = NO;
-        return @{@"eventType": @"recognized", @"recognitionType": @"barcode", @"barcodeData": result};
+        return @{@"eventType": @"recognized", @"recognitionType": @"text", @"textData": result};
       }];
+      //      [BarcodeDetector handleDetection:visionImage result:_eventSink resultWrapper:^id(id  _Nullable result) {
+      //        _isRecognizing = NO;
+      //        return @{@"eventType": @"recognized", @"recognitionType": @"barcode", @"barcodeData": result};
+      //      }];
     }
+    CFRetain(newBuffer);
+    CVPixelBufferRef old = _latestPixelBuffer;
+    while (!OSAtomicCompareAndSwapPtrBarrier(old, newBuffer, (void **)&_latestPixelBuffer)) {
+      old = _latestPixelBuffer;
+    }
+    if (old != nil) {
+      CFRelease(old);
+    }
+    if (_onFrameAvailable) {
+      _onFrameAvailable();
+    }
+  }
 //    switch (_currentDetector) {
 //      case DetectorOnDeviceFace:
 //        [self detectFacesOnDeviceInImage:visionImage width:imageWidth height:imageHeight];
@@ -115,7 +183,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 //        [self detectTextOnDeviceInImage:visionImage width:imageWidth height:imageHeight];
 //        break;
 //    }
-  }
   if (!CMSampleBufferDataIsReady(sampleBuffer)) {
     _eventSink(@{
                  @"event" : @"error",

@@ -8,7 +8,7 @@ static FIRVisionTextDetector *textDetector;
     FIRVision *vision = [FIRVision vision];
     textDetector = [vision textDetector];
   }
-  
+  NSLog(@"handling text detection");
   [textDetector
    detectInImage:image
    completion:^(NSArray<id<FIRVisionText>> *_Nullable features, NSError *_Nullable error) {

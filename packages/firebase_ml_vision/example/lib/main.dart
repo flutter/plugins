@@ -23,7 +23,7 @@ class _MyHomePageState extends State<_MyHomePage>
   File _imageFile;
   Size _imageSize;
   List<dynamic> _scanResults;
-  Detector _currentDetector = Detector.text;
+  FirebaseVisionDetectorType _currentDetector = FirebaseVisionDetectorType.text;
   TabController _tabController;
   int _selectedPageIndex = 0;
 
@@ -89,16 +89,16 @@ class _MyHomePageState extends State<_MyHomePage>
 
     FirebaseVisionDetector detector;
     switch (_currentDetector) {
-      case Detector.barcode:
+      case FirebaseVisionDetectorType.barcode:
         detector = FirebaseVision.instance.barcodeDetector(null);
         break;
-      case Detector.face:
+      case FirebaseVisionDetectorType.face:
         detector = FirebaseVision.instance.faceDetector(null);
         break;
-      case Detector.label:
+      case FirebaseVisionDetectorType.label:
         detector = FirebaseVision.instance.labelDetector(null);
         break;
-      case Detector.text:
+      case FirebaseVisionDetectorType.text:
         detector = FirebaseVision.instance.textDetector();
         break;
       default:
@@ -142,29 +142,29 @@ class _MyHomePageState extends State<_MyHomePage>
       appBar: new AppBar(
         title: const Text('ML Vision Example'),
         actions: <Widget>[
-          new PopupMenuButton<Detector>(
-            onSelected: (Detector result) {
+          new PopupMenuButton<FirebaseVisionDetectorType>(
+            onSelected: (FirebaseVisionDetectorType result) {
               setState(() {
                 _currentDetector = result;
                 if (_imageFile != null) _scanImage(_imageFile);
               });
             },
-            itemBuilder: (BuildContext context) => <PopupMenuEntry<Detector>>[
-                  const PopupMenuItem<Detector>(
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<FirebaseVisionDetectorType>>[
+                  const PopupMenuItem<FirebaseVisionDetectorType>(
                     child: const Text('Detect Barcode'),
-                    value: Detector.barcode,
+                    value: FirebaseVisionDetectorType.barcode,
                   ),
-                  const PopupMenuItem<Detector>(
+                  const PopupMenuItem<FirebaseVisionDetectorType>(
                     child: const Text('Detect Face'),
-                    value: Detector.face,
+                    value: FirebaseVisionDetectorType.face,
                   ),
-                  const PopupMenuItem<Detector>(
+                  const PopupMenuItem<FirebaseVisionDetectorType>(
                     child: const Text('Detect Label'),
-                    value: Detector.label,
+                    value: FirebaseVisionDetectorType.label,
                   ),
-                  const PopupMenuItem<Detector>(
+                  const PopupMenuItem<FirebaseVisionDetectorType>(
                     child: const Text('Detect Text'),
-                    value: Detector.text,
+                    value: FirebaseVisionDetectorType.text,
                   ),
                 ],
           ),

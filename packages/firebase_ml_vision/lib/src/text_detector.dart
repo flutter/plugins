@@ -88,6 +88,10 @@ class TextBlock extends TextContainer {
             .toList(),
         super._(block);
 
+  factory TextBlock.fromBlockData(Map<dynamic, dynamic> block) {
+    return new TextBlock._(block);
+  }
+
   final List<TextLine> _lines;
 
   /// The contents of the text block, broken down into individual lines.

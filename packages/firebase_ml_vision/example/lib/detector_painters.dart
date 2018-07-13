@@ -5,24 +5,29 @@
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:flutter/material.dart';
 
-enum Detector { barcode, face, label, text }
-
 CustomPaint customPaintForResults(
-    Detector detector, Size imageSize, List<dynamic> results) {
+    FirebaseVisionDetectorType detector, Size imageSize, List<dynamic> results) {
   CustomPainter painter;
-
   switch (detector) {
-    case Detector.barcode:
-      painter = new BarcodeDetectorPainter(imageSize, results);
+    case FirebaseVisionDetectorType.barcode:
+      try {
+        painter = new BarcodeDetectorPainter(imageSize, results.cast());
+      } on CastError {
+        painter = null;
+      }
       break;
-    case Detector.face:
+    case FirebaseVisionDetectorType.face:
       painter = new FaceDetectorPainter(imageSize, results);
       break;
-    case Detector.label:
+    case FirebaseVisionDetectorType.label:
       painter = new LabelDetectorPainter(imageSize, results);
       break;
-    case Detector.text:
-      painter = new TextDetectorPainter(imageSize, results);
+    case FirebaseVisionDetectorType.text:
+      try {
+        painter = new TextDetectorPainter(imageSize, results.cast());
+      } on CastError {
+        painter = null;
+      }
       break;
     default:
       break;

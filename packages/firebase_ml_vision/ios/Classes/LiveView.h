@@ -7,6 +7,7 @@ AVCaptureAudioDataOutputSampleBufferDelegate, FlutterStreamHandler>
 @property(readonly, nonatomic) int64_t textureId;
 @property (nonatomic) bool isUsingFrontCamera;
 @property(nonatomic, copy) void (^onFrameAvailable)();
+@property(nonatomic, copy) void (^onSizeAvailable)();
 @property(nonatomic) FlutterEventChannel *eventChannel;
 @property(nonatomic) FlutterEventSink eventSink;
 @property(readonly, nonatomic) AVCaptureSession *captureSession;
@@ -34,4 +35,5 @@ AVCaptureAudioDataOutputSampleBufferDelegate, FlutterStreamHandler>
 - (void)startVideoRecordingAtPath:(NSString *)path result:(FlutterResult)result;
 - (void)stopVideoRecordingWithResult:(FlutterResult)result;
 - (void)captureToFile:(NSString *)filename result:(FlutterResult)result;
+//- (void)setRecognizerType:(NSString *)recognizerType;
 @end

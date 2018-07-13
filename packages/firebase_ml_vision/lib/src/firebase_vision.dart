@@ -43,6 +43,29 @@ class FirebaseVision {
 
   /// Creates an instance of [TextDetector].
   TextDetector textDetector() => new TextDetector._();
+
+  Future<Null> setLiveViewRecognizer(FirebaseVisionDetectorType type) async {
+    print("sending setLiveVieRecognizer to device");
+    final String typeMessage = recognizerMessageType(type);
+    if (typeMessage == null) return;
+    await FirebaseVision.channel.invokeMethod("LiveView#setRecognizer",
+        <String, String>{"recognizerType": typeMessage});
+  }
+
+  String recognizerMessageType(FirebaseVisionDetectorType type) {
+    switch (type) {
+      case FirebaseVisionDetectorType.barcode:
+        return "barcode";
+      case FirebaseVisionDetectorType.face:
+        return "face";
+      case FirebaseVisionDetectorType.label:
+        return "label";
+      case FirebaseVisionDetectorType.text:
+        return "text";
+      default:
+        return null;
+    }
+  }
 }
 
 /// Represents an image object used for both on-device and cloud API detectors.
@@ -74,4 +97,11 @@ abstract class FirebaseVisionDetector {
 
   /// Release model resources for the detector.
   Future<void> close();
+}
+
+enum FirebaseVisionDetectorType {
+  barcode,
+  face,
+  label,
+  text,
 }

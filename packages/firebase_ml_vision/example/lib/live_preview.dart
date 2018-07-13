@@ -6,7 +6,7 @@ import 'package:firebase_ml_vision_example/detector_painters.dart';
 import 'package:flutter/material.dart';
 
 class LivePreview extends StatefulWidget {
-  final Detector detector;
+  final FirebaseVisionDetectorType detector;
 
   const LivePreview(
     this.detector, {
@@ -38,9 +38,9 @@ class LivePreviewState extends State<LivePreview> {
               new LiveViewCameraController(
                   backCamera, LiveViewResolutionPreset.high);
           await controller.initialize();
+          setLiveViewDetector();
           yield new LiveViewCameraLoadStateReady(controller);
         } on LiveViewCameraException catch (e) {
-          print("got an error: $e");
           yield new LiveViewCameraLoadStateFailed(
               "error initializing camera controller: ${e.toString()}");
         }
@@ -48,6 +48,17 @@ class LivePreviewState extends State<LivePreview> {
         yield new LiveViewCameraLoadStateFailed("Could not find device camera");
       }
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    setLiveViewDetector();
+  }
+
+  void setLiveViewDetector() async {
+    // set the initial recognizer
+    await FirebaseVision.instance.setLiveViewRecognizer(widget.detector);
   }
 
   @override
@@ -78,20 +89,12 @@ class LivePreviewState extends State<LivePreview> {
               aspectRatio: _readyLoadState.controller.value.aspectRatio,
               child: new LiveView(
                 controller: _readyLoadState.controller,
-                overlayBuilder: (BuildContext context, Size previewSize,
-                    List<BarcodeContainer> barcodes) {
-                  return barcodes == null
-                      ? const Center(
-                          child: const Text(
-                            'Scanning...',
-                            style: const TextStyle(
-                              color: Colors.green,
-                              fontSize: 30.0,
-                            ),
-                          ),
-                        )
+                overlayBuilder:
+                    (BuildContext context, Size previewSize, dynamic data) {
+                  return data == null
+                      ? new Container()
                       : customPaintForResults(
-                          Detector.barcode, previewSize, barcodes);
+                          widget.detector, previewSize, data);
                 },
               ),
             );

@@ -103,13 +103,15 @@
                                            binaryMessenger:_messenger];
       [eventChannel setStreamHandler:cam];
       cam.eventChannel = eventChannel;
-      result(@{
-               @"textureId" : @(textureId),
-               @"previewWidth" : @(cam.previewSize.width),
-               @"previewHeight" : @(cam.previewSize.height),
-               @"captureWidth" : @(cam.captureSize.width),
-               @"captureHeight" : @(cam.captureSize.height),
-               });
+      cam.onSizeAvailable = ^{
+        result(@{
+                 @"textureId" : @(textureId),
+                 @"previewWidth" : @(cam.previewSize.width),
+                 @"previewHeight" : @(cam.previewSize.height),
+                 @"captureWidth" : @(cam.captureSize.width),
+                 @"captureHeight" : @(cam.captureSize.height),
+                 });
+      };
       [cam start];
     }
   } else if ([@"dispose" isEqualToString:call.method]) {
@@ -117,6 +119,16 @@
     NSUInteger textureId = ((NSNumber *)argsMap[@"textureId"]).unsignedIntegerValue;
     [_registry unregisterTexture:textureId];
     [_camera close];
+    result(nil);
+  } else if ([@"LiveView#setRecognizer" isEqualToString:call.method]) {
+    NSLog(@"setRecognizer called");
+    NSDictionary *argsMap = call.arguments;
+    NSString *recognizerType = ((NSString *)argsMap[@"recognizerType"]);
+    NSLog(recognizerType);
+    if (_camera) {
+      NSLog(@"got a camera, setting the recognizer");
+//      [_camera setRecognizerType:recognizerType];
+    }
     result(nil);
   } else if ([@"BarcodeDetector#detectInImage" isEqualToString:call.method]) {
     FIRVisionImage *image = [self filePathToVisionImage:call.arguments];
