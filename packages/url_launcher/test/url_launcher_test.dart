@@ -99,7 +99,7 @@ void main() {
     await closeWebView();
     expect(
       log,
-      <Matcher>[isMethodCall('closeWebView', arguments: <String, Object>{})],
+      <Matcher>[isMethodCall('closeWebView', arguments: null)],
     );
   });
 }
