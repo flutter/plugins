@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.ResultReceiver;
 import android.view.KeyEvent;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
@@ -23,6 +24,7 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 /** UrlLauncherPlugin */
 public class UrlLauncherPlugin implements MethodCallHandler {
   private final Registrar mRegistrar;
+  private ResultReceiver mWebViewFinisher;
 
   public static void registerWith(Registrar registrar) {
     MethodChannel channel =
@@ -33,6 +35,7 @@ public class UrlLauncherPlugin implements MethodCallHandler {
 
   private UrlLauncherPlugin(Registrar registrar) {
     this.mRegistrar = registrar;
+    this.mWebViewFinisher = null;
   }
 
   @Override
@@ -59,6 +62,16 @@ public class UrlLauncherPlugin implements MethodCallHandler {
       if (mRegistrar.activity() == null) {
         launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
       }
+
+      // Create a ResultReceiver, so that the WebView can tell us how to close it.
+      launchIntent.putExtra("callback", new ResultReceiver(null) {
+          @Override
+          protected void onReceiveResult(int resultCode, Bundle resultData) {
+              ResultReceiver finisher = resultData.getParcelable("finisher");
+              UrlLauncherPlugin.this.mWebViewFinisher = finisher;
+          }
+      });
+
       context.startActivity(launchIntent);
       result.success(null);
     } else if (call.method.equals("closeWebView")) {
@@ -82,11 +95,11 @@ public class UrlLauncherPlugin implements MethodCallHandler {
   }
 
   private void closeWebView(Result result) {
-    Activity activity = mRegistrar.activity();
-
-    if (activity != null) {
-      activity.finish();
+    if (mWebViewFinisher != null) {
+      mWebViewFinisher.send(1, new Bundle());
     }
+
+    result.success(null);
   }
 
   /*  Launches WebView activity */
@@ -111,6 +124,18 @@ public class UrlLauncherPlugin implements MethodCallHandler {
               return false;
             }
           });
+
+      // The launcher plugin sent a result receiver; send another result receiver back.
+      // This will be used to ultimately close the WebView.
+      ResultReceiver callback = intent.getParcelableExtra("callback");
+      Bundle resultBundle = new Bundle();
+      resultBundle.putParcelable("finisher",new ResultReceiver(null) {
+          @Override
+          protected void onReceiveResult(int resultCode, Bundle resultData) {
+              WebViewActivity.this.finish();
+          }
+      });
+      callback.send(Activity.RESULT_OK, resultBundle);
     }
 
     @Override

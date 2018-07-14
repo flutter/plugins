@@ -91,7 +91,10 @@ class _MyHomePageState extends State<MyHomePage> {
             new RaisedButton(
               onPressed: () => setState(() {
                     _launched = _launchInWebViewOrVC(toLaunch);
-                    new Timer(const Duration(seconds: 15), closeWebView);
+                    new Timer(const Duration(seconds: 15), () {
+                      print('Closing WebView after 15 seconds...');
+                      closeWebView();
+                    });
                   }),
               child: const Text('Launch in app + close after 15 seconds'),
             ),
