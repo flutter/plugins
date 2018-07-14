@@ -52,8 +52,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
+import io.flutter.plugins.firebasemlvision.BarcodeDetector;
+import io.flutter.plugins.firebasemlvision.DetectorException;
+import io.flutter.plugins.firebasemlvision.FlutterResultWrapper;
+import io.flutter.plugins.firebasemlvision.TextDetector;
 import io.flutter.plugins.firebasemlvision.util.DetectedItemUtils;
 import io.flutter.view.FlutterView;
+
+import io.flutter.plugins.firebasemlvision.Detector;
 
 import static io.flutter.plugins.firebasemlvision.FirebaseMlVisionPlugin.CAMERA_REQUEST_ID;
 import static io.flutter.plugins.firebasemlvision.constants.VisionBarcodeConstants.BARCODE_DISPLAY_VALUE;
@@ -89,8 +95,62 @@ public class Camera {
   private HandlerThread mBackgroundThread;
   private Handler mBackgroundHandler;
   private Surface imageReaderSurface;
-  private CameraCharacteristics cameraCharacteristics;
   private WindowManager windowManager;
+  private Detector currentDetector = TextDetector.instance;
+
+  private FlutterResultWrapper liveDetectorResultWrapper = new FlutterResultWrapper() {
+    @SuppressWarnings("unchecked")
+    @Override
+    public Object wrapFlutterResultData(Detector detector, Object data) {
+      Map<String, Object> event = new HashMap<>();
+      event.put("eventType", "recognized");
+      String dataType;
+      String dataLabel;
+      if (detector instanceof BarcodeDetector) {
+        dataType = "barcode";
+        dataLabel = "barcodeData";
+      } else if (detector instanceof TextDetector) {
+        dataType = "text";
+        dataLabel = "textData";
+      } else {
+        // unsupported live detector
+        return data;
+      }
+      event.put("recognitionType", dataType);
+      event.put(dataLabel, data);
+      return event;
+    }
+  };
+
+  private Detector.OnDetectionFinishedCallback liveDetectorFinishedCallback = new Detector.OnDetectionFinishedCallback() {
+    @Override
+    public void dataReady(Detector detector, Object data) {
+      shouldThrottle.set(false);
+      Map<String, Object> event = new HashMap<>();
+      event.put("eventType", "recognized");
+      String dataType;
+      String dataLabel;
+      if (detector instanceof BarcodeDetector) {
+        dataType = "barcode";
+        dataLabel = "barcodeData";
+      } else if (detector instanceof TextDetector) {
+        dataType = "text";
+        dataLabel = "textData";
+      } else {
+        // unsupported live detector
+        return;
+      }
+      event.put("recognitionType", dataType);
+      event.put(dataLabel, data);
+      eventSink.success(event);
+    }
+
+    @Override
+    public void detectionError(DetectorException e) {
+      shouldThrottle.set(false);
+      e.sendError(eventSink);
+    }
+  };
 
   public Camera(PluginRegistry.Registrar registrar, final String cameraName, @NonNull final String resolutionPreset, @NonNull final MethodChannel.Result result) {
 
@@ -118,7 +178,7 @@ public class Camera {
           throw new IllegalArgumentException("Unknown preset: " + resolutionPreset);
       }
 
-      cameraCharacteristics = cameraManager.getCameraCharacteristics(cameraName);
+      CameraCharacteristics cameraCharacteristics = cameraManager.getCameraCharacteristics(cameraName);
       StreamConfigurationMap streamConfigurationMap =
         cameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
 
@@ -276,14 +336,6 @@ public class Camera {
       .put(uBuffer);
     return output;
 
-//    nv21 = new byte[ySize + uSize + vSize];
-//
-//    //U and V are swapped
-//    yBuffer.get(nv21, 0, ySize);
-//    vBuffer.get(nv21, ySize, vSize);
-//    uBuffer.get(nv21, ySize + vSize, uSize);
-//
-//    return nv21;
   }
 
   private int getRotation() {
@@ -328,11 +380,10 @@ public class Camera {
   private AtomicBoolean shouldThrottle = new AtomicBoolean(false);
 
   private void processImage(Image image) {
+    if (eventSink == null) return;
     if (shouldThrottle.get()) {
-//      Log.d("ML", "should throttle");
       return;
     }
-    Log.d("ML", "about to process a vision frame");
     shouldThrottle.set(true);
     ByteBuffer imageBuffer = YUV_420_888toNV21(image);
     FirebaseVisionImageMetadata metadata = new FirebaseVisionImageMetadata.Builder()
@@ -343,26 +394,25 @@ public class Camera {
       .build();
     FirebaseVisionImage firebaseVisionImage = FirebaseVisionImage.fromByteBuffer(imageBuffer, metadata);
 
-    FirebaseVisionBarcodeDetector visionBarcodeDetector = FirebaseVision.getInstance().getVisionBarcodeDetector();
-    visionBarcodeDetector.detectInImage(firebaseVisionImage).addOnSuccessListener(new OnSuccessListener<List<FirebaseVisionBarcode>>() {
-      @Override
-      public void onSuccess(List<FirebaseVisionBarcode> firebaseVisionBarcodes) {
-        shouldThrottle.set(false);
-        sendRecognizedBarcodes(firebaseVisionBarcodes);
-        Log.d("ML", "barcode scan success, got codes: " + firebaseVisionBarcodes.size());
-      }
-    }).addOnFailureListener(new OnFailureListener() {
-      @Override
-      public void onFailure(@NonNull Exception e) {
-        shouldThrottle.set(false);
-        sendErrorEvent(e.getLocalizedMessage());
-        Log.d("ML", "barcode scan failure, message: " + e.getMessage());
-      }
-    });
-    Log.d("ML", "got an image from the image reader");
+    currentDetector.handleDetection(firebaseVisionImage, liveDetectorFinishedCallback);
+
+//    FirebaseVisionBarcodeDetector visionBarcodeDetector = FirebaseVision.getInstance().getVisionBarcodeDetector();
+//    visionBarcodeDetector.detectInImage(firebaseVisionImage).addOnSuccessListener(new OnSuccessListener<List<FirebaseVisionBarcode>>() {
+//      @Override
+//      public void onSuccess(List<FirebaseVisionBarcode> firebaseVisionBarcodes) {
+//        shouldThrottle.set(false);
+//        sendRecognizedBarcodes(firebaseVisionBarcodes);
+//      }
+//    }).addOnFailureListener(new OnFailureListener() {
+//      @Override
+//      public void onFailure(@NonNull Exception e) {
+//        shouldThrottle.set(false);
+//        sendErrorEvent(e.getLocalizedMessage());
+//      }
+//    });
   }
 
-  ImageReader.OnImageAvailableListener imageAvailable = new ImageReader.OnImageAvailableListener() {
+  private ImageReader.OnImageAvailableListener imageAvailable = new ImageReader.OnImageAvailableListener() {
     @Override
     public void onImageAvailable(ImageReader reader) {
       Image image = reader.acquireLatestImage();
@@ -501,27 +551,27 @@ public class Camera {
       null);
   }
 
-  private void sendRecognizedBarcodes(List<FirebaseVisionBarcode> barcodes) {
-    if (eventSink != null) {
-      List<Map<String, Object>> outputMap = new ArrayList<>();
-      for (FirebaseVisionBarcode barcode : barcodes) {
-        Map<String, Object> barcodeData = new HashMap<>();
-        Rect boundingBox = barcode.getBoundingBox();
-        if (boundingBox != null) {
-          barcodeData.putAll(DetectedItemUtils.rectToFlutterMap(boundingBox));
-        }
-        barcodeData.put(BARCODE_VALUE_TYPE, barcode.getValueType());
-        barcodeData.put(BARCODE_DISPLAY_VALUE, barcode.getDisplayValue());
-        barcodeData.put(BARCODE_RAW_VALUE, barcode.getRawValue());
-        outputMap.add(barcodeData);
-      }
-      Map<String, Object> event = new HashMap<>();
-      event.put("eventType", "recognized");
-      event.put("recognitionType", "barcode");
-      event.put("barcodeData", outputMap);
-      eventSink.success(event);
-    }
-  }
+//  private void sendRecognizedBarcodes(List<FirebaseVisionBarcode> barcodes) {
+//    if (eventSink != null) {
+//      List<Map<String, Object>> outputMap = new ArrayList<>();
+//      for (FirebaseVisionBarcode barcode : barcodes) {
+//        Map<String, Object> barcodeData = new HashMap<>();
+//        Rect boundingBox = barcode.getBoundingBox();
+//        if (boundingBox != null) {
+//          barcodeData.putAll(DetectedItemUtils.rectToFlutterMap(boundingBox));
+//        }
+//        barcodeData.put(BARCODE_VALUE_TYPE, barcode.getValueType());
+//        barcodeData.put(BARCODE_DISPLAY_VALUE, barcode.getDisplayValue());
+//        barcodeData.put(BARCODE_RAW_VALUE, barcode.getRawValue());
+//        outputMap.add(barcodeData);
+//      }
+//      Map<String, Object> event = new HashMap<>();
+//      event.put("eventType", "recognized");
+//      event.put("recognitionType", "barcode");
+//      event.put("barcodeData", outputMap);
+//      eventSink.success(event);
+//    }
+//  }
 
   private void sendErrorEvent(String errorDescription) {
     if (eventSink != null) {

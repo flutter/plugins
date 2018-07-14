@@ -109,7 +109,7 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
   }
 
   @Override
-  public void onMethodCall(MethodCall call, Result result) {
+  public void onMethodCall(MethodCall call, final Result result) {
     switch (call.method) {
       case "init":
         if (camera != null) {
@@ -141,9 +141,21 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
         result.success(null);
         break;
       }
+      case "LiveView#setRecognizer":
+        break;
       case "BarcodeDetector#detectInImage":
         FirebaseVisionImage image = filePathToVisionImage((String) call.arguments, result);
-        if (image != null) BarcodeDetector.instance.handleDetection(image, result);
+        if (image != null) BarcodeDetector.instance.handleDetection(image, new Detector.OnDetectionFinishedCallback() {
+          @Override
+          public void dataReady(Detector detector, Object data) {
+            result.success(data);
+          }
+
+          @Override
+          public void detectionError(DetectorException e) {
+            e.sendError(result);
+          }
+        });
         break;
       case "BarcodeDetector#close":
         BarcodeDetector.instance.close(result);
@@ -158,7 +170,17 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
         break;
       case "TextDetector#detectInImage":
         image = filePathToVisionImage((String) call.arguments, result);
-        if (image != null) TextDetector.instance.handleDetection(image, result);
+        if (image != null) TextDetector.instance.handleDetection(image, new Detector.OnDetectionFinishedCallback() {
+          @Override
+          public void dataReady(Detector detector, Object data) {
+            result.success(data);
+          }
+
+          @Override
+          public void detectionError(DetectorException e) {
+            e.sendError(result);
+          }
+        });
         break;
       case "TextDetector#close":
         TextDetector.instance.close(result);

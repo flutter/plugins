@@ -17,17 +17,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugins.firebasemlvision.util.DetectedItemUtils;
 
 import static io.flutter.plugins.firebasemlvision.constants.VisionBarcodeConstants.*;
 
-class BarcodeDetector implements Detector {
+public class BarcodeDetector extends Detector {
   public static final BarcodeDetector instance = new BarcodeDetector();
   private static FirebaseVisionBarcodeDetector barcodeDetector;
 
   @Override
-  public void handleDetection(FirebaseVisionImage image, final MethodChannel.Result result) {
+  public void handleDetection(FirebaseVisionImage image, final OnDetectionFinishedCallback finishedCallback) {
     if (barcodeDetector == null) barcodeDetector = FirebaseVision.getInstance().getVisionBarcodeDetector();
     barcodeDetector
       .detectInImage(image)
@@ -40,13 +41,13 @@ class BarcodeDetector implements Detector {
             addBarcodeData(barcodeData, barcode);
             barcodes.add(barcodeData);
           }
-          result.success(barcodes);
+          finishedCallback.dataReady(BarcodeDetector.this, barcodes);
         }
       })
       .addOnFailureListener(new OnFailureListener() {
         @Override
         public void onFailure(@NonNull Exception e) {
-          result.error("barcodeDetectorError", e.getLocalizedMessage(), null);
+          finishedCallback.detectionError(new DetectorException("barcodeDetectorError", e.getLocalizedMessage(), null));
         }
       });
   }

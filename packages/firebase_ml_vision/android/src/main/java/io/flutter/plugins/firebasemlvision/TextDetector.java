@@ -11,6 +11,9 @@ import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.text.FirebaseVisionText;
 import com.google.firebase.ml.vision.text.FirebaseVisionTextDetector;
 
+import org.w3c.dom.Text;
+
+import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugins.firebasemlvision.util.DetectedItemUtils;
 
@@ -20,14 +23,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class TextDetector implements Detector {
+public class TextDetector extends Detector {
   public static final TextDetector instance = new TextDetector();
   private static FirebaseVisionTextDetector textDetector;
 
   private TextDetector() {
   }
 
-  public void handleDetection(FirebaseVisionImage image, final MethodChannel.Result result) {
+  @Override
+  public void handleDetection(FirebaseVisionImage image, final OnDetectionFinishedCallback finishedCallback) {
     if (textDetector == null) textDetector = FirebaseVision.getInstance().getVisionTextDetector();
     textDetector
       .detectInImage(image)
@@ -63,16 +67,17 @@ public class TextDetector implements Detector {
               blockData.put("lines", lines);
               blocks.add(blockData);
             }
-            result.success(blocks);
+            finishedCallback.dataReady(TextDetector.this, blocks);
           }
         })
       .addOnFailureListener(
         new OnFailureListener() {
           @Override
           public void onFailure(@NonNull Exception exception) {
-            result.error("textDetectorError", exception.getLocalizedMessage(), null);
+            finishedCallback.detectionError(new DetectorException("textDetectorError", exception.getLocalizedMessage(), null));
           }
         });
+
   }
 
   public void close(MethodChannel.Result result) {
