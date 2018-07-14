@@ -13,6 +13,7 @@
 @implementation FLTUrlLaunchSession {
   NSURL *_url;
   FlutterResult _flutterResult;
+  @public SFSafariViewController *safari;
 }
 
 - (instancetype)initWithUrl:url withFlutterResult:result {
@@ -42,6 +43,10 @@
 
 - (void)safariViewControllerDidFinish:(SFSafariViewController *)controller {
   [controller dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)close {
+  [self safariViewControllerDidFinish:safari];
 }
 
 @end
@@ -90,6 +95,8 @@
     } else {
       [self launchURL:url result:result];
     }
+  } else if ([@"closeWebView" isEqualToString:call.method]) {
+      [self closeWebView:url result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -141,7 +148,16 @@
   _currentSession = [[FLTUrlLaunchSession alloc] initWithUrl:url withFlutterResult:result];
   _currentSession.previousStatusBarStyle = _previousStatusBarStyle;
   safari.delegate = _currentSession;
+  _currentSession->safari = safari;
   [_viewController presentViewController:safari animated:YES completion:nil];
+}
+
+- (void)closeWebView:(NSString *)urlString result:(FlutterResult)result {
+    if (_currentSession != nil) {
+        [_currentSession close];
+    }
+    
+    result(nil);
 }
 
 @end
