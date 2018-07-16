@@ -1,7 +1,6 @@
 package io.flutter.plugins.firebasemlvision;
 
 import android.support.annotation.NonNull;
-
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.ml.vision.FirebaseVision;
@@ -10,9 +9,7 @@ import com.google.firebase.ml.vision.face.FirebaseVisionFace;
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetector;
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetectorOptions;
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceLandmark;
-
 import io.flutter.plugin.common.MethodChannel;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,9 +22,7 @@ class FaceDetector implements Detector {
 
   @Override
   public void handleDetection(
-      FirebaseVisionImage image,
-      Map<String, Object> options,
-      final MethodChannel.Result result) {
+      FirebaseVisionImage image, Map<String, Object> options, final MethodChannel.Result result) {
 
     FirebaseVisionFaceDetector detector;
     if (options == null) {
@@ -57,12 +52,17 @@ class FaceDetector implements Detector {
                   if (face.getSmilingProbability() != FirebaseVisionFace.UNCOMPUTED_PROBABILITY) {
                     faceData.put("smilingProbability", face.getSmilingProbability());
                   }
-                  if (face.getLeftEyeOpenProbability() != FirebaseVisionFace.UNCOMPUTED_PROBABILITY) {
+
+                  if (face.getLeftEyeOpenProbability()
+                      != FirebaseVisionFace.UNCOMPUTED_PROBABILITY) {
                     faceData.put("leftEyeOpenProbability", face.getLeftEyeOpenProbability());
                   }
-                  if (face.getRightEyeOpenProbability() != FirebaseVisionFace.UNCOMPUTED_PROBABILITY) {
+
+                  if (face.getRightEyeOpenProbability()
+                      != FirebaseVisionFace.UNCOMPUTED_PROBABILITY) {
                     faceData.put("rightEyeOpenProbability", face.getRightEyeOpenProbability());
                   }
+
                   if (face.getTrackingId() != FirebaseVisionFace.INVALID_ID) {
                     faceData.put("trackingId", face.getTrackingId());
                   }
@@ -111,16 +111,18 @@ class FaceDetector implements Detector {
   }
 
   private FirebaseVisionFaceDetectorOptions parseOptions(Map<String, Object> options) {
-    int classification = (boolean) options.get("enableClassification") ?
-        FirebaseVisionFaceDetectorOptions.ALL_CLASSIFICATIONS :
-        FirebaseVisionFaceDetectorOptions.NO_CLASSIFICATIONS;
+    int classification =
+        (boolean) options.get("enableClassification")
+            ? FirebaseVisionFaceDetectorOptions.ALL_CLASSIFICATIONS
+            : FirebaseVisionFaceDetectorOptions.NO_CLASSIFICATIONS;
 
-    int landmark = (boolean) options.get("enableLandmarks") ?
-        FirebaseVisionFaceDetectorOptions.ALL_LANDMARKS :
-        FirebaseVisionFaceDetectorOptions.NO_LANDMARKS;
+    int landmark =
+        (boolean) options.get("enableLandmarks")
+            ? FirebaseVisionFaceDetectorOptions.ALL_LANDMARKS
+            : FirebaseVisionFaceDetectorOptions.NO_LANDMARKS;
 
     int mode;
-    switch((String) options.get("mode")) {
+    switch ((String) options.get("mode")) {
       case "accurate":
         mode = FirebaseVisionFaceDetectorOptions.ACCURATE_MODE;
         break;
