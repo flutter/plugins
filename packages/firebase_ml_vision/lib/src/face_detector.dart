@@ -38,12 +38,6 @@ class FaceDetector extends FirebaseVisionDetector {
   /// The options for the face detector.
   final FaceDetectorOptions options;
 
-  /// Closes the face detector and releases its model resources.
-  @override
-  Future<void> close() async {
-    return FirebaseVision.channel.invokeMethod('FaceDetector#close');
-  }
-
   /// Detects faces in the input image.
   @override
   Future<List<Face>> detectInImage(FirebaseVisionImage visionImage) async {

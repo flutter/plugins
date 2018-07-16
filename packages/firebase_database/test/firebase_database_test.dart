@@ -282,6 +282,115 @@ void main() {
       });
     });
 
+    group('$OnDisconnect', () {
+      test('set', () async {
+        final dynamic value = <String, dynamic>{'hello': 'world'};
+        final int priority = 42;
+        final DatabaseReference ref = database.reference();
+        await ref.child('foo').onDisconnect().set(value);
+        await ref.child('bar').onDisconnect().set(value, priority: priority);
+        await ref.child('psi').onDisconnect().set(value, priority: 'priority');
+        await ref.child('por').onDisconnect().set(value, priority: value);
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall(
+              'OnDisconnect#set',
+              arguments: <String, dynamic>{
+                'app': app.name,
+                'databaseURL': databaseURL,
+                'path': 'foo',
+                'value': value,
+                'priority': null,
+              },
+            ),
+            isMethodCall(
+              'OnDisconnect#set',
+              arguments: <String, dynamic>{
+                'app': app.name,
+                'databaseURL': databaseURL,
+                'path': 'bar',
+                'value': value,
+                'priority': priority,
+              },
+            ),
+            isMethodCall(
+              'OnDisconnect#set',
+              arguments: <String, dynamic>{
+                'app': app.name,
+                'databaseURL': databaseURL,
+                'path': 'psi',
+                'value': value,
+                'priority': 'priority',
+              },
+            ),
+            isMethodCall(
+              'OnDisconnect#set',
+              arguments: <String, dynamic>{
+                'app': app.name,
+                'databaseURL': databaseURL,
+                'path': 'por',
+                'value': value,
+                'priority': value,
+              },
+            ),
+          ],
+        );
+      });
+      test('update', () async {
+        final dynamic value = <String, dynamic>{'hello': 'world'};
+        await database.reference().child("foo").onDisconnect().update(value);
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall(
+              'OnDisconnect#update',
+              arguments: <String, dynamic>{
+                'app': app.name,
+                'databaseURL': databaseURL,
+                'path': 'foo',
+                'value': value,
+              },
+            ),
+          ],
+        );
+      });
+      test('cancel', () async {
+        await database.reference().child("foo").onDisconnect().cancel();
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall(
+              'OnDisconnect#cancel',
+              arguments: <String, dynamic>{
+                'app': app.name,
+                'databaseURL': databaseURL,
+                'path': 'foo',
+              },
+            ),
+          ],
+        );
+      });
+      test('remove', () async {
+        await database.reference().child("foo").onDisconnect().remove();
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall(
+              'OnDisconnect#set',
+              arguments: <String, dynamic>{
+                'app': app.name,
+                'databaseURL': databaseURL,
+                'path': 'foo',
+                'value': null,
+                'priority': null,
+              },
+            ),
+          ],
+        );
+      });
+    });
+
     group('$Query', () {
       // TODO(jackson): Write more tests for queries
       test('keepSynced, simple query', () async {
