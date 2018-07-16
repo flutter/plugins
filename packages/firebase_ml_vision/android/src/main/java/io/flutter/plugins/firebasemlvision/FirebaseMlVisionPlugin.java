@@ -1,7 +1,6 @@
 package io.flutter.plugins.firebasemlvision;
 
 import android.net.Uri;
-
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;

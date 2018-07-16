@@ -3,7 +3,9 @@
 @implementation BarcodeDetector
 static FIRVisionBarcodeDetector *barcodeDetector;
 
-+ (void)handleDetection:(FIRVisionImage *)image options:(NSDictionary *)options result:(FlutterResult)result {
++ (void)handleDetection:(FIRVisionImage *)image
+                options:(NSDictionary *)options
+                 result:(FlutterResult)result {
   if (barcodeDetector == nil) {
     FIRVision *vision = [FIRVision vision];
     barcodeDetector = [vision barcodeDetector];
