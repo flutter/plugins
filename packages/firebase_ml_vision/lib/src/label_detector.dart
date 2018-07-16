@@ -4,13 +4,92 @@
 
 part of firebase_ml_vision;
 
+/// Detector for detecting and labeling entities in an input image.
+///
+/// When you use the API, you get a list of the entities that were recognized:
+/// people, things, places, activities, and so on. Each label found comes with a
+/// score that indicates the confidence the ML model has in its relevance. With
+/// this information, you can perform tasks such as automatic metadata
+/// generation and content moderation.
+///
+/// A label detector is created via labelDetector(LabelDetectorOptions options)
+/// in [FirebaseVision]:
+///
+/// ```dart
+/// LabelDetector labelDetector = FirebaseVision.instance.labelDetector(options);
+/// ```
 class LabelDetector extends FirebaseVisionDetector {
-  LabelDetector._(LabelDetectorOptions options);
+  LabelDetector._(this.options);
 
+  /// The options for the detector.
+  ///
+  /// Sets the confidence threshold for detecting entities.
+  final LabelDetectorOptions options;
+
+  /// Detects entities in the input image.
+  ///
+  /// Performed asynchronously.
   @override
-  Future<void> detectInImage(FirebaseVisionImage visionImage) async {
-    // TODO: implement detectInImage
+  Future<List<Label>> detectInImage(FirebaseVisionImage visionImage) async {
+    final List<dynamic> reply = await FirebaseVision.channel.invokeMethod(
+      'LabelDetector#detectInImage',
+      <String, dynamic>{
+        'path': visionImage.imageFile.path,
+        'options': <String, dynamic>{
+          'confidenceThreshold': options.confidenceThreshold,
+        },
+      },
+    );
+
+    final List<Label> labels = <Label>[];
+    for (dynamic data in reply) {
+      labels.add(Label._(data));
+    }
+
+    return labels;
   }
 }
 
-class LabelDetectorOptions {}
+/// Options for Label detector.
+///
+/// Confidence threshold could be provided for the label detection. For example,
+/// if the confidence threshold is set to 0.7, only labels with
+/// confidence >= 0.7 would be returned. The default threshold is 0.5.
+class LabelDetectorOptions {
+  /// Constructor for [LabelDetectorOptions].
+  ///
+  /// Confidence threshold could be provided for the label detection.
+  /// For example, if the confidence threshold is set to 0.7, only labels with
+  /// confidence >= 0.7 would be returned. The default threshold is 0.5.
+  LabelDetectorOptions({this.confidenceThreshold = 0.5})
+      : assert(confidenceThreshold >= 0.0),
+        assert(confidenceThreshold <= 1.0);
+
+  /// The minimum confidence threshold of labels to be detected.
+  ///
+  /// Required to be in range [0.0, 1.0].
+  final double confidenceThreshold;
+}
+
+/// Represents an entity label detected by [LabelDetector].
+class Label {
+  Label._(dynamic data)
+      : confidence = data['confidence'],
+        entityId = data['entityId'],
+        label = data['label'];
+
+  /// The overall confidence of the result. Range [0.0, 1.0].
+  final double confidence;
+
+  /// The opaque entity ID.
+  ///
+  /// IDs are available in Google Knowledge Graph Search API
+  /// https://developers.google.com/knowledge-graph/
+  final String entityId;
+
+  /// A detected label from the given image.
+  ///
+  /// The label returned here is in English only. The end developer should use
+  /// [entityId] to retrieve unique id.
+  final String label;
+}
