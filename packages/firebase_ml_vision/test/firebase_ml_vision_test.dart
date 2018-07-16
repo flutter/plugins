@@ -19,9 +19,11 @@ void main() {
         log.add(methodCall);
 
         switch (methodCall.method) {
-          case 'TextDetector#detectInImage':
-            return returnValue;
           case 'BarcodeDetector#detectInImage':
+            return returnValue;
+          case 'FaceDetector#detectInImage':
+            return returnValue;
+          case 'TextDetector#detectInImage':
             return returnValue;
           default:
             return null;
@@ -70,9 +72,9 @@ void main() {
         expect(barcode.boundingBox, const Rectangle<int>(1, 2, 3, 4));
         expect(barcode.rawValue, 'hello:raw');
         expect(barcode.displayValue, 'hello:display');
-        expect(barcode.cornerPoints, <Point<int>>[
-          const Point<int>(5, 6),
-          const Point<int>(7, 8),
+        expect(barcode.cornerPoints, const <Point<int>>[
+          Point<int>(5, 6),
+          Point<int>(7, 8),
         ]);
       });
 
@@ -122,9 +124,9 @@ void main() {
         expect(barcode.boundingBox, const Rectangle<int>(1, 2, 3, 4));
         expect(barcode.rawValue, 'email:raw');
         expect(barcode.displayValue, 'email:display');
-        expect(barcode.cornerPoints, <Point<int>>[
-          const Point<int>(5, 6),
-          const Point<int>(7, 8),
+        expect(barcode.cornerPoints, const <Point<int>>[
+          Point<int>(5, 6),
+          Point<int>(7, 8),
         ]);
         expect(barcode.email.address, 'a');
         expect(barcode.email.body, 'b');
@@ -176,9 +178,9 @@ void main() {
         expect(barcode.boundingBox, const Rectangle<int>(1, 2, 3, 4));
         expect(barcode.rawValue, 'phone:raw');
         expect(barcode.displayValue, 'phone:display');
-        expect(barcode.cornerPoints, <Point<int>>[
-          const Point<int>(5, 6),
-          const Point<int>(7, 8),
+        expect(barcode.cornerPoints, const <Point<int>>[
+          Point<int>(5, 6),
+          Point<int>(7, 8),
         ]);
         expect(barcode.phone.number, '000');
         expect(barcode.phone.type, BarcodePhoneType.Unknown);
@@ -228,9 +230,9 @@ void main() {
         expect(barcode.boundingBox, const Rectangle<int>(1, 2, 3, 4));
         expect(barcode.rawValue, 'sms:raw');
         expect(barcode.displayValue, 'sms:display');
-        expect(barcode.cornerPoints, <Point<int>>[
-          const Point<int>(5, 6),
-          const Point<int>(7, 8),
+        expect(barcode.cornerPoints, const <Point<int>>[
+          Point<int>(5, 6),
+          Point<int>(7, 8),
         ]);
         expect(barcode.sms.phoneNumber, '000');
         expect(barcode.sms.message, 'm');
@@ -280,9 +282,9 @@ void main() {
         expect(barcode.boundingBox, const Rectangle<int>(1, 2, 3, 4));
         expect(barcode.rawValue, 'url:raw');
         expect(barcode.displayValue, 'url:display');
-        expect(barcode.cornerPoints, <Point<int>>[
-          const Point<int>(5, 6),
-          const Point<int>(7, 8),
+        expect(barcode.cornerPoints, const <Point<int>>[
+          Point<int>(5, 6),
+          Point<int>(7, 8),
         ]);
         expect(barcode.url.title, 't');
         expect(barcode.url.url, 'u');
@@ -333,9 +335,9 @@ void main() {
         expect(barcode.boundingBox, const Rectangle<int>(1, 2, 3, 4));
         expect(barcode.rawValue, 'wifi:raw');
         expect(barcode.displayValue, 'wifi:display');
-        expect(barcode.cornerPoints, <Point<int>>[
-          const Point<int>(5, 6),
-          const Point<int>(7, 8),
+        expect(barcode.cornerPoints, const <Point<int>>[
+          Point<int>(5, 6),
+          Point<int>(7, 8),
         ]);
         expect(barcode.wifi.ssid, 's');
         expect(barcode.wifi.password, 'p');
@@ -386,9 +388,9 @@ void main() {
         expect(barcode.boundingBox, const Rectangle<int>(1, 2, 3, 4));
         expect(barcode.rawValue, 'geo:raw');
         expect(barcode.displayValue, 'geo:display');
-        expect(barcode.cornerPoints, <Point<int>>[
-          const Point<int>(5, 6),
-          const Point<int>(7, 8),
+        expect(barcode.cornerPoints, const <Point<int>>[
+          Point<int>(5, 6),
+          Point<int>(7, 8),
         ]);
         expect(barcode.geoPoint.latitude, 0.2);
         expect(barcode.geoPoint.longitude, 0.3);
@@ -468,9 +470,9 @@ void main() {
         expect(barcode.boundingBox, const Rectangle<int>(1, 2, 3, 4));
         expect(barcode.rawValue, 'contact:raw');
         expect(barcode.displayValue, 'contact:display');
-        expect(barcode.cornerPoints, <Point<int>>[
-          const Point<int>(5, 6),
-          const Point<int>(7, 8),
+        expect(barcode.cornerPoints, const <Point<int>>[
+          Point<int>(5, 6),
+          Point<int>(7, 8),
         ]);
         expect(
             barcode.contactInfo.addresses[0].type, BarcodeAddressType.Unknown);
@@ -542,9 +544,9 @@ void main() {
         expect(barcode.boundingBox, const Rectangle<int>(1, 2, 3, 4));
         expect(barcode.rawValue, 'calendar:raw');
         expect(barcode.displayValue, 'calendar:display');
-        expect(barcode.cornerPoints, <Point<int>>[
-          const Point<int>(5, 6),
-          const Point<int>(7, 8),
+        expect(barcode.cornerPoints, const <Point<int>>[
+          Point<int>(5, 6),
+          Point<int>(7, 8),
         ]);
         expect(barcode.calendarEvent.eventDescription, 'e');
         expect(barcode.calendarEvent.location, 'l');
@@ -612,9 +614,9 @@ void main() {
         expect(barcode.boundingBox, const Rectangle<int>(1, 2, 3, 4));
         expect(barcode.rawValue, 'driver:raw');
         expect(barcode.displayValue, 'driver:display');
-        expect(barcode.cornerPoints, <Point<int>>[
-          const Point<int>(5, 6),
-          const Point<int>(7, 8),
+        expect(barcode.cornerPoints, const <Point<int>>[
+          Point<int>(5, 6),
+          Point<int>(7, 8),
         ]);
         expect(barcode.driverLicense.firstName, 'fn');
         expect(barcode.driverLicense.middleName, 'mn');
@@ -690,14 +692,139 @@ void main() {
         expect(barcode.boundingBox, null);
         expect(barcode.rawValue, 'potato:raw');
         expect(barcode.displayValue, 'potato:display');
-        expect(barcode.cornerPoints, <Point<int>>[
-          const Point<int>(17, 18),
-          const Point<int>(19, 20),
+        expect(barcode.cornerPoints, const <Point<int>>[
+          Point<int>(17, 18),
+          Point<int>(19, 20),
         ]);
       });
     });
 
-    group('$FaceDetector', () {});
+    group('$FaceDetector', () {
+      List<dynamic> testFaces;
+
+      setUp(() {
+        testFaces = <dynamic>[
+          <dynamic, dynamic>{
+            'left': 0,
+            'top': 1,
+            'width': 2,
+            'height': 3,
+            'headEulerAngleY': 4.0,
+            'headEulerAngleZ': 5.0,
+            'leftEyeOpenProbability': 0.4,
+            'rightEyeOpenProbability': 0.5,
+            'smilingProbability': 0.2,
+            'trackingId': 8,
+            'landmarks': <dynamic, dynamic>{
+              'bottomMouth': <dynamic>[0.1, 1.1],
+              'leftCheek': <dynamic>[2.1, 3.1],
+              'leftEar': <dynamic>[4.1, 5.1],
+              'leftEye': <dynamic>[6.1, 7.1],
+              'leftMouth': <dynamic>[8.1, 9.1],
+              'noseBase': <dynamic>[10.1, 11.1],
+              'rightCheek': <dynamic>[12.1, 13.1],
+              'rightEar': <dynamic>[14.1, 15.1],
+              'rightEye': <dynamic>[16.1, 17.1],
+              'rightMouth': <dynamic>[18.1, 19.1],
+            },
+          },
+        ];
+      });
+
+      test('detectInImage', () async {
+        returnValue = testFaces;
+
+        final FaceDetector detector = FirebaseVision.instance.faceDetector(
+          new FaceDetectorOptions(
+            enableClassification: true,
+            enableLandmarks: true,
+            enableTracking: false,
+            minFaceSize: 0.5,
+            mode: FaceDetectorMode.accurate,
+          ),
+        );
+
+        final FirebaseVisionImage image = new FirebaseVisionImage.fromFilePath(
+          'empty',
+        );
+
+        final List<Face> faces = await detector.detectInImage(image);
+
+        expect(log, <Matcher>[
+          isMethodCall(
+            'FaceDetector#detectInImage',
+            arguments: <String, dynamic>{
+              'path': 'empty',
+              'options': <String, dynamic>{
+                'enableClassification': true,
+                'enableLandmarks': true,
+                'enableTracking': false,
+                'minFaceSize': 0.5,
+                'mode': 'accurate',
+              },
+            },
+          ),
+        ]);
+
+        final Face face = faces[0];
+        expect(face.boundingBox, const Rectangle<int>(0, 1, 2, 3));
+        expect(face.headEulerAngleY, 4.0);
+        expect(face.headEulerAngleZ, 5.0);
+        expect(face.leftEyeOpenProbability, 0.4);
+        expect(face.rightEyeOpenProbability, 0.5);
+        expect(face.smilingProbability, 0.2);
+        expect(face.trackingId, 8);
+
+        for (FaceLandmarkType type in FaceLandmarkType.values) {
+          expect(face.landmark(type).type, type);
+        }
+
+        Point<double> p(FaceLandmarkType type) {
+          return face.landmark(type).position;
+        }
+
+        expect(p(FaceLandmarkType.bottomMouth), const Point<double>(0.1, 1.1));
+        expect(p(FaceLandmarkType.leftCheek), const Point<double>(2.1, 3.1));
+        expect(p(FaceLandmarkType.leftEar), const Point<double>(4.1, 5.1));
+        expect(p(FaceLandmarkType.leftEye), const Point<double>(6.1, 7.1));
+        expect(p(FaceLandmarkType.leftMouth), const Point<double>(8.1, 9.1));
+        expect(p(FaceLandmarkType.noseBase), const Point<double>(10.1, 11.1));
+        expect(p(FaceLandmarkType.rightCheek), const Point<double>(12.1, 13.1));
+        expect(p(FaceLandmarkType.rightEar), const Point<double>(14.1, 15.1));
+        expect(p(FaceLandmarkType.rightEye), const Point<double>(16.1, 17.1));
+        expect(p(FaceLandmarkType.rightMouth), const Point<double>(18.1, 19.1));
+      });
+
+      test('detectInImage with null landmark', () async {
+        testFaces[0]['landmarks']['bottomMouth'] = null;
+        returnValue = testFaces;
+
+        final FaceDetector detector = FirebaseVision.instance.faceDetector(
+          new FaceDetectorOptions(),
+        );
+        final FirebaseVisionImage image = new FirebaseVisionImage.fromFilePath(
+          'empty',
+        );
+
+        final List<Face> faces = await detector.detectInImage(image);
+
+        expect(faces[0].landmark(FaceLandmarkType.bottomMouth), null);
+      });
+
+      test('detectInImage no faces', () async {
+        returnValue = <dynamic>[];
+
+        final FaceDetector detector = FirebaseVision.instance.faceDetector(
+          new FaceDetectorOptions(),
+        );
+        final FirebaseVisionImage image = new FirebaseVisionImage.fromFilePath(
+          'empty',
+        );
+
+        final List<Face> faces = await detector.detectInImage(image);
+        expect(faces, isEmpty);
+      });
+    });
 
     group('$LabelDetector', () {});
 
@@ -768,25 +895,25 @@ void main() {
         final TextBlock block = blocks[0];
         expect(block.boundingBox, const Rectangle<int>(13, 14, 15, 16));
         expect(block.text, 'friend');
-        expect(block.cornerPoints, <Point<int>>[
-          const Point<int>(17, 18),
-          const Point<int>(19, 20),
+        expect(block.cornerPoints, const <Point<int>>[
+          Point<int>(17, 18),
+          Point<int>(19, 20),
         ]);
 
         final TextLine line = block.lines[0];
         expect(line.boundingBox, const Rectangle<int>(5, 6, 7, 8));
         expect(line.text, 'my');
-        expect(line.cornerPoints, <Point<int>>[
-          const Point<int>(9, 10),
-          const Point<int>(11, 12),
+        expect(line.cornerPoints, const <Point<int>>[
+          Point<int>(9, 10),
+          Point<int>(11, 12),
         ]);
 
         final TextElement element = line.elements[0];
         expect(element.boundingBox, const Rectangle<int>(1, 2, 3, 4));
         expect(element.text, 'hello');
-        expect(element.cornerPoints, <Point<int>>[
-          const Point<int>(5, 6),
-          const Point<int>(7, 8),
+        expect(element.cornerPoints, const <Point<int>>[
+          Point<int>(5, 6),
+          Point<int>(7, 8),
         ]);
       });
 
@@ -843,9 +970,9 @@ void main() {
         final TextBlock block = blocks[0];
         expect(block.boundingBox, null);
         expect(block.text, 'potato');
-        expect(block.cornerPoints, <Point<int>>[
-          const Point<int>(17, 18),
-          const Point<int>(19, 20),
+        expect(block.cornerPoints, const <Point<int>>[
+          Point<int>(17, 18),
+          Point<int>(19, 20),
         ]);
       });
     });
