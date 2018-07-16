@@ -2,7 +2,7 @@ name: firebase_performance_example
 description: Demonstrates how to use the firebase_performance plugin.
 
 dependencies:
-  http: "0.11.3+16"
+  http: "0.11.3+17"
   flutter:
     sdk: flutter
 
