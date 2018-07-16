@@ -95,7 +95,7 @@ class AuthenticationHelper extends FingerprintManagerCompat.AuthenticationCallba
 
   boolean isFingerPrintAvailable(){
     if(android.os.Build.VERSION.SDK_INT >= 23){
-      if(fingerprintManager.isHardwareDetected){
+      if(fingerprintManager.isHardwareDetected()){
         return true;
       }
     }
