@@ -3,7 +3,9 @@
 @implementation BarcodeDetector
 static FIRVisionBarcodeDetector *barcodeDetector;
 
-+ (void)handleDetection:(FIRVisionImage *)image result:(FlutterResult)result {
++ (void)handleDetection:(FIRVisionImage *)image
+                options:(NSDictionary *)options
+                 result:(FlutterResult)result {
   if (barcodeDetector == nil) {
     FIRVision *vision = [FIRVision vision];
     barcodeDetector = [vision barcodeDetector];
@@ -25,9 +27,6 @@ static FIRVisionBarcodeDetector *barcodeDetector;
                         }
                         result(ret);
                       }];
-}
-+ (void)close {
-  barcodeDetector = nil;
 }
 
 NSDictionary *visionBarcodeToDictionary(FIRVisionBarcode *barcode) {
@@ -156,7 +155,7 @@ NSDictionary *barcodeContactInfoToDictionary(FIRVisionBarcodeContactInfo *contac
       @"last" : contact.name.last,
       @"middle" : contact.name.middle,
       @"prefix" : contact.name.prefix,
-      @"pronounciation" : contact.name.pronounciation,
+      @"pronunciation" : contact.name.pronounciation,
       @"suffix" : contact.name.suffix,
     },
     @"phones" : phones,

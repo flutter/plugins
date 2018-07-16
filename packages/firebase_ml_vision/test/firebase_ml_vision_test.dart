@@ -59,17 +59,20 @@ void main() {
         expect(log, <Matcher>[
           isMethodCall(
             'BarcodeDetector#detectInImage',
-            arguments: 'empty',
+            arguments: <String, dynamic>{
+              'path': 'empty',
+              'options': <String, dynamic>{},
+            },
           ),
         ]);
 
         final Barcode barcode = barcodes[0];
-        expect(barcode.boundingBox, const Rectangle<num>(1, 2, 3, 4));
+        expect(barcode.boundingBox, const Rectangle<int>(1, 2, 3, 4));
         expect(barcode.rawValue, 'hello:raw');
         expect(barcode.displayValue, 'hello:display');
-        expect(barcode.cornerPoints, <Point<num>>[
-          const Point<num>(5, 6),
-          const Point<num>(7, 8),
+        expect(barcode.cornerPoints, <Point<int>>[
+          const Point<int>(5, 6),
+          const Point<int>(7, 8),
         ]);
       });
 
@@ -108,17 +111,20 @@ void main() {
         expect(log, <Matcher>[
           isMethodCall(
             'BarcodeDetector#detectInImage',
-            arguments: 'empty',
+            arguments: <String, dynamic>{
+              'path': 'empty',
+              'options': <String, dynamic>{},
+            },
           ),
         ]);
 
         final Barcode barcode = barcodes[0];
-        expect(barcode.boundingBox, const Rectangle<num>(1, 2, 3, 4));
+        expect(barcode.boundingBox, const Rectangle<int>(1, 2, 3, 4));
         expect(barcode.rawValue, 'email:raw');
         expect(barcode.displayValue, 'email:display');
-        expect(barcode.cornerPoints, <Point<num>>[
-          const Point<num>(5, 6),
-          const Point<num>(7, 8),
+        expect(barcode.cornerPoints, <Point<int>>[
+          const Point<int>(5, 6),
+          const Point<int>(7, 8),
         ]);
         expect(barcode.email.address, 'a');
         expect(barcode.email.body, 'b');
@@ -159,17 +165,20 @@ void main() {
         expect(log, <Matcher>[
           isMethodCall(
             'BarcodeDetector#detectInImage',
-            arguments: 'empty',
+            arguments: <String, dynamic>{
+              'path': 'empty',
+              'options': <String, dynamic>{},
+            },
           ),
         ]);
 
         final Barcode barcode = barcodes[0];
-        expect(barcode.boundingBox, const Rectangle<num>(1, 2, 3, 4));
+        expect(barcode.boundingBox, const Rectangle<int>(1, 2, 3, 4));
         expect(barcode.rawValue, 'phone:raw');
         expect(barcode.displayValue, 'phone:display');
-        expect(barcode.cornerPoints, <Point<num>>[
-          const Point<num>(5, 6),
-          const Point<num>(7, 8),
+        expect(barcode.cornerPoints, <Point<int>>[
+          const Point<int>(5, 6),
+          const Point<int>(7, 8),
         ]);
         expect(barcode.phone.number, '000');
         expect(barcode.phone.type, BarcodePhoneType.Unknown);
@@ -208,17 +217,20 @@ void main() {
         expect(log, <Matcher>[
           isMethodCall(
             'BarcodeDetector#detectInImage',
-            arguments: 'empty',
+            arguments: <String, dynamic>{
+              'path': 'empty',
+              'options': <String, dynamic>{},
+            },
           ),
         ]);
 
         final Barcode barcode = barcodes[0];
-        expect(barcode.boundingBox, const Rectangle<num>(1, 2, 3, 4));
+        expect(barcode.boundingBox, const Rectangle<int>(1, 2, 3, 4));
         expect(barcode.rawValue, 'sms:raw');
         expect(barcode.displayValue, 'sms:display');
-        expect(barcode.cornerPoints, <Point<num>>[
-          const Point<num>(5, 6),
-          const Point<num>(7, 8),
+        expect(barcode.cornerPoints, <Point<int>>[
+          const Point<int>(5, 6),
+          const Point<int>(7, 8),
         ]);
         expect(barcode.sms.phoneNumber, '000');
         expect(barcode.sms.message, 'm');
@@ -257,17 +269,20 @@ void main() {
         expect(log, <Matcher>[
           isMethodCall(
             'BarcodeDetector#detectInImage',
-            arguments: 'empty',
+            arguments: <String, dynamic>{
+              'path': 'empty',
+              'options': <String, dynamic>{},
+            },
           ),
         ]);
 
         final Barcode barcode = barcodes[0];
-        expect(barcode.boundingBox, const Rectangle<num>(1, 2, 3, 4));
+        expect(barcode.boundingBox, const Rectangle<int>(1, 2, 3, 4));
         expect(barcode.rawValue, 'url:raw');
         expect(barcode.displayValue, 'url:display');
-        expect(barcode.cornerPoints, <Point<num>>[
-          const Point<num>(5, 6),
-          const Point<num>(7, 8),
+        expect(barcode.cornerPoints, <Point<int>>[
+          const Point<int>(5, 6),
+          const Point<int>(7, 8),
         ]);
         expect(barcode.url.title, 't');
         expect(barcode.url.url, 'u');
@@ -307,17 +322,20 @@ void main() {
         expect(log, <Matcher>[
           isMethodCall(
             'BarcodeDetector#detectInImage',
-            arguments: 'empty',
+            arguments: <String, dynamic>{
+              'path': 'empty',
+              'options': <String, dynamic>{},
+            },
           ),
         ]);
 
         final Barcode barcode = barcodes[0];
-        expect(barcode.boundingBox, const Rectangle<num>(1, 2, 3, 4));
+        expect(barcode.boundingBox, const Rectangle<int>(1, 2, 3, 4));
         expect(barcode.rawValue, 'wifi:raw');
         expect(barcode.displayValue, 'wifi:display');
-        expect(barcode.cornerPoints, <Point<num>>[
-          const Point<num>(5, 6),
-          const Point<num>(7, 8),
+        expect(barcode.cornerPoints, <Point<int>>[
+          const Point<int>(5, 6),
+          const Point<int>(7, 8),
         ]);
         expect(barcode.wifi.ssid, 's');
         expect(barcode.wifi.password, 'p');
@@ -357,17 +375,20 @@ void main() {
         expect(log, <Matcher>[
           isMethodCall(
             'BarcodeDetector#detectInImage',
-            arguments: 'empty',
+            arguments: <String, dynamic>{
+              'path': 'empty',
+              'options': <String, dynamic>{},
+            },
           ),
         ]);
 
         final Barcode barcode = barcodes[0];
-        expect(barcode.boundingBox, const Rectangle<num>(1, 2, 3, 4));
+        expect(barcode.boundingBox, const Rectangle<int>(1, 2, 3, 4));
         expect(barcode.rawValue, 'geo:raw');
         expect(barcode.displayValue, 'geo:display');
-        expect(barcode.cornerPoints, <Point<num>>[
-          const Point<num>(5, 6),
-          const Point<num>(7, 8),
+        expect(barcode.cornerPoints, <Point<int>>[
+          const Point<int>(5, 6),
+          const Point<int>(7, 8),
         ]);
         expect(barcode.geoPoint.latitude, 0.2);
         expect(barcode.geoPoint.longitude, 0.3);
@@ -395,7 +416,7 @@ void main() {
             'last': 'l',
             'middle': 'm',
             'prefix': 'p',
-            'pronounciation': 'pn',
+            'pronunciation': 'pn',
             'suffix': 's',
           },
           'phones': <dynamic>[
@@ -436,17 +457,20 @@ void main() {
         expect(log, <Matcher>[
           isMethodCall(
             'BarcodeDetector#detectInImage',
-            arguments: 'empty',
+            arguments: <String, dynamic>{
+              'path': 'empty',
+              'options': <String, dynamic>{},
+            },
           ),
         ]);
 
         final Barcode barcode = barcodes[0];
-        expect(barcode.boundingBox, const Rectangle<num>(1, 2, 3, 4));
+        expect(barcode.boundingBox, const Rectangle<int>(1, 2, 3, 4));
         expect(barcode.rawValue, 'contact:raw');
         expect(barcode.displayValue, 'contact:display');
-        expect(barcode.cornerPoints, <Point<num>>[
-          const Point<num>(5, 6),
-          const Point<num>(7, 8),
+        expect(barcode.cornerPoints, <Point<int>>[
+          const Point<int>(5, 6),
+          const Point<int>(7, 8),
         ]);
         expect(
             barcode.contactInfo.addresses[0].type, BarcodeAddressType.Unknown);
@@ -461,7 +485,7 @@ void main() {
         expect(barcode.contactInfo.name.formattedName, 'fn');
         expect(barcode.contactInfo.name.prefix, 'p');
         expect(barcode.contactInfo.name.suffix, 's');
-        expect(barcode.contactInfo.name.pronounciation, 'pn');
+        expect(barcode.contactInfo.name.pronunciation, 'pn');
         expect(barcode.contactInfo.phones[0].type, BarcodePhoneType.Unknown);
         expect(barcode.contactInfo.phones[0].number, '012');
         expect(barcode.contactInfo.urls[0], 'url');
@@ -507,17 +531,20 @@ void main() {
         expect(log, <Matcher>[
           isMethodCall(
             'BarcodeDetector#detectInImage',
-            arguments: 'empty',
+            arguments: <String, dynamic>{
+              'path': 'empty',
+              'options': <String, dynamic>{},
+            },
           ),
         ]);
 
         final Barcode barcode = barcodes[0];
-        expect(barcode.boundingBox, const Rectangle<num>(1, 2, 3, 4));
+        expect(barcode.boundingBox, const Rectangle<int>(1, 2, 3, 4));
         expect(barcode.rawValue, 'calendar:raw');
         expect(barcode.displayValue, 'calendar:display');
-        expect(barcode.cornerPoints, <Point<num>>[
-          const Point<num>(5, 6),
-          const Point<num>(7, 8),
+        expect(barcode.cornerPoints, <Point<int>>[
+          const Point<int>(5, 6),
+          const Point<int>(7, 8),
         ]);
         expect(barcode.calendarEvent.eventDescription, 'e');
         expect(barcode.calendarEvent.location, 'l');
@@ -574,17 +601,20 @@ void main() {
         expect(log, <Matcher>[
           isMethodCall(
             'BarcodeDetector#detectInImage',
-            arguments: 'empty',
+            arguments: <String, dynamic>{
+              'path': 'empty',
+              'options': <String, dynamic>{},
+            },
           ),
         ]);
 
         final Barcode barcode = barcodes[0];
-        expect(barcode.boundingBox, const Rectangle<num>(1, 2, 3, 4));
+        expect(barcode.boundingBox, const Rectangle<int>(1, 2, 3, 4));
         expect(barcode.rawValue, 'driver:raw');
         expect(barcode.displayValue, 'driver:display');
-        expect(barcode.cornerPoints, <Point<num>>[
-          const Point<num>(5, 6),
-          const Point<num>(7, 8),
+        expect(barcode.cornerPoints, <Point<int>>[
+          const Point<int>(5, 6),
+          const Point<int>(7, 8),
         ]);
         expect(barcode.driverLicense.firstName, 'fn');
         expect(barcode.driverLicense.middleName, 'mn');
@@ -615,24 +645,14 @@ void main() {
         expect(log, <Matcher>[
           isMethodCall(
             'BarcodeDetector#detectInImage',
-            arguments: 'empty',
+            arguments: <String, dynamic>{
+              'path': 'empty',
+              'options': <String, dynamic>{},
+            },
           ),
         ]);
 
         expect(blocks, isEmpty);
-      });
-
-      test('close', () async {
-        final BarcodeDetector detector =
-            FirebaseVision.instance.barcodeDetector();
-        await detector.close();
-
-        expect(log, <Matcher>[
-          isMethodCall(
-            'BarcodeDetector#close',
-            arguments: null,
-          ),
-        ]);
       });
 
       test('detectInImage no bounding box', () async {
@@ -659,7 +679,10 @@ void main() {
         expect(log, <Matcher>[
           isMethodCall(
             'BarcodeDetector#detectInImage',
-            arguments: 'empty',
+            arguments: <String, dynamic>{
+              'path': 'empty',
+              'options': <String, dynamic>{},
+            },
           ),
         ]);
 
@@ -667,9 +690,9 @@ void main() {
         expect(barcode.boundingBox, null);
         expect(barcode.rawValue, 'potato:raw');
         expect(barcode.displayValue, 'potato:display');
-        expect(barcode.cornerPoints, <Point<num>>[
-          const Point<num>(17, 18),
-          const Point<num>(19, 20),
+        expect(barcode.cornerPoints, <Point<int>>[
+          const Point<int>(17, 18),
+          const Point<int>(19, 20),
         ]);
       });
     });
@@ -735,32 +758,35 @@ void main() {
         expect(log, <Matcher>[
           isMethodCall(
             'TextDetector#detectInImage',
-            arguments: 'empty',
+            arguments: <String, dynamic>{
+              'path': 'empty',
+              'options': <String, dynamic>{},
+            },
           ),
         ]);
 
         final TextBlock block = blocks[0];
-        expect(block.boundingBox, const Rectangle<num>(13, 14, 15, 16));
+        expect(block.boundingBox, const Rectangle<int>(13, 14, 15, 16));
         expect(block.text, 'friend');
-        expect(block.cornerPoints, <Point<num>>[
-          const Point<num>(17, 18),
-          const Point<num>(19, 20),
+        expect(block.cornerPoints, <Point<int>>[
+          const Point<int>(17, 18),
+          const Point<int>(19, 20),
         ]);
 
         final TextLine line = block.lines[0];
-        expect(line.boundingBox, const Rectangle<num>(5, 6, 7, 8));
+        expect(line.boundingBox, const Rectangle<int>(5, 6, 7, 8));
         expect(line.text, 'my');
-        expect(line.cornerPoints, <Point<num>>[
-          const Point<num>(9, 10),
-          const Point<num>(11, 12),
+        expect(line.cornerPoints, <Point<int>>[
+          const Point<int>(9, 10),
+          const Point<int>(11, 12),
         ]);
 
         final TextElement element = line.elements[0];
-        expect(element.boundingBox, const Rectangle<num>(1, 2, 3, 4));
+        expect(element.boundingBox, const Rectangle<int>(1, 2, 3, 4));
         expect(element.text, 'hello');
-        expect(element.cornerPoints, <Point<num>>[
-          const Point<num>(5, 6),
-          const Point<num>(7, 8),
+        expect(element.cornerPoints, <Point<int>>[
+          const Point<int>(5, 6),
+          const Point<int>(7, 8),
         ]);
       });
 
@@ -776,23 +802,14 @@ void main() {
         expect(log, <Matcher>[
           isMethodCall(
             'TextDetector#detectInImage',
-            arguments: 'empty',
+            arguments: <String, dynamic>{
+              'path': 'empty',
+              'options': <String, dynamic>{},
+            },
           ),
         ]);
 
         expect(blocks, isEmpty);
-      });
-
-      test('close', () async {
-        final TextDetector detector = FirebaseVision.instance.textDetector();
-        await detector.close();
-
-        expect(log, <Matcher>[
-          isMethodCall(
-            'TextDetector#close',
-            arguments: null,
-          ),
-        ]);
       });
 
       test('detectInImage no bounding box', () async {
@@ -816,16 +833,19 @@ void main() {
         expect(log, <Matcher>[
           isMethodCall(
             'TextDetector#detectInImage',
-            arguments: 'empty',
+            arguments: <String, dynamic>{
+              'path': 'empty',
+              'options': <String, dynamic>{},
+            },
           ),
         ]);
 
         final TextBlock block = blocks[0];
         expect(block.boundingBox, null);
         expect(block.text, 'potato');
-        expect(block.cornerPoints, <Point<num>>[
-          const Point<num>(17, 18),
-          const Point<num>(19, 20),
+        expect(block.cornerPoints, <Point<int>>[
+          const Point<int>(17, 18),
+          const Point<int>(19, 20),
         ]);
       });
     });

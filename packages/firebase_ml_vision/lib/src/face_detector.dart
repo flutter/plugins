@@ -8,11 +8,6 @@ class FaceDetector extends FirebaseVisionDetector {
   FaceDetector._(FaceDetectorOptions options);
 
   @override
-  Future<void> close() async {
-    // TODO: implement close
-  }
-
-  @override
   Future<void> detectInImage(FirebaseVisionImage visionImage) async {
     // TODO: implement detectInImage
   }

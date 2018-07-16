@@ -10,7 +10,6 @@ import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode;
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetector;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import io.flutter.plugin.common.MethodChannel;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,10 +21,11 @@ class BarcodeDetector implements Detector {
 
   private BarcodeDetector() {}
 
-  @Override
-  public void handleDetection(FirebaseVisionImage image, final MethodChannel.Result result) {
+  public void handleDetection(
+      FirebaseVisionImage image, Map<String, Object> options, final MethodChannel.Result result) {
     if (barcodeDetector == null)
       barcodeDetector = FirebaseVision.getInstance().getVisionBarcodeDetector();
+
     barcodeDetector
         .detectInImage(image)
         .addOnSuccessListener(
@@ -122,7 +122,7 @@ class BarcodeDetector implements Detector {
                       name.put("middle", barcode.getContactInfo().getName().getMiddle());
                       name.put("prefix", barcode.getContactInfo().getName().getPrefix());
                       name.put(
-                          "pronounciation", barcode.getContactInfo().getName().getPronunciation());
+                          "pronunciation", barcode.getContactInfo().getName().getPronunciation());
                       name.put("suffix", barcode.getContactInfo().getName().getSuffix());
                       typeValue.put("name", name);
 
@@ -187,19 +187,5 @@ class BarcodeDetector implements Detector {
                 result.error("barcodeDetectorError", exception.getLocalizedMessage(), null);
               }
             });
-  }
-
-  @Override
-  public void close(MethodChannel.Result result) {
-    if (barcodeDetector != null) {
-      try {
-        barcodeDetector.close();
-        result.success(null);
-      } catch (IOException exception) {
-        result.error("barcodeDetectorError", exception.getLocalizedMessage(), null);
-      }
-
-      barcodeDetector = null;
-    }
   }
 }
