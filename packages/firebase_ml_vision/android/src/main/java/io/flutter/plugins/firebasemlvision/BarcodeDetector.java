@@ -21,6 +21,7 @@ class BarcodeDetector implements Detector {
 
   private BarcodeDetector() {}
 
+  @Override
   public void handleDetection(
       FirebaseVisionImage image, Map<String, Object> options, final MethodChannel.Result result) {
     if (barcodeDetector == null)
