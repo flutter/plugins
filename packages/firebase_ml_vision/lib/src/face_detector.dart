@@ -64,10 +64,10 @@ class FaceDetector extends FirebaseVisionDetector {
   }
 }
 
-/// Options for [FaceDetector].
+/// Immutable options for configuring features of [FaceDetector].
 ///
-/// Used to configure the features of the [FaceDetector], such as
-/// classification, face tracking, speed, etc.
+/// Used to configure the features such as classification, face tracking, speed,
+/// etc.
 class FaceDetectorOptions {
   /// Constructor for [FaceDetectorOptions].
   ///
