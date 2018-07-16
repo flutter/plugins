@@ -29,15 +29,19 @@ class FirebaseVision {
   static final FirebaseVision instance = new FirebaseVision._();
 
   /// Creates an instance of [BarcodeDetector].
-  BarcodeDetector barcodeDetector() => new BarcodeDetector._();
+  BarcodeDetector barcodeDetector() {
+    return BarcodeDetector._();
+  }
 
   /// Creates an instance of [FaceDetector].
-  FaceDetector faceDetector(FaceDetectorOptions options) =>
-      new FaceDetector._(options);
+  FaceDetector faceDetector([FaceDetectorOptions options]) {
+    return FaceDetector._(options ?? FaceDetectorOptions());
+  }
 
   /// Creates an instance of [LabelDetector].
-  LabelDetector labelDetector(LabelDetectorOptions options) =>
-      new LabelDetector._(options);
+  LabelDetector labelDetector([LabelDetectorOptions options]) {
+    return LabelDetector._(options ?? LabelDetectorOptions());
+  }
 
   /// Creates an instance of [TextDetector].
   TextDetector textDetector() => new TextDetector._();
@@ -69,7 +73,4 @@ class FirebaseVisionImage {
 abstract class FirebaseVisionDetector {
   /// Uses machine learning model to detect objects of interest in an image.
   Future<dynamic> detectInImage(FirebaseVisionImage visionImage);
-
-  /// Release model resources for the detector.
-  Future<void> close();
 }

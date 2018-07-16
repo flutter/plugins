@@ -10,7 +10,6 @@ import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.text.FirebaseVisionText;
 import com.google.firebase.ml.vision.text.FirebaseVisionTextDetector;
 import io.flutter.plugin.common.MethodChannel;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,7 +21,9 @@ public class TextDetector implements Detector {
 
   private TextDetector() {}
 
-  public void handleDetection(FirebaseVisionImage image, final MethodChannel.Result result) {
+  @Override
+  public void handleDetection(
+      FirebaseVisionImage image, Map<String, Object> options, final MethodChannel.Result result) {
     if (textDetector == null) textDetector = FirebaseVision.getInstance().getVisionTextDetector();
     textDetector
         .detectInImage(image)
@@ -68,19 +69,6 @@ public class TextDetector implements Detector {
                 result.error("textDetectorError", exception.getLocalizedMessage(), null);
               }
             });
-  }
-
-  public void close(MethodChannel.Result result) {
-    if (textDetector != null) {
-      try {
-        textDetector.close();
-        result.success(null);
-      } catch (IOException exception) {
-        result.error("textDetectorError", exception.getLocalizedMessage(), null);
-      }
-
-      textDetector = null;
-    }
   }
 
   private void addTextData(

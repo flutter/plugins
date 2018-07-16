@@ -8,8 +8,9 @@
 
 @protocol Detector
 @required
-+ (void)handleDetection:(FIRVisionImage *)image result:(FlutterResult)result;
-+ (void)close;
++ (void)handleDetection:(FIRVisionImage *)image
+                options:(NSDictionary *)options
+                 result:(FlutterResult)result;
 @optional
 @end
 

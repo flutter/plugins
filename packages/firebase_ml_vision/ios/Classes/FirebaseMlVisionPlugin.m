@@ -36,20 +36,14 @@
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
+  FIRVisionImage *image = [self filePathToVisionImage:call.arguments[@"path"]];
+  NSDictionary *options = call.arguments[@"options"];
   if ([@"BarcodeDetector#detectInImage" isEqualToString:call.method]) {
-    FIRVisionImage *image = [self filePathToVisionImage:call.arguments];
-    [BarcodeDetector handleDetection:image result:result];
-  } else if ([@"BarcodeDetector#close" isEqualToString:call.method]) {
-    [BarcodeDetector close];
+    [BarcodeDetector handleDetection:image options:options result:result];
   } else if ([@"FaceDetector#detectInImage" isEqualToString:call.method]) {
-  } else if ([@"FaceDetector#close" isEqualToString:call.method]) {
   } else if ([@"LabelDetector#detectInImage" isEqualToString:call.method]) {
-  } else if ([@"LabelDetector#close" isEqualToString:call.method]) {
   } else if ([@"TextDetector#detectInImage" isEqualToString:call.method]) {
-    FIRVisionImage *image = [self filePathToVisionImage:call.arguments];
-    [TextDetector handleDetection:image result:result];
-  } else if ([@"TextDetector#close" isEqualToString:call.method]) {
-    [TextDetector close];
+    [TextDetector handleDetection:image options:options result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }

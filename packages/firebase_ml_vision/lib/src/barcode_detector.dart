@@ -14,12 +14,6 @@ part of firebase_ml_vision;
 class BarcodeDetector extends FirebaseVisionDetector {
   BarcodeDetector._();
 
-  /// Closes the barcode detector and releases its model resources.
-  @override
-  Future<void> close() async {
-    return FirebaseVision.channel.invokeMethod('BarcodeDetector#close');
-  }
-
   /// Detects barcode in the input image.
   ///
   /// The barcode scanning is performed asynchronously.
@@ -27,7 +21,10 @@ class BarcodeDetector extends FirebaseVisionDetector {
   Future<List<Barcode>> detectInImage(FirebaseVisionImage visionImage) async {
     final List<dynamic> reply = await FirebaseVision.channel.invokeMethod(
       'BarcodeDetector#detectInImage',
-      visionImage.imageFile.path,
+      <String, dynamic>{
+        'path': visionImage.imageFile.path,
+        'options': <String, dynamic>{},
+      },
     );
 
     final List<Barcode> barcodes = <Barcode>[];
@@ -394,26 +391,24 @@ class BarcodeContactInfo {
   BarcodeContactInfo._(Map<dynamic, dynamic> data)
       : addresses = data['addresses'] == null
             ? null
-            : data['addresses']
-                .map<BarcodeAddress>((dynamic item) => BarcodeAddress._(item))
-                .toList(),
+            : List<BarcodeAddress>.unmodifiable(data['addresses']
+                .map<BarcodeAddress>((dynamic item) => BarcodeAddress._(item))),
         emails = data['emails'] == null
             ? null
-            : data['emails']
-                .map<BarcodeEmail>((dynamic item) => BarcodeEmail._(item))
-                .toList(),
+            : List<BarcodeEmail>.unmodifiable(data['emails']
+                .map<BarcodeEmail>((dynamic item) => BarcodeEmail._(item))),
         name = data['name'] == null ? null : BarcodePersonName._(data['name']),
         phones = data['phones'] == null
             ? null
-            : data['phones']
-                .map<BarcodePhone>((dynamic item) => BarcodePhone._(item))
-                .toList(),
+            : List<BarcodePhone>.unmodifiable(data['phones']
+                .map<BarcodePhone>((dynamic item) => BarcodePhone._(item))),
         urls = data['urls'] == null
             ? null
-            : data['urls'].map<String>((dynamic item) {
+            : List<String>.unmodifiable(
+                data['urls'].map<String>((dynamic item) {
                 final String s = item;
                 return s;
-              }).toList(),
+              })),
         jobTitle = data['job_title'],
         organization = data['organization'];
 
@@ -434,6 +429,8 @@ class BarcodeContactInfo {
   ///
   /// Could be an empty list if nothing found.
   final List<BarcodePhone> phones;
+
+  /// Contact urls associated with this person.
   final List<String> urls;
 
   /// Contact person's title.
@@ -446,10 +443,11 @@ class BarcodeContactInfo {
 /// An address.
 class BarcodeAddress {
   BarcodeAddress._(Map<dynamic, dynamic> data)
-      : addressLines = data['address_lines'].map<String>((dynamic item) {
+      : addressLines = List<String>.unmodifiable(
+            data['address_lines'].map<String>((dynamic item) {
           final String s = item;
           return s;
-        }).toList(),
+        })),
         type = BarcodeAddressType.values.elementAt(data['type']);
 
   /// Formatted address, multiple lines when appropriate.
@@ -483,7 +481,7 @@ class BarcodePersonName {
         last = data['last'],
         middle = data['middle'],
         prefix = data['prefix'],
-        pronounciation = data['pronounciation'],
+        pronunciation = data['pronunciation'],
         suffix = data['suffix'];
 
   /// The properly formatted name.
@@ -502,7 +500,7 @@ class BarcodePersonName {
   final String prefix;
 
   /// Designates a text string to be set as the kana name in the phonebook. Used for Japanese contacts.
-  final String pronounciation;
+  final String pronunciation;
 
   /// Suffix of the person's name
   final String suffix;

@@ -9,6 +9,7 @@ import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 /** FirebaseMlVisionPlugin */
 public class FirebaseMlVisionPlugin implements MethodCallHandler {
@@ -27,44 +28,40 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
+    Map<String, Object> options = call.argument("options");
     FirebaseVisionImage image;
     switch (call.method) {
       case "BarcodeDetector#detectInImage":
-        image = filePathToVisionImage((String) call.arguments, result);
-        if (image != null) BarcodeDetector.instance.handleDetection(image, result);
-        break;
-      case "BarcodeDetector#close":
-        BarcodeDetector.instance.close(result);
+        try {
+          image = filePathToVisionImage((String) call.argument("path"));
+          BarcodeDetector.instance.handleDetection(image, options, result);
+        } catch (IOException e) {
+          result.error("barcodeDetectorIOError", e.getLocalizedMessage(), null);
+        } catch (Exception e) {
+          result.error("barcodeDetectorError", e.getLocalizedMessage(), null);
+        }
         break;
       case "FaceDetector#detectInImage":
         break;
-      case "FaceDetector#close":
-        break;
       case "LabelDetector#detectInImage":
         break;
-      case "LabelDetector#close":
-        break;
       case "TextDetector#detectInImage":
-        image = filePathToVisionImage((String) call.arguments, result);
-        if (image != null) TextDetector.instance.handleDetection(image, result);
-        break;
-      case "TextDetector#close":
-        TextDetector.instance.close(result);
+        try {
+          image = filePathToVisionImage((String) call.argument("path"));
+          TextDetector.instance.handleDetection(image, options, result);
+        } catch (IOException e) {
+          result.error("textDetectorIOError", e.getLocalizedMessage(), null);
+        } catch (Exception e) {
+          result.error("textDetectorError", e.getLocalizedMessage(), null);
+        }
         break;
       default:
         result.notImplemented();
     }
   }
 
-  private FirebaseVisionImage filePathToVisionImage(String path, Result result) {
+  private FirebaseVisionImage filePathToVisionImage(String path) throws IOException {
     File file = new File(path);
-
-    try {
-      return FirebaseVisionImage.fromFilePath(registrar.context(), Uri.fromFile(file));
-    } catch (IOException exception) {
-      result.error("textDetectorIOError", exception.getLocalizedMessage(), null);
-    }
-
-    return null;
+    return FirebaseVisionImage.fromFilePath(registrar.context(), Uri.fromFile(file));
   }
 }

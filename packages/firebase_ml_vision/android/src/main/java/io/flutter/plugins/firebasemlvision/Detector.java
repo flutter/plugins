@@ -2,9 +2,9 @@ package io.flutter.plugins.firebasemlvision;
 
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import io.flutter.plugin.common.MethodChannel;
+import java.util.Map;
 
 interface Detector {
-  void close(MethodChannel.Result result);
-
-  void handleDetection(FirebaseVisionImage image, final MethodChannel.Result result);
+  void handleDetection(
+      FirebaseVisionImage image, Map<String, Object> options, final MethodChannel.Result result);
 }
