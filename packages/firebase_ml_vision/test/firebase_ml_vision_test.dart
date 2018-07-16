@@ -883,7 +883,7 @@ void main() {
           LabelDetectorOptions(),
         );
         final FirebaseVisionImage image =
-        new FirebaseVisionImage.fromFilePath('empty');
+            new FirebaseVisionImage.fromFilePath('empty');
 
         final List<Label> labels = await detector.detectInImage(image);
 
