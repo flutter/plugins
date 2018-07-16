@@ -92,8 +92,18 @@ class AuthenticationHelper extends FingerprintManagerCompat.AuthenticationCallba
     this.fingerprintManager = FingerprintManagerCompat.from(activity);
   }
 
+
+  boolean isFingerPrintAvailable(){
+    if(android.os.Build.VERSION.SDK_INT >= 23){
+      if(fingerprintManager.isHardwareDetected){
+        return true
+      }
+    }
+    return false;
+  }
+
   void authenticate() {
-    if (fingerprintManager.isHardwareDetected()) {
+    if (isFingerPrintAvailable()) {
       if (keyguardManager.isKeyguardSecure() && fingerprintManager.hasEnrolledFingerprints()) {
         start();
       } else {

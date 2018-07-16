@@ -21,6 +21,12 @@
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"authenticateWithBiometrics" isEqualToString:call.method]) {
     [self authenticateWithBiometrics:call.arguments withFlutterResult:result];
+  }else if([@"isFingerPrintAvailable" isEqualToString:call.method]){
+    if([self isFingerprintAvailable]){
+      result(@YES);
+    }else{
+      result(@NO);
+    }
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -62,6 +68,17 @@
                                                                                    completion:nil];
 }
 
+- (BOOL)isFingerprintAvailable{
+  LAContext *context = [[LAContext alloc] init];
+  NSError *authError = nil;
+  BOOL isAvailable = false;
+  if([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
+              error: &authError]){
+      isAvailable = true;
+  }
+  return isAvailable;
+}
+
 - (void)authenticateWithBiometrics:(NSDictionary *)arguments
                  withFlutterResult:(FlutterResult)result {
   LAContext *context = [[LAContext alloc] init];
@@ -69,9 +86,8 @@
   lastCallArgs = nil;
   lastResult = nil;
   context.localizedFallbackTitle = @"";
-
-  if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
-                           error:&authError]) {
+  BOOL isAvailable = [self isFingerprintAvailable];
+  if (isAvailable) {
     [context evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
             localizedReason:arguments[@"localizedReason"]
                       reply:^(BOOL success, NSError *error) {
