@@ -6,10 +6,10 @@ part of firebase_ml_vision;
 
 /// Detector for performing optical character recognition(OCR) on an input image.
 ///
-/// A text detector is created via getVisionTextDetector() in [FirebaseVision]:
+/// A text detector is created via `textDetector()` in [FirebaseVision]:
 ///
 /// ```dart
-/// TextDetector textDetector = FirebaseVision.instance.getTextDetector();
+/// TextDetector textDetector = FirebaseVision.instance.textDetector();
 /// ```
 class TextDetector implements FirebaseVisionDetector {
   TextDetector._();
@@ -58,6 +58,8 @@ abstract class TextContainer {
   final List<Point<int>> _cornerPoints;
 
   /// Axis-aligned bounding rectangle of the detected text.
+  ///
+  /// The point (0, 0) is defined as the upper-left corner of the image.
   ///
   /// Could be null even if text is found.
   final Rectangle<int> boundingBox;
