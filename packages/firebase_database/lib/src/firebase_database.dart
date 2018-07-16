@@ -39,8 +39,9 @@ class FirebaseDatabase {
         case 'DoTransaction':
           final MutableData mutableData =
               new MutableData.private(call.arguments['snapshot']);
-          final MutableData updated = await _transactions[
-              call.arguments['transactionKey']](mutableData);
+          final MutableData updated =
+              await _transactions[call.arguments['transactionKey']](
+                  mutableData);
           return <String, dynamic>{'value': updated.value};
         default:
           throw new MissingPluginException(
