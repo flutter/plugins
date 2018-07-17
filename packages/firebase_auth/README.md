@@ -79,6 +79,28 @@ _handleSignIn()
     .catchError((e) => print(e));
 ```
 
+### Phone Auth
+
+You can use Firebase Authentication to sign in a user by sending an SMS message to
+the user's phone. The user signs in using a one-time code contained in the SMS message.
+
+#### iOS setup
+
+1. Enable Phone as a Sign-In method in the [Firebase console](https://console.firebase.google.com/u/0/project/_/authentication/providers)
+
+  - When testing you can add test phone numbers and verification codes to the Firebase console.
+
+1. [Enable App verification](https://firebase.google.com/docs/auth/ios/phone-auth#enable-app-verification)  
+
+**Note:** App verification may use APNs, if using a simulator (where APNs does not work) or APNs is not setup on the
+device you are using you must set the `URL Schemes` to the `REVERSE_CLIENT_ID` from the GoogleServices-Info.plist file.
+
+#### Android setup
+
+1. Enable Phone as a Sign-In method in the [Firebase console](https://console.firebase.google.com/u/0/project/_/authentication/providers)
+
+  - When testing you can add test phone numbers and verification codes to the Firebase console.
+
 ## Example
 
 See the [example application](https://github.com/flutter/plugins/tree/master/packages/firebase_auth/example) source
