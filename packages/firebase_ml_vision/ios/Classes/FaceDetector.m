@@ -22,6 +22,15 @@ static FIRVisionFaceDetector *faceDetector;
 
            NSMutableArray *faceData = [NSMutableArray array];
            for (FIRVisionFace *face in faces) {
+             id smileProb = face.hasSmilingProbability ? @(face.smilingProbability)
+                                                       : [NSNull null];
+
+             id leftProb = face.hasLeftEyeOpenProbability ? @(face.leftEyeOpenProbability)
+                                                          : [NSNull null];
+
+             id rightProb = face.hasRightEyeOpenProbability ? @(face.rightEyeOpenProbability)
+                                                            : [NSNull null];
+
              NSDictionary *data = @{
                @"left" : @((int)face.frame.origin.x),
                @"top" : @((int)face.frame.origin.y),
@@ -31,13 +40,9 @@ static FIRVisionFaceDetector *faceDetector;
                                                             : [NSNull null],
                @"headEulerAngleZ" : face.hasHeadEulerAngleZ ? @(face.headEulerAngleZ)
                                                             : [NSNull null],
-               @"smilingProbability" : face.hasSmilingProbability ? @(face.smilingProbability)
-                                                                  : [NSNull null],
-               @"leftEyeOpenProbability" :
-                   face.hasLeftEyeOpenProbability ? @(face.leftEyeOpenProbability) : [NSNull null],
-               @"rightEyeOpenProbability" : face.hasRightEyeOpenProbability
-                                                ? @(face.rightEyeOpenProbability)
-                                                : [NSNull null],
+               @"smilingProbability" : smileProb,
+               @"leftEyeOpenProbability" : leftProb,
+               @"rightEyeOpenProbability" : rightProb,
                @"trackingId" : face.hasTrackingID ? @(face.trackingID) : [NSNull null],
                @"landmarks" : @{
                  @"bottomMouth" : [FaceDetector getLandmarkPosition:face
