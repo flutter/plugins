@@ -69,7 +69,9 @@ class SharedPreferencesDemoState extends State<SharedPreferencesDemo> {
                       return new Text('Error: ${snapshot.error}');
                     else
                       return new Text(
-                        'Button tapped ${snapshot.data} time${ snapshot.data == 1 ? '' : 's' }.\n\n'
+                        'Button tapped ${snapshot.data} time${snapshot.data == 1
+                                ? ''
+                                : 's'}.\n\n'
                             'This should persist across restarts.',
                       );
                 }
