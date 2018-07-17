@@ -23,6 +23,8 @@ void main() {
             return returnValue;
           case 'FaceDetector#detectInImage':
             return returnValue;
+          case 'LabelDetector#detectInImage':
+            return returnValue;
           case 'TextDetector#detectInImage':
             return returnValue;
           default:
@@ -826,7 +828,80 @@ void main() {
       });
     });
 
-    group('$LabelDetector', () {});
+    group('$LabelDetector', () {
+      test('detectInImage', () async {
+        final List<dynamic> labelData = <dynamic>[
+          <dynamic, dynamic>{
+            'confidence': 0.6,
+            'entityId': 'hello',
+            'label': 'friend',
+          },
+          <dynamic, dynamic>{
+            'confidence': 0.8,
+            'entityId': 'hi',
+            'label': 'brother',
+          },
+        ];
+
+        returnValue = labelData;
+
+        final LabelDetector detector = FirebaseVision.instance.labelDetector(
+          LabelDetectorOptions(confidenceThreshold: 0.2),
+        );
+
+        final FirebaseVisionImage image = new FirebaseVisionImage.fromFilePath(
+          'empty',
+        );
+
+        final List<Label> labels = await detector.detectInImage(image);
+
+        expect(log, <Matcher>[
+          isMethodCall(
+            'LabelDetector#detectInImage',
+            arguments: <String, dynamic>{
+              'path': 'empty',
+              'options': <String, dynamic>{
+                'confidenceThreshold': 0.2,
+              },
+            },
+          ),
+        ]);
+
+        expect(labels[0].confidence, 0.6);
+        expect(labels[0].entityId, 'hello');
+        expect(labels[0].label, 'friend');
+
+        expect(labels[1].confidence, 0.8);
+        expect(labels[1].entityId, 'hi');
+        expect(labels[1].label, 'brother');
+      });
+
+      test('detectInImage no blocks', () async {
+        returnValue = <dynamic>[];
+
+        final LabelDetector detector = FirebaseVision.instance.labelDetector(
+          LabelDetectorOptions(),
+        );
+        final FirebaseVisionImage image =
+            new FirebaseVisionImage.fromFilePath('empty');
+
+        final List<Label> labels = await detector.detectInImage(image);
+
+        expect(log, <Matcher>[
+          isMethodCall(
+            'LabelDetector#detectInImage',
+            arguments: <String, dynamic>{
+              'path': 'empty',
+              'options': <String, dynamic>{
+                'confidenceThreshold': 0.5,
+              },
+            },
+          ),
+        ]);
+
+        expect(labels, isEmpty);
+      });
+    });
 
     group('$TextDetector', () {
       test('detectInImage', () async {
