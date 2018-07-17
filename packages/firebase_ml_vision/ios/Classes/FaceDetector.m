@@ -22,14 +22,11 @@ static FIRVisionFaceDetector *faceDetector;
 
            NSMutableArray *faceData = [NSMutableArray array];
            for (FIRVisionFace *face in faces) {
-             id smileProb = face.hasSmilingProbability ? @(face.smilingProbability)
-                                                       : [NSNull null];
-
-             id leftProb = face.hasLeftEyeOpenProbability ? @(face.leftEyeOpenProbability)
-                                                          : [NSNull null];
-
-             id rightProb = face.hasRightEyeOpenProbability ? @(face.rightEyeOpenProbability)
-                                                            : [NSNull null];
+             id smileProb = face.hasSmilingProbability ? @(face.smilingProbability) : [NSNull null];
+             id leftProb =
+                 face.hasLeftEyeOpenProbability ? @(face.leftEyeOpenProbability) : [NSNull null];
+             id rightProb =
+                 face.hasRightEyeOpenProbability ? @(face.rightEyeOpenProbability) : [NSNull null];
 
              NSDictionary *data = @{
                @"left" : @((int)face.frame.origin.x),
