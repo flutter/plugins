@@ -42,6 +42,7 @@
     [BarcodeDetector handleDetection:image options:options result:result];
   } else if ([@"FaceDetector#detectInImage" isEqualToString:call.method]) {
   } else if ([@"LabelDetector#detectInImage" isEqualToString:call.method]) {
+    [LabelDetector handleDetection:image options:options result:result];
   } else if ([@"TextDetector#detectInImage" isEqualToString:call.method]) {
     [TextDetector handleDetection:image options:options result:result];
   } else {
