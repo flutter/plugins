@@ -28,6 +28,9 @@ class UserInfo {
   /// The user’s email address.
   String get email => _data['email'];
 
+  /// The user's phone number.
+  String get phoneNumber => _data['phoneNumber'];
+
   @override
   String toString() {
     return '$runtimeType($_data)';
@@ -93,6 +96,17 @@ class FirebaseUser extends UserInfo {
   }
 }
 
+class AuthException implements Exception {
+  final String code;
+  final String message;
+  const AuthException(this.code, this.message);
+}
+
+typedef void PhoneVerificationCompleted(FirebaseUser firebaseUser);
+typedef void PhoneVerificationFailed(AuthException error);
+typedef void PhoneCodeSent(String verificationId, [int forceResendingToken]);
+typedef void PhoneCodeAutoRetrievalTimeout(String verificationId);
+
 class FirebaseAuth {
   @visibleForTesting
   static const MethodChannel channel = const MethodChannel(
@@ -101,6 +115,10 @@ class FirebaseAuth {
 
   final Map<int, StreamController<FirebaseUser>> _authStateChangedControllers =
       <int, StreamController<FirebaseUser>>{};
+
+  static int nextHandle = 0;
+  final Map<int, Map<String, dynamic>> _phoneAuthCallbacks =
+      <int, Map<String, dynamic>>{};
 
   /// Provides an instance of this class corresponding to the default app.
   ///
@@ -255,6 +273,49 @@ class FirebaseAuth {
     return currentUser;
   }
 
+  Future<FirebaseUser> signInWithPhoneNumber({
+    @required String verificationId,
+    @required String smsCode,
+  }) async {
+    final Map<dynamic, dynamic> data = await channel.invokeMethod(
+      'signInWithPhoneNumber',
+      <String, String>{
+        'verificationId': verificationId,
+        'smsCode': smsCode,
+      },
+    );
+    final FirebaseUser currentUser = new FirebaseUser._(data);
+    return currentUser;
+  }
+
+  Future<void> verifyPhoneNumber({
+    @required String phoneNumber,
+    @required Duration timeout,
+    int forceResendingToken,
+    @required PhoneVerificationCompleted verificationCompleted,
+    @required PhoneVerificationFailed verificationFailed,
+    @required PhoneCodeSent codeSent,
+    @required PhoneCodeAutoRetrievalTimeout codeAutoRetrievalTimeout,
+  }) async {
+    final Map<String, dynamic> callbacks = <String, dynamic>{
+      'PhoneVerificationCompleted': verificationCompleted,
+      'PhoneVerificationFailed': verificationFailed,
+      'PhoneCodeSent': codeSent,
+      'PhoneCodeAuthRetrievalTimeout': codeAutoRetrievalTimeout,
+    };
+    nextHandle += 1;
+    _phoneAuthCallbacks[nextHandle] = callbacks;
+
+    final Map<String, dynamic> params = <String, dynamic>{
+      'handle': nextHandle,
+      'phoneNumber': phoneNumber,
+      'timeout': timeout.inMilliseconds,
+      'forceResendingToken': forceResendingToken,
+    };
+
+    await channel.invokeMethod('verifyPhoneNumber', params);
+  }
+
   Future<FirebaseUser> signInWithCustomToken({@required String token}) async {
     assert(token != null);
     final Map<dynamic, dynamic> data = await channel.invokeMethod(
@@ -352,8 +413,42 @@ class FirebaseAuth {
 
   Future<Null> _callHandler(MethodCall call) async {
     switch (call.method) {
-      case "onAuthStateChanged":
+      case 'onAuthStateChanged':
         _onAuthStageChangedHandler(call);
+        break;
+      case 'phoneVerificationCompleted':
+        final int handle = call.arguments['handle'];
+        final PhoneVerificationCompleted verificationCompleted =
+            _phoneAuthCallbacks[handle]['PhoneVerificationCompleted'];
+        verificationCompleted(await currentUser());
+        break;
+      case 'phoneVerificationFailed':
+        final int handle = call.arguments['handle'];
+        final PhoneVerificationFailed verificationFailed =
+            _phoneAuthCallbacks[handle]['PhoneVerificationFailed'];
+        final Map<String, String> exception = call.arguments['exception'];
+        verificationFailed(
+            new AuthException(exception['code'], exception['message']));
+        break;
+      case 'phoneCodeSent':
+        final int handle = call.arguments['handle'];
+        final String verificationId = call.arguments['verificationId'];
+        final int forceResendingToken = call.arguments['forceResendingToken'];
+
+        final PhoneCodeSent codeSent =
+            _phoneAuthCallbacks[handle]['PhoneCodeSent'];
+        if (forceResendingToken == null) {
+          codeSent(verificationId);
+        } else {
+          codeSent(verificationId, forceResendingToken);
+        }
+        break;
+      case 'phoneCodeAutoRetrievalTimeout':
+        final int handle = call.arguments['handle'];
+        final PhoneCodeAutoRetrievalTimeout codeAutoRetrievalTimeout =
+            _phoneAuthCallbacks[handle]['PhoneCodeAutoRetrievealTimeout'];
+        final String verificationId = call.arguments['verificationId'];
+        codeAutoRetrievalTimeout(verificationId);
         break;
     }
     return null;

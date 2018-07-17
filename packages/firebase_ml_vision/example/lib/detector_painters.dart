@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:ui';
+
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:flutter/material.dart';
 
@@ -81,20 +83,26 @@ class FaceDetectorPainter extends CustomPainter {
 }
 
 class LabelDetectorPainter extends CustomPainter {
-  LabelDetectorPainter(this.absoluteImageSize, this.results);
+  LabelDetectorPainter(this.absoluteImageSize, this.labels);
 
   final Size absoluteImageSize;
-  final List<dynamic> results;
+  final List<Label> labels;
 
   @override
   void paint(Canvas canvas, Size size) {
-    // TODO: implement paint
+    final ParagraphBuilder builder = ParagraphBuilder(ParagraphStyle());
+    for (Label label in labels) {
+      builder.addText('Label ${label.label}, '
+          'Entity Id: ${label.entityId}, '
+          'Confidence: ${label.confidence}');
+    }
+    canvas.drawParagraph(builder.build(), const Offset(0.0, 0.0));
   }
 
   @override
-  bool shouldRepaint(CustomPainter oldDelegate) {
-    // TODO: implement shouldRepaint
-    return false;
+  bool shouldRepaint(LabelDetectorPainter oldDelegate) {
+    return oldDelegate.absoluteImageSize != absoluteImageSize ||
+        oldDelegate.labels != labels;
   }
 }
 

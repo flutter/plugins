@@ -17,6 +17,9 @@ const String kMockPassword = 'passw0rd';
 const String kMockIdToken = '12345';
 const String kMockAccessToken = '67890';
 const String kMockCustomToken = '12345';
+const String kMockPhoneNumber = '5555555555';
+const String kMockVerificationId = '12345';
+const String kMockSmsCode = '123456';
 
 void main() {
   group('$FirebaseAuth', () {
@@ -42,6 +45,9 @@ void main() {
             break;
           case "fetchProvidersForEmail":
             return new List<String>(0);
+            break;
+          case "verifyPhoneNumber":
+            return null;
             break;
           default:
             return mockFirebaseUser();
@@ -168,6 +174,35 @@ void main() {
           ),
         ],
       );
+    });
+
+    test('signInWithPhoneNumber', () async {
+      await auth.signInWithPhoneNumber(
+          verificationId: kMockVerificationId, smsCode: kMockSmsCode);
+      expect(log, <Matcher>[
+        isMethodCall('signInWithPhoneNumber', arguments: <String, dynamic>{
+          'verificationId': kMockVerificationId,
+          'smsCode': kMockSmsCode,
+        })
+      ]);
+    });
+
+    test('verifyPhoneNumber', () async {
+      await auth.verifyPhoneNumber(
+          phoneNumber: kMockPhoneNumber,
+          timeout: const Duration(seconds: 5),
+          verificationCompleted: null,
+          verificationFailed: null,
+          codeSent: null,
+          codeAutoRetrievalTimeout: null);
+      expect(log, <Matcher>[
+        isMethodCall('verifyPhoneNumber', arguments: <String, dynamic>{
+          'handle': 1,
+          'phoneNumber': kMockPhoneNumber,
+          'timeout': 5000,
+          'forceResendingToken': null,
+        })
+      ]);
     });
 
     test('linkWithGoogleCredential', () async {

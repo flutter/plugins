@@ -22,9 +22,10 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
   return @{
     @"providerId" : userInfo.providerID,
     @"displayName" : userInfo.displayName ?: [NSNull null],
-    @"uid" : userInfo.uid,
+    @"uid" : userInfo.uid ?: [NSNull null],
     @"photoUrl" : userInfo.photoURL.absoluteString ?: [NSNull null],
     @"email" : userInfo.email ?: [NSNull null],
+    @"phoneNumber" : userInfo.phoneNumber ?: [NSNull null],
   };
 }
 
@@ -219,6 +220,36 @@ int nextHandle = 0;
                                                    identifier.intValue]
                 details:nil]);
     }
+  } else if ([@"verifyPhoneNumber" isEqualToString:call.method]) {
+    NSString *phoneNumber = call.arguments[@"phoneNumber"];
+    NSNumber *handle = call.arguments[@"handle"];
+    [[FIRPhoneAuthProvider provider]
+        verifyPhoneNumber:phoneNumber
+               UIDelegate:nil
+               completion:^(NSString *verificationID, NSError *error) {
+                 if (error) {
+                   [self.channel invokeMethod:@"phoneVerificationFailed"
+                                    arguments:@{
+                                      @"exception" : [self mapVerifyPhoneError:error],
+                                      @"handle" : handle
+                                    }];
+                 } else {
+                   [self.channel
+                       invokeMethod:@"phoneCodeSent"
+                          arguments:@{@"verificationId" : verificationID, @"handle" : handle}];
+                 }
+               }];
+  } else if ([@"signInWithPhoneNumber" isEqualToString:call.method]) {
+    NSString *verificationId = call.arguments[@"verificationId"];
+    NSString *smsCode = call.arguments[@"smsCode"];
+
+    FIRPhoneAuthCredential *credential =
+        [[FIRPhoneAuthProvider provider] credentialWithVerificationID:verificationId
+                                                     verificationCode:smsCode];
+    [[FIRAuth auth] signInWithCredential:credential
+                              completion:^(FIRUser *user, NSError *error) {
+                                [self sendResult:result forUser:user error:error];
+                              }];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -257,5 +288,20 @@ int nextHandle = 0;
   } else {
     result(providers);
   }
+}
+
+- (id)mapVerifyPhoneError:(NSError *)error {
+  NSString *errorCode = @"verifyPhoneNumberError";
+
+  if (error.code == FIRAuthErrorCodeCaptchaCheckFailed) {
+    errorCode = @"captchaCheckFailed";
+  } else if (error.code == FIRAuthErrorCodeQuotaExceeded) {
+    errorCode = @"quotaExceeded";
+  } else if (error.code == FIRAuthErrorCodeInvalidPhoneNumber) {
+    errorCode = @"invalidPhoneNumber";
+  } else if (error.code == FIRAuthErrorCodeMissingPhoneNumber) {
+    errorCode = @"missingPhoneNumber";
+  }
+  return @{@"code" : errorCode, @"message" : error.localizedDescription};
 }
 @end
