@@ -411,8 +411,12 @@ typedef NS_ENUM(NSUInteger, StorageTaskEventType) {
   FIRStorageUploadTask *task = [_uploadTasks objectForKey:handle];
   if (task != nil) {
     [task pause];
+    result(nil);
+  } else {
+    result([FlutterError errorWithCode:@"pause_error"
+                         message:@"task == null"
+                         details:nil]);
   }
-  result(nil);
 }
 
 - (void)resumeUploadTask:(FlutterMethodCall *)call result:(FlutterResult)result {
@@ -420,8 +424,12 @@ typedef NS_ENUM(NSUInteger, StorageTaskEventType) {
   FIRStorageUploadTask *task = [_uploadTasks objectForKey:handle];
   if (task != nil) {
     [task resume];
+    result(nil);
+  } else {
+    result([FlutterError errorWithCode:@"resume_error"
+                         message:@"task == null"
+                         details:nil]);
   }
-  result(nil);
 }
 
 - (void)cancelUploadTask:(FlutterMethodCall *)call result:(FlutterResult)result {
@@ -429,8 +437,12 @@ typedef NS_ENUM(NSUInteger, StorageTaskEventType) {
   FIRStorageUploadTask *task = [_uploadTasks objectForKey:handle];
   if (task != nil) {
     [task cancel];
+    result(nil);
+  } else {
+    result([FlutterError errorWithCode:@"cancel_error"
+                         message:@"task == null"
+                         details:nil]);
   }
-  result(nil);
 }
 
 @end
