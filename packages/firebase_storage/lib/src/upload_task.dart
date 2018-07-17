@@ -47,7 +47,7 @@ abstract class StorageUploadTask {
       final Map<dynamic, dynamic> args = m.arguments;
       final StorageTaskEvent e =
           new StorageTaskEvent._(args['type'], args['snapshot']);
-      _setState(e);
+      _changeState(e);
       lastSnapshot = e.snapshot;
       _controller.add(e);
       if (e.type == StorageTaskEventType.success ||
@@ -62,7 +62,7 @@ abstract class StorageUploadTask {
     return event.snapshot;
   }
 
-  void _setState(StorageTaskEvent event) {
+  void _changeState(StorageTaskEvent event) {
     _resetState();
     switch (event.type) {
       case StorageTaskEventType.progress:
