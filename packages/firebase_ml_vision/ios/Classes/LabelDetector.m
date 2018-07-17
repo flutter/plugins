@@ -10,18 +10,18 @@ static FIRVisionLabelDetector *detector;
   detector = [vision labelDetectorWithOptions:[LabelDetector parseOptions:options]];
 
   [detector detectInImage:image
-               completion:^(NSArray<FIRVisionLabel *> * _Nullable labels, NSError * _Nullable error) {
+               completion:^(NSArray<FIRVisionLabel *> *_Nullable labels, NSError *_Nullable error) {
                  if(error) {
-                     [FLTFirebaseMlVisionPlugin handleError:error result:result];
-                     return;
+                   [FLTFirebaseMlVisionPlugin handleError:error result:result];
+                   return;
                  } else if (!labels) {
-                     result(@[]);
+                   result(@[]);
                  }
 
                  NSMutableArray *labelData = [NSMutableArray array];
                  for (FIRVisionLabel *label in labels) {
                    NSDictionary *data = @{
-                     @"confidence": @(label.confidence),
+                     @"confidence" : @(label.confidence),
                      @"entityID" : label.entityID,
                      @"label" : label.label
                    };
@@ -34,6 +34,6 @@ static FIRVisionLabelDetector *detector;
 
 + (FIRVisionLabelDetectorOptions *)parseOptions:(NSDictionary *)optionsData {
   NSNumber *conf = optionsData[@"confidenceThreshold"];
-  return [[FIRVisionLabelDetectorOptions alloc] initWithConfidenceThreshold:[conf floatValue]];;
+  return [[FIRVisionLabelDetectorOptions alloc] initWithConfidenceThreshold:[conf floatValue]];
 }
 @end
