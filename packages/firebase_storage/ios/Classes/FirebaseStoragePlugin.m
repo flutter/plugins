@@ -413,9 +413,7 @@ typedef NS_ENUM(NSUInteger, StorageTaskEventType) {
     [task pause];
     result(nil);
   } else {
-    result([FlutterError errorWithCode:@"pause_error"
-                         message:@"task == null"
-                         details:nil]);
+    result([FlutterError errorWithCode:@"pause_error" message:@"task == null" details:nil]);
   }
 }
 
@@ -426,9 +424,7 @@ typedef NS_ENUM(NSUInteger, StorageTaskEventType) {
     [task resume];
     result(nil);
   } else {
-    result([FlutterError errorWithCode:@"resume_error"
-                         message:@"task == null"
-                         details:nil]);
+    result([FlutterError errorWithCode:@"resume_error" message:@"task == null" details:nil]);
   }
 }
 
@@ -439,9 +435,7 @@ typedef NS_ENUM(NSUInteger, StorageTaskEventType) {
     [task cancel];
     result(nil);
   } else {
-    result([FlutterError errorWithCode:@"cancel_error"
-                         message:@"task == null"
-                         details:nil]);
+    result([FlutterError errorWithCode:@"cancel_error" message:@"task == null" details:nil]);
   }
 }
 
