@@ -49,7 +49,7 @@ class FirebaseStorage {
   static FirebaseStorage get instance => _instance;
 
   /// Used to dispatch method calls
-  final StreamController<MethodCall> _methodStreamController =
+  static final StreamController<MethodCall> _methodStreamController =
       new StreamController<MethodCall>.broadcast(); // ignore: close_sinks
   Stream<MethodCall> get _methodStream => _methodStreamController.stream;
 
