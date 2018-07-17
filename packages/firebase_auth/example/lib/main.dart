@@ -37,6 +37,10 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   Future<String> _message = new Future<String>.value('');
+  TextEditingController _smsCodeController = new TextEditingController();
+  String verificationId;
+  final String testSmsCode = '888888';
+  final String testPhoneNumber = '+1 408-555-6969';
 
   Future<String> _testSignInAnonymously() async {
     final FirebaseUser user = await _auth.signInAnonymously();
@@ -82,6 +86,53 @@ class _MyHomePageState extends State<MyHomePage> {
     return 'signInWithGoogle succeeded: $user';
   }
 
+  Future<void> _testVerifyPhoneNumber() async {
+    final PhoneVerificationCompleted verificationCompleted =
+        (FirebaseUser user) {
+      _message = Future<String>.value('signInWithPhoneNumber succeeded: $user');
+    };
+
+    final PhoneVerificationFailed verificationFailed =
+        (AuthException authException) {
+      _message = Future<String>.value(
+          'Phone numbber verification failed. Code: ${authException
+              .code}. Message: ${authException.message}');
+    };
+
+    final PhoneCodeSent codeSent =
+        (String verificationId, [int forceResendingToken]) async {
+      this.verificationId = verificationId;
+      _smsCodeController.text = testSmsCode;
+    };
+
+    final PhoneCodeAutoRetrievalTimeout codeAutoRetrievalTimeout =
+        (String verificationId) {
+      this.verificationId = verificationId;
+      _smsCodeController.text = testSmsCode;
+    };
+
+    await _auth.verifyPhoneNumber(
+        phoneNumber: testPhoneNumber,
+        timeout: const Duration(seconds: 0),
+        verificationCompleted: verificationCompleted,
+        verificationFailed: verificationFailed,
+        codeSent: codeSent,
+        codeAutoRetrievalTimeout: codeAutoRetrievalTimeout);
+  }
+
+  Future<String> _testSignInWithPhoneNumber(String smsCode) async {
+    final FirebaseUser user = await _auth.signInWithPhoneNumber(
+      verificationId: verificationId,
+      smsCode: smsCode,
+    );
+
+    final FirebaseUser currentUser = await _auth.currentUser();
+    assert(user.uid == currentUser.uid);
+
+    _smsCodeController.text = '';
+    return 'signInWithPhoneNumber succeeded: $user';
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -104,6 +155,35 @@ class _MyHomePageState extends State<MyHomePage> {
                 setState(() {
                   _message = _testSignInWithGoogle();
                 });
+              }),
+          new MaterialButton(
+              child: const Text('Test verifyPhoneNumber'),
+              onPressed: () {
+                _testVerifyPhoneNumber();
+              }),
+          new Container(
+            margin: const EdgeInsets.only(
+              top: 8.0,
+              bottom: 8.0,
+              left: 16.0,
+              right: 16.0,
+            ),
+            child: new TextField(
+              controller: _smsCodeController,
+              decoration: const InputDecoration(
+                hintText: 'SMS Code',
+              ),
+            ),
+          ),
+          new MaterialButton(
+              child: const Text('Test signInWithPhoneNumber'),
+              onPressed: () {
+                if (_smsCodeController.text != null) {
+                  setState(() {
+                    _message =
+                        _testSignInWithPhoneNumber(_smsCodeController.text);
+                  });
+                }
               }),
           new FutureBuilder<String>(
               future: _message,

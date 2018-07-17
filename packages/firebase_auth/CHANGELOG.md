@@ -1,5 +1,9 @@
 ## 0.5.12
 
+* Add support for phone number authentication.
+
+## 0.5.12
+
 * Fixed ArrayIndexOutOfBoundsException in handleStopListeningAuthState
 
 ## 0.5.11
