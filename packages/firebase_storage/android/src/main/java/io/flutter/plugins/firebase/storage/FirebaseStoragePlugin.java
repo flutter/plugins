@@ -368,8 +368,10 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
     UploadTask task = uploadTasks.get(handle);
     if (task != null) {
       task.pause();
+      result.success(null);
+    } else {
+      result.error("pause_error", "task == null", null);
     }
-    result.success(null);
   }
 
   private void cancelUploadTask(MethodCall call, final Result result) {
@@ -377,8 +379,10 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
     UploadTask task = uploadTasks.get(handle);
     if (task != null) {
       task.cancel();
+      result.success(null);
+    } else {
+      result.error("cancel_error", "task == null", null);
     }
-    result.success(null);
   }
 
   private void resumeUploadTask(MethodCall call, final Result result) {
@@ -386,8 +390,10 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
     UploadTask task = uploadTasks.get(handle);
     if (task != null) {
       task.resume();
+      result.success(null);
+    } else {
+      result.error("resume_error", "task == null", null);
     }
-    result.success(null);
   }
 
   private int addUploadListeners(final UploadTask task) {
