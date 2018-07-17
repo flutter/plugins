@@ -25,29 +25,66 @@ Optional but recommended: If you use the on-device API, configure your app to au
 </application>
 ```
 
-## On-device Text Recognition
+## Using an On-device FirbaseVisionDetector
 
-To use the on-device text recognition model, run the text detector as described below:
+### 1. Create a `FirebaseVisionImage`.
 
-1. Create a `FirebaseVisionImage` object from your image.
-
-To create a `FirebaseVisionImage` from an image `File` object:
+Create a `FirebaseVisionImage` object from your image. To create a `FirebaseVisionImage` from an image `File` object:
 
 ```dart
 final File imageFile = getImageFile();
 final FirebaseVisionImage visionImage = FirebaseVisionImage.fromFile(imageFile);
 ```
 
-2. Get an instance of `TextDetector` and pass `visionImage` to `detectInImage().`
+### 2. Create an instance of a detector.
+
+Get an instance of a `FirebaseVisionDetector` and pass `visionImage` to `detectInImage().`
 
 ```dart
-final TextDetector detector = FirebaseVision.instance.getTextDetector();
-final List<TextBlock> blocks = await detector.detectInImage(visionImage);
-
-detector.close();
+final BarcodeDetector barcodeDetector = FirebaseVision.instance.barcodeDetector();
+final FaceDetector faceDetector = FirebaseVision.instance.faceDetector();
+final LabelDetector labelDetector = FirebaseVision.instance.labelDetector();
+final TextDetector textDetector = FirebaseVision.instance.textDetector();
 ```
 
-3. Extract text and text locations from blocks of recognized text.
+You can also configure all except `TextDetector` with desired options.
+
+```dart
+final LabelDetector detector = FirebaseVision.instance.labelDetector(
+  LabelDetectorOptions(confidenceThreshold: 0.75),
+);
+```
+
+### 3. Call `detectInImage()` with `visionImage`.
+
+```dart
+final List<Barcode> barcodeDetector = barcodeDetector.detectInImage(visionImage);
+final List<Barcode> faceDetector = faceDetector.detectInImage(visionImage);
+final List<Barcode> labelDetector = labelDetector.detectInImage(visionImage);
+final List<Barcode> textDetector = textDetector.detectInImage(visionImage);
+```
+
+### 4. On-device Detection.
+
+a. Extract barcodes.
+
+```dart
+
+```
+
+b. Extract faces.
+
+```dart
+
+```
+
+c. Extract labels.
+
+```dart
+
+```
+
+d. Extract text.
 
 ```dart
 for (TextBlock block in blocks) {
