@@ -10,7 +10,7 @@ abstract class StorageUploadTask {
   final StorageMetadata _metadata;
 
   StorageUploadTask._(this._firebaseStorage, this._path, this._metadata);
-  Future<dynamic> _platformMethod();
+  Future<dynamic> _platformStart();
 
   int _handle;
 
@@ -39,7 +39,7 @@ abstract class StorageUploadTask {
   Stream<StorageTaskEvent> get events => _controller.stream;
 
   Future<StorageTaskSnapshot> _start() async {
-    _handle = await _platformMethod();
+    _handle = await _platformStart();
     final StorageTaskEvent event = await _firebaseStorage._methodStream
         .where((MethodCall m) {
       return m.method == 'StorageTaskEvent' && m.arguments['handle'] == _handle;
@@ -133,7 +133,7 @@ class _StorageFileUploadTask extends StorageUploadTask {
       : super._(firebaseStorage, path, metadata);
 
   @override
-  Future<dynamic> _platformMethod() {
+  Future<dynamic> _platformStart() {
     return FirebaseStorage.channel.invokeMethod(
       'StorageReference#putFile',
       <String, dynamic>{
@@ -155,7 +155,7 @@ class _StorageDataUploadTask extends StorageUploadTask {
       : super._(firebaseStorage, path, metadata);
 
   @override
-  Future<dynamic> _platformMethod() {
+  Future<dynamic> _platformStart() {
     return FirebaseStorage.channel.invokeMethod(
       'StorageReference#putData',
       <String, dynamic>{
