@@ -1,4 +1,4 @@
-## 0.5.12
+## 0.5.13
 
 * Add support for phone number authentication.
 
