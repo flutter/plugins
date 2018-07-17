@@ -22,7 +22,8 @@ class LabelDetector implements Detector {
   @Override
   public void handleDetection(
       FirebaseVisionImage image, Map<String, Object> options, final MethodChannel.Result result) {
-    FirebaseVisionLabelDetector detector = FirebaseVision.getInstance().getVisionLabelDetector(parseOptions(options));
+    FirebaseVisionLabelDetector detector =
+        FirebaseVision.getInstance().getVisionLabelDetector(parseOptions(options));
     detector
         .detectInImage(image)
         .addOnSuccessListener(
@@ -41,16 +42,14 @@ class LabelDetector implements Detector {
 
                 result.success(labels);
               }
-            }
-        )
+            })
         .addOnFailureListener(
             new OnFailureListener() {
               @Override
               public void onFailure(@NonNull Exception e) {
                 result.error("labelDetectorError", e.getLocalizedMessage(), null);
               }
-            }
-        );
+            });
   }
 
   private FirebaseVisionLabelDetectorOptions parseOptions(Map<String, Object> optionsData) {
