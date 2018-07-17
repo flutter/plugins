@@ -33,12 +33,11 @@ static FIRVisionFaceDetector *faceDetector;
                                                             : [NSNull null],
                @"smilingProbability" : face.hasSmilingProbability ? @(face.smilingProbability)
                                                                   : [NSNull null],
-               @"leftEyeOpenProbability" : face.hasLeftEyeOpenProbability
-                   ? @(face.leftEyeOpenProbability)
-                   : [NSNull null],
+               @"leftEyeOpenProbability" :
+                   face.hasLeftEyeOpenProbability ? @(face.leftEyeOpenProbability) : [NSNull null],
                @"rightEyeOpenProbability" : face.hasRightEyeOpenProbability
-                   ? @(face.rightEyeOpenProbability)
-                   : [NSNull null],
+                                                ? @(face.rightEyeOpenProbability)
+                                                : [NSNull null],
                @"trackingId" : face.hasTrackingID ? @(face.trackingID) : [NSNull null],
                @"landmarks" : @{
                  @"bottomMouth" : [FaceDetector getLandmarkPosition:face
