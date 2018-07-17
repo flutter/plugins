@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
 
-const String kTestString = "Hello world!";
+const String kTestString = 'Hello world!';
 
 void main() async {
   final FirebaseApp app = await FirebaseApp.configure(
