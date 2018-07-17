@@ -37,7 +37,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   Future<String> _message = new Future<String>.value('');
-  TextEditingController smsCodeController = new TextEditingController();
+  TextEditingController _smsCodeController = new TextEditingController();
   String verificationId;
   final String testSmsCode = '888888';
   final String testPhoneNumber = '+1 408-555-6969';
@@ -95,19 +95,20 @@ class _MyHomePageState extends State<MyHomePage> {
     final PhoneVerificationFailed verificationFailed =
         (AuthException authException) {
       _message = Future<String>.value(
-          'Phone numbber verification failed. Code: ${authException.code}. Message: ${authException.message}');
+          'Phone numbber verification failed. Code: ${authException
+              .code}. Message: ${authException.message}');
     };
 
     final PhoneCodeSent codeSent =
         (String verificationId, [int forceResendingToken]) async {
       this.verificationId = verificationId;
-      smsCodeController.text = testSmsCode;
+      _smsCodeController.text = testSmsCode;
     };
 
     final PhoneCodeAutoRetrievalTimeout codeAutoRetrievalTimeout =
         (String verificationId) {
       this.verificationId = verificationId;
-      smsCodeController.text = testSmsCode;
+      _smsCodeController.text = testSmsCode;
     };
 
     await _auth.verifyPhoneNumber(
@@ -128,7 +129,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final FirebaseUser currentUser = await _auth.currentUser();
     assert(user.uid == currentUser.uid);
 
-    smsCodeController.text = '';
+    _smsCodeController.text = '';
     return 'signInWithPhoneNumber succeeded: $user';
   }
 
@@ -162,9 +163,13 @@ class _MyHomePageState extends State<MyHomePage> {
               }),
           new Container(
             margin: const EdgeInsets.only(
-                top: 8.0, bottom: 8.0, left: 16.0, right: 16.0),
+              top: 8.0,
+              bottom: 8.0,
+              left: 16.0,
+              right: 16.0,
+            ),
             child: new TextField(
-              controller: smsCodeController,
+              controller: _smsCodeController,
               decoration: const InputDecoration(
                 hintText: 'SMS Code',
               ),
@@ -173,10 +178,10 @@ class _MyHomePageState extends State<MyHomePage> {
           new MaterialButton(
               child: const Text('Test signInWithPhoneNumber'),
               onPressed: () {
-                if (smsCodeController.text != null) {
+                if (_smsCodeController.text != null) {
                   setState(() {
                     _message =
-                        _testSignInWithPhoneNumber(smsCodeController.text);
+                        _testSignInWithPhoneNumber(_smsCodeController.text);
                   });
                 }
               }),
