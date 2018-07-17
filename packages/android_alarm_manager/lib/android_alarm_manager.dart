@@ -19,36 +19,17 @@ void _alarmManagerCallbackDispatcher() {
   WidgetsFlutterBinding.ensureInitialized();
   _channel.setMethodCallHandler((MethodCall call) async {
     final args = call.arguments;
-    // args[0].runtimeType == List<dynamic>
-    // pair[0] = closure name
-    // pair[1] = closure library path
-    // pair[2] = closure containing class
-    final pair = args.cast<String>();
-    final cacheKey = pair.join('@');
-    Function closure;
-    // To avoid making repeated lookups of our callback, store the resulting
-    // closure in a cache based on the closure name and its library path.
-    if (_callbackCache.containsKey(cacheKey)) {
-      closure = _callbackCache[cacheKey];
-    } else {
-      // PluginUtilities.getClosureByName performs a lookup based on the name
-      // of a closure as well as its library Uri.
-      closure = PluginUtilities.getClosureByName(
-          name: pair[0],
-          libraryPath: pair[1],
-          className: (pair[2] == 'null') ? null : pair[2]);
-
-      if (closure == null) {
-        print('Could not find closure: ${pair[0]} in ${pair[1]}.');
-        print('Either ${pair[0]} does not exist or it is an instance method.');
-        exit(-1);
-      }
-      _callbackCache[cacheKey] = closure;
+    final CallbackHandle handle = new CallbackHandle.fromRawHandle(args[0]);
+    // PluginUtilities.getCallbackFromHandle performs a lookup based on the
+    // callback handle and returns a tear-off of the original callback.
+    Function closure = PluginUtilities.getCallbackFromHandle(handle);
+    if (closure == null) {
+      print('Fatal: could not find callback');
+      exit(-1);
     }
-    assert(
-        closure != null, 'Could not find closure: ${pair[0]} in ${pair[1]}.');
     closure();
   });
+  _channel.invokeMethod('AlarmService.initialized');
 }
 
 /// A Flutter plugin for registering Dart callbacks with the Android
@@ -66,15 +47,13 @@ class AndroidAlarmManager {
   /// Returns a [Future] that resolves to `true` on success and `false` on
   /// failure.
   static Future<bool> initialize() async {
-    final String functionName =
-        PluginUtilities.getNameOfFunction(_alarmManagerCallbackDispatcher);
-    final String libraryPath = PluginUtilities
-        .getPathForFunctionLibrary(_alarmManagerCallbackDispatcher);
-    if (functionName == null) {
+    final CallbackHandle handle =
+      PluginUtilities.getCallbackHandle(_alarmManagerCallbackDispatcher);
+    if (handle == null) {
       return false;
     }
     final dynamic r = await _channel.invokeMethod(
-        'AlarmService.start', <dynamic>[functionName, libraryPath]);
+        'AlarmService.start', <dynamic>[handle.toRawHandle()]);
     return r ?? false;
   }
 
@@ -109,27 +88,16 @@ class AndroidAlarmManager {
   }) async {
     final int now = new DateTime.now().millisecondsSinceEpoch;
     final int first = now + delay.inMilliseconds;
-    final String functionName = PluginUtilities.getNameOfFunction(callback);
-    final String className = PluginUtilities.getNameOfFunctionClass(callback);
-    final String libraryPath =
-        PluginUtilities.getPathForFunctionLibrary(callback);
-
-    if (functionName == null) {
+    final CallbackHandle handle = PluginUtilities.getCallbackHandle(callback);
+    if (handle == null) {
       return false;
     }
-
-    if (libraryPath == null) {
-      return false;
-    }
-
     final dynamic r = await _channel.invokeMethod('Alarm.oneShot', <dynamic>[
       id,
       exact,
       wakeup,
       first,
-      functionName,
-      className,
-      libraryPath
+      handle.toRawHandle(),
     ]);
     return (r == null) ? false : r;
   }
@@ -166,28 +134,17 @@ class AndroidAlarmManager {
     final int now = new DateTime.now().millisecondsSinceEpoch;
     final int period = duration.inMilliseconds;
     final int first = now + period;
-    final String functionName = PluginUtilities.getNameOfFunction(callback);
-    final String className = PluginUtilities.getNameOfFunctionClass(callback);
-    final String libraryPath =
-        PluginUtilities.getPathForFunctionLibrary(callback);
-
-    if (functionName == null) {
+    final CallbackHandle handle = PluginUtilities.getCallbackHandle(callback);
+    if (handle == null) {
       return false;
     }
-
-    if (libraryPath == null) {
-      return false;
-    }
-
     final dynamic r = await _channel.invokeMethod('Alarm.periodic', <dynamic>[
       id,
       exact,
       wakeup,
       first,
       period,
-      functionName,
-      className,
-      libraryPath
+      handle.toRawHandle()
     ]);
     return (r == null) ? false : r;
   }

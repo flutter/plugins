@@ -17,9 +17,11 @@ import io.flutter.app.FlutterActivity;
 import io.flutter.app.FlutterApplication;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry.PluginRegistrantCallback;
+import io.flutter.view.FlutterCallbackInformation;
 import io.flutter.view.FlutterIsolateStartedEvent;
 import io.flutter.view.FlutterMain;
 import io.flutter.view.FlutterNativeView;
+import io.flutter.view.FlutterRunArguments;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AlarmService extends Service {
@@ -38,21 +40,32 @@ public class AlarmService extends Service {
         Log.e(TAG, "AlarmService start failed. Bailing out.");
         return;
       }
-      sStarted.set(true);
     }
   }
 
-  public static void startAlarmService(Context context, String entrypoint,
-                                       String libraryPath) {
+  public static void onInitialized() {
+    sStarted.set(true);
+  }
+
+  public static void startAlarmService(Context context, long callbackHandle) {
     FlutterMain.ensureInitializationComplete(context, null);
     String mAppBundlePath = FlutterMain.findAppBundlePath(context);
+    FlutterCallbackInformation cb = FlutterCallbackInformation.lookupCallbackInformation(callbackHandle);
+    if (cb == null) {
+      Log.e(TAG, "Fatal: failed to find callback");
+      return;
+    }
     sSharedFlutterView = new FlutterNativeView(context, true);
     sStarted = new AtomicBoolean(false);
     if (mAppBundlePath != null && !sStarted.get()) {
       Log.i(TAG, "Starting AlarmService...");
       sOnStartedCallback = new OnStartedCallback();
-      sSharedFlutterView.runFromBundle(mAppBundlePath, null, entrypoint,
-                                       libraryPath, false, sOnStartedCallback);
+      FlutterRunArguments args = new FlutterRunArguments();
+      args.bundlePath = mAppBundlePath;
+      args.entrypoint = cb.callbackName;
+      args.libraryPath = cb.callbackLibraryPath;
+      args.onStartedEvent = sOnStartedCallback;
+      sSharedFlutterView.runFromBundle(args);
       sPluginRegistrantCallback.registerWith(
           sSharedFlutterView.getPluginRegistry());
     }
@@ -64,21 +77,19 @@ public class AlarmService extends Service {
 
   public static void setOneShot(Context context, int requestCode, boolean exact,
                                 boolean wakeup, long startMillis,
-                                String entrypoint, String className,
-                                String libraryPath) {
+                                long callbackHandle) {
     final boolean repeating = false;
     scheduleAlarm(context, requestCode, repeating, exact, wakeup, startMillis,
-                  0, entrypoint, className, libraryPath);
+                  0, callbackHandle);
   }
 
   public static void setPeriodic(Context context, int requestCode,
                                  boolean exact, boolean wakeup,
                                  long startMillis, long intervalMillis,
-                                 String entrypoint, String className,
-                                 String libraryPath) {
+                                 long callbackHandle) {
     final boolean repeating = true;
     scheduleAlarm(context, requestCode, repeating, exact, wakeup, startMillis,
-                  intervalMillis, entrypoint, className, libraryPath);
+                  intervalMillis, callbackHandle);
   }
 
   public static void cancel(Context context, int requestCode) {
@@ -146,13 +157,7 @@ public class AlarmService extends Service {
       // TODO(bkonyi): queue up alarm events.
       return START_NOT_STICKY;
     }
-    String entrypoint = intent.getStringExtra("entrypoint");
-    String className = intent.getStringExtra("className");
-    String libraryPath = intent.getStringExtra("libraryPath");
-    if (entrypoint == null) {
-      Log.e(TAG, "onStartCommand got a null entrypoint. Bailing out.");
-      return START_NOT_STICKY;
-    }
+    long callbackHandle = intent.getLongExtra("callbackHandle", 0);
     if (sBackgroundChannel == null) {
       Log.e(TAG,
             "setBackgroundChannel was not called before alarms were scheduled."
@@ -160,7 +165,7 @@ public class AlarmService extends Service {
       return START_NOT_STICKY;
     }
     sBackgroundChannel.invokeMethod(
-        "", new Object[] {entrypoint, libraryPath, className});
+        "", new Object[] {callbackHandle});
     return START_NOT_STICKY;
   }
 
@@ -172,13 +177,10 @@ public class AlarmService extends Service {
   private static void scheduleAlarm(Context context, int requestCode,
                                     boolean repeating, boolean exact,
                                     boolean wakeup, long startMillis,
-                                    long intervalMillis, String entrypoint,
-                                    String className, String libraryPath) {
-    // Create an Intent for the alarm and set the desired Dart entrypoint.
+                                    long intervalMillis, long callbackHandle) {
+    // Create an Intent for the alarm and set the desired Dart callback handle.
     Intent alarm = new Intent(context, AlarmService.class);
-    alarm.putExtra("entrypoint", entrypoint);
-    alarm.putExtra("className", className);
-    alarm.putExtra("libraryPath", libraryPath);
+    alarm.putExtra("callbackHandle", callbackHandle);
     PendingIntent pendingIntent =
         PendingIntent.getService(context, requestCode, alarm, PendingIntent.FLAG_UPDATE_CURRENT);
 

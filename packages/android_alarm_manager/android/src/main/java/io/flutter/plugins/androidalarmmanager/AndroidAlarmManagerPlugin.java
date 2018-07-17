@@ -50,6 +50,8 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
       if (method.equals("AlarmService.start")) {
         startService((JSONArray)arguments);
         result.success(true);
+      } else if (method.equals("AlarmService.initialized")) {
+        AlarmService.onInitialized();
       } else if (method.equals("Alarm.periodic")) {
         periodic((JSONArray) arguments);
         result.success(true);
@@ -68,9 +70,8 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
   }
 
   private void startService(JSONArray arguments) throws JSONException {
-    String entrypoint = arguments.getString(0);
-    String libraryPath = arguments.getString(1);
-    AlarmService.startAlarmService(mContext, entrypoint, libraryPath);
+    long callbackHandle = arguments.getLong(0);
+    AlarmService.startAlarmService(mContext, callbackHandle);
   }
 
   private void oneShot(JSONArray arguments) throws JSONException {
@@ -78,19 +79,9 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
     boolean exact = arguments.getBoolean(1);
     boolean wakeup = arguments.getBoolean(2);
     long startMillis = arguments.getLong(3);
-    String entrypoint = arguments.getString(4);
-
-    // JSONArray.getString will coerce null to "null".
-    String className = null;
-    if (!arguments.get(5).equals(null)) {
-      className = arguments.getString(5);
-    }
-    String libraryPath = null;
-    if (!arguments.get(6).equals(null)) {
-      libraryPath = arguments.getString(6);
-    }
+    long callbackHandle = arguments.getLong(4);
     AlarmService.setOneShot(mContext, requestCode, exact, wakeup, startMillis,
-                            entrypoint, className, libraryPath);
+                            callbackHandle);
   }
 
   private void periodic(JSONArray arguments) throws JSONException {
@@ -99,20 +90,9 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
     boolean wakeup = arguments.getBoolean(2);
     long startMillis = arguments.getLong(3);
     long intervalMillis = arguments.getLong(4);
-    String entrypoint = arguments.getString(5);
-
-    // JSONArray.getString will coerce null to "null".
-    String className = null;
-    if (!arguments.get(6).equals(null)) {
-      className = arguments.getString(6);
-    }
-    String libraryPath = null;
-    if (!arguments.get(7).equals(null)) {
-      libraryPath = arguments.getString(7);
-    }
+    long callbackHandle = arguments.getLong(5);
     AlarmService.setPeriodic(mContext, requestCode, exact, wakeup, startMillis,
-                             intervalMillis, entrypoint, className,
-                             libraryPath);
+                             intervalMillis, callbackHandle);
   }
 
   private void cancel(JSONArray arguments) throws JSONException {
