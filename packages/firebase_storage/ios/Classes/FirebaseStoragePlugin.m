@@ -207,7 +207,7 @@
                     }];
   [uploadTask observeStatus:FIRStorageTaskStatusResume
                     handler:^(FIRStorageTaskSnapshot *snapshot) {
-                      [self invokeStorageTaskEvent:handle type:kProgress snapshot:snapshot];
+                      [self invokeStorageTaskEvent:handle type:kResume snapshot:snapshot];
                     }];
   [uploadTask observeStatus:FIRStorageTaskStatusPause
                     handler:^(FIRStorageTaskSnapshot *snapshot) {
