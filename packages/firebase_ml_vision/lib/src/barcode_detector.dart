@@ -4,6 +4,105 @@
 
 part of firebase_ml_vision;
 
+/// Barcode value type constants - enumeration of supported barcode content value types.
+enum BarcodeValueType {
+  /// Unknown Barcode value types.
+  unknown,
+
+  /// Barcode value type for contact info.
+  contactInfo,
+
+  /// Barcode value type for email addresses.
+  email,
+
+  /// Barcode value type for ISBNs.
+  isbn,
+
+  /// Barcode value type for phone numbers.
+  phone,
+
+  /// Barcode value type for product codes.
+  product,
+
+  /// Barcode value type for SMS details.
+  sms,
+
+  /// Barcode value type for plain text.
+  text,
+
+  /// Barcode value type for URLs/bookmarks.
+  url,
+
+  /// Barcode value type for Wi-Fi access point details.
+  wifi,
+
+  /// Barcode value type for geographic coordinates.
+  geographicCoordinates,
+
+  /// Barcode value type for calendar events.
+  calendarEvent,
+
+  /// Barcode value type for driver's license data.
+  driversLicense,
+}
+
+/// The type of email for [BarcodeEmail].
+enum BarcodeEmailType {
+  /// Unknown email type.
+  unknown,
+
+  /// Barcode work email type.
+  work,
+
+  /// Barcode home email type.
+  home,
+}
+
+/// The type of phone number for [BarcodePhone].
+enum BarcodePhoneType {
+  /// Unknown phone type.
+  unknown,
+
+  /// Barcode work phone type.
+  work,
+
+  /// Barcode home phone type.
+  home,
+
+  /// Barcode fax phone type.
+  fax,
+
+  /// Barcode mobile phone type.
+  mobile,
+}
+
+/// Wifi encryption type constants.
+enum BarcodeWiFiEncryptionType {
+  /// Barcode unknown Wi-Fi encryption type.
+  unknown,
+
+  /// Barcode open Wi-Fi encryption type.
+  open,
+
+  /// Barcode WPA Wi-Fi encryption type.
+  wpa,
+
+  /// Barcode WEP Wi-Fi encryption type.
+  wep,
+}
+
+/// Address type constants.
+enum BarcodeAddressType {
+  /// Barcode unknown address type.
+  unknown,
+
+  /// Barcode work address type.
+  work,
+
+  /// Barcode home address type.
+  home,
+}
+
 /// Detector for performing barcode scanning on an input image.
 ///
 /// A barcode detector is created via barcodeDetector() in [FirebaseVision]:
@@ -114,7 +213,7 @@ class Barcode {
 
   /// The format type of the barcode value.
   ///
-  /// For example, [BarcodeValueType.Text], [BarcodeValueType.Product], [BarcodeValueType.URL], etc.
+  /// For example, [BarcodeValueType.text], [BarcodeValueType.product], [BarcodeValueType.url], etc.
   ///
   /// If the value structure cannot be parsed, TYPE_TEXT will be returned.
   /// If the recognized structure type is not defined in your current version of SDK, TYPE_UNKNOWN will be returned.
@@ -124,31 +223,31 @@ class Barcode {
   /// and implement your own parsing logic.
   final BarcodeValueType valueType;
 
-  /// Parsed email details. (set iff [valueType] is [BarcodeValueType.Email])
+  /// Parsed email details. (set iff [valueType] is [BarcodeValueType.email])
   final BarcodeEmail email;
 
-  /// Parsed phone details. (set iff [valueType] is [BarcodeValueType.Phone])
+  /// Parsed phone details. (set iff [valueType] is [BarcodeValueType.phone])
   final BarcodePhone phone;
 
-  /// Parsed SMS details. (set iff [valueType] is [BarcodeValueType.SMS])
+  /// Parsed SMS details. (set iff [valueType] is [BarcodeValueType.sms])
   final BarcodeSMS sms;
 
-  /// Parsed URL bookmark details. (set iff [valueType] is [BarcodeValueType.URL])
+  /// Parsed URL bookmark details. (set iff [valueType] is [BarcodeValueType.url])
   final BarcodeURLBookmark url;
 
-  /// Parsed WiFi AP details. (set iff [valueType] is [BarcodeValueType.WiFi])
+  /// Parsed WiFi AP details. (set iff [valueType] is [BarcodeValueType.wifi])
   final BarcodeWiFi wifi;
 
-  /// Parsed geo coordinates. (set iff [valueType] is [BarcodeValueType.GeographicCoordinates])
+  /// Parsed geo coordinates. (set iff [valueType] is [BarcodeValueType.geographicCoordinates])
   final BarcodeGeoPoint geoPoint;
 
-  /// Parsed contact details. (set iff [valueType] is [BarcodeValueType.ContactInfo])
+  /// Parsed contact details. (set iff [valueType] is [BarcodeValueType.contactInfo])
   final BarcodeContactInfo contactInfo;
 
-  /// Parsed calendar event details. (set iff [valueType] is [BarcodeValueType.CalendarEvent])
+  /// Parsed calendar event details. (set iff [valueType] is [BarcodeValueType.calendarEvent])
   final BarcodeCalendarEvent calendarEvent;
 
-  /// Parsed driver's license details. (set iff [valueType] is [BarcodeValueType.DriversLicense])
+  /// Parsed driver's license details. (set iff [valueType] is [BarcodeValueType.driversLicense])
   final BarcodeDriverLicense driverLicense;
 }
 
@@ -205,48 +304,6 @@ class BarcodeFormat {
   static const BarcodeFormat Aztec = const BarcodeFormat._(0x1000);
 }
 
-/// Barcode value type constants - enumeration of supported barcode content value types
-enum BarcodeValueType {
-  /// Unknown Barcode value types.
-  Unknown,
-
-  /// Barcode value type for contact info.
-  ContactInfo,
-
-  /// Barcode value type for email addresses.
-  Email,
-
-  /// Barcode value type for ISBNs.
-  ISBN,
-
-  /// Barcode value type for phone numbers.
-  Phone,
-
-  /// Barcode value type for product codes.
-  Product,
-
-  /// Barcode value type for SMS details.
-  SMS,
-
-  /// Barcode value type for plain text.
-  Text,
-
-  /// Barcode value type for URLs/bookmarks.
-  URL,
-
-  /// Barcode value type for Wi-Fi access point details.
-  WiFi,
-
-  /// Barcode value type for geographic coordinates.
-  GeographicCoordinates,
-
-  /// Barcode value type for calendar events.
-  CalendarEvent,
-
-  /// Barcode value type for driver's license data.
-  DriversLicense,
-}
-
 /// An email message from a 'MAILTO:' or similar QRCode type.
 class BarcodeEmail {
   BarcodeEmail._(Map<dynamic, dynamic> data)
@@ -268,18 +325,6 @@ class BarcodeEmail {
   final BarcodeEmailType type;
 }
 
-/// The type of email for [BarcodeEmail]
-enum BarcodeEmailType {
-  /// Unknown email type.
-  Unknown,
-
-  /// Barcode work email type.
-  Work,
-
-  /// Barcode home email type.
-  Home,
-}
-
 /// Phone number info.
 class BarcodePhone {
   BarcodePhone._(Map<dynamic, dynamic> data)
@@ -293,23 +338,6 @@ class BarcodePhone {
   ///
   /// See also [BarcodePhoneType]
   final BarcodePhoneType type;
-}
-
-enum BarcodePhoneType {
-  /// Unknown phone type.
-  Unknown,
-
-  /// Barcode work phone type.
-  Work,
-
-  /// Barcode home phone type.
-  Home,
-
-  /// Barcode fax phone type.
-  Fax,
-
-  /// Barcode mobile phone type.
-  Mobile,
 }
 
 /// An sms message from an 'SMS:' or similar QRCode type.
@@ -356,21 +384,6 @@ class BarcodeWiFi {
   ///
   /// See all [BarcodeWiFiEncryptionType]
   final BarcodeWiFiEncryptionType encryptionType;
-}
-
-/// Wifi encryption type constants.
-enum BarcodeWiFiEncryptionType {
-  /// Barcode unknown Wi-Fi encryption type.
-  Unknown,
-
-  /// Barcode open Wi-Fi encryption type.
-  Open,
-
-  /// Barcode WPA Wi-Fi encryption type.
-  WPA,
-
-  /// Barcode WEP Wi-Fi encryption type.
-  WEP,
 }
 
 /// GPS coordinates from a 'GEO:' or similar QRCode type.
@@ -459,18 +472,6 @@ class BarcodeAddress {
   ///
   /// See also [BarcodeAddressType]
   final BarcodeAddressType type;
-}
-
-/// Address type constants.
-enum BarcodeAddressType {
-  /// Barcode unknown address type.
-  Unknown,
-
-  /// Barcode work address type.
-  Work,
-
-  /// Barcode home address type.
-  Home,
 }
 
 /// A person's name, both formatted version and individual name components.

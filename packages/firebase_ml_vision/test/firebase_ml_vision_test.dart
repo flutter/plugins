@@ -133,7 +133,7 @@ void main() {
         expect(barcode.email.address, 'a');
         expect(barcode.email.body, 'b');
         expect(barcode.email.subject, 's');
-        expect(barcode.email.type, BarcodeEmailType.Unknown);
+        expect(barcode.email.type, BarcodeEmailType.unknown);
       });
 
       test('detectInImage phone', () async {
@@ -185,7 +185,7 @@ void main() {
           Point<int>(7, 8),
         ]);
         expect(barcode.phone.number, '000');
-        expect(barcode.phone.type, BarcodePhoneType.Unknown);
+        expect(barcode.phone.type, BarcodePhoneType.unknown);
       });
 
       test('detectInImage sms', () async {
@@ -343,7 +343,7 @@ void main() {
         ]);
         expect(barcode.wifi.ssid, 's');
         expect(barcode.wifi.password, 'p');
-        expect(barcode.wifi.encryptionType, BarcodeWiFiEncryptionType.Unknown);
+        expect(barcode.wifi.encryptionType, BarcodeWiFiEncryptionType.unknown);
       });
 
       test('detectInImage geo_point', () async {
@@ -477,9 +477,9 @@ void main() {
           Point<int>(7, 8),
         ]);
         expect(
-            barcode.contactInfo.addresses[0].type, BarcodeAddressType.Unknown);
+            barcode.contactInfo.addresses[0].type, BarcodeAddressType.unknown);
         expect(barcode.contactInfo.addresses[0].addressLines[0], 'al');
-        expect(barcode.contactInfo.emails[0].type, BarcodeEmailType.Unknown);
+        expect(barcode.contactInfo.emails[0].type, BarcodeEmailType.unknown);
         expect(barcode.contactInfo.emails[0].address, 'a');
         expect(barcode.contactInfo.emails[0].body, 'b');
         expect(barcode.contactInfo.emails[0].subject, 's');
@@ -490,7 +490,7 @@ void main() {
         expect(barcode.contactInfo.name.prefix, 'p');
         expect(barcode.contactInfo.name.suffix, 's');
         expect(barcode.contactInfo.name.pronunciation, 'pn');
-        expect(barcode.contactInfo.phones[0].type, BarcodePhoneType.Unknown);
+        expect(barcode.contactInfo.phones[0].type, BarcodePhoneType.unknown);
         expect(barcode.contactInfo.phones[0].number, '012');
         expect(barcode.contactInfo.urls[0], 'url');
         expect(barcode.contactInfo.jobTitle, 'j');
