@@ -26,16 +26,16 @@ class _MyAppState extends State<MyApp> {
   LocationBackgroundPlugin _locationPlugin;
   Location _lastLocation;
   bool _isTracking = false;
-  static const boldText = TextStyle(fontWeight: FontWeight.bold);
+  static const TextStyle boldText = TextStyle(fontWeight: FontWeight.bold);
 
   @override
-  initState() {
+  void initState() {
     _lastLocation = new Location(-1.0, 0.0, 0.0, -1.0, -1.0);
     super.initState();
     initPlatformState();
   }
 
-  initPlatformState() async {
+  void initPlatformState() {
     // The IsolateNameServer allows for us to create a mapping between a String
     // and a SendPort that is managed by the Flutter engine. A SendPort can
     // then be looked up elsewhere, like a background callback, to establish
@@ -47,8 +47,8 @@ class _MyAppState extends State<MyApp> {
     }
 
     // Listen on the port for location updates from our background callback.
-    _foregroundPort.listen((message) {
-      final location = Location.fromJson(message);
+    _foregroundPort.listen((dynamic message) {
+      final Location location = Location.fromJson(message);
       print('UI Location: $location');
       setState(() {
         _lastLocation = location;
@@ -61,10 +61,10 @@ class _MyAppState extends State<MyApp> {
 
   String _formatTime(DateTime t) {
     t = t.toLocal();
-    final hour = t.hour;
-    final minute = _padZero2(t.minute);
-    final second = _padZero2(t.second);
-    final year = t.year;
+    final int hour = t.hour;
+    final int minute = _padZero2(t.minute);
+    final int = _padZero2(t.second);
+    final int = t.year;
     return '$hour:$minute:$second $year';
   }
 
@@ -73,12 +73,12 @@ class _MyAppState extends State<MyApp> {
     return new MaterialApp(
         home: new Scaffold(
             appBar: new AppBar(
-              title: new Text('Background Plugin Demo'),
+              title: const Text('Background Plugin Demo'),
             ),
             body: new Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
+                children: <Widget>[
                   const Center(
                       child: Text(
                     'Update Time:',

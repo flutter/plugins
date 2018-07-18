@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file
 
-import 'package:location_background_plugin/location_background_plugin.dart';
-
 import 'dart:isolate';
 import 'dart:ui';
+import 'package:location_background_plugin/location_background_plugin.dart';
 
 const String kLocationPluginPortName = 'location_plugin_port';
 SendPort uiSendPort;

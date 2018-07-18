@@ -36,10 +36,6 @@ enum LocationAccuracy {
 
 /// A representation of a location update.
 class Location {
-  DateTime get time =>
-      new DateTime.fromMillisecondsSinceEpoch((_time * 1000).round(),
-          isUtc: true);
-
   final double _time;
   final double latitude;
   final double longitude;
@@ -50,17 +46,21 @@ class Location {
       this._time, this.latitude, this.longitude, this.altitude, this.speed);
 
   factory Location.fromJson(String jsonLocation) {
-    Map<String, dynamic> location = json.decode(jsonLocation);
+    final Map<String, dynamic> location = json.decode(jsonLocation);
     return new Location(location['time'], location['latitude'],
         location['longitude'], location['altitude'], location['speed']);
   }
+
+  DateTime get time =>
+      new DateTime.fromMillisecondsSinceEpoch((_time * 1000).round(),
+          isUtc: true);
 
   @override
   String toString() =>
       '[$time] ($latitude, $longitude) altitude: $altitude m/s: $speed';
 
   String toJson() {
-    Map<String, double> location = {
+    final Map<String, double> location = {
       'time': _time,
       'latitude': latitude,
       'longitude': longitude,
@@ -75,7 +75,7 @@ class Location {
 // To communicate between the native plugin and this entrypoint, we'll use
 // MethodChannels to open a persistent communication channel to trigger
 // callbacks.
-_backgroundCallbackDispatcher() {
+void _backgroundCallbackDispatcher() {
   const String kOnLocationEvent = 'onLocationEvent';
   const MethodChannel _channel = const MethodChannel(
       'plugins.flutter.io/ios_background_location_callback');
@@ -90,7 +90,7 @@ _backgroundCallbackDispatcher() {
   // native portion of the plugin. Here we massage the location data into a
   // `Location` object which we then pass to the provided callback.
   _channel.setMethodCallHandler((MethodCall call) async {
-    final args = call.arguments;
+    final dynamic args = call.arguments;
 
     Function _performCallbackLookup() {
       final CallbackHandle handle =
@@ -109,7 +109,7 @@ _backgroundCallbackDispatcher() {
 
     if (call.method == kOnLocationEvent) {
       onLocationEvent ??= _performCallbackLookup();
-      final location =
+      final Location location =
           new Location(args[1], args[2], args[3], args[4], args[5]);
       onLocationEvent(location);
     } else {
