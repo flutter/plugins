@@ -187,7 +187,7 @@ class Barcode {
   ///
   /// Structured values are not parsed, for example: 'MEBKM:TITLE:Google;URL://www.google.com;;'.
   ///
-  /// Could be null if nothing found.
+  /// Null if nothing found.
   final String rawValue;
 
   /// Barcode value in a user-friendly format.
@@ -200,7 +200,7 @@ class Barcode {
   /// This value may be multiline, for example, when line breaks are encoded into the original TEXT barcode value.
   /// May include the supplement value.
   ///
-  /// Could be null if nothing found.
+  /// Null if nothing found.
   final String displayValue;
 
   /// The barcode format, for example [BarcodeFormat.EAN13].
@@ -215,8 +215,8 @@ class Barcode {
   ///
   /// For example, [BarcodeValueType.text], [BarcodeValueType.product], [BarcodeValueType.url], etc.
   ///
-  /// If the value structure cannot be parsed, TYPE_TEXT will be returned.
-  /// If the recognized structure type is not defined in your current version of SDK, TYPE_UNKNOWN will be returned.
+  /// If the value structure cannot be parsed, `text` will be returned.
+  /// If the recognized structure type is not defined in your current version of SDK, `unknown` will be returned.
   ///
   /// Note that the built-in parsers only recognize a few popular value structures.
   /// For your specific use case, you might want to directly consume rawValue
