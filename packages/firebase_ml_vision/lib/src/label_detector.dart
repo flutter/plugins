@@ -19,7 +19,7 @@ part of firebase_ml_vision;
 /// LabelDetector labelDetector = FirebaseVision.instance.labelDetector(options);
 /// ```
 class LabelDetector extends FirebaseVisionDetector {
-  LabelDetector._(this.options);
+  LabelDetector._(this.options) : assert(options != null);
 
   /// The options for the detector.
   ///

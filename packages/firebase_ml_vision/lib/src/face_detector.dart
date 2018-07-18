@@ -205,8 +205,3 @@ class FaceLandmark {
   /// The point (0, 0) is defined as the upper-left corner of the image.
   final Point<double> position;
 }
-
-String _enumToString(dynamic enumValue) {
-  final String enumString = enumValue.toString();
-  return enumString.substring(enumString.indexOf('.') + 1);
-}

@@ -29,8 +29,8 @@ class FirebaseVision {
   static final FirebaseVision instance = new FirebaseVision._();
 
   /// Creates an instance of [BarcodeDetector].
-  BarcodeDetector barcodeDetector() {
-    return BarcodeDetector._();
+  BarcodeDetector barcodeDetector([BarcodeDetectorOptions options]) {
+    return BarcodeDetector._(options ?? BarcodeDetectorOptions());
   }
 
   /// Creates an instance of [FaceDetector].
@@ -73,4 +73,9 @@ class FirebaseVisionImage {
 abstract class FirebaseVisionDetector {
   /// Uses machine learning model to detect objects of interest in an image.
   Future<dynamic> detectInImage(FirebaseVisionImage visionImage);
+}
+
+String _enumToString(dynamic enumValue) {
+  final String enumString = enumValue.toString();
+  return enumString.substring(enumString.indexOf('.') + 1);
 }

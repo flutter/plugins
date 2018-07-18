@@ -103,6 +103,54 @@ enum BarcodeAddressType {
   home,
 }
 
+/// Enumeration of supported barcode formats.
+enum BarcodeFormat {
+  /// Barcode format representing the union of all supported formats.
+  all,
+
+  /// Barcode format unknown to the current SDK, but understood by Google Play services.
+  unknown,
+
+  /// Barcode format Code 128.
+  code128,
+
+  /// Barcode format Code 39.
+  code39,
+
+  /// Barcode format Code 93.
+  code93,
+
+  /// Barcode format Codabar.
+  codaBar,
+
+  /// Barcode format Data Matrix.
+  dataMatrix,
+
+  /// Barcode format EAN-13.
+  ean13,
+
+  /// Barcode format EAN-8.
+  ean8,
+
+  /// Barcode format ITF (Interleaved Two-of-Five).
+  itf,
+
+  /// Barcode format QR Code.
+  qrCode,
+
+  /// Barcode format UPC-A.
+  upca,
+
+  /// Barcode format UPC-E.
+  upce,
+
+  /// Barcode format PDF-417.
+  pdf417,
+
+  /// Barcode format AZTEC.
+  aztec,
+}
+
 /// Detector for performing barcode scanning on an input image.
 ///
 /// A barcode detector is created via barcodeDetector() in [FirebaseVision]:
@@ -111,9 +159,12 @@ enum BarcodeAddressType {
 /// BarcodeDetector barcodeDetector = FirebaseVision.instance.barcodeDetector();
 /// ```
 class BarcodeDetector extends FirebaseVisionDetector {
-  BarcodeDetector._();
+  BarcodeDetector._(this.options) : assert(options != null);
 
-  /// Detects barcode in the input image.
+  /// The options for configuring this detector.
+  final BarcodeDetectorOptions options;
+
+  /// Detects barcodes in the input image.
   ///
   /// The barcode scanning is performed asynchronously.
   @override
@@ -122,7 +173,11 @@ class BarcodeDetector extends FirebaseVisionDetector {
       'BarcodeDetector#detectInImage',
       <String, dynamic>{
         'path': visionImage.imageFile.path,
-        'options': <String, dynamic>{},
+        'options': <String, dynamic>{
+          'barcodeFormats': options._barcodeFormats
+              .map((BarcodeFormat format) => _enumToString(format))
+              .toList(),
+        },
       },
     );
 
@@ -133,6 +188,23 @@ class BarcodeDetector extends FirebaseVisionDetector {
 
     return barcodes;
   }
+}
+
+/// Immutable options to configure [BarcodeDetector].
+///
+/// Sets which barcode formats the detector will detect. Defaults to
+/// [BarcodeFormat.all].
+class BarcodeDetectorOptions {
+  BarcodeDetectorOptions({List<BarcodeFormat> barcodeFormats})
+      : _barcodeFormats = barcodeFormats != null
+            ? Set<BarcodeFormat>.from(barcodeFormats)
+            : Set<BarcodeFormat>.from(<BarcodeFormat>[BarcodeFormat.all]);
+
+  final Set<BarcodeFormat> _barcodeFormats;
+
+  /// List of barcode formats for the [BarcodeDetector] to detect.
+  List<BarcodeFormat> get barcodeFormats =>
+      List<BarcodeFormat>.unmodifiable(_barcodeFormats);
 }
 
 /// Represents a single recognized barcode and its value.
@@ -146,9 +218,12 @@ class Barcode {
                 _data['height'],
               )
             : null,
-        rawValue = _data['raw_value'],
-        displayValue = _data['display_value'],
-        format = BarcodeFormat._(_data['format']),
+        rawValue = _data['rawValue'],
+        displayValue = _data['displayValue'],
+        format = BarcodeFormat.values.firstWhere(
+          (BarcodeFormat format) => _enumToString(format) == _data['format'],
+          orElse: () => BarcodeFormat.unknown,
+        ),
         _cornerPoints = _data['points'] == null
             ? null
             : _data['points']
@@ -157,24 +232,28 @@ class Barcode {
                       item[1],
                     ))
                 .toList(),
-        valueType = BarcodeValueType.values.elementAt(_data['value_type']),
+        valueType = BarcodeValueType.values.firstWhere(
+          (BarcodeValueType format) =>
+              _enumToString(format) == _data['value_type'],
+          orElse: () => BarcodeValueType.unknown,
+        ),
         email = _data['email'] == null ? null : BarcodeEmail._(_data['email']),
         phone = _data['phone'] == null ? null : BarcodePhone._(_data['phone']),
         sms = _data['sms'] == null ? null : BarcodeSMS._(_data['sms']),
         url = _data['url'] == null ? null : BarcodeURLBookmark._(_data['url']),
         wifi = _data['wifi'] == null ? null : BarcodeWiFi._(_data['wifi']),
-        geoPoint = _data['geo_point'] == null
+        geoPoint = _data['geoPoint'] == null
             ? null
-            : BarcodeGeoPoint._(_data['geo_point']),
-        contactInfo = _data['contact_info'] == null
+            : BarcodeGeoPoint._(_data['geoPoint']),
+        contactInfo = _data['contactInfo'] == null
             ? null
-            : BarcodeContactInfo._(_data['contact_info']),
-        calendarEvent = _data['calendar_event'] == null
+            : BarcodeContactInfo._(_data['contactInfo']),
+        calendarEvent = _data['calendarEvent'] == null
             ? null
-            : BarcodeCalendarEvent._(_data['calendar_event']),
-        driverLicense = _data['driver_license'] == null
+            : BarcodeCalendarEvent._(_data['calendarEvent']),
+        driverLicense = _data['driverLicense'] == null
             ? null
-            : BarcodeDriverLicense._(_data['driver_license']);
+            : BarcodeDriverLicense._(_data['driverLicense']);
 
   final List<Point<int>> _cornerPoints;
 
@@ -195,7 +274,7 @@ class Barcode {
   /// May omit some of the information encoded in the barcode.
   /// For example, if rawValue is 'MEBKM:TITLE:Google;URL://www.google.com;;',
   /// the display_value might be '//www.google.com'.
-  /// If valueFormat==TEXT, this field will be equal to rawValue.
+  /// If valueType = [BarcodeValueType.text], this field will be equal to rawValue.
   ///
   /// This value may be multiline, for example, when line breaks are encoded into the original TEXT barcode value.
   /// May include the supplement value.
@@ -203,7 +282,7 @@ class Barcode {
   /// Null if nothing found.
   final String displayValue;
 
-  /// The barcode format, for example [BarcodeFormat.EAN13].
+  /// The barcode format, for example [BarcodeFormat.ean13].
   final BarcodeFormat format;
 
   /// The four corner points in clockwise direction starting with top-left.
@@ -215,99 +294,49 @@ class Barcode {
   ///
   /// For example, [BarcodeValueType.text], [BarcodeValueType.product], [BarcodeValueType.url], etc.
   ///
-  /// If the value structure cannot be parsed, `text` will be returned.
-  /// If the recognized structure type is not defined in your current version of SDK, `unknown` will be returned.
+  /// If the value structure cannot be parsed, [BarcodeValueType.text] will be returned.
+  /// If the recognized structure type is not defined in your current version of SDK, [BarcodeValueType.unknown] will be returned.
   ///
   /// Note that the built-in parsers only recognize a few popular value structures.
   /// For your specific use case, you might want to directly consume rawValue
   /// and implement your own parsing logic.
   final BarcodeValueType valueType;
 
-  /// Parsed email details. (set iff [valueType] is [BarcodeValueType.email])
+  /// Parsed email details. (set iff [valueType] is [BarcodeValueType.email]).
   final BarcodeEmail email;
 
-  /// Parsed phone details. (set iff [valueType] is [BarcodeValueType.phone])
+  /// Parsed phone details. (set iff [valueType] is [BarcodeValueType.phone]).
   final BarcodePhone phone;
 
-  /// Parsed SMS details. (set iff [valueType] is [BarcodeValueType.sms])
+  /// Parsed SMS details. (set iff [valueType] is [BarcodeValueType.sms]).
   final BarcodeSMS sms;
 
-  /// Parsed URL bookmark details. (set iff [valueType] is [BarcodeValueType.url])
+  /// Parsed URL bookmark details. (set iff [valueType] is [BarcodeValueType.url]).
   final BarcodeURLBookmark url;
 
-  /// Parsed WiFi AP details. (set iff [valueType] is [BarcodeValueType.wifi])
+  /// Parsed WiFi AP details. (set iff [valueType] is [BarcodeValueType.wifi]).
   final BarcodeWiFi wifi;
 
-  /// Parsed geo coordinates. (set iff [valueType] is [BarcodeValueType.geographicCoordinates])
+  /// Parsed geo coordinates. (set iff [valueType] is [BarcodeValueType.geographicCoordinates]).
   final BarcodeGeoPoint geoPoint;
 
-  /// Parsed contact details. (set iff [valueType] is [BarcodeValueType.contactInfo])
+  /// Parsed contact details. (set iff [valueType] is [BarcodeValueType.contactInfo]).
   final BarcodeContactInfo contactInfo;
 
-  /// Parsed calendar event details. (set iff [valueType] is [BarcodeValueType.calendarEvent])
+  /// Parsed calendar event details. (set iff [valueType] is [BarcodeValueType.calendarEvent]).
   final BarcodeCalendarEvent calendarEvent;
 
-  /// Parsed driver's license details. (set iff [valueType] is [BarcodeValueType.driversLicense])
+  /// Parsed driver's license details. (set iff [valueType] is [BarcodeValueType.driversLicense]).
   final BarcodeDriverLicense driverLicense;
-}
-
-/// Barcode format constants - enumeration of supported barcode formats.
-class BarcodeFormat {
-  const BarcodeFormat._(this.value);
-
-  /// Raw BarcodeFormat value.
-  final int value;
-
-  /// Barcode format constant representing the union of all supported formats.
-  static const BarcodeFormat All = const BarcodeFormat._(0xFFFF);
-
-  /// Barcode format unknown to the current SDK, but understood by Google Play services.
-  static const BarcodeFormat UnKnown = const BarcodeFormat._(0);
-
-  /// Barcode format constant for Code 128.
-  static const BarcodeFormat Code128 = const BarcodeFormat._(0x0001);
-
-  /// Barcode format constant for Code 39.
-  static const BarcodeFormat Code39 = const BarcodeFormat._(0x0002);
-
-  /// Barcode format constant for Code 93.
-  static const BarcodeFormat Code93 = const BarcodeFormat._(0x0004);
-
-  /// Barcode format constant for Codabar.
-  static const BarcodeFormat CodaBar = const BarcodeFormat._(0x0008);
-
-  /// Barcode format constant for Data Matrix.
-  static const BarcodeFormat DataMatrix = const BarcodeFormat._(0x0010);
-
-  /// Barcode format constant for EAN-13.
-  static const BarcodeFormat EAN13 = const BarcodeFormat._(0x0020);
-
-  /// Barcode format constant for EAN-8.
-  static const BarcodeFormat EAN8 = const BarcodeFormat._(0x0040);
-
-  /// Barcode format constant for ITF (Interleaved Two-of-Five).
-  static const BarcodeFormat ITF = const BarcodeFormat._(0x0080);
-
-  /// Barcode format constant for QR Code.
-  static const BarcodeFormat QRCode = const BarcodeFormat._(0x0100);
-
-  /// Barcode format constant for UPC-A.
-  static const BarcodeFormat UPCA = const BarcodeFormat._(0x0200);
-
-  /// Barcode format constant for UPC-E.
-  static const BarcodeFormat UPCE = const BarcodeFormat._(0x0400);
-
-  /// Barcode format constant for PDF-417.
-  static const BarcodeFormat PDF417 = const BarcodeFormat._(0x0800);
-
-  /// Barcode format constant for AZTEC.
-  static const BarcodeFormat Aztec = const BarcodeFormat._(0x1000);
 }
 
 /// An email message from a 'MAILTO:' or similar QRCode type.
 class BarcodeEmail {
   BarcodeEmail._(Map<dynamic, dynamic> data)
-      : type = BarcodeEmailType.values.elementAt(data['type']),
+      : type = BarcodeEmailType.values.firstWhere(
+          (BarcodeEmailType format) => _enumToString(format) == data['type'],
+          orElse: () => BarcodeEmailType.unknown,
+        ),
         address = data['address'],
         body = data['body'],
         subject = data['subject'];
@@ -329,12 +358,15 @@ class BarcodeEmail {
 class BarcodePhone {
   BarcodePhone._(Map<dynamic, dynamic> data)
       : number = data['number'],
-        type = BarcodePhoneType.values.elementAt(data['type']);
+        type = BarcodePhoneType.values.firstWhere(
+          (BarcodePhoneType format) => _enumToString(format) == data['type'],
+          orElse: () => BarcodePhoneType.unknown,
+        );
 
-  /// Phone number
+  /// Phone number.
   final String number;
 
-  /// Type of the phone number
+  /// Type of the phone number.
   ///
   /// See also [BarcodePhoneType]
   final BarcodePhoneType type;
@@ -344,7 +376,7 @@ class BarcodePhone {
 class BarcodeSMS {
   BarcodeSMS._(Map<dynamic, dynamic> data)
       : message = data['message'],
-        phoneNumber = data['phone_number'];
+        phoneNumber = data['phoneNumber'];
 
   /// An SMS message body.
   final String message;
@@ -371,8 +403,11 @@ class BarcodeWiFi {
   BarcodeWiFi._(Map<dynamic, dynamic> data)
       : ssid = data['ssid'],
         password = data['password'],
-        encryptionType =
-            BarcodeWiFiEncryptionType.values.elementAt(data['encryption_type']);
+        encryptionType = BarcodeWiFiEncryptionType.values.firstWhere(
+          (BarcodeWiFiEncryptionType format) =>
+              _enumToString(format) == data['encryptionType'],
+          orElse: () => BarcodeWiFiEncryptionType.unknown,
+        );
 
   /// A Wi-Fi access point SSID.
   final String ssid;
@@ -457,11 +492,14 @@ class BarcodeContactInfo {
 class BarcodeAddress {
   BarcodeAddress._(Map<dynamic, dynamic> data)
       : addressLines = List<String>.unmodifiable(
-            data['address_lines'].map<String>((dynamic item) {
+            data['addressLines'].map<String>((dynamic item) {
           final String s = item;
           return s;
         })),
-        type = BarcodeAddressType.values.elementAt(data['type']);
+        type = BarcodeAddressType.values.firstWhere(
+          (BarcodeAddressType format) => _enumToString(format) == data['type'],
+          orElse: () => BarcodeAddressType.unknown,
+        );
 
   /// Formatted address, multiple lines when appropriate.
   ///
@@ -477,7 +515,7 @@ class BarcodeAddress {
 /// A person's name, both formatted version and individual name components.
 class BarcodePersonName {
   BarcodePersonName._(Map<dynamic, dynamic> data)
-      : formattedName = data['formatted_name'],
+      : formattedName = data['formattedName'],
         first = data['first'],
         last = data['last'],
         middle = data['middle'],
@@ -507,10 +545,10 @@ class BarcodePersonName {
   final String suffix;
 }
 
-/// DateTime data type used in calendar events
+/// DateTime data type used in calendar events.
 class BarcodeCalendarEvent {
   BarcodeCalendarEvent._(Map<dynamic, dynamic> data)
-      : eventDescription = data['event_description'],
+      : eventDescription = data['eventDescription'],
         location = data['location'],
         organizer = data['organizer'],
         status = data['status'],
@@ -543,20 +581,20 @@ class BarcodeCalendarEvent {
 /// A driver license or ID card.
 class BarcodeDriverLicense {
   BarcodeDriverLicense._(Map<dynamic, dynamic> data)
-      : firstName = data['first_name'],
-        middleName = data['middle_name'],
-        lastName = data['last_name'],
+      : firstName = data['firstName'],
+        middleName = data['middleName'],
+        lastName = data['lastName'],
         gender = data['gender'],
-        addressCity = data['address_city'],
-        addressState = data['address_state'],
-        addressStreet = data['address_street'],
-        addressZip = data['address_zip'],
+        addressCity = data['addressCity'],
+        addressState = data['addressState'],
+        addressStreet = data['addressStreet'],
+        addressZip = data['addressZip'],
         birthDate = data['birth_date'],
-        documentType = data['document_type'],
-        licenseNumber = data['license_number'],
-        expiryDate = data['expiry_date'],
-        issuingDate = data['issuing_date'],
-        issuingCountry = data['issuing_country'];
+        documentType = data['documentType'],
+        licenseNumber = data['licenseNumber'],
+        expiryDate = data['expiryDate'],
+        issuingDate = data['issuingDate'],
+        issuingCountry = data['issuingCountry'];
 
   /// Holder's first name.
   final String firstName;
