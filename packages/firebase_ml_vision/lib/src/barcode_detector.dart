@@ -43,7 +43,7 @@ enum BarcodeValueType {
   calendarEvent,
 
   /// Barcode value type for driver's license data.
-  driversLicense,
+  driverLicense,
 }
 
 /// The type of email for [BarcodeEmail].
@@ -194,11 +194,14 @@ class BarcodeDetector extends FirebaseVisionDetector {
 ///
 /// Sets which barcode formats the detector will detect. Defaults to
 /// [BarcodeFormat.all].
+///
+/// Throws [AssertionError] if [barcodeFormats] is empty.
 class BarcodeDetectorOptions {
   BarcodeDetectorOptions({List<BarcodeFormat> barcodeFormats})
       : _barcodeFormats = barcodeFormats != null
             ? Set<BarcodeFormat>.from(barcodeFormats)
-            : Set<BarcodeFormat>.from(<BarcodeFormat>[BarcodeFormat.all]);
+            : Set<BarcodeFormat>.from(<BarcodeFormat>[BarcodeFormat.all]),
+        assert(barcodeFormats?.isNotEmpty ?? true);
 
   final Set<BarcodeFormat> _barcodeFormats;
 
@@ -234,7 +237,7 @@ class Barcode {
                 .toList(),
         valueType = BarcodeValueType.values.firstWhere(
           (BarcodeValueType format) =>
-              _enumToString(format) == _data['value_type'],
+              _enumToString(format) == _data['valueType'],
           orElse: () => BarcodeValueType.unknown,
         ),
         email = _data['email'] == null ? null : BarcodeEmail._(_data['email']),
@@ -273,7 +276,7 @@ class Barcode {
   ///
   /// May omit some of the information encoded in the barcode.
   /// For example, if rawValue is 'MEBKM:TITLE:Google;URL://www.google.com;;',
-  /// the display_value might be '//www.google.com'.
+  /// the displayValue might be '//www.google.com'.
   /// If valueType = [BarcodeValueType.text], this field will be equal to rawValue.
   ///
   /// This value may be multiline, for example, when line breaks are encoded into the original TEXT barcode value.
@@ -326,7 +329,7 @@ class Barcode {
   /// Parsed calendar event details. (set iff [valueType] is [BarcodeValueType.calendarEvent]).
   final BarcodeCalendarEvent calendarEvent;
 
-  /// Parsed driver's license details. (set iff [valueType] is [BarcodeValueType.driversLicense]).
+  /// Parsed driver's license details. (set iff [valueType] is [BarcodeValueType.driverLicense]).
   final BarcodeDriverLicense driverLicense;
 }
 
@@ -457,7 +460,7 @@ class BarcodeContactInfo {
                 final String s = item;
                 return s;
               })),
-        jobTitle = data['job_title'],
+        jobTitle = data['jobTitle'],
         organization = data['organization'];
 
   /// Contact person's addresses.
@@ -589,7 +592,7 @@ class BarcodeDriverLicense {
         addressState = data['addressState'],
         addressStreet = data['addressStreet'],
         addressZip = data['addressZip'],
-        birthDate = data['birth_date'],
+        birthDate = data['birthDate'],
         documentType = data['documentType'],
         licenseNumber = data['licenseNumber'],
         expiryDate = data['expiryDate'],
