@@ -778,11 +778,11 @@ void main() {
         expect(face.trackingId, 8);
 
         for (FaceLandmarkType type in FaceLandmarkType.values) {
-          expect(face.landmark(type).type, type);
+          expect(face.getLandmark(type).type, type);
         }
 
         Point<double> p(FaceLandmarkType type) {
-          return face.landmark(type).position;
+          return face.getLandmark(type).position;
         }
 
         expect(p(FaceLandmarkType.bottomMouth), const Point<double>(0.1, 1.1));
@@ -810,7 +810,7 @@ void main() {
 
         final List<Face> faces = await detector.detectInImage(image);
 
-        expect(faces[0].landmark(FaceLandmarkType.bottomMouth), null);
+        expect(faces[0].getLandmark(FaceLandmarkType.bottomMouth), isNull);
       });
 
       test('detectInImage no faces', () async {
