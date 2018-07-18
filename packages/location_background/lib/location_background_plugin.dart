@@ -94,7 +94,7 @@ _backgroundCallbackDispatcher() {
 
     Function _performCallbackLookup() {
       final CallbackHandle handle =
-          new CallbackHandle.fromRawHandle(call.arguments[0]);
+          CallbackHandle.fromRawHandle(call.arguments[0]);
 
       // PluginUtilities.getCallbackFromHandle performs a lookup based on the
       // handle we retrieved earlier.

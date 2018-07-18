@@ -48,13 +48,13 @@ class _MyAppState extends State<MyApp> {
 
     // Listen on the port for location updates from our background callback.
     _foregroundPort.listen((message) {
-      final location = new Location.fromJson(message);
+      final location = Location.fromJson(message);
       print('UI Location: $location');
       setState(() {
         _lastLocation = location;
       });
     });
-    _locationPlugin ??= new LocationBackgroundPlugin();
+    _locationPlugin ??= LocationBackgroundPlugin();
   }
 
   String _padZero2(int i) => i.toString().padLeft(2, '0');
@@ -91,8 +91,8 @@ class _MyAppState extends State<MyApp> {
                     style: boldText,
                   )),
                   Center(
-                      child: Text(
-                          '(${_lastLocation.latitude}, ${_lastLocation.longitude})')),
+                      child: Text('(${_lastLocation.latitude}, ${_lastLocation
+                          .longitude})')),
                   const Center(
                       child: Text(
                     'Altitude:',
