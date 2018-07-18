@@ -26,9 +26,10 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
             "plugins.flutter.io/android_alarm_manager",
             JSONMethodCodec.INSTANCE);
     final MethodChannel backgroundChannel =
-        new MethodChannel(registrar.messenger(),
-                          "plugins.flutter.io/android_alarm_manager_background",
-                          JSONMethodCodec.INSTANCE);
+        new MethodChannel(
+            registrar.messenger(),
+            "plugins.flutter.io/android_alarm_manager_background",
+            JSONMethodCodec.INSTANCE);
     AndroidAlarmManagerPlugin plugin = new AndroidAlarmManagerPlugin(registrar.context());
     channel.setMethodCallHandler(plugin);
     backgroundChannel.setMethodCallHandler(plugin);
@@ -48,7 +49,7 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
     Object arguments = call.arguments;
     try {
       if (method.equals("AlarmService.start")) {
-        startService((JSONArray)arguments);
+        startService((JSONArray) arguments);
         result.success(true);
       } else if (method.equals("AlarmService.initialized")) {
         AlarmService.onInitialized();
@@ -80,8 +81,7 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
     boolean wakeup = arguments.getBoolean(2);
     long startMillis = arguments.getLong(3);
     long callbackHandle = arguments.getLong(4);
-    AlarmService.setOneShot(mContext, requestCode, exact, wakeup, startMillis,
-                            callbackHandle);
+    AlarmService.setOneShot(mContext, requestCode, exact, wakeup, startMillis, callbackHandle);
   }
 
   private void periodic(JSONArray arguments) throws JSONException {
@@ -91,8 +91,8 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
     long startMillis = arguments.getLong(3);
     long intervalMillis = arguments.getLong(4);
     long callbackHandle = arguments.getLong(5);
-    AlarmService.setPeriodic(mContext, requestCode, exact, wakeup, startMillis,
-                             intervalMillis, callbackHandle);
+    AlarmService.setPeriodic(
+        mContext, requestCode, exact, wakeup, startMillis, intervalMillis, callbackHandle);
   }
 
   private void cancel(JSONArray arguments) throws JSONException {

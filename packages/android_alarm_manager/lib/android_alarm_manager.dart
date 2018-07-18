@@ -15,14 +15,13 @@ const String _backgroundName =
 void _alarmManagerCallbackDispatcher() {
   const MethodChannel _channel =
       const MethodChannel(_backgroundName, const JSONMethodCodec());
-  final Map<String, Function> _callbackCache = new Map<String, Function>();
   WidgetsFlutterBinding.ensureInitialized();
   _channel.setMethodCallHandler((MethodCall call) async {
-    final args = call.arguments;
+    final dynamic args = call.arguments;
     final CallbackHandle handle = new CallbackHandle.fromRawHandle(args[0]);
     // PluginUtilities.getCallbackFromHandle performs a lookup based on the
     // callback handle and returns a tear-off of the original callback.
-    Function closure = PluginUtilities.getCallbackFromHandle(handle);
+    final Function closure = PluginUtilities.getCallbackFromHandle(handle);
     if (closure == null) {
       print('Fatal: could not find callback');
       exit(-1);
@@ -48,12 +47,12 @@ class AndroidAlarmManager {
   /// failure.
   static Future<bool> initialize() async {
     final CallbackHandle handle =
-      PluginUtilities.getCallbackHandle(_alarmManagerCallbackDispatcher);
+        PluginUtilities.getCallbackHandle(_alarmManagerCallbackDispatcher);
     if (handle == null) {
       return false;
     }
-    final dynamic r = await _channel.invokeMethod(
-        'AlarmService.start', <dynamic>[handle.toRawHandle()]);
+    final dynamic r = await _channel
+        .invokeMethod('AlarmService.start', <dynamic>[handle.toRawHandle()]);
     return r ?? false;
   }
 
@@ -138,14 +137,8 @@ class AndroidAlarmManager {
     if (handle == null) {
       return false;
     }
-    final dynamic r = await _channel.invokeMethod('Alarm.periodic', <dynamic>[
-      id,
-      exact,
-      wakeup,
-      first,
-      period,
-      handle.toRawHandle()
-    ]);
+    final dynamic r = await _channel.invokeMethod('Alarm.periodic',
+        <dynamic>[id, exact, wakeup, first, period, handle.toRawHandle()]);
     return (r == null) ? false : r;
   }
 

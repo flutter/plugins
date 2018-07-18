@@ -50,7 +50,8 @@ public class AlarmService extends Service {
   public static void startAlarmService(Context context, long callbackHandle) {
     FlutterMain.ensureInitializationComplete(context, null);
     String mAppBundlePath = FlutterMain.findAppBundlePath(context);
-    FlutterCallbackInformation cb = FlutterCallbackInformation.lookupCallbackInformation(callbackHandle);
+    FlutterCallbackInformation cb =
+        FlutterCallbackInformation.lookupCallbackInformation(callbackHandle);
     if (cb == null) {
       Log.e(TAG, "Fatal: failed to find callback");
       return;
@@ -66,8 +67,7 @@ public class AlarmService extends Service {
       args.libraryPath = cb.callbackLibraryPath;
       args.onStartedEvent = sOnStartedCallback;
       sSharedFlutterView.runFromBundle(args);
-      sPluginRegistrantCallback.registerWith(
-          sSharedFlutterView.getPluginRegistry());
+      sPluginRegistrantCallback.registerWith(sSharedFlutterView.getPluginRegistry());
     }
   }
 
@@ -75,21 +75,35 @@ public class AlarmService extends Service {
     sBackgroundChannel = channel;
   }
 
-  public static void setOneShot(Context context, int requestCode, boolean exact,
-                                boolean wakeup, long startMillis,
-                                long callbackHandle) {
+  public static void setOneShot(
+      Context context,
+      int requestCode,
+      boolean exact,
+      boolean wakeup,
+      long startMillis,
+      long callbackHandle) {
     final boolean repeating = false;
-    scheduleAlarm(context, requestCode, repeating, exact, wakeup, startMillis,
-                  0, callbackHandle);
+    scheduleAlarm(context, requestCode, repeating, exact, wakeup, startMillis, 0, callbackHandle);
   }
 
-  public static void setPeriodic(Context context, int requestCode,
-                                 boolean exact, boolean wakeup,
-                                 long startMillis, long intervalMillis,
-                                 long callbackHandle) {
+  public static void setPeriodic(
+      Context context,
+      int requestCode,
+      boolean exact,
+      boolean wakeup,
+      long startMillis,
+      long intervalMillis,
+      long callbackHandle) {
     final boolean repeating = true;
-    scheduleAlarm(context, requestCode, repeating, exact, wakeup, startMillis,
-                  intervalMillis, callbackHandle);
+    scheduleAlarm(
+        context,
+        requestCode,
+        repeating,
+        exact,
+        wakeup,
+        startMillis,
+        intervalMillis,
+        callbackHandle);
   }
 
   public static void cancel(Context context, int requestCode) {
@@ -159,13 +173,12 @@ public class AlarmService extends Service {
     }
     long callbackHandle = intent.getLongExtra("callbackHandle", 0);
     if (sBackgroundChannel == null) {
-      Log.e(TAG,
-            "setBackgroundChannel was not called before alarms were scheduled."
-                + " Bailing out.");
+      Log.e(
+          TAG,
+          "setBackgroundChannel was not called before alarms were scheduled." + " Bailing out.");
       return START_NOT_STICKY;
     }
-    sBackgroundChannel.invokeMethod(
-        "", new Object[] {callbackHandle});
+    sBackgroundChannel.invokeMethod("", new Object[] {callbackHandle});
     return START_NOT_STICKY;
   }
 
@@ -174,10 +187,15 @@ public class AlarmService extends Service {
     return null;
   }
 
-  private static void scheduleAlarm(Context context, int requestCode,
-                                    boolean repeating, boolean exact,
-                                    boolean wakeup, long startMillis,
-                                    long intervalMillis, long callbackHandle) {
+  private static void scheduleAlarm(
+      Context context,
+      int requestCode,
+      boolean repeating,
+      boolean exact,
+      boolean wakeup,
+      long startMillis,
+      long intervalMillis,
+      long callbackHandle) {
     // Create an Intent for the alarm and set the desired Dart callback handle.
     Intent alarm = new Intent(context, AlarmService.class);
     alarm.putExtra("callbackHandle", callbackHandle);
