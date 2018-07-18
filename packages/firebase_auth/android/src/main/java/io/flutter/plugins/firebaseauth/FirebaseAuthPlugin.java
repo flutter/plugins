@@ -151,17 +151,19 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
           @Override
           public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
-            firebaseAuth.signInWithCredential(phoneAuthCredential).addOnCompleteListener(
+            firebaseAuth
+                .signInWithCredential(phoneAuthCredential)
+                .addOnCompleteListener(
                     new OnCompleteListener<AuthResult>() {
-              @Override
-              public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                  Map<String, Object> arguments = new HashMap<>();
-                  arguments.put("handle", handle);
-                  channel.invokeMethod("phoneVerificationCompleted", arguments);
-                }
-              }
-            });
+                      @Override
+                      public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                          Map<String, Object> arguments = new HashMap<>();
+                          arguments.put("handle", handle);
+                          channel.invokeMethod("phoneVerificationCompleted", arguments);
+                        }
+                      }
+                    });
           }
 
           @Override

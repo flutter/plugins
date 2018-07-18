@@ -90,7 +90,8 @@ class _MyHomePageState extends State<MyHomePage> {
     final PhoneVerificationCompleted verificationCompleted =
         (FirebaseUser user) {
       setState(() {
-        _message = Future<String>.value('signInWithPhoneNumber auto succeeded: $user');
+        _message =
+            Future<String>.value('signInWithPhoneNumber auto succeeded: $user');
       });
     };
 
@@ -98,8 +99,8 @@ class _MyHomePageState extends State<MyHomePage> {
         (AuthException authException) {
       setState(() {
         _message = Future<String>.value(
-        'Phone numbber verification failed. Code: ${authException
-            .code}. Message: ${authException.message}');
+            'Phone numbber verification failed. Code: ${authException
+                .code}. Message: ${authException.message}');
       });
     };
 
