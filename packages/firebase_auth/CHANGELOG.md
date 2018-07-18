@@ -1,4 +1,4 @@
-## 0.5.13
+## 0.5.14
 
 * Fixed handling of auto phone number verification.
 
