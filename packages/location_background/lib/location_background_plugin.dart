@@ -60,7 +60,7 @@ class Location {
       '[$time] ($latitude, $longitude) altitude: $altitude m/s: $speed';
 
   String toJson() {
-    final Map<String, double> location = {
+    final Map<String, double> location = <String, double>{
       'time': _time,
       'latitude': latitude,
       'longitude': longitude,

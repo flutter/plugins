@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file
 
-import 'package:flutter/material.dart';
-import 'package:location_background_plugin/location_background_plugin.dart';
-
 import 'dart:isolate';
 import 'dart:ui';
+
+import 'package:flutter/material.dart';
+import 'package:location_background_plugin/location_background_plugin.dart';
 
 import 'background.dart';
 
@@ -26,7 +26,6 @@ class _MyAppState extends State<MyApp> {
   LocationBackgroundPlugin _locationPlugin;
   Location _lastLocation;
   bool _isTracking = false;
-  static const TextStyle boldText = TextStyle(fontWeight: FontWeight.bold);
 
   @override
   void initState() {
@@ -62,14 +61,15 @@ class _MyAppState extends State<MyApp> {
   String _formatTime(DateTime t) {
     t = t.toLocal();
     final int hour = t.hour;
-    final int minute = _padZero2(t.minute);
-    final int = _padZero2(t.second);
-    final int = t.year;
+    final String minute = _padZero2(t.minute);
+    final String second = _padZero2(t.second);
+    final int year = t.year;
     return '$hour:$minute:$second $year';
   }
 
   @override
   Widget build(BuildContext context) {
+    const TextStyle boldText = const TextStyle(fontWeight: FontWeight.bold);
     return new MaterialApp(
         home: new Scaffold(
             appBar: new AppBar(
