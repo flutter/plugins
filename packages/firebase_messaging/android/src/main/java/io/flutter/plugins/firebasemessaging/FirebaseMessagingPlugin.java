@@ -61,7 +61,7 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
       RemoteMessage message =
           intent.getParcelableExtra(FlutterFirebaseMessagingService.EXTRA_REMOTE_MESSAGE);
 
-      HashMap<String, Object> content = new HashMap<>();
+      Map<String, Object> content = new HashMap<>();
       content.put("data", message.getData());
 
       RemoteMessage.Notification notification = message.getNotification();
@@ -70,6 +70,7 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
       content.put("body", notification.getBody());
 
       channel.invokeMethod("onMessage", content);
+    }
   }
 
   @Override
