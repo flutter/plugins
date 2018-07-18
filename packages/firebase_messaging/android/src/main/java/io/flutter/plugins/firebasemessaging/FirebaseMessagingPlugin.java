@@ -60,8 +60,16 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
     } else if (action.equals(FlutterFirebaseMessagingService.ACTION_REMOTE_MESSAGE)) {
       RemoteMessage message =
           intent.getParcelableExtra(FlutterFirebaseMessagingService.EXTRA_REMOTE_MESSAGE);
-      channel.invokeMethod("onMessage", message.getData());
-    }
+
+      HashMap<String, Object> content = new HashMap<>();
+      content.put("data", message.getData());
+
+      RemoteMessage.Notification notification = message.getNotification();
+
+      content.put("title", notification.getTitle());
+      content.put("body", notification.getBody());
+
+      channel.invokeMethod("onMessage", content);
   }
 
   @Override
