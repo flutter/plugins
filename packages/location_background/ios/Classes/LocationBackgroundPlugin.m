@@ -111,7 +111,8 @@ static LocationBackgroundPlugin *instance = nil;
 - (void)monitorLocationChanges:(NSArray *)arguments {
   _onLocationUpdateHandle = [arguments[0] longValue];
   _locationManager.pausesLocationUpdatesAutomatically = arguments[1];
-  _locationManager.showsBackgroundLocationIndicator = arguments[2];
+  // TODO(bkonyi): Remove this or uncomment for iOS 11.0 or newer.
+  // _locationManager.showsBackgroundLocationIndicator = arguments[2];
   _locationManager.distanceFilter = [arguments[3] integerValue];
   _locationManager.desiredAccuracy = [arguments[4] integerValue];
   _locationManager.activityType = [arguments[5] integerValue];
