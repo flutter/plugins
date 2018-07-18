@@ -81,9 +81,16 @@ static const int SOURCE_GALLERY = 1;
       (NSString *)kUTTypeMPEG4
     ];
     _imagePickerController.videoQuality = UIImagePickerControllerQualityTypeHigh;
+    
 
     _result = result;
     _arguments = call.arguments;
+  
+    NSNumber *maxDuration = [_arguments objectForKey:@"maxDuration"];
+    if (maxDuration != (id)[NSNull null]) {
+        double maxDurationToDouble = [maxDuration doubleValue];
+        [_imagePickerController setVideoMaximumDuration:maxDurationToDouble];
+    }
 
     int imageSource = [[_arguments objectForKey:@"source"] intValue];
 

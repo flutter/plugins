@@ -70,20 +70,27 @@ class ImagePicker {
   /// The [source] argument controls where the video comes from. This can
   /// be either [ImageSource.camera] or [ImageSource.gallery].
   ///
+  /// The [maxDuration] is the maximum amount of Seconds (eg. 30.0) that is available to be recorded
+  /// after which the video record will immediately finish and the [File] will be returned.
+  ///
   /// In Android, the MainActivity can be destroyed for various fo reasons. If that happens, the result will be lost
   /// in this call. You can then call [retrieveLostData] when your app relaunches to retrieve the lost data.
   static Future<File> pickVideo({
     @required ImageSource source,
+    double maxDuration
   }) async {
     assert(source != null);
 
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
+    double durationSeconds = (maxDuration==null) ? null : maxDuration.inSeconds.toDouble();
+
     final String path = await _channel.invokeMethod(
       'pickVideo',
       <String, dynamic>{
         'source': source.index,
+        'maxDuration':durationSeconds
       },
     );
     return path == null ? null : File(path);

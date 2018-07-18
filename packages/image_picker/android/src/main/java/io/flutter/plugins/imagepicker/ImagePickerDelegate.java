@@ -259,6 +259,12 @@ public class ImagePickerDelegate
     intent.putExtra(MediaStore.EXTRA_OUTPUT, videoUri);
     grantUriPermissions(intent, videoUri);
 
+    Double maxDuration = methodCall.argument("maxDuration");
+    if(maxDuration != null) {
+      int maxDurationToInt = maxDuration.intValue();
+      intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, maxDurationToInt);
+    }
+
     activity.startActivityForResult(intent, REQUEST_CODE_TAKE_VIDEO_WITH_CAMERA);
   }
 
