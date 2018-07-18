@@ -58,6 +58,7 @@ class ImagePicker {
 
   static Future<File> pickVideo({
     @required ImageSource source,
+    double maxDuration
   }) async {
     assert(source != null);
 
@@ -65,6 +66,7 @@ class ImagePicker {
       'pickVideo',
       <String, dynamic>{
         'source': source.index,
+        'maxDuration':maxDuration
       },
     );
     return path == null ? null : new File(path);

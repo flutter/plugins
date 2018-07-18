@@ -237,6 +237,14 @@ public class ImagePickerDelegate
     intent.putExtra(MediaStore.EXTRA_OUTPUT, videoUri);
     grantUriPermissions(intent, videoUri);
 
+    // Set a maximum duration for the video record
+    Double maxDuration = methodCall.argument("maxDuration");
+    if(maxDuration != null) {
+      int maxDurationToInt = maxDuration.intValue();
+      intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, maxDurationToInt);
+    }
+
+
     activity.startActivityForResult(intent, REQUEST_CODE_TAKE_VIDEO_WITH_CAMERA);
   }
 
@@ -454,7 +462,7 @@ public class ImagePickerDelegate
       String finalImagePath = imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight);
       finishWithSuccess(finalImagePath);
     } else {
-      throw new IllegalStateException("Received image from picker that was not requested");
+      throw new IllegalStateException("Received images from picker that were not requested");
     }
   }
 
@@ -462,7 +470,7 @@ public class ImagePickerDelegate
     if (pendingResult != null) {
       finishWithSuccess(path);
     } else {
-      throw new IllegalStateException("Received video from picker that was not requested");
+      throw new IllegalStateException("Received images from picker that were not requested");
     }
   }
 
