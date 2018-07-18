@@ -42,6 +42,14 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
         }
         break;
       case "FaceDetector#detectInImage":
+        try {
+          image = filePathToVisionImage((String) call.argument("path"));
+          FaceDetector.instance.handleDetection(image, options, result);
+        } catch (IOException e) {
+          result.error("faceDetectorIOError", e.getLocalizedMessage(), null);
+        } catch (Exception e) {
+          result.error("faceDetectorError", e.getLocalizedMessage(), null);
+        }
         break;
       case "LabelDetector#detectInImage":
         break;

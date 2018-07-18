@@ -41,6 +41,7 @@
   if ([@"BarcodeDetector#detectInImage" isEqualToString:call.method]) {
     [BarcodeDetector handleDetection:image options:options result:result];
   } else if ([@"FaceDetector#detectInImage" isEqualToString:call.method]) {
+    [FaceDetector handleDetection:image options:options result:result];
   } else if ([@"LabelDetector#detectInImage" isEqualToString:call.method]) {
   } else if ([@"TextDetector#detectInImage" isEqualToString:call.method]) {
     [TextDetector handleDetection:image options:options result:result];
