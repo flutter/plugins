@@ -1,3 +1,7 @@
+## 0.5.14
+
+* Fixed handling of auto phone number verification.
+
 ## 0.5.13
 
 * Add support for phone number authentication.
