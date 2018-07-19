@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -54,23 +55,35 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
   @Override
   public void onReceive(Context context, Intent intent) {
     String action = intent.getAction();
+
+    if (action == null) {
+      return;
+    }
+
     if (action.equals(FlutterFirebaseInstanceIDService.ACTION_TOKEN)) {
       String token = intent.getStringExtra(FlutterFirebaseInstanceIDService.EXTRA_TOKEN);
       channel.invokeMethod("onToken", token);
     } else if (action.equals(FlutterFirebaseMessagingService.ACTION_REMOTE_MESSAGE)) {
       RemoteMessage message =
           intent.getParcelableExtra(FlutterFirebaseMessagingService.EXTRA_REMOTE_MESSAGE);
-
-      Map<String, Object> content = new HashMap<>();
-      content.put("data", message.getData());
-
-      RemoteMessage.Notification notification = message.getNotification();
-
-      content.put("title", notification.getTitle());
-      content.put("body", notification.getBody());
-
+      Map<String, Object> content = parseRemoteMessage(message);
       channel.invokeMethod("onMessage", content);
     }
+  }
+
+  @NonNull
+  private Map<String, Object> parseRemoteMessage(RemoteMessage message) {
+    Map<String, Object> content = new HashMap<>();
+    content.put("data", message.getData());
+
+    RemoteMessage.Notification notification = message.getNotification();
+
+    String title = notification != null ? notification.getTitle() : null;
+    content.put("title", title);
+
+    String body = notification != null ? notification.getBody() : null;
+    content.put("body", body);
+    return content;
   }
 
   @Override
@@ -109,9 +122,19 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
         || CLICK_ACTION_VALUE.equals(intent.getStringExtra("click_action"))) {
       Map<String, String> message = new HashMap<>();
       Bundle extras = intent.getExtras();
-      for (String key : extras.keySet()) {
-        message.put(key, extras.get(key).toString());
+
+      if (extras == null) {
+        return false;
       }
+
+      for (String key : extras.keySet()) {
+        Object extra = extras.get(key);
+        if (extra != null) {
+          message.put(key, extra.toString());
+        }
+      }
+
+
       channel.invokeMethod(method, message);
       return true;
     }
