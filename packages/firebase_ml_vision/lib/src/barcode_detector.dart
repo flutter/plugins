@@ -103,52 +103,57 @@ enum BarcodeAddressType {
   home,
 }
 
-/// Enumeration of supported barcode formats.
-enum BarcodeFormat {
-  /// Barcode format representing the union of all supported formats.
-  all,
+/// Barcode format constants - enumeration of supported barcode formats.
+class BarcodeFormat {
+  const BarcodeFormat._(this.value);
 
-  /// Barcode format unknown to the current SDK, but understood by Google Play services.
-  unknown,
+  /// Raw BarcodeFormat value.
+  final int value;
 
-  /// Barcode format Code 128.
-  code128,
+  /// Barcode format constant representing the union of all supported formats.
+  static const BarcodeFormat all = const BarcodeFormat._(0xFFFF);
 
-  /// Barcode format Code 39.
-  code39,
+  /// Barcode format unknown to the current SDK.
+  static const BarcodeFormat unknown = const BarcodeFormat._(0);
 
-  /// Barcode format Code 93.
-  code93,
+  /// Barcode format constant for Code 128.
+  static const BarcodeFormat code128 = const BarcodeFormat._(0x0001);
 
-  /// Barcode format Codabar.
-  codaBar,
+  /// Barcode format constant for Code 39.
+  static const BarcodeFormat code39 = const BarcodeFormat._(0x0002);
 
-  /// Barcode format Data Matrix.
-  dataMatrix,
+  /// Barcode format constant for Code 93.
+  static const BarcodeFormat code93 = const BarcodeFormat._(0x0004);
 
-  /// Barcode format EAN-13.
-  ean13,
+  /// Barcode format constant for CodaBar.
+  static const BarcodeFormat codabar = const BarcodeFormat._(0x0008);
 
-  /// Barcode format EAN-8.
-  ean8,
+  /// Barcode format constant for Data Matrix.
+  static const BarcodeFormat dataMatrix = const BarcodeFormat._(0x0010);
 
-  /// Barcode format ITF (Interleaved Two-of-Five).
-  itf,
+  /// Barcode format constant for EAN-13.
+  static const BarcodeFormat ean13 = const BarcodeFormat._(0x0020);
 
-  /// Barcode format QR Code.
-  qrCode,
+  /// Barcode format constant for EAN-8.
+  static const BarcodeFormat ean8 = const BarcodeFormat._(0x0040);
 
-  /// Barcode format UPC-A.
-  upca,
+  /// Barcode format constant for ITF (Interleaved Two-of-Five).
+  static const BarcodeFormat itf = const BarcodeFormat._(0x0080);
 
-  /// Barcode format UPC-E.
-  upce,
+  /// Barcode format constant for QR Code.
+  static const BarcodeFormat qrCode = const BarcodeFormat._(0x0100);
 
-  /// Barcode format PDF-417.
-  pdf417,
+  /// Barcode format constant for UPC-A.
+  static const BarcodeFormat upca = const BarcodeFormat._(0x0200);
 
-  /// Barcode format AZTEC.
-  aztec,
+  /// Barcode format constant for UPC-E.
+  static const BarcodeFormat upce = const BarcodeFormat._(0x0400);
+
+  /// Barcode format constant for PDF-417.
+  static const BarcodeFormat pdf417 = const BarcodeFormat._(0x0800);
+
+  /// Barcode format constant for AZTEC.
+  static const BarcodeFormat aztec = const BarcodeFormat._(0x1000);
 }
 
 /// Detector for performing barcode scanning on an input image.
@@ -175,7 +180,7 @@ class BarcodeDetector extends FirebaseVisionDetector {
         'path': visionImage.imageFile.path,
         'options': <String, dynamic>{
           'barcodeFormats': options._barcodeFormats
-              .map((BarcodeFormat format) => _enumToString(format))
+              .map((BarcodeFormat format) => format.value)
               .toList(),
         },
       },
@@ -223,10 +228,7 @@ class Barcode {
             : null,
         rawValue = _data['rawValue'],
         displayValue = _data['displayValue'],
-        format = BarcodeFormat.values.firstWhere(
-          (BarcodeFormat format) => _enumToString(format) == _data['format'],
-          orElse: () => BarcodeFormat.unknown,
-        ),
+        format = BarcodeFormat._(_data['format']),
         _cornerPoints = _data['points'] == null
             ? null
             : _data['points']
@@ -235,11 +237,7 @@ class Barcode {
                       item[1],
                     ))
                 .toList(),
-        valueType = BarcodeValueType.values.firstWhere(
-          (BarcodeValueType format) =>
-              _enumToString(format) == _data['valueType'],
-          orElse: () => BarcodeValueType.unknown,
-        ),
+        valueType = BarcodeValueType.values[_data['valueType']],
         email = _data['email'] == null ? null : BarcodeEmail._(_data['email']),
         phone = _data['phone'] == null ? null : BarcodePhone._(_data['phone']),
         sms = _data['sms'] == null ? null : BarcodeSMS._(_data['sms']),
@@ -336,10 +334,7 @@ class Barcode {
 /// An email message from a 'MAILTO:' or similar QRCode type.
 class BarcodeEmail {
   BarcodeEmail._(Map<dynamic, dynamic> data)
-      : type = BarcodeEmailType.values.firstWhere(
-          (BarcodeEmailType format) => _enumToString(format) == data['type'],
-          orElse: () => BarcodeEmailType.unknown,
-        ),
+      : type = BarcodeEmailType.values[data['type']],
         address = data['address'],
         body = data['body'],
         subject = data['subject'];
@@ -361,10 +356,7 @@ class BarcodeEmail {
 class BarcodePhone {
   BarcodePhone._(Map<dynamic, dynamic> data)
       : number = data['number'],
-        type = BarcodePhoneType.values.firstWhere(
-          (BarcodePhoneType format) => _enumToString(format) == data['type'],
-          orElse: () => BarcodePhoneType.unknown,
-        );
+        type = BarcodePhoneType.values[data['type']];
 
   /// Phone number.
   final String number;
@@ -406,11 +398,8 @@ class BarcodeWiFi {
   BarcodeWiFi._(Map<dynamic, dynamic> data)
       : ssid = data['ssid'],
         password = data['password'],
-        encryptionType = BarcodeWiFiEncryptionType.values.firstWhere(
-          (BarcodeWiFiEncryptionType format) =>
-              _enumToString(format) == data['encryptionType'],
-          orElse: () => BarcodeWiFiEncryptionType.unknown,
-        );
+        encryptionType =
+            BarcodeWiFiEncryptionType.values[data['encryptionType']];
 
   /// A Wi-Fi access point SSID.
   final String ssid;
@@ -499,10 +488,7 @@ class BarcodeAddress {
           final String s = item;
           return s;
         })),
-        type = BarcodeAddressType.values.firstWhere(
-          (BarcodeAddressType format) => _enumToString(format) == data['type'],
-          orElse: () => BarcodeAddressType.unknown,
-        );
+        type = BarcodeAddressType.values[data['type']];
 
   /// Formatted address, multiple lines when appropriate.
   ///

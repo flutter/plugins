@@ -46,7 +46,7 @@ void main() {
           <dynamic, dynamic>{
             'rawValue': 'hello:raw',
             'displayValue': 'hello:display',
-            'format': 'unknown',
+            'format': 0,
             'left': 1,
             'top': 2,
             'width': 3,
@@ -60,7 +60,7 @@ void main() {
       });
 
       test('detectInImage unknown', () async {
-        returnBarcodes[0]['valueType'] = 'unknown';
+        returnBarcodes[0]['valueType'] = BarcodeValueType.unknown.index;
         returnValue = returnBarcodes;
 
         final List<Barcode> barcodes = await detector.detectInImage(image);
@@ -71,7 +71,9 @@ void main() {
             arguments: <String, dynamic>{
               'path': 'empty',
               'options': <String, dynamic>{
-                'barcodeFormats': <String>['all']
+                'barcodeFormats': <int>[
+                  0xFFFF,
+                ]
               },
             },
           ),
@@ -93,10 +95,10 @@ void main() {
           'address': 'a',
           'body': 'b',
           'subject': 's',
-          'type': 'home',
+          'type': BarcodeEmailType.home.index,
         };
 
-        returnBarcodes[0]['valueType'] = 'email';
+        returnBarcodes[0]['valueType'] = BarcodeValueType.email.index;
         returnBarcodes[0]['email'] = email;
         returnValue = returnBarcodes;
 
@@ -113,10 +115,10 @@ void main() {
       test('detectInImage phone', () async {
         final Map<dynamic, dynamic> phone = <dynamic, dynamic>{
           'number': '000',
-          'type': 'fax',
+          'type': BarcodePhoneType.fax.index,
         };
 
-        returnBarcodes[0]['valueType'] = 'phone';
+        returnBarcodes[0]['valueType'] = BarcodeValueType.phone.index;
         returnBarcodes[0]['phone'] = phone;
         returnValue = returnBarcodes;
 
@@ -134,7 +136,7 @@ void main() {
           'message': 'm'
         };
 
-        returnBarcodes[0]['valueType'] = 'sms';
+        returnBarcodes[0]['valueType'] = BarcodeValueType.sms.index;
         returnBarcodes[0]['sms'] = sms;
         returnValue = returnBarcodes;
 
@@ -152,7 +154,7 @@ void main() {
           'url': 'u'
         };
 
-        returnBarcodes[0]['valueType'] = 'url';
+        returnBarcodes[0]['valueType'] = BarcodeValueType.url.index;
         returnBarcodes[0]['url'] = url;
         returnValue = returnBarcodes;
 
@@ -168,10 +170,10 @@ void main() {
         final Map<dynamic, dynamic> wifi = <dynamic, dynamic>{
           'ssid': 's',
           'password': 'p',
-          'encryptionType': 'wep'
+          'encryptionType': BarcodeWiFiEncryptionType.wep.index,
         };
 
-        returnBarcodes[0]['valueType'] = 'wifi';
+        returnBarcodes[0]['valueType'] = BarcodeValueType.wifi.index;
         returnBarcodes[0]['wifi'] = wifi;
         returnValue = returnBarcodes;
 
@@ -190,7 +192,8 @@ void main() {
           'longitude': 0.3,
         };
 
-        returnBarcodes[0]['valueType'] = 'geographicCoordinates';
+        returnBarcodes[0]['valueType'] =
+            BarcodeValueType.geographicCoordinates.index;
         returnBarcodes[0]['geoPoint'] = geoPoint;
         returnValue = returnBarcodes;
 
@@ -207,12 +210,12 @@ void main() {
           'addresses': <dynamic>[
             <dynamic, dynamic>{
               'addressLines': <String>['al'],
-              'type': 'work',
+              'type': BarcodeAddressType.work.index,
             }
           ],
           'emails': <dynamic>[
             <dynamic, dynamic>{
-              'type': 'home',
+              'type': BarcodeEmailType.home.index,
               'address': 'a',
               'body': 'b',
               'subject': 's'
@@ -230,7 +233,7 @@ void main() {
           'phones': <dynamic>[
             <dynamic, dynamic>{
               'number': '012',
-              'type': 'mobile',
+              'type': BarcodePhoneType.mobile.index,
             }
           ],
           'urls': <String>['url'],
@@ -238,7 +241,7 @@ void main() {
           'organization': 'o'
         };
 
-        returnBarcodes[0]['valueType'] = 'contactInfo';
+        returnBarcodes[0]['valueType'] = BarcodeValueType.contactInfo.index;
         returnBarcodes[0]['contactInfo'] = contact;
         returnValue = returnBarcodes;
 
@@ -277,7 +280,7 @@ void main() {
           'end': '2018-08-05 01:23:45.456',
         };
 
-        returnBarcodes[0]['valueType'] = 'calendarEvent';
+        returnBarcodes[0]['valueType'] = BarcodeValueType.calendarEvent.index;
         returnBarcodes[0]['calendarEvent'] = calendar;
         returnValue = returnBarcodes;
 
@@ -313,7 +316,7 @@ void main() {
           'issuingCountry': 'ic'
         };
 
-        returnBarcodes[0]['valueType'] = 'driverLicense';
+        returnBarcodes[0]['valueType'] = BarcodeValueType.driverLicense.index;
         returnBarcodes[0]['driverLicense'] = driver;
         returnValue = returnBarcodes;
 
@@ -370,6 +373,46 @@ void main() {
         ]);
       });
 
+      test('enums match device APIs', () {
+        expect(BarcodeValueType.values.length, 13);
+        expect(BarcodeValueType.unknown.index, 0);
+        expect(BarcodeValueType.contactInfo.index, 1);
+        expect(BarcodeValueType.email.index, 2);
+        expect(BarcodeValueType.isbn.index, 3);
+        expect(BarcodeValueType.phone.index, 4);
+        expect(BarcodeValueType.product.index, 5);
+        expect(BarcodeValueType.sms.index, 6);
+        expect(BarcodeValueType.text.index, 7);
+        expect(BarcodeValueType.url.index, 8);
+        expect(BarcodeValueType.wifi.index, 9);
+        expect(BarcodeValueType.geographicCoordinates.index, 10);
+        expect(BarcodeValueType.calendarEvent.index, 11);
+        expect(BarcodeValueType.driverLicense.index, 12);
+
+        expect(BarcodeEmailType.values.length, 3);
+        expect(BarcodeEmailType.unknown.index, 0);
+        expect(BarcodeEmailType.work.index, 1);
+        expect(BarcodeEmailType.home.index, 2);
+
+        expect(BarcodePhoneType.values.length, 5);
+        expect(BarcodePhoneType.unknown.index, 0);
+        expect(BarcodePhoneType.work.index, 1);
+        expect(BarcodePhoneType.home.index, 2);
+        expect(BarcodePhoneType.fax.index, 3);
+        expect(BarcodePhoneType.mobile.index, 4);
+
+        expect(BarcodeWiFiEncryptionType.values.length, 4);
+        expect(BarcodeWiFiEncryptionType.unknown.index, 0);
+        expect(BarcodeWiFiEncryptionType.open.index, 1);
+        expect(BarcodeWiFiEncryptionType.wpa.index, 2);
+        expect(BarcodeWiFiEncryptionType.wep.index, 3);
+
+        expect(BarcodeAddressType.values.length, 3);
+        expect(BarcodeAddressType.unknown.index, 0);
+        expect(BarcodeAddressType.work.index, 1);
+        expect(BarcodeAddressType.home.index, 2);
+      });
+
       group('$BarcodeDetectorOptions', () {
         test('barcodeFormats', () async {
           final BarcodeDetectorOptions options = BarcodeDetectorOptions(
@@ -384,19 +427,32 @@ void main() {
               FirebaseVision.instance.barcodeDetector(options);
           await detector.detectInImage(image);
 
-          expect(log, <Matcher>[
-            isMethodCall(
-              'BarcodeDetector#detectInImage',
-              arguments: <String, dynamic>{
-                'path': 'empty',
-                'options': <String, dynamic>{
-                  'barcodeFormats': <String>['code128', 'dataMatrix', 'ean8'],
-                },
-              },
-            ),
-          ]);
+          expect(
+            log[0].arguments['options']['barcodeFormats'],
+            containsAll(<int>[0x0001, 0x0010, 0x0040]),
+          );
+        });
 
-          returnValue = returnBarcodes;
+        test('barcodeFormats no copies', () {
+          final BarcodeDetectorOptions options = BarcodeDetectorOptions(
+            barcodeFormats: <BarcodeFormat>[
+              BarcodeFormat.code128,
+              BarcodeFormat.code128,
+              BarcodeFormat.dataMatrix,
+              BarcodeFormat.dataMatrix,
+            ],
+          );
+
+          expect(
+            options.barcodeFormats,
+            allOf([
+              containsAll(<BarcodeFormat>[
+                BarcodeFormat.code128,
+                BarcodeFormat.dataMatrix,
+              ]),
+              hasLength(2),
+            ]),
+          );
         });
       });
     });
