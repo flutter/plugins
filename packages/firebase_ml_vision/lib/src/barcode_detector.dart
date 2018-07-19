@@ -4,6 +4,10 @@
 
 part of firebase_ml_vision;
 
+const String barcodeValueType = "barcode_value_type";
+const String barcodeDisplayValue = "barcode_display_value";
+const String barcodeRawValue = "barcode_raw_value";
+
 class BarcodeDetector extends FirebaseVisionDetector {
   BarcodeDetector._(BarcodeDetectorOptions options);
 

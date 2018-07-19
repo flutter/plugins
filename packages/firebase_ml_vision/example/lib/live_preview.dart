@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
-import 'package:firebase_ml_vision/src/live_view.dart';
+import 'package:firebase_ml_vision/live_view.dart';
 import 'package:firebase_ml_vision_example/detector_painters.dart';
 import 'package:flutter/material.dart';
 
@@ -25,12 +25,15 @@ class LivePreviewState extends State<LivePreview> {
 
   Stream<LiveViewCameraLoadState> _prepareCameraPreview() async* {
     if (_readyLoadState != null) {
+      await setLiveViewDetector();
       yield _readyLoadState;
     } else {
       yield new LiveViewCameraLoadStateLoading();
       final List<LiveViewCameraDescription> cameras = await availableCameras();
-      final backCamera = cameras.firstWhere((cameraDescription) =>
-          cameraDescription.lensDirection == LiveViewCameraLensDirection.back);
+      final LiveViewCameraDescription backCamera = cameras.firstWhere(
+          (LiveViewCameraDescription cameraDescription) =>
+              cameraDescription.lensDirection ==
+              LiveViewCameraLensDirection.back);
       if (backCamera != null) {
         yield new LiveViewCameraLoadStateLoaded(backCamera);
         try {
@@ -38,7 +41,7 @@ class LivePreviewState extends State<LivePreview> {
               new LiveViewCameraController(
                   backCamera, LiveViewResolutionPreset.high);
           await controller.initialize();
-          setLiveViewDetector();
+          await setLiveViewDetector();
           yield new LiveViewCameraLoadStateReady(controller);
         } on LiveViewCameraException catch (e) {
           yield new LiveViewCameraLoadStateFailed(
@@ -56,9 +59,8 @@ class LivePreviewState extends State<LivePreview> {
     setLiveViewDetector();
   }
 
-  void setLiveViewDetector() async {
-    // set the initial recognizer
-    await FirebaseVision.instance.setLiveViewRecognizer(widget.detector);
+  Future<Null> setLiveViewDetector() async {
+    return FirebaseVision.instance.setLiveViewRecognizer(widget.detector);
   }
 
   @override

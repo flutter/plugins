@@ -120,11 +120,9 @@
     [_registry unregisterTexture:textureId];
     [_camera close];
     result(nil);
-  } else if ([@"LiveView#setRecognizer" isEqualToString:call.method]) {
-    NSLog(@"setRecognizer called");
+  } else if ([@"LiveView#setDetector" isEqualToString:call.method]) {
     NSDictionary *argsMap = call.arguments;
-    NSString *recognizerType = ((NSString *)argsMap[@"recognizerType"]);
-    NSLog(recognizerType);
+    NSString *detectorType = ((NSString *)argsMap[@"detectorType"]);
     if (_camera) {
       NSLog(@"got a camera, setting the recognizer");
 //      [_camera setRecognizerType:recognizerType];

@@ -46,13 +46,13 @@ class FirebaseVision {
 
   Future<Null> setLiveViewRecognizer(FirebaseVisionDetectorType type) async {
     print("sending setLiveVieRecognizer to device");
-    final String typeMessage = recognizerMessageType(type);
+    final String typeMessage = detectorMessageType(type);
     if (typeMessage == null) return;
-    await FirebaseVision.channel.invokeMethod("LiveView#setRecognizer",
-        <String, String>{"recognizerType": typeMessage});
+    await FirebaseVision.channel.invokeMethod("LiveView#setDetector",
+        <String, String>{"detectorType": typeMessage});
   }
 
-  String recognizerMessageType(FirebaseVisionDetectorType type) {
+  String detectorMessageType(FirebaseVisionDetectorType type) {
     switch (type) {
       case FirebaseVisionDetectorType.barcode:
         return "barcode";

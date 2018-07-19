@@ -50,6 +50,9 @@ import io.flutter.plugins.firebasemlvision.DetectorException;
 import io.flutter.plugins.firebasemlvision.TextDetector;
 import io.flutter.view.FlutterView;
 
+import static android.hardware.Camera.CameraInfo.CAMERA_FACING_BACK;
+import static android.hardware.Camera.CameraInfo.CAMERA_FACING_FRONT;
+
 /**
  * Manages the camera and allows UI updates on top of it (e.g. overlaying extra Graphics or
  * displaying extra information). This receives preview frames from the camera at a specified rate,
@@ -57,11 +60,6 @@ import io.flutter.view.FlutterView;
  */
 @SuppressLint("MissingPermission")
 public class LegacyCamera {
-  @SuppressLint("InlinedApi")
-  public static final int CAMERA_FACING_BACK = CameraInfo.CAMERA_FACING_BACK;
-
-  @SuppressLint("InlinedApi")
-  public static final int CAMERA_FACING_FRONT = CameraInfo.CAMERA_FACING_FRONT;
 
   private static final String TAG = "MIDemoApp:CameraSource";
 
@@ -69,13 +67,6 @@ public class LegacyCamera {
     void onOpened(long textureId, int width, int height);
     void onFailed(Exception e);
   }
-
-  /**
-   * The dummy surface texture must be assigned a chosen name. Since we never use an OpenGL context,
-   * we can choose any ID we want here. The dummy surface texture is not a crazy hack - it is
-   * actually how the camera team recommends using the camera without a preview.
-   */
-  private static final int DUMMY_TEXTURE_NAME = 100;
 
   /**
    * If the absolute difference between a preview size aspect ratio and a picture size aspect ratio
@@ -106,8 +97,8 @@ public class LegacyCamera {
   // These values may be requested by the caller.  Due to hardware limitations, we may need to
   // select close, but not exactly the same values for these.
   private final float requestedFps = 20.0f;
-  private final int requestedPreviewWidth = 1280;
-  private final int requestedPreviewHeight = 960;
+  private int requestedPreviewWidth = 1280;
+  private int requestedPreviewHeight = 960;
   private final boolean requestedAutoFocus = true;
 
   // These instances need to be held onto to avoid GC of their underlying resources.  Even though
@@ -173,13 +164,30 @@ public class LegacyCamera {
   };
 
 
-  public LegacyCamera(PluginRegistry.Registrar registrar) {
+  public LegacyCamera(PluginRegistry.Registrar registrar, String resolutionPreset, int cameraFacing) {
     this.registrar = registrar;
     this.activity = registrar.activity();
     this.textureEntry = registrar.view().createSurfaceTexture();
     processingRunnable = new FrameProcessingRunnable();
 
     registerEventChannel();
+
+    switch (resolutionPreset) {
+      case "high":
+        requestedPreviewWidth = 1024;
+        requestedPreviewHeight = 768;
+        break;
+      case "medium":
+        requestedPreviewWidth = 640;
+        requestedPreviewHeight = 480;
+        break;
+      case "low":
+        requestedPreviewWidth = 320;
+        requestedPreviewHeight = 240;
+        break;
+    }
+
+    setFacing(cameraFacing);
   }
 
   private void registerEventChannel() {
@@ -217,36 +225,10 @@ public class LegacyCamera {
     }
   }
 
-//  /**
-//   * Opens the camera and starts sending preview frames to the underlying detector. The preview
-//   * frames are not displayed.
-//   *
-//   * @throws IOException if the camera's preview texture or display could not be initialized
-//   */
-//  @SuppressLint("MissingPermission")
-//  @RequiresPermission(Manifest.permission.CAMERA)
-//  public synchronized LegacyCamera start(OnCameraOpenedCallback callback) throws IOException {
-//    if (camera != null) {
-//      return this;
-//    }
-//
-//    camera = createCamera(callback);
-//    dummySurfaceTexture = new SurfaceTexture(DUMMY_TEXTURE_NAME);
-//    camera.setPreviewTexture(dummySurfaceTexture);
-//    usingSurfaceTexture = true;
-//    camera.startPreview();
-//
-//    processingThread = new Thread(processingRunnable);
-//    processingRunnable.setActive(true);
-//    processingThread.start();
-//    return this;
-//  }
-
   /**
    * Opens the camera and starts sending preview frames to the underlying detector. The supplied
    * surface holder is used for the preview so frames can be displayed to the user.
    *
-//   * @param surfaceHolder the surface holder to use for the preview frames
    * @throws IOException if the supplied surface holder could not be used as the preview display
    */
   @RequiresPermission(Manifest.permission.CAMERA)
@@ -332,8 +314,8 @@ public class LegacyCamera {
   }
 
   /**
-   * Returns the selected camera; one of {@link #CAMERA_FACING_BACK} or {@link
-   * #CAMERA_FACING_FRONT}.
+   * Returns the selected camera; one of {@link CameraInfo#CAMERA_FACING_BACK} or {@link
+   * CameraInfo#CAMERA_FACING_FRONT}.
    */
   public int getCameraFacing() {
     return facing;
@@ -624,7 +606,7 @@ public class LegacyCamera {
 
     int angle;
     int displayAngle;
-    if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+    if (cameraInfo.facing == CAMERA_FACING_FRONT) {
       angle = (cameraInfo.orientation + degrees) % 360;
       displayAngle = (360 - angle) % 360; // compensate for it being mirrored
     } else { // back-facing

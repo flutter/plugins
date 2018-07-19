@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
-enum LiveViewCameraLensDirection { front, back, external }
+enum LiveViewCameraLensDirection { front, back }
 
 enum LiveViewResolutionPreset { low, medium, high }
 
@@ -28,8 +28,6 @@ LiveViewCameraLensDirection _parseCameraLensDirection(String string) {
       return LiveViewCameraLensDirection.front;
     case 'back':
       return LiveViewCameraLensDirection.back;
-    case 'external':
-      return LiveViewCameraLensDirection.external;
   }
   throw new ArgumentError('Unknown CameraLensDirection value');
 }
@@ -268,15 +266,15 @@ class LiveViewCameraController extends ValueNotifier<LiveViewCameraValue> {
     }
     switch (map['eventType']) {
       case 'recognized':
-        String recognitionType = event['recognitionType'];
-        if (recognitionType == "barcode") {
+        String detectionType = event['recognitionType'];
+        if (detectionType == "barcode") {
           final List<dynamic> reply = event['barcodeData'];
           final List<BarcodeContainer> barcodes = <BarcodeContainer>[];
           reply.forEach((dynamic barcodeMap) {
             barcodes.add(new BarcodeContainer(barcodeMap));
           });
           value = value.copyWith(detectedData: barcodes);
-        } else if (recognitionType == "text") {
+        } else if (detectionType == "text") {
           final List<dynamic> reply = event['textData'];
           final detectedData = reply.map((dynamic block) {
             return TextBlock.fromBlockData(block);

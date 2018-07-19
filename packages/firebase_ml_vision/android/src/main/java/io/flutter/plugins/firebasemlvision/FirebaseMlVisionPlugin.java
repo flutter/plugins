@@ -61,6 +61,7 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
 
           @Override
           public void onActivityResumed(Activity activity) {
+            //TODO: handle camera permission requesting
 //            if (camera != null && camera.getRequestingPermission()) {
 //              camera.setRequestingPermission(false);
 //              return;
@@ -122,23 +123,16 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
         result.success(null);
         break;
       case "availableCameras":
-//        try {
-//          List<Map<String, Object>> cameras = CameraInfo.getAvailableCameras(registrar.activeContext());
-//          result.success(cameras);
-//        } catch (CameraInfoException e) {
-//          result.error("cameraAccess", e.getMessage(), null);
-//        }
         List<Map<String, Object>> cameras = LegacyCamera.listAvailableCameraDetails();
         result.success(cameras);
         break;
       case "initialize":
-        Log.d("ML", "initialize");
-        int cameraName = call.argument("cameraName"); //TODO: set camera facing
+        int cameraFacing = call.argument("cameraName");
         String resolutionPreset = call.argument("resolutionPreset");
         if (camera != null) {
           camera.stop();
         }
-        camera = new LegacyCamera(registrar); //new Camera(registrar, cameraName, resolutionPreset, result);
+        camera = new LegacyCamera(registrar, resolutionPreset, cameraFacing); //new Camera(registrar, cameraName, resolutionPreset, result);
         camera.setMachineLearningFrameProcessor(TextDetector.instance);
         try {
           camera.start(new LegacyCamera.OnCameraOpenedCallback() {
@@ -168,7 +162,23 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
         result.success(null);
         break;
       }
-      case "LiveView#setRecognizer":
+      case "LiveView#setDetector":
+        if (camera != null) {
+          String detectorType = call.argument("detectorType");
+          Detector detector;
+          switch (detectorType) {
+            case "text":
+              detector = TextDetector.instance;
+              break;
+            case "barcode":
+              detector = BarcodeDetector.instance;
+              break;
+            default:
+              detector = TextDetector.instance;
+          }
+          camera.setMachineLearningFrameProcessor(detector);
+        }
+        result.success(null);
         break;
       case "BarcodeDetector#detectInImage":
         FirebaseVisionImage image = filePathToVisionImage((String) call.arguments, result);

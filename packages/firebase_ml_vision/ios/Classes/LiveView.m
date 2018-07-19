@@ -154,6 +154,14 @@ static NSString *const videoDataOutputQueueLabel = @"io.flutter.plugins.firebase
       visionImage.metadata = metadata;
       CGFloat imageWidth = CVPixelBufferGetWidth(newBuffer);
       CGFloat imageHeight = CVPixelBufferGetHeight(newBuffer);
+      switch (_currentDetector) {
+        case <#constant#>:
+          <#statements#>
+          break;
+          
+        default:
+          break;
+      }
       [TextDetector handleDetection:visionImage result:_eventSink resultWrapper:^id(id  _Nullable result) {
         _isRecognizing = NO;
         return @{@"eventType": @"recognized", @"recognitionType": @"text", @"textData": result};
