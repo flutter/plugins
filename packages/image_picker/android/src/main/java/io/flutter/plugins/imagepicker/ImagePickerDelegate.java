@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.database.Cursor;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -68,11 +69,13 @@ public class ImagePickerDelegate
   @VisibleForTesting static final int REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY = 2342;
   @VisibleForTesting static final int REQUEST_CODE_TAKE_IMAGE_WITH_CAMERA = 2343;
   @VisibleForTesting static final int REQUEST_EXTERNAL_IMAGE_STORAGE_PERMISSION = 2344;
-  @VisibleForTesting static final int REQUEST_CAMERA_IMAGE_PERMISSION = 2345;
+  @VisibleForTesting static final int REQUEST_EXTERNAL_IMAGE_STORAGE_PERMISSION_LATEST = 2345;
+  @VisibleForTesting static final int REQUEST_CAMERA_IMAGE_PERMISSION = 2346;
   @VisibleForTesting static final int REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY = 2352;
   @VisibleForTesting static final int REQUEST_CODE_TAKE_VIDEO_WITH_CAMERA = 2353;
   @VisibleForTesting static final int REQUEST_EXTERNAL_VIDEO_STORAGE_PERMISSION = 2354;
-  @VisibleForTesting static final int REQUEST_CAMERA_VIDEO_PERMISSION = 2355;
+  @VisibleForTesting static final int REQUEST_EXTERNAL_VIDEO_STORAGE_PERMISSION_LATEST = 2355;
+  @VisibleForTesting static final int REQUEST_CAMERA_VIDEO_PERMISSION = 2356;
 
   @VisibleForTesting final String fileProviderName;
 
@@ -206,6 +209,36 @@ public class ImagePickerDelegate
     activity.startActivityForResult(pickVideoIntent, REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY);
   }
 
+  public void getMostRecentVideo(MethodCall methodCall, MethodChannel.Result result) {
+    if (!setPendingMethodCallAndResult(methodCall, result)) {
+      finishWithAlreadyActiveError();
+      return;
+    }
+
+    if (!permissionManager.isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+      permissionManager.askForPermission(
+              Manifest.permission.READ_EXTERNAL_STORAGE, REQUEST_EXTERNAL_VIDEO_STORAGE_PERMISSION_LATEST);
+      return;
+    }
+
+    getMostRecentVideoFromGallery();
+  }
+
+  public void getMostRecentVideoFromGallery() {
+    String[] projection = new String[]{
+            MediaStore.Video.VideoColumns.DATA
+    };
+    Cursor cursor = activity.getApplicationContext().getContentResolver()
+            .query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, projection, null,
+                    null, MediaStore.Video.VideoColumns.DATE_TAKEN + " DESC");
+
+    if (cursor.moveToFirst()) {
+      handleVideoResult(cursor.getString(0));
+    } else {
+      finishWithSuccess(null);
+    }
+  }
+
   public void takeVideoWithCamera(MethodCall methodCall, MethodChannel.Result result) {
     if (!setPendingMethodCallAndResult(methodCall, result)) {
       finishWithAlreadyActiveError();
@@ -260,6 +293,36 @@ public class ImagePickerDelegate
     pickImageIntent.setType("image/*");
 
     activity.startActivityForResult(pickImageIntent, REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY);
+  }
+
+  public void getMostRecentImage(MethodCall methodCall, MethodChannel.Result result) {
+    if (!setPendingMethodCallAndResult(methodCall, result)) {
+      finishWithAlreadyActiveError();
+      return;
+    }
+
+    if (!permissionManager.isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+      permissionManager.askForPermission(
+              Manifest.permission.READ_EXTERNAL_STORAGE, REQUEST_EXTERNAL_IMAGE_STORAGE_PERMISSION_LATEST);
+      return;
+    }
+
+    getMostRecentImageFromGallery();
+  }
+
+  public void getMostRecentImageFromGallery() {
+    String[] projection = new String[]{
+            MediaStore.Images.ImageColumns.DATA
+    };
+    Cursor cursor = activity.getApplicationContext().getContentResolver()
+            .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null,
+                    null, MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC");
+
+    if (cursor.moveToFirst()) {
+      handleImageResult(cursor.getString(0));
+    } else {
+      finishWithSuccess(null);
+    }
   }
 
   public void takeImageWithCamera(MethodCall methodCall, MethodChannel.Result result) {
@@ -342,9 +405,19 @@ public class ImagePickerDelegate
           launchPickImageFromGalleryIntent();
         }
         break;
+      case REQUEST_EXTERNAL_IMAGE_STORAGE_PERMISSION_LATEST:
+        if (permissionGranted) {
+          getMostRecentImageFromGallery();
+        }
+        break;
       case REQUEST_EXTERNAL_VIDEO_STORAGE_PERMISSION:
         if (permissionGranted) {
           launchPickVideoFromGalleryIntent();
+        }
+        break;
+      case REQUEST_EXTERNAL_VIDEO_STORAGE_PERMISSION_LATEST:
+        if (permissionGranted) {
+          getMostRecentVideoFromGallery();
         }
         break;
       case REQUEST_CAMERA_IMAGE_PERMISSION:

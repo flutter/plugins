@@ -56,6 +56,34 @@ class ImagePicker {
     return path == null ? null : new File(path);
   }
 
+  /// Returns a [File] object pointing to the most recent image in the user's gallery.
+  ///
+  /// If specified, the image will be at most [maxWidth] wide and
+  /// [maxHeight] tall. Otherwise the image will be returned at it's
+  /// original width and height.
+  static Future<File> getMostRecentImage({
+    double maxWidth,
+    double maxHeight,
+  }) async {
+    if (maxWidth != null && maxWidth < 0) {
+      throw new ArgumentError.value(maxWidth, 'maxWidth cannot be negative');
+    }
+
+    if (maxHeight != null && maxHeight < 0) {
+      throw new ArgumentError.value(maxHeight, 'maxHeight cannot be negative');
+    }
+
+    final String path = await _channel.invokeMethod(
+      'getMostRecentImage',
+      <String, dynamic>{
+        'maxWidth': maxWidth,
+        'maxHeight': maxHeight,
+      },
+    );
+
+    return path == null ? null : new File(path);
+  }
+
   static Future<File> pickVideo({
     @required ImageSource source,
   }) async {
@@ -67,6 +95,15 @@ class ImagePicker {
         'source': source.index,
       },
     );
+    return path == null ? null : new File(path);
+  }
+
+  /// Returns a [File] object pointing to the most recent video in the user's gallery.
+  static Future<File> getMostRecentVideo() async {
+    final String path = await _channel.invokeMethod(
+      'getMostRecentVideo'
+    );
+
     return path == null ? null : new File(path);
   }
 }
