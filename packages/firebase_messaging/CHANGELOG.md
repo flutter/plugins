@@ -1,3 +1,7 @@
+## 1.0.6
+
+* Updated Android to send Remote Message's title and body to Dart.
+
 ## 1.0.5
 
 * Bumped test and mockito versions to pick up Dart 2 support.
