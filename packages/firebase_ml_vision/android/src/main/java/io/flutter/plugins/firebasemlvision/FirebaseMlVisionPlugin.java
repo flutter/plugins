@@ -4,17 +4,18 @@ import android.app.Activity;
 import android.app.Application;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
-import android.hardware.camera2.CameraAccessException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.media.ExifInterface;
+import android.util.Log;
 
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +28,7 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.plugins.firebasemlvision.live.Camera;
 import io.flutter.plugins.firebasemlvision.live.CameraInfo;
 import io.flutter.plugins.firebasemlvision.live.CameraInfoException;
-import io.flutter.view.FlutterView;
+import io.flutter.plugins.firebasemlvision.live.LegacyCamera;
 
 /**
  * FirebaseMlVisionPlugin
@@ -38,7 +39,7 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
   private Activity activity;
 
   @Nullable
-  private Camera camera;
+  private LegacyCamera camera;
 
   private FirebaseMlVisionPlugin(Registrar registrar) {
     this.registrar = registrar;
@@ -60,13 +61,16 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
 
           @Override
           public void onActivityResumed(Activity activity) {
-            if (camera != null && camera.getRequestingPermission()) {
-              camera.setRequestingPermission(false);
-              return;
-            }
+//            if (camera != null && camera.getRequestingPermission()) {
+//              camera.setRequestingPermission(false);
+//              return;
+//            }
             if (activity == FirebaseMlVisionPlugin.this.activity) {
               if (camera != null) {
-                camera.open(null);
+                try {
+                  camera.start(null);
+                } catch (IOException ignored) {
+                }
               }
             }
           }
@@ -75,7 +79,7 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
           public void onActivityPaused(Activity activity) {
             if (activity == FirebaseMlVisionPlugin.this.activity) {
               if (camera != null) {
-                camera.close();
+                camera.stop();
               }
             }
           }
@@ -84,7 +88,7 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
           public void onActivityStopped(Activity activity) {
             if (activity == FirebaseMlVisionPlugin.this.activity) {
               if (camera != null) {
-                camera.close();
+                camera.stop();
               }
             }
           }
@@ -113,29 +117,52 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
     switch (call.method) {
       case "init":
         if (camera != null) {
-          camera.close();
+          camera.stop();
         }
         result.success(null);
         break;
       case "availableCameras":
-        try {
-          List<Map<String, Object>> cameras = CameraInfo.getAvailableCameras(registrar.activeContext());
-          result.success(cameras);
-        } catch (CameraInfoException e) {
-          result.error("cameraAccess", e.getMessage(), null);
-        }
+//        try {
+//          List<Map<String, Object>> cameras = CameraInfo.getAvailableCameras(registrar.activeContext());
+//          result.success(cameras);
+//        } catch (CameraInfoException e) {
+//          result.error("cameraAccess", e.getMessage(), null);
+//        }
+        List<Map<String, Object>> cameras = LegacyCamera.listAvailableCameraDetails();
+        result.success(cameras);
         break;
       case "initialize":
-        String cameraName = call.argument("cameraName");
+        Log.d("ML", "initialize");
+        int cameraName = call.argument("cameraName"); //TODO: set camera facing
         String resolutionPreset = call.argument("resolutionPreset");
         if (camera != null) {
-          camera.close();
+          camera.stop();
         }
-        camera = new Camera(registrar, cameraName, resolutionPreset, result);
+        camera = new LegacyCamera(registrar); //new Camera(registrar, cameraName, resolutionPreset, result);
+        camera.setMachineLearningFrameProcessor(TextDetector.instance);
+        try {
+          camera.start(new LegacyCamera.OnCameraOpenedCallback() {
+            @Override
+            public void onOpened(long textureId, int width, int height) {
+              Map<String, Object> reply = new HashMap<>();
+              reply.put("textureId", textureId);
+              reply.put("previewWidth", width);
+              reply.put("previewHeight", height);
+              result.success(reply);
+            }
+
+            @Override
+            public void onFailed(Exception e) {
+              result.error("CameraInitializationError", e.getLocalizedMessage(), null);
+            }
+          });
+        } catch (IOException e) {
+          result.error("CameraInitializationError", e.getLocalizedMessage(), null);
+        }
         break;
       case "dispose": {
         if (camera != null) {
-          camera.dispose();
+          camera.release();
           camera = null;
         }
         result.success(null);
@@ -145,20 +172,30 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
         break;
       case "BarcodeDetector#detectInImage":
         FirebaseVisionImage image = filePathToVisionImage((String) call.arguments, result);
-        if (image != null) BarcodeDetector.instance.handleDetection(image, new Detector.OnDetectionFinishedCallback() {
+        if (image != null) BarcodeDetector.instance.handleDetection(image, new Detector.OperationFinishedCallback() {
           @Override
-          public void dataReady(Detector detector, Object data) {
+          public void success(Detector detector, Object data) {
             result.success(data);
           }
 
           @Override
-          public void detectionError(DetectorException e) {
+          public void error(DetectorException e) {
             e.sendError(result);
           }
         });
         break;
       case "BarcodeDetector#close":
-        BarcodeDetector.instance.close(result);
+        BarcodeDetector.instance.close(new Detector.OperationFinishedCallback() {
+          @Override
+          public void success(Detector detector, Object data) {
+            result.success(null);
+          }
+
+          @Override
+          public void error(DetectorException e) {
+            e.sendError(result);
+          }
+        });
         break;
       case "FaceDetector#detectInImage":
         break;
@@ -170,20 +207,30 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
         break;
       case "TextDetector#detectInImage":
         image = filePathToVisionImage((String) call.arguments, result);
-        if (image != null) TextDetector.instance.handleDetection(image, new Detector.OnDetectionFinishedCallback() {
+        if (image != null) TextDetector.instance.handleDetection(image, new Detector.OperationFinishedCallback() {
           @Override
-          public void dataReady(Detector detector, Object data) {
+          public void success(Detector detector, Object data) {
             result.success(data);
           }
 
           @Override
-          public void detectionError(DetectorException e) {
+          public void error(DetectorException e) {
             e.sendError(result);
           }
         });
         break;
       case "TextDetector#close":
-        TextDetector.instance.close(result);
+        TextDetector.instance.close(new Detector.OperationFinishedCallback() {
+          @Override
+          public void success(Detector detector, Object data) {
+            result.success(null);
+          }
+
+          @Override
+          public void error(DetectorException e) {
+            e.sendError(result);
+          }
+        });
         break;
       default:
         result.notImplemented();
@@ -226,7 +273,7 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
     public boolean onRequestPermissionsResult(int id, String[] permissions, int[] grantResults) {
       if (id == CAMERA_REQUEST_ID) {
         if (camera != null) {
-          camera.continueRequestingPermissions();
+//          camera.continueRequestingPermissions();
         }
         return true;
       }

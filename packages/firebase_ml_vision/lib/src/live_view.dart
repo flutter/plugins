@@ -53,7 +53,7 @@ Future<List<LiveViewCameraDescription>> availableCameras() async {
 }
 
 class LiveViewCameraDescription {
-  final String name;
+  final int name;
   final LiveViewCameraLensDirection lensDirection;
 
   LiveViewCameraDescription({this.name, this.lensDirection});

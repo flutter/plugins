@@ -3,6 +3,7 @@ package io.flutter.plugins.firebasemlvision;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -11,10 +12,6 @@ import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.text.FirebaseVisionText;
 import com.google.firebase.ml.vision.text.FirebaseVisionTextDetector;
 
-import org.w3c.dom.Text;
-
-import io.flutter.plugin.common.EventChannel;
-import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugins.firebasemlvision.util.DetectedItemUtils;
 
 import java.io.IOException;
@@ -22,16 +19,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class TextDetector extends Detector {
   public static final TextDetector instance = new TextDetector();
   private static FirebaseVisionTextDetector textDetector;
 
+  private final AtomicBoolean shouldThrottle = new AtomicBoolean(false);
+
   private TextDetector() {
   }
 
   @Override
-  public void handleDetection(FirebaseVisionImage image, final OnDetectionFinishedCallback finishedCallback) {
+  void processImage(FirebaseVisionImage image, final OperationFinishedCallback finishedCallback) {
     if (textDetector == null) textDetector = FirebaseVision.getInstance().getVisionTextDetector();
     textDetector
       .detectInImage(image)
@@ -67,26 +67,30 @@ public class TextDetector extends Detector {
               blockData.put("lines", lines);
               blocks.add(blockData);
             }
-            finishedCallback.dataReady(TextDetector.this, blocks);
+            finishedCallback.success(TextDetector.this, blocks);
           }
         })
       .addOnFailureListener(
         new OnFailureListener() {
           @Override
           public void onFailure(@NonNull Exception exception) {
-            finishedCallback.detectionError(new DetectorException("textDetectorError", exception.getLocalizedMessage(), null));
+            finishedCallback.error(new DetectorException("textDetectorError", exception.getLocalizedMessage(), null));
           }
         });
-
   }
 
-  public void close(MethodChannel.Result result) {
+  @Override
+  public void close(@Nullable OperationFinishedCallback callback) {
     if (textDetector != null) {
       try {
         textDetector.close();
-        result.success(null);
+        if (callback != null) {
+          callback.success(TextDetector.this, null);
+        }
       } catch (IOException exception) {
-        result.error("textDetectorError", exception.getLocalizedMessage(), null);
+        if (callback != null) {
+          callback.error(new DetectorException("textDetectorError", exception.getLocalizedMessage(), null));
+        }
       }
 
       textDetector = null;

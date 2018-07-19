@@ -6,7 +6,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
-import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
@@ -31,11 +30,6 @@ import android.util.SparseIntArray;
 import android.view.Surface;
 import android.view.WindowManager;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.ml.vision.FirebaseVision;
-import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode;
-import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetector;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata;
 
@@ -54,17 +48,12 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugins.firebasemlvision.BarcodeDetector;
 import io.flutter.plugins.firebasemlvision.DetectorException;
-import io.flutter.plugins.firebasemlvision.FlutterResultWrapper;
 import io.flutter.plugins.firebasemlvision.TextDetector;
-import io.flutter.plugins.firebasemlvision.util.DetectedItemUtils;
 import io.flutter.view.FlutterView;
 
 import io.flutter.plugins.firebasemlvision.Detector;
 
 import static io.flutter.plugins.firebasemlvision.FirebaseMlVisionPlugin.CAMERA_REQUEST_ID;
-import static io.flutter.plugins.firebasemlvision.constants.VisionBarcodeConstants.BARCODE_DISPLAY_VALUE;
-import static io.flutter.plugins.firebasemlvision.constants.VisionBarcodeConstants.BARCODE_RAW_VALUE;
-import static io.flutter.plugins.firebasemlvision.constants.VisionBarcodeConstants.BARCODE_VALUE_TYPE;
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class Camera {
@@ -98,33 +87,9 @@ public class Camera {
   private WindowManager windowManager;
   private Detector currentDetector = TextDetector.instance;
 
-  private FlutterResultWrapper liveDetectorResultWrapper = new FlutterResultWrapper() {
-    @SuppressWarnings("unchecked")
+  private Detector.OperationFinishedCallback liveDetectorFinishedCallback = new Detector.OperationFinishedCallback() {
     @Override
-    public Object wrapFlutterResultData(Detector detector, Object data) {
-      Map<String, Object> event = new HashMap<>();
-      event.put("eventType", "recognized");
-      String dataType;
-      String dataLabel;
-      if (detector instanceof BarcodeDetector) {
-        dataType = "barcode";
-        dataLabel = "barcodeData";
-      } else if (detector instanceof TextDetector) {
-        dataType = "text";
-        dataLabel = "textData";
-      } else {
-        // unsupported live detector
-        return data;
-      }
-      event.put("recognitionType", dataType);
-      event.put(dataLabel, data);
-      return event;
-    }
-  };
-
-  private Detector.OnDetectionFinishedCallback liveDetectorFinishedCallback = new Detector.OnDetectionFinishedCallback() {
-    @Override
-    public void dataReady(Detector detector, Object data) {
+    public void success(Detector detector, Object data) {
       shouldThrottle.set(false);
       Map<String, Object> event = new HashMap<>();
       event.put("eventType", "recognized");
@@ -146,7 +111,7 @@ public class Camera {
     }
 
     @Override
-    public void detectionError(DetectorException e) {
+    public void error(DetectorException e) {
       shouldThrottle.set(false);
       e.sendError(eventSink);
     }

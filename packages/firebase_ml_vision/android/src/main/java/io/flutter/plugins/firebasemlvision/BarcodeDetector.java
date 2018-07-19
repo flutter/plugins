@@ -2,6 +2,7 @@ package io.flutter.plugins.firebasemlvision;
 
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -9,15 +10,14 @@ import com.google.firebase.ml.vision.FirebaseVision;
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode;
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetector;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
-import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugins.firebasemlvision.util.DetectedItemUtils;
 
@@ -28,7 +28,7 @@ public class BarcodeDetector extends Detector {
   private static FirebaseVisionBarcodeDetector barcodeDetector;
 
   @Override
-  public void handleDetection(FirebaseVisionImage image, final OnDetectionFinishedCallback finishedCallback) {
+  void processImage(FirebaseVisionImage image, final OperationFinishedCallback finishedCallback) {
     if (barcodeDetector == null) barcodeDetector = FirebaseVision.getInstance().getVisionBarcodeDetector();
     barcodeDetector
       .detectInImage(image)
@@ -41,25 +41,29 @@ public class BarcodeDetector extends Detector {
             addBarcodeData(barcodeData, barcode);
             barcodes.add(barcodeData);
           }
-          finishedCallback.dataReady(BarcodeDetector.this, barcodes);
+          finishedCallback.success(BarcodeDetector.this, barcodes);
         }
       })
       .addOnFailureListener(new OnFailureListener() {
         @Override
         public void onFailure(@NonNull Exception e) {
-          finishedCallback.detectionError(new DetectorException("barcodeDetectorError", e.getLocalizedMessage(), null));
+          finishedCallback.error(new DetectorException("barcodeDetectorError", e.getLocalizedMessage(), null));
         }
       });
   }
 
   @Override
-  public void close(MethodChannel.Result result) {
+  public void close(@Nullable OperationFinishedCallback callback) {
     if (barcodeDetector != null) {
       try {
         barcodeDetector.close();
-        result.success(null);
+        if (callback != null) {
+          callback.success(this, null);
+        }
       } catch (IOException e) {
-        result.error("barcodeDetectorError", e.getLocalizedMessage(), null);
+        if (callback != null) {
+          callback.error(new DetectorException("barcodeDetectorError", e.getLocalizedMessage(), null));
+        }
       }
     }
     barcodeDetector = null;
