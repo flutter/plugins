@@ -217,7 +217,8 @@ public class ImagePickerDelegate
 
     if (!permissionManager.isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)) {
       permissionManager.askForPermission(
-              Manifest.permission.READ_EXTERNAL_STORAGE, REQUEST_EXTERNAL_VIDEO_STORAGE_PERMISSION_LATEST);
+          Manifest.permission.READ_EXTERNAL_STORAGE,
+          REQUEST_EXTERNAL_VIDEO_STORAGE_PERMISSION_LATEST);
       return;
     }
 
@@ -225,12 +226,17 @@ public class ImagePickerDelegate
   }
 
   public void getMostRecentVideoFromGallery() {
-    String[] projection = new String[]{
-            MediaStore.Video.VideoColumns.DATA
-    };
-    Cursor cursor = activity.getApplicationContext().getContentResolver()
-            .query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, projection, null,
-                    null, MediaStore.Video.VideoColumns.DATE_TAKEN + " DESC");
+    String[] projection = new String[] {MediaStore.Video.VideoColumns.DATA};
+    Cursor cursor =
+        activity
+            .getApplicationContext()
+            .getContentResolver()
+            .query(
+                MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+                projection,
+                null,
+                null,
+                MediaStore.Video.VideoColumns.DATE_TAKEN + " DESC");
 
     if (cursor.moveToFirst()) {
       handleVideoResult(cursor.getString(0));
@@ -303,7 +309,8 @@ public class ImagePickerDelegate
 
     if (!permissionManager.isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)) {
       permissionManager.askForPermission(
-              Manifest.permission.READ_EXTERNAL_STORAGE, REQUEST_EXTERNAL_IMAGE_STORAGE_PERMISSION_LATEST);
+          Manifest.permission.READ_EXTERNAL_STORAGE,
+          REQUEST_EXTERNAL_IMAGE_STORAGE_PERMISSION_LATEST);
       return;
     }
 
@@ -311,12 +318,17 @@ public class ImagePickerDelegate
   }
 
   public void getMostRecentImageFromGallery() {
-    String[] projection = new String[]{
-            MediaStore.Images.ImageColumns.DATA
-    };
-    Cursor cursor = activity.getApplicationContext().getContentResolver()
-            .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null,
-                    null, MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC");
+    String[] projection = new String[] {MediaStore.Images.ImageColumns.DATA};
+    Cursor cursor =
+        activity
+            .getApplicationContext()
+            .getContentResolver()
+            .query(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                projection,
+                null,
+                null,
+                MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC");
 
     if (cursor.moveToFirst()) {
       handleImageResult(cursor.getString(0));
