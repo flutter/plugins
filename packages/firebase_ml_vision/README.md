@@ -19,35 +19,118 @@ Optional but recommended: If you use the on-device API, configure your app to au
 <application ...>
   ...
   <meta-data
-      android:name="com.google.firebase.ml.vision.DEPENDENCIES"
-      android:value="ocr" />
-  <!-- To use multiple models: android:value="ocr,model2,model3" -->
+    android:name="com.google.firebase.ml.vision.DEPENDENCIES"
+    android:value="ocr" />
+  <!-- To use multiple models: android:value="ocr,label,barcode,face" -->
 </application>
 ```
 
-## On-device Text Recognition
+## Using an On-device FirbaseVisionDetector
 
-To use the on-device text recognition model, run the text detector as described below:
+### 1. Create a `FirebaseVisionImage`.
 
-1. Create a `FirebaseVisionImage` object from your image.
-
-To create a `FirebaseVisionImage` from an image `File` object:
+Create a `FirebaseVisionImage` object from your image. To create a `FirebaseVisionImage` from an image `File` object:
 
 ```dart
 final File imageFile = getImageFile();
 final FirebaseVisionImage visionImage = FirebaseVisionImage.fromFile(imageFile);
 ```
 
-2. Get an instance of `TextDetector` and pass `visionImage` to `detectInImage().`
+### 2. Create an instance of a detector.
+
+Get an instance of a `FirebaseVisionDetector`.
 
 ```dart
-final TextDetector detector = FirebaseVision.instance.getTextDetector();
-final List<TextBlock> blocks = await detector.detectInImage(visionImage);
-
-detector.close();
+final BarcodeDetector barcodeDetector = FirebaseVision.instance.barcodeDetector();
+final FaceDetector faceDetector = FirebaseVision.instance.faceDetector();
+final LabelDetector labelDetector = FirebaseVision.instance.labelDetector();
+final TextDetector textDetector = FirebaseVision.instance.textDetector();
 ```
 
-3. Extract text and text locations from blocks of recognized text.
+You can also configure all detectors except `TextDetector` with desired options.
+
+```dart
+final LabelDetector detector = FirebaseVision.instance.labelDetector(
+  LabelDetectorOptions(confidenceThreshold: 0.75),
+);
+```
+
+### 3. Call `detectInImage()` with `visionImage`.
+
+```dart
+final List<Barcode> barcodes = await barcodeDetector.detectInImage(visionImage);
+final List<Face> faces = await faceDetector.detectInImage(visionImage);
+final List<Label> labels = await labelDetector.detectInImage(visionImage);
+final List<TextBlock> blocks = await textDetector.detectInImage(visionImage);
+```
+
+### 4. Extract data.
+
+a. Extract barcodes.
+
+```dart
+for (Barcode barcode in barcodes) {
+  final Rectangle<int> boundingBox = barcode.boundingBox;
+  final List<Point<int>> cornerPoints = barcode.cornerPoints;
+
+  final String rawValue = barcode.rawValue;
+
+  final BarcordeValueType valueType = barcode.valueType;
+
+  // See API reference for complete list of supported types
+  switch (valueType) {
+    case BarcodeValueType.wifi:
+      final String ssid = barcode.wifi.ssid;
+      final String password = barcode.wifi.password;
+      final BarcodeWiFiEncryptionType type = barcode.wifi.encryptionType;
+      break;
+    case BarcodeValueType.url:
+      final String title = barcode.url.title;
+      final String url = barcode.url.url;
+      break;
+  }
+}
+```
+
+b. Extract faces.
+
+```dart
+for (Face face in faces) {
+  final Rectangle<int> boundingBox = face.boundingBox;
+
+  final double rotY = face.headEulerAngleY; // Head is rotated to the right rotY degrees
+  final double rotZ = face.headEulerAngleZ; // Head is tilted sideways rotZ degrees
+
+  // If landmark detection was enabled with FaceDetectorOptions (mouth, ears,
+  // eyes, cheeks, and nose available):
+  final FaceLandmark leftEar = face.getLandmark(FaceLandmarkType.leftEar);
+  if (leftEar != null) {
+    final Point<double> leftEarPos = leftEar.position;
+  }
+
+  // If classification was enabled with FaceDetectorOptions:
+  if (face.smilingProbability != null) {
+    final double smileProb = face.smilingProbability;
+  }
+
+  // If face tracking was enabled with FaceDetectorOptions:
+  if (face.trackingId != null) {
+    final int id = face.trackingId;
+  }
+}
+```
+
+c. Extract labels.
+
+```dart
+for (Label label in labels) {
+  final String text = label.label;
+  final String entityId = label.entityId;
+  final double confidence = label.confidence;
+}
+```
+
+d. Extract text.
 
 ```dart
 for (TextBlock block in blocks) {
