@@ -6,8 +6,6 @@ dependencies:
     sdk: flutter
   firebase_storage:
     path: ../
-  firebase_core:
-    path: ../../firebase_core
   http: ^0.11.3
 
 # For information on the generic Dart part of this file, see the

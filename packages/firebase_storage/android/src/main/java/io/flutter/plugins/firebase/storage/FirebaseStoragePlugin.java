@@ -259,11 +259,6 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
 
   private void addResultListeners(UploadTask uploadTask, final Result result) {
     uploadTask
-        .addOnSuccessListener(
-            new OnSuccessListener<UploadTask.TaskSnapshot>() {
-              @Override
-              public void onSuccess(UploadTask.TaskSnapshot snapshot) {}
-            })
         .continueWithTask(
             new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
               @Override
