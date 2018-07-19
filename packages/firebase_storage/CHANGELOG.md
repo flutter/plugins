@@ -1,3 +1,7 @@
+## 1.0.1
+
+* Bump Android and Firebase dependency versions.
+
 ## 1.0.0
 
 * **Breaking change**. Make StorageUploadTask implementation classes private.

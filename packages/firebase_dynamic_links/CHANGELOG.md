@@ -1,3 +1,7 @@
+## 0.0.6
+
+* Bump Android and Firebase dependency versions.
+
 ## 0.0.5
 
 * Added capability to receive dynamic links.
