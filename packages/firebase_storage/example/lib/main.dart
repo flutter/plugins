@@ -53,7 +53,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
-  List<StorageUploadTask> _tasks = [];
+  List<StorageUploadTask> _tasks = <StorageUploadTask>[];
 
   Future<Null> _uploadFile() async {
     final String uuid = Uuid().v1();
