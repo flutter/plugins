@@ -27,13 +27,6 @@ abstract class StorageUploadTask {
       new Completer<StorageTaskSnapshot>();
   Future<StorageTaskSnapshot> get onComplete => _completer.future;
 
-  /// Convenience method to get the downloadUrl when complete
-  Completer<Uri> _downloadUrl = new Completer<Uri>();
-  Future<Uri> get downloadUrl => _downloadUrl.future.then((Uri u) {
-        if (u == null) throw Exception('Failed to upload');
-        return u;
-      });
-
   StreamController<StorageTaskEvent> _controller =
       new StreamController<StorageTaskEvent>.broadcast();
   Stream<StorageTaskEvent> get events => _controller.stream;
@@ -53,7 +46,6 @@ abstract class StorageUploadTask {
       if (e.type == StorageTaskEventType.success ||
           e.type == StorageTaskEventType.failure) {
         _completer.complete(e.snapshot);
-        _downloadUrl.complete(e.snapshot.downloadUrl);
       }
       return e;
     }).firstWhere((StorageTaskEvent e) =>

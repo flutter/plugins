@@ -78,7 +78,8 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  Future<Null> _downloadFile(StorageReference ref, Uri url) async {
+  Future<Null> _downloadFile(StorageReference ref) async {
+    final String url = await ref.getDownloadURL();
     final String uuid = Uuid().v1();
     final http.Response downloadData = await http.get(url);
     final Directory systemTempDir = Directory.systemTemp;
@@ -100,7 +101,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final String path = await ref.getPath();
     _scaffoldKey.currentState.showSnackBar(new SnackBar(
       content: new Text(
-        'Success!\n Downloaded $name \n from bucket: $bucket\n '
+        'Success!\n Downloaded $name \n from url: $url @ bucket: $bucket\n '
             'at path: $path \n\nFile contents: "$fileContents" \n'
             'Wrote "$tempFileContents" to tmp.txt',
         style: const TextStyle(color: const Color.fromARGB(255, 0, 155, 0)),
@@ -115,7 +116,7 @@ class _MyHomePageState extends State<MyHomePage> {
       final Widget tile = UploadTaskListTile(
         task: task,
         onDismissed: () => setState(() => _files.remove(ref)),
-        onDownload: () => _downloadFile(ref, task.lastSnapshot.downloadUrl),
+        onDownload: () => _downloadFile(ref),
       );
       children.add(tile);
     });

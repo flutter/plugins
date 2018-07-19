@@ -24,9 +24,7 @@ class StorageTaskEvent {
 
 class StorageTaskSnapshot {
   StorageTaskSnapshot._(Map<dynamic, dynamic> m)
-      : downloadUrl =
-            m['downloadUrl'] != null ? Uri.parse(m['downloadUrl']) : null,
-        error = m['error'],
+      : error = m['error'],
         bytesTransferred = m['bytesTransferred'],
         totalByteCount = m['totalByteCount'],
         uploadSessionUri = m['uploadSessionUri'] != null
@@ -36,7 +34,6 @@ class StorageTaskSnapshot {
             ? new StorageMetadata._fromMap(m['storageMetadata'])
             : null;
 
-  final Uri downloadUrl;
   final int error;
   final int bytesTransferred;
   final int totalByteCount;

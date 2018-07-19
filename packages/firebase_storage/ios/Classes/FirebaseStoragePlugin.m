@@ -242,9 +242,6 @@ typedef NS_ENUM(NSUInteger, StorageTaskEventType) {
 
 - (NSDictionary *)buildDictionaryFromTaskSnapshot:(FIRStorageTaskSnapshot *)snapshot {
   NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
-  if ([snapshot metadata] != nil && [snapshot.metadata downloadURL] != nil) {
-    [dictionary setValue:[snapshot.metadata.downloadURL absoluteString] forKey:@"downloadUrl"];
-  }
   [dictionary setValue:@((long)([snapshot.progress completedUnitCount]))
                 forKey:@"bytesTransferred"];
   [dictionary setValue:@((long)([snapshot.progress totalUnitCount])) forKey:@"totalByteCount"];
