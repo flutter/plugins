@@ -72,6 +72,31 @@ static const int SOURCE_GALLERY = 1;
                                    details:nil]);
         break;
     }
+  } else if ([@"getMostRecentImage" isEqualToString:call.method]) {
+      if (@available(iOS 8.0, *)) {
+          PHFetchOptions *fetchOptions = [[PHFetchOptions alloc] init];
+          fetchOptions.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
+
+          PHFetchResult *assetsFetchResult = [PHAsset fetchAssetsWithMediaType:PHAssetMediaTypeImage options:fetchOptions];
+
+          if (assetsFetchResult.count > 0) {
+              PHAsset *asset = [assetsFetchResult objectAtIndex:0];
+              [[PHImageManager defaultManager] requestImageForAsset:asset
+                                                         targetSize:CGSizeMake(0, 0)
+                                                        contentMode:PHImageContentModeDefault
+                                                            options:nil
+                                                      resultHandler:^(UIImage *image, NSDictionary *info) {
+                                                          self->_result = result;
+                                                          self->_arguments = call.arguments;
+                                                          [self onPickImage:image];
+                                                      }
+               ];
+          } else {
+              result(nil);
+          }
+      } else {
+          // Flutter minimum requirement is iOS 8.0, this should never happen
+      }
   } else if ([@"pickVideo" isEqualToString:call.method]) {
     _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
     _imagePickerController.delegate = self;
@@ -99,6 +124,29 @@ static const int SOURCE_GALLERY = 1;
                                    details:nil]);
         break;
     }
+  } else if ([@"getMostRecentVideo" isEqualToString:call.method]) {
+      if (@available(iOS 8.0, *)) {
+          PHFetchOptions *fetchOptions = [[PHFetchOptions alloc] init];
+          fetchOptions.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
+
+          PHFetchResult *assetsFetchResult = [PHAsset fetchAssetsWithMediaType:PHAssetMediaTypeVideo options:fetchOptions];
+
+          if (assetsFetchResult.count > 0) {
+              PHAsset *asset = [assetsFetchResult objectAtIndex:0];
+              [[PHImageManager defaultManager] requestAVAssetForVideo:asset
+                                                              options:nil
+                                                        resultHandler:^(AVAsset *video, AVAudioMix *audioMix, NSDictionary *info) {
+                                                            self->_result = result;
+                                                            self->_arguments = call.arguments;
+                                                            [self onPickVideo:((AVURLAsset *)video).URL];
+                                                        }
+               ];
+          } else {
+              result(nil);
+          }
+      } else {
+          // Flutter minimum requirement is iOS 8.0, this should never happen
+      }
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -124,56 +172,72 @@ static const int SOURCE_GALLERY = 1;
   [_viewController presentViewController:_imagePickerController animated:YES completion:nil];
 }
 
-- (void)imagePickerController:(UIImagePickerController *)picker
-    didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info {
-  NSURL *videoURL = [info objectForKey:UIImagePickerControllerMediaURL];
-  UIImage *image = [info objectForKey:UIImagePickerControllerEditedImage];
-  [_imagePickerController dismissViewControllerAnimated:YES completion:nil];
-
-  if (videoURL != nil) {
-    NSData *data = [NSData dataWithContentsOfURL:videoURL];
-    NSString *guid = [[NSProcessInfo processInfo] globallyUniqueString];
-    NSString *tmpFile = [NSString stringWithFormat:@"image_picker_%@.MOV", guid];
-    NSString *tmpDirectory = NSTemporaryDirectory();
-    NSString *tmpPath = [tmpDirectory stringByAppendingPathComponent:tmpFile];
-
-    if ([[NSFileManager defaultManager] createFileAtPath:tmpPath contents:data attributes:nil]) {
-      _result(tmpPath);
-    } else {
-      _result([FlutterError errorWithCode:@"create_error"
-                                  message:@"Temporary file could not be created"
-                                  details:nil]);
-    }
-  } else {
-    if (image == nil) {
-      image = [info objectForKey:UIImagePickerControllerOriginalImage];
-    }
-    image = [self normalizedImage:image];
-
+- (void)onPickImage:(UIImage *)image {
+    UIImage *nImage = [self normalizedImage:image];
+    
     NSNumber *maxWidth = [_arguments objectForKey:@"maxWidth"];
     NSNumber *maxHeight = [_arguments objectForKey:@"maxHeight"];
-
+    
     if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
-      image = [self scaledImage:image maxWidth:maxWidth maxHeight:maxHeight];
+        nImage = [self scaledImage:nImage maxWidth:maxWidth maxHeight:maxHeight];
     }
-
-    NSData *data = UIImageJPEGRepresentation(image, 1.0);
+    
+    NSData *data = UIImageJPEGRepresentation(nImage, 1.0);
     NSString *guid = [[NSProcessInfo processInfo] globallyUniqueString];
     NSString *tmpFile = [NSString stringWithFormat:@"image_picker_%@.jpg", guid];
     NSString *tmpDirectory = NSTemporaryDirectory();
     NSString *tmpPath = [tmpDirectory stringByAppendingPathComponent:tmpFile];
-
+    
     if ([[NSFileManager defaultManager] createFileAtPath:tmpPath contents:data attributes:nil]) {
-      _result(tmpPath);
+        if (_result) {
+            _result(tmpPath);
+        }
     } else {
-      _result([FlutterError errorWithCode:@"create_error"
-                                  message:@"Temporary file could not be created"
-                                  details:nil]);
+        _result([FlutterError errorWithCode:@"create_error"
+                                    message:@"Temporary file could not be created"
+                                    details:nil]);
     }
-  }
 
-  _result = nil;
-  _arguments = nil;
+    _result = nil;
+    _arguments = nil;
+}
+
+- (void)onPickVideo:(NSURL *)url {
+    NSData *data = [NSData dataWithContentsOfURL:url];
+    NSString *guid = [[NSProcessInfo processInfo] globallyUniqueString];
+    NSString *tmpFile = [NSString stringWithFormat:@"image_picker_%@.MOV", guid];
+    NSString *tmpDirectory = NSTemporaryDirectory();
+    NSString *tmpPath = [tmpDirectory stringByAppendingPathComponent:tmpFile];
+    
+    if ([[NSFileManager defaultManager] createFileAtPath:tmpPath contents:data attributes:nil]) {
+        if (_result) {
+            _result(tmpPath);
+        }
+    } else {
+        _result([FlutterError errorWithCode:@"create_error"
+                                    message:@"Temporary file could not be created"
+                                    details:nil]);
+    }
+    
+    _result = nil;
+    _arguments = nil;
+}
+
+- (void)imagePickerController:(UIImagePickerController *)picker
+    didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info {
+    NSURL *videoURL = [info objectForKey:UIImagePickerControllerMediaURL];
+    UIImage *image = [info objectForKey:UIImagePickerControllerEditedImage];
+    [_imagePickerController dismissViewControllerAnimated:YES completion:nil];
+    
+    if (videoURL != nil) {
+        [self onPickVideo:videoURL];
+    } else if (image != nil) {
+        [self onPickImage:image];
+    } else {
+        _result(nil);
+        _result = nil;
+        _arguments = nil;
+    }
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
