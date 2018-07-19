@@ -14,16 +14,16 @@ enum StorageTaskEventType {
 
 /// `Event` encapsulates a StorageTaskSnapshot
 class StorageTaskEvent {
-  StorageTaskEvent._(int type, Map<dynamic, dynamic> data)
+  StorageTaskEvent._(int type, StorageReference ref, Map<dynamic, dynamic> data)
       : type = StorageTaskEventType.values[type],
-        snapshot = new StorageTaskSnapshot._(data);
+        snapshot = new StorageTaskSnapshot._(ref, data);
 
   final StorageTaskEventType type;
   final StorageTaskSnapshot snapshot;
 }
 
 class StorageTaskSnapshot {
-  StorageTaskSnapshot._(Map<dynamic, dynamic> m)
+  StorageTaskSnapshot._(this.ref, Map<dynamic, dynamic> m)
       : error = m['error'],
         bytesTransferred = m['bytesTransferred'],
         totalByteCount = m['totalByteCount'],
@@ -34,6 +34,7 @@ class StorageTaskSnapshot {
             ? new StorageMetadata._fromMap(m['storageMetadata'])
             : null;
 
+  final StorageReference ref;
   final int error;
   final int bytesTransferred;
   final int totalByteCount;

@@ -6,10 +6,10 @@ part of firebase_storage;
 
 abstract class StorageUploadTask {
   final FirebaseStorage _firebaseStorage;
-  final String _path;
+  final StorageReference _ref;
   final StorageMetadata _metadata;
 
-  StorageUploadTask._(this._firebaseStorage, this._path, this._metadata);
+  StorageUploadTask._(this._firebaseStorage, this._ref, this._metadata);
   Future<dynamic> _platformStart();
 
   int _handle;
@@ -39,7 +39,7 @@ abstract class StorageUploadTask {
     }).map<StorageTaskEvent>((MethodCall m) {
       final Map<dynamic, dynamic> args = m.arguments;
       final StorageTaskEvent e =
-          new StorageTaskEvent._(args['type'], args['snapshot']);
+          new StorageTaskEvent._(args['type'], _ref, args['snapshot']);
       _changeState(e);
       lastSnapshot = e.snapshot;
       _controller.add(e);
@@ -121,8 +121,8 @@ abstract class StorageUploadTask {
 class _StorageFileUploadTask extends StorageUploadTask {
   final File _file;
   _StorageFileUploadTask._(this._file, FirebaseStorage firebaseStorage,
-      String path, StorageMetadata metadata)
-      : super._(firebaseStorage, path, metadata);
+      StorageReference ref, StorageMetadata metadata)
+      : super._(firebaseStorage, ref, metadata);
 
   @override
   Future<dynamic> _platformStart() {
@@ -132,7 +132,7 @@ class _StorageFileUploadTask extends StorageUploadTask {
         'app': _firebaseStorage.app?.name,
         'bucket': _firebaseStorage.storageBucket,
         'filename': _file.absolute.path,
-        'path': _path,
+        'path': _ref.path,
         'metadata':
             _metadata == null ? null : _buildMetadataUploadMap(_metadata),
       },
@@ -143,8 +143,8 @@ class _StorageFileUploadTask extends StorageUploadTask {
 class _StorageDataUploadTask extends StorageUploadTask {
   final Uint8List _bytes;
   _StorageDataUploadTask._(this._bytes, FirebaseStorage firebaseStorage,
-      String path, StorageMetadata metadata)
-      : super._(firebaseStorage, path, metadata);
+      StorageReference ref, StorageMetadata metadata)
+      : super._(firebaseStorage, ref, metadata);
 
   @override
   Future<dynamic> _platformStart() {
@@ -154,7 +154,7 @@ class _StorageDataUploadTask extends StorageUploadTask {
         'app': _firebaseStorage.app?.name,
         'bucket': _firebaseStorage.storageBucket,
         'data': _bytes,
-        'path': _path,
+        'path': _ref.path,
         'metadata':
             _metadata == null ? null : _buildMetadataUploadMap(_metadata),
       },

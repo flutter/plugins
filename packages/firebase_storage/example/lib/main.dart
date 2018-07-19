@@ -53,8 +53,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
-  Map<StorageReference, StorageUploadTask> _files =
-      <StorageReference, StorageUploadTask>{};
+  List<StorageUploadTask> _tasks = [];
 
   Future<Null> _uploadFile() async {
     final String uuid = Uuid().v1();
@@ -74,7 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
 
     setState(() {
-      _files[ref] = uploadTask;
+      _tasks.add(uploadTask);
     });
   }
 
@@ -112,11 +111,11 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> children = <Widget>[];
-    _files.forEach((StorageReference ref, StorageUploadTask task) {
+    _tasks.forEach((StorageUploadTask task) {
       final Widget tile = UploadTaskListTile(
         task: task,
-        onDismissed: () => setState(() => _files.remove(ref)),
-        onDownload: () => _downloadFile(ref),
+        onDismissed: () => setState(() => _tasks.remove(task)),
+        onDownload: () => _downloadFile(task.lastSnapshot.ref),
       );
       children.add(tile);
     });
@@ -128,7 +127,7 @@ class _MyHomePageState extends State<MyHomePage> {
           IconButton(
             icon: const Icon(Icons.clear_all),
             onPressed:
-                _files.isNotEmpty ? () => setState(() => _files.clear()) : null,
+                _tasks.isNotEmpty ? () => setState(() => _tasks.clear()) : null,
           )
         ],
       ),
