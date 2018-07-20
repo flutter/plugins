@@ -115,10 +115,10 @@ class _MyHomePageState extends State<MyHomePage> {
               new Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: new RaisedButton(
-                  child: new Text('${Platform.isIOS ?
-                                    "External directories are unavailable " 
-                                    "on iOS":
-                                    "Get External Storage Directory" }'),
+                  child: new Text('${Platform.isIOS
+                      ? "External directories are unavailable "
+                          "on iOS"
+                      : "Get External Storage Directory"}'),
                   onPressed:
                       Platform.isIOS ? null : _requestExternalStorageDirectory,
                 ),

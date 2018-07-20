@@ -6,10 +6,10 @@ part of firebase_ml_vision;
 
 /// Detector for performing optical character recognition(OCR) on an input image.
 ///
-/// A text detector is created via getVisionTextDetector() in [FirebaseVision]:
+/// A text detector is created via `textDetector()` in [FirebaseVision]:
 ///
 /// ```dart
-/// TextDetector textDetector = FirebaseVision.instance.getTextDetector();
+/// TextDetector textDetector = FirebaseVision.instance.textDetector();
 /// ```
 class TextDetector implements FirebaseVisionDetector {
   TextDetector._();
@@ -21,7 +21,10 @@ class TextDetector implements FirebaseVisionDetector {
   Future<List<TextBlock>> detectInImage(FirebaseVisionImage visionImage) async {
     final List<dynamic> reply = await FirebaseVision.channel.invokeMethod(
       'TextDetector#detectInImage',
-      visionImage.imageFile.path,
+      <String, dynamic>{
+        'path': visionImage.imageFile.path,
+        'options': <String, dynamic>{},
+      },
     );
 
     final List<TextBlock> blocks = <TextBlock>[];
@@ -30,12 +33,6 @@ class TextDetector implements FirebaseVisionDetector {
     });
 
     return blocks;
-  }
-
-  /// Closes the text detector and release its model resources.
-  @override
-  Future<void> close() {
-    return FirebaseVision.channel.invokeMethod('TextDetector#close');
   }
 }
 
@@ -61,6 +58,8 @@ abstract class TextContainer {
   final List<Point<int>> _cornerPoints;
 
   /// Axis-aligned bounding rectangle of the detected text.
+  ///
+  /// The point (0, 0) is defined as the upper-left corner of the image.
   ///
   /// Could be null even if text is found.
   final Rectangle<int> boundingBox;

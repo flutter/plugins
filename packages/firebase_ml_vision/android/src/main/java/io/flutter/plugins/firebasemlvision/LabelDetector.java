@@ -1,18 +1,11 @@
 package io.flutter.plugins.firebasemlvision;
 
-import android.support.annotation.Nullable;
-
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
-
 import io.flutter.plugin.common.MethodChannel;
+import java.util.Map;
 
-public class LabelDetector extends Detector {
-
+class LabelDetector implements Detector {
   @Override
-  void processImage(FirebaseVisionImage image, OperationFinishedCallback finishedCallback) {
-
-  }
-
-  @Override
-  public void close(@Nullable OperationFinishedCallback callback) {}
+  public void handleDetection(
+      FirebaseVisionImage image, Map<String, Object> options, final MethodChannel.Result result) {}
 }

@@ -414,6 +414,47 @@ public class FirebaseDatabasePlugin implements MethodCallHandler {
           break;
         }
 
+      case "OnDisconnect#set":
+        {
+          Object value = arguments.get("value");
+          Object priority = arguments.get("priority");
+          DatabaseReference reference = getReference(database, arguments);
+          if (priority != null) {
+            if (priority instanceof String) {
+              reference
+                  .onDisconnect()
+                  .setValue(value, (String) priority, new DefaultCompletionListener(result));
+            } else if (priority instanceof Double) {
+              reference
+                  .onDisconnect()
+                  .setValue(value, (double) priority, new DefaultCompletionListener(result));
+            } else if (priority instanceof Map) {
+              reference
+                  .onDisconnect()
+                  .setValue(value, (Map) priority, new DefaultCompletionListener(result));
+            }
+          } else {
+            reference.onDisconnect().setValue(value, new DefaultCompletionListener(result));
+          }
+          break;
+        }
+
+      case "OnDisconnect#update":
+        {
+          @SuppressWarnings("unchecked")
+          Map<String, Object> value = (Map<String, Object>) arguments.get("value");
+          DatabaseReference reference = getReference(database, arguments);
+          reference.onDisconnect().updateChildren(value, new DefaultCompletionListener(result));
+          break;
+        }
+
+      case "OnDisconnect#cancel":
+        {
+          DatabaseReference reference = getReference(database, arguments);
+          reference.onDisconnect().cancel(new DefaultCompletionListener(result));
+          break;
+        }
+
       case "Query#keepSynced":
         {
           boolean value = (Boolean) arguments.get("value");

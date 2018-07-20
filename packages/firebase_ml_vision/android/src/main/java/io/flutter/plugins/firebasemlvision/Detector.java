@@ -20,6 +20,7 @@ public abstract class Detector {
 
   public void handleDetection(
     FirebaseVisionImage image,
+    Map<String, Object> options,
     final OperationFinishedCallback finishedCallback) {
     if (shouldThrottle.get()) {
       return;

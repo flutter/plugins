@@ -29,10 +29,9 @@ import io.flutter.plugins.firebasemlvision.live.Camera;
 import io.flutter.plugins.firebasemlvision.live.CameraInfo;
 import io.flutter.plugins.firebasemlvision.live.CameraInfoException;
 import io.flutter.plugins.firebasemlvision.live.LegacyCamera;
+import java.util.Map;
 
-/**
- * FirebaseMlVisionPlugin
- */
+/** FirebaseMlVisionPlugin */
 public class FirebaseMlVisionPlugin implements MethodCallHandler {
   public static final int CAMERA_REQUEST_ID = 928291720;
   private Registrar registrar;
@@ -109,12 +108,14 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
    */
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel =
-      new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_ml_vision");
+        new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_ml_vision");
     channel.setMethodCallHandler(new FirebaseMlVisionPlugin(registrar));
   }
 
   @Override
   public void onMethodCall(MethodCall call, final Result result) {
+    Map<String, Object> options = call.argument("options");
+    FirebaseVisionImage image;
     switch (call.method) {
       case "init":
         if (camera != null) {
@@ -181,100 +182,45 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
         result.success(null);
         break;
       case "BarcodeDetector#detectInImage":
-        FirebaseVisionImage image = filePathToVisionImage((String) call.arguments, result);
-        if (image != null) BarcodeDetector.instance.handleDetection(image, new Detector.OperationFinishedCallback() {
-          @Override
-          public void success(Detector detector, Object data) {
-            result.success(data);
-          }
-
-          @Override
-          public void error(DetectorException e) {
-            e.sendError(result);
-          }
-        });
-        break;
-      case "BarcodeDetector#close":
-        BarcodeDetector.instance.close(new Detector.OperationFinishedCallback() {
-          @Override
-          public void success(Detector detector, Object data) {
-            result.success(null);
-          }
-
-          @Override
-          public void error(DetectorException e) {
-            e.sendError(result);
-          }
-        });
+        try {
+          image = filePathToVisionImage((String) call.argument("path"));
+          BarcodeDetector.instance.handleDetection(image, options, result);
+        } catch (IOException e) {
+          result.error("barcodeDetectorIOError", e.getLocalizedMessage(), null);
+        } catch (Exception e) {
+          result.error("barcodeDetectorError", e.getLocalizedMessage(), null);
+        }
         break;
       case "FaceDetector#detectInImage":
-        break;
-      case "FaceDetector#close":
+        try {
+          image = filePathToVisionImage((String) call.argument("path"));
+          FaceDetector.instance.handleDetection(image, options, result);
+        } catch (IOException e) {
+          result.error("faceDetectorIOError", e.getLocalizedMessage(), null);
+        } catch (Exception e) {
+          result.error("faceDetectorError", e.getLocalizedMessage(), null);
+        }
         break;
       case "LabelDetector#detectInImage":
         break;
-      case "LabelDetector#close":
-        break;
       case "TextDetector#detectInImage":
-        image = filePathToVisionImage((String) call.arguments, result);
-        if (image != null) TextDetector.instance.handleDetection(image, new Detector.OperationFinishedCallback() {
-          @Override
-          public void success(Detector detector, Object data) {
-            result.success(data);
-          }
-
-          @Override
-          public void error(DetectorException e) {
-            e.sendError(result);
-          }
-        });
-        break;
-      case "TextDetector#close":
-        TextDetector.instance.close(new Detector.OperationFinishedCallback() {
-          @Override
-          public void success(Detector detector, Object data) {
-            result.success(null);
-          }
-
-          @Override
-          public void error(DetectorException e) {
-            e.sendError(result);
-          }
-        });
+        try {
+          image = filePathToVisionImage((String) call.argument("path"));
+          TextDetector.instance.handleDetection(image, options, result);
+        } catch (IOException e) {
+          result.error("textDetectorIOError", e.getLocalizedMessage(), null);
+        } catch (Exception e) {
+          result.error("textDetectorError", e.getLocalizedMessage(), null);
+        }
         break;
       default:
         result.notImplemented();
     }
   }
 
-  private FirebaseVisionImage filePathToVisionImage(String path, Result result) {
+  private FirebaseVisionImage filePathToVisionImage(String path) throws IOException {
     File file = new File(path);
-
-    try {
-      Bitmap bitmap = MediaStore.Images.Media.getBitmap(registrar.context().getContentResolver(), Uri.fromFile(file));
-      int rotation = 0;
-      int orientation = new ExifInterface(path).getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
-
-      switch (orientation) {
-        case ExifInterface.ORIENTATION_ROTATE_90:
-          rotation = 90;
-          break;
-        case ExifInterface.ORIENTATION_ROTATE_180:
-          rotation = 180;
-          break;
-        case ExifInterface.ORIENTATION_ROTATE_270:
-          rotation = 270;
-          break;
-      }
-      Matrix matrix = new Matrix();
-      matrix.postRotate(rotation);
-      Bitmap rotatedImg = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-      return FirebaseVisionImage.fromBitmap(rotatedImg);
-    } catch (IOException exception) {
-      result.error("textDetectorIOError", exception.getLocalizedMessage(), null);
-    }
-
-    return null;
+    return FirebaseVisionImage.fromFilePath(registrar.context(), Uri.fromFile(file));
   }
 
   private class CameraRequestPermissionsListener

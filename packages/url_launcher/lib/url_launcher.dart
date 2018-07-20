@@ -30,10 +30,17 @@ const MethodChannel _channel =
 ///
 /// Note that if any of the above are set to true but the URL is not a web URL,
 /// this will throw a [PlatformException].
+///
+/// [statusBarBrightness] is only used in iOS. Sets the status bar brightness
+/// of the application after opening a link. The previous value of the status
+/// bar is stored on the platform side and restored when returning to Flutter
+/// if used with `forceSafariVC` or on iOS version 10.0 and greater. Defaults
+/// to [Brightness.light] if unset, or does nothing if null is passed.
 Future<void> launch(
   String urlString, {
   bool forceSafariVC,
   bool forceWebView,
+  Brightness statusBarBrightness = Brightness.light,
 }) {
   assert(urlString != null);
   final Uri url = Uri.parse(urlString.trimLeft());
@@ -50,6 +57,7 @@ Future<void> launch(
       'url': urlString,
       'useSafariVC': forceSafariVC ?? isWebURL,
       'useWebView': forceWebView ?? false,
+      'statusBarBrightness': statusBarBrightness?.toString(),
     },
   );
 }

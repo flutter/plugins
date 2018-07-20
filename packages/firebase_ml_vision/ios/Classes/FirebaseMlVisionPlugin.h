@@ -10,13 +10,16 @@ typedef void (^OperationFinishedCallback)(id _Nullable result, NSString *detecto
 typedef void (^OperationErrorCallback)(FlutterError *error);
 
 @interface FLTFirebaseMlVisionPlugin : NSObject<FlutterPlugin>
-+ (void)handleError:(NSError *)error finishedCallback:(OperationErrorCallback)callback;
++ (void)handleError:(NSError *)error result:(FlutterResult)result;
 @end
 
 @protocol Detector
 @required
 + (id)sharedInstance;
-- (void)handleDetection:(FIRVisionImage *)image finishedCallback:(OperationFinishedCallback)callback errorCallback:(OperationErrorCallback)error;
+- (void)handleDetection:(FIRVisionImage *)image
+            options:(NSDictionary *)options
+            finishedCallback:(OperationFinishedCallback)callback
+            errorCallback:(OperationErrorCallback)error;
 - (void)close;
 @optional
 @end

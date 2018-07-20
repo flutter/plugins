@@ -24,9 +24,10 @@
 - (instancetype)initWithRegistry:(NSObject<FlutterTextureRegistry> *)registry
                        messenger:(NSObject<FlutterBinaryMessenger> *)messenger {
   self = [super init];
-  NSAssert(self, @"super init cannot be nil");
-  if (![FIRApp defaultApp]) {
-    [FIRApp configure];
+  if (self) {
+    if (![FIRApp defaultApp]) {
+      [FIRApp configure];
+    }
   }
   _registry = registry;
   _messenger = messenger;
@@ -118,30 +119,20 @@
 //      [_camera setRecognizerType:recognizerType];
     }
     result(nil);
-  } else if ([@"BarcodeDetector#detectInImage" isEqualToString:call.method]) {
-    FIRVisionImage *image = [self filePathToVisionImage:call.arguments];
-    [[BarcodeDetector sharedInstance] handleDetection:image finishedCallback:^(id  _Nullable r, NSString *detectorType) {
-      result(r);
-    } errorCallback:^(FlutterError *e) {
-      result(e);
-    }];
-  } else if ([@"BarcodeDetector#close" isEqualToString:call.method]) {
-    [[BarcodeDetector sharedInstance] close];
-  } else if ([@"FaceDetector#detectInImage" isEqualToString:call.method]) {
-  } else if ([@"FaceDetector#close" isEqualToString:call.method]) {
-  } else if ([@"LabelDetector#detectInImage" isEqualToString:call.method]) {
-  } else if ([@"LabelDetector#close" isEqualToString:call.method]) {
-  } else if ([@"TextDetector#detectInImage" isEqualToString:call.method]) {
-    FIRVisionImage *image = [self filePathToVisionImage:call.arguments];
-    [[TextDetector sharedInstance] handleDetection:image finishedCallback:^(id  _Nullable r, NSString *detectorType) {
-      result(r);
-    } errorCallback:^(FlutterError *error) {
-      result(error);
-    }];
-  } else if ([@"TextDetector#close" isEqualToString:call.method]) {
-    [[TextDetector sharedInstance] close];
   } else {
-    result(FlutterMethodNotImplemented);
+    // image file detection
+    FIRVisionImage *image = [self filePathToVisionImage:call.arguments[@"path"]];
+    NSDictionary *options = call.arguments[@"options"];
+      if ([@"BarcodeDetector#detectInImage" isEqualToString:call.method]) {
+        [BarcodeDetector handleDetection:image options:options result:result];
+      } else if ([@"FaceDetector#detectInImage" isEqualToString:call.method]) {
+        [FaceDetector handleDetection:image options:options result:result];
+      } else if ([@"LabelDetector#detectInImage" isEqualToString:call.method]) {
+      } else if ([@"TextDetector#detectInImage" isEqualToString:call.method]) {
+        [TextDetector handleDetection:image options:options result:result];
+      } else {
+        result(FlutterMethodNotImplemented);
+      }
   }
 }
 

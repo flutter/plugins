@@ -184,6 +184,10 @@ class DatabaseReference extends Query {
 
     return completer.future;
   }
+
+  OnDisconnect onDisconnect() {
+    return new OnDisconnect._(_database, this);
+  }
 }
 
 class ServerValue {

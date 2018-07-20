@@ -2,59 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:ui';
+
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:flutter/material.dart';
 
-CustomPaint customPaintForResults(
-    FirebaseVisionDetectorType detector, Size imageSize, List<dynamic> results) {
-  CustomPainter painter;
-  switch (detector) {
-    case FirebaseVisionDetectorType.barcode:
-      try {
-        painter = new BarcodeDetectorPainter(imageSize, results.cast());
-      } on CastError {
-        painter = null;
-      }
-      break;
-    case FirebaseVisionDetectorType.face:
-      painter = new FaceDetectorPainter(imageSize, results);
-      break;
-    case FirebaseVisionDetectorType.label:
-      painter = new LabelDetectorPainter(imageSize, results);
-      break;
-    case FirebaseVisionDetectorType.text:
-      try {
-        painter = new TextDetectorPainter(imageSize, results.cast());
-      } on CastError {
-        painter = null;
-      }
-      break;
-    default:
-      break;
-  }
-
-  return new CustomPaint(
-    painter: painter,
-  );
-}
+enum Detector { barcode, face, label, text }
 
 class BarcodeDetectorPainter extends CustomPainter {
-  BarcodeDetectorPainter(this.absoluteImageSize, this.results);
+  BarcodeDetectorPainter(this.absoluteImageSize, this.barcodeLocations);
 
   final Size absoluteImageSize;
-  final List<BarcodeContainer> results;
+  final List<Barcode> barcodeLocations;
 
   @override
   void paint(Canvas canvas, Size size) {
     final double scaleX = size.width / absoluteImageSize.width;
     final double scaleY = size.height / absoluteImageSize.height;
 
-    Rect scaleRect(BarcodeContainer container) {
+    Rect scaleRect(Barcode barcode) {
       return new Rect.fromLTRB(
-        container.boundingBox.left * scaleX,
-        container.boundingBox.top * scaleY,
-        container.boundingBox.right * scaleX,
-        container.boundingBox.bottom * scaleY,
+        barcode.boundingBox.left * scaleX,
+        barcode.boundingBox.top * scaleY,
+        barcode.boundingBox.right * scaleX,
+        barcode.boundingBox.bottom * scaleY,
       );
     }
 
@@ -62,8 +33,8 @@ class BarcodeDetectorPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.0;
 
-    for (BarcodeContainer barcode in results) {
-      paint.color = Colors.red;
+    for (Barcode barcode in barcodeLocations) {
+      paint.color = Colors.green;
       canvas.drawRect(scaleRect(barcode), paint);
     }
   }
@@ -71,43 +42,67 @@ class BarcodeDetectorPainter extends CustomPainter {
   @override
   bool shouldRepaint(BarcodeDetectorPainter oldDelegate) {
     return oldDelegate.absoluteImageSize != absoluteImageSize ||
-        oldDelegate.results != results;
+        oldDelegate.barcodeLocations != barcodeLocations;
   }
 }
 
 class FaceDetectorPainter extends CustomPainter {
-  FaceDetectorPainter(this.absoluteImageSize, this.results);
+  FaceDetectorPainter(this.absoluteImageSize, this.faces);
 
   final Size absoluteImageSize;
-  final List<dynamic> results;
+  final List<Face> faces;
 
   @override
   void paint(Canvas canvas, Size size) {
-    // TODO: implement paint
+    final double scaleX = size.width / absoluteImageSize.width;
+    final double scaleY = size.height / absoluteImageSize.height;
+
+    final Paint paint = new Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.0
+      ..color = Colors.red;
+
+    for (Face face in faces) {
+      canvas.drawRect(
+        Rect.fromLTRB(
+          face.boundingBox.left * scaleX,
+          face.boundingBox.top * scaleY,
+          face.boundingBox.right * scaleX,
+          face.boundingBox.bottom * scaleY,
+        ),
+        paint,
+      );
+    }
   }
 
   @override
-  bool shouldRepaint(CustomPainter oldDelegate) {
-    // TODO: implement shouldRepaint
-    return false;
+  bool shouldRepaint(FaceDetectorPainter oldDelegate) {
+    return oldDelegate.absoluteImageSize != absoluteImageSize ||
+        oldDelegate.faces != faces;
   }
 }
 
 class LabelDetectorPainter extends CustomPainter {
-  LabelDetectorPainter(this.absoluteImageSize, this.results);
+  LabelDetectorPainter(this.absoluteImageSize, this.labels);
 
   final Size absoluteImageSize;
-  final List<dynamic> results;
+  final List<Label> labels;
 
   @override
   void paint(Canvas canvas, Size size) {
-    // TODO: implement paint
+    final ParagraphBuilder builder = ParagraphBuilder(ParagraphStyle());
+    for (Label label in labels) {
+      builder.addText('Label ${label.label}, '
+          'Entity Id: ${label.entityId}, '
+          'Confidence: ${label.confidence}');
+    }
+    canvas.drawParagraph(builder.build(), const Offset(0.0, 0.0));
   }
 
   @override
-  bool shouldRepaint(CustomPainter oldDelegate) {
-    // TODO: implement shouldRepaint
-    return false;
+  bool shouldRepaint(LabelDetectorPainter oldDelegate) {
+    return oldDelegate.absoluteImageSize != absoluteImageSize ||
+        oldDelegate.labels != labels;
   }
 }
 

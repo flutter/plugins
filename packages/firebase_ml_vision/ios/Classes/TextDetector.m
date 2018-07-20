@@ -3,86 +3,72 @@
 @implementation TextDetector
 static FIRVisionTextDetector *textDetector;
 
-+ (id)sharedInstance {
-  static TextDetector *sharedInstance = nil;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    sharedInstance = [[self alloc] init];
-  });
-  return sharedInstance;
-}
-
-- (void)respondToCallback:(OperationFinishedCallback)callback withData:(id _Nullable) data {
-  callback(data, @"text");
-}
-
-- (void)handleDetection:(FIRVisionImage *)image finishedCallback:(OperationFinishedCallback)callback errorCallback:(OperationErrorCallback)errorCallback {
++ (void)handleDetection:(FIRVisionImage *)image
+                options:(NSDictionary *)options
+                 result:(FlutterResult)result {
   if (textDetector == nil) {
     FIRVision *vision = [FIRVision vision];
     textDetector = [vision textDetector];
   }
-  NSLog(@"handling text detection");
+
   [textDetector
-   detectInImage:image
-   completion:^(NSArray<id<FIRVisionText>> *_Nullable features, NSError *_Nullable error) {
-     if (error) {
-       [FLTFirebaseMlVisionPlugin handleError:error finishedCallback:errorCallback];
-       return;
-     } else if (!features) {
-       [self respondToCallback:callback withData:@[]];
-       return;
-     }
-     
-     NSMutableArray *blocks = [NSMutableArray array];
-     for (id<FIRVisionText> feature in features) {
-       NSMutableDictionary *blockData = [NSMutableDictionary dictionary];
-       if ([feature isKindOfClass:[FIRVisionTextBlock class]]) {
-         FIRVisionTextBlock *block = (FIRVisionTextBlock *)feature;
-         
-         [blockData addEntriesFromDictionary:[self getTextData:block.frame
-                                                  cornerPoints:block.cornerPoints
-                                                          text:block.text]];
-         blockData[@"lines"] = [self getLineData:block.lines];
-       } else if ([feature isKindOfClass:[FIRVisionTextLine class]]) {
-         // We structure the return data to have the line be inside a FIRVisionTextBlock.
-         FIRVisionTextLine *line = (FIRVisionTextLine *)feature;
-         
-         [blockData addEntriesFromDictionary:[self getTextData:line.frame
-                                                  cornerPoints:line.cornerPoints
-                                                          text:line.text]];
-         NSArray<FIRVisionTextLine *> *lines = @[ line ];
-         blockData[@"lines"] = [self getLineData:lines];
-       } else if ([feature isKindOfClass:[FIRVisionTextElement class]]) {
-         // We structure the return data to have the element inside a FIRVisionTextLine
-         // that is inside a FIRVisionTextBlock.
-         FIRVisionTextElement *element = (FIRVisionTextElement *)feature;
-         
-         [blockData addEntriesFromDictionary:[self getTextData:element.frame
-                                                  cornerPoints:element.cornerPoints
-                                                          text:element.text]];
-         
-         NSMutableDictionary *lineData = [NSMutableDictionary dictionary];
-         [lineData addEntriesFromDictionary:[self getTextData:element.frame
-                                                 cornerPoints:element.cornerPoints
-                                                         text:element.text]];
-         
-         NSArray<FIRVisionTextElement *> *elements = @[ element ];
-         lineData[@"elements"] = [self getElementData:elements];
-         
-         blockData[@"lines"] = lineData;
-       }
-       
-       [blocks addObject:blockData];
-     }
-     [self respondToCallback:callback withData:blocks];
-   }];
+      detectInImage:image
+         completion:^(NSArray<id<FIRVisionText>> *_Nullable features, NSError *_Nullable error) {
+           if (error) {
+             [FLTFirebaseMlVisionPlugin handleError:error result:result];
+             return;
+           } else if (!features) {
+             result(@[]);
+             return;
+           }
+
+           NSMutableArray *blocks = [NSMutableArray array];
+           for (id<FIRVisionText> feature in features) {
+             NSMutableDictionary *blockData = [NSMutableDictionary dictionary];
+             if ([feature isKindOfClass:[FIRVisionTextBlock class]]) {
+               FIRVisionTextBlock *block = (FIRVisionTextBlock *)feature;
+
+               [blockData addEntriesFromDictionary:[self getTextData:block.frame
+                                                        cornerPoints:block.cornerPoints
+                                                                text:block.text]];
+               blockData[@"lines"] = [self getLineData:block.lines];
+             } else if ([feature isKindOfClass:[FIRVisionTextLine class]]) {
+               // We structure the return data to have the line be inside a FIRVisionTextBlock.
+               FIRVisionTextLine *line = (FIRVisionTextLine *)feature;
+
+               [blockData addEntriesFromDictionary:[self getTextData:line.frame
+                                                        cornerPoints:line.cornerPoints
+                                                                text:line.text]];
+               NSArray<FIRVisionTextLine *> *lines = @[ line ];
+               blockData[@"lines"] = [self getLineData:lines];
+             } else if ([feature isKindOfClass:[FIRVisionTextElement class]]) {
+               // We structure the return data to have the element inside a FIRVisionTextLine
+               // that is inside a FIRVisionTextBlock.
+               FIRVisionTextElement *element = (FIRVisionTextElement *)feature;
+
+               [blockData addEntriesFromDictionary:[self getTextData:element.frame
+                                                        cornerPoints:element.cornerPoints
+                                                                text:element.text]];
+
+               NSMutableDictionary *lineData = [NSMutableDictionary dictionary];
+               [lineData addEntriesFromDictionary:[self getTextData:element.frame
+                                                       cornerPoints:element.cornerPoints
+                                                               text:element.text]];
+
+               NSArray<FIRVisionTextElement *> *elements = @[ element ];
+               lineData[@"elements"] = [self getElementData:elements];
+
+               blockData[@"lines"] = lineData;
+             }
+
+             [blocks addObject:blockData];
+           }
+
+           result(blocks);
+         }];
 }
 
-- (void)close {
-  textDetector = nil;
-}
-
-- (NSDictionary *)getTextData:(CGRect)frame
++ (NSDictionary *)getTextData:(CGRect)frame
                  cornerPoints:(NSArray<NSValue *> *)cornerPoints
                          text:(NSString *)text {
   __block NSMutableArray<NSArray *> *points = [NSMutableArray array];
@@ -101,7 +87,7 @@ static FIRVisionTextDetector *textDetector;
   };
 }
 
-- (NSMutableArray *)getLineData:(NSArray<FIRVisionTextLine *> *)lines {
++ (NSMutableArray *)getLineData:(NSArray<FIRVisionTextLine *> *)lines {
   NSMutableArray *lineDataArray = [NSMutableArray array];
 
   for (FIRVisionTextLine *line in lines) {
@@ -116,7 +102,7 @@ static FIRVisionTextDetector *textDetector;
   return lineDataArray;
 }
 
-- (NSMutableArray *)getElementData:(NSArray<FIRVisionTextElement *> *)elements {
++ (NSMutableArray *)getElementData:(NSArray<FIRVisionTextElement *> *)elements {
   NSMutableArray *elementDataArray = [NSMutableArray array];
 
   for (FIRVisionTextElement *element in elements) {
