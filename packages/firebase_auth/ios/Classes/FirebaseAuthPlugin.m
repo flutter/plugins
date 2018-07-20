@@ -176,6 +176,18 @@ int nextHandle = 0;
                                         completion:^(FIRUser *user, NSError *error) {
                                           [self sendResult:result forUser:user error:error];
                                         }];
+  } else if ([@"updateEmail" isEqualToString:call.method]) {
+    NSString *email = call.arguments[@"email"];
+    [[FIRAuth auth].currentUser updateEmail:email
+                                 completion:^(NSError *error) {
+                                   [self sendResult:result forUser:nil error:error];
+                                 }];
+  } else if ([@"updatePassword" isEqualToString:call.method]) {
+    NSString *password = call.arguments[@"password"];
+    [[FIRAuth auth].currentUser updatePassword:password
+                                    completion:^(NSError *error) {
+                                      [self sendResult:result forUser:nil error:error];
+                                    }];
   } else if ([@"updateProfile" isEqualToString:call.method]) {
     FIRUserProfileChangeRequest *changeRequest = [[FIRAuth auth].currentUser profileChangeRequest];
     if (call.arguments[@"displayName"]) {
@@ -187,12 +199,6 @@ int nextHandle = 0;
     [changeRequest commitChangesWithCompletion:^(NSError *error) {
       [self sendResult:result forUser:nil error:error];
     }];
-  } else if ([@"updateEmail" isEqualToString:call.method]) {
-    NSString *toEmail = call.arguments[@"email"];
-    [[FIRAuth auth].currentUser updateEmail:toEmail
-                                 completion:^(NSError *_Nullable error) {
-                                   [self sendResult:result forUser:nil error:error];
-                                 }];
   } else if ([@"signInWithCustomToken" isEqualToString:call.method]) {
     NSString *token = call.arguments[@"token"];
     [[FIRAuth auth] signInWithCustomToken:token
