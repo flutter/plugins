@@ -71,9 +71,7 @@ void main() {
             arguments: <String, dynamic>{
               'path': 'empty',
               'options': <String, dynamic>{
-                'barcodeFormats': <int>[
-                  0xFFFF,
-                ]
+                'barcodeFormats': 0xFFFF,
               },
             },
           ),
@@ -416,11 +414,9 @@ void main() {
       group('$BarcodeDetectorOptions', () {
         test('barcodeFormats', () async {
           final BarcodeDetectorOptions options = BarcodeDetectorOptions(
-            barcodeFormats: <BarcodeFormat>[
-              BarcodeFormat.code128,
-              BarcodeFormat.dataMatrix,
-              BarcodeFormat.ean8,
-            ],
+            barcodeFormats: BarcodeFormat.code128 |
+                BarcodeFormat.dataMatrix |
+                BarcodeFormat.ean8,
           );
 
           final BarcodeDetector detector =
@@ -429,29 +425,7 @@ void main() {
 
           expect(
             log[0].arguments['options']['barcodeFormats'],
-            containsAll(<int>[0x0001, 0x0010, 0x0040]),
-          );
-        });
-
-        test('barcodeFormats no copies', () {
-          final BarcodeDetectorOptions options = BarcodeDetectorOptions(
-            barcodeFormats: <BarcodeFormat>[
-              BarcodeFormat.code128,
-              BarcodeFormat.code128,
-              BarcodeFormat.dataMatrix,
-              BarcodeFormat.dataMatrix,
-            ],
-          );
-
-          expect(
-            options.barcodeFormats,
-            allOf([
-              containsAll(<BarcodeFormat>[
-                BarcodeFormat.code128,
-                BarcodeFormat.dataMatrix,
-              ]),
-              hasLength(2),
-            ]),
+            0x0001 | 0x0010 | 0x0040,
           );
         });
       });

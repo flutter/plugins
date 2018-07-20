@@ -107,9 +107,6 @@ enum BarcodeAddressType {
 class BarcodeFormat {
   const BarcodeFormat._(this.value);
 
-  /// Raw BarcodeFormat value.
-  final int value;
-
   /// Barcode format constant representing the union of all supported formats.
   static const BarcodeFormat all = const BarcodeFormat._(0xFFFF);
 
@@ -154,6 +151,12 @@ class BarcodeFormat {
 
   /// Barcode format constant for AZTEC.
   static const BarcodeFormat aztec = const BarcodeFormat._(0x1000);
+
+  /// Raw BarcodeFormat value.
+  final int value;
+
+  BarcodeFormat operator |(BarcodeFormat other) =>
+      BarcodeFormat._(value | other.value);
 }
 
 /// Detector for performing barcode scanning on an input image.
@@ -179,9 +182,7 @@ class BarcodeDetector extends FirebaseVisionDetector {
       <String, dynamic>{
         'path': visionImage.imageFile.path,
         'options': <String, dynamic>{
-          'barcodeFormats': options._barcodeFormats
-              .map((BarcodeFormat format) => format.value)
-              .toList(),
+          'barcodeFormats': options.barcodeFormats.value,
         },
       },
     );
@@ -200,19 +201,16 @@ class BarcodeDetector extends FirebaseVisionDetector {
 /// Sets which barcode formats the detector will detect. Defaults to
 /// [BarcodeFormat.all].
 ///
-/// Throws [AssertionError] if [barcodeFormats] is empty.
+/// Example usage:
+/// ```dart
+/// final BarcodeDetectorOptions options =
+///     BarcodeDetectorOptions(barcodeFormats: BarcodeFormat.aztec | BarcodeFormat.ean8);
+/// ```
+/// Barcode
 class BarcodeDetectorOptions {
-  BarcodeDetectorOptions({List<BarcodeFormat> barcodeFormats})
-      : _barcodeFormats = barcodeFormats != null
-            ? Set<BarcodeFormat>.from(barcodeFormats)
-            : Set<BarcodeFormat>.from(<BarcodeFormat>[BarcodeFormat.all]),
-        assert(barcodeFormats?.isNotEmpty ?? true);
+  BarcodeDetectorOptions({this.barcodeFormats = BarcodeFormat.all});
 
-  final Set<BarcodeFormat> _barcodeFormats;
-
-  /// List of barcode formats for the [BarcodeDetector] to detect.
-  List<BarcodeFormat> get barcodeFormats =>
-      List<BarcodeFormat>.unmodifiable(_barcodeFormats);
+  final BarcodeFormat barcodeFormats;
 }
 
 /// Represents a single recognized barcode and its value.
