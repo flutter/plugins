@@ -99,8 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
         (AuthException authException) {
       setState(() {
         _message = Future<String>.value(
-            'Phone numbber verification failed. Code: ${authException
-                .code}. Message: ${authException.message}');
+            'Phone numbber verification failed. Code: ${authException.code}. Message: ${authException.message}');
       });
     };
 

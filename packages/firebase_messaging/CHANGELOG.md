@@ -1,3 +1,7 @@
+## 1.0.4
+
+* Bump Android and Firebase dependency versions.
+
 ## 1.0.3
 
 * Updated iOS token hook from 'didRefreshRegistrationToken' to 'didReceiveRegistrationToken'
