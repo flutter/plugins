@@ -33,6 +33,5 @@ android {
     }
     dependencies {
         api 'com.google.firebase:firebase-ml-vision:16.0.0'
-        compile "com.android.support:exifinterface:27.1.1"
     }
 }
