@@ -1,3 +1,7 @@
+## 1.0.4
+
+* Bumped Firebase messaging dependency to 17.1.0, Android Studio Gradle plugin 3.1.3 and google-services plugin to 4.0.1.
+
 ## 1.0.3
 
 * Updated iOS token hook from 'didRefreshRegistrationToken' to 'didReceiveRegistrationToken'
