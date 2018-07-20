@@ -23,11 +23,6 @@ public class FaceDetector extends Detector {
   private FaceDetector() {}
 
   @Override
-  public void close(@Nullable OperationFinishedCallback callback) {
-    // TODO: figure out if we still need to do this
-  }
-
-  @Override
   void processImage(FirebaseVisionImage image, Map<String, Object> options, final OperationFinishedCallback finishedCallback) {
     FirebaseVisionFaceDetector detector;
     if (options == null) {

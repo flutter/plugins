@@ -24,11 +24,6 @@ public class BarcodeDetector extends Detector {
   private BarcodeDetector() {}
 
   @Override
-  public void close(@Nullable OperationFinishedCallback callback) {
-
-  }
-
-  @Override
   void processImage(FirebaseVisionImage image, Map<String, Object> options, final OperationFinishedCallback finishedCallback) {
     if (barcodeDetector == null)
       barcodeDetector = FirebaseVision.getInstance().getVisionBarcodeDetector();

@@ -17,8 +17,6 @@ public abstract class Detector {
 
   private final AtomicBoolean shouldThrottle = new AtomicBoolean(false);
 
-  public abstract void close(@Nullable OperationFinishedCallback callback);
-
   public void handleDetection(
     FirebaseVisionImage image,
     Map<String, Object> options,

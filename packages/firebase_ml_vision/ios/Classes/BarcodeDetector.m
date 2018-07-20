@@ -3,9 +3,16 @@
 @implementation BarcodeDetector
 static FIRVisionBarcodeDetector *barcodeDetector;
 
-+ (void)handleDetection:(FIRVisionImage *)image
-                options:(NSDictionary *)options
-                 result:(FlutterResult)result {
++ (id)sharedInstance {
+  static BarcodeDetector *sharedInstance = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    sharedInstance = [[self alloc] init];
+  });
+  return sharedInstance;
+}
+
+- (void)handleDetection:(FIRVisionImage *)image options:(NSDictionary *)options finishedCallback:(OperationFinishedCallback)callback errorCallback:(OperationErrorCallback)errorCallback {
   if (barcodeDetector == nil) {
     FIRVision *vision = [FIRVision vision];
     barcodeDetector = [vision barcodeDetector];
@@ -14,10 +21,10 @@ static FIRVisionBarcodeDetector *barcodeDetector;
   [barcodeDetector detectInImage:image
                       completion:^(NSArray<FIRVisionBarcode *> *barcodes, NSError *error) {
                         if (error) {
-                          [FLTFirebaseMlVisionPlugin handleError:error result:result];
+                          [FLTFirebaseMlVisionPlugin handleError:error finishedCallback:errorCallback];
                           return;
                         } else if (!barcodes) {
-                          result(@[]);
+                          callback(@[], @"barcode");
                           return;
                         }
 
@@ -25,7 +32,7 @@ static FIRVisionBarcodeDetector *barcodeDetector;
                         for (FIRVisionBarcode *barcode in barcodes) {
                           [ret addObject:visionBarcodeToDictionary(barcode)];
                         }
-                        result(ret);
+                        callback(ret, @"barcode");
                       }];
 }
 

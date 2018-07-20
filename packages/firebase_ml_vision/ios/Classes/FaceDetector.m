@@ -3,9 +3,16 @@
 @implementation FaceDetector
 static FIRVisionFaceDetector *faceDetector;
 
-+ (void)handleDetection:(FIRVisionImage *)image
-                options:(NSDictionary *)options
-                 result:(FlutterResult)result {
++ (id)sharedInstance {
+  static FaceDetector *sharedInstance = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    sharedInstance = [[self alloc] init];
+  });
+  return sharedInstance;
+}
+
+- (void)handleDetection:(FIRVisionImage *)image options:(NSDictionary *)options finishedCallback:(OperationFinishedCallback)callback errorCallback:(OperationErrorCallback)errorCallback {
   FIRVision *vision = [FIRVision vision];
   faceDetector = [vision faceDetectorWithOptions:[FaceDetector parseOptions:options]];
 
@@ -13,10 +20,10 @@ static FIRVisionFaceDetector *faceDetector;
       detectInImage:image
          completion:^(NSArray<FIRVisionFace *> *_Nullable faces, NSError *_Nullable error) {
            if (error) {
-             [FLTFirebaseMlVisionPlugin handleError:error result:result];
+             [FLTFirebaseMlVisionPlugin handleError:error finishedCallback:errorCallback];
              return;
            } else if (!faces) {
-             result(@[]);
+             callback(@[], @"face");
              return;
            }
 
@@ -68,7 +75,7 @@ static FIRVisionFaceDetector *faceDetector;
              [faceData addObject:data];
            }
 
-           result(faceData);
+           callback(faceData, @"face");
          }];
 }
 

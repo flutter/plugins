@@ -273,19 +273,19 @@ class LiveViewCameraController extends ValueNotifier<LiveViewCameraValue> {
           dataList = new LiveViewBarcodeDetectionList(barcodes);
         } else if (detectionType == "text") {
           final List<TextBlock> texts = <TextBlock>[];
-          reply.map<TextBlock>((dynamic block) {
+          reply.forEach((dynamic block) {
             texts.add(TextBlock.fromBlockData(block));
-          }).toList();
+          });
           dataList = new LiveViewTextDetectionList(texts);
         } else if (detectionType == "face") {
           final List<Face> faces = <Face>[];
-          reply.map((dynamic f) {
+          reply.forEach((dynamic f) {
             faces.add(new Face(f));
           });
           dataList = new LiveViewFaceDetectionList(faces);
         } else if (detectionType == "label") {
           final List<Label> labels = <Label>[];
-          reply.map((dynamic l) {
+          reply.forEach((dynamic l) {
             labels.add(new Label(l));
           });
           dataList = new LiveViewLabelDetectionList(labels);

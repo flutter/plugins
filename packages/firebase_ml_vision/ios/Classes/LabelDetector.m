@@ -3,15 +3,6 @@
 @implementation LabelDetector
 static FIRVisionLabelDetector *labelDetector;
 
-- (void)close {
-  labelDetector = nil;
-}
-
-- (void)handleDetection:(FIRVisionImage *)image finishedCallback:(OperationFinishedCallback)callback errorCallback:(OperationErrorCallback)error {
-  
-}
-
-
 + (id)sharedInstance {
   static LabelDetector *sharedInstance = nil;
   static dispatch_once_t onceToken;
@@ -20,5 +11,10 @@ static FIRVisionLabelDetector *labelDetector;
   });
   return sharedInstance;
 }
+
+- (void)handleDetection:(FIRVisionImage *)image options:(NSDictionary *)options finishedCallback:(OperationFinishedCallback)callback errorCallback:(OperationErrorCallback)errorCallback {
+  
+}
+
 
 @end

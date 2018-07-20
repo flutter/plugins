@@ -3,9 +3,16 @@
 @implementation TextDetector
 static FIRVisionTextDetector *textDetector;
 
-+ (void)handleDetection:(FIRVisionImage *)image
-                options:(NSDictionary *)options
-                 result:(FlutterResult)result {
++ (id)sharedInstance {
+  static TextDetector *sharedInstance = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    sharedInstance = [[self alloc] init];
+  });
+  return sharedInstance;
+}
+
+- (void)handleDetection:(FIRVisionImage *)image options:(NSDictionary *)options finishedCallback:(OperationFinishedCallback)callback errorCallback:(OperationErrorCallback)errorCallback {
   if (textDetector == nil) {
     FIRVision *vision = [FIRVision vision];
     textDetector = [vision textDetector];
@@ -15,10 +22,10 @@ static FIRVisionTextDetector *textDetector;
       detectInImage:image
          completion:^(NSArray<id<FIRVisionText>> *_Nullable features, NSError *_Nullable error) {
            if (error) {
-             [FLTFirebaseMlVisionPlugin handleError:error result:result];
+             [FLTFirebaseMlVisionPlugin handleError:error finishedCallback:errorCallback];
              return;
            } else if (!features) {
-             result(@[]);
+             callback(@[], @"text");
              return;
            }
 
@@ -64,11 +71,11 @@ static FIRVisionTextDetector *textDetector;
              [blocks addObject:blockData];
            }
 
-           result(blocks);
+           callback(blocks, @"text");
          }];
 }
 
-+ (NSDictionary *)getTextData:(CGRect)frame
+- (NSDictionary *)getTextData:(CGRect)frame
                  cornerPoints:(NSArray<NSValue *> *)cornerPoints
                          text:(NSString *)text {
   __block NSMutableArray<NSArray *> *points = [NSMutableArray array];
@@ -87,7 +94,7 @@ static FIRVisionTextDetector *textDetector;
   };
 }
 
-+ (NSMutableArray *)getLineData:(NSArray<FIRVisionTextLine *> *)lines {
+- (NSMutableArray *)getLineData:(NSArray<FIRVisionTextLine *> *)lines {
   NSMutableArray *lineDataArray = [NSMutableArray array];
 
   for (FIRVisionTextLine *line in lines) {
@@ -102,7 +109,7 @@ static FIRVisionTextDetector *textDetector;
   return lineDataArray;
 }
 
-+ (NSMutableArray *)getElementData:(NSArray<FIRVisionTextElement *> *)elements {
+- (NSMutableArray *)getElementData:(NSArray<FIRVisionTextElement *> *)elements {
   NSMutableArray *elementDataArray = [NSMutableArray array];
 
   for (FIRVisionTextElement *element in elements) {
@@ -113,4 +120,5 @@ static FIRVisionTextDetector *textDetector;
 
   return elementDataArray;
 }
+
 @end

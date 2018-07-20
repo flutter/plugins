@@ -26,7 +26,6 @@ AVCaptureAudioDataOutputSampleBufferDelegate, FlutterStreamHandler>
 @property(strong, nonatomic) AVCaptureAudioDataOutput *audioOutput;
 @property(assign, nonatomic) BOOL isRecording;
 @property(assign, nonatomic) BOOL isAudioSetup;
-@property (strong, nonatomic) NSObject<Detector> *currentDetector;
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
                              error:(NSError **)error;
@@ -36,5 +35,5 @@ AVCaptureAudioDataOutputSampleBufferDelegate, FlutterStreamHandler>
 - (void)startVideoRecordingAtPath:(NSString *)path result:(FlutterResult)result;
 - (void)stopVideoRecordingWithResult:(FlutterResult)result;
 - (void)captureToFile:(NSString *)filename result:(FlutterResult)result;
-//- (void)setRecognizerType:(NSString *)recognizerType;
+- (void)setDetector:(NSObject<Detector> *)detector withOptions:(NSDictionary *)detectorOptions;
 @end

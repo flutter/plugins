@@ -11,6 +11,8 @@ static NSString *const videoDataOutputQueueLabel = @"io.flutter.plugins.firebase
 @interface FLTCam ()
 @property (assign, atomic) BOOL isRecognizing;
 @property (nonatomic) dispatch_queue_t sessionQueue;
+@property (strong, nonatomic) NSObject<Detector> *currentDetector;
+@property (strong, nonatomic) NSDictionary *currentDetectorOptions;
 @end
 
 @implementation FLTCam
@@ -30,15 +32,12 @@ static NSString *const videoDataOutputQueueLabel = @"io.flutter.plugins.firebase
   [self setUpCaptureSessionOutputWithResolutionPreset:resolutionPreset];
   [self setUpCaptureSessionInputWithCameraName:cameraName];
   
-  
-  // Probably unnecessary
-//  CMVideoDimensions dimensions =
-//  CMVideoFormatDescriptionGetDimensions([[_captureDevice activeFormat] formatDescription]);
-//  _previewSize = CGSizeMake(dimensions.width, dimensions.height);
-
-//  _capturePhotoOutput = [AVCapturePhotoOutput new];
-//  [_captureSession addOutput:_capturePhotoOutput];
   return self;
+}
+
+- (void)setDetector:(NSObject<Detector> *)detector withOptions:(NSDictionary *)detectorOptions {
+  _currentDetector = detector;
+  _currentDetectorOptions = detectorOptions;
 }
 
 - (AVCaptureSessionPreset) resolutionPresetForPreference:(NSString *)preference {
@@ -155,7 +154,7 @@ static NSString *const videoDataOutputQueueLabel = @"io.flutter.plugins.firebase
       visionImage.metadata = metadata;
       CGFloat imageWidth = CVPixelBufferGetWidth(newBuffer);
       CGFloat imageHeight = CVPixelBufferGetHeight(newBuffer);
-      [_currentDetector handleDetection:visionImage finishedCallback:^(id  _Nullable result, NSString *detectorType) {
+      [_currentDetector handleDetection:visionImage options:_currentDetectorOptions finishedCallback:^(id  _Nullable result, NSString *detectorType) {
         self->_isRecognizing = NO;
         self->_eventSink(@{@"eventType": @"detection", @"detectionType": detectorType, @"data": result});
       } errorCallback:^(FlutterError *error) {

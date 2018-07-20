@@ -222,10 +222,6 @@ public class LegacyCamera {
     synchronized (processorLock) {
       stop();
       processingRunnable.release();
-
-      if (detector != null) {
-        detector.close(null);
-      }
     }
   }
 
@@ -667,9 +663,6 @@ public class LegacyCamera {
 
   public void setMachineLearningFrameProcessor(Detector processor, @Nullable Map<String, Object> options) {
     synchronized (processorLock) {
-      if (detector != null) {
-        detector.close(null);
-      }
       detector = processor;
       detectorOptions = options;
     }

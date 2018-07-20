@@ -9,11 +9,6 @@ import java.util.Map;
 public class LabelDetector extends Detector {
 
   @Override
-  public void close(@Nullable OperationFinishedCallback callback) {
-
-  }
-
-  @Override
   void processImage(FirebaseVisionImage image, Map<String, Object> options, OperationFinishedCallback finishedCallback) {
 
   }

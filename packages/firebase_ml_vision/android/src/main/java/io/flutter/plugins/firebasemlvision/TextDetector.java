@@ -24,11 +24,6 @@ public class TextDetector extends Detector {
   private TextDetector() {}
 
   @Override
-  public void close(@Nullable OperationFinishedCallback callback) {
-
-  }
-
-  @Override
   void processImage(FirebaseVisionImage image, Map<String, Object> options, final OperationFinishedCallback finishedCallback) {
     if (textDetector == null) textDetector = FirebaseVision.getInstance().getVisionTextDetector();
     textDetector

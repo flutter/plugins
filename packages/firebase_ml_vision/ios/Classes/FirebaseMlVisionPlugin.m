@@ -112,11 +112,10 @@
   } else if ([@"LiveView#setDetector" isEqualToString:call.method]) {
     NSDictionary *argsMap = call.arguments;
     NSString *detectorType = ((NSString *)argsMap[@"detectorType"]);
+    NSDictionary *options = call.arguments[@"options"];
     id detector = [FLTFirebaseMlVisionPlugin detectorForDetectorTypeString:detectorType];
     if (_camera) {
-      NSLog(@"got a camera, setting the detector");
-      _camera.currentDetector = detector;
-//      [_camera setRecognizerType:recognizerType];
+      [_camera setDetector:detector withOptions:options];
     }
     result(nil);
   } else {
@@ -124,16 +123,28 @@
     FIRVisionImage *image = [self filePathToVisionImage:call.arguments[@"path"]];
     NSDictionary *options = call.arguments[@"options"];
       if ([@"BarcodeDetector#detectInImage" isEqualToString:call.method]) {
-        [BarcodeDetector handleDetection:image options:options result:result];
+        [[BarcodeDetector sharedInstance] handleDetection:image options:options finishedCallback:[self handleSuccess:result] errorCallback:[self handleError:result]];
       } else if ([@"FaceDetector#detectInImage" isEqualToString:call.method]) {
-        [FaceDetector handleDetection:image options:options result:result];
+        [[FaceDetector sharedInstance] handleDetection:image options:options finishedCallback:[self handleSuccess:result] errorCallback:[self handleError:result]];
       } else if ([@"LabelDetector#detectInImage" isEqualToString:call.method]) {
       } else if ([@"TextDetector#detectInImage" isEqualToString:call.method]) {
-        [TextDetector handleDetection:image options:options result:result];
+        [[TextDetector sharedInstance] handleDetection:image options:options finishedCallback:[self handleSuccess:result] errorCallback:[self handleError:result]];
       } else {
         result(FlutterMethodNotImplemented);
       }
   }
+}
+
+- (OperationFinishedCallback) handleSuccess:(FlutterResult) result {
+  return ^(id  _Nullable r, NSString *detectorType) {
+    result(r);
+  };
+}
+
+- (OperationErrorCallback) handleError:(FlutterResult) result {
+  return ^(FlutterError *error) {
+    result(error);
+  };
 }
 
 + (NSObject<Detector>*)detectorForDetectorTypeString:(NSString *)detectorType {
