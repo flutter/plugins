@@ -25,7 +25,8 @@ class BarcodeDetector implements Detector {
   public void handleDetection(
       FirebaseVisionImage image, Map<String, Object> options, final MethodChannel.Result result) {
 
-    FirebaseVisionBarcodeDetector detector = FirebaseVision.getInstance().getVisionBarcodeDetector(parseOptions(options));
+    FirebaseVisionBarcodeDetector detector =
+        FirebaseVision.getInstance().getVisionBarcodeDetector(parseOptions(options));
 
     detector
         .detectInImage(image)
@@ -168,14 +169,12 @@ class BarcodeDetector implements Detector {
                       typeValue.put("lastName", barcode.getDriverLicense().getLastName());
                       typeValue.put("gender", barcode.getDriverLicense().getGender());
                       typeValue.put("addressCity", barcode.getDriverLicense().getAddressCity());
-                      typeValue.put(
-                          "addressStreet", barcode.getDriverLicense().getAddressStreet());
+                      typeValue.put("addressStreet", barcode.getDriverLicense().getAddressStreet());
                       typeValue.put("addressState", barcode.getDriverLicense().getAddressState());
                       typeValue.put("addressZip", barcode.getDriverLicense().getAddressZip());
                       typeValue.put("birthDate", barcode.getDriverLicense().getBirthDate());
                       typeValue.put("documentType", barcode.getDriverLicense().getDocumentType());
-                      typeValue.put(
-                          "licenseNumber", barcode.getDriverLicense().getLicenseNumber());
+                      typeValue.put("licenseNumber", barcode.getDriverLicense().getLicenseNumber());
                       typeValue.put("expiryDate", barcode.getDriverLicense().getExpiryDate());
                       typeValue.put("issuingDate", barcode.getDriverLicense().getIssueDate());
                       typeValue.put(

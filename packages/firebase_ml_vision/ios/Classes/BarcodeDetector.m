@@ -51,13 +51,13 @@ NSDictionary *visionBarcodeToDictionary(FIRVisionBarcode *barcode) {
     @"sms" : barcode.sms ? visionBarcodeSMSToDictionary(barcode.sms) : [NSNull null],
     @"url" : barcode.URL ? visionBarcodeURLToDictionary(barcode.URL) : [NSNull null],
     @"geoPoint" : barcode.geoPoint ? visionBarcodeGeoPointToDictionary(barcode.geoPoint)
-                                    : [NSNull null],
+                                   : [NSNull null],
     @"contactInfo" : barcode.contactInfo ? barcodeContactInfoToDictionary(barcode.contactInfo)
-                                          : [NSNull null],
+                                         : [NSNull null],
     @"calendarEvent" : barcode.calendarEvent ? calendarEventToDictionary(barcode.calendarEvent)
-                                              : [NSNull null],
+                                             : [NSNull null],
     @"driverLicense" : barcode.driverLicense ? driverLicenseToDictionary(barcode.driverLicense)
-                                              : [NSNull null],
+                                             : [NSNull null],
   };
 }
 
@@ -202,6 +202,7 @@ NSDictionary *driverLicenseToDictionary(FIRVisionBarcodeDriverLicense *license) 
 
 + (FIRVisionBarcodeDetectorOptions *)parseOptions:(NSDictionary *)optionsData {
   NSNumber *barcodeFormat = optionsData[@"barcodeFormats"];
-  return [[FIRVisionBarcodeDetectorOptions alloc] initWithFormats:(FIRVisionBarcodeFormat)barcodeFormat.intValue];
+  return [[FIRVisionBarcodeDetectorOptions alloc]
+      initWithFormats:(FIRVisionBarcodeFormat)barcodeFormat.intValue];
 }
 @end
