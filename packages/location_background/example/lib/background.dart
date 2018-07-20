@@ -7,18 +7,18 @@ import 'dart:ui';
 import 'package:location_background_plugin/location_background_plugin.dart';
 
 const String kLocationPluginPortName = 'location_plugin_port';
-SendPort uiSendPort;
 
 /// This is an example of a callback for LocationBackgroundPlugin's
 /// `startMonitoringLocation`. A callback can be defined anywhere in an
 /// application's code, but cannot be from another program.
-class Foo {
+class LocationMonitor {
   static void locationCallback(Location location) {
-    if (uiSendPort == null) {
-      // We use isolate ports to communicate between the main isolate and spawned
-      // isolates since they do not share memory.
-      uiSendPort = IsolateNameServer.lookupPortByName(kLocationPluginPortName);
-    }
+    print('Background Location: $location');
+    // We use isolate ports to communicate between the main isolate and spawned
+    // isolates since they do not share memory. The port lookup will return
+    // null if the UI isolate has explicitly removed the mapping on shutdown.
+    final SendPort uiSendPort =
+        IsolateNameServer.lookupPortByName(kLocationPluginPortName);
     uiSendPort?.send(location.toJson());
   }
 }

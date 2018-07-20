@@ -135,8 +135,8 @@ class LocationBackgroundPlugin {
   LocationActivityType activityType;
 
   LocationBackgroundPlugin(
-      {this.pauseLocationUpdatesAutomatically = true,
-      this.showsBackgroundLocationIndicator = false,
+      {this.pauseLocationUpdatesAutomatically = false,
+      this.showsBackgroundLocationIndicator = true,
       this.distanceFilter = 0,
       this.desiredAccuracy = LocationAccuracy.best,
       this.activityType = LocationActivityType.other}) {

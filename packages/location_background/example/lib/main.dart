@@ -52,6 +52,10 @@ class _MyAppState extends State<MyApp> {
       setState(() {
         _lastLocation = location;
       });
+    }, onDone: () {
+      // Remove the port mapping just in case the UI is shutting down but
+      // background isolate is continuing to run.
+      IsolateNameServer.removePortNameMapping(kLocationPluginPortName);
     });
     _locationPlugin ??= LocationBackgroundPlugin();
   }
@@ -112,7 +116,7 @@ class _MyAppState extends State<MyApp> {
                     onPressed: () async {
                       if (!_isTracking) {
                         await _locationPlugin
-                            .monitorLocationChanges(Foo.locationCallback);
+                            .monitorLocationChanges(LocationMonitor.locationCallback);
                       } else {
                         await _locationPlugin.cancelLocationUpdates();
                       }

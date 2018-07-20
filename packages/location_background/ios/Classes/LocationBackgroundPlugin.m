@@ -117,6 +117,7 @@ static LocationBackgroundPlugin *instance = nil;
   _locationManager.distanceFilter = [arguments[3] integerValue];
   _locationManager.desiredAccuracy = [arguments[4] integerValue];
   _locationManager.activityType = [arguments[5] integerValue];
+  _locationManager.allowsBackgroundLocationUpdates = YES;
   [self->_locationManager startUpdatingLocation];
 }
 
