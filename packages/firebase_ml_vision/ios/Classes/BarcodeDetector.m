@@ -3,7 +3,20 @@
 @implementation BarcodeDetector
 static FIRVisionBarcodeDetector *barcodeDetector;
 
-+ (void)handleDetection:(FIRVisionImage *)image result:(FlutterResult)result resultWrapper:(FlutterResultWrapper)wrapper {
++ (id)sharedInstance {
+  static BarcodeDetector *sharedInstance = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    sharedInstance = [[self alloc] init];
+  });
+  return sharedInstance;
+}
+
+- (void)respondToCallback:(OperationFinishedCallback)callback withData:(id _Nullable) data {
+  callback(data, @"barcode");
+}
+
+- (void)handleDetection:(FIRVisionImage *)image finishedCallback:(OperationFinishedCallback)callback errorCallback:(OperationErrorCallback)errorCallback {
   if (barcodeDetector == nil) {
     FIRVision *vision = [FIRVision vision];
     barcodeDetector = [vision barcodeDetector];
@@ -13,35 +26,27 @@ static FIRVisionBarcodeDetector *barcodeDetector;
    detectInImage:image
    completion:^(NSArray<FIRVisionBarcode *> * _Nullable barcodes, NSError * _Nullable error) {
      if (error) {
-       [FLTFirebaseMlVisionPlugin handleError:error result:result];
+       [FLTFirebaseMlVisionPlugin handleError:error finishedCallback:errorCallback];
        return;
      } else if (!barcodes) {
-       result(@[]);
+       [self respondToCallback:callback withData:@[]];
        return;
      }
      
      NSMutableArray *blocks = [NSMutableArray array];
      for (FIRVisionBarcode *barcode in barcodes) {
-       NSDictionary *barcodeData = [BarcodeDetector getBarcodeData:barcode];
+       NSDictionary *barcodeData = [self getBarcodeData:barcode];
        [blocks addObject:barcodeData];
      }
-     
-     result(wrapper(blocks));
+     [self respondToCallback:callback withData:blocks];
    }];
 }
 
-+ (void)handleDetection:(FIRVisionImage *)image result:(FlutterResult)result {
-  [BarcodeDetector handleDetection:image result:result resultWrapper:^id(id  _Nullable result) {
-    return result;
-  }];
-}
-
-+ (void)close {
+- (void)close {
   barcodeDetector = nil;
 }
 
-
-+ (NSDictionary *)getBarcodeData:(FIRVisionBarcode *)barcode {
+- (NSDictionary *)getBarcodeData:(FIRVisionBarcode *)barcode {
   CGRect frame = barcode.frame;
   NSString *displayValue = barcode.displayValue == nil ? @"" : barcode.displayValue;
   NSString *rawValue = barcode.rawValue == nil ? @"" : barcode.rawValue;

@@ -3,6 +3,7 @@
 #import "UIUtilities.h"
 #import <AVFoundation/AVFoundation.h>
 #import <libkern/OSAtomic.h>
+#import "NSError+FlutterError.h"
 
 static NSString *const sessionQueueLabel = @"io.flutter.plugins.firebaseml.visiondetector.SessionQueue";
 static NSString *const videoDataOutputQueueLabel = @"io.flutter.plugins.firebaseml.visiondetector.VideoDataOutputQueue";
@@ -154,22 +155,13 @@ static NSString *const videoDataOutputQueueLabel = @"io.flutter.plugins.firebase
       visionImage.metadata = metadata;
       CGFloat imageWidth = CVPixelBufferGetWidth(newBuffer);
       CGFloat imageHeight = CVPixelBufferGetHeight(newBuffer);
-      switch (_currentDetector) {
-        case <#constant#>:
-          <#statements#>
-          break;
-          
-        default:
-          break;
-      }
-      [TextDetector handleDetection:visionImage result:_eventSink resultWrapper:^id(id  _Nullable result) {
-        _isRecognizing = NO;
-        return @{@"eventType": @"recognized", @"recognitionType": @"text", @"textData": result};
+      [_currentDetector handleDetection:visionImage finishedCallback:^(id  _Nullable result, NSString *detectorType) {
+        self->_isRecognizing = NO;
+        self->_eventSink(@{@"eventType": @"detection", @"detectionType": detectorType, @"data": result});
+      } errorCallback:^(FlutterError *error) {
+        self->_isRecognizing = NO;
+        self->_eventSink(error);
       }];
-      //      [BarcodeDetector handleDetection:visionImage result:_eventSink resultWrapper:^id(id  _Nullable result) {
-      //        _isRecognizing = NO;
-      //        return @{@"eventType": @"recognized", @"recognitionType": @"barcode", @"barcodeData": result};
-      //      }];
     }
     CFRetain(newBuffer);
     CVPixelBufferRef old = _latestPixelBuffer;

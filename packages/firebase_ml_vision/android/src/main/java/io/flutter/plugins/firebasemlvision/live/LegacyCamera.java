@@ -139,21 +139,18 @@ public class LegacyCamera {
     @Override
     public void success(Detector detector, Object data) {
       Map<String, Object> event = new HashMap<>();
-      event.put("eventType", "recognized");
+      event.put("eventType", "detection");
       String dataType;
-      String dataLabel;
       if (detector instanceof BarcodeDetector) {
         dataType = "barcode";
-        dataLabel = "barcodeData";
       } else if (detector instanceof TextDetector) {
         dataType = "text";
-        dataLabel = "textData";
       } else {
         // unsupported live detector
         return;
       }
-      event.put("recognitionType", dataType);
-      event.put(dataLabel, data);
+      event.put("detectionType", dataType);
+      event.put("data", data);
       eventSink.success(event);
     }
 
@@ -419,7 +416,7 @@ public class LegacyCamera {
       Map<String, Object> detailsMap = new HashMap<>();
       CameraInfo info = new CameraInfo();
       Camera.getCameraInfo(i, info);
-      detailsMap.put("name", i);
+      detailsMap.put("name", String.valueOf(i));
       Log.d("ML", "camera Name: " + i);
       if (info.facing == CAMERA_FACING_BACK) {
         detailsMap.put("lensFacing", "back");

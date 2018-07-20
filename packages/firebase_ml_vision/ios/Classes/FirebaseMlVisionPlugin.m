@@ -1,17 +1,6 @@
 #import "FirebaseMlVisionPlugin.h"
 #import "LiveView.h"
-
-@interface NSError (FlutterError)
-@property(readonly, nonatomic) FlutterError *flutterError;
-@end
-
-@implementation NSError (FlutterError)
-- (FlutterError *)flutterError {
-  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %d", (int)self.code]
-                             message:self.domain
-                             details:self.localizedDescription];
-}
-@end
+#import "NSError+FlutterError.h"
 
 @interface FLTFirebaseMlVisionPlugin()
 @property(readonly, nonatomic) NSObject<FlutterTextureRegistry> *registry;
@@ -20,8 +9,8 @@
 @end
 
 @implementation FLTFirebaseMlVisionPlugin
-+ (void)handleError:(NSError *)error result:(FlutterResult)result {
-  result([error flutterError]);
++ (void)handleError:(NSError *)error finishedCallback:(OperationErrorCallback)callback {
+  callback([error flutterError]);
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -87,7 +76,6 @@
     if (error) {
       result([error flutterError]);
     } else {
-      NSLog(@"initialize called");
       if (_camera) {
         [_camera close];
       }
@@ -123,27 +111,51 @@
   } else if ([@"LiveView#setDetector" isEqualToString:call.method]) {
     NSDictionary *argsMap = call.arguments;
     NSString *detectorType = ((NSString *)argsMap[@"detectorType"]);
+    id detector = [FLTFirebaseMlVisionPlugin detectorForDetectorTypeString:detectorType];
     if (_camera) {
-      NSLog(@"got a camera, setting the recognizer");
+      NSLog(@"got a camera, setting the detector");
+      _camera.currentDetector = detector;
 //      [_camera setRecognizerType:recognizerType];
     }
     result(nil);
   } else if ([@"BarcodeDetector#detectInImage" isEqualToString:call.method]) {
     FIRVisionImage *image = [self filePathToVisionImage:call.arguments];
-    [BarcodeDetector handleDetection:image result:result];
+    [[BarcodeDetector sharedInstance] handleDetection:image finishedCallback:^(id  _Nullable r, NSString *detectorType) {
+      result(r);
+    } errorCallback:^(FlutterError *e) {
+      result(e);
+    }];
   } else if ([@"BarcodeDetector#close" isEqualToString:call.method]) {
-    [BarcodeDetector close];
+    [[BarcodeDetector sharedInstance] close];
   } else if ([@"FaceDetector#detectInImage" isEqualToString:call.method]) {
   } else if ([@"FaceDetector#close" isEqualToString:call.method]) {
   } else if ([@"LabelDetector#detectInImage" isEqualToString:call.method]) {
   } else if ([@"LabelDetector#close" isEqualToString:call.method]) {
   } else if ([@"TextDetector#detectInImage" isEqualToString:call.method]) {
     FIRVisionImage *image = [self filePathToVisionImage:call.arguments];
-    [TextDetector handleDetection:image result:result];
+    [[TextDetector sharedInstance] handleDetection:image finishedCallback:^(id  _Nullable r, NSString *detectorType) {
+      result(r);
+    } errorCallback:^(FlutterError *error) {
+      result(error);
+    }];
   } else if ([@"TextDetector#close" isEqualToString:call.method]) {
-    [TextDetector close];
+    [[TextDetector sharedInstance] close];
   } else {
     result(FlutterMethodNotImplemented);
+  }
+}
+
++ (NSObject<Detector>*)detectorForDetectorTypeString:(NSString *)detectorType {
+  if ([detectorType isEqualToString:@"text"]) {
+    return [TextDetector sharedInstance];
+  } else if ([detectorType isEqualToString:@"barcode"]) {
+    return [BarcodeDetector sharedInstance];
+  } else if ([detectorType isEqualToString:@"label"]) {
+    return [LabelDetector sharedInstance];
+  } else if ([detectorType isEqualToString:@"face"]) {
+    return [FaceDetector sharedInstance];
+  } else {
+    return [TextDetector sharedInstance];
   }
 }
 

@@ -51,7 +51,7 @@ Future<List<LiveViewCameraDescription>> availableCameras() async {
 }
 
 class LiveViewCameraDescription {
-  final int name;
+  final String name;
   final LiveViewCameraLensDirection lensDirection;
 
   LiveViewCameraDescription({this.name, this.lensDirection});
@@ -265,18 +265,18 @@ class LiveViewCameraController extends ValueNotifier<LiveViewCameraValue> {
       return;
     }
     switch (map['eventType']) {
-      case 'recognized':
-        String detectionType = event['recognitionType'];
+      case 'detection':
+        final String detectionType = event['detectionType'];
         if (detectionType == "barcode") {
-          final List<dynamic> reply = event['barcodeData'];
+          final List<dynamic> reply = event['data'];
           final List<BarcodeContainer> barcodes = <BarcodeContainer>[];
           reply.forEach((dynamic barcodeMap) {
             barcodes.add(new BarcodeContainer(barcodeMap));
           });
           value = value.copyWith(detectedData: barcodes);
         } else if (detectionType == "text") {
-          final List<dynamic> reply = event['textData'];
-          final detectedData = reply.map((dynamic block) {
+          final List<dynamic> reply = event['data'];
+          final List<TextBlock> detectedData = reply.map((dynamic block) {
             return TextBlock.fromBlockData(block);
           }).toList();
           value = value.copyWith(detectedData: detectedData);

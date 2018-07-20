@@ -127,12 +127,12 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
         result.success(cameras);
         break;
       case "initialize":
-        int cameraFacing = call.argument("cameraName");
+        String cameraName = call.argument("cameraName");
         String resolutionPreset = call.argument("resolutionPreset");
         if (camera != null) {
           camera.stop();
         }
-        camera = new LegacyCamera(registrar, resolutionPreset, cameraFacing); //new Camera(registrar, cameraName, resolutionPreset, result);
+        camera = new LegacyCamera(registrar, resolutionPreset, Integer.parseInt(cameraName)); //new Camera(registrar, cameraName, resolutionPreset, result);
         camera.setMachineLearningFrameProcessor(TextDetector.instance);
         try {
           camera.start(new LegacyCamera.OnCameraOpenedCallback() {
