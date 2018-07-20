@@ -5,9 +5,28 @@
 import 'dart:ui';
 
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
+import 'package:firebase_ml_vision/live_view.dart';
 import 'package:flutter/material.dart';
 
-enum Detector { barcode, face, label, text }
+CustomPaint customPaintForResults(
+    Size imageSize, LiveViewDetectionList results) {
+  CustomPainter painter;
+  if (results is LiveViewBarcodeDetectionList) {
+    painter = new BarcodeDetectorPainter(imageSize, results.data);
+  } else if (results is LiveViewTextDetectionList) {
+    painter = new TextDetectorPainter(imageSize, results.data);
+  } else if (results is LiveViewFaceDetectionList) {
+    painter = new FaceDetectorPainter(imageSize, results.data);
+  } else if (results is LiveViewLabelDetectionList) {
+    painter = new LabelDetectorPainter(imageSize, results.data);
+  } else {
+    painter = null;
+  }
+
+  return new CustomPaint(
+    painter: painter,
+  );
+}
 
 class BarcodeDetectorPainter extends CustomPainter {
   BarcodeDetectorPainter(this.absoluteImageSize, this.barcodeLocations);

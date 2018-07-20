@@ -134,7 +134,7 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
           camera.stop();
         }
         camera = new LegacyCamera(registrar, resolutionPreset, Integer.parseInt(cameraName)); //new Camera(registrar, cameraName, resolutionPreset, result);
-        camera.setMachineLearningFrameProcessor(TextDetector.instance);
+        camera.setMachineLearningFrameProcessor(TextDetector.instance, options);
         try {
           camera.start(new LegacyCamera.OnCameraOpenedCallback() {
             @Override
@@ -174,17 +174,20 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
             case "barcode":
               detector = BarcodeDetector.instance;
               break;
+            case "face":
+              detector = FaceDetector.instance;
+              break;
             default:
               detector = TextDetector.instance;
           }
-          camera.setMachineLearningFrameProcessor(detector);
+          camera.setMachineLearningFrameProcessor(detector, options);
         }
         result.success(null);
         break;
       case "BarcodeDetector#detectInImage":
         try {
           image = filePathToVisionImage((String) call.argument("path"));
-          BarcodeDetector.instance.handleDetection(image, options, result);
+          BarcodeDetector.instance.handleDetection(image, options, handleDetection(result));
         } catch (IOException e) {
           result.error("barcodeDetectorIOError", e.getLocalizedMessage(), null);
         } catch (Exception e) {
@@ -194,7 +197,7 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
       case "FaceDetector#detectInImage":
         try {
           image = filePathToVisionImage((String) call.argument("path"));
-          FaceDetector.instance.handleDetection(image, options, result);
+          FaceDetector.instance.handleDetection(image, options, handleDetection(result));
         } catch (IOException e) {
           result.error("faceDetectorIOError", e.getLocalizedMessage(), null);
         } catch (Exception e) {
@@ -206,7 +209,7 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
       case "TextDetector#detectInImage":
         try {
           image = filePathToVisionImage((String) call.argument("path"));
-          TextDetector.instance.handleDetection(image, options, result);
+          TextDetector.instance.handleDetection(image, options, handleDetection(result));
         } catch (IOException e) {
           result.error("textDetectorIOError", e.getLocalizedMessage(), null);
         } catch (Exception e) {
@@ -216,6 +219,20 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
       default:
         result.notImplemented();
     }
+  }
+
+  private Detector.OperationFinishedCallback handleDetection(final Result result) {
+    return new Detector.OperationFinishedCallback() {
+      @Override
+      public void success(Detector detector, Object data) {
+        result.success(data);
+      }
+
+      @Override
+      public void error(DetectorException e) {
+        e.sendError(result);
+      }
+    };
   }
 
   private FirebaseVisionImage filePathToVisionImage(String path) throws IOException {

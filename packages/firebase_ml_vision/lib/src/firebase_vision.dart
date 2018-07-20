@@ -47,12 +47,12 @@ class FirebaseVision {
   /// Creates an instance of [TextDetector].
   TextDetector textDetector() => new TextDetector._();
 
-  Future<Null> setLiveViewRecognizer(FirebaseVisionDetectorType type) async {
-    print("sending setLiveVieRecognizer to device");
+  Future<Null> setLiveViewDetector(
+      FirebaseVisionDetectorType type, [Map<String, dynamic> options]) async {
     final String typeMessage = detectorMessageType(type);
     if (typeMessage == null) return;
-    await FirebaseVision.channel.invokeMethod("LiveView#setDetector",
-        <String, String>{"detectorType": typeMessage});
+    await FirebaseVision.channel.invokeMethod(
+        "LiveView#setDetector", <String, String>{"detectorType": typeMessage});
   }
 
   String detectorMessageType(FirebaseVisionDetectorType type) {

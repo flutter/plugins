@@ -3,6 +3,8 @@ package io.flutter.plugins.firebasemlvision;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.ml.vision.FirebaseVision;
@@ -15,15 +17,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class BarcodeDetector implements Detector {
+public class BarcodeDetector extends Detector {
   public static final BarcodeDetector instance = new BarcodeDetector();
   private static FirebaseVisionBarcodeDetector barcodeDetector;
 
   private BarcodeDetector() {}
 
   @Override
-  public void handleDetection(
-      FirebaseVisionImage image, Map<String, Object> options, final MethodChannel.Result result) {
+  public void close(@Nullable OperationFinishedCallback callback) {
+
+  }
+
+  @Override
+  void processImage(FirebaseVisionImage image, Map<String, Object> options, final OperationFinishedCallback finishedCallback) {
     if (barcodeDetector == null)
       barcodeDetector = FirebaseVision.getInstance().getVisionBarcodeDetector();
 
@@ -178,14 +184,14 @@ class BarcodeDetector implements Detector {
 
                   barcodes.add(barcodeMap);
                 }
-                result.success(barcodes);
+                finishedCallback.success(BarcodeDetector.this, barcodes);
               }
             })
         .addOnFailureListener(
             new OnFailureListener() {
               @Override
               public void onFailure(@NonNull Exception exception) {
-                result.error("barcodeDetectorError", exception.getLocalizedMessage(), null);
+                finishedCallback.error(new DetectorException("barcodeDetectorError", exception.getLocalizedMessage(), null));
               }
             });
   }

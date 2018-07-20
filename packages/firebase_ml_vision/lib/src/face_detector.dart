@@ -45,19 +45,13 @@ class FaceDetector extends FirebaseVisionDetector {
       'FaceDetector#detectInImage',
       <String, dynamic>{
         'path': visionImage.imageFile.path,
-        'options': <String, dynamic>{
-          'enableClassification': options.enableClassification,
-          'enableLandmarks': options.enableLandmarks,
-          'enableTracking': options.enableTracking,
-          'minFaceSize': options.minFaceSize,
-          'mode': _enumToString(options.mode),
-        },
+        'options': options.optionsMap,
       },
     );
 
     final List<Face> faces = <Face>[];
     for (dynamic data in reply) {
-      faces.add(Face._(data));
+      faces.add(Face(data));
     }
 
     return faces;
@@ -104,11 +98,21 @@ class FaceDetectorOptions {
 
   /// Option for controlling additional accuracy / speed trade-offs.
   final FaceDetectorMode mode;
+
+  Map<String, dynamic> get optionsMap {
+    return <String, dynamic>{
+      'enableClassification': this.enableClassification,
+      'enableLandmarks': this.enableLandmarks,
+      'enableTracking': this.enableTracking,
+      'minFaceSize': this.minFaceSize,
+      'mode': _enumToString(this.mode),
+    };
+  }
 }
 
 /// Represents a face detected by [FaceDetector].
 class Face {
-  Face._(dynamic data)
+  Face(dynamic data)
       : boundingBox = Rectangle<int>(
           data['left'],
           data['top'],

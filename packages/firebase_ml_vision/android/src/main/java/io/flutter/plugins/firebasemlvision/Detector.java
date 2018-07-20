@@ -4,6 +4,7 @@ import android.support.annotation.Nullable;
 
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class Detector {
@@ -25,7 +26,7 @@ public abstract class Detector {
     if (shouldThrottle.get()) {
       return;
     }
-    processImage(image, new OperationFinishedCallback() {
+    processImage(image, options, new OperationFinishedCallback() {
       @Override
       public void success(Detector detector, Object data) {
         shouldThrottle.set(false);
@@ -45,5 +46,5 @@ public abstract class Detector {
   }
 
   abstract void processImage(
-    FirebaseVisionImage image, OperationFinishedCallback finishedCallback);
+    FirebaseVisionImage image, Map<String, Object> options, OperationFinishedCallback finishedCallback);
 }

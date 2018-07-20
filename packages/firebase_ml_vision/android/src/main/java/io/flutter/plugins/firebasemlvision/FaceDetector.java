@@ -1,6 +1,8 @@
 package io.flutter.plugins.firebasemlvision;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.ml.vision.FirebaseVision;
@@ -15,15 +17,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class FaceDetector implements Detector {
+public class FaceDetector extends Detector {
   public static final FaceDetector instance = new FaceDetector();
 
   private FaceDetector() {}
 
   @Override
-  public void handleDetection(
-      FirebaseVisionImage image, Map<String, Object> options, final MethodChannel.Result result) {
+  public void close(@Nullable OperationFinishedCallback callback) {
+    // TODO: figure out if we still need to do this
+  }
 
+  @Override
+  void processImage(FirebaseVisionImage image, Map<String, Object> options, final OperationFinishedCallback finishedCallback) {
     FirebaseVisionFaceDetector detector;
     if (options == null) {
       detector = FirebaseVision.getInstance().getVisionFaceDetector();
@@ -72,14 +77,14 @@ class FaceDetector implements Detector {
                   faces.add(faceData);
                 }
 
-                result.success(faces);
+                finishedCallback.success(FaceDetector.this, faces);
               }
             })
         .addOnFailureListener(
             new OnFailureListener() {
               @Override
               public void onFailure(@NonNull Exception exception) {
-                result.error("faceDetectorError", exception.getLocalizedMessage(), null);
+                finishedCallback.error(new DetectorException("faceDetectorError", exception.getLocalizedMessage(), null));
               }
             });
   }

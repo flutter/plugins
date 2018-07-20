@@ -43,7 +43,7 @@ class LabelDetector extends FirebaseVisionDetector {
 
     final List<Label> labels = <Label>[];
     for (dynamic data in reply) {
-      labels.add(Label._(data));
+      labels.add(Label(data));
     }
 
     return labels;
@@ -73,7 +73,7 @@ class LabelDetectorOptions {
 
 /// Represents an entity label detected by [LabelDetector].
 class Label {
-  Label._(dynamic data)
+  Label(dynamic data)
       : confidence = data['confidence'],
         entityId = data['entityId'],
         label = data['label'];

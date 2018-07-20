@@ -47,6 +47,8 @@ import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugins.firebasemlvision.BarcodeDetector;
 import io.flutter.plugins.firebasemlvision.Detector;
 import io.flutter.plugins.firebasemlvision.DetectorException;
+import io.flutter.plugins.firebasemlvision.FaceDetector;
+import io.flutter.plugins.firebasemlvision.LabelDetector;
 import io.flutter.plugins.firebasemlvision.TextDetector;
 import io.flutter.view.FlutterView;
 
@@ -123,6 +125,7 @@ public class LegacyCamera {
 
   private final Object processorLock = new Object();
   private Detector detector;
+  private Map<String, Object> detectorOptions;
 
   /**
    * Map to convert between a byte array, received from the camera, and its associated byte buffer.
@@ -145,6 +148,10 @@ public class LegacyCamera {
         dataType = "barcode";
       } else if (detector instanceof TextDetector) {
         dataType = "text";
+      } else if (detector instanceof LabelDetector) {
+        dataType = "label";
+      } else if (detector instanceof FaceDetector) {
+        dataType = "face";
       } else {
         // unsupported live detector
         return;
@@ -658,12 +665,13 @@ public class LegacyCamera {
     }
   }
 
-  public void setMachineLearningFrameProcessor(Detector processor) {
+  public void setMachineLearningFrameProcessor(Detector processor, @Nullable Map<String, Object> options) {
     synchronized (processorLock) {
       if (detector != null) {
         detector.close(null);
       }
       detector = processor;
+      detectorOptions = options;
     }
   }
 
@@ -795,7 +803,7 @@ public class LegacyCamera {
                 .setRotation(rotation)
                 .build();
             FirebaseVisionImage image = FirebaseVisionImage.fromByteBuffer(data, metadata);
-            detector.handleDetection(image, liveDetectorFinishedCallback);
+            detector.handleDetection(image, detectorOptions, liveDetectorFinishedCallback);
           }
         } catch (Throwable t) {
           Log.e(TAG, "Exception thrown from receiver.", t);

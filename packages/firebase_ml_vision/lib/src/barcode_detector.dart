@@ -29,7 +29,7 @@ class BarcodeDetector extends FirebaseVisionDetector {
 
     final List<Barcode> barcodes = <Barcode>[];
     reply.forEach((dynamic barcode) {
-      barcodes.add(new Barcode._(barcode));
+      barcodes.add(new Barcode(barcode));
     });
 
     return barcodes;
@@ -38,7 +38,7 @@ class BarcodeDetector extends FirebaseVisionDetector {
 
 /// Represents a single recognized barcode and its value.
 class Barcode {
-  Barcode._(Map<dynamic, dynamic> _data)
+  Barcode(Map<dynamic, dynamic> _data)
       : boundingBox = _data['left'] != null
             ? Rectangle<int>(
                 _data['left'],

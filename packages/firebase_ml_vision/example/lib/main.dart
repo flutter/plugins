@@ -113,6 +113,31 @@ class _MyHomePageState extends State<_MyHomePage>
     });
   }
 
+  CustomPaint _buildResults(Size imageSize, List<dynamic> results) {
+    CustomPainter painter;
+
+    switch (_currentDetector) {
+      case FirebaseVisionDetectorType.barcode:
+        painter = new BarcodeDetectorPainter(_imageSize, results);
+        break;
+      case FirebaseVisionDetectorType.face:
+        painter = new FaceDetectorPainter(_imageSize, results);
+        break;
+      case FirebaseVisionDetectorType.label:
+        painter = new LabelDetectorPainter(_imageSize, results);
+        break;
+      case FirebaseVisionDetectorType.text:
+        painter = new TextDetectorPainter(_imageSize, results);
+        break;
+      default:
+        break;
+    }
+
+    return new CustomPaint(
+      painter: painter,
+    );
+  }
+
   Widget _buildImage() {
     return new Container(
       constraints: const BoxConstraints.expand(),
@@ -132,7 +157,7 @@ class _MyHomePageState extends State<_MyHomePage>
                 ),
               ),
             )
-          : customPaintForResults(_currentDetector, _imageSize, _scanResults),
+          : _buildResults(_imageSize, _scanResults),
     );
   }
 

@@ -22,6 +22,7 @@ class LivePreview extends StatefulWidget {
 class LivePreviewState extends State<LivePreview> {
   bool _isShowingPreview = false;
   LiveViewCameraLoadStateReady _readyLoadState;
+  GlobalKey<LiveViewState> _liveViewKey = new GlobalKey();
 
   Stream<LiveViewCameraLoadState> _prepareCameraPreview() async* {
     if (_readyLoadState != null) {
@@ -60,7 +61,7 @@ class LivePreviewState extends State<LivePreview> {
   }
 
   Future<Null> setLiveViewDetector() async {
-    return FirebaseVision.instance.setLiveViewRecognizer(widget.detector);
+    return _readyLoadState?.controller?.setDetector(widget.detector);
   }
 
   @override
@@ -76,7 +77,7 @@ class LivePreviewState extends State<LivePreview> {
       initialData: new LiveViewCameraLoadStateLoading(),
       builder: (BuildContext context,
           AsyncSnapshot<LiveViewCameraLoadState> snapshot) {
-        final loadState = snapshot.data;
+        final LiveViewCameraLoadState loadState = snapshot.data;
         if (loadState != null) {
           if (loadState is LiveViewCameraLoadStateLoading ||
               loadState is LiveViewCameraLoadStateLoaded) {
@@ -91,12 +92,11 @@ class LivePreviewState extends State<LivePreview> {
               aspectRatio: _readyLoadState.controller.value.aspectRatio,
               child: new LiveView(
                 controller: _readyLoadState.controller,
-                overlayBuilder:
-                    (BuildContext context, Size previewSize, dynamic data) {
+                overlayBuilder: (BuildContext context, Size previewSize,
+                    LiveViewDetectionList data) {
                   return data == null
                       ? new Container()
-                      : customPaintForResults(
-                          widget.detector, previewSize, data);
+                      : customPaintForResults(previewSize, data);
                 },
               ),
             );

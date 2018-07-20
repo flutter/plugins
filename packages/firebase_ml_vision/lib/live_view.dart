@@ -86,7 +86,7 @@ class LiveViewCameraException implements Exception {
 }
 
 typedef Widget OverlayBuilder(
-    BuildContext context, Size previewImageSize, dynamic data);
+    BuildContext context, Size previewImageSize, LiveViewDetectionList data);
 
 // Build the UI texture view of the video data with textureId.
 class LiveView extends StatefulWidget {
@@ -102,15 +102,11 @@ class LiveView extends StatefulWidget {
 }
 
 class LiveViewState extends State<LiveView> {
-  List<dynamic> scannedCodes = <dynamic>[];
-
   @override
   void initState() {
     super.initState();
     widget.controller.addListener(() {
-      setState(() {
-        scannedCodes = widget.controller.value.detectedData;
-      });
+      setState(() {});
     });
   }
 
@@ -123,7 +119,10 @@ class LiveViewState extends State<LiveView> {
               new Container(
                 constraints: const BoxConstraints.expand(),
                 child: widget.overlayBuilder(
-                    context, widget.controller.value.previewSize, scannedCodes),
+                  context,
+                  widget.controller.value.previewSize,
+                  widget.controller.value.detectedData,
+                ),
               )
             ],
           )
@@ -143,16 +142,13 @@ class LiveViewCameraValue {
   /// Is `null` until  [isInitialized] is `true`.
   final Size previewSize;
 
-  final List<dynamic> detectedData;
-
-  final FirebaseVisionDetectorType recognizerType;
+  final LiveViewDetectionList detectedData;
 
   const LiveViewCameraValue({
     this.isInitialized,
     this.errorDescription,
     this.previewSize,
     this.detectedData,
-    this.recognizerType,
   });
 
   const LiveViewCameraValue.uninitialized()
@@ -173,15 +169,13 @@ class LiveViewCameraValue {
     bool isTakingPicture,
     String errorDescription,
     Size previewSize,
-    List<dynamic> detectedData,
-    FirebaseVisionDetectorType recognizerType,
+    LiveViewDetectionList detectedData,
   }) {
     return new LiveViewCameraValue(
       isInitialized: isInitialized ?? this.isInitialized,
       errorDescription: errorDescription,
       previewSize: previewSize ?? this.previewSize,
       detectedData: detectedData ?? this.detectedData,
-      recognizerType: recognizerType ?? this.recognizerType,
     );
   }
 
@@ -250,10 +244,12 @@ class LiveViewCameraController extends ValueNotifier<LiveViewCameraValue> {
     return _creatingCompleter.future;
   }
 
-  Future<Null> setRecognizer(
-      FirebaseVisionDetectorType recognizerType) async {
-    await FirebaseVision.instance.setLiveViewRecognizer(recognizerType);
-    value = value.copyWith(recognizerType: recognizerType);
+  Future<Null> setDetector(FirebaseVisionDetectorType detectorType,
+      [Map<String, dynamic> options]) async {
+    if (detectorType == FirebaseVisionDetectorType.face && options == null) {
+      options = new FaceDetectorOptions().optionsMap;
+    }
+    await FirebaseVision.instance.setLiveViewDetector(detectorType, options);
   }
 
   /// Listen to events from the native plugins.
@@ -267,20 +263,37 @@ class LiveViewCameraController extends ValueNotifier<LiveViewCameraValue> {
     switch (map['eventType']) {
       case 'detection':
         final String detectionType = event['detectionType'];
+        final List<dynamic> reply = event['data'];
+        LiveViewDetectionList dataList;
         if (detectionType == "barcode") {
-          final List<dynamic> reply = event['data'];
-          final List<BarcodeContainer> barcodes = <BarcodeContainer>[];
+          final List<Barcode> barcodes = <Barcode>[];
           reply.forEach((dynamic barcodeMap) {
-            barcodes.add(new BarcodeContainer(barcodeMap));
+            barcodes.add(new Barcode(barcodeMap));
           });
-          value = value.copyWith(detectedData: barcodes);
+          dataList = new LiveViewBarcodeDetectionList(barcodes);
         } else if (detectionType == "text") {
-          final List<dynamic> reply = event['data'];
-          final List<TextBlock> detectedData = reply.map((dynamic block) {
-            return TextBlock.fromBlockData(block);
+          final List<TextBlock> texts = <TextBlock>[];
+          reply.map<TextBlock>((dynamic block) {
+            texts.add(TextBlock.fromBlockData(block));
           }).toList();
-          value = value.copyWith(detectedData: detectedData);
+          dataList = new LiveViewTextDetectionList(texts);
+        } else if (detectionType == "face") {
+          final List<Face> faces = <Face>[];
+          reply.map((dynamic f) {
+            faces.add(new Face(f));
+          });
+          dataList = new LiveViewFaceDetectionList(faces);
+        } else if (detectionType == "label") {
+          final List<Label> labels = <Label>[];
+          reply.map((dynamic l) {
+            labels.add(new Label(l));
+          });
+          dataList = new LiveViewLabelDetectionList(labels);
         }
+
+        value = value.copyWith(
+          detectedData: dataList,
+        );
         break;
       case 'error':
         value = value.copyWith(errorDescription: event['errorDescription']);
@@ -311,4 +324,30 @@ class LiveViewCameraController extends ValueNotifier<LiveViewCameraValue> {
       });
     }
   }
+}
+
+abstract class LiveViewDetectionList {}
+
+class LiveViewTextDetectionList extends LiveViewDetectionList {
+  final List<TextBlock> data;
+
+  LiveViewTextDetectionList(this.data);
+}
+
+class LiveViewBarcodeDetectionList extends LiveViewDetectionList {
+  final List<Barcode> data;
+
+  LiveViewBarcodeDetectionList(this.data);
+}
+
+class LiveViewFaceDetectionList extends LiveViewDetectionList {
+  final List<Face> data;
+
+  LiveViewFaceDetectionList(this.data);
+}
+
+class LiveViewLabelDetectionList extends LiveViewDetectionList {
+  final List<Label> data;
+
+  LiveViewLabelDetectionList(this.data);
 }

@@ -359,7 +359,7 @@ public class Camera {
       .build();
     FirebaseVisionImage firebaseVisionImage = FirebaseVisionImage.fromByteBuffer(imageBuffer, metadata);
 
-    currentDetector.handleDetection(firebaseVisionImage, liveDetectorFinishedCallback);
+    currentDetector.handleDetection(firebaseVisionImage, new HashMap<String, Object>(), liveDetectorFinishedCallback);
 
 //    FirebaseVisionBarcodeDetector visionBarcodeDetector = FirebaseVision.getInstance().getVisionBarcodeDetector();
 //    visionBarcodeDetector.detectInImage(firebaseVisionImage).addOnSuccessListener(new OnSuccessListener<List<FirebaseVisionBarcode>>() {
