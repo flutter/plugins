@@ -426,7 +426,7 @@ class FirebaseAuth {
         final int handle = call.arguments['handle'];
         final PhoneVerificationFailed verificationFailed =
             _phoneAuthCallbacks[handle]['PhoneVerificationFailed'];
-        final Map<String, String> exception = call.arguments['exception'];
+        final Map<dynamic, dynamic> exception = call.arguments['exception'];
         verificationFailed(
             new AuthException(exception['code'], exception['message']));
         break;
