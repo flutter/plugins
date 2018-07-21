@@ -3,15 +3,12 @@ package io.flutter.plugins.firebasemlvision;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.ml.vision.FirebaseVision;
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode;
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetector;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
-import io.flutter.plugin.common.MethodChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,7 +21,10 @@ public class BarcodeDetector extends Detector {
   private BarcodeDetector() {}
 
   @Override
-  void processImage(FirebaseVisionImage image, Map<String, Object> options, final OperationFinishedCallback finishedCallback) {
+  void processImage(
+      FirebaseVisionImage image,
+      Map<String, Object> options,
+      final OperationFinishedCallback finishedCallback) {
     if (barcodeDetector == null)
       barcodeDetector = FirebaseVision.getInstance().getVisionBarcodeDetector();
 
@@ -32,6 +32,7 @@ public class BarcodeDetector extends Detector {
         .detectInImage(image)
         .addOnSuccessListener(
             new OnSuccessListener<List<FirebaseVisionBarcode>>() {
+              @SuppressWarnings("ConstantConditions")
               @Override
               public void onSuccess(List<FirebaseVisionBarcode> firebaseVisionBarcodes) {
                 List<Map<String, Object>> barcodes = new ArrayList<>();
@@ -97,7 +98,7 @@ public class BarcodeDetector extends Detector {
                       List<Map<String, Object>> addresses = new ArrayList<>();
                       for (FirebaseVisionBarcode.Address address :
                           barcode.getContactInfo().getAddresses()) {
-                        Map<String, Object> addressMap = new HashMap();
+                        Map<String, Object> addressMap = new HashMap<>();
                         addressMap.put("address_lines", address.getAddressLines());
                         addressMap.put("type", address.getType());
                         addresses.add(addressMap);
@@ -107,7 +108,7 @@ public class BarcodeDetector extends Detector {
                       List<Map<String, Object>> emails = new ArrayList<>();
                       for (FirebaseVisionBarcode.Email email :
                           barcode.getContactInfo().getEmails()) {
-                        Map<String, Object> emailMap = new HashMap();
+                        Map<String, Object> emailMap = new HashMap<>();
                         emailMap.put("address", email.getAddress());
                         emailMap.put("type", email.getType());
                         emailMap.put("body", email.getBody());
@@ -116,7 +117,7 @@ public class BarcodeDetector extends Detector {
                       }
                       typeValue.put("emails", emails);
 
-                      Map<String, Object> name = new HashMap();
+                      Map<String, Object> name = new HashMap<>();
                       name.put(
                           "formatted_name", barcode.getContactInfo().getName().getFormattedName());
                       name.put("first", barcode.getContactInfo().getName().getFirst());
@@ -131,7 +132,7 @@ public class BarcodeDetector extends Detector {
                       List<Map<String, Object>> phones = new ArrayList<>();
                       for (FirebaseVisionBarcode.Phone phone :
                           barcode.getContactInfo().getPhones()) {
-                        Map<String, Object> phoneMap = new HashMap();
+                        Map<String, Object> phoneMap = new HashMap<>();
                         phoneMap.put("number", phone.getNumber());
                         phoneMap.put("type", phone.getType());
                         phones.add(phoneMap);
@@ -153,7 +154,7 @@ public class BarcodeDetector extends Detector {
                       typeValue.put("summary", barcode.getCalendarEvent().getSummary());
                       typeValue.put("start", barcode.getCalendarEvent().getStart().getRawValue());
                       typeValue.put("end", barcode.getCalendarEvent().getEnd().getRawValue());
-                      typeValue.put("calendar_event", typeValue);
+                      barcodeMap.put("calendar_event", typeValue);
                       break;
                     case FirebaseVisionBarcode.TYPE_DRIVER_LICENSE:
                       typeValue.put("first_name", barcode.getDriverLicense().getFirstName());
@@ -173,7 +174,7 @@ public class BarcodeDetector extends Detector {
                       typeValue.put("issuing_date", barcode.getDriverLicense().getIssueDate());
                       typeValue.put(
                           "issuing_country", barcode.getDriverLicense().getIssuingCountry());
-                      barcodeMap.put("calendar_event", typeValue);
+                      barcodeMap.put("driver_license", typeValue);
                       break;
                   }
 
@@ -186,7 +187,9 @@ public class BarcodeDetector extends Detector {
             new OnFailureListener() {
               @Override
               public void onFailure(@NonNull Exception exception) {
-                finishedCallback.error(new DetectorException("barcodeDetectorError", exception.getLocalizedMessage(), null));
+                finishedCallback.error(
+                    new DetectorException(
+                        "barcodeDetectorError", exception.getLocalizedMessage(), null));
               }
             });
   }

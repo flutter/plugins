@@ -3,15 +3,12 @@ package io.flutter.plugins.firebasemlvision;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.ml.vision.FirebaseVision;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.text.FirebaseVisionText;
 import com.google.firebase.ml.vision.text.FirebaseVisionTextDetector;
-import io.flutter.plugin.common.MethodChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,7 +21,10 @@ public class TextDetector extends Detector {
   private TextDetector() {}
 
   @Override
-  void processImage(FirebaseVisionImage image, Map<String, Object> options, final OperationFinishedCallback finishedCallback) {
+  void processImage(
+      FirebaseVisionImage image,
+      Map<String, Object> options,
+      final OperationFinishedCallback finishedCallback) {
     if (textDetector == null) textDetector = FirebaseVision.getInstance().getVisionTextDetector();
     textDetector
         .detectInImage(image)
@@ -67,7 +67,9 @@ public class TextDetector extends Detector {
             new OnFailureListener() {
               @Override
               public void onFailure(@NonNull Exception exception) {
-                finishedCallback.error(new DetectorException("textDetectorError", exception.getLocalizedMessage(), null));
+                finishedCallback.error(
+                    new DetectorException(
+                        "textDetectorError", exception.getLocalizedMessage(), null));
               }
             });
   }

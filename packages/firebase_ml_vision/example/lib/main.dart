@@ -174,7 +174,8 @@ class _MyHomePageState extends State<_MyHomePage>
                 if (_imageFile != null) _scanImage(_imageFile);
               });
             },
-            itemBuilder: (BuildContext context) => <PopupMenuEntry<FirebaseVisionDetectorType>>[
+            itemBuilder: (BuildContext context) =>
+                <PopupMenuEntry<FirebaseVisionDetectorType>>[
                   const PopupMenuItem<FirebaseVisionDetectorType>(
                     child: const Text('Detect Barcode'),
                     value: FirebaseVisionDetectorType.barcode,

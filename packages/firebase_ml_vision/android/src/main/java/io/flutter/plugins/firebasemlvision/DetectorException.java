@@ -4,11 +4,12 @@ import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodChannel;
 
 public class DetectorException extends Exception {
-  private String detectorExceptionType;
-  private String detectorExceptionDescription;
-  private Object exceptionData;
+  private final String detectorExceptionType;
+  private final String detectorExceptionDescription;
+  private final Object exceptionData;
 
-  public DetectorException(String detectorExceptionType, String detectorExceptionDescription, Object exceptionData) {
+  public DetectorException(
+      String detectorExceptionType, String detectorExceptionDescription, Object exceptionData) {
     super(detectorExceptionType + ": " + detectorExceptionDescription);
     this.detectorExceptionType = detectorExceptionType;
     this.detectorExceptionDescription = detectorExceptionDescription;

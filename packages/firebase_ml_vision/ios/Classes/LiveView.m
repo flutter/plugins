@@ -154,13 +154,20 @@ static NSString *const videoDataOutputQueueLabel = @"io.flutter.plugins.firebase
       visionImage.metadata = metadata;
       CGFloat imageWidth = CVPixelBufferGetWidth(newBuffer);
       CGFloat imageHeight = CVPixelBufferGetHeight(newBuffer);
-      [_currentDetector handleDetection:visionImage options:_currentDetectorOptions finishedCallback:^(id  _Nullable result, NSString *detectorType) {
-        self->_isRecognizing = NO;
-        self->_eventSink(@{@"eventType": @"detection", @"detectionType": detectorType, @"data": result});
-      } errorCallback:^(FlutterError *error) {
-        self->_isRecognizing = NO;
-        self->_eventSink(error);
-      }];
+      [_currentDetector handleDetection:visionImage
+          options:_currentDetectorOptions
+          finishedCallback:^(id _Nullable result, NSString *detectorType) {
+            self->_isRecognizing = NO;
+            self->_eventSink(@{
+              @"eventType" : @"detection",
+              @"detectionType" : detectorType,
+              @"data" : result
+            });
+          }
+          errorCallback:^(FlutterError *error) {
+            self->_isRecognizing = NO;
+            self->_eventSink(error);
+          }];
     }
     CFRetain(newBuffer);
     CVPixelBufferRef old = _latestPixelBuffer;

@@ -1,8 +1,6 @@
 package io.flutter.plugins.firebasemlvision;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.ml.vision.FirebaseVision;
@@ -11,7 +9,6 @@ import com.google.firebase.ml.vision.face.FirebaseVisionFace;
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetector;
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetectorOptions;
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceLandmark;
-import io.flutter.plugin.common.MethodChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +20,10 @@ public class FaceDetector extends Detector {
   private FaceDetector() {}
 
   @Override
-  void processImage(FirebaseVisionImage image, Map<String, Object> options, final OperationFinishedCallback finishedCallback) {
+  void processImage(
+      FirebaseVisionImage image,
+      Map<String, Object> options,
+      final OperationFinishedCallback finishedCallback) {
     FirebaseVisionFaceDetector detector;
     if (options == null) {
       detector = FirebaseVision.getInstance().getVisionFaceDetector();
@@ -79,7 +79,9 @@ public class FaceDetector extends Detector {
             new OnFailureListener() {
               @Override
               public void onFailure(@NonNull Exception exception) {
-                finishedCallback.error(new DetectorException("faceDetectorError", exception.getLocalizedMessage(), null));
+                finishedCallback.error(
+                    new DetectorException(
+                        "faceDetectorError", exception.getLocalizedMessage(), null));
               }
             });
   }

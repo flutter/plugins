@@ -35,5 +35,6 @@ AVCaptureAudioDataOutputSampleBufferDelegate, FlutterStreamHandler>
 - (void)startVideoRecordingAtPath:(NSString *)path result:(FlutterResult)result;
 - (void)stopVideoRecordingWithResult:(FlutterResult)result;
 - (void)captureToFile:(NSString *)filename result:(FlutterResult)result;
-- (void)setDetector:(NSObject<Detector> *)detector withOptions:(NSDictionary *)detectorOptions;
+- (void)setDetector:(NSObject<Detector> *)detector
+        withOptions:(NSDictionary *)detectorOptions;
 @end

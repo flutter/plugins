@@ -10,7 +10,8 @@ typedef void (^OperationFinishedCallback)(id _Nullable result, NSString *detecto
 typedef void (^OperationErrorCallback)(FlutterError *error);
 
 @interface FLTFirebaseMlVisionPlugin : NSObject<FlutterPlugin>
-+ (void)handleError:(NSError *)error finishedCallback:(OperationErrorCallback)callback;
++ (void)handleError:(NSError *)error
+    finishedCallback:(OperationErrorCallback)callback;
 @end
 
 @protocol Detector

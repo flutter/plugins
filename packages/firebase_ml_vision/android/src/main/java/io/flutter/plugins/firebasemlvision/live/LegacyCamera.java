@@ -14,6 +14,9 @@
 
 package io.flutter.plugins.firebasemlvision.live;
 
+import static android.hardware.Camera.CameraInfo.CAMERA_FACING_BACK;
+import static android.hardware.Camera.CameraInfo.CAMERA_FACING_FRONT;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -26,22 +29,10 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresPermission;
 import android.util.Log;
 import android.view.Surface;
-import android.view.SurfaceHolder;
 import android.view.WindowManager;
-
 import com.google.android.gms.common.images.Size;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata;
-
-import java.io.IOException;
-import java.lang.Thread.State;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugins.firebasemlvision.BarcodeDetector;
@@ -51,9 +42,14 @@ import io.flutter.plugins.firebasemlvision.FaceDetector;
 import io.flutter.plugins.firebasemlvision.LabelDetector;
 import io.flutter.plugins.firebasemlvision.TextDetector;
 import io.flutter.view.FlutterView;
-
-import static android.hardware.Camera.CameraInfo.CAMERA_FACING_BACK;
-import static android.hardware.Camera.CameraInfo.CAMERA_FACING_FRONT;
+import java.io.IOException;
+import java.lang.Thread.State;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Manages the camera and allows UI updates on top of it (e.g. overlaying extra Graphics or
@@ -67,7 +63,6 @@ public class LegacyCamera {
 
   public interface OnCameraOpenedCallback {
     void onOpened(long textureId, int width, int height);
-    void onFailed(Exception e);
   }
 
   /**
@@ -76,9 +71,9 @@ public class LegacyCamera {
    */
   private static final float ASPECT_RATIO_TOLERANCE = 0.01f;
 
-  protected Activity activity;
+  private final Activity activity;
 
-  private PluginRegistry.Registrar registrar;
+  private final PluginRegistry.Registrar registrar;
 
   private final FlutterView.SurfaceTextureEntry textureEntry;
 
@@ -86,7 +81,7 @@ public class LegacyCamera {
 
   private Camera camera;
 
-  protected int facing = CAMERA_FACING_BACK;
+  private int facing = CAMERA_FACING_BACK;
 
   /**
    * Rotation of the device, and thus the associated preview images captured from the device. See
@@ -98,15 +93,11 @@ public class LegacyCamera {
 
   // These values may be requested by the caller.  Due to hardware limitations, we may need to
   // select close, but not exactly the same values for these.
+  @SuppressWarnings("FieldCanBeLocal")
   private final float requestedFps = 20.0f;
+
   private int requestedPreviewWidth = 1280;
   private int requestedPreviewHeight = 960;
-  private final boolean requestedAutoFocus = true;
-
-  // These instances need to be held onto to avoid GC of their underlying resources.  Even though
-  // these aren't used outside of the method that creates them, they still must have hard
-  // references maintained to them.
-  private SurfaceTexture dummySurfaceTexture;
 
   // True if a SurfaceTexture is being used for the preview, false if a SurfaceHolder is being
   // used for the preview.  We want to be compatible back to Gingerbread, but SurfaceTexture
@@ -131,44 +122,47 @@ public class LegacyCamera {
    * Map to convert between a byte array, received from the camera, and its associated byte buffer.
    * We use byte buffers internally because this is a more efficient way to call into native code
    * later (avoids a potential copy).
+   *
    * <p>
+   *
    * <p><b>Note:</b> uses IdentityHashMap here instead of HashMap because the behavior of an array's
    * equals, hashCode and toString methods is both useless and unexpected. IdentityHashMap enforces
    * identity ('==') check on the keys.
    */
   private final Map<byte[], ByteBuffer> bytesToByteBuffer = new IdentityHashMap<>();
 
-  private Detector.OperationFinishedCallback liveDetectorFinishedCallback = new Detector.OperationFinishedCallback() {
-    @Override
-    public void success(Detector detector, Object data) {
-      Map<String, Object> event = new HashMap<>();
-      event.put("eventType", "detection");
-      String dataType;
-      if (detector instanceof BarcodeDetector) {
-        dataType = "barcode";
-      } else if (detector instanceof TextDetector) {
-        dataType = "text";
-      } else if (detector instanceof LabelDetector) {
-        dataType = "label";
-      } else if (detector instanceof FaceDetector) {
-        dataType = "face";
-      } else {
-        // unsupported live detector
-        return;
-      }
-      event.put("detectionType", dataType);
-      event.put("data", data);
-      eventSink.success(event);
-    }
+  private final Detector.OperationFinishedCallback liveDetectorFinishedCallback =
+      new Detector.OperationFinishedCallback() {
+        @Override
+        public void success(Detector detector, Object data) {
+          Map<String, Object> event = new HashMap<>();
+          event.put("eventType", "detection");
+          String dataType;
+          if (detector instanceof BarcodeDetector) {
+            dataType = "barcode";
+          } else if (detector instanceof TextDetector) {
+            dataType = "text";
+          } else if (detector instanceof LabelDetector) {
+            dataType = "label";
+          } else if (detector instanceof FaceDetector) {
+            dataType = "face";
+          } else {
+            // unsupported live detector
+            return;
+          }
+          event.put("detectionType", dataType);
+          event.put("data", data);
+          eventSink.success(event);
+        }
 
-    @Override
-    public void error(DetectorException e) {
-      e.sendError(eventSink);
-    }
-  };
+        @Override
+        public void error(DetectorException e) {
+          e.sendError(eventSink);
+        }
+      };
 
-
-  public LegacyCamera(PluginRegistry.Registrar registrar, String resolutionPreset, int cameraFacing) {
+  public LegacyCamera(
+      PluginRegistry.Registrar registrar, String resolutionPreset, int cameraFacing) {
     this.registrar = registrar;
     this.activity = registrar.activity();
     this.textureEntry = registrar.view().createSurfaceTexture();
@@ -196,28 +190,27 @@ public class LegacyCamera {
 
   private void registerEventChannel() {
     new EventChannel(
-      registrar.messenger(), "plugins.flutter.io/firebase_ml_vision/liveViewEvents" + textureEntry.id())
-      .setStreamHandler(
-        new EventChannel.StreamHandler() {
-          @Override
-          public void onListen(Object arguments, EventChannel.EventSink eventSink) {
-            LegacyCamera.this.eventSink = eventSink;
-          }
+            registrar.messenger(),
+            "plugins.flutter.io/firebase_ml_vision/liveViewEvents" + textureEntry.id())
+        .setStreamHandler(
+            new EventChannel.StreamHandler() {
+              @Override
+              public void onListen(Object arguments, EventChannel.EventSink eventSink) {
+                LegacyCamera.this.eventSink = eventSink;
+              }
 
-          @Override
-          public void onCancel(Object arguments) {
-            LegacyCamera.this.eventSink = null;
-          }
-        });
+              @Override
+              public void onCancel(Object arguments) {
+                LegacyCamera.this.eventSink = null;
+              }
+            });
   }
 
   // ==============================================================================================
   // Public
   // ==============================================================================================
 
-  /**
-   * Stops the camera and releases the resources of the camera and underlying detector.
-   */
+  /** Stops the camera and releases the resources of the camera and underlying detector. */
   public void release() {
     synchronized (processorLock) {
       stop();
@@ -255,10 +248,13 @@ public class LegacyCamera {
 
   /**
    * Closes the camera and stops sending frames to the underlying frame detector.
+   *
    * <p>
-   * <p>This camera source may be restarted again by calling {@link
-   * #start(OnCameraOpenedCallback)}.
+   *
+   * <p>This camera source may be restarted again by calling {@link #start(OnCameraOpenedCallback)}.
+   *
    * <p>
+   *
    * <p>Call {@link #release()} instead to completely shut down this camera source and release the
    * resources of the underlying detector.
    */
@@ -296,9 +292,7 @@ public class LegacyCamera {
     bytesToByteBuffer.clear();
   }
 
-  /**
-   * Changes the facing of the camera.
-   */
+  /** Changes the facing of the camera. */
   public synchronized void setFacing(int facing) {
     if ((facing != CAMERA_FACING_BACK) && (facing != CAMERA_FACING_FRONT)) {
       throw new IllegalArgumentException("Invalid camera: " + facing);
@@ -306,9 +300,7 @@ public class LegacyCamera {
     this.facing = facing;
   }
 
-  /**
-   * Returns the preview size that is currently in use by the underlying camera.
-   */
+  /** Returns the preview size that is currently in use by the underlying camera. */
   public Size getPreviewSize() {
     return previewSize;
   }
@@ -353,20 +345,18 @@ public class LegacyCamera {
     }
     parameters.setPreviewSize(previewSize.getWidth(), previewSize.getHeight());
     parameters.setPreviewFpsRange(
-      previewFpsRange[Camera.Parameters.PREVIEW_FPS_MIN_INDEX],
-      previewFpsRange[Camera.Parameters.PREVIEW_FPS_MAX_INDEX]);
+        previewFpsRange[Camera.Parameters.PREVIEW_FPS_MIN_INDEX],
+        previewFpsRange[Camera.Parameters.PREVIEW_FPS_MAX_INDEX]);
     parameters.setPreviewFormat(ImageFormat.NV21);
 
     setRotation(camera, parameters, requestedCameraId);
 
-    if (requestedAutoFocus) {
-      if (parameters
+    if (parameters
         .getSupportedFocusModes()
         .contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO)) {
-        parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
-      } else {
-        Log.i(TAG, "Camera auto focus is not supported on this device.");
-      }
+      parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
+    } else {
+      Log.i(TAG, "Camera auto focus is not supported on this device.");
     }
 
     camera.setParameters(parameters);
@@ -433,14 +423,16 @@ public class LegacyCamera {
 
   /**
    * Selects the most suitable preview and picture size, given the desired width and height.
+   *
    * <p>
+   *
    * <p>Even though we only need to find the preview size, it's necessary to find both the preview
    * size and the picture size of the camera together, because these need to have the same aspect
    * ratio. On some hardware, if you would only set the preview size, you will get a distorted
    * image.
    *
-   * @param camera        the camera to select a preview size from
-   * @param desiredWidth  the desired width of the camera preview frames
+   * @param camera the camera to select a preview size from
+   * @param desiredWidth the desired width of the camera preview frames
    * @param desiredHeight the desired height of the camera preview frames
    * @return the selected preview and picture size pair
    */
@@ -456,7 +448,7 @@ public class LegacyCamera {
     for (SizePair sizePair : validPreviewSizes) {
       Size size = sizePair.previewSize();
       int diff =
-        Math.abs(size.getWidth() - desiredWidth) + Math.abs(size.getHeight() - desiredHeight);
+          Math.abs(size.getWidth() - desiredWidth) + Math.abs(size.getHeight() - desiredHeight);
       if (diff < minDiff) {
         selectedPair = sizePair;
         minDiff = diff;
@@ -477,8 +469,8 @@ public class LegacyCamera {
     private Size picture;
 
     SizePair(
-      android.hardware.Camera.Size previewSize,
-      @Nullable android.hardware.Camera.Size pictureSize) {
+        android.hardware.Camera.Size previewSize,
+        @Nullable android.hardware.Camera.Size pictureSize) {
       preview = new Size(previewSize.width, previewSize.height);
       if (pictureSize != null) {
         picture = new Size(pictureSize.width, pictureSize.height);
@@ -499,17 +491,17 @@ public class LegacyCamera {
    * Generates a list of acceptable preview sizes. Preview sizes are not acceptable if there is not
    * a corresponding picture size of the same aspect ratio. If there is a corresponding picture size
    * of the same aspect ratio, the picture size is paired up with the preview size.
+   *
    * <p>
+   *
    * <p>This is necessary because even if we don't use still pictures, the still picture size must
    * be set to a size that is the same aspect ratio as the preview size we choose. Otherwise, the
    * preview images may be distorted on some devices.
    */
   private static List<SizePair> generateValidPreviewSizeList(Camera camera) {
     Camera.Parameters parameters = camera.getParameters();
-    List<Camera.Size> supportedPreviewSizes =
-      parameters.getSupportedPreviewSizes();
-    List<Camera.Size> supportedPictureSizes =
-      parameters.getSupportedPictureSizes();
+    List<Camera.Size> supportedPreviewSizes = parameters.getSupportedPreviewSizes();
+    List<Camera.Size> supportedPictureSizes = parameters.getSupportedPictureSizes();
     List<SizePair> validPreviewSizes = new ArrayList<>();
     for (android.hardware.Camera.Size previewSize : supportedPreviewSizes) {
       float previewAspectRatio = (float) previewSize.width / (float) previewSize.height;
@@ -543,7 +535,7 @@ public class LegacyCamera {
   /**
    * Selects the most suitable preview frames per second range, given the desired frames per second.
    *
-   * @param camera            the camera to select a frames per second range from
+   * @param camera the camera to select a frames per second range from
    * @param desiredPreviewFps the desired frames per second for the camera preview frames
    * @return the selected preview frames per second range
    */
@@ -578,11 +570,12 @@ public class LegacyCamera {
    * parameters. It also sets the camera's display orientation and rotation.
    *
    * @param parameters the camera parameters for which to set the rotation
-   * @param cameraId   the camera id to set rotation based on
+   * @param cameraId the camera id to set rotation based on
    */
   private void setRotation(Camera camera, Camera.Parameters parameters, int cameraId) {
     WindowManager windowManager = (WindowManager) activity.getSystemService(Context.WINDOW_SERVICE);
     int degrees = 0;
+    assert windowManager != null;
     int rotation = windowManager.getDefaultDisplay().getRotation();
     switch (rotation) {
       case Surface.ROTATION_0:
@@ -651,9 +644,7 @@ public class LegacyCamera {
   // Frame processing
   // ==============================================================================================
 
-  /**
-   * Called when the camera has a new preview frame.
-   */
+  /** Called when the camera has a new preview frame. */
   private class CameraPreviewCallback implements Camera.PreviewCallback {
     @Override
     public void onPreviewFrame(byte[] data, Camera camera) {
@@ -661,7 +652,8 @@ public class LegacyCamera {
     }
   }
 
-  public void setMachineLearningFrameProcessor(Detector processor, @Nullable Map<String, Object> options) {
+  public void setMachineLearningFrameProcessor(
+      Detector processor, @Nullable Map<String, Object> options) {
     synchronized (processorLock) {
       detector = processor;
       detectorOptions = options;
@@ -672,7 +664,9 @@ public class LegacyCamera {
    * This runnable controls access to the underlying receiver, calling it to process frames when
    * available from the camera. This is designed to run detection on frames as fast as possible
    * (i.e., without unnecessary context switching or waiting on the next frame).
+   *
    * <p>
+   *
    * <p>While detection is running on a frame, new frames may be received from the camera. As these
    * frames come in, the most recent frame is held onto as pending. As soon as detection and its
    * associated processing is done for the previous frame, detection on the mostly recently received
@@ -687,8 +681,7 @@ public class LegacyCamera {
     // These pending variables hold the state associated with the new frame awaiting processing.
     private ByteBuffer pendingFrameData;
 
-    FrameProcessingRunnable() {
-    }
+    FrameProcessingRunnable() {}
 
     /**
      * Releases the underlying receiver. This is only safe to do after the associated thread has
@@ -699,9 +692,7 @@ public class LegacyCamera {
       assert (processingThread.getState() == State.TERMINATED);
     }
 
-    /**
-     * Marks the runnable as active/not active. Signals any blocked threads to continue.
-     */
+    /** Marks the runnable as active/not active. Signals any blocked threads to continue. */
     void setActive(boolean active) {
       synchronized (lock) {
         this.active = active;
@@ -722,9 +713,9 @@ public class LegacyCamera {
 
         if (!bytesToByteBuffer.containsKey(data)) {
           Log.d(
-            TAG,
-            "Skipping frame. Could not find ByteBuffer associated with the image "
-              + "data from the camera.");
+              TAG,
+              "Skipping frame. Could not find ByteBuffer associated with the image "
+                  + "data from the camera.");
           return;
         }
 
@@ -740,11 +731,15 @@ public class LegacyCamera {
      * The next pending frame is either immediately available or hasn't been received yet. Once it
      * is available, we transfer the frame info to local variables and run detection on that frame.
      * It immediately loops back for the next frame without pausing.
+     *
      * <p>
+     *
      * <p>If detection takes longer than the time in between new frames from the camera, this will
      * mean that this loop will run without ever waiting on a frame, avoiding any context switching
      * or frame acquisition time latency.
+     *
      * <p>
+     *
      * <p>If you find that this is using more CPU than you'd like, you should probably decrease the
      * FPS setting above to allow for some idle time in between frames.
      */
@@ -789,12 +784,12 @@ public class LegacyCamera {
         try {
           synchronized (processorLock) {
             FirebaseVisionImageMetadata metadata =
-              new FirebaseVisionImageMetadata.Builder()
-                .setFormat(FirebaseVisionImageMetadata.IMAGE_FORMAT_NV21)
-                .setWidth(previewSize.getWidth())
-                .setHeight(previewSize.getHeight())
-                .setRotation(rotation)
-                .build();
+                new FirebaseVisionImageMetadata.Builder()
+                    .setFormat(FirebaseVisionImageMetadata.IMAGE_FORMAT_NV21)
+                    .setWidth(previewSize.getWidth())
+                    .setHeight(previewSize.getHeight())
+                    .setRotation(rotation)
+                    .build();
             FirebaseVisionImage image = FirebaseVisionImage.fromByteBuffer(data, metadata);
             detector.handleDetection(image, detectorOptions, liveDetectorFinishedCallback);
           }
