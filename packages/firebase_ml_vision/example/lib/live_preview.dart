@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
-import 'package:firebase_ml_vision/live_view.dart';
 import 'package:firebase_ml_vision_example/detector_painters.dart';
 import 'package:flutter/material.dart';
 
@@ -20,9 +19,7 @@ class LivePreview extends StatefulWidget {
 }
 
 class LivePreviewState extends State<LivePreview> {
-  bool _isShowingPreview = false;
   LiveViewCameraLoadStateReady _readyLoadState;
-  GlobalKey<LiveViewState> _liveViewKey = new GlobalKey();
 
   Stream<LiveViewCameraLoadState> _prepareCameraPreview() async* {
     if (_readyLoadState != null) {

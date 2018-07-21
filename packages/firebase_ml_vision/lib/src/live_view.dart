@@ -1,9 +1,4 @@
-import 'dart:async';
-
-import 'package:firebase_ml_vision/firebase_ml_vision.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
+part of firebase_ml_vision;
 
 enum LiveViewCameraLensDirection { front, back }
 

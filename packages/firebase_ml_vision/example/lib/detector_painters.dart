@@ -5,7 +5,6 @@
 import 'dart:ui';
 
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
-import 'package:firebase_ml_vision/live_view.dart';
 import 'package:flutter/material.dart';
 
 CustomPaint customPaintForResults(

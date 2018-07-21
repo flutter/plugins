@@ -101,11 +101,11 @@ class FaceDetectorOptions {
 
   Map<String, dynamic> get optionsMap {
     return <String, dynamic>{
-      'enableClassification': this.enableClassification,
-      'enableLandmarks': this.enableLandmarks,
-      'enableTracking': this.enableTracking,
-      'minFaceSize': this.minFaceSize,
-      'mode': _enumToString(this.mode),
+      'enableClassification': enableClassification,
+      'enableLandmarks': enableLandmarks,
+      'enableTracking': enableTracking,
+      'minFaceSize': minFaceSize,
+      'mode': _enumToString(mode),
     };
   }
 }
