@@ -27,20 +27,26 @@ static CGFloat const rectangleViewCornerRadius = 10.0;
   [self imageOrientationFromDevicePosition:AVCaptureDevicePositionBack];
 }
 
-+ (UIImageOrientation) imageOrientationFromDevicePosition:(AVCaptureDevicePosition)devicePosition {
++ (UIImageOrientation)imageOrientationFromDevicePosition:(AVCaptureDevicePosition)devicePosition {
   UIDeviceOrientation deviceOrientation = UIDevice.currentDevice.orientation;
-  if (deviceOrientation == UIDeviceOrientationFaceDown || deviceOrientation == UIDeviceOrientationFaceUp || deviceOrientation == UIDeviceOrientationUnknown) {
+  if (deviceOrientation == UIDeviceOrientationFaceDown ||
+      deviceOrientation == UIDeviceOrientationFaceUp ||
+      deviceOrientation == UIDeviceOrientationUnknown) {
     deviceOrientation = [self currentUIOrientation];
   }
   switch (deviceOrientation) {
     case UIDeviceOrientationPortrait:
-      return devicePosition == AVCaptureDevicePositionFront ? UIImageOrientationLeftMirrored : UIImageOrientationRight;
+      return devicePosition == AVCaptureDevicePositionFront ? UIImageOrientationLeftMirrored
+                                                            : UIImageOrientationRight;
     case UIDeviceOrientationLandscapeLeft:
-      return devicePosition == AVCaptureDevicePositionFront ? UIImageOrientationDownMirrored : UIImageOrientationUp;
+      return devicePosition == AVCaptureDevicePositionFront ? UIImageOrientationDownMirrored
+                                                            : UIImageOrientationUp;
     case UIDeviceOrientationPortraitUpsideDown:
-      return devicePosition == AVCaptureDevicePositionFront ? UIImageOrientationRightMirrored : UIImageOrientationLeft;
+      return devicePosition == AVCaptureDevicePositionFront ? UIImageOrientationRightMirrored
+                                                            : UIImageOrientationLeft;
     case UIDeviceOrientationLandscapeRight:
-      return devicePosition == AVCaptureDevicePositionFront ? UIImageOrientationUpMirrored : UIImageOrientationDown;
+      return devicePosition == AVCaptureDevicePositionFront ? UIImageOrientationUpMirrored
+                                                            : UIImageOrientationDown;
     case UIDeviceOrientationFaceDown:
     case UIDeviceOrientationFaceUp:
     case UIDeviceOrientationUnknown:
@@ -48,7 +54,8 @@ static CGFloat const rectangleViewCornerRadius = 10.0;
   }
 }
 
-+ (FIRVisionDetectorImageOrientation) visionImageOrientationFromImageOrientation:(UIImageOrientation)imageOrientation {
++ (FIRVisionDetectorImageOrientation)visionImageOrientationFromImageOrientation:
+    (UIImageOrientation)imageOrientation {
   switch (imageOrientation) {
     case UIImageOrientationUp:
       return FIRVisionDetectorImageOrientationTopLeft;
@@ -69,7 +76,7 @@ static CGFloat const rectangleViewCornerRadius = 10.0;
   }
 }
 
-+ (UIDeviceOrientation) currentUIOrientation {
++ (UIDeviceOrientation)currentUIOrientation {
   UIDeviceOrientation (^deviceOrientation)(void) = ^UIDeviceOrientation(void) {
     switch (UIApplication.sharedApplication.statusBarOrientation) {
       case UIInterfaceOrientationLandscapeLeft:
@@ -83,7 +90,7 @@ static CGFloat const rectangleViewCornerRadius = 10.0;
         return UIDeviceOrientationPortrait;
     }
   };
-  
+
   if (NSThread.isMainThread) {
     return deviceOrientation();
   } else {

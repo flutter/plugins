@@ -12,9 +12,10 @@ static FIRVisionLabelDetector *labelDetector;
   return sharedInstance;
 }
 
-- (void)handleDetection:(FIRVisionImage *)image options:(NSDictionary *)options finishedCallback:(OperationFinishedCallback)callback errorCallback:(OperationErrorCallback)errorCallback {
-  
+- (void)handleDetection:(FIRVisionImage *)image
+                options:(NSDictionary *)options
+       finishedCallback:(OperationFinishedCallback)callback
+          errorCallback:(OperationErrorCallback)errorCallback {
 }
-
 
 @end

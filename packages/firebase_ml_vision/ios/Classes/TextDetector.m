@@ -12,7 +12,10 @@ static FIRVisionTextDetector *textDetector;
   return sharedInstance;
 }
 
-- (void)handleDetection:(FIRVisionImage *)image options:(NSDictionary *)options finishedCallback:(OperationFinishedCallback)callback errorCallback:(OperationErrorCallback)errorCallback {
+- (void)handleDetection:(FIRVisionImage *)image
+                options:(NSDictionary *)options
+       finishedCallback:(OperationFinishedCallback)callback
+          errorCallback:(OperationErrorCallback)errorCallback {
   if (textDetector == nil) {
     FIRVision *vision = [FIRVision vision];
     textDetector = [vision textDetector];

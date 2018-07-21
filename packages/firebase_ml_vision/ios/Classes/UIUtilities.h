@@ -22,7 +22,8 @@
 @interface UIUtilities : NSObject
 + (void)imageOrientation;
 + (UIImageOrientation)imageOrientationFromDevicePosition:(AVCaptureDevicePosition)devicePosition;
-+ (FIRVisionDetectorImageOrientation)visionImageOrientationFromImageOrientation:(UIImageOrientation)imageOrientation;
++ (FIRVisionDetectorImageOrientation)visionImageOrientationFromImageOrientation:
+    (UIImageOrientation)imageOrientation;
 + (UIDeviceOrientation)currentUIOrientation;
 
 @end

@@ -12,28 +12,32 @@ static FIRVisionBarcodeDetector *barcodeDetector;
   return sharedInstance;
 }
 
-- (void)handleDetection:(FIRVisionImage *)image options:(NSDictionary *)options finishedCallback:(OperationFinishedCallback)callback errorCallback:(OperationErrorCallback)errorCallback {
+- (void)handleDetection:(FIRVisionImage *)image
+                options:(NSDictionary *)options
+       finishedCallback:(OperationFinishedCallback)callback
+          errorCallback:(OperationErrorCallback)errorCallback {
   if (barcodeDetector == nil) {
     FIRVision *vision = [FIRVision vision];
     barcodeDetector = [vision barcodeDetector];
   }
   NSMutableArray *ret = [NSMutableArray array];
-  [barcodeDetector detectInImage:image
-                      completion:^(NSArray<FIRVisionBarcode *> *barcodes, NSError *error) {
-                        if (error) {
-                          [FLTFirebaseMlVisionPlugin handleError:error finishedCallback:errorCallback];
-                          return;
-                        } else if (!barcodes) {
-                          callback(@[], @"barcode");
-                          return;
-                        }
+  [barcodeDetector
+      detectInImage:image
+         completion:^(NSArray<FIRVisionBarcode *> *barcodes, NSError *error) {
+           if (error) {
+             [FLTFirebaseMlVisionPlugin handleError:error finishedCallback:errorCallback];
+             return;
+           } else if (!barcodes) {
+             callback(@[], @"barcode");
+             return;
+           }
 
-                        // Scanned barcode
-                        for (FIRVisionBarcode *barcode in barcodes) {
-                          [ret addObject:visionBarcodeToDictionary(barcode)];
-                        }
-                        callback(ret, @"barcode");
-                      }];
+           // Scanned barcode
+           for (FIRVisionBarcode *barcode in barcodes) {
+             [ret addObject:visionBarcodeToDictionary(barcode)];
+           }
+           callback(ret, @"barcode");
+         }];
 }
 
 NSDictionary *visionBarcodeToDictionary(FIRVisionBarcode *barcode) {

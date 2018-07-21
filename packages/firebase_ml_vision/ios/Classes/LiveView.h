@@ -1,11 +1,13 @@
-#import <Flutter/Flutter.h>
 #import <AVFoundation/AVFoundation.h>
+#import <Flutter/Flutter.h>
 #import <libkern/OSAtomic.h>
 
-@interface FLTCam : NSObject<FlutterTexture, AVCaptureVideoDataOutputSampleBufferDelegate,
-AVCaptureAudioDataOutputSampleBufferDelegate, FlutterStreamHandler>
+@interface FLTCam : NSObject <FlutterTexture,
+                              AVCaptureVideoDataOutputSampleBufferDelegate,
+                              AVCaptureAudioDataOutputSampleBufferDelegate,
+                              FlutterStreamHandler>
 @property(readonly, nonatomic) int64_t textureId;
-@property (nonatomic) bool isUsingFrontCamera;
+@property(nonatomic) bool isUsingFrontCamera;
 @property(nonatomic, copy) void (^onFrameAvailable)();
 @property(nonatomic, copy) void (^onSizeAvailable)();
 @property(nonatomic) FlutterEventChannel *eventChannel;
@@ -35,6 +37,5 @@ AVCaptureAudioDataOutputSampleBufferDelegate, FlutterStreamHandler>
 - (void)startVideoRecordingAtPath:(NSString *)path result:(FlutterResult)result;
 - (void)stopVideoRecordingWithResult:(FlutterResult)result;
 - (void)captureToFile:(NSString *)filename result:(FlutterResult)result;
-- (void)setDetector:(NSObject<Detector> *)detector
-        withOptions:(NSDictionary *)detectorOptions;
+- (void)setDetector:(NSObject<Detector> *)detector withOptions:(NSDictionary *)detectorOptions;
 @end
