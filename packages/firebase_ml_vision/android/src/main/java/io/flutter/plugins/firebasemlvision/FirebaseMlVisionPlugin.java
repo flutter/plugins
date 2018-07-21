@@ -2,14 +2,9 @@ package io.flutter.plugins.firebasemlvision;
 
 import android.app.Activity;
 import android.app.Application;
-import android.graphics.Bitmap;
-import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.Nullable;
-import android.support.media.ExifInterface;
-import android.util.Log;
 
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 
@@ -25,11 +20,7 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
-import io.flutter.plugins.firebasemlvision.live.Camera;
-import io.flutter.plugins.firebasemlvision.live.CameraInfo;
-import io.flutter.plugins.firebasemlvision.live.CameraInfoException;
 import io.flutter.plugins.firebasemlvision.live.LegacyCamera;
-import java.util.Map;
 
 /** FirebaseMlVisionPlugin */
 public class FirebaseMlVisionPlugin implements MethodCallHandler {
