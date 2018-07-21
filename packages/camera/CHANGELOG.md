@@ -1,3 +1,7 @@
+## 0.2.2
+
+* iOS image capture is done in high quality (full camera size)
+
 ## 0.2.1
 
 * Updated Gradle tooling to match Android Studio 3.1.2.
