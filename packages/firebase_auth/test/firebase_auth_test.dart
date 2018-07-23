@@ -20,6 +20,7 @@ const String kMockCustomToken = '12345';
 const String kMockPhoneNumber = '5555555555';
 const String kMockVerificationId = '12345';
 const String kMockSmsCode = '123456';
+const String kMockLanguage = 'en';
 
 void main() {
   group('$FirebaseAuth', () {
@@ -411,6 +412,22 @@ void main() {
             'stopListeningAuthState',
             arguments: <String, dynamic>{
               'id': 42,
+            },
+          ),
+        ],
+      );
+    });
+
+    test('setLanguageCode', () async {
+      await auth.setLanguageCode(kMockLanguage);
+
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'setLanguageCode',
+            arguments: <String, String>{
+              'language': kMockLanguage,
             },
           ),
         ],
