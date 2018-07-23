@@ -78,6 +78,12 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       case "reload":
         handleReload(call, result);
         break;
+      case "updatePassword":
+        handleUpdatePassword(call, result);
+        break;
+      case "delete":
+        handleDelete(call, result);
+        break;
       case "signInWithEmailAndPassword":
         handleSignInWithEmailAndPassword(call, result);
         break;
@@ -308,6 +314,23 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     firebaseAuth
         .getCurrentUser()
         .reload()
+        .addOnCompleteListener(new TaskVoidCompleteListener(result));
+  }
+
+  private void handleUpdatePassword(MethodCall call, final Result result) {
+    @SuppressWarnings("unchecked")
+    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    String password = arguments.get("password");
+    firebaseAuth
+        .getCurrentUser()
+        .updatePassword(password)
+        .addOnCompleteListener(new TaskVoidCompleteListener(result));
+  }
+
+  private void handleDelete(MethodCall call, final Result result) {
+    firebaseAuth
+        .getCurrentUser()
+        .delete()
         .addOnCompleteListener(new TaskVoidCompleteListener(result));
   }
 

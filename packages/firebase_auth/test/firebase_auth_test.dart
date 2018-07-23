@@ -14,6 +14,7 @@ const String kMockDisplayName = 'Flutter Test User';
 const String kMockPhotoUrl = 'http://www.example.com/';
 const String kMockEmail = 'test@example.com';
 const String kMockPassword = 'passw0rd';
+const String kMockUpdatePassword = 'n3wpassw0rd';
 const String kMockIdToken = '12345';
 const String kMockAccessToken = '67890';
 const String kMockCustomToken = '12345';
@@ -313,6 +314,46 @@ void main() {
           ),
           isMethodCall(
             'reload',
+            arguments: null,
+          ),
+        ],
+      );
+    });
+
+    test('updatePassword', () async {
+      final FirebaseUser user = await auth.currentUser();
+      await user.updatePassword(kMockUpdatePassword);
+
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'currentUser',
+            arguments: null,
+          ),
+          isMethodCall(
+            'updatePassword',
+            arguments: <String, String>{
+              'password': kMockUpdatePassword,
+            },
+          ),
+        ],
+      );
+    });
+
+    test('delete', () async {
+      final FirebaseUser user = await auth.currentUser();
+      await user.delete();
+
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'currentUser',
+            arguments: null,
+          ),
+          isMethodCall(
+            'delete',
             arguments: null,
           ),
         ],
