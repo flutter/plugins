@@ -47,8 +47,8 @@ class Connectivity {
   /// 
   /// Please note that it DOESN'T WORK on emulators (returns null).
   /// 
-  /// From android 8.0 onwards the GPS must be ON in order
-  /// to be able to obtain the SSID.
+  /// From android 8.0 onwards the GPS must be ON (high accuracy) 
+  /// in order to be able to obtain the SSID.
   Future<String> getWifiName() async {
     String wifiName = await _methodChannel.invokeMethod('wifiname');
     // as Android might return <unkown ssid>, uniforming result
