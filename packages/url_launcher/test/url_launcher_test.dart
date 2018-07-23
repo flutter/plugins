@@ -8,7 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 void main() {
   const MethodChannel channel =
-      const MethodChannel('plugins.flutter.io/url_launcher');
+      MethodChannel('plugins.flutter.io/url_launcher');
   final List<MethodCall> log = <MethodCall>[];
   channel.setMockMethodCallHandler((MethodCall methodCall) async {
     log.add(methodCall);

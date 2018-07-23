@@ -127,7 +127,7 @@ class GoogleSignIn {
   /// The [MethodChannel] over which this class communicates.
   @visibleForTesting
   static const MethodChannel channel =
-      const MethodChannel('plugins.flutter.io/google_sign_in');
+      MethodChannel('plugins.flutter.io/google_sign_in');
 
   /// Option to determine the sign in user experience. [SignInOption.games] must
   /// not be used on iOS.
@@ -230,10 +230,7 @@ class GoogleSignIn {
       // If after the last completed call currentUser is not null and requested
       // method is a sign in method, re-use the same authenticated user
       // instead of making extra call to the native side.
-      const List<String> kSignInMethods = const <String>[
-        'signIn',
-        'signInSilently'
-      ];
+      const List<String> kSignInMethods = <String>['signIn', 'signInSilently'];
       if (kSignInMethods.contains(method) && _currentUser != null) {
         completer.complete(_currentUser);
       } else {

@@ -9,9 +9,9 @@ part of cloud_firestore;
 /// You can get an instance by calling [Firestore.instance].
 class Firestore {
   @visibleForTesting
-  static const MethodChannel channel = const MethodChannel(
+  static const MethodChannel channel = MethodChannel(
     'plugins.flutter.io/cloud_firestore',
-    const StandardMethodCodec(const FirestoreMessageCodec()),
+    StandardMethodCodec(FirestoreMessageCodec()),
   );
 
   static final Map<int, StreamController<QuerySnapshot>> _queryObservers =

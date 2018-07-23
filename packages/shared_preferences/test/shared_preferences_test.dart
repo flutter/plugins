@@ -8,24 +8,24 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   group('$SharedPreferences', () {
-    const MethodChannel channel = const MethodChannel(
+    const MethodChannel channel = MethodChannel(
       'plugins.flutter.io/shared_preferences',
     );
 
-    const Map<String, dynamic> kTestValues = const <String, dynamic>{
+    const Map<String, dynamic> kTestValues = <String, dynamic>{
       'flutter.String': 'hello world',
       'flutter.bool': true,
       'flutter.int': 42,
       'flutter.double': 3.14159,
-      'flutter.List': const <String>['foo', 'bar'],
+      'flutter.List': <String>['foo', 'bar'],
     };
 
-    const Map<String, dynamic> kTestValues2 = const <String, dynamic>{
+    const Map<String, dynamic> kTestValues2 = <String, dynamic>{
       'flutter.String': 'goodbye world',
       'flutter.bool': false,
       'flutter.int': 1337,
       'flutter.double': 2.71828,
-      'flutter.List': const <String>['baz', 'quox'],
+      'flutter.List': <String>['baz', 'quox'],
     };
 
     final List<MethodCall> log = <MethodCall>[];

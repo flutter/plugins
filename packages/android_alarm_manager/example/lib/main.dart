@@ -73,7 +73,7 @@ Future<Null> main() async {
   final int oneShotID = 2;
   printHelloMessage("Hello, main()!");
   runApp(const Center(
-      child: const Text('Hello, world!', textDirection: TextDirection.ltr)));
+      child: Text('Hello, world!', textDirection: TextDirection.ltr)));
   await AndroidAlarmManager.periodic(
       const Duration(minutes: 1), helloAlarmID, printHello);
   await AndroidAlarmManager.periodic(
