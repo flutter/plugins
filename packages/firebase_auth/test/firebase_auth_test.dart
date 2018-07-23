@@ -14,7 +14,6 @@ const String kMockDisplayName = 'Flutter Test User';
 const String kMockPhotoUrl = 'http://www.example.com/';
 const String kMockEmail = 'test@example.com';
 const String kMockPassword = 'passw0rd';
-const String kMockUpdatePassword = 'n3wpassw0rd';
 const String kMockIdToken = '12345';
 const String kMockAccessToken = '67890';
 const String kMockCustomToken = '12345';
