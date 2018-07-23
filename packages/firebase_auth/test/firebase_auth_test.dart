@@ -320,27 +320,6 @@ void main() {
       );
     });
 
-    test('updatePassword', () async {
-      final FirebaseUser user = await auth.currentUser();
-      await user.updatePassword(kMockUpdatePassword);
-
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall(
-            'currentUser',
-            arguments: null,
-          ),
-          isMethodCall(
-            'updatePassword',
-            arguments: <String, String>{
-              'password': kMockUpdatePassword,
-            },
-          ),
-        ],
-      );
-    });
-
     test('delete', () async {
       final FirebaseUser user = await auth.currentUser();
       await user.delete();

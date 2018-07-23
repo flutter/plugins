@@ -90,14 +90,6 @@ class FirebaseUser extends UserInfo {
     await FirebaseAuth.channel.invokeMethod('reload');
   }
 
-  /// Updates the password of the user.
-  Future<void> updatePassword(String password) async {
-    assert(password != null);
-    await FirebaseAuth.channel.invokeMethod('updatePassword', <String, String>{
-      'password': password,
-    });
-  }
-
   /// Deletes the user record from your Firebase project's database.
   Future<void> delete() async {
     await FirebaseAuth.channel.invokeMethod('delete');
