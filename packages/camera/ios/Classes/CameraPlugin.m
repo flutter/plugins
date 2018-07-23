@@ -341,6 +341,7 @@
       dictionaryWithObjectsAndKeys:AVVideoCodecH264, AVVideoCodecKey,
                                    [NSNumber numberWithInt:_previewSize.height], AVVideoWidthKey,
                                    [NSNumber numberWithInt:_previewSize.width], AVVideoHeightKey,
+                                   AVVideoScalingModeKey, AVVideoScalingModeResizeAspectFill,
                                    nil];
   _videoWriterInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeVideo
                                                          outputSettings:videoSettings];
