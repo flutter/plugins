@@ -250,6 +250,10 @@ int nextHandle = 0;
                               completion:^(FIRUser *user, NSError *error) {
                                 [self sendResult:result forUser:user error:error];
                               }];
+  } else if ([@"setLanguageCode" isEqualToString:call.method]) {
+    NSString *language = call.arguments[@"language"];
+    [[FIRAuth auth] setLanguageCode:language];
+    [self sendResult:result forUser:nil error:nil];
   } else {
     result(FlutterMethodNotImplemented);
   }
