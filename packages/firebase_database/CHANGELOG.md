@@ -1,3 +1,7 @@
+## 1.0.3
+
+* Bump Android and Firebase dependency versions.
+
 ## 1.0.2
 
 * Add `onDisconnect` support.

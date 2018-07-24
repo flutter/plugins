@@ -411,6 +411,16 @@ class FirebaseAuth {
     return currentUser;
   }
 
+  /// Sets the user-facing language code for auth operations that can be
+  /// internationalized, such as [sendEmailVerification]. This language
+  /// code should follow the conventions defined by the IETF in BCP47.
+  Future<void> setLanguageCode(String language) async {
+    assert(language != null);
+    await FirebaseAuth.channel.invokeMethod('setLanguageCode', <String, String>{
+      'language': language,
+    });
+  }
+
   Future<Null> _callHandler(MethodCall call) async {
     switch (call.method) {
       case 'onAuthStateChanged':
@@ -426,7 +436,7 @@ class FirebaseAuth {
         final int handle = call.arguments['handle'];
         final PhoneVerificationFailed verificationFailed =
             _phoneAuthCallbacks[handle]['PhoneVerificationFailed'];
-        final Map<String, String> exception = call.arguments['exception'];
+        final Map<dynamic, dynamic> exception = call.arguments['exception'];
         verificationFailed(
             new AuthException(exception['code'], exception['message']));
         break;

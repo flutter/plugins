@@ -66,7 +66,7 @@ class FaceDetector extends FirebaseVisionDetector {
 
 /// Immutable options for configuring features of [FaceDetector].
 ///
-/// Used to configure the features such as classification, face tracking, speed,
+/// Used to configure features such as classification, face tracking, speed,
 /// etc.
 class FaceDetectorOptions {
   /// Constructor for [FaceDetectorOptions].
@@ -188,7 +188,7 @@ class Face {
   /// Gets the landmark based on the provided [FaceLandmarkType].
   ///
   /// Null if landmark was not detected.
-  FaceLandmark landmark(FaceLandmarkType landmark) => _landmarks[landmark];
+  FaceLandmark getLandmark(FaceLandmarkType landmark) => _landmarks[landmark];
 }
 
 /// Represent a face landmark.

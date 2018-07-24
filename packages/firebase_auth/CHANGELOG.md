@@ -1,3 +1,15 @@
+## 0.5.16
+
+* Adding support for setLanguageCode in FirebaseAuth.
+
+## 0.5.15
+
+* Bump Android and Firebase dependency versions.
+
+## 0.5.14
+
+* Fixed handling of auto phone number verification.
+
 ## 0.5.13
 
 * Add support for phone number authentication.
