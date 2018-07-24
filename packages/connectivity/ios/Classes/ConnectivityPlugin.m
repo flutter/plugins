@@ -30,11 +30,11 @@
 }
 
 - (NSString*)getWifiName {
-  NSString *wifiName = nil;
-  NSArray *interFaceNames = (__bridge_transfer id)CNCopySupportedInterfaces();
+  NSString* wifiName = nil;
+  NSArray* interFaceNames = (__bridge_transfer id)CNCopySupportedInterfaces();
 
-  for (NSString *name in interFaceNames) {
-    NSDictionary *info = (__bridge_transfer id)CNCopyCurrentNetworkInfo((__bridge CFStringRef)name);
+  for (NSString* name in interFaceNames) {
+    NSDictionary* info = (__bridge_transfer id)CNCopyCurrentNetworkInfo((__bridge CFStringRef)name);
     if (info[@"SSID"]) { 
       wifiName = info[@"SSID"]; 
     }

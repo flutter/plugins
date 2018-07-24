@@ -10,8 +10,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.wifi.WifiManager;
 import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.EventChannel.EventSink;
 import io.flutter.plugin.common.EventChannel.StreamHandler;
@@ -94,22 +94,19 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
     } else {
       result.success("none");
     }
-}
+  }
 
   private void handleWifiName(MethodCall call, final Result result) {
     WifiManager wifiManager =
-      (WifiManager) registrar.context().getSystemService(Context.WIFI_SERVICE);
+        (WifiManager) registrar.context().getSystemService(Context.WIFI_SERVICE);
 
     WifiInfo wifiInfo = null;
-    if (wifiManager != null)
-      wifiInfo = wifiManager.getConnectionInfo();
+    if (wifiManager != null) wifiInfo = wifiManager.getConnectionInfo();
 
     String ssid = null;
-    if (wifiInfo != null)
-      ssid = wifiInfo.getSSID();
-    
-    if (ssid != null)
-      ssid = ssid.replaceAll("\"", ""); // Android returns "SSID"
+    if (wifiInfo != null) ssid = wifiInfo.getSSID();
+
+    if (ssid != null) ssid = ssid.replaceAll("\"", ""); // Android returns "SSID"
 
     result.success(ssid);
   }
