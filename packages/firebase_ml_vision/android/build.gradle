@@ -32,7 +32,7 @@ android {
         disable 'InvalidPackage'
     }
     dependencies {
-        api 'com.google.firebase:firebase-ml-vision:15.0.0'
-        api 'com.google.firebase:firebase-ml-vision-image-label-model:16.0.0'
+        api 'com.google.firebase:firebase-ml-vision:16.0.0'
+        api 'com.google.firebase:firebase-ml-vision-image-label-model:15.0.0'
     }
 }
