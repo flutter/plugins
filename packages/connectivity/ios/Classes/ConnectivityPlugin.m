@@ -8,7 +8,7 @@
 
 #import <SystemConfiguration/CaptiveNetwork.h>
 
-@interface FLTConnectivityPlugin ()<FlutterStreamHandler>
+@interface FLTConnectivityPlugin () <FlutterStreamHandler>
 @end
 
 @implementation FLTConnectivityPlugin {
@@ -35,8 +35,8 @@
 
   for (NSString* name in interFaceNames) {
     NSDictionary* info = (__bridge_transfer id)CNCopyCurrentNetworkInfo((__bridge CFStringRef)name);
-    if (info[@"SSID"]) { 
-      wifiName = info[@"SSID"]; 
+    if (info[@"SSID"]) {
+      wifiName = info[@"SSID"];
     }
   }
 
