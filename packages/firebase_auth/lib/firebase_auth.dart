@@ -412,7 +412,7 @@ class FirebaseAuth {
   }
 
   /// Sets the user-facing language code for auth operations that can be
-  /// internationalized, such as [sendEmailVerification]. This language 
+  /// internationalized, such as [sendEmailVerification]. This language
   /// code should follow the conventions defined by the IETF in BCP47.
   Future<void> setLanguageCode(String language) async {
     assert(language != null);
