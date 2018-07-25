@@ -126,6 +126,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       case "signInWithPhoneNumber":
         handleSignInWithPhoneNumber(call, result);
         break;
+      case "setLanguageCode":
+        handleSetLanguageCode(call, result);
+        break;
       default:
         result.notImplemented();
         break;
@@ -484,6 +487,15 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
           String.format("Listener with identifier '%d' not found.", id),
           null);
     }
+  }
+
+  private void handleSetLanguageCode(MethodCall call, final Result result) {
+    @SuppressWarnings("unchecked")
+    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    String language = arguments.get("language");
+
+    firebaseAuth.setLanguageCode(language);
+    result.success(null);
   }
 
   private class SignInCompleteListener implements OnCompleteListener<AuthResult> {
