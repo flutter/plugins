@@ -43,6 +43,7 @@
   } else if ([@"FaceDetector#detectInImage" isEqualToString:call.method]) {
     [FaceDetector handleDetection:image options:options result:result];
   } else if ([@"LabelDetector#detectInImage" isEqualToString:call.method]) {
+    [LabelDetector handleDetection:image options:options result:result];
   } else if ([@"TextDetector#detectInImage" isEqualToString:call.method]) {
     [TextDetector handleDetection:image options:options result:result];
   } else {

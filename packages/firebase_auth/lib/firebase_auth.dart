@@ -90,6 +90,11 @@ class FirebaseUser extends UserInfo {
     await FirebaseAuth.channel.invokeMethod('reload');
   }
 
+  /// Deletes the user record from your Firebase project's database.
+  Future<void> delete() async {
+    await FirebaseAuth.channel.invokeMethod('delete');
+  }
+
   @override
   String toString() {
     return '$runtimeType($_data)';
@@ -409,6 +414,16 @@ class FirebaseAuth {
     );
     final FirebaseUser currentUser = new FirebaseUser._(data);
     return currentUser;
+  }
+
+  /// Sets the user-facing language code for auth operations that can be
+  /// internationalized, such as [sendEmailVerification]. This language
+  /// code should follow the conventions defined by the IETF in BCP47.
+  Future<void> setLanguageCode(String language) async {
+    assert(language != null);
+    await FirebaseAuth.channel.invokeMethod('setLanguageCode', <String, String>{
+      'language': language,
+    });
   }
 
   Future<Null> _callHandler(MethodCall call) async {

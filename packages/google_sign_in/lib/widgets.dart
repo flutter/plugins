@@ -75,8 +75,7 @@ class GoogleUserCircleAvatar extends StatelessWidget {
     if (photoUrl == null) {
       // If the user has no profile photo and no display name, fall back to
       // the default profile photo as a last resort.
-      return 'https://lh3.googleusercontent.com/a/default-user=s${size
-          .round()}-c';
+      return 'https://lh3.googleusercontent.com/a/default-user=s${size.round()}-c';
     }
     final Uri profileUri = Uri.parse(photoUrl);
     final List<String> pathSegments =
