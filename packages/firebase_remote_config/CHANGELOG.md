@@ -1,3 +1,7 @@
+## 0.0.6
+
+* Allowed extending the RemoteConfig class.
+
 ## 0.0.5
 
 * Bump Android and Firebase dependency versions.
