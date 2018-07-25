@@ -1,6 +1,6 @@
 ## 0.5.17
 
-* Adding support for FirebaseUser.delete.
+* Adding support for FirebaseUser.delete. 
 
 ## 0.5.16
 
