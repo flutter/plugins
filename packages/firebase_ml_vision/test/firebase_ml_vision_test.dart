@@ -467,7 +467,7 @@ void main() {
         returnValue = testFaces;
 
         final FaceDetector detector = FirebaseVision.instance.faceDetector(
-          new FaceDetectorOptions(
+          const FaceDetectorOptions(
             enableClassification: true,
             enableLandmarks: true,
             enableTracking: false,
@@ -532,7 +532,7 @@ void main() {
         returnValue = testFaces;
 
         final FaceDetector detector = FirebaseVision.instance.faceDetector(
-          new FaceDetectorOptions(),
+          const FaceDetectorOptions(),
         );
         final FirebaseVisionImage image = new FirebaseVisionImage.fromFilePath(
           'empty',
@@ -547,7 +547,7 @@ void main() {
         returnValue = <dynamic>[];
 
         final FaceDetector detector = FirebaseVision.instance.faceDetector(
-          new FaceDetectorOptions(),
+          const FaceDetectorOptions(),
         );
         final FirebaseVisionImage image = new FirebaseVisionImage.fromFilePath(
           'empty',
@@ -576,7 +576,7 @@ void main() {
         returnValue = labelData;
 
         final LabelDetector detector = FirebaseVision.instance.labelDetector(
-          LabelDetectorOptions(confidenceThreshold: 0.2),
+          const LabelDetectorOptions(confidenceThreshold: 0.2),
         );
 
         final FirebaseVisionImage image = new FirebaseVisionImage.fromFilePath(
@@ -610,7 +610,7 @@ void main() {
         returnValue = <dynamic>[];
 
         final LabelDetector detector = FirebaseVision.instance.labelDetector(
-          LabelDetectorOptions(),
+          const LabelDetectorOptions(),
         );
         final FirebaseVisionImage image =
             new FirebaseVisionImage.fromFilePath('empty');

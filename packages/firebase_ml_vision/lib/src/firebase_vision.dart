@@ -30,17 +30,17 @@ class FirebaseVision {
 
   /// Creates an instance of [BarcodeDetector].
   BarcodeDetector barcodeDetector([BarcodeDetectorOptions options]) {
-    return BarcodeDetector._(options ?? BarcodeDetectorOptions());
+    return BarcodeDetector._(options ?? const BarcodeDetectorOptions());
   }
 
   /// Creates an instance of [FaceDetector].
   FaceDetector faceDetector([FaceDetectorOptions options]) {
-    return FaceDetector._(options ?? FaceDetectorOptions());
+    return FaceDetector._(options ?? const FaceDetectorOptions());
   }
 
   /// Creates an instance of [LabelDetector].
   LabelDetector labelDetector([LabelDetectorOptions options]) {
-    return LabelDetector._(options ?? LabelDetectorOptions());
+    return LabelDetector._(options ?? const LabelDetectorOptions());
   }
 
   /// Creates an instance of [TextDetector].
