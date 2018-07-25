@@ -320,6 +320,25 @@ void main() {
       );
     });
 
+    test('delete', () async {
+      final FirebaseUser user = await auth.currentUser();
+      await user.delete();
+
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'currentUser',
+            arguments: null,
+          ),
+          isMethodCall(
+            'delete',
+            arguments: null,
+          ),
+        ],
+      );
+    });
+
     test('sendPasswordResetEmail', () async {
       await auth.sendPasswordResetEmail(
         email: kMockEmail,
