@@ -78,7 +78,7 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
       case "check":
         handleCheck(call, result);
         break;
-      case "wifiname":
+      case "wifiName":
         handleWifiName(call, result);
         break;
       default:

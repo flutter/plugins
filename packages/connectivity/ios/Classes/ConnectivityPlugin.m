@@ -63,7 +63,7 @@
     // and the code
     // gets more involved. So for now, this will do.
     result([self statusFromReachability:[Reachability reachabilityForInternetConnection]]);
-  } else if ([call.method isEqualToString:@"wifiname"]) {
+  } else if ([call.method isEqualToString:@"wifiName"]) {
     result([self getWifiName]);
   } else {
     result(FlutterMethodNotImplemented);

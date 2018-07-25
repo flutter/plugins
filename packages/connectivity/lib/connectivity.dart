@@ -50,10 +50,10 @@ class Connectivity {
   /// From android 8.0 onwards the GPS must be ON (high accuracy)
   /// in order to be able to obtain the SSID.
   Future<String> getWifiName() async {
-    String wifiName = await _methodChannel.invokeMethod('wifiname');
+    String wifiName = await _methodChannel.invokeMethod('wifiName');
     // as Android might return <unknown ssid>, uniforming result
     // our iOS implementation will return null
-    if (wifiName == "<unknown ssid>") wifiName = null;
+    if (wifiName == '<unknown ssid>') wifiName = null;
     return wifiName;
   }
 }
