@@ -72,7 +72,7 @@ class FaceDetectorOptions {
   /// Constructor for [FaceDetectorOptions].
   ///
   /// The parameter minFaceValue must be between 0.0 and 1.0, inclusive.
-  FaceDetectorOptions({
+  const FaceDetectorOptions({
     this.enableClassification = false,
     this.enableLandmarks = false,
     this.enableTracking = false,
@@ -204,9 +204,4 @@ class FaceLandmark {
   ///
   /// The point (0, 0) is defined as the upper-left corner of the image.
   final Point<double> position;
-}
-
-String _enumToString(dynamic enumValue) {
-  final String enumString = enumValue.toString();
-  return enumString.substring(enumString.indexOf('.') + 1);
 }
