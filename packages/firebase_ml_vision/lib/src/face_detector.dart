@@ -72,7 +72,7 @@ class FaceDetectorOptions {
   /// Constructor for [FaceDetectorOptions].
   ///
   /// The parameter minFaceValue must be between 0.0 and 1.0, inclusive.
-  FaceDetectorOptions({
+  const FaceDetectorOptions({
     this.enableClassification = false,
     this.enableLandmarks = false,
     this.enableTracking = false,

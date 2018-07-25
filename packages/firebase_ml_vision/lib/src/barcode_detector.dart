@@ -4,7 +4,11 @@
 
 part of firebase_ml_vision;
 
-/// Barcode value type constants - enumeration of supported barcode content value types.
+/// Enumeration of supported barcode content value types for [Barcode.valueType].
+///
+/// Note that the built-in parsers only recognize a few popular value
+/// structures. For your specific use case, you may want to implement your own
+/// parsing logic.
 enum BarcodeValueType {
   /// Unknown Barcode value types.
   unknown,
@@ -46,7 +50,7 @@ enum BarcodeValueType {
   driverLicense,
 }
 
-/// The type of email for [BarcodeEmail].
+/// The type of email for [BarcodeEmail.type].
 enum BarcodeEmailType {
   /// Unknown email type.
   unknown,
@@ -58,7 +62,7 @@ enum BarcodeEmailType {
   home,
 }
 
-/// The type of phone number for [BarcodePhone].
+/// The type of phone number for [BarcodePhone.type].
 enum BarcodePhoneType {
   /// Unknown phone type.
   unknown,
@@ -76,7 +80,7 @@ enum BarcodePhoneType {
   mobile,
 }
 
-/// Wifi encryption type constants.
+/// Wifi encryption type constants for [BarcodeWiFi.encryptionType].
 enum BarcodeWiFiEncryptionType {
   /// Barcode unknown Wi-Fi encryption type.
   unknown,
@@ -91,7 +95,7 @@ enum BarcodeWiFiEncryptionType {
   wep,
 }
 
-/// Address type constants.
+/// Address type constants for [BarcodeAddress.type]
 enum BarcodeAddressType {
   /// Barcode unknown address type.
   unknown,
@@ -103,7 +107,12 @@ enum BarcodeAddressType {
   home,
 }
 
-/// Barcode format constants - enumeration of supported barcode formats.
+/// Class containing supported barcode format constants for [BarcodeDetector].
+///
+/// Passed to [BarcodeDetectorOptions] to set which formats the detector should
+/// detect.
+///
+/// Also, represents possible values for [Barcode.format].
 class BarcodeFormat {
   const BarcodeFormat._(this.value);
 
@@ -206,9 +215,8 @@ class BarcodeDetector extends FirebaseVisionDetector {
 /// final BarcodeDetectorOptions options =
 ///     BarcodeDetectorOptions(barcodeFormats: BarcodeFormat.aztec | BarcodeFormat.ean8);
 /// ```
-/// Barcode
 class BarcodeDetectorOptions {
-  BarcodeDetectorOptions({this.barcodeFormats = BarcodeFormat.all});
+  const BarcodeDetectorOptions({this.barcodeFormats = BarcodeFormat.all});
 
   final BarcodeFormat barcodeFormats;
 }
@@ -513,7 +521,7 @@ class BarcodePersonName {
   /// The properly formatted name.
   final String formattedName;
 
-  /// Tirst name
+  /// First name
   final String first;
 
   /// Last name
