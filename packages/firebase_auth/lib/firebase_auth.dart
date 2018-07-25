@@ -90,6 +90,11 @@ class FirebaseUser extends UserInfo {
     await FirebaseAuth.channel.invokeMethod('reload');
   }
 
+  /// Deletes the user record from your Firebase project's database.
+  Future<void> delete() async {
+    await FirebaseAuth.channel.invokeMethod('delete');
+  }
+
   @override
   String toString() {
     return '$runtimeType($_data)';
