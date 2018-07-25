@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:ui';
+import 'dart:ui' as ui;
 
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:flutter/material.dart';
@@ -90,13 +90,27 @@ class LabelDetectorPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final ParagraphBuilder builder = ParagraphBuilder(ParagraphStyle());
+    final ui.ParagraphBuilder builder = ui.ParagraphBuilder(
+      ui.ParagraphStyle(
+          textAlign: TextAlign.left,
+          fontSize: 23.0,
+          textDirection: TextDirection.ltr),
+    );
+
+    builder.pushStyle(new ui.TextStyle(color: Colors.green));
     for (Label label in labels) {
-      builder.addText('Label ${label.label}, '
-          'Entity Id: ${label.entityId}, '
-          'Confidence: ${label.confidence}');
+      builder.addText('Label: ${label.label}, '
+          'Confidence: ${label.confidence.toStringAsFixed(2)}\n');
     }
-    canvas.drawParagraph(builder.build(), const Offset(0.0, 0.0));
+    builder.pop();
+
+    canvas.drawParagraph(
+      builder.build()
+        ..layout(ui.ParagraphConstraints(
+          width: size.width,
+        )),
+      const Offset(0.0, 0.0),
+    );
   }
 
   @override

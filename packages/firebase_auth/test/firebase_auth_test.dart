@@ -20,6 +20,7 @@ const String kMockCustomToken = '12345';
 const String kMockPhoneNumber = '5555555555';
 const String kMockVerificationId = '12345';
 const String kMockSmsCode = '123456';
+const String kMockLanguage = 'en';
 
 void main() {
   group('$FirebaseAuth', () {
@@ -319,6 +320,25 @@ void main() {
       );
     });
 
+    test('delete', () async {
+      final FirebaseUser user = await auth.currentUser();
+      await user.delete();
+
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'currentUser',
+            arguments: null,
+          ),
+          isMethodCall(
+            'delete',
+            arguments: null,
+          ),
+        ],
+      );
+    });
+
     test('sendPasswordResetEmail', () async {
       await auth.sendPasswordResetEmail(
         email: kMockEmail,
@@ -411,6 +431,22 @@ void main() {
             'stopListeningAuthState',
             arguments: <String, dynamic>{
               'id': 42,
+            },
+          ),
+        ],
+      );
+    });
+
+    test('setLanguageCode', () async {
+      await auth.setLanguageCode(kMockLanguage);
+
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'setLanguageCode',
+            arguments: <String, String>{
+              'language': kMockLanguage,
             },
           ),
         ],
