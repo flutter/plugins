@@ -39,7 +39,7 @@ class RemoteConfig extends ChangeNotifier {
     final Map<dynamic, dynamic> properties =
         await channel.invokeMethod('RemoteConfig#instance');
 
-    final RemoteConfig instance = RemoteConfig();
+    final RemoteConfig instance = new RemoteConfig();
 
     instance._lastFetchTime =
         new DateTime.fromMillisecondsSinceEpoch(properties['lastFetchTime']);
