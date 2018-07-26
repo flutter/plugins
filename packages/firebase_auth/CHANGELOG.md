@@ -1,3 +1,7 @@
+## 0.5.18
+
+* Adding support for updateEmail in FirebaseAuth.
+
 ## 0.5.17
 
 * Adding support for FirebaseUser.delete. 

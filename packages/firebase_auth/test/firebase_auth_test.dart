@@ -44,6 +44,9 @@ void main() {
           case "updateProfile":
             return null;
             break;
+          case "updateEmail":
+            return null;
+            break;
           case "fetchProvidersForEmail":
             return new List<String>(0);
             break;
@@ -371,6 +374,20 @@ void main() {
           },
         ),
       ]);
+    });
+
+    test('updateEmail', () async {
+      final String updatedEmail = 'atestemail@gmail.com';
+      auth.updateEmail(email: updatedEmail);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'updateEmail',
+            arguments: <String, String>{'email': updatedEmail},
+          ),
+        ],
+      );
     });
 
     test('signInWithCustomToken', () async {

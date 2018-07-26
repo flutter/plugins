@@ -369,6 +369,18 @@ class FirebaseAuth {
     return currentUser;
   }
 
+  Future<void> updateEmail({
+    @required String email,
+  }) async {
+    assert(email != null);
+    return await channel.invokeMethod(
+      'updateEmail',
+      <String, String>{
+        'email': email,
+      },
+    );
+  }
+
   Future<void> updateProfile(UserUpdateInfo userUpdateInfo) async {
     assert(userUpdateInfo != null);
     return await channel.invokeMethod(
