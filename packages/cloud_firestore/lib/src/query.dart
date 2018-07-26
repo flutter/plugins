@@ -97,7 +97,11 @@ class Query {
       new CollectionReference._(firestore, _pathComponents);
 
   /// Creates and returns a new [Query] with additional filter on specified
-  /// [field].
+  /// [field]. [field] refers to a field in a document.
+  ///
+  /// The [field] may consist of a single field name (referring to a top level
+  /// field in the document), or a series of field names seperated by dots '.'
+  /// (referring to a nested field in the document).
   ///
   /// Only documents satisfying provided condition are included in the result
   /// set.

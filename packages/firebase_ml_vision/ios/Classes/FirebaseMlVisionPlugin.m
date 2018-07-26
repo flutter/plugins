@@ -128,28 +128,20 @@
     }
     result(nil);
   } else {
-    // image file detection
-    FIRVisionImage *image = [self filePathToVisionImage:call.arguments[@"path"]];
-    NSDictionary *options = call.arguments[@"options"];
-    if ([@"BarcodeDetector#detectInImage" isEqualToString:call.method]) {
-      [[BarcodeDetector sharedInstance] handleDetection:image
-                                                options:options
-                                       finishedCallback:[self handleSuccess:result]
+    // image file detectionFIRVisionImage *image = [self filePathToVisionImage:call.arguments[@"path"]];
+  NSDictionary *options = call.arguments[@"options"];
+  if ([@"BarcodeDetector#detectInImage" isEqualToString:call.method]) {
+    [[BarcodeDetector sharedInstance]handleDetection:image options:options finishedCallback:[self handleSuccess:result]
                                           errorCallback:[self handleError:result]];
-    } else if ([@"FaceDetector#detectInImage" isEqualToString:call.method]) {
-      [[FaceDetector sharedInstance] handleDetection:image
-                                             options:options
-                                    finishedCallback:[self handleSuccess:result]
+  } else if ([@"FaceDetector#detectInImage" isEqualToString:call.method]) {
+    [[FaceDetector sharedInstance]handleDetection:image options:options finishedCallback:[self handleSuccess:result]
                                        errorCallback:[self handleError:result]];
-    } else if ([@"LabelDetector#detectInImage" isEqualToString:call.method]) {
-    } else if ([@"TextDetector#detectInImage" isEqualToString:call.method]) {
-      [[TextDetector sharedInstance] handleDetection:image
-                                             options:options
-                                    finishedCallback:[self handleSuccess:result]
+  } else if ([@"LabelDetector#detectInImage" isEqualToString:call.method]) {
+  [LabelDetector handleDetection:image options:options result:result];} else if ([@"TextDetector#detectInImage" isEqualToString:call.method]) {
+    [[TextDetector sharedInstance]handleDetection:image options:options finishedCallback:[self handleSuccess:result]
                                        errorCallback:[self handleError:result]];
-    } else {
-      result(FlutterMethodNotImplemented);
-    }
+  } else {
+    result(FlutterMethodNotImplemented);}
   }
 }
 
