@@ -3,19 +3,29 @@
 @implementation LabelDetector
 static FIRVisionLabelDetector *detector;
 
-+ (void)handleDetection:(FIRVisionImage *)image
++ (id)sharedInstance {
+  static LabelDetector *sharedInstance = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    sharedInstance = [[self alloc] init];
+  });
+  return sharedInstance;
+}
+
+- (void)handleDetection:(FIRVisionImage *)image
                 options:(NSDictionary *)options
-                 result:(FlutterResult)result {
+       finishedCallback:(OperationFinishedCallback)callback
+          errorCallback:(OperationErrorCallback)errorCallback {
   FIRVision *vision = [FIRVision vision];
   detector = [vision labelDetectorWithOptions:[LabelDetector parseOptions:options]];
 
   [detector detectInImage:image
                completion:^(NSArray<FIRVisionLabel *> *_Nullable labels, NSError *_Nullable error) {
                  if (error) {
-                   [FLTFirebaseMlVisionPlugin handleError:error result:result];
+                   [FLTFirebaseMlVisionPlugin handleError:error finishedCallback:errorCallback];
                    return;
                  } else if (!labels) {
-                   result(@[]);
+                   callback(@[], @"label");
                  }
 
                  NSMutableArray *labelData = [NSMutableArray array];
@@ -28,7 +38,7 @@ static FIRVisionLabelDetector *detector;
                    [labelData addObject:data];
                  }
 
-                 result(labelData);
+                 callback(labelData, @"label");
                }];
 }
 

@@ -242,7 +242,7 @@ class LiveViewCameraController extends ValueNotifier<LiveViewCameraValue> {
   Future<Null> setDetector(FirebaseVisionDetectorType detectorType,
       [Map<String, dynamic> options]) async {
     if (detectorType == FirebaseVisionDetectorType.face && options == null) {
-      options = new FaceDetectorOptions().optionsMap;
+      options = const FaceDetectorOptions().optionsMap;
     }
     await FirebaseVision.instance.setLiveViewDetector(detectorType, options);
   }

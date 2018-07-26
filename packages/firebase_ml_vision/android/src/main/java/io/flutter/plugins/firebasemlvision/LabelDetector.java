@@ -8,20 +8,26 @@ import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.label.FirebaseVisionLabel;
 import com.google.firebase.ml.vision.label.FirebaseVisionLabelDetector;
 import com.google.firebase.ml.vision.label.FirebaseVisionLabelDetectorOptions;
-import io.flutter.plugin.common.MethodChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class LabelDetector implements Detector {
+public class LabelDetector extends Detector {
   public static final LabelDetector instance = new LabelDetector();
 
   private LabelDetector() {}
 
+  private FirebaseVisionLabelDetectorOptions parseOptions(Map<String, Object> optionsData) {
+    float conf = (float) (double) optionsData.get("confidenceThreshold");
+    return new FirebaseVisionLabelDetectorOptions.Builder().setConfidenceThreshold(conf).build();
+  }
+
   @Override
-  public void handleDetection(
-      FirebaseVisionImage image, Map<String, Object> options, final MethodChannel.Result result) {
+  void processImage(
+      FirebaseVisionImage image,
+      Map<String, Object> options,
+      final OperationFinishedCallback finishedCallback) {
     FirebaseVisionLabelDetector detector =
         FirebaseVision.getInstance().getVisionLabelDetector(parseOptions(options));
     detector
@@ -40,20 +46,16 @@ class LabelDetector implements Detector {
                   labels.add(labelData);
                 }
 
-                result.success(labels);
+                finishedCallback.success(LabelDetector.this, labels);
               }
             })
         .addOnFailureListener(
             new OnFailureListener() {
               @Override
               public void onFailure(@NonNull Exception e) {
-                result.error("labelDetectorError", e.getLocalizedMessage(), null);
+                finishedCallback.error(
+                    new DetectorException("labelDetectorError", e.getLocalizedMessage(), null));
               }
             });
-  }
-
-  private FirebaseVisionLabelDetectorOptions parseOptions(Map<String, Object> optionsData) {
-    float conf = (float) (double) optionsData.get("confidenceThreshold");
-    return new FirebaseVisionLabelDetectorOptions.Builder().setConfidenceThreshold(conf).build();
   }
 }

@@ -101,7 +101,7 @@ static NSString *const videoDataOutputQueueLabel =
         AVCaptureConnection *connection =
             [AVCaptureConnection connectionWithInputPorts:self->_captureVideoInput.ports
                                                    output:self->_captureVideoOutput];
-        connection.videoOrientation = AVCaptureVideoOrientationPortraitUpsideDown;
+        //        connection.videoOrientation = AVCaptureVideoOrientationPortrait;
         if ([self->_captureDevice position] == AVCaptureDevicePositionFront) {
           connection.videoMirrored = YES;
         }
