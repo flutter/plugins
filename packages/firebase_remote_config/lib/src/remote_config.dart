@@ -20,8 +20,6 @@ class RemoteConfig extends ChangeNotifier {
   LastFetchStatus _lastFetchStatus;
   RemoteConfigSettings _remoteConfigSettings;
 
-  RemoteConfig._();
-
   DateTime get lastFetchTime => _lastFetchTime;
   LastFetchStatus get lastFetchStatus => _lastFetchStatus;
   RemoteConfigSettings get remoteConfigSettings => _remoteConfigSettings;
@@ -41,7 +39,7 @@ class RemoteConfig extends ChangeNotifier {
     final Map<dynamic, dynamic> properties =
         await channel.invokeMethod('RemoteConfig#instance');
 
-    final RemoteConfig instance = new RemoteConfig._();
+    final RemoteConfig instance = new RemoteConfig();
 
     instance._lastFetchTime =
         new DateTime.fromMillisecondsSinceEpoch(properties['lastFetchTime']);
