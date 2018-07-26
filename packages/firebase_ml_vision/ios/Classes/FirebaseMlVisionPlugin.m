@@ -5,7 +5,7 @@
 @interface FLTFirebaseMlVisionPlugin ()
 @property(readonly, nonatomic) NSObject<FlutterTextureRegistry> *registry;
 @property(readonly, nonatomic) NSObject<FlutterBinaryMessenger> *messenger;
-@property(readonly, nonatomic) FLTCam *camera;
+@property(readonly, nonatomic) LiveView *camera;
 @end
 
 @implementation FLTFirebaseMlVisionPlugin
@@ -43,11 +43,17 @@
     }
     result(nil);
   } else if ([@"availableCameras" isEqualToString:call.method]) {
-    AVCaptureDeviceDiscoverySession *discoverySession = [AVCaptureDeviceDiscoverySession
-        discoverySessionWithDeviceTypes:@[ AVCaptureDeviceTypeBuiltInWideAngleCamera ]
-                              mediaType:AVMediaTypeVideo
-                               position:AVCaptureDevicePositionUnspecified];
-    NSArray<AVCaptureDevice *> *devices = discoverySession.devices;
+    NSArray<AVCaptureDevice *> *devices;
+    if (@available(iOS 10.0, *)) {
+      AVCaptureDeviceDiscoverySession *discoverySession = [AVCaptureDeviceDiscoverySession
+          discoverySessionWithDeviceTypes:@[ AVCaptureDeviceTypeBuiltInWideAngleCamera ]
+                                mediaType:AVMediaTypeVideo
+                                 position:AVCaptureDevicePositionUnspecified];
+      devices = discoverySession.devices;
+    } else {
+      // Fallback on earlier versions
+      devices = AVCaptureDevice.devices;
+    }
     NSMutableArray<NSDictionary<NSString *, NSObject *> *> *reply =
         [[NSMutableArray alloc] initWithCapacity:devices.count];
     for (AVCaptureDevice *device in devices) {
@@ -73,9 +79,9 @@
     NSString *cameraName = call.arguments[@"cameraName"];
     NSString *resolutionPreset = call.arguments[@"resolutionPreset"];
     NSError *error;
-    FLTCam *cam = [[FLTCam alloc] initWithCameraName:cameraName
-                                    resolutionPreset:resolutionPreset
-                                               error:&error];
+    LiveView *cam = [[LiveView alloc] initWithCameraName:cameraName
+                                        resolutionPreset:resolutionPreset
+                                                   error:&error];
     if (error) {
       result([error flutterError]);
     } else {
@@ -85,7 +91,7 @@
       int64_t textureId = [_registry registerTexture:cam];
       _camera = cam;
       cam.onFrameAvailable = ^{
-        [_registry textureFrameAvailable:textureId];
+        [self->_registry textureFrameAvailable:textureId];
       };
       FlutterEventChannel *eventChannel = [FlutterEventChannel
           eventChannelWithName:
@@ -95,13 +101,13 @@
                binaryMessenger:_messenger];
       [eventChannel setStreamHandler:cam];
       cam.eventChannel = eventChannel;
-      cam.onSizeAvailable = ^{
+      cam.onSizeAvailable = ^(CGSize previewSize, CGSize captureSize) {
         result(@{
           @"textureId" : @(textureId),
-          @"previewWidth" : @(cam.previewSize.width),
-          @"previewHeight" : @(cam.previewSize.height),
-          @"captureWidth" : @(cam.captureSize.width),
-          @"captureHeight" : @(cam.captureSize.height),
+          @"previewWidth" : @(previewSize.width),
+          @"previewHeight" : @(previewSize.height),
+          @"captureWidth" : @(captureSize.width),
+          @"captureHeight" : @(captureSize.height),
         });
       };
       [cam start];

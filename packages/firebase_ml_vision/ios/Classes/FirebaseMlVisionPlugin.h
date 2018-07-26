@@ -9,7 +9,7 @@
 typedef void (^OperationFinishedCallback)(id _Nullable result, NSString *detectorType);
 typedef void (^OperationErrorCallback)(FlutterError *error);
 
-@interface FLTFirebaseMlVisionPlugin : NSObject <FlutterPlugin>
+@interface FLTFirebaseMlVisionPlugin : NSObject<FlutterPlugin>
 + (void)handleError:(NSError *)error finishedCallback:(OperationErrorCallback)callback;
 @end
 
@@ -23,14 +23,14 @@ typedef void (^OperationErrorCallback)(FlutterError *error);
 @optional
 @end
 
-@interface BarcodeDetector : NSObject <Detector>
+@interface BarcodeDetector : NSObject<Detector>
 @end
 
-@interface FaceDetector : NSObject <Detector>
+@interface FaceDetector : NSObject<Detector>
 @end
 
-@interface LabelDetector : NSObject <Detector>
+@interface LabelDetector : NSObject<Detector>
 @end
 
-@interface TextDetector : NSObject <Detector>
+@interface TextDetector : NSObject<Detector>
 @end

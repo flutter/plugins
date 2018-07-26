@@ -98,8 +98,7 @@ class LivePreviewState extends State<LivePreview> {
               ),
             );
           } else if (loadState is LiveViewCameraLoadStateFailed) {
-            return new Text("error loading camera ${loadState
-                .errorMessage}");
+            return new Text("error loading camera ${loadState.errorMessage}");
           } else {
             return const Text("Unknown Camera error");
           }

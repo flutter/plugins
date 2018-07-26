@@ -16,11 +16,6 @@
 
 #import "UIUtilities.h"
 
-static CGFloat const circleViewAlpha = 0.7;
-static CGFloat const rectangleViewAlpha = 0.3;
-static CGFloat const shapeViewAlpha = 0.3;
-static CGFloat const rectangleViewCornerRadius = 10.0;
-
 @implementation UIUtilities
 
 + (void)imageOrientation {
