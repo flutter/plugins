@@ -366,7 +366,6 @@ class Camera {
         public void onImageAvailable(ImageReader reader) {
           Image image = reader.acquireLatestImage();
           if (image != null) {
-            //        Log.d("ML", "image was not null");
             processImage(image);
             image.close();
           }

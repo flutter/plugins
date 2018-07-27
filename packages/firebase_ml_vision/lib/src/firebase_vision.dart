@@ -13,7 +13,19 @@ part of firebase_ml_vision;
 /// TextDetector textDetector = FirebaseVision.instance.getTextDetector();
 /// ```
 class FirebaseVision {
-  FirebaseVision._();
+  StreamSubscription<dynamic> _eventSubscription;
+
+  FirebaseVision._() {
+    _eventSubscription = const EventChannel(
+        'plugins.flutter.io/firebase_ml_vision/liveViewEvents')
+        .receiveBroadcastStream()
+        .listen(_listener);
+  }
+
+  void _listener(dynamic event) {
+    //TODO: handle presentation of recognized items
+    print(event);
+  }
 
   @visibleForTesting
   static final MethodChannel channel =

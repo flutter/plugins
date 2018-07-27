@@ -16,23 +16,19 @@ public class MainActivity extends FlutterActivity implements PreviewImageDelegat
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-    Log.d("ML", "MainActivity created");
     super.onCreate(savedInstanceState);
     GeneratedPluginRegistrant.registerWith(this);
   }
 
   @Override
-  public void onImageAvailable(Image image) {
-    Log.d("ML", "got a preview image");
+  public void onImageAvailable(Image image, int rotation) {
     if (previewImageDelegate != null) {
-      Log.d("ML", "the delegate was not null, sending image to ml for processing");
-      previewImageDelegate.onImageAvailable(image);
+      previewImageDelegate.onImageAvailable(image, rotation);
     }
   }
 
   @Override
   public void setImageDelegate(PreviewImageDelegate delegate) {
-    Log.d("ML", "setting image delegate");
     previewImageDelegate = delegate;
   }
 }

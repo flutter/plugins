@@ -29,6 +29,7 @@ import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.Surface;
+import android.view.WindowManager;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -74,14 +75,13 @@ public class CameraPlugin implements MethodCallHandler {
   private Runnable cameraPermissionContinuation;
   private boolean requestingPermission;
   @Nullable private PreviewImageDelegate previewImageDelegate;
+  private WindowManager windowManager;
 
   private CameraPlugin(Registrar registrar, FlutterView view, Activity activity) {
-    Log.d("ML", "registering camera plugin");
     this.registrar = registrar;
     this.view = view;
     this.activity = activity;
     if (activity instanceof PreviewImageDelegate) {
-      Log.d("ML", "the activity is a PreviewImageDelegate, assigning the image delegate now");
       this.previewImageDelegate = (PreviewImageDelegate) activity;
     }
 
@@ -438,12 +438,10 @@ public class CameraPlugin implements MethodCallHandler {
         new ImageReader.OnImageAvailableListener() {
           @Override
           public void onImageAvailable(ImageReader reader) {
-            Log.d("ML", "ImageReader image available...");
             Image image = reader.acquireLatestImage();
             if (image != null) {
-              //        Log.d("ML", "image was not null");
               if (previewImageDelegate != null) {
-                previewImageDelegate.onImageAvailable(image);
+                previewImageDelegate.onImageAvailable(image, getRotation());
               }
               image.close();
             }
@@ -476,14 +474,12 @@ public class CameraPlugin implements MethodCallHandler {
         if (result != null) result.error("cameraPermission", "Camera permission not granted", null);
       } else {
         try {
-          Log.d("ML", "opening camera");
           startBackgroundThread();
           imageReader =
               ImageReader.newInstance(
-                  captureSize.getWidth(), captureSize.getHeight(), ImageFormat.JPEG, 2);
+                  captureSize.getWidth(), captureSize.getHeight(), ImageFormat.YUV_420_888, 2);
           imageReaderSurface = imageReader.getSurface();
           imageReader.setOnImageAvailableListener(imageAvailable, mBackgroundHandler);
-          Log.d("ML", "assigned image available listener, boo");
           cameraManager.openCamera(
               cameraName,
               new CameraDevice.StateCallback() {
@@ -576,6 +572,7 @@ public class CameraPlugin implements MethodCallHandler {
         return;
       }
 
+      // TODO: figure out how we'll use both image readers? do we need two?
       Log.d("ML", "not setting the take picture listener");
 //      imageReader.setOnImageAvailableListener(
 //          new ImageReader.OnImageAvailableListener() {
@@ -798,6 +795,45 @@ public class CameraPlugin implements MethodCallHandler {
     private void dispose() {
       close();
       textureEntry.release();
+    }
+  }
+
+  private int getRotation() {
+    if (windowManager == null) {
+      windowManager = (WindowManager) activity.getSystemService(Context.WINDOW_SERVICE);
+    }
+    int degrees = 0;
+    int rotation = windowManager.getDefaultDisplay().getRotation();
+    switch (rotation) {
+      case Surface.ROTATION_0:
+        degrees = 0;
+        break;
+      case Surface.ROTATION_90:
+        degrees = 90;
+        break;
+      case Surface.ROTATION_180:
+        degrees = 180;
+        break;
+      case Surface.ROTATION_270:
+        degrees = 270;
+        break;
+      default:
+        Log.e("ML", "Bad rotation value: $rotation");
+    }
+
+    try {
+      int angle;
+      int displayAngle; // TODO? setDisplayOrientation?
+      CameraCharacteristics cameraCharacteristics =
+        cameraManager.getCameraCharacteristics(camera.cameraName);
+      Integer orientation = cameraCharacteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
+      // back-facing
+      angle = (orientation - degrees + 360) % 360;
+      displayAngle = angle;
+      int translatedAngle = angle / 90;
+      return translatedAngle; // this corresponds to the rotation constants
+    } catch (CameraAccessException e) {
+      return 0;
     }
   }
 }
