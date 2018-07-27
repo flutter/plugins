@@ -30,7 +30,14 @@ import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.Surface;
 import android.view.WindowManager;
-
+import io.flutter.plugin.common.EventChannel;
+import io.flutter.plugin.common.MethodCall;
+import io.flutter.plugin.common.MethodChannel;
+import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
+import io.flutter.plugin.common.MethodChannel.Result;
+import io.flutter.plugin.common.PluginRegistry;
+import io.flutter.plugin.common.PluginRegistry.Registrar;
+import io.flutter.view.FlutterView;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -42,15 +49,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import io.flutter.plugin.common.EventChannel;
-import io.flutter.plugin.common.MethodCall;
-import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
-import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.PluginRegistry;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
-import io.flutter.view.FlutterView;
 
 public class CameraPlugin implements MethodCallHandler {
 
@@ -574,24 +572,24 @@ public class CameraPlugin implements MethodCallHandler {
 
       // TODO: figure out how we'll use both image readers? do we need two?
       Log.d("ML", "not setting the take picture listener");
-//      imageReader.setOnImageAvailableListener(
-//          new ImageReader.OnImageAvailableListener() {
-//            @Override
-//            public void onImageAvailable(ImageReader reader) {
-//              try (Image image = reader.acquireLatestImage()) {
-//                if (previewImageDelegate != null) {
-//                  Log.d("ML", "the preview image delegate is not null, sending the image");
-//                  previewImageDelegate.onImageAvailable(image);
-//                }
-//                ByteBuffer buffer = image.getPlanes()[0].getBuffer();
-//                writeToFile(buffer, file);
-//                result.success(null);
-//              } catch (IOException e) {
-//                result.error("IOError", "Failed saving image", null);
-//              }
-//            }
-//          },
-//          null);
+      //      imageReader.setOnImageAvailableListener(
+      //          new ImageReader.OnImageAvailableListener() {
+      //            @Override
+      //            public void onImageAvailable(ImageReader reader) {
+      //              try (Image image = reader.acquireLatestImage()) {
+      //                if (previewImageDelegate != null) {
+      //                  Log.d("ML", "the preview image delegate is not null, sending the image");
+      //                  previewImageDelegate.onImageAvailable(image);
+      //                }
+      //                ByteBuffer buffer = image.getPlanes()[0].getBuffer();
+      //                writeToFile(buffer, file);
+      //                result.success(null);
+      //              } catch (IOException e) {
+      //                result.error("IOError", "Failed saving image", null);
+      //              }
+      //            }
+      //          },
+      //          null);
 
       try {
         final CaptureRequest.Builder captureBuilder =
@@ -825,7 +823,7 @@ public class CameraPlugin implements MethodCallHandler {
       int angle;
       int displayAngle; // TODO? setDisplayOrientation?
       CameraCharacteristics cameraCharacteristics =
-        cameraManager.getCameraCharacteristics(camera.cameraName);
+          cameraManager.getCameraCharacteristics(camera.cameraName);
       Integer orientation = cameraCharacteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
       // back-facing
       angle = (orientation - degrees + 360) % 360;

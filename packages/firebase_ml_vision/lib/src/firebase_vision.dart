@@ -17,7 +17,7 @@ class FirebaseVision {
 
   FirebaseVision._() {
     _eventSubscription = const EventChannel(
-        'plugins.flutter.io/firebase_ml_vision/liveViewEvents')
+            'plugins.flutter.io/firebase_ml_vision/liveViewEvents')
         .receiveBroadcastStream()
         .listen(_listener);
   }

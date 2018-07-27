@@ -28,11 +28,12 @@ class LivePreviewState extends State<LivePreview> {
       yield _readyLoadState;
     } else {
       yield new LiveViewCameraLoadStateLoading();
-      final List<camera.CameraDescription> cameras = await camera.availableCameras();
+      final List<camera.CameraDescription> cameras =
+          await camera.availableCameras();
       final camera.CameraDescription backCamera = cameras.firstWhere(
           (camera.CameraDescription cameraDescription) =>
               cameraDescription.lensDirection ==
-                  camera.CameraLensDirection.back);
+              camera.CameraLensDirection.back);
       if (backCamera != null) {
         yield new LiveViewCameraLoadStateLoaded(backCamera);
         try {
