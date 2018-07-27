@@ -2,9 +2,12 @@ package io.flutter.plugins.firebasemlvision;
 
 import android.app.Activity;
 import android.app.Application;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
+
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -12,7 +15,10 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
+import io.flutter.plugins.camera.PreviewImageDelegate;
+import io.flutter.plugins.firebasemlvision.live.CameraPreviewImageProvider;
 import io.flutter.plugins.firebasemlvision.live.LegacyCamera;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -20,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 /** FirebaseMlVisionPlugin */
-public class FirebaseMlVisionPlugin implements MethodCallHandler {
+public class FirebaseMlVisionPlugin implements MethodCallHandler, PreviewImageDelegate {
   public static final int CAMERA_REQUEST_ID = 928291720;
   private final Registrar registrar;
   private final Activity activity;
@@ -30,6 +36,10 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
   private FirebaseMlVisionPlugin(Registrar registrar) {
     this.registrar = registrar;
     this.activity = registrar.activity();
+    if (activity instanceof CameraPreviewImageProvider) {
+      Log.d("ML", "the activity is a CameraPreviewImageProvider, setting self as a delegate");
+      ((CameraPreviewImageProvider)activity).setImageDelegate(this);
+    }
 
     registrar.addRequestPermissionsResultListener(new CameraRequestPermissionsListener());
 
@@ -210,6 +220,11 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
       default:
         result.notImplemented();
     }
+  }
+
+  @Override
+  public void onImageAvailable(Image image) {
+    Log.d("ML", "got an image");
   }
 
   private Detector.OperationFinishedCallback handleDetection(final Result result) {

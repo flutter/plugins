@@ -13,6 +13,8 @@ dependencies:
 dev_dependencies:
   firebase_ml_vision:
     path: ../
+  camera:
+    path: ../../camera
 
 flutter:
   uses-material-design: true

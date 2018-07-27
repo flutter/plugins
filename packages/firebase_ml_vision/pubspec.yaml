@@ -8,10 +8,13 @@ homepage: https://github.com/flutter/plugins/tree/master/packages/firebase_ml_vi
 dependencies:
   flutter:
     sdk: flutter
+  video_player: ^0.6.4
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  camera:
+    path: ../camera
 
 flutter:
   plugin:

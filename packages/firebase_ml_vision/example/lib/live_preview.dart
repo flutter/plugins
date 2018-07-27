@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:firebase_ml_vision_example/detector_painters.dart';
 import 'package:flutter/material.dart';
+import 'package:camera/camera.dart' as camera;
 
 class LivePreview extends StatefulWidget {
   final FirebaseVisionDetectorType detector;
@@ -27,17 +28,17 @@ class LivePreviewState extends State<LivePreview> {
       yield _readyLoadState;
     } else {
       yield new LiveViewCameraLoadStateLoading();
-      final List<LiveViewCameraDescription> cameras = await availableCameras();
-      final LiveViewCameraDescription backCamera = cameras.firstWhere(
-          (LiveViewCameraDescription cameraDescription) =>
+      final List<camera.CameraDescription> cameras = await camera.availableCameras();
+      final camera.CameraDescription backCamera = cameras.firstWhere(
+          (camera.CameraDescription cameraDescription) =>
               cameraDescription.lensDirection ==
-              LiveViewCameraLensDirection.back);
+                  camera.CameraLensDirection.back);
       if (backCamera != null) {
         yield new LiveViewCameraLoadStateLoaded(backCamera);
         try {
-          final LiveViewCameraController controller =
-              new LiveViewCameraController(
-                  backCamera, LiveViewResolutionPreset.high);
+          final camera.CameraController controller =
+              new camera.CameraController(
+                  backCamera, camera.ResolutionPreset.high);
           await controller.initialize();
           await setLiveViewDetector();
           yield new LiveViewCameraLoadStateReady(controller);
@@ -58,7 +59,7 @@ class LivePreviewState extends State<LivePreview> {
   }
 
   Future<Null> setLiveViewDetector() async {
-    return _readyLoadState?.controller?.setDetector(widget.detector);
+    FirebaseVision.instance.setLiveViewDetector(widget.detector);
   }
 
   @override
@@ -87,15 +88,7 @@ class LivePreviewState extends State<LivePreview> {
             }
             return new AspectRatio(
               aspectRatio: _readyLoadState.controller.value.aspectRatio,
-              child: new LiveView(
-                controller: _readyLoadState.controller,
-                overlayBuilder: (BuildContext context, Size previewSize,
-                    LiveViewDetectionList data) {
-                  return data == null
-                      ? new Container()
-                      : customPaintForResults(previewSize, data);
-                },
-              ),
+              child: new camera.CameraPreview(loadState.controller),
             );
           } else if (loadState is LiveViewCameraLoadStateFailed) {
             return new Text("error loading camera ${loadState.errorMessage}");
@@ -115,13 +108,13 @@ abstract class LiveViewCameraLoadState {}
 class LiveViewCameraLoadStateLoading extends LiveViewCameraLoadState {}
 
 class LiveViewCameraLoadStateLoaded extends LiveViewCameraLoadState {
-  final LiveViewCameraDescription cameraDescription;
+  final camera.CameraDescription cameraDescription;
 
   LiveViewCameraLoadStateLoaded(this.cameraDescription);
 }
 
 class LiveViewCameraLoadStateReady extends LiveViewCameraLoadState {
-  final LiveViewCameraController controller;
+  final camera.CameraController controller;
 
   LiveViewCameraLoadStateReady(this.controller);
 

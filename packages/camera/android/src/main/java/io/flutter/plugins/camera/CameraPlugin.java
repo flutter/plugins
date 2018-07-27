@@ -21,19 +21,15 @@ import android.media.ImageReader;
 import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.Surface;
-import io.flutter.plugin.common.EventChannel;
-import io.flutter.plugin.common.MethodCall;
-import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
-import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.PluginRegistry;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
-import io.flutter.view.FlutterView;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -45,6 +41,15 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import io.flutter.plugin.common.EventChannel;
+import io.flutter.plugin.common.MethodCall;
+import io.flutter.plugin.common.MethodChannel;
+import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
+import io.flutter.plugin.common.MethodChannel.Result;
+import io.flutter.plugin.common.PluginRegistry;
+import io.flutter.plugin.common.PluginRegistry.Registrar;
+import io.flutter.view.FlutterView;
 
 public class CameraPlugin implements MethodCallHandler {
 
@@ -68,11 +73,17 @@ public class CameraPlugin implements MethodCallHandler {
   // The code to run after requesting camera permissions.
   private Runnable cameraPermissionContinuation;
   private boolean requestingPermission;
+  @Nullable private PreviewImageDelegate previewImageDelegate;
 
   private CameraPlugin(Registrar registrar, FlutterView view, Activity activity) {
+    Log.d("ML", "registering camera plugin");
     this.registrar = registrar;
     this.view = view;
     this.activity = activity;
+    if (activity instanceof PreviewImageDelegate) {
+      Log.d("ML", "the activity is a PreviewImageDelegate, assigning the image delegate now");
+      this.previewImageDelegate = (PreviewImageDelegate) activity;
+    }
 
     registrar.addRequestPermissionsResultListener(new CameraRequestPermissionsListener());
 
@@ -376,7 +387,8 @@ public class CameraPlugin implements MethodCallHandler {
       } else {
         previewSize = goodEnough.get(0);
 
-        // Video capture size should not be greater than 1080 because MediaRecorder cannot handle higher resolutions.
+        // Video capture size should not be greater than 1080 because MediaRecorder cannot handle
+        // higher resolutions.
         videoSize = goodEnough.get(0);
         for (int i = goodEnough.size() - 1; i >= 0; i--) {
           if (goodEnough.get(i).getHeight() <= 1080) {
@@ -419,14 +431,59 @@ public class CameraPlugin implements MethodCallHandler {
       mediaRecorder.prepare();
     }
 
+    private Handler mBackgroundHandler;
+    private HandlerThread mBackgroundThread;
+    private Surface imageReaderSurface;
+    private final ImageReader.OnImageAvailableListener imageAvailable =
+        new ImageReader.OnImageAvailableListener() {
+          @Override
+          public void onImageAvailable(ImageReader reader) {
+            Log.d("ML", "ImageReader image available...");
+            Image image = reader.acquireLatestImage();
+            if (image != null) {
+              //        Log.d("ML", "image was not null");
+              if (previewImageDelegate != null) {
+                previewImageDelegate.onImageAvailable(image);
+              }
+              image.close();
+            }
+          }
+        };
+
+    /** Starts a background thread and its {@link Handler}. */
+    private void startBackgroundThread() {
+      mBackgroundThread = new HandlerThread("CameraBackground");
+      mBackgroundThread.start();
+      mBackgroundHandler = new Handler(mBackgroundThread.getLooper());
+    }
+
+    /** Stops the background thread and its {@link Handler}. */
+    private void stopBackgroundThread() {
+      if (mBackgroundThread != null) {
+        mBackgroundThread.quitSafely();
+        try {
+          mBackgroundThread.join();
+          mBackgroundThread = null;
+          mBackgroundHandler = null;
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+      }
+    }
+
     private void open(@Nullable final Result result) {
       if (!hasCameraPermission()) {
         if (result != null) result.error("cameraPermission", "Camera permission not granted", null);
       } else {
         try {
+          Log.d("ML", "opening camera");
+          startBackgroundThread();
           imageReader =
               ImageReader.newInstance(
                   captureSize.getWidth(), captureSize.getHeight(), ImageFormat.JPEG, 2);
+          imageReaderSurface = imageReader.getSurface();
+          imageReader.setOnImageAvailableListener(imageAvailable, mBackgroundHandler);
+          Log.d("ML", "assigned image available listener, boo");
           cameraManager.openCamera(
               cameraName,
               new CameraDevice.StateCallback() {
@@ -519,20 +576,25 @@ public class CameraPlugin implements MethodCallHandler {
         return;
       }
 
-      imageReader.setOnImageAvailableListener(
-          new ImageReader.OnImageAvailableListener() {
-            @Override
-            public void onImageAvailable(ImageReader reader) {
-              try (Image image = reader.acquireLatestImage()) {
-                ByteBuffer buffer = image.getPlanes()[0].getBuffer();
-                writeToFile(buffer, file);
-                result.success(null);
-              } catch (IOException e) {
-                result.error("IOError", "Failed saving image", null);
-              }
-            }
-          },
-          null);
+      Log.d("ML", "not setting the take picture listener");
+//      imageReader.setOnImageAvailableListener(
+//          new ImageReader.OnImageAvailableListener() {
+//            @Override
+//            public void onImageAvailable(ImageReader reader) {
+//              try (Image image = reader.acquireLatestImage()) {
+//                if (previewImageDelegate != null) {
+//                  Log.d("ML", "the preview image delegate is not null, sending the image");
+//                  previewImageDelegate.onImageAvailable(image);
+//                }
+//                ByteBuffer buffer = image.getPlanes()[0].getBuffer();
+//                writeToFile(buffer, file);
+//                result.success(null);
+//              } catch (IOException e) {
+//                result.error("IOError", "Failed saving image", null);
+//              }
+//            }
+//          },
+//          null);
 
       try {
         final CaptureRequest.Builder captureBuilder =
@@ -667,7 +729,8 @@ public class CameraPlugin implements MethodCallHandler {
       surfaces.add(previewSurface);
       captureRequestBuilder.addTarget(previewSurface);
 
-      surfaces.add(imageReader.getSurface());
+      surfaces.add(imageReaderSurface);
+      captureRequestBuilder.addTarget(imageReaderSurface);
 
       cameraDevice.createCaptureSession(
           surfaces,
@@ -729,6 +792,7 @@ public class CameraPlugin implements MethodCallHandler {
         mediaRecorder.release();
         mediaRecorder = null;
       }
+      stopBackgroundThread();
     }
 
     private void dispose() {
