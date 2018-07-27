@@ -30,14 +30,7 @@ import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.Surface;
 import android.view.WindowManager;
-import io.flutter.plugin.common.EventChannel;
-import io.flutter.plugin.common.MethodCall;
-import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
-import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.PluginRegistry;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
-import io.flutter.view.FlutterView;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -49,6 +42,15 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import io.flutter.plugin.common.EventChannel;
+import io.flutter.plugin.common.MethodCall;
+import io.flutter.plugin.common.MethodChannel;
+import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
+import io.flutter.plugin.common.MethodChannel.Result;
+import io.flutter.plugin.common.PluginRegistry;
+import io.flutter.plugin.common.PluginRegistry.Registrar;
+import io.flutter.view.FlutterView;
 
 public class CameraPlugin implements MethodCallHandler {
 
@@ -248,7 +250,8 @@ public class CameraPlugin implements MethodCallHandler {
     private CameraDevice cameraDevice;
     private CameraCaptureSession cameraCaptureSession;
     private EventChannel.EventSink eventSink;
-    private ImageReader imageReader;
+    private ImageReader previewImageReader;
+    private ImageReader captureImageReader;
     private int sensorOrientation;
     private boolean isFrontFacing;
     private String cameraName;
@@ -431,7 +434,6 @@ public class CameraPlugin implements MethodCallHandler {
 
     private Handler mBackgroundHandler;
     private HandlerThread mBackgroundThread;
-    private Surface imageReaderSurface;
     private final ImageReader.OnImageAvailableListener imageAvailable =
         new ImageReader.OnImageAvailableListener() {
           @Override
@@ -473,11 +475,14 @@ public class CameraPlugin implements MethodCallHandler {
       } else {
         try {
           startBackgroundThread();
-          imageReader =
+          // this image reader is used for sending frame data to other packages that need it, such as firebase_ml_vision
+          previewImageReader =
               ImageReader.newInstance(
-                  captureSize.getWidth(), captureSize.getHeight(), ImageFormat.YUV_420_888, 2);
-          imageReaderSurface = imageReader.getSurface();
-          imageReader.setOnImageAvailableListener(imageAvailable, mBackgroundHandler);
+                  previewSize.getWidth(), previewSize.getHeight(), ImageFormat.YUV_420_888, 4);
+          captureImageReader =
+              ImageReader.newInstance(
+                  captureSize.getWidth(), captureSize.getHeight(), ImageFormat.JPEG, 2);
+          previewImageReader.setOnImageAvailableListener(imageAvailable, mBackgroundHandler);
           cameraManager.openCamera(
               cameraName,
               new CameraDevice.StateCallback() {
@@ -570,31 +575,25 @@ public class CameraPlugin implements MethodCallHandler {
         return;
       }
 
-      // TODO: figure out how we'll use both image readers? do we need two?
-      Log.d("ML", "not setting the take picture listener");
-      //      imageReader.setOnImageAvailableListener(
-      //          new ImageReader.OnImageAvailableListener() {
-      //            @Override
-      //            public void onImageAvailable(ImageReader reader) {
-      //              try (Image image = reader.acquireLatestImage()) {
-      //                if (previewImageDelegate != null) {
-      //                  Log.d("ML", "the preview image delegate is not null, sending the image");
-      //                  previewImageDelegate.onImageAvailable(image);
-      //                }
-      //                ByteBuffer buffer = image.getPlanes()[0].getBuffer();
-      //                writeToFile(buffer, file);
-      //                result.success(null);
-      //              } catch (IOException e) {
-      //                result.error("IOError", "Failed saving image", null);
-      //              }
-      //            }
-      //          },
-      //          null);
+      captureImageReader.setOnImageAvailableListener(
+          new ImageReader.OnImageAvailableListener() {
+            @Override
+            public void onImageAvailable(ImageReader reader) {
+              try (Image image = reader.acquireLatestImage()) {
+                ByteBuffer buffer = image.getPlanes()[0].getBuffer();
+                writeToFile(buffer, file);
+                result.success(null);
+              } catch (IOException e) {
+                result.error("IOError", "Failed saving image", null);
+              }
+            }
+          },
+          null);
 
       try {
         final CaptureRequest.Builder captureBuilder =
             cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
-        captureBuilder.addTarget(imageReader.getSurface());
+        captureBuilder.addTarget(captureImageReader.getSurface());
         int displayRotation = activity.getWindowManager().getDefaultDisplay().getRotation();
         int displayOrientation = ORIENTATIONS.get(displayRotation);
         if (isFrontFacing) displayOrientation = -displayOrientation;
@@ -724,8 +723,12 @@ public class CameraPlugin implements MethodCallHandler {
       surfaces.add(previewSurface);
       captureRequestBuilder.addTarget(previewSurface);
 
-      surfaces.add(imageReaderSurface);
-      captureRequestBuilder.addTarget(imageReaderSurface);
+      surfaces.add(captureImageReader.getSurface());
+
+      // This is so we can send sample frames out to other plugins that need a live feed of frames
+      Surface previewImageReaderSurface = previewImageReader.getSurface();
+      surfaces.add(previewImageReaderSurface);
+      captureRequestBuilder.addTarget(previewImageReaderSurface);
 
       cameraDevice.createCaptureSession(
           surfaces,
@@ -778,9 +781,9 @@ public class CameraPlugin implements MethodCallHandler {
         cameraDevice.close();
         cameraDevice = null;
       }
-      if (imageReader != null) {
-        imageReader.close();
-        imageReader = null;
+      if (previewImageReader != null) {
+        previewImageReader.close();
+        previewImageReader = null;
       }
       if (mediaRecorder != null) {
         mediaRecorder.reset();
