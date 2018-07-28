@@ -369,15 +369,15 @@ public class CameraPlugin implements MethodCallHandler {
       int displayRotation = activity.getWindowManager().getDefaultDisplay().getRotation();
       boolean swapWH = (displayRotation + sensorOrientation) % 180 == 90;
       int screenWidth = swapWH ? screenResolution.y : screenResolution.x;
-      int screenHeight = swapWH ? screenResolution.x :  screenResolution.y;
+      int screenHeight = swapWH ? screenResolution.x : screenResolution.y;
 
       List<Size> goodEnough = new ArrayList<>();
       for (Size s : sizes) {
         if (minPreviewSize.getWidth() < s.getWidth()
-                && minPreviewSize.getHeight() < s.getHeight()
-                && s.getWidth() <= screenWidth
-                && s.getHeight() <= screenHeight
-                && s.getHeight() <= 1080) {
+            && minPreviewSize.getHeight() < s.getHeight()
+            && s.getWidth() <= screenWidth
+            && s.getHeight() <= screenHeight
+            && s.getHeight() <= 1080) {
           goodEnough.add(s);
         }
       }
