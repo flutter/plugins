@@ -26,7 +26,7 @@ int64_t FLTCMTimeToMillis(CMTime time) { return time.value * 1000 / time.timesca
 }
 @end
 
-@interface FLTVideoPlayer : NSObject<FlutterTexture, FlutterStreamHandler>
+@interface FLTVideoPlayer : NSObject <FlutterTexture, FlutterStreamHandler>
 @property(readonly, nonatomic) AVPlayer* player;
 @property(readonly, nonatomic) AVPlayerItemVideoOutput* videoOutput;
 @property(readonly, nonatomic) CADisplayLink* displayLink;
@@ -198,14 +198,31 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
   _displayLink.paused = !_isPlaying;
 }
 
+static inline CGFloat radiansToDegrees(CGFloat radians) {
+  // Input range [-pi, pi] or [-180, 180]
+  CGFloat degrees = radians * 180 / M_PI;
+  if (degrees < 0) {
+    // Convert -90 to 270 and -180 to 180
+    return degrees + 360;
+  }
+  // Output degrees in between [0, 360[
+  return degrees;
+};
+
 - (void)sendInitialized {
   if (_eventSink && _isInitialized) {
     CGSize size = [self.player currentItem].presentationSize;
+    CGAffineTransform transform = [[self.player currentItem] asset].preferredTransform;
+    // atan2 returns values in the closed interval [-pi,pi]. See:
+    // https://www.mathworks.com/help/matlab/ref/atan2.html#buct8h0-4
+    NSInteger rotationDegrees = (NSInteger)round(radiansToDegrees(atan2(transform.b, transform.a)));
+
     _eventSink(@{
       @"event" : @"initialized",
       @"duration" : @([self duration]),
       @"width" : @(size.width),
       @"height" : @(size.height),
+      @"rotationDegrees" : @(rotationDegrees),
     });
   }
 }
@@ -352,7 +369,7 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
     [eventChannel setStreamHandler:player];
     player.eventChannel = eventChannel;
     _players[@(textureId)] = player;
-    result(@{ @"textureId" : @(textureId) });
+    result(@{@"textureId" : @(textureId)});
   } else {
     NSDictionary* argsMap = call.arguments;
     int64_t textureId = ((NSNumber*)argsMap[@"textureId"]).unsignedIntegerValue;

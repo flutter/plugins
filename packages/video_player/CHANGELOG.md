@@ -1,3 +1,9 @@
+## 0.6.5
+
+* Added access to the video rotation in degrees (rotationDegrees). Possible values are: 0, 90, 180 and 270.
+* Updated the aspectRatio getter to use the video rotation.
+* Fixed the aspect ratio of videos in the video_player plugin example. It now properly displays 'rotated' videos.
+
 ## 0.6.4
 
 * Android: add support for hls, dash and ss video formats.
