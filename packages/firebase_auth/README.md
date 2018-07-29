@@ -52,8 +52,9 @@ Add the following imports to your Dart code:
 import 'package:firebase_auth/firebase_auth.dart';
 ```
 
-Initialize `FirebaseAuth`:
+Initialize `GoogleSignIn` and `FirebaseAuth`:
 ```dart
+final GoogleSignIn _googleSignIn = GoogleSignIn();
 final FirebaseAuth _auth = FirebaseAuth.instance;
 ```
 
