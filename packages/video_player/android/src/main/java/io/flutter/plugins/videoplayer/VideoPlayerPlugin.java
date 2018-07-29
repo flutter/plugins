@@ -11,6 +11,7 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
+import android.util.Log;
 import android.view.Surface;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -49,6 +50,8 @@ import java.util.Map;
 
 public class VideoPlayerPlugin implements MethodCallHandler {
 
+  private static final String TAG = "VideoPlayerPlugin";
+
   private static class VideoPlayer {
 
     private SimpleExoPlayer exoPlayer;
@@ -62,6 +65,7 @@ public class VideoPlayerPlugin implements MethodCallHandler {
     private final EventChannel eventChannel;
 
     private boolean isInitialized = false;
+    private boolean isStateReady = false;
 
     VideoPlayer(
         Context context,
@@ -126,6 +130,7 @@ public class VideoPlayerPlugin implements MethodCallHandler {
           new EventChannel.StreamHandler() {
             @Override
             public void onListen(Object o, EventChannel.EventSink sink) {
+              Log.d(TAG, "EventSink set to:" + sink);
               eventSink = sink;
             }
 
@@ -155,8 +160,10 @@ public class VideoPlayerPlugin implements MethodCallHandler {
                   eventSink.success(event);
                 }
               } else if (playbackState == Player.STATE_READY && !isInitialized) {
-                isInitialized = true;
+                isStateReady = true;
                 sendInitialized();
+              } else {
+                Log.d(TAG, "Received unhandled state: " + playbackState);
               }
             }
 
@@ -210,7 +217,9 @@ public class VideoPlayerPlugin implements MethodCallHandler {
     }
 
     private void sendInitialized() {
-      if (isInitialized && eventSink != null) {
+      if (!isInitialized && isStateReady && eventSink != null) {
+        Log.d(TAG, "sending isInitialized");
+        isInitialized = true;
         Map<String, Object> event = new HashMap<>();
         event.put("event", "initialized");
         event.put("duration", exoPlayer.getDuration());
@@ -219,6 +228,16 @@ public class VideoPlayerPlugin implements MethodCallHandler {
           event.put("height", exoPlayer.getVideoFormat().height);
         }
         eventSink.success(event);
+      } else {
+        Log.e(
+            TAG,
+            "failed sending sendInitialized(isInitialized: "
+                + isInitialized
+                + ",isStateReady: "
+                + isStateReady
+                + ", eventSink: "
+                + eventSink
+                + ")");
       }
     }
 
@@ -350,6 +369,9 @@ public class VideoPlayerPlugin implements MethodCallHandler {
         player.dispose();
         videoPlayers.remove(textureId);
         result.success(null);
+        break;
+      case "sendInitialized":
+        player.sendInitialized();
         break;
       default:
         result.notImplemented();

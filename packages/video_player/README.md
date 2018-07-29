@@ -64,17 +64,12 @@ class _VideoAppState extends State<VideoApp> {
       'http://www.sample-videos.com/video/mp4/720/big_buck_bunny_720p_20mb.mp4',
     )
       ..addListener(() {
-        final bool isPlaying = _controller.value.isPlaying;
-        if (isPlaying != _isPlaying) {
-          setState(() {
-            _isPlaying = isPlaying;
-          });
-        }
-      })
-      ..initialize().then((_) {
+        print('completed listener: $_controller');
         // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
         setState(() {});
-      });
+      })
+      ..initialize()
+          .catchError((dynamic error) => print('Unexpected error: $error'));
   }
 
   @override
