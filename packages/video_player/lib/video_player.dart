@@ -10,8 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 final MethodChannel _channel = const MethodChannel('flutter.io/videoPlayer')
-  // This will clear all open videos on the platform when a full restart is
-  // performed.
+// This will clear all open videos on the platform when a full restart is
+// performed.
   ..invokeMethod('init');
 
 class DurationRange {
@@ -68,6 +68,13 @@ class VideoPlayerValue {
   /// Is null when [initialized] is false.
   final Size size;
 
+  /// The [rotationDegrees] of the currently loaded video.
+  /// Possible values are: 0 or 180 for videos recorded in landscape format,
+  /// 90 and 270 for videos taken in portrait mode.
+  ///
+  /// Is null when [initialized] is false.
+  final int rotationDegrees;
+
   VideoPlayerValue({
     @required this.duration,
     this.size,
@@ -78,6 +85,7 @@ class VideoPlayerValue {
     this.isBuffering: false,
     this.volume: 1.0,
     this.errorDescription,
+    this.rotationDegrees,
   });
 
   VideoPlayerValue.uninitialized() : this(duration: null);
@@ -86,8 +94,12 @@ class VideoPlayerValue {
       : this(duration: null, errorDescription: errorDescription);
 
   bool get initialized => duration != null;
+
   bool get hasError => errorDescription != null;
-  double get aspectRatio => size.width / size.height;
+
+  double get aspectRatio => rotationDegrees == 0 || rotationDegrees == 180
+      ? size.width / size.height
+      : size.height / size.width;
 
   VideoPlayerValue copyWith({
     Duration duration,
@@ -99,6 +111,7 @@ class VideoPlayerValue {
     bool isBuffering,
     double volume,
     String errorDescription,
+    int rotationDegrees,
   }) {
     return new VideoPlayerValue(
       duration: duration ?? this.duration,
@@ -110,6 +123,7 @@ class VideoPlayerValue {
       isBuffering: isBuffering ?? this.isBuffering,
       volume: volume ?? this.volume,
       errorDescription: errorDescription ?? this.errorDescription,
+      rotationDegrees: rotationDegrees ?? this.rotationDegrees,
     );
   }
 
@@ -124,7 +138,8 @@ class VideoPlayerValue {
         'isLooping: $isLooping, '
         'isBuffering: $isBuffering'
         'volume: $volume, '
-        'errorDescription: $errorDescription)';
+        'errorDescription: $errorDescription,'
+        'rotationDegrees: $rotationDegrees)';
   }
 }
 
@@ -223,6 +238,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           value = value.copyWith(
             duration: new Duration(milliseconds: map['duration']),
             size: new Size(map['width'].toDouble(), map['height'].toDouble()),
+            rotationDegrees: map['rotationDegrees'].toInt(),
           );
           initializingCompleter.complete(null);
           _applyLooping();
@@ -552,6 +568,7 @@ class _VideoProgressIndicatorState extends State<VideoProgressIndicator> {
   }
 
   VideoPlayerController get controller => widget.controller;
+
   VideoProgressColors get colors => widget.colors;
 
   @override

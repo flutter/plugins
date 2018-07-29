@@ -1,3 +1,7 @@
+## 0.4.7
+
+* Bugfix: rotated videos will now be displayed with the correct aspect ratio.
+
 ## 0.4.6
 
 * Added support for picking remote images.

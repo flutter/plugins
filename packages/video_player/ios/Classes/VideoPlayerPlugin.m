@@ -198,14 +198,31 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
   _displayLink.paused = !_isPlaying;
 }
 
+static inline CGFloat radiansToDegrees(CGFloat radians) {
+  // Input range [-pi, pi] or [-180, 180]
+  CGFloat degrees = radians * 180 / M_PI;
+  if (degrees < 0) {
+    // Convert -90 to 270 and -180 to 180
+    return degrees + 360;
+  }
+  // Output degrees in between [0, 360[
+  return degrees;
+};
+
 - (void)sendInitialized {
   if (_eventSink && _isInitialized) {
     CGSize size = [self.player currentItem].presentationSize;
+    CGAffineTransform transform = [[self.player currentItem] asset].preferredTransform;
+    // atan2 returns values in the closed interval [-pi,pi]. See:
+    // https://www.mathworks.com/help/matlab/ref/atan2.html#buct8h0-4
+    NSInteger rotationDegrees = (NSInteger)round(radiansToDegrees(atan2(transform.b, transform.a)));
+
     _eventSink(@{
       @"event" : @"initialized",
       @"duration" : @([self duration]),
       @"width" : @(size.width),
       @"height" : @(size.height),
+      @"rotationDegrees" : @(rotationDegrees),
     });
   }
 }

@@ -226,6 +226,7 @@ public class VideoPlayerPlugin implements MethodCallHandler {
         if (exoPlayer.getVideoFormat() != null) {
           event.put("width", exoPlayer.getVideoFormat().width);
           event.put("height", exoPlayer.getVideoFormat().height);
+          event.put("rotationDegrees", exoPlayer.getVideoFormat().rotationDegrees);
         }
         eventSink.success(event);
       } else {
