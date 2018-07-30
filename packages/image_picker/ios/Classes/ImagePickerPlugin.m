@@ -73,7 +73,6 @@ static const int SOURCE_GALLERY = 1;
         break;
     }
   } else if ([@"pickVideo" isEqualToString:call.method]) {
-      
     _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
     _imagePickerController.delegate = self;
     _imagePickerController.mediaTypes = @[
@@ -86,7 +85,6 @@ static const int SOURCE_GALLERY = 1;
     _result = result;
     _arguments = call.arguments;
   
-    // Set a maximum duration for the video record
     NSNumber *maxDuration = [_arguments objectForKey:@"maxDuration"];
     if (maxDuration != (id)[NSNull null]) {
         double maxDurationToDouble = [maxDuration doubleValue];

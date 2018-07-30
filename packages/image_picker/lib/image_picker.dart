@@ -56,6 +56,13 @@ class ImagePicker {
     return path == null ? null : new File(path);
   }
 
+  /// Returns a [File] object pointing to the video that was picked.
+  ///
+  /// The [source] argument controls where the video comes from. This can
+  /// be either [ImageSource.camera] or [ImageSource.gallery].
+  ///
+  /// [maxDuration] is the maximum amount of Seconds (eg. 30.0) that is available to be recorded
+  /// after which the video record will immediately finish and the [File] will be returned
   static Future<File> pickVideo({
     @required ImageSource source,
     double maxDuration
@@ -66,7 +73,7 @@ class ImagePicker {
       'pickVideo',
       <String, dynamic>{
         'source': source.index,
-        'maxDuration':maxDuration
+        'maxDuration': maxDuration
       },
     );
     return path == null ? null : new File(path);
