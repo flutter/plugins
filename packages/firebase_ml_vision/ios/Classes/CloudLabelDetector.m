@@ -22,7 +22,7 @@ static FIRVisionCloudLabelDetector *detector;
                  for (FIRVisionCloudLabel *label in labels) {
                    NSDictionary *data = @{
                      @"confidence" : label.confidence,
-                     @"entityID" : label.entityID,
+                     @"entityId" : label.entityId,
                      @"label" : label.label
                    };
                    [labelData addObject:data];
