@@ -21,7 +21,7 @@ static FIRVisionCloudLabelDetector *detector;
                  NSMutableArray *labelData = [NSMutableArray array];
                  for (FIRVisionCloudLabel *label in labels) {
                    NSDictionary *data = @{
-                     @"confidence" : @(label.confidence),
+                     @"confidence" : label.confidence,
                      @"entityID" : label.entityID,
                      @"label" : label.label
                    };
@@ -37,10 +37,10 @@ static FIRVisionCloudLabelDetector *detector;
   FIRVisionCloudDetectorOptions *detector = [[FIRVisionCloudDetectorOptions alloc] init];
 
   NSNumber *modelType = optionsData[@"modelType"];
-  detector.modelType = (FIRVisionBarcodeFormat) modelType.intValue;
+  detector.modelType = (FIRVisionCloudModelType) [modelType intValue];
 
-  NSUInteger *maxResults = optionsData[@"maxResults"];
-  detector.maxResults = maxResults.intValue;
+  NSInteger *maxResults = optionsData[@"maxResults"];
+  detector.maxResults = [maxResults intValue];
 
   return detector;
 }
