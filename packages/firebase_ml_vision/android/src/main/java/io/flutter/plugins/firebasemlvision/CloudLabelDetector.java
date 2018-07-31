@@ -4,10 +4,10 @@ import android.support.annotation.NonNull;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.ml.vision.FirebaseVision;
-import com.google.firebase.ml.vision.common.FirebaseVisionImage;
+import com.google.firebase.ml.vision.cloud.FirebaseVisionCloudDetectorOptions;
 import com.google.firebase.ml.vision.cloud.label.FirebaseVisionCloudLabel;
 import com.google.firebase.ml.vision.cloud.label.FirebaseVisionCloudLabelDetector;
-import com.google.firebase.ml.vision.cloud.FirebaseVisionCloudDetectorOptions;
+import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import io.flutter.plugin.common.MethodChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +30,8 @@ class CloudLabelDetector implements Detector {
             new OnSuccessListener<List<FirebaseVisionCloudLabel>>() {
               @Override
               public void onSuccess(List<FirebaseVisionCloudLabel> firebaseVisionCloudLabels) {
-                List<Map<String, Object>> labels = new ArrayList<>(firebaseVisionCloudLabels.size());
+                List<Map<String, Object>> labels =
+                    new ArrayList<>(firebaseVisionCloudLabels.size());
                 for (FirebaseVisionCloudLabel label : firebaseVisionCloudLabels) {
                   Map<String, Object> labelData = new HashMap<>();
                   labelData.put("confidence", (double) label.getConfidence());
@@ -55,6 +56,9 @@ class CloudLabelDetector implements Detector {
   private FirebaseVisionCloudDetectorOptions parseOptions(Map<String, Object> optionsData) {
     final int maxResults = (int) optionsData.get("maxResults");
     final int modelType = (int) optionsData.get("modelType");
-    return new FirebaseVisionCloudDetectorOptions.Builder().setMaxResults(maxResults).setModelType(modelType).build();
+    return new FirebaseVisionCloudDetectorOptions.Builder()
+        .setMaxResults(maxResults)
+        .setModelType(modelType)
+        .build();
   }
 }

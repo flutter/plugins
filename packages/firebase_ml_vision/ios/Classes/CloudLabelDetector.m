@@ -9,35 +9,35 @@ static FIRVisionCloudLabelDetector *detector;
   FIRVision *vision = [FIRVision vision];
   detector = [vision cloudLabelDetectorWithOptions:[CloudLabelDetector parseOptions:options]];
 
-  [detector detectInImage:image
-               completion:^(NSArray<FIRVisionCloudLabel *> *_Nullable labels, NSError *_Nullable error) {
-                 if (error) {
-                   [FLTFirebaseMlVisionPlugin handleError:error result:result];
-                   return;
-                 } else if (!labels) {
-                   result(@[]);
-                 }
+  [detector
+      detectInImage:image
+         completion:^(NSArray<FIRVisionCloudLabel *> *_Nullable labels, NSError *_Nullable error) {
+           if (error) {
+             [FLTFirebaseMlVisionPlugin handleError:error result:result];
+             return;
+           } else if (!labels) {
+             result(@[]);
+           }
 
-                 NSMutableArray *labelData = [NSMutableArray array];
-                 for (FIRVisionCloudLabel *label in labels) {
-                   NSDictionary *data = @{
-                     @"confidence" : label.confidence,
-                     @"entityId" : label.entityId,
-                     @"label" : label.label
-                   };
-                   [labelData addObject:data];
-                 }
+           NSMutableArray *labelData = [NSMutableArray array];
+           for (FIRVisionCloudLabel *label in labels) {
+             NSDictionary *data = @{
+               @"confidence" : label.confidence,
+               @"entityId" : label.entityId,
+               @"label" : label.label
+             };
+             [labelData addObject:data];
+           }
 
-                 result(labelData);
-               }];
+           result(labelData);
+         }];
 }
 
 + (FIRVisionCloudDetectorOptions *)parseOptions:(NSDictionary *)optionsData {
-  // maxResults: maxResults.intValue modelType: modelType.intValue
   FIRVisionCloudDetectorOptions *detector = [[FIRVisionCloudDetectorOptions alloc] init];
 
   NSNumber *modelType = optionsData[@"modelType"];
-  detector.modelType = (FIRVisionCloudModelType) [modelType intValue];
+  detector.modelType = (FIRVisionCloudModelType)[modelType intValue];
 
   NSNumber *maxResults = optionsData[@"maxResults"];
   detector.maxResults = [maxResults uintValue];

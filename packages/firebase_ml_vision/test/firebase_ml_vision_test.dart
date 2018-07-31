@@ -14,7 +14,8 @@ void main() {
     dynamic returnValue;
 
     setUp(() {
-      FirebaseVision.channel.setMockMethodCallHandler((MethodCall methodCall) async {
+      FirebaseVision.channel
+          .setMockMethodCallHandler((MethodCall methodCall) async {
         log.add(methodCall);
 
         switch (methodCall.method) {
@@ -130,7 +131,10 @@ void main() {
       });
 
       test('detectInImage sms', () async {
-        final Map<dynamic, dynamic> sms = <dynamic, dynamic>{'phoneNumber': '000', 'message': 'm'};
+        final Map<dynamic, dynamic> sms = <dynamic, dynamic>{
+          'phoneNumber': '000',
+          'message': 'm'
+        };
 
         returnBarcodes[0]['valueType'] = BarcodeValueType.sms.index;
         returnBarcodes[0]['sms'] = sms;
@@ -145,7 +149,10 @@ void main() {
       });
 
       test('detectInImage url', () async {
-        final Map<dynamic, dynamic> url = <dynamic, dynamic>{'title': 't', 'url': 'u'};
+        final Map<dynamic, dynamic> url = <dynamic, dynamic>{
+          'title': 't',
+          'url': 'u'
+        };
 
         returnBarcodes[0]['valueType'] = BarcodeValueType.url.index;
         returnBarcodes[0]['url'] = url;
@@ -185,7 +192,8 @@ void main() {
           'longitude': 0.3,
         };
 
-        returnBarcodes[0]['valueType'] = BarcodeValueType.geographicCoordinates.index;
+        returnBarcodes[0]['valueType'] =
+            BarcodeValueType.geographicCoordinates.index;
         returnBarcodes[0]['geoPoint'] = geoPoint;
         returnValue = returnBarcodes;
 
@@ -206,7 +214,12 @@ void main() {
             }
           ],
           'emails': <dynamic>[
-            <dynamic, dynamic>{'type': BarcodeEmailType.home.index, 'address': 'a', 'body': 'b', 'subject': 's'},
+            <dynamic, dynamic>{
+              'type': BarcodeEmailType.home.index,
+              'address': 'a',
+              'body': 'b',
+              'subject': 's'
+            },
           ],
           'name': <dynamic, dynamic>{
             'formattedName': 'fn',
@@ -280,7 +293,8 @@ void main() {
         expect(barcode.calendarEvent.organizer, 'o');
         expect(barcode.calendarEvent.status, 'st');
         expect(barcode.calendarEvent.summary, 'sm');
-        expect(barcode.calendarEvent.start, DateTime(2017, 7, 4, 12, 34, 56, 123));
+        expect(
+            barcode.calendarEvent.start, DateTime(2017, 7, 4, 12, 34, 56, 123));
         expect(barcode.calendarEvent.end, DateTime(2018, 8, 5, 1, 23, 45, 456));
       });
 
@@ -402,10 +416,13 @@ void main() {
       group('$BarcodeDetectorOptions', () {
         test('barcodeFormats', () async {
           final BarcodeDetectorOptions options = BarcodeDetectorOptions(
-            barcodeFormats: BarcodeFormat.code128 | BarcodeFormat.dataMatrix | BarcodeFormat.ean8,
+            barcodeFormats: BarcodeFormat.code128 |
+                BarcodeFormat.dataMatrix |
+                BarcodeFormat.ean8,
           );
 
-          final BarcodeDetector detector = FirebaseVision.instance.barcodeDetector(options);
+          final BarcodeDetector detector =
+              FirebaseVision.instance.barcodeDetector(options);
           await detector.detectInImage(image);
 
           expect(
@@ -597,7 +614,8 @@ void main() {
         final LabelDetector detector = FirebaseVision.instance.labelDetector(
           const LabelDetectorOptions(),
         );
-        final FirebaseVisionImage image = new FirebaseVisionImage.fromFilePath('empty');
+        final FirebaseVisionImage image =
+            new FirebaseVisionImage.fromFilePath('empty');
 
         final List<Label> labels = await detector.detectInImage(image);
 
@@ -634,8 +652,11 @@ void main() {
 
         returnValue = labelData;
 
-        final CloudLabelDetector detector = FirebaseVision.instance.cloudLabelDetector(
-          const VisionCloudDetectorOptions(maxResults: 5, modelType: VisionCloudDetectorOptions.MODEL_TYPE_LATEST),
+        final CloudLabelDetector detector =
+            FirebaseVision.instance.cloudLabelDetector(
+          const VisionCloudDetectorOptions(
+              maxResults: 5,
+              modelType: VisionCloudDetectorOptions.MODEL_TYPE_LATEST),
         );
 
         final FirebaseVisionImage image = new FirebaseVisionImage.fromFilePath(
@@ -669,10 +690,12 @@ void main() {
       test('detectInImage no blocks', () async {
         returnValue = <dynamic>[];
 
-        final CloudLabelDetector detector = FirebaseVision.instance.cloudLabelDetector(
+        final CloudLabelDetector detector =
+            FirebaseVision.instance.cloudLabelDetector(
           const VisionCloudDetectorOptions(),
         );
-        final FirebaseVisionImage image = new FirebaseVisionImage.fromFilePath('empty');
+        final FirebaseVisionImage image =
+            new FirebaseVisionImage.fromFilePath('empty');
 
         final List<Label> labels = await detector.detectInImage(image);
 
@@ -742,7 +765,8 @@ void main() {
         returnValue = textBlocks;
 
         final TextDetector detector = FirebaseVision.instance.textDetector();
-        final FirebaseVisionImage image = new FirebaseVisionImage.fromFilePath('empty');
+        final FirebaseVisionImage image =
+            new FirebaseVisionImage.fromFilePath('empty');
 
         final List<TextBlock> blocks = await detector.detectInImage(image);
 
@@ -785,7 +809,8 @@ void main() {
         returnValue = <dynamic>[];
 
         final TextDetector detector = FirebaseVision.instance.textDetector();
-        final FirebaseVisionImage image = new FirebaseVisionImage.fromFilePath('empty');
+        final FirebaseVisionImage image =
+            new FirebaseVisionImage.fromFilePath('empty');
 
         final List<TextBlock> blocks = await detector.detectInImage(image);
 
@@ -815,7 +840,8 @@ void main() {
         ];
 
         final TextDetector detector = FirebaseVision.instance.textDetector();
-        final FirebaseVisionImage image = new FirebaseVisionImage.fromFilePath('empty');
+        final FirebaseVisionImage image =
+            new FirebaseVisionImage.fromFilePath('empty');
 
         final List<TextBlock> blocks = await detector.detectInImage(image);
 
