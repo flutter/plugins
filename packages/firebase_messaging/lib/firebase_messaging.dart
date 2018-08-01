@@ -129,9 +129,9 @@ class IosNotificationSettings {
   final bool badge;
 
   const IosNotificationSettings({
-    this.sound: true,
-    this.alert: true,
-    this.badge: true,
+    this.sound = true,
+    this.alert = true,
+    this.badge = true,
   });
 
   IosNotificationSettings._fromMap(Map<String, bool> settings)

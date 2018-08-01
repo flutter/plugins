@@ -106,7 +106,7 @@ class Firestore {
   /// timeout can be adjusted by setting the timeout parameter.
   Future<Map<String, dynamic>> runTransaction(
       TransactionHandler transactionHandler,
-      {Duration timeout: const Duration(seconds: 5)}) async {
+      {Duration timeout = const Duration(seconds: 5)}) async {
     assert(timeout.inMilliseconds > 0,
         'Transaction timeout must be more than 0 milliseconds');
     final int transactionId = _transactionHandlerId++;

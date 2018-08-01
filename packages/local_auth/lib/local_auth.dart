@@ -48,10 +48,10 @@ class LocalAuthentication {
   /// simulator.
   Future<bool> authenticateWithBiometrics({
     @required String localizedReason,
-    bool useErrorDialogs: true,
-    bool stickyAuth: false,
-    AndroidAuthMessages androidAuthStrings: const AndroidAuthMessages(),
-    IOSAuthMessages iOSAuthStrings: const IOSAuthMessages(),
+    bool useErrorDialogs = true,
+    bool stickyAuth = false,
+    AndroidAuthMessages androidAuthStrings = const AndroidAuthMessages(),
+    IOSAuthMessages iOSAuthStrings = const IOSAuthMessages(),
   }) async {
     assert(localizedReason != null);
     final Map<String, Object> args = <String, Object>{

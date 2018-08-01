@@ -102,6 +102,7 @@ linter:
     - prefer_const_constructors
     # - prefer_constructors_over_static_methods # not yet tested
     - prefer_contains
+    - prefer_equal_for_default_values
     # - prefer_expression_function_bodies # conflicts with https://github.com/flutter/flutter/wiki/Style-guide-for-Flutter-repo#consider-using--for-short-functions-and-methods
     # - prefer_final_fields # https://github.com/dart-lang/linter/issues/506
     - prefer_final_locals
