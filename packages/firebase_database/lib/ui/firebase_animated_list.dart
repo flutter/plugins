@@ -25,14 +25,14 @@ class FirebaseAnimatedList extends StatefulWidget {
     @required this.itemBuilder,
     this.sort,
     this.defaultChild,
-    this.scrollDirection: Axis.vertical,
-    this.reverse: false,
+    this.scrollDirection = Axis.vertical,
+    this.reverse = false,
     this.controller,
     this.primary,
     this.physics,
-    this.shrinkWrap: false,
+    this.shrinkWrap = false,
     this.padding,
-    this.duration: const Duration(milliseconds: 300),
+    this.duration = const Duration(milliseconds: 300),
   }) : super(key: key) {
     assert(itemBuilder != null);
   }

@@ -92,7 +92,7 @@ class ExplicitIntentsWidget extends StatelessWidget {
     intent.launch();
   }
 
-  void _displayMapInGoogleMaps({int zoomLevel: 12}) {
+  void _displayMapInGoogleMaps({int zoomLevel = 12}) {
     final AndroidIntent intent = new AndroidIntent(
         action: 'action_view',
         data: Uri.encodeFull('geo:37.7749,-122.4194?z=$zoomLevel'),
