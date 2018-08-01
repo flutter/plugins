@@ -146,7 +146,7 @@ class DatabaseReference extends Query {
   /// this Firebase Database location.
   Future<TransactionResult> runTransaction(
       TransactionHandler transactionHandler,
-      {Duration timeout: const Duration(seconds: 5)}) async {
+      {Duration timeout = const Duration(seconds: 5)}) async {
     assert(timeout.inMilliseconds > 0,
         'Transaction timeout must be more than 0 milliseconds.');
 

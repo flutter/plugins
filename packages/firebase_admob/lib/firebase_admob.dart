@@ -456,7 +456,7 @@ class FirebaseAdMob {
   Future<bool> initialize(
       {@required String appId,
       String trackingId,
-      bool analyticsEnabled: false}) {
+      bool analyticsEnabled = false}) {
     assert(appId != null && appId.isNotEmpty);
     assert(analyticsEnabled != null);
     return _invokeBooleanMethod("initialize", <String, dynamic>{

@@ -41,8 +41,8 @@ class AndroidAlarmManager {
     Duration delay,
     int id,
     dynamic Function() callback, {
-    bool exact: false,
-    bool wakeup: false,
+    bool exact = false,
+    bool wakeup = false,
   }) async {
     final int now = new DateTime.now().millisecondsSinceEpoch;
     final int first = now + delay.inMilliseconds;
@@ -81,8 +81,8 @@ class AndroidAlarmManager {
     Duration duration,
     int id,
     dynamic Function() callback, {
-    bool exact: false,
-    bool wakeup: false,
+    bool exact = false,
+    bool wakeup = false,
   }) async {
     final int now = new DateTime.now().millisecondsSinceEpoch;
     final int period = duration.inMilliseconds;

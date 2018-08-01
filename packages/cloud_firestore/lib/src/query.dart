@@ -148,7 +148,7 @@ class Query {
 
   /// Creates and returns a new [Query] that's additionally sorted by the specified
   /// [field].
-  Query orderBy(String field, {bool descending: false}) {
+  Query orderBy(String field, {bool descending = false}) {
     final List<List<dynamic>> orders =
         new List<List<dynamic>>.from(_parameters['orderBy']);
 

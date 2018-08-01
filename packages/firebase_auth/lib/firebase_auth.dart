@@ -75,7 +75,7 @@ class FirebaseUser extends UserInfo {
   /// Obtains the id token for the current user, forcing a [refresh] if desired.
   ///
   /// Completes with an error if the user is signed out.
-  Future<String> getIdToken({bool refresh: false}) async {
+  Future<String> getIdToken({bool refresh = false}) async {
     return await FirebaseAuth.channel.invokeMethod('getIdToken', <String, bool>{
       'refresh': refresh,
     });
