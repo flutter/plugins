@@ -3,6 +3,7 @@
 * Added support for `updatePassword` in `FirebaseUser`.
 * **Breaking Change** Moved `updateEmail` and `updateProfile` to `FirebaseUser`.
   This brings the `firebase_auth` package inline with other implementations and documentation.
+* Adding support for linkWithTwitterCredential in FirebaseAuth.
 
 ## 0.5.20
 
