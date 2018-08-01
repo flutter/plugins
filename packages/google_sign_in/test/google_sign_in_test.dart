@@ -11,18 +11,18 @@ import 'package:google_sign_in/testing.dart';
 
 void main() {
   group('GoogleSignIn', () {
-    const MethodChannel channel = const MethodChannel(
+    const MethodChannel channel = MethodChannel(
       'plugins.flutter.io/google_sign_in',
     );
 
-    const Map<String, String> kUserData = const <String, String>{
+    const Map<String, String> kUserData = <String, String>{
       "email": "john.doe@gmail.com",
       "id": "8162538176523816253123",
       "photoUrl": "https://lh5.googleusercontent.com/photo.jpg",
       "displayName": "John Doe",
     };
 
-    const Map<String, dynamic> kDefaultResponses = const <String, dynamic>{
+    const Map<String, dynamic> kDefaultResponses = <String, dynamic>{
       'init': null,
       'signInSilently': kUserData,
       'signIn': kUserData,
@@ -330,7 +330,7 @@ void main() {
   });
 
   group('GoogleSignIn with fake backend', () {
-    const FakeUser kUserData = const FakeUser(
+    const FakeUser kUserData = FakeUser(
       id: "8162538176523816253123",
       displayName: "John Doe",
       email: "john.doe@gmail.com",

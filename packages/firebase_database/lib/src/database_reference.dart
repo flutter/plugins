@@ -191,7 +191,7 @@ class DatabaseReference extends Query {
 }
 
 class ServerValue {
-  static const Map<String, String> timestamp = const <String, String>{
+  static const Map<String, String> timestamp = <String, String>{
     '.sv': 'timestamp'
   };
 }

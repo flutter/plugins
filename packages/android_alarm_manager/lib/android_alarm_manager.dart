@@ -13,7 +13,7 @@ import 'package:flutter/services.dart';
 class AndroidAlarmManager {
   static const String _channelName = 'plugins.flutter.io/android_alarm_manager';
   static const MethodChannel _channel =
-      const MethodChannel(_channelName, const JSONMethodCodec());
+      MethodChannel(_channelName, JSONMethodCodec());
 
   /// Schedules a one-shot timer to run `callback` after time `delay`.
   ///
