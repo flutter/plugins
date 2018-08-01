@@ -13,7 +13,7 @@ class Share {
   /// [MethodChannel] used to communicate with the platform side.
   @visibleForTesting
   static const MethodChannel channel =
-      const MethodChannel('plugins.flutter.io/share');
+      MethodChannel('plugins.flutter.io/share');
 
   /// Summons the platform's share sheet to share text.
   ///

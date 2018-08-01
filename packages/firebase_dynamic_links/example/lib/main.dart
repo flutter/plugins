@@ -128,7 +128,7 @@ class _DynamicLinkScreen extends StatelessWidget {
           title: const Text('Hello World DeepLink'),
         ),
         body: const Center(
-          child: const Text('Hello, World!'),
+          child: Text('Hello, World!'),
         ),
       ),
     );

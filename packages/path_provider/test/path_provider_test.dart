@@ -10,7 +10,7 @@ import 'package:path_provider/path_provider.dart';
 
 void main() {
   const MethodChannel channel =
-      const MethodChannel('plugins.flutter.io/path_provider');
+      MethodChannel('plugins.flutter.io/path_provider');
   final List<MethodCall> log = <MethodCall>[];
   String response;
 

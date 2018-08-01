@@ -15,7 +15,7 @@ class FirebaseApp {
       Platform.isIOS ? '__FIRAPP_DEFAULT' : '[DEFAULT]';
 
   @visibleForTesting
-  static const MethodChannel channel = const MethodChannel(
+  static const MethodChannel channel = MethodChannel(
     'plugins.flutter.io/firebase_core',
   );
 

@@ -11,8 +11,7 @@ import 'package:meta/meta.dart';
 import 'auth_strings.dart';
 import 'error_codes.dart';
 
-const MethodChannel _channel =
-    const MethodChannel('plugins.flutter.io/local_auth');
+const MethodChannel _channel = MethodChannel('plugins.flutter.io/local_auth');
 
 /// A Flutter plugin for authenticating the user identity locally.
 class LocalAuthentication {

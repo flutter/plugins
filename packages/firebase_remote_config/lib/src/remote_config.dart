@@ -7,7 +7,7 @@ part of firebase_remote_config;
 class RemoteConfig extends ChangeNotifier {
   @visibleForTesting
   static const MethodChannel channel =
-      const MethodChannel('plugins.flutter.io/firebase_remote_config');
+      MethodChannel('plugins.flutter.io/firebase_remote_config');
 
   static const String defaultValueForString = '';
   static const int defaultValueForInt = 0;

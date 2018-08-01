@@ -844,7 +844,7 @@ void _requireValueAndCurrencyTogether(double value, String currency) {
 /// Reserved event names that cannot be used.
 ///
 /// See: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event.html
-const List<String> _reservedEventNames = const <String>[
+const List<String> _reservedEventNames = <String>[
   'app_clear_data',
   'app_uninstall',
   'app_update',
