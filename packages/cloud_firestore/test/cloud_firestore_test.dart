@@ -45,7 +45,9 @@ void main() {
             final int handle = mockHandleId++;
             // Wait before sending a message back.
             // Otherwise the first request didn't have the time to finish.
-            Future<void>.delayed(Duration.zero).then<void>((_) {
+            // TODO(a14n) remove this ignore when https://github.com/dart-lang/sdk/issues/33647 is closed
+            // ignore: unnecessary_new
+            new Future<void>.delayed(Duration.zero).then<void>((_) {
               BinaryMessages.handlePlatformMessage(
                 Firestore.channel.name,
                 Firestore.channel.codec.encodeMethodCall(
@@ -72,7 +74,9 @@ void main() {
             final int handle = mockHandleId++;
             // Wait before sending a message back.
             // Otherwise the first request didn't have the time to finish.
-            Future<void>.delayed(Duration.zero).then<void>((_) {
+            // TODO(a14n) remove this ignore when https://github.com/dart-lang/sdk/issues/33647 is closed
+            // ignore: unnecessary_new
+            new Future<void>.delayed(Duration.zero).then<void>((_) {
               BinaryMessages.handlePlatformMessage(
                 Firestore.channel.name,
                 Firestore.channel.codec.encodeMethodCall(
