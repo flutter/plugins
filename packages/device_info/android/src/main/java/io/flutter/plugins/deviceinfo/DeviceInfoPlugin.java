@@ -4,9 +4,11 @@
 
 package io.flutter.plugins.deviceinfo;
 
+import android.annotation.SuppressLint;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
+import android.provider.Settings.Secure;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -26,11 +28,15 @@ public class DeviceInfoPlugin implements MethodCallHandler {
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/device_info");
-    channel.setMethodCallHandler(new DeviceInfoPlugin());
+    channel.setMethodCallHandler(new DeviceInfoPlugin(registrar));
   }
 
+  private Registrar registrar;
+
   /** Do not allow direct instantiation. */
-  private DeviceInfoPlugin() {}
+  private DeviceInfoPlugin(Registrar registrar) {
+    this.registrar = registrar;
+  }
 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
@@ -60,6 +66,9 @@ public class DeviceInfoPlugin implements MethodCallHandler {
       build.put("tags", Build.TAGS);
       build.put("type", Build.TYPE);
       build.put("isPhysicalDevice", !isEmulator());
+
+      @SuppressLint("HardwareIds") String androidId = Secure.getString(registrar.context().getContentResolver(), Secure.ANDROID_ID);
+      build.put("androidId", androidId);
 
       Map<String, Object> version = new HashMap<>();
       if (VERSION.SDK_INT >= VERSION_CODES.M) {
