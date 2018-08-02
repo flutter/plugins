@@ -37,28 +37,19 @@ class WebView extends StatefulWidget {
 
 class _WebWidgetState extends State<WebView> implements WebController {
 
-  int viewId;
   MethodChannel methodChannel;
   String loadUrlTarget;
 
   @override
   Widget build(BuildContext context) {
-    return PlatformView(
-      id: viewId,
+    return AndroidView(
       viewType: 'webview',
-      platformViewCreated: onPlatformViewCreated,
+      onPlatformViewCreated: onPlatformViewCreated,
     );
   }
 
-  @override
-  void initState() {
-    super.initState();
-    viewId = platformViewRegistry.getNextPlatformViewId();
-    methodChannel = new MethodChannel('webview_flutter/$viewId');
-  }
-
   void onPlatformViewCreated(int id) {
-    assert(id == viewId);
+    methodChannel = new MethodChannel('webview_flutter/$id');
     widget?.webController?._completer?.complete(this);
     if (loadUrlTarget != null || widget.initialUrl != null)
       methodChannel.invokeMethod('loadUrl', loadUrlTarget ?? widget.initialUrl);
