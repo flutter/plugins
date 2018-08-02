@@ -67,7 +67,9 @@ public class DeviceInfoPlugin implements MethodCallHandler {
       build.put("type", Build.TYPE);
       build.put("isPhysicalDevice", !isEmulator());
 
-      @SuppressLint("HardwareIds") String androidId = Secure.getString(registrar.context().getContentResolver(), Secure.ANDROID_ID);
+      @SuppressLint("HardwareIds")
+      String androidId =
+          Secure.getString(registrar.context().getContentResolver(), Secure.ANDROID_ID);
       build.put("androidId", androidId);
 
       Map<String, Object> version = new HashMap<>();
