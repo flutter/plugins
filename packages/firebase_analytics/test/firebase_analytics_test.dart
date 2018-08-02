@@ -34,7 +34,7 @@ void main() {
     dynamic arguments;
 
     setUp(() {
-      final MockPlatformChannel mockChannel = new MockPlatformChannel();
+      final MockPlatformChannel mockChannel = MockPlatformChannel();
 
       invokedMethod = null;
       arguments = null;
@@ -45,7 +45,7 @@ void main() {
         arguments = invocation.positionalArguments[1];
       });
 
-      analytics = new FirebaseAnalytics.private(mockChannel);
+      analytics = FirebaseAnalytics.private(mockChannel);
     });
 
     test('setUserId', () async {
@@ -119,7 +119,7 @@ void main() {
     Map<String, dynamic> parameters;
 
     setUp(() {
-      final MockPlatformChannel mockChannel = new MockPlatformChannel();
+      final MockPlatformChannel mockChannel = MockPlatformChannel();
 
       name = null;
       parameters = null;
@@ -133,9 +133,9 @@ void main() {
       });
 
       when(mockChannel.invokeMethod(typed(argThat(isNot('logEvent'))), any))
-          .thenThrow(new ArgumentError('Only logEvent invocations expected'));
+          .thenThrow(ArgumentError('Only logEvent invocations expected'));
 
-      analytics = new FirebaseAnalytics.private(mockChannel);
+      analytics = FirebaseAnalytics.private(mockChannel);
     });
 
     test('logEvent log events', () async {

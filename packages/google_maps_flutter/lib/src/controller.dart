@@ -35,12 +35,11 @@ class GoogleMapController extends ChangeNotifier {
   }
 
   /// Callbacks to receive tap events for markers placed on this map.
-  final ArgumentCallbacks<Marker> onMarkerTapped =
-      new ArgumentCallbacks<Marker>();
+  final ArgumentCallbacks<Marker> onMarkerTapped = ArgumentCallbacks<Marker>();
 
   /// Callbacks to receive tap events for info windows on markers
   final ArgumentCallbacks<Marker> onInfoWindowTapped =
-      new ArgumentCallbacks<Marker>();
+      ArgumentCallbacks<Marker>();
 
   /// The configuration options most recently applied via controller
   /// initialization or [updateMapOptions].
@@ -50,7 +49,7 @@ class GoogleMapController extends ChangeNotifier {
   /// The current set of markers on this map.
   ///
   /// The returned set will be a detached snapshot of the markers collection.
-  Set<Marker> get markers => new Set<Marker>.from(_markers.values);
+  Set<Marker> get markers => Set<Marker>.from(_markers.values);
   final Map<String, Marker> _markers = <String, Marker>{};
 
   /// True if the map camera is currently moving.
@@ -114,7 +113,7 @@ class GoogleMapController extends ChangeNotifier {
         notifyListeners();
         break;
       default:
-        throw new MissingPluginException();
+        throw MissingPluginException();
     }
   }
 
@@ -181,7 +180,7 @@ class GoogleMapController extends ChangeNotifier {
         'options': effectiveOptions._toJson(),
       },
     );
-    final Marker marker = new Marker(markerId, effectiveOptions);
+    final Marker marker = Marker(markerId, effectiveOptions);
     _markers[markerId] = marker;
     notifyListeners();
     return marker;
@@ -258,10 +257,10 @@ class GoogleMapOverlayController {
     final GoogleMapOptions effectiveOptions =
         GoogleMapOptions.defaultOptions.copyWith(options);
     final _GoogleMapsPlatformOverlay overlay =
-        new _GoogleMapsPlatformOverlay(effectiveOptions);
-    return new GoogleMapOverlayController._(
-      new GoogleMapController(overlay._textureId.future, effectiveOptions),
-      new PlatformOverlayController(width, height, overlay),
+        _GoogleMapsPlatformOverlay(effectiveOptions);
+    return GoogleMapOverlayController._(
+      GoogleMapController(overlay._textureId.future, effectiveOptions),
+      PlatformOverlayController(width, height, overlay),
     );
   }
 
@@ -280,7 +279,7 @@ class _GoogleMapsPlatformOverlay extends PlatformOverlay {
   _GoogleMapsPlatformOverlay(this.options);
 
   final GoogleMapOptions options;
-  Completer<int> _textureId = new Completer<int>();
+  Completer<int> _textureId = Completer<int>();
 
   @override
   Future<int> create(Size size) {
@@ -338,7 +337,7 @@ class GoogleMapOverlay extends StatefulWidget {
   GoogleMapOverlay({Key key, @required this.controller}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => new _GoogleMapOverlayState();
+  State<StatefulWidget> createState() => _GoogleMapOverlayState();
 }
 
 class _GoogleMapOverlayState extends State<GoogleMapOverlay> {
@@ -356,14 +355,14 @@ class _GoogleMapOverlayState extends State<GoogleMapOverlay> {
 
   @override
   Widget build(BuildContext context) {
-    return new SizedBox(
-      child: new FutureBuilder<int>(
+    return SizedBox(
+      child: FutureBuilder<int>(
         future: widget.controller.mapController._id,
         builder: (_, AsyncSnapshot<int> snapshot) {
           if (snapshot.hasData) {
-            return new Texture(textureId: snapshot.data);
+            return Texture(textureId: snapshot.data);
           } else {
-            return new Container();
+            return Container();
           }
         },
       ),

@@ -12,8 +12,7 @@ abstract class StorageUploadTask {
   StorageUploadTask._(this._firebaseStorage, this._path, this._metadata);
   Future<void> _start();
 
-  Completer<UploadTaskSnapshot> _completer =
-      new Completer<UploadTaskSnapshot>();
+  Completer<UploadTaskSnapshot> _completer = Completer<UploadTaskSnapshot>();
   Future<UploadTaskSnapshot> get future => _completer.future;
 }
 
@@ -37,7 +36,7 @@ class _StorageFileUploadTask extends StorageUploadTask {
       },
     );
     _completer
-        .complete(new UploadTaskSnapshot(downloadUrl: Uri.parse(downloadUrl)));
+        .complete(UploadTaskSnapshot(downloadUrl: Uri.parse(downloadUrl)));
   }
 }
 
@@ -61,7 +60,7 @@ class _StorageDataUploadTask extends StorageUploadTask {
       },
     );
     _completer
-        .complete(new UploadTaskSnapshot(downloadUrl: Uri.parse(downloadUrl)));
+        .complete(UploadTaskSnapshot(downloadUrl: Uri.parse(downloadUrl)));
   }
 }
 

@@ -44,7 +44,7 @@ class AndroidAlarmManager {
     bool exact = false,
     bool wakeup = false,
   }) async {
-    final int now = new DateTime.now().millisecondsSinceEpoch;
+    final int now = DateTime.now().millisecondsSinceEpoch;
     final int first = now + delay.inMilliseconds;
     final String functionName = _nameOfFunction(callback);
     if (functionName == null) {
@@ -84,7 +84,7 @@ class AndroidAlarmManager {
     bool exact = false,
     bool wakeup = false,
   }) async {
-    final int now = new DateTime.now().millisecondsSinceEpoch;
+    final int now = DateTime.now().millisecondsSinceEpoch;
     final int period = duration.inMilliseconds;
     final int first = now + period;
     final String functionName = _nameOfFunction(callback);

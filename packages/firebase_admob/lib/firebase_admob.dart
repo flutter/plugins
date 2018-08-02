@@ -359,7 +359,7 @@ class RewardedVideoAd {
       ? 'ca-app-pub-3940256099942544/5224354917'
       : 'ca-app-pub-3940256099942544/1712485313';
 
-  static final RewardedVideoAd _instance = new RewardedVideoAd._();
+  static final RewardedVideoAd _instance = RewardedVideoAd._();
 
   RewardedVideoAd._();
 
@@ -420,7 +420,7 @@ class FirebaseAdMob {
     _channel.setMethodCallHandler(_handleMethod);
   }
 
-  static final FirebaseAdMob _instance = new FirebaseAdMob.private(
+  static final FirebaseAdMob _instance = FirebaseAdMob.private(
     const MethodChannel('plugins.flutter.io/firebase_admob'),
   );
 
@@ -492,7 +492,7 @@ class FirebaseAdMob {
       }
     }
 
-    return new Future<Null>(null);
+    return Future<Null>(null);
   }
 }
 

@@ -14,7 +14,7 @@ import 'package:http/http.dart' as http;
 void main() async {
   final FirebaseApp app = await FirebaseApp.configure(
     name: 'test',
-    options: new FirebaseOptions(
+    options: FirebaseOptions(
       googleAppID: Platform.isIOS
           ? '1:159623150305:ios:4a213ef3dbd8997b'
           : '1:159623150305:android:ef48439a0cc0263d',
@@ -23,9 +23,9 @@ void main() async {
       projectID: 'flutter-firebase-plugins',
     ),
   );
-  final FirebaseStorage storage = new FirebaseStorage(
+  final FirebaseStorage storage = FirebaseStorage(
       app: app, storageBucket: 'gs://flutter-firebase-plugins.appspot.com');
-  runApp(new MyApp(storage: storage));
+  runApp(MyApp(storage: storage));
 }
 
 class MyApp extends StatelessWidget {
@@ -34,9 +34,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
+    return MaterialApp(
       title: 'Flutter Storage Example',
-      home: new MyHomePage(storage: storage),
+      home: MyHomePage(storage: storage),
     );
   }
 }
@@ -46,7 +46,7 @@ class MyHomePage extends StatefulWidget {
   final FirebaseStorage storage;
 
   @override
-  _MyHomePageState createState() => new _MyHomePageState();
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
 const String kTestString = "Hello world!";
@@ -60,15 +60,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<Null> _uploadFile() async {
     final Directory systemTempDir = Directory.systemTemp;
-    final File file = await new File('${systemTempDir.path}/foo.txt').create();
+    final File file = await File('${systemTempDir.path}/foo.txt').create();
     file.writeAsString(kTestString);
     assert(await file.readAsString() == kTestString);
-    final String rand = "${new Random().nextInt(10000)}";
+    final String rand = "${Random().nextInt(10000)}";
     final StorageReference ref =
         widget.storage.ref().child('text').child('foo$rand.txt');
     final StorageUploadTask uploadTask = ref.putFile(
       file,
-      new StorageMetadata(
+      StorageMetadata(
         contentLanguage: 'en',
         customMetadata: <String, String>{'activity': 'test'},
       ),
@@ -79,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final String name = await ref.getName();
     final String bucket = await ref.getBucket();
     final String path = await ref.getPath();
-    final File tempFile = new File('${systemTempDir.path}/tmp.txt');
+    final File tempFile = File('${systemTempDir.path}/tmp.txt');
     if (tempFile.existsSync()) {
       await tempFile.delete();
     }
@@ -102,18 +102,18 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
+    return Scaffold(
+      appBar: AppBar(
         title: const Text('Flutter Storage Example'),
       ),
-      body: new Center(
-        child: new Column(
+      body: Center(
+        child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             _fileContents == null
                 ? const Text('Press the button to upload a file \n '
                     'and download its contents to tmp.txt')
-                : new Text(
+                : Text(
                     'Success!\n Uploaded $_name \n to bucket: $_bucket\n '
                         'at path: $_path \n\nFile contents: "$_fileContents" \n'
                         'Wrote "$_tempFileContents" to tmp.txt',
@@ -123,7 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-      floatingActionButton: new FloatingActionButton(
+      floatingActionButton: FloatingActionButton(
         onPressed: _uploadFile,
         tooltip: 'Upload',
         child: const Icon(Icons.file_upload),

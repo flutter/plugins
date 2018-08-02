@@ -51,7 +51,7 @@ class PlatformOverlayController extends NavigatorObserver
   final double width;
   final double height;
   final PlatformOverlay overlay;
-  final Completer<int> _overlayIdCompleter = new Completer<int>();
+  final Completer<int> _overlayIdCompleter = Completer<int>();
   BuildContext _context;
 
   // Current route as observed via NavigatorObserver calls.
@@ -86,7 +86,7 @@ class PlatformOverlayController extends NavigatorObserver
         return;
       }
       if (!_overlayIdCompleter.isCompleted) {
-        _overlayIdCompleter.complete(overlay.create(new Size(width, height)));
+        _overlayIdCompleter.complete(overlay.create(Size(width, height)));
       }
     });
   }

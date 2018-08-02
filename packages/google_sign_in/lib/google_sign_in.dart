@@ -58,7 +58,7 @@ class GoogleSignInAccount implements GoogleIdentity {
 
   Future<GoogleSignInAuthentication> get authentication async {
     if (_googleSignIn.currentUser != this) {
-      throw new StateError('User is no longer signed in.');
+      throw StateError('User is no longer signed in.');
     }
 
     final Map<dynamic, dynamic> response =
@@ -71,7 +71,7 @@ class GoogleSignInAccount implements GoogleIdentity {
     if (response['idToken'] == null) {
       response['idToken'] = _idToken;
     }
-    return new GoogleSignInAuthentication._(response);
+    return GoogleSignInAuthentication._(response);
   }
 
   Future<Map<String, String>> get authHeaders async {
@@ -157,7 +157,7 @@ class GoogleSignIn {
 
   /// Factory for creating default sign in user experience.
   factory GoogleSignIn.standard({List<String> scopes, String hostedDomain}) {
-    return new GoogleSignIn(
+    return GoogleSignIn(
         signInOption: SignInOption.standard,
         scopes: scopes,
         hostedDomain: hostedDomain);
@@ -166,11 +166,11 @@ class GoogleSignIn {
   /// Factory for creating sign in suitable for games. This option must not be
   /// used on iOS because the games API is not supported.
   factory GoogleSignIn.games() {
-    return new GoogleSignIn(signInOption: SignInOption.games);
+    return GoogleSignIn(signInOption: SignInOption.games);
   }
 
   StreamController<GoogleSignInAccount> _currentUserController =
-      new StreamController<GoogleSignInAccount>.broadcast();
+      StreamController<GoogleSignInAccount>.broadcast();
 
   /// Subscribe to this stream to be notified when the current user changes.
   Stream<GoogleSignInAccount> get onCurrentUserChanged =>
@@ -184,7 +184,7 @@ class GoogleSignIn {
 
     final Map<dynamic, dynamic> response = await channel.invokeMethod(method);
     return _setCurrentUser(response != null && response.isNotEmpty
-        ? new GoogleSignInAccount._(this, response)
+        ? GoogleSignInAccount._(this, response)
         : null);
   }
 
@@ -220,12 +220,12 @@ class GoogleSignIn {
   /// updates to [currentUser] and [onCurrentUserChanged].
   Future<GoogleSignInAccount> _addMethodCall(String method) {
     if (_lastMethodCompleter == null) {
-      _lastMethodCompleter = new _MethodCompleter(method)
+      _lastMethodCompleter = _MethodCompleter(method)
         ..complete(_callMethod(method));
       return _lastMethodCompleter.future;
     }
 
-    final _MethodCompleter completer = new _MethodCompleter(method);
+    final _MethodCompleter completer = _MethodCompleter(method);
     _lastMethodCompleter.future.whenComplete(() {
       // If after the last completed call currentUser is not null and requested
       // method is a sign in method, re-use the same authenticated user
@@ -306,7 +306,7 @@ class GoogleSignIn {
 class _MethodCompleter {
   final String method;
   final Completer<GoogleSignInAccount> _completer =
-      new Completer<GoogleSignInAccount>();
+      Completer<GoogleSignInAccount>();
 
   _MethodCompleter(this.method);
 

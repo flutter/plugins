@@ -100,7 +100,7 @@ class VideoPlayerValue {
     double volume,
     String errorDescription,
   }) {
-    return new VideoPlayerValue(
+    return VideoPlayerValue(
       duration: duration ?? this.duration,
       size: size ?? this.size,
       position: position ?? this.position,
@@ -162,7 +162,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// package and null otherwise.
   VideoPlayerController.asset(this.dataSource, {this.package})
       : dataSourceType = DataSourceType.asset,
-        super(new VideoPlayerValue(duration: null));
+        super(VideoPlayerValue(duration: null));
 
   /// Constructs a [VideoPlayerController] playing a video from obtained from
   /// the network.
@@ -171,7 +171,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// null.
   VideoPlayerController.network(this.dataSource)
       : dataSourceType = DataSourceType.network,
-        super(new VideoPlayerValue(duration: null));
+        super(VideoPlayerValue(duration: null));
 
   /// Constructs a [VideoPlayerController] playing a video from a file.
   ///
@@ -180,12 +180,12 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   VideoPlayerController.file(File file)
       : dataSource = 'file://${file.path}',
         dataSourceType = DataSourceType.file,
-        super(new VideoPlayerValue(duration: null));
+        super(VideoPlayerValue(duration: null));
 
   Future<void> initialize() async {
-    _lifeCycleObserver = new _VideoAppLifeCycleObserver(this);
+    _lifeCycleObserver = _VideoAppLifeCycleObserver(this);
     _lifeCycleObserver.initialize();
-    _creatingCompleter = new Completer<void>();
+    _creatingCompleter = Completer<void>();
     Map<dynamic, dynamic> dataSourceDescription;
     switch (dataSourceType) {
       case DataSourceType.asset:
@@ -206,13 +206,13 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     );
     _textureId = response['textureId'];
     _creatingCompleter.complete(null);
-    final Completer<void> initializingCompleter = new Completer<void>();
+    final Completer<void> initializingCompleter = Completer<void>();
 
     DurationRange toDurationRange(dynamic value) {
       final List<dynamic> pair = value;
-      return new DurationRange(
-        new Duration(milliseconds: pair[0]),
-        new Duration(milliseconds: pair[1]),
+      return DurationRange(
+        Duration(milliseconds: pair[0]),
+        Duration(milliseconds: pair[1]),
       );
     }
 
@@ -221,8 +221,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       switch (map['event']) {
         case 'initialized':
           value = value.copyWith(
-            duration: new Duration(milliseconds: map['duration']),
-            size: new Size(map['width'].toDouble(), map['height'].toDouble()),
+            duration: Duration(milliseconds: map['duration']),
+            size: Size(map['width'].toDouble(), map['height'].toDouble()),
           );
           initializingCompleter.complete(null);
           _applyLooping();
@@ -250,7 +250,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
     void errorListener(Object obj) {
       final PlatformException e = obj;
-      value = new VideoPlayerValue.erroneous(e.message);
+      value = VideoPlayerValue.erroneous(e.message);
       timer?.cancel();
     }
 
@@ -261,7 +261,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   }
 
   EventChannel _eventChannelFor(int textureId) {
-    return new EventChannel('flutter.io/videoPlayer/videoEvents$textureId');
+    return EventChannel('flutter.io/videoPlayer/videoEvents$textureId');
   }
 
   @override
@@ -317,7 +317,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         'play',
         <String, dynamic>{'textureId': _textureId},
       );
-      timer = new Timer.periodic(
+      timer = Timer.periodic(
         const Duration(milliseconds: 500),
         (Timer timer) async {
           if (isDisposed) {
@@ -354,7 +354,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     if (isDisposed) {
       return null;
     }
-    return new Duration(
+    return Duration(
       milliseconds: await _channel.invokeMethod(
         'position',
         <String, dynamic>{'textureId': _textureId},
@@ -428,8 +428,8 @@ class VideoPlayer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return controller._textureId == null
-        ? new Container()
-        : new Texture(textureId: controller._textureId);
+        ? Container()
+        : Texture(textureId: controller._textureId);
   }
 }
 
@@ -455,7 +455,7 @@ class _VideoScrubber extends StatefulWidget {
   });
 
   @override
-  _VideoScrubberState createState() => new _VideoScrubberState();
+  _VideoScrubberState createState() => _VideoScrubberState();
 }
 
 class _VideoScrubberState extends State<_VideoScrubber> {
@@ -473,7 +473,7 @@ class _VideoScrubberState extends State<_VideoScrubber> {
       controller.seekTo(position);
     }
 
-    return new GestureDetector(
+    return GestureDetector(
       behavior: HitTestBehavior.opaque,
       child: widget.child,
       onHorizontalDragStart: (DragStartDetails details) {
@@ -524,11 +524,10 @@ class VideoProgressIndicator extends StatefulWidget {
     VideoProgressColors colors,
     this.allowScrubbing,
     this.padding = const EdgeInsets.only(top: 5.0),
-  }) : colors = colors ?? new VideoProgressColors();
+  }) : colors = colors ?? VideoProgressColors();
 
   @override
-  _VideoProgressIndicatorState createState() =>
-      new _VideoProgressIndicatorState();
+  _VideoProgressIndicatorState createState() => _VideoProgressIndicatorState();
 }
 
 class _VideoProgressIndicatorState extends State<VideoProgressIndicator> {
@@ -573,34 +572,34 @@ class _VideoProgressIndicatorState extends State<VideoProgressIndicator> {
         }
       }
 
-      progressIndicator = new Stack(
+      progressIndicator = Stack(
         fit: StackFit.passthrough,
         children: <Widget>[
-          new LinearProgressIndicator(
+          LinearProgressIndicator(
             value: maxBuffering / duration,
-            valueColor: new AlwaysStoppedAnimation<Color>(colors.bufferedColor),
+            valueColor: AlwaysStoppedAnimation<Color>(colors.bufferedColor),
             backgroundColor: colors.backgroundColor,
           ),
-          new LinearProgressIndicator(
+          LinearProgressIndicator(
             value: position / duration,
-            valueColor: new AlwaysStoppedAnimation<Color>(colors.playedColor),
+            valueColor: AlwaysStoppedAnimation<Color>(colors.playedColor),
             backgroundColor: Colors.transparent,
           ),
         ],
       );
     } else {
-      progressIndicator = new LinearProgressIndicator(
+      progressIndicator = LinearProgressIndicator(
         value: null,
-        valueColor: new AlwaysStoppedAnimation<Color>(colors.playedColor),
+        valueColor: AlwaysStoppedAnimation<Color>(colors.playedColor),
         backgroundColor: colors.backgroundColor,
       );
     }
-    final Widget paddedProgressIndicator = new Padding(
+    final Widget paddedProgressIndicator = Padding(
       padding: widget.padding,
       child: progressIndicator,
     );
     if (widget.allowScrubbing) {
-      return new _VideoScrubber(
+      return _VideoScrubber(
         child: paddedProgressIndicator,
         controller: controller,
       );

@@ -41,7 +41,7 @@ void main() {
 
       setUp(() {
         detector = FirebaseVision.instance.barcodeDetector();
-        image = new FirebaseVisionImage.fromFilePath('empty');
+        image = FirebaseVisionImage.fromFilePath('empty');
         returnBarcodes = <dynamic>[
           <dynamic, dynamic>{
             'rawValue': 'hello:raw',
@@ -476,7 +476,7 @@ void main() {
           ),
         );
 
-        final FirebaseVisionImage image = new FirebaseVisionImage.fromFilePath(
+        final FirebaseVisionImage image = FirebaseVisionImage.fromFilePath(
           'empty',
         );
 
@@ -534,7 +534,7 @@ void main() {
         final FaceDetector detector = FirebaseVision.instance.faceDetector(
           const FaceDetectorOptions(),
         );
-        final FirebaseVisionImage image = new FirebaseVisionImage.fromFilePath(
+        final FirebaseVisionImage image = FirebaseVisionImage.fromFilePath(
           'empty',
         );
 
@@ -549,7 +549,7 @@ void main() {
         final FaceDetector detector = FirebaseVision.instance.faceDetector(
           const FaceDetectorOptions(),
         );
-        final FirebaseVisionImage image = new FirebaseVisionImage.fromFilePath(
+        final FirebaseVisionImage image = FirebaseVisionImage.fromFilePath(
           'empty',
         );
 
@@ -579,7 +579,7 @@ void main() {
           const LabelDetectorOptions(confidenceThreshold: 0.2),
         );
 
-        final FirebaseVisionImage image = new FirebaseVisionImage.fromFilePath(
+        final FirebaseVisionImage image = FirebaseVisionImage.fromFilePath(
           'empty',
         );
 
@@ -613,7 +613,7 @@ void main() {
           const LabelDetectorOptions(),
         );
         final FirebaseVisionImage image =
-            new FirebaseVisionImage.fromFilePath('empty');
+            FirebaseVisionImage.fromFilePath('empty');
 
         final List<Label> labels = await detector.detectInImage(image);
 
@@ -683,7 +683,7 @@ void main() {
 
         final TextDetector detector = FirebaseVision.instance.textDetector();
         final FirebaseVisionImage image =
-            new FirebaseVisionImage.fromFilePath('empty');
+            FirebaseVisionImage.fromFilePath('empty');
 
         final List<TextBlock> blocks = await detector.detectInImage(image);
 
@@ -727,7 +727,7 @@ void main() {
 
         final TextDetector detector = FirebaseVision.instance.textDetector();
         final FirebaseVisionImage image =
-            new FirebaseVisionImage.fromFilePath('empty');
+            FirebaseVisionImage.fromFilePath('empty');
 
         final List<TextBlock> blocks = await detector.detectInImage(image);
 
@@ -758,7 +758,7 @@ void main() {
 
         final TextDetector detector = FirebaseVision.instance.textDetector();
         final FirebaseVisionImage image =
-            new FirebaseVisionImage.fromFilePath('empty');
+            FirebaseVisionImage.fromFilePath('empty');
 
         final List<TextBlock> blocks = await detector.detectInImage(image);
 

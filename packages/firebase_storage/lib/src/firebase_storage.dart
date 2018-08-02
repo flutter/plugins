@@ -24,7 +24,7 @@ class FirebaseStorage {
   /// The [app] argument is the custom [FirebaseApp].
   FirebaseStorage({this.app, this.storageBucket});
 
-  static FirebaseStorage _instance = new FirebaseStorage();
+  static FirebaseStorage _instance = FirebaseStorage();
 
   /// The [FirebaseApp] instance to which this [FirebaseStorage] belongs.
   ///
@@ -42,7 +42,7 @@ class FirebaseStorage {
 
   /// Creates a new [StorageReference] initialized at the root
   /// Firebase Storage location.
-  StorageReference ref() => new StorageReference._(const <String>[], this);
+  StorageReference ref() => StorageReference._(const <String>[], this);
 
   Future<int> getMaxDownloadRetryTimeMillis() async {
     return await channel.invokeMethod(
@@ -114,11 +114,11 @@ class StorageFileDownloadTask {
       },
     );
     _completer
-        .complete(new FileDownloadTaskSnapshot(totalByteCount: totalByteCount));
+        .complete(FileDownloadTaskSnapshot(totalByteCount: totalByteCount));
   }
 
   Completer<FileDownloadTaskSnapshot> _completer =
-      new Completer<FileDownloadTaskSnapshot>();
+      Completer<FileDownloadTaskSnapshot>();
   Future<FileDownloadTaskSnapshot> get future => _completer.future;
 }
 
