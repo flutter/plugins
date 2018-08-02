@@ -30,6 +30,7 @@ void main() {
             return new Future<bool>.value(true);
           default:
             assert(false);
+            return null;
         }
       });
     });

@@ -274,7 +274,7 @@ void main() {
             equals(<String, dynamic>{'fakeKey': 'updated fakeValue'}));
         expect(
           database.reference().child('foo').runTransaction(
-                (MutableData mutableData) {},
+                (MutableData mutableData) async => null,
                 timeout: const Duration(milliseconds: 0),
               ),
           throwsA(isInstanceOf<AssertionError>()),

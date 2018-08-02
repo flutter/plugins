@@ -56,7 +56,7 @@ void main() {
               },
             ];
           default:
-            break;
+            return null;
         }
       });
       log.clear();
