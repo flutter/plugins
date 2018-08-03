@@ -28,7 +28,7 @@ class Firestore {
 
   Firestore({FirebaseApp app}) : this.app = app ?? FirebaseApp.instance {
     if (_initialized) return;
-    channel.setMethodCallHandler((MethodCall call) {
+    channel.setMethodCallHandler((MethodCall call) async {
       if (call.method == 'QuerySnapshot') {
         final QuerySnapshot snapshot =
             new QuerySnapshot._(call.arguments, this);

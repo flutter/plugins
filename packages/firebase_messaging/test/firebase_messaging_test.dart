@@ -102,11 +102,11 @@ void main() {
     final Completer<dynamic> onLaunch = new Completer<dynamic>();
     final Completer<dynamic> onResume = new Completer<dynamic>();
 
-    firebaseMessaging.configure(onMessage: (dynamic m) {
+    firebaseMessaging.configure(onMessage: (dynamic m) async {
       onMessage.complete(m);
-    }, onLaunch: (dynamic m) {
+    }, onLaunch: (dynamic m) async {
       onLaunch.complete(m);
-    }, onResume: (dynamic m) {
+    }, onResume: (dynamic m) async {
       onResume.complete(m);
     });
     final dynamic handler =

@@ -42,7 +42,7 @@ class QuickActions {
   ///
   /// Call this once before any further interaction with the the plugin.
   void initialize(QuickActionHandler handler) {
-    _kChannel.setMethodCallHandler((MethodCall call) {
+    _kChannel.setMethodCallHandler((MethodCall call) async {
       assert(call.method == 'launch');
       handler(call.arguments);
     });
