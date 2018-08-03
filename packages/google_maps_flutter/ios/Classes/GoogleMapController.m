@@ -150,7 +150,7 @@ static uint64_t _nextMapId = 0;
   return [marker.userData[1] boolValue];
 }
 
-- (void)mapView:(GMSMapView*)mapView didTapInfoWindow:(GMSMarker*)marker {
+- (void)mapView:(GMSMapView*)mapView didTapInfoWindowOfMarker:(GMSMarker*)marker {
   NSString* markerId = marker.userData[0];
   [_delegate onInfoWindowTappedOnMap:_mapId marker:markerId];
 }
