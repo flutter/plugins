@@ -9,6 +9,7 @@
 ## 0.6.3
 
 * Add multi app support.
+* Adding support for FirebaseUser.unlink(providerId)
 
 ## 0.6.2+1
 

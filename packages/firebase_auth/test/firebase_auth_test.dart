@@ -383,6 +383,25 @@ void main() {
       );
     });
 
+    test('unlink', () async {
+      final FirebaseUser user = await auth.unlink(
+        providerId: kMockProviderId,
+      );
+      verifyUser(user);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'unlink',
+            arguments: <String, String>{
+              'app': auth.app.name,
+              'providerId': kMockProviderId,
+            },
+          ),
+        ],
+      );
+    });
+
     test('signInWithFacebook', () async {
       final FirebaseUser user = await auth.signInWithFacebook(
         accessToken: kMockAccessToken,

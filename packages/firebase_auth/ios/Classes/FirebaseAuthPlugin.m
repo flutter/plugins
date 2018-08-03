@@ -266,6 +266,14 @@ int nextHandle = 0;
                                                                   forUser:user
                                                                     error:error];
                                                        }];
+  } else if ([@"unlink" isEqualToString:call.method]) {
+    NSString *providerId = call.arguments[@"providerId"];
+    [[self getAuth:call.arguments].currentUser unlinkFromProvider:providerId
+                                                       completion:^(FIRUser *user, NSError *error) {
+                                                         [self sendResult:result
+                                                                  forUser:user
+                                                                    error:error];
+                                                       }];
   } else if ([@"updateEmail" isEqualToString:call.method]) {
     NSString *email = call.arguments[@"email"];
     [[self getAuth:call.arguments].currentUser updateEmail:email
