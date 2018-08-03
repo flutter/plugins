@@ -62,6 +62,16 @@ class BookList extends StatelessWidget {
 }
 ```
 
+Performing a query:
+```dart
+Firestore.instance
+    .collection('talks')
+    .where("difficulty", isEqualTo: "easy")
+    .snapshots()
+    .listen((data) =>
+        data.documents.forEach((doc) => print(doc["title"])));
+```
+
 Running a transaction:
 
 ```dart
