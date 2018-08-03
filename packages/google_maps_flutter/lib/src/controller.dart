@@ -81,6 +81,7 @@ class GoogleMapController extends ChangeNotifier {
       if (controller != null) {
         controller._handleMethodCall(call);
       }
+      return Future<void>.value(null);
     });
   }
 
