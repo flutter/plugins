@@ -335,6 +335,26 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
   }
 
+  /// Sets the auto focus and auto exposure point.
+  ///
+  /// Throws a [CameraException] if the call fails.
+  Future<Null> setPointOfInterest(Offset offset) async {
+    if (!value.isInitialized || _isDisposed) {
+      throw new CameraException(
+        'Uninitialized CameraController.',
+        'takePicture was called on uninitialized CameraController',
+      );
+    }
+    try {
+      await _channel.invokeMethod(
+        'setPointOfInterest',
+        <String, dynamic>{'offsetX': offset.dx, 'offsetY': offset.dy},
+      );
+    } on PlatformException catch (e) {
+      throw new CameraException(e.code, e.message);
+    }
+  }
+
   /// Releases the resources of this camera.
   @override
   Future<Null> dispose() async {

@@ -492,6 +492,28 @@
       });
       [cam start];
     }
+  } else if ([@"setPointOfInterest" isEqualToString:call.method]) {
+    NSNumber *offsetX = call.arguments[@"offsetX"];
+    NSNumber *offsetY = call.arguments[@"offsetY"];
+
+    NSError *error = nil;
+    [_camera.captureDevice lockForConfiguration:&error];
+    if (error) {
+      result([error flutterError]);
+    } else {
+      if ([_camera.captureDevice isFocusPointOfInterestSupported]) {
+        _camera.captureDevice.focusPointOfInterest =
+            CGPointMake(offsetY.floatValue, 1 - offsetX.floatValue);
+        [_camera.captureDevice setFocusMode:AVCaptureFocusModeContinuousAutoFocus];
+      }
+      if ([_camera.captureDevice isExposurePointOfInterestSupported]) {
+        _camera.captureDevice.exposurePointOfInterest =
+            CGPointMake(offsetY.floatValue, 1 - offsetX.floatValue);
+        [_camera.captureDevice setExposureMode:AVCaptureExposureModeContinuousAutoExposure];
+      }
+      [_camera.captureDevice unlockForConfiguration];
+      result(@{});
+    }
   } else {
     NSDictionary *argsMap = call.arguments;
     NSUInteger textureId = ((NSNumber *)argsMap[@"textureId"]).unsignedIntegerValue;
