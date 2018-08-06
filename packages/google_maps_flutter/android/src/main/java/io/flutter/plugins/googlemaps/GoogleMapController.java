@@ -217,6 +217,12 @@ final class GoogleMapController
     googleMap.setOnCameraMoveListener(this);
     googleMap.setOnCameraIdleListener(this);
     googleMap.setOnMarkerClickListener(this);
+
+    // enable location for partycon
+    // DON'T ANYBODY DARE submit PR for this ugly try-catch sollution to google
+    try {
+      googleMap.setMyLocationEnabled(true);
+    } catch(Exception e) {}
     // Take snapshots until the dust settles.
     timer.schedule(newSnapshotTask(), 0);
     timer.schedule(newSnapshotTask(), 500);
