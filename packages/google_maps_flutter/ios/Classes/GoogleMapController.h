@@ -4,6 +4,7 @@
 
 #import <Flutter/Flutter.h>
 #import <GoogleMaps/GoogleMaps.h>
+#import <CoreLocation/CoreLocation.h>
 #import "GoogleMapMarkerController.h"
 
 // Defines events to be sent to Flutter.
@@ -30,7 +31,7 @@
 @end
 
 // Defines map overlay controllable from Flutter.
-@interface FLTGoogleMapController : NSObject<GMSMapViewDelegate, FLTGoogleMapOptionsSink>
+@interface FLTGoogleMapController : NSObject<GMSMapViewDelegate, FLTGoogleMapOptionsSink, CLLocationManagerDelegate>
 @property(atomic) id<FLTGoogleMapDelegate> delegate;
 @property(atomic, readonly) id mapId;
 + (instancetype)controllerWithWidth:(CGFloat)width
