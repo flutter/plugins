@@ -71,15 +71,20 @@ Future<Null> main() async {
   final int helloAlarmID = 0;
   final int goodbyeAlarmID = 1;
   final int oneShotID = 2;
+
+  // Start the AlarmManager service.
+  await AndroidAlarmManager.initialize();
+
   printHelloMessage("Hello, main()!");
   runApp(const Center(
       child: Text('Hello, world!', textDirection: TextDirection.ltr)));
   await AndroidAlarmManager.periodic(
-      const Duration(minutes: 1), helloAlarmID, printHello);
-  await AndroidAlarmManager.periodic(
-      const Duration(minutes: 1), goodbyeAlarmID, printGoodbye);
+      const Duration(seconds: 5), helloAlarmID, printHello,
+      wakeup: true);
+  await AndroidAlarmManager.oneShot(
+      const Duration(seconds: 5), goodbyeAlarmID, printGoodbye);
   if (!oneShotFired) {
     await AndroidAlarmManager.oneShot(
-        const Duration(minutes: 1), oneShotID, printOneShot);
+        const Duration(seconds: 5), oneShotID, printOneShot);
   }
 }
