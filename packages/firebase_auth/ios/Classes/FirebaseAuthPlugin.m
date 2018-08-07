@@ -193,6 +193,12 @@ int nextHandle = 0;
                                  completion:^(NSError *_Nullable error) {
                                    [self sendResult:result forUser:nil error:error];
                                  }];
+  } else if ([@"updatePassword" isEqualToString:call.method]) {
+    NSString *toPassword = call.arguments[@"password"];
+    [[FIRAuth auth].currentUser updatePassword:toPassword
+                                 completion:^(NSError *_Nullable error) {
+                                   [self sendResult:result forUser:nil error:error];
+                                 }];
   } else if ([@"signInWithCustomToken" isEqualToString:call.method]) {
     NSString *token = call.arguments[@"token"];
     [[FIRAuth auth] signInWithCustomToken:token

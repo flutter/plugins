@@ -45,6 +45,7 @@ void main() {
             return null;
             break;
           case "updateEmail":
+          case "updatePassword":
             return null;
             break;
           case "fetchProvidersForEmail":
@@ -385,6 +386,20 @@ void main() {
           isMethodCall(
             'updateEmail',
             arguments: <String, String>{'email': updatedEmail},
+          ),
+        ],
+      );
+    });
+
+    test('updatePassword', () async {
+      final String updatedPassword = 'password123';
+      auth.updatePassword(password: updatedPassword);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'updatePassword',
+            arguments: <String, String>{'password': updatedPassword},
           ),
         ],
       );
