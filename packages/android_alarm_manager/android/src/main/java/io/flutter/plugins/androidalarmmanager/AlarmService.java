@@ -18,7 +18,6 @@ import io.flutter.app.FlutterApplication;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry.PluginRegistrantCallback;
 import io.flutter.view.FlutterCallbackInformation;
-import io.flutter.view.FlutterIsolateStartedEvent;
 import io.flutter.view.FlutterMain;
 import io.flutter.view.FlutterNativeView;
 import io.flutter.view.FlutterRunArguments;
@@ -26,22 +25,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AlarmService extends Service {
   public static final String TAG = "AlarmService";
-  private static AtomicBoolean sStarted;
+  private static AtomicBoolean sStarted = new AtomicBoolean(false);
   private static FlutterNativeView sSharedFlutterView;
   private static MethodChannel sBackgroundChannel;
-  private static OnStartedCallback sOnStartedCallback;
   private static PluginRegistrantCallback sPluginRegistrantCallback;
 
   private String mAppBundlePath;
-
-  private static class OnStartedCallback implements FlutterIsolateStartedEvent {
-    public void onStarted(boolean success) {
-      if (!success) {
-        Log.e(TAG, "AlarmService start failed. Bailing out.");
-        return;
-      }
-    }
-  }
 
   public static void onInitialized() {
     sStarted.set(true);
@@ -57,15 +46,12 @@ public class AlarmService extends Service {
       return;
     }
     sSharedFlutterView = new FlutterNativeView(context, true);
-    sStarted = new AtomicBoolean(false);
     if (mAppBundlePath != null && !sStarted.get()) {
       Log.i(TAG, "Starting AlarmService...");
-      sOnStartedCallback = new OnStartedCallback();
       FlutterRunArguments args = new FlutterRunArguments();
       args.bundlePath = mAppBundlePath;
       args.entrypoint = cb.callbackName;
       args.libraryPath = cb.callbackLibraryPath;
-      args.onStartedEvent = sOnStartedCallback;
       sSharedFlutterView.runFromBundle(args);
       sPluginRegistrantCallback.registerWith(sSharedFlutterView.getPluginRegistry());
     }
