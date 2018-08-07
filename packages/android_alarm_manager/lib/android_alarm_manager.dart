@@ -14,7 +14,7 @@ const String _backgroundName =
 
 void _alarmManagerCallbackDispatcher() {
   const MethodChannel _channel =
-      const MethodChannel(_backgroundName, const JSONMethodCodec());
+      MethodChannel(_backgroundName, JSONMethodCodec());
   WidgetsFlutterBinding.ensureInitialized();
   _channel.setMethodCallHandler((MethodCall call) async {
     final dynamic args = call.arguments;
