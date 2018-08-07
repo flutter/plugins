@@ -102,6 +102,6 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
 
   @Override
   public boolean onViewDestroy(FlutterNativeView nativeView) {
-    return AlarmService.setSharedFlutterView(nativeView);
+    return AlarmService.setBackgroundFlutterView(nativeView);
   }
 }
