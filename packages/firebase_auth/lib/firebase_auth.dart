@@ -301,6 +301,7 @@ class FirebaseAuth {
     @required PhoneVerificationFailed verificationFailed,
     @required PhoneCodeSent codeSent,
     @required PhoneCodeAutoRetrievalTimeout codeAutoRetrievalTimeout,
+    bool loginAfter = true
   }) async {
     final Map<String, dynamic> callbacks = <String, dynamic>{
       'PhoneVerificationCompleted': verificationCompleted,
@@ -316,6 +317,7 @@ class FirebaseAuth {
       'phoneNumber': phoneNumber,
       'timeout': timeout.inMilliseconds,
       'forceResendingToken': forceResendingToken,
+      'loginAfter': loginAfter
     };
 
     await channel.invokeMethod('verifyPhoneNumber', params);
@@ -389,6 +391,21 @@ class FirebaseAuth {
       'updatePassword',
       <String, String>{
         'password': password,
+      },
+    );
+  }
+
+  Future<void> updatePhoneNumber({
+    @required String verificationId,
+    @required String smsCode
+  }) async {
+    assert(verificationId != null);
+    assert(smsCode != null);
+    return await channel.invokeMethod(
+      'updatePhoneNumber',
+      <String, String>{
+        'verificationId': verificationId,
+        'smsCode': smsCode
       },
     );
   }

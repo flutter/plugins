@@ -199,6 +199,18 @@ int nextHandle = 0;
                                  completion:^(NSError *_Nullable error) {
                                    [self sendResult:result forUser:nil error:error];
                                  }];
+  } else if ([@"updatePhoneNumber" isEqualToString:call.method]) {
+    NSString *verificationId = call.arguments[@"verificationId"];
+    NSString *smsCode = call.arguments[@"smsCode"];
+
+    FIRPhoneAuthCredential *credential =
+        [[FIRPhoneAuthProvider provider] credentialWithVerificationID:verificationId
+                                                     verificationCode:smsCode];
+    [[FIRAuth auth].currentUser updatePhoneNumber:credential
+                                 completion:^(NSError *_Nullable error) {
+                                   [self sendResult:result forUser:nil error:error];
+                                 }];
+    NSString *toPassword = call.arguments[@"password"];
   } else if ([@"signInWithCustomToken" isEqualToString:call.method]) {
     NSString *token = call.arguments[@"token"];
     [[FIRAuth auth] signInWithCustomToken:token
