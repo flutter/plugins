@@ -12,6 +12,7 @@
   FlutterMethodChannel *_callbackChannel;
   FlutterMethodChannel *_mainChannel;
   NSObject<FlutterPluginRegistrar> *_registrar;
+  NSUserDefaults *_persistentState;
   int64_t _onLocationUpdateHandle;
 }
 
@@ -23,14 +24,33 @@ static LocationBackgroundPlugin *instance = nil;
   @synchronized(self) {
     if (instance == nil) {
       instance = [[LocationBackgroundPlugin alloc] init:registrar];
+      [registrar addApplicationDelegate:instance];
     }
   }
+}
+
+- (BOOL)application:(UIApplication *)application
+    didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+  if (launchOptions[UIApplicationLaunchOptionsLocationKey] != nil) {
+    [self startHeadlessService:[self getCallbackDispatcherHandle]];
+    _onLocationUpdateHandle = [self getLocationCallbackHandle];
+    _locationManager.pausesLocationUpdatesAutomatically =
+        [self getPausesLocationUpdatesAutomatically];
+    if (@available(iOS 11.0, *)) {
+      _locationManager.showsBackgroundLocationIndicator =
+          [self getShowsBackgroundLocationIndicator];
+    }
+    _locationManager.allowsBackgroundLocationUpdates = YES;
+    [self->_locationManager startMonitoringSignificantLocationChanges];
+    return YES;
+  }
+  return YES;
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSArray *arguments = call.arguments;
   if ([@"monitorLocationChanges" isEqualToString:call.method]) {
-    NSAssert(arguments.count == 6, @"Invalid argument count for 'monitorLocationChanges'");
+    NSAssert(arguments.count == 4, @"Invalid argument count for 'monitorLocationChanges'");
     [self monitorLocationChanges:arguments];
     result(@(YES));
   } else if ([@"startHeadlessService" isEqualToString:call.method]) {
@@ -62,6 +82,7 @@ static LocationBackgroundPlugin *instance = nil;
 - (instancetype)init:(NSObject<FlutterPluginRegistrar> *)registrar {
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
+  _persistentState = [NSUserDefaults standardUserDefaults];
   _locationManager = [[CLLocationManager alloc] init];
   [_locationManager setDelegate:self];
   [_locationManager requestAlwaysAuthorization];
@@ -87,10 +108,53 @@ static LocationBackgroundPlugin *instance = nil;
   return self;
 }
 
+- (int64_t)getCallbackDispatcherHandle {
+  id handle = [_persistentState objectForKey:@"callback_dispatcher_handle"];
+  if (handle == nil) {
+    return 0;
+  }
+  return [handle longLongValue];
+}
+
+- (void)setCallbackDispatcherHandle:(int64_t)handle {
+  [_persistentState setObject:[NSNumber numberWithLongLong:handle]
+                       forKey:@"callback_dispatcher_handle"];
+}
+
+- (int64_t)getLocationCallbackHandle {
+  id handle = [_persistentState objectForKey:@"location_callback_handle"];
+  if (handle == nil) {
+    return 0;
+  }
+  return [handle longLongValue];
+}
+
+- (void)setLocationCallbackHandle:(int64_t)handle {
+  [_persistentState setObject:[NSNumber numberWithLongLong:handle]
+                       forKey:@"location_callback_handle"];
+}
+
+- (BOOL)getPausesLocationUpdatesAutomatically {
+  return [_persistentState boolForKey:@"pauses_location_updates_automatically"];
+}
+
+- (void)setPausesLocationUpdatesAutomatically:(BOOL)pause {
+  [_persistentState setBool:pause forKey:@"pauses_location_updates_automatically"];
+}
+
+- (BOOL)getShowsBackgroundLocationIndicator {
+  return [_persistentState boolForKey:@"shows_background_location_indicator"];
+}
+
+- (void)setShowsBackgroundLocationIndicator:(BOOL)pause {
+  [_persistentState setBool:pause forKey:@"shows_background_location_indicator"];
+}
+
 // Initializes and starts the background isolate which will process location
 // events. `entrypoint` is the name of the callback to be invoked and `uri` is
 // the URI of the library which contains the callback.
 - (void)startHeadlessService:(int64_t)handle {
+  [self setCallbackDispatcherHandle:handle];
   FlutterCallbackInformation *info = [FlutterCallbackCache lookupCallbackInformation:handle];
   NSAssert(info != nil, @"failed to find callback");
   NSString *entrypoint = info.callbackName;
@@ -109,16 +173,18 @@ static LocationBackgroundPlugin *instance = nil;
 
 // Start receiving location updates.
 - (void)monitorLocationChanges:(NSArray *)arguments {
-  _onLocationUpdateHandle = [arguments[0] longValue];
+  _onLocationUpdateHandle = [arguments[0] longLongValue];
+  [self setLocationCallbackHandle:_onLocationUpdateHandle];
   _locationManager.pausesLocationUpdatesAutomatically = arguments[1];
   if (@available(iOS 11.0, *)) {
     _locationManager.showsBackgroundLocationIndicator = arguments[2];
   }
-  _locationManager.distanceFilter = [arguments[3] integerValue];
-  _locationManager.desiredAccuracy = [arguments[4] integerValue];
-  _locationManager.activityType = [arguments[5] integerValue];
+  _locationManager.activityType = [arguments[3] integerValue];
   _locationManager.allowsBackgroundLocationUpdates = YES;
-  [self->_locationManager startUpdatingLocation];
+
+  [self setPausesLocationUpdatesAutomatically:_locationManager.pausesLocationUpdatesAutomatically];
+  [self setShowsBackgroundLocationIndicator:_locationManager.showsBackgroundLocationIndicator];
+  [self->_locationManager startMonitoringSignificantLocationChanges];
 }
 
 // Stop the location updates.

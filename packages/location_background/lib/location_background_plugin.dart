@@ -22,18 +22,6 @@ enum LocationActivityType {
   otherNavigation,
 }
 
-/// Types of accuracy modes for iOS.
-///
-/// See https://developer.apple.com/documentation/corelocation/cllocationaccuracy
-enum LocationAccuracy {
-  bestForNavigation,
-  best,
-  nearestTenMeters,
-  hundredMeters,
-  kilometer,
-  threeKilometers,
-}
-
 /// A representation of a location update.
 class Location {
   final double _time;
@@ -122,7 +110,7 @@ class LocationBackgroundPlugin {
   // The method channel we'll use to communicate with the native portion of our
   // plugin.
   static const MethodChannel _channel =
-      const MethodChannel('plugins.flutter.io/ios_background_location');
+      MethodChannel('plugins.flutter.io/ios_background_location');
 
   static const String _kCancelLocationUpdates = 'cancelLocationUpdates';
   static const String _kMonitorLocationChanges = 'monitorLocationChanges';
@@ -130,15 +118,11 @@ class LocationBackgroundPlugin {
 
   bool pauseLocationUpdatesAutomatically;
   bool showsBackgroundLocationIndicator;
-  int distanceFilter;
-  LocationAccuracy desiredAccuracy;
   LocationActivityType activityType;
 
   LocationBackgroundPlugin(
       {this.pauseLocationUpdatesAutomatically = false,
       this.showsBackgroundLocationIndicator = true,
-      this.distanceFilter = 0,
-      this.desiredAccuracy = LocationAccuracy.best,
       this.activityType = LocationActivityType.other}) {
     // Start the headless location service. The parameter here is a handle to
     // a callback managed by the Flutter engine, which allows for us to pass
@@ -151,11 +135,11 @@ class LocationBackgroundPlugin {
         .invokeMethod(_kStartHeadlessService, <dynamic>[handle.toRawHandle()]);
   }
 
-  /// Start getting location updates through `callback`.
+  /// Start getting significant location updates through `callback`.
   ///
   /// `callback` is invoked on a background isolate and will not have direct
   /// access to the state held by the main isolate (or any other isolate).
-  Future<bool> monitorLocationChanges(
+  Future<bool> monitorSignificantLocationChanges(
       void Function(Location location) callback) {
     if (callback == null) {
       throw ArgumentError.notNull('callback');
@@ -165,8 +149,6 @@ class LocationBackgroundPlugin {
       handle.toRawHandle(),
       pauseLocationUpdatesAutomatically,
       showsBackgroundLocationIndicator,
-      distanceFilter,
-      desiredAccuracy.index,
       activityType.index
     ]).then<bool>((dynamic result) => result);
   }

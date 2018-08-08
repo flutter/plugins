@@ -95,8 +95,8 @@ class _MyAppState extends State<MyApp> {
                     style: boldText,
                   )),
                   Center(
-                      child: Text('(${_lastLocation.latitude}, ${_lastLocation
-                          .longitude})')),
+                      child: Text(
+                          '(${_lastLocation.latitude}, ${_lastLocation.longitude})')),
                   const Center(
                       child: Text(
                     'Altitude:',
@@ -115,8 +115,8 @@ class _MyAppState extends State<MyApp> {
                         Text(_isTracking ? 'Stop Tracking' : 'Start Tracking'),
                     onPressed: () async {
                       if (!_isTracking) {
-                        await _locationPlugin
-                            .monitorLocationChanges(LocationMonitor.locationCallback);
+                        await _locationPlugin.monitorSignificantLocationChanges(
+                            LocationMonitor.locationCallback);
                       } else {
                         await _locationPlugin.cancelLocationUpdates();
                       }
