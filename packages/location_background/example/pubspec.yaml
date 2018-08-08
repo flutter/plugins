@@ -9,12 +9,12 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.0
 
+  location_background_plugin:
+    path: ../
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
-  location_background_plugin:
-    path: ../
 
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec

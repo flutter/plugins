@@ -29,10 +29,18 @@ static LocationBackgroundPlugin *instance = nil;
   }
 }
 
+// When iOS relaunches us due to a significant location change, we need to
+// reinitialize our plugin state. This includes relaunching the headless
+// service, retrieving our cached callback handles and location manager
+// settings, and restarting the location manager to actually receive the
+// location event.
 - (BOOL)application:(UIApplication *)application
     didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+  // Check to see if we're being launched due to a location event.
   if (launchOptions[UIApplicationLaunchOptionsLocationKey] != nil) {
+    // Restart the headless service.
     [self startHeadlessService:[self getCallbackDispatcherHandle]];
+    // Grab our callback handles and location manager state.
     _onLocationUpdateHandle = [self getLocationCallbackHandle];
     _locationManager.pausesLocationUpdatesAutomatically =
         [self getPausesLocationUpdatesAutomatically];
@@ -41,9 +49,11 @@ static LocationBackgroundPlugin *instance = nil;
           [self getShowsBackgroundLocationIndicator];
     }
     _locationManager.allowsBackgroundLocationUpdates = YES;
+    // Finally, restart monitoring for location changes to get our location.
     [self->_locationManager startMonitoringSignificantLocationChanges];
-    return YES;
   }
+
+  // Note: if we return NO, this vetos the launch of the application.
   return YES;
 }
 
@@ -104,7 +114,6 @@ static LocationBackgroundPlugin *instance = nil;
   _callbackChannel = [FlutterMethodChannel
       methodChannelWithName:@"plugins.flutter.io/ios_background_location_callback"
             binaryMessenger:_headlessRunner];
-
   return self;
 }
 
@@ -151,19 +160,26 @@ static LocationBackgroundPlugin *instance = nil;
 }
 
 // Initializes and starts the background isolate which will process location
-// events. `entrypoint` is the name of the callback to be invoked and `uri` is
-// the URI of the library which contains the callback.
+// events. `handle` is the handle to the callback dispatcher which we specified
+// in the Dart portion of the plugin.
 - (void)startHeadlessService:(int64_t)handle {
   [self setCallbackDispatcherHandle:handle];
+
+  // Lookup the information for our callback dispatcher from the callback cache.
+  // This cache is populated when `PluginUtilities.getCallbackHandle` is called
+  // and the resulting handle maps to a `FlutterCallbackInformation` object.
+  // This object contains information needed by the engine to start a headless
+  // runner, which includes the callback name as well as the path to the file
+  // containing the callback.
   FlutterCallbackInformation *info = [FlutterCallbackCache lookupCallbackInformation:handle];
   NSAssert(info != nil, @"failed to find callback");
   NSString *entrypoint = info.callbackName;
   NSString *uri = info.callbackLibraryPath;
-  [_headlessRunner runWithEntrypointAndCallback:entrypoint
-                                     libraryUri:uri
-                                     completion:^(BOOL success) {
-                                       NSAssert(success, @"Unable to start background service");
-                                     }];
+
+  // Here we actually launch the background isolate to start executing our
+  // callback dispatcher, `_backgroundCallbackDispatcher`, in Dart.
+  [_headlessRunner runWithEntrypointAndCallback:entrypoint libraryUri:uri];
+
   // The headless runner needs to be initialized before we can register it as a
   // MethodCallDelegate or else we get an illegal memory access. If we don't
   // want to make calls from `_backgroundCallDispatcher` back to native code,
