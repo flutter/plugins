@@ -415,7 +415,10 @@ void main() {
         <Matcher>[
           isMethodCall(
             'updatePhoneNumber',
-            arguments: <String, String>{'verificationId': verificationId, 'smsCode': smsCode},
+            arguments: <String, String>{
+              'verificationId': verificationId,
+              'smsCode': smsCode
+            },
           ),
         ],
       );

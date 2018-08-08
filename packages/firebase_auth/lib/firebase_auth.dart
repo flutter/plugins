@@ -293,16 +293,15 @@ class FirebaseAuth {
     return currentUser;
   }
 
-  Future<void> verifyPhoneNumber({
-    @required String phoneNumber,
-    @required Duration timeout,
-    int forceResendingToken,
-    @required PhoneVerificationCompleted verificationCompleted,
-    @required PhoneVerificationFailed verificationFailed,
-    @required PhoneCodeSent codeSent,
-    @required PhoneCodeAutoRetrievalTimeout codeAutoRetrievalTimeout,
-    bool loginAfter = true
-  }) async {
+  Future<void> verifyPhoneNumber(
+      {@required String phoneNumber,
+      @required Duration timeout,
+      int forceResendingToken,
+      @required PhoneVerificationCompleted verificationCompleted,
+      @required PhoneVerificationFailed verificationFailed,
+      @required PhoneCodeSent codeSent,
+      @required PhoneCodeAutoRetrievalTimeout codeAutoRetrievalTimeout,
+      bool loginAfter = true}) async {
     final Map<String, dynamic> callbacks = <String, dynamic>{
       'PhoneVerificationCompleted': verificationCompleted,
       'PhoneVerificationFailed': verificationFailed,
@@ -395,18 +394,13 @@ class FirebaseAuth {
     );
   }
 
-  Future<void> updatePhoneNumber({
-    @required String verificationId,
-    @required String smsCode
-  }) async {
+  Future<void> updatePhoneNumber(
+      {@required String verificationId, @required String smsCode}) async {
     assert(verificationId != null);
     assert(smsCode != null);
     return await channel.invokeMethod(
       'updatePhoneNumber',
-      <String, String>{
-        'verificationId': verificationId,
-        'smsCode': smsCode
-      },
+      <String, String>{'verificationId': verificationId, 'smsCode': smsCode},
     );
   }
 
