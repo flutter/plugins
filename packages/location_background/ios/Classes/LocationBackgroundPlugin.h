@@ -7,6 +7,6 @@
 #import <CoreLocation/CoreLocation.h>
 
 @interface LocationBackgroundPlugin
-    : NSObject <FlutterPlugin, CLLocationManagerDelegate> {
+    : NSObject<FlutterPlugin, CLLocationManagerDelegate> {
 }
 @end
