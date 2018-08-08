@@ -65,8 +65,8 @@ class Location {
 // callbacks.
 void _backgroundCallbackDispatcher() {
   const String kOnLocationEvent = 'onLocationEvent';
-  const MethodChannel _channel = const MethodChannel(
-      'plugins.flutter.io/ios_background_location_callback');
+  const MethodChannel _channel =
+      MethodChannel('plugins.flutter.io/ios_background_location_callback');
 
   // Setup Flutter state needed for MethodChannels.
   WidgetsFlutterBinding.ensureInitialized();

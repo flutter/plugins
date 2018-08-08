@@ -73,7 +73,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    const TextStyle boldText = const TextStyle(fontWeight: FontWeight.bold);
+    const TextStyle boldText = TextStyle(fontWeight: FontWeight.bold);
     return new MaterialApp(
         home: new Scaffold(
             appBar: new AppBar(
