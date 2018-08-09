@@ -13,18 +13,53 @@ part of firebase_ml_vision;
 /// TextDetector textDetector = FirebaseVision.instance.getTextDetector();
 /// ```
 class FirebaseVision {
-  StreamSubscription<dynamic> _eventSubscription;
+  Stream<dynamic> liveViewStream;
 
   FirebaseVision._() {
-    _eventSubscription = const EventChannel(
+    liveViewStream = const EventChannel(
             'plugins.flutter.io/firebase_ml_vision/liveViewEvents')
         .receiveBroadcastStream()
-        .listen(_listener);
-  }
+        .where((dynamic event) => event['eventType'] == 'detection')
+        .map<LiveViewDetectionResult>((dynamic event) {
+          print("mapping!");
 
-  void _listener(dynamic event) {
-    //TODO: handle presentation of recognized items
-    print(event);
+          // get the image size
+          final Map<dynamic, dynamic> sizeMap = event['imageSize'];
+          int width = sizeMap['width'];
+          int height = sizeMap['height'];
+          final imageSize = Size(width.toDouble(), height.toDouble());
+
+          // get the data
+          final List<dynamic> reply = event['data'];
+          // get the data type
+          final String detectionType = event['detectionType'];
+          if (detectionType == "barcode") {
+            final List<Barcode> barcodes = <Barcode>[];
+            reply.forEach((dynamic barcodeMap) {
+              barcodes.add(new Barcode(barcodeMap));
+            });
+            return new LiveViewBarcodeDetectionResult(barcodes, imageSize);
+          } else if (detectionType == "text") {
+            final List<TextBlock> texts = <TextBlock>[];
+            reply.forEach((dynamic block) {
+              texts.add(TextBlock.fromBlockData(block));
+            });
+            return new LiveViewTextDetectionResult(texts, imageSize);
+          } else if (detectionType == "face") {
+            final List<Face> faces = <Face>[];
+            reply.forEach((dynamic f) {
+              faces.add(new Face(f));
+            });
+            return new LiveViewFaceDetectionResult(faces, imageSize);
+          } else if (detectionType == "label") {
+            final List<Label> labels = <Label>[];
+            reply.forEach((dynamic l) {
+              labels.add(new Label(l));
+            });
+            return new LiveViewLabelDetectionResult(labels, imageSize);
+          }
+          return new LiveViewDefaultDetectionResult();
+    }).asBroadcastStream();
   }
 
   @visibleForTesting
@@ -59,13 +94,13 @@ class FirebaseVision {
   TextDetector textDetector() => new TextDetector._();
 
   Future<Null> setLiveViewDetector(FirebaseVisionDetectorType type,
-      [Map<String, dynamic> options]) async {
+      [VisionOptions options]) async {
     final String typeMessage = detectorMessageType(type);
     if (typeMessage == null) return;
     await FirebaseVision.channel
         .invokeMethod("LiveView#setDetector", <String, dynamic>{
       "detectorType": typeMessage,
-      "options": options,
+      "options": options?.toMap() ?? <String, dynamic>{},
     });
   }
 

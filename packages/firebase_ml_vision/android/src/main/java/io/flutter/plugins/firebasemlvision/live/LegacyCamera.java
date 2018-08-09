@@ -134,7 +134,7 @@ public class LegacyCamera {
   private final Detector.OperationFinishedCallback liveDetectorFinishedCallback =
       new Detector.OperationFinishedCallback() {
         @Override
-        public void success(Detector detector, Object data) {
+        public void success(Detector detector, Object data, android.util.Size size) {
           Map<String, Object> event = new HashMap<>();
           event.put("eventType", "detection");
           String dataType;
@@ -791,7 +791,7 @@ public class LegacyCamera {
                     .setRotation(rotation)
                     .build();
             FirebaseVisionImage image = FirebaseVisionImage.fromByteBuffer(data, metadata);
-            detector.handleDetection(image, detectorOptions, liveDetectorFinishedCallback);
+            detector.handleDetection(image, new android.util.Size(previewSize.getWidth(), previewSize.getHeight()), detectorOptions, liveDetectorFinishedCallback);
           }
         } catch (Throwable t) {
           Log.e(TAG, "Exception thrown from receiver.", t);

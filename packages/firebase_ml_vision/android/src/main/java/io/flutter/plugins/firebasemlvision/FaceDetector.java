@@ -1,6 +1,8 @@
 package io.flutter.plugins.firebasemlvision;
 
 import android.support.annotation.NonNull;
+import android.util.Size;
+
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.ml.vision.FirebaseVision;
@@ -21,9 +23,10 @@ public class FaceDetector extends Detector {
 
   @Override
   void processImage(
-      FirebaseVisionImage image,
-      Map<String, Object> options,
-      final OperationFinishedCallback finishedCallback) {
+    FirebaseVisionImage image,
+    final Size imageSize,
+    Map<String, Object> options,
+    final OperationFinishedCallback finishedCallback) {
     FirebaseVisionFaceDetector detector;
     if (options == null) {
       detector = FirebaseVision.getInstance().getVisionFaceDetector();
@@ -72,7 +75,7 @@ public class FaceDetector extends Detector {
                   faces.add(faceData);
                 }
 
-                finishedCallback.success(FaceDetector.this, faces);
+                finishedCallback.success(FaceDetector.this, faces, imageSize);
               }
             })
         .addOnFailureListener(

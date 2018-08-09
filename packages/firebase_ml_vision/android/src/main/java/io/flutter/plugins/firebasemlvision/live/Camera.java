@@ -1,7 +1,5 @@
 package io.flutter.plugins.firebasemlvision.live;
 
-import static io.flutter.plugins.firebasemlvision.FirebaseMlVisionPlugin.CAMERA_REQUEST_ID;
-
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -31,16 +29,10 @@ import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.Surface;
 import android.view.WindowManager;
+
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata;
-import io.flutter.plugin.common.EventChannel;
-import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.PluginRegistry;
-import io.flutter.plugins.firebasemlvision.BarcodeDetector;
-import io.flutter.plugins.firebasemlvision.Detector;
-import io.flutter.plugins.firebasemlvision.DetectorException;
-import io.flutter.plugins.firebasemlvision.TextDetector;
-import io.flutter.view.FlutterView;
+
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,6 +42,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import io.flutter.plugin.common.EventChannel;
+import io.flutter.plugin.common.MethodChannel;
+import io.flutter.plugin.common.PluginRegistry;
+import io.flutter.plugins.firebasemlvision.BarcodeDetector;
+import io.flutter.plugins.firebasemlvision.Detector;
+import io.flutter.plugins.firebasemlvision.DetectorException;
+import io.flutter.plugins.firebasemlvision.TextDetector;
+import io.flutter.view.FlutterView;
+
+import static io.flutter.plugins.firebasemlvision.FirebaseMlVisionPlugin.CAMERA_REQUEST_ID;
 
 @SuppressWarnings("WeakerAccess")
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -87,7 +90,7 @@ class Camera {
   private final Detector.OperationFinishedCallback liveDetectorFinishedCallback =
       new Detector.OperationFinishedCallback() {
         @Override
-        public void success(Detector detector, Object data) {
+        public void success(Detector detector, Object data, Size imageSize) {
           shouldThrottle.set(false);
           Map<String, Object> event = new HashMap<>();
           event.put("eventType", "recognized");
@@ -104,6 +107,10 @@ class Camera {
             return;
           }
           event.put("recognitionType", dataType);
+          Map<String, Object> sizeMap = new HashMap<>();
+          sizeMap.put("width", imageSize.getWidth());
+          sizeMap.put("height", imageSize.getHeight());
+          event.put("imageSize", sizeMap);
           event.put(dataLabel, data);
           eventSink.success(event);
         }
@@ -357,7 +364,10 @@ class Camera {
         FirebaseVisionImage.fromByteBuffer(imageBuffer, metadata);
 
     currentDetector.handleDetection(
-        firebaseVisionImage, new HashMap<String, Object>(), liveDetectorFinishedCallback);
+        firebaseVisionImage,
+        new Size(image.getWidth(), image.getHeight()),
+        new HashMap<String, Object>(),
+        liveDetectorFinishedCallback);
   }
 
   private final ImageReader.OnImageAvailableListener imageAvailable =

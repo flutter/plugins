@@ -35,9 +35,7 @@ class LabelDetector extends FirebaseVisionDetector {
       'LabelDetector#detectInImage',
       <String, dynamic>{
         'path': visionImage.imageFile.path,
-        'options': <String, dynamic>{
-          'confidenceThreshold': options.confidenceThreshold,
-        },
+        'options': options.toMap(),
       },
     );
 
@@ -55,7 +53,7 @@ class LabelDetector extends FirebaseVisionDetector {
 /// Confidence threshold could be provided for the label detection. For example,
 /// if the confidence threshold is set to 0.7, only labels with
 /// confidence >= 0.7 would be returned. The default threshold is 0.5.
-class LabelDetectorOptions {
+class LabelDetectorOptions implements VisionOptions {
   /// Constructor for [LabelDetectorOptions].
   ///
   /// Confidence threshold could be provided for the label detection.
@@ -69,6 +67,13 @@ class LabelDetectorOptions {
   ///
   /// Required to be in range [0.0, 1.0].
   final double confidenceThreshold;
+
+  @override
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'confidenceThreshold': confidenceThreshold,
+    };
+  }
 }
 
 /// Represents an entity label detected by [LabelDetector].

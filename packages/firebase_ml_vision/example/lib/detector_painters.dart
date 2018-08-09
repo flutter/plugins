@@ -7,18 +7,19 @@ import 'dart:ui' as ui;
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:flutter/material.dart';
 
-CustomPaint customPaintForResults(
-    Size imageSize, LiveViewDetectionList results) {
+CustomPaint customPaintForResults(LiveViewDetectionResult result) {
   CustomPainter painter;
-  if (results is LiveViewBarcodeDetectionList) {
-    painter = new BarcodeDetectorPainter(imageSize, results.data);
-  } else if (results is LiveViewTextDetectionList) {
-    painter = new TextDetectorPainter(imageSize, results.data);
-  } else if (results is LiveViewFaceDetectionList) {
-    painter = new FaceDetectorPainter(imageSize, results.data);
-  } else if (results is LiveViewLabelDetectionList) {
-    painter = new LabelDetectorPainter(imageSize, results.data);
+  if (result is LiveViewBarcodeDetectionResult) {
+    painter = new BarcodeDetectorPainter(result.size, result.data);
+  } else if (result is LiveViewTextDetectionResult) {
+    print("painting text");
+    painter = new TextDetectorPainter(result.size, result.data);
+  } else if (result is LiveViewFaceDetectionResult) {
+    painter = new FaceDetectorPainter(result.size, result.data);
+  } else if (result is LiveViewLabelDetectionResult) {
+    painter = new LabelDetectorPainter(result.size, result.data);
   } else {
+    print("unknown painter");
     painter = null;
   }
 

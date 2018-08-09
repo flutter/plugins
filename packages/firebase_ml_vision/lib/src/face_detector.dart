@@ -45,7 +45,7 @@ class FaceDetector extends FirebaseVisionDetector {
       'FaceDetector#detectInImage',
       <String, dynamic>{
         'path': visionImage.imageFile.path,
-        'options': options.optionsMap,
+        'options': options.toMap(),
       },
     );
 
@@ -62,7 +62,7 @@ class FaceDetector extends FirebaseVisionDetector {
 ///
 /// Used to configure features such as classification, face tracking, speed,
 /// etc.
-class FaceDetectorOptions {
+class FaceDetectorOptions implements VisionOptions {
   /// Constructor for [FaceDetectorOptions].
   ///
   /// The parameter minFaceValue must be between 0.0 and 1.0, inclusive.
@@ -99,7 +99,8 @@ class FaceDetectorOptions {
   /// Option for controlling additional accuracy / speed trade-offs.
   final FaceDetectorMode mode;
 
-  Map<String, dynamic> get optionsMap {
+  @override
+  Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'enableClassification': enableClassification,
       'enableLandmarks': enableLandmarks,

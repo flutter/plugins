@@ -3,6 +3,8 @@ package io.flutter.plugins.firebasemlvision;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
+import android.util.Size;
+
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.ml.vision.FirebaseVision;
@@ -22,9 +24,10 @@ public class TextDetector extends Detector {
 
   @Override
   void processImage(
-      FirebaseVisionImage image,
-      Map<String, Object> options,
-      final OperationFinishedCallback finishedCallback) {
+    FirebaseVisionImage image,
+    final Size imageSize,
+    Map<String, Object> options,
+    final OperationFinishedCallback finishedCallback) {
     if (textDetector == null) textDetector = FirebaseVision.getInstance().getVisionTextDetector();
     textDetector
         .detectInImage(image)
@@ -60,7 +63,7 @@ public class TextDetector extends Detector {
                   blockData.put("lines", lines);
                   blocks.add(blockData);
                 }
-                finishedCallback.success(TextDetector.this, blocks);
+                finishedCallback.success(TextDetector.this, blocks, imageSize);
               }
             })
         .addOnFailureListener(

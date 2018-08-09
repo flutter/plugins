@@ -1,5 +1,8 @@
 package io.flutter.plugins.firebasemlvision;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodChannel;
 
@@ -16,7 +19,7 @@ public class DetectorException extends Exception {
     this.exceptionData = exceptionData;
   }
 
-  public void sendError(EventChannel.EventSink eventSink) {
+  public void sendError(@NonNull EventChannel.EventSink eventSink) {
     eventSink.error(detectorExceptionType, detectorExceptionDescription, exceptionData);
   }
 

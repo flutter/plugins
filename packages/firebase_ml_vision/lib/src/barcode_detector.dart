@@ -190,9 +190,7 @@ class BarcodeDetector extends FirebaseVisionDetector {
       'BarcodeDetector#detectInImage',
       <String, dynamic>{
         'path': visionImage.imageFile.path,
-        'options': <String, dynamic>{
-          'barcodeFormats': options.barcodeFormats.value,
-        },
+        'options': options.toMap(),
       },
     );
 
@@ -215,10 +213,17 @@ class BarcodeDetector extends FirebaseVisionDetector {
 /// final BarcodeDetectorOptions options =
 ///     BarcodeDetectorOptions(barcodeFormats: BarcodeFormat.aztec | BarcodeFormat.ean8);
 /// ```
-class BarcodeDetectorOptions {
+class BarcodeDetectorOptions implements VisionOptions {
   const BarcodeDetectorOptions({this.barcodeFormats = BarcodeFormat.all});
 
   final BarcodeFormat barcodeFormats;
+
+  @override
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'barcodeFormats': barcodeFormats.value,
+    };
+  }
 }
 
 /// Represents a single recognized barcode and its value.

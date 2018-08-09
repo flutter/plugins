@@ -3,6 +3,8 @@ package io.flutter.plugins.firebasemlvision;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
+import android.util.Size;
+
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.ml.vision.FirebaseVision;
@@ -10,6 +12,7 @@ import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode;
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetector;
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetectorOptions;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,9 +25,10 @@ public class BarcodeDetector extends Detector {
 
   @Override
   void processImage(
-      FirebaseVisionImage image,
-      Map<String, Object> options,
-      final OperationFinishedCallback finishedCallback) {
+    final FirebaseVisionImage image,
+    final Size imageSize,
+    Map<String, Object> options,
+    final OperationFinishedCallback finishedCallback) {
 
     FirebaseVisionBarcodeDetector detector =
         FirebaseVision.getInstance().getVisionBarcodeDetector(parseOptions(options));
@@ -212,7 +216,7 @@ public class BarcodeDetector extends Detector {
 
                   barcodes.add(barcodeMap);
                 }
-                finishedCallback.success(BarcodeDetector.this, barcodes);
+                finishedCallback.success(BarcodeDetector.this, barcodes, imageSize);
               }
             })
         .addOnFailureListener(

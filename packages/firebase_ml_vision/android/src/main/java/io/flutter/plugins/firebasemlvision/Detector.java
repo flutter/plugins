@@ -1,5 +1,7 @@
 package io.flutter.plugins.firebasemlvision;
 
+import android.util.Size;
+
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -7,7 +9,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public abstract class Detector {
 
   public interface OperationFinishedCallback {
-    void success(Detector detector, Object data);
+    void success(Detector detector, Object data, Size size);
 
     void error(DetectorException e);
   }
@@ -15,20 +17,22 @@ public abstract class Detector {
   private final AtomicBoolean shouldThrottle = new AtomicBoolean(false);
 
   public void handleDetection(
-      FirebaseVisionImage image,
-      Map<String, Object> options,
-      final OperationFinishedCallback finishedCallback) {
+    final FirebaseVisionImage image,
+    final Size imageSize,
+    Map<String, Object> options,
+    final OperationFinishedCallback finishedCallback) {
     if (shouldThrottle.get()) {
       return;
     }
     processImage(
         image,
+        imageSize,
         options,
         new OperationFinishedCallback() {
           @Override
-          public void success(Detector detector, Object data) {
+          public void success(Detector detector, Object data, Size size) {
             shouldThrottle.set(false);
-            finishedCallback.success(detector, data);
+            finishedCallback.success(detector, data, size);
           }
 
           @Override
@@ -45,6 +49,7 @@ public abstract class Detector {
 
   abstract void processImage(
       FirebaseVisionImage image,
+      Size imageSize,
       Map<String, Object> options,
       OperationFinishedCallback finishedCallback);
 }

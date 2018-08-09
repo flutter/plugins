@@ -5,8 +5,18 @@ import android.media.Image;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.util.Size;
+
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -15,43 +25,45 @@ import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.plugins.camera.PreviewImageDelegate;
 import io.flutter.plugins.firebasemlvision.live.CameraPreviewImageProvider;
-import java.io.File;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /** FirebaseMlVisionPlugin */
 public class FirebaseMlVisionPlugin implements MethodCallHandler, PreviewImageDelegate {
   public static final int CAMERA_REQUEST_ID = 928291720;
   private final Registrar registrar;
   private final Activity activity;
-  private EventChannel.EventSink eventSink;
+  @Nullable private EventChannel.EventSink eventSink;
   @Nullable private Detector liveViewDetector;
+  @Nullable private Map<String, Object> liveViewOptions;
 
   private final Detector.OperationFinishedCallback liveDetectorFinishedCallback =
       new Detector.OperationFinishedCallback() {
         @Override
-        public void success(Detector detector, Object data) {
+        public void success(Detector detector, Object data, Size imageSize) {
+          if (eventSink == null) return;
           Log.d("ML", "detector finished");
           shouldThrottle.set(false);
           Map<String, Object> event = new HashMap<>();
-          event.put("eventType", "recognized");
+          event.put("eventType", "detection");
           String dataType;
           String dataLabel;
           if (detector instanceof BarcodeDetector) {
             dataType = "barcode";
-            dataLabel = "barcodeData";
           } else if (detector instanceof TextDetector) {
             dataType = "text";
-            dataLabel = "textData";
+          } else if (detector instanceof FaceDetector) {
+            dataType = "face";
+          } else if (detector instanceof LabelDetector) {
+            dataType = "label";
           } else {
-            // unsupported live detector
+            // unsupported detector
             return;
           }
-          event.put("recognitionType", dataType);
-          event.put(dataLabel, data);
+          event.put("detectionType", dataType);
+          event.put("data", data);
+          Map<String, Object> sizeMap = new HashMap<>();
+          sizeMap.put("width", imageSize.getWidth());
+          sizeMap.put("height", imageSize.getHeight());
+          event.put("imageSize", sizeMap);
           eventSink.success(event);
         }
 
@@ -59,7 +71,9 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler, PreviewImageDe
         public void error(DetectorException e) {
           Log.d("ML", "detector error");
           shouldThrottle.set(false);
-          e.sendError(eventSink);
+          if (eventSink != null) {
+            e.sendError(eventSink);
+          }
         }
       };
 
@@ -102,56 +116,8 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler, PreviewImageDe
     Map<String, Object> options = call.argument("options");
     FirebaseVisionImage image;
     switch (call.method) {
-        //      case "init":
-        //        if (camera != null) {
-        //          camera.stop();
-        //        }
-        //        result.success(null);
-        //        break;
-        //      case "availableCameras":
-        //        List<Map<String, Object>> cameras = LegacyCamera.listAvailableCameraDetails();
-        //        result.success(cameras);
-        //        break;
-        //      case "initialize":
-        //        String cameraName = call.argument("cameraName");
-        //        String resolutionPreset = call.argument("resolutionPreset");
-        //        if (camera != null) {
-        //          camera.stop();
-        //        }
-        //        camera =
-        //            new LegacyCamera(
-        //                registrar,
-        //                resolutionPreset,
-        //                Integer.parseInt(
-        //                    cameraName)); // new Camera(registrar, cameraName, resolutionPreset, result);
-        //        camera.setMachineLearningFrameProcessor(TextDetector.instance, options);
-        //        try {
-        //          camera.start(
-        //              new LegacyCamera.OnCameraOpenedCallback() {
-        //                @Override
-        //                public void onOpened(long textureId, int width, int height) {
-        //                  Map<String, Object> reply = new HashMap<>();
-        //                  reply.put("textureId", textureId);
-        //                  reply.put("previewWidth", width);
-        //                  reply.put("previewHeight", height);
-        //                  result.success(reply);
-        //                }
-        //              });
-        //        } catch (IOException e) {
-        //          result.error("CameraInitializationError", e.getLocalizedMessage(), null);
-        //        }
-        //        break;
-        //      case "dispose":
-        //        {
-        //          if (camera != null) {
-        //            camera.release();
-        //            camera = null;
-        //          }
-        //          result.success(null);
-        //          break;
-        //        }
       case "LiveView#setDetector":
-        //        if (camera != null) {
+        liveViewOptions = options;
         String detectorType = call.argument("detectorType");
         switch (detectorType) {
           case "text":
@@ -168,14 +134,13 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler, PreviewImageDe
           default:
             liveViewDetector = TextDetector.instance;
         }
-        //          camera.setMachineLearningFrameProcessor(detector, options);
-        //        }
         result.success(null);
         break;
       case "BarcodeDetector#detectInImage":
         try {
           image = filePathToVisionImage((String) call.argument("path"));
-          BarcodeDetector.instance.handleDetection(image, options, handleDetection(result));
+          BarcodeDetector.instance.handleDetection(
+              image, new Size(0, 0), options, handleDetection(result));
         } catch (IOException e) {
           result.error("barcodeDetectorIOError", e.getLocalizedMessage(), null);
         } catch (Exception e) {
@@ -185,7 +150,8 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler, PreviewImageDe
       case "FaceDetector#detectInImage":
         try {
           image = filePathToVisionImage((String) call.argument("path"));
-          FaceDetector.instance.handleDetection(image, options, handleDetection(result));
+          FaceDetector.instance.handleDetection(
+              image, new Size(0, 0), options, handleDetection(result));
         } catch (IOException e) {
           result.error("faceDetectorIOError", e.getLocalizedMessage(), null);
         } catch (Exception e) {
@@ -195,7 +161,8 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler, PreviewImageDe
       case "LabelDetector#detectInImage":
         try {
           image = filePathToVisionImage((String) call.argument("path"));
-          LabelDetector.instance.handleDetection(image, options, handleDetection(result));
+          LabelDetector.instance.handleDetection(
+              image, new Size(0, 0), options, handleDetection(result));
         } catch (IOException e) {
           result.error("labelDetectorIOError", e.getLocalizedMessage(), null);
         } catch (Exception e) {
@@ -205,7 +172,8 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler, PreviewImageDe
       case "TextDetector#detectInImage":
         try {
           image = filePathToVisionImage((String) call.argument("path"));
-          TextDetector.instance.handleDetection(image, options, handleDetection(result));
+          TextDetector.instance.handleDetection(
+              image, new Size(0, 0), options, handleDetection(result));
         } catch (IOException e) {
           result.error("textDetectorIOError", e.getLocalizedMessage(), null);
         } catch (Exception e) {
@@ -237,7 +205,10 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler, PreviewImageDe
         FirebaseVisionImage.fromByteBuffer(imageBuffer, metadata);
 
     liveViewDetector.handleDetection(
-        firebaseVisionImage, new HashMap<String, Object>(), liveDetectorFinishedCallback);
+        firebaseVisionImage,
+        new Size(image.getWidth(), image.getHeight()),
+        liveViewOptions,
+        liveDetectorFinishedCallback);
   }
 
   private static ByteBuffer YUV_420_888toNV21(Image image) {
@@ -256,7 +227,8 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler, PreviewImageDe
   private Detector.OperationFinishedCallback handleDetection(final Result result) {
     return new Detector.OperationFinishedCallback() {
       @Override
-      public void success(Detector detector, Object data) {
+      public void success(
+          Detector detector, Object data, Size imageSize /*ignore size for file image detection*/) {
         result.success(data);
       }
 

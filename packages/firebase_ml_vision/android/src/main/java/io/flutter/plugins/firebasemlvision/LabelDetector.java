@@ -1,6 +1,8 @@
 package io.flutter.plugins.firebasemlvision;
 
 import android.support.annotation.NonNull;
+import android.util.Size;
+
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.ml.vision.FirebaseVision;
@@ -25,9 +27,10 @@ public class LabelDetector extends Detector {
 
   @Override
   void processImage(
-      FirebaseVisionImage image,
-      Map<String, Object> options,
-      final OperationFinishedCallback finishedCallback) {
+    FirebaseVisionImage image,
+    final Size imageSize,
+    Map<String, Object> options,
+    final OperationFinishedCallback finishedCallback) {
     FirebaseVisionLabelDetector detector =
         FirebaseVision.getInstance().getVisionLabelDetector(parseOptions(options));
     detector
@@ -46,7 +49,7 @@ public class LabelDetector extends Detector {
                   labels.add(labelData);
                 }
 
-                finishedCallback.success(LabelDetector.this, labels);
+                finishedCallback.success(LabelDetector.this, labels, imageSize);
               }
             })
         .addOnFailureListener(

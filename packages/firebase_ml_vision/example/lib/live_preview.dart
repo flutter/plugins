@@ -1,9 +1,9 @@
 import 'dart:async';
 
+import 'package:camera/camera.dart' as camera;
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:firebase_ml_vision_example/detector_painters.dart';
 import 'package:flutter/material.dart';
-import 'package:camera/camera.dart' as camera;
 
 class LivePreview extends StatefulWidget {
   final FirebaseVisionDetectorType detector;
@@ -60,7 +60,15 @@ class LivePreviewState extends State<LivePreview> {
   }
 
   Future<Null> setLiveViewDetector() async {
-    FirebaseVision.instance.setLiveViewDetector(widget.detector);
+    VisionOptions options;
+    if (widget.detector == FirebaseVisionDetectorType.barcode) {
+      options = const BarcodeDetectorOptions();
+    } else if (widget.detector == FirebaseVisionDetectorType.label) {
+      options = const LabelDetectorOptions();
+    } else if (widget.detector == FirebaseVisionDetectorType.face) {
+      options = const FaceDetectorOptions();
+    }
+    FirebaseVision.instance.setLiveViewDetector(widget.detector, options);
   }
 
   @override
@@ -89,7 +97,25 @@ class LivePreviewState extends State<LivePreview> {
             }
             return new AspectRatio(
               aspectRatio: _readyLoadState.controller.value.aspectRatio,
-              child: new camera.CameraPreview(loadState.controller),
+              child: Stack(children: <Widget>[
+                new camera.CameraPreview(loadState.controller),
+                Container(
+                  constraints: const BoxConstraints.expand(),
+                  child: StreamBuilder<LiveViewDetectionResult>(
+                    builder: (BuildContext context,
+                        AsyncSnapshot<LiveViewDetectionResult> snapshot) {
+                      print("update: ${snapshot}");
+                      if (snapshot == null || snapshot.data == null) {
+                        return Text("No DATA!!!");
+                      }
+                      print("size: ${snapshot.data.size}");
+                      print("data: ${snapshot.data.data}");
+                      return customPaintForResults(snapshot.data);
+                    },
+                    stream: FirebaseVision.instance.liveViewStream,
+                  ),
+                )
+              ]),
             );
           } else if (loadState is LiveViewCameraLoadStateFailed) {
             return new Text("error loading camera ${loadState.errorMessage}");
