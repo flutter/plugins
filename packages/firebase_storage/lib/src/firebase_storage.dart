@@ -8,7 +8,7 @@ part of firebase_storage;
 /// objects to Google Cloud Storage.
 class FirebaseStorage {
   static const MethodChannel channel =
-      const MethodChannel('plugins.flutter.io/firebase_storage');
+      MethodChannel('plugins.flutter.io/firebase_storage');
 
   /// Returns the [FirebaseStorage] instance, initialized with a custom
   /// [FirebaseApp] if [app] is specified and a custom Google Cloud Storage

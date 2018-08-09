@@ -16,7 +16,7 @@ void main() {
   setUp(() {
     mockChannel = new MockMethodChannel();
     // Re-pipe to mockito for easier verifies.
-    Share.channel.setMockMethodCallHandler((MethodCall call) {
+    Share.channel.setMockMethodCallHandler((MethodCall call) async {
       mockChannel.invokeMethod(call.method, call.arguments);
     });
   });
