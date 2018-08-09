@@ -15,10 +15,4 @@ public class MainActivity extends FlutterActivity {
     super.onCreate(savedInstanceState);
     GeneratedPluginRegistrant.registerWith(this);
   }
-
-  @Override
-  public FlutterNativeView createFlutterNativeView() {
-    Log.i(TAG, "createFlutterNativeView");
-    return AlarmService.getSharedFlutterView();
-  }
 }
