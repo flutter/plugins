@@ -40,7 +40,7 @@ static FIRVisionCloudLabelDetector *detector;
   detector.modelType = (FIRVisionCloudModelType)[modelType intValue];
 
   NSNumber *maxResults = optionsData[@"maxResults"];
-  detector.maxResults = [maxResults uintValue];
+  detector.maxResults = [maxResults unsignedIntegerValue];
 
   return detector;
 }
