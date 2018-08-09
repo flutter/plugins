@@ -113,10 +113,6 @@ public class AlarmService extends Service {
     manager.cancel(existingIntent);
   }
 
-  public static FlutterNativeView getSharedFlutterView() {
-    return sBackgroundFlutterView;
-  }
-
   public static boolean setBackgroundFlutterView(FlutterNativeView view) {
     if (sBackgroundFlutterView != null && sBackgroundFlutterView != view) {
       Log.i(TAG, "setBackgroundFlutterView tried to overwrite an existing FlutterNativeView");
