@@ -40,7 +40,7 @@ class DemoAppState extends State<DemoApp> {
                         text = value;
                       }),
                 ),
-                const Padding(padding: const EdgeInsets.only(top: 24.0)),
+                const Padding(padding: EdgeInsets.only(top: 24.0)),
                 new Builder(
                   builder: (BuildContext context) {
                     return new RaisedButton(

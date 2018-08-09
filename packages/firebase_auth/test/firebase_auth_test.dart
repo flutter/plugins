@@ -473,11 +473,11 @@ void main() {
 }
 
 Map<String, dynamic> mockFirebaseUser(
-        {String providerId: kMockProviderId,
-        String uid: kMockUid,
-        String displayName: kMockDisplayName,
-        String photoUrl: kMockPhotoUrl,
-        String email: kMockEmail}) =>
+        {String providerId = kMockProviderId,
+        String uid = kMockUid,
+        String displayName = kMockDisplayName,
+        String photoUrl = kMockPhotoUrl,
+        String email = kMockEmail}) =>
     <String, dynamic>{
       'isAnonymous': true,
       'isEmailVerified': false,

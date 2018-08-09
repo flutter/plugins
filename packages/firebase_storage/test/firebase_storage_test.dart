@@ -275,16 +275,14 @@ void main() {
                 return <String, String>{
                   'name': 'image.jpg',
                 };
-                break;
               case 'StorageReference#updateMetadata':
                 return <String, dynamic>{
                   'name': 'image.jpg',
                   'contentLanguage': 'en',
                   'customMetadata': <String, String>{'activity': 'test'},
                 };
-                break;
               default:
-                break;
+                return null;
             }
           });
           ref =

@@ -137,9 +137,9 @@ class _MyHomePageState extends State<_MyHomePage> {
       ),
       child: _imageSize == null || _scanResults == null
           ? const Center(
-              child: const Text(
+              child: Text(
                 'Scanning...',
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.green,
                   fontSize: 30.0,
                 ),
@@ -162,23 +162,23 @@ class _MyHomePageState extends State<_MyHomePage> {
             },
             itemBuilder: (BuildContext context) => <PopupMenuEntry<Detector>>[
                   const PopupMenuItem<Detector>(
-                    child: const Text('Detect Barcode'),
+                    child: Text('Detect Barcode'),
                     value: Detector.barcode,
                   ),
                   const PopupMenuItem<Detector>(
-                    child: const Text('Detect Face'),
+                    child: Text('Detect Face'),
                     value: Detector.face,
                   ),
                   const PopupMenuItem<Detector>(
-                    child: const Text('Detect Label'),
+                    child: Text('Detect Label'),
                     value: Detector.label,
                   ),
                   const PopupMenuItem<Detector>(
-                    child: const Text('Detect Cloud Label'),
+                    child: Text('Detect Cloud Label'),
                     value: Detector.cloudLabel,
                   ),
                   const PopupMenuItem<Detector>(
-                    child: const Text('Detect Text'),
+                    child: Text('Detect Text'),
                     value: Detector.text,
                   ),
                 ],
@@ -186,7 +186,7 @@ class _MyHomePageState extends State<_MyHomePage> {
         ],
       ),
       body: _imageFile == null
-          ? const Center(child: const Text('No image selected.'))
+          ? const Center(child: Text('No image selected.'))
           : _buildImage(),
       floatingActionButton: new FloatingActionButton(
         onPressed: _getAndScanImage,
