@@ -34,22 +34,10 @@ main() async {
 }
 ```
 
-`printHello` will then run (roughly) every minute, even if the main app ends. If
-possible it will reuse the same Dart Isolate from the application's main
-activity. Additionally, if you would like a new main activity of your application
-to reuse the Isolate from an existing background service created by this plugin,
-add the following override to your app's `MainActivity` class:
-
-```java
-@Override
-public FlutterNativeView createFlutterNativeView() {
-  return AlarmService.getSharedFlutterView();
-}
-```
-
-See the [example's](https://github.com/flutter/plugins/tree/master/packages/android_alarm_manager/example)
-[MainActivity](https://github.com/flutter/plugins/blob/master/packages/android_alarm_manager/example/android/app/src/main/java/io/flutter/androidalarmmanagerexample/MainActivity.java)
-to see an example.
+`printHello` will then run (roughly) every minute, even if the main app ends. However, `printHello`
+will not run in the same isolate as the main application. Unlike threads, isolates do not share
+memory and communication between isolates must be done via message passing (see more documentation on
+isolates [here](https://api.dartlang.org/stable/2.0.0/dart-isolate/dart-isolate-library.html)).
 
 If alarm callbacks will need access to other Flutter plugins, including the
 alarm manager plugin itself, it is necessary to teach the background service how
