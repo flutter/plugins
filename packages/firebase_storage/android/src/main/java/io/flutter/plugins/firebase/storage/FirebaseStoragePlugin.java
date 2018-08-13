@@ -416,7 +416,7 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
             new OnCompleteListener<UploadTask.TaskSnapshot>() {
               @Override
               public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                if(!task.isSuccessful()) {
+                if (!task.isSuccessful()) {
                   invokeStorageTaskEvent(
                       handle,
                       StorageTaskEventType.failure,
