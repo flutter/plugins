@@ -12,7 +12,7 @@ class FirebaseDynamicLinks {
 
   @visibleForTesting
   static const MethodChannel channel =
-      const MethodChannel('plugins.flutter.io/firebase_dynamic_links');
+      MethodChannel('plugins.flutter.io/firebase_dynamic_links');
 
   /// Singleton of [FirebaseDynamicLinks].
   static final FirebaseDynamicLinks instance = new FirebaseDynamicLinks._();

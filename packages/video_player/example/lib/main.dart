@@ -98,7 +98,8 @@ class FadeAnimation extends StatefulWidget {
   final Widget child;
   final Duration duration;
 
-  FadeAnimation({this.child, this.duration: const Duration(milliseconds: 500)});
+  FadeAnimation(
+      {this.child, this.duration = const Duration(milliseconds: 500)});
 
   @override
   _FadeAnimationState createState() => new _FadeAnimationState();
@@ -290,8 +291,8 @@ class VideoInListOfCards extends StatelessWidget {
           new Column(
             children: <Widget>[
               const ListTile(
-                leading: const Icon(Icons.cake),
-                title: const Text("Video video"),
+                leading: Icon(Icons.cake),
+                title: Text("Video video"),
               ),
               new Stack(
                   alignment: FractionalOffset.bottomRight +
@@ -369,9 +370,9 @@ void main() {
             title: const Text('Video player example'),
             bottom: const TabBar(
               isScrollable: true,
-              tabs: const <Widget>[
-                const Tab(icon: const Icon(Icons.fullscreen)),
-                const Tab(icon: const Icon(Icons.list)),
+              tabs: <Widget>[
+                Tab(icon: Icon(Icons.fullscreen)),
+                Tab(icon: Icon(Icons.list)),
               ],
             ),
           ),

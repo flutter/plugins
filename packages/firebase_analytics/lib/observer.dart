@@ -54,7 +54,7 @@ class FirebaseAnalyticsObserver extends RouteObserver<PageRoute<dynamic>> {
 
   FirebaseAnalyticsObserver({
     @required this.analytics,
-    this.nameExtractor: defaultNameExtractor,
+    this.nameExtractor = defaultNameExtractor,
   });
 
   void _sendScreenView(PageRoute<dynamic> route) {

@@ -71,8 +71,8 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: const Text(toLaunch),
+              padding: EdgeInsets.all(16.0),
+              child: Text(toLaunch),
             ),
             new RaisedButton(
               onPressed: () => setState(() {
@@ -80,14 +80,14 @@ class _MyHomePageState extends State<MyHomePage> {
                   }),
               child: const Text('Launch in browser'),
             ),
-            const Padding(padding: const EdgeInsets.all(16.0)),
+            const Padding(padding: EdgeInsets.all(16.0)),
             new RaisedButton(
               onPressed: () => setState(() {
                     _launched = _launchInWebViewOrVC(toLaunch);
                   }),
               child: const Text('Launch in app'),
             ),
-            const Padding(padding: const EdgeInsets.all(16.0)),
+            const Padding(padding: EdgeInsets.all(16.0)),
             new FutureBuilder<Null>(future: _launched, builder: _launchStatus),
           ],
         ),
