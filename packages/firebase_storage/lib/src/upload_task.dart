@@ -56,6 +56,7 @@ abstract class StorageUploadTask {
 
   void _changeState(StorageTaskEvent event) {
     _resetState();
+    print('EVENT ${event.type}');
     switch (event.type) {
       case StorageTaskEventType.progress:
         isInProgress = true;
@@ -72,6 +73,7 @@ abstract class StorageUploadTask {
         break;
       case StorageTaskEventType.failure:
         isComplete = true;
+        print('CANCELLED');
         if (event.snapshot.error == StorageError.canceled) {
           isCanceled = true;
         }

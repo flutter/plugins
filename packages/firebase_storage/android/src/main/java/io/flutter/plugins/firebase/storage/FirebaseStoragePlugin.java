@@ -7,6 +7,8 @@ package io.flutter.plugins.firebase.storage;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import com.google.android.gms.tasks.Continuation;
+
+import android.util.Log;
 import android.util.SparseArray;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -396,52 +398,36 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
     }
   }
 
-  private int addUploadListeners(final UploadTask task) {
+  private int addUploadListeners(final UploadTask uploadTask) {
     final int handle = ++nextUploadHandle;
-    task.continueWithTask(
-        new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-          @Override
-          public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-            return task.getResult().getMetadata().getReference().getDownloadUrl();
-          }
-        });
-    task.addOnSuccessListener(
-        new OnSuccessListener<UploadTask.TaskSnapshot>() {
-          @Override
-          public void onSuccess(UploadTask.TaskSnapshot snapshot) {
-            invokeStorageTaskEvent(handle, StorageTaskEventType.success, snapshot, null);
-          }
-        });
-    task.addOnProgressListener(
+    uploadTask
+      .addOnProgressListener(
         new OnProgressListener<UploadTask.TaskSnapshot>() {
           @Override
           public void onProgress(UploadTask.TaskSnapshot snapshot) {
             invokeStorageTaskEvent(handle, StorageTaskEventType.progress, snapshot, null);
           }
-        });
-    task.addOnPausedListener(
+        })
+      .addOnPausedListener(
         new OnPausedListener<UploadTask.TaskSnapshot>() {
           @Override
           public void onPaused(UploadTask.TaskSnapshot snapshot) {
             invokeStorageTaskEvent(handle, StorageTaskEventType.pause, snapshot, null);
           }
-        });
-    task.addOnCompleteListener(
+        })
+      .addOnCompleteListener(
         new OnCompleteListener<UploadTask.TaskSnapshot>() {
           @Override
           public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+            if(!task.isSuccessful()) {
+              invokeStorageTaskEvent(handle, StorageTaskEventType.failure, uploadTask.getSnapshot(), (StorageException) task.getException());
+            } else {
+              invokeStorageTaskEvent(handle, StorageTaskEventType.success, task.getResult(), null);
+            }
             uploadTasks.remove(handle);
-          }
-        });
-    task.addOnFailureListener(
-        new OnFailureListener() {
-          @Override
-          public void onFailure(@NonNull Exception e) {
-            StorageException error = (StorageException) e;
-            invokeStorageTaskEvent(handle, StorageTaskEventType.failure, task.getSnapshot(), error);
-          }
-        });
-    uploadTasks.put(handle, task);
+        }
+      });
+    uploadTasks.put(handle, uploadTask);
     return handle;
   }
 
@@ -476,9 +462,6 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
   private Map<String, Object> buildMapFromTaskSnapshot(
       UploadTask.TaskSnapshot snapshot, StorageException error) {
     Map<String, Object> map = new HashMap<>();
-    if (snapshot.getDownloadUrl() != null) {
-      map.put("downloadUrl", snapshot.getDownloadUrl().toString());
-    }
     map.put("bytesTransferred", snapshot.getBytesTransferred());
     map.put("totalByteCount", snapshot.getTotalByteCount());
     if (snapshot.getUploadSessionUri() != null) {

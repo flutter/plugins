@@ -26,7 +26,7 @@ class FirebaseStorage {
   /// The [app] argument is the custom [FirebaseApp].
   FirebaseStorage({this.app, this.storageBucket}) {
     if (_initialized) return;
-    channel.setMethodCallHandler((MethodCall call) {
+    channel.setMethodCallHandler((MethodCall call) async {
       _methodStreamController.add(call);
     });
     _initialized = true;
