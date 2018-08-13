@@ -417,13 +417,18 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
               @Override
               public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                 if(!task.isSuccessful()) {
-                  invokeStorageTaskEvent(handle, StorageTaskEventType.failure, uploadTask.getSnapshot(), (StorageException) task.getException());
+                  invokeStorageTaskEvent(
+                      handle,
+                      StorageTaskEventType.failure,
+                      uploadTask.getSnapshot(),
+                      (StorageException) task.getException());
                 } else {
-                  invokeStorageTaskEvent(handle, StorageTaskEventType.success, task.getResult(), null);
+                  invokeStorageTaskEvent(
+                      handle, StorageTaskEventType.success, task.getResult(), null);
                 }
                 uploadTasks.remove(handle);
-            }
-        });
+              }
+            });
     uploadTasks.put(handle, uploadTask);
     return handle;
   }
