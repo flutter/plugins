@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
 const MethodChannel _kChannel =
-    const MethodChannel('plugins.flutter.io/shared_preferences');
+    MethodChannel('plugins.flutter.io/shared_preferences');
 
 /// Wraps NSUserDefaults (on iOS) and SharedPreferences (on Android), providing
 /// a persistent store for simple data.

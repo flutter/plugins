@@ -10,7 +10,7 @@ import 'package:flutter/services.dart';
 class DeviceInfoPlugin {
   /// Channel used to communicate to native code.
   static const MethodChannel channel =
-      const MethodChannel('plugins.flutter.io/device_info');
+      MethodChannel('plugins.flutter.io/device_info');
 
   DeviceInfoPlugin();
 

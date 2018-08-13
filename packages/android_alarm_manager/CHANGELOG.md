@@ -1,3 +1,9 @@
+## 0.2.0
+
+* **Breaking change**. A new isolate is always spawned for the background service
+  instead of trying to share an existing isolate owned by the application.
+* **Breaking change**. Removed `AlarmService.getSharedFlutterView`.
+
 ## 0.1.1
 
 * Updated Gradle tooling to match Android Studio 3.1.2.

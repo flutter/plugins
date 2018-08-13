@@ -20,7 +20,7 @@ class CloudFunctionsException implements Exception {
 /// You can get an instance by calling [CloudFunctions.instance].
 class CloudFunctions {
   @visibleForTesting
-  static const MethodChannel channel = const MethodChannel('cloud_functions');
+  static const MethodChannel channel = MethodChannel('cloud_functions');
 
   static CloudFunctions _instance = new CloudFunctions();
 

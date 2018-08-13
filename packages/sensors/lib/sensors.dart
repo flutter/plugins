@@ -2,13 +2,13 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 
 const EventChannel _accelerometerEventChannel =
-    const EventChannel('plugins.flutter.io/sensors/accelerometer');
+    EventChannel('plugins.flutter.io/sensors/accelerometer');
 
 const EventChannel _userAccelerometerEventChannel =
-    const EventChannel('plugins.flutter.io/sensors/user_accel');
+    EventChannel('plugins.flutter.io/sensors/user_accel');
 
 const EventChannel _gyroscopeEventChannel =
-    const EventChannel('plugins.flutter.io/sensors/gyroscope');
+    EventChannel('plugins.flutter.io/sensors/gyroscope');
 
 class AccelerometerEvent {
   /// Acceleration force along the x axis (including gravity) measured in m/s^2.
