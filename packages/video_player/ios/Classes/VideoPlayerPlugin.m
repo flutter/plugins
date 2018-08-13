@@ -32,6 +32,7 @@ int64_t FLTCMTimeToMillis(CMTime time) { return time.value * 1000 / time.timesca
 @property(readonly, nonatomic) CADisplayLink* displayLink;
 @property(nonatomic) FlutterEventChannel* eventChannel;
 @property(nonatomic) FlutterEventSink eventSink;
+@property(nonatomic) CGAffineTransform preferredTransform;
 @property(nonatomic, readonly) bool disposed;
 @property(nonatomic, readonly) bool isPlaying;
 @property(nonatomic, readonly) bool isLooping;
@@ -55,14 +56,7 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
   return [self initWithURL:[NSURL fileURLWithPath:path] frameUpdater:frameUpdater];
 }
 
-- (instancetype)initWithURL:(NSURL*)url frameUpdater:(FLTFrameUpdater*)frameUpdater {
-  self = [super init];
-  NSAssert(self, @"super init cannot be nil");
-  _isInitialized = false;
-  _isPlaying = false;
-  _disposed = false;
-
-  AVPlayerItem* item = [AVPlayerItem playerItemWithURL:url];
+- (void)addObservers:(AVPlayerItem*)item {
   [item addObserver:self
          forKeyPath:@"loadedTimeRanges"
             options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
@@ -84,8 +78,6 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
             options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
             context:playbackBufferFullContext];
 
-  _player = [AVPlayer playerWithPlayerItem:item];
-  _player.actionAtItemEnd = AVPlayerActionAtItemEndNone;
   [[NSNotificationCenter defaultCenter] addObserverForName:AVPlayerItemDidPlayToEndTimeNotification
                                                     object:[_player currentItem]
                                                      queue:[NSOperationQueue mainQueue]
@@ -99,11 +91,66 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
                                                     }
                                                   }
                                                 }];
+}
+
+- (AVMutableVideoComposition*)getVideoCompositionWithTransform:(CGAffineTransform)transform
+                                                     withAsset:(AVAsset*)asset
+                                                withVideoTrack:(AVAssetTrack*)videoTrack {
+  // CGAffineTransform t = _preferredTransform;
+  // NSLog(@"Affine1 (a, b, c, d, tx, ty): (%f, %f, %f, %f, %f, %f)", t.a, t.b, t.c, t.d, t.tx,
+  // t.ty);
+
+  AVMutableVideoCompositionInstruction* instruction =
+      [AVMutableVideoCompositionInstruction videoCompositionInstruction];
+  instruction.timeRange = CMTimeRangeMake(kCMTimeZero, [asset duration]);
+  AVMutableVideoCompositionLayerInstruction* layerInstruction =
+      [AVMutableVideoCompositionLayerInstruction
+          videoCompositionLayerInstructionWithAssetTrack:videoTrack];
+  [layerInstruction setTransform:_preferredTransform atTime:kCMTimeZero];
+
+  AVMutableVideoComposition* videoComposition = [AVMutableVideoComposition videoComposition];
+  instruction.layerInstructions = @[ layerInstruction ];
+  videoComposition.instructions = @[ instruction ];
+
+  // If in portrait mode, switch the width and height of the video
+  float width = videoTrack.naturalSize.width;
+  float height = videoTrack.naturalSize.height;
+  NSInteger rotationDegrees =
+      (NSInteger)round(radiansToDegrees(atan2(_preferredTransform.b, _preferredTransform.a)));
+  if (rotationDegrees == 90 || rotationDegrees == 270) {
+    width = videoTrack.naturalSize.height;
+    height = videoTrack.naturalSize.width;
+  }
+  videoComposition.renderSize = CGSizeMake(width, height);
+
+  // TODO use videoTrack.nominalFrameRate ?
+  // Currently set at 30 FPS
+  videoComposition.frameDuration = CMTimeMake(1, 30);
+
+  return videoComposition;
+}
+
+- (void)createVideoOutputAndDisplayLink:(FLTFrameUpdater*)frameUpdater {
   NSDictionary* pixBuffAttributes = @{
     (id)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_32BGRA),
     (id)kCVPixelBufferIOSurfacePropertiesKey : @{}
   };
   _videoOutput = [[AVPlayerItemVideoOutput alloc] initWithPixelBufferAttributes:pixBuffAttributes];
+
+  _displayLink =
+      [CADisplayLink displayLinkWithTarget:frameUpdater selector:@selector(onDisplayLink:)];
+  [_displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
+  _displayLink.paused = YES;
+}
+
+- (instancetype)initWithURL:(NSURL*)url frameUpdater:(FLTFrameUpdater*)frameUpdater {
+  self = [super init];
+  NSAssert(self, @"super init cannot be nil");
+  _isInitialized = false;
+  _isPlaying = false;
+  _disposed = false;
+
+  AVPlayerItem* item = [AVPlayerItem playerItemWithURL:url];
 
   AVAsset* asset = [item asset];
   void (^assetCompletionHandler)(void) = ^{
@@ -115,7 +162,17 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
           if (_disposed) return;
           if ([videoTrack statusOfValueForKey:@"preferredTransform" error:nil] ==
               AVKeyValueStatusLoaded) {
+            // Rotate the video by using a videoComposition and the preferredTransform
+            _preferredTransform = videoTrack.preferredTransform;
+            // Note:
+            // https://developer.apple.com/documentation/avfoundation/avplayeritem/1388818-videocomposition
+            // Aideo composition can only be used with file-based media and is not supported for use
+            // with media served using HTTP Live Streaming.
+            item.videoComposition = [self getVideoCompositionWithTransform:_preferredTransform
+                                                                 withAsset:asset
+                                                            withVideoTrack:videoTrack];
             dispatch_async(dispatch_get_main_queue(), ^{
+              // Without this line, videos are not always rendered in app. TODO explain why
               [_player replaceCurrentItemWithPlayerItem:item];
             });
           }
@@ -125,11 +182,16 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
       }
     }
   };
+
+  _player = [AVPlayer playerWithPlayerItem:item];
+  _player.actionAtItemEnd = AVPlayerActionAtItemEndNone;
+
+  [self createVideoOutputAndDisplayLink:frameUpdater];
+
+  [self addObservers:item];
+
   [asset loadValuesAsynchronouslyForKeys:@[ @"tracks" ] completionHandler:assetCompletionHandler];
-  _displayLink =
-      [CADisplayLink displayLinkWithTarget:frameUpdater selector:@selector(onDisplayLink:)];
-  [_displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
-  _displayLink.paused = YES;
+
   return self;
 }
 
@@ -212,10 +274,22 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 - (void)sendInitialized {
   if (_eventSink && _isInitialized) {
     CGSize size = [self.player currentItem].presentationSize;
-    CGAffineTransform transform = [[self.player currentItem] asset].preferredTransform;
+    // CGAffineTransform transform = [_player currentItem] asset].preferredTransform;
+    // CGAffineTransform transform = [[[_player currentItem] asset] preferredTransform];
+    // NSArray* tracks = [[[_player currentItem] asset] tracksWithMediaType:AVMediaTypeVideo];
+    // NSLog(@"Track lenght: %d", tracks.count);
+    // CGAffineTransform transform = [[tracks objectAtIndex:0] preferredTransform];
     // atan2 returns values in the closed interval [-pi,pi]. See:
     // https://www.mathworks.com/help/matlab/ref/atan2.html#buct8h0-4
-    NSInteger rotationDegrees = (NSInteger)round(radiansToDegrees(atan2(transform.b, transform.a)));
+    // https://developer.apple.com/documentation/coregraphics/cgaffinetransform
+    // https://en.wikipedia.org/wiki/File:2D_affine_transformation_matrix.svg
+    NSInteger rotationDegrees =
+        (NSInteger)round(radiansToDegrees(atan2(_preferredTransform.b, _preferredTransform.a)));
+
+    CGAffineTransform t = _preferredTransform;
+    NSLog(@"atan2: %f", atan2(_preferredTransform.b, _preferredTransform.a));
+    NSLog(@"Rotation degrees: %d \tFrom (a, b, c, d, tx, ty): (%f, %f, %f, %f, %f, %f)",
+          (int)rotationDegrees, t.a, t.b, t.c, t.d, t.tx, t.ty);
 
     _eventSink(@{
       @"event" : @"initialized",
