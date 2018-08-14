@@ -117,8 +117,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     'Success!\n Uploaded $_name \n to bucket: $_bucket\n '
                         'at path: $_path \n\nFile contents: "$_fileContents" \n'
                         'Wrote "$_tempFileContents" to tmp.txt',
-                    style: const TextStyle(
-                        color: const Color.fromARGB(255, 0, 155, 0)),
+                    style:
+                        const TextStyle(color: Color.fromARGB(255, 0, 155, 0)),
                   )
           ],
         ),

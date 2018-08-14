@@ -56,7 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: const Text('Plugin example app'),
       ),
       body: const Center(
-          child: const Text('On home screen, long press the icon to '
+          child: Text('On home screen, long press the icon to '
               'get Main view action. Tapping on that action should print '
               'a message to the log.')),
     );

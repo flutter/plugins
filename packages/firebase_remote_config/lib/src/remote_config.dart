@@ -7,7 +7,7 @@ part of firebase_remote_config;
 class RemoteConfig extends ChangeNotifier {
   @visibleForTesting
   static const MethodChannel channel =
-      const MethodChannel('plugins.flutter.io/firebase_remote_config');
+      MethodChannel('plugins.flutter.io/firebase_remote_config');
 
   static const String defaultValueForString = '';
   static const int defaultValueForInt = 0;
@@ -112,7 +112,7 @@ class RemoteConfig extends ChangeNotifier {
   /// Config if enough time has elapsed since parameter values were last
   /// fetched from the server. The default expiration time is 12 hours.
   /// Expiration must be defined in seconds.
-  Future<void> fetch({Duration expiration: const Duration(hours: 12)}) async {
+  Future<void> fetch({Duration expiration = const Duration(hours: 12)}) async {
     try {
       final Map<dynamic, dynamic> properties = await channel.invokeMethod(
           'RemoteConfig#fetch',
