@@ -1,3 +1,8 @@
+## 0.4.7
+
+* Replace the full `com.android.support:appcompat-v7` dependency with `com.android.support:support-core-utils`, which results in smaller APK sizes.
+* Upgrade support library to 27.1.1
+
 ## 0.4.6
 
 * Added support for picking remote images.
