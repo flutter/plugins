@@ -117,6 +117,12 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       case "updateEmail":
         handleUpdateEmail(call, result);
         break;
+      case "updatePassword":
+        handleUpdatePassword(call, result);
+        break;
+      case "updatePhoneNumber":
+        handleUpdatePhoneNumber(call, result);
+        break;
       case "startListeningAuthState":
         handleStartListeningAuthState(call, result);
         break;
@@ -155,24 +161,31 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     final int handle = call.argument("handle");
     String phoneNumber = call.argument("phoneNumber");
     int timeout = call.argument("timeout");
+    final boolean loginAfter = call.argument("loginAfter");
 
     PhoneAuthProvider.OnVerificationStateChangedCallbacks verificationCallbacks =
         new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
           @Override
           public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
-            firebaseAuth
-                .signInWithCredential(phoneAuthCredential)
-                .addOnCompleteListener(
-                    new OnCompleteListener<AuthResult>() {
-                      @Override
-                      public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                          Map<String, Object> arguments = new HashMap<>();
-                          arguments.put("handle", handle);
-                          channel.invokeMethod("phoneVerificationCompleted", arguments);
+            if (loginAfter) {
+              firebaseAuth
+                  .signInWithCredential(phoneAuthCredential)
+                  .addOnCompleteListener(
+                      new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                          if (task.isSuccessful()) {
+                            Map<String, Object> arguments = new HashMap<>();
+                            arguments.put("handle", handle);
+                            channel.invokeMethod("phoneVerificationCompleted", arguments);
+                          }
                         }
-                      }
-                    });
+                      });
+            } else {
+              Map<String, Object> arguments = new HashMap<>();
+              arguments.put("handle", handle);
+              channel.invokeMethod("phoneVerificationCompleted", arguments);
+            }
           }
 
           @Override
@@ -461,6 +474,54 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     firebaseAuth
         .getCurrentUser()
         .updateEmail(email)
+        .addOnCompleteListener(
+            new OnCompleteListener<Void>() {
+              @Override
+              public void onComplete(@NonNull Task<Void> task) {
+                if (!task.isSuccessful()) {
+                  Exception e = task.getException();
+                  result.error(ERROR_REASON_EXCEPTION, e.getMessage(), null);
+                } else {
+                  result.success(null);
+                }
+              }
+            });
+  }
+
+  private void handleUpdatePassword(MethodCall call, final Result result) {
+    @SuppressWarnings("unchecked")
+    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    String password = arguments.get("password");
+
+    firebaseAuth
+        .getCurrentUser()
+        .updatePassword(password)
+        .addOnCompleteListener(
+            new OnCompleteListener<Void>() {
+              @Override
+              public void onComplete(@NonNull Task<Void> task) {
+                if (!task.isSuccessful()) {
+                  Exception e = task.getException();
+                  result.error(ERROR_REASON_EXCEPTION, e.getMessage(), null);
+                } else {
+                  result.success(null);
+                }
+              }
+            });
+  }
+
+  private void handleUpdatePhoneNumber(MethodCall call, final Result result) {
+    @SuppressWarnings("unchecked")
+    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    String verificationId = arguments.get("verificationId");
+    String smsCode = arguments.get("smsCode");
+
+    PhoneAuthCredential phoneAuthCredential =
+        PhoneAuthProvider.getCredential(verificationId, smsCode);
+
+    firebaseAuth
+        .getCurrentUser()
+        .updatePhoneNumber(phoneAuthCredential)
         .addOnCompleteListener(
             new OnCompleteListener<Void>() {
               @Override

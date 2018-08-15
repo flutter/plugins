@@ -45,6 +45,8 @@ void main() {
             return null;
             break;
           case "updateEmail":
+          case "updatePassword":
+          case "updatePhoneNumber":
             return null;
             break;
           case "fetchProvidersForEmail":
@@ -385,6 +387,38 @@ void main() {
           isMethodCall(
             'updateEmail',
             arguments: <String, String>{'email': updatedEmail},
+          ),
+        ],
+      );
+    });
+
+    test('updatePassword', () async {
+      final String updatedPassword = 'password123';
+      auth.updatePassword(password: updatedPassword);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'updatePassword',
+            arguments: <String, String>{'password': updatedPassword},
+          ),
+        ],
+      );
+    });
+
+    test('updatePhoneNumber', () async {
+      final String verificationId = 'thisIsAVerificationCode';
+      final String smsCode = '123456';
+      auth.updatePhoneNumber(verificationId: verificationId, smsCode: smsCode);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'updatePhoneNumber',
+            arguments: <String, String>{
+              'verificationId': verificationId,
+              'smsCode': smsCode
+            },
           ),
         ],
       );
