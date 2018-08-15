@@ -178,7 +178,7 @@ static LocationBackgroundPlugin *instance = nil;
 
   // Here we actually launch the background isolate to start executing our
   // callback dispatcher, `_backgroundCallbackDispatcher`, in Dart.
-  [_headlessRunner runWithEntrypointAndCallback:entrypoint libraryUri:uri completion:nil];
+  [_headlessRunner runWithEntrypointAndLibraryUri:entrypoint libraryUri:uri];
 
   // The headless runner needs to be initialized before we can register it as a
   // MethodCallDelegate or else we get an illegal memory access. If we don't
