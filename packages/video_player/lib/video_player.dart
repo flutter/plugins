@@ -97,9 +97,7 @@ class VideoPlayerValue {
 
   bool get hasError => errorDescription != null;
 
-  double get aspectRatio => rotationDegrees == 0 || rotationDegrees == 180
-      ? size.width / size.height
-      : size.height / size.width;
+  double get aspectRatio => size.width / size.height;
 
   VideoPlayerValue copyWith({
     Duration duration,
@@ -193,7 +191,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// This will load the file from the file-URI given by:
   /// `'file://${file.path}'`.
   VideoPlayerController.file(File file)
-      : dataSource = 'file://${file.path}',
+      : dataSource = file.path.startsWith('phasset://')
+            ? file.path
+            : 'file://${file.path}',
         dataSourceType = DataSourceType.file,
         super(new VideoPlayerValue(duration: null));
 
@@ -214,6 +214,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         break;
       case DataSourceType.file:
         dataSourceDescription = <String, dynamic>{'uri': dataSource};
+      // dataSourceDescription = <String, dynamic>{'phAsset': dataSource};
     }
     final Map<dynamic, dynamic> response = await _channel.invokeMethod(
       'create',

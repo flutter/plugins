@@ -220,13 +220,22 @@ public class VideoPlayerPlugin implements MethodCallHandler {
       if (!isInitialized && isStateReady && eventSink != null) {
         Log.d(TAG, "sending isInitialized");
         isInitialized = true;
+
+        int width = exoPlayer.getVideoFormat().width;
+        int height = exoPlayer.getVideoFormat().height;
+        int rotationDegrees = exoPlayer.getVideoFormat().rotationDegrees;
+        if (rotationDegrees == 90 || rotationDegrees == 270) {
+          width = exoPlayer.getVideoFormat().height;
+          height = exoPlayer.getVideoFormat().width;
+        }
+
         Map<String, Object> event = new HashMap<>();
         event.put("event", "initialized");
         event.put("duration", exoPlayer.getDuration());
         if (exoPlayer.getVideoFormat() != null) {
-          event.put("width", exoPlayer.getVideoFormat().width);
-          event.put("height", exoPlayer.getVideoFormat().height);
-          event.put("rotationDegrees", exoPlayer.getVideoFormat().rotationDegrees);
+          event.put("width", width);
+          event.put("height", height);
+          event.put("rotationDegrees", rotationDegrees);
         }
         eventSink.success(event);
       } else {
