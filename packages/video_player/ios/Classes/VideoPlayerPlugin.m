@@ -4,6 +4,7 @@
 
 #import "VideoPlayerPlugin.h"
 #import <AVFoundation/AVFoundation.h>
+#import <Photos/Photos.h>
 
 int64_t FLTCMTimeToMillis(CMTime time) { return time.value * 1000 / time.timescale; }
 
@@ -57,8 +58,29 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
   return [self initWithURL:[NSURL fileURLWithPath:path] frameUpdater:frameUpdater];
 }
 
+// resultHandler:(void (^)(FLTVideoPlayer *playerItem, FLTFrameUpdater *frameUpdater))resultHandler
+
+- (void)initWithPHAssetLocalIdentifier:(NSString*)localIdentifier
+                          frameUpdater:(FLTFrameUpdater*)frameUpdater
+                         onPlayerSetup:(void (^)(FLTVideoPlayer* playerItem))onPlayerSetup {
+  PHFetchResult<PHAsset*>* phFetchResult =
+      [PHAsset fetchAssetsWithLocalIdentifiers:@[ localIdentifier ] options:nil];
+  // TODO what to do if the asset cannot be loaded? Send an error to flutter?
+  PHAsset* phAsset = [phFetchResult firstObject];
+  NSLog(@"PHFetchResult loaded: %@", phFetchResult);
+  NSLog(@"PHAsset loaded: %@", phAsset);
+  PHCachingImageManager* imageManager = [[PHCachingImageManager alloc] init];
+  [imageManager requestPlayerItemForVideo:phAsset
+                                  options:nil
+                            resultHandler:^(AVPlayerItem* _Nullable playerItem,
+                                            NSDictionary* _Nullable info) {
+                              FLTVideoPlayer* player =
+                                  [self initWithPlayerItem:playerItem frameUpdater:frameUpdater];
+                              onPlayerSetup(player);
+                            }];
+}
+
 - (void)addObservers:(AVPlayerItem*)item {
-    
   [item addObserver:self
          forKeyPath:@"loadedTimeRanges"
             options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
@@ -98,9 +120,8 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
 - (AVMutableVideoComposition*)getVideoCompositionWithTransform:(CGAffineTransform)transform
                                                      withAsset:(AVAsset*)asset
                                                 withVideoTrack:(AVAssetTrack*)videoTrack {
-  // CGAffineTransform t = _preferredTransform;
-  // NSLog(@"Affine1 (a, b, c, d, tx, ty): (%f, %f, %f, %f, %f, %f)", t.a, t.b, t.c, t.d, t.tx,
-  // t.ty);
+  CGAffineTransform t = _preferredTransform;
+  NSLog(@"Affine1 (a, b, c, d, tx, ty): (%f, %f, %f, %f, %f, %f)", t.a, t.b, t.c, t.d, t.tx, t.ty);
 
   AVMutableVideoCompositionInstruction* instruction =
       [AVMutableVideoCompositionInstruction videoCompositionInstruction];
@@ -123,6 +144,7 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
     width = videoTrack.naturalSize.height;
     height = videoTrack.naturalSize.width;
   }
+  NSLog(@"Using width, height: %f, %f", width, height);
   videoComposition.renderSize = CGSizeMake(width, height);
 
   // TODO use videoTrack.nominalFrameRate ?
@@ -146,14 +168,17 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
 }
 
 - (instancetype)initWithURL:(NSURL*)url frameUpdater:(FLTFrameUpdater*)frameUpdater {
+  AVPlayerItem* item = [AVPlayerItem playerItemWithURL:url];
+  return [self initWithPlayerItem:item frameUpdater:frameUpdater];
+}
+
+- (instancetype)initWithPlayerItem:(AVPlayerItem*)item frameUpdater:(FLTFrameUpdater*)frameUpdater {
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
   _isInitialized = false;
   _isReady = false;
   _isPlaying = false;
   _disposed = false;
-
-  AVPlayerItem* item = [AVPlayerItem playerItemWithURL:url];
 
   AVAsset* asset = [item asset];
   void (^assetCompletionHandler)(void) = ^{
@@ -165,6 +190,9 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
           if (_disposed) return;
           if ([videoTrack statusOfValueForKey:@"preferredTransform" error:nil] ==
               AVKeyValueStatusLoaded) {
+            CGSize size = item.presentationSize;
+            NSLog(@"preferredTransform width, height: %f, %f", size.width, size.height);
+
             // Rotate the video by using a videoComposition and the preferredTransform
             _preferredTransform = videoTrack.preferredTransform;
             // Note:
@@ -174,10 +202,11 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
             item.videoComposition = [self getVideoCompositionWithTransform:_preferredTransform
                                                                  withAsset:asset
                                                             withVideoTrack:videoTrack];
-            dispatch_async(dispatch_get_main_queue(), ^{
-              // Without this line, videos are not always rendered in app. TODO explain why
-              [_player replaceCurrentItemWithPlayerItem:item];
-            });
+            dispatch_async(
+                dispatch_get_main_queue(), ^{
+                    // Without this line, videos are not always rendered in app. TODO explain why
+                    // [_player replaceCurrentItemWithPlayerItem:item];
+                });
           }
         };
         [videoTrack loadValuesAsynchronouslyForKeys:@[ @"preferredTransform" ]
@@ -188,6 +217,9 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
 
   _player = [AVPlayer playerWithPlayerItem:item];
   _player.actionAtItemEnd = AVPlayerActionAtItemEndNone;
+
+  CGSize size = item.presentationSize;
+  NSLog(@"_player create width, height: %f, %f", size.width, size.height);
 
   [self createVideoOutputAndDisplayLink:frameUpdater];
 
@@ -277,7 +309,6 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 - (void)sendInitialized {
   if (_eventSink && !_isInitialized && _isReady) {
     _isInitialized = true;
-    CGSize size = [self.player currentItem].presentationSize;
     // CGAffineTransform transform = [_player currentItem] asset].preferredTransform;
     // CGAffineTransform transform = [[[_player currentItem] asset] preferredTransform];
     // NSArray* tracks = [[[_player currentItem] asset] tracksWithMediaType:AVMediaTypeVideo];
@@ -290,16 +321,17 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     NSInteger rotationDegrees =
         (NSInteger)round(radiansToDegrees(atan2(_preferredTransform.b, _preferredTransform.a)));
 
-    CGAffineTransform t = _preferredTransform;
-    NSLog(@"atan2: %f", atan2(_preferredTransform.b, _preferredTransform.a));
-    NSLog(@"Rotation degrees: %d \tFrom (a, b, c, d, tx, ty): (%f, %f, %f, %f, %f, %f)",
-          (int)rotationDegrees, t.a, t.b, t.c, t.d, t.tx, t.ty);
+    CGSize size = [self.player currentItem].presentationSize;
+    CGFloat width = size.width;
+    CGFloat height = size.height;
+
+    NSLog(@"sendInitialized width, height: %f, %f", width, height);
 
     _eventSink(@{
       @"event" : @"initialized",
       @"duration" : @([self duration]),
-      @"width" : @(size.width),
-      @"height" : @(size.height),
+      @"width" : @(width),
+      @"height" : @(height),
       @"rotationDegrees" : @(rotationDegrees),
     });
   }
@@ -354,7 +386,8 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 - (FlutterError* _Nullable)onListenWithArguments:(id _Nullable)arguments
                                        eventSink:(nonnull FlutterEventSink)events {
   _eventSink = events;
-  [self sendInitialized];
+  // TODO do we need this?
+  // [self sendInitialized];
   return nil;
 }
 
@@ -408,6 +441,21 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   return self;
 }
 
+- (void)onPlayerSetup:(FLTVideoPlayer*)player
+         frameUpdater:(FLTFrameUpdater*)frameUpdater
+               result:(FlutterResult)result {
+  int64_t textureId = [_registry registerTexture:player];
+  frameUpdater.textureId = textureId;
+  FlutterEventChannel* eventChannel = [FlutterEventChannel
+      eventChannelWithName:[NSString stringWithFormat:@"flutter.io/videoPlayer/videoEvents%lld",
+                                                      textureId]
+           binaryMessenger:_messenger];
+  [eventChannel setStreamHandler:player];
+  player.eventChannel = eventChannel;
+  _players[@(textureId)] = player;
+  result(@{ @"textureId" : @(textureId) });
+}
+
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
   if ([@"init" isEqualToString:call.method]) {
     // Allow audio playback when the Ring/Silent switch is set to silent
@@ -422,32 +470,39 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   } else if ([@"create" isEqualToString:call.method]) {
     NSDictionary* argsMap = call.arguments;
     FLTFrameUpdater* frameUpdater = [[FLTFrameUpdater alloc] initWithRegistry:_registry];
-    NSString* dataSource = argsMap[@"asset"];
+    NSString* assetArg = argsMap[@"asset"];
+    NSString* uriArg = argsMap[@"uri"];
     FLTVideoPlayer* player;
-    if (dataSource) {
+    if (assetArg) {
       NSString* assetPath;
       NSString* package = argsMap[@"package"];
       if (![package isEqual:[NSNull null]]) {
-        assetPath = [_registrar lookupKeyForAsset:dataSource fromPackage:package];
+        assetPath = [_registrar lookupKeyForAsset:assetArg fromPackage:package];
       } else {
-        assetPath = [_registrar lookupKeyForAsset:dataSource];
+        assetPath = [_registrar lookupKeyForAsset:assetArg];
       }
       player = [[FLTVideoPlayer alloc] initWithAsset:assetPath frameUpdater:frameUpdater];
+      [self onPlayerSetup:player frameUpdater:frameUpdater result:result];
+    } else if (uriArg) {
+      NSString* phAssetPrefix = @"phasset://";
+      if ([uriArg hasPrefix:phAssetPrefix]) {
+        NSString* phAssetArg = [uriArg substringFromIndex:[phAssetPrefix length]];
+        NSLog(@"Loading PHAsset localIdentifier: %@", phAssetArg);
+        [[FLTVideoPlayer alloc]
+            initWithPHAssetLocalIdentifier:phAssetArg
+                              frameUpdater:frameUpdater
+                             onPlayerSetup:^(FLTVideoPlayer* player) {
+                               [self onPlayerSetup:player frameUpdater:frameUpdater result:result];
+                             }];
+      } else {
+        player = [[FLTVideoPlayer alloc] initWithURL:[NSURL URLWithString:uriArg]
+                                        frameUpdater:frameUpdater];
+        [self onPlayerSetup:player frameUpdater:frameUpdater result:result];
+      }
     } else {
-      dataSource = argsMap[@"uri"];
-      player = [[FLTVideoPlayer alloc] initWithURL:[NSURL URLWithString:dataSource]
-                                      frameUpdater:frameUpdater];
+      result(FlutterMethodNotImplemented);
     }
-    int64_t textureId = [_registry registerTexture:player];
-    frameUpdater.textureId = textureId;
-    FlutterEventChannel* eventChannel = [FlutterEventChannel
-        eventChannelWithName:[NSString stringWithFormat:@"flutter.io/videoPlayer/videoEvents%lld",
-                                                        textureId]
-             binaryMessenger:_messenger];
-    [eventChannel setStreamHandler:player];
-    player.eventChannel = eventChannel;
-    _players[@(textureId)] = player;
-    result(@{ @"textureId" : @(textureId) });
+
   } else {
     NSDictionary* argsMap = call.arguments;
     int64_t textureId = ((NSNumber*)argsMap[@"textureId"]).unsignedIntegerValue;
