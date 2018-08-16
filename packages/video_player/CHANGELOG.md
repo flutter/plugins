@@ -1,3 +1,7 @@
+## 0.6.5
+
+* Android: update video buffering status event for ExoPlayer.
+
 ## 0.6.4
 
 * Android: add support for hls, dash and ss video formats.

@@ -153,11 +153,21 @@ public class VideoPlayerPlugin implements MethodCallHandler {
                   // iOS supports a list of buffered ranges, so here is a list with a single range.
                   event.put("values", Collections.singletonList(range));
                   eventSink.success(event);
+                  event.clear();
+                  event.put("event", "bufferingStart");
+                  eventSink.success(event);
                 }
-              } else if (playbackState == Player.STATE_READY && !isInitialized) {
-                isInitialized = true;
-                sendInitialized();
-              }
+              } else if (playbackState == Player.STATE_READY) {
+                if (!isInitialized) {
+                  isInitialized = true;
+                  sendInitialized();
+                }
+                if (eventSink != null) {
+                  Map<String, Object> event = new HashMap<>();
+                  event.put("event", "bufferingEnd");
+                  eventSink.success(event);
+                }
+              } 
             }
 
             @Override
