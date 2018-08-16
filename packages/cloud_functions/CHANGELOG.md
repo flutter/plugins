@@ -1,3 +1,7 @@
+## 0.0.2
+
+* Bump Android and Firebase dependency versions.
+
 ## 0.0.1
 
 * The Cloud Functions for Firebase client SDKs let you call functions

@@ -11,7 +11,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('FirebaseAdMob', () {
     const MethodChannel channel =
-        const MethodChannel('plugins.flutter.io/firebase_admob');
+        MethodChannel('plugins.flutter.io/firebase_admob');
 
     final List<MethodCall> log = <MethodCall>[];
     final FirebaseAdMob admob = new FirebaseAdMob.private(channel);
@@ -30,6 +30,7 @@ void main() {
             return new Future<bool>.value(true);
           default:
             assert(false);
+            return null;
         }
       });
     });

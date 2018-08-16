@@ -78,6 +78,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       case "reload":
         handleReload(call, result);
         break;
+      case "delete":
+        handleDelete(call, result);
+        break;
       case "signInWithEmailAndPassword":
         handleSignInWithEmailAndPassword(call, result);
         break;
@@ -111,6 +114,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       case "updateProfile":
         handleUpdateProfile(call, result);
         break;
+      case "updateEmail":
+        handleUpdateEmail(call, result);
+        break;
       case "startListeningAuthState":
         handleStartListeningAuthState(call, result);
         break;
@@ -122,6 +128,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         break;
       case "signInWithPhoneNumber":
         handleSignInWithPhoneNumber(call, result);
+        break;
+      case "setLanguageCode":
+        handleSetLanguageCode(call, result);
         break;
       default:
         result.notImplemented();
@@ -311,6 +320,13 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         .addOnCompleteListener(new TaskVoidCompleteListener(result));
   }
 
+  private void handleDelete(MethodCall call, final Result result) {
+    firebaseAuth
+        .getCurrentUser()
+        .delete()
+        .addOnCompleteListener(new TaskVoidCompleteListener(result));
+  }
+
   private void handleSignInWithEmailAndPassword(MethodCall call, final Result result) {
     @SuppressWarnings("unchecked")
     Map<String, String> arguments = (Map<String, String>) call.arguments;
@@ -437,6 +453,28 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
             });
   }
 
+  private void handleUpdateEmail(MethodCall call, final Result result) {
+    @SuppressWarnings("unchecked")
+    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    String email = arguments.get("email");
+
+    firebaseAuth
+        .getCurrentUser()
+        .updateEmail(email)
+        .addOnCompleteListener(
+            new OnCompleteListener<Void>() {
+              @Override
+              public void onComplete(@NonNull Task<Void> task) {
+                if (!task.isSuccessful()) {
+                  Exception e = task.getException();
+                  result.error(ERROR_REASON_EXCEPTION, e.getMessage(), null);
+                } else {
+                  result.success(null);
+                }
+              }
+            });
+  }
+
   private void handleStartListeningAuthState(MethodCall call, final Result result) {
     final int handle = nextHandle++;
     FirebaseAuth.AuthStateListener listener =
@@ -474,6 +512,15 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
           String.format("Listener with identifier '%d' not found.", id),
           null);
     }
+  }
+
+  private void handleSetLanguageCode(MethodCall call, final Result result) {
+    @SuppressWarnings("unchecked")
+    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    String language = arguments.get("language");
+
+    firebaseAuth.setLanguageCode(language);
+    result.success(null);
   }
 
   private class SignInCompleteListener implements OnCompleteListener<AuthResult> {

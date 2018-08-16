@@ -1,3 +1,19 @@
+## 0.5.18
+
+* Adding support for updateEmail in FirebaseAuth.
+
+## 0.5.17
+
+* Adding support for FirebaseUser.delete. 
+
+## 0.5.16
+
+* Adding support for setLanguageCode in FirebaseAuth.
+
+## 0.5.15
+
+* Bump Android and Firebase dependency versions.
+
 ## 0.5.14
 
 * Fixed handling of auto phone number verification.

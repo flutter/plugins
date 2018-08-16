@@ -75,7 +75,7 @@ class GoogleMapController extends ChangeNotifier {
   static Future<void> init() async {
     await _channel.invokeMethod('init');
     _controllers.clear();
-    _channel.setMethodCallHandler((MethodCall call) {
+    _channel.setMethodCallHandler((MethodCall call) async {
       final int mapId = call.arguments['map'];
       final GoogleMapController controller = _controllers[mapId];
       if (controller != null) {

@@ -11,7 +11,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('$FirebaseDatabase', () {
-    const MethodChannel channel = const MethodChannel(
+    const MethodChannel channel = MethodChannel(
       'plugins.flutter.io/firebase_database',
     );
 
@@ -274,7 +274,7 @@ void main() {
             equals(<String, dynamic>{'fakeKey': 'updated fakeValue'}));
         expect(
           database.reference().child('foo').runTransaction(
-                (MutableData mutableData) {},
+                (MutableData mutableData) async => null,
                 timeout: const Duration(milliseconds: 0),
               ),
           throwsA(isInstanceOf<AssertionError>()),

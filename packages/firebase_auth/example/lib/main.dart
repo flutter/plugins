@@ -99,8 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
         (AuthException authException) {
       setState(() {
         _message = Future<String>.value(
-            'Phone numbber verification failed. Code: ${authException
-                .code}. Message: ${authException.message}');
+            'Phone numbber verification failed. Code: ${authException.code}. Message: ${authException.message}');
       });
     };
 
@@ -194,8 +193,8 @@ class _MyHomePageState extends State<MyHomePage> {
               future: _message,
               builder: (_, AsyncSnapshot<String> snapshot) {
                 return new Text(snapshot.data ?? '',
-                    style: const TextStyle(
-                        color: const Color.fromARGB(255, 0, 155, 0)));
+                    style:
+                        const TextStyle(color: Color.fromARGB(255, 0, 155, 0)));
               }),
         ],
       ),

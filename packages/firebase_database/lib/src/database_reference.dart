@@ -146,7 +146,7 @@ class DatabaseReference extends Query {
   /// this Firebase Database location.
   Future<TransactionResult> runTransaction(
       TransactionHandler transactionHandler,
-      {Duration timeout: const Duration(seconds: 5)}) async {
+      {Duration timeout = const Duration(seconds: 5)}) async {
     assert(timeout.inMilliseconds > 0,
         'Transaction timeout must be more than 0 milliseconds.');
 
@@ -191,7 +191,7 @@ class DatabaseReference extends Query {
 }
 
 class ServerValue {
-  static const Map<String, String> timestamp = const <String, String>{
+  static const Map<String, String> timestamp = <String, String>{
     '.sv': 'timestamp'
   };
 }
