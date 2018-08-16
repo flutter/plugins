@@ -1,49 +1,85 @@
 task:
   container:
-    image: cirrusci/flutter:latest
+    image: gcr.io/flutter-cirrus/build-plugins-image:latest
+  env:
+    CIRRUS_WORKING_DIR: "/opt/flutter plugins"
+    # PATH, PUB_CACHE, and FLUTTER_ROOT are set in Dockerfile.
+  pub_cache:
+    folder: "$PUB_CACHE"
+    fingerprint_script:
+     - echo $OS
+     - grep -r --include=pubspec.yaml 'PUBSPEC CHECKSUM' "$FLUTTER_ROOT"
+     - find "$CIRRUS_WORKING_DIR" -type f -name pubspec.yaml -print0 | xargs -0 shasum
+  flutter_pkg_cache:
+    folder: "$FLUTTER_ROOT/bin/cache/pkg"
+    fingerprint_script: echo $OS; cat "$FLUTTER_ROOT/bin/internal/engine.version"
+  artifacts_cache:
+    folder: "$FLUTTER_ROOT/bin/cache/artifacts"
+    fingerprint_script: echo $OS; cat "$FLUTTER_ROOT/bin/internal/engine.version"
+  git_fetch_script:
+    - git fetch origin
+    - git fetch origin master # To set FETCH_HEAD
   upgrade_script:
     - flutter channel master
     - flutter upgrade
-  activate_script: pub global activate flutter_plugin_tools
+    - flutter update-packages
   matrix:
-    - name: test+format
-      install_script:
-        - wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-        - sudo apt-add-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-5.0 main"
-        - sudo apt-get update
-        - sudo apt-get install -y --allow-unauthenticated clang-format-5.0
-      format_script: ./script/incremental_build.sh format --travis --clang-format=clang-format-5.0
-      test_script: ./script/incremental_build.sh test
     - name: analyze
       script: ./script/incremental_build.sh analyze
+    - name: format
+      format_script: ./script/incremental_build.sh format --travis --clang-format=clang-format-5.0
+    - name: test-linux
+      test_script: ./script/incremental_build.sh test
     - name: build-apks+java-test
       env:
         matrix:
           PLUGIN_SHARDING: "--shardIndex 0 --shardCount 2"
           PLUGIN_SHARDING: "--shardIndex 1 --shardCount 2"
       script:
-        - ./script/incremental_build.sh build-examples --apk
-        - ./script/incremental_build.sh java-test  # must come after apk build
+      - ./script/incremental_build.sh build-examples --apk
+      - ./script/incremental_build.sh java-test  # must come after apk build
 
 task:
   name: build-ipas
   osx_instance:
-    image: high-sierra-xcode-9.4
+    image: high-sierra-xcode-9.4.1
   env:
-    PATH: $PATH:/usr/local/bin
+    CIRRUS_WORKING_DIR: "/tmp/flutter plugins"
+    FLUTTER_ROOT: "/tmp/flutter sdk"
+    PUB_CACHE: "/tmp/pub-cache"
+    PATH: "$FLUTTER_ROOT/bin:$FLUTTER_ROOT/bin/cache/dart-sdk/bin:$PATH:/usr/local/bin"
     matrix:
       PLUGIN_SHARDING: "--shardIndex 0 --shardCount 2"
       PLUGIN_SHARDING: "--shardIndex 1 --shardCount 2"
-  setup_script:
+  depends_on:
+    - analyze
+    - format
+  git_fetch_script:
+    - git fetch origin
+    - git fetch origin master # To set FETCH_HEAD
+  install_script:
     - brew update
     - brew install libimobiledevice
     - brew install ideviceinstaller
     - brew install ios-deploy
     - pod repo update
-    - git clone https://github.com/flutter/flutter.git
-    - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
-    - flutter doctor
+    - gem update cocoapods
+    - mkdir --parents "$FLUTTER_ROOT"
+    - git clone https://github.com/flutter/flutter.git "$FLUTTER_ROOT"
+    - flutter channel master
+    - flutter upgrade
+    - flutter doctor -v
     - pub global activate flutter_plugin_tools
-  build_script:
-    - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
+#  pub_cache:
+#    folder: "$PUB_CACHE"
+#    fingerprint_script:
+#     - echo $OS
+#     - grep -r --include=pubspec.yaml 'PUBSPEC CHECKSUM' "$FLUTTER_ROOT"
+#  flutter_pkg_cache:
+#    folder: "$FLUTTER_ROOT/bin/cache/pkg"
+#    fingerprint_script: echo $OS; cat "$FLUTTER_ROOT/bin/internal/engine.version"
+#  artifacts_cache:
+#    folder: "$FLUTTER_ROOT/bin/cache/artifacts"
+#    fingerprint_script: echo $OS; cat "$FLUTTER_ROOT/bin/internal/engine.version"
+  build_ipas_script:
     - ./script/incremental_build.sh build-examples --ipa
