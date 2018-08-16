@@ -167,7 +167,7 @@ public class VideoPlayerPlugin implements MethodCallHandler {
                   event.put("event", "bufferingEnd");
                   eventSink.success(event);
                 }
-              } 
+              }
             }
 
             @Override
