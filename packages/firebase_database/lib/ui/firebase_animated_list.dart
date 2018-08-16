@@ -14,6 +14,7 @@ typedef Widget FirebaseAnimatedListItemBuilder(
   DataSnapshot snapshot,
   Animation<double> animation,
   int index,
+  DataSnapshot nextSnapshot,
 );
 
 /// An AnimatedList widget that is bound to a query
@@ -182,7 +183,7 @@ class FirebaseAnimatedListState extends State<FirebaseAnimatedList> {
     _animatedListKey.currentState.removeItem(
       index,
       (BuildContext context, Animation<double> animation) {
-        return widget.itemBuilder(context, snapshot, animation, index);
+        return widget.itemBuilder(context, snapshot, animation, index, _model[index + 1]);
       },
       duration: widget.duration,
     );
@@ -206,7 +207,7 @@ class FirebaseAnimatedListState extends State<FirebaseAnimatedList> {
 
   Widget _buildItem(
       BuildContext context, int index, Animation<double> animation) {
-    return widget.itemBuilder(context, _model[index], animation, index);
+    return widget.itemBuilder(context, _model[index], animation, index, _model[index + 1]);
   }
 
   @override
