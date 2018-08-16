@@ -144,7 +144,7 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
     width = videoTrack.naturalSize.height;
     height = videoTrack.naturalSize.width;
   }
-  NSLog(@"Using width, height: %f, %f", width, height);
+  NSLog(@"Using width, height: %f, %f, %d", width, height, rotationDegrees);
   videoComposition.renderSize = CGSizeMake(width, height);
 
   // TODO use videoTrack.nominalFrameRate ?
@@ -172,6 +172,29 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
   return [self initWithPlayerItem:item frameUpdater:frameUpdater];
 }
 
+- (CGAffineTransform)fixTransform:(AVAssetTrack*)videoTrack {
+  CGAffineTransform transform = videoTrack.preferredTransform;
+  // TODO: why do we need to do this? Why is the preferredTransform incorrect?
+  // At least 2 videos show a black screen otherwise when in portrait mode
+  // Setting tx to the height of the video, properly displays the video
+  // https://github.com/flutter/flutter/issues/17606#issuecomment-413473181
+  if (transform.tx == 0 && transform.ty == 0) {
+    NSInteger rotationDegrees = (NSInteger)round(radiansToDegrees(atan2(transform.b, transform.a)));
+    NSLog(@"TX and TY are 0. Rotation: %d. Natural width,height: %f, %f", rotationDegrees,
+          videoTrack.naturalSize.width, videoTrack.naturalSize.height);
+    if (rotationDegrees == 90) {
+      NSLog(@"Setting transform tx");
+      transform.tx = videoTrack.naturalSize.height;
+      transform.ty = 0;
+    } else if (rotationDegrees == 270) {
+      NSLog(@"Setting transform ty");
+      transform.tx = 0;
+      transform.ty = videoTrack.naturalSize.width;
+    }
+  }
+  return transform;
+}
+
 - (instancetype)initWithPlayerItem:(AVPlayerItem*)item frameUpdater:(FLTFrameUpdater*)frameUpdater {
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
@@ -190,21 +213,24 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
           if (_disposed) return;
           if ([videoTrack statusOfValueForKey:@"preferredTransform" error:nil] ==
               AVKeyValueStatusLoaded) {
-            CGSize size = item.presentationSize;
+            CGSize size = videoTrack.naturalSize;
             NSLog(@"preferredTransform width, height: %f, %f", size.width, size.height);
 
             // Rotate the video by using a videoComposition and the preferredTransform
-            _preferredTransform = videoTrack.preferredTransform;
+            _preferredTransform = [self fixTransform:videoTrack];
             // Note:
             // https://developer.apple.com/documentation/avfoundation/avplayeritem/1388818-videocomposition
-            // Aideo composition can only be used with file-based media and is not supported for use
-            // with media served using HTTP Live Streaming.
-            item.videoComposition = [self getVideoCompositionWithTransform:_preferredTransform
-                                                                 withAsset:asset
-                                                            withVideoTrack:videoTrack];
+            // Aideo composition can only be used with file-based media and is not supported for
+            // use with media served using HTTP Live Streaming.
+            AVMutableVideoComposition* videoComposition =
+                [self getVideoCompositionWithTransform:_preferredTransform
+                                             withAsset:asset
+                                        withVideoTrack:videoTrack];
+            item.videoComposition = videoComposition;
             dispatch_async(
                 dispatch_get_main_queue(), ^{
                     // Without this line, videos are not always rendered in app. TODO explain why
+                    // Even with this line, videos are sometimes blank in app
                     // [_player replaceCurrentItemWithPlayerItem:item];
                 });
           }
@@ -325,7 +351,11 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     CGFloat width = size.width;
     CGFloat height = size.height;
 
-    NSLog(@"sendInitialized width, height: %f, %f", width, height);
+    CGAffineTransform t = _preferredTransform;
+    NSLog(@"Affine2 (a, b, c, d, tx, ty): (%f, %f, %f, %f, %f, %f)", t.a, t.b, t.c, t.d, t.tx,
+          t.ty);
+    NSLog(@"sendInitialized width, height, rotationDegrees: %f, %f, %d", width, height,
+          rotationDegrees);
 
     _eventSink(@{
       @"event" : @"initialized",
