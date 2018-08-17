@@ -201,7 +201,7 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
 }
 
 - (void)sendInitialized {
-  if (_eventSink && !_isInitialized && isReady) {
+  if (_eventSink && !_isInitialized && _isReady) {
     _isInitialized = true;
     CGSize size = [self.player currentItem].presentationSize;
     _eventSink(@{
