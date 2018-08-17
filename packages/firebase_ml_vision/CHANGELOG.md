@@ -1,3 +1,7 @@
+## 0.1.1
+
+Set pod version of Firebase/MLVision to avoid breaking changes.
+
 ## 0.1.0
 
 * **Breaking Change** Add Barcode, Face, and Label on-device detectors.
