@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+set -x
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null && pwd)"
 REPO_DIR="$(dirname "$SCRIPT_DIR")"
@@ -13,11 +14,12 @@ CHANGED_PACKAGES=""
 function check_changed_packages() {
   # Try get a merge base for the branch and calculate affected packages.
   # We need this check because some CIs can do a single branch clones with a limited history of commits.
-  local branch_base_sha="$(git merge-base --fork-point FETCH_HEAD HEAD)"
-  echo "Checking for changed packages from $branch_base_sha"
-
+  local packages
+  local branch_base_sha="$(git merge-base --fork-point FETCH_HEAD HEAD || git merge-base FETCH_HEAD HEAD)"
+#  local branch_base_sha="$(git merge-base --fork-point master || git merge-base master)"
   if [[ "$?" == 0 ]]; then
-    IFS=$'\n' local packages=($(git diff --name-only "$branch_base_sha" HEAD | grep -o "packages/[^/]*" | sed -e "s/packages\///g" | sort | uniq ))
+    echo "Checking for changed packages from $branch_base_sha"
+    IFS=$'\n' packages=( $(git diff --name-only "$branch_base_sha" HEAD | grep -o "packages/[^/]*" | sed -e "s/packages\///g" | sort | uniq) )
   else
     error "Cannot find a merge base for the current branch to run an incremental build..."
     error "Please rebase your branch onto the latest master!"
@@ -59,10 +61,13 @@ if [[ "${BRANCH_NAME}" == "master" ]]; then
   (cd "$REPO_DIR" && pub global run flutter_plugin_tools "${ACTIONS[@]}" $PLUGIN_SHARDING)
 else
   check_changed_packages
+  echo "Environment:"
+  env
+  echo "---------------------"
   if [[ "$CHANGED_PACKAGES" == "" ]]; then
     echo "Running for all packages"
     (cd "$REPO_DIR" && pub global run flutter_plugin_tools "${ACTIONS[@]}" $PLUGIN_SHARDING)
   else
-    (cd "$REPO_DIR" && pub global run flutter_plugin_tools "${ACTIONS[@]}" --plugins="$CHANGED_PACKAGES")
+    (cd "$REPO_DIR" && pub global run flutter_plugin_tools "${ACTIONS[@]}" --plugins="$CHANGED_PACKAGES" $PLUGIN_SHARDING)
   fi
 fi

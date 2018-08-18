@@ -1,6 +1,8 @@
 task:
   container:
     image: cirrusci/flutter:latest
+    cpu: 4
+    memory: 8G
   upgrade_script:
     - flutter channel master
     - flutter upgrade

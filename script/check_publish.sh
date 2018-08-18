@@ -36,11 +36,12 @@ function check_publish() {
 function check_changed_packages() {
   # Try get a merge base for the branch and calculate affected packages.
   # We need this check because some CIs can do a single branch clones with a limited history of commits.
-  local branch_base_sha="$(git merge-base --fork-point FETCH_HEAD HEAD)"
+  # If merge-base --fork-point can't be found (it's more conservative), then use regular merge-base.
+  local branch_base_sha="$(git merge-base --fork-point FETCH_HEAD HEAD || git merge-base FETCH_HEAD HEAD)"
   echo "Checking for changed packages from $branch_base_sha"
-
+  local packages
   if [[ "$?" == 0 ]]; then
-    IFS=$'\n' local packages=($(git diff --name-only "$branch_base_sha" HEAD | grep -o "packages/[^/]*" | sed -e "s/packages\///g" | sort | uniq ))
+    IFS=$'\n' packages=( $(git diff --name-only "$branch_base_sha" HEAD | grep -o "packages/[^/]*" | sed -e "s/packages\///g" | sort | uniq) )
   else
     error "Cannot find a merge base for the current branch to run an incremental build..."
     error "Please rebase your branch onto the latest master!"
