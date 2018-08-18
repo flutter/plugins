@@ -17,7 +17,7 @@ dependencies:
   firebase_core: ^0.2.2
 
 dev_dependencies:
-  mockito: ^2.0.2
+  mockito: 3.0.0
   flutter_test:
     sdk: flutter
 
