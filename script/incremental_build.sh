@@ -1,6 +1,5 @@
 #!/bin/bash
 set -e
-set -x
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null && pwd)"
 REPO_DIR="$(dirname "$SCRIPT_DIR")"
@@ -16,7 +15,6 @@ function check_changed_packages() {
   # We need this check because some CIs can do a single branch clones with a limited history of commits.
   local packages
   local branch_base_sha="$(git merge-base --fork-point FETCH_HEAD HEAD || git merge-base FETCH_HEAD HEAD)"
-#  local branch_base_sha="$(git merge-base --fork-point master || git merge-base master)"
   if [[ "$?" == 0 ]]; then
     echo "Checking for changed packages from $branch_base_sha"
     IFS=$'\n' packages=( $(git diff --name-only "$branch_base_sha" HEAD | grep -o "packages/[^/]*" | sed -e "s/packages\///g" | sort | uniq) )
@@ -61,9 +59,6 @@ if [[ "${BRANCH_NAME}" == "master" ]]; then
   (cd "$REPO_DIR" && pub global run flutter_plugin_tools "${ACTIONS[@]}" $PLUGIN_SHARDING)
 else
   check_changed_packages
-  echo "Environment:"
-  env
-  echo "---------------------"
   if [[ "$CHANGED_PACKAGES" == "" ]]; then
     echo "Running for all packages"
     (cd "$REPO_DIR" && pub global run flutter_plugin_tools "${ACTIONS[@]}" $PLUGIN_SHARDING)
