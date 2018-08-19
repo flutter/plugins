@@ -1,11 +1,16 @@
 task:
   container:
     image: cirrusci/flutter:latest
+    cpu: 4
+    memory: 8G
   upgrade_script:
     - flutter channel master
     - flutter upgrade
+    - git fetch origin master
   activate_script: pub global activate flutter_plugin_tools
   matrix:
+    - name: publishable
+      script: ./script/check_publish.sh
     - name: test+format
       install_script:
         - wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
@@ -41,6 +46,7 @@ task:
     - brew install ios-deploy
     - pod repo update
     - git clone https://github.com/flutter/flutter.git
+    - git fetch origin master
     - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
     - flutter doctor
     - pub global activate flutter_plugin_tools
