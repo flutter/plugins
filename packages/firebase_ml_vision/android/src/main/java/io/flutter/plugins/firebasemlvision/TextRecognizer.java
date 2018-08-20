@@ -10,7 +10,6 @@ import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.text.FirebaseVisionText;
 import com.google.firebase.ml.vision.text.FirebaseVisionTextRecognizer;
 import com.google.firebase.ml.vision.text.RecognizedLanguage;
-
 import io.flutter.plugin.common.MethodChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,7 +24,8 @@ public class TextRecognizer implements Detector {
   @Override
   public void handleDetection(
       FirebaseVisionImage image, Map<String, Object> options, final MethodChannel.Result result) {
-    FirebaseVisionTextRecognizer textRecognizer = FirebaseVision.getInstance().getOnDeviceTextRecognizer();
+    FirebaseVisionTextRecognizer textRecognizer =
+        FirebaseVision.getInstance().getOnDeviceTextRecognizer();
     textRecognizer
         .processImage(image)
         .addOnSuccessListener(
@@ -39,22 +39,34 @@ public class TextRecognizer implements Detector {
                 for (FirebaseVisionText.TextBlock block : firebaseVisionText.getTextBlocks()) {
                   Map<String, Object> blockData = new HashMap<>();
                   addData(
-                      blockData, block.getBoundingBox(), block.getConfidence(),
-                      block.getCornerPoints(), block.getRecognizedLanguages(), block.getText());
+                      blockData,
+                      block.getBoundingBox(),
+                      block.getConfidence(),
+                      block.getCornerPoints(),
+                      block.getRecognizedLanguages(),
+                      block.getText());
 
                   List<Map<String, Object>> allLineData = new ArrayList<>();
                   for (FirebaseVisionText.Line line : block.getLines()) {
                     Map<String, Object> lineData = new HashMap<>();
                     addData(
-                        lineData, line.getBoundingBox(), line.getConfidence(),
-                        line.getCornerPoints(), line.getRecognizedLanguages(), line.getText());
+                        lineData,
+                        line.getBoundingBox(),
+                        line.getConfidence(),
+                        line.getCornerPoints(),
+                        line.getRecognizedLanguages(),
+                        line.getText());
 
                     List<Map<String, Object>> allElementData = new ArrayList<>();
                     for (FirebaseVisionText.Element element : line.getElements()) {
                       Map<String, Object> elementData = new HashMap<>();
                       addData(
-                          elementData, element.getBoundingBox(), element.getConfidence(),
-                          element.getCornerPoints(), element.getRecognizedLanguages(), element.getText());
+                          elementData,
+                          element.getBoundingBox(),
+                          element.getConfidence(),
+                          element.getCornerPoints(),
+                          element.getRecognizedLanguages(),
+                          element.getText());
 
                       allElementData.add(elementData);
                     }
@@ -79,8 +91,12 @@ public class TextRecognizer implements Detector {
   }
 
   private void addData(
-      Map<String, Object> addTo, Rect boundingBox, Float confidence, Point[] cornerPoints,
-      List<RecognizedLanguage> languages, String text) {
+      Map<String, Object> addTo,
+      Rect boundingBox,
+      Float confidence,
+      Point[] cornerPoints,
+      List<RecognizedLanguage> languages,
+      String text) {
 
     if (boundingBox != null) {
       addTo.put("left", boundingBox.left);
