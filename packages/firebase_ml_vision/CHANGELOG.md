@@ -1,6 +1,10 @@
+## 0.1.2
+
+* Fix example imports so that publishing will be warning-free.
+
 ## 0.1.1
 
-Set pod version of Firebase/MLVision to avoid breaking changes.
+* Set pod version of Firebase/MLVision to avoid breaking changes.
 
 ## 0.1.0
 

@@ -1,3 +1,7 @@
+## 0.0.3
+
+* Added missing dependency on meta package.
+
 ## 0.0.2
 
 * Bump Android and Firebase dependency versions.
