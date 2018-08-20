@@ -43,8 +43,8 @@ class FirebaseVision {
     return LabelDetector._(options ?? const LabelDetectorOptions());
   }
 
-  /// Creates an instance of [TextDetector].
-  TextDetector textDetector() => new TextDetector._();
+  /// Creates an instance of [TextRecognizer].
+  TextRecognizer textDetector() => new TextRecognizer._();
 }
 
 /// Represents an image object used for both on-device and cloud API detectors.

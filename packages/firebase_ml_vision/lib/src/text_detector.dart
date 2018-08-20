@@ -11,15 +11,16 @@ part of firebase_ml_vision;
 /// ```dart
 /// TextDetector textDetector = FirebaseVision.instance.textDetector();
 /// ```
-class TextDetector implements FirebaseVisionDetector {
-  TextDetector._();
+class TextRecognizer implements FirebaseVisionDetector {
+  TextRecognizer._();
 
   /// Detects text in the input image.
   ///
   /// The OCR is performed asynchronously.
   @override
-  Future<List<TextBlock>> detectInImage(FirebaseVisionImage visionImage) async {
-    final List<dynamic> reply = await FirebaseVision.channel.invokeMethod(
+  Future<VisionText> detectInImage(FirebaseVisionImage visionImage) async {
+    final Map<dynamic, dynamic> reply =
+        await FirebaseVision.channel.invokeMethod(
       'TextDetector#detectInImage',
       <String, dynamic>{
         'path': visionImage.imageFile.path,
@@ -27,13 +28,24 @@ class TextDetector implements FirebaseVisionDetector {
       },
     );
 
-    final List<TextBlock> blocks = <TextBlock>[];
-    reply.forEach((dynamic block) {
-      blocks.add(new TextBlock._(block));
-    });
-
-    return blocks;
+    return VisionText._(reply);
   }
+}
+
+class VisionText {
+  VisionText._(Map<dynamic, dynamic> data)
+      : text = data['text'],
+        blocks = List<TextBlock>.unmodifiable(data['blocks']
+            .map<TextBlock>((dynamic block) => TextBlock._(block)));
+
+  final String text;
+  final List<TextBlock> blocks;
+}
+
+class RecognizedLanguage {
+  RecognizedLanguage._(dynamic data) : languageCode = data['languageCode'];
+
+  final String languageCode;
 }
 
 /// Abstract class representing dimensions of recognized text in an image.
@@ -47,15 +59,16 @@ abstract class TextContainer {
                 data['height'],
               )
             : null,
-        _cornerPoints = data['points']
-            .map<Point<int>>((dynamic item) => Point<int>(
-                  item[0],
-                  item[1],
-                ))
-            .toList(),
+        confidence = data['confidence'],
+        cornerPoints = List<Point<int>>.unmodifiable(
+            data['points'].map<Point<int>>((dynamic point) => Point<int>(
+                  point[0],
+                  point[1],
+                ))),
+        recognizedLanguages = List<RecognizedLanguage>.unmodifiable(
+            data['recognizedLanguages'].map<RecognizedLanguage>(
+                (dynamic language) => RecognizedLanguage._(language))),
         text = data['text'];
-
-  final List<Point<int>> _cornerPoints;
 
   /// Axis-aligned bounding rectangle of the detected text.
   ///
@@ -64,11 +77,7 @@ abstract class TextContainer {
   /// Could be null even if text is found.
   final Rectangle<int> boundingBox;
 
-  /// The recognized text as a string.
-  ///
-  /// Returned in reading order for the language. For Latin, this is top to
-  /// bottom within a Block, and left-to-right within a Line.
-  final String text;
+  final double confidence;
 
   /// The four corner points in clockwise direction starting with top-left.
   ///
@@ -76,7 +85,15 @@ abstract class TextContainer {
   /// rectangle. Parts of the region could be outside of the image.
   ///
   /// Could be empty even if text is found.
-  List<Point<int>> get cornerPoints => List<Point<int>>.from(_cornerPoints);
+  final List<Point<int>> cornerPoints;
+
+  final List<RecognizedLanguage> recognizedLanguages;
+
+  /// The recognized text as a string.
+  ///
+  /// Returned in reading order for the language. For Latin, this is top to
+  /// bottom within a Block, and left-to-right within a Line.
+  final String text;
 }
 
 /// A block of text (think of it as a paragraph) as deemed by the OCR engine.
