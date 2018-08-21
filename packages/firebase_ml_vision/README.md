@@ -44,10 +44,10 @@ Get an instance of a `FirebaseVisionDetector`.
 final BarcodeDetector barcodeDetector = FirebaseVision.instance.barcodeDetector();
 final FaceDetector faceDetector = FirebaseVision.instance.faceDetector();
 final LabelDetector labelDetector = FirebaseVision.instance.labelDetector();
-final TextDetector textDetector = FirebaseVision.instance.textDetector();
+final TextRecognizer textRecognizer = FirebaseVision.instance.textRecognizer();
 ```
 
-You can also configure all detectors except `TextDetector` with desired options.
+You can also configure all detectors except `TextRecognizer` with desired options.
 
 ```dart
 final LabelDetector detector = FirebaseVision.instance.labelDetector(
@@ -61,7 +61,7 @@ final LabelDetector detector = FirebaseVision.instance.labelDetector(
 final List<Barcode> barcodes = await barcodeDetector.detectInImage(visionImage);
 final List<Face> faces = await faceDetector.detectInImage(visionImage);
 final List<Label> labels = await labelDetector.detectInImage(visionImage);
-final List<TextBlock> blocks = await textDetector.detectInImage(visionImage);
+final VisionText visionText = await textRecognizer.detectInImage(visionImage);
 ```
 
 ### 4. Extract data.
@@ -133,16 +133,17 @@ for (Label label in labels) {
 d. Extract text.
 
 ```dart
-for (TextBlock block in blocks) {
+String text = visionText.text;
+for (TextBlock block in visionText.blocks) {
   final Rectangle<int> boundingBox = block.boundingBox;
   final List<Point<int>> cornerPoints = block.cornerPoints;
   final String text = block.text;
+  final List<RecognizedLanguage> languages = block.recognizedLanguages;
 
   for (TextLine line in block.lines) {
-    // ...
-
+    // Same getters as TextBlock
     for (TextElement element in line.elements) {
-      // ...
+      // Same getters as TextBlock
     }
   }
 }

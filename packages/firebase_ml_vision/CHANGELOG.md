@@ -1,3 +1,8 @@
+## 0.2.2
+
+* **Breaking Change** Update TextDetector to TextRecognizer for android mlkit '17.0.0' and
+firebase-ios-sdk '5.6.0'
+
 ## 0.1.2
 
 * Fix example imports so that publishing will be warning-free.
