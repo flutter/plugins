@@ -6,10 +6,10 @@ part of firebase_ml_vision;
 
 /// Detector for performing optical character recognition(OCR) on an input image.
 ///
-/// A text detector is created via `textDetector()` in [FirebaseVision]:
+/// A text recognizer is created via `textRecognizer()` in [FirebaseVision]:
 ///
 /// ```dart
-/// TextDetector textDetector = FirebaseVision.instance.textDetector();
+/// TextRecognizer textRecognizer = FirebaseVision.instance.textRecognizer();
 /// ```
 class TextRecognizer implements FirebaseVisionDetector {
   TextRecognizer._();
@@ -21,7 +21,7 @@ class TextRecognizer implements FirebaseVisionDetector {
   Future<VisionText> detectInImage(FirebaseVisionImage visionImage) async {
     final Map<dynamic, dynamic> reply =
         await FirebaseVision.channel.invokeMethod(
-      'TextDetector#detectInImage',
+      'TextRecognizer#detectInImage',
       <String, dynamic>{
         'path': visionImage.imageFile.path,
         'options': <String, dynamic>{},
@@ -32,19 +32,26 @@ class TextRecognizer implements FirebaseVisionDetector {
   }
 }
 
+/// Recognized text in an image.
 class VisionText {
   VisionText._(Map<dynamic, dynamic> data)
       : text = data['text'],
         blocks = List<TextBlock>.unmodifiable(data['blocks']
             .map<TextBlock>((dynamic block) => TextBlock._(block)));
 
+  /// String representation of the recognized text.
   final String text;
+
+  /// All recognized text broken down into individual blocks/paragraphs.
   final List<TextBlock> blocks;
 }
 
+/// Detected language from text recognition.
 class RecognizedLanguage {
   RecognizedLanguage._(dynamic data) : languageCode = data['languageCode'];
 
+  /// The BCP-47 language code, such as, en-US or sr-Latn. For more information,
+  /// see http://www.unicode.org/reports/tr35/#Unicode_locale_identifier.
   final String languageCode;
 }
 
@@ -77,6 +84,10 @@ abstract class TextContainer {
   /// Could be null even if text is found.
   final Rectangle<int> boundingBox;
 
+  /// The confidence of the recognized text block.
+  ///
+  /// The value is null for all text recognizers except for cloud text
+  /// recognizers.
   final double confidence;
 
   /// The four corner points in clockwise direction starting with top-left.
@@ -87,6 +98,11 @@ abstract class TextContainer {
   /// Could be empty even if text is found.
   final List<Point<int>> cornerPoints;
 
+  /// All detected languages from recognized text.
+  ///
+  /// On-device text recognizers only detect Latin-based languages, while cloud
+  /// text recognizers can detect multiple languages. If no languages are
+  /// recognized, the list is empty.
   final List<RecognizedLanguage> recognizedLanguages;
 
   /// The recognized text as a string.
@@ -99,29 +115,23 @@ abstract class TextContainer {
 /// A block of text (think of it as a paragraph) as deemed by the OCR engine.
 class TextBlock extends TextContainer {
   TextBlock._(Map<dynamic, dynamic> block)
-      : _lines = block['lines']
-            .map<TextLine>((dynamic line) => TextLine._(line))
-            .toList(),
+      : lines = List<TextLine>.unmodifiable(
+            block['lines'].map<TextLine>((dynamic line) => TextLine._(line))),
         super._(block);
 
-  final List<TextLine> _lines;
-
   /// The contents of the text block, broken down into individual lines.
-  List<TextLine> get lines => List<TextLine>.from(_lines);
+  final List<TextLine> lines;
 }
 
 /// Represents a line of text.
 class TextLine extends TextContainer {
   TextLine._(Map<dynamic, dynamic> line)
-      : _elements = line['elements']
-            .map<TextElement>((dynamic element) => TextElement._(element))
-            .toList(),
+      : elements = List<TextElement>.unmodifiable(line['elements']
+            .map<TextElement>((dynamic element) => TextElement._(element))),
         super._(line);
 
-  final List<TextElement> _elements;
-
   /// The contents of this line, broken down into individual elements.
-  List<TextElement> get elements => List<TextElement>.from(_elements);
+  final List<TextElement> elements;
 }
 
 /// Roughly equivalent to a space-separated "word."

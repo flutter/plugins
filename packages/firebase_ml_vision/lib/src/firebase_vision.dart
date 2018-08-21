@@ -44,7 +44,7 @@ class FirebaseVision {
   }
 
   /// Creates an instance of [TextRecognizer].
-  TextRecognizer textDetector() => new TextRecognizer._();
+  TextRecognizer textRecognizer() => new TextRecognizer._();
 }
 
 /// Represents an image object used for both on-device and cloud API detectors.

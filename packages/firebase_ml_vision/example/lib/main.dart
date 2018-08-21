@@ -81,7 +81,7 @@ class _MyHomePageState extends State<_MyHomePage> {
         detector = FirebaseVision.instance.labelDetector();
         break;
       case Detector.text:
-        detector = FirebaseVision.instance.textDetector();
+        detector = FirebaseVision.instance.textRecognizer();
         break;
       default:
         return;
@@ -95,7 +95,7 @@ class _MyHomePageState extends State<_MyHomePage> {
     });
   }
 
-  CustomPaint _buildResults(Size imageSize, List<dynamic> results) {
+  CustomPaint _buildResults(Size imageSize, dynamic results) {
     CustomPainter painter;
 
     switch (_currentDetector) {
