@@ -1,6 +1,5 @@
 # Flutter plugins
 
-[![Build Status](https://travis-ci.org/flutter/plugins.svg?branch=master)](https://travis-ci.org/flutter/plugins)
 [![Build Status](https://api.cirrus-ci.com/github/flutter/plugins.svg)](https://cirrus-ci.com/github/flutter/plugins)
 
 This repo is a companion repo to the main [flutter
