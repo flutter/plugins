@@ -1,3 +1,7 @@
+## 0.4.7
+
+* Added missing video_player package dev dependency.
+
 ## 0.4.6
 
 * Added support for picking remote images.
