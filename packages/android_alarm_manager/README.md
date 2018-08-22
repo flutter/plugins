@@ -20,6 +20,7 @@ Then in Dart code add:
 
 ```dart
 import 'package:android_alarm_manager/android_alarm_manager.dart';
+import 'dart:isolate';
 
 void printHello() {
   final DateTime now = new DateTime.now();
@@ -29,6 +30,7 @@ void printHello() {
 
 main() async {
   final int helloAlarmID = 0;
+  await AndroidAlarmManager.initialize();
   runApp(...);
   await AndroidAlarmManager.periodic(const Duration(minutes: 1), helloAlarmID, printHello);
 }
