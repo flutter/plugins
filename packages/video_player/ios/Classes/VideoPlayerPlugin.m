@@ -58,28 +58,6 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
   return [self initWithURL:[NSURL fileURLWithPath:path] frameUpdater:frameUpdater];
 }
 
-// resultHandler:(void (^)(FLTVideoPlayer *playerItem, FLTFrameUpdater *frameUpdater))resultHandler
-
-- (void)initWithPHAssetLocalIdentifier:(NSString*)localIdentifier
-                          frameUpdater:(FLTFrameUpdater*)frameUpdater
-                         onPlayerSetup:(void (^)(FLTVideoPlayer* playerItem))onPlayerSetup {
-  PHFetchResult<PHAsset*>* phFetchResult =
-      [PHAsset fetchAssetsWithLocalIdentifiers:@[ localIdentifier ] options:nil];
-  // TODO what to do if the asset cannot be loaded? Send an error to flutter?
-  PHAsset* phAsset = [phFetchResult firstObject];
-  NSLog(@"PHFetchResult loaded: %@", phFetchResult);
-  NSLog(@"PHAsset loaded: %@", phAsset);
-  PHCachingImageManager* imageManager = [[PHCachingImageManager alloc] init];
-  [imageManager requestPlayerItemForVideo:phAsset
-                                  options:nil
-                            resultHandler:^(AVPlayerItem* _Nullable playerItem,
-                                            NSDictionary* _Nullable info) {
-                              FLTVideoPlayer* player =
-                                  [self initWithPlayerItem:playerItem frameUpdater:frameUpdater];
-                              onPlayerSetup(player);
-                            }];
-}
-
 - (void)addObservers:(AVPlayerItem*)item {
   [item addObserver:self
          forKeyPath:@"loadedTimeRanges"
@@ -514,21 +492,9 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
       player = [[FLTVideoPlayer alloc] initWithAsset:assetPath frameUpdater:frameUpdater];
       [self onPlayerSetup:player frameUpdater:frameUpdater result:result];
     } else if (uriArg) {
-      NSString* phAssetPrefix = @"phasset://";
-      if ([uriArg hasPrefix:phAssetPrefix]) {
-        NSString* phAssetArg = [uriArg substringFromIndex:[phAssetPrefix length]];
-        NSLog(@"Loading PHAsset localIdentifier: %@", phAssetArg);
-        [[FLTVideoPlayer alloc]
-            initWithPHAssetLocalIdentifier:phAssetArg
-                              frameUpdater:frameUpdater
-                             onPlayerSetup:^(FLTVideoPlayer* player) {
-                               [self onPlayerSetup:player frameUpdater:frameUpdater result:result];
-                             }];
-      } else {
-        player = [[FLTVideoPlayer alloc] initWithURL:[NSURL URLWithString:uriArg]
-                                        frameUpdater:frameUpdater];
-        [self onPlayerSetup:player frameUpdater:frameUpdater result:result];
-      }
+      player = [[FLTVideoPlayer alloc] initWithURL:[NSURL URLWithString:uriArg]
+                                      frameUpdater:frameUpdater];
+      [self onPlayerSetup:player frameUpdater:frameUpdater result:result];
     } else {
       result(FlutterMethodNotImplemented);
     }
