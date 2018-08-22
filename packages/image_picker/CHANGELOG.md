@@ -1,6 +1,6 @@
 ## 0.4.7
 
-* Bugfix: rotated videos will now be displayed with the correct aspect ratio.
+* Added missing video_player package dev dependency.
 
 ## 0.4.6
 
