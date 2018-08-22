@@ -1,9 +1,9 @@
 name: shared_preferences
 description: Flutter plugin for reading and writing simple key-value pairs.
   Wraps NSUserDefaults on iOS and SharedPreferences on Android.
-version: 0.4.1
 author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/shared_preferences
+version: 0.4.2
 
 flutter:
   plugin:

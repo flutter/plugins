@@ -39,10 +39,11 @@ void main() {
       invokedMethod = null;
       arguments = null;
 
-      when(mockChannel.invokeMethod(typed(any), any))
+      when(mockChannel.invokeMethod(any, any))
           .thenAnswer((Invocation invocation) {
         invokedMethod = invocation.positionalArguments[0];
         arguments = invocation.positionalArguments[1];
+        return Future<void>.value();
       });
 
       analytics = new FirebaseAnalytics.private(mockChannel);
@@ -130,9 +131,10 @@ void main() {
         name = args['name'];
         parameters = args['parameters'];
         expect(args.keys, unorderedEquals(<String>['name', 'parameters']));
+        return Future<void>.value();
       });
 
-      when(mockChannel.invokeMethod(typed(argThat(isNot('logEvent'))), any))
+      when(mockChannel.invokeMethod(argThat(isNot('logEvent')), any))
           .thenThrow(new ArgumentError('Only logEvent invocations expected'));
 
       analytics = new FirebaseAnalytics.private(mockChannel);

@@ -14,10 +14,10 @@ import 'package:flutter/services.dart';
 enum ConnectivityResult { wifi, mobile, none }
 
 const MethodChannel _methodChannel =
-    const MethodChannel('plugins.flutter.io/connectivity');
+    MethodChannel('plugins.flutter.io/connectivity');
 
 const EventChannel _eventChannel =
-    const EventChannel('plugins.flutter.io/connectivity_status');
+    EventChannel('plugins.flutter.io/connectivity_status');
 
 class Connectivity {
   Stream<ConnectivityResult> _onConnectivityChanged;

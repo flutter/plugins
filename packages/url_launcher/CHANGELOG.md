@@ -1,3 +1,15 @@
+## 3.0.3
+
+* Added statusBarBrightness field to `launch` to set iOS status bar brightness.
+
+## 3.0.2
+
+* Updated Gradle tooling to match Android Studio 3.1.2.
+
+## 3.0.1
+
+* Fix a crash during Safari view controller dismiss.
+
 ## 3.0.0
 
 * **Breaking change**. Set SDK constraints to match the Flutter beta release.

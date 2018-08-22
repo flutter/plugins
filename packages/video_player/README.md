@@ -16,6 +16,8 @@ First, add `video_player` as a [dependency in your pubspec.yaml file](https://fl
 
 ### iOS
 
+Warning: The video player is not functional on iOS simulators. An iOS device must be used during development/testing.
+
 Add the following entry to your _Info.plist_ file, located in `<project root>/ios/Runner/Info.plist`:
 
 ```xml
@@ -41,14 +43,24 @@ The Flutter project template adds it, so it may already be there.
 ### Example
 
 ```dart
-class _MyHomePageState extends State<MyHomePage> {
+import 'package:video_player/video_player.dart';
+import 'package:flutter/material.dart';
+
+void main() => runApp(VideoApp());
+
+class VideoApp extends StatefulWidget {
+  @override
+  _VideoAppState createState() => _VideoAppState();
+}
+
+class _VideoAppState extends State<VideoApp> {
   VideoPlayerController _controller;
   bool _isPlaying = false;
 
   @override
   void initState() {
     super.initState();
-    _controller = new VideoPlayerController.network(
+    _controller = VideoPlayerController.network(
       'http://www.sample-videos.com/video/mp4/720/big_buck_bunny_720p_20mb.mp4',
     )
       ..addListener(() {
@@ -59,29 +71,32 @@ class _MyHomePageState extends State<MyHomePage> {
           });
         }
       })
-      ..initialize();
+      ..initialize().then((_) {
+        // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
+        setState(() {});
+      });
   }
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text(widget.title),
-      ),
-      body: new Center(
-        child: new Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: new AspectRatio(
-            aspectRatio: 1280 / 720,
-            child: new VideoPlayer(_controller),
-          ),
+    return MaterialApp(
+      title: 'Video Demo',
+      home: Scaffold(
+        body: Center(
+          child: _controller.value.initialized
+              ? AspectRatio(
+                  aspectRatio: _controller.value.aspectRatio,
+                  child: VideoPlayer(_controller),
+                )
+              : Container(),
         ),
-      ),
-      floatingActionButton: new FloatingActionButton(
-        onPressed:
-            _controller.value.isPlaying ? _controller.pause : _controller.play,
-        child: new Icon(
-          _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
+        floatingActionButton: FloatingActionButton(
+          onPressed: _controller.value.isPlaying
+              ? _controller.pause
+              : _controller.play,
+          child: Icon(
+            _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
+          ),
         ),
       ),
     );

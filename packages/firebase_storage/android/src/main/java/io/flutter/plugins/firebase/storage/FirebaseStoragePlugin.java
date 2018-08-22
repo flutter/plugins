@@ -6,6 +6,7 @@ package io.flutter.plugins.firebase.storage;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -257,20 +258,28 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
   }
 
   private void addResultListeners(UploadTask uploadTask, final Result result) {
-    uploadTask.addOnSuccessListener(
-        new OnSuccessListener<UploadTask.TaskSnapshot>() {
-          @Override
-          public void onSuccess(UploadTask.TaskSnapshot snapshot) {
-            result.success(snapshot.getDownloadUrl().toString());
-          }
-        });
-    uploadTask.addOnFailureListener(
-        new OnFailureListener() {
-          @Override
-          public void onFailure(@NonNull Exception e) {
-            result.error("upload_error", e.getMessage(), null);
-          }
-        });
+    uploadTask
+        .continueWithTask(
+            new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+              @Override
+              public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                return task.getResult().getMetadata().getReference().getDownloadUrl();
+              }
+            })
+        .addOnSuccessListener(
+            new OnSuccessListener<Uri>() {
+              @Override
+              public void onSuccess(Uri uri) {
+                result.success(uri.toString());
+              }
+            })
+        .addOnFailureListener(
+            new OnFailureListener() {
+              @Override
+              public void onFailure(@NonNull Exception e) {
+                result.error("upload_error", e.getMessage(), null);
+              }
+            });
   }
 
   private StorageMetadata buildMetadataFromMap(Map<String, Object> map) {
@@ -280,6 +289,13 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
     builder.setContentDisposition((String) map.get("contentDisposition"));
     builder.setContentLanguage((String) map.get("contentLanguage"));
     builder.setContentType((String) map.get("contentType"));
+
+    Map<String, String> customMetadata = (Map<String, String>) map.get("customMetadata");
+    if (customMetadata != null) {
+      for (String key : customMetadata.keySet()) {
+        builder.setCustomMetadata(key, customMetadata.get(key));
+      }
+    }
     return builder.build();
   }
 
@@ -299,6 +315,12 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
     map.put("contentEncoding", storageMetadata.getContentEncoding());
     map.put("contentLanguage", storageMetadata.getContentLanguage());
     map.put("contentType", storageMetadata.getContentType());
+
+    Map<String, String> customMetadata = new HashMap<>();
+    for (String key : storageMetadata.getCustomMetadataKeys()) {
+      customMetadata.put(key, storageMetadata.getCustomMetadata(key));
+    }
+    map.put("customMetadata", customMetadata);
     return map;
   }
 

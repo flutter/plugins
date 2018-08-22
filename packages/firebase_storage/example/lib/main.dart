@@ -66,15 +66,19 @@ class _MyHomePageState extends State<MyHomePage> {
     final String rand = "${new Random().nextInt(10000)}";
     final StorageReference ref =
         widget.storage.ref().child('text').child('foo$rand.txt');
-    final StorageUploadTask uploadTask =
-        ref.putFile(file, const StorageMetadata(contentLanguage: "en"));
+    final StorageUploadTask uploadTask = ref.putFile(
+      file,
+      new StorageMetadata(
+        contentLanguage: 'en',
+        customMetadata: <String, String>{'activity': 'test'},
+      ),
+    );
 
     final Uri downloadUrl = (await uploadTask.future).downloadUrl;
     final http.Response downloadData = await http.get(downloadUrl);
     final String name = await ref.getName();
     final String bucket = await ref.getBucket();
     final String path = await ref.getPath();
-
     final File tempFile = new File('${systemTempDir.path}/tmp.txt');
     if (tempFile.existsSync()) {
       await tempFile.delete();
@@ -113,8 +117,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     'Success!\n Uploaded $_name \n to bucket: $_bucket\n '
                         'at path: $_path \n\nFile contents: "$_fileContents" \n'
                         'Wrote "$_tempFileContents" to tmp.txt',
-                    style: const TextStyle(
-                        color: const Color.fromARGB(255, 0, 155, 0)),
+                    style:
+                        const TextStyle(color: Color.fromARGB(255, 0, 155, 0)),
                   )
           ],
         ),

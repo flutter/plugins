@@ -7,7 +7,7 @@ part of firebase_remote_config;
 class RemoteConfig extends ChangeNotifier {
   @visibleForTesting
   static const MethodChannel channel =
-      const MethodChannel('plugins.flutter.io/firebase_remote_config');
+      MethodChannel('plugins.flutter.io/firebase_remote_config');
 
   static const String defaultValueForString = '';
   static const int defaultValueForInt = 0;
@@ -19,8 +19,6 @@ class RemoteConfig extends ChangeNotifier {
   DateTime _lastFetchTime;
   LastFetchStatus _lastFetchStatus;
   RemoteConfigSettings _remoteConfigSettings;
-
-  RemoteConfig._();
 
   DateTime get lastFetchTime => _lastFetchTime;
   LastFetchStatus get lastFetchStatus => _lastFetchStatus;
@@ -41,7 +39,7 @@ class RemoteConfig extends ChangeNotifier {
     final Map<dynamic, dynamic> properties =
         await channel.invokeMethod('RemoteConfig#instance');
 
-    final RemoteConfig instance = new RemoteConfig._();
+    final RemoteConfig instance = new RemoteConfig();
 
     instance._lastFetchTime =
         new DateTime.fromMillisecondsSinceEpoch(properties['lastFetchTime']);
@@ -114,7 +112,7 @@ class RemoteConfig extends ChangeNotifier {
   /// Config if enough time has elapsed since parameter values were last
   /// fetched from the server. The default expiration time is 12 hours.
   /// Expiration must be defined in seconds.
-  Future<void> fetch({Duration expiration: const Duration(hours: 12)}) async {
+  Future<void> fetch({Duration expiration = const Duration(hours: 12)}) async {
     try {
       final Map<dynamic, dynamic> properties = await channel.invokeMethod(
           'RemoteConfig#fetch',
@@ -155,7 +153,7 @@ class RemoteConfig extends ChangeNotifier {
   ///
   /// Default config parameters should be set then when changes are needed the
   /// parameters should be updated in the Firebase console.
-  void setDefaults(Map<String, dynamic> defaults) async {
+  Future<void> setDefaults(Map<String, dynamic> defaults) async {
     // Make defaults available even if fetch fails.
     defaults.forEach((String key, dynamic value) {
       if (!_parameters.containsKey(key)) {
@@ -167,7 +165,7 @@ class RemoteConfig extends ChangeNotifier {
         _parameters[key] = remoteConfigValue;
       }
     });
-    channel.invokeMethod(
+    await channel.invokeMethod(
         'RemoteConfig#setDefaults', <String, dynamic>{'defaults': defaults});
   }
 

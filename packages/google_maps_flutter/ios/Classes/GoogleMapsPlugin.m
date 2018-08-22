@@ -137,6 +137,9 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
 - (void)onMarkerTappedOnMap:(id)mapId marker:(NSString*)markerId {
   [_channel invokeMethod:@"marker#onTap" arguments:@{@"map" : mapId, @"marker" : markerId}];
 }
+- (void)onInfoWindowTappedOnMap:(id)mapId marker:(NSString*)markerId {
+  [_channel invokeMethod:@"infoWindow#onTap" arguments:@{@"map" : mapId, @"marker" : markerId}];
+}
 @end
 
 #pragma mark - Implementations of JSON conversion functions.

@@ -1,3 +1,27 @@
+## 1.0.5
+
+* Bumped test and mockito versions to pick up Dart 2 support.
+
+## 1.0.4
+
+* Bump Android and Firebase dependency versions.
+
+## 1.0.3
+
+* Updated iOS token hook from 'didRefreshRegistrationToken' to 'didReceiveRegistrationToken'
+
+## 1.0.2
+
+* Updated Gradle tooling to match Android Studio 3.1.2.
+
+## 1.0.1
+
+* Fix for Android where the onLaunch event is not triggered when the Activity is killed by the OS (or if the Don't keep activities toggle is enabled)
+
+## 1.0.0
+
+* Bump to released version
+
 ## 0.2.5
 
 * Fixed Dart 2 type error.

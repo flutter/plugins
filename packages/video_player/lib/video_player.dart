@@ -52,6 +52,9 @@ class VideoPlayerValue {
   /// True if the video is looping.
   final bool isLooping;
 
+  /// True if the video is currently buffering.
+  final bool isBuffering;
+
   /// The current volume of the playback.
   final double volume;
 
@@ -68,11 +71,12 @@ class VideoPlayerValue {
   VideoPlayerValue({
     @required this.duration,
     this.size,
-    this.position: const Duration(),
-    this.buffered: const <DurationRange>[],
-    this.isPlaying: false,
-    this.isLooping: false,
-    this.volume: 1.0,
+    this.position = const Duration(),
+    this.buffered = const <DurationRange>[],
+    this.isPlaying = false,
+    this.isLooping = false,
+    this.isBuffering = false,
+    this.volume = 1.0,
     this.errorDescription,
   });
 
@@ -92,6 +96,7 @@ class VideoPlayerValue {
     List<DurationRange> buffered,
     bool isPlaying,
     bool isLooping,
+    bool isBuffering,
     double volume,
     String errorDescription,
   }) {
@@ -102,6 +107,7 @@ class VideoPlayerValue {
       buffered: buffered ?? this.buffered,
       isPlaying: isPlaying ?? this.isPlaying,
       isLooping: isLooping ?? this.isLooping,
+      isBuffering: isBuffering ?? this.isBuffering,
       volume: volume ?? this.volume,
       errorDescription: errorDescription ?? this.errorDescription,
     );
@@ -116,6 +122,7 @@ class VideoPlayerValue {
         'buffered: [${buffered.join(', ')}], '
         'isPlaying: $isPlaying, '
         'isLooping: $isLooping, '
+        'isBuffering: $isBuffering'
         'volume: $volume, '
         'errorDescription: $errorDescription)';
   }
@@ -144,7 +151,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   String package;
   Timer timer;
   bool isDisposed = false;
-  Completer<Null> _creatingCompleter;
+  Completer<void> _creatingCompleter;
   StreamSubscription<dynamic> _eventSubscription;
   _VideoAppLifeCycleObserver _lifeCycleObserver;
 
@@ -175,10 +182,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         dataSourceType = DataSourceType.file,
         super(new VideoPlayerValue(duration: null));
 
-  Future<Null> initialize() async {
+  Future<void> initialize() async {
     _lifeCycleObserver = new _VideoAppLifeCycleObserver(this);
     _lifeCycleObserver.initialize();
-    _creatingCompleter = new Completer<Null>();
+    _creatingCompleter = new Completer<void>();
     Map<dynamic, dynamic> dataSourceDescription;
     switch (dataSourceType) {
       case DataSourceType.asset:
@@ -199,6 +206,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     );
     _textureId = response['textureId'];
     _creatingCompleter.complete(null);
+    final Completer<void> initializingCompleter = new Completer<void>();
 
     DurationRange toDurationRange(dynamic value) {
       final List<dynamic> pair = value;
@@ -216,6 +224,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
             duration: new Duration(milliseconds: map['duration']),
             size: new Size(map['width'].toDouble(), map['height'].toDouble()),
           );
+          initializingCompleter.complete(null);
           _applyLooping();
           _applyVolume();
           _applyPlayPause();
@@ -230,6 +239,12 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
             buffered: values.map<DurationRange>(toDurationRange).toList(),
           );
           break;
+        case 'bufferingStart':
+          value = value.copyWith(isBuffering: true);
+          break;
+        case 'bufferingEnd':
+          value = value.copyWith(isBuffering: false);
+          break;
       }
     }
 
@@ -242,6 +257,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     _eventSubscription = _eventChannelFor(_textureId)
         .receiveBroadcastStream()
         .listen(eventListener, onError: errorListener);
+    return initializingCompleter.future;
   }
 
   EventChannel _eventChannelFor(int textureId) {
@@ -249,7 +265,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   }
 
   @override
-  Future<Null> dispose() async {
+  Future<void> dispose() async {
     if (_creatingCompleter != null) {
       await _creatingCompleter.future;
       if (!isDisposed) {
@@ -267,22 +283,22 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     super.dispose();
   }
 
-  Future<Null> play() async {
+  Future<void> play() async {
     value = value.copyWith(isPlaying: true);
     await _applyPlayPause();
   }
 
-  Future<Null> setLooping(bool looping) async {
+  Future<void> setLooping(bool looping) async {
     value = value.copyWith(isLooping: looping);
     await _applyLooping();
   }
 
-  Future<Null> pause() async {
+  Future<void> pause() async {
     value = value.copyWith(isPlaying: false);
     await _applyPlayPause();
   }
 
-  Future<Null> _applyLooping() async {
+  Future<void> _applyLooping() async {
     if (!value.initialized || isDisposed) {
       return;
     }
@@ -292,7 +308,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     );
   }
 
-  Future<Null> _applyPlayPause() async {
+  Future<void> _applyPlayPause() async {
     if (!value.initialized || isDisposed) {
       return;
     }
@@ -323,7 +339,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     }
   }
 
-  Future<Null> _applyVolume() async {
+  Future<void> _applyVolume() async {
     if (!value.initialized || isDisposed) {
       return;
     }
@@ -346,7 +362,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     );
   }
 
-  Future<Null> seekTo(Duration moment) async {
+  Future<void> seekTo(Duration moment) async {
     if (isDisposed) {
       return;
     }
@@ -366,7 +382,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   ///
   /// [volume] indicates a value between 0.0 (silent) and 1.0 (full volume) on a
   /// linear scale.
-  Future<Null> setVolume(double volume) async {
+  Future<void> setVolume(double volume) async {
     value = value.copyWith(volume: volume.clamp(0.0, 1.0));
     await _applyVolume();
   }
@@ -423,9 +439,9 @@ class VideoProgressColors {
   final Color backgroundColor;
 
   VideoProgressColors({
-    this.playedColor: const Color.fromRGBO(255, 0, 0, 0.7),
-    this.bufferedColor: const Color.fromRGBO(50, 50, 200, 0.2),
-    this.backgroundColor: const Color.fromRGBO(200, 200, 200, 0.5),
+    this.playedColor = const Color.fromRGBO(255, 0, 0, 0.7),
+    this.bufferedColor = const Color.fromRGBO(50, 50, 200, 0.2),
+    this.backgroundColor = const Color.fromRGBO(200, 200, 200, 0.5),
   });
 }
 
@@ -507,7 +523,7 @@ class VideoProgressIndicator extends StatefulWidget {
     this.controller, {
     VideoProgressColors colors,
     this.allowScrubbing,
-    this.padding: const EdgeInsets.only(top: 5.0),
+    this.padding = const EdgeInsets.only(top: 5.0),
   }) : colors = colors ?? new VideoProgressColors();
 
   @override

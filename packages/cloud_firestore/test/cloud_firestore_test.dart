@@ -18,8 +18,9 @@ void main() {
     final List<MethodCall> log = <MethodCall>[];
     CollectionReference collectionReference;
     Transaction transaction;
-    const Map<String, dynamic> kMockDocumentSnapshotData =
-        const <String, dynamic>{'1': 2};
+    const Map<String, dynamic> kMockDocumentSnapshotData = <String, dynamic>{
+      '1': 2
+    };
 
     setUp(() async {
       mockHandleId = 0;
@@ -42,9 +43,9 @@ void main() {
         switch (methodCall.method) {
           case 'Query#addSnapshotListener':
             final int handle = mockHandleId++;
-            // Wait for a microtask before sending a message back.
+            // Wait before sending a message back.
             // Otherwise the first request didn't have the time to finish.
-            scheduleMicrotask(() {
+            new Future<void>.delayed(Duration.zero).then<void>((_) {
               BinaryMessages.handlePlatformMessage(
                 Firestore.channel.name,
                 Firestore.channel.codec.encodeMethodCall(
@@ -69,9 +70,9 @@ void main() {
             return handle;
           case 'Query#addDocumentListener':
             final int handle = mockHandleId++;
-            // Wait for a microtask before sending a message back.
+            // Wait before sending a message back.
             // Otherwise the first request didn't have the time to finish.
-            scheduleMicrotask(() {
+            new Future<void>.delayed(Duration.zero).then<void>((_) {
               BinaryMessages.handlePlatformMessage(
                 Firestore.channel.name,
                 Firestore.channel.codec.encodeMethodCall(
@@ -113,10 +114,15 @@ void main() {
           case 'Firestore#runTransaction':
             return <String, dynamic>{'1': 3};
           case 'Transaction#get':
-            return <String, dynamic>{
-              'path': 'foo/bar',
-              'data': <String, dynamic>{'key1': 'val1'}
-            };
+            if (methodCall.arguments['path'] == 'foo/bar') {
+              return <String, dynamic>{
+                'path': 'foo/bar',
+                'data': <String, dynamic>{'key1': 'val1'}
+              };
+            } else if (methodCall.arguments['path'] == 'foo/notExists') {
+              return <String, dynamic>{'path': 'foo/notExists', 'data': null};
+            }
+            throw new PlatformException(code: 'UNKNOWN_PATH');
           case 'Transaction#set':
             return null;
           case 'Transaction#update':
@@ -157,6 +163,19 @@ void main() {
       test('get', () async {
         final DocumentReference documentReference =
             firestore.document('foo/bar');
+        await transaction.get(documentReference);
+        expect(log, <Matcher>[
+          isMethodCall('Transaction#get', arguments: <String, dynamic>{
+            'app': app.name,
+            'transactionId': 0,
+            'path': documentReference.path
+          })
+        ]);
+      });
+
+      test('get notExists', () async {
+        final DocumentReference documentReference =
+            firestore.document('foo/notExists');
         await transaction.get(documentReference);
         expect(log, <Matcher>[
           isMethodCall('Transaction#get', arguments: <String, dynamic>{
@@ -538,7 +557,7 @@ void main() {
     });
 
     group('FirestoreMessageCodec', () {
-      const MessageCodec<dynamic> codec = const FirestoreMessageCodec();
+      const MessageCodec<dynamic> codec = FirestoreMessageCodec();
       final DateTime testTime = new DateTime(2015, 10, 30, 11, 16);
       test('should encode and decode simple messages', () {
         _checkEncodeDecode<dynamic>(codec, testTime);

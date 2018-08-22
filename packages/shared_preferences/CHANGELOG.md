@@ -1,3 +1,7 @@
+## 0.4.2
+
+* Updated Gradle tooling to match Android Studio 3.1.2.
+
 ## 0.4.1
 
 * Added getKeys method.

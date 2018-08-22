@@ -23,6 +23,7 @@ android {
 
     defaultConfig {
         minSdkVersion 21
+        targetSdkVersion 27
         applicationId "io.flutter.plugins.cameraexample"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -45,6 +46,6 @@ flutter {
 
 dependencies {
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }

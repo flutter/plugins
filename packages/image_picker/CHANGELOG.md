@@ -1,3 +1,28 @@
+## 0.4.7
+
+* Added missing video_player package dev dependency.
+
+## 0.4.6
+
+* Added support for picking remote images.
+
+## 0.4.5
+
+* Bugfixes, code cleanup, more test coverage.
+
+## 0.4.4
+
+* Updated Gradle tooling to match Android Studio 3.1.2.
+
+## 0.4.3
+
+* Bugfix: on iOS the `pickVideo` method will now return null when the user cancels picking a video.
+
+## 0.4.2
+
+* Added support for picking videos.
+* Updated example app to show video preview.
+
 ## 0.4.1
 
 * Bugfix: the `pickImage` method will now return null when the user cancels picking the image, instead of hanging indefinitely.
@@ -6,11 +31,11 @@
 ## 0.4.0
 
 * **Breaking change**. The `source` parameter for the `pickImage` is now required. Also, the `ImageSource.any` option doesn't exist anymore.
-* Use the native Android image gallery for picking images instead of a custom UI. 
+* Use the native Android image gallery for picking images instead of a custom UI.
 
 ## 0.3.1
 
-* Bugfix: Android version correctly asks for runtime camera permission when using `ImageSource.camera`. 
+* Bugfix: Android version correctly asks for runtime camera permission when using `ImageSource.camera`.
 
 ## 0.3.0
 

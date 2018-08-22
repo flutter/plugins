@@ -7,7 +7,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 
 const MethodChannel _kChannel =
-    const MethodChannel('plugins.flutter.io/package_info');
+    MethodChannel('plugins.flutter.io/package_info');
 
 /// Application metadata. Provides application bundle information on iOS and
 /// application package information on Android.
@@ -18,6 +18,7 @@ const MethodChannel _kChannel =
 /// ```
 class PackageInfo {
   PackageInfo({
+    this.appName,
     this.packageName,
     this.version,
     this.buildNumber,
@@ -35,6 +36,7 @@ class PackageInfo {
         final Map<dynamic, dynamic> map = result;
 
         completer.complete(new PackageInfo(
+          appName: map["appName"],
           packageName: map["packageName"],
           version: map["version"],
           buildNumber: map["buildNumber"],
@@ -45,6 +47,9 @@ class PackageInfo {
     }
     return _fromPlatform;
   }
+
+  /// The app name. `CFBundleDisplayName` on iOS, `application/label` on Android.
+  final String appName;
 
   /// The package name. `bundleIdentifier` on iOS, `getPackageName` on Android.
   final String packageName;

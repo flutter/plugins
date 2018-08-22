@@ -10,5 +10,5 @@ class RemoteConfigSettings {
   /// the 5 per hour that is enforced when developer mode is disabled.
   final bool debugMode;
 
-  RemoteConfigSettings({this.debugMode: false});
+  RemoteConfigSettings({this.debugMode = false});
 }

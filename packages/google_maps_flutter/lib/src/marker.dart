@@ -38,7 +38,7 @@ class InfoWindowText {
   const InfoWindowText(this.title, this.snippet);
 
   /// Text labels specifying that no text is to be displayed.
-  static const InfoWindowText noText = const InfoWindowText(null, null);
+  static const InfoWindowText noText = InfoWindowText(null, null);
 
   /// Text displayed in an info window when the user taps the marker.
   ///
@@ -148,12 +148,12 @@ class MarkerOptions {
   /// * is placed at the base of the drawing order; [zIndex] is 0.0
   static const MarkerOptions defaultOptions = MarkerOptions(
     alpha: 1.0,
-    anchor: const Offset(0.5, 1.0),
+    anchor: Offset(0.5, 1.0),
     consumeTapEvents: false,
     draggable: false,
     flat: false,
     icon: BitmapDescriptor.defaultMarker,
-    infoWindowAnchor: const Offset(0.5, 0.0),
+    infoWindowAnchor: Offset(0.5, 0.0),
     infoWindowText: InfoWindowText.noText,
     position: LatLng(0.0, 0.0),
     rotation: 0.0,

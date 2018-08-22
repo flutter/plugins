@@ -311,8 +311,7 @@ class _MyHomePageState extends State<MyHomePage> {
             onPressed: _testSetUserProperty,
           ),
           new Text(_message,
-              style:
-                  const TextStyle(color: const Color.fromARGB(255, 0, 155, 0))),
+              style: const TextStyle(color: Color.fromARGB(255, 0, 155, 0))),
         ],
       ),
       floatingActionButton: new FloatingActionButton(

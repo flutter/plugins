@@ -1,0 +1,18 @@
+name: in_app_purchase_example
+description: Demonstrates how to use the in_app_purchase plugin.
+author: Flutter Team <flutter-dev@googlegroups.com>
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^0.1.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  in_app_purchase:
+    path: ../
+
+flutter:
+  uses-material-design: true
+
