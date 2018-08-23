@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -40,6 +41,8 @@ public class AndroidIntentPlugin implements MethodCallHandler {
         return Intent.ACTION_VIEW;
       case "action_voice":
         return Intent.ACTION_VOICE_COMMAND;
+      case "settings":
+        return Settings.ACTION_SETTINGS;
       default:
         return action;
     }
