@@ -120,18 +120,7 @@ class AndroidDeviceInfo {
   /// `false` if the application is running in an emulator, `true` otherwise.
   final bool isPhysicalDevice;
 
-  /// On Android 8.0 (API level 26) and higher versions of the platform,
-  /// a 64-bit number (expressed as a hexadecimal string), unique to each
-  /// combination of app-signing key, user, and device. Values of ANDROID_ID
-  /// are scoped by signing key and user. The value may change if a factory
-  /// reset is performed on the device or if an APK signing key changes.
-  ///
-  /// In versions of the platform lower than Android 8.0 (API level 26),
-  /// a 64-bit number (expressed as a hexadecimal string) that is randomly
-  /// generated when the user first sets up the device and should remain
-  /// constant for the lifetime of the user's device. On devices that have
-  /// multiple users, each user appears as a completely separate device,
-  /// so the ANDROID_ID value is unique to each user.
+  /// A unique 64-bit encoded identifier provided by the platform.
   final String androidId;
 
   /// Deserializes from the message received from [_kChannel].
