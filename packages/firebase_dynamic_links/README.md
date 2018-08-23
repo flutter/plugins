@@ -23,7 +23,7 @@ You create a Dynamic Link either by using the Firebase console, using a REST API
 Below are instructions to create Dynamic Links using Flutter with the Firebase Dynamic Links API. This API accepts either a long Dynamic Link or an object containing Dynamic Link parameters, and returns a URL like the following example:
 
 ```
-https://abc123.app.goo.gl/WXYZ
+https://example.page.link/WXYZ
 ```
 
 You can create a Dynamic Link programmatically by setting the following parameters and using the `DynamicLinkParameters.buildUrl()` method.
@@ -70,7 +70,7 @@ To shorten a long Dynamic Link, use the DynamicLinkParameters.shortenUrl method.
 
 ```dart
 final ShortDynamicLink shortenedLink = await DynamicLinkParameters.shortenUrl(
-  Uri.parse('https://abc123.app.goo.gl/?link=https://example.com/&apn=com.example.android&ibn=com.example.ios'),
+  Uri.parse('https://example.page.link/?link=https://example.com/&apn=com.example.android&ibn=com.example.ios'),
   new DynamicLinkParametersOptions(ShortDynamicLinkPathLength.unguessable),
 );
 
@@ -83,7 +83,7 @@ You can receive a Dynamic Link containing a deep link that takes the user to spe
 
 1. In the [Firebase Console](https://console.firebase.google.com), open the Dynamic Links section.
   - Accept the terms of service if you are prompted to do so.
-  - Take note of your project's Dynamic Links domain, which is displayed at the top of the Dynamic Links page. You need your project's Dynamic Links domain to programmatically create Dynamic Links. A Dynamic Links domain looks like `APP_CODE.app.goo.gl`.
+  - Take note of your project's Dynamic Links domain, which is displayed at the top of the Dynamic Links page. You need your project's Dynamic Links domain to programmatically create Dynamic Links. A Dynamic Links domain looks like `YOUR_SUBDOMAIN.page.link`.
 
 Receiving dynamic links on *iOS* requires a couple more steps than *Android*. If you only want to receive dynamic links on *Android*, skip to step 4. You can also follow a video on the next two steps [here.](https://youtu.be/sFPo296OQqk?t=2m40s)
 
@@ -110,7 +110,7 @@ void main() {
   ));
 }
 
-class _MyHomeWidgetState extends State<_MyHomeWidget> {
+class MyHomeWidgetState extends State<MyHomeWidget> {
   .
   .
   .
@@ -125,7 +125,7 @@ class _MyHomeWidgetState extends State<_MyHomeWidget> {
     final Uri deepLink = data?.link;
 
     if (deepLink != null) {
-      Navigator.pushNamed(context, deepLink.path); // '/helloworld'
+      Navigator.pushNamed(context, deepLink.path); // deeplink.path == '/helloworld'
     }
   }
   .
