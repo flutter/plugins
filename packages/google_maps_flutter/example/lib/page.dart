@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 abstract class Page extends StatelessWidget {
   const Page(this.leading, this.title);
@@ -11,5 +10,4 @@ abstract class Page extends StatelessWidget {
   final Widget leading;
   final String title;
 
-  GoogleMapOverlayController get controller;
 }

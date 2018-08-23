@@ -4,11 +4,12 @@
 
 package io.flutter.plugins.googlemaps;
 
+import android.content.Context;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLngBounds;
-import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
+
 import java.util.concurrent.atomic.AtomicInteger;
 
 class GoogleMapBuilder implements GoogleMapOptionsSink {
@@ -16,13 +17,12 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   private boolean trackCameraPosition = false;
 
   GoogleMapController build(
+      int id,
+      Context context,
       AtomicInteger state,
-      PluginRegistry.Registrar registrar,
-      int width,
-      int height,
-      MethodChannel.Result result) {
+      PluginRegistry.Registrar registrar) {
     final GoogleMapController controller =
-        new GoogleMapController(state, registrar, width, height, options, result);
+        new GoogleMapController(id, context, state, registrar, options);
     controller.init();
     controller.setTrackCameraPosition(trackCameraPosition);
     return controller;
