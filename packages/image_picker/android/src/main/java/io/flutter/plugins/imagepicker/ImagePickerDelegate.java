@@ -258,7 +258,6 @@ public class ImagePickerDelegate
   private void launchPickImageFromGalleryIntent() {
     Intent pickImageIntent = new Intent(Intent.ACTION_GET_CONTENT);
     pickImageIntent.setType("image/*");
-
     activity.startActivityForResult(pickImageIntent, REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY);
   }
 
@@ -447,14 +446,18 @@ public class ImagePickerDelegate
   }
 
   private void handleImageResult(String path) {
-    if (pendingResult != null) {
-      Double maxWidth = methodCall.argument("maxWidth");
-      Double maxHeight = methodCall.argument("maxHeight");
+    try{
+      if (pendingResult != null) {
+        Double maxWidth = methodCall.argument("maxWidth");
+        Double maxHeight = methodCall.argument("maxHeight");
 
-      String finalImagePath = imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight);
-      finishWithSuccess(finalImagePath);
-    } else {
-      throw new IllegalStateException("Received image from picker that was not requested");
+        String finalImagePath = imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight);
+        finishWithSuccess(finalImagePath);
+      } else {
+        throw new IllegalStateException("Received image from picker that was not requested");
+      }
+    }catch(Exception e){
+      finishWithSuccess("invalidImageFormat");
     }
   }
 
