@@ -5,7 +5,7 @@
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
     <string>Required for Flutter Geofencing example events.</string>
     <key>NSLocationWhenInUseUsageDescription</key>
-    <string>Required for Flutter Geofencing example events.<</string>
+    <string>Required for Flutter Geofencing example events.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleExecutable</key>
