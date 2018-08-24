@@ -22,6 +22,7 @@ class _MyAppState extends State<MyApp> {
     birthday: new DateTime.now(),
     childDirected: true,
     gender: MobileAdGender.male,
+    nonPersonalizedAds: true,
   );
 
   BannerAd _bannerAd;
