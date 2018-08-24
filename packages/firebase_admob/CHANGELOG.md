@@ -1,3 +1,7 @@
+## 0.6.0
+
+* Add nonPersonalizedAds option to MobileAdTargetingInfo
+
 ## 0.5.7
 
 * Bumped mockito dependency to pick up Dart 2 support.
