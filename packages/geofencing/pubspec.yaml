@@ -1,0 +1,17 @@
+name: geofencing
+description: A geofencing plugin for Flutter applications.
+version: 0.0.1
+author: bkonyi@google.com
+homepage:
+
+environment:
+  sdk: ">=2.0.0-dev.68.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+flutter:
+  plugin:
+    androidPackage: io.flutter.plugins.geofencing
+    pluginClass: GeofencingPlugin
