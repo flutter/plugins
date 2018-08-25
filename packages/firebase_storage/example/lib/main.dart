@@ -103,7 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
         'Success!\n Downloaded $name \n from url: $url @ bucket: $bucket\n '
             'at path: $path \n\nFile contents: "$fileContents" \n'
             'Wrote "$tempFileContents" to tmp.txt',
-        style: const TextStyle(color: const Color.fromARGB(255, 0, 155, 0)),
+        style: const TextStyle(color: Color.fromARGB(255, 0, 155, 0)),
       ),
     ));
   }
