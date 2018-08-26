@@ -409,7 +409,7 @@ public class CameraPlugin implements MethodCallHandler {
       mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
       mediaRecorder.setAudioSamplingRate(16000);
       mediaRecorder.setVideoFrameRate(27);
-      mediaRecorder.setVideoSize(768, 1366);
+      mediaRecorder.setVideoSize(607, 1080);
       mediaRecorder.setOutputFile(outputFilePath);
 
       int displayRotation = activity.getWindowManager().getDefaultDisplay().getRotation();
