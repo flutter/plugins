@@ -261,7 +261,7 @@ public class CameraPlugin implements MethodCallHandler {
         Size minPreviewSize;
         switch (resolutionPreset) {
           case "high":
-            minPreviewSize = new Size(1024, 768);
+            minPreviewSize = new Size(768, 1366); //1024, 768
             break;
           case "medium":
             minPreviewSize = new Size(640, 480);
@@ -409,7 +409,7 @@ public class CameraPlugin implements MethodCallHandler {
       mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
       mediaRecorder.setAudioSamplingRate(16000);
       mediaRecorder.setVideoFrameRate(27);
-      mediaRecorder.setVideoSize(607, 1080);
+      mediaRecorder.setVideoSize(videoSize.getWidth(), videoSize.getHeight());
       mediaRecorder.setOutputFile(outputFilePath);
 
       int displayRotation = activity.getWindowManager().getDefaultDisplay().getRotation();
