@@ -157,9 +157,9 @@ static const int SOURCE_GALLERY = 1;
       image = [self scaledImage:image maxWidth:maxWidth maxHeight:maxHeight];
     }
 
-    NSData *data = UIImageJPEGRepresentation(image, 1.0);
+    NSData *data = UIImagePNGRepresentation(image);
     NSString *guid = [[NSProcessInfo processInfo] globallyUniqueString];
-    NSString *tmpFile = [NSString stringWithFormat:@"image_picker_%@.jpg", guid];
+    NSString *tmpFile = [NSString stringWithFormat:@"image_picker_%@.png", guid];
     NSString *tmpDirectory = NSTemporaryDirectory();
     NSString *tmpPath = [tmpDirectory stringByAppendingPathComponent:tmpFile];
 
