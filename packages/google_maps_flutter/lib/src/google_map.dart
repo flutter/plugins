@@ -17,7 +17,7 @@ class _GoogleMapState extends State<GoogleMap> {
   @override
   Widget build(BuildContext context) {
     if (defaultTargetPlatform == TargetPlatform.android) {
-      return AndroidView<dynamic>(
+      return AndroidView(
         viewType: 'plugins.flutter.io/google_maps',
         onPlatformViewCreated: onPlatformViewCreated,
         creationParams: widget.options._toJson(),
