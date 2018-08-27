@@ -175,8 +175,7 @@ const UInt8 BLOB = 131;
     case DATE_TIME: {
       SInt64 value;
       [self readBytes:&value length:8];
-      NSTimeInterval time = [NSNumber numberWithLong:value].doubleValue / 1000.0;
-      return [NSDate dateWithTimeIntervalSince1970:time];
+      return [NSDate dateWithTimeIntervalSince1970:(value / 1000.0)];
     }
     case GEO_POINT: {
       Float64 latitude;
