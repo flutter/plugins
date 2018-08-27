@@ -1,3 +1,7 @@
+## 0.4.8
+
+* Bugfix: on iOS prevent to appear one pixel white line on resized image.
+
 ## 0.4.7
 
 * Added missing video_player package dev dependency.
