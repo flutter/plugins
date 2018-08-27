@@ -134,7 +134,6 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
         }
       }
 
-
       channel.invokeMethod(method, message);
       return true;
     }
