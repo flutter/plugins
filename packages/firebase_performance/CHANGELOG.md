@@ -1,3 +1,7 @@
+## 0.0.7
+
+* Added missing http package dependency.
+
 ## 0.0.6
 
 * Bump Android and Firebase dependency versions.

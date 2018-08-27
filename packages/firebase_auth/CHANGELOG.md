@@ -1,3 +1,17 @@
+## 0.5.19
+
+* Update test package dependency to pick up Dart 2 support.
+* Modified dependency on google_sign_in to point to a published
+  version instead of a relative path.
+
+## 0.5.18
+
+* Adding support for updateEmail in FirebaseAuth.
+
+## 0.5.17
+
+* Adding support for FirebaseUser.delete. 
+
 ## 0.5.16
 
 * Adding support for setLanguageCode in FirebaseAuth.

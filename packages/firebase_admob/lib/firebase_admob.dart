@@ -39,15 +39,15 @@ typedef void MobileAdListener(MobileAdEvent event);
 /// This class's properties mirror the native AdRequest API. See for example:
 /// [AdRequest.Builder for Android](https://firebase.google.com/docs/reference/android/com/google/android/gms/ads/AdRequest.Builder).
 class MobileAdTargetingInfo {
-  const MobileAdTargetingInfo({
-    this.keywords,
-    this.contentUrl,
-    this.birthday,
-    this.gender,
-    this.designedForFamilies,
-    this.childDirected,
-    this.testDevices,
-  });
+  const MobileAdTargetingInfo(
+      {this.keywords,
+      this.contentUrl,
+      this.birthday,
+      this.gender,
+      this.designedForFamilies,
+      this.childDirected,
+      this.testDevices,
+      this.nonPersonalizedAds});
 
   final List<String> keywords;
   final String contentUrl;
@@ -56,6 +56,7 @@ class MobileAdTargetingInfo {
   final bool designedForFamilies;
   final bool childDirected;
   final List<String> testDevices;
+  final bool nonPersonalizedAds;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> json = <String, dynamic>{
@@ -66,6 +67,8 @@ class MobileAdTargetingInfo {
       assert(keywords.every((String s) => s != null && s.isNotEmpty));
       json['keywords'] = keywords;
     }
+    if (nonPersonalizedAds != null)
+      json['nonPersonalizedAds'] = nonPersonalizedAds;
     if (contentUrl != null && contentUrl.isNotEmpty)
       json['contentUrl'] = contentUrl;
     if (birthday != null) json['birthday'] = birthday.millisecondsSinceEpoch;
@@ -110,35 +113,35 @@ class AdSize {
   });
 
   /// The standard banner (320x50) size.
-  static const AdSize banner = const AdSize._(
+  static const AdSize banner = AdSize._(
     width: 320,
     height: 50,
     adSizeType: AdSizeType.WidthAndHeight,
   );
 
   /// The large banner (320x100) size.
-  static const AdSize largeBanner = const AdSize._(
+  static const AdSize largeBanner = AdSize._(
     width: 320,
     height: 100,
     adSizeType: AdSizeType.WidthAndHeight,
   );
 
   /// The medium rectangle (300x250) size.
-  static const AdSize mediumRectangle = const AdSize._(
+  static const AdSize mediumRectangle = AdSize._(
     width: 300,
     height: 250,
     adSizeType: AdSizeType.WidthAndHeight,
   );
 
   /// The full banner (468x60) size.
-  static const AdSize fullBanner = const AdSize._(
+  static const AdSize fullBanner = AdSize._(
     width: 468,
     height: 60,
     adSizeType: AdSizeType.WidthAndHeight,
   );
 
   /// The leaderboard (728x90) size.
-  static const AdSize leaderboard = const AdSize._(
+  static const AdSize leaderboard = AdSize._(
     width: 728,
     height: 90,
     adSizeType: AdSizeType.WidthAndHeight,
@@ -151,7 +154,7 @@ class AdSize {
   /// calculation based on the displaying device's height. For more info see the
   /// [Android](https://developers.google.com/admob/android/banner) and
   /// [iOS](https://developers.google.com/admob/ios/banner) banner ad guides.
-  static const AdSize smartBanner = const AdSize._(
+  static const AdSize smartBanner = AdSize._(
     width: 0,
     height: 0,
     adSizeType: AdSizeType.SmartBanner,
@@ -430,7 +433,7 @@ class FirebaseAdMob {
   final MethodChannel _channel;
 
   static const Map<String, MobileAdEvent> _methodToMobileAdEvent =
-      const <String, MobileAdEvent>{
+      <String, MobileAdEvent>{
     'onAdLoaded': MobileAdEvent.loaded,
     'onAdFailedToLoad': MobileAdEvent.failedToLoad,
     'onAdClicked': MobileAdEvent.clicked,
@@ -441,7 +444,7 @@ class FirebaseAdMob {
   };
 
   static const Map<String, RewardedVideoAdEvent> _methodToRewardedVideoAdEvent =
-      const <String, RewardedVideoAdEvent>{
+      <String, RewardedVideoAdEvent>{
     'onRewarded': RewardedVideoAdEvent.rewarded,
     'onRewardedVideoAdClosed': RewardedVideoAdEvent.closed,
     'onRewardedVideoAdFailedToLoad': RewardedVideoAdEvent.failedToLoad,
@@ -456,7 +459,7 @@ class FirebaseAdMob {
   Future<bool> initialize(
       {@required String appId,
       String trackingId,
-      bool analyticsEnabled: false}) {
+      bool analyticsEnabled = false}) {
     assert(appId != null && appId.isNotEmpty);
     assert(analyticsEnabled != null);
     return _invokeBooleanMethod("initialize", <String, dynamic>{

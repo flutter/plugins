@@ -32,7 +32,7 @@ dart import 'package:cloud_functions/cloud_functions.dart';
 Calling a function:
 
 ```
-dynamic resp = await FirebaseFunctions.instance.call(functionName: 'YOUR_CALLABLE_FUNCTION_NAME');
+dynamic resp = await CloudFunctions.instance.call(functionName: 'YOUR_CALLABLE_FUNCTION_NAME');
 ```
 
 ## Getting Started

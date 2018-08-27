@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
 const MethodChannel _kChannel =
-    const MethodChannel('plugins.flutter.io/quick_actions');
+    MethodChannel('plugins.flutter.io/quick_actions');
 
 /// Handler for a quick action launch event.
 ///
@@ -42,7 +42,7 @@ class QuickActions {
   ///
   /// Call this once before any further interaction with the the plugin.
   void initialize(QuickActionHandler handler) {
-    _kChannel.setMethodCallHandler((MethodCall call) {
+    _kChannel.setMethodCallHandler((MethodCall call) async {
       assert(call.method == 'launch');
       handler(call.arguments);
     });

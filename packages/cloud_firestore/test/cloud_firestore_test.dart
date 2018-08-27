@@ -18,8 +18,9 @@ void main() {
     final List<MethodCall> log = <MethodCall>[];
     CollectionReference collectionReference;
     Transaction transaction;
-    const Map<String, dynamic> kMockDocumentSnapshotData =
-        const <String, dynamic>{'1': 2};
+    const Map<String, dynamic> kMockDocumentSnapshotData = <String, dynamic>{
+      '1': 2
+    };
 
     setUp(() async {
       mockHandleId = 0;
@@ -556,7 +557,7 @@ void main() {
     });
 
     group('FirestoreMessageCodec', () {
-      const MessageCodec<dynamic> codec = const FirestoreMessageCodec();
+      const MessageCodec<dynamic> codec = FirestoreMessageCodec();
       final DateTime testTime = new DateTime(2015, 10, 30, 11, 16);
       test('should encode and decode simple messages', () {
         _checkEncodeDecode<dynamic>(codec, testTime);

@@ -71,12 +71,12 @@ class VideoPlayerValue {
   VideoPlayerValue({
     @required this.duration,
     this.size,
-    this.position: const Duration(),
-    this.buffered: const <DurationRange>[],
-    this.isPlaying: false,
-    this.isLooping: false,
-    this.isBuffering: false,
-    this.volume: 1.0,
+    this.position = const Duration(),
+    this.buffered = const <DurationRange>[],
+    this.isPlaying = false,
+    this.isLooping = false,
+    this.isBuffering = false,
+    this.volume = 1.0,
     this.errorDescription,
   });
 
@@ -439,9 +439,9 @@ class VideoProgressColors {
   final Color backgroundColor;
 
   VideoProgressColors({
-    this.playedColor: const Color.fromRGBO(255, 0, 0, 0.7),
-    this.bufferedColor: const Color.fromRGBO(50, 50, 200, 0.2),
-    this.backgroundColor: const Color.fromRGBO(200, 200, 200, 0.5),
+    this.playedColor = const Color.fromRGBO(255, 0, 0, 0.7),
+    this.bufferedColor = const Color.fromRGBO(50, 50, 200, 0.2),
+    this.backgroundColor = const Color.fromRGBO(200, 200, 200, 0.5),
   });
 }
 
@@ -523,7 +523,7 @@ class VideoProgressIndicator extends StatefulWidget {
     this.controller, {
     VideoProgressColors colors,
     this.allowScrubbing,
-    this.padding: const EdgeInsets.only(top: 5.0),
+    this.padding = const EdgeInsets.only(top: 5.0),
   }) : colors = colors ?? new VideoProgressColors();
 
   @override

@@ -75,7 +75,7 @@ class FirebaseUser extends UserInfo {
   /// Obtains the id token for the current user, forcing a [refresh] if desired.
   ///
   /// Completes with an error if the user is signed out.
-  Future<String> getIdToken({bool refresh: false}) async {
+  Future<String> getIdToken({bool refresh = false}) async {
     return await FirebaseAuth.channel.invokeMethod('getIdToken', <String, bool>{
       'refresh': refresh,
     });
@@ -88,6 +88,11 @@ class FirebaseUser extends UserInfo {
   /// Manually refreshes the data of the current user (for example, attached providers, display name, and so on).
   Future<void> reload() async {
     await FirebaseAuth.channel.invokeMethod('reload');
+  }
+
+  /// Deletes the user record from your Firebase project's database.
+  Future<void> delete() async {
+    await FirebaseAuth.channel.invokeMethod('delete');
   }
 
   @override
@@ -109,7 +114,7 @@ typedef void PhoneCodeAutoRetrievalTimeout(String verificationId);
 
 class FirebaseAuth {
   @visibleForTesting
-  static const MethodChannel channel = const MethodChannel(
+  static const MethodChannel channel = MethodChannel(
     'plugins.flutter.io/firebase_auth',
   );
 
@@ -362,6 +367,18 @@ class FirebaseAuth {
     );
     final FirebaseUser currentUser = new FirebaseUser._(data);
     return currentUser;
+  }
+
+  Future<void> updateEmail({
+    @required String email,
+  }) async {
+    assert(email != null);
+    return await channel.invokeMethod(
+      'updateEmail',
+      <String, String>{
+        'email': email,
+      },
+    );
   }
 
   Future<void> updateProfile(UserUpdateInfo userUpdateInfo) async {

@@ -19,7 +19,7 @@ part of firebase_ml_vision;
 /// LabelDetector labelDetector = FirebaseVision.instance.labelDetector(options);
 /// ```
 class LabelDetector extends FirebaseVisionDetector {
-  LabelDetector._(this.options);
+  LabelDetector._(this.options) : assert(options != null);
 
   /// The options for the detector.
   ///
@@ -61,7 +61,7 @@ class LabelDetectorOptions {
   /// Confidence threshold could be provided for the label detection.
   /// For example, if the confidence threshold is set to 0.7, only labels with
   /// confidence >= 0.7 would be returned. The default threshold is 0.5.
-  LabelDetectorOptions({this.confidenceThreshold = 0.5})
+  const LabelDetectorOptions({this.confidenceThreshold = 0.5})
       : assert(confidenceThreshold >= 0.0),
         assert(confidenceThreshold <= 1.0);
 
