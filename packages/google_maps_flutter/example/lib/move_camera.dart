@@ -36,11 +36,12 @@ class MoveCameraState extends State<MoveCamera> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         Center(
-            child: new SizedBox(
+          child: new SizedBox(
               width: 300.0,
               height: 200.0,
-              child: new GoogleMap(onMapCreated: _onMapCreated, options: GoogleMapOptions.defaultOptions)
-            ),
+              child: new GoogleMap(
+                  onMapCreated: _onMapCreated,
+                  options: GoogleMapOptions.defaultOptions)),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,

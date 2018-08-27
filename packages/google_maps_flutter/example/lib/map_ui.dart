@@ -25,8 +25,7 @@ class MapUiBody extends StatefulWidget {
   const MapUiBody();
 
   @override
-  State<StatefulWidget> createState() =>
-      MapUiBodyState();
+  State<StatefulWidget> createState() => MapUiBodyState();
 }
 
 class MapUiBodyState extends State<MapUiBody> {
@@ -215,7 +214,7 @@ class MapUiBodyState extends State<MapUiBody> {
               Text('camera bearing: ${_position.bearing}'),
               Text(
                   'camera target: ${_position.target.latitude.toStringAsFixed(4)},'
-                      '${_position.target.longitude.toStringAsFixed(4)}'),
+                  '${_position.target.longitude.toStringAsFixed(4)}'),
               Text('camera zoom: ${_position.zoom}'),
               Text('camera tilt: ${_position.tilt}'),
               Text(_isMoving ? '(Camera moving)' : '(Camera idle)'),

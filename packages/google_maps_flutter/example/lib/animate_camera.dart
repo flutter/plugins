@@ -40,7 +40,9 @@ class AnimateCameraState extends State<AnimateCamera> {
           child: new SizedBox(
               width: 300.0,
               height: 200.0,
-              child: GoogleMap(onMapCreated: _onMapCreated, options: GoogleMapOptions.defaultOptions)),
+              child: GoogleMap(
+                  onMapCreated: _onMapCreated,
+                  options: GoogleMapOptions.defaultOptions)),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,

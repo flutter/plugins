@@ -9,5 +9,4 @@ abstract class Page extends StatelessWidget {
 
   final Widget leading;
   final String title;
-
 }

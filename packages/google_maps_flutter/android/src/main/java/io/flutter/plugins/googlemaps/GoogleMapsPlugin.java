@@ -7,10 +7,8 @@ package io.flutter.plugins.googlemaps;
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
-
-import java.util.concurrent.atomic.AtomicInteger;
-
 import io.flutter.plugin.common.PluginRegistry.Registrar;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Plugin for controlling a set of GoogleMap views to be shown as overlays on top of the Flutter
@@ -30,7 +28,10 @@ public class GoogleMapsPlugin implements Application.ActivityLifecycleCallbacks 
   public static void registerWith(Registrar registrar) {
     final GoogleMapsPlugin plugin = new GoogleMapsPlugin();
     registrar.activity().getApplication().registerActivityLifecycleCallbacks(plugin);
-    registrar.platformViewRegistry().registerViewFactory("plugins.flutter.io/google_maps", new GoogleMapFactory(plugin.state, registrar));
+    registrar
+        .platformViewRegistry()
+        .registerViewFactory(
+            "plugins.flutter.io/google_maps", new GoogleMapFactory(plugin.state, registrar));
   }
 
   @Override

@@ -3,10 +3,8 @@ part of google_maps_flutter;
 typedef void MapCreatedCallback(GoogleMapController controller);
 
 class GoogleMap extends StatefulWidget {
-  GoogleMap({
-    @required this.onMapCreated,
-    GoogleMapOptions options
-  }) : this.options = GoogleMapOptions.defaultOptions.copyWith(options);
+  GoogleMap({@required this.onMapCreated, GoogleMapOptions options})
+      : this.options = GoogleMapOptions.defaultOptions.copyWith(options);
 
   final MapCreatedCallback onMapCreated;
   final GoogleMapOptions options;
@@ -27,11 +25,13 @@ class _GoogleMapState extends State<GoogleMap> {
       );
     }
 
-    return new Text('$defaultTargetPlatform is not yet supported by the maps plugin');
+    return new Text(
+        '$defaultTargetPlatform is not yet supported by the maps plugin');
   }
 
   Future<void> onPlatformViewCreated(int id) async {
-    final GoogleMapController controller = await GoogleMapController.init(id, widget.options);
+    final GoogleMapController controller =
+        await GoogleMapController.init(id, widget.options);
     widget.onMapCreated(controller);
   }
 }

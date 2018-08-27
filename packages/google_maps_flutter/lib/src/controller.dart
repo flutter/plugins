@@ -17,7 +17,8 @@ part of google_maps_flutter;
 ///
 /// Marker tap events can be received by adding callbacks to [onMarkerTapped].
 class GoogleMapController extends ChangeNotifier {
-  GoogleMapController._(this._id, GoogleMapOptions options, MethodChannel channel)
+  GoogleMapController._(
+      this._id, GoogleMapOptions options, MethodChannel channel)
       : assert(_id != null),
         assert(options != null),
         assert(options.cameraPosition != null),
@@ -30,11 +31,13 @@ class GoogleMapController extends ChangeNotifier {
     _options = GoogleMapOptions.defaultOptions.copyWith(options);
   }
 
-  static Future<GoogleMapController> init(int id, GoogleMapOptions options) async {
+  static Future<GoogleMapController> init(
+      int id, GoogleMapOptions options) async {
     assert(id != null);
     assert(options != null);
     assert(options.cameraPosition != null);
-    final MethodChannel channel = new MethodChannel('plugins.flutter.io/google_maps_$id');
+    final MethodChannel channel =
+        new MethodChannel('plugins.flutter.io/google_maps_$id');
     await channel.invokeMethod('map#waitForMap');
     return GoogleMapController._(id, options, channel);
   }

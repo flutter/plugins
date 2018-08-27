@@ -1,13 +1,12 @@
 package io.flutter.plugins.googlemaps;
 
+import static io.flutter.plugin.common.PluginRegistry.Registrar;
+
 import android.content.Context;
 import io.flutter.plugin.common.StandardMessageCodec;
 import io.flutter.plugin.platform.PlatformView;
 import io.flutter.plugin.platform.PlatformViewFactory;
-
 import java.util.concurrent.atomic.AtomicInteger;
-
-import static io.flutter.plugin.common.PluginRegistry.Registrar;
 
 public class GoogleMapFactory extends PlatformViewFactory {
 

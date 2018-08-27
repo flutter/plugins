@@ -4,12 +4,17 @@
 
 package io.flutter.plugins.googlemaps;
 
+import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.CREATED;
+import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.PAUSED;
+import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.RESUMED;
+import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.STARTED;
+import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.STOPPED;
+
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
-
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -20,22 +25,14 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.platform.PlatformView;
-
-import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.CREATED;
-import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.PAUSED;
-import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.RESUMED;
-import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.STARTED;
-import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.STOPPED;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /** Controller of a single GoogleMaps MapView instance. */
 final class GoogleMapController
@@ -75,13 +72,13 @@ final class GoogleMapController
     this.markers = new HashMap<>();
     this.density = context.getResources().getDisplayMetrics().density;
     methodChannel =
-      new MethodChannel(registrar.messenger(), "plugins.flutter.io/google_maps_" + id);
+        new MethodChannel(registrar.messenger(), "plugins.flutter.io/google_maps_" + id);
     methodChannel.setMethodCallHandler(this);
   }
 
   @Override
   public View getView() {
-      return mapView;
+    return mapView;
   }
 
   void init() {
@@ -134,8 +131,7 @@ final class GoogleMapController
 
   Marker addMarker(MarkerOptions markerOptions, boolean consumesTapEvents) {
     final Marker marker = googleMap.addMarker(markerOptions);
-    markers.put(
-        marker.getId(), new MarkerController(marker, consumesTapEvents, this));
+    markers.put(marker.getId(), new MarkerController(marker, consumesTapEvents, this));
     return marker;
   }
 
@@ -159,8 +155,8 @@ final class GoogleMapController
     this.googleMap = googleMap;
     googleMap.setOnInfoWindowClickListener(this);
     if (mapReadyResult != null) {
-        mapReadyResult.success(null);
-        mapReadyResult = null;
+      mapReadyResult.success(null);
+      mapReadyResult = null;
     }
     googleMap.setOnCameraMoveStartedListener(this);
     googleMap.setOnCameraMoveListener(this);
@@ -178,50 +174,50 @@ final class GoogleMapController
         mapReadyResult = result;
         break;
       case "map#update":
-      {
-        Convert.interpretGoogleMapOptions(call.argument("options"), this);
-        result.success(Convert.toJson(getCameraPosition()));
-        break;
-      }
+        {
+          Convert.interpretGoogleMapOptions(call.argument("options"), this);
+          result.success(Convert.toJson(getCameraPosition()));
+          break;
+        }
       case "camera#move":
-      {
-        final CameraUpdate cameraUpdate =
-            Convert.toCameraUpdate(call.argument("cameraUpdate"), density);
-        moveCamera(cameraUpdate);
-        result.success(null);
-        break;
-      }
+        {
+          final CameraUpdate cameraUpdate =
+              Convert.toCameraUpdate(call.argument("cameraUpdate"), density);
+          moveCamera(cameraUpdate);
+          result.success(null);
+          break;
+        }
       case "camera#animate":
-      {
-        final CameraUpdate cameraUpdate =
-            Convert.toCameraUpdate(call.argument("cameraUpdate"), density);
-        animateCamera(cameraUpdate);
-        result.success(null);
-        break;
-      }
+        {
+          final CameraUpdate cameraUpdate =
+              Convert.toCameraUpdate(call.argument("cameraUpdate"), density);
+          animateCamera(cameraUpdate);
+          result.success(null);
+          break;
+        }
       case "marker#add":
-      {
-        final MarkerBuilder markerBuilder = newMarkerBuilder();
-        Convert.interpretMarkerOptions(call.argument("options"), markerBuilder);
-        final String markerId = markerBuilder.build();
-        result.success(markerId);
-        break;
-      }
+        {
+          final MarkerBuilder markerBuilder = newMarkerBuilder();
+          Convert.interpretMarkerOptions(call.argument("options"), markerBuilder);
+          final String markerId = markerBuilder.build();
+          result.success(markerId);
+          break;
+        }
       case "marker#remove":
-      {
-        final String markerId = call.argument("marker");
-        removeMarker(markerId);
-        result.success(null);
-        break;
-      }
+        {
+          final String markerId = call.argument("marker");
+          removeMarker(markerId);
+          result.success(null);
+          break;
+        }
       case "marker#update":
-      {
-        final String markerId = call.argument("marker");
-        final MarkerController marker = marker(markerId);
-        Convert.interpretMarkerOptions(call.argument("options"), marker);
-        result.success(null);
-        break;
-      }
+        {
+          final String markerId = call.argument("marker");
+          final MarkerController marker = marker(markerId);
+          Convert.interpretMarkerOptions(call.argument("options"), marker);
+          result.success(null);
+          break;
+        }
       default:
         result.notImplemented();
     }
@@ -229,39 +225,39 @@ final class GoogleMapController
 
   @Override
   public void onCameraMoveStarted(int reason) {
-      final Map<String, Object> arguments = new HashMap<>(2);
-      boolean isGesture = reason == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE;
-      arguments.put("isGesture", isGesture);
-      methodChannel.invokeMethod("camera#onMoveStarted", arguments);
+    final Map<String, Object> arguments = new HashMap<>(2);
+    boolean isGesture = reason == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE;
+    arguments.put("isGesture", isGesture);
+    methodChannel.invokeMethod("camera#onMoveStarted", arguments);
   }
 
   @Override
   public void onInfoWindowClick(Marker marker) {
-      final Map<String, Object> arguments = new HashMap<>(2);
-      arguments.put("marker", marker.getId());
-      methodChannel.invokeMethod("infoWindow#onTap", arguments);
+    final Map<String, Object> arguments = new HashMap<>(2);
+    arguments.put("marker", marker.getId());
+    methodChannel.invokeMethod("infoWindow#onTap", arguments);
   }
 
   @Override
   public void onCameraMove() {
-      if (!trackCameraPosition) {
-        return;
-      }
-      final Map<String, Object> arguments = new HashMap<>(2);
-      arguments.put("position", Convert.toJson(googleMap.getCameraPosition()));
-      methodChannel.invokeMethod("camera#onMove", arguments);
+    if (!trackCameraPosition) {
+      return;
+    }
+    final Map<String, Object> arguments = new HashMap<>(2);
+    arguments.put("position", Convert.toJson(googleMap.getCameraPosition()));
+    methodChannel.invokeMethod("camera#onMove", arguments);
   }
 
   @Override
   public void onCameraIdle() {
-      methodChannel.invokeMethod("camera#onIdle", Collections.singletonMap("map", id));
+    methodChannel.invokeMethod("camera#onIdle", Collections.singletonMap("map", id));
   }
 
   @Override
   public void onMarkerTapped(Marker marker) {
-      final Map<String, Object> arguments = new HashMap<>(2);
-      arguments.put("marker", marker.getId());
-      methodChannel.invokeMethod("marker#onTap", arguments);
+    final Map<String, Object> arguments = new HashMap<>(2);
+    arguments.put("marker", marker.getId());
+    methodChannel.invokeMethod("marker#onTap", arguments);
   }
 
   @Override

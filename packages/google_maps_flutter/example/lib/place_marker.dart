@@ -19,7 +19,6 @@ class PlaceMarkerPage extends Page {
 }
 
 class PlaceMarkerBody extends StatefulWidget {
-
   const PlaceMarkerBody();
 
   @override
@@ -204,12 +203,14 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
                         ),
                         FlatButton(
                           child: const Text('change info'),
-                          onPressed: (_selectedMarker == null) ? null : _changeInfo,
+                          onPressed:
+                              (_selectedMarker == null) ? null : _changeInfo,
                         ),
                         FlatButton(
                           child: const Text('change info anchor'),
-                          onPressed:
-                          (_selectedMarker == null) ? null : _changeInfoAnchor,
+                          onPressed: (_selectedMarker == null)
+                              ? null
+                              : _changeInfoAnchor,
                         ),
                       ],
                     ),
@@ -218,41 +219,45 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
                         FlatButton(
                           child: const Text('change alpha'),
                           onPressed:
-                          (_selectedMarker == null) ? null : _changeAlpha,
+                              (_selectedMarker == null) ? null : _changeAlpha,
                         ),
                         FlatButton(
                           child: const Text('change anchor'),
                           onPressed:
-                          (_selectedMarker == null) ? null : _changeAnchor,
+                              (_selectedMarker == null) ? null : _changeAnchor,
                         ),
                         FlatButton(
                           child: const Text('toggle draggable'),
-                          onPressed:
-                          (_selectedMarker == null) ? null : _toggleDraggable,
+                          onPressed: (_selectedMarker == null)
+                              ? null
+                              : _toggleDraggable,
                         ),
                         FlatButton(
                           child: const Text('toggle flat'),
-                          onPressed: (_selectedMarker == null) ? null : _toggleFlat,
+                          onPressed:
+                              (_selectedMarker == null) ? null : _toggleFlat,
                         ),
                         FlatButton(
                           child: const Text('change position'),
-                          onPressed:
-                          (_selectedMarker == null) ? null : _changePosition,
+                          onPressed: (_selectedMarker == null)
+                              ? null
+                              : _changePosition,
                         ),
                         FlatButton(
                           child: const Text('change rotation'),
-                          onPressed:
-                          (_selectedMarker == null) ? null : _changeRotation,
+                          onPressed: (_selectedMarker == null)
+                              ? null
+                              : _changeRotation,
                         ),
                         FlatButton(
                           child: const Text('toggle visible'),
                           onPressed:
-                          (_selectedMarker == null) ? null : _toggleVisible,
+                              (_selectedMarker == null) ? null : _toggleVisible,
                         ),
                         FlatButton(
                           child: const Text('change zIndex'),
                           onPressed:
-                          (_selectedMarker == null) ? null : _changeZIndex,
+                              (_selectedMarker == null) ? null : _changeZIndex,
                         ),
                       ],
                     ),
