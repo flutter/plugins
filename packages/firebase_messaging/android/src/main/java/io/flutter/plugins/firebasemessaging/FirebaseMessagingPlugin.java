@@ -78,11 +78,15 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
 
     RemoteMessage.Notification notification = message.getNotification();
 
+    Map<String, Object> notificationMap = new HashMap<>();
+
     String title = notification != null ? notification.getTitle() : null;
-    content.put("title", title);
+    notificationMap.put("title", title);
 
     String body = notification != null ? notification.getBody() : null;
-    content.put("body", body);
+    notificationMap.put("body", body);
+
+    content.put("notification", notificationMap);
     return content;
   }
 
