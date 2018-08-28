@@ -1,3 +1,7 @@
+## 3.0.6
+
+* Remove flaky displayName assertion
+
 ## 3.0.5
 
 * Added missing http package dependency.
