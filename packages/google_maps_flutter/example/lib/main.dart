@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'animate_camera.dart';
 import 'map_ui.dart';
 import 'move_camera.dart';
@@ -43,10 +42,6 @@ class MapsDemo extends StatelessWidget {
 }
 
 void main() {
-  GoogleMapController.init();
   final List<NavigatorObserver> observers = <NavigatorObserver>[];
-  for (Page p in _allPages) {
-    observers.add(p.controller.overlayController);
-  }
   runApp(MaterialApp(home: MapsDemo(), navigatorObservers: observers));
 }
