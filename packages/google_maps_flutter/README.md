@@ -2,8 +2,7 @@
 
 [![pub package](https://img.shields.io/pub/v/google_maps_flutter.svg)](https://pub.dartlang.org/packages/google_maps_flutter)
 
-A Flutter plugin to use [Google Maps](https://developers.google.com/maps/) in
-iOS and Android apps.
+A Flutter plugin to use [Google Maps](https://developers.google.com/maps/).
 
 ## Caveat
 
@@ -12,24 +11,9 @@ This plugin provides an *unpublished preview* of the Flutter API for Google Maps
   code are still being consolidated and expanded. The intention is to grow
   current coverage into a complete offering. Issues and pull requests aimed to
   help us prioritize and speed up this effort are very welcome.
-* The technique currently used for compositing GoogleMap views with Flutter
-  widgets is *inherently limited* and will be replaced by a fully compositional
-  [Texture](https://docs.flutter.io/flutter/widgets/Texture-class.html)-based
-  approach before we publish this plugin.
-
-  In detail: the plugin currently relies on placing platform overlays on top of
-  a bitmap snapshotting widget for creating the illusion of in-line compositing
-  of GoogleMap views with Flutter widgets. This works only in very limited
-  situations where
-  * the widget is stationary
-  * the widget is drawn on top of all other widgets within bounds
-  * touch events within widget bounds can be safely ignored by Flutter
-
-  The root problem with platform overlays is that they cannot be freely composed
-  with other widgets. Many workarounds can be devised to address this shortcoming
-  in particular situations, but the Flutter team does not intend to support such
-  work, as it would not move us forward towards our goal of a fully compositional
-  GoogleMaps widget.
+* Currently the plugin only supports Android as it embeds a platform view in the
+  Flutter hierarchy which is currently only supported for Android ([tracking
+  issue](https://github.com/flutter/flutter/issues/19030)).
 
 ## Usage
 
@@ -79,38 +63,32 @@ Supply your API key in the application delegate `ios/Runner/AppDelegate.m`:
 
 ### Both
 
-You can now instantiate a `GoogleMapOverlayController` and use it to configure
-a `GoogleMapOverlay` widget. Client code will have to change once the plugin
-stops using platform overlays.
+You can now add a `GoogleMap` widget to your widget tree.
 
-Once added as an overlay, the map view can be controlled via the
-`GoogleMapController` that you obtain as the `mapController` property of
-the overlay controller. Client code written against the `GoogleMapController`
-interface will be unaffected by the change away from platform overlays.
+The map view can be controlled with the `GoogleMapController` that is passed to
+the `GoogleMap`'s `onMapCreated` callback.
 
 ```dart
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 void main() {
-  GoogleMapController.init();
-  final GoogleMapOverlayController controller =
-      GoogleMapOverlayController.fromSize(width: 300.0, height: 200.0);
-  final Widget mapWidget = GoogleMapOverlay(controller: controller);
   runApp(MaterialApp(
     home: new Scaffold(
       appBar: AppBar(title: const Text('Google Maps demo')),
-      body: MapsDemo(mapWidget, controller.mapController),
+      body: MapsDemo(),
     ),
-    navigatorObservers: <NavigatorObserver>[controller.overlayController],
   ));
 }
 
-class MapsDemo extends StatelessWidget {
-  MapsDemo(this.mapWidget, this.controller);
+class MapsDemo extends StatefulWidget {
+  @override
+  State createState() => MapsDemoState();
+}
 
-  final Widget mapWidget;
-  final GoogleMapController controller;
+class MapsDemoState extends State<MapsDemo> {
+
+  GoogleMapController mapController;
 
   @override
   Widget build(BuildContext context) {
@@ -119,11 +97,19 @@ class MapsDemo extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
-          Center(child: mapWidget),
+          Center(
+            child: SizedBox(
+              width: 300.0,
+              height: 200.0,
+              child: GoogleMap(
+                onMapCreated: _onMapCreated,
+              ),
+            ),
+          ),
           RaisedButton(
             child: const Text('Go to London'),
-            onPressed: () {
-              controller.animateCamera(CameraUpdate.newCameraPosition(
+            onPressed: mapController == null ? null : () {
+              mapController.animateCamera(CameraUpdate.newCameraPosition(
                 const CameraPosition(
                   bearing: 270.0,
                   target: LatLng(51.5160895, -0.1294527),
@@ -136,6 +122,10 @@ class MapsDemo extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void _onMapCreated(GoogleMapController controller) {
+    setState(() { mapController = controller; });
   }
 }
 ```
