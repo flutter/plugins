@@ -109,7 +109,8 @@ final class GoogleMapController
         mapView.onCreate(null);
         break;
       default:
-        throw new IllegalArgumentException("Cannot interpret " + activityState.get() + " as an activity state");
+        throw new IllegalArgumentException(
+            "Cannot interpret " + activityState.get() + " as an activity state");
     }
     registrar.activity().getApplication().registerActivityLifecycleCallbacks(this);
     mapView.getMapAsync(this);
