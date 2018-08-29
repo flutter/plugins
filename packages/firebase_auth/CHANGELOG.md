@@ -1,3 +1,7 @@
+## 0.5.20
+
+* Fixed podspec to use static_framework
+
 ## 0.5.19
 
 * Update test package dependency to pick up Dart 2 support.
