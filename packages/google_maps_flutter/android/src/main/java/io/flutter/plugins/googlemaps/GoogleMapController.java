@@ -108,6 +108,9 @@ final class GoogleMapController
       case CREATED:
         mapView.onCreate(null);
         break;
+      default:
+        throw new IllegalArgumentException(
+            "Cannot interpret " + activityState.get() + " as an activity state");
     }
     registrar.activity().getApplication().registerActivityLifecycleCallbacks(this);
     mapView.getMapAsync(this);
@@ -164,6 +167,7 @@ final class GoogleMapController
     googleMap.setOnMarkerClickListener(this);
   }
 
+  @Override
   public void onMethodCall(MethodCall call, MethodChannel.Result result) {
     switch (call.method) {
       case "map#waitForMap":
