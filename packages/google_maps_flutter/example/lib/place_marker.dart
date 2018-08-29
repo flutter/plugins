@@ -13,53 +13,35 @@ class PlaceMarkerPage extends Page {
   PlaceMarkerPage() : super(const Icon(Icons.place), 'Place marker');
 
   @override
-  final GoogleMapOverlayController controller =
-      GoogleMapOverlayController.fromSize(
-    width: 300.0,
-    height: 200.0,
-    options: GoogleMapOptions(
-      cameraPosition: const CameraPosition(
-        target: LatLng(-33.852, 151.211),
-        zoom: 11.0,
-      ),
-    ),
-  );
-
-  @override
   Widget build(BuildContext context) {
-    return PlaceMarkerBody(controller);
+    return const PlaceMarkerBody();
   }
 }
 
 class PlaceMarkerBody extends StatefulWidget {
-  final GoogleMapOverlayController controller;
-
-  const PlaceMarkerBody(this.controller);
+  const PlaceMarkerBody();
 
   @override
-  State<StatefulWidget> createState() {
-    return PlaceMarkerBodyState(controller.mapController);
-  }
+  State<StatefulWidget> createState() => PlaceMarkerBodyState();
 }
 
 class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
   static final LatLng center = const LatLng(-33.86711, 151.1947171);
 
-  PlaceMarkerBodyState(this.controller);
+  PlaceMarkerBodyState();
 
-  final GoogleMapController controller;
+  GoogleMapController controller;
   int _markerCount = 0;
   Marker _selectedMarker;
 
-  @override
-  void initState() {
-    super.initState();
+  void _onMapCreated(GoogleMapController controller) {
+    this.controller = controller;
     controller.onMarkerTapped.add(_onMarkerTapped);
   }
 
   @override
   void dispose() {
-    controller.onMarkerTapped.remove(_onMarkerTapped);
+    controller?.onMarkerTapped?.remove(_onMarkerTapped);
     super.dispose();
   }
 
@@ -187,80 +169,104 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        Center(child: GoogleMapOverlay(controller: widget.controller)),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            Row(
+        Center(
+          child: new SizedBox(
+            width: 300.0,
+            height: 200.0,
+            child: GoogleMap(
+              onMapCreated: _onMapCreated,
+              options: new GoogleMapOptions(
+                cameraPosition: const CameraPosition(
+                  target: LatLng(-33.852, 151.211),
+                  zoom: 11.0,
+                ),
+              ),
+            ),
+          ),
+        ),
+        Expanded(
+          child: SingleChildScrollView(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-                Column(
+                Row(
                   children: <Widget>[
-                    FlatButton(
-                      child: const Text('add'),
-                      onPressed: (_markerCount == 12) ? null : _add,
+                    Column(
+                      children: <Widget>[
+                        FlatButton(
+                          child: const Text('add'),
+                          onPressed: (_markerCount == 12) ? null : _add,
+                        ),
+                        FlatButton(
+                          child: const Text('remove'),
+                          onPressed: (_selectedMarker == null) ? null : _remove,
+                        ),
+                        FlatButton(
+                          child: const Text('change info'),
+                          onPressed:
+                              (_selectedMarker == null) ? null : _changeInfo,
+                        ),
+                        FlatButton(
+                          child: const Text('change info anchor'),
+                          onPressed: (_selectedMarker == null)
+                              ? null
+                              : _changeInfoAnchor,
+                        ),
+                      ],
                     ),
-                    FlatButton(
-                      child: const Text('remove'),
-                      onPressed: (_selectedMarker == null) ? null : _remove,
-                    ),
-                    FlatButton(
-                      child: const Text('change info'),
-                      onPressed: (_selectedMarker == null) ? null : _changeInfo,
-                    ),
-                    FlatButton(
-                      child: const Text('change info anchor'),
-                      onPressed:
-                          (_selectedMarker == null) ? null : _changeInfoAnchor,
+                    Column(
+                      children: <Widget>[
+                        FlatButton(
+                          child: const Text('change alpha'),
+                          onPressed:
+                              (_selectedMarker == null) ? null : _changeAlpha,
+                        ),
+                        FlatButton(
+                          child: const Text('change anchor'),
+                          onPressed:
+                              (_selectedMarker == null) ? null : _changeAnchor,
+                        ),
+                        FlatButton(
+                          child: const Text('toggle draggable'),
+                          onPressed: (_selectedMarker == null)
+                              ? null
+                              : _toggleDraggable,
+                        ),
+                        FlatButton(
+                          child: const Text('toggle flat'),
+                          onPressed:
+                              (_selectedMarker == null) ? null : _toggleFlat,
+                        ),
+                        FlatButton(
+                          child: const Text('change position'),
+                          onPressed: (_selectedMarker == null)
+                              ? null
+                              : _changePosition,
+                        ),
+                        FlatButton(
+                          child: const Text('change rotation'),
+                          onPressed: (_selectedMarker == null)
+                              ? null
+                              : _changeRotation,
+                        ),
+                        FlatButton(
+                          child: const Text('toggle visible'),
+                          onPressed:
+                              (_selectedMarker == null) ? null : _toggleVisible,
+                        ),
+                        FlatButton(
+                          child: const Text('change zIndex'),
+                          onPressed:
+                              (_selectedMarker == null) ? null : _changeZIndex,
+                        ),
+                      ],
                     ),
                   ],
-                ),
-                Column(
-                  children: <Widget>[
-                    FlatButton(
-                      child: const Text('change alpha'),
-                      onPressed:
-                          (_selectedMarker == null) ? null : _changeAlpha,
-                    ),
-                    FlatButton(
-                      child: const Text('change anchor'),
-                      onPressed:
-                          (_selectedMarker == null) ? null : _changeAnchor,
-                    ),
-                    FlatButton(
-                      child: const Text('toggle draggable'),
-                      onPressed:
-                          (_selectedMarker == null) ? null : _toggleDraggable,
-                    ),
-                    FlatButton(
-                      child: const Text('toggle flat'),
-                      onPressed: (_selectedMarker == null) ? null : _toggleFlat,
-                    ),
-                    FlatButton(
-                      child: const Text('change position'),
-                      onPressed:
-                          (_selectedMarker == null) ? null : _changePosition,
-                    ),
-                    FlatButton(
-                      child: const Text('change rotation'),
-                      onPressed:
-                          (_selectedMarker == null) ? null : _changeRotation,
-                    ),
-                    FlatButton(
-                      child: const Text('toggle visible'),
-                      onPressed:
-                          (_selectedMarker == null) ? null : _toggleVisible,
-                    ),
-                    FlatButton(
-                      child: const Text('change zIndex'),
-                      onPressed:
-                          (_selectedMarker == null) ? null : _changeZIndex,
-                    ),
-                  ],
-                ),
+                )
               ],
-            )
-          ],
-        )
+            ),
+          ),
+        ),
       ],
     );
   }
