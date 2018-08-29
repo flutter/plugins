@@ -182,7 +182,7 @@ int nextHandle = 0;
       changeRequest.displayName = call.arguments[@"displayName"];
     }
     if (call.arguments[@"photoUrl"]) {
-      changeRequest.photoURL = call.arguments[@"photoUrl"];
+      changeRequest.photoURL = [NSURL URLWithString:call.arguments[@"photoUrl"]];
     }
     [changeRequest commitChangesWithCompletion:^(NSError *error) {
       [self sendResult:result forUser:nil error:error];

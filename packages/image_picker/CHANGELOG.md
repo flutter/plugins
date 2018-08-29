@@ -1,3 +1,12 @@
+## 0.4.8
+
+* Replace the full `com.android.support:appcompat-v7` dependency with `com.android.support:support-core-utils`, which results in smaller APK sizes.
+* Upgrade support library to 27.1.1
+
+## 0.4.7
+
+* Added missing video_player package dev dependency.
+
 ## 0.4.6
 
 * Added support for picking remote images.
