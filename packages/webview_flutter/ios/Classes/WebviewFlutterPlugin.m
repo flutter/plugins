@@ -4,12 +4,12 @@
 
 #import "WebviewFlutterPlugin.h"
 
-@implementation WebviewFlutterPlugin
+@implementation FLTWebviewFlutterPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  FlutterMethodChannel* channel = [FlutterMethodChannel
-      methodChannelWithName:@"webview_flutter"
-            binaryMessenger:[registrar messenger]];
-  WebviewFlutterPlugin* instance = [[WebviewFlutterPlugin alloc] init];
+  FlutterMethodChannel* channel =
+      [FlutterMethodChannel methodChannelWithName:@"webview_flutter"
+                                  binaryMessenger:[registrar messenger]];
+  FLTWebviewFlutterPlugin* instance = [[FLTWebviewFlutterPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
