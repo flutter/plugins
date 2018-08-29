@@ -1,3 +1,7 @@
+## 0.4.9
+
+* Bugfix: on iOS prevent to appear one pixel white line on resized image.
+
 ## 0.4.8
 
 * Replace the full `com.android.support:appcompat-v7` dependency with `com.android.support:support-core-utils`, which results in smaller APK sizes.
