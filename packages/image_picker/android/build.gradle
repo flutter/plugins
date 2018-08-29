@@ -1,4 +1,4 @@
-group 'com.yourcompany.image_picker'
+group 'io.flutter.plugins.imagepicker'
 version '1.0-SNAPSHOT'
 
 buildscript {
@@ -34,5 +34,5 @@ android {
 }
 
 dependencies {
-    api 'com.android.support:appcompat-v7:27.1.0'
+    implementation 'com.android.support:support-core-utils:27.1.1'
 }
