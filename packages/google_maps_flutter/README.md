@@ -30,8 +30,6 @@ as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/
 
 Get an API key at <https://cloud.google.com/maps-platform/>.
 
-### Android
-
 Specify your API key in the application manifest `android/app/src/main/AndroidManifest.xml`:
 
 ```xml
@@ -40,28 +38,6 @@ Specify your API key in the application manifest `android/app/src/main/AndroidMa
     <meta-data android:name="com.google.android.geo.API_KEY"
                android:value="YOUR KEY HERE"/>
 ```
-
-### iOS
-
-Supply your API key in the application delegate `ios/Runner/AppDelegate.m`:
-
-```objectivec
-#include "AppDelegate.h"
-#include "GeneratedPluginRegistrant.h"
-#import "GoogleMaps/GoogleMaps.h"
-
-@implementation AppDelegate
-
-- (BOOL)application:(UIApplication *)application
-    didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-  [GMSServices provideAPIKey:@"YOUR KEY HERE"];
-  [GeneratedPluginRegistrant registerWithRegistry:self];
-  return [super application:application didFinishLaunchingWithOptions:launchOptions];
-}
-@end
-```
-
-### Both
 
 You can now add a `GoogleMap` widget to your widget tree.
 
