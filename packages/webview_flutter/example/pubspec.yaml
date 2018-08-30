@@ -9,13 +9,12 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  webview_flutter:
+    path: ../
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
-  webview_flutter:
-    path: ../
 
 flutter:
   uses-material-design: true
