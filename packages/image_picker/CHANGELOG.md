@@ -1,3 +1,7 @@
+## 0.4.11
+
+* Use `api` to define `support-v4` dependency to allow automatic version resolution.
+
 ## 0.4.10
 
 * Depend on full `support-v4` library for ease of use (fixes conflicts with Firebase and libraries)
