@@ -1,3 +1,7 @@
+## 0.4.10
+
+* Depend on full `support-v4` library for ease of use (fixes conflicts with Firebase and libraries)
+
 ## 0.4.9
 
 * Bugfix: on iOS prevent to appear one pixel white line on resized image.
