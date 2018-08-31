@@ -83,12 +83,10 @@ class _WebViewState extends State<WebView> {
 /// A [WebViewController] instance can be obtained by setting the [WebView.onWebViewCreated]
 /// callback for a [WebView] widget.
 class WebViewController {
-  WebViewController._(int id) {
-    _channel = new MethodChannel(
-        'plugins.flutter.io/webview_$id', const StandardMethodCodec());
-  }
+  WebViewController._(int id)
+      : _channel = new MethodChannel('plugins.flutter.io/webview_$id');
 
-  MethodChannel _channel;
+  final MethodChannel _channel;
 
   /// Loads the specified URL.
   ///
