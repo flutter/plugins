@@ -16,48 +16,36 @@ class MapUiPage extends Page {
   MapUiPage() : super(const Icon(Icons.map), 'User interface');
 
   @override
-  final GoogleMapOverlayController controller =
-      GoogleMapOverlayController.fromSize(
-    width: 300.0,
-    height: 200.0,
-    options: GoogleMapOptions(
-      cameraPosition: const CameraPosition(
-        target: LatLng(-33.852, 151.211),
-        zoom: 11.0,
-      ),
-      trackCameraPosition: true,
-    ),
-  );
-
-  @override
   Widget build(BuildContext context) {
-    return MapUiBody(controller);
+    return const MapUiBody();
   }
 }
 
 class MapUiBody extends StatefulWidget {
-  final GoogleMapOverlayController controller;
-
-  const MapUiBody(this.controller);
+  const MapUiBody();
 
   @override
-  State<StatefulWidget> createState() =>
-      MapUiBodyState(controller.mapController);
+  State<StatefulWidget> createState() => MapUiBodyState();
 }
 
 class MapUiBodyState extends State<MapUiBody> {
-  MapUiBodyState(this.mapController);
+  MapUiBodyState();
 
-  final GoogleMapController mapController;
+  GoogleMapController mapController;
   CameraPosition _position;
-  GoogleMapOptions _options;
-  bool _isMoving;
+  GoogleMapOptions _options = GoogleMapOptions(
+    cameraPosition: const CameraPosition(
+      target: LatLng(-33.852, 151.211),
+      zoom: 11.0,
+    ),
+    trackCameraPosition: true,
+    compassEnabled: true,
+  );
+  bool _isMoving = false;
 
   @override
   void initState() {
     super.initState();
-    mapController.addListener(_onMapChanged);
-    _extractMapInfo();
   }
 
   void _onMapChanged() {
@@ -196,36 +184,64 @@ class MapUiBodyState extends State<MapUiBody> {
 
   @override
   Widget build(BuildContext context) {
+    final List<Widget> columnChildren = <Widget>[
+      Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Center(
+          child: new SizedBox(
+            width: 300.0,
+            height: 200.0,
+            child: GoogleMap(
+              onMapCreated: onMapCreated,
+              options: GoogleMapOptions(
+                cameraPosition: const CameraPosition(
+                  target: LatLng(-33.852, 151.211),
+                  zoom: 11.0,
+                ),
+                trackCameraPosition: true,
+              ),
+            ),
+          ),
+        ),
+      ),
+    ];
+
+    if (mapController != null) {
+      columnChildren.add(
+        new Expanded(
+          child: ListView(
+            children: <Widget>[
+              Text('camera bearing: ${_position.bearing}'),
+              Text(
+                  'camera target: ${_position.target.latitude.toStringAsFixed(4)},'
+                  '${_position.target.longitude.toStringAsFixed(4)}'),
+              Text('camera zoom: ${_position.zoom}'),
+              Text('camera tilt: ${_position.tilt}'),
+              Text(_isMoving ? '(Camera moving)' : '(Camera idle)'),
+              _compassToggler(),
+              _latLngBoundsToggler(),
+              _mapTypeCycler(),
+              _zoomBoundsToggler(),
+              _rotateToggler(),
+              _scrollToggler(),
+              _tiltToggler(),
+              _zoomToggler(),
+            ],
+          ),
+        ),
+      );
+    }
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Center(
-            child: GoogleMapOverlay(controller: widget.controller),
-          ),
-        ),
-        Column(
-          children: <Widget>[
-            Text('camera bearing: ${_position.bearing}'),
-            Text(
-                'camera target: ${_position.target.latitude.toStringAsFixed(4)},'
-                '${_position.target.longitude.toStringAsFixed(4)}'),
-            Text('camera zoom: ${_position.zoom}'),
-            Text('camera tilt: ${_position.tilt}'),
-            Text(_isMoving ? '(Camera moving)' : '(Camera idle)'),
-            _compassToggler(),
-            _latLngBoundsToggler(),
-            _mapTypeCycler(),
-            _zoomBoundsToggler(),
-            _rotateToggler(),
-            _scrollToggler(),
-            _tiltToggler(),
-            _zoomToggler(),
-          ],
-        ),
-      ],
+      children: columnChildren,
     );
+  }
+
+  void onMapCreated(GoogleMapController controller) {
+    mapController = controller;
+    mapController.addListener(_onMapChanged);
+    _extractMapInfo();
+    setState(() {});
   }
 }
