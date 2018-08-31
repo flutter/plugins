@@ -1,3 +1,15 @@
+## 0.6.0
+
+* Add nonPersonalizedAds option to MobileAdTargetingInfo
+
+## 0.5.7
+
+* Bumped mockito dependency to pick up Dart 2 support.
+
+## 0.5.6
+
+* Bump Android and Firebase dependency versions.
+
 ## 0.5.5
 
 * Updated Gradle tooling to match Android Studio 3.1.2.

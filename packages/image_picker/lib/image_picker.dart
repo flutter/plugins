@@ -19,7 +19,7 @@ enum ImageSource {
 
 class ImagePicker {
   static const MethodChannel _channel =
-      const MethodChannel('plugins.flutter.io/image_picker');
+      MethodChannel('plugins.flutter.io/image_picker');
 
   /// Returns a [File] object pointing to the image that was picked.
   ///

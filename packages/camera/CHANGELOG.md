@@ -1,3 +1,12 @@
+## 0.2.3
+
+* Added path_provider and video_player as dev dependencies because the example uses them.
+* Updated example path_provider version to get Dart 2 support.
+
+## 0.2.2
+
+* iOS image capture is done in high quality (full camera size)
+
 ## 0.2.1
 
 * Updated Gradle tooling to match Android Studio 3.1.2.

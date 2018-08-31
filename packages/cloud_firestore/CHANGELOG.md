@@ -1,3 +1,7 @@
+## 0.7.4
+
+* Bump Android and Firebase dependency versions.
+
 ## 0.7.3
 
 * Updated Gradle tooling to match Android Studio 3.1.2.

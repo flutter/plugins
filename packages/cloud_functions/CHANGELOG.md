@@ -1,3 +1,15 @@
+## 0.0.4
+
+* Fixed podspec to use static_framework
+
+## 0.0.3
+
+* Added missing dependency on meta package.
+
+## 0.0.2
+
+* Bump Android and Firebase dependency versions.
+
 ## 0.0.1
 
 * The Cloud Functions for Firebase client SDKs let you call functions

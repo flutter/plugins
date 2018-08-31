@@ -6,8 +6,7 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
-const MethodChannel _channel =
-    const MethodChannel('plugins.flutter.io/url_launcher');
+const MethodChannel _channel = MethodChannel('plugins.flutter.io/url_launcher');
 
 /// Parses the specified URL string and delegates handling of it to the
 /// underlying platform.

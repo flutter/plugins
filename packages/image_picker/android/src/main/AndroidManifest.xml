@@ -6,7 +6,7 @@
 
     <application>
         <provider
-            android:name="android.support.v4.content.FileProvider"
+            android:name="io.flutter.plugins.imagepicker.ImagePickerFileProvider"
             android:authorities="${applicationId}.flutter.image_provider"
             android:exported="false"
             android:grantUriPermissions="true">
