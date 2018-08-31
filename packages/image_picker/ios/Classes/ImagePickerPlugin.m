@@ -187,15 +187,13 @@ static const int SOURCE_GALLERY = 1;
     NSString *tmpFile = [NSString stringWithFormat:@"image_picker_%@.jpg", guid];
     NSString *tmpDirectory = NSTemporaryDirectory();
     NSString *tmpPath = [tmpDirectory stringByAppendingPathComponent:tmpFile];
-    
+
     if ([[NSFileManager defaultManager] createFileAtPath:tmpPath contents:data attributes:nil]) {
-        if (_result) {
-            _result(tmpPath);
-        }
+      _result(tmpPath);
     } else {
-        _result([FlutterError errorWithCode:@"create_error"
-                                    message:@"Temporary file could not be created"
-                                    details:nil]);
+      _result([FlutterError errorWithCode:@"create_error"
+                                  message:@"Temporary file could not be created"
+                                  details:nil]);
     }
 
     _result = nil;
@@ -210,15 +208,13 @@ static const int SOURCE_GALLERY = 1;
     NSString *tmpPath = [tmpDirectory stringByAppendingPathComponent:tmpFile];
     
     if ([[NSFileManager defaultManager] createFileAtPath:tmpPath contents:data attributes:nil]) {
-        if (_result) {
-            _result(tmpPath);
-        }
+      _result(tmpPath);
     } else {
-        _result([FlutterError errorWithCode:@"create_error"
-                                    message:@"Temporary file could not be created"
-                                    details:nil]);
+      _result([FlutterError errorWithCode:@"create_error"
+                                  message:@"Temporary file could not be created"
+                                  details:nil]);
     }
-    
+
     _result = nil;
     _arguments = nil;
 }
@@ -228,15 +224,14 @@ static const int SOURCE_GALLERY = 1;
     NSURL *videoURL = [info objectForKey:UIImagePickerControllerMediaURL];
     UIImage *image = [info objectForKey:UIImagePickerControllerEditedImage];
     [_imagePickerController dismissViewControllerAnimated:YES completion:nil];
-    
+
     if (videoURL != nil) {
-        [self onPickVideo:videoURL];
-    } else if (image != nil) {
-        [self onPickImage:image];
+      [self onPickVideo:videoURL];
     } else {
-        _result(nil);
-        _result = nil;
-        _arguments = nil;
+      if (image == nil) {
+        image = [info objectForKey:UIImagePickerControllerOriginalImage];
+      }
+      [self onPickImage:image];
     }
 }
 
