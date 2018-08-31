@@ -1,3 +1,7 @@
+## 0.0.4
+
+* Fixed podspec to use static_framework
+
 ## 0.0.3
 
 * Added missing dependency on meta package.
