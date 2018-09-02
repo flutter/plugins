@@ -415,8 +415,11 @@ public class CameraPlugin implements MethodCallHandler {
       int displayRotation = activity.getWindowManager().getDefaultDisplay().getRotation();
       int displayOrientation = ORIENTATIONS.get(displayRotation);
       if (isFrontFacing) displayOrientation = -displayOrientation;
-      mediaRecorder.setOrientationHint((displayOrientation + sensorOrientation) % 360);
+      //mediaRecorder.setOrientationHint((displayOrientation + sensorOrientation) % 360);
 
+      //new
+      mediaRecorder.setOrientationHint(90);
+      
       mediaRecorder.prepare();
     }
 
