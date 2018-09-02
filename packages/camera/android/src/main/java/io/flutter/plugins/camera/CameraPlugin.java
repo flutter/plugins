@@ -358,7 +358,6 @@ public class CameraPlugin implements MethodCallHandler {
     private void computeBestPreviewAndRecordingSize(
         StreamConfigurationMap streamConfigurationMap, Size minPreviewSize, Size captureSize) {
       Size[] sizes = streamConfigurationMap.getOutputSizes(SurfaceTexture.class);
-      Log.d("cameraPlugin", sizes.toString());
       float captureSizeRatio = (float) captureSize.getWidth() / captureSize.getHeight();
       List<Size> goodEnough = new ArrayList<>();
       for (Size s : sizes) {
