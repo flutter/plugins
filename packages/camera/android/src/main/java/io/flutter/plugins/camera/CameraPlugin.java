@@ -421,7 +421,7 @@ public class CameraPlugin implements MethodCallHandler {
       //mediaRecorder.setOrientationHint((displayOrientation + sensorOrientation) % 360);
 
       //new
-      mediaRecorder.setOrientationHint(90);
+     // mediaRecorder.setOrientationHint(90);
       
       mediaRecorder.prepare();
     }
