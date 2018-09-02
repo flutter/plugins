@@ -358,6 +358,7 @@ public class CameraPlugin implements MethodCallHandler {
     private void computeBestPreviewAndRecordingSize(
         StreamConfigurationMap streamConfigurationMap, Size minPreviewSize, Size captureSize) {
       Size[] sizes = streamConfigurationMap.getOutputSizes(SurfaceTexture.class);
+      Log.d("cameraPlugin", sizes.toString());
       float captureSizeRatio = (float) captureSize.getWidth() / captureSize.getHeight();
       List<Size> goodEnough = new ArrayList<>();
       for (Size s : sizes) {
@@ -409,7 +410,7 @@ public class CameraPlugin implements MethodCallHandler {
       mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
       mediaRecorder.setAudioSamplingRate(16000);
       mediaRecorder.setVideoFrameRate(27);
-      mediaRecorder.setVideoSize(540, 1080);
+      mediaRecorder.setVideoSize(videoSize.getWidth(), videoSize.getHeight());
       mediaRecorder.setOutputFile(outputFilePath);
 
       int displayRotation = activity.getWindowManager().getDefaultDisplay().getRotation();
