@@ -261,7 +261,7 @@ public class CameraPlugin implements MethodCallHandler {
         Size minPreviewSize;
         switch (resolutionPreset) {
           case "high":
-            minPreviewSize = new Size(768, 1366); //1024, 768
+            minPreviewSize = new Size(540, 1080); //1024, 768
             break;
           case "medium":
             minPreviewSize = new Size(640, 480);
