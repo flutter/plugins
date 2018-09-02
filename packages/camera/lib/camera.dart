@@ -207,7 +207,7 @@ class CameraController extends ValueNotifier<CameraValue> {
       _textureId = reply['textureId'];
       value = value.copyWith(
         isInitialized: true,
-        previewSize: new Size(1080.0, 720.0
+        previewSize: new Size(1280.0, 720.0
           //reply['previewWidth'].toDouble(),
           //reply['previewHeight'].toDouble(),
         ),
