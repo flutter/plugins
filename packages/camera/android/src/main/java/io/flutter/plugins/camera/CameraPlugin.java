@@ -400,7 +400,7 @@ public class CameraPlugin implements MethodCallHandler {
         mediaRecorder.release();
       }
       mediaRecorder = new MediaRecorder();
-      mediaRecorder.setVideoEncodingBitRate(1024 * 2500);
+      mediaRecorder.setVideoEncodingBitRate(1024 * 1800);
 
       mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
       mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
