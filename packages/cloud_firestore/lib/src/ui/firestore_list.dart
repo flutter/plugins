@@ -10,6 +10,10 @@ import 'package:meta/meta.dart';
 
 import '../../cloud_firestore.dart';
 
+// pub global run flutter_plugin_tools format --plugins cloud_firestore
+// pub global run flutter_plugin_tools analyze --plugins cloud_firestore
+// pub global run flutter_plugin_tools test --plugins cloud_firestore
+
 typedef void DocumentCallback(int index, DocumentSnapshot snapshot);
 typedef void ValueCallback(DocumentSnapshot snapshot);
 typedef void ErrorCallback(Error error);

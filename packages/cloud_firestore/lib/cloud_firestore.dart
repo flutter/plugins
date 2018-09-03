@@ -17,6 +17,9 @@ import 'package:collection/collection.dart';
 
 import 'src/utils/push_id_generator.dart';
 
+export 'src/ui/animated_firestore_list.dart';
+export 'src/ui/firestore_list.dart';
+
 part 'src/collection_reference.dart';
 part 'src/blob.dart';
 part 'src/document_change.dart';

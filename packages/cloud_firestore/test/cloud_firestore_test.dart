@@ -11,7 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group('$Firestore', () {
+  group('Firestore', () {
     int mockHandleId = 0;
     FirebaseApp app;
     Firestore firestore;
