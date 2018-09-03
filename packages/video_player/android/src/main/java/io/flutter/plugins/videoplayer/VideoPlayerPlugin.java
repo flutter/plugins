@@ -11,6 +11,7 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
+import android.text.TextUtils;
 import android.view.Surface;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -99,7 +100,13 @@ public class VideoPlayerPlugin implements MethodCallHandler {
     }
 
     private MediaSource buildMediaSource(Uri uri, DataSource.Factory mediaDataSourceFactory) {
-      int type = Util.inferContentType(uri.getLastPathSegment());
+      int type;
+      String fileName = uri.getLastPathSegment();
+      if (!TextUtils.isEmpty(fileName)) {
+        type = Util.inferContentType(fileName);
+      } else {
+        type = C.TYPE_OTHER;
+      }
       switch (type) {
         case C.TYPE_SS:
           return new SsMediaSource(
