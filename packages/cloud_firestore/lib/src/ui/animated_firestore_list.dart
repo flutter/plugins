@@ -47,7 +47,7 @@ class FirestoreAnimatedList extends StatefulWidget {
   final Widget defaultChild;
 
   /// A widget to display if an error ocurred. Defaults to a
-  /// centered [Column] with `Icon.error` and the error itsef;
+  /// centered [Column] with `Icons.error` and the error itsef;
   final Widget errorChild;
 
   /// A widget to display if the query returns empty. Defaults to a
