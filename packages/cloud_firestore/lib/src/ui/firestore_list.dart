@@ -79,24 +79,18 @@ class FirestoreList extends ListBase<DocumentSnapshot>
     // Do not call super.clear(), it will set the length, it's unsupported.
   }
 
-  void _log(String message) {
+  void log(String message) {
     if (debug) print("[$TAG] $message");
   }
 
   int _indexForKey(String key) {
-    assert(key != null);
-    for (int index = 0; index < _snapshots.length; index++) {
-      if (key == _snapshots[index].documentID) {
-        _log("Returning $index from _indexForKey($key)");
-        return index;
-      }
-    }
-    return null;
+    assert(key != null && key.isNotEmpty);
+    return _snapshots.indexWhere((item) => item.documentID == key);
   }
 
   void _onData(QuerySnapshot snapshot) {
     if (_snapshots.isEmpty) {
-      _log("Adding all values from query");
+      log("Adding all values from query");
       _snapshots.addAll(snapshot.documents.map(_onValue));
     } else if (snapshot.documentChanges.isNotEmpty) {
       for (DocumentChange change in snapshot.documentChanges) {
@@ -116,32 +110,32 @@ class FirestoreList extends ListBase<DocumentSnapshot>
   }
 
   void _onDocumentAdded(DocumentChange event) {
-    int index = 0;
-    if (event.oldIndex != null) {
-      index = event.oldIndex + 1;
-    }
-    _log("Calling _onDocumentAdded for document ${event.document.documentID}");
-    _snapshots.insert(index, event.document);
-    onDocumentAdded(index, event.document);
+    log("Calling _onDocumentAdded for document ${event.document.documentID}");
+    _snapshots.insert(event.newIndex, event.document);
+    onDocumentAdded(event.newIndex, event.document);
   }
 
   void _onDocumentRemoved(DocumentChange event) {
-    final int index = _indexForKey(event.document.documentID);
-    _log(
-        "Calling _onDocumentRemoved for document ${event.document.documentID}");
-    _snapshots.removeAt(index);
-    onDocumentRemoved(index, event.document);
+    try {
+      log("Calling _onDocumentRemoved for document ${event.document.documentID}");
+      _snapshots.removeAt(event.oldIndex);
+      onDocumentRemoved(event.oldIndex, event.document);
+    } catch (error) {
+      log("Failed on removing item on index ${event.oldIndex}");
+    }
   }
 
   void _onDocumentChanged(DocumentChange event) {
     final int index = _indexForKey(event.document.documentID);
-    _log("Calling onDocumentChanged for document ${event.document.documentID}");
-    _snapshots[index] = event.document;
-    onDocumentChanged(index, event.document);
+    if (index > -1) {
+      log("Calling _onDocumentChanged for document ${event.document.documentID}");
+      _snapshots[index] = event.document;
+      onDocumentChanged(index, event.document);
+    }
   }
 
   DocumentSnapshot _onValue(DocumentSnapshot document) {
-    _log("Calling onValue for document ${document.documentID}");
+    log("Calling onValue for document ${document.documentID}");
     onValue(document);
     return document;
   }

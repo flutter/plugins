@@ -180,15 +180,18 @@ class FirestoreAnimatedListState extends State<FirestoreAnimatedList> {
 
   void _onDocumentRemoved(int index, DocumentSnapshot snapshot) {
     // The child should have already been removed from the model by now
-    assert(index >= _model.length ||
-        _model[index].documentID != snapshot.documentID);
-    _animatedListKey.currentState.removeItem(
-      index,
-      (BuildContext context, Animation<double> animation) {
-        return widget.itemBuilder(context, snapshot, animation, index);
-      },
-      duration: widget.duration,
-    );
+    assert(_model.indexOf(snapshot) == -1);
+    try {
+      _animatedListKey.currentState.removeItem(
+        index,
+        (BuildContext context, Animation<double> animation) {
+          return widget.itemBuilder(context, snapshot, animation, index);
+        },
+        duration: widget.duration,
+      );
+    } catch (error) {
+      _model.log("Failed to remove Widget on index $index");
+    }
   }
 
   // No animation, just update contents
