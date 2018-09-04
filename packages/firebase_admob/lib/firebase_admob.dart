@@ -190,7 +190,7 @@ abstract class MobileAd {
   final String adUnitId;
 
   /// Called when the status of the ad changes.
-  final MobileAdListener listener;
+  MobileAdListener listener;
 
   /// An internal id that identifies this mobile ad to the native AdMob plugin.
   ///
@@ -227,6 +227,12 @@ abstract class MobileAd {
     assert(_allAds[id] != null);
     _allAds[id] = null;
     return _invokeBooleanMethod("disposeAd", <String, dynamic>{'id': id});
+  }
+
+  Future<bool> isLoaded() {
+    return _invokeBooleanMethod("isAdLoaded", <String, dynamic>{
+      'id': id,
+    });
   }
 }
 
