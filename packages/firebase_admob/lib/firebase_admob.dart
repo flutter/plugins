@@ -230,7 +230,7 @@ abstract class MobileAd {
   }
 
   Future<bool> isLoaded() {
-    return _invokeBooleanMethod("isAdLoaded", <String, dynamic> {
+    return _invokeBooleanMethod("isAdLoaded", <String, dynamic>{
       'id': id,
     });
   }

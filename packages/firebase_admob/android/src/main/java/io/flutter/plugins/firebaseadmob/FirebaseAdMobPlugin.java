@@ -156,7 +156,7 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
 
   private void callIsAdLoaded(int id, MethodCall call, Result result) {
     MobileAd ad = MobileAd.getAdForId(id);
-    if(ad == null) {
+    if (ad == null) {
       result.error("no_ad_for_id", "isAdLoaded failed, no add exists for id=" + id, null);
       return;
     }

@@ -211,22 +211,21 @@
 }
 
 - (void)callIsAdLoaded:(NSNumber *)mobileAdId
-          call:(FlutterMethodCall *)call
-          result:(FlutterResult)result {
-            FLTMobileAd *ad = [FLTMobileAd getAdForId:mobileAdId];
-            if(ad == nil) {
-               NSString *message =
-        [NSString stringWithFormat:@"isAdLoaded failed, no ad exists for id=%d", mobileAdId.intValue];
+                  call:(FlutterMethodCall *)call
+                result:(FlutterResult)result {
+  FLTMobileAd *ad = [FLTMobileAd getAdForId:mobileAdId];
+  if (ad == nil) {
+    NSString *message = [NSString
+        stringWithFormat:@"isAdLoaded failed, no ad exists for id=%d", mobileAdId.intValue];
     result([FlutterError errorWithCode:@"no_ad_for_id" message:message details:nil]);
-              return;
-            }
-            if (ad.status == LOADED) {
-              result([NSNumber numberWithBool:YES]);
-            }
-            else {
-              result([NSNumber numberWithBool:NO]);
-            }
-          }
+    return;
+  }
+  if (ad.status == LOADED) {
+    result([NSNumber numberWithBool:YES]);
+  } else {
+    result([NSNumber numberWithBool:NO]);
+  }
+}
 
 - (void)callShowRewardedVideoAd:(FlutterMethodCall *)call result:(FlutterResult)result {
   if (self.rewardedWrapper.status != FLTRewardedVideoAdStatusLoaded) {
