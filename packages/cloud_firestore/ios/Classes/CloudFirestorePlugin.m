@@ -46,6 +46,8 @@ FIRQuery *getQuery(NSDictionary *arguments) {
       query = [query queryWhereField:fieldName isGreaterThan:value];
     } else if ([op isEqualToString:@">="]) {
       query = [query queryWhereField:fieldName isGreaterThanOrEqualTo:value];
+    } else if ([op isEqualToString:@"array-contains"]) {
+      query = [query queryWhereField:fieldName arrayContains:value];
     } else {
       // Unsupported operator
     }
@@ -127,6 +129,8 @@ const UInt8 DATE_TIME = 128;
 const UInt8 GEO_POINT = 129;
 const UInt8 DOCUMENT_REFERENCE = 130;
 const UInt8 BLOB = 131;
+const UInt8 ARRAY_UNION = 132;
+const UInt8 ARRAY_REMOVE = 133;
 
 @interface FirestoreWriter : FlutterStandardWriter
 - (void)writeValue:(id)value;
@@ -195,6 +199,12 @@ const UInt8 BLOB = 131;
     case BLOB: {
       UInt32 elementCount = [self readSize];
       return [self readData:elementCount];
+    }
+    case ARRAY_UNION: {
+      return [FIRFieldValue fieldValueForArrayUnion:[self readValue]];
+    }
+    case ARRAY_REMOVE: {
+      return [FIRFieldValue fieldValueForArrayRemove:[self readValue]];
     }
     default:
       return [super readValueOfType:type];
@@ -457,6 +467,13 @@ const UInt8 BLOB = 131;
     FIRWriteBatch *batch = [_batches objectForKey:handle];
     [batch commitWithCompletion:defaultCompletionBlock];
     [_batches removeObjectForKey:handle];
+  } else if ([@"Firestore#enablePersistence" isEqualToString:call.method]) {
+    bool enable = (bool)call.arguments[@"enable"];
+    FIRFirestoreSettings *settings = [[FIRFirestoreSettings alloc] init];
+    settings.persistenceEnabled = enable;
+    FIRFirestore *db = getFirestore(call.arguments);
+    db.settings = settings;
+    result(nil);
   } else {
     result(FlutterMethodNotImplemented);
   }

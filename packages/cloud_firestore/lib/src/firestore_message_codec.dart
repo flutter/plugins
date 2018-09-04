@@ -12,6 +12,8 @@ class FirestoreMessageCodec extends StandardMessageCodec {
   static const int _kGeoPoint = 129;
   static const int _kDocumentReference = 130;
   static const int _kBlob = 131;
+  static const int _kArrayUnion = 132;
+  static const int _kArrayRemove = 133;
 
   @override
   void writeValue(WriteBuffer buffer, dynamic value) {
@@ -34,6 +36,12 @@ class FirestoreMessageCodec extends StandardMessageCodec {
       buffer.putUint8(_kBlob);
       writeSize(buffer, value.bytes.length);
       buffer.putUint8List(value.bytes);
+    } else if (value is ArrayUnion) {
+      buffer.putUint8(_kArrayUnion);
+      writeValue(buffer, value.value);
+    } else if (value is ArrayRemove) {
+      buffer.putUint8(_kArrayRemove);
+      writeValue(buffer, value.value);
     } else {
       super.writeValue(buffer, value);
     }
@@ -60,6 +68,12 @@ class FirestoreMessageCodec extends StandardMessageCodec {
         final int length = readSize(buffer);
         final List<int> bytes = buffer.getUint8List(length);
         return new Blob(bytes);
+      case _kArrayUnion:
+        final List<dynamic> value = readValue(buffer);
+        return new ArrayUnion(value);
+      case _kArrayRemove:
+        final List<dynamic> value = readValue(buffer);
+        return new ArrayRemove(value);
       default:
         return super.readValueOfType(type, buffer);
     }

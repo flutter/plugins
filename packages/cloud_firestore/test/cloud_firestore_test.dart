@@ -579,6 +579,14 @@ void main() {
         final Blob message = new Blob(bytes);
         _checkEncodeDecode<dynamic>(codec, message);
       });
+
+      test('encode and decode ArrayUnion', () {
+        _checkEncodeDecode<dynamic>(codec, new ArrayUnion(<int>[123]));
+      });
+
+      test('encode and decode ArrayRemove', () {
+        _checkEncodeDecode<dynamic>(codec, new ArrayRemove(<int>[123]));
+      });
     });
 
     group('WriteBatch', () {
