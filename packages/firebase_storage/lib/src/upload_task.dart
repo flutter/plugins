@@ -73,7 +73,6 @@ abstract class StorageUploadTask {
         break;
       case StorageTaskEventType.failure:
         isComplete = true;
-        print('CANCELLED');
         if (event.snapshot.error == StorageError.canceled) {
           isCanceled = true;
         }
