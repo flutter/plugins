@@ -20,8 +20,10 @@ import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
@@ -153,6 +155,8 @@ public class CloudFirestorePlugin implements MethodCallHandler {
         query = query.whereGreaterThan(fieldName, value);
       } else if (">=".equals(operator)) {
         query = query.whereGreaterThanOrEqualTo(fieldName, value);
+      } else if ("array-contains".equals(operator)) {
+        query = query.whereArrayContains(fieldName, value);
       } else {
         // Invalid operator.
       }
@@ -559,6 +563,17 @@ public class CloudFirestorePlugin implements MethodCallHandler {
           addDefaultListeners("delete", task, result);
           break;
         }
+      case "Firestore#enablePersistence":
+        {
+          Map<String, Object> arguments = call.arguments();
+          Boolean enable = (Boolean) arguments.get("enable");
+          FirebaseFirestoreSettings.Builder builder = new FirebaseFirestoreSettings.Builder();
+          builder.setPersistenceEnabled(enable);
+          FirebaseFirestoreSettings settings = builder.build();
+          getFirestore(arguments).setFirestoreSettings(settings);
+          result.success(null);
+          break;
+        }
       default:
         {
           result.notImplemented();
@@ -575,6 +590,8 @@ final class FirestoreMessageCodec extends StandardMessageCodec {
   private static final byte GEO_POINT = (byte) 129;
   private static final byte DOCUMENT_REFERENCE = (byte) 130;
   private static final byte BLOB = (byte) 131;
+  private static final byte ARRAY_UNION = (byte) 132;
+  private static final byte ARRAY_REMOVE = (byte) 133;
 
   @Override
   protected void writeValue(ByteArrayOutputStream stream, Object value) {
@@ -618,6 +635,10 @@ final class FirestoreMessageCodec extends StandardMessageCodec {
       case BLOB:
         final byte[] bytes = readBytes(buffer);
         return Blob.fromBytes(bytes);
+      case ARRAY_UNION:
+        return FieldValue.arrayUnion(readValue(buffer));
+      case ARRAY_REMOVE:
+        return FieldValue.arrayRemove(readValue(buffer));
       default:
         return super.readValueOfType(type, buffer);
     }
