@@ -508,11 +508,13 @@ public class CloudFirestorePlugin implements MethodCallHandler {
           DocumentReference documentReference = getDocumentReference(arguments);
           @SuppressWarnings("unchecked")
           Map<String, Object> options = (Map<String, Object>) arguments.get("options");
+          @SuppressWarnings("unchecked")
+          Map<String, Object> data = (Map<String, Object>) arguments.get("data");
           Task<Void> task;
           if (options != null && (Boolean) options.get("merge")) {
-            task = documentReference.set(arguments.get("data"), SetOptions.merge());
+            task = documentReference.set(data, SetOptions.merge());
           } else {
-            task = documentReference.set(arguments.get("data"));
+            task = documentReference.set(data);
           }
           addDefaultListeners("setData", task, result);
           break;
