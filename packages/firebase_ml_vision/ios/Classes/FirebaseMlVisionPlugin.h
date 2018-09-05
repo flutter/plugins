@@ -23,5 +23,5 @@
 @interface LabelDetector : NSObject<Detector>
 @end
 
-@interface TextDetector : NSObject<Detector>
+@interface TextRecognizer : NSObject<Detector>
 @end
