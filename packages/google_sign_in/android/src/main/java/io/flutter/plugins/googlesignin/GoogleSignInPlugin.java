@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -170,6 +171,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     private static final String ERROR_REASON_SIGN_IN_CANCELED = "sign_in_canceled";
     private static final String ERROR_REASON_SIGN_IN_REQUIRED = "sign_in_required";
     private static final String ERROR_REASON_SIGN_IN_FAILED = "sign_in_failed";
+    private static final String ERROR_REASON_USER_RECOVERABLE_AUTH = "user_recoverable_auth";
 
     private static final String STATE_RESOLVING_ERROR = "resolving_error";
 
@@ -185,6 +187,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     private List<String> requestedScopes;
     private PendingOperation pendingOperation;
     private volatile GoogleSignInAccount currentAccount;
+    private Intent 
 
     public Delegate(PluginRegistry.Registrar registrar) {
       this.registrar = registrar;
@@ -343,6 +346,17 @@ public class GoogleSignInPlugin implements MethodCallHandler {
                 // how it works on iOS.
                 result.success(tokenResult);
               } catch (ExecutionException e) {
+                if (e.getCause() instanceof UserRecoverableAuthException) {
+                  UserRecoverableAuthException exception = (UserRecoverableAuthException) e.getCause();
+                  Map<String, Object> exceptionMap = new HashMap<>();
+                  exceptionMap.put("message", exception.getLocalizedMessage());
+                  result.error(
+                      ERROR_REASON_USER_RECOVERABLE_AUTH,
+                      exception.getLocalizedMessage(),
+                      exceptionMap);
+                  return;
+                }
+
                 Log.e(TAG, "Exception getting access token", e);
                 result.error(ERROR_REASON_EXCEPTION, e.getCause().getMessage(), null);
               } catch (InterruptedException e) {
