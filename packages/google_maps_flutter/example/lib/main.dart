@@ -42,6 +42,5 @@ class MapsDemo extends StatelessWidget {
 }
 
 void main() {
-  final List<NavigatorObserver> observers = <NavigatorObserver>[];
-  runApp(MaterialApp(home: MapsDemo(), navigatorObservers: observers));
+  runApp(MaterialApp(home: MapsDemo()));
 }
