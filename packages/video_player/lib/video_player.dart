@@ -257,6 +257,14 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     _eventSubscription = _eventChannelFor(_textureId)
         .receiveBroadcastStream()
         .listen(eventListener, onError: errorListener);
+
+    // Ensure init is called regardless of whether the init event was sent
+    // before we could subscribe to the broadcast channel
+    await _channel.invokeMethod(
+      'sendInitialized',
+      <String, dynamic>{'textureId': _textureId},
+    );
+
     return initializingCompleter.future;
   }
 

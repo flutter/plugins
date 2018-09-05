@@ -1,3 +1,7 @@
+## 0.6.5
+
+* Fixed race condition that prevented some videos from being displayed
+
 ## 0.6.4
 
 * Android: add support for hls, dash and ss video formats.

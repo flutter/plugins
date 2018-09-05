@@ -35,6 +35,7 @@ int64_t FLTCMTimeToMillis(CMTime time) { return time.value * 1000 / time.timesca
 @property(nonatomic, readonly) bool disposed;
 @property(nonatomic, readonly) bool isPlaying;
 @property(nonatomic, readonly) bool isLooping;
+@property(nonatomic, readonly) bool isReady;
 @property(nonatomic, readonly) bool isInitialized;
 - (instancetype)initWithURL:(NSURL*)url frameUpdater:(FLTFrameUpdater*)frameUpdater;
 - (void)play;
@@ -58,6 +59,7 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
 - (instancetype)initWithURL:(NSURL*)url frameUpdater:(FLTFrameUpdater*)frameUpdater {
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
+  _isReady = false;
   _isInitialized = false;
   _isPlaying = false;
   _disposed = false;
@@ -162,7 +164,7 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
       case AVPlayerItemStatusUnknown:
         break;
       case AVPlayerItemStatusReadyToPlay:
-        _isInitialized = true;
+        _isReady = true;
         [item addOutput:_videoOutput];
         [self sendInitialized];
         [self updatePlayingState];
@@ -187,7 +189,7 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
 }
 
 - (void)updatePlayingState {
-  if (!_isInitialized) {
+  if (!_isReady) {
     return;
   }
   if (_isPlaying) {
@@ -199,7 +201,8 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
 }
 
 - (void)sendInitialized {
-  if (_eventSink && _isInitialized) {
+  if (_eventSink && !_isInitialized && _isReady) {
+    _isInitialized = true;
     CGSize size = [self.player currentItem].presentationSize;
     _eventSink(@{
       @"event" : @"initialized",
@@ -378,6 +381,9 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
       result(nil);
     } else if ([@"pause" isEqualToString:call.method]) {
       [player pause];
+      result(nil);
+    } else if ([@"sendInitialized" isEqualToString:call.method]) {
+      [player sendInitialized];
       result(nil);
     } else {
       result(FlutterMethodNotImplemented);
