@@ -54,7 +54,7 @@ class DocumentReference {
   /// Updates fields in the document referred to by this [DocumentReference].
   ///
   /// Values in [data] may be of any supported Firestore type as well as
-  /// special types [ArrayUnion] and [ArrayRemove].
+  /// special sentinel [FieldValue] type.
   ///
   /// If no document exists yet, the update will fail.
   Future<void> updateData(Map<String, dynamic> data) {
