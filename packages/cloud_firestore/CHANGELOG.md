@@ -1,4 +1,4 @@
-## 0.7.5
+## 0.8.0
 
 Note: this version depends on features available in iOS SDK versions 5.5.0 or later.
 To update iOS SDK in existing projects run `pod update Firebase/Firestore`.
