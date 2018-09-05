@@ -43,7 +43,7 @@ If alarm callbacks will need access to other Flutter plugins, including the
 alarm manager plugin itself, it is necessary to teach the background service how
 to initialize plugins. This is done by giving the `AlarmService` a callback to call
 in the application's `onCreate` method. See the example's
-[Application overrides](https://github.com/flutter/plugins/blob/master/packages/android_alarm_manager/example/android/app/src/main/java/io/flutter/androidalarmmanagerexample/Application.java).
+[Application overrides](https://github.com/flutter/plugins/blob/master/packages/android_alarm_manager/example/android/app/src/main/java/io/flutter/plugins/androidalarmmanagerexample/Application.java).
 In particular, its `Application` class is as follows:
 
 ```java

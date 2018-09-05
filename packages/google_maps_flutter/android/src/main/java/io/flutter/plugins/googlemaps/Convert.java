@@ -37,8 +37,9 @@ class Convert {
           return BitmapDescriptorFactory.fromAsset(
               FlutterMain.getLookupKeyForAsset(toString(data.get(1)), toString(data.get(2))));
         }
+      default:
+        throw new IllegalArgumentException("Cannot interpret " + o + " as BitmapDescriptor");
     }
-    throw new IllegalArgumentException("Cannot interpret " + o + " as BitmapDescriptor");
   }
 
   private static boolean toBoolean(Object o) {
@@ -83,8 +84,9 @@ class Convert {
         return CameraUpdateFactory.zoomOut();
       case "zoomTo":
         return CameraUpdateFactory.zoomTo(toFloat(data.get(1)));
+      default:
+        throw new IllegalArgumentException("Cannot interpret " + o + " as CameraUpdate");
     }
-    throw new IllegalArgumentException("Cannot interpret " + o + " as CameraUpdate");
   }
 
   private static double toDouble(Object o) {

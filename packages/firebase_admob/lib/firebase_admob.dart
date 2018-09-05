@@ -39,15 +39,15 @@ typedef void MobileAdListener(MobileAdEvent event);
 /// This class's properties mirror the native AdRequest API. See for example:
 /// [AdRequest.Builder for Android](https://firebase.google.com/docs/reference/android/com/google/android/gms/ads/AdRequest.Builder).
 class MobileAdTargetingInfo {
-  const MobileAdTargetingInfo({
-    this.keywords,
-    this.contentUrl,
-    this.birthday,
-    this.gender,
-    this.designedForFamilies,
-    this.childDirected,
-    this.testDevices,
-  });
+  const MobileAdTargetingInfo(
+      {this.keywords,
+      this.contentUrl,
+      this.birthday,
+      this.gender,
+      this.designedForFamilies,
+      this.childDirected,
+      this.testDevices,
+      this.nonPersonalizedAds});
 
   final List<String> keywords;
   final String contentUrl;
@@ -56,6 +56,7 @@ class MobileAdTargetingInfo {
   final bool designedForFamilies;
   final bool childDirected;
   final List<String> testDevices;
+  final bool nonPersonalizedAds;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> json = <String, dynamic>{
@@ -66,6 +67,8 @@ class MobileAdTargetingInfo {
       assert(keywords.every((String s) => s != null && s.isNotEmpty));
       json['keywords'] = keywords;
     }
+    if (nonPersonalizedAds != null)
+      json['nonPersonalizedAds'] = nonPersonalizedAds;
     if (contentUrl != null && contentUrl.isNotEmpty)
       json['contentUrl'] = contentUrl;
     if (birthday != null) json['birthday'] = birthday.millisecondsSinceEpoch;
@@ -187,7 +190,7 @@ abstract class MobileAd {
   final String adUnitId;
 
   /// Called when the status of the ad changes.
-  final MobileAdListener listener;
+  MobileAdListener listener;
 
   /// An internal id that identifies this mobile ad to the native AdMob plugin.
   ///
@@ -224,6 +227,12 @@ abstract class MobileAd {
     assert(_allAds[id] != null);
     _allAds[id] = null;
     return _invokeBooleanMethod("disposeAd", <String, dynamic>{'id': id});
+  }
+
+  Future<bool> isLoaded() {
+    return _invokeBooleanMethod("isAdLoaded", <String, dynamic>{
+      'id': id,
+    });
   }
 }
 
