@@ -14,6 +14,16 @@ class FirestoreMessageCodec extends StandardMessageCodec {
   static const int _kBlob = 131;
   static const int _kArrayUnion = 132;
   static const int _kArrayRemove = 133;
+  static const int _kDelete = 134;
+  static const int _kServerTimestamp = 135;
+
+  static const Map<FieldValueType, int> _kFieldValueCodes =
+      <FieldValueType, int>{
+    FieldValueType.arrayUnion: _kArrayUnion,
+    FieldValueType.arrayRemove: _kArrayRemove,
+    FieldValueType.delete: _kDelete,
+    FieldValueType.serverTimestamp: _kServerTimestamp,
+  };
 
   @override
   void writeValue(WriteBuffer buffer, dynamic value) {
@@ -36,12 +46,11 @@ class FirestoreMessageCodec extends StandardMessageCodec {
       buffer.putUint8(_kBlob);
       writeSize(buffer, value.bytes.length);
       buffer.putUint8List(value.bytes);
-    } else if (value is ArrayUnion) {
-      buffer.putUint8(_kArrayUnion);
-      writeValue(buffer, value.value);
-    } else if (value is ArrayRemove) {
-      buffer.putUint8(_kArrayRemove);
-      writeValue(buffer, value.value);
+    } else if (value is FieldValue) {
+      final int code = _kFieldValueCodes[value.type];
+      assert(code != null);
+      buffer.putUint8(code);
+      if (value.value != null) writeValue(buffer, value.value);
     } else {
       super.writeValue(buffer, value);
     }
@@ -70,10 +79,14 @@ class FirestoreMessageCodec extends StandardMessageCodec {
         return new Blob(bytes);
       case _kArrayUnion:
         final List<dynamic> value = readValue(buffer);
-        return new ArrayUnion(value);
+        return FieldValue.arrayUnion(value);
       case _kArrayRemove:
         final List<dynamic> value = readValue(buffer);
-        return new ArrayRemove(value);
+        return FieldValue.arrayRemove(value);
+      case _kDelete:
+        return FieldValue.delete();
+      case _kServerTimestamp:
+        return FieldValue.serverTimestamp();
       default:
         return super.readValueOfType(type, buffer);
     }

@@ -17,12 +17,12 @@ import 'package:meta/meta.dart';
 
 import 'src/utils/push_id_generator.dart';
 
-part 'src/array.dart';
 part 'src/blob.dart';
 part 'src/collection_reference.dart';
 part 'src/document_change.dart';
 part 'src/document_reference.dart';
 part 'src/document_snapshot.dart';
+part 'src/field_value.dart';
 part 'src/firestore.dart';
 part 'src/firestore_message_codec.dart';
 part 'src/geo_point.dart';

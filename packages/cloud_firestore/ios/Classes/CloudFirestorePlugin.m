@@ -131,6 +131,8 @@ const UInt8 DOCUMENT_REFERENCE = 130;
 const UInt8 BLOB = 131;
 const UInt8 ARRAY_UNION = 132;
 const UInt8 ARRAY_REMOVE = 133;
+const UInt8 DELETE = 134;
+const UInt8 SERVER_TIMESTAMP = 135;
 
 @interface FirestoreWriter : FlutterStandardWriter
 - (void)writeValue:(id)value;
@@ -205,6 +207,12 @@ const UInt8 ARRAY_REMOVE = 133;
     }
     case ARRAY_REMOVE: {
       return [FIRFieldValue fieldValueForArrayRemove:[self readValue]];
+    }
+    case DELETE: {
+      return [FIRFieldValue fieldValueForDelete];
+    }
+    case SERVER_TIMESTAMP: {
+      return [FIRFieldValue fieldValueForServerTimestamp];
     }
     default:
       return [super readValueOfType:type];

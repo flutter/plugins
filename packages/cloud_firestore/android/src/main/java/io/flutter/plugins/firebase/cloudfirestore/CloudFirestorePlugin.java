@@ -592,6 +592,8 @@ final class FirestoreMessageCodec extends StandardMessageCodec {
   private static final byte BLOB = (byte) 131;
   private static final byte ARRAY_UNION = (byte) 132;
   private static final byte ARRAY_REMOVE = (byte) 133;
+  private static final byte DELETE = (byte) 134;
+  private static final byte SERVER_TIMESTAMP = (byte) 135;
 
   @Override
   protected void writeValue(ByteArrayOutputStream stream, Object value) {
@@ -639,6 +641,10 @@ final class FirestoreMessageCodec extends StandardMessageCodec {
         return FieldValue.arrayUnion(readValue(buffer));
       case ARRAY_REMOVE:
         return FieldValue.arrayRemove(readValue(buffer));
+      case DELETE:
+        return FieldValue.delete();
+      case SERVER_TIMESTAMP:
+        return FieldValue.serverTimestamp();
       default:
         return super.readValueOfType(type, buffer);
     }
