@@ -420,16 +420,39 @@ class _VideoAppLifeCycleObserver extends WidgetsBindingObserver {
 }
 
 /// Displays the video controlled by [controller].
-class VideoPlayer extends StatelessWidget {
+class VideoPlayer extends StatefulWidget {
   final VideoPlayerController controller;
 
   VideoPlayer(this.controller);
 
   @override
+  _VideoPlayerState createState() => new _VideoPlayerState();
+}
+
+class _VideoPlayerState extends State<VideoPlayer> {
+  int textureId;
+
+  @override
+  void initState() {
+    super.initState();
+    textureId = widget.controller._textureId;
+    // Need to listen for initialization events since the actual texture ID
+    // becomes available after asynchronous initialization finishes.
+    widget.controller.addListener(() {
+      final int newTextureId = widget.controller._textureId;
+      if (newTextureId != textureId) {
+        setState(() {
+          textureId = newTextureId;
+        });
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return controller._textureId == null
+    return textureId == null
         ? new Container()
-        : new Texture(textureId: controller._textureId);
+        : new Texture(textureId: textureId);
   }
 }
 

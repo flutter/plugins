@@ -1,3 +1,8 @@
+## 0.6.5
+
+* Eliminate race conditions around initialization: now initialization events are queued and guaranteed
+  to be delivered to the Dart side. VideoPlayer widget is rebuilt upon completion of initialization.
+
 ## 0.6.4
 
 * Android: add support for hls, dash and ss video formats.
