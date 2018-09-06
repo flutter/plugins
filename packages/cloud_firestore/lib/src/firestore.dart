@@ -120,6 +120,7 @@ class Firestore {
     return result?.cast<String, dynamic>() ?? <String, dynamic>{};
   }
 
+  @deprecated
   Future<void> enablePersistence(bool enable) async {
     assert(enable != null);
     await channel.invokeMethod('Firestore#enablePersistence', <String, dynamic>{
