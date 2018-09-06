@@ -1,3 +1,8 @@
+## 0.7.0
+
+* Add a unit test for controller and texture changes. This is a breaking change since the interface
+  had to be cleaned up to facilitate faking.
+
 ## 0.6.6
 
 * Fix the condition where the player doesn't update when attached controller is changed.
