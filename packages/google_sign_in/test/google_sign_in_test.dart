@@ -16,10 +16,10 @@ void main() {
     );
 
     const Map<String, String> kUserData = <String, String>{
-      "email": "john.doe@gmail.com",
-      "id": "8162538176523816253123",
-      "photoUrl": "https://lh5.googleusercontent.com/photo.jpg",
-      "displayName": "John Doe",
+      'email': 'john.doe@gmail.com',
+      'id': '8162538176523816253123',
+      'photoUrl': 'https://lh5.googleusercontent.com/photo.jpg',
+      'displayName': 'John Doe',
     };
 
     const Map<String, dynamic> kDefaultResponses = <String, dynamic>{
@@ -29,6 +29,10 @@ void main() {
       'signOut': null,
       'disconnect': null,
       'isSignedIn': true,
+      'getTokens': <dynamic, dynamic>{
+        'idToken': '123',
+        'accessToken': '456',
+      },
     };
 
     final List<MethodCall> log = <MethodCall>[];
@@ -263,14 +267,14 @@ void main() {
 
     test('signInSilently suppresses errors by default', () async {
       channel.setMockMethodCallHandler((MethodCall methodCall) {
-        throw "I am an error";
+        throw 'I am an error';
       });
       expect(await googleSignIn.signInSilently(), isNull); // should not throw
     });
 
     test('signInSilently forwards errors', () async {
       channel.setMockMethodCallHandler((MethodCall methodCall) {
-        throw "I am an error";
+        throw 'I am an error';
       });
       expect(googleSignIn.signInSilently(suppressErrors: false),
           throwsA(isInstanceOf<PlatformException>()));
@@ -282,7 +286,7 @@ void main() {
         if (methodCall.method == 'init') {
           initCount++;
           if (initCount == 1) {
-            throw "First init fails";
+            throw 'First init fails';
           }
         }
         return new Future<dynamic>.value(responses[methodCall.method]);
@@ -327,14 +331,92 @@ void main() {
         ],
       );
     });
+
+    test('getTokens', () async {
+      await googleSignIn.signIn();
+      log.clear();
+
+      final GoogleSignInAccount user = googleSignIn.currentUser;
+
+      final GoogleSignInAuthentication auth = await user.authentication;
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall('getTokens', arguments: <String, dynamic>{
+            'email': 'john.doe@gmail.com',
+          }),
+        ],
+      );
+      expect(auth.accessToken, '456');
+      expect(auth.idToken, '123');
+    });
+
+    test('getTokens throws $AndroidUserRecoverableAuthException', () async {
+      await googleSignIn.signIn();
+      log.clear();
+
+      final GoogleSignInAccount user = googleSignIn.currentUser;
+
+      channel.setMockMethodCallHandler((MethodCall call) {
+        if (call.method == 'getTokens') {
+          throw new PlatformException(
+            code: 'user_recoverable_auth',
+            message: 'msg',
+          );
+        }
+
+        return null;
+      });
+      expect(
+        () async => await user.authentication,
+        throwsA(isInstanceOf<AndroidUserRecoverableAuthException>()),
+      );
+
+      channel.setMockMethodCallHandler((MethodCall call) {
+        if (call.method == 'getTokens') {
+          throw new PlatformException(
+            code: 'code',
+            message: 'msg',
+          );
+        }
+
+        return null;
+      });
+      expect(
+        () async => await user.authentication,
+        throwsA(isInstanceOf<PlatformException>()),
+      );
+    });
+
+    test('getTokens throws $PlatformException', () async {
+      await googleSignIn.signIn();
+      log.clear();
+
+      final GoogleSignInAccount user = googleSignIn.currentUser;
+
+      channel.setMockMethodCallHandler((MethodCall call) {
+        if (call.method == 'getTokens') {
+          throw new PlatformException(
+            code: 'code',
+            message: 'msg',
+          );
+        }
+
+        return null;
+      });
+      expect(
+            () async => await user.authentication,
+        throwsA(isInstanceOf<PlatformException>()),
+      );
+    });
   });
 
   group('GoogleSignIn with fake backend', () {
     const FakeUser kUserData = FakeUser(
-      id: "8162538176523816253123",
-      displayName: "John Doe",
-      email: "john.doe@gmail.com",
-      photoUrl: "https://lh5.googleusercontent.com/photo.jpg",
+      id: '8162538176523816253123',
+      displayName: 'John Doe',
+      email: 'john.doe@gmail.com',
+      photoUrl: 'https://lh5.googleusercontent.com/photo.jpg',
     );
 
     GoogleSignIn googleSignIn;

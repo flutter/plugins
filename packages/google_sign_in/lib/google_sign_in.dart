@@ -16,6 +16,11 @@ export 'widgets.dart';
 
 enum SignInOption { standard, games }
 
+/// Signals Google authentication errors that can be recovered with user action.
+///
+/// Is thrown only on android.
+///
+/// Dart equivalent of android `UserRecoverableAuthException`.
 class AndroidUserRecoverableAuthException implements Exception {
   AndroidUserRecoverableAuthException._(
     this.code,
@@ -27,6 +32,10 @@ class AndroidUserRecoverableAuthException implements Exception {
   final String message;
   final String _accountId;
 
+  /// Allows user to take required action for authentication.
+  ///
+  /// Throws [PlatformException] if user fails to successfully recover
+  /// authentication.
   Future<void> recoverAuth() async => await GoogleSignIn.channel
       .invokeMethod('recoverAuth', <String, dynamic>{'accountId': _accountId});
 }
@@ -73,6 +82,16 @@ class GoogleSignInAccount implements GoogleIdentity {
   final String _idToken;
   final GoogleSignIn _googleSignIn;
 
+  /// Retrieve [GoogleSignInAuthentication] for this account.
+  ///
+  /// Throws a [AndroidUserRecoverableAuthException] to signal that a user
+  /// action is required (to provide consent, enter a password, etc.). To
+  /// initiate the user action, clients must run
+  /// `AndroidUserRecoverableAuthException.recoverAuth()`. Upon success, a client
+  /// should invoke this method again to get authentication.
+  ///
+  /// Be sure to handle the [AndroidUserRecoverableAuthException] exception, as
+  /// it is normal behavior that user interaction is required.
   Future<GoogleSignInAuthentication> get authentication async {
     if (_googleSignIn.currentUser != this) {
       throw new StateError('User is no longer signed in.');
