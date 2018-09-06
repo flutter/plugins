@@ -1,3 +1,8 @@
+## 0.5.21
+
+* Added support for Github signin and linking Github/Twitter accounts to
+  existing users
+
 ## 0.5.20
 
 * Replaced usages of guava's: ImmutableList and ImmutableMap with platform
