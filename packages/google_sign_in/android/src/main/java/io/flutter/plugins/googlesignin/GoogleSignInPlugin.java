@@ -57,6 +57,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
   private static final String METHOD_SIGN_OUT = "signOut";
   private static final String METHOD_DISCONNECT = "disconnect";
   private static final String METHOD_IS_SIGNED_IN = "isSignedIn";
+  private static final String METHOD_RECOVER_AUTH = "recoverAuth";
 
   private final IDelegate delegate;
 
@@ -105,6 +106,10 @@ public class GoogleSignInPlugin implements MethodCallHandler {
         delegate.isSignedIn(result);
         break;
 
+      case METHOD_RECOVER_AUTH:
+        delegate.recoverAuth(result);
+        break;
+
       default:
         result.notImplemented();
     }
@@ -149,6 +154,9 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 
     /** Checks if there is a signed in user. */
     public void isSignedIn(Result result);
+
+    /** Method used when signaled that a user action is required. **/
+    public void recoverAuth(Result result);
   }
 
   /**
@@ -162,6 +170,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
    */
   public static final class Delegate implements IDelegate {
     private static final int REQUEST_CODE = 53293;
+    private static final int REQUEST_CODE_RECOVERABLE_AUTH = 12345;
     private static final int REQUEST_CODE_RESOLVE_ERROR = 1001;
 
     private static final String ERROR_REASON_EXCEPTION = "exception";
@@ -187,7 +196,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     private List<String> requestedScopes;
     private PendingOperation pendingOperation;
     private volatile GoogleSignInAccount currentAccount;
-    private Intent 
+    private Intent userRecoverableAuthIntent;
 
     public Delegate(PluginRegistry.Registrar registrar) {
       this.registrar = registrar;
@@ -348,12 +357,11 @@ public class GoogleSignInPlugin implements MethodCallHandler {
               } catch (ExecutionException e) {
                 if (e.getCause() instanceof UserRecoverableAuthException) {
                   UserRecoverableAuthException exception = (UserRecoverableAuthException) e.getCause();
-                  Map<String, Object> exceptionMap = new HashMap<>();
-                  exceptionMap.put("message", exception.getLocalizedMessage());
+                  userRecoverableAuthIntent = exception.getIntent();
                   result.error(
                       ERROR_REASON_USER_RECOVERABLE_AUTH,
                       exception.getLocalizedMessage(),
-                      exceptionMap);
+                      null);
                   return;
                 }
 
@@ -408,6 +416,16 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     public void isSignedIn(final Result result) {
       boolean value = GoogleSignIn.getLastSignedInAccount(registrar.context()) != null;
       result.success(value);
+    }
+
+    @Override
+    public void recoverAuth(Result result) {
+      if (userRecoverableAuthIntent == null) {
+        throw new IllegalStateException("No recoverable auth intent available.");
+      }
+      checkAndSetPendingOperation(METHOD_RECOVER_AUTH, result);
+
+      registrar.activity().startActivityForResult(userRecoverableAuthIntent, REQUEST_CODE_RECOVERABLE_AUTH);
     }
 
     private void onSignInResult(GoogleSignInResult result) {
@@ -477,6 +495,15 @@ public class GoogleSignInPlugin implements MethodCallHandler {
             }
           } else if (pendingOperation != null && pendingOperation.method.equals(METHOD_INIT)) {
             finishWithError(ERROR_REASON_CONNECTION_FAILED, String.valueOf(resultCode));
+          }
+          return true;
+        }
+
+        if (requestCode == REQUEST_CODE_RECOVERABLE_AUTH) {
+          if (resultCode == Activity.RESULT_OK) {
+            pendingOperation.result.success(null);
+          } else {
+            finishWithError(METHOD_RECOVER_AUTH, "User failed to recover authentication.");
           }
           return true;
         }
