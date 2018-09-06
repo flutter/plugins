@@ -261,6 +261,18 @@ class FirebaseAuth {
     return currentUser;
   }
 
+  Future<FirebaseUser> signInWithGithub({
+    @required String token
+  }) async {
+    assert(token != null);
+    final Map<dynamic, dynamic> data = await channel.invokeMethod(
+        'signInWithGithub',
+        <String, String>{ 'token': token }
+    );
+    final FirebaseUser currentUser = new FirebaseUser._(data);
+    return currentUser;
+  }
+
   Future<FirebaseUser> signInWithGoogle({
     @required String idToken,
     @required String accessToken,

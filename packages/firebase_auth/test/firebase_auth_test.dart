@@ -16,6 +16,7 @@ const String kMockEmail = 'test@example.com';
 const String kMockPassword = 'passw0rd';
 const String kMockIdToken = '12345';
 const String kMockAccessToken = '67890';
+const String kMockGithubToken = 'github';
 const String kMockCustomToken = '12345';
 const String kMockPhoneNumber = '5555555555';
 const String kMockVerificationId = '12345';
@@ -259,6 +260,24 @@ void main() {
             'signInWithFacebook',
             arguments: <String, String>{
               'accessToken': kMockAccessToken,
+            },
+          ),
+        ],
+      );
+    });
+
+    test('signInWithGithub', () async {
+      final FirebaseUser user = await auth.signInWithGithub(
+        token: kMockGithubToken,
+      );
+      verifyUser(user);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'signInWithGithub',
+            arguments: <String, String>{
+              'token': kMockGithubToken,
             },
           ),
         ],

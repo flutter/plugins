@@ -96,6 +96,14 @@ int nextHandle = 0;
                               completion:^(FIRUser *user, NSError *error) {
                                 [self sendResult:result forUser:user error:error];
                               }];
+  } else if ([@"signInWithGithub" isEqualToString:call.method]) {
+    NSString *token = call.arguments[@"token"];
+    FIRAuthCredential *credential =
+        [FIRGitHubAuthProvider credentialWithToken:token];
+    [[FIRAuth auth] signInWithCredential:credential
+                              completion:^(FIRUser *user, NSError *error) {
+                                [self sendResult:result forUser:user error:error];
+                              }];
   } else if ([@"createUserWithEmailAndPassword" isEqualToString:call.method]) {
     NSString *email = call.arguments[@"email"];
     NSString *password = call.arguments[@"password"];
