@@ -353,8 +353,6 @@ void main() {
 
     test('getTokens throws $AndroidUserRecoverableAuthException', () async {
       await googleSignIn.signIn();
-      log.clear();
-
       final GoogleSignInAccount user = googleSignIn.currentUser;
 
       channel.setMockMethodCallHandler((MethodCall call) {
@@ -367,6 +365,7 @@ void main() {
 
         return null;
       });
+
       expect(
         () async => await user.authentication,
         throwsA(isInstanceOf<AndroidUserRecoverableAuthException>()),
@@ -375,8 +374,6 @@ void main() {
 
     test('getTokens throws $PlatformException', () async {
       await googleSignIn.signIn();
-      log.clear();
-
       final GoogleSignInAccount user = googleSignIn.currentUser;
 
       channel.setMockMethodCallHandler((MethodCall call) {
@@ -386,6 +383,7 @@ void main() {
 
         return null;
       });
+
       expect(
         () async => await user.authentication,
         throwsA(isInstanceOf<PlatformException>()),

@@ -83,11 +83,11 @@ class GoogleSignInAccount implements GoogleIdentity {
 
   /// Retrieve [GoogleSignInAuthentication] for this account.
   ///
-  /// Throws a [AndroidUserRecoverableAuthException] to signal that a user
-  /// action is required (to provide consent, enter a password, etc.). To
+  /// Throws a [AndroidUserRecoverableAuthException] on Android to signal that a
+  /// user action is required (to provide consent, enter a password, etc.). To
   /// initiate the user action, clients must run
-  /// `AndroidUserRecoverableAuthException.recoverAuth()`. Upon success, a client
-  /// should invoke this method again to get authentication.
+  /// `AndroidUserRecoverableAuthException.recoverAuth()`. Upon success, a
+  /// client should invoke this method again to get authentication.
   ///
   /// Be sure to handle the [AndroidUserRecoverableAuthException] exception, as
   /// it is normal behavior that user interaction is required.
