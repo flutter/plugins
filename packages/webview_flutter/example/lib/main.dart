@@ -16,14 +16,11 @@ class WebViewExample extends StatelessWidget {
         // This drop down menu demonstrates that Flutter widgets can be shown over the web view.
         actions: <Widget>[const SampleMenu()],
       ),
-      body: WebView(
-        onWebViewCreated: _onWebViewCreated,
+      body: const WebView(
+        initialUrl: 'https://youtube.com',
+        javaScriptMode: JavaScriptMode.unrestricted,
       ),
     );
-  }
-
-  void _onWebViewCreated(WebViewController controller) {
-    controller.loadUrl('https://flutter.io');
   }
 }
 
