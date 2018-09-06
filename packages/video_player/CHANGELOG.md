@@ -1,3 +1,7 @@
+## 0.6.6
+
+* Fix the condition where the player doesn't update when attached controller is changed.
+
 ## 0.6.5
 
 * Eliminate race conditions around initialization: now initialization events are queued and guaranteed

@@ -430,29 +430,48 @@ class VideoPlayer extends StatefulWidget {
 }
 
 class _VideoPlayerState extends State<VideoPlayer> {
-  int textureId;
+  VoidCallback _listener;
+  int _textureId;
+
+  _VideoPlayerState() {
+    _listener = () {
+      final int newTextureId = widget.controller._textureId;
+      if (newTextureId != _textureId) {
+        setState(() {
+          _textureId = newTextureId;
+        });
+      }
+    };
+  }
 
   @override
   void initState() {
     super.initState();
-    textureId = widget.controller._textureId;
+    _textureId = widget.controller._textureId;
     // Need to listen for initialization events since the actual texture ID
     // becomes available after asynchronous initialization finishes.
-    widget.controller.addListener(() {
-      final int newTextureId = widget.controller._textureId;
-      if (newTextureId != textureId) {
-        setState(() {
-          textureId = newTextureId;
-        });
-      }
-    });
+    widget.controller.addListener(_listener);
+  }
+
+  @override
+  void didUpdateWidget(VideoPlayer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    oldWidget.controller.removeListener(_listener);
+    _textureId = widget.controller._textureId;
+    widget.controller.addListener(_listener);
+  }
+
+  @override
+  void deactivate() {
+    super.deactivate();
+    widget.controller.removeListener(_listener);
   }
 
   @override
   Widget build(BuildContext context) {
-    return textureId == null
+    return _textureId == null
         ? new Container()
-        : new Texture(textureId: textureId);
+        : new Texture(textureId: _textureId);
   }
 }
 
