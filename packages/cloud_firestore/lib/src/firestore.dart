@@ -128,7 +128,11 @@ class Firestore {
     });
   }
 
-  Future<void> settings({bool persistenceEnabled, String host, bool sslEnabled, bool timestampsInSnapshotsEnabled}) async {
+  Future<void> settings(
+      {bool persistenceEnabled,
+      String host,
+      bool sslEnabled,
+      bool timestampsInSnapshotsEnabled}) async {
     await channel.invokeMethod('Firestore#settings', <String, dynamic>{
       'app': app.name,
       'persistenceEnabled': persistenceEnabled,

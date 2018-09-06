@@ -594,7 +594,8 @@ public class CloudFirestorePlugin implements MethodCallHandler {
           }
 
           if (arguments.get("timestampsInSnapshotsEnabled") != null) {
-            builder.setTimestampsInSnapshotsEnabled((Boolean) arguments.get("timestampsInSnapshotsEnabled"));
+            builder.setTimestampsInSnapshotsEnabled(
+                (Boolean) arguments.get("timestampsInSnapshotsEnabled"));
           }
 
           FirebaseFirestoreSettings settings = builder.build();
