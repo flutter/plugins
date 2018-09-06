@@ -127,4 +127,14 @@ class Firestore {
       'enable': enable,
     });
   }
+
+  Future<void> settings({bool persistenceEnabled, String host, bool sslEnabled, bool timestampsInSnapshotsEnabled}) async {
+    await channel.invokeMethod('Firestore#settings', <String, dynamic>{
+      'app': app.name,
+      'persistenceEnabled': persistenceEnabled,
+      'host': host,
+      'sslEnabled': sslEnabled,
+      'timestampsInSnapshotsEnabled': timestampsInSnapshotsEnabled,
+    });
+  }
 }

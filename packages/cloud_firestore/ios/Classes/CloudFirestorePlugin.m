@@ -482,6 +482,23 @@ const UInt8 SERVER_TIMESTAMP = 135;
     FIRFirestore *db = getFirestore(call.arguments);
     db.settings = settings;
     result(nil);
+  } else if ([@"Firestore#settings" isEqualToString:call.method]) {
+    FIRFirestoreSettings *settings = [[FIRFirestoreSettings alloc] init];
+    if (![call.arguments[@"persistenceEnabled"] isEqual:[NSNull null]]) {
+      settings.persistenceEnabled = (bool)call.arguments[@"persistenceEnabled"];
+    }
+    if (![call.arguments[@"host"] isEqual:[NSNull null]]) {
+      settings.host = (NSString *)call.arguments[@"host"];
+    }
+    if (![call.arguments[@"sslEnabled"] isEqual:[NSNull null]]) {
+      settings.sslEnabled = (bool)call.arguments[@"sslEnabled"];
+    }
+    if (![call.arguments[@"timestampsInSnapshotsEnabled"] isEqual:[NSNull null]]) {
+      settings.timestampsInSnapshotsEnabled = (bool)call.arguments[@"timestampsInSnapshotsEnabled"];
+    }
+    FIRFirestore *db = getFirestore(call.arguments);
+    db.settings = settings;
+    result(nil);
   } else {
     result(FlutterMethodNotImplemented);
   }

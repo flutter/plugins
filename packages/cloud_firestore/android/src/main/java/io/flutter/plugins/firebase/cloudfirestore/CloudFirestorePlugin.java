@@ -576,6 +576,36 @@ public class CloudFirestorePlugin implements MethodCallHandler {
           result.success(null);
           break;
         }
+      case "Firestore#settings":
+        {
+          final Map<String, Object> arguments = call.arguments();
+          final FirebaseFirestoreSettings.Builder builder = new FirebaseFirestoreSettings.Builder();
+
+          final Boolean persistenceEnabled = (Boolean) arguments.get("persistenceEnabled");
+          if (persistenceEnabled != null) {
+            builder.setPersistenceEnabled(enable);
+          }
+
+          final String host = (String) arguments.get("host");
+          if (host != null  && !host.isEmpty()) {
+            builder.setHost(host);
+          }
+
+          final Boolean sslEnabled = (Boolean) arguments.get("sslEnabled");
+          if (sslEnabled != null) {
+            builder.setSslEnabled(sslEnabled);
+          }
+
+          final Boolean timestampsInSnapshotsEnabled = (Boolean) arguments.get("timestampsInSnapshotsEnabled");
+          if (timestampsInSnapshotsEnabled != null) {
+            builder.setTimestampsInSnapshotsEnabled(timestampsInSnapshotsEnabled);
+          }
+
+          FirebaseFirestoreSettings settings = builder.build();
+          getFirestore(arguments).setFirestoreSettings(settings);
+          result.success(null);
+          break;
+        }
       default:
         {
           result.notImplemented();
