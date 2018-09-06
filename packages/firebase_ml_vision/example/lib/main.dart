@@ -6,9 +6,10 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
-import 'package:firebase_ml_vision_example/detector_painters.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+
+import 'detector_painters.dart';
 
 void main() => runApp(new MaterialApp(home: _MyHomePage()));
 

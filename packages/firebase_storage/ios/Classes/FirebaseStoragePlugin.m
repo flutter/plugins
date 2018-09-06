@@ -18,10 +18,16 @@
 }
 @end
 
+@interface FLTFirebaseStoragePlugin ()
+@property(nonatomic, retain) FlutterMethodChannel *channel;
+@end
+
 @implementation FLTFirebaseStoragePlugin {
   NSMutableDictionary<NSString * /* app name */,
                       NSMutableDictionary<NSString * /* bucket */, FIRStorage *> *> *_storageMap;
   FIRStorage *storage;
+  int _nextUploadHandle;
+  NSMutableDictionary<NSNumber *, FIRStorageUploadTask *> *_uploadTasks;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -29,6 +35,7 @@
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/firebase_storage"
                                   binaryMessenger:[registrar messenger]];
   FLTFirebaseStoragePlugin *instance = [[FLTFirebaseStoragePlugin alloc] init];
+  instance.channel = channel;
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
@@ -39,6 +46,8 @@
       [FIRApp configure];
     }
     _storageMap = [[NSMutableDictionary alloc] init];
+    _uploadTasks = [NSMutableDictionary<NSNumber *, FIRStorageUploadTask *> dictionary];
+    _nextUploadHandle = 0;
   }
   return self;
 }
@@ -79,6 +88,12 @@
     [self updateMetadata:call result:result];
   } else if ([@"StorageReference#writeToFile" isEqualToString:call.method]) {
     [self writeToFile:call result:result];
+  } else if ([@"UploadTask#pause" isEqualToString:call.method]) {
+    [self pauseUploadTask:call result:result];
+  } else if ([@"UploadTask#resume" isEqualToString:call.method]) {
+    [self resumeUploadTask:call result:result];
+  } else if ([@"UploadTask#cancel" isEqualToString:call.method]) {
+    [self cancelUploadTask:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -179,21 +194,65 @@
     metadata = [self buildMetadataFromDictionary:metadataDictionary];
   }
   FIRStorageReference *fileRef = [storage.reference child:path];
-  [fileRef putData:data
-          metadata:metadata
-        completion:^(FIRStorageMetadata *metadata, NSError *error) {
-          if (error != nil) {
-            result(error.flutterError);
-          } else {
-            [fileRef downloadURLWithCompletion:^(NSURL *URL, NSError *error) {
-              if (error != nil) {
-                result(error.flutterError);
-              } else {
-                result(URL.absoluteString);
-              }
-            }];
-          }
-        }];
+  FIRStorageUploadTask *uploadTask = [fileRef putData:data metadata:metadata];
+  NSNumber *handle = [NSNumber numberWithInt:_nextUploadHandle++];
+  [uploadTask observeStatus:FIRStorageTaskStatusSuccess
+                    handler:^(FIRStorageTaskSnapshot *snapshot) {
+                      [self invokeStorageTaskEvent:handle type:kSuccess snapshot:snapshot];
+                      [self->_uploadTasks removeObjectForKey:handle];
+                    }];
+  [uploadTask observeStatus:FIRStorageTaskStatusProgress
+                    handler:^(FIRStorageTaskSnapshot *snapshot) {
+                      [self invokeStorageTaskEvent:handle type:kProgress snapshot:snapshot];
+                    }];
+  [uploadTask observeStatus:FIRStorageTaskStatusResume
+                    handler:^(FIRStorageTaskSnapshot *snapshot) {
+                      [self invokeStorageTaskEvent:handle type:kResume snapshot:snapshot];
+                    }];
+  [uploadTask observeStatus:FIRStorageTaskStatusPause
+                    handler:^(FIRStorageTaskSnapshot *snapshot) {
+                      [self invokeStorageTaskEvent:handle type:kPause snapshot:snapshot];
+                    }];
+  [uploadTask observeStatus:FIRStorageTaskStatusFailure
+                    handler:^(FIRStorageTaskSnapshot *snapshot) {
+                      [self invokeStorageTaskEvent:handle type:kFailure snapshot:snapshot];
+                      [self->_uploadTasks removeObjectForKey:handle];
+                    }];
+  _uploadTasks[handle] = uploadTask;
+  result(handle);
+}
+
+typedef NS_ENUM(NSUInteger, StorageTaskEventType) {
+  kResume,
+  kProgress,
+  kPause,
+  kSuccess,
+  kFailure
+};
+
+- (void)invokeStorageTaskEvent:(NSNumber *)handle
+                          type:(StorageTaskEventType)type
+                      snapshot:(FIRStorageTaskSnapshot *)snapshot {
+  NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+  [dictionary setValue:handle forKey:@"handle"];
+  [dictionary setValue:@((int)type) forKey:@"type"];
+  [dictionary setValue:[self buildDictionaryFromTaskSnapshot:snapshot] forKey:@"snapshot"];
+  [self.channel invokeMethod:@"StorageTaskEvent" arguments:dictionary];
+}
+
+- (NSDictionary *)buildDictionaryFromTaskSnapshot:(FIRStorageTaskSnapshot *)snapshot {
+  NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
+  [dictionary setValue:@((long)([snapshot.progress completedUnitCount]))
+                forKey:@"bytesTransferred"];
+  [dictionary setValue:@((long)([snapshot.progress totalUnitCount])) forKey:@"totalByteCount"];
+  if ([snapshot error] != nil) {
+    [dictionary setValue:@((long)[snapshot.error code]) forKey:@"error"];
+  }
+  if ([snapshot metadata] != nil) {
+    [dictionary setValue:[self buildDictionaryFromMetadata:snapshot.metadata]
+                  forKey:@"storageMetadata"];
+  }
+  return dictionary;
 }
 
 - (FIRStorageMetadata *)buildMetadataFromDictionary:(NSDictionary *)dictionary {
@@ -342,6 +401,39 @@
       result(nil);
     }
   }];
+}
+
+- (void)pauseUploadTask:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSNumber *handle = call.arguments[@"handle"];
+  FIRStorageUploadTask *task = [_uploadTasks objectForKey:handle];
+  if (task != nil) {
+    [task pause];
+    result(nil);
+  } else {
+    result([FlutterError errorWithCode:@"pause_error" message:@"task == null" details:nil]);
+  }
+}
+
+- (void)resumeUploadTask:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSNumber *handle = call.arguments[@"handle"];
+  FIRStorageUploadTask *task = [_uploadTasks objectForKey:handle];
+  if (task != nil) {
+    [task resume];
+    result(nil);
+  } else {
+    result([FlutterError errorWithCode:@"resume_error" message:@"task == null" details:nil]);
+  }
+}
+
+- (void)cancelUploadTask:(FlutterMethodCall *)call result:(FlutterResult)result {
+  NSNumber *handle = call.arguments[@"handle"];
+  FIRStorageUploadTask *task = [_uploadTasks objectForKey:handle];
+  if (task != nil) {
+    [task cancel];
+    result(nil);
+  } else {
+    result([FlutterError errorWithCode:@"cancel_error" message:@"task == null" details:nil]);
+  }
 }
 
 @end

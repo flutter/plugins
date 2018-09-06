@@ -67,7 +67,7 @@
     if (_dynamicLink.minimumAppVersion) {
       iosData[@"minimumVersion"] = _dynamicLink.minimumAppVersion;
     }
-
+    _dynamicLink = nil;
     dynamicLink[@"ios"] = iosData;
     return dynamicLink;
   } else {

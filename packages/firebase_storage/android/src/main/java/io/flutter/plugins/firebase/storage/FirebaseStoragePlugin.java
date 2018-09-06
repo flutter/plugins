@@ -6,13 +6,17 @@ package io.flutter.plugins.firebase.storage;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import com.google.android.gms.tasks.Continuation;
+import android.util.SparseArray;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnPausedListener;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageException;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -28,14 +32,19 @@ import java.util.Map;
 /** FirebaseStoragePlugin */
 public class FirebaseStoragePlugin implements MethodCallHandler {
   private FirebaseStorage firebaseStorage;
+  private final MethodChannel channel;
+
+  private int nextUploadHandle = 0;
+  private final SparseArray<UploadTask> uploadTasks = new SparseArray<>();
 
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_storage");
-    channel.setMethodCallHandler(new FirebaseStoragePlugin(registrar));
+    channel.setMethodCallHandler(new FirebaseStoragePlugin(channel, registrar));
   }
 
-  private FirebaseStoragePlugin(Registrar registrar) {
+  private FirebaseStoragePlugin(MethodChannel channel, Registrar registrar) {
+    this.channel = channel;
     FirebaseApp.initializeApp(registrar.context());
   }
 
@@ -104,6 +113,15 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
         break;
       case "StorageReference#writeToFile":
         writeToFile(call, result);
+        break;
+      case "UploadTask#pause":
+        pauseUploadTask(call, result);
+        break;
+      case "UploadTask#resume":
+        resumeUploadTask(call, result);
+        break;
+      case "UploadTask#cancel":
+        cancelUploadTask(call, result);
         break;
       default:
         result.notImplemented();
@@ -240,7 +258,8 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
     } else {
       uploadTask = ref.putFile(Uri.fromFile(file), buildMetadataFromMap(metadata));
     }
-    addResultListeners(uploadTask, result);
+    final int handle = addUploadListeners(uploadTask);
+    result.success(handle);
   }
 
   private void putData(MethodCall call, Result result) {
@@ -254,32 +273,8 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
     } else {
       uploadTask = ref.putBytes(bytes, buildMetadataFromMap(metadata));
     }
-    addResultListeners(uploadTask, result);
-  }
-
-  private void addResultListeners(UploadTask uploadTask, final Result result) {
-    uploadTask
-        .continueWithTask(
-            new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-              @Override
-              public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                return task.getResult().getMetadata().getReference().getDownloadUrl();
-              }
-            })
-        .addOnSuccessListener(
-            new OnSuccessListener<Uri>() {
-              @Override
-              public void onSuccess(Uri uri) {
-                result.success(uri.toString());
-              }
-            })
-        .addOnFailureListener(
-            new OnFailureListener() {
-              @Override
-              public void onFailure(@NonNull Exception e) {
-                result.error("upload_error", e.getMessage(), null);
-              }
-            });
+    final int handle = addUploadListeners(uploadTask);
+    result.success(handle);
   }
 
   private StorageMetadata buildMetadataFromMap(Map<String, Object> map) {
@@ -365,5 +360,121 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
             result.error("download_error", e.getMessage(), null);
           }
         });
+  }
+
+  private void pauseUploadTask(MethodCall call, final Result result) {
+    int handle = call.argument("handle");
+    UploadTask task = uploadTasks.get(handle);
+    if (task != null) {
+      task.pause();
+      result.success(null);
+    } else {
+      result.error("pause_error", "task == null", null);
+    }
+  }
+
+  private void cancelUploadTask(MethodCall call, final Result result) {
+    int handle = call.argument("handle");
+    UploadTask task = uploadTasks.get(handle);
+    if (task != null) {
+      task.cancel();
+      result.success(null);
+    } else {
+      result.error("cancel_error", "task == null", null);
+    }
+  }
+
+  private void resumeUploadTask(MethodCall call, final Result result) {
+    int handle = call.argument("handle");
+    UploadTask task = uploadTasks.get(handle);
+    if (task != null) {
+      task.resume();
+      result.success(null);
+    } else {
+      result.error("resume_error", "task == null", null);
+    }
+  }
+
+  private int addUploadListeners(final UploadTask uploadTask) {
+    final int handle = ++nextUploadHandle;
+    uploadTask
+        .addOnProgressListener(
+            new OnProgressListener<UploadTask.TaskSnapshot>() {
+              @Override
+              public void onProgress(UploadTask.TaskSnapshot snapshot) {
+                invokeStorageTaskEvent(handle, StorageTaskEventType.progress, snapshot, null);
+              }
+            })
+        .addOnPausedListener(
+            new OnPausedListener<UploadTask.TaskSnapshot>() {
+              @Override
+              public void onPaused(UploadTask.TaskSnapshot snapshot) {
+                invokeStorageTaskEvent(handle, StorageTaskEventType.pause, snapshot, null);
+              }
+            })
+        .addOnCompleteListener(
+            new OnCompleteListener<UploadTask.TaskSnapshot>() {
+              @Override
+              public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                if (!task.isSuccessful()) {
+                  invokeStorageTaskEvent(
+                      handle,
+                      StorageTaskEventType.failure,
+                      uploadTask.getSnapshot(),
+                      (StorageException) task.getException());
+                } else {
+                  invokeStorageTaskEvent(
+                      handle, StorageTaskEventType.success, task.getResult(), null);
+                }
+                uploadTasks.remove(handle);
+              }
+            });
+    uploadTasks.put(handle, uploadTask);
+    return handle;
+  }
+
+  private enum StorageTaskEventType {
+    resume,
+    progress,
+    pause,
+    success,
+    failure
+  }
+
+  private void invokeStorageTaskEvent(
+      int handle,
+      StorageTaskEventType type,
+      UploadTask.TaskSnapshot snapshot,
+      StorageException error) {
+    channel.invokeMethod("StorageTaskEvent", buildMapFromTaskEvent(handle, type, snapshot, error));
+  }
+
+  private Map<String, Object> buildMapFromTaskEvent(
+      int handle,
+      StorageTaskEventType type,
+      UploadTask.TaskSnapshot snapshot,
+      StorageException error) {
+    Map<String, Object> map = new HashMap<>();
+    map.put("handle", handle);
+    map.put("type", type.ordinal());
+    map.put("snapshot", buildMapFromTaskSnapshot(snapshot, error));
+    return map;
+  }
+
+  private Map<String, Object> buildMapFromTaskSnapshot(
+      UploadTask.TaskSnapshot snapshot, StorageException error) {
+    Map<String, Object> map = new HashMap<>();
+    map.put("bytesTransferred", snapshot.getBytesTransferred());
+    map.put("totalByteCount", snapshot.getTotalByteCount());
+    if (snapshot.getUploadSessionUri() != null) {
+      map.put("uploadSessionUri", snapshot.getUploadSessionUri().toString());
+    }
+    if (error != null) {
+      map.put("error", error.getErrorCode());
+    }
+    if (snapshot.getMetadata() != null) {
+      map.put("storageMetadata", buildMapFromMetadata(snapshot.getMetadata()));
+    }
+    return map;
   }
 }

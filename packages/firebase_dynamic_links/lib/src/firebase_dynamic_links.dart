@@ -19,8 +19,9 @@ class FirebaseDynamicLinks {
 
   /// Attempts to retrieve a pending dynamic link.
   ///
-  /// This method always returns a Future. That Future completes to null, if
-  /// there is no pending dynamic link.
+  /// This method always returns a Future. That Future completes to null if
+  /// there is no pending dynamic link or any call to this method after the
+  /// the first attempt.
   Future<PendingDynamicLinkData> retrieveDynamicLink() async {
     final Map<dynamic, dynamic> linkData =
         await channel.invokeMethod('FirebaseDynamicLinks#retrieveDynamicLink');
