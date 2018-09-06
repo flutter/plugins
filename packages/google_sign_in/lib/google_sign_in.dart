@@ -5,7 +5,8 @@
 import 'dart:async';
 import 'dart:ui' show hashValues;
 
-import 'package:flutter/services.dart' show MethodChannel, PlatformException;
+import 'package:flutter/services.dart'
+    show MethodCall, MethodChannel, PlatformException;
 import 'package:meta/meta.dart' show visibleForTesting;
 
 import 'src/common.dart';
@@ -14,6 +15,21 @@ export 'src/common.dart';
 export 'widgets.dart';
 
 enum SignInOption { standard, games }
+
+class AndroidUserRecoverableAuthException implements Exception {
+  AndroidUserRecoverableAuthException._(
+    this.code,
+    this.message,
+    this._accountId,
+  );
+
+  final String code;
+  final String message;
+  final String _accountId;
+
+  Future<void> recoverAuth() async => await GoogleSignIn.channel
+      .invokeMethod('recoverAuth', <String, dynamic>{'accountId': _accountId});
+}
 
 class GoogleSignInAuthentication {
   final Map<dynamic, dynamic> _data;
@@ -40,6 +56,8 @@ class GoogleSignInAccount implements GoogleIdentity {
     assert(id != null);
   }
 
+  static const String _userRecoverableAuthError = 'user_recoverable_auth';
+
   @override
   final String displayName;
 
@@ -60,11 +78,20 @@ class GoogleSignInAccount implements GoogleIdentity {
       throw new StateError('User is no longer signed in.');
     }
 
-    final Map<dynamic, dynamic> response =
-        await GoogleSignIn.channel.invokeMethod(
-      'getTokens',
-      <String, dynamic>{'email': email},
-    );
+    Map<dynamic, dynamic> response;
+    try {
+      response = await GoogleSignIn.channel.invokeMethod(
+        'getTokens',
+        <String, dynamic>{'email': email},
+      );
+    } on PlatformException catch (e) {
+      if (e.code == _userRecoverableAuthError) {
+        throw new AndroidUserRecoverableAuthException._(e.code, e.message, id);
+      }
+
+      rethrow;
+    }
+
     // On Android, there isn't an API for refreshing the idToken, so re-use
     // the one we obtained on login.
     if (response['idToken'] == null) {

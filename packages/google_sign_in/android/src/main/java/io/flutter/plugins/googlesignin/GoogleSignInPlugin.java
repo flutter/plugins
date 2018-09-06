@@ -107,7 +107,8 @@ public class GoogleSignInPlugin implements MethodCallHandler {
         break;
 
       case METHOD_RECOVER_AUTH:
-        delegate.recoverAuth(result);
+        String accountId = call.argument("accountId");
+        delegate.recoverAuth(result, accountId);
         break;
 
       default:
@@ -156,7 +157,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     public void isSignedIn(Result result);
 
     /** Method used when signaled that a user action is required. **/
-    public void recoverAuth(Result result);
+    public void recoverAuth(Result result, String accountId);
   }
 
   /**
@@ -358,10 +359,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
                 if (e.getCause() instanceof UserRecoverableAuthException) {
                   UserRecoverableAuthException exception = (UserRecoverableAuthException) e.getCause();
                   userRecoverableAuthIntent = exception.getIntent();
-                  result.error(
-                      ERROR_REASON_USER_RECOVERABLE_AUTH,
-                      exception.getLocalizedMessage(),
-                      null);
+                  result.error(ERROR_REASON_USER_RECOVERABLE_AUTH, exception.getLocalizedMessage(), null);
                   return;
                 }
 
@@ -405,6 +403,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
                 @Override
                 public void onResult(@NonNull Status status) {
                   currentAccount = null;
+                  userRecoverableAuthIntent = null;
                   // TODO(tvolkert): communicate status back to user
                   finishWithSuccess(null);
                 }
@@ -419,9 +418,11 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     }
 
     @Override
-    public void recoverAuth(Result result) {
+    public void recoverAuth(Result result, String accountId) {
       if (userRecoverableAuthIntent == null) {
         throw new IllegalStateException("No recoverable auth intent available.");
+      } else if (currentAccount != null && !accountId.equals(currentAccount.getId())) {
+        throw new IllegalStateException("No recoverable auth intent for this account.");
       }
       checkAndSetPendingOperation(METHOD_RECOVER_AUTH, result);
 
@@ -497,9 +498,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
             finishWithError(ERROR_REASON_CONNECTION_FAILED, String.valueOf(resultCode));
           }
           return true;
-        }
-
-        if (requestCode == REQUEST_CODE_RECOVERABLE_AUTH) {
+        } else if (requestCode == REQUEST_CODE_RECOVERABLE_AUTH) {
           if (resultCode == Activity.RESULT_OK) {
             pendingOperation.result.success(null);
           } else {
