@@ -10,7 +10,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'page.dart';
 
 class ScrollingMapPage extends Page {
-  ScrollingMapPage() : super(const Icon(Icons.list), 'Scrolling map');
+  ScrollingMapPage() : super(const Icon(Icons.map), 'Scrolling map');
 
   @override
   Widget build(BuildContext context) {
@@ -103,24 +103,5 @@ class ScrollingMapBody extends StatelessWidget {
       ),
       infoWindowText: const InfoWindowText('An interesting location', '*'),
     ));
-  }
-}
-
-class EagerGestureRecognizer extends OneSequenceGestureRecognizer {
-  @override
-  void addPointer(PointerDownEvent event) {
-    startTrackingPointer(event.pointer);
-  }
-
-  @override
-  String get debugDescription => 'eager';
-
-  @override
-  void didStopTrackingLastPointer(int pointer) {}
-
-  @override
-  void handleEvent(PointerEvent event) {
-    resolve(GestureDisposition.accepted);
-    stopTrackingPointer(event.pointer);
   }
 }
