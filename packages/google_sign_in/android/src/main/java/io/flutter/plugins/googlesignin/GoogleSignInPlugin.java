@@ -156,7 +156,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     /** Checks if there is a signed in user. */
     public void isSignedIn(Result result);
 
-    /** Method used when signaled that a user action is required. **/
+    /** Method used when signaled that a user action is required. */
     public void recoverAuth(Result result, String accountId);
   }
 
@@ -357,9 +357,11 @@ public class GoogleSignInPlugin implements MethodCallHandler {
                 result.success(tokenResult);
               } catch (ExecutionException e) {
                 if (e.getCause() instanceof UserRecoverableAuthException) {
-                  UserRecoverableAuthException exception = (UserRecoverableAuthException) e.getCause();
+                  UserRecoverableAuthException exception =
+                      (UserRecoverableAuthException) e.getCause();
                   userRecoverableAuthIntent = exception.getIntent();
-                  result.error(ERROR_REASON_USER_RECOVERABLE_AUTH, exception.getLocalizedMessage(), null);
+                  result.error(
+                      ERROR_REASON_USER_RECOVERABLE_AUTH, exception.getLocalizedMessage(), null);
                   return;
                 }
 
@@ -424,9 +426,11 @@ public class GoogleSignInPlugin implements MethodCallHandler {
       } else if (currentAccount != null && !accountId.equals(currentAccount.getId())) {
         throw new IllegalStateException("No recoverable auth intent for this account.");
       }
-      checkAndSetPendingOperation(METHOD_RECOVER_AUTH, result);
 
-      registrar.activity().startActivityForResult(userRecoverableAuthIntent, REQUEST_CODE_RECOVERABLE_AUTH);
+      checkAndSetPendingOperation(METHOD_RECOVER_AUTH, result);
+      registrar
+          .activity()
+          .startActivityForResult(userRecoverableAuthIntent, REQUEST_CODE_RECOVERABLE_AUTH);
     }
 
     private void onSignInResult(GoogleSignInResult result) {
