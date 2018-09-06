@@ -261,14 +261,10 @@ class FirebaseAuth {
     return currentUser;
   }
 
-  Future<FirebaseUser> signInWithGithub({
-    @required String token
-  }) async {
+  Future<FirebaseUser> signInWithGithub({@required String token}) async {
     assert(token != null);
-    final Map<dynamic, dynamic> data = await channel.invokeMethod(
-        'signInWithGithub',
-        <String, String>{ 'token': token }
-    );
+    final Map<dynamic, dynamic> data = await channel
+        .invokeMethod('signInWithGithub', <String, String>{'token': token});
     final FirebaseUser currentUser = new FirebaseUser._(data);
     return currentUser;
   }
@@ -457,14 +453,11 @@ class FirebaseAuth {
     return currentUser;
   }
 
-  Future<FirebaseUser> linkWithGithubCredential({
-    @required String token
-  }) async {
+  Future<FirebaseUser> linkWithGithubCredential(
+      {@required String token}) async {
     assert(token != null);
     final Map<dynamic, dynamic> data = await channel.invokeMethod(
-      'linkWithGithubCredential',
-      <String, String>{ 'token': token }
-    );
+        'linkWithGithubCredential', <String, String>{'token': token});
     final FirebaseUser currentUser = new FirebaseUser._(data);
     return currentUser;
   }
