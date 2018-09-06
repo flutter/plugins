@@ -72,6 +72,15 @@ public class LocalAuthPlugin implements MethodCallHandler {
                 }
               });
       authenticationHelper.authenticate();
+    } else if(call.method.equals("isFingerPrintAvailable")){
+      Activity activity = registrar.activity();
+      AuthenticationHelper authenticationHelper = new AuthenticationHelper(
+        activity,
+        call,
+        null
+      );
+      boolean isAvailable = authenticationHelper.isFingerPrintAvailable();
+      result.success(isAvailable);
     } else {
       result.notImplemented();
     }

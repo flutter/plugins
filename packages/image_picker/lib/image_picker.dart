@@ -52,7 +52,6 @@ class ImagePicker {
         'maxHeight': maxHeight,
       },
     );
-
     return path == null ? null : new File(path);
   }
 

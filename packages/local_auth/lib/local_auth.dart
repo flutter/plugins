@@ -72,4 +72,8 @@ class LocalAuthentication {
     }
     return await _channel.invokeMethod('authenticateWithBiometrics', args);
   }
+
+  Future<bool> isFingerprintAVailable() async{
+      return await _channel.invokeMethod('isFingerPrintAvailable');
+  }
 }
