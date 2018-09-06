@@ -581,24 +581,20 @@ public class CloudFirestorePlugin implements MethodCallHandler {
           final Map<String, Object> arguments = call.arguments();
           final FirebaseFirestoreSettings.Builder builder = new FirebaseFirestoreSettings.Builder();
 
-          final Boolean persistenceEnabled = (Boolean) arguments.get("persistenceEnabled");
-          if (persistenceEnabled != null) {
-            builder.setPersistenceEnabled(enable);
+          if (arguments.get("persistenceEnabled") != null) {
+            builder.setPersistenceEnabled((Boolean) arguments.get("persistenceEnabled"));
           }
 
-          final String host = (String) arguments.get("host");
-          if (host != null  && !host.isEmpty()) {
-            builder.setHost(host);
+          if (arguments.get("host") != null) {
+            builder.setHost((String) arguments.get("host"));
           }
 
-          final Boolean sslEnabled = (Boolean) arguments.get("sslEnabled");
-          if (sslEnabled != null) {
-            builder.setSslEnabled(sslEnabled);
+          if (arguments.get("sslEnabled") != null) {
+            builder.setSslEnabled((Boolean) arguments.get("sslEnabled"));
           }
 
-          final Boolean timestampsInSnapshotsEnabled = (Boolean) arguments.get("timestampsInSnapshotsEnabled");
-          if (timestampsInSnapshotsEnabled != null) {
-            builder.setTimestampsInSnapshotsEnabled(timestampsInSnapshotsEnabled);
+          if (arguments.get("timestampsInSnapshotsEnabled") != null) {
+            builder.setTimestampsInSnapshotsEnabled((Boolean) arguments.get("timestampsInSnapshotsEnabled"));
           }
 
           FirebaseFirestoreSettings settings = builder.build();
