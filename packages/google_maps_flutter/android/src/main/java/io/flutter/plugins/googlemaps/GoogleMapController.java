@@ -25,6 +25,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
@@ -33,6 +34,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import android.content.res.AssetManager;
+import android.util.Log;
+import java.io.InputStream;
+import java.io.IOException;
+import java.util.Scanner;
 
 /** Controller of a single GoogleMaps MapView instance. */
 final class GoogleMapController
@@ -155,6 +161,31 @@ final class GoogleMapController
 
   @Override
   public void onMapReady(GoogleMap googleMap) {
+
+    try {
+      // Customise the styling of the map using a JSON asset file.
+      // First check the assets whether the style.json file is exist or not,
+      // then convert it to a String and pass that string to the setMapStyle.
+      AssetManager assetManager = registrar.context().getAssets();
+
+      // TODO: Handle custom styles from clients dynamically.
+      String key = registrar.lookupKeyForAsset("assets/map/style.json");
+
+      InputStream inputStream = assetManager.open(key);
+
+      Scanner scanner = new Scanner(inputStream, "UTF-8");
+      String str = scanner.useDelimiter("\\A").next();
+
+      boolean success = googleMap.setMapStyle(new MapStyleOptions(str));
+
+      // TODO: Handle errors and exceptions appropriately.
+      if (!success) {
+        Log.e("onMapReady", "Map styling - key: " + key + ", json: " + str);
+      }
+    } catch (IOException e) {
+      Log.e("onMapReady", "Map styling - : error msg: " + e.getMessage());
+    }
+
     this.googleMap = googleMap;
     googleMap.setOnInfoWindowClickListener(this);
     if (mapReadyResult != null) {

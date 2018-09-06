@@ -37,6 +37,13 @@ android {
             signingConfig signingConfigs.debug
         }
     }
+
+    aaptOptions {
+        // Disabling compression for JSON files.
+        // The JSON files are not automatically exluded from compression by aapt,
+        // but AssetManager requires uncompressed asset.
+        noCompress 'json'
+    }
 }
 
 flutter {
