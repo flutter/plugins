@@ -98,8 +98,7 @@ int nextHandle = 0;
                               }];
   } else if ([@"signInWithGithub" isEqualToString:call.method]) {
     NSString *token = call.arguments[@"token"];
-    FIRAuthCredential *credential =
-        [FIRGitHubAuthProvider credentialWithToken:token];
+    FIRAuthCredential *credential = [FIRGitHubAuthProvider credentialWithToken:token];
     [[FIRAuth auth] signInWithCredential:credential
                               completion:^(FIRUser *user, NSError *error) {
                                 [self sendResult:result forUser:user error:error];
@@ -180,6 +179,22 @@ int nextHandle = 0;
   } else if ([@"linkWithFacebookCredential" isEqualToString:call.method]) {
     NSString *accessToken = call.arguments[@"accessToken"];
     FIRAuthCredential *credential = [FIRFacebookAuthProvider credentialWithAccessToken:accessToken];
+    [[FIRAuth auth].currentUser linkWithCredential:credential
+                                        completion:^(FIRUser *user, NSError *error) {
+                                          [self sendResult:result forUser:user error:error];
+                                        }];
+  } else if ([@"linkWithTwitterCredential" isEqualToString:call.method]) {
+    NSString *authToken = call.arguments[@"authToken"];
+    NSString *authTokenSecret = call.arguments[@"authTokenSecret"];
+    FIRAuthCredential *credential =
+        [FIRTwitterAuthProvider credentialWithToken:authToken secret:authTokenSecret];
+    [[FIRAuth auth].currentUser linkWithCredential:credential
+                                        completion:^(FIRUser *user, NSError *error) {
+                                          [self sendResult:result forUser:user error:error];
+                                        }];
+  } else if ([@"linkWithGithubCredential" isEqualToString:call.method]) {
+    NSString *token = call.arguments[@"token"];
+    FIRAuthCredential *credential = [FIRGitHubAuthProvider credentialWithToken:token];
     [[FIRAuth auth].currentUser linkWithCredential:credential
                                         completion:^(FIRUser *user, NSError *error) {
                                           [self sendResult:result forUser:user error:error];

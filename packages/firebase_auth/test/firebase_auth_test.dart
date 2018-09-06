@@ -16,6 +16,8 @@ const String kMockEmail = 'test@example.com';
 const String kMockPassword = 'passw0rd';
 const String kMockIdToken = '12345';
 const String kMockAccessToken = '67890';
+const String kMockAuthToken = 'twitter123';
+const String kMockAuthSecret = 'twittersecret';
 const String kMockGithubToken = 'github';
 const String kMockCustomToken = '12345';
 const String kMockPhoneNumber = '5555555555';
@@ -260,6 +262,64 @@ void main() {
             'signInWithFacebook',
             arguments: <String, String>{
               'accessToken': kMockAccessToken,
+            },
+          ),
+        ],
+      );
+    });
+
+    test('linkWithTwitterCredential', () async {
+      final FirebaseUser user = await auth.linkWithTwitterCredential(
+        authToken: kMockAuthToken,
+        authTokenSecret: kMockAuthSecret,
+      );
+      verifyUser(user);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'linkWithTwitterCredential',
+            arguments: <String, String>{
+              'authToken': kMockAuthToken,
+              'authTokenSecret': kMockAuthSecret,
+            },
+          ),
+        ],
+      );
+    });
+
+    test('signInWithTwitter', () async {
+      final FirebaseUser user = await auth.signInWithTwitter(
+        authToken: kMockAuthToken,
+        authTokenSecret: kMockAuthSecret,
+      );
+      verifyUser(user);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'signInWithTwitter',
+            arguments: <String, String>{
+              'authToken': kMockAuthToken,
+              'authTokenSecret': kMockAuthSecret,
+            },
+          ),
+        ],
+      );
+    });
+
+    test('linkWithGithubCredential', () async {
+      final FirebaseUser user = await auth.linkWithGithubCredential(
+        token: kMockGithubToken,
+      );
+      verifyUser(user);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'linkWithGithubCredential',
+            arguments: <String, String>{
+              'token': kMockGithubToken,
             },
           ),
         ],

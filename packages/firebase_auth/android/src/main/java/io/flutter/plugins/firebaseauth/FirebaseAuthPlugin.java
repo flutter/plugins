@@ -114,6 +114,12 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       case "linkWithFacebookCredential":
         handleLinkWithFacebookCredential(call, result);
         break;
+      case "linkWithTwitterCredential":
+        handleLinkWithTwitterCredential(call, result);
+        break;
+      case "linkWithGithubCredential":
+        handleLinkWithGithubCredential(call, result);
+        break;
       case "updateProfile":
         handleUpdateProfile(call, result);
         break;
@@ -369,6 +375,25 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     Map<String, String> arguments = (Map<String, String>) call.arguments;
     String accessToken = arguments.get("accessToken");
     AuthCredential credential = FacebookAuthProvider.getCredential(accessToken);
+    firebaseAuth
+        .getCurrentUser()
+        .linkWithCredential(credential)
+        .addOnCompleteListener(new SignInCompleteListener(result));
+  }
+
+  private void handleLinkWithTwitterCredential(MethodCall call, final Result result) {
+    String authToken = call.argument("authToken");
+    String authTokenSecret = call.argument("authTokenSecret");
+    AuthCredential credential = TwitterAuthProvider.getCredential(authToken, authTokenSecret);
+    firebaseAuth
+        .getCurrentUser()
+        .linkWithCredential(credential)
+        .addOnCompleteListener(new SignInCompleteListener(result));
+  }
+
+  private void handleLinkWithGithubCredential(MethodCall call, final Result result) {
+    String token = call.argument("token");
+    AuthCredential credential = GithubAuthProvider.getCredential(token);
     firebaseAuth
         .getCurrentUser()
         .linkWithCredential(credential)

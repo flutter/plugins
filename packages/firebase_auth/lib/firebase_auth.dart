@@ -440,6 +440,35 @@ class FirebaseAuth {
     return currentUser;
   }
 
+  Future<FirebaseUser> linkWithTwitterCredential({
+    @required String authToken,
+    @required String authTokenSecret,
+  }) async {
+    assert(authToken != null);
+    assert(authTokenSecret != null);
+    final Map<dynamic, dynamic> data = await channel.invokeMethod(
+      'linkWithTwitterCredential',
+      <String, String>{
+        'authToken': authToken,
+        'authTokenSecret': authTokenSecret,
+      },
+    );
+    final FirebaseUser currentUser = new FirebaseUser._(data);
+    return currentUser;
+  }
+
+  Future<FirebaseUser> linkWithGithubCredential({
+    @required String token
+  }) async {
+    assert(token != null);
+    final Map<dynamic, dynamic> data = await channel.invokeMethod(
+      'linkWithGithubCredential',
+      <String, String>{ 'token': token }
+    );
+    final FirebaseUser currentUser = new FirebaseUser._(data);
+    return currentUser;
+  }
+
   /// Sets the user-facing language code for auth operations that can be
   /// internationalized, such as [sendEmailVerification]. This language
   /// code should follow the conventions defined by the IETF in BCP47.
