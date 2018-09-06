@@ -371,21 +371,6 @@ void main() {
         () async => await user.authentication,
         throwsA(isInstanceOf<AndroidUserRecoverableAuthException>()),
       );
-
-      channel.setMockMethodCallHandler((MethodCall call) {
-        if (call.method == 'getTokens') {
-          throw new PlatformException(
-            code: 'code',
-            message: 'msg',
-          );
-        }
-
-        return null;
-      });
-      expect(
-        () async => await user.authentication,
-        throwsA(isInstanceOf<PlatformException>()),
-      );
     });
 
     test('getTokens throws $PlatformException', () async {
@@ -396,16 +381,13 @@ void main() {
 
       channel.setMockMethodCallHandler((MethodCall call) {
         if (call.method == 'getTokens') {
-          throw new PlatformException(
-            code: 'code',
-            message: 'msg',
-          );
+          throw new PlatformException(code: 'code', message: 'msg');
         }
 
         return null;
       });
       expect(
-            () async => await user.authentication,
+        () async => await user.authentication,
         throwsA(isInstanceOf<PlatformException>()),
       );
     });

@@ -1,3 +1,7 @@
+## 3.1.0
+
+* **Breaking change** Add support for handling UserRecoverableAuthException on Android.
+
 ## 3.0.6
 
 * Remove flaky displayName assertion

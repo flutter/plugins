@@ -500,7 +500,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
           return true;
         } else if (requestCode == REQUEST_CODE_RECOVERABLE_AUTH) {
           if (resultCode == Activity.RESULT_OK) {
-            pendingOperation.result.success(null);
+            finishWithSuccess(null);
           } else {
             finishWithError(METHOD_RECOVER_AUTH, "User failed to recover authentication.");
           }

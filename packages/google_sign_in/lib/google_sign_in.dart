@@ -5,8 +5,7 @@
 import 'dart:async';
 import 'dart:ui' show hashValues;
 
-import 'package:flutter/services.dart'
-    show MethodCall, MethodChannel, PlatformException;
+import 'package:flutter/services.dart' show MethodChannel, PlatformException;
 import 'package:meta/meta.dart' show visibleForTesting;
 
 import 'src/common.dart';
