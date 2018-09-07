@@ -135,16 +135,16 @@ class FirebaseAuth {
   final Map<int, Map<String, dynamic>> _phoneAuthCallbacks =
       <int, Map<String, dynamic>>{};
 
+  FirebaseAuth({FirebaseApp app})
+      : this.app = app != null ? app : FirebaseApp.instance {
+    channel.setMethodCallHandler(_callHandler);
+  }
+
   /// Provides an instance of this class corresponding to the default app.
   ///
   /// TODO(jackson): Support for non-default apps.
 
   FirebaseAuth._() {
-    channel.setMethodCallHandler(_callHandler);
-  }
-
-  FirebaseAuth({FirebaseApp app})
-      : this.app = app != null ? app : FirebaseApp.instance {
     channel.setMethodCallHandler(_callHandler);
   }
 
