@@ -1,4 +1,4 @@
-## 0.2.2
+## 0.2.0
 
 * **Breaking Change** Update TextDetector to TextRecognizer for android mlkit '17.0.0' and
 firebase-ios-sdk '5.6.0'.
