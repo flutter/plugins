@@ -421,10 +421,11 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 
     @Override
     public void recoverAuth(Result result, String accountId) {
-      if (userRecoverableAuthIntent == null) {
-        throw new IllegalStateException("No recoverable auth intent available.");
-      } else if (currentAccount != null && !accountId.equals(currentAccount.getId())) {
-        throw new IllegalStateException("No recoverable auth intent for this account.");
+      if (currentAccount == null ||
+          userRecoverableAuthIntent == null ||
+          !accountId.equals(currentAccount.getId())) {
+        result.error(METHOD_RECOVER_AUTH, "Incapable of recovering authentication for this account. Illegal state of plugin.", null);
+        return;
       }
 
       checkAndSetPendingOperation(METHOD_RECOVER_AUTH, result);
@@ -504,9 +505,9 @@ public class GoogleSignInPlugin implements MethodCallHandler {
           return true;
         } else if (requestCode == REQUEST_CODE_RECOVERABLE_AUTH) {
           if (resultCode == Activity.RESULT_OK) {
-            finishWithSuccess(null);
+            finishWithSuccess(true);
           } else {
-            finishWithError(METHOD_RECOVER_AUTH, "User failed to recover authentication.");
+            finishWithSuccess(false);
           }
           return true;
         }

@@ -20,8 +20,8 @@ enum SignInOption { standard, games }
 /// Is thrown only on android.
 ///
 /// Dart equivalent of android `UserRecoverableAuthException`.
-class AndroidUserRecoverableAuthException implements Exception {
-  AndroidUserRecoverableAuthException._(
+class UserRecoverableAuthException implements Exception {
+  UserRecoverableAuthException._(
     this.code,
     this.message,
     this._accountId,
@@ -33,9 +33,11 @@ class AndroidUserRecoverableAuthException implements Exception {
 
   /// Allows user to take required action for authentication.
   ///
-  /// Throws [PlatformException] if user fails to successfully recover
-  /// authentication.
-  Future<void> recoverAuth() async => await GoogleSignIn.channel
+  /// Returns whether user successfully took action to recover authentication.
+  ///
+  /// Throws [PlatformException] if this method is not capable of recovering
+  /// authentication for this user.
+  Future<bool> recoverAuth() async => await GoogleSignIn.channel
       .invokeMethod('recoverAuth', <String, dynamic>{'accountId': _accountId});
 }
 
@@ -83,13 +85,13 @@ class GoogleSignInAccount implements GoogleIdentity {
 
   /// Retrieve [GoogleSignInAuthentication] for this account.
   ///
-  /// Throws a [AndroidUserRecoverableAuthException] on Android to signal that a
+  /// Throws a [UserRecoverableAuthException] on Android to signal that a
   /// user action is required (to provide consent, enter a password, etc.). To
   /// initiate the user action, clients must run
-  /// `AndroidUserRecoverableAuthException.recoverAuth()`. Upon success, a
+  /// `UserRecoverableAuthException.recoverAuth()`. Upon success, a
   /// client should invoke this method again to get authentication.
   ///
-  /// Be sure to handle the [AndroidUserRecoverableAuthException] exception, as
+  /// Be sure to handle the [UserRecoverableAuthException] exception, as
   /// it is normal behavior that user interaction is required.
   Future<GoogleSignInAuthentication> get authentication async {
     if (_googleSignIn.currentUser != this) {
@@ -104,7 +106,7 @@ class GoogleSignInAccount implements GoogleIdentity {
       );
     } on PlatformException catch (e) {
       if (e.code == _userRecoverableAuthError) {
-        throw new AndroidUserRecoverableAuthException._(e.code, e.message, id);
+        throw new UserRecoverableAuthException._(e.code, e.message, id);
       }
 
       rethrow;

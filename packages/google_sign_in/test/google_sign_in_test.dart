@@ -351,7 +351,7 @@ void main() {
       expect(auth.idToken, '123');
     });
 
-    test('getTokens throws $AndroidUserRecoverableAuthException', () async {
+    test('getTokens throws $UserRecoverableAuthException', () async {
       await googleSignIn.signIn();
       final GoogleSignInAccount user = googleSignIn.currentUser;
 
@@ -368,7 +368,7 @@ void main() {
 
       expect(
         () async => await user.authentication,
-        throwsA(isInstanceOf<AndroidUserRecoverableAuthException>()),
+        throwsA(isInstanceOf<UserRecoverableAuthException>()),
       );
     });
 
