@@ -654,9 +654,9 @@ void main() {
 
         final CloudLabelDetector detector =
             FirebaseVision.instance.cloudLabelDetector(
-          const VisionCloudDetectorOptions(
+          const CloudDetectorOptions(
               maxResults: 5,
-              modelType: VisionCloudDetectorOptions.modelTypeLatest),
+              modelType: CloudDetectorOptions.modelTypeLatest),
         );
 
         final FirebaseVisionImage image = new FirebaseVisionImage.fromFilePath(
@@ -672,7 +672,7 @@ void main() {
               'path': 'empty',
               'options': <String, dynamic>{
                 'maxResults': 5,
-                'modelType': VisionCloudDetectorOptions.modelTypeLatest,
+                'modelType': CloudDetectorOptions.modelTypeLatest,
               },
             },
           ),
@@ -692,7 +692,7 @@ void main() {
 
         final CloudLabelDetector detector =
             FirebaseVision.instance.cloudLabelDetector(
-          const VisionCloudDetectorOptions(),
+          const CloudDetectorOptions(),
         );
         final FirebaseVisionImage image =
             new FirebaseVisionImage.fromFilePath('empty');
@@ -706,7 +706,7 @@ void main() {
               'path': 'empty',
               'options': <String, dynamic>{
                 'maxResults': 10,
-                'modelType': VisionCloudDetectorOptions.modelTypeStable,
+                'modelType': CloudDetectorOptions.modelTypeStable,
               },
             },
           ),

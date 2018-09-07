@@ -46,9 +46,9 @@ class FirebaseVision {
   /// Creates an instance of [TextRecognizer].
   TextRecognizer textRecognizer() => TextRecognizer._();
 
-  /// Creates an instance of [LabelDetector].
-  CloudLabelDetector cloudLabelDetector([VisionCloudDetectorOptions options]) {
-    return CloudLabelDetector._(options ?? const VisionCloudDetectorOptions());
+  /// Creates an instance of [CloudLabelDetector].
+  CloudLabelDetector cloudLabelDetector([CloudDetectorOptions options]) {
+    return CloudLabelDetector._(options ?? const CloudDetectorOptions());
   }
 }
 

@@ -5,11 +5,14 @@
 part of firebase_ml_vision;
 
 /// Options for cloud vision detectors.
-///
-class VisionCloudDetectorOptions {
-  /// Constructor for [VisionCloudDetectorOptions].
+class CloudDetectorOptions {
+  /// Constructor for [CloudDetectorOptions].
   ///
-  const VisionCloudDetectorOptions(
+  /// [maxResults] must be greater than 0, otherwise AssertionError is thrown.
+  ///
+  /// [modelType] must be [modelTypeStable] or [modelTypeLatest], otherwise
+  /// AssertionError is thrown.
+  const CloudDetectorOptions(
       {this.maxResults = 10, this.modelType = modelTypeStable})
       : assert(maxResults > 0),
         assert(modelType == modelTypeLatest || modelType == modelTypeStable);
