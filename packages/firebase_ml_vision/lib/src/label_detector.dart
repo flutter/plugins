@@ -63,8 +63,6 @@ class CloudLabelDetector extends FirebaseVisionDetector {
   /// Performed asynchronously.
   @override
   Future<List<Label>> detectInImage(FirebaseVisionImage visionImage) async {
-    debugPrint(
-        'Options: modelType=${options.modelType}, maxResults=${options.maxResults}');
     final List<dynamic> reply = await FirebaseVision.channel.invokeMethod(
       'CloudLabelDetector#detectInImage',
       <String, dynamic>{

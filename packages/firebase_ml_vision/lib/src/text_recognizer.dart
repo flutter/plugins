@@ -14,13 +14,12 @@ part of firebase_ml_vision;
 class TextRecognizer implements FirebaseVisionDetector {
   TextRecognizer._();
 
-  /// Detects text in the input image.
+  /// Detects [VisionText] from a [FirebaseVisionImage].
   ///
   /// The OCR is performed asynchronously.
-  @override
-  Future<VisionText> detectInImage(FirebaseVisionImage visionImage) async {
+  Future<VisionText> processImage(FirebaseVisionImage visionImage) async {
     final Map<dynamic, dynamic> reply =
-        await FirebaseVision.channel.invokeMethod(
+    await FirebaseVision.channel.invokeMethod(
       'TextRecognizer#detectInImage',
       <String, dynamic>{
         'path': visionImage.imageFile.path,
@@ -29,6 +28,14 @@ class TextRecognizer implements FirebaseVisionDetector {
     );
 
     return VisionText._(reply);
+  }
+
+  /// Detects [VisionText] from a [FirebaseVisionImage].
+  ///
+  /// The OCR is performed asynchronously.
+  @override
+  Future<VisionText> detectInImage(FirebaseVisionImage visionImage) async {
+    return processImage(visionImage);
   }
 }
 

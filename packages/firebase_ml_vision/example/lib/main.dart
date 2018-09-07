@@ -21,7 +21,7 @@ class _MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<_MyHomePage> {
   File _imageFile;
   Size _imageSize;
-  List<dynamic> _scanResults;
+  dynamic _scanResults;
   Detector _currentDetector = Detector.text;
 
   Future<void> _getAndScanImage() async {
@@ -91,7 +91,7 @@ class _MyHomePageState extends State<_MyHomePage> {
         return;
     }
 
-    final List<dynamic> results =
+    final dynamic results =
         await detector.detectInImage(visionImage) ?? <dynamic>[];
 
     setState(() {

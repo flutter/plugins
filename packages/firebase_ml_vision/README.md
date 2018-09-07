@@ -42,6 +42,7 @@ Get an instance of a `FirebaseVisionDetector`.
 
 ```dart
 final BarcodeDetector barcodeDetector = FirebaseVision.instance.barcodeDetector();
+final CloudLabelDetector cloudLabelDetector = FirebaseVision.instance.cloudLabelDetector();
 final FaceDetector faceDetector = FirebaseVision.instance.faceDetector();
 final LabelDetector labelDetector = FirebaseVision.instance.labelDetector();
 final TextRecognizer textRecognizer = FirebaseVision.instance.textRecognizer();
@@ -59,6 +60,7 @@ final LabelDetector detector = FirebaseVision.instance.labelDetector(
 
 ```dart
 final List<Barcode> barcodes = await barcodeDetector.detectInImage(visionImage);
+final List<Label> labels = await cloudLabelDetector.detectInImage(visionImage);
 final List<Face> faces = await faceDetector.detectInImage(visionImage);
 final List<Label> labels = await labelDetector.detectInImage(visionImage);
 final VisionText visionText = await textRecognizer.detectInImage(visionImage);
