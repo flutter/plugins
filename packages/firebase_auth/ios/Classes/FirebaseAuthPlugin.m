@@ -124,7 +124,7 @@ int nextHandle = 0;
       [self sendResult:result forProviders:nil error:error];
     }];
   } else if ([@"delete" isEqualToString:call.method]) {
-    [[FIRAuth auth].currentUser deleteWithCompletion:^(NSError *_Nullable error) {
+    [[self getAuth:call.arguments].currentUser deleteWithCompletion:^(NSError *_Nullable error) {
       [self sendResult:result forProviders:nil error:error];
     }];
   } else if ([@"sendPasswordResetEmail" isEqualToString:call.method]) {
@@ -194,7 +194,7 @@ int nextHandle = 0;
     }];
   } else if ([@"updateEmail" isEqualToString:call.method]) {
     NSString *toEmail = call.arguments[@"email"];
-    [[FIRAuth auth].currentUser updateEmail:toEmail
+    [[self getAuth:call.arguments].currentUser updateEmail:toEmail
                                  completion:^(NSError *_Nullable error) {
                                    [self sendResult:result forUser:nil error:error];
                                  }];
@@ -261,13 +261,13 @@ int nextHandle = 0;
     FIRPhoneAuthCredential *credential =
         [[FIRPhoneAuthProvider provider] credentialWithVerificationID:verificationId
                                                      verificationCode:smsCode];
-    [[FIRAuth auth] signInWithCredential:credential
+    [[self getAuth:call.arguments] signInWithCredential:credential
                               completion:^(FIRUser *user, NSError *error) {
                                 [self sendResult:result forUser:user error:error];
                               }];
   } else if ([@"setLanguageCode" isEqualToString:call.method]) {
     NSString *language = call.arguments[@"language"];
-    [[FIRAuth auth] setLanguageCode:language];
+    [[self getAuth:call.arguments] setLanguageCode:language];
     [self sendResult:result forUser:nil error:nil];
   } else {
     result(FlutterMethodNotImplemented);

@@ -99,7 +99,7 @@ class FirebaseUser extends UserInfo {
 
   /// Deletes the user record from your Firebase project's database.
   Future<void> delete() async {
-    await FirebaseAuth.channel.invokeMethod('delete');
+    await FirebaseAuth.channel.invokeMethod('delete', <String, String>{'app': app.name});
   }
 
   @override
@@ -290,9 +290,10 @@ class FirebaseAuth {
       <String, String>{
         'verificationId': verificationId,
         'smsCode': smsCode,
+        'app': app.name
       },
     );
-    final FirebaseUser currentUser = new FirebaseUser._(data);
+    final FirebaseUser currentUser = new FirebaseUser._(data, app);
     return currentUser;
   }
 
@@ -319,6 +320,7 @@ class FirebaseAuth {
       'phoneNumber': phoneNumber,
       'timeout': timeout.inMilliseconds,
       'forceResendingToken': forceResendingToken,
+      'app': app.name
     };
 
     await channel.invokeMethod('verifyPhoneNumber', params);
@@ -376,6 +378,7 @@ class FirebaseAuth {
       'updateEmail',
       <String, String>{
         'email': email,
+        'app': app.name,
       },
     );
   }
@@ -435,6 +438,7 @@ class FirebaseAuth {
     assert(language != null);
     await FirebaseAuth.channel.invokeMethod('setLanguageCode', <String, String>{
       'language': language,
+      'app': app.name,
     });
   }
 
