@@ -1,3 +1,41 @@
+## 0.6.5
+
+* Eliminate race conditions around initialization: now initialization events are queued and guaranteed
+  to be delivered to the Dart side. VideoPlayer widget is rebuilt upon completion of initialization.
+
+## 0.6.4
+
+* Android: add support for hls, dash and ss video formats.
+
+## 0.6.3
+
+* iOS: Allow audio playback in silent mode.
+
+## 0.6.2
+
+* `VideoPlayerController.seekTo()` is now frame accurate on both platforms.
+
+## 0.6.1
+
+* iOS: add missing observer removals to prevent crashes on deallocation. 
+
+## 0.6.0
+
+* Android: use ExoPlayer instead of MediaPlayer for better video format support.
+
+## 0.5.5
+
+* **Breaking change** `VideoPlayerController.initialize()` now only completes after the controller is initialized.
+* Updated example in README.md.
+
+## 0.5.4
+
+* Updated Gradle tooling to match Android Studio 3.1.2.
+
+## 0.5.3
+
+* Added video buffering status.
+
 ## 0.5.2
 
 * Fixed a bug on iOS that could lead to missing initialization.

@@ -1,3 +1,19 @@
+## 3.0.6
+
+* Remove flaky displayName assertion
+
+## 3.0.5
+
+* Added missing http package dependency.
+
+## 3.0.4
+
+* Updated Gradle tooling to match Android Studio 3.1.2.
+
+## 3.0.3+1
+
+* Added documentation on where to find the list of available scopes.
+
 ## 3.0.3
 
 * Added support for games sign in on Android.

@@ -9,22 +9,29 @@ import android.support.annotation.NonNull;
 import android.util.SparseArray;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
+import com.google.firebase.FirebaseApiNotAvailableException;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseException;
+import com.google.firebase.FirebaseTooManyRequestsException;
 import com.google.firebase.auth.*;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /** Flutter plugin for Firebase Auth. */
 public class FirebaseAuthPlugin implements MethodCallHandler {
   private final PluginRegistry.Registrar registrar;
   private final SparseArray<FirebaseAuth.AuthStateListener> authStateListeners =
+      new SparseArray<>();
+  private final SparseArray<PhoneAuthProvider.ForceResendingToken> forceResendingTokens =
       new SparseArray<>();
   private final MethodChannel channel;
 
@@ -76,6 +83,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       case "reload":
         handleReload(call, result, getAuth(call));
         break;
+      case "delete":
+        handleDelete(call, result);
+        break;
       case "signInWithEmailAndPassword":
         handleSignInWithEmailAndPassword(call, result, getAuth(call));
         break;
@@ -109,17 +119,134 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       case "updateProfile":
         handleUpdateProfile(call, result, getAuth(call));
         break;
+      case "updateEmail":
+        handleUpdateEmail(call, result);
+        break;
       case "startListeningAuthState":
         handleStartListeningAuthState(call, result, getAuth(call));
         break;
       case "stopListeningAuthState":
         handleStopListeningAuthState(call, result, getAuth(call));
         break;
+      case "verifyPhoneNumber":
+        handleVerifyPhoneNumber(call, result);
+        break;
+      case "signInWithPhoneNumber":
+        handleSignInWithPhoneNumber(call, result);
+        break;
+      case "setLanguageCode":
+        handleSetLanguageCode(call, result);
+        break;
       default:
         result.notImplemented();
         break;
     }
   }
+
+    private void handleSignInWithPhoneNumber(MethodCall call, Result result) {
+        Map<String, String> arguments = (Map<String, String>) call.arguments;
+        String verificationId = arguments.get("verificationId");
+        String smsCode = arguments.get("smsCode");
+
+        PhoneAuthCredential phoneAuthCredential =
+            PhoneAuthProvider.getCredential(verificationId, smsCode);
+        firebaseAuth
+            .signInWithCredential(phoneAuthCredential)
+            .addOnCompleteListener(new SignInCompleteListener(result));
+    }
+
+    private void handleVerifyPhoneNumber(MethodCall call, Result result) {
+        @SuppressWarnings("unchecked")
+        final int handle = call.argument("handle");
+        String phoneNumber = call.argument("phoneNumber");
+        int timeout = call.argument("timeout");
+
+        PhoneAuthProvider.OnVerificationStateChangedCallbacks verificationCallbacks =
+            new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+                @Override
+                public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
+                    firebaseAuth
+                        .signInWithCredential(phoneAuthCredential)
+                        .addOnCompleteListener(
+                            new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (task.isSuccessful()) {
+                                        Map<String, Object> arguments = new HashMap<>();
+                                        arguments.put("handle", handle);
+                                        channel.invokeMethod("phoneVerificationCompleted", arguments);
+                                    }
+                                }
+                            });
+                }
+
+                @Override
+                public void onVerificationFailed(FirebaseException e) {
+                    Map<String, Object> arguments = new HashMap<>();
+                    arguments.put("handle", handle);
+                    arguments.put("exception", getVerifyPhoneNumberExceptionMap(e));
+                    channel.invokeMethod("phoneVerificationFailed", arguments);
+                }
+
+                @Override
+                public void onCodeSent(
+                    String verificationId, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+                    Map<String, Object> arguments = new HashMap<>();
+                    arguments.put("handle", handle);
+                    arguments.put("verificationId", verificationId);
+                    arguments.put("forceResendingToken", forceResendingToken.hashCode());
+                    channel.invokeMethod("phoneCodeSent", arguments);
+                }
+
+                @Override
+                public void onCodeAutoRetrievalTimeOut(String verificationId) {
+                    Map<String, Object> arguments = new HashMap<>();
+                    arguments.put("handle", handle);
+                    arguments.put("verificationId", verificationId);
+                    channel.invokeMethod("phoneCodeAutoRetrievalTimeout", arguments);
+                }
+            };
+
+        if (call.argument("forceResendingToken") != null) {
+            int forceResendingTokenKey = call.argument("forceResendingToken");
+            PhoneAuthProvider.ForceResendingToken forceResendingToken =
+                forceResendingTokens.get(forceResendingTokenKey);
+            PhoneAuthProvider.getInstance()
+                             .verifyPhoneNumber(
+                                 phoneNumber,
+                                 timeout,
+                                 TimeUnit.MILLISECONDS,
+                                 registrar.activity(),
+                                 verificationCallbacks,
+                                 forceResendingToken);
+        } else {
+            PhoneAuthProvider.getInstance()
+                             .verifyPhoneNumber(
+                                 phoneNumber,
+                                 timeout,
+                                 TimeUnit.MILLISECONDS,
+                                 registrar.activity(),
+                                 verificationCallbacks);
+        }
+    }
+
+    private Map<String, Object> getVerifyPhoneNumberExceptionMap(FirebaseException e) {
+        Map<String, Object> exceptionMap = new HashMap<>();
+        String errorCode = "verifyPhoneNumberError";
+
+        if (e instanceof FirebaseAuthInvalidCredentialsException) {
+            errorCode = "invalidCredential";
+        } else if (e instanceof FirebaseAuthException) {
+            errorCode = "firebaseAuth";
+        } else if (e instanceof FirebaseTooManyRequestsException) {
+            errorCode = "quotaExceeded";
+        } else if (e instanceof FirebaseApiNotAvailableException) {
+            errorCode = "apiNotAvailable";
+        }
+        exceptionMap.put("code", errorCode);
+        exceptionMap.put("message", e.getMessage());
+        return exceptionMap;
+    }
 
   private void handleLinkWithEmailAndPassword(MethodCall call, Result result, FirebaseAuth firebaseAuth) {
     @SuppressWarnings("unchecked")
@@ -141,7 +268,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
           public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
             firebaseAuth.removeAuthStateListener(this);
             FirebaseUser user = firebaseAuth.getCurrentUser();
-            ImmutableMap<String, Object> userMap = mapFromUser(user);
+            Map<String, Object> userMap = mapFromUser(user);
             result.success(userMap);
           }
         };
@@ -208,6 +335,13 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         .signInWithEmailAndPassword(email, password)
         .addOnCompleteListener(new SignInCompleteListener(result));
   }
+
+    private void handleDelete(MethodCall call, final Result result) {
+        firebaseAuth
+            .getCurrentUser()
+            .delete()
+            .addOnCompleteListener(new TaskVoidCompleteListener(result));
+    }
 
   private void handleSignInWithGoogle(MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
     @SuppressWarnings("unchecked")
@@ -324,6 +458,28 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
             });
   }
 
+  private void handleUpdateEmail(MethodCall call, final Result result) {
+    @SuppressWarnings("unchecked")
+    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    String email = arguments.get("email");
+
+    firebaseAuth
+        .getCurrentUser()
+        .updateEmail(email)
+        .addOnCompleteListener(
+            new OnCompleteListener<Void>() {
+              @Override
+              public void onComplete(@NonNull Task<Void> task) {
+                if (!task.isSuccessful()) {
+                  Exception e = task.getException();
+                  result.error(ERROR_REASON_EXCEPTION, e.getMessage(), null);
+                } else {
+                  result.success(null);
+                }
+              }
+            });
+  }
+
   private void handleStartListeningAuthState(MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
     final int handle = nextHandle++;
     FirebaseAuth.AuthStateListener listener =
@@ -331,14 +487,14 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
           @Override
           public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
             FirebaseUser user = firebaseAuth.getCurrentUser();
-            ImmutableMap<String, Object> userMap = mapFromUser(user);
-            ImmutableMap.Builder<String, Object> builder =
-                ImmutableMap.<String, Object>builder().put("id", handle);
+            Map<String, Object> userMap = mapFromUser(user);
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", handle);
 
             if (userMap != null) {
-              builder.put("user", userMap);
+              map.put("user", userMap);
             }
-            channel.invokeMethod("onAuthStateChanged", builder.build());
+            channel.invokeMethod("onAuthStateChanged", Collections.unmodifiableMap(map));
           }
         };
     firebaseAuth.addAuthStateListener(listener);
@@ -353,7 +509,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     FirebaseAuth.AuthStateListener listener = authStateListeners.get(id);
     if (listener != null) {
       firebaseAuth.removeAuthStateListener(listener);
-      authStateListeners.removeAt(id);
+      authStateListeners.remove(id);
       result.success(null);
     } else {
       result.error(
@@ -361,6 +517,15 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
           String.format("Listener with identifier '%d' not found.", id),
           null);
     }
+  }
+
+  private void handleSetLanguageCode(MethodCall call, final Result result) {
+    @SuppressWarnings("unchecked")
+    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    String language = arguments.get("language");
+
+    firebaseAuth.setLanguageCode(language);
+    result.success(null);
   }
 
   private class SignInCompleteListener implements OnCompleteListener<AuthResult> {
@@ -377,7 +542,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         result.error(ERROR_REASON_EXCEPTION, e.getMessage(), null);
       } else {
         FirebaseUser user = task.getResult().getUser();
-        ImmutableMap<String, Object> userMap = mapFromUser(user);
+        Map<String, Object> userMap = Collections.unmodifiableMap(mapFromUser(user));
         result.success(userMap);
       }
     }
@@ -420,37 +585,40 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     }
   }
 
-  private ImmutableMap.Builder<String, Object> userInfoToMap(UserInfo userInfo) {
-    ImmutableMap.Builder<String, Object> builder =
-        ImmutableMap.<String, Object>builder()
-            .put("providerId", userInfo.getProviderId())
-            .put("uid", userInfo.getUid());
+  private Map<String, Object> userInfoToMap(UserInfo userInfo) {
+    Map<String, Object> map = new HashMap<>();
+    map.put("providerId", userInfo.getProviderId());
+    map.put("uid", userInfo.getUid());
     if (userInfo.getDisplayName() != null) {
-      builder.put("displayName", userInfo.getDisplayName());
+      map.put("displayName", userInfo.getDisplayName());
     }
     if (userInfo.getPhotoUrl() != null) {
-      builder.put("photoUrl", userInfo.getPhotoUrl().toString());
+      map.put("photoUrl", userInfo.getPhotoUrl().toString());
     }
     if (userInfo.getEmail() != null) {
-      builder.put("email", userInfo.getEmail());
+      map.put("email", userInfo.getEmail());
     }
-    return builder;
+    if (userInfo.getPhoneNumber() != null) {
+      map.put("phoneNumber", userInfo.getPhoneNumber());
+    }
+    return map;
   }
 
-  private ImmutableMap<String, Object> mapFromUser(FirebaseUser user) {
+  private Map<String, Object> mapFromUser(FirebaseUser user) {
     if (user != null) {
-      ImmutableList.Builder<ImmutableMap<String, Object>> providerDataBuilder =
-          ImmutableList.<ImmutableMap<String, Object>>builder();
+      List<Map<String, Object>> providerData = new ArrayList<>();
       for (UserInfo userInfo : user.getProviderData()) {
-        providerDataBuilder.add(userInfoToMap(userInfo).build());
+        // Ignore phone provider since firebase provider is a super set of the phone provider.
+        if (userInfo.getProviderId().equals("phone")) {
+          continue;
+        }
+        providerData.add(Collections.unmodifiableMap(userInfoToMap(userInfo)));
       }
-      ImmutableMap<String, Object> userMap =
-          userInfoToMap(user)
-              .put("isAnonymous", user.isAnonymous())
-              .put("isEmailVerified", user.isEmailVerified())
-              .put("providerData", providerDataBuilder.build())
-              .build();
-      return userMap;
+      Map<String, Object> userMap = userInfoToMap(user);
+      userMap.put("isAnonymous", user.isAnonymous());
+      userMap.put("isEmailVerified", user.isEmailVerified());
+      userMap.put("providerData", Collections.unmodifiableList(providerData));
+      return Collections.unmodifiableMap(userMap);
     } else {
       return null;
     }

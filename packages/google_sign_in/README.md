@@ -37,7 +37,7 @@ enable the [Google People API](https://developers.google.com/people/).
 		<key>CFBundleURLSchemes</key>
 		<array>
 			<!-- TODO Replace this value: -->
-			<!-- Copied from GoogleServices-Info.plist key REVERSE_CLIENT_ID -->
+			<!-- Copied from GoogleServices-Info.plist key REVERSED_CLIENT_ID -->
 			<string>com.googleusercontent.apps.861823949799-vc35cprkp249096uujjn0vvnmcvjppkn</string>
 		</array>
 	</dict>
@@ -67,8 +67,9 @@ GoogleSignIn _googleSignIn = new GoogleSignIn(
   ],
 );
 ```
+[Full list of available scopes](https://developers.google.com/identity/protocols/googlescopes).
 
-You can now use the `GoogleSignIn` class to authenticate in your Dart code, e.g. 
+You can now use the `GoogleSignIn` class to authenticate in your Dart code, e.g.
 
 ```
 Future<Null> _handleSignIn() async {

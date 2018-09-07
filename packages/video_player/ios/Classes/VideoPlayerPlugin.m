@@ -46,6 +46,8 @@ int64_t FLTCMTimeToMillis(CMTime time) { return time.value * 1000 / time.timesca
 static void* timeRangeContext = &timeRangeContext;
 static void* statusContext = &statusContext;
 static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
+static void* playbackBufferEmptyContext = &playbackBufferEmptyContext;
+static void* playbackBufferFullContext = &playbackBufferFullContext;
 
 @implementation FLTVideoPlayer
 - (instancetype)initWithAsset:(NSString*)asset frameUpdater:(FLTFrameUpdater*)frameUpdater {
@@ -73,6 +75,14 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
          forKeyPath:@"playbackLikelyToKeepUp"
             options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
             context:playbackLikelyToKeepUpContext];
+  [item addObserver:self
+         forKeyPath:@"playbackBufferEmpty"
+            options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
+            context:playbackBufferEmptyContext];
+  [item addObserver:self
+         forKeyPath:@"playbackBufferFull"
+            options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
+            context:playbackBufferFullContext];
 
   _player = [AVPlayer playerWithPlayerItem:item];
   _player.actionAtItemEnd = AVPlayerActionAtItemEndNone;
@@ -161,6 +171,17 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
   } else if (context == playbackLikelyToKeepUpContext) {
     if ([[_player currentItem] isPlaybackLikelyToKeepUp]) {
       [self updatePlayingState];
+      if (_eventSink != nil) {
+        _eventSink(@{@"event" : @"bufferingEnd"});
+      }
+    }
+  } else if (context == playbackBufferEmptyContext) {
+    if (_eventSink != nil) {
+      _eventSink(@{@"event" : @"bufferingStart"});
+    }
+  } else if (context == playbackBufferFullContext) {
+    if (_eventSink != nil) {
+      _eventSink(@{@"event" : @"bufferingEnd"});
     }
   }
 }
@@ -208,7 +229,9 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
 }
 
 - (void)seekTo:(int)location {
-  [_player seekToTime:CMTimeMake(location, 1000)];
+  [_player seekToTime:CMTimeMake(location, 1000)
+      toleranceBefore:kCMTimeZero
+       toleranceAfter:kCMTimeZero];
 }
 
 - (void)setIsLooping:(bool)isLooping {
@@ -250,6 +273,12 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
   [[_player currentItem] removeObserver:self
                              forKeyPath:@"playbackLikelyToKeepUp"
                                 context:playbackLikelyToKeepUpContext];
+  [[_player currentItem] removeObserver:self
+                             forKeyPath:@"playbackBufferEmpty"
+                                context:playbackBufferEmptyContext];
+  [[_player currentItem] removeObserver:self
+                             forKeyPath:@"playbackBufferFull"
+                                context:playbackBufferFullContext];
   [_player replaceCurrentItemWithPlayerItem:nil];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [_eventChannel setStreamHandler:nil];
@@ -286,6 +315,9 @@ static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
   if ([@"init" isEqualToString:call.method]) {
+    // Allow audio playback when the Ring/Silent switch is set to silent
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
+
     for (NSNumber* textureId in _players) {
       [_registry unregisterTexture:[textureId unsignedIntegerValue]];
       [[_players objectForKey:textureId] dispose];

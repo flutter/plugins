@@ -1,3 +1,11 @@
+## 0.2.5
+
+* Bump Android and Firebase dependency versions.
+
+## 0.2.4
+
+* Updated Gradle tooling to match Android Studio 3.1.2.
+
 ## 0.2.3
 
 * Updated Google Play Services dependencies to version 15.0.0.

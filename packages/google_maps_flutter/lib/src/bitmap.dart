@@ -23,7 +23,7 @@ class BitmapDescriptor {
 
   /// Creates a BitmapDescriptor that refers to the default marker image.
   static const BitmapDescriptor defaultMarker =
-      const BitmapDescriptor._(<dynamic>['defaultMarker']);
+      BitmapDescriptor._(<dynamic>['defaultMarker']);
 
   /// Creates a BitmapDescriptor that refers to a colorization of the default
   /// marker image. For convenience, there is a predefined set of hue values.

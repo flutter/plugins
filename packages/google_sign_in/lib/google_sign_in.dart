@@ -37,7 +37,6 @@ class GoogleSignInAccount implements GoogleIdentity {
         id = data['id'],
         photoUrl = data['photoUrl'],
         _idToken = data['idToken'] {
-    assert(displayName != null);
     assert(id != null);
   }
 
@@ -127,7 +126,7 @@ class GoogleSignIn {
   /// The [MethodChannel] over which this class communicates.
   @visibleForTesting
   static const MethodChannel channel =
-      const MethodChannel('plugins.flutter.io/google_sign_in');
+      MethodChannel('plugins.flutter.io/google_sign_in');
 
   /// Option to determine the sign in user experience. [SignInOption.games] must
   /// not be used on iOS.
@@ -146,7 +145,9 @@ class GoogleSignIn {
   ///
   /// The list of [scopes] are OAuth scope codes to request when signing in.
   /// These scope codes will determine the level of data access that is granted
-  /// to your application by the user.
+  /// to your application by the user. The full list of available scopes can
+  /// be found here:
+  /// <https://developers.google.com/identity/protocols/googlescopes>
   ///
   /// The [hostedDomain] argument specifies a hosted domain restriction. By
   /// setting this, sign in will be restricted to accounts of the user in the
@@ -228,10 +229,7 @@ class GoogleSignIn {
       // If after the last completed call currentUser is not null and requested
       // method is a sign in method, re-use the same authenticated user
       // instead of making extra call to the native side.
-      const List<String> kSignInMethods = const <String>[
-        'signIn',
-        'signInSilently'
-      ];
+      const List<String> kSignInMethods = <String>['signIn', 'signInSilently'];
       if (kSignInMethods.contains(method) && _currentUser != null) {
         completer.complete(_currentUser);
       } else {
@@ -264,7 +262,7 @@ class GoogleSignIn {
   /// returned Future completes with [PlatformException] whose `code` can be
   /// either [kSignInRequiredError] (when there is no authenticated user) or
   /// [kSignInFailedError] (when an unknown error occurred).
-  Future<GoogleSignInAccount> signInSilently({bool suppressErrors: true}) {
+  Future<GoogleSignInAccount> signInSilently({bool suppressErrors = true}) {
     final Future<GoogleSignInAccount> result = _addMethodCall('signInSilently');
     if (suppressErrors) {
       return result.catchError((dynamic _) => null);

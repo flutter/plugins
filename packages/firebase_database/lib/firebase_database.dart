@@ -16,3 +16,4 @@ part 'src/database_reference.dart';
 part 'src/event.dart';
 part 'src/firebase_database.dart';
 part 'src/query.dart';
+part 'src/on_disconnect.dart';

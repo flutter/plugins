@@ -81,6 +81,10 @@ class _VideoPlayPauseState extends State<VideoPlayPause> {
         ),
       ),
       new Center(child: imageFadeAnim),
+      new Center(
+          child: controller.value.isBuffering
+              ? const CircularProgressIndicator()
+              : null),
     ];
 
     return new Stack(
@@ -94,7 +98,8 @@ class FadeAnimation extends StatefulWidget {
   final Widget child;
   final Duration duration;
 
-  FadeAnimation({this.child, this.duration: const Duration(milliseconds: 500)});
+  FadeAnimation(
+      {this.child, this.duration = const Duration(milliseconds: 500)});
 
   @override
   _FadeAnimationState createState() => new _FadeAnimationState();
@@ -247,11 +252,15 @@ Widget buildCard(String title) {
             children: <Widget>[
               new FlatButton(
                 child: const Text('BUY TICKETS'),
-                onPressed: () {/* ... */},
+                onPressed: () {
+                  /* ... */
+                },
               ),
               new FlatButton(
                 child: const Text('SELL TICKETS'),
-                onPressed: () {/* ... */},
+                onPressed: () {
+                  /* ... */
+                },
               ),
             ],
           ),
@@ -282,8 +291,8 @@ class VideoInListOfCards extends StatelessWidget {
           new Column(
             children: <Widget>[
               const ListTile(
-                leading: const Icon(Icons.cake),
-                title: const Text("Video video"),
+                leading: Icon(Icons.cake),
+                title: Text("Video video"),
               ),
               new Stack(
                   alignment: FractionalOffset.bottomRight +
@@ -361,14 +370,31 @@ void main() {
             title: const Text('Video player example'),
             bottom: const TabBar(
               isScrollable: true,
-              tabs: const <Widget>[
-                const Tab(icon: const Icon(Icons.fullscreen)),
-                const Tab(icon: const Icon(Icons.list)),
+              tabs: <Widget>[
+                Tab(icon: Icon(Icons.fullscreen)),
+                Tab(icon: Icon(Icons.list)),
               ],
             ),
           ),
           body: new TabBarView(
             children: <Widget>[
+              new Column(
+                children: <Widget>[
+                  new NetworkPlayerLifeCycle(
+                    'http://www.sample-videos.com/video/mp4/720/big_buck_bunny_720p_20mb.mp4',
+                    (BuildContext context, VideoPlayerController controller) =>
+                        new AspectRatioVideo(controller),
+                  ),
+                  new Container(
+                    padding: const EdgeInsets.only(top: 20.0),
+                  ),
+                  new NetworkPlayerLifeCycle(
+                    'http://184.72.239.149/vod/smil:BigBuckBunny.smil/playlist.m3u8',
+                    (BuildContext context, VideoPlayerController controller) =>
+                        new AspectRatioVideo(controller),
+                  ),
+                ],
+              ),
               new NetworkPlayerLifeCycle(
                 'http://www.sample-videos.com/video/mp4/720/big_buck_bunny_720p_20mb.mp4',
                 (BuildContext context, VideoPlayerController controller) =>

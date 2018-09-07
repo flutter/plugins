@@ -138,6 +138,7 @@
   [_captureSession addOutputWithNoConnections:_captureVideoOutput];
   [_captureSession addConnection:connection];
   _capturePhotoOutput = [AVCapturePhotoOutput new];
+  [_capturePhotoOutput setHighResolutionCaptureEnabled:YES];
   [_captureSession addOutput:_capturePhotoOutput];
   return self;
 }
@@ -152,6 +153,7 @@
 
 - (void)captureToFile:(NSString *)path result:(FlutterResult)result {
   AVCapturePhotoSettings *settings = [AVCapturePhotoSettings photoSettings];
+  [settings setHighResolutionPhotoEnabled:YES];
   [_capturePhotoOutput
       capturePhotoWithSettings:settings
                       delegate:[[FLTSavePhotoDelegate alloc] initWithPath:path result:result]];

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@ package io.flutter.plugins.firebaseperformance;
 
 import android.util.SparseArray;
 import com.google.firebase.perf.FirebasePerformance;
+import com.google.firebase.perf.metrics.HttpMetric;
 import com.google.firebase.perf.metrics.Trace;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -19,6 +20,7 @@ public class FirebasePerformancePlugin implements MethodCallHandler {
   private FirebasePerformance firebasePerformance;
 
   private final SparseArray<Trace> traces = new SparseArray<>();
+  private final SparseArray<HttpMetric> httpMetrics = new SparseArray<>();
 
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel =
@@ -47,16 +49,20 @@ public class FirebasePerformancePlugin implements MethodCallHandler {
       case "Trace#stop":
         handleTraceStop(call, result);
         break;
+      case "HttpMetric#start":
+        handleHttpMetricStart(call, result);
+        break;
+      case "HttpMetric#stop":
+        handleHttpMetricStop(call, result);
+        break;
       default:
         result.notImplemented();
     }
   }
 
   private void handleTraceStart(MethodCall call, Result result) {
-    Map<String, Object> arguments = call.arguments();
-
-    int handle = (int) arguments.get("handle");
-    String name = (String) arguments.get("name");
+    Integer handle = call.argument("handle");
+    String name = call.argument("name");
 
     Trace trace = firebasePerformance.newTrace(name);
 
@@ -67,25 +73,92 @@ public class FirebasePerformancePlugin implements MethodCallHandler {
   }
 
   private void handleTraceStop(MethodCall call, Result result) {
-    Map<String, Object> arguments = call.arguments();
-
-    int handle = (int) arguments.get("handle");
+    Integer handle = call.argument("handle");
     Trace trace = traces.get(handle);
 
-    @SuppressWarnings("unchecked")
-    Map<String, Integer> counters = (Map<String, Integer>) arguments.get("counters");
+    Map<String, Integer> counters = call.argument("counters");
     for (Map.Entry<String, Integer> entry : counters.entrySet()) {
       trace.incrementCounter(entry.getKey(), entry.getValue());
     }
 
-    @SuppressWarnings("unchecked")
-    Map<String, String> attributes = (Map<String, String>) arguments.get("attributes");
+    Map<String, String> attributes = call.argument("attributes");
     for (Map.Entry<String, String> entry : attributes.entrySet()) {
       trace.putAttribute(entry.getKey(), entry.getValue());
     }
 
     trace.stop();
     traces.remove(handle);
+    result.success(null);
+  }
+
+  private void handleHttpMetricStart(MethodCall call, Result result) {
+    Integer handle = call.argument("handle");
+    String url = call.argument("url");
+
+    int httpMethod = call.argument("httpMethod");
+    String httpMethodStr;
+    switch (httpMethod) {
+      case 0:
+        httpMethodStr = FirebasePerformance.HttpMethod.CONNECT;
+        break;
+      case 1:
+        httpMethodStr = FirebasePerformance.HttpMethod.DELETE;
+        break;
+      case 2:
+        httpMethodStr = FirebasePerformance.HttpMethod.GET;
+        break;
+      case 3:
+        httpMethodStr = FirebasePerformance.HttpMethod.HEAD;
+        break;
+      case 4:
+        httpMethodStr = FirebasePerformance.HttpMethod.OPTIONS;
+        break;
+      case 5:
+        httpMethodStr = FirebasePerformance.HttpMethod.PATCH;
+        break;
+      case 6:
+        httpMethodStr = FirebasePerformance.HttpMethod.POST;
+        break;
+      case 7:
+        httpMethodStr = FirebasePerformance.HttpMethod.PUT;
+        break;
+      case 8:
+        httpMethodStr = FirebasePerformance.HttpMethod.TRACE;
+        break;
+      default:
+        httpMethodStr = null;
+        break;
+    }
+
+    HttpMetric metric = firebasePerformance.newHttpMetric(url, httpMethodStr);
+
+    httpMetrics.put(handle, metric);
+
+    metric.start();
+    result.success(null);
+  }
+
+  private void handleHttpMetricStop(MethodCall call, Result result) {
+    Integer handle = call.argument("handle");
+    HttpMetric metric = httpMetrics.get(handle);
+
+    Integer httpResponseCode = call.argument("httpResponseCode");
+    Number requestPayloadSize = call.argument("requestPayloadSize");
+    String responseContentType = call.argument("responseContentType");
+    Number responsePayloadSize = call.argument("responsePayloadSize");
+
+    if (requestPayloadSize != null) metric.setRequestPayloadSize(requestPayloadSize.longValue());
+    if (httpResponseCode != null) metric.setHttpResponseCode(httpResponseCode);
+    if (responseContentType != null) metric.setResponseContentType(responseContentType);
+    if (responsePayloadSize != null) metric.setResponsePayloadSize(responsePayloadSize.longValue());
+
+    Map<String, String> attributes = call.argument("attributes");
+    for (Map.Entry<String, String> entry : attributes.entrySet()) {
+      metric.putAttribute(entry.getKey(), entry.getValue());
+    }
+
+    metric.stop();
+    httpMetrics.remove(handle);
     result.success(null);
   }
 }

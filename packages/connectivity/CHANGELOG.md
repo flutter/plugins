@@ -1,3 +1,11 @@
+## 0.3.2
+
+* Adding getWifiName() to obtain current wifi network's SSID.
+
+## 0.3.1
+
+* Updated Gradle tooling to match Android Studio 3.1.2.
+
 ## 0.3.0
 
 * **Breaking change**. Set SDK constraints to match the Flutter beta release.

@@ -20,5 +20,5 @@ import 'package:share/share.dart';
 
 Then invoke the static `share` method anywhere in your Dart code
 ``` dart
-share('check out my website https://example.com');
+Share.share('check out my website https://example.com');
 ```

@@ -17,6 +17,10 @@ const String kMockPassword = 'passw0rd';
 const String kMockIdToken = '12345';
 const String kMockAccessToken = '67890';
 const String kMockCustomToken = '12345';
+const String kMockPhoneNumber = '5555555555';
+const String kMockVerificationId = '12345';
+const String kMockSmsCode = '123456';
+const String kMockLanguage = 'en';
 
 void main() {
   group('$FirebaseAuth', () {
@@ -40,8 +44,14 @@ void main() {
           case "updateProfile":
             return null;
             break;
+          case "updateEmail":
+            return null;
+            break;
           case "fetchProvidersForEmail":
             return new List<String>(0);
+            break;
+          case "verifyPhoneNumber":
+            return null;
             break;
           default:
             return mockFirebaseUser();
@@ -170,6 +180,35 @@ void main() {
       );
     });
 
+    test('signInWithPhoneNumber', () async {
+      await auth.signInWithPhoneNumber(
+          verificationId: kMockVerificationId, smsCode: kMockSmsCode);
+      expect(log, <Matcher>[
+        isMethodCall('signInWithPhoneNumber', arguments: <String, dynamic>{
+          'verificationId': kMockVerificationId,
+          'smsCode': kMockSmsCode,
+        })
+      ]);
+    });
+
+    test('verifyPhoneNumber', () async {
+      await auth.verifyPhoneNumber(
+          phoneNumber: kMockPhoneNumber,
+          timeout: const Duration(seconds: 5),
+          verificationCompleted: null,
+          verificationFailed: null,
+          codeSent: null,
+          codeAutoRetrievalTimeout: null);
+      expect(log, <Matcher>[
+        isMethodCall('verifyPhoneNumber', arguments: <String, dynamic>{
+          'handle': 1,
+          'phoneNumber': kMockPhoneNumber,
+          'timeout': 5000,
+          'forceResendingToken': null,
+        })
+      ]);
+    });
+
     test('linkWithGoogleCredential', () async {
       final FirebaseUser user = await auth.linkWithGoogleCredential(
         idToken: kMockIdToken,
@@ -284,6 +323,25 @@ void main() {
       );
     });
 
+    test('delete', () async {
+      final FirebaseUser user = await auth.currentUser();
+      await user.delete();
+
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'currentUser',
+            arguments: null,
+          ),
+          isMethodCall(
+            'delete',
+            arguments: null,
+          ),
+        ],
+      );
+    });
+
     test('sendPasswordResetEmail', () async {
       await auth.sendPasswordResetEmail(
         email: kMockEmail,
@@ -316,6 +374,20 @@ void main() {
           },
         ),
       ]);
+    });
+
+    test('updateEmail', () async {
+      final String updatedEmail = 'atestemail@gmail.com';
+      auth.updateEmail(email: updatedEmail);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'updateEmail',
+            arguments: <String, String>{'email': updatedEmail},
+          ),
+        ],
+      );
     });
 
     test('signInWithCustomToken', () async {
@@ -381,15 +453,31 @@ void main() {
         ],
       );
     });
+
+    test('setLanguageCode', () async {
+      await auth.setLanguageCode(kMockLanguage);
+
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'setLanguageCode',
+            arguments: <String, String>{
+              'language': kMockLanguage,
+            },
+          ),
+        ],
+      );
+    });
   });
 }
 
 Map<String, dynamic> mockFirebaseUser(
-        {String providerId: kMockProviderId,
-        String uid: kMockUid,
-        String displayName: kMockDisplayName,
-        String photoUrl: kMockPhotoUrl,
-        String email: kMockEmail}) =>
+        {String providerId = kMockProviderId,
+        String uid = kMockUid,
+        String displayName = kMockDisplayName,
+        String photoUrl = kMockPhotoUrl,
+        String email = kMockEmail}) =>
     <String, dynamic>{
       'isAnonymous': true,
       'isEmailVerified': false,

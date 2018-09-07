@@ -9,18 +9,20 @@ For Flutter plugins for other Firebase products, see [FlutterFire.md](https://gi
 *Note*: This plugin is still under development, and some APIs might not be available yet. [Feedback](https://github.com/flutter/flutter/issues) and [Pull Requests](https://github.com/flutter/plugins/pulls) are most welcome!
 
 ## Usage
+
 To use this plugin, add `firebase_performance` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/). You must also configure firebase performance monitoring for each platform project: Android and iOS (see the example folder or https://codelabs.developers.google.com/codelabs/flutter-firebase/#4 for step by step details).
+
+You can confirm that Performance Monitoring results appear in the [Firebase console.](https://console.firebase.google.com/) Results should appear within 12 hours.
 
 ## Define a Custom Trace
 
 A custom trace is a report of performance data associated with some of the code in your app. To learn more about custom traces, see the [Performance Monitoring overview](https://firebase.google.com/docs/perf-mon/#how_does_it_work).
 
 ```dart
-
-Trace myTrace = FirebasePerformance.instance.newTrace("test_trace");
+final Trace myTrace = FirebasePerformance.instance.newTrace("test_trace");
 myTrace.start();
 
-Item item = cache.fetch("item");
+final Item item = cache.fetch("item");
 if (item != null) {
   myTrace.incrementCounter("item_cache_hit");
 } else {
@@ -28,7 +30,58 @@ if (item != null) {
 }
 
 myTrace.stop();
+```
 
+## Add monitoring for specific network requests
+
+Performance Monitoring collects network requests automatically. Although this includes most network requests for your app, some might not be reported. To include specific network requests in Performance Monitoring, add the following code to your app:
+
+```dart
+class _MetricHttpClient extends BaseClient {
+  _MetricHttpClient(this._inner);
+
+  final Client _inner;
+
+  @override
+  Future<StreamedResponse> send(BaseRequest request) async {
+    final HttpMetric metric = FirebasePerformance.instance
+        .newHttpMetric(request.url.toString(), HttpMethod.Get);
+
+    await metric.start();
+
+    StreamedResponse response;
+    try {
+      response = await _inner.send(request);
+      metric
+        ..responsePayloadSize = response.contentLength
+        ..responseContentType = response.headers['Content-Type']
+        ..requestPayloadSize = request.contentLength
+        ..httpResponseCode = response.statusCode;
+    } finally {
+      await metric.stop();
+    }
+
+    return response;
+  }
+}
+
+class _MyAppState extends State<MyApp> {
+.
+.
+.
+  Future<void> testHttpMetric() async {
+    final _MetricHttpClient metricHttpClient =
+        new _MetricHttpClient(new Client());
+
+    final Request request =
+        new Request("SEND", Uri.parse("https://www.google.com"));
+
+    metricHttpClient.send(request);
+  }
+.
+.
+.
+}
 ```
 
 ## Getting Started
