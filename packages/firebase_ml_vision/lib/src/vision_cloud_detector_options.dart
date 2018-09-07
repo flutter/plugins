@@ -4,21 +4,21 @@
 
 part of firebase_ml_vision;
 
+/// Model types for cloud vision APIs
+enum CloudModelType { stable, latest }
+
 /// Options for cloud vision detectors.
 class CloudDetectorOptions {
   /// Constructor for [CloudDetectorOptions].
   ///
   /// [maxResults] must be greater than 0, otherwise AssertionError is thrown.
+  /// Default is 10.
   ///
-  /// [modelType] must be [modelTypeStable] or [modelTypeLatest], otherwise
-  /// AssertionError is thrown.
+  /// [modelType] has default [CloudModelType.stable].
   const CloudDetectorOptions(
-      {this.maxResults = 10, this.modelType = modelTypeStable})
+      {this.maxResults = 10, this.modelType = CloudModelType.stable})
       : assert(maxResults > 0),
-        assert(modelType == modelTypeLatest || modelType == modelTypeStable);
-
-  static const int modelTypeStable = 1;
-  static const int modelTypeLatest = 2;
+        assert(modelType != null);
 
   /// The number of results to be returned.
   ///
@@ -26,9 +26,11 @@ class CloudDetectorOptions {
   /// Required to be greater than zero.
   final int maxResults;
 
-  /// The type of model to use for the detection..
-  ///
-  /// Defaults to [modelTypeStable]
-  /// Required to be [modelTypeStable] or [modelTypeLatest].
-  final int modelType;
+  /// The type of model to use for the detection.
+  final CloudModelType modelType;
+
+  Map<String, dynamic> _toMap() => <String, dynamic>{
+        'maxResults': maxResults,
+        'modelType': _enumToString(modelType),
+      };
 }

@@ -81,10 +81,7 @@ class CloudLabelDetector extends FirebaseVisionDetector {
       'CloudLabelDetector#detectInImage',
       <String, dynamic>{
         'path': visionImage.imageFile.path,
-        'options': <String, dynamic>{
-          'maxResults': options.maxResults,
-          'modelType': options.modelType,
-        },
+        'options': options._toMap(),
       },
     );
 
