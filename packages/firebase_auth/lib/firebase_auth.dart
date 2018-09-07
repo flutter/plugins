@@ -99,7 +99,8 @@ class FirebaseUser extends UserInfo {
 
   /// Deletes the user record from your Firebase project's database.
   Future<void> delete() async {
-    await FirebaseAuth.channel.invokeMethod('delete', <String, String>{'app': app.name});
+    await FirebaseAuth.channel
+        .invokeMethod('delete', <String, String>{'app': app.name});
   }
 
   @override
