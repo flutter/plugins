@@ -19,7 +19,7 @@ class TextRecognizer implements FirebaseVisionDetector {
   /// The OCR is performed asynchronously.
   Future<VisionText> processImage(FirebaseVisionImage visionImage) async {
     final Map<dynamic, dynamic> reply =
-    await FirebaseVision.channel.invokeMethod(
+        await FirebaseVision.channel.invokeMethod(
       'TextRecognizer#detectInImage',
       <String, dynamic>{
         'path': visionImage.imageFile.path,

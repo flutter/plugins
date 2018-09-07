@@ -655,8 +655,9 @@ void main() {
         final CloudLabelDetector detector =
             FirebaseVision.instance.cloudLabelDetector(
           const CloudDetectorOptions(
-              maxResults: 5,
-              modelType: CloudModelType.latest),
+            maxResults: 5,
+            modelType: CloudModelType.latest,
+          ),
         );
 
         final FirebaseVisionImage image = new FirebaseVisionImage.fromFilePath(

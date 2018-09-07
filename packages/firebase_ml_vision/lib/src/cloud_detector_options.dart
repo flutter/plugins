@@ -4,7 +4,7 @@
 
 part of firebase_ml_vision;
 
-/// Model types for cloud vision APIs
+/// Model types for cloud vision APIs.
 enum CloudModelType { stable, latest }
 
 /// Options for cloud vision detectors.
