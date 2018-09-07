@@ -421,10 +421,13 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 
     @Override
     public void recoverAuth(Result result, String accountId) {
-      if (currentAccount == null ||
-          userRecoverableAuthIntent == null ||
-          !accountId.equals(currentAccount.getId())) {
-        result.error(METHOD_RECOVER_AUTH, "Incapable of recovering authentication for this account. Illegal state of plugin.", null);
+      if (currentAccount == null
+          || userRecoverableAuthIntent == null
+          || !accountId.equals(currentAccount.getId())) {
+        result.error(
+            METHOD_RECOVER_AUTH,
+            "Incapable of recovering authentication for this account. Illegal state of plugin.",
+            null);
         return;
       }
 
