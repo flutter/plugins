@@ -14,6 +14,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.Blob;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
@@ -623,12 +624,17 @@ final class FirestoreMessageCodec extends StandardMessageCodec {
   private static final byte ARRAY_REMOVE = (byte) 133;
   private static final byte DELETE = (byte) 134;
   private static final byte SERVER_TIMESTAMP = (byte) 135;
+  private static final byte TIMESTAMP = (byte) 136;
 
   @Override
   protected void writeValue(ByteArrayOutputStream stream, Object value) {
     if (value instanceof Date) {
       stream.write(DATE_TIME);
       writeLong(stream, ((Date) value).getTime());
+    } else if (value instanceof Timestamp) {
+      stream.write(TIMESTAMP);
+      writeLong(stream, ((Timestamp) value).getSeconds());
+      writeInt(stream, ((Timestamp) value).getNanoseconds());
     } else if (value instanceof GeoPoint) {
       stream.write(GEO_POINT);
       writeAlignment(stream, 8);
@@ -652,6 +658,8 @@ final class FirestoreMessageCodec extends StandardMessageCodec {
     switch (type) {
       case DATE_TIME:
         return new Date(buffer.getLong());
+      case TIMESTAMP:
+        return new Timestamp(buffer.getLong(), buffer.getInt());
       case GEO_POINT:
         readAlignment(buffer, 8);
         return new GeoPoint(buffer.getDouble(), buffer.getDouble());
