@@ -1,4 +1,4 @@
-# Google ML Kit for Firebase
+# ML Kit for Firebase
 
 [![pub package](https://img.shields.io/pub/v/firebase_ml_vision.svg)](https://pub.dartlang.org/packages/firebase_ml_vision)
 
