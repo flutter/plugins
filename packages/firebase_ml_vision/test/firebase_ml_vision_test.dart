@@ -27,6 +27,8 @@ void main() {
             return returnValue;
           case 'TextRecognizer#detectInImage':
             return returnValue;
+          case 'CloudLabelDetector#detectInImage':
+            return returnValue;
           default:
             return null;
         }
@@ -633,9 +635,93 @@ void main() {
       });
     });
 
+    group('$CloudLabelDetector', () {
+      test('detectInImage', () async {
+        final List<dynamic> labelData = <dynamic>[
+          <dynamic, dynamic>{
+            'confidence': 0.6,
+            'entityId': '/m/0',
+            'label': 'banana',
+          },
+          <dynamic, dynamic>{
+            'confidence': 0.8,
+            'entityId': '/m/1',
+            'label': 'apple',
+          },
+        ];
+
+        returnValue = labelData;
+
+        final CloudLabelDetector detector =
+            FirebaseVision.instance.cloudLabelDetector(
+          const VisionCloudDetectorOptions(
+              maxResults: 5,
+              modelType: VisionCloudDetectorOptions.modelTypeLatest),
+        );
+
+        final FirebaseVisionImage image = new FirebaseVisionImage.fromFilePath(
+          'empty',
+        );
+
+        final List<Label> labels = await detector.detectInImage(image);
+
+        expect(log, <Matcher>[
+          isMethodCall(
+            'CloudLabelDetector#detectInImage',
+            arguments: <String, dynamic>{
+              'path': 'empty',
+              'options': <String, dynamic>{
+                'maxResults': 5,
+                'modelType': VisionCloudDetectorOptions.modelTypeLatest,
+              },
+            },
+          ),
+        ]);
+
+        expect(labels[0].confidence, 0.6);
+        expect(labels[0].entityId, '/m/0');
+        expect(labels[0].label, 'banana');
+
+        expect(labels[1].confidence, 0.8);
+        expect(labels[1].entityId, '/m/1');
+        expect(labels[1].label, 'apple');
+      });
+
+      test('detectInImage no blocks', () async {
+        returnValue = <dynamic>[];
+
+        final CloudLabelDetector detector =
+            FirebaseVision.instance.cloudLabelDetector(
+          const VisionCloudDetectorOptions(),
+        );
+        final FirebaseVisionImage image =
+            new FirebaseVisionImage.fromFilePath('empty');
+
+        final List<Label> labels = await detector.detectInImage(image);
+
+        expect(log, <Matcher>[
+          isMethodCall(
+            'CloudLabelDetector#detectInImage',
+            arguments: <String, dynamic>{
+              'path': 'empty',
+              'options': <String, dynamic>{
+                'maxResults': 10,
+                'modelType': VisionCloudDetectorOptions.modelTypeStable,
+              },
+            },
+          ),
+        ]);
+
+        expect(labels, isEmpty);
+      });
+    });
+
     group('$TextRecognizer', () {
-      final TextRecognizer recognizer = FirebaseVision.instance.textRecognizer();
-      final FirebaseVisionImage image = new FirebaseVisionImage.fromFilePath('empty');
+      final TextRecognizer recognizer =
+          FirebaseVision.instance.textRecognizer();
+      final FirebaseVisionImage image = new FirebaseVisionImage.fromFilePath(
+        'empty',
+      );
 
       setUp(() {
         final List<dynamic> elements = <dynamic>[

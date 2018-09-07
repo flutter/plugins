@@ -32,7 +32,6 @@ android {
         disable 'InvalidPackage'
     }
     dependencies {
-        implementation 'com.google.guava:guava:20.0'
         api 'com.google.firebase:firebase-auth:16.0.2'
     }
 }

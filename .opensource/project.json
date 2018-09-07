@@ -1,0 +1,23 @@
+{
+  "name": "FlutterFire",
+  "platforms": [
+    "Android",
+    "iOS"
+  ],
+  "content": "FlutterFire.md",
+  "pages": [
+    "packages/cloud_firestore/README.md",
+    "packages/cloud_functions/README.md",
+    "packages/firebase_admob/README.md",
+    "packages/firebase_analytics/README.md",
+    "packages/firebase_auth/README.md",
+    "packages/firebase_core/README.md",
+    "packages/firebase_database/README.md",
+    "packages/firebase_dynamic_links/README.md",
+    "packages/firebase_messaging/README.md",
+    "packages/firebase_ml_vision/README.md",
+    "packages/firebase_performance/README.md",
+    "packages/firebase_remote_config/README.md",
+    "packages/firebase_storage/README.md"
+  ]
+}

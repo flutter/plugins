@@ -10,7 +10,7 @@ part of firebase_ml_vision;
 /// a detector from the instance:
 ///
 /// ```dart
-/// TextDetector textDetector = FirebaseVision.instance.getTextDetector();
+/// TextRecognizer textRecognizer = FirebaseVision.instance.textRecognizer();
 /// ```
 class FirebaseVision {
   FirebaseVision._();
@@ -24,7 +24,7 @@ class FirebaseVision {
   /// Use this get an instance of a detector:
   ///
   /// ```dart
-  /// TextDetector textDetector = FirebaseVision.instance.textDetector();
+  /// TextRecognizer textDetector = FirebaseVision.instance.textDetector();
   /// ```
   static final FirebaseVision instance = new FirebaseVision._();
 
@@ -45,6 +45,11 @@ class FirebaseVision {
 
   /// Creates an instance of [TextRecognizer].
   TextRecognizer textRecognizer() => new TextRecognizer._();
+
+  /// Creates an instance of [LabelDetector].
+  CloudLabelDetector cloudLabelDetector([VisionCloudDetectorOptions options]) {
+    return CloudLabelDetector._(options ?? const VisionCloudDetectorOptions());
+  }
 }
 
 /// Represents an image object used for both on-device and cloud API detectors.
