@@ -98,6 +98,10 @@ class FileUtils {
         return uri.getLastPathSegment();
       }
 
+      if (isDropBoxUri(uri)) {
+        return null;
+      }
+
       return getDataColumn(context, uri, null, null);
     } else if ("file".equalsIgnoreCase(uri.getScheme())) {
       return uri.getPath();
@@ -182,5 +186,9 @@ class FileUtils {
 
   private static boolean isGooglePhotosUri(Uri uri) {
     return "com.google.android.apps.photos.content".equals(uri.getAuthority());
+  }
+
+  private static boolean isDropBoxUri(Uri uri) {
+    return "com.dropbox.android.FileCache".equals(uri.getAuthority());
   }
 }
