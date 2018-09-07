@@ -81,6 +81,9 @@ class _MyHomePageState extends State<_MyHomePage> {
       case Detector.label:
         detector = FirebaseVision.instance.labelDetector();
         break;
+      case Detector.cloudLabel:
+        detector = FirebaseVision.instance.cloudLabelDetector();
+        break;
       case Detector.text:
         detector = FirebaseVision.instance.textDetector();
         break;
@@ -107,6 +110,9 @@ class _MyHomePageState extends State<_MyHomePage> {
         painter = new FaceDetectorPainter(_imageSize, results);
         break;
       case Detector.label:
+        painter = new LabelDetectorPainter(_imageSize, results);
+        break;
+      case Detector.cloudLabel:
         painter = new LabelDetectorPainter(_imageSize, results);
         break;
       case Detector.text:
@@ -167,6 +173,10 @@ class _MyHomePageState extends State<_MyHomePage> {
                   const PopupMenuItem<Detector>(
                     child: Text('Detect Label'),
                     value: Detector.label,
+                  ),
+                  const PopupMenuItem<Detector>(
+                    child: Text('Detect Cloud Label'),
+                    value: Detector.cloudLabel,
                   ),
                   const PopupMenuItem<Detector>(
                     child: Text('Detect Text'),

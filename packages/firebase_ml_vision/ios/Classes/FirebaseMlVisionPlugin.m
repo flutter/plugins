@@ -44,6 +44,8 @@
     [FaceDetector handleDetection:image options:options result:result];
   } else if ([@"LabelDetector#detectInImage" isEqualToString:call.method]) {
     [LabelDetector handleDetection:image options:options result:result];
+  } else if ([@"CloudLabelDetector#detectInImage" isEqualToString:call.method]) {
+    [CloudLabelDetector handleDetection:image options:options result:result];
   } else if ([@"TextRecognizer#detectInImage" isEqualToString:call.method]) {
     [TextRecognizer handleDetection:image options:options result:result];
   } else {
