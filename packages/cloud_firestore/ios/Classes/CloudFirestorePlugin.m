@@ -150,7 +150,7 @@ const UInt8 TIMESTAMP = 136;
   } else if ([value isKindOfClass:[FIRTimestamp class]]) {
     FIRTimestamp *timestamp = value;
     SInt64 seconds = timestamp.seconds;
-    SInt64 nanoseconds = timestamp.nanoseconds;
+    int nanoseconds = timestamp.nanoseconds;
     [self writeByte:TIMESTAMP];
     [self writeBytes:(UInt8 *)&seconds length:8];
     [self writeBytes:(UInt8 *)&nanoseconds length:4];
@@ -194,7 +194,7 @@ const UInt8 TIMESTAMP = 136;
     }
     case TIMESTAMP: {
       SInt64 seconds;
-      int32_t nanoseconds;
+      int nanoseconds;
       [self readBytes:&seconds length:8];
       [self readBytes:&nanoseconds length:4];
       return [[FIRTimestamp alloc] initWithSeconds:seconds nanoseconds:nanoseconds];

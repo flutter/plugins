@@ -67,7 +67,7 @@ class FirestoreMessageCodec extends StandardMessageCodec {
       case _kDateTime:
         return new DateTime.fromMillisecondsSinceEpoch(buffer.getInt64());
       case _kTimestamp:
-        return new Timestamp(buffer.getInt64(), buffer.getInt64());
+        return new Timestamp(buffer.getInt64(), buffer.getInt32());
       case _kGeoPoint:
         return new GeoPoint(buffer.getFloat64(), buffer.getFloat64());
       case _kDocumentReference:
