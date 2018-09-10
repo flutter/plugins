@@ -19,6 +19,7 @@ Future<void> main() async {
     ),
   );
   final Firestore firestore = new Firestore(app: app);
+  firestore.settings(timestampsInSnapshotsEnabled: true);
 
   runApp(new MaterialApp(
       title: 'Firestore Example', home: new MyHomePage(firestore: firestore)));
@@ -40,9 +41,13 @@ class MessageList extends StatelessWidget {
           itemCount: messageCount,
           itemBuilder: (_, int index) {
             final DocumentSnapshot document = snapshot.data.documents[index];
+            String subtitle = 'Message ${index + 1} of $messageCount';
+            if (document['created_at'] != null) {
+              subtitle += '\nCreated at ${(document['created_at'].toDate())}';
+            }
             return new ListTile(
               title: new Text(document['message'] ?? '<No message retrieved>'),
-              subtitle: new Text('Message ${index + 1} of $messageCount'),
+              subtitle: new Text(subtitle),
             );
           },
         );
@@ -57,9 +62,9 @@ class MyHomePage extends StatelessWidget {
   CollectionReference get messages => firestore.collection('messages');
 
   Future<Null> _addMessage() async {
-    final DocumentReference document = messages.document();
-    document.setData(<String, dynamic>{
+    await messages.add(<String, dynamic>{
       'message': 'Hello world!',
+      'created_at': FieldValue.serverTimestamp(),
     });
   }
 
