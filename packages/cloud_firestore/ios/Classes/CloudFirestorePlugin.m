@@ -114,8 +114,8 @@ NSDictionary *parseQuerySnapshot(FIRQuerySnapshot *snapshot) {
       @"type" : type,
       @"document" : documentChange.document.data,
       @"path" : documentChange.document.reference.path,
-      @"oldIndex" : [NSNumber numberWithInt:documentChange.oldIndex],
-      @"newIndex" : [NSNumber numberWithInt:documentChange.newIndex],
+      @"oldIndex" : [NSNumber numberWithUnsignedInteger:documentChange.oldIndex],
+      @"newIndex" : [NSNumber numberWithUnsignedInteger:documentChange.newIndex],
     }];
   }
   return @{
@@ -163,7 +163,7 @@ const UInt8 SERVER_TIMESTAMP = 135;
   } else if ([value isKindOfClass:[NSData class]]) {
     NSData *blob = value;
     [self writeByte:BLOB];
-    [self writeSize:blob.length];
+    [self writeSize:(UInt32)blob.length];
     [self writeData:blob];
   } else {
     [super writeValue:value];
@@ -285,21 +285,21 @@ const UInt8 SERVER_TIMESTAMP = 135;
       NSNumber *transactionId = call.arguments[@"transactionId"];
       NSNumber *transactionTimeout = call.arguments[@"transactionTimeout"];
 
-      transactions[transactionId] = transaction;
+      self->transactions[transactionId] = transaction;
 
       dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
 
       [self.channel invokeMethod:@"DoTransaction"
                        arguments:call.arguments
                           result:^(id doTransactionResult) {
-                            transactionResults[transactionId] = doTransactionResult;
+                            self->transactionResults[transactionId] = doTransactionResult;
                             dispatch_semaphore_signal(semaphore);
                           }];
 
       dispatch_semaphore_wait(
           semaphore, dispatch_time(DISPATCH_TIME_NOW, [transactionTimeout integerValue] * 1000000));
 
-      return transactionResults[transactionId];
+      return self->transactionResults[transactionId];
     }
         completion:^(id transactionResult, NSError *error) {
           if (error != nil) {
@@ -313,7 +313,7 @@ const UInt8 SERVER_TIMESTAMP = 135;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
       NSNumber *transactionId = call.arguments[@"transactionId"];
       FIRDocumentReference *document = getDocumentReference(call.arguments);
-      FIRTransaction *transaction = transactions[transactionId];
+      FIRTransaction *transaction = self->transactions[transactionId];
       NSError *error = [[NSError alloc] init];
 
       FIRDocumentSnapshot *snapshot = [transaction getDocument:document error:&error];
@@ -337,7 +337,7 @@ const UInt8 SERVER_TIMESTAMP = 135;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
       NSNumber *transactionId = call.arguments[@"transactionId"];
       FIRDocumentReference *document = getDocumentReference(call.arguments);
-      FIRTransaction *transaction = transactions[transactionId];
+      FIRTransaction *transaction = self->transactions[transactionId];
 
       [transaction updateData:call.arguments[@"data"] forDocument:document];
       result(nil);
@@ -346,7 +346,7 @@ const UInt8 SERVER_TIMESTAMP = 135;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
       NSNumber *transactionId = call.arguments[@"transactionId"];
       FIRDocumentReference *document = getDocumentReference(call.arguments);
-      FIRTransaction *transaction = transactions[transactionId];
+      FIRTransaction *transaction = self->transactions[transactionId];
 
       [transaction setData:call.arguments[@"data"] forDocument:document];
       result(nil);
@@ -355,7 +355,7 @@ const UInt8 SERVER_TIMESTAMP = 135;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
       NSNumber *transactionId = call.arguments[@"transactionId"];
       FIRDocumentReference *document = getDocumentReference(call.arguments);
-      FIRTransaction *transaction = transactions[transactionId];
+      FIRTransaction *transaction = self->transactions[transactionId];
 
       [transaction deleteDocument:document];
       result(nil);
