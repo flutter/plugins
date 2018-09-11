@@ -17,7 +17,6 @@
 
 * Eliminate race conditions around initialization: now initialization events are queued and guaranteed
   to be delivered to the Dart side. VideoPlayer widget is rebuilt upon completion of initialization.
->>>>>>> 8178bf113b461ab3b940a69c537c2db508dbf49b
 
 ## 0.6.4
 
