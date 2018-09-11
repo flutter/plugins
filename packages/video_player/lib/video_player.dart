@@ -148,9 +148,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// is constructed with.
   final DataSourceType dataSourceType;
 
-  String package;
-  Timer timer;
-  bool isDisposed = false;
+  final String package;
+  Timer _timer;
+  bool _isDisposed = false;
   Completer<void> _creatingCompleter;
   StreamSubscription<dynamic> _eventSubscription;
   _VideoAppLifeCycleObserver _lifeCycleObserver;
@@ -171,6 +171,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// null.
   VideoPlayerController.network(this.dataSource)
       : dataSourceType = DataSourceType.network,
+        package = null,
         super(new VideoPlayerValue(duration: null));
 
   /// Constructs a [VideoPlayerController] playing a video from a file.
@@ -180,7 +181,11 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   VideoPlayerController.file(File file)
       : dataSource = 'file://${file.path}',
         dataSourceType = DataSourceType.file,
+        package = null,
         super(new VideoPlayerValue(duration: null));
+
+  // Visible for testing.
+  int get textureId => _textureId;
 
   Future<void> initialize() async {
     _lifeCycleObserver = new _VideoAppLifeCycleObserver(this);
@@ -231,7 +236,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           break;
         case 'completed':
           value = value.copyWith(isPlaying: false);
-          timer?.cancel();
+          _timer?.cancel();
           break;
         case 'bufferingUpdate':
           final List<dynamic> values = map['values'];
@@ -251,7 +256,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     void errorListener(Object obj) {
       final PlatformException e = obj;
       value = new VideoPlayerValue.erroneous(e.message);
-      timer?.cancel();
+      _timer?.cancel();
     }
 
     _eventSubscription = _eventChannelFor(_textureId)
@@ -268,9 +273,9 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   Future<void> dispose() async {
     if (_creatingCompleter != null) {
       await _creatingCompleter.future;
-      if (!isDisposed) {
-        isDisposed = true;
-        timer?.cancel();
+      if (!_isDisposed) {
+        _isDisposed = true;
+        _timer?.cancel();
         await _eventSubscription?.cancel();
         await _channel.invokeMethod(
           'dispose',
@@ -279,7 +284,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       }
       _lifeCycleObserver.dispose();
     }
-    isDisposed = true;
+    _isDisposed = true;
     super.dispose();
   }
 
@@ -299,7 +304,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   }
 
   Future<void> _applyLooping() async {
-    if (!value.initialized || isDisposed) {
+    if (!value.initialized || _isDisposed) {
       return;
     }
     _channel.invokeMethod(
@@ -309,7 +314,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   }
 
   Future<void> _applyPlayPause() async {
-    if (!value.initialized || isDisposed) {
+    if (!value.initialized || _isDisposed) {
       return;
     }
     if (value.isPlaying) {
@@ -317,21 +322,21 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         'play',
         <String, dynamic>{'textureId': _textureId},
       );
-      timer = new Timer.periodic(
+      _timer = new Timer.periodic(
         const Duration(milliseconds: 500),
         (Timer timer) async {
-          if (isDisposed) {
+          if (_isDisposed) {
             return;
           }
           final Duration newPosition = await position;
-          if (isDisposed) {
+          if (_isDisposed) {
             return;
           }
           value = value.copyWith(position: newPosition);
         },
       );
     } else {
-      timer?.cancel();
+      _timer?.cancel();
       await _channel.invokeMethod(
         'pause',
         <String, dynamic>{'textureId': _textureId},
@@ -340,7 +345,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   }
 
   Future<void> _applyVolume() async {
-    if (!value.initialized || isDisposed) {
+    if (!value.initialized || _isDisposed) {
       return;
     }
     await _channel.invokeMethod(
@@ -351,7 +356,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
   /// The position in the current video.
   Future<Duration> get position async {
-    if (isDisposed) {
+    if (_isDisposed) {
       return null;
     }
     return new Duration(
@@ -363,7 +368,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   }
 
   Future<void> seekTo(Duration moment) async {
-    if (isDisposed) {
+    if (_isDisposed) {
       return;
     }
     if (moment > value.duration) {
@@ -430,29 +435,48 @@ class VideoPlayer extends StatefulWidget {
 }
 
 class _VideoPlayerState extends State<VideoPlayer> {
-  int textureId;
+  VoidCallback _listener;
+  int _textureId;
+
+  _VideoPlayerState() {
+    _listener = () {
+      final int newTextureId = widget.controller.textureId;
+      if (newTextureId != _textureId) {
+        setState(() {
+          _textureId = newTextureId;
+        });
+      }
+    };
+  }
 
   @override
   void initState() {
     super.initState();
-    textureId = widget.controller._textureId;
+    _textureId = widget.controller.textureId;
     // Need to listen for initialization events since the actual texture ID
     // becomes available after asynchronous initialization finishes.
-    widget.controller.addListener(() {
-      final int newTextureId = widget.controller._textureId;
-      if (newTextureId != textureId) {
-        setState(() {
-          textureId = newTextureId;
-        });
-      }
-    });
+    widget.controller.addListener(_listener);
+  }
+
+  @override
+  void didUpdateWidget(VideoPlayer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    oldWidget.controller.removeListener(_listener);
+    _textureId = widget.controller.textureId;
+    widget.controller.addListener(_listener);
+  }
+
+  @override
+  void deactivate() {
+    super.deactivate();
+    widget.controller.removeListener(_listener);
   }
 
   @override
   Widget build(BuildContext context) {
-    return textureId == null
+    return _textureId == null
         ? new Container()
-        : new Texture(textureId: textureId);
+        : new Texture(textureId: _textureId);
   }
 }
 
