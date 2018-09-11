@@ -614,6 +614,8 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         providerData.add(Collections.unmodifiableMap(userInfoToMap(userInfo)));
       }
       Map<String, Object> userMap = userInfoToMap(user);
+      userMap.put("creationTimestamp", user.getMetadata().getCreationTimestamp());
+      userMap.put("lastSignInTimestamp", user.getMetadata().getLastSignInTimestamp());
       userMap.put("isAnonymous", user.isAnonymous());
       userMap.put("isEmailVerified", user.isEmailVerified());
       userMap.put("providerData", Collections.unmodifiableList(providerData));
