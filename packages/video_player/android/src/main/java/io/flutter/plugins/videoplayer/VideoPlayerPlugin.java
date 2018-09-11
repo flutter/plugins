@@ -221,11 +221,20 @@ public class VideoPlayerPlugin implements MethodCallHandler {
         Map<String, Object> event = new HashMap<>();
         event.put("event", "initialized");
         event.put("duration", exoPlayer.getDuration());
+
         if (exoPlayer.getVideoFormat() != null) {
           Format videoFormat = exoPlayer.getVideoFormat();
-          event.put("width", videoFormat.width);
-          event.put("height", videoFormat.height);
-          event.put("rotationDegrees", videoFormat.rotationDegrees);
+          int width = videoFormat.width;
+          int height = videoFormat.height;
+          int rotationDegrees = videoFormat.rotationDegrees;
+          // Switch the width/height if video was taken in portrait mode
+          if (rotationDegrees == 90 || rotationDegrees == 270) {
+            width = exoPlayer.getVideoFormat().height;
+            height = exoPlayer.getVideoFormat().width;
+          }
+          event.put("width", width);
+          event.put("height", height);
+          event.put("rotationDegrees", rotationDegrees);
         }
         eventSink.success(event);
       } else {
