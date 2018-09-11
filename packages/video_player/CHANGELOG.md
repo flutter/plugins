@@ -1,9 +1,23 @@
-## 0.6.5
+## 0.7.1
 
-* Fixed race condition that prevented some videos from being displayed
 * Added access to the video rotation in degrees (rotationDegrees). Possible values are: 0, 90, 180 and 270.
 * Updated the aspectRatio getter to use the video rotation.
-* Fixed the aspect ratio of videos in the video_player plugin example. It now properly displays 'rotated' videos.
+* Fixed the aspect ratio of videos in the video_player plugin example. It now properly displays videos taken in portrait mode.
+
+## 0.7.0
+
+* Add a unit test for controller and texture changes. This is a breaking change since the interface
+  had to be cleaned up to facilitate faking.
+
+## 0.6.6
+
+* Fix the condition where the player doesn't update when attached controller is changed.
+
+## 0.6.5
+
+* Eliminate race conditions around initialization: now initialization events are queued and guaranteed
+  to be delivered to the Dart side. VideoPlayer widget is rebuilt upon completion of initialization.
+>>>>>>> 8178bf113b461ab3b940a69c537c2db508dbf49b
 
 ## 0.6.4
 

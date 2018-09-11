@@ -579,6 +579,13 @@ void main() {
         final Blob message = new Blob(bytes);
         _checkEncodeDecode<dynamic>(codec, message);
       });
+
+      test('encode and decode FieldValue', () {
+        _checkEncodeDecode<dynamic>(codec, FieldValue.arrayUnion(<int>[123]));
+        _checkEncodeDecode<dynamic>(codec, FieldValue.arrayRemove(<int>[123]));
+        _checkEncodeDecode<dynamic>(codec, FieldValue.delete());
+        _checkEncodeDecode<dynamic>(codec, FieldValue.serverTimestamp());
+      });
     });
 
     group('WriteBatch', () {
@@ -734,6 +741,9 @@ bool _deepEquals(dynamic valueA, dynamic valueB) {
   if (valueA is List) return valueB is List && _deepEqualsList(valueA, valueB);
   if (valueA is Map) return valueB is Map && _deepEqualsMap(valueA, valueB);
   if (valueA is double && valueA.isNaN) return valueB is double && valueB.isNaN;
+  if (valueA is FieldValue) {
+    return valueB is FieldValue && _deepEqualsFieldValue(valueA, valueB);
+  }
   return valueA == valueB;
 }
 
@@ -770,4 +780,10 @@ bool _deepEqualsMap(
       return false;
   }
   return true;
+}
+
+bool _deepEqualsFieldValue(FieldValue valueA, FieldValue valueB) {
+  if (valueA.type != valueB.type) return false;
+  if (valueA.value == null) return valueB.value == null;
+  return _deepEqualsList(valueA.value, valueB.value);
 }

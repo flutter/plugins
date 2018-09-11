@@ -16,6 +16,7 @@ import android.view.Surface;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.Player.DefaultEventListener;
 import com.google.android.exoplayer2.SimpleExoPlayer;
@@ -40,7 +41,9 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
+import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
+import io.flutter.view.FlutterNativeView;
 import io.flutter.view.TextureRegistry;
 import java.util.Arrays;
 import java.util.Collections;
@@ -60,12 +63,11 @@ public class VideoPlayerPlugin implements MethodCallHandler {
 
     private final TextureRegistry.SurfaceTextureEntry textureEntry;
 
-    private EventChannel.EventSink eventSink;
+    private QueuingEventSink eventSink = new QueuingEventSink();
 
     private final EventChannel eventChannel;
 
     private boolean isInitialized = false;
-    private boolean isStateReady = false;
 
     VideoPlayer(
         Context context,
@@ -130,13 +132,12 @@ public class VideoPlayerPlugin implements MethodCallHandler {
           new EventChannel.StreamHandler() {
             @Override
             public void onListen(Object o, EventChannel.EventSink sink) {
-              Log.d(TAG, "EventSink set to:" + sink);
-              eventSink = sink;
+              eventSink.setDelegate(sink);
             }
 
             @Override
             public void onCancel(Object o) {
-              eventSink = null;
+              eventSink.setDelegate(null);
             }
           });
 
@@ -151,16 +152,14 @@ public class VideoPlayerPlugin implements MethodCallHandler {
             public void onPlayerStateChanged(final boolean playWhenReady, final int playbackState) {
               super.onPlayerStateChanged(playWhenReady, playbackState);
               if (playbackState == Player.STATE_BUFFERING) {
-                if (eventSink != null) {
-                  Map<String, Object> event = new HashMap<>();
-                  event.put("event", "bufferingUpdate");
-                  List<Integer> range = Arrays.asList(0, exoPlayer.getBufferedPercentage());
-                  // iOS supports a list of buffered ranges, so here is a list with a single range.
-                  event.put("values", Collections.singletonList(range));
-                  eventSink.success(event);
-                }
+                Map<String, Object> event = new HashMap<>();
+                event.put("event", "bufferingUpdate");
+                List<Integer> range = Arrays.asList(0, exoPlayer.getBufferedPercentage());
+                // iOS supports a list of buffered ranges, so here is a list with a single range.
+                event.put("values", Collections.singletonList(range));
+                eventSink.success(event);
               } else if (playbackState == Player.STATE_READY && !isInitialized) {
-                isStateReady = true;
+                isInitialized = true;
                 sendInitialized();
               } else {
                 Log.d(TAG, "Received unhandled state: " + playbackState);
@@ -217,37 +216,23 @@ public class VideoPlayerPlugin implements MethodCallHandler {
     }
 
     private void sendInitialized() {
-      if (!isInitialized && isStateReady && eventSink != null) {
+      if (isInitialized) {
         Log.d(TAG, "sending isInitialized");
-        isInitialized = true;
-
-        int width = exoPlayer.getVideoFormat().width;
-        int height = exoPlayer.getVideoFormat().height;
-        int rotationDegrees = exoPlayer.getVideoFormat().rotationDegrees;
-        if (rotationDegrees == 90 || rotationDegrees == 270) {
-          width = exoPlayer.getVideoFormat().height;
-          height = exoPlayer.getVideoFormat().width;
-        }
-
         Map<String, Object> event = new HashMap<>();
         event.put("event", "initialized");
         event.put("duration", exoPlayer.getDuration());
         if (exoPlayer.getVideoFormat() != null) {
-          event.put("width", width);
-          event.put("height", height);
-          event.put("rotationDegrees", rotationDegrees);
+          Format videoFormat = exoPlayer.getVideoFormat();
+          event.put("width", videoFormat.width);
+          event.put("height", videoFormat.height);
+          event.put("rotationDegrees", videoFormat.rotationDegrees);
         }
         eventSink.success(event);
       } else {
         Log.e(
             TAG,
             "failed sending sendInitialized(isInitialized: "
-                + isInitialized
-                + ",isStateReady: "
-                + isStateReady
-                + ", eventSink: "
-                + eventSink
-                + ")");
+                + isInitialized + ")");
       }
     }
 
@@ -267,9 +252,18 @@ public class VideoPlayerPlugin implements MethodCallHandler {
   }
 
   public static void registerWith(Registrar registrar) {
+    final VideoPlayerPlugin plugin = new VideoPlayerPlugin(registrar);
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "flutter.io/videoPlayer");
-    channel.setMethodCallHandler(new VideoPlayerPlugin(registrar));
+    channel.setMethodCallHandler(plugin);
+    registrar.addViewDestroyListener(
+        new PluginRegistry.ViewDestroyListener() {
+          @Override
+          public boolean onViewDestroy(FlutterNativeView view) {
+            plugin.onDestroy();
+            return false; // We are not interested in assuming ownership of the NativeView.
+          }
+        });
   }
 
   private VideoPlayerPlugin(Registrar registrar) {
@@ -280,6 +274,17 @@ public class VideoPlayerPlugin implements MethodCallHandler {
   private final Map<Long, VideoPlayer> videoPlayers;
 
   private final Registrar registrar;
+
+  void onDestroy() {
+    // The whole FlutterView is being destroyed. Here we release resources acquired for all instances
+    // of VideoPlayer. Once https://github.com/flutter/flutter/issues/19358 is resolved this may
+    // be replaced with just asserting that videoPlayers.isEmpty().
+    // https://github.com/flutter/flutter/issues/20989 tracks this.
+    for (VideoPlayer player : videoPlayers.values()) {
+      player.dispose();
+    }
+    videoPlayers.clear();
+  }
 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
@@ -379,9 +384,6 @@ public class VideoPlayerPlugin implements MethodCallHandler {
         player.dispose();
         videoPlayers.remove(textureId);
         result.success(null);
-        break;
-      case "sendInitialized":
-        player.sendInitialized();
         break;
       default:
         result.notImplemented();

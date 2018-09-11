@@ -43,6 +43,11 @@ class FirebaseVision {
     return LabelDetector._(options ?? const LabelDetectorOptions());
   }
 
+  /// Creates an instance of [LabelDetector].
+  CloudLabelDetector cloudLabelDetector([VisionCloudDetectorOptions options]) {
+    return CloudLabelDetector._(options ?? const VisionCloudDetectorOptions());
+  }
+
   /// Creates an instance of [TextDetector].
   TextDetector textDetector() => new TextDetector._();
 }

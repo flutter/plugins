@@ -10,6 +10,8 @@ class FirebaseStorage {
   static const MethodChannel channel =
       MethodChannel('plugins.flutter.io/firebase_storage');
 
+  static bool _initialized = false;
+
   /// Returns the [FirebaseStorage] instance, initialized with a custom
   /// [FirebaseApp] if [app] is specified and a custom Google Cloud Storage
   /// bucket if [storageBucket] is specified. Otherwise the instance will be
@@ -22,7 +24,13 @@ class FirebaseStorage {
   /// Storage Bucket.
   ///
   /// The [app] argument is the custom [FirebaseApp].
-  FirebaseStorage({this.app, this.storageBucket});
+  FirebaseStorage({this.app, this.storageBucket}) {
+    if (_initialized) return;
+    channel.setMethodCallHandler((MethodCall call) async {
+      _methodStreamController.add(call);
+    });
+    _initialized = true;
+  }
 
   static FirebaseStorage _instance = new FirebaseStorage();
 
@@ -39,6 +47,11 @@ class FirebaseStorage {
   /// Returns the [FirebaseStorage] instance, initialized with the default
   /// [FirebaseApp].
   static FirebaseStorage get instance => _instance;
+
+  /// Used to dispatch method calls
+  static final StreamController<MethodCall> _methodStreamController =
+      new StreamController<MethodCall>.broadcast(); // ignore: close_sinks
+  Stream<MethodCall> get _methodStream => _methodStreamController.stream;
 
   /// Creates a new [StorageReference] initialized at the root
   /// Firebase Storage location.
@@ -96,6 +109,7 @@ class FirebaseStorage {
   }
 }
 
+/// TODO: Move into own file and build out progress functionality
 class StorageFileDownloadTask {
   final FirebaseStorage _firebaseStorage;
   final String _path;

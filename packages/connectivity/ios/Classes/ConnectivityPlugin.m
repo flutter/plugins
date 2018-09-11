@@ -6,6 +6,8 @@
 
 #import "Reachability/Reachability.h"
 
+#import "SystemConfiguration/CaptiveNetwork.h"
+
 @interface FLTConnectivityPlugin ()<FlutterStreamHandler>
 @end
 
@@ -25,6 +27,20 @@
       [FlutterEventChannel eventChannelWithName:@"plugins.flutter.io/connectivity_status"
                                 binaryMessenger:[registrar messenger]];
   [streamChannel setStreamHandler:instance];
+}
+
+- (NSString*)getWifiName {
+  NSString* wifiName = nil;
+  NSArray* interFaceNames = (__bridge_transfer id)CNCopySupportedInterfaces();
+
+  for (NSString* name in interFaceNames) {
+    NSDictionary* info = (__bridge_transfer id)CNCopyCurrentNetworkInfo((__bridge CFStringRef)name);
+    if (info[@"SSID"]) {
+      wifiName = info[@"SSID"];
+    }
+  }
+
+  return wifiName;
 }
 
 - (NSString*)statusFromReachability:(Reachability*)reachability {
@@ -47,6 +63,8 @@
     // and the code
     // gets more involved. So for now, this will do.
     result([self statusFromReachability:[Reachability reachabilityForInternetConnection]]);
+  } else if ([call.method isEqualToString:@"wifiName"]) {
+    result([self getWifiName]);
   } else {
     result(FlutterMethodNotImplemented);
   }
