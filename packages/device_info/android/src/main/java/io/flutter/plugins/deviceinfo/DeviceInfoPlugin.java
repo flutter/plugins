@@ -87,9 +87,9 @@ public class DeviceInfoPlugin implements MethodCallHandler {
   }
 
   /**
-   * Returns the Android hardware device ID that is unique between the device + user and
-   * app signing. This key will change if the app is uninstalled or its data is cleared. Device
-   * factory reset will also result in a value change.
+   * Returns the Android hardware device ID that is unique between the device + user and app
+   * signing. This key will change if the app is uninstalled or its data is cleared. Device factory
+   * reset will also result in a value change.
    *
    * @return The android ID
    */
