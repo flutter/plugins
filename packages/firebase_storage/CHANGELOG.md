@@ -1,3 +1,21 @@
+## 1.0.3
+
+* Added monitoring of StorageUploadTask via `events` stream.
+* Added support for StorageUploadTask functions: `pause`, `resume`, `cancel`.
+
+## 1.0.2
+
+* Added missing http package dependency.
+
+## 1.0.1
+
+* Bump Android and Firebase dependency versions.
+
+## 1.0.0
+
+* **Breaking change**. Make StorageUploadTask implementation classes private.
+* Bump to released version
+
 ## 0.3.7
 
 * Updated Gradle tooling to match Android Studio 3.1.2.

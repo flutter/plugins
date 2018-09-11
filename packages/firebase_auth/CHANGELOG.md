@@ -1,3 +1,42 @@
+## 0.5.20
+
+* Replaced usages of guava's: ImmutableList and ImmutableMap with platform
+Collections.unmodifiableList() and Collections.unmodifiableMap().
+
+## 0.5.19
+
+* Update test package dependency to pick up Dart 2 support.
+* Modified dependency on google_sign_in to point to a published
+  version instead of a relative path.
+
+## 0.5.18
+
+* Adding support for updateEmail in FirebaseAuth.
+
+## 0.5.17
+
+* Adding support for FirebaseUser.delete. 
+
+## 0.5.16
+
+* Adding support for setLanguageCode in FirebaseAuth.
+
+## 0.5.15
+
+* Bump Android and Firebase dependency versions.
+
+## 0.5.14
+
+* Fixed handling of auto phone number verification.
+
+## 0.5.13
+
+* Add support for phone number authentication.
+
+## 0.5.12
+
+* Fixed ArrayIndexOutOfBoundsException in handleStopListeningAuthState
+
 ## 0.5.11
 
 * Updated Gradle tooling to match Android Studio 3.1.2.

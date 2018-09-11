@@ -1,3 +1,11 @@
+## 0.0.6
+
+* Allowed extending the RemoteConfig class.
+
+## 0.0.5
+
+* Bump Android and Firebase dependency versions.
+
 ## 0.0.4
 
 * Updated Gradle tooling to match Android Studio 3.1.2.

@@ -10,7 +10,7 @@ import 'package:flutter/services.dart';
 class DeviceInfoPlugin {
   /// Channel used to communicate to native code.
   static const MethodChannel channel =
-      const MethodChannel('plugins.flutter.io/device_info');
+      MethodChannel('plugins.flutter.io/device_info');
 
   DeviceInfoPlugin();
 
@@ -21,8 +21,8 @@ class DeviceInfoPlugin {
   ///
   /// See: https://developer.android.com/reference/android/os/Build.html
   Future<AndroidDeviceInfo> get androidInfo async =>
-      _cachedAndroidDeviceInfo ??= AndroidDeviceInfo
-          ._fromMap(await channel.invokeMethod('getAndroidDeviceInfo'));
+      _cachedAndroidDeviceInfo ??= AndroidDeviceInfo._fromMap(
+          await channel.invokeMethod('getAndroidDeviceInfo'));
 
   /// This information does not change from call to call. Cache it.
   IosDeviceInfo _cachedIosDeviceInfo;

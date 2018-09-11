@@ -22,9 +22,10 @@ NSDictionary *toDictionary(id<FIRUserInfo> userInfo) {
   return @{
     @"providerId" : userInfo.providerID,
     @"displayName" : userInfo.displayName ?: [NSNull null],
-    @"uid" : userInfo.uid,
+    @"uid" : userInfo.uid ?: [NSNull null],
     @"photoUrl" : userInfo.photoURL.absoluteString ?: [NSNull null],
     @"email" : userInfo.email ?: [NSNull null],
+    @"phoneNumber" : userInfo.phoneNumber ?: [NSNull null],
   };
 }
 
@@ -117,6 +118,10 @@ int nextHandle = 0;
     [[FIRAuth auth].currentUser reloadWithCompletion:^(NSError *_Nullable error) {
       [self sendResult:result forProviders:nil error:error];
     }];
+  } else if ([@"delete" isEqualToString:call.method]) {
+    [[FIRAuth auth].currentUser deleteWithCompletion:^(NSError *_Nullable error) {
+      [self sendResult:result forProviders:nil error:error];
+    }];
   } else if ([@"sendPasswordResetEmail" isEqualToString:call.method]) {
     NSString *email = call.arguments[@"email"];
     [[FIRAuth auth] sendPasswordResetWithEmail:email
@@ -177,11 +182,17 @@ int nextHandle = 0;
       changeRequest.displayName = call.arguments[@"displayName"];
     }
     if (call.arguments[@"photoUrl"]) {
-      changeRequest.photoURL = call.arguments[@"photoUrl"];
+      changeRequest.photoURL = [NSURL URLWithString:call.arguments[@"photoUrl"]];
     }
     [changeRequest commitChangesWithCompletion:^(NSError *error) {
       [self sendResult:result forUser:nil error:error];
     }];
+  } else if ([@"updateEmail" isEqualToString:call.method]) {
+    NSString *toEmail = call.arguments[@"email"];
+    [[FIRAuth auth].currentUser updateEmail:toEmail
+                                 completion:^(NSError *_Nullable error) {
+                                   [self sendResult:result forUser:nil error:error];
+                                 }];
   } else if ([@"signInWithCustomToken" isEqualToString:call.method]) {
     NSString *token = call.arguments[@"token"];
     [[FIRAuth auth] signInWithCustomToken:token
@@ -219,6 +230,40 @@ int nextHandle = 0;
                                                    identifier.intValue]
                 details:nil]);
     }
+  } else if ([@"verifyPhoneNumber" isEqualToString:call.method]) {
+    NSString *phoneNumber = call.arguments[@"phoneNumber"];
+    NSNumber *handle = call.arguments[@"handle"];
+    [[FIRPhoneAuthProvider provider]
+        verifyPhoneNumber:phoneNumber
+               UIDelegate:nil
+               completion:^(NSString *verificationID, NSError *error) {
+                 if (error) {
+                   [self.channel invokeMethod:@"phoneVerificationFailed"
+                                    arguments:@{
+                                      @"exception" : [self mapVerifyPhoneError:error],
+                                      @"handle" : handle
+                                    }];
+                 } else {
+                   [self.channel
+                       invokeMethod:@"phoneCodeSent"
+                          arguments:@{@"verificationId" : verificationID, @"handle" : handle}];
+                 }
+               }];
+  } else if ([@"signInWithPhoneNumber" isEqualToString:call.method]) {
+    NSString *verificationId = call.arguments[@"verificationId"];
+    NSString *smsCode = call.arguments[@"smsCode"];
+
+    FIRPhoneAuthCredential *credential =
+        [[FIRPhoneAuthProvider provider] credentialWithVerificationID:verificationId
+                                                     verificationCode:smsCode];
+    [[FIRAuth auth] signInWithCredential:credential
+                              completion:^(FIRUser *user, NSError *error) {
+                                [self sendResult:result forUser:user error:error];
+                              }];
+  } else if ([@"setLanguageCode" isEqualToString:call.method]) {
+    NSString *language = call.arguments[@"language"];
+    [[FIRAuth auth] setLanguageCode:language];
+    [self sendResult:result forUser:nil error:nil];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -257,5 +302,20 @@ int nextHandle = 0;
   } else {
     result(providers);
   }
+}
+
+- (id)mapVerifyPhoneError:(NSError *)error {
+  NSString *errorCode = @"verifyPhoneNumberError";
+
+  if (error.code == FIRAuthErrorCodeCaptchaCheckFailed) {
+    errorCode = @"captchaCheckFailed";
+  } else if (error.code == FIRAuthErrorCodeQuotaExceeded) {
+    errorCode = @"quotaExceeded";
+  } else if (error.code == FIRAuthErrorCodeInvalidPhoneNumber) {
+    errorCode = @"invalidPhoneNumber";
+  } else if (error.code == FIRAuthErrorCodeMissingPhoneNumber) {
+    errorCode = @"missingPhoneNumber";
+  }
+  return @{@"code" : errorCode, @"message" : error.localizedDescription};
 }
 @end

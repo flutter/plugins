@@ -16,7 +16,7 @@ void main() {
   setUp(() {
     mockChannel = new MockMethodChannel();
     // Re-pipe to mockito for easier verifies.
-    Share.channel.setMockMethodCallHandler((MethodCall call) {
+    Share.channel.setMockMethodCallHandler((MethodCall call) async {
       mockChannel.invokeMethod(call.method, call.arguments);
     });
   });
@@ -24,7 +24,7 @@ void main() {
   test('sharing null fails', () {
     expect(
       () => Share.share(null),
-      throwsA(const isInstanceOf<AssertionError>()),
+      throwsA(const TypeMatcher<AssertionError>()),
     );
     verifyZeroInteractions(mockChannel);
   });
@@ -32,7 +32,7 @@ void main() {
   test('sharing empty fails', () {
     expect(
       () => Share.share(''),
-      throwsA(const isInstanceOf<AssertionError>()),
+      throwsA(const TypeMatcher<AssertionError>()),
     );
     verifyZeroInteractions(mockChannel);
   });

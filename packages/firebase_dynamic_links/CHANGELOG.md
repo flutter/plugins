@@ -1,3 +1,11 @@
+## 0.1.0
+
+* **Breaking Change** Calls to retrieve dynamic links on iOS always returns null after first call.
+
+## 0.0.6
+
+* Bump Android and Firebase dependency versions.
+
 ## 0.0.5
 
 * Added capability to receive dynamic links.

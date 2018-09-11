@@ -1,3 +1,7 @@
+## 0.3.5
+
+* Added missing test package dependency.
+
 ## 0.3.4
 
 * Make sensors Dart 2 compliant.

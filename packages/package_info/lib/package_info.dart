@@ -7,7 +7,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 
 const MethodChannel _kChannel =
-    const MethodChannel('plugins.flutter.io/package_info');
+    MethodChannel('plugins.flutter.io/package_info');
 
 /// Application metadata. Provides application bundle information on iOS and
 /// application package information on Android.

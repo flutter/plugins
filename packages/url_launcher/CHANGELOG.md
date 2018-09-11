@@ -1,3 +1,7 @@
+## 3.0.3
+
+* Added statusBarBrightness field to `launch` to set iOS status bar brightness.
+
 ## 3.0.2
 
 * Updated Gradle tooling to match Android Studio 3.1.2.
