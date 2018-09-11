@@ -39,7 +39,7 @@ class DocumentReference {
   ///
   /// If [merge] is true, the provided data will be merged into an
   /// existing document instead of overwriting.
-  Future<void> setData(Map<String, dynamic> data, {bool merge: false}) {
+  Future<void> setData(Map<String, dynamic> data, {bool merge = false}) {
     return Firestore.channel.invokeMethod(
       'DocumentReference#setData',
       <String, dynamic>{
@@ -52,6 +52,9 @@ class DocumentReference {
   }
 
   /// Updates fields in the document referred to by this [DocumentReference].
+  ///
+  /// Values in [data] may be of any supported Firestore type as well as
+  /// special sentinel [FieldValue] type.
   ///
   /// If no document exists yet, the update will fail.
   Future<void> updateData(Map<String, dynamic> data) {

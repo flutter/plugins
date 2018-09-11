@@ -216,8 +216,8 @@ static const int SOURCE_GALLERY = 1;
   bool shouldDownscale = shouldDownscaleWidth || shouldDownscaleHeight;
 
   if (shouldDownscale) {
-    double downscaledWidth = (height / originalHeight) * originalWidth;
-    double downscaledHeight = (width / originalWidth) * originalHeight;
+    double downscaledWidth = floor((height / originalHeight) * originalWidth);
+    double downscaledHeight = floor((width / originalWidth) * originalHeight);
 
     if (width < height) {
       if (!hasMaxWidth) {

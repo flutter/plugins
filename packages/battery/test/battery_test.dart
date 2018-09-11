@@ -23,7 +23,7 @@ void main() {
 
   test('batteryLevel', () async {
     when(methodChannel.invokeMethod('getBatteryLevel'))
-        .thenReturn(new Future<int>.value(42));
+        .thenAnswer((Invocation invoke) => new Future<int>.value(42));
     expect(await battery.batteryLevel, 42);
   });
 
@@ -32,7 +32,8 @@ void main() {
 
     setUp(() {
       controller = new StreamController<String>();
-      when(eventChannel.receiveBroadcastStream()).thenReturn(controller.stream);
+      when(eventChannel.receiveBroadcastStream())
+          .thenAnswer((Invocation invoke) => controller.stream);
     });
 
     tearDown(() {

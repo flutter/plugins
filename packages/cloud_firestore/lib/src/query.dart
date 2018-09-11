@@ -97,7 +97,11 @@ class Query {
       new CollectionReference._(firestore, _pathComponents);
 
   /// Creates and returns a new [Query] with additional filter on specified
-  /// [field].
+  /// [field]. [field] refers to a field in a document.
+  ///
+  /// The [field] may consist of a single field name (referring to a top level
+  /// field in the document), or a series of field names seperated by dots '.'
+  /// (referring to a nested field in the document).
   ///
   /// Only documents satisfying provided condition are included in the result
   /// set.
@@ -108,6 +112,7 @@ class Query {
     dynamic isLessThanOrEqualTo,
     dynamic isGreaterThan,
     dynamic isGreaterThanOrEqualTo,
+    dynamic arrayContains,
     bool isNull,
   }) {
     final ListEquality<dynamic> equality = const ListEquality<dynamic>();
@@ -131,6 +136,8 @@ class Query {
     if (isGreaterThan != null) addCondition(field, '>', isGreaterThan);
     if (isGreaterThanOrEqualTo != null)
       addCondition(field, '>=', isGreaterThanOrEqualTo);
+    if (arrayContains != null)
+      addCondition(field, 'array-contains', arrayContains);
     if (isNull != null) {
       assert(
           isNull,
@@ -144,7 +151,7 @@ class Query {
 
   /// Creates and returns a new [Query] that's additionally sorted by the specified
   /// [field].
-  Query orderBy(String field, {bool descending: false}) {
+  Query orderBy(String field, {bool descending = false}) {
     final List<List<dynamic>> orders =
         new List<List<dynamic>>.from(_parameters['orderBy']);
 

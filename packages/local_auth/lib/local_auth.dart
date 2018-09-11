@@ -14,8 +14,7 @@ import 'error_codes.dart';
 
 export 'biometric.dart';
 
-const MethodChannel _channel =
-    const MethodChannel('plugins.flutter.io/local_auth');
+const MethodChannel _channel = MethodChannel('plugins.flutter.io/local_auth');
 
 /// A Flutter plugin for authenticating the user identity locally.
 class LocalAuthentication {
@@ -52,10 +51,10 @@ class LocalAuthentication {
   /// simulator.
   Future<bool> authenticateWithBiometrics({
     @required String localizedReason,
-    bool useErrorDialogs: true,
-    bool stickyAuth: false,
-    AndroidAuthMessages androidAuthStrings: const AndroidAuthMessages(),
-    IOSAuthMessages iOSAuthStrings: const IOSAuthMessages(),
+    bool useErrorDialogs = true,
+    bool stickyAuth = false,
+    AndroidAuthMessages androidAuthStrings = const AndroidAuthMessages(),
+    IOSAuthMessages iOSAuthStrings = const IOSAuthMessages(),
   }) async {
     assert(localizedReason != null);
     final Map<String, Object> args = <String, Object>{

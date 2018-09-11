@@ -1,3 +1,24 @@
+## 0.4.11
+
+* Use `api` to define `support-v4` dependency to allow automatic version resolution.
+
+## 0.4.10
+
+* Depend on full `support-v4` library for ease of use (fixes conflicts with Firebase and libraries)
+
+## 0.4.9
+
+* Bugfix: on iOS prevent to appear one pixel white line on resized image.
+
+## 0.4.8
+
+* Replace the full `com.android.support:appcompat-v7` dependency with `com.android.support:support-core-utils`, which results in smaller APK sizes.
+* Upgrade support library to 27.1.1
+
+## 0.4.7
+
+* Added missing video_player package dev dependency.
+
 ## 0.4.6
 
 * Added support for picking remote images.

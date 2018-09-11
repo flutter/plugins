@@ -71,12 +71,12 @@ class VideoPlayerValue {
   VideoPlayerValue({
     @required this.duration,
     this.size,
-    this.position: const Duration(),
-    this.buffered: const <DurationRange>[],
-    this.isPlaying: false,
-    this.isLooping: false,
-    this.isBuffering: false,
-    this.volume: 1.0,
+    this.position = const Duration(),
+    this.buffered = const <DurationRange>[],
+    this.isPlaying = false,
+    this.isLooping = false,
+    this.isBuffering = false,
+    this.volume = 1.0,
     this.errorDescription,
   });
 
@@ -420,16 +420,39 @@ class _VideoAppLifeCycleObserver extends WidgetsBindingObserver {
 }
 
 /// Displays the video controlled by [controller].
-class VideoPlayer extends StatelessWidget {
+class VideoPlayer extends StatefulWidget {
   final VideoPlayerController controller;
 
   VideoPlayer(this.controller);
 
   @override
+  _VideoPlayerState createState() => new _VideoPlayerState();
+}
+
+class _VideoPlayerState extends State<VideoPlayer> {
+  int textureId;
+
+  @override
+  void initState() {
+    super.initState();
+    textureId = widget.controller._textureId;
+    // Need to listen for initialization events since the actual texture ID
+    // becomes available after asynchronous initialization finishes.
+    widget.controller.addListener(() {
+      final int newTextureId = widget.controller._textureId;
+      if (newTextureId != textureId) {
+        setState(() {
+          textureId = newTextureId;
+        });
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return controller._textureId == null
+    return textureId == null
         ? new Container()
-        : new Texture(textureId: controller._textureId);
+        : new Texture(textureId: textureId);
   }
 }
 
@@ -439,9 +462,9 @@ class VideoProgressColors {
   final Color backgroundColor;
 
   VideoProgressColors({
-    this.playedColor: const Color.fromRGBO(255, 0, 0, 0.7),
-    this.bufferedColor: const Color.fromRGBO(50, 50, 200, 0.2),
-    this.backgroundColor: const Color.fromRGBO(200, 200, 200, 0.5),
+    this.playedColor = const Color.fromRGBO(255, 0, 0, 0.7),
+    this.bufferedColor = const Color.fromRGBO(50, 50, 200, 0.2),
+    this.backgroundColor = const Color.fromRGBO(200, 200, 200, 0.5),
   });
 }
 
@@ -523,7 +546,7 @@ class VideoProgressIndicator extends StatefulWidget {
     this.controller, {
     VideoProgressColors colors,
     this.allowScrubbing,
-    this.padding: const EdgeInsets.only(top: 5.0),
+    this.padding = const EdgeInsets.only(top: 5.0),
   }) : colors = colors ?? new VideoProgressColors();
 
   @override
