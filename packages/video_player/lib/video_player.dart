@@ -184,7 +184,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         package = null,
         super(new VideoPlayerValue(duration: null));
 
-  // Visible for testing.
+  @visibleForTesting
   int get textureId => _textureId;
 
   Future<void> initialize() async {
