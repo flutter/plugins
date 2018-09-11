@@ -229,10 +229,7 @@ public class VideoPlayerPlugin implements MethodCallHandler {
         }
         eventSink.success(event);
       } else {
-        Log.e(
-            TAG,
-            "failed sending sendInitialized(isInitialized: "
-                + isInitialized + ")");
+        Log.e(TAG, "failed sending sendInitialized(isInitialized: " + isInitialized + ")");
       }
     }
 
