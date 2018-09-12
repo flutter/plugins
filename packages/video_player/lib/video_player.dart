@@ -474,9 +474,7 @@ class _VideoPlayerState extends State<VideoPlayer> {
 
   @override
   Widget build(BuildContext context) {
-    return _textureId == null
-        ? Container()
-        : Texture(textureId: _textureId);
+    return _textureId == null ? Container() : Texture(textureId: _textureId);
   }
 }
 

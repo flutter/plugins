@@ -31,8 +31,8 @@ class SampleMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopupMenuButton<String>(
       onSelected: (String value) {
-        Scaffold.of(context).showSnackBar(
-            SnackBar(content: Text('You selected: $value')));
+        Scaffold.of(context)
+            .showSnackBar(SnackBar(content: Text('You selected: $value')));
       },
       itemBuilder: (BuildContext context) => <PopupMenuItem<String>>[
             const PopupMenuItem<String>(

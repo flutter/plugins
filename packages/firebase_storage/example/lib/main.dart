@@ -58,8 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<Null> _uploadFile() async {
     final String uuid = Uuid().v1();
     final Directory systemTempDir = Directory.systemTemp;
-    final File file =
-        await File('${systemTempDir.path}/foo$uuid.txt').create();
+    final File file = await File('${systemTempDir.path}/foo$uuid.txt').create();
     await file.writeAsString(kTestString);
     assert(await file.readAsString() == kTestString);
     final StorageReference ref =

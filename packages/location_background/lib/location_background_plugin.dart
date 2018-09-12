@@ -40,8 +40,7 @@ class Location {
   }
 
   DateTime get time =>
-      DateTime.fromMillisecondsSinceEpoch((_time * 1000).round(),
-          isUtc: true);
+      DateTime.fromMillisecondsSinceEpoch((_time * 1000).round(), isUtc: true);
 
   @override
   String toString() =>

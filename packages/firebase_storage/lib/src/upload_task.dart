@@ -23,8 +23,7 @@ abstract class StorageUploadTask {
   StorageTaskSnapshot lastSnapshot;
 
   /// Returns a last snapshot when completed
-  Completer<StorageTaskSnapshot> _completer =
-      Completer<StorageTaskSnapshot>();
+  Completer<StorageTaskSnapshot> _completer = Completer<StorageTaskSnapshot>();
   Future<StorageTaskSnapshot> get onComplete => _completer.future;
 
   StreamController<StorageTaskEvent> _controller =
