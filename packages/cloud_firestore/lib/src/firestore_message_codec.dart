@@ -60,15 +60,15 @@ class FirestoreMessageCodec extends StandardMessageCodec {
   dynamic readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
       case _kDateTime:
-        return new DateTime.fromMillisecondsSinceEpoch(buffer.getInt64());
+        return DateTime.fromMillisecondsSinceEpoch(buffer.getInt64());
       case _kGeoPoint:
-        return new GeoPoint(buffer.getFloat64(), buffer.getFloat64());
+        return GeoPoint(buffer.getFloat64(), buffer.getFloat64());
       case _kDocumentReference:
         final int appNameLength = readSize(buffer);
         final String appName =
             utf8.decoder.convert(buffer.getUint8List(appNameLength));
-        final FirebaseApp app = new FirebaseApp(name: appName);
-        final Firestore firestore = new Firestore(app: app);
+        final FirebaseApp app = FirebaseApp(name: appName);
+        final Firestore firestore = Firestore(app: app);
         final int pathLength = readSize(buffer);
         final String path =
             utf8.decoder.convert(buffer.getUint8List(pathLength));
@@ -76,7 +76,7 @@ class FirestoreMessageCodec extends StandardMessageCodec {
       case _kBlob:
         final int length = readSize(buffer);
         final List<int> bytes = buffer.getUint8List(length);
-        return new Blob(bytes);
+        return Blob(bytes);
       case _kArrayUnion:
         final List<dynamic> value = readValue(buffer);
         return FieldValue.arrayUnion(value);

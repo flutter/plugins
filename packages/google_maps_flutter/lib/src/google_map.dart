@@ -30,7 +30,7 @@ class GoogleMap extends StatefulWidget {
   final List<OneSequenceGestureRecognizer> gestureRecognizers;
 
   @override
-  State createState() => new _GoogleMapState();
+  State createState() => _GoogleMapState();
 }
 
 class _GoogleMapState extends State<GoogleMap> {
@@ -46,7 +46,7 @@ class _GoogleMapState extends State<GoogleMap> {
       );
     }
 
-    return new Text(
+    return Text(
         '$defaultTargetPlatform is not yet supported by the maps plugin');
   }
 

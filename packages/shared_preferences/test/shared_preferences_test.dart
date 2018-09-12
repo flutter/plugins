@@ -115,7 +115,7 @@ void main() {
       await preferences.remove(key);
       expect(
           log,
-          new List<Matcher>.filled(
+          List<Matcher>.filled(
             6,
             isMethodCall(
               'remove',

@@ -19,7 +19,7 @@ class MoveCameraPage extends Page {
 class MoveCamera extends StatefulWidget {
   const MoveCamera();
   @override
-  State createState() => new MoveCameraState();
+  State createState() => MoveCameraState();
 }
 
 class MoveCameraState extends State<MoveCamera> {
@@ -36,10 +36,10 @@ class MoveCameraState extends State<MoveCamera> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         Center(
-          child: new SizedBox(
+          child: SizedBox(
               width: 300.0,
               height: 200.0,
-              child: new GoogleMap(
+              child: GoogleMap(
                   onMapCreated: _onMapCreated,
                   options: GoogleMapOptions.defaultOptions)),
         ),

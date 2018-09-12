@@ -280,7 +280,7 @@ void main() {
       PerformanceAttributes attributes;
 
       setUp(() {
-        attributes = new MockPerformanceAttributes();
+        attributes = MockPerformanceAttributes();
       });
 
       test('putAttribute', () async {

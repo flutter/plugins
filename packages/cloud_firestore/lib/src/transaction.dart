@@ -21,7 +21,7 @@ class Transaction {
       'path': documentReference.path,
     });
     if (result != null) {
-      return new DocumentSnapshot._(documentReference.path,
+      return DocumentSnapshot._(documentReference.path,
           result['data']?.cast<String, dynamic>(), Firestore.instance);
     } else {
       return null;
