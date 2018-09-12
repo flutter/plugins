@@ -6,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 class FakeController extends ValueNotifier<VideoPlayerValue>
     implements VideoPlayerController {
-  FakeController() : super(new VideoPlayerValue(duration: null));
+  FakeController() : super(VideoPlayerValue(duration: null));
 
   @override
   Future<void> dispose() async {
@@ -47,7 +47,7 @@ void main() {
 
     controller.textureId = 123;
     controller.value = controller.value.copyWith(
-      duration: new Duration(milliseconds: 100),
+      duration: Duration(milliseconds: 100),
     );
 
     await tester.pump();

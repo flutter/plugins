@@ -169,7 +169,7 @@ class MarkerOptions {
     if (changes == null) {
       return this;
     }
-    return new MarkerOptions(
+    return MarkerOptions(
       alpha: changes.alpha ?? alpha,
       anchor: changes.anchor ?? anchor,
       consumeTapEvents: changes.consumeTapEvents ?? consumeTapEvents,

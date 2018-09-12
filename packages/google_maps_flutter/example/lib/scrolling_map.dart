@@ -27,10 +27,10 @@ class ScrollingMapBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView(
       children: <Widget>[
-        new Card(
-          child: new Padding(
+        Card(
+          child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 30.0),
-            child: new Column(
+            child: Column(
               children: <Widget>[
                 const Padding(
                   padding: EdgeInsets.only(bottom: 12.0),
@@ -42,14 +42,14 @@ class ScrollingMapBody extends StatelessWidget {
                     height: 300.0,
                     child: GoogleMap(
                       onMapCreated: onMapCreated,
-                      options: new GoogleMapOptions(
+                      options: GoogleMapOptions(
                         cameraPosition: CameraPosition(
                           target: center,
                           zoom: 11.0,
                         ),
                       ),
                       gestureRecognizers: <OneSequenceGestureRecognizer>[
-                        new EagerGestureRecognizer()
+                        EagerGestureRecognizer()
                       ],
                     ),
                   ),
@@ -58,10 +58,10 @@ class ScrollingMapBody extends StatelessWidget {
             ),
           ),
         ),
-        new Card(
-          child: new Padding(
+        Card(
+          child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 30.0),
-            child: new Column(
+            child: Column(
               children: <Widget>[
                 const Text('This map doesn\'t consume the vertical drags.'),
                 const Padding(
@@ -75,7 +75,7 @@ class ScrollingMapBody extends StatelessWidget {
                     height: 300.0,
                     child: GoogleMap(
                       onMapCreated: onMapCreated,
-                      options: new GoogleMapOptions(
+                      options: GoogleMapOptions(
                         cameraPosition: CameraPosition(
                           target: center,
                           zoom: 11.0,

@@ -23,12 +23,11 @@ abstract class StorageUploadTask {
   StorageTaskSnapshot lastSnapshot;
 
   /// Returns a last snapshot when completed
-  Completer<StorageTaskSnapshot> _completer =
-      new Completer<StorageTaskSnapshot>();
+  Completer<StorageTaskSnapshot> _completer = Completer<StorageTaskSnapshot>();
   Future<StorageTaskSnapshot> get onComplete => _completer.future;
 
   StreamController<StorageTaskEvent> _controller =
-      new StreamController<StorageTaskEvent>.broadcast();
+      StreamController<StorageTaskEvent>.broadcast();
   Stream<StorageTaskEvent> get events => _controller.stream;
 
   Future<StorageTaskSnapshot> _start() async {
@@ -39,7 +38,7 @@ abstract class StorageUploadTask {
     }).map<StorageTaskEvent>((MethodCall m) {
       final Map<dynamic, dynamic> args = m.arguments;
       final StorageTaskEvent e =
-          new StorageTaskEvent._(args['type'], _ref, args['snapshot']);
+          StorageTaskEvent._(args['type'], _ref, args['snapshot']);
       _changeState(e);
       lastSnapshot = e.snapshot;
       _controller.add(e);
