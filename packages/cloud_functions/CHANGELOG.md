@@ -1,3 +1,7 @@
+## 0.0.5
+
+* Set iOS deployment target to 6.0 (minimum supported by Firebase SDKs), fixes compilation errors.
+
 ## 0.0.4
 
 * Fixed podspec to use static_framework
