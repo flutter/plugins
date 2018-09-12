@@ -5,14 +5,14 @@ class FetchThrottledException implements Exception {
   DateTime _throttleEnd;
 
   FetchThrottledException._({int endTimeInMills}) {
-    _throttleEnd = new DateTime.fromMillisecondsSinceEpoch(endTimeInMills);
+    _throttleEnd = DateTime.fromMillisecondsSinceEpoch(endTimeInMills);
   }
 
   DateTime get throttleEnd => _throttleEnd;
 
   @override
   String toString() {
-    final Duration duration = _throttleEnd.difference(new DateTime.now());
+    final Duration duration = _throttleEnd.difference(DateTime.now());
     return '''FetchThrottledException
 Fetching throttled, try again in ${duration.inMilliseconds} milliseconds''';
   }

@@ -10,15 +10,15 @@ import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 
 void main() {
-  runApp(new MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
+    return MaterialApp(
       title: 'Image Picker Demo',
-      home: new MyHomePage(title: 'Image Picker Example'),
+      home: MyHomePage(title: 'Image Picker Example'),
     );
   }
 }
@@ -29,7 +29,7 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  _MyHomePageState createState() => new _MyHomePageState();
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -199,7 +199,7 @@ class AspectRatioVideo extends StatefulWidget {
   AspectRatioVideo(this.controller);
 
   @override
-  AspectRatioVideoState createState() => new AspectRatioVideoState();
+  AspectRatioVideoState createState() => AspectRatioVideoState();
 }
 
 class AspectRatioVideoState extends State<AspectRatioVideo> {
@@ -226,14 +226,15 @@ class AspectRatioVideoState extends State<AspectRatioVideo> {
   @override
   Widget build(BuildContext context) {
     if (initialized) {
-      return new Center(
-        child: new AspectRatio(
-          aspectRatio: controller.value.aspectRatio,
-          child: new VideoPlayer(controller),
+      final Size size = controller.value.size;
+      return Center(
+        child: AspectRatio(
+          aspectRatio: controller.value?.aspectRatio,
+          child: VideoPlayer(controller),
         ),
       );
     } else {
-      return new Container();
+      return Container();
     }
   }
 }

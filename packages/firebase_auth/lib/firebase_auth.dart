@@ -60,7 +60,7 @@ class FirebaseUser extends UserInfo {
 
   FirebaseUser._(Map<dynamic, dynamic> data)
       : providerData = data['providerData']
-            .map<UserInfo>((dynamic item) => new UserInfo._(item))
+            .map<UserInfo>((dynamic item) => UserInfo._(item))
             .toList(),
         super._(data);
 
@@ -128,7 +128,7 @@ class FirebaseAuth {
   /// Provides an instance of this class corresponding to the default app.
   ///
   /// TODO(jackson): Support for non-default apps.
-  static FirebaseAuth instance = new FirebaseAuth._();
+  static FirebaseAuth instance = FirebaseAuth._();
 
   FirebaseAuth._() {
     channel.setMethodCallHandler(_callHandler);
@@ -139,7 +139,7 @@ class FirebaseAuth {
     Future<int> _handle;
 
     StreamController<FirebaseUser> controller;
-    controller = new StreamController<FirebaseUser>.broadcast(onListen: () {
+    controller = StreamController<FirebaseUser>.broadcast(onListen: () {
       _handle = channel
           .invokeMethod('startListeningAuthState')
           .then<int>((dynamic v) => v);
@@ -169,7 +169,7 @@ class FirebaseAuth {
   Future<FirebaseUser> signInAnonymously() async {
     final Map<dynamic, dynamic> data =
         await channel.invokeMethod('signInAnonymously');
-    final FirebaseUser currentUser = new FirebaseUser._(data);
+    final FirebaseUser currentUser = FirebaseUser._(data);
     return currentUser;
   }
 
@@ -186,7 +186,7 @@ class FirebaseAuth {
         'password': password,
       },
     );
-    final FirebaseUser currentUser = new FirebaseUser._(data);
+    final FirebaseUser currentUser = FirebaseUser._(data);
     return currentUser;
   }
 
@@ -228,7 +228,7 @@ class FirebaseAuth {
         'password': password,
       },
     );
-    final FirebaseUser currentUser = new FirebaseUser._(data);
+    final FirebaseUser currentUser = FirebaseUser._(data);
     return currentUser;
   }
 
@@ -239,7 +239,7 @@ class FirebaseAuth {
         await channel.invokeMethod('signInWithFacebook', <String, String>{
       'accessToken': accessToken,
     });
-    final FirebaseUser currentUser = new FirebaseUser._(data);
+    final FirebaseUser currentUser = FirebaseUser._(data);
     return currentUser;
   }
 
@@ -257,7 +257,7 @@ class FirebaseAuth {
       'authToken': authToken,
       'authTokenSecret': authTokenSecret,
     });
-    final FirebaseUser currentUser = new FirebaseUser._(data);
+    final FirebaseUser currentUser = FirebaseUser._(data);
     return currentUser;
   }
 
@@ -274,7 +274,7 @@ class FirebaseAuth {
         'accessToken': accessToken,
       },
     );
-    final FirebaseUser currentUser = new FirebaseUser._(data);
+    final FirebaseUser currentUser = FirebaseUser._(data);
     return currentUser;
   }
 
@@ -289,7 +289,7 @@ class FirebaseAuth {
         'smsCode': smsCode,
       },
     );
-    final FirebaseUser currentUser = new FirebaseUser._(data);
+    final FirebaseUser currentUser = FirebaseUser._(data);
     return currentUser;
   }
 
@@ -329,7 +329,7 @@ class FirebaseAuth {
         'token': token,
       },
     );
-    final FirebaseUser currentUser = new FirebaseUser._(data);
+    final FirebaseUser currentUser = FirebaseUser._(data);
     return currentUser;
   }
 
@@ -341,8 +341,7 @@ class FirebaseAuth {
   Future<FirebaseUser> currentUser() async {
     final Map<dynamic, dynamic> data =
         await channel.invokeMethod("currentUser");
-    final FirebaseUser currentUser =
-        data == null ? null : new FirebaseUser._(data);
+    final FirebaseUser currentUser = data == null ? null : FirebaseUser._(data);
     return currentUser;
   }
 
@@ -365,7 +364,7 @@ class FirebaseAuth {
         'password': password,
       },
     );
-    final FirebaseUser currentUser = new FirebaseUser._(data);
+    final FirebaseUser currentUser = FirebaseUser._(data);
     return currentUser;
   }
 
@@ -410,7 +409,7 @@ class FirebaseAuth {
         'accessToken': accessToken,
       },
     );
-    final FirebaseUser currentUser = new FirebaseUser._(data);
+    final FirebaseUser currentUser = FirebaseUser._(data);
     return currentUser;
   }
 
@@ -424,7 +423,7 @@ class FirebaseAuth {
         'accessToken': accessToken,
       },
     );
-    final FirebaseUser currentUser = new FirebaseUser._(data);
+    final FirebaseUser currentUser = FirebaseUser._(data);
     return currentUser;
   }
 
@@ -455,7 +454,7 @@ class FirebaseAuth {
             _phoneAuthCallbacks[handle]['PhoneVerificationFailed'];
         final Map<dynamic, dynamic> exception = call.arguments['exception'];
         verificationFailed(
-            new AuthException(exception['code'], exception['message']));
+            AuthException(exception['code'], exception['message']));
         break;
       case 'phoneCodeSent':
         final int handle = call.arguments['handle'];
@@ -485,8 +484,7 @@ class FirebaseAuth {
     final Map<dynamic, dynamic> data = call.arguments["user"];
     final int id = call.arguments["id"];
 
-    final FirebaseUser currentUser =
-        data != null ? new FirebaseUser._(data) : null;
+    final FirebaseUser currentUser = data != null ? FirebaseUser._(data) : null;
     _authStateChangedControllers[id].add(currentUser);
   }
 }
