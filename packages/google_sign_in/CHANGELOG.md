@@ -1,3 +1,11 @@
+## 3.0.6
+
+* Remove flaky displayName assertion
+
+## 3.0.5
+
+* Added missing http package dependency.
+
 ## 3.0.4
 
 * Updated Gradle tooling to match Android Studio 3.1.2.

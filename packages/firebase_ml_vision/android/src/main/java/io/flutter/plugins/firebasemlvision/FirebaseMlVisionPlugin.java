@@ -61,14 +61,24 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
           result.error("labelDetectorError", e.getLocalizedMessage(), null);
         }
         break;
-      case "TextDetector#detectInImage":
+      case "CloudLabelDetector#detectInImage":
         try {
           image = filePathToVisionImage((String) call.argument("path"));
-          TextDetector.instance.handleDetection(image, options, result);
+          CloudLabelDetector.instance.handleDetection(image, options, result);
         } catch (IOException e) {
-          result.error("textDetectorIOError", e.getLocalizedMessage(), null);
+          result.error("labelDetectorIOError", e.getLocalizedMessage(), null);
         } catch (Exception e) {
-          result.error("textDetectorError", e.getLocalizedMessage(), null);
+          result.error("labelDetectorError", e.getLocalizedMessage(), null);
+        }
+        break;
+      case "TextRecognizer#detectInImage":
+        try {
+          image = filePathToVisionImage((String) call.argument("path"));
+          TextRecognizer.instance.handleDetection(image, options, result);
+        } catch (IOException e) {
+          result.error("textRecognizerIOError", e.getLocalizedMessage(), null);
+        } catch (Exception e) {
+          result.error("textRecognizerError", e.getLocalizedMessage(), null);
         }
         break;
       default:

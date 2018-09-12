@@ -50,6 +50,41 @@ class LabelDetector extends FirebaseVisionDetector {
   }
 }
 
+class CloudLabelDetector extends FirebaseVisionDetector {
+  CloudLabelDetector._(this.options) : assert(options != null);
+
+  /// The options for the detector.
+  ///
+  /// Sets the confidence threshold for detecting entities.
+  final VisionCloudDetectorOptions options;
+
+  /// Detects entities in the input image.
+  ///
+  /// Performed asynchronously.
+  @override
+  Future<List<Label>> detectInImage(FirebaseVisionImage visionImage) async {
+    debugPrint(
+        'Options: modelType=${options.modelType}, maxResults=${options.maxResults}');
+    final List<dynamic> reply = await FirebaseVision.channel.invokeMethod(
+      'CloudLabelDetector#detectInImage',
+      <String, dynamic>{
+        'path': visionImage.imageFile.path,
+        'options': <String, dynamic>{
+          'maxResults': options.maxResults,
+          'modelType': options.modelType,
+        },
+      },
+    );
+
+    final List<Label> labels = <Label>[];
+    for (dynamic data in reply) {
+      labels.add(Label._(data));
+    }
+
+    return labels;
+  }
+}
+
 /// Options for Label detector.
 ///
 /// Confidence threshold could be provided for the label detection. For example,

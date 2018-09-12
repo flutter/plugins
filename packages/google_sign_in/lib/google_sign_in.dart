@@ -37,7 +37,6 @@ class GoogleSignInAccount implements GoogleIdentity {
         id = data['id'],
         photoUrl = data['photoUrl'],
         _idToken = data['idToken'] {
-    assert(displayName != null);
     assert(id != null);
   }
 

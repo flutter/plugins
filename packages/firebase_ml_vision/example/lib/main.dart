@@ -6,9 +6,10 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
-import 'package:firebase_ml_vision_example/detector_painters.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+
+import 'detector_painters.dart';
 
 void main() => runApp(MaterialApp(home: _MyHomePage()));
 
@@ -80,6 +81,9 @@ class _MyHomePageState extends State<_MyHomePage> {
       case Detector.label:
         detector = FirebaseVision.instance.labelDetector();
         break;
+      case Detector.cloudLabel:
+        detector = FirebaseVision.instance.cloudLabelDetector();
+        break;
       case Detector.text:
         detector = FirebaseVision.instance.textDetector();
         break;
@@ -106,6 +110,9 @@ class _MyHomePageState extends State<_MyHomePage> {
         painter = FaceDetectorPainter(_imageSize, results);
         break;
       case Detector.label:
+        painter = LabelDetectorPainter(_imageSize, results);
+        break;
+      case Detector.cloudLabel:
         painter = LabelDetectorPainter(_imageSize, results);
         break;
       case Detector.text:
@@ -166,6 +173,10 @@ class _MyHomePageState extends State<_MyHomePage> {
                   const PopupMenuItem<Detector>(
                     child: Text('Detect Label'),
                     value: Detector.label,
+                  ),
+                  const PopupMenuItem<Detector>(
+                    child: Text('Detect Cloud Label'),
+                    value: Detector.cloudLabel,
                   ),
                   const PopupMenuItem<Detector>(
                     child: Text('Detect Text'),

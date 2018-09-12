@@ -111,6 +111,7 @@ class Query {
     dynamic isLessThanOrEqualTo,
     dynamic isGreaterThan,
     dynamic isGreaterThanOrEqualTo,
+    dynamic arrayContains,
     bool isNull,
   }) {
     final ListEquality<dynamic> equality = const ListEquality<dynamic>();
@@ -134,6 +135,8 @@ class Query {
     if (isGreaterThan != null) addCondition(field, '>', isGreaterThan);
     if (isGreaterThanOrEqualTo != null)
       addCondition(field, '>=', isGreaterThanOrEqualTo);
+    if (arrayContains != null)
+      addCondition(field, 'array-contains', arrayContains);
     if (isNull != null) {
       assert(
           isNull,
