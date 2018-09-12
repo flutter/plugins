@@ -97,7 +97,7 @@ class VideoPlayerValue {
 
   bool get hasError => errorDescription != null;
 
-  double get aspectRatio => size.width / size.height;
+  double get aspectRatio => size != null ? size.width / size.height : 1.0;
 
   VideoPlayerValue copyWith({
     Duration duration,
