@@ -15,32 +15,6 @@ export 'widgets.dart';
 
 enum SignInOption { standard, games }
 
-/// Signals Google authentication errors that can be recovered with user action.
-///
-/// Is thrown only on android.
-///
-/// Dart equivalent of android `UserRecoverableAuthException`.
-class UserRecoverableAuthException implements Exception {
-  UserRecoverableAuthException._(
-    this.code,
-    this.message,
-    this._accountId,
-  );
-
-  final String code;
-  final String message;
-  final String _accountId;
-
-  /// Allows user to take required action for authentication.
-  ///
-  /// Returns whether user successfully took action to recover authentication.
-  ///
-  /// Throws [PlatformException] if this method is not capable of recovering
-  /// authentication for this user.
-  Future<bool> recoverAuth() async => await GoogleSignIn.channel
-      .invokeMethod('recoverAuth', <String, dynamic>{'accountId': _accountId});
-}
-
 class GoogleSignInAuthentication {
   final Map<dynamic, dynamic> _data;
 
@@ -66,8 +40,6 @@ class GoogleSignInAccount implements GoogleIdentity {
     assert(id != null);
   }
 
-  static const String _userRecoverableAuthError = 'user_recoverable_auth';
-
   @override
   final String displayName;
 
@@ -85,43 +57,33 @@ class GoogleSignInAccount implements GoogleIdentity {
 
   /// Retrieve [GoogleSignInAuthentication] for this account.
   ///
-  /// Throws a [UserRecoverableAuthException] on Android to signal that a
-  /// user action is required (to provide consent, enter a password, etc.). To
-  /// initiate the user action, clients must run
-  /// `UserRecoverableAuthException.recoverAuth()`. Upon success, a
-  /// client should invoke this method again to get authentication.
-  ///
-  /// Be sure to handle the [UserRecoverableAuthException] exception, as
-  /// it is normal behavior that user interaction is required.
-  Future<GoogleSignInAuthentication> get authentication async {
+  /// `shouldRecoverAuth` sets whether to attempt to recover authentication if
+  /// user action is needed.
+  Future<GoogleSignInAuthentication> getAuthentication({
+    bool shouldRecoverAuth = true,
+  }) async {
     if (_googleSignIn.currentUser != this) {
-      throw new StateError('User is no longer signed in.');
+      throw StateError('User is no longer signed in.');
     }
 
-    Map<dynamic, dynamic> response;
-    try {
-      response = await GoogleSignIn.channel.invokeMethod(
-        'getTokens',
-        <String, dynamic>{'email': email},
-      );
-    } on PlatformException catch (e) {
-      if (e.code == _userRecoverableAuthError) {
-        throw new UserRecoverableAuthException._(e.code, e.message, id);
-      }
-
-      rethrow;
-    }
-
+    final Map<dynamic, dynamic> response =
+        await GoogleSignIn.channel.invokeMethod(
+      'getTokens',
+      <String, dynamic>{
+        'email': email,
+        'shouldRecoverAuth': shouldRecoverAuth,
+      },
+    );
     // On Android, there isn't an API for refreshing the idToken, so re-use
     // the one we obtained on login.
     if (response['idToken'] == null) {
       response['idToken'] = _idToken;
     }
-    return new GoogleSignInAuthentication._(response);
+    return GoogleSignInAuthentication._(response);
   }
 
   Future<Map<String, String>> get authHeaders async {
-    final String token = (await authentication).accessToken;
+    final String token = (await getAuthentication()).accessToken;
     return <String, String>{
       "Authorization": "Bearer $token",
       "X-Goog-AuthUser": "0",
@@ -203,7 +165,7 @@ class GoogleSignIn {
 
   /// Factory for creating default sign in user experience.
   factory GoogleSignIn.standard({List<String> scopes, String hostedDomain}) {
-    return new GoogleSignIn(
+    return GoogleSignIn(
         signInOption: SignInOption.standard,
         scopes: scopes,
         hostedDomain: hostedDomain);
@@ -212,11 +174,11 @@ class GoogleSignIn {
   /// Factory for creating sign in suitable for games. This option must not be
   /// used on iOS because the games API is not supported.
   factory GoogleSignIn.games() {
-    return new GoogleSignIn(signInOption: SignInOption.games);
+    return GoogleSignIn(signInOption: SignInOption.games);
   }
 
   StreamController<GoogleSignInAccount> _currentUserController =
-      new StreamController<GoogleSignInAccount>.broadcast();
+      StreamController<GoogleSignInAccount>.broadcast();
 
   /// Subscribe to this stream to be notified when the current user changes.
   Stream<GoogleSignInAccount> get onCurrentUserChanged =>
@@ -230,7 +192,7 @@ class GoogleSignIn {
 
     final Map<dynamic, dynamic> response = await channel.invokeMethod(method);
     return _setCurrentUser(response != null && response.isNotEmpty
-        ? new GoogleSignInAccount._(this, response)
+        ? GoogleSignInAccount._(this, response)
         : null);
   }
 
@@ -266,12 +228,12 @@ class GoogleSignIn {
   /// updates to [currentUser] and [onCurrentUserChanged].
   Future<GoogleSignInAccount> _addMethodCall(String method) {
     if (_lastMethodCompleter == null) {
-      _lastMethodCompleter = new _MethodCompleter(method)
+      _lastMethodCompleter = _MethodCompleter(method)
         ..complete(_callMethod(method));
       return _lastMethodCompleter.future;
     }
 
-    final _MethodCompleter completer = new _MethodCompleter(method);
+    final _MethodCompleter completer = _MethodCompleter(method);
     _lastMethodCompleter.future.whenComplete(() {
       // If after the last completed call currentUser is not null and requested
       // method is a sign in method, re-use the same authenticated user
@@ -352,7 +314,7 @@ class GoogleSignIn {
 class _MethodCompleter {
   final String method;
   final Completer<GoogleSignInAccount> _completer =
-      new Completer<GoogleSignInAccount>();
+      Completer<GoogleSignInAccount>();
 
   _MethodCompleter(this.method);
 

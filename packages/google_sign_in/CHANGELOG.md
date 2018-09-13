@@ -1,6 +1,7 @@
 ## 3.1.0
 
-* **Breaking change** Add support for handling UserRecoverableAuthException on Android.
+* **Breaking change** Add support to recover authentication for Android.
+  `GoogleSignInAccount.authentication` -> `GoogleSignInAccount.getAuthentication()`
 
 ## 3.0.6
 

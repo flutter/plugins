@@ -57,7 +57,6 @@ public class GoogleSignInPlugin implements MethodCallHandler {
   private static final String METHOD_SIGN_OUT = "signOut";
   private static final String METHOD_DISCONNECT = "disconnect";
   private static final String METHOD_IS_SIGNED_IN = "isSignedIn";
-  private static final String METHOD_RECOVER_AUTH = "recoverAuth";
 
   private final IDelegate delegate;
 
@@ -91,7 +90,8 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 
       case METHOD_GET_TOKENS:
         String email = call.argument("email");
-        delegate.getTokens(result, email);
+        boolean shouldRecoverAuth = call.argument("shouldRecoverAuth");
+        delegate.getTokens(result, email, shouldRecoverAuth);
         break;
 
       case METHOD_SIGN_OUT:
@@ -104,11 +104,6 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 
       case METHOD_IS_SIGNED_IN:
         delegate.isSignedIn(result);
-        break;
-
-      case METHOD_RECOVER_AUTH:
-        String accountId = call.argument("accountId");
-        delegate.recoverAuth(result, accountId);
         break;
 
       default:
@@ -142,7 +137,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
      * Gets an OAuth access token with the scopes that were specified during initialization for the
      * user with the specified email address.
      */
-    public void getTokens(final Result result, final String email);
+    public void getTokens(final Result result, final String email, final boolean shouldRecoverAuth);
 
     /**
      * Signs the user out. Their credentials may remain valid, meaning they'll be able to silently
@@ -155,9 +150,6 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 
     /** Checks if there is a signed in user. */
     public void isSignedIn(Result result);
-
-    /** Method used when signaled that a user action is required. */
-    public void recoverAuth(Result result, String accountId);
   }
 
   /**
@@ -171,7 +163,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
    */
   public static final class Delegate implements IDelegate {
     private static final int REQUEST_CODE = 53293;
-    private static final int REQUEST_CODE_RECOVERABLE_AUTH = 12345;
+    private static final int REQUEST_CODE_RECOVER_AUTH = 12345;
     private static final int REQUEST_CODE_RESOLVE_ERROR = 1001;
 
     private static final String ERROR_REASON_EXCEPTION = "exception";
@@ -181,7 +173,6 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     private static final String ERROR_REASON_SIGN_IN_CANCELED = "sign_in_canceled";
     private static final String ERROR_REASON_SIGN_IN_REQUIRED = "sign_in_required";
     private static final String ERROR_REASON_SIGN_IN_FAILED = "sign_in_failed";
-    private static final String ERROR_REASON_USER_RECOVERABLE_AUTH = "user_recoverable_auth";
 
     private static final String STATE_RESOLVING_ERROR = "resolving_error";
 
@@ -197,7 +188,6 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     private List<String> requestedScopes;
     private PendingOperation pendingOperation;
     private volatile GoogleSignInAccount currentAccount;
-    private Intent userRecoverableAuthIntent;
 
     public Delegate(PluginRegistry.Registrar registrar) {
       this.registrar = registrar;
@@ -211,12 +201,12 @@ public class GoogleSignInPlugin implements MethodCallHandler {
       return currentAccount;
     }
 
-    private void checkAndSetPendingOperation(String method, Result result) {
+    private void checkAndSetPendingOperation(String method, Result result, Object data) {
       if (pendingOperation != null) {
         throw new IllegalStateException(
             "Concurrent operations detected: " + pendingOperation.method + ", " + method);
       }
-      pendingOperation = new PendingOperation(method, result);
+      pendingOperation = new PendingOperation(method, result, data);
     }
 
     /**
@@ -225,10 +215,10 @@ public class GoogleSignInPlugin implements MethodCallHandler {
      */
     @Override
     public void init(
-        Result result, String signInOption, List<String> requestedScopes, String hostedDomain) {
+            Result result, String signInOption, List<String> requestedScopes, String hostedDomain) {
       // We're not initialized until we receive `onConnected`.
       // If initialization fails, we'll receive `onConnectionFailed`
-      checkAndSetPendingOperation(METHOD_INIT, result);
+      checkAndSetPendingOperation(METHOD_INIT, result, null);
 
       try {
         GoogleSignInOptions.Builder optionsBuilder;
@@ -255,7 +245,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
                 .context()
                 .getResources()
                 .getIdentifier(
-                    "default_web_client_id", "string", registrar.context().getPackageName());
+                        "default_web_client_id", "string", registrar.context().getPackageName());
         if (clientIdIdentifier != 0) {
           optionsBuilder.requestIdToken(registrar.context().getString(clientIdIdentifier));
         }
@@ -286,7 +276,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
      */
     @Override
     public void signInSilently(Result result) {
-      checkAndSetPendingOperation(METHOD_SIGN_IN_SILENTLY, result);
+      checkAndSetPendingOperation(METHOD_SIGN_IN_SILENTLY, result, null);
 
       OptionalPendingResult<GoogleSignInResult> pendingResult =
           Auth.GoogleSignInApi.silentSignIn(googleApiClient);
@@ -312,7 +302,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
       if (registrar.activity() == null) {
         throw new IllegalStateException("signIn needs a foreground activity");
       }
-      checkAndSetPendingOperation(METHOD_SIGN_IN, result);
+      checkAndSetPendingOperation(METHOD_SIGN_IN, result, null);
 
       Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
       registrar.activity().startActivityForResult(signInIntent, REQUEST_CODE);
@@ -323,7 +313,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
      * user with the specified email address.
      */
     @Override
-    public void getTokens(final Result result, final String email) {
+    public void getTokens(final Result result, final String email, final boolean shouldRecoverAuth) {
       // TODO(issue/11107): Add back the checkAndSetPendingOperation once getTokens is properly
       // gated from Dart code. Change result.success/error calls below to use finishWith()
       if (email == null) {
@@ -355,13 +345,17 @@ public class GoogleSignInPlugin implements MethodCallHandler {
                 // instead of the value we cached during sign in. At least, that's
                 // how it works on iOS.
                 result.success(tokenResult);
-              } catch (ExecutionException e) {
-                if (e.getCause() instanceof UserRecoverableAuthException) {
-                  UserRecoverableAuthException exception =
-                      (UserRecoverableAuthException) e.getCause();
-                  userRecoverableAuthIntent = exception.getIntent();
-                  result.error(
-                      ERROR_REASON_USER_RECOVERABLE_AUTH, exception.getLocalizedMessage(), null);
+              } catch (final ExecutionException e) {
+                if (shouldRecoverAuth && e.getCause() instanceof UserRecoverableAuthException) {
+                  registrar.activity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                      UserRecoverableAuthException exception =
+                              (UserRecoverableAuthException) e.getCause();
+                      checkAndSetPendingOperation(METHOD_GET_TOKENS, result, email);
+                      registrar.activity().startActivityForResult(exception.getIntent(), REQUEST_CODE_RECOVER_AUTH);
+                    }
+                  });
                   return;
                 }
 
@@ -381,35 +375,34 @@ public class GoogleSignInPlugin implements MethodCallHandler {
      */
     @Override
     public void signOut(Result result) {
-      checkAndSetPendingOperation(METHOD_SIGN_OUT, result);
+      checkAndSetPendingOperation(METHOD_SIGN_OUT, result, null);
 
       Auth.GoogleSignInApi.signOut(googleApiClient)
           .setResultCallback(
-              new ResultCallback<Status>() {
-                @Override
-                public void onResult(@NonNull Status status) {
-                  // TODO(tvolkert): communicate status back to user
-                  finishWithSuccess(null);
-                }
-              });
+                  new ResultCallback<Status>() {
+                    @Override
+                    public void onResult(@NonNull Status status) {
+                      // TODO(tvolkert): communicate status back to user
+                      finishWithSuccess(null);
+                    }
+                  });
     }
 
     /** Signs the user out, and revokes their credentials. */
     @Override
     public void disconnect(Result result) {
-      checkAndSetPendingOperation(METHOD_DISCONNECT, result);
+      checkAndSetPendingOperation(METHOD_DISCONNECT, result, null);
 
       Auth.GoogleSignInApi.revokeAccess(googleApiClient)
           .setResultCallback(
-              new ResultCallback<Status>() {
-                @Override
-                public void onResult(@NonNull Status status) {
-                  currentAccount = null;
-                  userRecoverableAuthIntent = null;
-                  // TODO(tvolkert): communicate status back to user
-                  finishWithSuccess(null);
-                }
-              });
+                  new ResultCallback<Status>() {
+                    @Override
+                    public void onResult(@NonNull Status status) {
+                      currentAccount = null;
+                      // TODO(tvolkert): communicate status back to user
+                      finishWithSuccess(null);
+                    }
+                  });
     }
 
     /** Checks if there is a signed in user. */
@@ -417,24 +410,6 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     public void isSignedIn(final Result result) {
       boolean value = GoogleSignIn.getLastSignedInAccount(registrar.context()) != null;
       result.success(value);
-    }
-
-    @Override
-    public void recoverAuth(Result result, String accountId) {
-      if (currentAccount == null
-          || userRecoverableAuthIntent == null
-          || !accountId.equals(currentAccount.getId())) {
-        result.error(
-            METHOD_RECOVER_AUTH,
-            "Incapable of recovering authentication for this account. Illegal state of plugin.",
-            null);
-        return;
-      }
-
-      checkAndSetPendingOperation(METHOD_RECOVER_AUTH, result);
-      registrar
-          .activity()
-          .startActivityForResult(userRecoverableAuthIntent, REQUEST_CODE_RECOVERABLE_AUTH);
     }
 
     private void onSignInResult(GoogleSignInResult result) {
@@ -480,15 +455,17 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     private static class PendingOperation {
       final String method;
       final Result result;
+      final Object data;
 
-      PendingOperation(String method, Result result) {
+      PendingOperation(String method, Result result, Object data) {
         this.method = method;
         this.result = result;
+        this.data = data;
       }
     }
 
     private class Handler
-        implements ActivityLifecycleCallbacks,
+            implements ActivityLifecycleCallbacks,
             PluginRegistry.ActivityResultListener,
             GoogleApiClient.ConnectionCallbacks,
             GoogleApiClient.OnConnectionFailedListener {
@@ -506,11 +483,10 @@ public class GoogleSignInPlugin implements MethodCallHandler {
             finishWithError(ERROR_REASON_CONNECTION_FAILED, String.valueOf(resultCode));
           }
           return true;
-        } else if (requestCode == REQUEST_CODE_RECOVERABLE_AUTH) {
+        } else if (requestCode == REQUEST_CODE_RECOVER_AUTH) {
           if (resultCode == Activity.RESULT_OK) {
-            finishWithSuccess(true);
-          } else {
-            finishWithSuccess(false);
+            getTokens(pendingOperation.result, (String) pendingOperation.data, false);
+            pendingOperation = null;
           }
           return true;
         }
@@ -602,19 +578,19 @@ public class GoogleSignInPlugin implements MethodCallHandler {
           resolvingError = true;
           GoogleApiAvailability.getInstance()
               .showErrorDialogFragment(
-                  registrar.activity(),
-                  result.getErrorCode(),
-                  REQUEST_CODE_RESOLVE_ERROR,
-                  new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(DialogInterface dialog) {
-                      if (pendingOperation != null && pendingOperation.method.equals(METHOD_INIT)) {
-                        finishWithError(
-                            ERROR_REASON_CONNECTION_FAILED, String.valueOf(result.getErrorCode()));
-                      }
-                      resolvingError = false;
-                    }
-                  });
+                      registrar.activity(),
+                      result.getErrorCode(),
+                      REQUEST_CODE_RESOLVE_ERROR,
+                      new DialogInterface.OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialog) {
+                          if (pendingOperation != null && pendingOperation.method.equals(METHOD_INIT)) {
+                            finishWithError(
+                                    ERROR_REASON_CONNECTION_FAILED, String.valueOf(result.getErrorCode()));
+                          }
+                          resolvingError = false;
+                        }
+                      });
         }
       }
 
