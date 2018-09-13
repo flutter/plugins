@@ -340,7 +340,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   /// Throws a [CameraException] if the call fails.
   Future<Null> setPointOfInterest(Offset offset) async {
     if (!value.isInitialized || _isDisposed) {
-      throw new CameraException(
+      throw CameraException(
         'Uninitialized CameraController.',
         'takePicture was called on uninitialized CameraController',
       );
@@ -351,7 +351,7 @@ class CameraController extends ValueNotifier<CameraValue> {
         <String, dynamic>{'offsetX': offset.dx, 'offsetY': offset.dy},
       );
     } on PlatformException catch (e) {
-      throw new CameraException(e.code, e.message);
+      throw CameraException(e.code, e.message);
     }
   }
 
