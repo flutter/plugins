@@ -14,6 +14,8 @@ flutter:
 
 dependencies:
   meta: ^1.0.4
+  firebase_core: "^0.2.2"
+
   flutter:
     sdk: flutter
 

@@ -24,7 +24,7 @@ const String kMockLanguage = 'en';
 
 void main() {
   group('$FirebaseAuth', () {
-    final FirebaseAuth auth = FirebaseAuth.instance;
+    final FirebaseAuth auth = FirebaseAuth();
     final List<MethodCall> log = <MethodCall>[];
 
     int mockHandleId = 0;
