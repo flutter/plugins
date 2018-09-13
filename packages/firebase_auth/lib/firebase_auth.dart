@@ -346,7 +346,8 @@ class FirebaseAuth {
   Future<FirebaseUser> currentUser() async {
     final Map<dynamic, dynamic> data = await channel
         .invokeMethod("currentUser", <String, String>{'app': app.name});
-    final FirebaseUser currentUser = data == null ? null : FirebaseUser._(data, app);
+    final FirebaseUser currentUser =
+        data == null ? null : FirebaseUser._(data, app);
     return currentUser;
   }
 
@@ -489,7 +490,8 @@ class FirebaseAuth {
     final Map<dynamic, dynamic> data = call.arguments["user"];
     final int id = call.arguments["id"];
 
-    final FirebaseUser currentUser = data != null ? FirebaseUser._(data, app) : null;
+    final FirebaseUser currentUser =
+        data != null ? FirebaseUser._(data, app) : null;
     _authStateChangedControllers[id].add(currentUser);
   }
 }
