@@ -487,7 +487,10 @@ public class GoogleSignInPlugin implements MethodCallHandler {
           if (resultCode == Activity.RESULT_OK) {
             getTokens(pendingOperation.result, (String) pendingOperation.data, false);
             pendingOperation = null;
+          } else {
+            finishWithSuccess(null);
           }
+
           return true;
         }
 
