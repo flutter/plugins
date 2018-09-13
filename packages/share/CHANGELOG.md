@@ -1,3 +1,8 @@
+## 0.5.3
+
+* Added missing test package dependency.
+* Bumped version of mockito package dependency to pick up Dart 2 support.
+
 ## 0.5.2
 
 * Fixes iOS sharing

@@ -45,7 +45,7 @@ Future<void> launch(
   final Uri url = Uri.parse(urlString.trimLeft());
   final bool isWebURL = url.scheme == 'http' || url.scheme == 'https';
   if ((forceSafariVC == true || forceWebView == true) && !isWebURL) {
-    throw new PlatformException(
+    throw PlatformException(
         code: 'NOT_A_WEB_SCHEME',
         message: 'To use webview or safariVC, you need to pass'
             'in a web URL. This $urlString is not a web URL.');

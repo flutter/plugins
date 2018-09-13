@@ -9,7 +9,7 @@ import 'package:video_player/video_player.dart';
 class CameraExampleHome extends StatefulWidget {
   @override
   _CameraExampleHomeState createState() {
-    return new _CameraExampleHomeState();
+    return _CameraExampleHomeState();
   }
 }
 
@@ -23,7 +23,7 @@ IconData getCameraLensIcon(CameraLensDirection direction) {
     case CameraLensDirection.external:
       return Icons.camera;
   }
-  throw new ArgumentError('Unknown lens direction');
+  throw ArgumentError('Unknown lens direction');
 }
 
 void logError(String code, String message) =>
@@ -36,28 +36,28 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
   VideoPlayerController videoController;
   VoidCallback videoPlayerListener;
 
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
+    return Scaffold(
       key: _scaffoldKey,
-      appBar: new AppBar(
+      appBar: AppBar(
         title: const Text('Camera example'),
       ),
-      body: new Column(
+      body: Column(
         children: <Widget>[
-          new Expanded(
-            child: new Container(
-              child: new Padding(
+          Expanded(
+            child: Container(
+              child: Padding(
                 padding: const EdgeInsets.all(1.0),
-                child: new Center(
+                child: Center(
                   child: _cameraPreviewWidget(),
                 ),
               ),
-              decoration: new BoxDecoration(
+              decoration: BoxDecoration(
                 color: Colors.black,
-                border: new Border.all(
+                border: Border.all(
                   color: controller != null && controller.value.isRecordingVideo
                       ? Colors.redAccent
                       : Colors.grey,
@@ -67,9 +67,9 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
             ),
           ),
           _captureControlRowWidget(),
-          new Padding(
+          Padding(
             padding: const EdgeInsets.all(5.0),
-            child: new Row(
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 _cameraTogglesRowWidget(),
@@ -97,7 +97,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
       return new AspectRatio(
           aspectRatio: controller.value.aspectRatio,
           child: GestureDetector(
-              child: new CameraPreview(controller),
+              child: CameraPreview(controller),
               onTapUp: (TapUpDetails details) {
                 final RenderBox box = context.findRenderObject();
                 final Offset localPoint =
@@ -111,24 +111,24 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
 
   /// Display the thumbnail of the captured image or video.
   Widget _thumbnailWidget() {
-    return new Expanded(
-      child: new Align(
+    return Expanded(
+      child: Align(
         alignment: Alignment.centerRight,
         child: videoController == null && imagePath == null
             ? null
-            : new SizedBox(
+            : SizedBox(
                 child: (videoController == null)
-                    ? new Image.file(new File(imagePath))
-                    : new Container(
-                        child: new Center(
-                          child: new AspectRatio(
+                    ? Image.file(File(imagePath))
+                    : Container(
+                        child: Center(
+                          child: AspectRatio(
                               aspectRatio: videoController.value.size != null
                                   ? videoController.value.aspectRatio
                                   : 1.0,
-                              child: new VideoPlayer(videoController)),
+                              child: VideoPlayer(videoController)),
                         ),
-                        decoration: new BoxDecoration(
-                            border: new Border.all(color: Colors.pink)),
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.pink)),
                       ),
                 width: 64.0,
                 height: 64.0,
@@ -139,11 +139,11 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
 
   /// Display the control bar with buttons to take pictures and record videos.
   Widget _captureControlRowWidget() {
-    return new Row(
+    return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       mainAxisSize: MainAxisSize.max,
       children: <Widget>[
-        new IconButton(
+        IconButton(
           icon: const Icon(Icons.camera_alt),
           color: Colors.blue,
           onPressed: controller != null &&
@@ -152,7 +152,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
               ? onTakePictureButtonPressed
               : null,
         ),
-        new IconButton(
+        IconButton(
           icon: const Icon(Icons.videocam),
           color: Colors.blue,
           onPressed: controller != null &&
@@ -161,7 +161,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
               ? onVideoRecordButtonPressed
               : null,
         ),
-        new IconButton(
+        IconButton(
           icon: const Icon(Icons.stop),
           color: Colors.red,
           onPressed: controller != null &&
@@ -183,11 +183,10 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
     } else {
       for (CameraDescription cameraDescription in cameras) {
         toggles.add(
-          new SizedBox(
+          SizedBox(
             width: 90.0,
-            child: new RadioListTile<CameraDescription>(
-              title:
-                  new Icon(getCameraLensIcon(cameraDescription.lensDirection)),
+            child: RadioListTile<CameraDescription>(
+              title: Icon(getCameraLensIcon(cameraDescription.lensDirection)),
               groupValue: controller?.description,
               value: cameraDescription,
               onChanged: controller != null && controller.value.isRecordingVideo
@@ -199,21 +198,20 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
       }
     }
 
-    return new Row(children: toggles);
+    return Row(children: toggles);
   }
 
-  String timestamp() => new DateTime.now().millisecondsSinceEpoch.toString();
+  String timestamp() => DateTime.now().millisecondsSinceEpoch.toString();
 
   void showInSnackBar(String message) {
-    _scaffoldKey.currentState
-        .showSnackBar(new SnackBar(content: new Text(message)));
+    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(message)));
   }
 
   void onNewCameraSelected(CameraDescription cameraDescription) async {
     if (controller != null) {
       await controller.dispose();
     }
-    controller = new CameraController(cameraDescription, ResolutionPreset.high);
+    controller = CameraController(cameraDescription, ResolutionPreset.high);
 
     // If the controller is updated then update the UI.
     controller.addListener(() {
@@ -269,7 +267,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
 
     final Directory extDir = await getApplicationDocumentsDirectory();
     final String dirPath = '${extDir.path}/Movies/flutter_test';
-    await new Directory(dirPath).create(recursive: true);
+    await Directory(dirPath).create(recursive: true);
     final String filePath = '$dirPath/${timestamp()}.mp4';
 
     if (controller.value.isRecordingVideo) {
@@ -304,7 +302,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
 
   Future<void> _startVideoPlayer() async {
     final VideoPlayerController vcontroller =
-        new VideoPlayerController.file(new File(videoPath));
+        VideoPlayerController.file(File(videoPath));
     videoPlayerListener = () {
       if (videoController != null && videoController.value.size != null) {
         // Refreshing the state to update video player with the correct ratio.
@@ -332,7 +330,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
     }
     final Directory extDir = await getApplicationDocumentsDirectory();
     final String dirPath = '${extDir.path}/Pictures/flutter_test';
-    await new Directory(dirPath).create(recursive: true);
+    await Directory(dirPath).create(recursive: true);
     final String filePath = '$dirPath/${timestamp()}.jpg';
 
     if (controller.value.isTakingPicture) {
@@ -358,8 +356,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
 class CameraApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
-      home: new CameraExampleHome(),
+    return MaterialApp(
+      home: CameraExampleHome(),
     );
   }
 }
@@ -373,5 +371,5 @@ Future<Null> main() async {
   } on CameraException catch (e) {
     logError(e.code, e.description);
   }
-  runApp(new CameraApp());
+  runApp(CameraApp());
 }

@@ -1,3 +1,8 @@
+## 0.2.3
+
+* Updated mockito dependency to 3.0.0 to get Dart 2 support.
+* Update test package dependency to 1.3.0, and fixed tests to match.
+
 ## 0.2.2
 
 * Updated Gradle tooling to match Android Studio 3.1.2.

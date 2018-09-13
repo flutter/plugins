@@ -1,3 +1,14 @@
+## 0.5.20
+
+* Replaced usages of guava's: ImmutableList and ImmutableMap with platform
+Collections.unmodifiableList() and Collections.unmodifiableMap().
+
+## 0.5.19
+
+* Update test package dependency to pick up Dart 2 support.
+* Modified dependency on google_sign_in to point to a published
+  version instead of a relative path.
+
 ## 0.5.18
 
 * Adding support for updateEmail in FirebaseAuth.
