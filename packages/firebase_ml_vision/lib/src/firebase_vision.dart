@@ -26,7 +26,7 @@ class FirebaseVision {
   /// ```dart
   /// TextDetector textDetector = FirebaseVision.instance.textDetector();
   /// ```
-  static final FirebaseVision instance = new FirebaseVision._();
+  static final FirebaseVision instance = FirebaseVision._();
 
   /// Creates an instance of [BarcodeDetector].
   BarcodeDetector barcodeDetector([BarcodeDetectorOptions options]) {
@@ -43,8 +43,13 @@ class FirebaseVision {
     return LabelDetector._(options ?? const LabelDetectorOptions());
   }
 
+  /// Creates an instance of [LabelDetector].
+  CloudLabelDetector cloudLabelDetector([VisionCloudDetectorOptions options]) {
+    return CloudLabelDetector._(options ?? const VisionCloudDetectorOptions());
+  }
+
   /// Creates an instance of [TextDetector].
-  TextDetector textDetector() => new TextDetector._();
+  TextDetector textDetector() => TextDetector._();
 }
 
 /// Represents an image object used for both on-device and cloud API detectors.
@@ -62,7 +67,7 @@ class FirebaseVisionImage {
   /// Construct a [FirebaseVisionImage] from a file path.
   factory FirebaseVisionImage.fromFilePath(String imagePath) {
     assert(imagePath != null);
-    return FirebaseVisionImage._(new File(imagePath));
+    return FirebaseVisionImage._(File(imagePath));
   }
 
   /// The file location of the image.

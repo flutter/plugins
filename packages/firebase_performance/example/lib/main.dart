@@ -9,11 +9,11 @@ import 'package:flutter/material.dart';
 
 import 'package:firebase_performance/firebase_performance.dart';
 
-void main() => runApp(new MyApp());
+void main() => runApp(MyApp());
 
 class MyApp extends StatefulWidget {
   @override
-  _MyAppState createState() => new _MyAppState();
+  _MyAppState createState() => _MyAppState();
 }
 
 class _MetricHttpClient extends BaseClient {
@@ -100,10 +100,9 @@ class _MyAppState extends State<MyApp> {
       _httpMetricHasRan = false;
     });
 
-    final _MetricHttpClient metricHttpClient =
-        new _MetricHttpClient(new Client());
+    final _MetricHttpClient metricHttpClient = _MetricHttpClient(Client());
 
-    final Request request = new Request(
+    final Request request = Request(
       "SEND",
       Uri.parse("https://www.google.com"),
     );
@@ -119,32 +118,32 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     final TextStyle textStyle =
         const TextStyle(color: Colors.lightGreenAccent, fontSize: 25.0);
-    return new MaterialApp(
-      home: new Scaffold(
-        appBar: new AppBar(
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
           title: const Text('Firebase Performance Example'),
         ),
-        body: new Center(
-          child: new Column(
+        body: Center(
+          child: Column(
             children: <Widget>[
-              new Text(_performanceCollectionMessage),
-              new RaisedButton(
+              Text(_performanceCollectionMessage),
+              RaisedButton(
                 onPressed: _togglePerformanceCollection,
                 child: const Text('Toggle Data Collection'),
               ),
-              new RaisedButton(
+              RaisedButton(
                 onPressed: _testTrace,
                 child: const Text('Run Trace'),
               ),
-              new Text(
+              Text(
                 _traceHasRan ? 'Trace Ran!' : '',
                 style: textStyle,
               ),
-              new RaisedButton(
+              RaisedButton(
                 onPressed: _testHttpMetric,
                 child: const Text('Run HttpMetric'),
               ),
-              new Text(
+              Text(
                 _httpMetricHasRan ? 'HttpMetric Ran!' : '',
                 style: textStyle,
               ),

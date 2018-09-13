@@ -63,14 +63,14 @@ class WebView extends StatefulWidget {
 
 class _WebViewState extends State<WebView> {
   final Completer<WebViewController> _controller =
-      new Completer<WebViewController>();
+      Completer<WebViewController>();
 
   _WebSettings _settings;
 
   @override
   Widget build(BuildContext context) {
     if (defaultTargetPlatform == TargetPlatform.android) {
-      return new GestureDetector(
+      return GestureDetector(
         // We prevent text selection by intercepting long press event.
         // This is a temporary workaround to prevent a native crash on a second
         // text selection.
@@ -119,7 +119,7 @@ class _WebViewState extends State<WebView> {
   }
 
   void _onPlatformViewCreated(int id) {
-    final WebViewController controller = new WebViewController._(id);
+    final WebViewController controller = WebViewController._(id);
     _controller.complete(controller);
     if (widget.onWebViewCreated != null) {
       widget.onWebViewCreated(controller);
@@ -131,7 +131,7 @@ class _CreationParams {
   _CreationParams({this.initialUrl, this.settings});
 
   static _CreationParams fromWidget(WebView widget) {
-    return new _CreationParams(
+    return _CreationParams(
       initialUrl: widget.initialUrl,
       settings: _WebSettings.fromWidget(widget),
     );
@@ -154,7 +154,7 @@ class _WebSettings {
   });
 
   static _WebSettings fromWidget(WebView widget) {
-    return new _WebSettings(javaScriptMode: widget.javaScriptMode);
+    return _WebSettings(javaScriptMode: widget.javaScriptMode);
   }
 
   final JavaScriptMode javaScriptMode;
@@ -181,7 +181,7 @@ class _WebSettings {
 /// callback for a [WebView] widget.
 class WebViewController {
   WebViewController._(int id)
-      : _channel = new MethodChannel('plugins.flutter.io/webview_$id');
+      : _channel = MethodChannel('plugins.flutter.io/webview_$id');
 
   final MethodChannel _channel;
 
@@ -206,9 +206,9 @@ void _validateUrlString(String url) {
   try {
     final Uri uri = Uri.parse(url);
     if (uri.scheme.isEmpty) {
-      throw new ArgumentError('Missing scheme in URL string: "$url"');
+      throw ArgumentError('Missing scheme in URL string: "$url"');
     }
   } on FormatException catch (e) {
-    throw new ArgumentError(e);
+    throw ArgumentError(e);
   }
 }

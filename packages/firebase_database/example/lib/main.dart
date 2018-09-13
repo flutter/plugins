@@ -25,9 +25,9 @@ Future<void> main() async {
             databaseURL: 'https://flutterfire-cd2f7.firebaseio.com',
           ),
   );
-  runApp(new MaterialApp(
+  runApp(MaterialApp(
     title: 'Flutter Database Example',
-    home: new MyHomePage(app: app),
+    home: MyHomePage(app: app),
   ));
 }
 
@@ -36,7 +36,7 @@ class MyHomePage extends StatefulWidget {
   final FirebaseApp app;
 
   @override
-  _MyHomePageState createState() => new _MyHomePageState();
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -57,7 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // Demonstrates configuring to the database using a file
     _counterRef = FirebaseDatabase.instance.reference().child('counter');
     // Demonstrates configuring the database directly
-    final FirebaseDatabase database = new FirebaseDatabase(app: widget.app);
+    final FirebaseDatabase database = FirebaseDatabase(app: widget.app);
     _messagesRef = database.reference().child('messages');
     database.reference().child('counter').once().then((DataSnapshot snapshot) {
       print('Connected to second database and read ${snapshot.value}');
@@ -114,26 +114,26 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
+    return Scaffold(
+      appBar: AppBar(
         title: const Text('Flutter Database Example'),
       ),
-      body: new Column(
+      body: Column(
         children: <Widget>[
-          new Flexible(
-            child: new Center(
+          Flexible(
+            child: Center(
               child: _error == null
-                  ? new Text(
+                  ? Text(
                       'Button tapped $_counter time${_counter == 1 ? '' : 's'}.\n\n'
                           'This includes all devices, ever.',
                     )
-                  : new Text(
+                  : Text(
                       'Error retrieving button tap count:\n${_error.message}',
                     ),
             ),
           ),
-          new ListTile(
-            leading: new Checkbox(
+          ListTile(
+            leading: Checkbox(
               onChanged: (bool value) {
                 setState(() {
                   _anchorToBottom = value;
@@ -143,9 +143,9 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             title: const Text('Anchor to bottom'),
           ),
-          new Flexible(
-            child: new FirebaseAnimatedList(
-              key: new ValueKey<bool>(_anchorToBottom),
+          Flexible(
+            child: FirebaseAnimatedList(
+              key: ValueKey<bool>(_anchorToBottom),
               query: _messagesRef,
               reverse: _anchorToBottom,
               sort: _anchorToBottom
@@ -153,16 +153,16 @@ class _MyHomePageState extends State<MyHomePage> {
                   : null,
               itemBuilder: (BuildContext context, DataSnapshot snapshot,
                   Animation<double> animation, int index) {
-                return new SizeTransition(
+                return SizeTransition(
                   sizeFactor: animation,
-                  child: new Text("$index: ${snapshot.value.toString()}"),
+                  child: Text("$index: ${snapshot.value.toString()}"),
                 );
               },
             ),
           ),
         ],
       ),
-      floatingActionButton: new FloatingActionButton(
+      floatingActionButton: FloatingActionButton(
         onPressed: _increment,
         tooltip: 'Increment',
         child: const Icon(Icons.add),

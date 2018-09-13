@@ -63,7 +63,7 @@ class FirebaseUser extends UserInfo {
 
   FirebaseUser._(Map<dynamic, dynamic> data, FirebaseApp app)
       : providerData = data['providerData']
-            .map<UserInfo>((dynamic item) => new UserInfo._(item, app))
+            .map<UserInfo>((dynamic item) => UserInfo._(item, app))
             .toList(),
         super._(data, app);
 
@@ -153,7 +153,7 @@ class FirebaseAuth {
     Future<int> _handle;
 
     StreamController<FirebaseUser> controller;
-    controller = new StreamController<FirebaseUser>.broadcast(onListen: () {
+    controller = StreamController<FirebaseUser>.broadcast(onListen: () {
       _handle = channel.invokeMethod('startListeningAuthState',
           <String, String>{"app": app.name}).then<int>((dynamic v) => v);
       _handle.then((int handle) {
@@ -182,7 +182,7 @@ class FirebaseAuth {
   Future<FirebaseUser> signInAnonymously() async {
     final Map<dynamic, dynamic> data = await channel
         .invokeMethod('signInAnonymously', <String, String>{"app": app.name});
-    final FirebaseUser currentUser = new FirebaseUser._(data, app);
+    final FirebaseUser currentUser = FirebaseUser._(data, app);
     return currentUser;
   }
 
@@ -196,7 +196,7 @@ class FirebaseAuth {
       'createUserWithEmailAndPassword',
       <String, String>{'email': email, 'password': password, 'app': app.name},
     );
-    final FirebaseUser currentUser = new FirebaseUser._(data, app);
+    final FirebaseUser currentUser = FirebaseUser._(data, app);
     return currentUser;
   }
 
@@ -231,7 +231,7 @@ class FirebaseAuth {
       'signInWithEmailAndPassword',
       <String, String>{'email': email, 'password': password, 'app': app.name},
     );
-    final FirebaseUser currentUser = new FirebaseUser._(data, app);
+    final FirebaseUser currentUser = FirebaseUser._(data, app);
     return currentUser;
   }
 
@@ -241,7 +241,7 @@ class FirebaseAuth {
     final Map<dynamic, dynamic> data = await channel.invokeMethod(
         'signInWithFacebook',
         <String, String>{'accessToken': accessToken, 'app': app.name});
-    final FirebaseUser currentUser = new FirebaseUser._(data, app);
+    final FirebaseUser currentUser = FirebaseUser._(data, app);
     return currentUser;
   }
 
@@ -260,7 +260,7 @@ class FirebaseAuth {
       'authTokenSecret': authTokenSecret,
       'app': app.name
     });
-    final FirebaseUser currentUser = new FirebaseUser._(data, app);
+    final FirebaseUser currentUser = FirebaseUser._(data, app);
     return currentUser;
   }
 
@@ -278,7 +278,7 @@ class FirebaseAuth {
         'app': app.name
       },
     );
-    final FirebaseUser currentUser = new FirebaseUser._(data, app);
+    final FirebaseUser currentUser = FirebaseUser._(data, app);
     return currentUser;
   }
 
@@ -294,7 +294,7 @@ class FirebaseAuth {
         'app': app.name
       },
     );
-    final FirebaseUser currentUser = new FirebaseUser._(data, app);
+    final FirebaseUser currentUser = FirebaseUser._(data, app);
     return currentUser;
   }
 
@@ -333,7 +333,7 @@ class FirebaseAuth {
       'signInWithCustomToken',
       <String, String>{'token': token, 'app': app.name},
     );
-    final FirebaseUser currentUser = new FirebaseUser._(data, app);
+    final FirebaseUser currentUser = FirebaseUser._(data, app);
     return currentUser;
   }
 
@@ -346,8 +346,7 @@ class FirebaseAuth {
   Future<FirebaseUser> currentUser() async {
     final Map<dynamic, dynamic> data = await channel
         .invokeMethod("currentUser", <String, String>{'app': app.name});
-    final FirebaseUser currentUser =
-        data == null ? null : new FirebaseUser._(data, app);
+    final FirebaseUser currentUser = data == null ? null : FirebaseUser._(data, app);
     return currentUser;
   }
 
@@ -367,7 +366,7 @@ class FirebaseAuth {
       'linkWithEmailAndPassword',
       <String, String>{'email': email, 'password': password, 'app': app.name},
     );
-    final FirebaseUser currentUser = new FirebaseUser._(data, app);
+    final FirebaseUser currentUser = FirebaseUser._(data, app);
     return currentUser;
   }
 
@@ -416,7 +415,7 @@ class FirebaseAuth {
         'app': app.name
       },
     );
-    final FirebaseUser currentUser = new FirebaseUser._(data, app);
+    final FirebaseUser currentUser = FirebaseUser._(data, app);
     return currentUser;
   }
 
@@ -428,7 +427,7 @@ class FirebaseAuth {
       'linkWithFacebookCredential',
       <String, String>{'accessToken': accessToken, 'app': app.name},
     );
-    final FirebaseUser currentUser = new FirebaseUser._(data, app);
+    final FirebaseUser currentUser = FirebaseUser._(data, app);
     return currentUser;
   }
 
@@ -460,7 +459,7 @@ class FirebaseAuth {
             _phoneAuthCallbacks[handle]['PhoneVerificationFailed'];
         final Map<dynamic, dynamic> exception = call.arguments['exception'];
         verificationFailed(
-            new AuthException(exception['code'], exception['message']));
+            AuthException(exception['code'], exception['message']));
         break;
       case 'phoneCodeSent':
         final int handle = call.arguments['handle'];
@@ -490,8 +489,7 @@ class FirebaseAuth {
     final Map<dynamic, dynamic> data = call.arguments["user"];
     final int id = call.arguments["id"];
 
-    final FirebaseUser currentUser =
-        data != null ? new FirebaseUser._(data, app) : null;
+    final FirebaseUser currentUser = data != null ? FirebaseUser._(data, app) : null;
     _authStateChangedControllers[id].add(currentUser);
   }
 }
