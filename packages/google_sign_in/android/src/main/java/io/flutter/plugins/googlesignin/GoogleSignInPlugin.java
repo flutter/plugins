@@ -215,7 +215,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
      */
     @Override
     public void init(
-            Result result, String signInOption, List<String> requestedScopes, String hostedDomain) {
+        Result result, String signInOption, List<String> requestedScopes, String hostedDomain) {
       // We're not initialized until we receive `onConnected`.
       // If initialization fails, we'll receive `onConnectionFailed`
       checkAndSetPendingOperation(METHOD_INIT, result, null);
@@ -245,7 +245,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
                 .context()
                 .getResources()
                 .getIdentifier(
-                        "default_web_client_id", "string", registrar.context().getPackageName());
+                    "default_web_client_id", "string", registrar.context().getPackageName());
         if (clientIdIdentifier != 0) {
           optionsBuilder.requestIdToken(registrar.context().getString(clientIdIdentifier));
         }
@@ -351,7 +351,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
                     @Override
                     public void run() {
                       UserRecoverableAuthException exception =
-                              (UserRecoverableAuthException) e.getCause();
+                          (UserRecoverableAuthException) e.getCause();
                       checkAndSetPendingOperation(METHOD_GET_TOKENS, result, email);
                       registrar.activity().startActivityForResult(exception.getIntent(), REQUEST_CODE_RECOVER_AUTH);
                     }
@@ -379,13 +379,13 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 
       Auth.GoogleSignInApi.signOut(googleApiClient)
           .setResultCallback(
-                  new ResultCallback<Status>() {
-                    @Override
-                    public void onResult(@NonNull Status status) {
-                      // TODO(tvolkert): communicate status back to user
-                      finishWithSuccess(null);
-                    }
-                  });
+              new ResultCallback<Status>() {
+                @Override
+                public void onResult(@NonNull Status status) {
+                  // TODO(tvolkert): communicate status back to user
+                  finishWithSuccess(null);
+                }
+              });
     }
 
     /** Signs the user out, and revokes their credentials. */
@@ -395,14 +395,14 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 
       Auth.GoogleSignInApi.revokeAccess(googleApiClient)
           .setResultCallback(
-                  new ResultCallback<Status>() {
-                    @Override
-                    public void onResult(@NonNull Status status) {
-                      currentAccount = null;
-                      // TODO(tvolkert): communicate status back to user
-                      finishWithSuccess(null);
-                    }
-                  });
+              new ResultCallback<Status>() {
+                @Override
+                public void onResult(@NonNull Status status) {
+                  currentAccount = null;
+                  // TODO(tvolkert): communicate status back to user
+                  finishWithSuccess(null);
+                }
+              });
     }
 
     /** Checks if there is a signed in user. */
@@ -465,10 +465,10 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     }
 
     private class Handler
-            implements ActivityLifecycleCallbacks,
-            PluginRegistry.ActivityResultListener,
-            GoogleApiClient.ConnectionCallbacks,
-            GoogleApiClient.OnConnectionFailedListener {
+        implements ActivityLifecycleCallbacks,
+        PluginRegistry.ActivityResultListener,
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener {
       @Override
       public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE_RESOLVE_ERROR) {
@@ -578,19 +578,19 @@ public class GoogleSignInPlugin implements MethodCallHandler {
           resolvingError = true;
           GoogleApiAvailability.getInstance()
               .showErrorDialogFragment(
-                      registrar.activity(),
-                      result.getErrorCode(),
-                      REQUEST_CODE_RESOLVE_ERROR,
-                      new DialogInterface.OnCancelListener() {
-                        @Override
-                        public void onCancel(DialogInterface dialog) {
-                          if (pendingOperation != null && pendingOperation.method.equals(METHOD_INIT)) {
-                            finishWithError(
-                                    ERROR_REASON_CONNECTION_FAILED, String.valueOf(result.getErrorCode()));
-                          }
-                          resolvingError = false;
-                        }
-                      });
+                  registrar.activity(),
+                  result.getErrorCode(),
+                  REQUEST_CODE_RESOLVE_ERROR,
+                  new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                      if (pendingOperation != null && pendingOperation.method.equals(METHOD_INIT)) {
+                        finishWithError(
+                            ERROR_REASON_CONNECTION_FAILED, String.valueOf(result.getErrorCode()));
+                      }
+                      resolvingError = false;
+                    }
+                  });
         }
       }
 
