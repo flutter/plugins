@@ -313,7 +313,8 @@ public class GoogleSignInPlugin implements MethodCallHandler {
      * user with the specified email address.
      */
     @Override
-    public void getTokens(final Result result, final String email, final boolean shouldRecoverAuth) {
+    public void getTokens(
+        final Result result, final String email, final boolean shouldRecoverAuth) {
       // TODO(issue/11107): Add back the checkAndSetPendingOperation once getTokens is properly
       // gated from Dart code. Change result.success/error calls below to use finishWith()
       if (email == null) {
@@ -347,15 +348,21 @@ public class GoogleSignInPlugin implements MethodCallHandler {
                 result.success(tokenResult);
               } catch (final ExecutionException e) {
                 if (shouldRecoverAuth && e.getCause() instanceof UserRecoverableAuthException) {
-                  registrar.activity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                      UserRecoverableAuthException exception =
-                          (UserRecoverableAuthException) e.getCause();
-                      checkAndSetPendingOperation(METHOD_GET_TOKENS, result, email);
-                      registrar.activity().startActivityForResult(exception.getIntent(), REQUEST_CODE_RECOVER_AUTH);
-                    }
-                  });
+                  registrar
+                      .activity()
+                      .runOnUiThread(
+                          new Runnable() {
+                            @Override
+                            public void run() {
+                              UserRecoverableAuthException exception =
+                                  (UserRecoverableAuthException) e.getCause();
+                              checkAndSetPendingOperation(METHOD_GET_TOKENS, result, email);
+                              registrar
+                                  .activity()
+                                  .startActivityForResult(
+                                      exception.getIntent(), REQUEST_CODE_RECOVER_AUTH);
+                            }
+                          });
                   return;
                 }
 
@@ -466,9 +473,9 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 
     private class Handler
         implements ActivityLifecycleCallbacks,
-        PluginRegistry.ActivityResultListener,
-        GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener {
+            PluginRegistry.ActivityResultListener,
+            GoogleApiClient.ConnectionCallbacks,
+            GoogleApiClient.OnConnectionFailedListener {
       @Override
       public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE_RESOLVE_ERROR) {
