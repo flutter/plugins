@@ -352,8 +352,8 @@ void main() {
       );
 
       log.clear();
-      final GoogleSignInAuthentication authFalseRecover =
-          await user.getAuthentication(shouldRecoverAuth: false);
+      await user.getAuthentication(shouldRecoverAuth: false);
+
       expect(
         log,
         <Matcher>[
