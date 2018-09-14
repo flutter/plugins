@@ -1,3 +1,8 @@
+## 0.5.20
+
+* Replaced usages of guava's: ImmutableList and ImmutableMap with platform
+Collections.unmodifiableList() and Collections.unmodifiableMap().
+
 ## 0.5.19
 
 * Update test package dependency to pick up Dart 2 support.

@@ -5,7 +5,7 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-void main() => runApp(MaterialApp(home: new WebViewExample()));
+void main() => runApp(MaterialApp(home: WebViewExample()));
 
 class WebViewExample extends StatelessWidget {
   @override
@@ -16,14 +16,11 @@ class WebViewExample extends StatelessWidget {
         // This drop down menu demonstrates that Flutter widgets can be shown over the web view.
         actions: <Widget>[const SampleMenu()],
       ),
-      body: WebView(
-        onWebViewCreated: _onWebViewCreated,
+      body: const WebView(
+        initialUrl: 'https://youtube.com',
+        javaScriptMode: JavaScriptMode.unrestricted,
       ),
     );
-  }
-
-  void _onWebViewCreated(WebViewController controller) {
-    controller.loadUrl('https://flutter.io');
   }
 }
 
@@ -34,8 +31,8 @@ class SampleMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopupMenuButton<String>(
       onSelected: (String value) {
-        Scaffold.of(context).showSnackBar(
-            new SnackBar(content: new Text('You selected: $value')));
+        Scaffold.of(context)
+            .showSnackBar(SnackBar(content: Text('You selected: $value')));
       },
       itemBuilder: (BuildContext context) => <PopupMenuItem<String>>[
             const PopupMenuItem<String>(

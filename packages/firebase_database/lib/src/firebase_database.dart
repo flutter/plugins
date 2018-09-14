@@ -28,23 +28,22 @@ class FirebaseDatabase {
     _channel.setMethodCallHandler((MethodCall call) async {
       switch (call.method) {
         case 'Event':
-          final Event event = new Event._(call.arguments);
+          final Event event = Event._(call.arguments);
           _observers[call.arguments['handle']].add(event);
           return null;
         case 'Error':
-          final DatabaseError error =
-              new DatabaseError._(call.arguments['error']);
+          final DatabaseError error = DatabaseError._(call.arguments['error']);
           _observers[call.arguments['handle']].addError(error);
           return null;
         case 'DoTransaction':
           final MutableData mutableData =
-              new MutableData.private(call.arguments['snapshot']);
+              MutableData.private(call.arguments['snapshot']);
           final MutableData updated =
               await _transactions[call.arguments['transactionKey']](
                   mutableData);
           return <String, dynamic>{'value': updated.value};
         default:
-          throw new MissingPluginException(
+          throw MissingPluginException(
             '${call.method} method not implemented on the Dart side.',
           );
       }
@@ -52,7 +51,7 @@ class FirebaseDatabase {
     _initialized = true;
   }
 
-  static FirebaseDatabase _instance = new FirebaseDatabase();
+  static FirebaseDatabase _instance = FirebaseDatabase();
 
   /// The [FirebaseApp] instance to which this [FirebaseDatabase] belongs.
   ///
@@ -68,7 +67,7 @@ class FirebaseDatabase {
   static FirebaseDatabase get instance => _instance;
 
   /// Gets a DatabaseReference for the root of your Firebase Database.
-  DatabaseReference reference() => new DatabaseReference._(this, <String>[]);
+  DatabaseReference reference() => DatabaseReference._(this, <String>[]);
 
   /// Attempts to sets the database persistence to [enabled].
   ///

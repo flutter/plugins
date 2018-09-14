@@ -42,8 +42,8 @@ class HelloMessage {
 void printHelloMessage(String msg) {
   ensureFirebaseUser().then((_) {
     firebaseUser.getIdToken().then((String idToken) {
-      print(new HelloMessage(
-        new DateTime.now(),
+      print(HelloMessage(
+        DateTime.now(),
         msg,
         Isolate.current.hashCode,
         firebaseUser,

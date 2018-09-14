@@ -159,7 +159,7 @@ class GoogleMapOptions {
     if (change == null) {
       return this;
     }
-    return new GoogleMapOptions(
+    return GoogleMapOptions(
       cameraPosition: change.cameraPosition ?? cameraPosition,
       compassEnabled: change.compassEnabled ?? compassEnabled,
       cameraTargetBounds: change.cameraTargetBounds ?? cameraTargetBounds,
