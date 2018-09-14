@@ -268,6 +268,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     FirebaseUser user = firebaseAuth.getCurrentUser();
     if (user == null) {
       result.success(null);
+      return;
     }
     Map<String, Object> userMap = mapFromUser(user);
     result.success(userMap);
