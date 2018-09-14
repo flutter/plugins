@@ -53,7 +53,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
   }
 
   private FirebaseAuth getAuth(MethodCall call) {
-    Map<String, Object> arguments = (Map<String, Object>) call.arguments;
+    Map<String, Object> arguments = call.arguments();
     String appName = (String) arguments.get("app");
     FirebaseApp app = FirebaseApp.getInstance(appName);
     return FirebaseAuth.getInstance(app);
@@ -151,8 +151,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
 
   private void handleSignInWithPhoneNumber(
       MethodCall call, Result result, FirebaseAuth firebaseAuth) {
-    @SuppressWarnings("unchecked")
-    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    Map<String, String> arguments = call.arguments();
     String verificationId = arguments.get("verificationId");
     String smsCode = arguments.get("smsCode");
 
@@ -165,7 +164,6 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
 
   private void handleVerifyPhoneNumber(
       MethodCall call, Result result, final FirebaseAuth firebaseAuth) {
-    @SuppressWarnings("unchecked")
     final int handle = call.argument("handle");
     String phoneNumber = call.argument("phoneNumber");
     int timeout = call.argument("timeout");
@@ -237,6 +235,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
               registrar.activity(),
               verificationCallbacks);
     }
+    result.success(null);
   }
 
   private Map<String, Object> getVerifyPhoneNumberExceptionMap(FirebaseException e) {
@@ -259,8 +258,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
 
   private void handleLinkWithEmailAndPassword(
       MethodCall call, Result result, FirebaseAuth firebaseAuth) {
-    @SuppressWarnings("unchecked")
-    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    Map<String, String> arguments = call.arguments();
     String email = arguments.get("email");
     String password = arguments.get("password");
 
@@ -271,25 +269,30 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         .addOnCompleteListener(new SignInCompleteListener(result));
   }
 
-  private void handleCurrentUser(MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
-    FirebaseUser user = firebaseAuth.getCurrentUser();
-    if (user == null) {
-      result.success(null);
-      return;
-    }
-    Map<String, Object> userMap = mapFromUser(user);
-    result.success(userMap);
+  private void handleCurrentUser(
+      @SuppressWarnings("unused") MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
+    final FirebaseAuth.AuthStateListener listener =
+        new FirebaseAuth.AuthStateListener() {
+          @Override
+          public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+            firebaseAuth.removeAuthStateListener(this);
+            FirebaseUser user = firebaseAuth.getCurrentUser();
+            Map<String, Object> userMap = mapFromUser(user);
+            result.success(userMap);
+          }
+        };
+
+    firebaseAuth.addAuthStateListener(listener);
   }
 
   private void handleSignInAnonymously(
-      MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
+      @SuppressWarnings("unused") MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
     firebaseAuth.signInAnonymously().addOnCompleteListener(new SignInCompleteListener(result));
   }
 
   private void handleCreateUserWithEmailAndPassword(
       MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
-    @SuppressWarnings("unchecked")
-    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    Map<String, String> arguments = call.arguments();
     String email = arguments.get("email");
     String password = arguments.get("password");
 
@@ -300,19 +303,17 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
 
   private void handleFetchProvidersForEmail(
       MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
-    @SuppressWarnings("unchecked")
-    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    Map<String, String> arguments = call.arguments();
     String email = arguments.get("email");
 
     firebaseAuth
-        .fetchProvidersForEmail(email)
-        .addOnCompleteListener(new ProvidersCompleteListener(result));
+        .fetchSignInMethodsForEmail(email)
+        .addOnCompleteListener(new SignInMethodCompleteListener(result));
   }
 
   private void handleSendPasswordResetEmail(
       MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
-    @SuppressWarnings("unchecked")
-    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    Map<String, String> arguments = call.arguments();
     String email = arguments.get("email");
 
     firebaseAuth
@@ -321,24 +322,32 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
   }
 
   private void handleSendEmailVerification(
-      MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
+      @SuppressWarnings("unused") MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
     firebaseAuth
         .getCurrentUser()
         .sendEmailVerification()
         .addOnCompleteListener(new TaskVoidCompleteListener(result));
   }
 
-  private void handleReload(MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
+  private void handleReload(
+      @SuppressWarnings("unused") MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
     firebaseAuth
         .getCurrentUser()
         .reload()
         .addOnCompleteListener(new TaskVoidCompleteListener(result));
   }
 
+  private void handleDelete(
+      @SuppressWarnings("unused") MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
+    firebaseAuth
+        .getCurrentUser()
+        .delete()
+        .addOnCompleteListener(new TaskVoidCompleteListener(result));
+  }
+
   private void handleSignInWithEmailAndPassword(
       MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
-    @SuppressWarnings("unchecked")
-    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    Map<String, String> arguments = call.arguments();
     String email = arguments.get("email");
     String password = arguments.get("password");
 
@@ -347,17 +356,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         .addOnCompleteListener(new SignInCompleteListener(result));
   }
 
-  private void handleDelete(MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
-    firebaseAuth
-        .getCurrentUser()
-        .delete()
-        .addOnCompleteListener(new TaskVoidCompleteListener(result));
-  }
-
   private void handleSignInWithGoogle(
       MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
-    @SuppressWarnings("unchecked")
-    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    Map<String, String> arguments = call.arguments();
     String idToken = arguments.get("idToken");
     String accessToken = arguments.get("accessToken");
     AuthCredential credential = GoogleAuthProvider.getCredential(idToken, accessToken);
@@ -368,8 +369,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
 
   private void handleLinkWithGoogleCredential(
       MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
-    @SuppressWarnings("unchecked")
-    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    Map<String, String> arguments = call.arguments();
     String idToken = arguments.get("idToken");
     String accessToken = arguments.get("accessToken");
     AuthCredential credential = GoogleAuthProvider.getCredential(idToken, accessToken);
@@ -381,8 +381,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
 
   private void handleLinkWithFacebookCredential(
       MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
-    @SuppressWarnings("unchecked")
-    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    Map<String, String> arguments = call.arguments();
     String accessToken = arguments.get("accessToken");
     AuthCredential credential = FacebookAuthProvider.getCredential(accessToken);
     firebaseAuth
@@ -393,8 +392,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
 
   private void handleLinkWithTwitterCredential(
       MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
-    @SuppressWarnings("unchecked")
-    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    Map<String, String> arguments = call.arguments();
     String authToken = arguments.get("authToken");
     String authTokenSecret = arguments.get("authTokenSecret");
     AuthCredential credential = TwitterAuthProvider.getCredential(authToken, authTokenSecret);
@@ -406,8 +404,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
 
   private void handleSignInWithFacebook(
       MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
-    @SuppressWarnings("unchecked")
-    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    Map<String, String> arguments = call.arguments();
     String accessToken = arguments.get("accessToken");
     AuthCredential credential = FacebookAuthProvider.getCredential(accessToken);
     firebaseAuth
@@ -434,14 +431,14 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         .addOnCompleteListener(new SignInCompleteListener(result));
   }
 
-  private void handleSignOut(MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
+  private void handleSignOut(
+      @SuppressWarnings("unused") MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
     firebaseAuth.signOut();
     result.success(null);
   }
 
   private void handleGetToken(MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
-    @SuppressWarnings("unchecked")
-    Map<String, Boolean> arguments = (Map<String, Boolean>) call.arguments;
+    Map<String, Boolean> arguments = call.arguments();
     boolean refresh = arguments.get("refresh");
     firebaseAuth
         .getCurrentUser()
@@ -460,8 +457,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
   }
 
   private void handleUpdateEmail(MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
-    @SuppressWarnings("unchecked")
-    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    Map<String, String> arguments = call.arguments();
     firebaseAuth
         .getCurrentUser()
         .updateEmail(arguments.get("email"))
@@ -470,8 +466,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
 
   private void handleUpdatePassword(
       MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
-    @SuppressWarnings("unchecked")
-    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    Map<String, String> arguments = call.arguments();
     firebaseAuth
         .getCurrentUser()
         .updatePassword(arguments.get("password"))
@@ -480,8 +475,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
 
   private void handleUpdateProfile(
       MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
-    @SuppressWarnings("unchecked")
-    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    Map<String, String> arguments = call.arguments();
 
     UserProfileChangeRequest.Builder builder = new UserProfileChangeRequest.Builder();
     if (arguments.containsKey("displayName")) {
@@ -498,7 +492,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
   }
 
   private void handleStartListeningAuthState(
-      MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
+      @SuppressWarnings("unused") MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
     final int handle = nextHandle++;
     FirebaseAuth.AuthStateListener listener =
         new FirebaseAuth.AuthStateListener() {
@@ -540,8 +534,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
 
   private void handleSetLanguageCode(
       MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
-    @SuppressWarnings("unchecked")
-    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    Map<String, String> arguments = call.arguments();
     String language = arguments.get("language");
 
     firebaseAuth.setLanguageCode(language);
@@ -586,20 +579,21 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     }
   }
 
-  private class ProvidersCompleteListener implements OnCompleteListener<ProviderQueryResult> {
+  private class SignInMethodCompleteListener
+      implements OnCompleteListener<SignInMethodQueryResult> {
     private final Result result;
 
-    ProvidersCompleteListener(Result result) {
+    SignInMethodCompleteListener(Result result) {
       this.result = result;
     }
 
     @Override
-    public void onComplete(@NonNull Task<ProviderQueryResult> task) {
+    public void onComplete(@NonNull Task<SignInMethodQueryResult> task) {
       if (!task.isSuccessful()) {
         Exception e = task.getException();
         result.error(ERROR_REASON_EXCEPTION, e.getMessage(), null);
       } else {
-        List<String> providers = task.getResult().getProviders();
+        List<String> providers = task.getResult().getSignInMethods();
         result.success(providers);
       }
     }
