@@ -21,7 +21,7 @@ class BarcodeDetectorPainter extends CustomPainter {
     final double scaleY = size.height / absoluteImageSize.height;
 
     Rect scaleRect(Barcode barcode) {
-      return new Rect.fromLTRB(
+      return Rect.fromLTRB(
         barcode.boundingBox.left * scaleX,
         barcode.boundingBox.top * scaleY,
         barcode.boundingBox.right * scaleX,
@@ -29,7 +29,7 @@ class BarcodeDetectorPainter extends CustomPainter {
       );
     }
 
-    final Paint paint = new Paint()
+    final Paint paint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.0;
 
@@ -57,7 +57,7 @@ class FaceDetectorPainter extends CustomPainter {
     final double scaleX = size.width / absoluteImageSize.width;
     final double scaleY = size.height / absoluteImageSize.height;
 
-    final Paint paint = new Paint()
+    final Paint paint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.0
       ..color = Colors.red;
@@ -97,7 +97,7 @@ class LabelDetectorPainter extends CustomPainter {
           textDirection: TextDirection.ltr),
     );
 
-    builder.pushStyle(new ui.TextStyle(color: Colors.green));
+    builder.pushStyle(ui.TextStyle(color: Colors.green));
     for (Label label in labels) {
       builder.addText('Label: ${label.label}, '
           'Confidence: ${label.confidence.toStringAsFixed(2)}\n');
@@ -133,7 +133,7 @@ class TextDetectorPainter extends CustomPainter {
     final double scaleY = size.height / absoluteImageSize.height;
 
     Rect scaleRect(TextContainer container) {
-      return new Rect.fromLTRB(
+      return Rect.fromLTRB(
         container.boundingBox.left * scaleX,
         container.boundingBox.top * scaleY,
         container.boundingBox.right * scaleX,
@@ -141,7 +141,7 @@ class TextDetectorPainter extends CustomPainter {
       );
     }
 
-    final Paint paint = new Paint()
+    final Paint paint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.0;
 

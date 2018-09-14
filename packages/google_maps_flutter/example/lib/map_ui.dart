@@ -188,7 +188,7 @@ class MapUiBodyState extends State<MapUiBody> {
       Padding(
         padding: const EdgeInsets.all(10.0),
         child: Center(
-          child: new SizedBox(
+          child: SizedBox(
             width: 300.0,
             height: 200.0,
             child: GoogleMap(
@@ -208,7 +208,7 @@ class MapUiBodyState extends State<MapUiBody> {
 
     if (mapController != null) {
       columnChildren.add(
-        new Expanded(
+        Expanded(
           child: ListView(
             children: <Widget>[
               Text('camera bearing: ${_position.bearing}'),

@@ -76,7 +76,7 @@ class DocumentReference {
       'DocumentReference#get',
       <String, dynamic>{'app': firestore.app.name, 'path': path},
     );
-    return new DocumentSnapshot._(
+    return DocumentSnapshot._(
       data['path'],
       _asStringKeyedMap(data['data']),
       Firestore.instance,
@@ -106,7 +106,7 @@ class DocumentReference {
     // It's fine to let the StreamController be garbage collected once all the
     // subscribers have cancelled; this analyzer warning is safe to ignore.
     StreamController<DocumentSnapshot> controller; // ignore: close_sinks
-    controller = new StreamController<DocumentSnapshot>.broadcast(
+    controller = StreamController<DocumentSnapshot>.broadcast(
       onListen: () {
         _handle = Firestore.channel.invokeMethod(
           'Query#addDocumentListener',

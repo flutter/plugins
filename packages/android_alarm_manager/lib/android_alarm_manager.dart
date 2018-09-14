@@ -28,7 +28,7 @@ void _alarmManagerCallbackDispatcher() {
   // native portion of the plugin.
   _channel.setMethodCallHandler((MethodCall call) async {
     final dynamic args = call.arguments;
-    final CallbackHandle handle = new CallbackHandle.fromRawHandle(args[0]);
+    final CallbackHandle handle = CallbackHandle.fromRawHandle(args[0]);
 
     // PluginUtilities.getCallbackFromHandle performs a lookup based on the
     // callback handle and returns a tear-off of the original callback.
@@ -100,7 +100,7 @@ class AndroidAlarmManager {
     bool exact = false,
     bool wakeup = false,
   }) async {
-    final int now = new DateTime.now().millisecondsSinceEpoch;
+    final int now = DateTime.now().millisecondsSinceEpoch;
     final int first = now + delay.inMilliseconds;
     final CallbackHandle handle = PluginUtilities.getCallbackHandle(callback);
     if (handle == null) {
@@ -145,7 +145,7 @@ class AndroidAlarmManager {
     bool exact = false,
     bool wakeup = false,
   }) async {
-    final int now = new DateTime.now().millisecondsSinceEpoch;
+    final int now = DateTime.now().millisecondsSinceEpoch;
     final int period = duration.inMilliseconds;
     final int first = now + period;
     final CallbackHandle handle = PluginUtilities.getCallbackHandle(callback);
