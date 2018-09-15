@@ -48,7 +48,7 @@ void main() {
             return null;
             break;
           case "fetchProvidersForEmail":
-            return new List<String>(0);
+            return List<String>(0);
             break;
           case "verifyPhoneNumber":
             return null;
@@ -360,7 +360,7 @@ void main() {
     });
 
     test('updateProfile', () async {
-      final UserUpdateInfo userUpdateInfo = new UserUpdateInfo();
+      final UserUpdateInfo userUpdateInfo = UserUpdateInfo();
       userUpdateInfo.photoUrl = kMockPhotoUrl;
       userUpdateInfo.displayName = kMockDisplayName;
 
@@ -411,7 +411,7 @@ void main() {
         await BinaryMessages.handlePlatformMessage(
           FirebaseAuth.channel.name,
           FirebaseAuth.channel.codec.encodeMethodCall(
-            new MethodCall(
+            MethodCall(
               'onAuthStateChanged',
               <String, dynamic>{'id': 42, 'user': user},
             ),
@@ -420,12 +420,12 @@ void main() {
         );
       }
 
-      final AsyncQueue<FirebaseUser> events = new AsyncQueue<FirebaseUser>();
+      final AsyncQueue<FirebaseUser> events = AsyncQueue<FirebaseUser>();
 
       // Subscribe and allow subscription to complete.
       final StreamSubscription<FirebaseUser> subscription =
           auth.onAuthStateChanged.listen(events.add);
-      await new Future<Null>.delayed(const Duration(seconds: 0));
+      await Future<Null>.delayed(const Duration(seconds: 0));
 
       await simulateEvent(null);
       await simulateEvent(mockFirebaseUser());
@@ -438,7 +438,7 @@ void main() {
 
       // Cancel subscription and allow cancellation to complete.
       subscription.cancel();
-      await new Future<Null>.delayed(const Duration(seconds: 0));
+      await Future<Null>.delayed(const Duration(seconds: 0));
 
       expect(
         log,
@@ -511,7 +511,7 @@ class AsyncQueue<T> {
     if (_completers.containsKey(index)) {
       return _completers.remove(index);
     } else {
-      return _completers[index] = new Completer<T>();
+      return _completers[index] = Completer<T>();
     }
   }
 }

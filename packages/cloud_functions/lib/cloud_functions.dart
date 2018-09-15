@@ -22,7 +22,7 @@ class CloudFunctions {
   @visibleForTesting
   static const MethodChannel channel = MethodChannel('cloud_functions');
 
-  static CloudFunctions _instance = new CloudFunctions();
+  static CloudFunctions _instance = CloudFunctions();
 
   static CloudFunctions get instance => _instance;
 

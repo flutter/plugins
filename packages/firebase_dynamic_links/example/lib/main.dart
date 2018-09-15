@@ -8,18 +8,18 @@ import 'package:flutter/material.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 
 void main() {
-  runApp(new MaterialApp(
+  runApp(MaterialApp(
     title: 'Dynamic Links Example',
     routes: <String, WidgetBuilder>{
-      '/': (BuildContext context) => new _MainScreen(),
-      '/helloworld': (BuildContext context) => new _DynamicLinkScreen(),
+      '/': (BuildContext context) => _MainScreen(),
+      '/helloworld': (BuildContext context) => _DynamicLinkScreen(),
     },
   ));
 }
 
 class _MainScreen extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => new _MainScreenState();
+  State<StatefulWidget> createState() => _MainScreenState();
 }
 
 class _MainScreenState extends State<_MainScreen> {
@@ -49,17 +49,17 @@ class _MainScreenState extends State<_MainScreen> {
       _isCreatingLink = true;
     });
 
-    final DynamicLinkParameters parameters = new DynamicLinkParameters(
+    final DynamicLinkParameters parameters = DynamicLinkParameters(
       domain: 'cx4k7.app.goo.gl',
       link: Uri.parse('https://dynamic.link.example/helloworld'),
-      androidParameters: new AndroidParameters(
+      androidParameters: AndroidParameters(
         packageName: 'io.flutter.plugins.firebasedynamiclinksexample',
         minimumVersion: 0,
       ),
-      dynamicLinkParametersOptions: new DynamicLinkParametersOptions(
+      dynamicLinkParametersOptions: DynamicLinkParametersOptions(
         shortDynamicLinkPathLength: ShortDynamicLinkPathLength.short,
       ),
-      iosParameters: new IosParameters(
+      iosParameters: IosParameters(
         bundleId: 'com.google.FirebaseCppDynamicLinksTestApp.dev',
         minimumVersion: '0',
       ),
@@ -81,25 +81,25 @@ class _MainScreenState extends State<_MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return new Material(
-      child: new Scaffold(
-        appBar: new AppBar(
+    return Material(
+      child: Scaffold(
+        appBar: AppBar(
           title: const Text('Dynamic Links Example'),
         ),
-        body: new Center(
-          child: new Column(
+        body: Center(
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              new ButtonBar(
+              ButtonBar(
                 alignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  new RaisedButton(
+                  RaisedButton(
                     onPressed: !_isCreatingLink
                         ? () => _createDynamicLink(false)
                         : null,
                     child: const Text('Get Long Link'),
                   ),
-                  new RaisedButton(
+                  RaisedButton(
                     onPressed: !_isCreatingLink
                         ? () => _createDynamicLink(true)
                         : null,
@@ -107,7 +107,7 @@ class _MainScreenState extends State<_MainScreen> {
                   ),
                 ],
               ),
-              new Text(
+              Text(
                 _linkMessage ?? '',
                 textAlign: TextAlign.center,
               ),
@@ -122,9 +122,9 @@ class _MainScreenState extends State<_MainScreen> {
 class _DynamicLinkScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new Material(
-      child: new Scaffold(
-        appBar: new AppBar(
+    return Material(
+      child: Scaffold(
+        appBar: AppBar(
           title: const Text('Hello World DeepLink'),
         ),
         body: const Center(
