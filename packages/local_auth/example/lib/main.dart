@@ -46,7 +46,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<Null> _getBiometricOptions() async {
-    final LocalAuthentication auth = new LocalAuthentication();
+    final LocalAuthentication auth = LocalAuthentication();
     final List<Biometric> options = await auth.getBiometricOptions();
     final List<String> stringOptions = <String>[];
 
