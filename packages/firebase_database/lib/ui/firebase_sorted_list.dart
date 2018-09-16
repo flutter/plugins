@@ -66,7 +66,7 @@ class FirebaseSortedList extends ListBase<DataSnapshot>
 
   @override
   set length(int value) {
-    throw new UnsupportedError("List cannot be modified.");
+    throw UnsupportedError("List cannot be modified.");
   }
 
   @override
@@ -74,7 +74,7 @@ class FirebaseSortedList extends ListBase<DataSnapshot>
 
   @override
   void operator []=(int index, DataSnapshot value) {
-    throw new UnsupportedError("List cannot be modified.");
+    throw UnsupportedError("List cannot be modified.");
   }
 
   @override

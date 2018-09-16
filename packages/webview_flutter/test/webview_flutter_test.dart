@@ -10,7 +10,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 void main() {
   final _FakePlatformViewsController fakePlatformViewsController =
-      new _FakePlatformViewsController();
+      _FakePlatformViewsController();
 
   setUpAll(() {
     SystemChannels.platform_views.setMockMethodCallHandler(
@@ -108,7 +108,7 @@ class FakePlatformWebView {
       lastUrlLoaded = params['initialUrl'];
       javaScriptMode = JavaScriptMode.values[params['settings']['jsMode']];
     }
-    channel = new MethodChannel(
+    channel = MethodChannel(
         'plugins.flutter.io/webview_$id', const StandardMethodCodec());
     channel.setMockMethodCallHandler(onMethodCall);
   }
@@ -122,7 +122,7 @@ class FakePlatformWebView {
     switch (call.method) {
       case 'loadUrl':
         lastUrlLoaded = call.arguments;
-        return new Future<Null>.sync(() => null);
+        return Future<Null>.sync(() => null);
       case 'updateSettings':
         if (call.arguments['jsMode'] == null) {
           break;
@@ -130,7 +130,7 @@ class FakePlatformWebView {
         javaScriptMode = JavaScriptMode.values[call.arguments['jsMode']];
         break;
     }
-    return new Future<Null>.sync(() => null);
+    return Future<Null>.sync(() => null);
   }
 }
 
@@ -142,13 +142,13 @@ class _FakePlatformViewsController {
       case 'create':
         final Map<dynamic, dynamic> args = call.arguments;
         final Map<dynamic, dynamic> params = _decodeParams(args['params']);
-        lastCreatedView = new FakePlatformWebView(
+        lastCreatedView = FakePlatformWebView(
           args['id'],
           params,
         );
         return Future<int>.sync(() => 1);
       default:
-        return new Future<Null>.sync(() => null);
+        return Future<Null>.sync(() => null);
     }
   }
 

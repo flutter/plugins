@@ -40,7 +40,7 @@ void main() {
     expect(event.y, 2.0);
     expect(event.z, 3.0);
 
-    await new Future<Null>.delayed(Duration.zero);
+    await Future<Null>.delayed(Duration.zero);
     expect(isCanceled, isTrue);
   });
 }

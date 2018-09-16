@@ -8,12 +8,12 @@ import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
 
 void main() {
-  runApp(new MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatefulWidget {
   @override
-  _MyAppState createState() => new _MyAppState();
+  _MyAppState createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
@@ -28,7 +28,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<Null> _authenticate() async {
-    final LocalAuthentication auth = new LocalAuthentication();
+    final LocalAuthentication auth = LocalAuthentication();
     bool authenticated = false;
     try {
       authenticated = await auth.authenticateWithBiometrics(
@@ -71,19 +71,19 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
-        home: new Scaffold(
-      appBar: new AppBar(
+    return MaterialApp(
+        home: Scaffold(
+      appBar: AppBar(
         title: const Text('Plugin example app'),
       ),
-      body: new ConstrainedBox(
+      body: ConstrainedBox(
           constraints: const BoxConstraints.expand(),
-          child: new Column(
+          child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
-                new Text('Available biometrics: ${_options.toString()}\n'),
-                new Text('Current State: $_authorized\n'),
-                new RaisedButton(
+                Text('Available biometrics: ${_options.toString()}\n'),
+                Text('Current State: $_authorized\n'),
+                RaisedButton(
                   child: const Text('Authenticate'),
                   onPressed: _authenticate,
                 )

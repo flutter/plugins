@@ -35,13 +35,12 @@ class Location {
 
   factory Location.fromJson(String jsonLocation) {
     final Map<String, dynamic> location = json.decode(jsonLocation);
-    return new Location(location['time'], location['latitude'],
+    return Location(location['time'], location['latitude'],
         location['longitude'], location['altitude'], location['speed']);
   }
 
   DateTime get time =>
-      new DateTime.fromMillisecondsSinceEpoch((_time * 1000).round(),
-          isUtc: true);
+      DateTime.fromMillisecondsSinceEpoch((_time * 1000).round(), isUtc: true);
 
   @override
   String toString() =>
@@ -98,7 +97,7 @@ void _backgroundCallbackDispatcher() {
     if (call.method == kOnLocationEvent) {
       onLocationEvent ??= _performCallbackLookup();
       final Location location =
-          new Location(args[1], args[2], args[3], args[4], args[5]);
+          Location(args[1], args[2], args[3], args[4], args[5]);
       onLocationEvent(location);
     } else {
       assert(false, "No handler defined for method type: '${call.method}'");
