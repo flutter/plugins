@@ -10,7 +10,7 @@ const int _kBillion = 1000000000;
 
 void _check(bool expr, String name, int value) {
   if (!expr) {
-    throw new ArgumentError("Timestamp $name out of range: $value");
+    throw ArgumentError("Timestamp $name out of range: $value");
   }
 }
 

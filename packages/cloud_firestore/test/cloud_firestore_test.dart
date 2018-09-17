@@ -558,7 +558,7 @@ void main() {
 
     group('FirestoreMessageCodec', () {
       const MessageCodec<dynamic> codec = FirestoreMessageCodec();
-      final DateTime testTime = new DateTime(2015, 10, 30, 11, 16);
+      final DateTime testTime = DateTime(2015, 10, 30, 11, 16);
       final Timestamp timestamp = Timestamp.fromDate(testTime);
       test('should encode and decode simple messages', () {
         _checkEncodeDecode<dynamic>(codec, testTime);

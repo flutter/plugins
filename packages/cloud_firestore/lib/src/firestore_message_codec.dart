@@ -65,9 +65,9 @@ class FirestoreMessageCodec extends StandardMessageCodec {
   dynamic readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
       case _kDateTime:
-        return new DateTime.fromMillisecondsSinceEpoch(buffer.getInt64());
+        return DateTime.fromMillisecondsSinceEpoch(buffer.getInt64());
       case _kTimestamp:
-        return new Timestamp(buffer.getInt64(), buffer.getInt32());
+        return Timestamp(buffer.getInt64(), buffer.getInt32());
       case _kGeoPoint:
         return GeoPoint(buffer.getFloat64(), buffer.getFloat64());
       case _kDocumentReference:
