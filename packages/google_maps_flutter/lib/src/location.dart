@@ -4,8 +4,6 @@
 
 part of google_maps_flutter;
 
-
-
 T clip<T extends num>(T val, T low, T high) {
   assert(low <= high);
   assert(val != null);
@@ -19,8 +17,6 @@ T wrap<T extends num>(T val, T low, T high) {
   final T range = high -= low;
   return ((val - low) % range + range) % range + low;
 }
-
-
 
 /// A pair of latitude and longitude coordinates, stored as degrees.
 class LatLng {
@@ -121,10 +117,10 @@ class _LngRange {
     return isEmpty() || other.isEmpty()
         ? false
         : crosses180deg(this)
-        ? crosses180deg(other) || other.west <= east || other.east >= west
-        : crosses180deg(other)
-        ? other.west <= east || other.east >= west
-        : other.west <= east && other.east >= west;
+            ? crosses180deg(other) || other.west <= east || other.east >= west
+            : crosses180deg(other)
+                ? other.west <= east || other.east >= west
+                : other.west <= east && other.east >= west;
   }
 
   _LngRange extend(double lng) {
@@ -166,7 +162,6 @@ class _LngRange {
   }
 }
 
-
 /// A latitude/longitude aligned rectangle.
 ///
 /// The rectangle conceptually includes all points (lat, lng) where
@@ -184,24 +179,23 @@ class LatLngBounds {
       final double south = clip(southwest.latitude, -90.0, 90.0);
       final double north = clip(northeast.latitude, -90.0, 90.0);
       assert(south <= north);
-      _latRange =  _LatRange(south, north);
+      _latRange = _LatRange(south, north);
       double west = southwest.longitude;
       double east = northeast.longitude;
       if (360.0 <= east - west) {
-        _lngRange =  _LngRange(-180.0, 180.0);
+        _lngRange = _LngRange(-180.0, 180.0);
       } else {
         west = wrap(west, -180.0, 180.0);
         east = wrap(east, -180.0, 180.0);
-        _lngRange =  _LngRange(west, east);
+        _lngRange = _LngRange(west, east);
       }
     } else {
-      _latRange =  _LatRange(1.0, -1.0);
-      _lngRange =  _LngRange(180.0, -180.0);
+      _latRange = _LatRange(1.0, -1.0);
+      _lngRange = _LngRange(180.0, -180.0);
     }
   }
 
   LatLng get center => LatLng(_latRange.center, _lngRange.center);
-
 
   bool contains(LatLng point) {
     return _latRange.contains(point.latitude) &&
@@ -235,8 +229,6 @@ class LatLngBounds {
 
   LatLng get southwest => LatLng(_latRange.south, _lngRange.west);
   LatLng get northeast => LatLng(_latRange.north, _lngRange.east);
-
-
 
   dynamic _toJson() {
     return <dynamic>[southwest._toJson(), northeast._toJson()];
