@@ -14,7 +14,7 @@ T clip<T extends num>(T val, T low, T high) {
 T wrap<T extends num>(T val, T low, T high) {
   assert(low <= high);
   assert(val != null && low != null && high != null);
-  final T range = high -= low;
+  final T range = high - low;
   return ((val - low) % range + range) % range + low;
 }
 
@@ -66,6 +66,11 @@ class LatLng {
 }
 
 class _LatRange {
+  double north;
+  double south;
+
+  double get center => (north + south) / 2;
+
   _LatRange(this.south, this.north);
 
   bool isEmpty() {
@@ -92,22 +97,15 @@ class _LatRange {
     }
     return this;
   }
-
-  double get center => (north + south) / 2;
-
-  double north;
-  double south;
 }
 
 class _LngRange {
   double west;
   double east;
 
-  _LngRange(double west, double east) {
-    // Ac
-    this.west = -180.0 == west && 180.0 != east ? 180.0 : west;
-    this.east = -180.0 == east && 180.0 != west ? 180.0 : east;
-  }
+  _LngRange(double west, double east)
+      : west = -180.0 == west && 180.0 != east ? 180.0 : west,
+        east = -180.0 == east && 180.0 != west ? 180.0 : east;
 
   bool isEmpty() {
     return 360.0 == west - east;
@@ -116,9 +114,9 @@ class _LngRange {
   bool intersects(_LngRange other) {
     return isEmpty() || other.isEmpty()
         ? false
-        : crosses180deg(this)
-            ? crosses180deg(other) || other.west <= east || other.east >= west
-            : crosses180deg(other)
+        : spans180deg(this)
+            ? spans180deg(other) || other.west <= east || other.east >= west
+            : spans180deg(other)
                 ? other.west <= east || other.east >= west
                 : other.west <= east && other.east >= west;
   }
@@ -138,7 +136,7 @@ class _LngRange {
 
   bool contains(double lng) {
     lng = -180.0 == lng ? 180.0 : lng;
-    return crosses180deg(this)
+    return spans180deg(this)
         ? (lng >= west || lng <= east) && !isEmpty()
         : lng >= west && lng <= east;
   }
@@ -146,7 +144,7 @@ class _LngRange {
   double get center {
     // _.n.W
     double center = (west + east) / 2;
-    if (crosses180deg(this)) center = wrap(center + 180.0, -180.0, 180.0);
+    if (spans180deg(this)) center = wrap(center + 180.0, -180.0, 180.0);
     return center;
   }
 
@@ -156,7 +154,7 @@ class _LngRange {
     return 0.0 <= dist ? dist : west + 180.0 - (east - 180.0);
   }
 
-  static bool crosses180deg(_LngRange a) {
+  static bool spans180deg(_LngRange a) {
     // _.Bc
     return a.west > a.east;
   }
