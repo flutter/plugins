@@ -19,6 +19,7 @@ Future<void> main() async {
     ),
   );
   final Firestore firestore = Firestore(app: app);
+  await firestore.settings(timestampsInSnapshotsEnabled: true);
 
   runApp(MaterialApp(
       title: 'Firestore Example', home: MyHomePage(firestore: firestore)));
