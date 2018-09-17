@@ -69,9 +69,9 @@ class _LatRange {
   double north;
   double south;
 
-  double get center => (north + south) / 2;
-
   _LatRange(this.south, this.north);
+
+  double get center => (north + south) / 2;
 
   bool isEmpty() {
     return south > north;
