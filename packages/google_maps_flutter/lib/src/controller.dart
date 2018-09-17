@@ -37,7 +37,7 @@ class GoogleMapController extends ChangeNotifier {
     assert(options != null);
     assert(options.cameraPosition != null);
     final MethodChannel channel =
-        new MethodChannel('plugins.flutter.io/google_maps_$id');
+        MethodChannel('plugins.flutter.io/google_maps_$id');
     await channel.invokeMethod('map#waitForMap');
     return GoogleMapController._(id, options, channel);
   }
@@ -45,12 +45,11 @@ class GoogleMapController extends ChangeNotifier {
   final MethodChannel _channel;
 
   /// Callbacks to receive tap events for markers placed on this map.
-  final ArgumentCallbacks<Marker> onMarkerTapped =
-      new ArgumentCallbacks<Marker>();
+  final ArgumentCallbacks<Marker> onMarkerTapped = ArgumentCallbacks<Marker>();
 
   /// Callbacks to receive tap events for info windows on markers
   final ArgumentCallbacks<Marker> onInfoWindowTapped =
-      new ArgumentCallbacks<Marker>();
+      ArgumentCallbacks<Marker>();
 
   /// The configuration options most recently applied via controller
   /// initialization or [updateMapOptions].
@@ -60,7 +59,7 @@ class GoogleMapController extends ChangeNotifier {
   /// The current set of markers on this map.
   ///
   /// The returned set will be a detached snapshot of the markers collection.
-  Set<Marker> get markers => new Set<Marker>.from(_markers.values);
+  Set<Marker> get markers => Set<Marker>.from(_markers.values);
   final Map<String, Marker> _markers = <String, Marker>{};
 
   /// True if the map camera is currently moving.
@@ -105,7 +104,7 @@ class GoogleMapController extends ChangeNotifier {
         notifyListeners();
         break;
       default:
-        throw new MissingPluginException();
+        throw MissingPluginException();
     }
   }
 
@@ -164,7 +163,7 @@ class GoogleMapController extends ChangeNotifier {
         'options': effectiveOptions._toJson(),
       },
     );
-    final Marker marker = new Marker(markerId, effectiveOptions);
+    final Marker marker = Marker(markerId, effectiveOptions);
     _markers[markerId] = marker;
     notifyListeners();
     return marker;

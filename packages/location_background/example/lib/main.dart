@@ -11,25 +11,25 @@ import 'package:location_background_plugin/location_background_plugin.dart';
 import 'background.dart';
 
 void main() {
-  runApp(new MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatefulWidget {
   @override
   _MyAppState createState() {
-    return new _MyAppState();
+    return _MyAppState();
   }
 }
 
 class _MyAppState extends State<MyApp> {
-  ReceivePort _foregroundPort = new ReceivePort();
+  ReceivePort _foregroundPort = ReceivePort();
   LocationBackgroundPlugin _locationPlugin;
   Location _lastLocation;
   bool _isTracking = false;
 
   @override
   void initState() {
-    _lastLocation = new Location(-1.0, 0.0, 0.0, -1.0, -1.0);
+    _lastLocation = Location(-1.0, 0.0, 0.0, -1.0, -1.0);
     super.initState();
     initPlatformState();
   }
@@ -74,12 +74,12 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     const TextStyle boldText = TextStyle(fontWeight: FontWeight.bold);
-    return new MaterialApp(
-        home: new Scaffold(
-            appBar: new AppBar(
+    return MaterialApp(
+        home: Scaffold(
+            appBar: AppBar(
               title: const Text('Background Plugin Demo'),
             ),
-            body: new Column(
+            body: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[

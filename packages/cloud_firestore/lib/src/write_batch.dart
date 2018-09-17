@@ -32,7 +32,7 @@ class WriteBatch {
       return await Firestore.channel.invokeMethod(
           'WriteBatch#commit', <String, dynamic>{'handle': await _handle});
     } else {
-      throw new StateError("This batch has already been committed.");
+      throw StateError("This batch has already been committed.");
     }
   }
 
@@ -52,7 +52,7 @@ class WriteBatch {
         );
       });
     } else {
-      throw new StateError(
+      throw StateError(
           "This batch has been committed and can no longer be changed.");
     }
   }
@@ -81,7 +81,7 @@ class WriteBatch {
         );
       });
     } else {
-      throw new StateError(
+      throw StateError(
           "This batch has been committed and can no longer be changed.");
     }
   }
@@ -105,7 +105,7 @@ class WriteBatch {
         );
       });
     } else {
-      throw new StateError(
+      throw StateError(
           "This batch has been committed and can no longer be changed.");
     }
   }

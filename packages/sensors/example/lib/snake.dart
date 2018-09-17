@@ -19,8 +19,7 @@ class Snake extends StatefulWidget {
   }
 
   @override
-  State<StatefulWidget> createState() =>
-      new SnakeState(rows, columns, cellSize);
+  State<StatefulWidget> createState() => SnakeState(rows, columns, cellSize);
 }
 
 class SnakeBoardPainter extends CustomPainter {
@@ -31,19 +30,19 @@ class SnakeBoardPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final Paint blackLine = new Paint()..color = Colors.black;
-    final Paint blackFilled = new Paint()
+    final Paint blackLine = Paint()..color = Colors.black;
+    final Paint blackFilled = Paint()
       ..color = Colors.black
       ..style = PaintingStyle.fill;
     canvas.drawRect(
-      new Rect.fromPoints(Offset.zero, size.bottomLeft(Offset.zero)),
+      Rect.fromPoints(Offset.zero, size.bottomLeft(Offset.zero)),
       blackLine,
     );
     for (math.Point<int> p in state.body) {
-      final Offset a = new Offset(cellSize * p.x, cellSize * p.y);
-      final Offset b = new Offset(cellSize * (p.x + 1), cellSize * (p.y + 1));
+      final Offset a = Offset(cellSize * p.x, cellSize * p.y);
+      final Offset b = Offset(cellSize * (p.x + 1), cellSize * (p.y + 1));
 
-      canvas.drawRect(new Rect.fromPoints(a, b), blackFilled);
+      canvas.drawRect(Rect.fromPoints(a, b), blackFilled);
     }
   }
 
@@ -59,12 +58,12 @@ class SnakeState extends State<Snake> {
   AccelerometerEvent acceleration;
 
   SnakeState(int rows, int columns, this.cellSize) {
-    state = new GameState(rows, columns);
+    state = GameState(rows, columns);
   }
 
   @override
   Widget build(BuildContext context) {
-    return new CustomPaint(painter: new SnakeBoardPainter(state, cellSize));
+    return CustomPaint(painter: SnakeBoardPainter(state, cellSize));
   }
 
   @override
@@ -76,7 +75,7 @@ class SnakeState extends State<Snake> {
       });
     });
 
-    new Timer.periodic(const Duration(milliseconds: 200), (_) {
+    Timer.periodic(const Duration(milliseconds: 200), (_) {
       setState(() {
         _step();
       });
@@ -89,8 +88,8 @@ class SnakeState extends State<Snake> {
         : acceleration.x.abs() < 1.0 && acceleration.y.abs() < 1.0
             ? null
             : (acceleration.x.abs() < acceleration.y.abs())
-                ? new math.Point<int>(0, acceleration.y.sign.toInt())
-                : new math.Point<int>(-acceleration.x.sign.toInt(), 0);
+                ? math.Point<int>(0, acceleration.y.sign.toInt())
+                : math.Point<int>(-acceleration.x.sign.toInt(), 0);
     state.step(newDirection);
   }
 }
@@ -108,7 +107,7 @@ class GameState {
 
   void step(math.Point<int> newDirection) {
     math.Point<int> next = body.last + direction;
-    next = new math.Point<int>(next.x % columns, next.y % rows);
+    next = math.Point<int>(next.x % columns, next.y % rows);
 
     body.add(next);
     if (body.length > snakeLength) body.removeAt(0);
