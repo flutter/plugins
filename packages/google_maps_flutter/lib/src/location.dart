@@ -184,19 +184,19 @@ class LatLngBounds {
       final double south = clip(southwest.latitude, -90.0, 90.0);
       final double north = clip(northeast.latitude, -90.0, 90.0);
       assert(south <= north);
-      _latRange = new _LatRange(south, north);
+      _latRange =  _LatRange(south, north);
       double west = southwest.longitude;
       double east = northeast.longitude;
       if (360.0 <= east - west) {
-        _lngRange = new _LngRange(-180.0, 180.0);
+        _lngRange =  _LngRange(-180.0, 180.0);
       } else {
         west = wrap(west, -180.0, 180.0);
         east = wrap(east, -180.0, 180.0);
-        _lngRange = new _LngRange(west, east);
+        _lngRange =  _LngRange(west, east);
       }
     } else {
-      _latRange = new _LatRange(1.0, -1.0);
-      _lngRange = new _LngRange(180.0, -180.0);
+      _latRange =  _LatRange(1.0, -1.0);
+      _lngRange =  _LngRange(180.0, -180.0);
     }
   }
 
