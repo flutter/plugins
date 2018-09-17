@@ -64,7 +64,7 @@ class LocalAuthentication {
     } else if (Platform.isAndroid) {
       args.addAll(androidAuthStrings.args);
     } else {
-      throw new PlatformException(
+      throw PlatformException(
           code: otherOperatingSystem,
           message: 'Local authentication does not support non-Android/iOS '
               'operating systems.',

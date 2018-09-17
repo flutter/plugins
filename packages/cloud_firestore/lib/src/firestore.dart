@@ -30,11 +30,10 @@ class Firestore {
     if (_initialized) return;
     channel.setMethodCallHandler((MethodCall call) async {
       if (call.method == 'QuerySnapshot') {
-        final QuerySnapshot snapshot =
-            new QuerySnapshot._(call.arguments, this);
+        final QuerySnapshot snapshot = QuerySnapshot._(call.arguments, this);
         _queryObservers[call.arguments['handle']].add(snapshot);
       } else if (call.method == 'DocumentSnapshot') {
-        final DocumentSnapshot snapshot = new DocumentSnapshot._(
+        final DocumentSnapshot snapshot = DocumentSnapshot._(
           call.arguments['path'],
           _asStringKeyedMap(call.arguments['data']),
           this,
@@ -43,7 +42,7 @@ class Firestore {
       } else if (call.method == 'DoTransaction') {
         final int transactionId = call.arguments['transactionId'];
         return _transactionHandlers[transactionId](
-          new Transaction(transactionId, this),
+          Transaction(transactionId, this),
         );
       }
     });
@@ -51,7 +50,7 @@ class Firestore {
   }
 
   /// Gets the instance of Firestore for the default Firebase app.
-  static final Firestore instance = new Firestore();
+  static final Firestore instance = Firestore();
 
   /// The [FirebaseApp] instance to which this [FirebaseDatabase] belongs.
   ///
@@ -67,13 +66,13 @@ class Firestore {
   /// Gets a [CollectionReference] for the specified Firestore path.
   CollectionReference collection(String path) {
     assert(path != null);
-    return new CollectionReference._(this, path.split('/'));
+    return CollectionReference._(this, path.split('/'));
   }
 
   /// Gets a [DocumentReference] for the specified Firestore path.
   DocumentReference document(String path) {
     assert(path != null);
-    return new DocumentReference._(this, path.split('/'));
+    return DocumentReference._(this, path.split('/'));
   }
 
   /// Creates a write batch, used for performing multiple writes as a single
@@ -81,7 +80,7 @@ class Firestore {
   ///
   /// Unlike transactions, write batches are persisted offline and therefore are
   /// preferable when you don’t need to condition your writes on read data.
-  WriteBatch batch() => new WriteBatch._(this);
+  WriteBatch batch() => WriteBatch._(this);
 
   /// Executes the given TransactionHandler and then attempts to commit the
   /// changes applied within an atomic transaction.

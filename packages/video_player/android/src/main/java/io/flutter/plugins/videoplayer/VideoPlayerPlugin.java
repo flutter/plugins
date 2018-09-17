@@ -59,7 +59,7 @@ public class VideoPlayerPlugin implements MethodCallHandler {
 
     private final TextureRegistry.SurfaceTextureEntry textureEntry;
 
-    private EventChannel.EventSink eventSink;
+    private QueuingEventSink eventSink = new QueuingEventSink();
 
     private final EventChannel eventChannel;
 
@@ -128,12 +128,12 @@ public class VideoPlayerPlugin implements MethodCallHandler {
           new EventChannel.StreamHandler() {
             @Override
             public void onListen(Object o, EventChannel.EventSink sink) {
-              eventSink = sink;
+              eventSink.setDelegate(sink);
             }
 
             @Override
             public void onCancel(Object o) {
-              eventSink = null;
+              eventSink.setDelegate(null);
             }
           });
 
@@ -148,14 +148,12 @@ public class VideoPlayerPlugin implements MethodCallHandler {
             public void onPlayerStateChanged(final boolean playWhenReady, final int playbackState) {
               super.onPlayerStateChanged(playWhenReady, playbackState);
               if (playbackState == Player.STATE_BUFFERING) {
-                if (eventSink != null) {
-                  Map<String, Object> event = new HashMap<>();
-                  event.put("event", "bufferingUpdate");
-                  List<Integer> range = Arrays.asList(0, exoPlayer.getBufferedPercentage());
-                  // iOS supports a list of buffered ranges, so here is a list with a single range.
-                  event.put("values", Collections.singletonList(range));
-                  eventSink.success(event);
-                }
+                Map<String, Object> event = new HashMap<>();
+                event.put("event", "bufferingUpdate");
+                List<Integer> range = Arrays.asList(0, exoPlayer.getBufferedPercentage());
+                // iOS supports a list of buffered ranges, so here is a list with a single range.
+                event.put("values", Collections.singletonList(range));
+                eventSink.success(event);
               } else if (playbackState == Player.STATE_READY && !isInitialized) {
                 isInitialized = true;
                 sendInitialized();
@@ -212,7 +210,7 @@ public class VideoPlayerPlugin implements MethodCallHandler {
     }
 
     private void sendInitialized() {
-      if (isInitialized && eventSink != null) {
+      if (isInitialized) {
         Map<String, Object> event = new HashMap<>();
         event.put("event", "initialized");
         event.put("duration", exoPlayer.getDuration());

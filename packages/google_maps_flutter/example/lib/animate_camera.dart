@@ -37,7 +37,7 @@ class AnimateCameraState extends State<AnimateCamera> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         Center(
-          child: new SizedBox(
+          child: SizedBox(
               width: 300.0,
               height: 200.0,
               child: GoogleMap(

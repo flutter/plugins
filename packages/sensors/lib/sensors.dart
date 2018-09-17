@@ -59,15 +59,15 @@ class UserAccelerometerEvent {
 }
 
 AccelerometerEvent _listToAccelerometerEvent(List<double> list) {
-  return new AccelerometerEvent(list[0], list[1], list[2]);
+  return AccelerometerEvent(list[0], list[1], list[2]);
 }
 
 UserAccelerometerEvent _listToUserAccelerometerEvent(List<double> list) {
-  return new UserAccelerometerEvent(list[0], list[1], list[2]);
+  return UserAccelerometerEvent(list[0], list[1], list[2]);
 }
 
 GyroscopeEvent _listToGyroscopeEvent(List<double> list) {
-  return new GyroscopeEvent(list[0], list[1], list[2]);
+  return GyroscopeEvent(list[0], list[1], list[2]);
 }
 
 Stream<AccelerometerEvent> _accelerometerEvents;

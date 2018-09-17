@@ -9,7 +9,7 @@ import "package:http/http.dart" as http;
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-GoogleSignIn _googleSignIn = new GoogleSignIn(
+GoogleSignIn _googleSignIn = GoogleSignIn(
   scopes: <String>[
     'email',
     'https://www.googleapis.com/auth/contacts.readonly',
@@ -18,16 +18,16 @@ GoogleSignIn _googleSignIn = new GoogleSignIn(
 
 void main() {
   runApp(
-    new MaterialApp(
+    MaterialApp(
       title: 'Google Sign In',
-      home: new SignInDemo(),
+      home: SignInDemo(),
     ),
   );
 }
 
 class SignInDemo extends StatefulWidget {
   @override
-  State createState() => new SignInDemoState();
+  State createState() => SignInDemoState();
 }
 
 class SignInDemoState extends State<SignInDemo> {
@@ -108,34 +108,34 @@ class SignInDemoState extends State<SignInDemo> {
 
   Widget _buildBody() {
     if (_currentUser != null) {
-      return new Column(
+      return Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
-          new ListTile(
-            leading: new GoogleUserCircleAvatar(
+          ListTile(
+            leading: GoogleUserCircleAvatar(
               identity: _currentUser,
             ),
-            title: new Text(_currentUser.displayName),
-            subtitle: new Text(_currentUser.email),
+            title: Text(_currentUser.displayName),
+            subtitle: Text(_currentUser.email),
           ),
           const Text("Signed in successfully."),
-          new Text(_contactText),
-          new RaisedButton(
+          Text(_contactText),
+          RaisedButton(
             child: const Text('SIGN OUT'),
             onPressed: _handleSignOut,
           ),
-          new RaisedButton(
+          RaisedButton(
             child: const Text('REFRESH'),
             onPressed: _handleGetContact,
           ),
         ],
       );
     } else {
-      return new Column(
+      return Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
           const Text("You are not currently signed in."),
-          new RaisedButton(
+          RaisedButton(
             child: const Text('SIGN IN'),
             onPressed: _handleSignIn,
           ),
@@ -146,11 +146,11 @@ class SignInDemoState extends State<SignInDemo> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-        appBar: new AppBar(
+    return Scaffold(
+        appBar: AppBar(
           title: const Text('Google Sign In'),
         ),
-        body: new ConstrainedBox(
+        body: ConstrainedBox(
           constraints: const BoxConstraints.expand(),
           child: _buildBody(),
         ));
