@@ -24,16 +24,32 @@ class _MainScreen extends StatefulWidget {
   State<StatefulWidget> createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<_MainScreen> {
+class _MainScreenState extends State<_MainScreen> with WidgetsBindingObserver {
   String _linkMessage;
   bool _isCreatingLink = false;
-  @override
-  BuildContext get context => super.context;
+  String _testString =
+      "To test: long press link and then copy and click from a non-browser "
+      "app. Make sure this isn't being tested on iOS simulator and iOS xcode "
+      "is properly setup. Look at firebase_dynamic_links/README.md for more "
+      "details.";
 
   @override
   void initState() {
     super.initState();
-    _retrieveDynamicLink();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _retrieveDynamicLink();
+    }
   }
 
   Future<void> _retrieveDynamicLink() async {
@@ -127,6 +143,7 @@ class _MainScreenState extends State<_MainScreen> {
                     );
                   },
                 ),
+                Text(_linkMessage == null ? '' : _testString)
               ],
             ),
           );
