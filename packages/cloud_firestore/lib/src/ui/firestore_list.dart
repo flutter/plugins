@@ -61,7 +61,7 @@ class FirestoreList extends ListBase<DocumentSnapshot>
 
   @override
   set length(int value) {
-    throw new UnsupportedError("List cannot be modified.");
+    throw UnsupportedError("List cannot be modified.");
   }
 
   @override
@@ -70,7 +70,7 @@ class FirestoreList extends ListBase<DocumentSnapshot>
 
   @override
   void operator []=(int index, DocumentSnapshot value) {
-    throw new UnsupportedError("List cannot be modified.");
+    throw UnsupportedError("List cannot be modified.");
   }
 
   @override

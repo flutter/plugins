@@ -48,11 +48,11 @@ void main() {
             final int handle = mockHandleId++;
             // Wait before sending a message back.
             // Otherwise the first request didn't have the time to finish.
-            new Future<void>.delayed(Duration.zero).then<void>((_) {
+            Future<void>.delayed(Duration.zero).then((_) {
               BinaryMessages.handlePlatformMessage(
                 Firestore.channel.name,
                 Firestore.channel.codec.encodeMethodCall(
-                  new MethodCall('QuerySnapshot', <String, dynamic>{
+                  MethodCall('QuerySnapshot', <String, dynamic>{
                     'app': app.name,
                     'handle': handle,
                     'paths': <String>["${methodCall.arguments['path']}/0"],
@@ -75,11 +75,11 @@ void main() {
             final int handle = mockHandleId++;
             // Wait before sending a message back.
             // Otherwise the first request didn't have the time to finish.
-            new Future<void>.delayed(Duration.zero).then<void>((_) {
+            Future<void>.delayed(Duration.zero).then((_) {
               BinaryMessages.handlePlatformMessage(
                 Firestore.channel.name,
                 Firestore.channel.codec.encodeMethodCall(
-                  new MethodCall('DocumentSnapshot', <String, dynamic>{
+                  MethodCall('DocumentSnapshot', <String, dynamic>{
                     'handle': handle,
                     'path': methodCall.arguments['path'],
                     'data': kMockDocumentSnapshotData,
@@ -113,7 +113,7 @@ void main() {
             } else if (methodCall.arguments['path'] == 'foo/notExists') {
               return <String, dynamic>{'path': 'foo/notExists', 'data': null};
             }
-            throw new PlatformException(code: 'UNKNOWN_PATH');
+            throw PlatformException(code: 'UNKNOWN_PATH');
           case 'Firestore#runTransaction':
             return <String, dynamic>{'1': 3};
           case 'Transaction#get':
@@ -125,7 +125,7 @@ void main() {
             } else if (methodCall.arguments['path'] == 'foo/notExists') {
               return <String, dynamic>{'path': 'foo/notExists', 'data': null};
             }
-            throw new PlatformException(code: 'UNKNOWN_PATH');
+            throw PlatformException(code: 'UNKNOWN_PATH');
           case 'Transaction#set':
             return null;
           case 'Transaction#update':

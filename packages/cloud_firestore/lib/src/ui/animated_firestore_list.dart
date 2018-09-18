@@ -133,7 +133,7 @@ class FirestoreAnimatedList extends StatefulWidget {
   final Duration duration;
 
   @override
-  FirestoreAnimatedListState createState() => new FirestoreAnimatedListState();
+  FirestoreAnimatedListState createState() => FirestoreAnimatedListState();
 }
 
 class FirestoreAnimatedListState extends State<FirestoreAnimatedList> {
