@@ -184,7 +184,7 @@ class FirestoreAnimatedListState extends State<FirestoreAnimatedList> {
 
   void _onDocumentRemoved(int index, DocumentSnapshot snapshot) {
     // The child should have already been removed from the model by now
-    assert(_model.indexOf(snapshot) == -1);
+    assert(!_model.contains(snapshot));
     if (mounted) {
       try {
         _animatedListKey.currentState.removeItem(
@@ -238,7 +238,7 @@ class FirestoreAnimatedListState extends State<FirestoreAnimatedList> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                Icon(Icons.error),
+                const Icon(Icons.error),
                 Text(_error),
               ],
             ),
