@@ -46,6 +46,8 @@ FIRQuery *getQuery(NSDictionary *arguments) {
       query = [query queryWhereField:fieldName isGreaterThan:value];
     } else if ([op isEqualToString:@">="]) {
       query = [query queryWhereField:fieldName isGreaterThanOrEqualTo:value];
+    } else if ([op isEqualToString:@"array-contains"]) {
+      query = [query queryWhereField:fieldName arrayContains:value];
     } else {
       // Unsupported operator
     }
@@ -127,6 +129,10 @@ const UInt8 DATE_TIME = 128;
 const UInt8 GEO_POINT = 129;
 const UInt8 DOCUMENT_REFERENCE = 130;
 const UInt8 BLOB = 131;
+const UInt8 ARRAY_UNION = 132;
+const UInt8 ARRAY_REMOVE = 133;
+const UInt8 DELETE = 134;
+const UInt8 SERVER_TIMESTAMP = 135;
 
 @interface FirestoreWriter : FlutterStandardWriter
 - (void)writeValue:(id)value;
@@ -196,6 +202,18 @@ const UInt8 BLOB = 131;
       UInt32 elementCount = [self readSize];
       return [self readData:elementCount];
     }
+    case ARRAY_UNION: {
+      return [FIRFieldValue fieldValueForArrayUnion:[self readValue]];
+    }
+    case ARRAY_REMOVE: {
+      return [FIRFieldValue fieldValueForArrayRemove:[self readValue]];
+    }
+    case DELETE: {
+      return [FIRFieldValue fieldValueForDelete];
+    }
+    case SERVER_TIMESTAMP: {
+      return [FIRFieldValue fieldValueForServerTimestamp];
+    }
     default:
       return [super readValueOfType:type];
   }
@@ -262,28 +280,27 @@ const UInt8 BLOB = 131;
     result(error.flutterError);
   };
   if ([@"Firestore#runTransaction" isEqualToString:call.method]) {
-    [getFirestore(call.arguments)
-        runTransactionWithBlock:^id(FIRTransaction *transaction, NSError **pError) {
-          NSNumber *transactionId = call.arguments[@"transactionId"];
-          NSNumber *transactionTimeout = call.arguments[@"transactionTimeout"];
+    [getFirestore(call.arguments) runTransactionWithBlock:^id(FIRTransaction *transaction,
+                                                              NSError **pError) {
+      NSNumber *transactionId = call.arguments[@"transactionId"];
+      NSNumber *transactionTimeout = call.arguments[@"transactionTimeout"];
 
-          transactions[transactionId] = transaction;
+      transactions[transactionId] = transaction;
 
-          dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+      dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
 
-          [self.channel invokeMethod:@"DoTransaction"
-                           arguments:call.arguments
-                              result:^(id doTransactionResult) {
-                                transactionResults[transactionId] = doTransactionResult;
-                                dispatch_semaphore_signal(semaphore);
-                              }];
+      [self.channel invokeMethod:@"DoTransaction"
+                       arguments:call.arguments
+                          result:^(id doTransactionResult) {
+                            transactionResults[transactionId] = doTransactionResult;
+                            dispatch_semaphore_signal(semaphore);
+                          }];
 
-          dispatch_semaphore_wait(
-              semaphore,
-              dispatch_time(DISPATCH_TIME_NOW, [transactionTimeout integerValue] * 1000000));
+      dispatch_semaphore_wait(
+          semaphore, dispatch_time(DISPATCH_TIME_NOW, [transactionTimeout integerValue] * 1000000));
 
-          return transactionResults[transactionId];
-        }
+      return transactionResults[transactionId];
+    }
         completion:^(id transactionResult, NSError *error) {
           if (error != nil) {
             result([FlutterError errorWithCode:[NSString stringWithFormat:@"%ld", error.code]
@@ -458,6 +475,13 @@ const UInt8 BLOB = 131;
     FIRWriteBatch *batch = [_batches objectForKey:handle];
     [batch commitWithCompletion:defaultCompletionBlock];
     [_batches removeObjectForKey:handle];
+  } else if ([@"Firestore#enablePersistence" isEqualToString:call.method]) {
+    bool enable = (bool)call.arguments[@"enable"];
+    FIRFirestoreSettings *settings = [[FIRFirestoreSettings alloc] init];
+    settings.persistenceEnabled = enable;
+    FIRFirestore *db = getFirestore(call.arguments);
+    db.settings = settings;
+    result(nil);
   } else {
     result(FlutterMethodNotImplemented);
   }
