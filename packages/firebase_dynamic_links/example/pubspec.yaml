@@ -8,5 +8,7 @@ dependencies:
   firebase_dynamic_links:
     path: ../
 
+  url_launcher: ^3.0.3
+
 flutter:
   uses-material-design: true
