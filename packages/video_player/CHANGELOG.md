@@ -1,3 +1,17 @@
+## 0.7.0
+
+* Add a unit test for controller and texture changes. This is a breaking change since the interface
+  had to be cleaned up to facilitate faking.
+
+## 0.6.6
+
+* Fix the condition where the player doesn't update when attached controller is changed.
+
+## 0.6.5
+
+* Eliminate race conditions around initialization: now initialization events are queued and guaranteed
+  to be delivered to the Dart side. VideoPlayer widget is rebuilt upon completion of initialization.
+
 ## 0.6.4
 
 * Android: add support for hls, dash and ss video formats.

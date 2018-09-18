@@ -8,16 +8,16 @@ import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
 
 void main() {
-  runApp(new MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
+    return MaterialApp(
       title: 'PackageInfo Demo',
-      theme: new ThemeData(primarySwatch: Colors.blue),
-      home: new MyHomePage(title: 'PackageInfo example app'),
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: MyHomePage(title: 'PackageInfo example app'),
     );
   }
 }
@@ -28,11 +28,11 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  _MyHomePageState createState() => new _MyHomePageState();
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  PackageInfo _packageInfo = new PackageInfo(
+  PackageInfo _packageInfo = PackageInfo(
     appName: 'Unknown',
     packageName: 'Unknown',
     version: 'Unknown',
@@ -53,19 +53,19 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _infoTile(String title, String subtitle) {
-    return new ListTile(
-      title: new Text(title),
-      subtitle: new Text(subtitle ?? 'Not set'),
+    return ListTile(
+      title: Text(title),
+      subtitle: Text(subtitle ?? 'Not set'),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text(widget.title),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
       ),
-      body: new Column(
+      body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           _infoTile('App name', _packageInfo.appName),

@@ -11,6 +11,14 @@ import 'package:flutter/widgets.dart';
 
 typedef void WebViewCreatedCallback(WebViewController controller);
 
+enum JavaScriptMode {
+  /// JavaScript execution is disabled.
+  disabled,
+
+  /// JavaScript execution is not restricted.
+  unrestricted,
+}
+
 /// A web view widget for showing html content.
 class WebView extends StatefulWidget {
   /// Creates a new web view.
@@ -18,12 +26,15 @@ class WebView extends StatefulWidget {
   /// The web view can be controlled using a `WebViewController` that is passed to the
   /// `onWebViewCreated` callback once the web view is created.
   ///
-  /// The `gestureRecognizers` parameter must not be null;
+  /// The `gestureRecognizers` and `javaScriptMode` parameters must not be null.
   const WebView({
     Key key,
     this.onWebViewCreated,
+    this.initialUrl,
+    this.javaScriptMode = JavaScriptMode.disabled,
     this.gestureRecognizers = const <OneSequenceGestureRecognizer>[],
   })  : assert(gestureRecognizers != null),
+        assert(javaScriptMode != null),
         super(key: key);
 
   /// If not null invoked once the web view is created.
@@ -40,15 +51,26 @@ class WebView extends StatefulWidget {
   /// were not claimed by any other gesture recognizer.
   final List<OneSequenceGestureRecognizer> gestureRecognizers;
 
+  /// The initial URL to load.
+  final String initialUrl;
+
+  /// Whether JavaScript execution is enabled.
+  final JavaScriptMode javaScriptMode;
+
   @override
   State<StatefulWidget> createState() => _WebViewState();
 }
 
 class _WebViewState extends State<WebView> {
+  final Completer<WebViewController> _controller =
+      Completer<WebViewController>();
+
+  _WebSettings _settings;
+
   @override
   Widget build(BuildContext context) {
     if (defaultTargetPlatform == TargetPlatform.android) {
-      return new GestureDetector(
+      return GestureDetector(
         // We prevent text selection by intercepting long press event.
         // This is a temporary workaround to prevent a native crash on a second
         // text selection.
@@ -63,6 +85,8 @@ class _WebViewState extends State<WebView> {
           // we explicitly set it here so that the widget doesn't require an ambient
           // directionality.
           layoutDirection: TextDirection.rtl,
+          creationParams: _CreationParams.fromWidget(widget).toMap(),
+          creationParamsCodec: const StandardMessageCodec(),
         ),
       );
     }
@@ -70,11 +94,84 @@ class _WebViewState extends State<WebView> {
         '$defaultTargetPlatform is not yet supported by the webview_flutter plugin');
   }
 
-  void _onPlatformViewCreated(int id) {
-    if (widget.onWebViewCreated == null) {
+  @override
+  void initState() {
+    super.initState();
+    _settings = _WebSettings.fromWidget(widget);
+  }
+
+  @override
+  void didUpdateWidget(WebView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final _WebSettings newSettings = _WebSettings.fromWidget(widget);
+    final Map<String, dynamic> settingsUpdate =
+        _settings.updatesMap(newSettings);
+    _updateSettings(settingsUpdate);
+    _settings = newSettings;
+  }
+
+  Future<void> _updateSettings(Map<String, dynamic> update) async {
+    if (update == null) {
       return;
     }
-    widget.onWebViewCreated(new WebViewController._(id));
+    final WebViewController controller = await _controller.future;
+    controller._updateSettings(update);
+  }
+
+  void _onPlatformViewCreated(int id) {
+    final WebViewController controller = WebViewController._(id);
+    _controller.complete(controller);
+    if (widget.onWebViewCreated != null) {
+      widget.onWebViewCreated(controller);
+    }
+  }
+}
+
+class _CreationParams {
+  _CreationParams({this.initialUrl, this.settings});
+
+  static _CreationParams fromWidget(WebView widget) {
+    return _CreationParams(
+      initialUrl: widget.initialUrl,
+      settings: _WebSettings.fromWidget(widget),
+    );
+  }
+
+  final String initialUrl;
+  final _WebSettings settings;
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'initialUrl': initialUrl,
+      'settings': settings.toMap(),
+    };
+  }
+}
+
+class _WebSettings {
+  _WebSettings({
+    this.javaScriptMode,
+  });
+
+  static _WebSettings fromWidget(WebView widget) {
+    return _WebSettings(javaScriptMode: widget.javaScriptMode);
+  }
+
+  final JavaScriptMode javaScriptMode;
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'jsMode': javaScriptMode.index,
+    };
+  }
+
+  Map<String, dynamic> updatesMap(_WebSettings newSettings) {
+    if (javaScriptMode == newSettings.javaScriptMode) {
+      return null;
+    }
+    return <String, dynamic>{
+      'jsMode': newSettings.javaScriptMode.index,
+    };
   }
 }
 
@@ -84,7 +181,7 @@ class _WebViewState extends State<WebView> {
 /// callback for a [WebView] widget.
 class WebViewController {
   WebViewController._(int id)
-      : _channel = new MethodChannel('plugins.flutter.io/webview_$id');
+      : _channel = MethodChannel('plugins.flutter.io/webview_$id');
 
   final MethodChannel _channel;
 
@@ -98,6 +195,10 @@ class WebViewController {
     _validateUrlString(url);
     return _channel.invokeMethod('loadUrl', url);
   }
+
+  Future<void> _updateSettings(Map<String, dynamic> update) async {
+    return _channel.invokeMethod('updateSettings', update);
+  }
 }
 
 // Throws an ArgumentError if url is not a valid url string.
@@ -105,9 +206,9 @@ void _validateUrlString(String url) {
   try {
     final Uri uri = Uri.parse(url);
     if (uri.scheme.isEmpty) {
-      throw new ArgumentError('Missing scheme in URL string: "$url"');
+      throw ArgumentError('Missing scheme in URL string: "$url"');
     }
   } on FormatException catch (e) {
-    throw new ArgumentError(e);
+    throw ArgumentError(e);
   }
 }

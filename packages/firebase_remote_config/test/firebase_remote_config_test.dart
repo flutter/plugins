@@ -44,7 +44,7 @@ void main() {
       );
       expect(remoteConfig.remoteConfigSettings.debugMode, true);
       expect(remoteConfig.lastFetchTime,
-          new DateTime.fromMillisecondsSinceEpoch(lastFetchTime));
+          DateTime.fromMillisecondsSinceEpoch(lastFetchTime));
       expect(remoteConfig.lastFetchStatus, LastFetchStatus.values[0]);
     });
 
@@ -164,7 +164,7 @@ void main() {
     test('setConfigSettings', () async {
       expect(remoteConfig.remoteConfigSettings.debugMode, true);
       final RemoteConfigSettings remoteConfigSettings =
-          new RemoteConfigSettings(debugMode: false);
+          RemoteConfigSettings(debugMode: false);
       await remoteConfig.setConfigSettings(remoteConfigSettings);
       expect(
         log,

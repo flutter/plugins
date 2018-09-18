@@ -37,11 +37,11 @@ class ImagePicker {
     assert(source != null);
 
     if (maxWidth != null && maxWidth < 0) {
-      throw new ArgumentError.value(maxWidth, 'maxWidth cannot be negative');
+      throw ArgumentError.value(maxWidth, 'maxWidth cannot be negative');
     }
 
     if (maxHeight != null && maxHeight < 0) {
-      throw new ArgumentError.value(maxHeight, 'maxHeight cannot be negative');
+      throw ArgumentError.value(maxHeight, 'maxHeight cannot be negative');
     }
 
     final String path = await _channel.invokeMethod(
@@ -53,7 +53,7 @@ class ImagePicker {
       },
     );
 
-    return path == null ? null : new File(path);
+    return path == null ? null : File(path);
   }
 
   static Future<File> pickVideo({
@@ -67,6 +67,6 @@ class ImagePicker {
         'source': source.index,
       },
     );
-    return path == null ? null : new File(path);
+    return path == null ? null : File(path);
   }
 }

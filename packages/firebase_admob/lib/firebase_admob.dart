@@ -190,7 +190,7 @@ abstract class MobileAd {
   final String adUnitId;
 
   /// Called when the status of the ad changes.
-  final MobileAdListener listener;
+  MobileAdListener listener;
 
   /// An internal id that identifies this mobile ad to the native AdMob plugin.
   ///
@@ -227,6 +227,12 @@ abstract class MobileAd {
     assert(_allAds[id] != null);
     _allAds[id] = null;
     return _invokeBooleanMethod("disposeAd", <String, dynamic>{'id': id});
+  }
+
+  Future<bool> isLoaded() {
+    return _invokeBooleanMethod("isAdLoaded", <String, dynamic>{
+      'id': id,
+    });
   }
 }
 
@@ -362,7 +368,7 @@ class RewardedVideoAd {
       ? 'ca-app-pub-3940256099942544/5224354917'
       : 'ca-app-pub-3940256099942544/1712485313';
 
-  static final RewardedVideoAd _instance = new RewardedVideoAd._();
+  static final RewardedVideoAd _instance = RewardedVideoAd._();
 
   RewardedVideoAd._();
 
@@ -423,7 +429,7 @@ class FirebaseAdMob {
     _channel.setMethodCallHandler(_handleMethod);
   }
 
-  static final FirebaseAdMob _instance = new FirebaseAdMob.private(
+  static final FirebaseAdMob _instance = FirebaseAdMob.private(
     const MethodChannel('plugins.flutter.io/firebase_admob'),
   );
 
@@ -495,7 +501,7 @@ class FirebaseAdMob {
       }
     }
 
-    return new Future<Null>(null);
+    return Future<Null>(null);
   }
 }
 
