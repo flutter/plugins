@@ -92,7 +92,6 @@ class FirestoreList extends ListBase<DocumentSnapshot>
   void _onChange(List<DocumentChange> documentChanges) {
     if (documentChanges != null && documentChanges.isNotEmpty) {
       for (DocumentChange change in documentChanges) {
-        _onValue(change.document);
         switch (change.type) {
           case DocumentChangeType.added:
             _onDocumentAdded(change);
@@ -104,6 +103,7 @@ class FirestoreList extends ListBase<DocumentSnapshot>
             _onDocumentRemoved(change);
             break;
         }
+        _onValue(change.document);
       }
     }
   }

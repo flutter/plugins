@@ -29,6 +29,7 @@ class FirestoreAnimatedList extends StatefulWidget {
     this.emptyChild,
     this.scrollDirection = Axis.vertical,
     this.reverse = false,
+    this.debug = false,
     this.controller,
     this.primary,
     this.physics,
@@ -69,6 +70,10 @@ class FirestoreAnimatedList extends StatefulWidget {
   ///
   /// Defaults to [Axis.vertical].
   final Axis scrollDirection;
+
+  /// Allows for debug messages relating to FirestoreList operations
+  /// to be shown on your respective IDE's debug console
+  final bool debug;
 
   /// Whether the scroll view scrolls in the reading direction.
   ///
@@ -152,7 +157,7 @@ class FirestoreAnimatedListState extends State<FirestoreAnimatedList> {
       onDocumentChanged: _onDocumentChanged,
       onValue: _onValue,
       onError: _onError,
-      debug: true,
+      debug: widget.debug,
     );
     super.didChangeDependencies();
   }
@@ -178,7 +183,7 @@ class FirestoreAnimatedListState extends State<FirestoreAnimatedList> {
     }
     if (mounted) {
       _animatedListKey.currentState
-          .insertItem(index, duration: widget.duration);
+          ?.insertItem(index, duration: widget.duration);
     }
   }
 
@@ -187,7 +192,7 @@ class FirestoreAnimatedListState extends State<FirestoreAnimatedList> {
     assert(!_model.contains(snapshot));
     if (mounted) {
       try {
-        _animatedListKey.currentState.removeItem(
+        _animatedListKey.currentState?.removeItem(
           index,
           (BuildContext context, Animation<double> animation) {
             return widget.itemBuilder(context, snapshot, animation, index);
