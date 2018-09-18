@@ -1,3 +1,7 @@
+## 0.1.1
+
+* Update example to create a clickable and copyable link.
+
 ## 0.1.0
 
 * **Breaking Change** Calls to retrieve dynamic links on iOS always returns null after first call.
