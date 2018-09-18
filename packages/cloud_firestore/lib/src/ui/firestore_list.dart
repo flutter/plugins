@@ -65,7 +65,8 @@ class FirestoreList extends ListBase<DocumentSnapshot>
   }
 
   @override
-  DocumentSnapshot operator [](int index) => _snapshots[index];
+  DocumentSnapshot operator [](int index) =>
+      _snapshots.isEmpty ? null : _snapshots[index];
 
   @override
   void operator []=(int index, DocumentSnapshot value) {
@@ -75,7 +76,6 @@ class FirestoreList extends ListBase<DocumentSnapshot>
   @override
   void clear() {
     cancelSubscriptions();
-
     // Do not call super.clear(), it will set the length, it's unsupported.
   }
 
@@ -85,15 +85,14 @@ class FirestoreList extends ListBase<DocumentSnapshot>
 
   int _indexForKey(String key) {
     assert(key != null && key.isNotEmpty);
-    return _snapshots.indexWhere((item) => item.documentID == key);
+    return _snapshots
+        .indexWhere((DocumentSnapshot item) => item.documentID == key);
   }
 
-  void _onData(QuerySnapshot snapshot) {
-    if (_snapshots.isEmpty) {
-      log("Adding all values from query");
-      _snapshots.addAll(snapshot.documents.map(_onValue));
-    } else if (snapshot.documentChanges.isNotEmpty) {
-      for (DocumentChange change in snapshot.documentChanges) {
+  void _onChange(List<DocumentChange> documentChanges) {
+    if (documentChanges != null && documentChanges.isNotEmpty) {
+      for (DocumentChange change in documentChanges) {
+        _onValue(change.document);
         switch (change.type) {
           case DocumentChangeType.added:
             _onDocumentAdded(change);
@@ -109,34 +108,40 @@ class FirestoreList extends ListBase<DocumentSnapshot>
     }
   }
 
+  void _onData(QuerySnapshot snapshot) {
+    if (snapshot != null) {
+      _onChange(snapshot.documentChanges);
+    }
+  }
+
   void _onDocumentAdded(DocumentChange event) {
-    log("Calling _onDocumentAdded for document ${event.document.documentID}");
+    log("Calling _onDocumentAdded for document on index ${event?.newIndex}");
     _snapshots.insert(event.newIndex, event.document);
-    onDocumentAdded(event.newIndex, event.document);
+    onDocumentAdded?.call(event.newIndex, event.document);
   }
 
   void _onDocumentRemoved(DocumentChange event) {
     try {
-      log("Calling _onDocumentRemoved for document ${event.document.documentID}");
+      log("Calling _onDocumentRemoved for document on index ${event?.newIndex}");
       _snapshots.removeAt(event.oldIndex);
-      onDocumentRemoved(event.oldIndex, event.document);
+      onDocumentRemoved?.call(event.oldIndex, event.document);
     } catch (error) {
-      log("Failed on removing item on index ${event.oldIndex}");
+      log("Failed on removing item on index ${event?.oldIndex}");
     }
   }
 
   void _onDocumentChanged(DocumentChange event) {
     final int index = _indexForKey(event.document.documentID);
     if (index > -1) {
-      log("Calling _onDocumentChanged for document ${event.document.documentID}");
+      log("Calling _onDocumentChanged for document on index ${event?.newIndex}");
       _snapshots[index] = event.document;
-      onDocumentChanged(index, event.document);
+      onDocumentChanged?.call(index, event.document);
     }
   }
 
   DocumentSnapshot _onValue(DocumentSnapshot document) {
-    log("Calling onValue for document ${document.documentID}");
-    onValue(document);
+    log("Calling onValue for document ${document?.documentID}");
+    onValue?.call(document);
     return document;
   }
 

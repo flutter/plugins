@@ -138,8 +138,8 @@ class FirestoreAnimatedList extends StatefulWidget {
 
 class FirestoreAnimatedListState extends State<FirestoreAnimatedList> {
   final GlobalKey<AnimatedListState> _animatedListKey =
-      new GlobalKey<AnimatedListState>();
-  List<DocumentSnapshot> _model;
+      GlobalKey<AnimatedListState>();
+  FirestoreList _model;
   String _error;
   bool _loaded = false;
 
@@ -161,48 +161,59 @@ class FirestoreAnimatedListState extends State<FirestoreAnimatedList> {
   void dispose() {
     // Cancel the Firebase stream subscriptions
     _model.clear();
-
     super.dispose();
   }
 
   void _onError(Error error) {
-    setState(() {
-      error = error;
-    });
+    if (mounted) {
+      setState(() {
+        error = error;
+      });
+    }
   }
 
   void _onDocumentAdded(int index, DocumentSnapshot snapshot) {
     if (!_loaded) {
       return; // AnimatedList is not created yet
     }
-    _animatedListKey.currentState.insertItem(index, duration: widget.duration);
+    if (mounted) {
+      _animatedListKey.currentState
+          .insertItem(index, duration: widget.duration);
+    }
   }
 
   void _onDocumentRemoved(int index, DocumentSnapshot snapshot) {
     // The child should have already been removed from the model by now
     assert(_model.indexOf(snapshot) == -1);
-    try {
-      _animatedListKey.currentState.removeItem(
-        index,
-        (BuildContext context, Animation<double> animation) {
-          return widget.itemBuilder(context, snapshot, animation, index);
-        },
-        duration: widget.duration,
-      );
-    } catch (error) {
-      _model.log("Failed to remove Widget on index $index");
+    if (mounted) {
+      try {
+        _animatedListKey.currentState.removeItem(
+          index,
+          (BuildContext context, Animation<double> animation) {
+            return widget.itemBuilder(context, snapshot, animation, index);
+          },
+          duration: widget.duration,
+        );
+        setState(() {});
+      } catch (error) {
+        _model.log("Failed to remove Widget on index $index");
+      }
     }
   }
 
   // No animation, just update contents
   void _onDocumentChanged(int index, DocumentSnapshot snapshot) {
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   void _onValue(DocumentSnapshot _) {
-    setState(() {
-      _loaded = true;
-    });
+    if (mounted) {
+      setState(() {
+        _loaded = true;
+      });
+    }
   }
 
   Widget _buildItem(
@@ -227,7 +238,7 @@ class FirestoreAnimatedListState extends State<FirestoreAnimatedList> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                const Icon(Icons.error),
+                Icon(Icons.error),
                 Text(_error),
               ],
             ),

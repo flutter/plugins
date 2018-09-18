@@ -25,7 +25,7 @@ class DocumentSnapshot {
   dynamic operator [](String key) => data[key];
 
   /// Returns the ID of the snapshot's document
-  String get documentID => _path.split('/').last;
+  String get documentID => _path?.split('/')?.last;
 
   /// Returns `true` if the document exists.
   bool get exists => data != null;

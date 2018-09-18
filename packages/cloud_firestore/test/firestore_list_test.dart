@@ -1,10 +1,9 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cloud_firestore/src/ui/firestore_list.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('FirestoreList', () {
@@ -12,9 +11,9 @@ void main() {
     StreamController<QuerySnapshot> streamController;
     final List<MethodCall> log = <MethodCall>[];
     FirestoreList list;
-    Completer<ListChange> callbackCompleter;
     FirebaseApp app;
     Firestore firestore;
+    CollectionReference collectionReference;
     const Map<String, dynamic> kMockDocumentSnapshotData = <String, dynamic>{
       '1': 2
     };
@@ -33,20 +32,13 @@ void main() {
       );
 
       firestore = Firestore(app: app);
+      collectionReference = firestore.collection('foo');
 
-      callbackCompleter = Completer<ListChange>();
       streamController = StreamController<QuerySnapshot>();
-
-      void completeWithChange(int index, DocumentSnapshot snapshot) {
-        callbackCompleter.complete(ListChange.at(index, snapshot));
-      }
 
       list = FirestoreList(
         query: streamController.stream,
-        onDocumentAdded: completeWithChange,
-        onDocumentChanged: completeWithChange,
-        onDocumentRemoved: completeWithChange,
-        debug: true,
+        debug: false,
       );
 
       Firestore.channel.setMockMethodCallHandler((MethodCall methodCall) async {
@@ -56,11 +48,11 @@ void main() {
             final int handle = mockHandleId++;
             // Wait before sending a message back.
             // Otherwise the first request didn't have the time to finish.
-            await Future<void>.delayed(Duration.zero).then((_) {
+            new Future<void>.delayed(Duration.zero).then<void>((_) {
               BinaryMessages.handlePlatformMessage(
                 Firestore.channel.name,
                 Firestore.channel.codec.encodeMethodCall(
-                  MethodCall('QuerySnapshot', <String, dynamic>{
+                  new MethodCall('QuerySnapshot', <String, dynamic>{
                     'app': app.name,
                     'handle': handle,
                     'paths': <String>["${methodCall.arguments['path']}/0"],
@@ -83,11 +75,11 @@ void main() {
             final int handle = mockHandleId++;
             // Wait before sending a message back.
             // Otherwise the first request didn't have the time to finish.
-            Future<void>.delayed(Duration.zero).then((_) {
+            new Future<void>.delayed(Duration.zero).then<void>((_) {
               BinaryMessages.handlePlatformMessage(
                 Firestore.channel.name,
                 Firestore.channel.codec.encodeMethodCall(
-                  MethodCall('DocumentSnapshot', <String, dynamic>{
+                  new MethodCall('DocumentSnapshot', <String, dynamic>{
                     'handle': handle,
                     'path': methodCall.arguments['path'],
                     'data': kMockDocumentSnapshotData,
@@ -118,15 +110,10 @@ void main() {
                 'path': 'foo/bar',
                 'data': <String, dynamic>{'key1': 'val1'}
               };
-            } else if (methodCall.arguments['path'] == 'foo/add') {
-              return <String, dynamic>{
-                'path': 'foo/add',
-                'data': kMockDocumentSnapshotData
-              };
             } else if (methodCall.arguments['path'] == 'foo/notExists') {
               return <String, dynamic>{'path': 'foo/notExists', 'data': null};
             }
-            throw PlatformException(code: 'UNKNOWN_PATH');
+            throw new PlatformException(code: 'UNKNOWN_PATH');
           case 'Firestore#runTransaction':
             return <String, dynamic>{'1': 3};
           case 'Transaction#get':
@@ -135,15 +122,10 @@ void main() {
                 'path': 'foo/bar',
                 'data': <String, dynamic>{'key1': 'val1'}
               };
-            } else if (methodCall.arguments['path'] == 'foo/add') {
-              return <String, dynamic>{
-                'path': 'foo/add',
-                'data': kMockDocumentSnapshotData
-              };
             } else if (methodCall.arguments['path'] == 'foo/notExists') {
               return <String, dynamic>{'path': 'foo/notExists', 'data': null};
             }
-            throw PlatformException(code: 'UNKNOWN_PATH');
+            throw new PlatformException(code: 'UNKNOWN_PATH');
           case 'Transaction#set':
             return null;
           case 'Transaction#update':
@@ -159,60 +141,15 @@ void main() {
       log.clear();
     });
 
-    Future<ListChange> resetCompleterOnCallback() async {
-      final ListChange result = await callbackCompleter.future;
-      callbackCompleter = Completer<ListChange>();
-      return result;
-    }
-
-    Future<ListChange> processChange(QuerySnapshot querySnapshot) {
+    Future<void> processChange(QuerySnapshot querySnapshot) async {
       streamController.add(querySnapshot);
-      return resetCompleterOnCallback();
     }
-
-    firestore
-        .collection("foo")
-        .snapshots()
-        .listen((QuerySnapshot querySnapshot) {
-      processChange(querySnapshot);
-    });
 
     test('can add to empty list', () async {
-      final DocumentSnapshot snapshot =
-          await firestore.document("foo/add").get();
-      expect(
-        await processChange(await firestore.collection("foo").getDocuments()),
-        ListChange.at(0, snapshot),
-      );
-      expect(list, <DocumentSnapshot>[snapshot]);
+      expect(collectionReference.id, "foo");
+      await processChange(await collectionReference.snapshots().first);
+      expect(list.length, 1);
+      expect(list[0].data, kMockDocumentSnapshotData);
     });
   });
-}
-
-class ListChange {
-  ListChange.at(int index, DocumentSnapshot snapshot)
-      : this._(index, null, snapshot);
-
-  ListChange.move(int from, int to, DocumentSnapshot snapshot)
-      : this._(from, to, snapshot);
-
-  ListChange._(this.index, this.index2, this.snapshot);
-
-  final int index;
-  final int index2;
-  final DocumentSnapshot snapshot;
-
-  @override
-  String toString() => '$runtimeType[$index, $index2, $snapshot]';
-
-  @override
-  bool operator ==(Object o) {
-    return o is ListChange &&
-        index == o.index &&
-        index2 == o.index2 &&
-        snapshot == o.snapshot;
-  }
-
-  @override
-  int get hashCode => index;
 }
