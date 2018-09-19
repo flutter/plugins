@@ -108,6 +108,12 @@ class GoogleMapOptions {
   /// True if the map view should respond to zoom gestures.
   final bool zoomGesturesEnabled;
 
+  // OnCameraIdle callback
+  final VoidCallback onCameraIdle;
+
+  // OnCameraMove callback
+  final VoidCallback onCameraMove;
+
   /// Creates a set of map user interface configuration options.
   ///
   /// By default, every non-specified field is null, meaning no desire to change
@@ -123,6 +129,8 @@ class GoogleMapOptions {
     this.tiltGesturesEnabled,
     this.trackCameraPosition,
     this.zoomGesturesEnabled,
+    this.onCameraIdle,
+    this.onCameraMove,
   });
 
   /// Default user interface options.
@@ -138,6 +146,8 @@ class GoogleMapOptions {
   /// * responds to tilt gestures; [tiltGesturesEnabled] is true
   /// * is silent about camera movement; [trackCameraPosition] is false
   /// * responds to zoom gestures; [zoomGesturesEnabled] is true
+  /// * no onCameraIdle listener; [onCameraIdle] is null
+  /// * no onCameraMove listener;  [onCameraMove] is null
   static final GoogleMapOptions defaultOptions = GoogleMapOptions(
     compassEnabled: true,
     cameraPosition: const CameraPosition(target: LatLng(0.0, 0.0)),
@@ -172,6 +182,8 @@ class GoogleMapOptions {
       tiltGesturesEnabled: change.tiltGesturesEnabled ?? tiltGesturesEnabled,
       trackCameraPosition: change.trackCameraPosition ?? trackCameraPosition,
       zoomGesturesEnabled: change.zoomGesturesEnabled ?? zoomGesturesEnabled,
+      onCameraIdle: change.onCameraIdle ?? onCameraIdle,
+      onCameraMove: change.onCameraMove ?? onCameraMove,
     );
   }
 

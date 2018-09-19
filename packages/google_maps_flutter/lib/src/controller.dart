@@ -97,10 +97,14 @@ class GoogleMapController extends ChangeNotifier {
         break;
       case 'camera#onMove':
         _cameraPosition = CameraPosition._fromJson(call.arguments['position']);
+        if (_options.onCameraMove != null)
+          _options.onCameraMove();
         notifyListeners();
         break;
       case 'camera#onIdle':
         _isCameraMoving = false;
+        if (_options.onCameraIdle != null)
+          _options.onCameraIdle();
         notifyListeners();
         break;
       default:
