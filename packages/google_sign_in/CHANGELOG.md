@@ -1,4 +1,4 @@
-## 3.1.0
+## 4.0.0
 
 * **Breaking change** Add support to recover authentication for Android.
   `GoogleSignInAccount.authentication` -> `GoogleSignInAccount.getAuthentication()`
