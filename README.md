@@ -1,4 +1,4 @@
-# Flutter plugins
+# Flutter plugins 
 
 [![Build Status](https://api.cirrus-ci.com/github/flutter/plugins.svg)](https://cirrus-ci.com/github/flutter/plugins/master)
 
