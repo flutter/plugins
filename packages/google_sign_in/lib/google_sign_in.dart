@@ -57,7 +57,7 @@ class GoogleSignInAccount implements GoogleIdentity {
 
   /// Retrieve [GoogleSignInAuthentication] for this account.
   ///
-  /// `shouldRecoverAuth` sets whether to attempt to recover authentication if
+  /// [shouldRecoverAuth] sets whether to attempt to recover authentication if
   /// user action is needed.
   Future<GoogleSignInAuthentication> getAuthentication({
     bool shouldRecoverAuth = true,

@@ -135,7 +135,9 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 
     /**
      * Gets an OAuth access token with the scopes that were specified during initialization for the
-     * user with the specified email address.
+     * user with the specified email address. If shouldRecoverAuth is set to true and user needs to
+     * recover authentication for method to complete, the method will attempt to recover
+     * authentication and rerun method.
      */
     public void getTokens(final Result result, final String email, final boolean shouldRecoverAuth);
 
@@ -310,7 +312,9 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 
     /**
      * Gets an OAuth access token with the scopes that were specified during initialization for the
-     * user with the specified email address.
+     * user with the specified email address. If shouldRecoverAuth is set to true and user needs to
+     * recover authentication for method to complete, the method will attempt to recover
+     * authentication and rerun method.
      */
     @Override
     public void getTokens(
