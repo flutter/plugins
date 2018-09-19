@@ -17,7 +17,7 @@ class Marker {
 
   final String _id;
   String get id => _id;
-  
+
   MarkerOptions _options;
 
   /// The marker configuration options most recently applied programmatically
