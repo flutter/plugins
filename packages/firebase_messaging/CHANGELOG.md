@@ -1,3 +1,7 @@
+## 2.0.2
+
+* Removing local cache of getToken() in the dart part of the plugin. Now getToken() calls directly its counterparts in the iOS and Android implementations. This enables obtaining its value without calling configure() or having to wait for a new token refresh.
+
 ## 2.0.1
 
 * Bump Android dependencies to latest.

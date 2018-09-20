@@ -106,6 +106,8 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
       String topic = call.arguments();
       FirebaseMessaging.getInstance().unsubscribeFromTopic(topic);
       result.success(null);
+    } else if ("getToken".equals(call.method)) {
+      result.success(FirebaseMessaging.getInstance().getInstanceId().getToken());
     } else {
       result.notImplemented();
     }
