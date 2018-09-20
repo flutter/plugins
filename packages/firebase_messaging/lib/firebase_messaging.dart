@@ -32,7 +32,7 @@ class FirebaseMessaging {
   MessageHandler _onMessage;
   MessageHandler _onLaunch;
   MessageHandler _onResume;
- 
+
   /// On iOS, prompts the user for notification permissions the first time
   /// it is called.
   ///
