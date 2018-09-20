@@ -40,6 +40,12 @@ class GoogleSignInAccount implements GoogleIdentity {
     assert(id != null);
   }
 
+  /// Error code indicating there was a failed attempt to recover user authentication.
+  static const String kFailedToRecoverAuthError = 'failed_to_recover_auth';
+
+  /// Error indicating that authentication can be recovered with user action;
+  static const String kUserRecoverableAuthError = 'user_recoverable_auth';
+
   @override
   final String displayName;
 
@@ -58,7 +64,13 @@ class GoogleSignInAccount implements GoogleIdentity {
   /// Retrieve [GoogleSignInAuthentication] for this account.
   ///
   /// [shouldRecoverAuth] sets whether to attempt to recover authentication if
-  /// user action is needed.
+  /// user action is needed. If an attempt to recover authentication fails a
+  /// [PlatformException] is thrown with possible error code
+  /// [kFailedToRecoverAuthError].
+  ///
+  /// Otherwise, if [shouldRecoverAuth] is false and the authentication can be
+  /// recovered by user action a [PlatformException] is thrown with error code
+  /// [kUserRecoverableAuthError].
   Future<GoogleSignInAuthentication> getAuthentication({
     bool shouldRecoverAuth = true,
   }) async {
