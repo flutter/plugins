@@ -1,3 +1,7 @@
+## 1.0.4
+
+* Set iOS deployment target to 8.0 (minimum supported by Firebase SDKs), fixes compilation errors.
+
 ## 1.0.3
 
 * Added monitoring of StorageUploadTask via `events` stream.
