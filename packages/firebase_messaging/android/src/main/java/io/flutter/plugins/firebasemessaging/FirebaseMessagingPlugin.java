@@ -11,7 +11,10 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
 import io.flutter.plugin.common.MethodCall;
@@ -91,7 +94,7 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
   }
 
   @Override
-  public void onMethodCall(MethodCall call, Result result) {
+  public void onMethodCall(final MethodCall call, final Result result) {
     if ("configure".equals(call.method)) {
       FlutterFirebaseInstanceIDService.broadcastToken(registrar.context());
       if (registrar.activity() != null) {
@@ -107,7 +110,12 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
       FirebaseMessaging.getInstance().unsubscribeFromTopic(topic);
       result.success(null);
     } else if ("getToken".equals(call.method)) {
-      result.success(FirebaseMessaging.getInstance().getInstanceId().getToken());
+      FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+        @Override
+        public void onSuccess(InstanceIdResult instanceIdResult) {
+          result.success(instanceIdResult.getToken());
+        }
+      });      
     } else {
       result.notImplemented();
     }
