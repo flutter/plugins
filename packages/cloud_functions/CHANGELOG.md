@@ -1,3 +1,7 @@
+## 0.0.5
+
+* Added missing dependency and set ios deployment target to 6.0 in podspec.
+
 ## 0.0.4
 
 * Fixed podspec to use static_framework
