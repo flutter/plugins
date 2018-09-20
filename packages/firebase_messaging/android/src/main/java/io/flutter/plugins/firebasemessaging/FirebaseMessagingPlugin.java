@@ -110,12 +110,15 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
       FirebaseMessaging.getInstance().unsubscribeFromTopic(topic);
       result.success(null);
     } else if ("getToken".equals(call.method)) {
-      FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
-        @Override
-        public void onSuccess(InstanceIdResult instanceIdResult) {
-          result.success(instanceIdResult.getToken());
-        }
-      });      
+      FirebaseInstanceId.getInstance()
+          .getInstanceId()
+          .addOnSuccessListener(
+              new OnSuccessListener<InstanceIdResult>() {
+                @Override
+                public void onSuccess(InstanceIdResult instanceIdResult) {
+                  result.success(instanceIdResult.getToken());
+                }
+              });
     } else {
       result.notImplemented();
     }
