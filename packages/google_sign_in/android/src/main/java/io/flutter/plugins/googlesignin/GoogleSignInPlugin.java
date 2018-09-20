@@ -508,7 +508,9 @@ public class GoogleSignInPlugin implements MethodCallHandler {
           }
           return true;
         } else if (requestCode == REQUEST_CODE_RECOVER_AUTH) {
-          if (resultCode == Activity.RESULT_OK) {
+          if (resultCode == Activity.RESULT_OK
+              && pendingOperation != null
+              && pendingOperation.method.equals(METHOD_GET_TOKENS)) {
             getTokens(pendingOperation.result, (String) pendingOperation.data, false);
             pendingOperation = null;
           } else {
