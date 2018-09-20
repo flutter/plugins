@@ -206,6 +206,10 @@ public class GoogleSignInPlugin implements MethodCallHandler {
       return currentAccount;
     }
 
+    private void checkAndSetPendingOperation(String method, Result result) {
+      checkAndSetPendingOperation(method, result, null);
+    }
+
     private void checkAndSetPendingOperation(String method, Result result, Object data) {
       if (pendingOperation != null) {
         throw new IllegalStateException(
@@ -223,7 +227,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
         Result result, String signInOption, List<String> requestedScopes, String hostedDomain) {
       // We're not initialized until we receive `onConnected`.
       // If initialization fails, we'll receive `onConnectionFailed`
-      checkAndSetPendingOperation(METHOD_INIT, result, null);
+      checkAndSetPendingOperation(METHOD_INIT, result);
 
       try {
         GoogleSignInOptions.Builder optionsBuilder;
@@ -281,7 +285,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
      */
     @Override
     public void signInSilently(Result result) {
-      checkAndSetPendingOperation(METHOD_SIGN_IN_SILENTLY, result, null);
+      checkAndSetPendingOperation(METHOD_SIGN_IN_SILENTLY, result);
 
       OptionalPendingResult<GoogleSignInResult> pendingResult =
           Auth.GoogleSignInApi.silentSignIn(googleApiClient);
@@ -307,7 +311,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
       if (registrar.activity() == null) {
         throw new IllegalStateException("signIn needs a foreground activity");
       }
-      checkAndSetPendingOperation(METHOD_SIGN_IN, result, null);
+      checkAndSetPendingOperation(METHOD_SIGN_IN, result);
 
       Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
       registrar.activity().startActivityForResult(signInIntent, REQUEST_CODE);
@@ -395,7 +399,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
      */
     @Override
     public void signOut(Result result) {
-      checkAndSetPendingOperation(METHOD_SIGN_OUT, result, null);
+      checkAndSetPendingOperation(METHOD_SIGN_OUT, result);
 
       Auth.GoogleSignInApi.signOut(googleApiClient)
           .setResultCallback(
@@ -411,7 +415,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     /** Signs the user out, and revokes their credentials. */
     @Override
     public void disconnect(Result result) {
-      checkAndSetPendingOperation(METHOD_DISCONNECT, result, null);
+      checkAndSetPendingOperation(METHOD_DISCONNECT, result);
 
       Auth.GoogleSignInApi.revokeAccess(googleApiClient)
           .setResultCallback(
