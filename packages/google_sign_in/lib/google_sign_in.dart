@@ -40,6 +40,8 @@ class GoogleSignInAccount implements GoogleIdentity {
     assert(id != null);
   }
 
+  // These error codes must match with ones declared on Android and iOS sides.
+
   /// Error code indicating there was a failed attempt to recover user authentication.
   static const String kFailedToRecoverAuthError = 'failed_to_recover_auth';
 
