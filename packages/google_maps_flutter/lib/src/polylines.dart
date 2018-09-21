@@ -15,6 +15,20 @@ enum Cap {
   squareCap,
 }
 
+dynamic _capToJson(Cap cap) {
+  if (cap == null)
+    return null;
+  switch (cap) {
+    case Cap.buttCap:
+      return <String>["buttCap"];
+    case Cap.roundCap:
+      return <String>["roundCap"];
+    case Cap.squareCap:
+      return <String>["squareCap"];
+  }
+  return null;
+}
+
 enum JointType {
   DEFAULT,
   BEVEL,
@@ -164,10 +178,10 @@ class PolylineOptions {
 
     addIfPresent('clickable', clickable);
     addIfPresent('color', color);
-    addIfPresent('endCap', endCap.toString());
+    addIfPresent('endCap', _capToJson(endCap));
     addIfPresent('geodesic', geodesic);
     addIfPresent('jointType', jointType.index);
-    addIfPresent('startCap', startCap.toString());
+    addIfPresent('startCap', _capToJson(startCap));
     addIfPresent('points', _pointsToJson(points));
     addIfPresent('width', width);
     addIfPresent('visible', visible);
