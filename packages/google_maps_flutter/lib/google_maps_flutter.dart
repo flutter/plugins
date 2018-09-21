@@ -22,3 +22,4 @@ part 'src/google_map.dart';
 part 'src/marker.dart';
 part 'src/location.dart';
 part 'src/ui.dart';
+part 'src/polylines.dart';
