@@ -180,7 +180,7 @@ class PolylineOptions {
     addIfPresent('color', color);
     addIfPresent('endCap', _capToJson(endCap));
     addIfPresent('geodesic', geodesic);
-    addIfPresent('jointType', jointType.index);
+    addIfPresent('jointType', jointType?.index);
     addIfPresent('startCap', _capToJson(startCap));
     addIfPresent('points', _pointsToJson(points));
     addIfPresent('width', width);
