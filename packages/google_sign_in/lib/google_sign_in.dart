@@ -73,9 +73,7 @@ class GoogleSignInAccount implements GoogleIdentity {
   /// Otherwise, if [shouldRecoverAuth] is false and the authentication can be
   /// recovered by user action a [PlatformException] is thrown with error code
   /// [kUserRecoverableAuthError].
-  Future<GoogleSignInAuthentication> getAuthentication({
-    bool shouldRecoverAuth = true,
-  }) async {
+  Future<GoogleSignInAuthentication> get authentication async {
     if (_googleSignIn.currentUser != this) {
       throw StateError('User is no longer signed in.');
     }
@@ -85,7 +83,7 @@ class GoogleSignInAccount implements GoogleIdentity {
       'getTokens',
       <String, dynamic>{
         'email': email,
-        'shouldRecoverAuth': shouldRecoverAuth,
+        'shouldRecoverAuth': true,
       },
     );
     // On Android, there isn't an API for refreshing the idToken, so re-use
@@ -97,7 +95,7 @@ class GoogleSignInAccount implements GoogleIdentity {
   }
 
   Future<Map<String, String>> get authHeaders async {
-    final String token = (await getAuthentication()).accessToken;
+    final String token = (await authentication).accessToken;
     return <String, String>{
       "Authorization": "Bearer $token",
       "X-Goog-AuthUser": "0",

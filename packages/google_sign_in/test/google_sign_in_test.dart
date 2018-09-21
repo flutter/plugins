@@ -332,12 +332,12 @@ void main() {
       );
     });
 
-    test('getAuthentication', () async {
+    test('authentication', () async {
       await googleSignIn.signIn();
       log.clear();
 
       final GoogleSignInAccount user = googleSignIn.currentUser;
-      final GoogleSignInAuthentication auth = await user.getAuthentication();
+      final GoogleSignInAuthentication auth = await user.authentication;
 
       expect(auth.accessToken, '456');
       expect(auth.idToken, '123');
@@ -347,19 +347,6 @@ void main() {
           isMethodCall('getTokens', arguments: <String, dynamic>{
             'email': 'john.doe@gmail.com',
             'shouldRecoverAuth': true,
-          }),
-        ],
-      );
-
-      log.clear();
-      await user.getAuthentication(shouldRecoverAuth: false);
-
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall('getTokens', arguments: <String, dynamic>{
-            'email': 'john.doe@gmail.com',
-            'shouldRecoverAuth': false,
           }),
         ],
       );
