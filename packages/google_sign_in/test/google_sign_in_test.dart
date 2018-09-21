@@ -29,6 +29,10 @@ void main() {
       'signOut': null,
       'disconnect': null,
       'isSignedIn': true,
+      'getTokens': <dynamic, dynamic>{
+        'idToken': '123',
+        'accessToken': '456',
+      },
     };
 
     final List<MethodCall> log = <MethodCall>[];
@@ -324,6 +328,26 @@ void main() {
             'hostedDomain': null,
           }),
           isMethodCall('signInSilently', arguments: null),
+        ],
+      );
+    });
+
+    test('authentication', () async {
+      await googleSignIn.signIn();
+      log.clear();
+
+      final GoogleSignInAccount user = googleSignIn.currentUser;
+      final GoogleSignInAuthentication auth = await user.authentication;
+
+      expect(auth.accessToken, '456');
+      expect(auth.idToken, '123');
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall('getTokens', arguments: <String, dynamic>{
+            'email': 'john.doe@gmail.com',
+            'shouldRecoverAuth': true,
+          }),
         ],
       );
     });

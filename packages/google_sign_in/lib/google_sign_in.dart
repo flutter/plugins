@@ -40,6 +40,14 @@ class GoogleSignInAccount implements GoogleIdentity {
     assert(id != null);
   }
 
+  // These error codes must match with ones declared on Android and iOS sides.
+
+  /// Error code indicating there was a failed attempt to recover user authentication.
+  static const String kFailedToRecoverAuthError = 'failed_to_recover_auth';
+
+  /// Error indicating that authentication can be recovered with user action;
+  static const String kUserRecoverableAuthError = 'user_recoverable_auth';
+
   @override
   final String displayName;
 
@@ -55,6 +63,16 @@ class GoogleSignInAccount implements GoogleIdentity {
   final String _idToken;
   final GoogleSignIn _googleSignIn;
 
+  /// Retrieve [GoogleSignInAuthentication] for this account.
+  ///
+  /// [shouldRecoverAuth] sets whether to attempt to recover authentication if
+  /// user action is needed. If an attempt to recover authentication fails a
+  /// [PlatformException] is thrown with possible error code
+  /// [kFailedToRecoverAuthError].
+  ///
+  /// Otherwise, if [shouldRecoverAuth] is false and the authentication can be
+  /// recovered by user action a [PlatformException] is thrown with error code
+  /// [kUserRecoverableAuthError].
   Future<GoogleSignInAuthentication> get authentication async {
     if (_googleSignIn.currentUser != this) {
       throw StateError('User is no longer signed in.');
@@ -63,7 +81,10 @@ class GoogleSignInAccount implements GoogleIdentity {
     final Map<dynamic, dynamic> response =
         await GoogleSignIn.channel.invokeMethod(
       'getTokens',
-      <String, dynamic>{'email': email},
+      <String, dynamic>{
+        'email': email,
+        'shouldRecoverAuth': true,
+      },
     );
     // On Android, there isn't an API for refreshing the idToken, so re-use
     // the one we obtained on login.
