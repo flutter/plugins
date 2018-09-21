@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -89,7 +90,8 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 
       case METHOD_GET_TOKENS:
         String email = call.argument("email");
-        delegate.getTokens(result, email);
+        boolean shouldRecoverAuth = call.argument("shouldRecoverAuth");
+        delegate.getTokens(result, email, shouldRecoverAuth);
         break;
 
       case METHOD_SIGN_OUT:
@@ -134,8 +136,11 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     /**
      * Gets an OAuth access token with the scopes that were specified during initialization for the
      * user with the specified email address.
+     *
+     * <p>If shouldRecoverAuth is set to true and user needs to recover authentication for method to
+     * complete, the method will attempt to recover authentication and rerun method.
      */
-    public void getTokens(final Result result, final String email);
+    public void getTokens(final Result result, final String email, final boolean shouldRecoverAuth);
 
     /**
      * Signs the user out. Their credentials may remain valid, meaning they'll be able to silently
@@ -161,6 +166,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
    */
   public static final class Delegate implements IDelegate {
     private static final int REQUEST_CODE = 53293;
+    private static final int REQUEST_CODE_RECOVER_AUTH = 12345;
     private static final int REQUEST_CODE_RESOLVE_ERROR = 1001;
 
     private static final String ERROR_REASON_EXCEPTION = "exception";
@@ -170,6 +176,8 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     private static final String ERROR_REASON_SIGN_IN_CANCELED = "sign_in_canceled";
     private static final String ERROR_REASON_SIGN_IN_REQUIRED = "sign_in_required";
     private static final String ERROR_REASON_SIGN_IN_FAILED = "sign_in_failed";
+    private static final String ERROR_FAILURE_TO_RECOVER_AUTH = "failed_to_recover_auth";
+    private static final String ERROR_USER_RECOVERABLE_AUTH = "user_recoverable_auth";
 
     private static final String STATE_RESOLVING_ERROR = "resolving_error";
 
@@ -199,11 +207,15 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     }
 
     private void checkAndSetPendingOperation(String method, Result result) {
+      checkAndSetPendingOperation(method, result, null);
+    }
+
+    private void checkAndSetPendingOperation(String method, Result result, Object data) {
       if (pendingOperation != null) {
         throw new IllegalStateException(
             "Concurrent operations detected: " + pendingOperation.method + ", " + method);
       }
-      pendingOperation = new PendingOperation(method, result);
+      pendingOperation = new PendingOperation(method, result, data);
     }
 
     /**
@@ -308,9 +320,13 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     /**
      * Gets an OAuth access token with the scopes that were specified during initialization for the
      * user with the specified email address.
+     *
+     * <p>If shouldRecoverAuth is set to true and user needs to recover authentication for method to
+     * complete, the method will attempt to recover authentication and rerun method.
      */
     @Override
-    public void getTokens(final Result result, final String email) {
+    public void getTokens(
+        final Result result, final String email, final boolean shouldRecoverAuth) {
       // TODO(issue/11107): Add back the checkAndSetPendingOperation once getTokens is properly
       // gated from Dart code. Change result.success/error calls below to use finishWith()
       if (email == null) {
@@ -342,7 +358,31 @@ public class GoogleSignInPlugin implements MethodCallHandler {
                 // instead of the value we cached during sign in. At least, that's
                 // how it works on iOS.
                 result.success(tokenResult);
-              } catch (ExecutionException e) {
+              } catch (final ExecutionException e) {
+                if (e.getCause() instanceof UserRecoverableAuthException) {
+                  if (shouldRecoverAuth) {
+                    registrar
+                        .activity()
+                        .runOnUiThread(
+                            new Runnable() {
+                              @Override
+                              public void run() {
+                                UserRecoverableAuthException exception =
+                                    (UserRecoverableAuthException) e.getCause();
+                                checkAndSetPendingOperation(METHOD_GET_TOKENS, result, email);
+                                registrar
+                                    .activity()
+                                    .startActivityForResult(
+                                        exception.getIntent(), REQUEST_CODE_RECOVER_AUTH);
+                              }
+                            });
+                  } else {
+                    result.error(ERROR_USER_RECOVERABLE_AUTH, e.getLocalizedMessage(), null);
+                  }
+
+                  return;
+                }
+
                 Log.e(TAG, "Exception getting access token", e);
                 result.error(ERROR_REASON_EXCEPTION, e.getCause().getMessage(), null);
               } catch (InterruptedException e) {
@@ -439,10 +479,12 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     private static class PendingOperation {
       final String method;
       final Result result;
+      final Object data;
 
-      PendingOperation(String method, Result result) {
+      PendingOperation(String method, Result result, Object data) {
         this.method = method;
         this.result = result;
+        this.data = data;
       }
     }
 
@@ -464,6 +506,19 @@ public class GoogleSignInPlugin implements MethodCallHandler {
           } else if (pendingOperation != null && pendingOperation.method.equals(METHOD_INIT)) {
             finishWithError(ERROR_REASON_CONNECTION_FAILED, String.valueOf(resultCode));
           }
+          return true;
+        } else if (requestCode == REQUEST_CODE_RECOVER_AUTH) {
+          if (resultCode == Activity.RESULT_OK
+              && pendingOperation != null
+              && pendingOperation.method.equals(METHOD_GET_TOKENS)) {
+            getTokens(pendingOperation.result, (String) pendingOperation.data, false);
+            pendingOperation = null;
+          } else {
+            finishWithError(
+                ERROR_FAILURE_TO_RECOVER_AUTH,
+                "Failed attempt to recover authentication for user " + pendingOperation.data);
+          }
+
           return true;
         }
 
