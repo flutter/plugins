@@ -25,6 +25,9 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
+
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
@@ -46,13 +49,14 @@ final class GoogleMapController
         MethodChannel.MethodCallHandler,
         OnMapReadyCallback,
         OnMarkerTappedListener,
-        PlatformView {
+        PlatformView, onPolylineTappedListener, GoogleMap.OnPolylineClickListener {
   private final int id;
   private final AtomicInteger activityState;
   private final MethodChannel methodChannel;
   private final PluginRegistry.Registrar registrar;
   private final MapView mapView;
   private final Map<String, MarkerController> markers;
+  private final Map<String, PolylineController> polylines;
   private GoogleMap googleMap;
   private boolean trackCameraPosition = false;
   private boolean disposed = false;
@@ -70,6 +74,7 @@ final class GoogleMapController
     this.registrar = registrar;
     this.mapView = new MapView(context, options);
     this.markers = new HashMap<>();
+    this.polylines = new HashMap<>();
     this.density = context.getResources().getDisplayMetrics().density;
     methodChannel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/google_maps_" + id);
@@ -153,6 +158,29 @@ final class GoogleMapController
     return marker;
   }
 
+  private PolylineBuilder newPolylineBuilder() { return  new PolylineBuilder(this);}
+
+  Polyline addPolyline(PolylineOptions polylineOptions) {
+    final Polyline polyline = googleMap.addPolyline(polylineOptions);
+    polylines.put(polyline.getId(), new PolylineController(polyline, this));
+    return polyline;
+  }
+
+  private void removePolyline(String polylineId) {
+    final PolylineController polylineController = polylines.remove(polylineId);
+    if (polylineController != null) {
+      polylineController.remove();
+    }
+  }
+
+  private PolylineController polyline(String polylineId) {
+    final PolylineController polyline = polylines.get(polylineId);
+    if (polyline == null) {
+      throw new IllegalArgumentException("Unknown polyline: " + polylineId);
+    }
+    return polyline;
+  }
+
   @Override
   public void onMapReady(GoogleMap googleMap) {
     this.googleMap = googleMap;
@@ -165,6 +193,7 @@ final class GoogleMapController
     googleMap.setOnCameraMoveListener(this);
     googleMap.setOnCameraIdleListener(this);
     googleMap.setOnMarkerClickListener(this);
+    googleMap.setOnPolylineClickListener(this);
   }
 
   @Override
@@ -222,6 +251,29 @@ final class GoogleMapController
           result.success(null);
           break;
         }
+      case "polyline#add":
+      {
+        final PolylineBuilder polylineBuilder = newPolylineBuilder();
+        Convert.interpretPolylineOptions(call.argument("options"), polylineBuilder);
+        final String polylineId = polylineBuilder.build();
+        result.success(polylineId);
+        break;
+      }
+      case "polyline#remove":
+      {
+        final String polylineId = call.argument("polyline");
+        removePolyline(polylineId);
+        result.success(null);
+        break;
+      }
+      case "polyline#update":
+      {
+        final String polylineId = call.argument("polyline");
+        final PolylineController polyline = polyline(polylineId);
+        Convert.interpretPolylineOptions(call.argument("options"), polyline);
+        result.success(null);
+        break;
+      }
       default:
         result.notImplemented();
     }
@@ -268,6 +320,21 @@ final class GoogleMapController
   public boolean onMarkerClick(Marker marker) {
     final MarkerController markerController = markers.get(marker.getId());
     return (markerController != null && markerController.onTap());
+  }
+
+  @Override
+  public void onPolylineTapped(Polyline polyline) {
+    final Map<String, Object> arguments = new HashMap<>(2);
+    arguments.put("polyline", polyline.getId());
+    methodChannel.invokeMethod("polyline#onTap", arguments);
+  }
+
+  @Override
+  public void onPolylineClick(Polyline polyline) {
+    final PolylineController polylineController = polylines.get(polyline.getId());
+    if (polylineController != null) {
+      polylineController.onTap();
+    };
   }
 
   @Override

@@ -9,10 +9,18 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.ButtCap;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Cap;
+import com.google.android.gms.maps.model.CustomCap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.RoundCap;
+import com.google.android.gms.maps.model.SquareCap;
+
 import io.flutter.view.FlutterMain;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +52,22 @@ class Convert {
 
   private static boolean toBoolean(Object o) {
     return (Boolean) o;
+  }
+
+  private static Cap toCap(Object o) {
+    final List<?> data = toList(o);
+    switch (toString(data.get(0))) {
+      case "buttCap":
+        return new ButtCap();
+      case "roundCap":
+        return new RoundCap();
+      case "squareCap":
+        return new SquareCap();
+      case "customCap":
+        return new ButtCap(); //TODO: Add support for custom cap
+      default:
+        throw new IllegalArgumentException("Cannot interpret " + o + " as Cap");
+    }
   }
 
   private static CameraPosition toCameraPosition(Object o) {
@@ -101,7 +125,7 @@ class Convert {
     return (o == null) ? null : toFloat(o);
   }
 
-  static int toInt(Object o) {
+  private static int toInt(Object o) {
     return ((Number) o).intValue();
   }
 
@@ -138,11 +162,23 @@ class Convert {
     return (List<?>) o;
   }
 
-  static long toLong(Object o) {
+  private static  List<LatLng> toLatLngList(Object o) {
+    if (o == null) {
+      return null;
+    }
+    final List<?> data = toList(o);
+    List<LatLng> points = new ArrayList<>();
+    for (int i = 0; i < data.size(); ++i) {
+      points.add(toLatLng(data.get(i)));
+    }
+    return points;
+  }
+
+  private static long toLong(Object o) {
     return ((Number) o).longValue();
   }
 
-  static Map<?, ?> toMap(Object o) {
+  private static Map<?, ?> toMap(Object o) {
     return (Map<?, ?>) o;
   }
 
@@ -150,7 +186,7 @@ class Convert {
     return toFloat(o) * density;
   }
 
-  static int toPixels(Object o, float density) {
+  private static int toPixels(Object o, float density) {
     return (int) toFractionalPixels(o, density);
   }
 
@@ -259,6 +295,54 @@ class Convert {
     final Object visible = data.get("visible");
     if (visible != null) {
       sink.setVisible(toBoolean(visible));
+    }
+    final Object zIndex = data.get("zIndex");
+    if (zIndex != null) {
+      sink.setZIndex(toFloat(zIndex));
+    }
+  }
+
+  static void interpretPolylineOptions(Object o, PolylineOptionsSink sink) {
+    final Map<?, ?> data = toMap(o);
+    final Object clickable = data.get("clickable");
+    if (clickable != null) {
+      sink.setClickable(toBoolean(clickable));
+    }
+    final Object color = data.get("color");
+    if (color != null) {
+      sink.setColor(toInt(color));
+    }
+    final Object endCap = data.get("endCap");
+    if (endCap != null) {
+      sink.setEndCap(toCap(endCap));
+    }
+    final Object geodesic = data.get("geodesic");
+    if (geodesic != null) {
+      sink.setGeodesic(toBoolean(geodesic));
+    }
+    final Object jointType = data.get("jointType");
+    if (jointType != null) {
+      sink.setJointType(toInt(jointType));
+    }
+    final Object patternItems = data.get("patternItems");
+    if (patternItems != null) {
+      // TODO:
+    }
+    final Object points = data.get("points");
+    if (points != null) {
+      sink.setPoints(toLatLngList(points));
+    }
+    final Object startCap = data.get("startCap");
+    if (startCap != null) {
+      sink.setStartCap(toCap(startCap));
+    }
+    final Object visible = data.get("visible");
+    if (visible != null) {
+      sink.setVisible(toBoolean(visible));
+    }
+    final Object width = data.get("width");
+    if (width != null) {
+      sink.setWidth(toFloat(width));
     }
     final Object zIndex = data.get("zIndex");
     if (zIndex != null) {
