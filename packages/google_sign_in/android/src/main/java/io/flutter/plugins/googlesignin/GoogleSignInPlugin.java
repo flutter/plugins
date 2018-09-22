@@ -7,29 +7,20 @@ package io.flutter.plugins.googlesignin;
 import android.accounts.Account;
 import android.app.Activity;
 import android.app.Application;
-import android.app.Application.ActivityLifecycleCallbacks;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentSender.SendIntentException;
-import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.util.Log;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
-import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.CommonStatusCodes;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.OptionalPendingResult;
-import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Scope;
-import com.google.android.gms.common.api.Status;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import io.flutter.plugin.common.MethodCall;
@@ -164,10 +155,9 @@ public class GoogleSignInPlugin implements MethodCallHandler {
    * completed (either successfully or in error). This class provides no synchronization constructs
    * to guarantee such behavior; callers are responsible for providing such guarantees.
    */
-  public static final class Delegate implements IDelegate {
+  public static final class Delegate implements IDelegate, PluginRegistry.ActivityResultListener {
     private static final int REQUEST_CODE = 53293;
-    private static final int REQUEST_CODE_RECOVER_AUTH = 12345;
-    private static final int REQUEST_CODE_RESOLVE_ERROR = 1001;
+    private static final int REQUEST_CODE_RECOVER_AUTH = 53294;
 
     private static final String ERROR_REASON_EXCEPTION = "exception";
     private static final String ERROR_REASON_STATUS = "status";
@@ -179,17 +169,13 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     private static final String ERROR_FAILURE_TO_RECOVER_AUTH = "failed_to_recover_auth";
     private static final String ERROR_USER_RECOVERABLE_AUTH = "user_recoverable_auth";
 
-    private static final String STATE_RESOLVING_ERROR = "resolving_error";
-
     private static final String DEFAULT_SIGN_IN = "SignInOption.standard";
     private static final String DEFAULT_GAMES_SIGN_IN = "SignInOption.games";
 
     private final PluginRegistry.Registrar registrar;
-    private final Handler handler = new Handler();
     private final BackgroundTaskRunner backgroundTaskRunner = new BackgroundTaskRunner(1);
 
-    private boolean resolvingError = false; // Whether we are currently resolving a sign-in error
-    private GoogleApiClient googleApiClient;
+    private GoogleSignInClient signInClient;
     private List<String> requestedScopes;
     private PendingOperation pendingOperation;
     private volatile GoogleSignInAccount currentAccount;
@@ -197,8 +183,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     public Delegate(PluginRegistry.Registrar registrar) {
       this.registrar = registrar;
       Application application = (Application) registrar.context();
-      application.registerActivityLifecycleCallbacks(handler);
-      registrar.addActivityResultListener(handler);
+      registrar.addActivityResultListener(this);
     }
 
     /** Returns the most recently signed-in account, or null if there was none. */
@@ -266,16 +251,11 @@ public class GoogleSignInPlugin implements MethodCallHandler {
         }
 
         this.requestedScopes = requestedScopes;
-        googleApiClient =
-            new GoogleApiClient.Builder(registrar.context())
-                .addApi(Auth.GOOGLE_SIGN_IN_API, optionsBuilder.build())
-                .addConnectionCallbacks(handler)
-                .addOnConnectionFailedListener(handler)
-                .build();
-        googleApiClient.connect();
+        signInClient = GoogleSignIn.getClient(registrar.context(), optionsBuilder.build());
+        finishWithSuccess(null);
       } catch (Exception e) {
         Log.e(TAG, "Initialization error", e);
-        result.error(ERROR_REASON_EXCEPTION, e.getMessage(), null);
+        finishWithError(ERROR_REASON_EXCEPTION, e.getMessage());
       }
     }
 
@@ -286,17 +266,16 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     @Override
     public void signInSilently(Result result) {
       checkAndSetPendingOperation(METHOD_SIGN_IN_SILENTLY, result);
-
-      OptionalPendingResult<GoogleSignInResult> pendingResult =
-          Auth.GoogleSignInApi.silentSignIn(googleApiClient);
-      if (pendingResult.isDone()) {
-        onSignInResult(pendingResult.get());
+      Task<GoogleSignInAccount> task = signInClient.silentSignIn();
+      if (task.isSuccessful()) {
+        // There's immediate result available.
+        onSignInAccount(task.getResult());
       } else {
-        pendingResult.setResultCallback(
-            new ResultCallback<GoogleSignInResult>() {
+        task.addOnCompleteListener(
+            new OnCompleteListener() {
               @Override
-              public void onResult(@NonNull GoogleSignInResult signInResult) {
-                onSignInResult(signInResult);
+              public void onComplete(Task task) {
+                onSignInResult(task);
               }
             });
       }
@@ -313,8 +292,107 @@ public class GoogleSignInPlugin implements MethodCallHandler {
       }
       checkAndSetPendingOperation(METHOD_SIGN_IN, result);
 
-      Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
+      Intent signInIntent = signInClient.getSignInIntent();
       registrar.activity().startActivityForResult(signInIntent, REQUEST_CODE);
+    }
+
+    /**
+     * Signs the user out. Their credentials may remain valid, meaning they'll be able to silently
+     * sign back in.
+     */
+    @Override
+    public void signOut(Result result) {
+      checkAndSetPendingOperation(METHOD_SIGN_OUT, result);
+
+      signInClient
+          .signOut()
+          .addOnCompleteListener(
+              new OnCompleteListener() {
+                @Override
+                public void onComplete(Task task) {
+                  finishWithSuccess(null);
+                }
+              });
+    }
+
+    /** Signs the user out, and revokes their credentials. */
+    @Override
+    public void disconnect(Result result) {
+      checkAndSetPendingOperation(METHOD_DISCONNECT, result);
+
+      signInClient
+          .revokeAccess()
+          .addOnCompleteListener(
+              new OnCompleteListener() {
+                @Override
+                public void onComplete(Task task) {
+                  currentAccount = null;
+                  finishWithSuccess(null);
+                }
+              });
+    }
+
+    /** Checks if there is a signed in user. */
+    @Override
+    public void isSignedIn(final Result result) {
+      boolean value = GoogleSignIn.getLastSignedInAccount(registrar.context()) != null;
+      result.success(value);
+    }
+
+    private void onSignInResult(Task<GoogleSignInAccount> completedTask) {
+      try {
+        GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+        onSignInAccount(account);
+      } catch (ApiException e) {
+        // Forward all errors and let Dart side decide how to handle.
+        String errorCode = errorCodeForStatus(e.getStatusCode());
+        finishWithError(errorCode, e.toString());
+      }
+    }
+
+    private void onSignInAccount(GoogleSignInAccount account) {
+      currentAccount = account;
+      Map<String, Object> response = new HashMap<>();
+      response.put("email", account.getEmail());
+      response.put("id", account.getId());
+      response.put("idToken", account.getIdToken());
+      response.put("displayName", account.getDisplayName());
+      if (account.getPhotoUrl() != null) {
+        response.put("photoUrl", account.getPhotoUrl().toString());
+      }
+      finishWithSuccess(response);
+    }
+
+    private String errorCodeForStatus(int statusCode) {
+      if (statusCode == GoogleSignInStatusCodes.SIGN_IN_CANCELLED) {
+        return ERROR_REASON_SIGN_IN_CANCELED;
+      } else if (statusCode == CommonStatusCodes.SIGN_IN_REQUIRED) {
+        return ERROR_REASON_SIGN_IN_REQUIRED;
+      } else {
+        return ERROR_REASON_SIGN_IN_FAILED;
+      }
+    }
+
+    private void finishWithSuccess(Object data) {
+      pendingOperation.result.success(data);
+      pendingOperation = null;
+    }
+
+    private void finishWithError(String errorCode, String errorMessage) {
+      pendingOperation.result.error(errorCode, errorMessage, null);
+      pendingOperation = null;
+    }
+
+    private static class PendingOperation {
+      final String method;
+      final Result result;
+      final Object data;
+
+      PendingOperation(String method, Result result, Object data) {
+        this.method = method;
+        this.result = result;
+        this.data = data;
+      }
     }
 
     /**
@@ -393,243 +471,39 @@ public class GoogleSignInPlugin implements MethodCallHandler {
           });
     }
 
-    /**
-     * Signs the user out. Their credentials may remain valid, meaning they'll be able to silently
-     * sign back in.
-     */
     @Override
-    public void signOut(Result result) {
-      checkAndSetPendingOperation(METHOD_SIGN_OUT, result);
-
-      Auth.GoogleSignInApi.signOut(googleApiClient)
-          .setResultCallback(
-              new ResultCallback<Status>() {
-                @Override
-                public void onResult(@NonNull Status status) {
-                  // TODO(tvolkert): communicate status back to user
-                  finishWithSuccess(null);
-                }
-              });
-    }
-
-    /** Signs the user out, and revokes their credentials. */
-    @Override
-    public void disconnect(Result result) {
-      checkAndSetPendingOperation(METHOD_DISCONNECT, result);
-
-      Auth.GoogleSignInApi.revokeAccess(googleApiClient)
-          .setResultCallback(
-              new ResultCallback<Status>() {
-                @Override
-                public void onResult(@NonNull Status status) {
-                  currentAccount = null;
-                  // TODO(tvolkert): communicate status back to user
-                  finishWithSuccess(null);
-                }
-              });
-    }
-
-    /** Checks if there is a signed in user. */
-    @Override
-    public void isSignedIn(final Result result) {
-      boolean value = GoogleSignIn.getLastSignedInAccount(registrar.context()) != null;
-      result.success(value);
-    }
-
-    private void onSignInResult(GoogleSignInResult result) {
-      if (result.isSuccess()) {
-        GoogleSignInAccount account = result.getSignInAccount();
-        currentAccount = account;
-        Map<String, Object> response = new HashMap<>();
-        response.put("email", account.getEmail());
-        response.put("id", account.getId());
-        response.put("idToken", account.getIdToken());
-        response.put("displayName", account.getDisplayName());
-        if (account.getPhotoUrl() != null) {
-          response.put("photoUrl", account.getPhotoUrl().toString());
+    public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
+      if (requestCode == REQUEST_CODE_RECOVER_AUTH) {
+        if (resultCode == Activity.RESULT_OK
+            && pendingOperation != null
+            && pendingOperation.method.equals(METHOD_GET_TOKENS)) {
+          getTokens(pendingOperation.result, (String) pendingOperation.data, false);
+          pendingOperation = null;
+        } else {
+          finishWithError(
+              ERROR_FAILURE_TO_RECOVER_AUTH,
+              "Failed attempt to recover authentication");
         }
-        finishWithSuccess(response);
-      } else {
-        // Forward all errors and let Dart side decide how to handle.
-        String errorCode = errorCodeForStatus(result.getStatus().getStatusCode());
-        finishWithError(errorCode, result.getStatus().toString());
-      }
-    }
-
-    private String errorCodeForStatus(int statusCode) {
-      if (statusCode == GoogleSignInStatusCodes.SIGN_IN_CANCELLED) {
-        return ERROR_REASON_SIGN_IN_CANCELED;
-      } else if (statusCode == CommonStatusCodes.SIGN_IN_REQUIRED) {
-        return ERROR_REASON_SIGN_IN_REQUIRED;
-      } else {
-        return ERROR_REASON_SIGN_IN_FAILED;
-      }
-    }
-
-    private void finishWithSuccess(Object data) {
-      pendingOperation.result.success(data);
-      pendingOperation = null;
-    }
-
-    private void finishWithError(String errorCode, String errorMessage) {
-      pendingOperation.result.error(errorCode, errorMessage, null);
-      pendingOperation = null;
-    }
-
-    private static class PendingOperation {
-      final String method;
-      final Result result;
-      final Object data;
-
-      PendingOperation(String method, Result result, Object data) {
-        this.method = method;
-        this.result = result;
-        this.data = data;
-      }
-    }
-
-    private class Handler
-        implements ActivityLifecycleCallbacks,
-            PluginRegistry.ActivityResultListener,
-            GoogleApiClient.ConnectionCallbacks,
-            GoogleApiClient.OnConnectionFailedListener {
-      @Override
-      public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_CODE_RESOLVE_ERROR) {
-          // Deal with result of `onConnectionFailed` error resolution.
-          resolvingError = false;
-          if (resultCode == Activity.RESULT_OK) {
-            // Make sure the app is not already connected or attempting to connect
-            if (!googleApiClient.isConnecting() && !googleApiClient.isConnected()) {
-              googleApiClient.connect();
-            }
-          } else if (pendingOperation != null && pendingOperation.method.equals(METHOD_INIT)) {
-            finishWithError(ERROR_REASON_CONNECTION_FAILED, String.valueOf(resultCode));
-          }
-          return true;
-        } else if (requestCode == REQUEST_CODE_RECOVER_AUTH) {
-          if (resultCode == Activity.RESULT_OK
-              && pendingOperation != null
-              && pendingOperation.method.equals(METHOD_GET_TOKENS)) {
-            getTokens(pendingOperation.result, (String) pendingOperation.data, false);
-            pendingOperation = null;
-          } else {
-            finishWithError(
-                ERROR_FAILURE_TO_RECOVER_AUTH,
-                "Failed attempt to recover authentication for user " + pendingOperation.data);
-          }
-
-          return true;
-        }
-
-        if (requestCode != REQUEST_CODE) {
-          // We're only interested in the "sign in" activity result
-          return false;
-        }
-
-        if (pendingOperation == null || !pendingOperation.method.equals(METHOD_SIGN_IN)) {
-          Log.w(TAG, "Unexpected activity result; sign-in not in progress");
-          return false;
-        }
-
-        if (data == null) {
-          finishWithError(ERROR_REASON_STATUS, "No intent data: " + resultCode);
-          return true;
-        }
-
-        onSignInResult(Auth.GoogleSignInApi.getSignInResultFromIntent(data));
         return true;
       }
 
-      @Override
-      public void onActivityCreated(Activity activity, Bundle bundle) {
-        resolvingError = bundle != null && bundle.getBoolean(STATE_RESOLVING_ERROR, false);
+      if (requestCode != REQUEST_CODE) {
+        // We're only interested in the "sign in" activity result
+        return false;
       }
 
-      @Override
-      public void onActivityDestroyed(Activity activity) {}
-
-      @Override
-      public void onActivityPaused(Activity activity) {}
-
-      @Override
-      public void onActivityResumed(Activity activity) {}
-
-      @Override
-      public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
-        outState.putBoolean(STATE_RESOLVING_ERROR, resolvingError);
+      if (pendingOperation == null || !pendingOperation.method.equals(METHOD_SIGN_IN)) {
+        Log.w(TAG, "Unexpected activity result; sign-in not in progress");
+        return false;
       }
 
-      @Override
-      public void onActivityStarted(Activity activity) {
-        if (!resolvingError && activity == registrar.activity() && googleApiClient != null) {
-          googleApiClient.connect();
-        }
+      if (data == null) {
+        finishWithError(ERROR_REASON_STATUS, "No intent data: " + resultCode);
+        return true;
       }
 
-      @Override
-      public void onActivityStopped(Activity activity) {
-        if (activity == registrar.activity() && googleApiClient != null) {
-          googleApiClient.disconnect();
-        }
-      }
-
-      /**
-       * Invoked when the GMS client has successfully connected to the GMS server. This signals that
-       * this listener is properly initialized.
-       */
-      @Override
-      public void onConnected(Bundle connectionHint) {
-        // We can get reconnected if, e.g. the activity is paused and resumed.
-        if (pendingOperation != null && pendingOperation.method.equals(METHOD_INIT)) {
-          finishWithSuccess(null);
-        }
-      }
-
-      /**
-       * Invoked when the GMS client was unable to connect to the GMS server, either because of an
-       * error the user was unable to resolve, or because the user canceled the resolution (e.g.
-       * cancelling a dialog instructing them to upgrade Google Play Services). This signals that we
-       * were unable to properly initialize this listener.
-       */
-      @Override
-      public void onConnectionFailed(@NonNull final ConnectionResult result) {
-        if (resolvingError) {
-          // Already attempting to resolve an error.
-          return;
-        } else if (result.hasResolution() && registrar.activity() != null) {
-          resolvingError = true;
-          try {
-            result.startResolutionForResult(registrar.activity(), REQUEST_CODE_RESOLVE_ERROR);
-          } catch (SendIntentException e) {
-            resolvingError = false;
-            finishWithError(ERROR_REASON_CONNECTION_FAILED, String.valueOf(result.getErrorCode()));
-          }
-        } else if (registrar.activity() != null) {
-          resolvingError = true;
-          GoogleApiAvailability.getInstance()
-              .showErrorDialogFragment(
-                  registrar.activity(),
-                  result.getErrorCode(),
-                  REQUEST_CODE_RESOLVE_ERROR,
-                  new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(DialogInterface dialog) {
-                      if (pendingOperation != null && pendingOperation.method.equals(METHOD_INIT)) {
-                        finishWithError(
-                            ERROR_REASON_CONNECTION_FAILED, String.valueOf(result.getErrorCode()));
-                      }
-                      resolvingError = false;
-                    }
-                  });
-        }
-      }
-
-      @Override
-      public void onConnectionSuspended(int cause) {
-        // TODO(jackson): implement
-        Log.w(TAG, "The GMS server connection has been suspended (" + cause + ")");
-      }
+      onSignInResult(GoogleSignIn.getSignedInAccountFromIntent(data));
+      return true;
     }
   }
 }
