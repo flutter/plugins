@@ -207,7 +207,8 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
             item.videoComposition = videoComposition;
             dispatch_async(
                 dispatch_get_main_queue(), ^{
-                    // Without this line, videos are not always rendered in app. TODO explain why
+                    // TODO explain why this line was here in the first place
+                    // The plugin seems to work OK without it
                     // Even with this line, videos are sometimes blank in app
                     // [_player replaceCurrentItemWithPlayerItem:item];
                 });
@@ -313,11 +314,6 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 - (void)sendInitialized {
   if (_eventSink && !_isInitialized && _isReady) {
     _isInitialized = true;
-    // CGAffineTransform transform = [_player currentItem] asset].preferredTransform;
-    // CGAffineTransform transform = [[[_player currentItem] asset] preferredTransform];
-    // NSArray* tracks = [[[_player currentItem] asset] tracksWithMediaType:AVMediaTypeVideo];
-    // NSLog(@"Track lenght: %d", tracks.count);
-    // CGAffineTransform transform = [[tracks objectAtIndex:0] preferredTransform];
     // atan2 returns values in the closed interval [-pi,pi]. See:
     // https://www.mathworks.com/help/matlab/ref/atan2.html#buct8h0-4
     // https://developer.apple.com/documentation/coregraphics/cgaffinetransform
@@ -524,9 +520,6 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
       result(nil);
     } else if ([@"pause" isEqualToString:call.method]) {
       [player pause];
-      result(nil);
-    } else if ([@"sendInitialized" isEqualToString:call.method]) {
-      [player sendInitialized];
       result(nil);
     } else {
       result(FlutterMethodNotImplemented);
