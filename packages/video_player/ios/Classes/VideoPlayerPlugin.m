@@ -27,7 +27,7 @@ int64_t FLTCMTimeToMillis(CMTime time) { return time.value * 1000 / time.timesca
 }
 @end
 
-@interface FLTVideoPlayer : NSObject<FlutterTexture, FlutterStreamHandler>
+@interface FLTVideoPlayer : NSObject <FlutterTexture, FlutterStreamHandler>
 @property(readonly, nonatomic) AVPlayer* player;
 @property(readonly, nonatomic) AVPlayerItemVideoOutput* videoOutput;
 @property(readonly, nonatomic) CADisplayLink* displayLink;
@@ -205,13 +205,12 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
                                              withAsset:asset
                                         withVideoTrack:videoTrack];
             item.videoComposition = videoComposition;
-            dispatch_async(
-                dispatch_get_main_queue(), ^{
-                    // TODO explain why this line was here in the first place
-                    // The plugin seems to work OK without it
-                    // Even with this line, videos are sometimes blank in app
-                    // [_player replaceCurrentItemWithPlayerItem:item];
-                });
+            dispatch_async(dispatch_get_main_queue(), ^{
+                               // TODO explain why this line was here in the first place
+                               // The plugin seems to work OK without it
+                               // Even with this line, videos are sometimes blank in app
+                               // [_player replaceCurrentItemWithPlayerItem:item];
+                           });
           }
         };
         [videoTrack loadValuesAsynchronouslyForKeys:@[ @"preferredTransform" ]
@@ -457,7 +456,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   [eventChannel setStreamHandler:player];
   player.eventChannel = eventChannel;
   _players[@(textureId)] = player;
-  result(@{ @"textureId" : @(textureId) });
+  result(@{@"textureId" : @(textureId)});
 }
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
