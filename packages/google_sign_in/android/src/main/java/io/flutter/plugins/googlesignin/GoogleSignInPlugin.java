@@ -18,6 +18,7 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.RuntimeExecutionException;
 import com.google.android.gms.tasks.Task;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
@@ -344,6 +345,8 @@ public class GoogleSignInPlugin implements MethodCallHandler {
         // Forward all errors and let Dart side decide how to handle.
         String errorCode = errorCodeForStatus(e.getStatusCode());
         finishWithError(errorCode, e.toString());
+      } catch (RuntimeExecutionException e) {
+        finishWithError(ERROR_REASON_EXCEPTION, e.toString());
       }
     }
 
