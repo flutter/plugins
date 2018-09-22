@@ -1,3 +1,7 @@
+## 3.1.0
+
+* Add support to recover authentication for Android.
+
 ## 3.0.6
 
 * Remove flaky displayName assertion
