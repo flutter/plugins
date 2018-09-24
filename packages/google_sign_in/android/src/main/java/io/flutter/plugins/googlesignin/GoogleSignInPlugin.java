@@ -174,16 +174,10 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     private GoogleSignInClient signInClient;
     private List<String> requestedScopes;
     private PendingOperation pendingOperation;
-    private volatile GoogleSignInAccount currentAccount;
 
     public Delegate(PluginRegistry.Registrar registrar) {
       this.registrar = registrar;
       registrar.addActivityResultListener(this);
-    }
-
-    /** Returns the most recently signed-in account, or null if there was none. */
-    public GoogleSignInAccount getCurrentAccount() {
-      return currentAccount;
     }
 
     private void checkAndSetPendingOperation(String method, Result result) {
@@ -321,7 +315,6 @@ public class GoogleSignInPlugin implements MethodCallHandler {
                 @Override
                 public void onComplete(Task<Void> task) {
                   if (task.isSuccessful()) {
-                    currentAccount = null;
                     finishWithSuccess(null);
                   } else {
                     finishWithError(ERROR_REASON_STATUS, "Failed to disconnect.");
@@ -351,7 +344,6 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     }
 
     private void onSignInAccount(GoogleSignInAccount account) {
-      currentAccount = account;
       Map<String, Object> response = new HashMap<>();
       response.put("email", account.getEmail());
       response.put("id", account.getId());
