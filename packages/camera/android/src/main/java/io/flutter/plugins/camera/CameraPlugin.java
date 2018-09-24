@@ -665,7 +665,6 @@ public class CameraPlugin implements MethodCallHandler {
 
       Surface previewSurface = new Surface(surfaceTexture);
       surfaces.add(previewSurface);
-      // here is the code. Works for me...
       if(surfaces == null || imageReader == null){
         return;
       }
