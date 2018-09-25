@@ -640,9 +640,9 @@ final class FirestoreMessageCodec extends StandardMessageCodec {
         final byte[] bytes = readBytes(buffer);
         return Blob.fromBytes(bytes);
       case ARRAY_UNION:
-        return FieldValue.arrayUnion(readValue(buffer));
+        return FieldValue.arrayUnion(toArray(readValue(buffer)));
       case ARRAY_REMOVE:
-        return FieldValue.arrayRemove(readValue(buffer));
+        return FieldValue.arrayRemove(toArray(readValue(buffer)));
       case DELETE:
         return FieldValue.delete();
       case SERVER_TIMESTAMP:
@@ -650,5 +650,19 @@ final class FirestoreMessageCodec extends StandardMessageCodec {
       default:
         return super.readValueOfType(type, buffer);
     }
+  }
+
+  private Object[] toArray(Object source) {
+    if (source instanceof List) {
+      return ((List) source).toArray();
+    }
+
+    if (source == null) {
+      return new Object[0];
+    }
+
+    String sourceType = source.getClass().getCanonicalName();
+    String message = "java.util.List was expected, unable to convert '%s' to an object array";
+    throw new IllegalArgumentException(String.format(message, sourceType));
   }
 }
