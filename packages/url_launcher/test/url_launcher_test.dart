@@ -39,6 +39,7 @@ void main() {
           'url': 'http://example.com/',
           'useSafariVC': true,
           'useWebView': false,
+          'enableJavaScript': false,
           'statusBarBrightness': Brightness.light.toString(),
         })
       ],
@@ -54,6 +55,7 @@ void main() {
           'url': 'http://example.com/',
           'useSafariVC': true,
           'useWebView': false,
+          'enableJavaScript': false,
           'statusBarBrightness': Brightness.light.toString(),
         })
       ],
@@ -69,6 +71,24 @@ void main() {
           'url': 'http://example.com/',
           'useSafariVC': true,
           'useWebView': true,
+          'enableJavaScript': false,
+          'statusBarBrightness': Brightness.light.toString(),
+        })
+      ],
+    );
+  });
+
+  test('launch force WebView enable javascript', () async {
+    await launch('http://example.com/',
+        forceWebView: true, enableJavaScript: true);
+    expect(
+      log,
+      <Matcher>[
+        isMethodCall('launch', arguments: <String, Object>{
+          'url': 'http://example.com/',
+          'useSafariVC': true,
+          'useWebView': true,
+          'enableJavaScript': true,
           'statusBarBrightness': Brightness.light.toString(),
         })
       ],
@@ -84,6 +104,7 @@ void main() {
           'url': 'http://example.com/',
           'useSafariVC': false,
           'useWebView': false,
+          'enableJavaScript': false,
           'statusBarBrightness': Brightness.light.toString(),
         })
       ],

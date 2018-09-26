@@ -30,6 +30,9 @@ const MethodChannel _channel = MethodChannel('plugins.flutter.io/url_launcher');
 /// Note that if any of the above are set to true but the URL is not a web URL,
 /// this will throw a [PlatformException].
 ///
+/// [enableJavaScript] is an Android only setting. If true, and [forceWebView]
+/// is also true, webview enable javascript.
+///
 /// [statusBarBrightness] is only used in iOS. Sets the status bar brightness
 /// of the application after opening a link. The previous value of the status
 /// bar is stored on the platform side and restored when returning to Flutter
@@ -39,6 +42,7 @@ Future<void> launch(
   String urlString, {
   bool forceSafariVC,
   bool forceWebView,
+  bool enableJavaScript,
   Brightness statusBarBrightness = Brightness.light,
 }) {
   assert(urlString != null);
@@ -56,6 +60,7 @@ Future<void> launch(
       'url': urlString,
       'useSafariVC': forceSafariVC ?? isWebURL,
       'useWebView': forceWebView ?? false,
+      'enableJavaScript': enableJavaScript ?? false,
       'statusBarBrightness': statusBarBrightness?.toString(),
     },
   );
