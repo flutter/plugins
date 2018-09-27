@@ -1,3 +1,7 @@
+## 3.2.0
+
+* Add support for clearing authentication cache for Android.
+
 ## 3.1.0
 
 * Add support to recover authentication for Android.
