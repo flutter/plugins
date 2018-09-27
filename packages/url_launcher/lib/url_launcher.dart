@@ -38,7 +38,7 @@ Future<void> launch(
   String urlString, {
   bool forceSafariVC,
   bool forceWebView,
-  Brightness statusBarBrightness = Brightness.light
+  Brightness statusBarBrightness,
 }) {
   assert(urlString != null);
   final Uri url = Uri.parse(urlString.trimLeft());
