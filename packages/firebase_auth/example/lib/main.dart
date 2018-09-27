@@ -10,18 +10,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
-final GoogleSignIn _googleSignIn = new GoogleSignIn();
+final GoogleSignIn _googleSignIn = GoogleSignIn();
 
 void main() {
-  runApp(new MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
+    return MaterialApp(
       title: 'Firebase Auth Demo',
-      home: new MyHomePage(title: 'Firebase Auth Demo'),
+      home: MyHomePage(title: 'Firebase Auth Demo'),
     );
   }
 }
@@ -32,11 +32,15 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  _MyHomePageState createState() => new _MyHomePageState();
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Future<String> _message = new Future<String>.value('');
+  Future<String> _message = Future<String>.value('');
+  TextEditingController _smsCodeController = TextEditingController();
+  String verificationId;
+  final String testSmsCode = '888888';
+  final String testPhoneNumber = '+1 408-555-6969';
 
   Future<String> _testSignInAnonymously() async {
     final FirebaseUser user = await _auth.signInAnonymously();
@@ -82,35 +86,115 @@ class _MyHomePageState extends State<MyHomePage> {
     return 'signInWithGoogle succeeded: $user';
   }
 
+  Future<void> _testVerifyPhoneNumber() async {
+    final PhoneVerificationCompleted verificationCompleted =
+        (FirebaseUser user) {
+      setState(() {
+        _message =
+            Future<String>.value('signInWithPhoneNumber auto succeeded: $user');
+      });
+    };
+
+    final PhoneVerificationFailed verificationFailed =
+        (AuthException authException) {
+      setState(() {
+        _message = Future<String>.value(
+            'Phone number verification failed. Code: ${authException.code}. Message: ${authException.message}');
+      });
+    };
+
+    final PhoneCodeSent codeSent =
+        (String verificationId, [int forceResendingToken]) async {
+      this.verificationId = verificationId;
+      _smsCodeController.text = testSmsCode;
+    };
+
+    final PhoneCodeAutoRetrievalTimeout codeAutoRetrievalTimeout =
+        (String verificationId) {
+      this.verificationId = verificationId;
+      _smsCodeController.text = testSmsCode;
+    };
+
+    await _auth.verifyPhoneNumber(
+        phoneNumber: testPhoneNumber,
+        timeout: const Duration(seconds: 5),
+        verificationCompleted: verificationCompleted,
+        verificationFailed: verificationFailed,
+        codeSent: codeSent,
+        codeAutoRetrievalTimeout: codeAutoRetrievalTimeout);
+  }
+
+  Future<String> _testSignInWithPhoneNumber(String smsCode) async {
+    final FirebaseUser user = await _auth.signInWithPhoneNumber(
+      verificationId: verificationId,
+      smsCode: smsCode,
+    );
+
+    final FirebaseUser currentUser = await _auth.currentUser();
+    assert(user.uid == currentUser.uid);
+
+    _smsCodeController.text = '';
+    return 'signInWithPhoneNumber succeeded: $user';
+  }
+
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text(widget.title),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
       ),
-      body: new Column(
+      body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          new MaterialButton(
+          MaterialButton(
               child: const Text('Test signInAnonymously'),
               onPressed: () {
                 setState(() {
                   _message = _testSignInAnonymously();
                 });
               }),
-          new MaterialButton(
+          MaterialButton(
               child: const Text('Test signInWithGoogle'),
               onPressed: () {
                 setState(() {
                   _message = _testSignInWithGoogle();
                 });
               }),
-          new FutureBuilder<String>(
+          MaterialButton(
+              child: const Text('Test verifyPhoneNumber'),
+              onPressed: () {
+                _testVerifyPhoneNumber();
+              }),
+          Container(
+            margin: const EdgeInsets.only(
+              top: 8.0,
+              bottom: 8.0,
+              left: 16.0,
+              right: 16.0,
+            ),
+            child: TextField(
+              controller: _smsCodeController,
+              decoration: const InputDecoration(
+                hintText: 'SMS Code',
+              ),
+            ),
+          ),
+          MaterialButton(
+              child: const Text('Test signInWithPhoneNumber'),
+              onPressed: () {
+                if (_smsCodeController.text != null) {
+                  setState(() {
+                    _message =
+                        _testSignInWithPhoneNumber(_smsCodeController.text);
+                  });
+                }
+              }),
+          FutureBuilder<String>(
               future: _message,
               builder: (_, AsyncSnapshot<String> snapshot) {
-                return new Text(snapshot.data ?? '',
-                    style: const TextStyle(
-                        color: const Color.fromARGB(255, 0, 155, 0)));
+                return Text(snapshot.data ?? '',
+                    style:
+                        const TextStyle(color: Color.fromARGB(255, 0, 155, 0)));
               }),
         ],
       ),

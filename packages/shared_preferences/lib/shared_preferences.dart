@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
 const MethodChannel _kChannel =
-    const MethodChannel('plugins.flutter.io/shared_preferences');
+    MethodChannel('plugins.flutter.io/shared_preferences');
 
 /// Wraps NSUserDefaults (on iOS) and SharedPreferences (on Android), providing
 /// a persistent store for simple data.
@@ -30,7 +30,7 @@ class SharedPreferences {
         assert(key.startsWith(_prefix));
         preferencesMap[key.substring(_prefix.length)] = fromSystem[key];
       }
-      _instance = new SharedPreferences._(preferencesMap);
+      _instance = SharedPreferences._(preferencesMap);
     }
     return _instance;
   }
@@ -46,7 +46,7 @@ class SharedPreferences {
   final Map<String, Object> _preferenceCache;
 
   /// Returns all keys in the persistent storage.
-  Set<String> getKeys() => new Set<String>.from(_preferenceCache.keys);
+  Set<String> getKeys() => Set<String>.from(_preferenceCache.keys);
 
   /// Reads a value of any type from persistent storage.
   dynamic get(String key) => _preferenceCache[key];

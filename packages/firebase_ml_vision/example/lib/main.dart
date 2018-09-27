@@ -5,52 +5,48 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 
-void main() => runApp(new MaterialApp(home: _MyHomePage()));
+import 'detector_painters.dart';
+
+void main() => runApp(MaterialApp(home: _MyHomePage()));
 
 class _MyHomePage extends StatefulWidget {
   @override
-  _MyHomePageState createState() => new _MyHomePageState();
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<_MyHomePage> {
   File _imageFile;
   Size _imageSize;
-  List<TextBlock> _textLocations;
+  List<dynamic> _scanResults;
+  Detector _currentDetector = Detector.text;
 
-  Future<void> _getImage() async {
+  Future<void> _getAndScanImage() async {
     setState(() {
       _imageFile = null;
       _imageSize = null;
-      _textLocations = null;
     });
 
     final File imageFile =
         await ImagePicker.pickImage(source: ImageSource.gallery);
+
+    if (imageFile != null) {
+      _getImageSize(imageFile);
+      _scanImage(imageFile);
+    }
 
     setState(() {
       _imageFile = imageFile;
     });
   }
 
-  Future<void> _scanImage() async {
-    final FirebaseVisionImage visionImage =
-        FirebaseVisionImage.fromFile(_imageFile);
-    final TextDetector detector = FirebaseVision.instance.getTextDetector();
-    final List<TextBlock> blocks = await detector.detectInImage(visionImage);
+  Future<void> _getImageSize(File imageFile) async {
+    final Completer<Size> completer = Completer<Size>();
 
-    setState(() {
-      _textLocations = blocks;
-    });
-
-    detector.close();
-  }
-
-  Future<void> _getImageSize(Image image) async {
-    final Completer<Size> completer = new Completer<Size>();
+    final Image image = Image.file(imageFile);
     image.image.resolve(const ImageConfiguration()).addListener(
       (ImageInfo info, bool _) {
         completer.complete(Size(
@@ -66,98 +62,138 @@ class _MyHomePageState extends State<_MyHomePage> {
     });
   }
 
+  Future<void> _scanImage(File imageFile) async {
+    setState(() {
+      _scanResults = null;
+    });
+
+    final FirebaseVisionImage visionImage =
+        FirebaseVisionImage.fromFile(imageFile);
+
+    FirebaseVisionDetector detector;
+    switch (_currentDetector) {
+      case Detector.barcode:
+        detector = FirebaseVision.instance.barcodeDetector();
+        break;
+      case Detector.face:
+        detector = FirebaseVision.instance.faceDetector();
+        break;
+      case Detector.label:
+        detector = FirebaseVision.instance.labelDetector();
+        break;
+      case Detector.cloudLabel:
+        detector = FirebaseVision.instance.cloudLabelDetector();
+        break;
+      case Detector.text:
+        detector = FirebaseVision.instance.textDetector();
+        break;
+      default:
+        return;
+    }
+
+    final List<dynamic> results =
+        await detector.detectInImage(visionImage) ?? <dynamic>[];
+
+    setState(() {
+      _scanResults = results;
+    });
+  }
+
+  CustomPaint _buildResults(Size imageSize, List<dynamic> results) {
+    CustomPainter painter;
+
+    switch (_currentDetector) {
+      case Detector.barcode:
+        painter = BarcodeDetectorPainter(_imageSize, results);
+        break;
+      case Detector.face:
+        painter = FaceDetectorPainter(_imageSize, results);
+        break;
+      case Detector.label:
+        painter = LabelDetectorPainter(_imageSize, results);
+        break;
+      case Detector.cloudLabel:
+        painter = LabelDetectorPainter(_imageSize, results);
+        break;
+      case Detector.text:
+        painter = TextDetectorPainter(_imageSize, results);
+        break;
+      default:
+        break;
+    }
+
+    return CustomPaint(
+      painter: painter,
+    );
+  }
+
   Widget _buildImage() {
-    return new Container(
+    return Container(
       constraints: const BoxConstraints.expand(),
-      decoration: new BoxDecoration(
-        image: new DecorationImage(
+      decoration: BoxDecoration(
+        image: DecorationImage(
           image: Image.file(_imageFile).image,
           fit: BoxFit.fill,
         ),
       ),
-      child: _imageSize == null || _textLocations == null
+      child: _imageSize == null || _scanResults == null
           ? const Center(
-              child: const Text(
-              "Scanning...",
-              style: const TextStyle(
-                color: Colors.green,
-                fontSize: 30.0,
+              child: Text(
+                'Scanning...',
+                style: TextStyle(
+                  color: Colors.green,
+                  fontSize: 30.0,
+                ),
               ),
-            ))
-          : new CustomPaint(
-              painter: new ScannedTextPainter(_imageSize, _textLocations),
-            ),
+            )
+          : _buildResults(_imageSize, _scanResults),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
+    return Scaffold(
+      appBar: AppBar(
         title: const Text('ML Vision Example'),
+        actions: <Widget>[
+          PopupMenuButton<Detector>(
+            onSelected: (Detector result) {
+              _currentDetector = result;
+              if (_imageFile != null) _scanImage(_imageFile);
+            },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<Detector>>[
+                  const PopupMenuItem<Detector>(
+                    child: Text('Detect Barcode'),
+                    value: Detector.barcode,
+                  ),
+                  const PopupMenuItem<Detector>(
+                    child: Text('Detect Face'),
+                    value: Detector.face,
+                  ),
+                  const PopupMenuItem<Detector>(
+                    child: Text('Detect Label'),
+                    value: Detector.label,
+                  ),
+                  const PopupMenuItem<Detector>(
+                    child: Text('Detect Cloud Label'),
+                    value: Detector.cloudLabel,
+                  ),
+                  const PopupMenuItem<Detector>(
+                    child: Text('Detect Text'),
+                    value: Detector.text,
+                  ),
+                ],
+          ),
+        ],
       ),
       body: _imageFile == null
-          ? const Center(child: const Text("No image selected."))
+          ? const Center(child: Text('No image selected.'))
           : _buildImage(),
-      floatingActionButton: new FloatingActionButton(
-        onPressed: () async {
-          await _getImage();
-          if (_imageFile != null) {
-            _getImageSize(Image.file(_imageFile));
-            _scanImage();
-          }
-        },
+      floatingActionButton: FloatingActionButton(
+        onPressed: _getAndScanImage,
         tooltip: 'Pick Image',
         child: const Icon(Icons.add_a_photo),
       ),
     );
-  }
-}
-
-// Paints rectangles around all the text in the image.
-class ScannedTextPainter extends CustomPainter {
-  ScannedTextPainter(this.absoluteImageSize, this.textLocations);
-
-  final Size absoluteImageSize;
-  final List<TextBlock> textLocations;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final double scaleX = size.width / absoluteImageSize.width;
-    final double scaleY = size.height / absoluteImageSize.height;
-
-    Rect scaleRect(TextContainer container) {
-      return new Rect.fromLTRB(
-        container.boundingBox.left * scaleX,
-        container.boundingBox.top * scaleY,
-        container.boundingBox.right * scaleX,
-        container.boundingBox.bottom * scaleY,
-      );
-    }
-
-    final Paint paint = new Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.0;
-
-    for (TextBlock block in textLocations) {
-      for (TextLine line in block.lines) {
-        for (TextElement element in line.elements) {
-          paint.color = Colors.green;
-          canvas.drawRect(scaleRect(element), paint);
-        }
-
-        paint.color = Colors.yellow;
-        canvas.drawRect(scaleRect(line), paint);
-      }
-
-      paint.color = Colors.red;
-      canvas.drawRect(scaleRect(block), paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(ScannedTextPainter oldDelegate) {
-    return oldDelegate.absoluteImageSize != absoluteImageSize ||
-        oldDelegate.textLocations != textLocations;
   }
 }

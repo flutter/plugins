@@ -16,13 +16,13 @@ void main() {
     FirebaseAnalyticsObserver observer;
 
     setUp(() {
-      analytics = new MockFirebaseAnalytics();
-      observer = new FirebaseAnalyticsObserver(analytics: analytics);
+      analytics = MockFirebaseAnalytics();
+      observer = FirebaseAnalyticsObserver(analytics: analytics);
     });
 
     test('setCurrentScreen on route pop', () {
-      final PageRoute<dynamic> route = new MockPageRoute();
-      final PageRoute<dynamic> previousRoute = new MockPageRoute();
+      final PageRoute<dynamic> route = MockPageRoute();
+      final PageRoute<dynamic> previousRoute = MockPageRoute();
       when(previousRoute.settings)
           .thenReturn(const RouteSettings(name: 'previousRoute'));
 
@@ -32,8 +32,8 @@ void main() {
     });
 
     test('setCurrentScreen on route push', () {
-      final PageRoute<dynamic> route = new MockPageRoute();
-      final PageRoute<dynamic> previousRoute = new MockPageRoute();
+      final PageRoute<dynamic> route = MockPageRoute();
+      final PageRoute<dynamic> previousRoute = MockPageRoute();
       when(route.settings).thenReturn(const RouteSettings(name: 'route'));
 
       observer.didPush(route, previousRoute);
@@ -42,12 +42,12 @@ void main() {
     });
 
     test('uses nameExtractor', () {
-      observer = new FirebaseAnalyticsObserver(
+      observer = FirebaseAnalyticsObserver(
         analytics: analytics,
         nameExtractor: (RouteSettings settings) => 'foo',
       );
-      final PageRoute<dynamic> route = new MockPageRoute();
-      final PageRoute<dynamic> previousRoute = new MockPageRoute();
+      final PageRoute<dynamic> route = MockPageRoute();
+      final PageRoute<dynamic> previousRoute = MockPageRoute();
 
       observer.didPush(route, previousRoute);
 

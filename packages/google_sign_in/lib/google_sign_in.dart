@@ -37,9 +37,16 @@ class GoogleSignInAccount implements GoogleIdentity {
         id = data['id'],
         photoUrl = data['photoUrl'],
         _idToken = data['idToken'] {
-    assert(displayName != null);
     assert(id != null);
   }
+
+  // These error codes must match with ones declared on Android and iOS sides.
+
+  /// Error code indicating there was a failed attempt to recover user authentication.
+  static const String kFailedToRecoverAuthError = 'failed_to_recover_auth';
+
+  /// Error indicating that authentication can be recovered with user action;
+  static const String kUserRecoverableAuthError = 'user_recoverable_auth';
 
   @override
   final String displayName;
@@ -56,22 +63,35 @@ class GoogleSignInAccount implements GoogleIdentity {
   final String _idToken;
   final GoogleSignIn _googleSignIn;
 
+  /// Retrieve [GoogleSignInAuthentication] for this account.
+  ///
+  /// [shouldRecoverAuth] sets whether to attempt to recover authentication if
+  /// user action is needed. If an attempt to recover authentication fails a
+  /// [PlatformException] is thrown with possible error code
+  /// [kFailedToRecoverAuthError].
+  ///
+  /// Otherwise, if [shouldRecoverAuth] is false and the authentication can be
+  /// recovered by user action a [PlatformException] is thrown with error code
+  /// [kUserRecoverableAuthError].
   Future<GoogleSignInAuthentication> get authentication async {
     if (_googleSignIn.currentUser != this) {
-      throw new StateError('User is no longer signed in.');
+      throw StateError('User is no longer signed in.');
     }
 
     final Map<dynamic, dynamic> response =
         await GoogleSignIn.channel.invokeMethod(
       'getTokens',
-      <String, dynamic>{'email': email},
+      <String, dynamic>{
+        'email': email,
+        'shouldRecoverAuth': true,
+      },
     );
     // On Android, there isn't an API for refreshing the idToken, so re-use
     // the one we obtained on login.
     if (response['idToken'] == null) {
       response['idToken'] = _idToken;
     }
-    return new GoogleSignInAuthentication._(response);
+    return GoogleSignInAuthentication._(response);
   }
 
   Future<Map<String, String>> get authHeaders async {
@@ -127,7 +147,7 @@ class GoogleSignIn {
   /// The [MethodChannel] over which this class communicates.
   @visibleForTesting
   static const MethodChannel channel =
-      const MethodChannel('plugins.flutter.io/google_sign_in');
+      MethodChannel('plugins.flutter.io/google_sign_in');
 
   /// Option to determine the sign in user experience. [SignInOption.games] must
   /// not be used on iOS.
@@ -157,7 +177,7 @@ class GoogleSignIn {
 
   /// Factory for creating default sign in user experience.
   factory GoogleSignIn.standard({List<String> scopes, String hostedDomain}) {
-    return new GoogleSignIn(
+    return GoogleSignIn(
         signInOption: SignInOption.standard,
         scopes: scopes,
         hostedDomain: hostedDomain);
@@ -166,11 +186,11 @@ class GoogleSignIn {
   /// Factory for creating sign in suitable for games. This option must not be
   /// used on iOS because the games API is not supported.
   factory GoogleSignIn.games() {
-    return new GoogleSignIn(signInOption: SignInOption.games);
+    return GoogleSignIn(signInOption: SignInOption.games);
   }
 
   StreamController<GoogleSignInAccount> _currentUserController =
-      new StreamController<GoogleSignInAccount>.broadcast();
+      StreamController<GoogleSignInAccount>.broadcast();
 
   /// Subscribe to this stream to be notified when the current user changes.
   Stream<GoogleSignInAccount> get onCurrentUserChanged =>
@@ -184,7 +204,7 @@ class GoogleSignIn {
 
     final Map<dynamic, dynamic> response = await channel.invokeMethod(method);
     return _setCurrentUser(response != null && response.isNotEmpty
-        ? new GoogleSignInAccount._(this, response)
+        ? GoogleSignInAccount._(this, response)
         : null);
   }
 
@@ -220,20 +240,17 @@ class GoogleSignIn {
   /// updates to [currentUser] and [onCurrentUserChanged].
   Future<GoogleSignInAccount> _addMethodCall(String method) {
     if (_lastMethodCompleter == null) {
-      _lastMethodCompleter = new _MethodCompleter(method)
+      _lastMethodCompleter = _MethodCompleter(method)
         ..complete(_callMethod(method));
       return _lastMethodCompleter.future;
     }
 
-    final _MethodCompleter completer = new _MethodCompleter(method);
+    final _MethodCompleter completer = _MethodCompleter(method);
     _lastMethodCompleter.future.whenComplete(() {
       // If after the last completed call currentUser is not null and requested
       // method is a sign in method, re-use the same authenticated user
       // instead of making extra call to the native side.
-      const List<String> kSignInMethods = const <String>[
-        'signIn',
-        'signInSilently'
-      ];
+      const List<String> kSignInMethods = <String>['signIn', 'signInSilently'];
       if (kSignInMethods.contains(method) && _currentUser != null) {
         completer.complete(_currentUser);
       } else {
@@ -266,7 +283,7 @@ class GoogleSignIn {
   /// returned Future completes with [PlatformException] whose `code` can be
   /// either [kSignInRequiredError] (when there is no authenticated user) or
   /// [kSignInFailedError] (when an unknown error occurred).
-  Future<GoogleSignInAccount> signInSilently({bool suppressErrors: true}) {
+  Future<GoogleSignInAccount> signInSilently({bool suppressErrors = true}) {
     final Future<GoogleSignInAccount> result = _addMethodCall('signInSilently');
     if (suppressErrors) {
       return result.catchError((dynamic _) => null);
@@ -309,7 +326,7 @@ class GoogleSignIn {
 class _MethodCompleter {
   final String method;
   final Completer<GoogleSignInAccount> _completer =
-      new Completer<GoogleSignInAccount>();
+      Completer<GoogleSignInAccount>();
 
   _MethodCompleter(this.method);
 

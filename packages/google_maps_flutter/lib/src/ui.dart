@@ -40,7 +40,7 @@ class CameraTargetBounds {
   final LatLngBounds bounds;
 
   /// Unbounded camera target.
-  static const CameraTargetBounds unbounded = const CameraTargetBounds(null);
+  static const CameraTargetBounds unbounded = CameraTargetBounds(null);
 
   dynamic _toJson() => <dynamic>[bounds?._toJson()];
 }
@@ -61,7 +61,7 @@ class MinMaxZoomPreference {
 
   /// Unbounded zooming.
   static const MinMaxZoomPreference unbounded =
-      const MinMaxZoomPreference(null, null);
+      MinMaxZoomPreference(null, null);
 
   dynamic _toJson() => <dynamic>[minZoom, maxZoom];
 }
@@ -159,7 +159,7 @@ class GoogleMapOptions {
     if (change == null) {
       return this;
     }
-    return new GoogleMapOptions(
+    return GoogleMapOptions(
       cameraPosition: change.cameraPosition ?? cameraPosition,
       compassEnabled: change.compassEnabled ?? compassEnabled,
       cameraTargetBounds: change.cameraTargetBounds ?? cameraTargetBounds,

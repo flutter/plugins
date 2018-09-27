@@ -23,23 +23,23 @@ class BitmapDescriptor {
 
   /// Creates a BitmapDescriptor that refers to the default marker image.
   static const BitmapDescriptor defaultMarker =
-      const BitmapDescriptor._(<dynamic>['defaultMarker']);
+      BitmapDescriptor._(<dynamic>['defaultMarker']);
 
   /// Creates a BitmapDescriptor that refers to a colorization of the default
   /// marker image. For convenience, there is a predefined set of hue values.
   /// See e.g. [hueYellow].
   static BitmapDescriptor defaultMarkerWithHue(double hue) {
     assert(0.0 <= hue && hue < 360.0);
-    return new BitmapDescriptor._(<dynamic>['defaultMarker', hue]);
+    return BitmapDescriptor._(<dynamic>['defaultMarker', hue]);
   }
 
   /// Creates a BitmapDescriptor using the name of a bitmap image in the assets
   /// directory.
   static BitmapDescriptor fromAsset(String assetName, {String package}) {
     if (package == null) {
-      return new BitmapDescriptor._(<dynamic>['fromAsset', assetName]);
+      return BitmapDescriptor._(<dynamic>['fromAsset', assetName]);
     } else {
-      return new BitmapDescriptor._(<dynamic>['fromAsset', assetName, package]);
+      return BitmapDescriptor._(<dynamic>['fromAsset', assetName, package]);
     }
   }
 

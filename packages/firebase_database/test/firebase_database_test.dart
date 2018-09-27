@@ -11,7 +11,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('$FirebaseDatabase', () {
-    const MethodChannel channel = const MethodChannel(
+    const MethodChannel channel = MethodChannel(
       'plugins.flutter.io/firebase_database',
     );
 
@@ -22,7 +22,7 @@ void main() {
     );
     final String databaseURL = 'https://fake-database-url2.firebaseio.com';
     final FirebaseDatabase database =
-        new FirebaseDatabase(app: app, databaseURL: databaseURL);
+        FirebaseDatabase(app: app, databaseURL: databaseURL);
 
     setUp(() async {
       channel.setMockMethodCallHandler((MethodCall methodCall) async {
@@ -41,7 +41,7 @@ void main() {
               await BinaryMessages.handlePlatformMessage(
                 channel.name,
                 channel.codec.encodeMethodCall(
-                  new MethodCall(
+                  MethodCall(
                     'DoTransaction',
                     <String, dynamic>{
                       'transactionKey': transactionKey,
@@ -62,7 +62,7 @@ void main() {
 
             await simulateEvent(
                 0,
-                new MutableData.private(<String, dynamic>{
+                MutableData.private(<String, dynamic>{
                   'key': 'fakeKey',
                   'value': <String, dynamic>{'fakeKey': 'fakeValue'},
                 }));
@@ -248,7 +248,7 @@ void main() {
             .reference()
             .child('foo')
             .runTransaction((MutableData mutableData) {
-          return new Future<MutableData>(() {
+          return Future<MutableData>(() {
             mutableData.value['fakeKey'] =
                 'updated ' + mutableData.value['fakeKey'];
             return mutableData;
@@ -274,10 +274,119 @@ void main() {
             equals(<String, dynamic>{'fakeKey': 'updated fakeValue'}));
         expect(
           database.reference().child('foo').runTransaction(
-                (MutableData mutableData) {},
+                (MutableData mutableData) async => null,
                 timeout: const Duration(milliseconds: 0),
               ),
           throwsA(isInstanceOf<AssertionError>()),
+        );
+      });
+    });
+
+    group('$OnDisconnect', () {
+      test('set', () async {
+        final dynamic value = <String, dynamic>{'hello': 'world'};
+        final int priority = 42;
+        final DatabaseReference ref = database.reference();
+        await ref.child('foo').onDisconnect().set(value);
+        await ref.child('bar').onDisconnect().set(value, priority: priority);
+        await ref.child('psi').onDisconnect().set(value, priority: 'priority');
+        await ref.child('por').onDisconnect().set(value, priority: value);
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall(
+              'OnDisconnect#set',
+              arguments: <String, dynamic>{
+                'app': app.name,
+                'databaseURL': databaseURL,
+                'path': 'foo',
+                'value': value,
+                'priority': null,
+              },
+            ),
+            isMethodCall(
+              'OnDisconnect#set',
+              arguments: <String, dynamic>{
+                'app': app.name,
+                'databaseURL': databaseURL,
+                'path': 'bar',
+                'value': value,
+                'priority': priority,
+              },
+            ),
+            isMethodCall(
+              'OnDisconnect#set',
+              arguments: <String, dynamic>{
+                'app': app.name,
+                'databaseURL': databaseURL,
+                'path': 'psi',
+                'value': value,
+                'priority': 'priority',
+              },
+            ),
+            isMethodCall(
+              'OnDisconnect#set',
+              arguments: <String, dynamic>{
+                'app': app.name,
+                'databaseURL': databaseURL,
+                'path': 'por',
+                'value': value,
+                'priority': value,
+              },
+            ),
+          ],
+        );
+      });
+      test('update', () async {
+        final dynamic value = <String, dynamic>{'hello': 'world'};
+        await database.reference().child("foo").onDisconnect().update(value);
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall(
+              'OnDisconnect#update',
+              arguments: <String, dynamic>{
+                'app': app.name,
+                'databaseURL': databaseURL,
+                'path': 'foo',
+                'value': value,
+              },
+            ),
+          ],
+        );
+      });
+      test('cancel', () async {
+        await database.reference().child("foo").onDisconnect().cancel();
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall(
+              'OnDisconnect#cancel',
+              arguments: <String, dynamic>{
+                'app': app.name,
+                'databaseURL': databaseURL,
+                'path': 'foo',
+              },
+            ),
+          ],
+        );
+      });
+      test('remove', () async {
+        await database.reference().child("foo").onDisconnect().remove();
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall(
+              'OnDisconnect#set',
+              arguments: <String, dynamic>{
+                'app': app.name,
+                'databaseURL': databaseURL,
+                'path': 'foo',
+                'value': null,
+                'priority': null,
+              },
+            ),
+          ],
         );
       });
     });
@@ -349,7 +458,7 @@ void main() {
           await BinaryMessages.handlePlatformMessage(
             channel.name,
             channel.codec.encodeMethodCall(
-              new MethodCall('Error', <String, dynamic>{
+              MethodCall('Error', <String, dynamic>{
                 'handle': 99,
                 'error': <String, dynamic>{
                   'code': errorCode,
@@ -362,13 +471,12 @@ void main() {
           );
         }
 
-        final AsyncQueue<DatabaseError> errors =
-            new AsyncQueue<DatabaseError>();
+        final AsyncQueue<DatabaseError> errors = AsyncQueue<DatabaseError>();
 
         // Subscribe and allow subscription to complete.
         final StreamSubscription<Event> subscription =
             query.onValue.listen((_) {}, onError: errors.add);
-        await new Future<Null>.delayed(const Duration(seconds: 0));
+        await Future<Null>.delayed(const Duration(seconds: 0));
 
         await simulateError('Bad foo');
         await simulateError('Bad bar');
@@ -390,7 +498,7 @@ void main() {
           await BinaryMessages.handlePlatformMessage(
             channel.name,
             channel.codec.encodeMethodCall(
-              new MethodCall('Event', <String, dynamic>{
+              MethodCall('Event', <String, dynamic>{
                 'handle': 87,
                 'snapshot': <String, dynamic>{
                   'key': path,
@@ -402,12 +510,12 @@ void main() {
           );
         }
 
-        final AsyncQueue<Event> events = new AsyncQueue<Event>();
+        final AsyncQueue<Event> events = AsyncQueue<Event>();
 
         // Subscribe and allow subscription to complete.
         final StreamSubscription<Event> subscription =
             query.onValue.listen(events.add);
-        await new Future<Null>.delayed(const Duration(seconds: 0));
+        await Future<Null>.delayed(const Duration(seconds: 0));
 
         await simulateEvent('1');
         await simulateEvent('2');
@@ -420,7 +528,7 @@ void main() {
 
         // Cancel subscription and allow cancellation to complete.
         subscription.cancel();
-        await new Future<Null>.delayed(const Duration(seconds: 0));
+        await Future<Null>.delayed(const Duration(seconds: 0));
 
         expect(
           log,
@@ -470,7 +578,7 @@ class AsyncQueue<T> {
     if (_completers.containsKey(index)) {
       return _completers.remove(index);
     } else {
-      return _completers[index] = new Completer<T>();
+      return _completers[index] = Completer<T>();
     }
   }
 }

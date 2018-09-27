@@ -154,6 +154,15 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
     result.success(Boolean.TRUE);
   }
 
+  private void callIsAdLoaded(int id, MethodCall call, Result result) {
+    MobileAd ad = MobileAd.getAdForId(id);
+    if (ad == null) {
+      result.error("no_ad_for_id", "isAdLoaded failed, no add exists for id=" + id, null);
+      return;
+    }
+    result.success(ad.status == MobileAd.Status.LOADED ? Boolean.TRUE : Boolean.FALSE);
+  }
+
   private void callShowRewardedVideoAd(MethodCall call, Result result) {
     if (rewardedWrapper.getStatus() == RewardedVideoAdWrapper.Status.LOADED) {
       rewardedWrapper.show();
@@ -207,6 +216,9 @@ public class FirebaseAdMobPlugin implements MethodCallHandler {
         break;
       case "disposeAd":
         callDisposeAd(id, call, result);
+        break;
+      case "isAdLoaded":
+        callIsAdLoaded(id, call, result);
         break;
       default:
         result.notImplemented();

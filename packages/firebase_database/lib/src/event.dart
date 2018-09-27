@@ -16,7 +16,7 @@ enum _EventType {
 /// previous sibling, which can be used to order the snapshots.
 class Event {
   Map<dynamic, dynamic> _data;
-  Event._(this._data) : snapshot = new DataSnapshot._(_data['snapshot']);
+  Event._(this._data) : snapshot = DataSnapshot._(_data['snapshot']);
 
   final DataSnapshot snapshot;
   String get previousSiblingKey => _data['previousSiblingKey'];
