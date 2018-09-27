@@ -51,7 +51,8 @@ Future<void> launch(
         message: 'To use webview or safariVC, you need to pass'
             'in a web URL. This $urlString is not a web URL.');
   }
-  final SystemUiOverlayStyle previousStyle = SystemChrome.latestStyle;
+  // TODO(jonahwilliams): remove this once latestStyle has regular visibility.
+  final SystemUiOverlayStyle previousStyle = (SystemChrome as dynamic).latestStyle;
   final bool previousAutomaticSystemUiAdjustment = WidgetsBinding.instance.renderView.automaticSystemUiAdjustment;
   if (statusBarBrightness != null && defaultTargetPlatform == TargetPlatform.iOS) {
     WidgetsBinding.instance.renderView.automaticSystemUiAdjustment = false;
