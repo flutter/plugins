@@ -102,6 +102,18 @@ class GoogleSignInAccount implements GoogleIdentity {
     };
   }
 
+  /// Clears any client side cache that might be holding invalid tokens.
+  ///
+  /// If client runs into 401 errors using a token, it is expected to call
+  /// this method and grab `authHeaders` once again.
+  Future<void> clearAuthCache() async {
+    final String token = (await authentication).accessToken;
+    await GoogleSignIn.channel.invokeMethod(
+      'clearAuthCache',
+      <String, dynamic>{'token': token},
+    );
+  }
+
   @override
   bool operator ==(dynamic other) {
     if (identical(this, other)) return true;
