@@ -122,8 +122,6 @@ public class CameraPlugin implements MethodCallHandler {
           @Override
           public void onActivityDestroyed(Activity activity) {}
         };
-
-    activity.getApplication().registerActivityLifecycleCallbacks(this.activityLifecycleCallbacks);
   }
 
   public static void registerWith(Registrar registrar) {
@@ -182,6 +180,9 @@ public class CameraPlugin implements MethodCallHandler {
             camera.close();
           }
           camera = new Camera(cameraName, resolutionPreset, result);
+          this.activity
+              .getApplication()
+              .registerActivityLifecycleCallbacks(this.activityLifecycleCallbacks);
           break;
         }
       case "takePicture":
@@ -382,7 +383,8 @@ public class CameraPlugin implements MethodCallHandler {
       } else {
         previewSize = goodEnough.get(0);
 
-        // Video capture size should not be greater than 1080 because MediaRecorder cannot handle higher resolutions.
+        // Video capture size should not be greater than 1080 because MediaRecorder cannot handle
+        // higher resolutions.
         videoSize = goodEnough.get(0);
         for (int i = goodEnough.size() - 1; i >= 0; i--) {
           if (goodEnough.get(i).getHeight() <= 1080) {
