@@ -7,6 +7,7 @@ package io.flutter.plugins.googlesignin;
 import android.accounts.Account;
 import android.app.Activity;
 import android.content.Intent;
+import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -27,6 +28,7 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +47,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
   private static final String METHOD_SIGN_OUT = "signOut";
   private static final String METHOD_DISCONNECT = "disconnect";
   private static final String METHOD_IS_SIGNED_IN = "isSignedIn";
+  private static final String METHOD_CLEAR_AUTH_CACHE = "clearAuthCache";
 
   private final IDelegate delegate;
 
@@ -84,6 +87,11 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 
       case METHOD_SIGN_OUT:
         delegate.signOut(result);
+        break;
+
+      case METHOD_CLEAR_AUTH_CACHE:
+        String token = call.argument("token");
+        delegate.clearAuthCache(result, token);
         break;
 
       case METHOD_DISCONNECT:
@@ -129,6 +137,12 @@ public class GoogleSignInPlugin implements MethodCallHandler {
      * complete, the method will attempt to recover authentication and rerun method.
      */
     public void getTokens(final Result result, final String email, final boolean shouldRecoverAuth);
+
+    /**
+     * Clears the token from any client cache forcing the next {@link #getTokens} call to fetch a
+     * new one.
+     */
+    public void clearAuthCache(final Result result, final String token);
 
     /**
      * Signs the user out. Their credentials may remain valid, meaning they'll be able to silently
@@ -387,18 +401,15 @@ public class GoogleSignInPlugin implements MethodCallHandler {
       }
     }
 
-    private void recoverAuthFromException(final UserRecoverableAuthException exception) {
-      registrar
-          .activity()
-          .runOnUiThread(
-              new Runnable() {
-                @Override
-                public void run() {
-                  registrar
-                      .activity()
-                      .startActivityForResult(exception.getIntent(), REQUEST_CODE_RECOVER_AUTH);
-                }
-              });
+    /** Clears the token kept in the client side cache. */
+    @Override
+    public void clearAuthCache(Result result, String token) {
+      try {
+        GoogleAuthUtil.clearToken(registrar.context(), token);
+        result.success(null);
+      } catch (GoogleAuthException | IOException e) {
+        result.error(ERROR_REASON_EXCEPTION, e.getMessage(), e);
+      }
     }
 
     /**
@@ -411,8 +422,6 @@ public class GoogleSignInPlugin implements MethodCallHandler {
     @Override
     public void getTokens(
         final Result result, final String email, final boolean shouldRecoverAuth) {
-      // TODO(issue/11107): Add back the checkAndSetPendingOperation once getTokens is properly
-      // gated from Dart code. Change result.success/error calls below to use finishWith()
       if (email == null) {
         result.error(ERROR_REASON_EXCEPTION, "Email is null", null);
         return;
@@ -428,6 +437,9 @@ public class GoogleSignInPlugin implements MethodCallHandler {
             }
           };
 
+      // Background task runner has a single thread effectively serializing
+      // the getToken calls. 1p apps can then enjoy the token cache if multiple
+      // getToken calls are coming in.
       backgroundTaskRunner.runInBackground(
           getTokenTask,
           new BackgroundTaskRunner.Callback<String>() {
@@ -440,10 +452,13 @@ public class GoogleSignInPlugin implements MethodCallHandler {
                 result.success(tokenResult);
               } catch (ExecutionException e) {
                 if (e.getCause() instanceof UserRecoverableAuthException) {
-                  if (shouldRecoverAuth) {
-                    // Move this to top of getTokens method.
+                  if (shouldRecoverAuth && pendingOperation == null) {
                     checkAndSetPendingOperation(METHOD_GET_TOKENS, result, email);
-                    recoverAuthFromException((UserRecoverableAuthException) e.getCause());
+                    Intent recoveryIntent =
+                        ((UserRecoverableAuthException) e.getCause()).getIntent();
+                    registrar
+                        .activity()
+                        .startActivityForResult(recoveryIntent, REQUEST_CODE_RECOVER_AUTH);
                   } else {
                     result.error(ERROR_USER_RECOVERABLE_AUTH, e.getLocalizedMessage(), null);
                   }
