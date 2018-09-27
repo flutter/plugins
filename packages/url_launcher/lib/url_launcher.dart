@@ -5,7 +5,6 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
@@ -34,8 +33,7 @@ const MethodChannel _channel = MethodChannel('plugins.flutter.io/url_launcher');
 /// this will throw a [PlatformException].
 ///
 /// [statusBarBrightness] Sets the status bar brightness of the application
-/// after opening a link on iOS. Defaults to [Brightness.light] and Does
-/// nothing if null value is passed.
+/// after opening a link on iOS. Does nothing if no value is passed.
 Future<void> launch(
   String urlString, {
   bool forceSafariVC,
