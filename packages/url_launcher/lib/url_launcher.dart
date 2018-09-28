@@ -4,7 +4,9 @@
 
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 
 const MethodChannel _channel = MethodChannel('plugins.flutter.io/url_launcher');
 
@@ -30,16 +32,14 @@ const MethodChannel _channel = MethodChannel('plugins.flutter.io/url_launcher');
 /// Note that if any of the above are set to true but the URL is not a web URL,
 /// this will throw a [PlatformException].
 ///
-/// [statusBarBrightness] is only used in iOS. Sets the status bar brightness
-/// of the application after opening a link. The previous value of the status
-/// bar is stored on the platform side and restored when returning to Flutter
-/// if used with `forceSafariVC` or on iOS version 10.0 and greater. Defaults
-/// to [Brightness.light] if unset, or does nothing if null is passed.
+/// [statusBarBrightness] Sets the status bar brightness of the application
+/// after opening a link on iOS. Does nothing if no value is passed. This does
+/// not handle reseting the previous status bar style.
 Future<void> launch(
   String urlString, {
   bool forceSafariVC,
   bool forceWebView,
-  Brightness statusBarBrightness = Brightness.light,
+  Brightness statusBarBrightness,
 }) {
   assert(urlString != null);
   final Uri url = Uri.parse(urlString.trimLeft());
@@ -50,15 +50,29 @@ Future<void> launch(
         message: 'To use webview or safariVC, you need to pass'
             'in a web URL. This $urlString is not a web URL.');
   }
+  bool previousAutomaticSystemUiAdjustment;
+  if (statusBarBrightness != null &&
+      defaultTargetPlatform == TargetPlatform.iOS) {
+    previousAutomaticSystemUiAdjustment =
+        WidgetsBinding.instance.renderView.automaticSystemUiAdjustment;
+    WidgetsBinding.instance.renderView.automaticSystemUiAdjustment = false;
+    SystemChrome.setSystemUIOverlayStyle(statusBarBrightness == Brightness.light
+        ? SystemUiOverlayStyle.dark
+        : SystemUiOverlayStyle.light);
+  }
   return _channel.invokeMethod(
     'launch',
     <String, Object>{
       'url': urlString,
       'useSafariVC': forceSafariVC ?? isWebURL,
       'useWebView': forceWebView ?? false,
-      'statusBarBrightness': statusBarBrightness?.toString(),
     },
-  );
+  ).then((void _) {
+    if (statusBarBrightness != null) {
+      WidgetsBinding.instance.renderView.automaticSystemUiAdjustment =
+          previousAutomaticSystemUiAdjustment;
+    }
+  });
 }
 
 /// Checks whether the specified URL can be handled by some app installed on the
