@@ -67,8 +67,10 @@ Future<void> launch(
       'useWebView': forceWebView ?? false,
     },
   ).then((void _) {
-    WidgetsBinding.instance.renderView.automaticSystemUiAdjustment =
-        previousAutomaticSystemUiAdjustment;
+    if (statusBarBrightness != null) {
+      WidgetsBinding.instance.renderView.automaticSystemUiAdjustment =
+          previousAutomaticSystemUiAdjustment;
+    }
   });
 }
 
