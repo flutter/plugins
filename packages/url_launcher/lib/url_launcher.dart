@@ -50,11 +50,16 @@ Future<void> launch(
             'in a web URL. This $urlString is not a web URL.');
   }
   // TODO(jonahwilliams): remove this once latestStyle has regular visibility.
-  final SystemUiOverlayStyle previousStyle = (SystemChrome as dynamic).latestStyle;
-  final bool previousAutomaticSystemUiAdjustment = WidgetsBinding.instance.renderView.automaticSystemUiAdjustment;
-  if (statusBarBrightness != null && defaultTargetPlatform == TargetPlatform.iOS) {
+  final SystemUiOverlayStyle previousStyle =
+      (SystemChrome as dynamic).latestStyle;
+  final bool previousAutomaticSystemUiAdjustment =
+      WidgetsBinding.instance.renderView.automaticSystemUiAdjustment;
+  if (statusBarBrightness != null &&
+      defaultTargetPlatform == TargetPlatform.iOS) {
     WidgetsBinding.instance.renderView.automaticSystemUiAdjustment = false;
-    SystemChrome.setSystemUIOverlayStyle(statusBarBrightness == Brightness.light ? SystemUiOverlayStyle.dark : SystemUiOverlayStyle.light);
+    SystemChrome.setSystemUIOverlayStyle(statusBarBrightness == Brightness.light
+        ? SystemUiOverlayStyle.dark
+        : SystemUiOverlayStyle.light);
   }
   return _channel.invokeMethod(
     'launch',
@@ -64,8 +69,10 @@ Future<void> launch(
       'useWebView': forceWebView ?? false,
     },
   ).then((void _) {
-    if (statusBarBrightness != null && defaultTargetPlatform == TargetPlatform.iOS) {
-      WidgetsBinding.instance.renderView.automaticSystemUiAdjustment = previousAutomaticSystemUiAdjustment;
+    if (statusBarBrightness != null &&
+        defaultTargetPlatform == TargetPlatform.iOS) {
+      WidgetsBinding.instance.renderView.automaticSystemUiAdjustment =
+          previousAutomaticSystemUiAdjustment;
       SystemChrome.setSystemUIOverlayStyle(previousStyle);
     }
   });
