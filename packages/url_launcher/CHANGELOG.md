@@ -1,3 +1,7 @@
+## 4.0.0
+* **Breaking change** Now requires a minimum Flutter version of 0.5.6.
+* Update to statusBarBrightness field so that the logic runs on the Flutter side.
+
 ## 3.0.3
 
 * Added statusBarBrightness field to `launch` to set iOS status bar brightness.

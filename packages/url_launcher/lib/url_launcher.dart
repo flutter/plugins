@@ -33,7 +33,8 @@ const MethodChannel _channel = MethodChannel('plugins.flutter.io/url_launcher');
 /// this will throw a [PlatformException].
 ///
 /// [statusBarBrightness] Sets the status bar brightness of the application
-/// after opening a link on iOS. Does nothing if no value is passed.
+/// after opening a link on iOS. Does nothing if no value is passed. This does
+/// not handle reseting the previous status bar style.
 Future<void> launch(
   String urlString, {
   bool forceSafariVC,
@@ -49,9 +50,6 @@ Future<void> launch(
         message: 'To use webview or safariVC, you need to pass'
             'in a web URL. This $urlString is not a web URL.');
   }
-  // TODO(jonahwilliams): remove this once latestStyle has regular visibility.
-  final SystemUiOverlayStyle previousStyle =
-      (SystemChrome as dynamic).latestStyle;
   final bool previousAutomaticSystemUiAdjustment =
       WidgetsBinding.instance.renderView.automaticSystemUiAdjustment;
   if (statusBarBrightness != null &&
@@ -69,12 +67,8 @@ Future<void> launch(
       'useWebView': forceWebView ?? false,
     },
   ).then((void _) {
-    if (statusBarBrightness != null &&
-        defaultTargetPlatform == TargetPlatform.iOS) {
-      WidgetsBinding.instance.renderView.automaticSystemUiAdjustment =
-          previousAutomaticSystemUiAdjustment;
-      SystemChrome.setSystemUIOverlayStyle(previousStyle);
-    }
+    WidgetsBinding.instance.renderView.automaticSystemUiAdjustment =
+        previousAutomaticSystemUiAdjustment;
   });
 }
 
