@@ -50,10 +50,11 @@ Future<void> launch(
         message: 'To use webview or safariVC, you need to pass'
             'in a web URL. This $urlString is not a web URL.');
   }
-  final bool previousAutomaticSystemUiAdjustment =
-      WidgetsBinding.instance.renderView.automaticSystemUiAdjustment;
+  bool previousAutomaticSystemUiAdjustment;
   if (statusBarBrightness != null &&
       defaultTargetPlatform == TargetPlatform.iOS) {
+    previousAutomaticSystemUiAdjustment =
+        WidgetsBinding.instance.renderView.automaticSystemUiAdjustment;
     WidgetsBinding.instance.renderView.automaticSystemUiAdjustment = false;
     SystemChrome.setSystemUIOverlayStyle(statusBarBrightness == Brightness.light
         ? SystemUiOverlayStyle.dark
