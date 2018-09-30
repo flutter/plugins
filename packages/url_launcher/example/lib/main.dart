@@ -53,8 +53,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<Null> _launchInWebViewWithJavaScript(String url) async {
     if (await canLaunch(url)) {
-      await launch(url,
-          forceSafariVC: true, forceWebView: true, enableJavaScript: true);
+      await launch(
+        url,
+        forceSafariVC: true,
+        forceWebView: true,
+        enableJavaScript: true,
+      );
     } else {
       throw 'Could not launch $url';
     }

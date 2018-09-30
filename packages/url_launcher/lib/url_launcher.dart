@@ -26,12 +26,11 @@ const MethodChannel _channel = MethodChannel('plugins.flutter.io/url_launcher');
 /// always launched with the default browser on device. If set to true, the URL
 /// is launched in a webview. Unlike iOS, browser context is shared across
 /// WebViews.
+/// [enableJavaScript] is an Android only setting. If true, webview enable
+/// javascript.
 ///
 /// Note that if any of the above are set to true but the URL is not a web URL,
 /// this will throw a [PlatformException].
-///
-/// [enableJavaScript] is an Android only setting. If true, and [forceWebView]
-/// is also true, webview enable javascript.
 ///
 /// [statusBarBrightness] is only used in iOS. Sets the status bar brightness
 /// of the application after opening a link. The previous value of the status
