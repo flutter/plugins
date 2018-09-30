@@ -393,7 +393,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   }
 }
 
-class _VideoAppLifeCycleObserver extends WidgetsBindingObserver {
+class _VideoAppLifeCycleObserver extends Object with WidgetsBindingObserver {
   bool _wasPlayingBeforePause = false;
   final VideoPlayerController _controller;
 

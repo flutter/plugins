@@ -95,6 +95,33 @@ class FirebaseUser extends UserInfo {
     await FirebaseAuth.channel.invokeMethod('delete');
   }
 
+  /// Updates the email address of the user.
+  Future<void> updateEmail(String email) async {
+    assert(email != null);
+    return await FirebaseAuth.channel.invokeMethod(
+      'updateEmail',
+      <String, String>{'email': email},
+    );
+  }
+
+  /// Updates the password of the user.
+  Future<void> updatePassword(String password) async {
+    assert(password != null);
+    return await FirebaseAuth.channel.invokeMethod(
+      'updatePassword',
+      <String, String>{'password': password},
+    );
+  }
+
+  /// Updates the user profile information.
+  Future<void> updateProfile(UserUpdateInfo userUpdateInfo) async {
+    assert(userUpdateInfo != null);
+    return await FirebaseAuth.channel.invokeMethod(
+      'updateProfile',
+      userUpdateInfo._updateData,
+    );
+  }
+
   @override
   String toString() {
     return '$runtimeType($_data)';
@@ -366,26 +393,6 @@ class FirebaseAuth {
     );
     final FirebaseUser currentUser = FirebaseUser._(data);
     return currentUser;
-  }
-
-  Future<void> updateEmail({
-    @required String email,
-  }) async {
-    assert(email != null);
-    return await channel.invokeMethod(
-      'updateEmail',
-      <String, String>{
-        'email': email,
-      },
-    );
-  }
-
-  Future<void> updateProfile(UserUpdateInfo userUpdateInfo) async {
-    assert(userUpdateInfo != null);
-    return await channel.invokeMethod(
-      'updateProfile',
-      userUpdateInfo._updateData,
-    );
   }
 
   /// Links google account with current user and returns [Future<FirebaseUser>]
