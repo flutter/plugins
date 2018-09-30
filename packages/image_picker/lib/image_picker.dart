@@ -69,11 +69,13 @@ class ImagePicker {
   }) async {
     assert(source != null);
 
+    double durationSeconds = (maxDuration==null) ? null : maxDuration.inSeconds.toDouble();
+
     final String path = await _channel.invokeMethod(
       'pickVideo',
       <String, dynamic>{
         'source': source.index,
-        'maxDuration': maxDuration
+        'maxDuration':durationSeconds
       },
     );
     return path == null ? null : new File(path);
