@@ -1,3 +1,7 @@
+## 4.0.1
+
+* Added enableJavaScript field to `launch` to enable javascript in Android WebView.
+
 ## 3.0.3
 
 * Added statusBarBrightness field to `launch` to set iOS status bar brightness.
