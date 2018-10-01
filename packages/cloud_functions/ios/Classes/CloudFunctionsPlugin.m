@@ -49,6 +49,7 @@
                                           @"code" : [self mapFunctionsErrorCodes:error.code],
                                           @"message" : error.localizedDescription,
                                           @"details" : error.userInfo[FIRFunctionsErrorDetailsKey]
+                                              ?: [NSNull null]
                                         }];
               } else {
                 flutterError =
