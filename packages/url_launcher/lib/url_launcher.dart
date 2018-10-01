@@ -28,6 +28,8 @@ const MethodChannel _channel = MethodChannel('plugins.flutter.io/url_launcher');
 /// always launched with the default browser on device. If set to true, the URL
 /// is launched in a webview. Unlike iOS, browser context is shared across
 /// WebViews.
+/// [enableJavaScript] is an Android only setting. If true, webview enable
+/// javascript.
 ///
 /// Note that if any of the above are set to true but the URL is not a web URL,
 /// this will throw a [PlatformException].
@@ -39,6 +41,7 @@ Future<void> launch(
   String urlString, {
   bool forceSafariVC,
   bool forceWebView,
+  bool enableJavaScript,
   Brightness statusBarBrightness,
 }) {
   assert(urlString != null);
@@ -66,6 +69,7 @@ Future<void> launch(
       'url': urlString,
       'useSafariVC': forceSafariVC ?? isWebURL,
       'useWebView': forceWebView ?? false,
+      'enableJavaScript': enableJavaScript ?? false,
     },
   ).then((void _) {
     if (statusBarBrightness != null) {
