@@ -494,6 +494,8 @@ public class GoogleSignInPlugin implements MethodCallHandler {
         case REQUEST_CODE_SIGNIN:
           if (resultCode == Activity.RESULT_OK && data != null) {
             onSignInResult(GoogleSignIn.getSignedInAccountFromIntent(data));
+          } else if (resultCode == Activity.RESULT_CANCELED) {
+            finishWithError(ERROR_REASON_SIGN_IN_CANCELED, "User canceled sign in");
           } else {
             finishWithError(ERROR_REASON_STATUS, "Sign in failed with " + resultCode);
           }
