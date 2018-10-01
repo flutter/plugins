@@ -432,11 +432,16 @@
     }
     result(nil);
   } else if ([@"availableCameras" isEqualToString:call.method]) {
-    AVCaptureDeviceDiscoverySession *discoverySession = [AVCaptureDeviceDiscoverySession
-        discoverySessionWithDeviceTypes:@[ AVCaptureDeviceTypeBuiltInWideAngleCamera ]
-                              mediaType:AVMediaTypeVideo
-                               position:AVCaptureDevicePositionUnspecified];
-    NSArray<AVCaptureDevice *> *devices = discoverySession.devices;
+    NSArray<AVCaptureDevice *> *devices;
+    if (@available(iOS 10.0, *)) {
+      AVCaptureDeviceDiscoverySession *discoverySession = [AVCaptureDeviceDiscoverySession
+          discoverySessionWithDeviceTypes:@[ AVCaptureDeviceTypeBuiltInWideAngleCamera ]
+                                mediaType:AVMediaTypeVideo
+                                 position:AVCaptureDevicePositionUnspecified];
+      devices = discoverySession.devices;
+    } else {
+      devices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
+    }
     NSMutableArray<NSDictionary<NSString *, NSObject *> *> *reply =
         [[NSMutableArray alloc] initWithCapacity:devices.count];
     for (AVCaptureDevice *device in devices) {
