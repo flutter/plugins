@@ -40,7 +40,6 @@ void main() {
           'useSafariVC': true,
           'useWebView': false,
           'enableJavaScript': false,
-          'statusBarBrightness': Brightness.light.toString(),
         })
       ],
     );
@@ -56,7 +55,6 @@ void main() {
           'useSafariVC': true,
           'useWebView': false,
           'enableJavaScript': false,
-          'statusBarBrightness': Brightness.light.toString(),
         })
       ],
     );
@@ -72,7 +70,6 @@ void main() {
           'useSafariVC': true,
           'useWebView': true,
           'enableJavaScript': false,
-          'statusBarBrightness': Brightness.light.toString(),
         })
       ],
     );
@@ -89,7 +86,6 @@ void main() {
           'useSafariVC': true,
           'useWebView': true,
           'enableJavaScript': true,
-          'statusBarBrightness': Brightness.light.toString(),
         })
       ],
     );
@@ -105,7 +101,6 @@ void main() {
           'useSafariVC': false,
           'useWebView': false,
           'enableJavaScript': false,
-          'statusBarBrightness': Brightness.light.toString(),
         })
       ],
     );

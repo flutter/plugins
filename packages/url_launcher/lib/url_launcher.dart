@@ -42,7 +42,7 @@ Future<void> launch(
   bool forceSafariVC,
   bool forceWebView,
   bool enableJavaScript,
-  Brightness statusBarBrightness = Brightness.light,
+  Brightness statusBarBrightness,
 }) {
   assert(urlString != null);
   final Uri url = Uri.parse(urlString.trimLeft());
@@ -70,7 +70,6 @@ Future<void> launch(
       'useSafariVC': forceSafariVC ?? isWebURL,
       'useWebView': forceWebView ?? false,
       'enableJavaScript': enableJavaScript ?? false,
-      'statusBarBrightness': statusBarBrightness?.toString(),
     },
   ).then((void _) {
     if (statusBarBrightness != null) {
