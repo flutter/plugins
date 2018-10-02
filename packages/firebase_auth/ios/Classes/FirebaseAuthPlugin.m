@@ -151,6 +151,18 @@ int nextHandle = 0;
                       completion:^(NSString *_Nullable token, NSError *_Nullable error) {
                         result(error != nil ? error.flutterError : token);
                       }];
+  } else if ([@"linkWithPhoneNumber" isEqualToString:call.method]) {
+    NSString *verificationId = call.arguments[@"verificationId"];
+    NSString *smsCode = call.arguments[@"smsCode"];
+
+    FIRPhoneAuthCredential *credential =
+        [[FIRPhoneAuthProvider provider] credentialWithVerificationID:verificationId
+                                                     verificationCode:smsCode];
+
+    [[FIRAuth auth].currentUser linkWithCredential:credential
+                                        completion:^(FIRUser *user, NSError *error) {
+                                          [self sendResult:result forUser:user error:error];
+                                        }];
   } else if ([@"linkWithEmailAndPassword" isEqualToString:call.method]) {
     NSString *email = call.arguments[@"email"];
     NSString *password = call.arguments[@"password"];
