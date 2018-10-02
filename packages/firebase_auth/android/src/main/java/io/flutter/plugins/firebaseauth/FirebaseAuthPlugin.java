@@ -254,7 +254,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     String verificationId = arguments.get("verificationId");
     String smsCode = arguments.get("smsCode");
 
-    PhoneAuthCredential phoneAuthCredential =
+    PhoneAuthCredential credential =
         PhoneAuthProvider.getCredential(verificationId, smsCode);
     firebaseAuth
         .getCurrentUser()
