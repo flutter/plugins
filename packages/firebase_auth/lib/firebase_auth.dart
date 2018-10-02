@@ -372,6 +372,23 @@ class FirebaseAuth {
     return currentUser;
   }
 
+  /// Links phone number with current user and returns [Future<FirebaseUser>]
+  /// basically current user with additional phone number information
+  Future<FirebaseUser> linkWithPhoneNumber({
+    @required String verificationId,
+    @required String smsCode,
+  }) async {
+    final Map<dynamic, dynamic> data = await channel.invokeMethod(
+      'linkWithPhoneNumber',
+      <String, String>{
+        'verificationId': verificationId,
+        'smsCode': smsCode,
+      },
+    );
+    final FirebaseUser currentUser = FirebaseUser._(data);
+    return currentUser;
+  }
+
   /// Links email account with current user and returns [Future<FirebaseUser>]
   /// basically current user with additional email information
   ///
