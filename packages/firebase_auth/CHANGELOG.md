@@ -1,3 +1,7 @@
+## 0.6.1
+
+* Adding support for linkWithTwitterCredential in FirebaseAuth.
+
 ## 0.6.0
 
 * Added support for `updatePassword` in `FirebaseUser`.
