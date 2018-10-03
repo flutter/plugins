@@ -73,7 +73,7 @@ class FirebaseUser extends UserInfo {
       : providerData = data['providerData']
             .map<UserInfo>((dynamic item) => UserInfo._(item))
             .toList(),
-        _metadata = new FirebaseUserMetadata._(data),
+        _metadata = FirebaseUserMetadata._(data),
         super._(data);
 
   // Returns true if the user is anonymous; that is, the user account was
