@@ -24,29 +24,17 @@ Future<void> main() async {
       title: 'Firestore Example', home: MyHomePage(firestore: firestore)));
 }
 
-class MessageList extends StatelessWidget {
-  MessageList({this.firestore});
+class MessageItem extends StatelessWidget {
+  final int index;
+  final DocumentSnapshot document;
 
-  final Firestore firestore;
+  const MessageItem({Key key, this.index, this.document}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: firestore.collection('messages').snapshots(),
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (!snapshot.hasData) return const Text('Loading...');
-        final int messageCount = snapshot.data.documents.length;
-        return ListView.builder(
-          itemCount: messageCount,
-          itemBuilder: (_, int index) {
-            final DocumentSnapshot document = snapshot.data.documents[index];
-            return ListTile(
-              title: Text(document['message'] ?? '<No message retrieved>'),
-              subtitle: Text('Message ${index + 1} of $messageCount'),
-            );
-          },
-        );
-      },
+    return ListTile(
+      title: Text(document['message'] ?? '<No message retrieved>'),
+      subtitle: Text('Message ${index + 1}'),
     );
   }
 }
@@ -69,7 +57,20 @@ class MyHomePage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Firestore Example'),
       ),
-      body: MessageList(firestore: firestore),
+      body: FirestoreAnimatedList(
+        query: firestore.collection('messages').snapshots(),
+        itemBuilder: (
+          BuildContext context,
+          DocumentSnapshot snapshot,
+          Animation<double> animation,
+          int index,
+        ) {
+          return FadeTransition(
+            opacity: animation,
+            child: MessageItem(index: index, document: snapshot),
+          );
+        },
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: _addMessage,
         tooltip: 'Increment',
