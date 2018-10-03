@@ -8,6 +8,16 @@ import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
 /// Represents user data returned from an identity provider.
+
+class FirebaseUserMetadata {
+  final Map<dynamic, dynamic> _data;
+
+  FirebaseUserMetadata._(this._data);
+
+  int get creationTimestamp => _data['creationTimestamp'];
+  int get lastSignInTimestamp => _data['lastSignInTimestamp'];
+}
+
 class UserInfo {
   final Map<dynamic, dynamic> _data;
 
@@ -57,16 +67,20 @@ class UserUpdateInfo {
 /// Represents a user.
 class FirebaseUser extends UserInfo {
   final List<UserInfo> providerData;
+  final FirebaseUserMetadata _metadata;
 
   FirebaseUser._(Map<dynamic, dynamic> data)
       : providerData = data['providerData']
             .map<UserInfo>((dynamic item) => UserInfo._(item))
             .toList(),
+        _metadata = FirebaseUserMetadata._(data),
         super._(data);
 
   // Returns true if the user is anonymous; that is, the user account was
   // created with signInAnonymously() and has not been linked to another
   // account.
+  FirebaseUserMetadata get metadata => _metadata;
+
   bool get isAnonymous => _data['isAnonymous'];
 
   /// Returns true if the user's email is verified.

@@ -291,7 +291,13 @@ int nextHandle = 0;
   for (id<FIRUserInfo> userInfo in user.providerData) {
     [providerData addObject:toDictionary(userInfo)];
   }
+
+  long creationDate = [user.metadata.creationDate timeIntervalSince1970];
+  long lastSignInDate = [user.metadata.lastSignInDate timeIntervalSince1970];
+
   NSMutableDictionary *userData = [toDictionary(user) mutableCopy];
+  userData[@"creationTimestamp"] = [NSNumber numberWithLong:creationDate];
+  userData[@"lastSignInTimestamp"] = [NSNumber numberWithInt:lastSignInDate];
   userData[@"isAnonymous"] = [NSNumber numberWithBool:user.isAnonymous];
   userData[@"isEmailVerified"] = [NSNumber numberWithBool:user.isEmailVerified];
   userData[@"providerData"] = providerData;

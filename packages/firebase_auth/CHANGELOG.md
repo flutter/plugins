@@ -1,3 +1,7 @@
+## 0.6.2
+
+* Add access to user metadata.
+
 ## 0.6.1
 
 * Adding support for linkWithTwitterCredential in FirebaseAuth.
