@@ -139,6 +139,22 @@ void main() {
       );
     });
 
+    test('linkWithPhoneNumber', () async {
+      await auth.linkWithPhoneNumber(
+        verificationId: kMockVerifcationId,
+        smsCode: kMockSmsCode);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'linkWithPhoneNumber',
+            arguments: <String, String>{
+              'verificationId': kMockVerificationId,
+              'smsCode': kMockSmsCode,
+            })
+        ]);
+    });
+
     test('linkWithEmailAndPassword', () async {
       final FirebaseUser user = await auth.linkWithEmailAndPassword(
         email: kMockEmail,
