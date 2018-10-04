@@ -21,7 +21,11 @@
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"authenticateWithBiometrics" isEqualToString:call.method]) {
     [self authenticateWithBiometrics:call.arguments withFlutterResult:result];
-  } else {
+  }
+  else if( [@"biometricsSupported" isEqualToString:call.method]){
+    [self biometricsSupported:call.arguments withFlutterResult:result];
+  }
+  else {
     result(FlutterMethodNotImplemented);
   }
 }
@@ -60,6 +64,22 @@
   [[UIApplication sharedApplication].delegate.window.rootViewController presentViewController:alert
                                                                                      animated:YES
                                                                                    completion:nil];
+}
+
+- (void)biometricsSupported:(NSDictionary *)arguments
+          withFlutterResult:(FlutterResult)result {
+    LAContext *context = [[LAContext alloc] init];
+      NSError *authError = nil;
+      [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
+                           error:&authError];
+
+      if(nil == authError){
+         result(@YES);
+         return;
+      }
+
+      [self handleErrors:authError flutterArguments:arguments withFlutterResult:result];
+      result(@NO);
 }
 
 - (void)authenticateWithBiometrics:(NSDictionary *)arguments

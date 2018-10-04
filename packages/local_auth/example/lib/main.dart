@@ -18,6 +18,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _authorized = 'Not Authorized';
+  String _supported = 'Checking...';
 
   Future<Null> _authenticate() async {
     final LocalAuthentication auth = LocalAuthentication();
@@ -38,6 +39,31 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  Future<Null> _checkBiometrics() async {
+    final LocalAuthentication auth = LocalAuthentication();
+    bool supported = false;
+    String message = "";
+    try {
+      supported = await auth.biometricsSupported();
+    } on PlatformException catch (e) {
+      print(e);
+    } on Exception catch (e) {
+      message = e.toString();
+    }
+    if (!mounted) return;
+
+    setState(() {
+      _supported = supported ? 'Supported' : 'Not Supported: ' + message;
+    });
+  }
+
+  @override
+  void initState() {
+    _checkBiometrics();
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -50,6 +76,7 @@ class _MyAppState extends State<MyApp> {
           child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
+                Text('Biometrics: $_supported\n'),
                 Text('Current State: $_authorized\n'),
                 RaisedButton(
                   child: const Text('Authenticate'),
