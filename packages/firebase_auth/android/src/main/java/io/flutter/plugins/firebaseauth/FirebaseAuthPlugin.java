@@ -104,6 +104,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         break;
       case "linkWithPhoneNumber":
         handleLinkWithPhoneNumber(call, result);
+        break;
       case "linkWithEmailAndPassword":
         handleLinkWithEmailAndPassword(call, result);
         break;
