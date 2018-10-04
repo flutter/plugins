@@ -140,19 +140,13 @@ void main() {
     });
 
     test('linkWithPhoneNumber', () async {
-      await auth.linkWithPhoneNumber(
-        verificationId: kMockVerifcationId,
-        smsCode: kMockSmsCode);
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall(
-            'linkWithPhoneNumber',
-            arguments: <String, String>{
-              'verificationId': kMockVerificationId,
-              'smsCode': kMockSmsCode,
-            })
-        ]);
+      await auth.linkWithPhoneNumber(verificationId: kMockVerificationId, smsCode: kMockSmsCode);
+      expect(log, <Matcher>[
+        isMethodCall('linkWithPhoneNumber', arguments: <String, String>{
+          'verificationId': kMockVerificationId,
+          'smsCode': kMockSmsCode,
+        })
+      ]);
     });
 
     test('linkWithEmailAndPassword', () async {
