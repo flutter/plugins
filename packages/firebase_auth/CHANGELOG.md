@@ -1,3 +1,15 @@
+## 0.6.3
+
+* Added support for `linkWithPhoneNumber` in `FirebaseAuth`.
+
+## 0.6.2
+
+* Add access to user metadata.
+
+## 0.6.1
+
+* Adding support for linkWithTwitterCredential in FirebaseAuth.
+
 ## 0.6.0
 
 * Added support for `updatePassword` in `FirebaseUser`.
