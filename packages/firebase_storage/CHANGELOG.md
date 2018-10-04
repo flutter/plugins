@@ -2,6 +2,7 @@
 
 * Added monitoring of StorageUploadTask via `events` stream.
 * Added support for StorageUploadTask functions: `pause`, `resume`, `cancel`.
+* Set http version to be compatible with flutter_test.
 
 ## 1.0.2
 

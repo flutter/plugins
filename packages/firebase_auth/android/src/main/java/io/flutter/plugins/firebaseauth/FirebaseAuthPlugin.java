@@ -114,6 +114,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       case "linkWithFacebookCredential":
         handleLinkWithFacebookCredential(call, result);
         break;
+      case "linkWithTwitterCredential":
+        handleLinkWithTwitterCredential(call, result);
+        break;
       case "updateEmail":
         handleUpdateEmail(call, result);
         break;
@@ -391,6 +394,18 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         .addOnCompleteListener(new SignInCompleteListener(result));
   }
 
+  private void handleLinkWithTwitterCredential(MethodCall call, final Result result) {
+    @SuppressWarnings("unchecked")
+    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    String authToken = arguments.get("authToken");
+    String authTokenSecret = arguments.get("authTokenSecret");
+    AuthCredential credential = TwitterAuthProvider.getCredential(authToken, authTokenSecret);
+    firebaseAuth
+        .getCurrentUser()
+        .linkWithCredential(credential)
+        .addOnCompleteListener(new SignInCompleteListener(result));
+  }
+
   private void handleSignInWithFacebook(MethodCall call, final Result result) {
     @SuppressWarnings("unchecked")
     Map<String, String> arguments = (Map<String, String>) call.arguments;
@@ -614,6 +629,8 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         providerData.add(Collections.unmodifiableMap(userInfoToMap(userInfo)));
       }
       Map<String, Object> userMap = userInfoToMap(user);
+      userMap.put("creationTimestamp", user.getMetadata().getCreationTimestamp());
+      userMap.put("lastSignInTimestamp", user.getMetadata().getLastSignInTimestamp());
       userMap.put("isAnonymous", user.isAnonymous());
       userMap.put("isEmailVerified", user.isEmailVerified());
       userMap.put("providerData", Collections.unmodifiableList(providerData));

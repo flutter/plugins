@@ -188,6 +188,15 @@ int nextHandle = 0;
                                         completion:^(FIRUser *user, NSError *error) {
                                           [self sendResult:result forUser:user error:error];
                                         }];
+  } else if ([@"linkWithTwitterCredential" isEqualToString:call.method]) {
+    NSString *authToken = call.arguments[@"authToken"];
+    NSString *authTokenSecret = call.arguments[@"authTokenSecret"];
+    FIRAuthCredential *credential =
+        [FIRTwitterAuthProvider credentialWithToken:authToken secret:authTokenSecret];
+    [[FIRAuth auth].currentUser linkWithCredential:credential
+                                        completion:^(FIRUser *user, NSError *error) {
+                                          [self sendResult:result forUser:user error:error];
+                                        }];
   } else if ([@"updateEmail" isEqualToString:call.method]) {
     NSString *email = call.arguments[@"email"];
     [[FIRAuth auth].currentUser updateEmail:email
@@ -200,6 +209,7 @@ int nextHandle = 0;
                                     completion:^(NSError *error) {
                                       [self sendResult:result forUser:nil error:error];
                                     }];
+
   } else if ([@"updateProfile" isEqualToString:call.method]) {
     FIRUserProfileChangeRequest *changeRequest = [[FIRAuth auth].currentUser profileChangeRequest];
     if (call.arguments[@"displayName"]) {
@@ -293,7 +303,13 @@ int nextHandle = 0;
   for (id<FIRUserInfo> userInfo in user.providerData) {
     [providerData addObject:toDictionary(userInfo)];
   }
+
+  long creationDate = [user.metadata.creationDate timeIntervalSince1970];
+  long lastSignInDate = [user.metadata.lastSignInDate timeIntervalSince1970];
+
   NSMutableDictionary *userData = [toDictionary(user) mutableCopy];
+  userData[@"creationTimestamp"] = [NSNumber numberWithLong:creationDate];
+  userData[@"lastSignInTimestamp"] = [NSNumber numberWithInt:lastSignInDate];
   userData[@"isAnonymous"] = [NSNumber numberWithBool:user.isAnonymous];
   userData[@"isEmailVerified"] = [NSNumber numberWithBool:user.isEmailVerified];
   userData[@"providerData"] = providerData;
