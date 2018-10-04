@@ -50,6 +50,7 @@ class LocalAuthentication {
     @required String localizedReason,
     bool useErrorDialogs = true,
     bool stickyAuth = false,
+    bool showDialog = true, // false only supported on Android.
     AndroidAuthMessages androidAuthStrings = const AndroidAuthMessages(),
     IOSAuthMessages iOSAuthStrings = const IOSAuthMessages(),
   }) async {
@@ -58,6 +59,7 @@ class LocalAuthentication {
       'localizedReason': localizedReason,
       'useErrorDialogs': useErrorDialogs,
       'stickyAuth': stickyAuth,
+      'showDialog': showDialog
     };
     if (Platform.isIOS) {
       args.addAll(iOSAuthStrings.args);
@@ -72,4 +74,11 @@ class LocalAuthentication {
     }
     return await _channel.invokeMethod('authenticateWithBiometrics', args);
   }
+
+  Future<bool> biometricsSupported() async {
+
+    return await _channel.invokeMethod('biometricsSupported');
+
+  }
+
 }

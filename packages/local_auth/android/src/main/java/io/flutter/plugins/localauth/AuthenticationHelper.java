@@ -92,6 +92,18 @@ class AuthenticationHelper extends FingerprintManagerCompat.AuthenticationCallba
     this.fingerprintManager = FingerprintManagerCompat.from(activity);
   }
 
+  public boolean isHardwareDetected(){
+    return fingerprintManager.isHardwareDetected();
+  }
+
+  public boolean isKeyguardSecure(){
+    return keyguardManager.isKeyguardSecure();
+  }
+
+  public boolean hasEnrolledFingerprints(){
+    return fingerprintManager.hasEnrolledFingerprints();
+  }
+
   void authenticate() {
     if (fingerprintManager.isHardwareDetected()) {
       if (keyguardManager.isKeyguardSecure() && fingerprintManager.hasEnrolledFingerprints()) {
@@ -117,9 +129,16 @@ class AuthenticationHelper extends FingerprintManagerCompat.AuthenticationCallba
     resume();
   }
 
+  private boolean showDialog()
+  {
+    return call.argument("showDialog");
+  }
+
   private void resume() {
     cancellationSignal = new CancellationSignal();
-    showFingerprintDialog();
+    if( showDialog() ) {
+      showFingerprintDialog();
+    }
     fingerprintManager.authenticate(null, 0, cancellationSignal, this, null);
   }
 
@@ -169,32 +188,55 @@ class AuthenticationHelper extends FingerprintManagerCompat.AuthenticationCallba
 
   @Override
   public void onAuthenticationError(int errMsgId, CharSequence errString) {
-    updateFingerprintDialog(DialogState.FAILURE, errString.toString());
+    if( showDialog() ) {
+      updateFingerprintDialog(DialogState.FAILURE, errString.toString());
+    }
+    else{
+      stop(false);
+    }
   }
 
   @Override
   public void onAuthenticationHelp(int helpMsgId, CharSequence helpString) {
-    updateFingerprintDialog(DialogState.FAILURE, helpString.toString());
+    if( showDialog()) {
+      updateFingerprintDialog(DialogState.FAILURE, helpString.toString());
+    }
+    else{
+      stop(false);
+    }
   }
 
   @Override
   public void onAuthenticationFailed() {
-    updateFingerprintDialog(
-        DialogState.FAILURE, (String) call.argument("fingerprintNotRecognized"));
+    if( showDialog() ) {
+      updateFingerprintDialog(
+              DialogState.FAILURE, (String) call.argument("fingerprintNotRecognized"));
+    }
+    else{
+      stop(false);
+    }
   }
 
   @Override
   public void onAuthenticationSucceeded(FingerprintManagerCompat.AuthenticationResult result) {
-    updateFingerprintDialog(DialogState.SUCCESS, (String) call.argument("fingerprintSuccess"));
-    new Handler(Looper.myLooper())
-        .postDelayed(
-            new Runnable() {
-              @Override
-              public void run() {
-                stop(true);
-              }
-            },
-            DISMISS_AFTER_MS);
+
+    if( showDialog() ) {
+
+      updateFingerprintDialog(DialogState.SUCCESS, (String) call.argument("fingerprintSuccess"));
+      new Handler(Looper.myLooper())
+              .postDelayed(
+                      new Runnable() {
+                        @Override
+                        public void run() {
+                          stop(true);
+                        }
+                      },
+                      DISMISS_AFTER_MS);
+    }
+    else
+    {
+      stop(true);
+    }
   }
 
   private void updateFingerprintDialog(DialogState state, String message) {

@@ -31,6 +31,12 @@ public class LocalAuthPlugin implements MethodCallHandler {
 
   @Override
   public void onMethodCall(MethodCall call, final Result result) {
+      Activity activity = registrar.activity();
+      if (activity == null || activity.isFinishing()) {
+          result.error("no_activity", "local_auth plugin requires a foreground activity", null);
+          return;
+      }
+
     if (call.method.equals("authenticateWithBiometrics")) {
       if (!authInProgress.compareAndSet(false, true)) {
         // Apps should not invoke another authentication request while one is in progress,
@@ -40,11 +46,7 @@ public class LocalAuthPlugin implements MethodCallHandler {
         result.error("auth_in_progress", "Authentication in progress", null);
         return;
       }
-      Activity activity = registrar.activity();
-      if (activity == null || activity.isFinishing()) {
-        result.error("no_activity", "local_auth plugin requires a foreground activity", null);
-        return;
-      }
+
       AuthenticationHelper authenticationHelper =
           new AuthenticationHelper(
               activity,
@@ -72,7 +74,45 @@ public class LocalAuthPlugin implements MethodCallHandler {
                 }
               });
       authenticationHelper.authenticate();
-    } else {
+    }
+    else if( call.method.equals("biometricsSupported") ){
+        AuthenticationHelper authenticationHelper = new AuthenticationHelper(activity, call, new AuthCompletionHandler() {
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onFailure() {
+
+            }
+
+            @Override
+            public void onError(String code, String error) {
+
+            }
+        });
+
+        if(!authenticationHelper.isHardwareDetected()){
+            result.error("NotAvailable","Fingerprint is not available on this device.", null);
+            return;
+        }
+
+        if(!authenticationHelper.isKeyguardSecure()){
+            result.error("PasscodeNotSet",
+                    "Phone not secured by PIN, pattern or password, or SIM is currently locked.", null);
+            return;
+        }
+
+        if(!authenticationHelper.hasEnrolledFingerprints()){
+            result.error("NotEnrolled", "No fingerprint enrolled on this device.", null);
+            return;
+        }
+
+        result.success(true);
+    }
+
+    else {
       result.notImplemented();
     }
   }
