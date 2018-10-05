@@ -58,6 +58,7 @@ class AndroidDeviceInfo {
     this.tags,
     this.type,
     this.isPhysicalDevice,
+    this.androidId,
   })  : supported32BitAbis = List<String>.unmodifiable(supported32BitAbis),
         supported64BitAbis = List<String>.unmodifiable(supported64BitAbis),
         supportedAbis = List<String>.unmodifiable(supportedAbis);
@@ -119,6 +120,9 @@ class AndroidDeviceInfo {
   /// `false` if the application is running in an emulator, `true` otherwise.
   final bool isPhysicalDevice;
 
+  /// The Android hardware device ID that is unique between the device + user and app signing.
+  final String androidId;
+
   /// Deserializes from the message received from [_kChannel].
   static AndroidDeviceInfo _fromMap(dynamic message) {
     final Map<dynamic, dynamic> map = message;
@@ -142,6 +146,7 @@ class AndroidDeviceInfo {
       tags: map['tags'],
       type: map['type'],
       isPhysicalDevice: map['isPhysicalDevice'],
+      androidId: map['androidId'],
     );
   }
 

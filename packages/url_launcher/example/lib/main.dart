@@ -51,6 +51,19 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  Future<Null> _launchInWebViewWithJavaScript(String url) async {
+    if (await canLaunch(url)) {
+      await launch(
+        url,
+        forceSafariVC: true,
+        forceWebView: true,
+        enableJavaScript: true,
+      );
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
   Widget _launchStatus(BuildContext context, AsyncSnapshot<Null> snapshot) {
     if (snapshot.hasError) {
       return Text('Error: ${snapshot.error}');
@@ -86,6 +99,13 @@ class _MyHomePageState extends State<MyHomePage> {
                     _launched = _launchInWebViewOrVC(toLaunch);
                   }),
               child: const Text('Launch in app'),
+            ),
+            const Padding(padding: EdgeInsets.all(16.0)),
+            RaisedButton(
+              onPressed: () => setState(() {
+                    _launched = _launchInWebViewWithJavaScript(toLaunch);
+                  }),
+              child: const Text('Launch in app(JavaScript ON)'),
             ),
             const Padding(padding: EdgeInsets.all(16.0)),
             FutureBuilder<Null>(future: _launched, builder: _launchStatus),

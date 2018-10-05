@@ -41,7 +41,7 @@ public class LocalAuthPlugin implements MethodCallHandler {
         return;
       }
       Activity activity = registrar.activity();
-      if (activity == null) {
+      if (activity == null || activity.isFinishing()) {
         result.error("no_activity", "local_auth plugin requires a foreground activity", null);
         return;
       }
