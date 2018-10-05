@@ -1,3 +1,7 @@
+## 0.1.2+1
+
+* Bump Android dependencies to latest.
+
 ## 0.1.2
 
 * Fix example imports so that publishing will be warning-free.

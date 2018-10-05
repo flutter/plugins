@@ -32,6 +32,6 @@ android {
         disable 'InvalidPackage'
     }
     dependencies {
-        api 'com.google.firebase:firebase-ads:15.0.1'
+        api 'com.google.firebase:firebase-ads:16.0.1'
     }
 }

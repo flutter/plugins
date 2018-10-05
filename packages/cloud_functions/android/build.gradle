@@ -32,6 +32,6 @@ android {
         disable 'InvalidPackage'
     }
     dependencies {
-        api 'com.google.firebase:firebase-functions:16.1.0'
+        api 'com.google.firebase:firebase-functions:16.1.1'
     }
 }
