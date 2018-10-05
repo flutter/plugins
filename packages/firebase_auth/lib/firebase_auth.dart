@@ -10,18 +10,18 @@ import 'package:meta/meta.dart';
 /// Represents user data returned from an identity provider.
 
 class FirebaseUserMetadata {
-  final Map<dynamic, dynamic> _data;
-
   FirebaseUserMetadata._(this._data);
+
+  final Map<dynamic, dynamic> _data;
 
   int get creationTimestamp => _data['creationTimestamp'];
   int get lastSignInTimestamp => _data['lastSignInTimestamp'];
 }
 
 class UserInfo {
-  final Map<dynamic, dynamic> _data;
-
   UserInfo._(this._data);
+
+  final Map<dynamic, dynamic> _data;
 
   /// The provider identifier.
   String get providerId => _data['providerId'];
@@ -66,16 +66,16 @@ class UserUpdateInfo {
 
 /// Represents a user.
 class FirebaseUser extends UserInfo {
-  final List<UserInfo> providerData;
-  final FirebaseUserMetadata _metadata;
-  final String appName;
-
   FirebaseUser._(Map<dynamic, dynamic> data, {this.appName})
       : providerData = data['providerData']
             .map<UserInfo>((dynamic item) => UserInfo._(item))
             .toList(),
         _metadata = FirebaseUserMetadata._(data),
         super._(data);
+
+  final List<UserInfo> providerData;
+  final FirebaseUserMetadata _metadata;
+  final String appName;
 
   // Returns true if the user is anonymous; that is, the user account was
   // created with signInAnonymously() and has not been linked to another
@@ -171,9 +171,9 @@ class FirebaseUser extends UserInfo {
 }
 
 class AuthException implements Exception {
+  const AuthException(this.code, this.message);
   final String code;
   final String message;
-  const AuthException(this.code, this.message);
 }
 
 typedef void PhoneVerificationCompleted(FirebaseUser firebaseUser);
@@ -182,6 +182,12 @@ typedef void PhoneCodeSent(String verificationId, [int forceResendingToken]);
 typedef void PhoneCodeAutoRetrievalTimeout(String verificationId);
 
 class FirebaseAuth {
+  FirebaseAuth({this.appName}) {
+    if (_initialized) return;
+    channel.setMethodCallHandler(_callHandler);
+    _initialized = true;
+  }
+
   @visibleForTesting
   static const MethodChannel channel = MethodChannel(
     'plugins.flutter.io/firebase_auth',
@@ -195,12 +201,6 @@ class FirebaseAuth {
       <int, Map<String, dynamic>>{};
 
   static bool _initialized = false;
-
-  FirebaseAuth({this.appName}) {
-    if (_initialized) return;
-    channel.setMethodCallHandler(_callHandler);
-    _initialized = true;
-  }
 
   /// Provides an instance of this class corresponding to the default app.
   static FirebaseAuth _instance = FirebaseAuth();

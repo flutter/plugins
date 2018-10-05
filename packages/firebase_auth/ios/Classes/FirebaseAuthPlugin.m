@@ -80,8 +80,8 @@ int nextHandle = 0;
   } else if ([@"signInWithGoogle" isEqualToString:call.method]) {
     NSString *idToken = call.arguments[@"idToken"];
     NSString *accessToken = call.arguments[@"accessToken"];
-    FIRAuthCredential *credential = [FIRGoogleAuthProvider credentialWithIDToken:idToken
-                                                                     accessToken:accessToken];
+    FIRAuthCredential *credential =
+        [FIRGoogleAuthProvider credentialWithIDToken:idToken accessToken:accessToken];
     [auth signInWithCredential:credential
                     completion:^(FIRUser *user, NSError *error) {
                       [self sendResult:result forUser:user error:error];
@@ -96,8 +96,8 @@ int nextHandle = 0;
   } else if ([@"signInWithTwitter" isEqualToString:call.method]) {
     NSString *authToken = call.arguments[@"authToken"];
     NSString *authTokenSecret = call.arguments[@"authTokenSecret"];
-    FIRAuthCredential *credential = [FIRTwitterAuthProvider credentialWithToken:authToken
-                                                                         secret:authTokenSecret];
+    FIRAuthCredential *credential = 
+        [FIRTwitterAuthProvider credentialWithToken:authToken secret:authTokenSecret];
     [auth signInWithCredential:credential
                     completion:^(FIRUser *user, NSError *error) {
                       [self sendResult:result forUser:user error:error];
@@ -160,8 +160,8 @@ int nextHandle = 0;
   } else if ([@"linkWithEmailAndPassword" isEqualToString:call.method]) {
     NSString *email = call.arguments[@"email"];
     NSString *password = call.arguments[@"password"];
-    FIRAuthCredential *credential = [FIREmailAuthProvider credentialWithEmail:email
-                                                                     password:password];
+    FIRAuthCredential *credential = \
+        [FIREmailAuthProvider credentialWithEmail:email password:password];
     [auth.currentUser linkWithCredential:credential
                               completion:^(FIRUser *user, NSError *error) {
                                 [self sendResult:result forUser:user error:error];
@@ -169,8 +169,8 @@ int nextHandle = 0;
   } else if ([@"linkWithGoogleCredential" isEqualToString:call.method]) {
     NSString *idToken = call.arguments[@"idToken"];
     NSString *accessToken = call.arguments[@"accessToken"];
-    FIRAuthCredential *credential = [FIRGoogleAuthProvider credentialWithIDToken:idToken
-                                                                     accessToken:accessToken];
+    FIRAuthCredential *credential = 
+        [FIRGoogleAuthProvider credentialWithIDToken:idToken accessToken:accessToken];
     [auth.currentUser linkWithCredential:credential
                               completion:^(FIRUser *user, NSError *error) {
                                 [self sendResult:result forUser:user error:error];
@@ -185,8 +185,8 @@ int nextHandle = 0;
   } else if ([@"linkWithTwitterCredential" isEqualToString:call.method]) {
     NSString *authToken = call.arguments[@"authToken"];
     NSString *authTokenSecret = call.arguments[@"authTokenSecret"];
-    FIRAuthCredential *credential = [FIRTwitterAuthProvider credentialWithToken:authToken
-                                                                         secret:authTokenSecret];
+    FIRAuthCredential *credential = 
+        [FIRTwitterAuthProvider credentialWithToken:authToken secret:authTokenSecret];
     [auth.currentUser linkWithCredential:credential
                               completion:^(FIRUser *user, NSError *error) {
                                 [self sendResult:result forUser:user error:error];
