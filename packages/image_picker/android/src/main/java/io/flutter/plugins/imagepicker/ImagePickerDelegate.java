@@ -452,9 +452,14 @@ public class ImagePickerDelegate
         Double maxHeight = methodCall.argument("maxHeight");
 
         String finalImagePath = imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight);
-        finishWithSuccess(finalImagePath);
+        if(finalImagePath != null){
+          finishWithSuccess(finalImagePath);
+        }else{
+          finishWithSuccess("invalidImageFormat");
+        }
       } else {
-        throw new IllegalStateException("Received image from picker that was not requested");
+        // throw new IllegalStateException("Received image from picker that was not requested");
+        finishWithSuccess("invalidImageFormat");
       }
     }catch(Exception e){
       finishWithSuccess("invalidImageFormat");
@@ -474,7 +479,6 @@ public class ImagePickerDelegate
     if (pendingResult != null) {
       return false;
     }
-
     this.methodCall = methodCall;
     pendingResult = result;
     return true;
