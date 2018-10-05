@@ -44,15 +44,15 @@ Binding a `CollectionReference` to a `ListView`:
 class BookList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new StreamBuilder<QuerySnapshot>(
+    return StreamBuilder<QuerySnapshot>(
       stream: Firestore.instance.collection('books').snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (!snapshot.hasData) return new Text('Loading...');
-        return new ListView(
+        if (!snapshot.hasData) return Text('Loading...');
+        return ListView(
           children: snapshot.data.documents.map((DocumentSnapshot document) {
-            return new ListTile(
-              title: new Text(document['title']),
-              subtitle: new Text(document['author']),
+            return ListTile(
+              title: Text(document['title']),
+              subtitle: Text(document['author']),
             );
           }).toList(),
         );
