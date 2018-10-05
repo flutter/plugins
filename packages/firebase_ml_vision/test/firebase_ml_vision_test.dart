@@ -846,8 +846,8 @@ void main() {
       });
 
       group('$TextBlock', () {
-        test('detectInImage', () async {
-          final VisionText text = await recognizer.detectInImage(image);
+        test('processImage', () async {
+          final VisionText text = await recognizer.processImage(image);
 
           expect(text.blocks, hasLength(2));
 
@@ -876,7 +876,7 @@ void main() {
 
       group('$TextLine', () {
         test('detectInImage', () async {
-          final VisionText text = await recognizer.detectInImage(image);
+          final VisionText text = await recognizer.processImage(image);
 
           TextLine line = text.blocks[0].lines[0];
           expect(line.boundingBox, const Rectangle<int>(5, 6, 7, 8));
@@ -903,7 +903,7 @@ void main() {
 
       group('$TextElement', () {
         test('detectInImage', () async {
-          final VisionText text = await recognizer.detectInImage(image);
+          final VisionText text = await recognizer.processImage(image);
 
           TextElement element = text.blocks[0].lines[0].elements[0];
           expect(element.boundingBox, const Rectangle<int>(1, 2, 3, 4));
@@ -928,8 +928,8 @@ void main() {
         });
       });
 
-      test('detectInImage', () async {
-        final VisionText text = await recognizer.detectInImage(image);
+      test('processImage', () async {
+        final VisionText text = await recognizer.processImage(image);
 
         expect(text.text, 'testext');
         expect(log, <Matcher>[
@@ -943,7 +943,7 @@ void main() {
         ]);
       });
 
-      test('detectInImage no bounding box', () async {
+      test('processImage no bounding box', () async {
         returnValue = <dynamic, dynamic>{
           'blocks': <dynamic>[
             <dynamic, dynamic>{
@@ -955,7 +955,7 @@ void main() {
           ],
         };
 
-        final VisionText text = await recognizer.detectInImage(image);
+        final VisionText text = await recognizer.processImage(image);
 
         final TextBlock block = text.blocks[0];
         expect(block.boundingBox, null);
