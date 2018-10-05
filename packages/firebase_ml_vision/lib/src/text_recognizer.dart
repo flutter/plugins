@@ -33,6 +33,7 @@ class TextRecognizer implements FirebaseVisionDetector {
   /// Detects [VisionText] from a [FirebaseVisionImage].
   ///
   /// The OCR is performed asynchronously.
+  @Deprecated('Please use `processImage`')
   @override
   Future<VisionText> detectInImage(FirebaseVisionImage visionImage) async {
     return processImage(visionImage);
