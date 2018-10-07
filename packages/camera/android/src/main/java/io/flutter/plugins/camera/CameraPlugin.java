@@ -430,6 +430,8 @@ public class CameraPlugin implements MethodCallHandler {
     private void open(@Nullable final Result result) {
       if (!hasCameraPermission()) {
         if (result != null) result.error("cameraPermission", "Camera permission not granted", null);
+      } else if (!hasAudioPermission()) {
+        if (result != null) result.error("cameraPermission", "Audio permission not granted", null);
       } else {
         try {
           imageReader =
