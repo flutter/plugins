@@ -49,28 +49,33 @@ class SharedPreferences {
   Set<String> getKeys() => Set<String>.from(_preferenceCache.keys);
 
   /// Reads a value of any type from persistent storage.
-  dynamic get(String key) => _preferenceCache[key];
+  dynamic get(String key, {dynamic defaultValue}) =>
+      _preferenceCache[key] ?? defaultValue;
 
   /// Reads a value from persistent storage, throwing an exception if it's not a
   /// bool.
-  bool getBool(String key) => _preferenceCache[key];
+  bool getBool(String key, {bool defaultValue}) =>
+      _preferenceCache[key] ?? defaultValue;
 
   /// Reads a value from persistent storage, throwing an exception if it's not
   /// an int.
-  int getInt(String key) => _preferenceCache[key];
+  int getInt(String key, {int defaultValue}) =>
+      _preferenceCache[key] ?? defaultValue;
 
   /// Reads a value from persistent storage, throwing an exception if it's not a
   /// double.
-  double getDouble(String key) => _preferenceCache[key];
+  double getDouble(String key, {double defaultValue}) =>
+      _preferenceCache[key] ?? defaultValue;
 
   /// Reads a value from persistent storage, throwing an exception if it's not a
   /// String.
-  String getString(String key) => _preferenceCache[key];
+  String getString(String key, {String defaultValue}) =>
+      _preferenceCache[key] ?? defaultValue;
 
   /// Reads a set of string values from persistent storage, throwing an
   /// exception if it's not a string set.
-  List<String> getStringList(String key) {
-    List<Object> list = _preferenceCache[key];
+  List<String> getStringList(String key, {List<String> defaultValue}) {
+    List<Object> list = _preferenceCache[key] ?? defaultValue;
     if (list != null && list is! List<String>) {
       list = list.cast<String>().toList();
       _preferenceCache[key] = list;

@@ -61,6 +61,62 @@ void main() {
       expect(log, <Matcher>[]);
     });
 
+    test('defaultValue', () async {
+      expect(preferences.get('StringUnknown'), null);
+      expect(
+          preferences.get('StringUnknown',
+              defaultValue: kTestValues2['flutter.String']),
+          kTestValues2['flutter.String']);
+      expect(preferences.get('boolUnknown'), null);
+      expect(
+          preferences.get('boolUnknown',
+              defaultValue: kTestValues2['flutter.bool']),
+          kTestValues2['flutter.bool']);
+      expect(preferences.get('intUnknown'), null);
+      expect(
+          preferences.get('intUnknown',
+              defaultValue: kTestValues2['flutter.int']),
+          kTestValues2['flutter.int']);
+      expect(preferences.get('doubleUnknown'), null);
+      expect(
+          preferences.get('doubleUnknown',
+              defaultValue: kTestValues2['flutter.double']),
+          kTestValues2['flutter.double']);
+      expect(preferences.get('ListUnknown'), null);
+      expect(
+          preferences.get('ListUnknown',
+              defaultValue: kTestValues2['flutter.List']),
+          kTestValues2['flutter.List']);
+
+      expect(preferences.getString('StringUnknown'), null);
+      expect(
+          preferences.getString('StringUnknown',
+              defaultValue: kTestValues2['flutter.String']),
+          kTestValues2['flutter.String']);
+      expect(preferences.getBool('boolUnknown'), null);
+      expect(
+          preferences.getBool('boolUnknown',
+              defaultValue: kTestValues2['flutter.bool']),
+          kTestValues2['flutter.bool']);
+      expect(preferences.getInt('intUnknown'), null);
+      expect(
+          preferences.getInt('intUnknown',
+              defaultValue: kTestValues2['flutter.int']),
+          kTestValues2['flutter.int']);
+      expect(preferences.getDouble('doubleUnknown'), null);
+      expect(
+          preferences.getDouble('doubleUnknown',
+              defaultValue: kTestValues2['flutter.double']),
+          kTestValues2['flutter.double']);
+      expect(preferences.getStringList('ListUnknown'), null);
+      expect(
+          preferences.getStringList('ListUnknown',
+              defaultValue: kTestValues2['flutter.List']),
+          kTestValues2['flutter.List']);
+
+      expect(log, <Matcher>[]);
+    });
+
     test('writing', () async {
       await Future.wait(<Future<bool>>[
         preferences.setString('String', kTestValues2['flutter.String']),
