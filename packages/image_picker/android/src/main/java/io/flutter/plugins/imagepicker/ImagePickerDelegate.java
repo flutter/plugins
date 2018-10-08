@@ -388,15 +388,19 @@ public class ImagePickerDelegate
       default:
         return false;
     }
-
     return true;
   }
 
   private void handleChooseImageResult(int resultCode, Intent data) {
     if (resultCode == Activity.RESULT_OK && data != null) {
-      String path = fileUtils.getPathFromUri(activity, data.getData());
-      handleImageResult(path);
-      return;
+      try {
+        String path = fileUtils.getPathFromUri(activity, data.getData());
+        handleImageResult(path);
+        return;
+      }catch (Exception e){
+        finishWithSuccess("invalidImageFormat");
+        return;
+      }
     }
 
     // User cancelled choosing a picture.
@@ -416,17 +420,21 @@ public class ImagePickerDelegate
 
   private void handleCaptureImageResult(int resultCode) {
     if (resultCode == Activity.RESULT_OK) {
-      fileUriResolver.getFullImagePath(
-          pendingCameraMediaUri,
-          new OnPathReadyListener() {
-            @Override
-            public void onPathReady(String path) {
-              handleImageResult(path);
-            }
-          });
-      return;
+      try {
+        fileUriResolver.getFullImagePath(
+                pendingCameraMediaUri,
+                new OnPathReadyListener() {
+                  @Override
+                  public void onPathReady(String path) {
+                    handleImageResult(path);
+                  }
+                });
+        return;
+      }catch (Exception e){
+        finishWithSuccess("invalidImageFormat");
+        return;
+      }
     }
-
     // User cancelled taking a picture.
     finishWithSuccess(null);
   }
