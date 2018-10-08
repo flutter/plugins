@@ -35,6 +35,23 @@ class DurationRange {
 /// The duration, current position, buffering state, error state and settings
 /// of a [VideoPlayerController].
 class VideoPlayerValue {
+  VideoPlayerValue({
+    @required this.duration,
+    this.size,
+    this.position = const Duration(),
+    this.buffered = const <DurationRange>[],
+    this.isPlaying = false,
+    this.isLooping = false,
+    this.isBuffering = false,
+    this.volume = 1.0,
+    this.errorDescription,
+  });
+
+  VideoPlayerValue.uninitialized() : this(duration: null);
+
+  VideoPlayerValue.erroneous(String errorDescription)
+      : this(duration: null, errorDescription: errorDescription);
+
   /// The total duration of the video.
   ///
   /// Is null when [initialized] is false.
@@ -67,23 +84,6 @@ class VideoPlayerValue {
   ///
   /// Is null when [initialized] is false.
   final Size size;
-
-  VideoPlayerValue({
-    @required this.duration,
-    this.size,
-    this.position = const Duration(),
-    this.buffered = const <DurationRange>[],
-    this.isPlaying = false,
-    this.isLooping = false,
-    this.isBuffering = false,
-    this.volume = 1.0,
-    this.errorDescription,
-  });
-
-  VideoPlayerValue.uninitialized() : this(duration: null);
-
-  VideoPlayerValue.erroneous(String errorDescription)
-      : this(duration: null, errorDescription: errorDescription);
 
   bool get initialized => duration != null;
   bool get hasError => errorDescription != null;
@@ -141,20 +141,6 @@ enum DataSourceType { asset, network, file }
 ///
 /// After [dispose] all further calls are ignored.
 class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
-  int _textureId;
-  final String dataSource;
-
-  /// Describes the type of data source this [VideoPlayerController]
-  /// is constructed with.
-  final DataSourceType dataSourceType;
-
-  final String package;
-  Timer _timer;
-  bool _isDisposed = false;
-  Completer<void> _creatingCompleter;
-  StreamSubscription<dynamic> _eventSubscription;
-  _VideoAppLifeCycleObserver _lifeCycleObserver;
-
   /// Constructs a [VideoPlayerController] playing a video from an asset.
   ///
   /// The name of the asset is given by the [dataSource] argument and must not be
@@ -183,6 +169,20 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         dataSourceType = DataSourceType.file,
         package = null,
         super(VideoPlayerValue(duration: null));
+
+  int _textureId;
+  final String dataSource;
+
+  /// Describes the type of data source this [VideoPlayerController]
+  /// is constructed with.
+  final DataSourceType dataSourceType;
+
+  final String package;
+  Timer _timer;
+  bool _isDisposed = false;
+  Completer<void> _creatingCompleter;
+  StreamSubscription<dynamic> _eventSubscription;
+  _VideoAppLifeCycleObserver _lifeCycleObserver;
 
   @visibleForTesting
   int get textureId => _textureId;
@@ -394,10 +394,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 }
 
 class _VideoAppLifeCycleObserver extends Object with WidgetsBindingObserver {
+  _VideoAppLifeCycleObserver(this._controller);
+
   bool _wasPlayingBeforePause = false;
   final VideoPlayerController _controller;
-
-  _VideoAppLifeCycleObserver(this._controller);
 
   void initialize() {
     WidgetsBinding.instance.addObserver(this);
@@ -426,18 +426,15 @@ class _VideoAppLifeCycleObserver extends Object with WidgetsBindingObserver {
 
 /// Displays the video controlled by [controller].
 class VideoPlayer extends StatefulWidget {
-  final VideoPlayerController controller;
-
   VideoPlayer(this.controller);
+
+  final VideoPlayerController controller;
 
   @override
   _VideoPlayerState createState() => _VideoPlayerState();
 }
 
 class _VideoPlayerState extends State<VideoPlayer> {
-  VoidCallback _listener;
-  int _textureId;
-
   _VideoPlayerState() {
     _listener = () {
       final int newTextureId = widget.controller.textureId;
@@ -448,6 +445,9 @@ class _VideoPlayerState extends State<VideoPlayer> {
       }
     };
   }
+
+  VoidCallback _listener;
+  int _textureId;
 
   @override
   void initState() {
@@ -479,25 +479,25 @@ class _VideoPlayerState extends State<VideoPlayer> {
 }
 
 class VideoProgressColors {
-  final Color playedColor;
-  final Color bufferedColor;
-  final Color backgroundColor;
-
   VideoProgressColors({
     this.playedColor = const Color.fromRGBO(255, 0, 0, 0.7),
     this.bufferedColor = const Color.fromRGBO(50, 50, 200, 0.2),
     this.backgroundColor = const Color.fromRGBO(200, 200, 200, 0.5),
   });
+
+  final Color playedColor;
+  final Color bufferedColor;
+  final Color backgroundColor;
 }
 
 class _VideoScrubber extends StatefulWidget {
-  final Widget child;
-  final VideoPlayerController controller;
-
   _VideoScrubber({
     @required this.child,
     @required this.controller,
   });
+
+  final Widget child;
+  final VideoPlayerController controller;
 
   @override
   _VideoScrubberState createState() => _VideoScrubberState();
@@ -559,11 +559,6 @@ class _VideoScrubberState extends State<_VideoScrubber> {
 /// [padding] allows to specify some extra padding around the progress indicator
 /// that will also detect the gestures.
 class VideoProgressIndicator extends StatefulWidget {
-  final VideoPlayerController controller;
-  final VideoProgressColors colors;
-  final bool allowScrubbing;
-  final EdgeInsets padding;
-
   VideoProgressIndicator(
     this.controller, {
     VideoProgressColors colors,
@@ -571,13 +566,16 @@ class VideoProgressIndicator extends StatefulWidget {
     this.padding = const EdgeInsets.only(top: 5.0),
   }) : colors = colors ?? VideoProgressColors();
 
+  final VideoPlayerController controller;
+  final VideoProgressColors colors;
+  final bool allowScrubbing;
+  final EdgeInsets padding;
+
   @override
   _VideoProgressIndicatorState createState() => _VideoProgressIndicatorState();
 }
 
 class _VideoProgressIndicatorState extends State<VideoProgressIndicator> {
-  VoidCallback listener;
-
   _VideoProgressIndicatorState() {
     listener = () {
       if (!mounted) {
@@ -586,6 +584,8 @@ class _VideoProgressIndicatorState extends State<VideoProgressIndicator> {
       setState(() {});
     };
   }
+
+  VoidCallback listener;
 
   VideoPlayerController get controller => widget.controller;
   VideoProgressColors get colors => widget.colors;

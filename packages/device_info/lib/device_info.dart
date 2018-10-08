@@ -8,11 +8,11 @@ import 'package:flutter/services.dart';
 
 /// Provides device and operating system information.
 class DeviceInfoPlugin {
+  DeviceInfoPlugin();
+
   /// Channel used to communicate to native code.
   static const MethodChannel channel =
       MethodChannel('plugins.flutter.io/device_info');
-
-  DeviceInfoPlugin();
 
   /// This information does not change from call to call. Cache it.
   AndroidDeviceInfo _cachedAndroidDeviceInfo;

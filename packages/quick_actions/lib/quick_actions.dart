@@ -17,6 +17,12 @@ typedef void QuickActionHandler(String type);
 
 /// Home screen quick-action shortcut item.
 class ShortcutItem {
+  const ShortcutItem({
+    @required this.type,
+    @required this.localizedTitle,
+    this.icon,
+  });
+
   /// The identifier of this item; should be unique within the app.
   final String type;
 
@@ -26,12 +32,6 @@ class ShortcutItem {
   /// Name of native resource (xcassets etc; NOT a Flutter asset) to be
   /// displayed as the icon for this item.
   final String icon;
-
-  const ShortcutItem({
-    @required this.type,
-    @required this.localizedTitle,
-    this.icon,
-  });
 }
 
 /// Quick actions plugin.
