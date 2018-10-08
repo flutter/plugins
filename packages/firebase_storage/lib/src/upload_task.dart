@@ -5,11 +5,12 @@
 part of firebase_storage;
 
 abstract class StorageUploadTask {
+  StorageUploadTask._(this._firebaseStorage, this._ref, this._metadata);
+
   final FirebaseStorage _firebaseStorage;
   final StorageReference _ref;
   final StorageMetadata _metadata;
 
-  StorageUploadTask._(this._firebaseStorage, this._ref, this._metadata);
   Future<dynamic> _platformStart();
 
   int _handle;
@@ -119,10 +120,11 @@ abstract class StorageUploadTask {
 }
 
 class _StorageFileUploadTask extends StorageUploadTask {
-  final File _file;
   _StorageFileUploadTask._(this._file, FirebaseStorage firebaseStorage,
       StorageReference ref, StorageMetadata metadata)
       : super._(firebaseStorage, ref, metadata);
+
+  final File _file;
 
   @override
   Future<dynamic> _platformStart() {
@@ -141,10 +143,11 @@ class _StorageFileUploadTask extends StorageUploadTask {
 }
 
 class _StorageDataUploadTask extends StorageUploadTask {
-  final Uint8List _bytes;
   _StorageDataUploadTask._(this._bytes, FirebaseStorage firebaseStorage,
       StorageReference ref, StorageMetadata metadata)
       : super._(firebaseStorage, ref, metadata);
+
+  final Uint8List _bytes;
 
   @override
   Future<dynamic> _platformStart() {

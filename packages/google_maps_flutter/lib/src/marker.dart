@@ -62,6 +62,25 @@ class InfoWindowText {
 /// When used to change configuration, null values will be interpreted as
 /// "do not change this configuration option".
 class MarkerOptions {
+  /// Creates a set of marker configuration options.
+  ///
+  /// By default, every non-specified field is null, meaning no desire to change
+  /// marker defaults or current configuration.
+  const MarkerOptions({
+    this.alpha,
+    this.anchor,
+    this.consumeTapEvents,
+    this.draggable,
+    this.flat,
+    this.icon,
+    this.infoWindowAnchor,
+    this.infoWindowText,
+    this.position,
+    this.rotation,
+    this.visible,
+    this.zIndex,
+  }) : assert(alpha == null || (0.0 <= alpha && alpha <= 1.0));
+
   /// The opacity of the marker, between 0.0 and 1.0 inclusive.
   ///
   /// 0.0 means fully transparent, 1.0 means fully opaque.
@@ -115,25 +134,6 @@ class MarkerOptions {
   /// Overlays are drawn in order of z-index, so that lower values means drawn
   /// earlier, and thus appearing to be closer to the surface of the Earth.
   final double zIndex;
-
-  /// Creates a set of marker configuration options.
-  ///
-  /// By default, every non-specified field is null, meaning no desire to change
-  /// marker defaults or current configuration.
-  const MarkerOptions({
-    this.alpha,
-    this.anchor,
-    this.consumeTapEvents,
-    this.draggable,
-    this.flat,
-    this.icon,
-    this.infoWindowAnchor,
-    this.infoWindowText,
-    this.position,
-    this.rotation,
-    this.visible,
-    this.zIndex,
-  }) : assert(alpha == null || (0.0 <= alpha && alpha <= 1.0));
 
   /// Default marker options.
   ///

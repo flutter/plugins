@@ -16,9 +16,9 @@ export 'widgets.dart';
 enum SignInOption { standard, games }
 
 class GoogleSignInAuthentication {
-  final Map<dynamic, dynamic> _data;
-
   GoogleSignInAuthentication._(this._data);
+
+  final Map<dynamic, dynamic> _data;
 
   /// An OpenID Connect ID token that identifies the user.
   String get idToken => _data['idToken'];
@@ -143,34 +143,6 @@ class GoogleSignInAccount implements GoogleIdentity {
 
 /// GoogleSignIn allows you to authenticate Google users.
 class GoogleSignIn {
-  // These error codes must match with ones declared on Android and iOS sides.
-
-  /// Error code indicating there is no signed in user and interactive sign in
-  /// flow is required.
-  static const String kSignInRequiredError = 'sign_in_required';
-
-  /// Error code indicating that interactive sign in process was canceled by the
-  /// user.
-  static const String kSignInCanceledError = 'sign_in_canceled';
-
-  /// Error code indicating that attempt to sign in failed.
-  static const String kSignInFailedError = 'sign_in_failed';
-
-  /// The [MethodChannel] over which this class communicates.
-  @visibleForTesting
-  static const MethodChannel channel =
-      MethodChannel('plugins.flutter.io/google_sign_in');
-
-  /// Option to determine the sign in user experience. [SignInOption.games] must
-  /// not be used on iOS.
-  final SignInOption signInOption;
-
-  /// The list of [scopes] are OAuth scope codes requested when signing in.
-  final List<String> scopes;
-
-  /// Domain to restrict sign-in to.
-  final String hostedDomain;
-
   /// Initializes global sign-in configuration settings.
   ///
   /// The [signInOption] determines the user experience. [SigninOption.games]
@@ -200,6 +172,34 @@ class GoogleSignIn {
   factory GoogleSignIn.games() {
     return GoogleSignIn(signInOption: SignInOption.games);
   }
+
+  // These error codes must match with ones declared on Android and iOS sides.
+
+  /// Error code indicating there is no signed in user and interactive sign in
+  /// flow is required.
+  static const String kSignInRequiredError = 'sign_in_required';
+
+  /// Error code indicating that interactive sign in process was canceled by the
+  /// user.
+  static const String kSignInCanceledError = 'sign_in_canceled';
+
+  /// Error code indicating that attempt to sign in failed.
+  static const String kSignInFailedError = 'sign_in_failed';
+
+  /// The [MethodChannel] over which this class communicates.
+  @visibleForTesting
+  static const MethodChannel channel =
+      MethodChannel('plugins.flutter.io/google_sign_in');
+
+  /// Option to determine the sign in user experience. [SignInOption.games] must
+  /// not be used on iOS.
+  final SignInOption signInOption;
+
+  /// The list of [scopes] are OAuth scope codes requested when signing in.
+  final List<String> scopes;
+
+  /// Domain to restrict sign-in to.
+  final String hostedDomain;
 
   StreamController<GoogleSignInAccount> _currentUserController =
       StreamController<GoogleSignInAccount>.broadcast();
@@ -336,11 +336,11 @@ class GoogleSignIn {
 }
 
 class _MethodCompleter {
+  _MethodCompleter(this.method);
+
   final String method;
   final Completer<GoogleSignInAccount> _completer =
       Completer<GoogleSignInAccount>();
-
-  _MethodCompleter(this.method);
 
   void complete(FutureOr<GoogleSignInAccount> value) {
     if (value is Future<GoogleSignInAccount>) {

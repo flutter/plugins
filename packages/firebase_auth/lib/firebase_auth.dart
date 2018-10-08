@@ -10,18 +10,18 @@ import 'package:meta/meta.dart';
 /// Represents user data returned from an identity provider.
 
 class FirebaseUserMetadata {
-  final Map<dynamic, dynamic> _data;
-
   FirebaseUserMetadata._(this._data);
+
+  final Map<dynamic, dynamic> _data;
 
   int get creationTimestamp => _data['creationTimestamp'];
   int get lastSignInTimestamp => _data['lastSignInTimestamp'];
 }
 
 class UserInfo {
-  final Map<dynamic, dynamic> _data;
-
   UserInfo._(this._data);
+
+  final Map<dynamic, dynamic> _data;
 
   /// The provider identifier.
   String get providerId => _data['providerId'];
@@ -66,15 +66,15 @@ class UserUpdateInfo {
 
 /// Represents a user.
 class FirebaseUser extends UserInfo {
-  final List<UserInfo> providerData;
-  final FirebaseUserMetadata _metadata;
-
   FirebaseUser._(Map<dynamic, dynamic> data)
       : providerData = data['providerData']
             .map<UserInfo>((dynamic item) => UserInfo._(item))
             .toList(),
         _metadata = FirebaseUserMetadata._(data),
         super._(data);
+
+  final List<UserInfo> providerData;
+  final FirebaseUserMetadata _metadata;
 
   // Returns true if the user is anonymous; that is, the user account was
   // created with signInAnonymously() and has not been linked to another
@@ -143,9 +143,10 @@ class FirebaseUser extends UserInfo {
 }
 
 class AuthException implements Exception {
+  const AuthException(this.code, this.message);
+
   final String code;
   final String message;
-  const AuthException(this.code, this.message);
 }
 
 typedef void PhoneVerificationCompleted(FirebaseUser firebaseUser);
@@ -154,6 +155,15 @@ typedef void PhoneCodeSent(String verificationId, [int forceResendingToken]);
 typedef void PhoneCodeAutoRetrievalTimeout(String verificationId);
 
 class FirebaseAuth {
+  FirebaseAuth._() {
+    channel.setMethodCallHandler(_callHandler);
+  }
+
+  /// Provides an instance of this class corresponding to the default app.
+  ///
+  /// TODO(jackson): Support for non-default apps.
+  static FirebaseAuth instance = FirebaseAuth._();
+
   @visibleForTesting
   static const MethodChannel channel = MethodChannel(
     'plugins.flutter.io/firebase_auth',
@@ -165,15 +175,6 @@ class FirebaseAuth {
   static int nextHandle = 0;
   final Map<int, Map<String, dynamic>> _phoneAuthCallbacks =
       <int, Map<String, dynamic>>{};
-
-  /// Provides an instance of this class corresponding to the default app.
-  ///
-  /// TODO(jackson): Support for non-default apps.
-  static FirebaseAuth instance = FirebaseAuth._();
-
-  FirebaseAuth._() {
-    channel.setMethodCallHandler(_callHandler);
-  }
 
   /// Receive [FirebaseUser] each time the user signIn or signOut
   Stream<FirebaseUser> get onAuthStateChanged {

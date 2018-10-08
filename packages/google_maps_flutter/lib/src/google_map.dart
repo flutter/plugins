@@ -12,7 +12,7 @@ class GoogleMap extends StatefulWidget {
     GoogleMapOptions options,
     this.gestureRecognizers = const <OneSequenceGestureRecognizer>[],
   })  : assert(gestureRecognizers != null),
-        this.options = GoogleMapOptions.defaultOptions.copyWith(options);
+        options = GoogleMapOptions.defaultOptions.copyWith(options);
 
   final MapCreatedCallback onMapCreated;
 
