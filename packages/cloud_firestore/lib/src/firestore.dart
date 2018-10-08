@@ -8,25 +8,7 @@ part of cloud_firestore;
 ///
 /// You can get an instance by calling [Firestore.instance].
 class Firestore {
-  @visibleForTesting
-  static const MethodChannel channel = MethodChannel(
-    'plugins.flutter.io/cloud_firestore',
-    StandardMethodCodec(FirestoreMessageCodec()),
-  );
-
-  static final Map<int, StreamController<QuerySnapshot>> _queryObservers =
-      <int, StreamController<QuerySnapshot>>{};
-
-  static final Map<int, StreamController<DocumentSnapshot>> _documentObservers =
-      <int, StreamController<DocumentSnapshot>>{};
-
-  static final Map<int, TransactionHandler> _transactionHandlers =
-      <int, TransactionHandler>{};
-  static int _transactionHandlerId = 0;
-
-  static bool _initialized = false;
-
-  Firestore({FirebaseApp app}) : this.app = app ?? FirebaseApp.instance {
+  Firestore({FirebaseApp app}) : app = app ?? FirebaseApp.instance {
     if (_initialized) return;
     channel.setMethodCallHandler((MethodCall call) async {
       if (call.method == 'QuerySnapshot') {
@@ -56,6 +38,24 @@ class Firestore {
   ///
   /// If null, the default [FirebaseApp] is used.
   final FirebaseApp app;
+
+  static bool _initialized = false;
+
+  @visibleForTesting
+  static const MethodChannel channel = MethodChannel(
+    'plugins.flutter.io/cloud_firestore',
+    StandardMethodCodec(FirestoreMessageCodec()),
+  );
+
+  static final Map<int, StreamController<QuerySnapshot>> _queryObservers =
+      <int, StreamController<QuerySnapshot>>{};
+
+  static final Map<int, StreamController<DocumentSnapshot>> _documentObservers =
+      <int, StreamController<DocumentSnapshot>>{};
+
+  static final Map<int, TransactionHandler> _transactionHandlers =
+      <int, TransactionHandler>{};
+  static int _transactionHandlerId = 0;
 
   @override
   bool operator ==(dynamic o) => o is Firestore && o.app == app;
