@@ -2,7 +2,7 @@
 
 [![pub package](https://img.shields.io/pub/v/firebase_ml_vision.svg)](https://pub.dartlang.org/packages/firebase_ml_vision)
 
-A Flutter plugin to use the [Google ML Kit for Firebase API](https://firebase.google.com/docs/ml-kit/).
+A Flutter plugin to use the [ML Kit for Firebase API](https://firebase.google.com/docs/ml-kit/).
 
 For Flutter plugins for other Firebase products, see [FlutterFire.md](https://github.com/flutter/plugins/blob/master/FlutterFire.md).
 
@@ -153,4 +153,4 @@ for (TextBlock block in visionText.blocks) {
 
 ## Getting Started
 
-See the `example` directory for a complete sample app using Google ML Kit for Firebase.
+See the `example` directory for a complete sample app using ML Kit for Firebase.

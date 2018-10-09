@@ -24,7 +24,7 @@ class FirebaseVision {
   /// Use this get an instance of a detector:
   ///
   /// ```dart
-  /// TextRecognizer textDetector = FirebaseVision.instance.textDetector();
+  /// TextRecognizer textRecognizer = FirebaseVision.instance.textRecognizer();
   /// ```
   static final FirebaseVision instance = FirebaseVision._();
 

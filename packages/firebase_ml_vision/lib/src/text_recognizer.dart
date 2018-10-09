@@ -20,7 +20,7 @@ class TextRecognizer implements FirebaseVisionDetector {
   Future<VisionText> processImage(FirebaseVisionImage visionImage) async {
     final Map<dynamic, dynamic> reply =
         await FirebaseVision.channel.invokeMethod(
-      'TextRecognizer#detectInImage',
+      'TextRecognizer#processImage',
       <String, dynamic>{
         'path': visionImage.imageFile.path,
         'options': <String, dynamic>{},
@@ -33,6 +33,7 @@ class TextRecognizer implements FirebaseVisionDetector {
   /// Detects [VisionText] from a [FirebaseVisionImage].
   ///
   /// The OCR is performed asynchronously.
+  @Deprecated('Please use `processImage`')
   @override
   Future<VisionText> detectInImage(FirebaseVisionImage visionImage) async {
     return processImage(visionImage);
