@@ -8,15 +8,15 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  runApp(new MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
+    return MaterialApp(
       title: 'SharedPreferences Demo',
-      home: new SharedPreferencesDemo(),
+      home: SharedPreferencesDemo(),
     );
   }
 }
@@ -25,7 +25,7 @@ class SharedPreferencesDemo extends StatefulWidget {
   SharedPreferencesDemo({Key key}) : super(key: key);
 
   @override
-  SharedPreferencesDemoState createState() => new SharedPreferencesDemoState();
+  SharedPreferencesDemoState createState() => SharedPreferencesDemoState();
 }
 
 class SharedPreferencesDemoState extends State<SharedPreferencesDemo> {
@@ -53,12 +53,12 @@ class SharedPreferencesDemoState extends State<SharedPreferencesDemo> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
+    return Scaffold(
+      appBar: AppBar(
         title: const Text("SharedPreferences Demo"),
       ),
-      body: new Center(
-          child: new FutureBuilder<int>(
+      body: Center(
+          child: FutureBuilder<int>(
               future: _counter,
               builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
                 switch (snapshot.connectionState) {
@@ -66,15 +66,15 @@ class SharedPreferencesDemoState extends State<SharedPreferencesDemo> {
                     return const CircularProgressIndicator();
                   default:
                     if (snapshot.hasError)
-                      return new Text('Error: ${snapshot.error}');
+                      return Text('Error: ${snapshot.error}');
                     else
-                      return new Text(
+                      return Text(
                         'Button tapped ${snapshot.data} time${snapshot.data == 1 ? '' : 's'}.\n\n'
                             'This should persist across restarts.',
                       );
                 }
               })),
-      floatingActionButton: new FloatingActionButton(
+      floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
         tooltip: 'Increment',
         child: const Icon(Icons.add),

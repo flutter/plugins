@@ -7,7 +7,6 @@
 #import "UrlLauncherPlugin.h"
 
 @interface FLTUrlLaunchSession : NSObject<SFSafariViewControllerDelegate>
-@property(nonatomic) UIStatusBarStyle previousStatusBarStyle;
 @end
 
 @implementation FLTUrlLaunchSession {
@@ -26,10 +25,6 @@
 
 - (void)safariViewController:(SFSafariViewController *)controller
       didCompleteInitialLoad:(BOOL)didLoadSuccessfully {
-  if (_previousStatusBarStyle != nil) {
-    UIApplication *application = [UIApplication sharedApplication];
-    application.statusBarStyle = _previousStatusBarStyle;
-  }
   if (didLoadSuccessfully) {
     _flutterResult(nil);
   } else {
@@ -49,7 +44,6 @@
 @implementation FLTUrlLauncherPlugin {
   UIViewController *_viewController;
   FLTUrlLaunchSession *_currentSession;
-  UIStatusBarStyle _previousStatusBarStyle;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -77,14 +71,6 @@
     result(@([self canLaunchURL:url]));
   } else if ([@"launch" isEqualToString:call.method]) {
     NSNumber *useSafariVC = call.arguments[@"useSafariVC"];
-    NSString *brightness = call.arguments[@"statusBarBrightness"];
-    UIApplication *application = [UIApplication sharedApplication];
-    _previousStatusBarStyle = application.statusBarStyle;
-    if ([brightness isEqualToString:@"Brightness.light"]) {
-      application.statusBarStyle = UIStatusBarStyleDefault;
-    } else if ([brightness isEqualToString:@"Brightness.dark"]) {
-      application.statusBarStyle = UIStatusBarStyleLightContent;
-    }
     if (useSafariVC.boolValue) {
       [self launchURLInVC:url result:result];
     } else {
@@ -108,10 +94,6 @@
     [application openURL:url
         options:@{}
         completionHandler:^(BOOL success) {
-          if (self->_previousStatusBarStyle != nil) {
-            UIApplication *application = [UIApplication sharedApplication];
-            application.statusBarStyle = self->_previousStatusBarStyle;
-          }
           if (success) {
             result(nil);
           } else {
@@ -139,7 +121,6 @@
 
   SFSafariViewController *safari = [[SFSafariViewController alloc] initWithURL:url];
   _currentSession = [[FLTUrlLaunchSession alloc] initWithUrl:url withFlutterResult:result];
-  _currentSession.previousStatusBarStyle = _previousStatusBarStyle;
   safari.delegate = _currentSession;
   [_viewController presentViewController:safari animated:YES completion:nil];
 }

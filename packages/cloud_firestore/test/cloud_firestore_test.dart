@@ -35,9 +35,9 @@ void main() {
           gcmSenderID: '1234567890',
         ),
       );
-      firestore = new Firestore(app: app);
+      firestore = Firestore(app: app);
       collectionReference = firestore.collection('foo');
-      transaction = new Transaction(0, firestore);
+      transaction = Transaction(0, firestore);
       Firestore.channel.setMockMethodCallHandler((MethodCall methodCall) async {
         log.add(methodCall);
         switch (methodCall.method) {
@@ -45,11 +45,11 @@ void main() {
             final int handle = mockHandleId++;
             // Wait before sending a message back.
             // Otherwise the first request didn't have the time to finish.
-            new Future<void>.delayed(Duration.zero).then<void>((_) {
+            Future<void>.delayed(Duration.zero).then<void>((_) {
               BinaryMessages.handlePlatformMessage(
                 Firestore.channel.name,
                 Firestore.channel.codec.encodeMethodCall(
-                  new MethodCall('QuerySnapshot', <String, dynamic>{
+                  MethodCall('QuerySnapshot', <String, dynamic>{
                     'app': app.name,
                     'handle': handle,
                     'paths': <String>["${methodCall.arguments['path']}/0"],
@@ -72,11 +72,11 @@ void main() {
             final int handle = mockHandleId++;
             // Wait before sending a message back.
             // Otherwise the first request didn't have the time to finish.
-            new Future<void>.delayed(Duration.zero).then<void>((_) {
+            Future<void>.delayed(Duration.zero).then<void>((_) {
               BinaryMessages.handlePlatformMessage(
                 Firestore.channel.name,
                 Firestore.channel.codec.encodeMethodCall(
-                  new MethodCall('DocumentSnapshot', <String, dynamic>{
+                  MethodCall('DocumentSnapshot', <String, dynamic>{
                     'handle': handle,
                     'path': methodCall.arguments['path'],
                     'data': kMockDocumentSnapshotData,
@@ -110,7 +110,7 @@ void main() {
             } else if (methodCall.arguments['path'] == 'foo/notExists') {
               return <String, dynamic>{'path': 'foo/notExists', 'data': null};
             }
-            throw new PlatformException(code: 'UNKNOWN_PATH');
+            throw PlatformException(code: 'UNKNOWN_PATH');
           case 'Firestore#runTransaction':
             return <String, dynamic>{'1': 3};
           case 'Transaction#get':
@@ -122,7 +122,7 @@ void main() {
             } else if (methodCall.arguments['path'] == 'foo/notExists') {
               return <String, dynamic>{'path': 'foo/notExists', 'data': null};
             }
-            throw new PlatformException(code: 'UNKNOWN_PATH');
+            throw PlatformException(code: 'UNKNOWN_PATH');
           case 'Transaction#set':
             return null;
           case 'Transaction#update':
@@ -139,9 +139,9 @@ void main() {
     });
 
     test('multiple apps', () async {
-      expect(Firestore.instance, equals(new Firestore()));
-      final FirebaseApp app = new FirebaseApp(name: firestore.app.name);
-      expect(firestore, equals(new Firestore(app: app)));
+      expect(Firestore.instance, equals(Firestore()));
+      final FirebaseApp app = FirebaseApp(name: firestore.app.name);
+      expect(firestore, equals(Firestore(app: app)));
     });
 
     group('Transaction', () {
@@ -244,21 +244,21 @@ void main() {
 
     group('Blob', () {
       test('hashCode equality', () async {
-        final Uint8List bytesA = new Uint8List(8);
+        final Uint8List bytesA = Uint8List(8);
         bytesA.setAll(0, <int>[0, 2, 4, 6, 8, 10, 12, 14]);
-        final Blob a = new Blob(bytesA);
-        final Uint8List bytesB = new Uint8List(8);
+        final Blob a = Blob(bytesA);
+        final Uint8List bytesB = Uint8List(8);
         bytesB.setAll(0, <int>[0, 2, 4, 6, 8, 10, 12, 14]);
-        final Blob b = new Blob(bytesB);
+        final Blob b = Blob(bytesB);
         expect(a.hashCode == b.hashCode, isTrue);
       });
       test('hashCode not equal', () async {
-        final Uint8List bytesA = new Uint8List(8);
+        final Uint8List bytesA = Uint8List(8);
         bytesA.setAll(0, <int>[0, 2, 4, 6, 8, 10, 12, 14]);
-        final Blob a = new Blob(bytesA);
-        final Uint8List bytesB = new Uint8List(8);
+        final Blob a = Blob(bytesA);
+        final Uint8List bytesB = Uint8List(8);
         bytesB.setAll(0, <int>[1, 2, 4, 6, 8, 10, 12, 14]);
-        final Blob b = new Blob(bytesB);
+        final Blob b = Blob(bytesB);
         expect(a.hashCode == b.hashCode, isFalse);
       });
     });
@@ -279,7 +279,7 @@ void main() {
         expect(document.reference.path, equals('foo/0'));
         expect(document.data, equals(kMockDocumentSnapshotData));
         // Flush the async removeListener call
-        await new Future<Null>.delayed(Duration.zero);
+        await Future<Null>.delayed(Duration.zero);
         expect(log, <Matcher>[
           isMethodCall(
             'Query#addSnapshotListener',
@@ -305,7 +305,7 @@ void main() {
                 .snapshots()
                 .listen((QuerySnapshot querySnapshot) {});
         subscription.cancel();
-        await new Future<Null>.delayed(Duration.zero);
+        await Future<Null>.delayed(Duration.zero);
         expect(
           log,
           equals(<Matcher>[
@@ -336,7 +336,7 @@ void main() {
                 .snapshots()
                 .listen((QuerySnapshot querySnapshot) {});
         subscription.cancel();
-        await new Future<Null>.delayed(Duration.zero);
+        await Future<Null>.delayed(Duration.zero);
         expect(
           log,
           equals(<Matcher>[
@@ -367,7 +367,7 @@ void main() {
                 .snapshots()
                 .listen((QuerySnapshot querySnapshot) {});
         subscription.cancel();
-        await new Future<Null>.delayed(Duration.zero);
+        await Future<Null>.delayed(Duration.zero);
         expect(
           log,
           equals(<Matcher>[
@@ -401,7 +401,7 @@ void main() {
         expect(snapshot.reference.path, equals('path/to/foo'));
         expect(snapshot.data, equals(kMockDocumentSnapshotData));
         // Flush the async removeListener call
-        await new Future<Null>.delayed(Duration.zero);
+        await Future<Null>.delayed(Duration.zero);
         expect(
           log,
           <Matcher>[
@@ -558,7 +558,7 @@ void main() {
 
     group('FirestoreMessageCodec', () {
       const MessageCodec<dynamic> codec = FirestoreMessageCodec();
-      final DateTime testTime = new DateTime(2015, 10, 30, 11, 16);
+      final DateTime testTime = DateTime(2015, 10, 30, 11, 16);
       test('should encode and decode simple messages', () {
         _checkEncodeDecode<dynamic>(codec, testTime);
         _checkEncodeDecode<dynamic>(
@@ -574,9 +574,9 @@ void main() {
         _checkEncodeDecode<dynamic>(codec, message);
       });
       test('encode and decode blob', () {
-        final Uint8List bytes = new Uint8List(4);
+        final Uint8List bytes = Uint8List(4);
         bytes[0] = 128;
-        final Blob message = new Blob(bytes);
+        final Blob message = Blob(bytes);
         _checkEncodeDecode<dynamic>(codec, message);
       });
 

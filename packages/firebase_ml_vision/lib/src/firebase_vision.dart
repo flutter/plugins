@@ -26,7 +26,7 @@ class FirebaseVision {
   /// ```dart
   /// TextRecognizer textDetector = FirebaseVision.instance.textDetector();
   /// ```
-  static final FirebaseVision instance = new FirebaseVision._();
+  static final FirebaseVision instance = FirebaseVision._();
 
   /// Creates an instance of [BarcodeDetector].
   BarcodeDetector barcodeDetector([BarcodeDetectorOptions options]) {
@@ -67,7 +67,7 @@ class FirebaseVisionImage {
   /// Construct a [FirebaseVisionImage] from a file path.
   factory FirebaseVisionImage.fromFilePath(String imagePath) {
     assert(imagePath != null);
-    return FirebaseVisionImage._(new File(imagePath));
+    return FirebaseVisionImage._(File(imagePath));
   }
 
   /// The file location of the image.

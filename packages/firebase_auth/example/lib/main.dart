@@ -10,18 +10,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
-final GoogleSignIn _googleSignIn = new GoogleSignIn();
+final GoogleSignIn _googleSignIn = GoogleSignIn();
 
 void main() {
-  runApp(new MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
+    return MaterialApp(
       title: 'Firebase Auth Demo',
-      home: new MyHomePage(title: 'Firebase Auth Demo'),
+      home: MyHomePage(title: 'Firebase Auth Demo'),
     );
   }
 }
@@ -32,12 +32,12 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  _MyHomePageState createState() => new _MyHomePageState();
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Future<String> _message = new Future<String>.value('');
-  TextEditingController _smsCodeController = new TextEditingController();
+  Future<String> _message = Future<String>.value('');
+  TextEditingController _smsCodeController = TextEditingController();
   String verificationId;
   final String testSmsCode = '888888';
   final String testPhoneNumber = '+1 408-555-6969';
@@ -99,7 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
         (AuthException authException) {
       setState(() {
         _message = Future<String>.value(
-            'Phone numbber verification failed. Code: ${authException.code}. Message: ${authException.message}');
+            'Phone number verification failed. Code: ${authException.code}. Message: ${authException.message}');
       });
     };
 
@@ -139,47 +139,47 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text(widget.title),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
       ),
-      body: new Column(
+      body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          new MaterialButton(
+          MaterialButton(
               child: const Text('Test signInAnonymously'),
               onPressed: () {
                 setState(() {
                   _message = _testSignInAnonymously();
                 });
               }),
-          new MaterialButton(
+          MaterialButton(
               child: const Text('Test signInWithGoogle'),
               onPressed: () {
                 setState(() {
                   _message = _testSignInWithGoogle();
                 });
               }),
-          new MaterialButton(
+          MaterialButton(
               child: const Text('Test verifyPhoneNumber'),
               onPressed: () {
                 _testVerifyPhoneNumber();
               }),
-          new Container(
+          Container(
             margin: const EdgeInsets.only(
               top: 8.0,
               bottom: 8.0,
               left: 16.0,
               right: 16.0,
             ),
-            child: new TextField(
+            child: TextField(
               controller: _smsCodeController,
               decoration: const InputDecoration(
                 hintText: 'SMS Code',
               ),
             ),
           ),
-          new MaterialButton(
+          MaterialButton(
               child: const Text('Test signInWithPhoneNumber'),
               onPressed: () {
                 if (_smsCodeController.text != null) {
@@ -189,10 +189,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   });
                 }
               }),
-          new FutureBuilder<String>(
+          FutureBuilder<String>(
               future: _message,
               builder: (_, AsyncSnapshot<String> snapshot) {
-                return new Text(snapshot.data ?? '',
+                return Text(snapshot.data ?? '',
                     style:
                         const TextStyle(color: Color.fromARGB(255, 0, 155, 0)));
               }),

@@ -11,9 +11,6 @@ import 'package:flutter/foundation.dart';
 
 /// Firebase Analytics API.
 class FirebaseAnalytics {
-  static final FirebaseAnalytics _instance = new FirebaseAnalytics.private(
-      const MethodChannel('plugins.flutter.io/firebase_analytics'));
-
   /// Provides an instance of this class.
   factory FirebaseAnalytics() => _instance;
 
@@ -23,8 +20,11 @@ class FirebaseAnalytics {
   FirebaseAnalytics.private(MethodChannel platformChannel)
       : _channel = platformChannel,
         android = defaultTargetPlatform == TargetPlatform.android
-            ? new FirebaseAnalyticsAndroid.private(platformChannel)
+            ? FirebaseAnalyticsAndroid.private(platformChannel)
             : null;
+
+  static final FirebaseAnalytics _instance = FirebaseAnalytics.private(
+      const MethodChannel('plugins.flutter.io/firebase_analytics'));
 
   final MethodChannel _channel;
 
@@ -44,14 +44,14 @@ class FirebaseAnalytics {
   Future<Null> logEvent(
       {@required String name, Map<String, dynamic> parameters}) async {
     if (_reservedEventNames.contains(name)) {
-      throw new ArgumentError.value(
+      throw ArgumentError.value(
           name, 'name', 'Event name is reserved and cannot be used');
     }
 
     const String kReservedPrefix = 'firebase_';
 
     if (name.startsWith(kReservedPrefix)) {
-      throw new ArgumentError.value(name, 'name',
+      throw ArgumentError.value(name, 'name',
           'Prefix "$kReservedPrefix" is reserved and cannot be used.');
     }
 
@@ -68,7 +68,7 @@ class FirebaseAnalytics {
   /// [1]: https://www.google.com/policies/privacy/
   Future<Null> setUserId(String id) async {
     if (id == null) {
-      throw new ArgumentError.notNull('id');
+      throw ArgumentError.notNull('id');
     }
 
     await _channel.invokeMethod('setUserId', id);
@@ -95,7 +95,7 @@ class FirebaseAnalytics {
       {@required String screenName,
       String screenClassOverride = 'Flutter'}) async {
     if (screenName == null) {
-      throw new ArgumentError.notNull('screenName');
+      throw ArgumentError.notNull('screenName');
     }
 
     await _channel.invokeMethod('setCurrentScreen', <String, String>{
@@ -104,8 +104,8 @@ class FirebaseAnalytics {
     });
   }
 
-  static final RegExp _nonAlphaNumeric = new RegExp(r'[^a-zA-Z0-9_]');
-  static final RegExp _alpha = new RegExp(r'[a-zA-Z]');
+  static final RegExp _nonAlphaNumeric = RegExp(r'[^a-zA-Z0-9_]');
+  static final RegExp _alpha = RegExp(r'[a-zA-Z]');
 
   /// Sets a user property to a given value.
   ///
@@ -119,19 +119,18 @@ class FirebaseAnalytics {
   Future<Null> setUserProperty(
       {@required String name, @required String value}) async {
     if (name == null) {
-      throw new ArgumentError.notNull('name');
+      throw ArgumentError.notNull('name');
     }
 
     if (name.isEmpty ||
         name.length > 24 ||
         name.indexOf(_alpha) != 0 ||
         name.contains(_nonAlphaNumeric))
-      throw new ArgumentError.value(
+      throw ArgumentError.value(
           name, 'name', 'must contain 1 to 24 alphanumeric characters.');
 
     if (name.startsWith('firebase_'))
-      throw new ArgumentError.value(
-          name, 'name', '"firebase_" prefix is reserved');
+      throw ArgumentError.value(name, 'name', '"firebase_" prefix is reserved');
 
     await _channel.invokeMethod('setUserProperty', <String, String>{
       'name': name,
@@ -779,17 +778,17 @@ class FirebaseAnalytics {
 
 /// Android-specific analytics API.
 class FirebaseAnalyticsAndroid {
-  final MethodChannel _channel;
-
   @visibleForTesting
   const FirebaseAnalyticsAndroid.private(this._channel);
+
+  final MethodChannel _channel;
 
   /// Sets whether analytics collection is enabled for this app on this device.
   ///
   /// This setting is persisted across app sessions. By default it is enabled.
   Future<Null> setAnalyticsCollectionEnabled(bool enabled) async {
     if (enabled == null) {
-      throw new ArgumentError.notNull('enabled');
+      throw ArgumentError.notNull('enabled');
     }
 
     await _channel.invokeMethod('setAnalyticsCollectionEnabled', enabled);
@@ -800,7 +799,7 @@ class FirebaseAnalyticsAndroid {
   /// The default value is 10000 (10 seconds).
   Future<Null> setMinimumSessionDuration(int milliseconds) async {
     if (milliseconds == null) {
-      throw new ArgumentError.notNull('milliseconds');
+      throw ArgumentError.notNull('milliseconds');
     }
 
     await _channel.invokeMethod('setMinimumSessionDuration', milliseconds);
@@ -811,7 +810,7 @@ class FirebaseAnalyticsAndroid {
   /// The default value is 1800000 (30 minutes).
   Future<Null> setSessionTimeoutDuration(int milliseconds) async {
     if (milliseconds == null) {
-      throw new ArgumentError.notNull('milliseconds');
+      throw ArgumentError.notNull('milliseconds');
     }
 
     await _channel.invokeMethod('setSessionTimeoutDuration', milliseconds);
@@ -837,7 +836,7 @@ const String valueAndCurrencyMustBeTogetherError = 'If you supply the "value" '
 
 void _requireValueAndCurrencyTogether(double value, String currency) {
   if (value != null && currency == null) {
-    throw new ArgumentError(valueAndCurrencyMustBeTogetherError);
+    throw ArgumentError(valueAndCurrencyMustBeTogetherError);
   }
 }
 

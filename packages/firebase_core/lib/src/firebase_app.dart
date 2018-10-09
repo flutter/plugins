@@ -29,7 +29,7 @@ class FirebaseApp {
       name,
     );
     assert(app != null);
-    return new FirebaseOptions.from(app['options']);
+    return FirebaseOptions.from(app['options']);
   }
 
   /// Returns a previously created FirebaseApp instance with the given name,
@@ -39,11 +39,11 @@ class FirebaseApp {
       'FirebaseApp#appNamed',
       name,
     );
-    return app == null ? null : new FirebaseApp(name: app['name']);
+    return app == null ? null : FirebaseApp(name: app['name']);
   }
 
   /// Returns the default (first initialized) instance of the FirebaseApp.
-  static final FirebaseApp instance = new FirebaseApp(name: defaultAppName);
+  static final FirebaseApp instance = FirebaseApp(name: defaultAppName);
 
   /// Configures an app with the given [name] and [options].
   ///
@@ -70,7 +70,7 @@ class FirebaseApp {
       'FirebaseApp#configure',
       <String, dynamic>{'name': name, 'options': options.asMap},
     );
-    return new FirebaseApp(name: name);
+    return FirebaseApp(name: name);
   }
 
   /// Returns a list of all extant FirebaseApp instances, or null if there are
@@ -81,7 +81,7 @@ class FirebaseApp {
     );
     return result
         ?.map<FirebaseApp>(
-          (dynamic app) => new FirebaseApp(name: app['name']),
+          (dynamic app) => FirebaseApp(name: app['name']),
         )
         ?.toList();
   }

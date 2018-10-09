@@ -12,14 +12,6 @@ const String kChannelName = 'plugins.flutter.io/android_intent';
 
 /// Flutter plugin for launching arbitrary Android Intents.
 class AndroidIntent {
-  final String action;
-  final String category;
-  final String data;
-  final Map<String, dynamic> arguments;
-  final String package;
-  final MethodChannel _channel;
-  final Platform _platform;
-
   /// Builds an Android intent with the following parameters
   /// [action] refers to the action parameter of the intent.
   /// [category] refers to the category of the intent, can be null.
@@ -37,6 +29,14 @@ class AndroidIntent {
   })  : assert(action != null),
         _channel = const MethodChannel(kChannelName),
         _platform = platform ?? const LocalPlatform();
+
+  final String action;
+  final String category;
+  final String data;
+  final Map<String, dynamic> arguments;
+  final String package;
+  final MethodChannel _channel;
+  final Platform _platform;
 
   /// Launch the intent.
   ///

@@ -1,3 +1,7 @@
+## 0.2.4
+
+* Unregister the activity lifecycle callbacks when disposing the camera.
+
 ## 0.2.3
 
 * Added path_provider and video_player as dev dependencies because the example uses them.

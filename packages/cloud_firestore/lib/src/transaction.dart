@@ -7,11 +7,11 @@ part of cloud_firestore;
 typedef Future<dynamic> TransactionHandler(Transaction transaction);
 
 class Transaction {
-  int _transactionId;
-  Firestore _firestore;
-
   @visibleForTesting
   Transaction(this._transactionId, this._firestore);
+
+  int _transactionId;
+  Firestore _firestore;
 
   Future<DocumentSnapshot> get(DocumentReference documentReference) async {
     final dynamic result = await Firestore.channel
@@ -21,7 +21,7 @@ class Transaction {
       'path': documentReference.path,
     });
     if (result != null) {
-      return new DocumentSnapshot._(documentReference.path,
+      return DocumentSnapshot._(documentReference.path,
           result['data']?.cast<String, dynamic>(), Firestore.instance);
     } else {
       return null;

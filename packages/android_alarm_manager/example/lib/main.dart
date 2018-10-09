@@ -22,13 +22,13 @@ Future<Null> ensureFirebaseUser() async {
 }
 
 class HelloMessage {
+  HelloMessage(this._now, this._msg, this._isolate, this._user, this._token);
+
   final DateTime _now;
   final String _msg;
   final int _isolate;
   final FirebaseUser _user;
   final String _token;
-
-  HelloMessage(this._now, this._msg, this._isolate, this._user, this._token);
 
   @override
   String toString() {
@@ -42,8 +42,8 @@ class HelloMessage {
 void printHelloMessage(String msg) {
   ensureFirebaseUser().then((_) {
     firebaseUser.getIdToken().then((String idToken) {
-      print(new HelloMessage(
-        new DateTime.now(),
+      print(HelloMessage(
+        DateTime.now(),
         msg,
         Isolate.current.hashCode,
         firebaseUser,
