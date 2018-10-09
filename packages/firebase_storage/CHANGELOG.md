@@ -1,3 +1,7 @@
+## 1.0.4
+
+* Bump Android dependencies to latest.
+
 ## 1.0.3
 
 * Added monitoring of StorageUploadTask via `events` stream.
