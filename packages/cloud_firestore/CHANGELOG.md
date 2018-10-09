@@ -1,3 +1,7 @@
+## 0.8.1+1
+
+* Bump Android dependencies to latest.
+
 ## 0.8.1
 
 * Fixed bug where updating arrays in with `FieldValue` always throws an Exception on Android.
