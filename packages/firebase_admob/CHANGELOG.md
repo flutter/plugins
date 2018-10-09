@@ -1,3 +1,7 @@
+## 0.6.1+1
+
+* Bump Android dependencies to latest.
+
 ## 0.6.1
 
 * listener on MobileAd shouldn't be final.
