@@ -292,6 +292,10 @@ static void interpretMapOptions(id json, id<FLTGoogleMapOptionsSink> sink) {
   if (zoomGesturesEnabled) {
     [sink setZoomGesturesEnabled:toBool(zoomGesturesEnabled)];
   }
+  id zoomControlsEnabled = data[@"zoomControlsEnabled"];
+  if (zoomControlsEnabled) {
+    [sink setZoomControlsEnabled:toBool(zoomControlsEnabled)];
+  }
 }
 
 static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> sink,

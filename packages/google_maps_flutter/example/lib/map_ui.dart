@@ -182,6 +182,20 @@ class MapUiBodyState extends State<MapUiBody> {
     );
   }
 
+  Widget _zoomControlsToggler() {
+    return FlatButton(
+      child: Text(
+          '${_options.zoomControlsEnabled ? 'disable' : 'enable'} zoom controls'),
+      onPressed: () {
+        mapController.updateMapOptions(
+          GoogleMapOptions(
+            zoomControlsEnabled: !_options.zoomControlsEnabled,
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final List<Widget> columnChildren = <Widget>[
@@ -226,6 +240,7 @@ class MapUiBodyState extends State<MapUiBody> {
               _scrollToggler(),
               _tiltToggler(),
               _zoomToggler(),
+              _zoomControlsToggler(),
             ],
           ),
         ),

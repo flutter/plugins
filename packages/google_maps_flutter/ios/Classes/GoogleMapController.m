@@ -128,6 +128,10 @@ static uint64_t _nextMapId = 0;
   _mapView.settings.zoomGestures = enabled;
 }
 
+- (void)setZoomControlsEnabled:(BOOL)enabled {
+  // Noop on iOS.
+}
+
 #pragma mark - GMSMapViewDelegate methods
 
 - (void)mapView:(GMSMapView*)mapView willMove:(BOOL)gesture {
