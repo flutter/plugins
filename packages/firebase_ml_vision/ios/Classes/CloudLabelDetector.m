@@ -34,14 +34,18 @@ static FIRVisionCloudLabelDetector *detector;
 }
 
 + (FIRVisionCloudDetectorOptions *)parseOptions:(NSDictionary *)optionsData {
-  FIRVisionCloudDetectorOptions *detector = [[FIRVisionCloudDetectorOptions alloc] init];
-
-  NSNumber *modelType = optionsData[@"modelType"];
-  detector.modelType = (FIRVisionCloudModelType)[modelType intValue];
+  FIRVisionCloudDetectorOptions *options = [[FIRVisionCloudDetectorOptions alloc] init];
 
   NSNumber *maxResults = optionsData[@"maxResults"];
-  detector.maxResults = [maxResults unsignedIntegerValue];
+  options.maxResults = [maxResults unsignedIntegerValue];
 
-  return detector;
+  NSString *modelTypeStr = optionsData[@"modelType"];
+  if ([@"stable" isEqualToString:modelTypeStr]) {
+    options.modelType = FIRVisionCloudModelTypeStable;
+  } else if ([@"latest" isEqualToString:modelTypeStr]) {
+    options.modelType = FIRVisionCloudModelTypeLatest;
+  }
+
+  return options;
 }
 @end
