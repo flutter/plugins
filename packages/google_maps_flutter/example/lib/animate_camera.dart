@@ -198,7 +198,8 @@ class AnimateCameraState extends State<AnimateCamera> {
           child: GridView.count(
             crossAxisCount: 2,
             childAspectRatio: 3.0,
-            padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
+            padding:
+                const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
             children: <Widget>[
               _newCameraPosition(),
               _zoomByWithFocus(),

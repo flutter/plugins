@@ -218,7 +218,8 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
           child: GridView.count(
             crossAxisCount: 2,
             childAspectRatio: 3.5,
-            padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
+            padding:
+                const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
             children: <Widget>[
               _button(
                 text: 'add',

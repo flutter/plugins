@@ -97,8 +97,8 @@ class MapUiBodyState extends State<MapUiBody> {
   Widget _latLngBoundsToggler() {
     return _button(
       text: _options.cameraTargetBounds.bounds == null
-            ? 'Bound Camera Target'
-            : 'Release Camera Target',
+          ? 'Bound Camera Target'
+          : 'Release Camera Target',
       onPressed: () {
         mapController.updateMapOptions(
           GoogleMapOptions(
@@ -114,8 +114,8 @@ class MapUiBodyState extends State<MapUiBody> {
   Widget _zoomBoundsToggler() {
     return _button(
       text: _options.minMaxZoomPreference.minZoom == null
-            ? 'Bound Zoom'
-            : 'Release Zoom',
+          ? 'Bound Zoom'
+          : 'Release Zoom',
       onPressed: () {
         mapController.updateMapOptions(
           GoogleMapOptions(
