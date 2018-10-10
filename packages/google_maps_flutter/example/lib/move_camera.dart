@@ -196,7 +196,7 @@ class MoveCameraState extends State<MoveCamera> {
         Expanded(
           child: GridView.count(
             crossAxisCount: 2,
-            childAspectRatio: 3.0,
+            childAspectRatio: 2.8,
             padding:
                 const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
             children: <Widget>[
