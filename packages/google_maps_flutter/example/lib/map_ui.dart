@@ -66,9 +66,26 @@ class MapUiBodyState extends State<MapUiBody> {
     super.dispose();
   }
 
+  Widget _button({@required String text, @required VoidCallback onPressed}) {
+    return Container(
+      height: 48.0,
+      margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 40.0),
+      child: RaisedButton(
+        color: Colors.lightBlue[700],
+        textColor: Colors.white,
+        child: Text(
+          text,
+          style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+          textAlign: TextAlign.center,
+        ),
+        onPressed: onPressed,
+      ),
+    );
+  }
+
   Widget _compassToggler() {
-    return FlatButton(
-      child: Text('${_options.compassEnabled ? 'disable' : 'enable'} compass'),
+    return _button(
+      text: '${_options.compassEnabled ? 'Disable' : 'Enable'} Compass',
       onPressed: () {
         mapController.updateMapOptions(
           GoogleMapOptions(compassEnabled: !_options.compassEnabled),
@@ -78,12 +95,10 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   Widget _latLngBoundsToggler() {
-    return FlatButton(
-      child: Text(
-        _options.cameraTargetBounds.bounds == null
-            ? 'bound camera target'
-            : 'release camera target',
-      ),
+    return _button(
+      text: _options.cameraTargetBounds.bounds == null
+            ? 'Bound Camera Target'
+            : 'Release Camera Target',
       onPressed: () {
         mapController.updateMapOptions(
           GoogleMapOptions(
@@ -97,10 +112,10 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   Widget _zoomBoundsToggler() {
-    return FlatButton(
-      child: Text(_options.minMaxZoomPreference.minZoom == null
-          ? 'bound zoom'
-          : 'release zoom'),
+    return _button(
+      text: _options.minMaxZoomPreference.minZoom == null
+            ? 'Bound Zoom'
+            : 'Release Zoom',
       onPressed: () {
         mapController.updateMapOptions(
           GoogleMapOptions(
@@ -116,8 +131,8 @@ class MapUiBodyState extends State<MapUiBody> {
   Widget _mapTypeCycler() {
     final MapType nextType =
         MapType.values[(_options.mapType.index + 1) % MapType.values.length];
-    return FlatButton(
-      child: Text('change map type to $nextType'),
+    return _button(
+      text: 'Change map type to $nextType',
       onPressed: () {
         mapController.updateMapOptions(
           GoogleMapOptions(mapType: nextType),
@@ -127,9 +142,8 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   Widget _rotateToggler() {
-    return FlatButton(
-      child: Text(
-          '${_options.rotateGesturesEnabled ? 'disable' : 'enable'} rotate'),
+    return _button(
+      text: '${_options.rotateGesturesEnabled ? 'Disable' : 'Enable'} Rotate',
       onPressed: () {
         mapController.updateMapOptions(
           GoogleMapOptions(
@@ -141,9 +155,8 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   Widget _scrollToggler() {
-    return FlatButton(
-      child: Text(
-          '${_options.scrollGesturesEnabled ? 'disable' : 'enable'} scroll'),
+    return _button(
+      text: '${_options.scrollGesturesEnabled ? 'Disable' : 'Enable'} Scroll',
       onPressed: () {
         mapController.updateMapOptions(
           GoogleMapOptions(
@@ -155,9 +168,8 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   Widget _tiltToggler() {
-    return FlatButton(
-      child:
-          Text('${_options.tiltGesturesEnabled ? 'disable' : 'enable'} tilt'),
+    return _button(
+      text: '${_options.tiltGesturesEnabled ? 'Disable' : 'Enable'} Tilt',
       onPressed: () {
         mapController.updateMapOptions(
           GoogleMapOptions(
@@ -169,9 +181,8 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   Widget _zoomToggler() {
-    return FlatButton(
-      child:
-          Text('${_options.zoomGesturesEnabled ? 'disable' : 'enable'} zoom'),
+    return _button(
+      text: '${_options.zoomGesturesEnabled ? 'Disable' : 'Enable'} Zoom',
       onPressed: () {
         mapController.updateMapOptions(
           GoogleMapOptions(
@@ -179,6 +190,33 @@ class MapUiBodyState extends State<MapUiBody> {
           ),
         );
       },
+    );
+  }
+
+  Widget _currentCompassDetails() {
+    var currentCameraDetailsTextStyle = TextStyle(
+      color: Colors.red[900],
+      fontSize: 14.0,
+    );
+    return Padding(
+      padding: EdgeInsets.fromLTRB(0.0, 8.0, 0.0, 12.0),
+      child: Column(
+        children: <Widget>[
+          Text('Camera Bearing: ${_position.bearing}',
+              style: currentCameraDetailsTextStyle),
+          Text(
+            'Camera Target: ${_position.target.latitude.toStringAsFixed(4)},'
+                '${_position.target.longitude.toStringAsFixed(4)}',
+            style: currentCameraDetailsTextStyle,
+          ),
+          Text('Camera Zoom: ${_position.zoom}',
+              style: currentCameraDetailsTextStyle),
+          Text('Camera Tilt: ${_position.tilt}',
+              style: currentCameraDetailsTextStyle),
+          Text(_isMoving ? '(Camera Moving)' : '(Camera Idle)',
+              style: currentCameraDetailsTextStyle),
+        ],
+      ),
     );
   }
 
@@ -207,17 +245,11 @@ class MapUiBodyState extends State<MapUiBody> {
     ];
 
     if (mapController != null) {
+      columnChildren.add(_currentCompassDetails());
       columnChildren.add(
         Expanded(
           child: ListView(
             children: <Widget>[
-              Text('camera bearing: ${_position.bearing}'),
-              Text(
-                  'camera target: ${_position.target.latitude.toStringAsFixed(4)},'
-                  '${_position.target.longitude.toStringAsFixed(4)}'),
-              Text('camera zoom: ${_position.zoom}'),
-              Text('camera tilt: ${_position.tilt}'),
-              Text(_isMoving ? '(Camera moving)' : '(Camera idle)'),
               _compassToggler(),
               _latLngBoundsToggler(),
               _mapTypeCycler(),

@@ -33,6 +33,15 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
   GoogleMapController controller;
   int _markerCount = 0;
   Marker _selectedMarker;
+//  Marker _selectedMarker = Marker(
+//    "aaijielkflk18",
+//      MarkerOptions(
+//    position: LatLng(
+//      center.latitude + sin(pi / 6.0) / 20.0,
+//      center.longitude + cos(pi / 6.0) / 20.0,
+//    ),
+//    infoWindowText: InfoWindowText('Marker #1', '*'),
+//  ));
 
   void _onMapCreated(GoogleMapController controller) {
     this.controller = controller;
@@ -163,108 +172,105 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
     );
   }
 
+  Widget _button(
+      {@required String text, @required VoidCallback onPressed, Color color}) {
+    color ??= Colors.lightBlue[700];
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+      child: RaisedButton(
+        color: color,
+        textColor: Colors.white,
+        child: Text(
+          text,
+          style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+          textAlign: TextAlign.center,
+        ),
+        onPressed: onPressed,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        Center(
-          child: SizedBox(
-            width: 300.0,
-            height: 200.0,
-            child: GoogleMap(
-              onMapCreated: _onMapCreated,
-              options: GoogleMapOptions(
-                cameraPosition: const CameraPosition(
-                  target: LatLng(-33.852, 151.211),
-                  zoom: 11.0,
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Center(
+            child: SizedBox(
+              width: 300.0,
+              height: 200.0,
+              child: GoogleMap(
+                onMapCreated: _onMapCreated,
+                options: GoogleMapOptions(
+                  cameraPosition: const CameraPosition(
+                    target: LatLng(-33.852, 151.211),
+                    zoom: 11.0,
+                  ),
                 ),
               ),
             ),
           ),
         ),
         Expanded(
-          child: SingleChildScrollView(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Column(
-                      children: <Widget>[
-                        FlatButton(
-                          child: const Text('add'),
-                          onPressed: (_markerCount == 12) ? null : _add,
-                        ),
-                        FlatButton(
-                          child: const Text('remove'),
-                          onPressed: (_selectedMarker == null) ? null : _remove,
-                        ),
-                        FlatButton(
-                          child: const Text('change info'),
-                          onPressed:
-                              (_selectedMarker == null) ? null : _changeInfo,
-                        ),
-                        FlatButton(
-                          child: const Text('change info anchor'),
-                          onPressed: (_selectedMarker == null)
-                              ? null
-                              : _changeInfoAnchor,
-                        ),
-                      ],
-                    ),
-                    Column(
-                      children: <Widget>[
-                        FlatButton(
-                          child: const Text('change alpha'),
-                          onPressed:
-                              (_selectedMarker == null) ? null : _changeAlpha,
-                        ),
-                        FlatButton(
-                          child: const Text('change anchor'),
-                          onPressed:
-                              (_selectedMarker == null) ? null : _changeAnchor,
-                        ),
-                        FlatButton(
-                          child: const Text('toggle draggable'),
-                          onPressed: (_selectedMarker == null)
-                              ? null
-                              : _toggleDraggable,
-                        ),
-                        FlatButton(
-                          child: const Text('toggle flat'),
-                          onPressed:
-                              (_selectedMarker == null) ? null : _toggleFlat,
-                        ),
-                        FlatButton(
-                          child: const Text('change position'),
-                          onPressed: (_selectedMarker == null)
-                              ? null
-                              : _changePosition,
-                        ),
-                        FlatButton(
-                          child: const Text('change rotation'),
-                          onPressed: (_selectedMarker == null)
-                              ? null
-                              : _changeRotation,
-                        ),
-                        FlatButton(
-                          child: const Text('toggle visible'),
-                          onPressed:
-                              (_selectedMarker == null) ? null : _toggleVisible,
-                        ),
-                        FlatButton(
-                          child: const Text('change zIndex'),
-                          onPressed:
-                              (_selectedMarker == null) ? null : _changeZIndex,
-                        ),
-                      ],
-                    ),
-                  ],
-                )
-              ],
-            ),
+          child: GridView.count(
+            crossAxisCount: 2,
+            childAspectRatio: 3.5,
+            padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
+            children: <Widget>[
+              _button(
+                text: 'add',
+                onPressed: (_markerCount == 12) ? null : _add,
+                color: Colors.green[700],
+              ),
+              _button(
+                text: 'remove',
+                onPressed: (_selectedMarker == null) ? null : _remove,
+                color: Colors.red[700],
+              ),
+              _button(
+                text: 'change info',
+                onPressed: (_selectedMarker == null) ? null : _changeInfo,
+              ),
+              _button(
+                text: 'change info anchor',
+                onPressed: (_selectedMarker == null) ? null : _changeInfoAnchor,
+              ),
+              _button(
+                text: 'change alpha',
+                onPressed: (_selectedMarker == null) ? null : _changeAlpha,
+              ),
+              _button(
+                text: 'change anchor',
+                onPressed: (_selectedMarker == null) ? null : _changeAnchor,
+              ),
+              _button(
+                text: 'toggle draggable',
+                onPressed: (_selectedMarker == null) ? null : _toggleDraggable,
+              ),
+              _button(
+                text: 'toggle flat',
+                onPressed: (_selectedMarker == null) ? null : _toggleFlat,
+              ),
+              _button(
+                text: 'change position',
+                onPressed: (_selectedMarker == null) ? null : _changePosition,
+              ),
+              _button(
+                text: 'change rotation',
+                onPressed: (_selectedMarker == null) ? null : _changeRotation,
+              ),
+              _button(
+                text: 'toggle visible',
+                onPressed: (_selectedMarker == null) ? null : _toggleVisible,
+              ),
+              _button(
+                text: 'change zIndex',
+                onPressed: (_selectedMarker == null) ? null : _changeZIndex,
+              ),
+            ],
           ),
         ),
       ],

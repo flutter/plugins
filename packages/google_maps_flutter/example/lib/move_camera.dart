@@ -29,134 +29,189 @@ class MoveCameraState extends State<MoveCamera> {
     mapController = controller;
   }
 
+  Widget _button({@required String text, @required VoidCallback onPressed}) {
+    return Container(
+      padding: EdgeInsets.all(8.0),
+      child: RaisedButton(
+        color: Colors.lightBlue[700],
+        textColor: Colors.white,
+        child: Text(
+          text,
+          style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+          textAlign: TextAlign.center,
+        ),
+        onPressed: onPressed,
+      ),
+    );
+  }
+
+  Widget _newCameraPosition() {
+    return _button(
+      text: 'newCameraPosition',
+      onPressed: () {
+        mapController.moveCamera(
+          CameraUpdate.newCameraPosition(
+            const CameraPosition(
+              bearing: 270.0,
+              target: LatLng(51.5160895, -0.1294527),
+              tilt: 30.0,
+              zoom: 17.0,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _newLatLng() {
+    return _button(
+      text: 'newLatLng',
+      onPressed: () {
+        mapController.moveCamera(
+          CameraUpdate.newLatLng(
+            const LatLng(56.1725505, 10.1850512),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _newLatLngBounds() {
+    return _button(
+      text: 'newLatLngBounds',
+      onPressed: () {
+        mapController.moveCamera(
+          CameraUpdate.newLatLngBounds(
+            LatLngBounds(
+              southwest: const LatLng(-38.483935, 113.248673),
+              northeast: const LatLng(-8.982446, 153.823821),
+            ),
+            10.0,
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _newLatLngZoom() {
+    return _button(
+      text: 'newLatLngZoom',
+      onPressed: () {
+        mapController.moveCamera(
+          CameraUpdate.newLatLngZoom(
+            const LatLng(37.4231613, -122.087159),
+            11.0,
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _scrollBy() {
+    return _button(
+      text: 'scrollBy',
+      onPressed: () {
+        mapController.moveCamera(
+          CameraUpdate.scrollBy(150.0, -225.0),
+        );
+      },
+    );
+  }
+
+  Widget _zoomByWithFocus() {
+    return _button(
+      text: 'zoomBy with focus',
+      onPressed: () {
+        mapController.moveCamera(
+          CameraUpdate.zoomBy(
+            -0.5,
+            const Offset(30.0, 20.0),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _zoomBy() {
+    return _button(
+      text: 'zoomBy',
+      onPressed: () {
+        mapController.moveCamera(
+          CameraUpdate.zoomBy(-0.5),
+        );
+      },
+    );
+  }
+
+  Widget _zoomIn() {
+    return _button(
+      text: 'zoomIn',
+      onPressed: () {
+        mapController.moveCamera(
+          CameraUpdate.zoomIn(),
+        );
+      },
+    );
+  }
+
+  Widget _zoomOut() {
+    return _button(
+      text: 'zoomOut',
+      onPressed: () {
+        mapController.moveCamera(
+          CameraUpdate.zoomOut(),
+        );
+      },
+    );
+  }
+
+  Widget _zoomTo() {
+    return _button(
+      text: 'zoomTo',
+      onPressed: () {
+        mapController.moveCamera(
+          CameraUpdate.zoomTo(16.0),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        Center(
-          child: SizedBox(
-              width: 300.0,
-              height: 200.0,
-              child: GoogleMap(
-                  onMapCreated: _onMapCreated,
-                  options: GoogleMapOptions.defaultOptions)),
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Center(
+            child: SizedBox(
+                width: 300.0,
+                height: 200.0,
+                child: GoogleMap(
+                    onMapCreated: _onMapCreated,
+                    options: GoogleMapOptions.defaultOptions)),
+          ),
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            Column(
-              children: <Widget>[
-                FlatButton(
-                  onPressed: () {
-                    mapController.moveCamera(
-                      CameraUpdate.newCameraPosition(
-                        const CameraPosition(
-                          bearing: 270.0,
-                          target: LatLng(51.5160895, -0.1294527),
-                          tilt: 30.0,
-                          zoom: 17.0,
-                        ),
-                      ),
-                    );
-                  },
-                  child: const Text('newCameraPosition'),
-                ),
-                FlatButton(
-                  onPressed: () {
-                    mapController.moveCamera(
-                      CameraUpdate.newLatLng(
-                        const LatLng(56.1725505, 10.1850512),
-                      ),
-                    );
-                  },
-                  child: const Text('newLatLng'),
-                ),
-                FlatButton(
-                  onPressed: () {
-                    mapController.moveCamera(
-                      CameraUpdate.newLatLngBounds(
-                        LatLngBounds(
-                          southwest: const LatLng(-38.483935, 113.248673),
-                          northeast: const LatLng(-8.982446, 153.823821),
-                        ),
-                        10.0,
-                      ),
-                    );
-                  },
-                  child: const Text('newLatLngBounds'),
-                ),
-                FlatButton(
-                  onPressed: () {
-                    mapController.moveCamera(
-                      CameraUpdate.newLatLngZoom(
-                        const LatLng(37.4231613, -122.087159),
-                        11.0,
-                      ),
-                    );
-                  },
-                  child: const Text('newLatLngZoom'),
-                ),
-                FlatButton(
-                  onPressed: () {
-                    mapController.moveCamera(
-                      CameraUpdate.scrollBy(150.0, -225.0),
-                    );
-                  },
-                  child: const Text('scrollBy'),
-                ),
-              ],
-            ),
-            Column(
-              children: <Widget>[
-                FlatButton(
-                  onPressed: () {
-                    mapController.moveCamera(
-                      CameraUpdate.zoomBy(
-                        -0.5,
-                        const Offset(30.0, 20.0),
-                      ),
-                    );
-                  },
-                  child: const Text('zoomBy with focus'),
-                ),
-                FlatButton(
-                  onPressed: () {
-                    mapController.moveCamera(
-                      CameraUpdate.zoomBy(-0.5),
-                    );
-                  },
-                  child: const Text('zoomBy'),
-                ),
-                FlatButton(
-                  onPressed: () {
-                    mapController.moveCamera(
-                      CameraUpdate.zoomIn(),
-                    );
-                  },
-                  child: const Text('zoomIn'),
-                ),
-                FlatButton(
-                  onPressed: () {
-                    mapController.moveCamera(
-                      CameraUpdate.zoomOut(),
-                    );
-                  },
-                  child: const Text('zoomOut'),
-                ),
-                FlatButton(
-                  onPressed: () {
-                    mapController.moveCamera(
-                      CameraUpdate.zoomTo(16.0),
-                    );
-                  },
-                  child: const Text('zoomTo'),
-                ),
-              ],
-            ),
-          ],
-        )
+        Expanded(
+          child: GridView.count(
+            crossAxisCount: 2,
+            childAspectRatio: 3.0,
+            padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
+            children: <Widget>[
+              _newCameraPosition(),
+              _zoomByWithFocus(),
+              _newLatLng(),
+              _zoomBy(),
+              _newLatLngBounds(),
+              _zoomIn(),
+              _newLatLngZoom(),
+              _zoomOut(),
+              _scrollBy(),
+              _zoomTo(),
+            ],
+          ),
+        ),
       ],
     );
   }
