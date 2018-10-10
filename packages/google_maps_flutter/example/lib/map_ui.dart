@@ -69,13 +69,13 @@ class MapUiBodyState extends State<MapUiBody> {
   Widget _button({@required String text, @required VoidCallback onPressed}) {
     return Container(
       height: 48.0,
-      margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 40.0),
+      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 40.0),
       child: RaisedButton(
         color: Colors.lightBlue[700],
         textColor: Colors.white,
         child: Text(
           text,
-          style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
           textAlign: TextAlign.center,
         ),
         onPressed: onPressed,
@@ -194,12 +194,12 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   Widget _currentCompassDetails() {
-    var currentCameraDetailsTextStyle = TextStyle(
+    final TextStyle currentCameraDetailsTextStyle = TextStyle(
       color: Colors.red[900],
       fontSize: 14.0,
     );
     return Padding(
-      padding: EdgeInsets.fromLTRB(0.0, 8.0, 0.0, 12.0),
+      padding: const EdgeInsets.fromLTRB(0.0, 8.0, 0.0, 12.0),
       child: Column(
         children: <Widget>[
           Text('Camera Bearing: ${_position.bearing}',

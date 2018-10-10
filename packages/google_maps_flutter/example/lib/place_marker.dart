@@ -176,13 +176,13 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
       {@required String text, @required VoidCallback onPressed, Color color}) {
     color ??= Colors.lightBlue[700];
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
       child: RaisedButton(
         color: color,
         textColor: Colors.white,
         child: Text(
           text,
-          style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
           textAlign: TextAlign.center,
         ),
         onPressed: onPressed,
@@ -218,7 +218,7 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
           child: GridView.count(
             crossAxisCount: 2,
             childAspectRatio: 3.5,
-            padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
+            padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
             children: <Widget>[
               _button(
                 text: 'add',

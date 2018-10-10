@@ -31,13 +31,13 @@ class MoveCameraState extends State<MoveCamera> {
 
   Widget _button({@required String text, @required VoidCallback onPressed}) {
     return Container(
-      padding: EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(8.0),
       child: RaisedButton(
         color: Colors.lightBlue[700],
         textColor: Colors.white,
         child: Text(
           text,
-          style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
           textAlign: TextAlign.center,
         ),
         onPressed: onPressed,
@@ -197,7 +197,7 @@ class MoveCameraState extends State<MoveCamera> {
           child: GridView.count(
             crossAxisCount: 2,
             childAspectRatio: 3.0,
-            padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
+            padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
             children: <Widget>[
               _newCameraPosition(),
               _zoomByWithFocus(),
