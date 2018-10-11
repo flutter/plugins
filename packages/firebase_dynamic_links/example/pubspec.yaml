@@ -7,6 +7,7 @@ dependencies:
 
   firebase_dynamic_links:
     path: ../
+  firebase_core: ^0.2.5+1
 
 flutter:
   uses-material-design: true
