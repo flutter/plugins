@@ -73,7 +73,8 @@ class _MyHomePageState extends State<_MyHomePage> {
     dynamic results;
     switch (_currentDetector) {
       case Detector.barcode:
-        final BarcodeDetector detector = FirebaseVision.instance.barcodeDetector();
+        final BarcodeDetector detector =
+            FirebaseVision.instance.barcodeDetector();
         results = await detector.detectInImage(visionImage);
         break;
       case Detector.face:
@@ -85,11 +86,13 @@ class _MyHomePageState extends State<_MyHomePage> {
         results = await detector.detectInImage(visionImage);
         break;
       case Detector.cloudLabel:
-        final CloudLabelDetector detector = FirebaseVision.instance.cloudLabelDetector();
+        final CloudLabelDetector detector =
+            FirebaseVision.instance.cloudLabelDetector();
         results = await detector.detectInImage(visionImage);
         break;
       case Detector.text:
-        final TextRecognizer recognizer = FirebaseVision.instance.textRecognizer();
+        final TextRecognizer recognizer =
+            FirebaseVision.instance.textRecognizer();
         results = await recognizer.processImage(visionImage);
         break;
       default:
