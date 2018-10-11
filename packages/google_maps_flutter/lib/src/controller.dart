@@ -204,4 +204,20 @@ class GoogleMapController extends ChangeNotifier {
     _markers.remove(marker._id);
     notifyListeners();
   }
+
+  /// Removes all [markers] from the map.
+  ///
+  /// Change listeners are notified once all markers have been removed on the
+  /// platform side.
+  ///
+  /// The returned [Future] completes once listeners have been notified.
+  Future<void> clearMarkers() async {
+    assert(_markers != null);
+    await _markers.forEach((id, marker) {
+      _channel.invokeMethod('marker#remove', <String, dynamic>{
+        'marker': id,
+      });
+    });
+    notifyListeners();
+  }
 }
