@@ -39,7 +39,7 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
           result.error("barcodeDetectorIOError", e.getLocalizedMessage(), null);
         }
         break;
-      case "FaceDetector#detectInImage":
+      case "FaceDetector#processImage":
         try {
           image = filePathToVisionImage((String) call.argument("path"));
           FaceDetector.instance.handleDetection(image, options, result);

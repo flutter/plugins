@@ -1,3 +1,9 @@
+## 0.3.0
+
+* **Breaking Change** Removal of base detector class `FirebaseVisionDetector`.
+* **Breaking Change** Removal of `TextRecognizer.detectInImage()`. Pleas use `TextRecognizer.processImage()`.
+* **Breaking Change** Changed `FaceDetector.detectInImage()` to `FaceDetector.processImage()`.
+
 ## 0.2.0
 
 * **Breaking Change** Update TextDetector to TextRecognizer for android mlkit '17.0.0' and
