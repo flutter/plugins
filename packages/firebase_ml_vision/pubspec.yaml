@@ -1,5 +1,5 @@
 name: firebase_ml_vision
-description: Flutter plugin for Google ML Vision for Firebase, an SDK that brings Google's machine
+description: Flutter plugin for ML Vision for Firebase, an SDK that brings Google's machine
   learning expertise to Android and iOS apps in a powerful yet easy-to-use package.
 author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/firebase_ml_vision

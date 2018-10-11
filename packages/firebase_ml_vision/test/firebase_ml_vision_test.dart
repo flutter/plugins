@@ -21,7 +21,7 @@ void main() {
         switch (methodCall.method) {
           case 'BarcodeDetector#detectInImage':
             return returnValue;
-          case 'FaceDetector#detectInImage':
+          case 'FaceDetector#processImage':
             return returnValue;
           case 'LabelDetector#detectInImage':
             return returnValue;
@@ -465,7 +465,7 @@ void main() {
         ];
       });
 
-      test('detectInImage', () async {
+      test('processImage', () async {
         returnValue = testFaces;
 
         final FaceDetector detector = FirebaseVision.instance.faceDetector(
@@ -482,11 +482,11 @@ void main() {
           'empty',
         );
 
-        final List<Face> faces = await detector.detectInImage(image);
+        final List<Face> faces = await detector.processImage(image);
 
         expect(log, <Matcher>[
           isMethodCall(
-            'FaceDetector#detectInImage',
+            'FaceDetector#processImage',
             arguments: <String, dynamic>{
               'path': 'empty',
               'options': <String, dynamic>{
@@ -529,7 +529,7 @@ void main() {
         expect(p(FaceLandmarkType.rightMouth), const Point<double>(18.1, 19.1));
       });
 
-      test('detectInImage with null landmark', () async {
+      test('processImage with null landmark', () async {
         testFaces[0]['landmarks']['bottomMouth'] = null;
         returnValue = testFaces;
 
@@ -540,12 +540,12 @@ void main() {
           'empty',
         );
 
-        final List<Face> faces = await detector.detectInImage(image);
+        final List<Face> faces = await detector.processImage(image);
 
         expect(faces[0].getLandmark(FaceLandmarkType.bottomMouth), isNull);
       });
 
-      test('detectInImage no faces', () async {
+      test('processImage no faces', () async {
         returnValue = <dynamic>[];
 
         final FaceDetector detector = FirebaseVision.instance.faceDetector(
@@ -555,7 +555,7 @@ void main() {
           'empty',
         );
 
-        final List<Face> faces = await detector.detectInImage(image);
+        final List<Face> faces = await detector.processImage(image);
         expect(faces, isEmpty);
       });
     });

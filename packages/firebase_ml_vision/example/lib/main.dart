@@ -92,7 +92,7 @@ class _MyHomePageState extends State<_MyHomePage> {
     }
 
     final dynamic results =
-        await detector.detectInImage(visionImage) ?? <dynamic>[];
+        await detector.processImage(visionImage) ?? <dynamic>[];
 
     setState(() {
       _scanResults = results;

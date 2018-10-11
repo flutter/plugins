@@ -26,23 +26,27 @@ enum FaceLandmarkType {
 
 /// Detector for detecting faces in an input image.
 ///
-/// A face detector is created via faceDetector(FaceDetectorOptions options)
-/// in [FirebaseVision]:
+/// A face detector is created via
+/// `faceDetector([FaceDetectorOptions options])` in [FirebaseVision]:
 ///
 /// ```dart
-/// FaceDetector faceDetector = FirebaseVision.instance.faceDetector(options);
+/// final FirebaseVisionImage image =
+///     FirebaseVisionImage.fromFilePath('path/to/file');
+///
+/// final FaceDetector faceDetector = FirebaseVision.instance.faceDetector();
+///
+/// final List<Faces> faces = await faceDetector.processImage(image);
 /// ```
-class FaceDetector extends FirebaseVisionDetector {
+class FaceDetector {
   FaceDetector._(this.options) : assert(options != null);
 
   /// The options for the face detector.
   final FaceDetectorOptions options;
 
   /// Detects faces in the input image.
-  @override
-  Future<List<Face>> detectInImage(FirebaseVisionImage visionImage) async {
+  Future<List<Face>> processImage(FirebaseVisionImage visionImage) async {
     final List<dynamic> reply = await FirebaseVision.channel.invokeMethod(
-      'FaceDetector#detectInImage',
+      'FaceDetector#processImage',
       <String, dynamic>{
         'path': visionImage.imageFile.path,
         'options': <String, dynamic>{
