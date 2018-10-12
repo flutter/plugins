@@ -12,6 +12,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  firebase_core: ^0.2.5+1
 
 flutter:
   plugin:
