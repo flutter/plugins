@@ -210,8 +210,8 @@ class GoogleMapController extends ChangeNotifier {
   /// The returned [Future] completes once listeners have been notified.
   Future<void> clearMarkers() async {
     assert(_markers != null);
-    final markerIds = new List.from(_markers.keys);
-    for (var id in markerIds) {
+    final List<String> markerIds = List<String>.from(_markers.keys);
+    for (String id in markerIds) {
       await _removeMarker(id);
     }
     notifyListeners();
