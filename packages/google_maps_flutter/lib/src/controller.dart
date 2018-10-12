@@ -228,4 +228,4 @@ class GoogleMapController extends ChangeNotifier {
     });
     _markers.remove(id);
   }
- }
+}
