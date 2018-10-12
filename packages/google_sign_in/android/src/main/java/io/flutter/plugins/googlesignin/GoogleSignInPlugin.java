@@ -7,6 +7,7 @@ package io.flutter.plugins.googlesignin;
 import android.accounts.Account;
 import android.app.Activity;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
@@ -109,7 +110,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 
   /**
    * A delegate interface that exposes all of the sign-in functionality for other plugins to use.
-   * The below {@link #Delegate} implementation should be used by any clients unless they need to
+   * The below {@link Delegate} implementation should be used by any clients unless they need to
    * override some of these functions, such as for testing.
    */
   public interface IDelegate {
@@ -272,7 +273,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
         task.addOnCompleteListener(
             new OnCompleteListener<GoogleSignInAccount>() {
               @Override
-              public void onComplete(Task<GoogleSignInAccount> task) {
+              public void onComplete(@NonNull Task<GoogleSignInAccount> task) {
                 onSignInResult(task);
               }
             });
@@ -307,7 +308,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
           .addOnCompleteListener(
               new OnCompleteListener<Void>() {
                 @Override
-                public void onComplete(Task<Void> task) {
+                public void onComplete(@NonNull Task<Void> task) {
                   if (task.isSuccessful()) {
                     finishWithSuccess(null);
                   } else {
@@ -327,7 +328,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
           .addOnCompleteListener(
               new OnCompleteListener<Void>() {
                 @Override
-                public void onComplete(Task<Void> task) {
+                public void onComplete(@NonNull Task<Void> task) {
                   if (task.isSuccessful()) {
                     finishWithSuccess(null);
                   } else {

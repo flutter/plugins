@@ -1,3 +1,7 @@
+## 3.2.2
+
+* Updated Google Play Services dependency to version 16.0.1
+
 ## 3.2.1
 
 * Set http version to be compatible with flutter_test.
