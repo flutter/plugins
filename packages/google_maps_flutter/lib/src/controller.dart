@@ -198,9 +198,7 @@ class GoogleMapController extends ChangeNotifier {
   Future<void> removeMarker(Marker marker) async {
     assert(marker != null);
     assert(_markers[marker._id] == marker);
-    await _channel.invokeMethod('marker#remove', <String, dynamic>{
-      'marker': marker._id,
-    });
+    await _removeMarker(marker._id);
     _markers.remove(marker._id);
     notifyListeners();
   }
@@ -213,12 +211,16 @@ class GoogleMapController extends ChangeNotifier {
   /// The returned [Future] completes once listeners have been notified.
   Future<void> clearMarkers() async {
     assert(_markers != null);
-    await _markers.forEach((String id, Marker marker) async {
-      await _channel.invokeMethod('marker#remove', <String, dynamic>{
-        'marker': id,
-      });
-      _markers.remove(marker._id);
+    _markers.forEach((String id, Marker marker) async {
+      await _removeMarker(id);
+      _markers.remove(id);
     });
     notifyListeners();
+  }
+
+  void _removeMarker(String id) {
+    _channel.invokeMethod('marker#remove', <String, dynamic>{
+      'marker': id,
+    });
   }
 }
