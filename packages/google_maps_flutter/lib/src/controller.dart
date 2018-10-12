@@ -199,7 +199,6 @@ class GoogleMapController extends ChangeNotifier {
     assert(marker != null);
     assert(_markers[marker._id] == marker);
     await _removeMarker(marker._id);
-    _markers.remove(marker._id);
     notifyListeners();
   }
 
@@ -213,14 +212,14 @@ class GoogleMapController extends ChangeNotifier {
     assert(_markers != null);
     _markers.forEach((String id, Marker marker) async {
       await _removeMarker(id);
-      _markers.remove(id);
     });
     notifyListeners();
   }
 
-  void _removeMarker(String id) {
-    _channel.invokeMethod('marker#remove', <String, dynamic>{
+  Future<void> _removeMarker(String id) async {
+    await _channel.invokeMethod('marker#remove', <String, dynamic>{
       'marker': id,
     });
+    _markers.remove(id);
   }
 }
