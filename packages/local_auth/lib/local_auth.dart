@@ -72,4 +72,13 @@ class LocalAuthentication {
     }
     return await _channel.invokeMethod('authenticateWithBiometrics', args);
   }
+
+  /// Returns biometry type if enrolled on the device
+  ///
+  /// Returns a [Future] String with the following possibilities: 
+  /// - iOS: 'faceID', 'touchID', 'notEnrolled' or 'notAvailable' 
+  /// - Android: 'fingerprint', 'notEnrolled' or 'notAvailable'
+  Future<String> getBiometryType() async {
+    return await _channel.invokeMethod('getBiometryType');
+  }
 }

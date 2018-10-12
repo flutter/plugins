@@ -17,7 +17,23 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  String _biometryType = '';
   String _authorized = 'Not Authorized';
+
+  Future<Null> _getBiometryType() async {
+    final LocalAuthentication auth = LocalAuthentication();
+    String biometryType;
+    try {
+      biometryType = await auth.getBiometryType();
+    } on PlatformException catch (e) {
+      print(e);
+    }
+    if (!mounted) return;
+
+    setState(() {
+      _biometryType = biometryType;
+    });
+  }
 
   Future<Null> _authenticate() async {
     final LocalAuthentication auth = LocalAuthentication();
@@ -49,6 +65,11 @@ class _MyAppState extends State<MyApp> {
           child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
+                Text('Biometry type: $_biometryType\n'),
+                RaisedButton(
+                  child: const Text('Get biometry type'),
+                  onPressed: _getBiometryType,
+                ),
                 Text('Current State: $_authorized\n'),
                 RaisedButton(
                   child: const Text('Authenticate'),
