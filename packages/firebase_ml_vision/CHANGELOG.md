@@ -4,6 +4,10 @@
 * **Breaking Change** Removal of `TextRecognizer.detectInImage()`. Pleas use `TextRecognizer.processImage()`.
 * **Breaking Change** Changed `FaceDetector.detectInImage()` to `FaceDetector.processImage()`.
 
+## 0.2.0+1
+
+Bump Android dependencies to latest.
+
 ## 0.2.0
 
 * **Breaking Change** Update TextDetector to TextRecognizer for android mlkit '17.0.0' and
