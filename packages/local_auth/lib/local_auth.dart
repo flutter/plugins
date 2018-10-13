@@ -11,6 +11,8 @@ import 'package:meta/meta.dart';
 import 'auth_strings.dart';
 import 'error_codes.dart';
 
+enum BiometricType { face, fingerprint, iris }
+
 const MethodChannel _channel = MethodChannel('plugins.flutter.io/local_auth');
 
 /// A Flutter plugin for authenticating the user identity locally.
@@ -73,12 +75,40 @@ class LocalAuthentication {
     return await _channel.invokeMethod('authenticateWithBiometrics', args);
   }
 
-  /// Returns biometry type if enrolled on the device
+  /// Returns true or false if biometrics are available
   ///
-  /// Returns a [Future] String with the following possibilities:
-  /// - iOS: 'faceID', 'touchID', 'notEnrolled' or 'notAvailable'
-  /// - Android: 'fingerprint', 'notEnrolled' or 'notAvailable'
-  Future<String> getBiometryType() async {
-    return await _channel.invokeMethod('getBiometryType');
+  /// Returns a [Future] bool true or false:
+  Future<bool> canCheckBiometrics() async {
+    final List<dynamic> biometrics =
+        await _channel.invokeMethod('getAvailableBiometrics');
+    print('canCheckBiometrics $biometrics');
+    return biometrics.isNotEmpty;
+  }
+
+  /// Returns a list of enrolled biometrics
+  ///
+  /// Returns a [Future] List<BiometricType> with the following possibilities:
+  /// - BiometricType.face
+  /// - BiometricType.fingerprint
+  /// - BiometricType.iris (not yet implemented)
+  Future<List<BiometricType>> getAvailableBiometrics() async {
+    final List<dynamic> result =
+        await _channel.invokeMethod('getAvailableBiometrics');
+
+    final List<BiometricType> biometrics = <BiometricType>[];
+    result.forEach((dynamic value) {
+      switch (value) {
+        case 'face':
+          biometrics.add(BiometricType.face);
+          break;
+        case 'fingerprint':
+          biometrics.add(BiometricType.fingerprint);
+          break;
+        case 'iris':
+          biometrics.add(BiometricType.iris);
+          break;
+      }
+    });
+    return biometrics;
   }
 }

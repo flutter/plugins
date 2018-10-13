@@ -17,21 +17,37 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _biometryType = '';
+  bool _canCheckBiometrics;
+  List<BiometricType> _availableBiometrics;
   String _authorized = 'Not Authorized';
 
-  Future<Null> _getBiometryType() async {
+  Future<Null> _checkBiometrics() async {
     final LocalAuthentication auth = LocalAuthentication();
-    String biometryType;
+    bool canCheckBiometrics;
     try {
-      biometryType = await auth.getBiometryType();
+      canCheckBiometrics = await auth.canCheckBiometrics();
     } on PlatformException catch (e) {
       print(e);
     }
     if (!mounted) return;
 
     setState(() {
-      _biometryType = biometryType;
+      _canCheckBiometrics = canCheckBiometrics;
+    });
+  }
+
+  Future<Null> _getAvailableBiometrics() async {
+    final LocalAuthentication auth = LocalAuthentication();
+    List<dynamic> availableBiometrics;
+    try {
+      availableBiometrics = await auth.getAvailableBiometrics();
+    } on PlatformException catch (e) {
+      print(e);
+    }
+    if (!mounted) return;
+
+    setState(() {
+      _availableBiometrics = availableBiometrics;
     });
   }
 
@@ -65,10 +81,15 @@ class _MyAppState extends State<MyApp> {
           child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
-                Text('Biometry type: $_biometryType\n'),
+                Text('Can check biometrics: $_canCheckBiometrics\n'),
                 RaisedButton(
-                  child: const Text('Get biometry type'),
-                  onPressed: _getBiometryType,
+                  child: const Text('Check biometrics'),
+                  onPressed: _checkBiometrics,
+                ),
+                Text('Available biometrics: $_availableBiometrics\n'),
+                RaisedButton(
+                  child: const Text('Get available biometrics'),
+                  onPressed: _getAvailableBiometrics,
                 ),
                 Text('Current State: $_authorized\n'),
                 RaisedButton(

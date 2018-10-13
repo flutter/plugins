@@ -21,8 +21,8 @@
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"authenticateWithBiometrics" isEqualToString:call.method]) {
     [self authenticateWithBiometrics:call.arguments withFlutterResult:result];
-  } else if ([@"getBiometryType" isEqualToString:call.method]) {
-      [self getBiometryType:result];
+  } else if ([@"getAvailableBiometrics" isEqualToString:call.method]) {
+    [self getAvailableBiometrics:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -64,23 +64,24 @@
                                                                                    completion:nil];
 }
 
-- (void)getBiometryType:(FlutterResult)result {
-    LAContext *context = [[LAContext alloc] init];
-    NSError *authError = nil;
-    if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&authError]) {
-        if (authError == nil) {
-            if (@available(iOS 11.0.1, *)) {
-                if (context.biometryType == LABiometryTypeFaceID) {
-                    result(@"faceID");
-                } else if (context.biometryType == LABiometryTypeTouchID) {
-                    result(@"touchID");
-                }
-            }
+- (void)getAvailableBiometrics:(FlutterResult)result {
+  LAContext *context = [[LAContext alloc] init];
+  NSError *authError = nil;
+  if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
+                           error:&authError]) {
+    if (authError == nil) {
+      if (@available(iOS 11.0.1, *)) {
+        if (context.biometryType == LABiometryTypeFaceID) {
+          result(@[ @"face" ]);
+        } else if (context.biometryType == LABiometryTypeTouchID) {
+          result(@[ @"fingerprint" ]);
         }
-    } else if(authError.code == LAErrorTouchIDNotEnrolled) {
-        result(@"notEnrolled");
+      }
     }
-    result(@"notAvailable");
+  } else if (authError.code == LAErrorTouchIDNotEnrolled) {
+    result(@[ @"undefined" ]);
+  }
+  result(@[]);
 }
 
 - (void)authenticateWithBiometrics:(NSDictionary *)arguments
