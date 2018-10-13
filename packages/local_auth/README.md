@@ -64,6 +64,34 @@ await localAuth.authenticateWithBiometrics(
 
 ```
 
+### Availability Checks
+
+We provide an API to test for availability of different biometric
+authentication mechanisms so they can be appropriately referenced in any UI.
+
+[https://developer.apple.com/design/human-interface-guidelines/ios/user-interaction/authentication/](Apple's guidelines)
+recommend:
+> Reference authentication methods accurately. Don't reference Touch ID on a
+> device that supports Face ID. Conversely, don't reference Face ID on a device
+> that supports Touch ID. Check the device's capabilities and use the
+> appropriate terminology.
+
+To identify which mechanism is available, call the 'getBiometricOptions':
+```dart
+
+var localAuth = new LocalAuthentication();
+List<Biometric> options = await localAuth.getBiometricOptions();
+if (options.contains(Biometric.face)) {
+    // Facial recognition is supported (iOS only)
+} else if (option.contains(Biometric.fingerprint)) {
+    // Fingerprint is supported
+} else {
+    // No known biometric is supported.
+}
+```
+
+At this time, Android only supports returning 'Biometric.fingerprint'.
+
 ### Exceptions
 
 There are 4 types of exceptions: PasscodeNotSet, NotEnrolled, NotAvailable and

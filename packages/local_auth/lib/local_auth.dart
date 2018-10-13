@@ -9,7 +9,10 @@ import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
 import 'auth_strings.dart';
+import 'biometric.dart';
 import 'error_codes.dart';
+
+export 'biometric.dart';
 
 const MethodChannel _channel = MethodChannel('plugins.flutter.io/local_auth');
 
@@ -71,5 +74,31 @@ class LocalAuthentication {
           details: 'Your operating system is ${Platform.operatingSystem}');
     }
     return await _channel.invokeMethod('authenticateWithBiometrics', args);
+  }
+
+  /// Request the available list of authentication methods from the device.
+  ///
+  /// Returns a [Future] holding zero or more [BiometricOptions] values. If the
+  /// device does not support biometric authentication, or if the user has
+  /// simply not set up biometric authentication, this will return an emptry
+  /// array.
+  Future<List<Biometric>> getBiometricOptions() async {
+    final List<dynamic> channelBiometrics =
+        await _channel.invokeMethod('getBiometricOptions');
+    final List<Biometric> result = <Biometric>[];
+
+    for (String bio in channelBiometrics) {
+      switch (bio) {
+        case 'face':
+          result.add(Biometric.face);
+          break;
+
+        case 'fingerprint':
+          result.add(Biometric.fingerprint);
+          break;
+      }
+    }
+
+    return result;
   }
 }

@@ -18,6 +18,14 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _authorized = 'Not Authorized';
+  List<String> _options = <String>[];
+
+  @override
+  void initState() {
+    super.initState();
+
+    _getBiometricOptions();
+  }
 
   Future<Null> _authenticate() async {
     final LocalAuthentication auth = LocalAuthentication();
@@ -37,6 +45,30 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  Future<Null> _getBiometricOptions() async {
+    final LocalAuthentication auth = LocalAuthentication();
+    final List<Biometric> options = await auth.getBiometricOptions();
+    final List<String> stringOptions = <String>[];
+
+    for (Biometric b in options) {
+      switch (b) {
+        case Biometric.face:
+          stringOptions.add('face');
+          break;
+
+        case Biometric.fingerprint:
+          stringOptions.add('fingerprint');
+          break;
+
+        default:
+          stringOptions.add('other');
+          break;
+      }
+    }
+
+    setState(() => _options = stringOptions);
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -49,6 +81,7 @@ class _MyAppState extends State<MyApp> {
           child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
+                Text('Available biometrics: ${_options.toString()}\n'),
                 Text('Current State: $_authorized\n'),
                 RaisedButton(
                   child: const Text('Authenticate'),
