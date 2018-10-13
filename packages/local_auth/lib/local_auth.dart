@@ -81,7 +81,6 @@ class LocalAuthentication {
   Future<bool> canCheckBiometrics() async {
     final List<dynamic> biometrics =
         await _channel.invokeMethod('getAvailableBiometrics');
-    print('canCheckBiometrics $biometrics');
     return biometrics.isNotEmpty;
   }
 
