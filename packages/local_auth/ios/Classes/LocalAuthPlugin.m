@@ -67,21 +67,22 @@
 - (void)getAvailableBiometrics:(FlutterResult)result {
   LAContext *context = [[LAContext alloc] init];
   NSError *authError = nil;
+  NSMutableArray *biometrics = [[NSMutableArray alloc] init];
   if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
                            error:&authError]) {
     if (authError == nil) {
       if (@available(iOS 11.0.1, *)) {
         if (context.biometryType == LABiometryTypeFaceID) {
-          result(@[ @"face" ]);
+          [biometrics addObject:@"face"];
         } else if (context.biometryType == LABiometryTypeTouchID) {
-          result(@[ @"fingerprint" ]);
+          [biometrics addObject:@"fingerprint"];
         }
       }
     }
   } else if (authError.code == LAErrorTouchIDNotEnrolled) {
-    result(@[ @"undefined" ]);
+    [biometrics addObject:@"undefined"];
   }
-  result(@[]);
+  result(biometrics);
 }
 
 - (void)authenticateWithBiometrics:(NSDictionary *)arguments

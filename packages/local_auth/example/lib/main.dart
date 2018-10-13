@@ -17,12 +17,12 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  final LocalAuthentication auth = LocalAuthentication();
   bool _canCheckBiometrics;
   List<BiometricType> _availableBiometrics;
   String _authorized = 'Not Authorized';
 
   Future<Null> _checkBiometrics() async {
-    final LocalAuthentication auth = LocalAuthentication();
     bool canCheckBiometrics;
     try {
       canCheckBiometrics = await auth.canCheckBiometrics();
@@ -37,7 +37,6 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<Null> _getAvailableBiometrics() async {
-    final LocalAuthentication auth = LocalAuthentication();
     List<dynamic> availableBiometrics;
     try {
       availableBiometrics = await auth.getAvailableBiometrics();
@@ -52,7 +51,6 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<Null> _authenticate() async {
-    final LocalAuthentication auth = LocalAuthentication();
     bool authenticated = false;
     try {
       authenticated = await auth.authenticateWithBiometrics(

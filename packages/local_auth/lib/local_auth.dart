@@ -75,7 +75,7 @@ class LocalAuthentication {
     return await _channel.invokeMethod('authenticateWithBiometrics', args);
   }
 
-  /// Returns true or false if biometrics are available
+  /// Returns true if device is capable of checking biometrics
   ///
   /// Returns a [Future] bool true or false:
   Future<bool> canCheckBiometrics() async {
@@ -105,6 +105,8 @@ class LocalAuthentication {
           break;
         case 'iris':
           biometrics.add(BiometricType.iris);
+          break;
+        case 'undefined':
           break;
       }
     });

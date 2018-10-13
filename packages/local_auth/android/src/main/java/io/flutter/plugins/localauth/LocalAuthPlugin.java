@@ -78,10 +78,12 @@ public class LocalAuthPlugin implements MethodCallHandler {
       FingerprintManager fingerprintMgr =
           registrar.activity().getSystemService(FingerprintManager.class);
       ArrayList<String> biometrics = new ArrayList<String>();
-      if (!fingerprintMgr.hasEnrolledFingerprints()) {
-        biometrics.add("undefined");
-      } else if (fingerprintMgr.isHardwareDetected() && fingerprintMgr.hasEnrolledFingerprints()) {
-        biometrics.add("fingerprint");
+      if (fingerprintMgr.isHardwareDetected()) {
+        if (fingerprintMgr.hasEnrolledFingerprints()) {
+          biometrics.add("fingerprint");
+        } else {
+          biometrics.add("undefined");
+        }
       }
       result.success(biometrics);
     } else {
