@@ -16,6 +16,8 @@ const String kMockEmail = 'test@example.com';
 const String kMockPassword = 'passw0rd';
 const String kMockIdToken = '12345';
 const String kMockAccessToken = '67890';
+const String kMockAuthToken = '23456';
+const String kMockAuthTokenSecret = '78901';
 const String kMockCustomToken = '12345';
 const String kMockPhoneNumber = '5555555555';
 const String kMockVerificationId = '12345';
@@ -41,10 +43,9 @@ void main() {
             return mockHandleId++;
             break;
           case "sendPasswordResetEmail":
-          case "updateProfile":
-            return null;
-            break;
           case "updateEmail":
+          case "updatePassword":
+          case "updateProfile":
             return null;
             break;
           case "fetchProvidersForEmail":
@@ -247,6 +248,26 @@ void main() {
       );
     });
 
+    test('linkWithTwitterCredential', () async {
+      final FirebaseUser user = await auth.linkWithTwitterCredential(
+        authToken: kMockAuthToken,
+        authTokenSecret: kMockAuthTokenSecret,
+      );
+      verifyUser(user);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'linkWithTwitterCredential',
+            arguments: <String, String>{
+              'authToken': kMockAuthToken,
+              'authTokenSecret': kMockAuthTokenSecret,
+            },
+          ),
+        ],
+      );
+    });
+
     test('signInWithFacebook', () async {
       final FirebaseUser user = await auth.signInWithFacebook(
         accessToken: kMockAccessToken,
@@ -359,13 +380,52 @@ void main() {
       );
     });
 
+    test('updateEmail', () async {
+      final FirebaseUser user = await auth.currentUser();
+      await user.updateEmail(kMockEmail);
+      expect(log, <Matcher>[
+        isMethodCall(
+          'currentUser',
+          arguments: null,
+        ),
+        isMethodCall(
+          'updateEmail',
+          arguments: <String, String>{
+            'email': kMockEmail,
+          },
+        ),
+      ]);
+    });
+
+    test('updatePassword', () async {
+      final FirebaseUser user = await auth.currentUser();
+      await user.updatePassword(kMockPassword);
+      expect(log, <Matcher>[
+        isMethodCall(
+          'currentUser',
+          arguments: null,
+        ),
+        isMethodCall(
+          'updatePassword',
+          arguments: <String, String>{
+            'password': kMockPassword,
+          },
+        ),
+      ]);
+    });
+
     test('updateProfile', () async {
       final UserUpdateInfo userUpdateInfo = UserUpdateInfo();
       userUpdateInfo.photoUrl = kMockPhotoUrl;
       userUpdateInfo.displayName = kMockDisplayName;
 
-      await auth.updateProfile(userUpdateInfo);
+      final FirebaseUser user = await auth.currentUser();
+      await user.updateProfile(userUpdateInfo);
       expect(log, <Matcher>[
+        isMethodCall(
+          'currentUser',
+          arguments: null,
+        ),
         isMethodCall(
           'updateProfile',
           arguments: <String, String>{
@@ -374,20 +434,6 @@ void main() {
           },
         ),
       ]);
-    });
-
-    test('updateEmail', () async {
-      final String updatedEmail = 'atestemail@gmail.com';
-      auth.updateEmail(email: updatedEmail);
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall(
-            'updateEmail',
-            arguments: <String, String>{'email': updatedEmail},
-          ),
-        ],
-      );
     });
 
     test('signInWithCustomToken', () async {

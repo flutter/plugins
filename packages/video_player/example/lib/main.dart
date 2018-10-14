@@ -15,9 +15,9 @@ import 'package:video_player/video_player.dart';
 ///
 /// Plays (looping) on initialization, and mutes on deactivation.
 class VideoPlayPause extends StatefulWidget {
-  final VideoPlayerController controller;
-
   VideoPlayPause(this.controller);
+
+  final VideoPlayerController controller;
 
   @override
   State createState() {
@@ -26,15 +26,15 @@ class VideoPlayPause extends StatefulWidget {
 }
 
 class _VideoPlayPauseState extends State<VideoPlayPause> {
-  FadeAnimation imageFadeAnim =
-      FadeAnimation(child: const Icon(Icons.play_arrow, size: 100.0));
-  VoidCallback listener;
-
   _VideoPlayPauseState() {
     listener = () {
       setState(() {});
     };
   }
+
+  FadeAnimation imageFadeAnim =
+      FadeAnimation(child: const Icon(Icons.play_arrow, size: 100.0));
+  VoidCallback listener;
 
   VideoPlayerController get controller => widget.controller;
 
@@ -95,11 +95,11 @@ class _VideoPlayPauseState extends State<VideoPlayPause> {
 }
 
 class FadeAnimation extends StatefulWidget {
-  final Widget child;
-  final Duration duration;
-
   FadeAnimation(
       {this.child, this.duration = const Duration(milliseconds: 500)});
+
+  final Widget child;
+  final Duration duration;
 
   @override
   _FadeAnimationState createState() => _FadeAnimationState();
@@ -157,10 +157,10 @@ typedef Widget VideoWidgetBuilder(
     BuildContext context, VideoPlayerController controller);
 
 abstract class PlayerLifeCycle extends StatefulWidget {
+  PlayerLifeCycle(this.dataSource, this.childBuilder);
+
   final VideoWidgetBuilder childBuilder;
   final String dataSource;
-
-  PlayerLifeCycle(this.dataSource, this.childBuilder);
 }
 
 /// A widget connecting its life cycle to a [VideoPlayerController] using
@@ -270,9 +270,9 @@ Widget buildCard(String title) {
 }
 
 class VideoInListOfCards extends StatelessWidget {
-  final VideoPlayerController controller;
-
   VideoInListOfCards(this.controller);
+
+  final VideoPlayerController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -314,9 +314,9 @@ class VideoInListOfCards extends StatelessWidget {
 }
 
 class AspectRatioVideo extends StatefulWidget {
-  final VideoPlayerController controller;
-
   AspectRatioVideo(this.controller);
+
+  final VideoPlayerController controller;
 
   @override
   AspectRatioVideoState createState() => AspectRatioVideoState();

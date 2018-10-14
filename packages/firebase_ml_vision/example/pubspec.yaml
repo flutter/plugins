@@ -8,10 +8,9 @@ dependencies:
 
   image_picker: ^0.4.5
   cupertino_icons: ^0.1.2
-
-dev_dependencies:
   firebase_ml_vision:
     path: ../
+  firebase_core: ^0.2.5+1
 
 flutter:
   uses-material-design: true
