@@ -1,3 +1,11 @@
+## 3.2.1
+
+* Set http version to be compatible with flutter_test.
+
+## 3.2.0
+
+* Add support for clearing authentication cache for Android.
+
 ## 3.1.0
 
 * Add support to recover authentication for Android.

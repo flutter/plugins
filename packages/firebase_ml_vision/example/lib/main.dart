@@ -21,7 +21,7 @@ class _MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<_MyHomePage> {
   File _imageFile;
   Size _imageSize;
-  List<dynamic> _scanResults;
+  dynamic _scanResults;
   Detector _currentDetector = Detector.text;
 
   Future<void> _getAndScanImage() async {
@@ -85,13 +85,13 @@ class _MyHomePageState extends State<_MyHomePage> {
         detector = FirebaseVision.instance.cloudLabelDetector();
         break;
       case Detector.text:
-        detector = FirebaseVision.instance.textDetector();
+        detector = FirebaseVision.instance.textRecognizer();
         break;
       default:
         return;
     }
 
-    final List<dynamic> results =
+    final dynamic results =
         await detector.detectInImage(visionImage) ?? <dynamic>[];
 
     setState(() {
@@ -99,7 +99,7 @@ class _MyHomePageState extends State<_MyHomePage> {
     });
   }
 
-  CustomPaint _buildResults(Size imageSize, List<dynamic> results) {
+  CustomPaint _buildResults(Size imageSize, dynamic results) {
     CustomPainter painter;
 
     switch (_currentDetector) {

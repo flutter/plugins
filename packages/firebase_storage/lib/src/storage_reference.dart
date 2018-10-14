@@ -5,8 +5,9 @@
 part of firebase_storage;
 
 class StorageReference {
-  final FirebaseStorage _firebaseStorage;
   const StorageReference._(this._pathComponents, this._firebaseStorage);
+
+  final FirebaseStorage _firebaseStorage;
   final List<String> _pathComponents;
 
   /// Returns a new instance of [StorageReference] pointing to a child

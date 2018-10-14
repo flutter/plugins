@@ -1,8 +1,8 @@
-# Google ML Kit for Firebase
+# ML Kit for Firebase
 
 [![pub package](https://img.shields.io/pub/v/firebase_ml_vision.svg)](https://pub.dartlang.org/packages/firebase_ml_vision)
 
-A Flutter plugin to use the [Google ML Kit for Firebase API](https://firebase.google.com/docs/ml-kit/).
+A Flutter plugin to use the [ML Kit for Firebase API](https://firebase.google.com/docs/ml-kit/).
 
 For Flutter plugins for other Firebase products, see [FlutterFire.md](https://github.com/flutter/plugins/blob/master/FlutterFire.md).
 
@@ -42,12 +42,13 @@ Get an instance of a `FirebaseVisionDetector`.
 
 ```dart
 final BarcodeDetector barcodeDetector = FirebaseVision.instance.barcodeDetector();
+final CloudLabelDetector cloudLabelDetector = FirebaseVision.instance.cloudLabelDetector();
 final FaceDetector faceDetector = FirebaseVision.instance.faceDetector();
 final LabelDetector labelDetector = FirebaseVision.instance.labelDetector();
-final TextDetector textDetector = FirebaseVision.instance.textDetector();
+final TextRecognizer textRecognizer = FirebaseVision.instance.textRecognizer();
 ```
 
-You can also configure all detectors except `TextDetector` with desired options.
+You can also configure all detectors except `TextRecognizer` with desired options.
 
 ```dart
 final LabelDetector detector = FirebaseVision.instance.labelDetector(
@@ -59,9 +60,10 @@ final LabelDetector detector = FirebaseVision.instance.labelDetector(
 
 ```dart
 final List<Barcode> barcodes = await barcodeDetector.detectInImage(visionImage);
+final List<Label> labels = await cloudLabelDetector.detectInImage(visionImage);
 final List<Face> faces = await faceDetector.detectInImage(visionImage);
 final List<Label> labels = await labelDetector.detectInImage(visionImage);
-final List<TextBlock> blocks = await textDetector.detectInImage(visionImage);
+final VisionText visionText = await textRecognizer.detectInImage(visionImage);
 ```
 
 ### 4. Extract data.
@@ -133,16 +135,17 @@ for (Label label in labels) {
 d. Extract text.
 
 ```dart
-for (TextBlock block in blocks) {
+String text = visionText.text;
+for (TextBlock block in visionText.blocks) {
   final Rectangle<int> boundingBox = block.boundingBox;
   final List<Point<int>> cornerPoints = block.cornerPoints;
   final String text = block.text;
+  final List<RecognizedLanguage> languages = block.recognizedLanguages;
 
   for (TextLine line in block.lines) {
-    // ...
-
+    // Same getters as TextBlock
     for (TextElement element in line.elements) {
-      // ...
+      // Same getters as TextBlock
     }
   }
 }
@@ -150,4 +153,4 @@ for (TextBlock block in blocks) {
 
 ## Getting Started
 
-See the `example` directory for a complete sample app using Google ML Kit for Firebase.
+See the `example` directory for a complete sample app using ML Kit for Firebase.

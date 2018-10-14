@@ -1,3 +1,7 @@
+## 0.0.4+1
+
+* Bump Android dependncies to latest.
+
 ## 0.0.4
 
 * Fixed podspec to use static_framework

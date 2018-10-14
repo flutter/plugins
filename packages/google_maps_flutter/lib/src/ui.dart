@@ -71,6 +71,25 @@ class MinMaxZoomPreference {
 /// When used to change configuration, null values will be interpreted as
 /// "do not change this configuration option".
 class GoogleMapOptions {
+  /// Creates a set of map user interface configuration options.
+  ///
+  /// By default, every non-specified field is null, meaning no desire to change
+  /// user interface defaults or current configuration.
+  GoogleMapOptions({
+    this.cameraPosition,
+    this.compassEnabled,
+    this.cameraTargetBounds,
+    this.mapType,
+    this.minMaxZoomPreference,
+    this.rotateGesturesEnabled,
+    this.scrollGesturesEnabled,
+    this.tiltGesturesEnabled,
+    this.trackCameraPosition,
+    this.zoomGesturesEnabled,
+    this.onCameraIdle,
+    this.onCameraMove,
+  });
+
   /// The desired position of the map camera.
   ///
   /// This field is used to indicate initial camera position and to update that
@@ -113,25 +132,6 @@ class GoogleMapOptions {
 
   // OnCameraMove callback
   final VoidCallback onCameraMove;
-
-  /// Creates a set of map user interface configuration options.
-  ///
-  /// By default, every non-specified field is null, meaning no desire to change
-  /// user interface defaults or current configuration.
-  GoogleMapOptions({
-    this.cameraPosition,
-    this.compassEnabled,
-    this.cameraTargetBounds,
-    this.mapType,
-    this.minMaxZoomPreference,
-    this.rotateGesturesEnabled,
-    this.scrollGesturesEnabled,
-    this.tiltGesturesEnabled,
-    this.trackCameraPosition,
-    this.zoomGesturesEnabled,
-    this.onCameraIdle,
-    this.onCameraMove,
-  });
 
   /// Default user interface options.
   ///

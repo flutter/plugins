@@ -3,7 +3,7 @@ description: Flutter plugin for Cloud Firestore, a cloud-hosted, noSQL database 
   live synchronization and offline support on Android and iOS.
 author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/cloud_firestore
-version: 0.8.0
+version: 0.8.1+1
 
 flutter:
   plugin:
@@ -14,9 +14,9 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
-  firebase_core: "^0.2.2"
   meta: "^1.0.5"
   collection: "^1.14.3"
+  firebase_core: "^0.2.5+1"
 
 dev_dependencies:
   flutter_test:

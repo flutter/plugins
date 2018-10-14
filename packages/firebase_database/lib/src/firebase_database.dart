@@ -8,18 +8,6 @@ part of firebase_database;
 /// by calling `FirebaseDatabase.instance`. To access a location in the database
 /// and read or write data, use `reference()`.
 class FirebaseDatabase {
-  final MethodChannel _channel = const MethodChannel(
-    'plugins.flutter.io/firebase_database',
-  );
-
-  static final Map<int, StreamController<Event>> _observers =
-      <int, StreamController<Event>>{};
-
-  static final Map<int, TransactionHandler> _transactions =
-      <int, TransactionHandler>{};
-
-  static bool _initialized = false;
-
   /// Gets an instance of [FirebaseDatabase].
   ///
   /// If [app] is specified, its options should include a [databaseURL].
@@ -51,7 +39,19 @@ class FirebaseDatabase {
     _initialized = true;
   }
 
+  static final Map<int, StreamController<Event>> _observers =
+      <int, StreamController<Event>>{};
+
+  static final Map<int, TransactionHandler> _transactions =
+      <int, TransactionHandler>{};
+
+  static bool _initialized = false;
+
   static FirebaseDatabase _instance = FirebaseDatabase();
+
+  final MethodChannel _channel = const MethodChannel(
+    'plugins.flutter.io/firebase_database',
+  );
 
   /// The [FirebaseApp] instance to which this [FirebaseDatabase] belongs.
   ///
