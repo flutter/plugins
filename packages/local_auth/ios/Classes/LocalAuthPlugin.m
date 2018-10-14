@@ -67,7 +67,7 @@
 - (void)getAvailableBiometrics:(FlutterResult)result {
   LAContext *context = [[LAContext alloc] init];
   NSError *authError = nil;
-  NSMutableArray *biometrics = [[NSMutableArray alloc] init];
+  NSMutableArray<NSString *> *biometrics = [[NSMutableArray<NSString *> alloc] init];
   if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
                            error:&authError]) {
     if (authError == nil) {

@@ -91,11 +91,10 @@ class LocalAuthentication {
   /// - BiometricType.fingerprint
   /// - BiometricType.iris (not yet implemented)
   Future<List<BiometricType>> getAvailableBiometrics() async {
-    final List<dynamic> result =
-        await _channel.invokeMethod('getAvailableBiometrics');
-
+    final List<String> result =
+        (await _channel.invokeMethod('getAvailableBiometrics')).cast<String>();
     final List<BiometricType> biometrics = <BiometricType>[];
-    result.forEach((dynamic value) {
+    result.forEach((String value) {
       switch (value) {
         case 'face':
           biometrics.add(BiometricType.face);
