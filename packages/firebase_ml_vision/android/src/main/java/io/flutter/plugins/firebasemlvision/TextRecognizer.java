@@ -7,6 +7,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.ml.vision.FirebaseVision;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
+import com.google.firebase.ml.vision.text.FirebaseVisionCloudTextRecognizerOptions;
 import com.google.firebase.ml.vision.text.FirebaseVisionText;
 import com.google.firebase.ml.vision.text.FirebaseVisionTextRecognizer;
 import com.google.firebase.ml.vision.text.RecognizedLanguage;
@@ -24,8 +25,21 @@ public class TextRecognizer implements Detector {
   @Override
   public void handleDetection(
       FirebaseVisionImage image, Map<String, Object> options, final MethodChannel.Result result) {
-    FirebaseVisionTextRecognizer textRecognizer =
-        FirebaseVision.getInstance().getOnDeviceTextRecognizer();
+
+    FirebaseVisionTextRecognizer textRecognizer;
+
+    String recognizerType = (String) options.get("recognizerType");
+    switch (recognizerType) {
+      case "onDevice":
+        textRecognizer = FirebaseVision.getInstance().getOnDeviceTextRecognizer();
+        break;
+      case "cloud":
+        textRecognizer = FirebaseVision.getInstance().getCloudTextRecognizer(parseCloudOptions(options));
+        break;
+      default:
+        throw new IllegalArgumentException(String.format("No TextRecognizer for type: %s", recognizerType));
+    }
+
     textRecognizer
         .processImage(image)
         .addOnSuccessListener(
@@ -124,5 +138,31 @@ public class TextRecognizer implements Detector {
     addTo.put("recognizedLanguages", allLanguageData);
 
     addTo.put("text", text);
+  }
+
+  private FirebaseVisionCloudTextRecognizerOptions parseCloudOptions(Map<String, Object> options) {
+    FirebaseVisionCloudTextRecognizerOptions.Builder builder =
+        new FirebaseVisionCloudTextRecognizerOptions.Builder();
+
+    boolean enforceCertFingerprintMatch = (Boolean) options.get("enforceCertFingerprintMatch");
+    if (enforceCertFingerprintMatch) builder.enforceCertFingerprintMatch();
+
+    @SuppressWarnings("unchecked")
+    List<String> hintedLanguages = (List<String>) options.get("hintedLanguages");
+    builder.setLanguageHints(hintedLanguages);
+
+    String modelType = (String) options.get("modelType");
+    switch(modelType) {
+      case "sparse":
+        builder.setModelType(FirebaseVisionCloudTextRecognizerOptions.SPARSE_MODEL);
+        break;
+      case "dense":
+        builder.setModelType(FirebaseVisionCloudTextRecognizerOptions.DENSE_MODEL);
+        break;
+      default:
+        throw new IllegalArgumentException(String.format("No model for type: %s", modelType));
+    }
+
+    return builder.build();
   }
 }

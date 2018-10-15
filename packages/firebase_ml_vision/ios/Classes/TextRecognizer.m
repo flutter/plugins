@@ -7,7 +7,13 @@ static FIRVisionTextRecognizer *recognizer;
                 options:(NSDictionary *)options
                  result:(FlutterResult)result {
   FIRVision *vision = [FIRVision vision];
-  recognizer = [vision onDeviceTextRecognizer];
+
+  NSString *recognizerType = options[@"recognizerType"];
+  if ([recognizerType isEqualToString:@"onDevice"]) {
+    recognizer = [vision onDeviceTextRecognizer];
+  } else if ([recognizerType isEqualToString:@"cloud"]) {
+    recognizer = [vision cloudTextRecognizerWithOptions:[TextRecognizer parseCloudOptions:options]];
+  }
 
   [recognizer processImage:image
                 completion:^(FIRVisionText *_Nullable visionText, NSError *_Nullable error) {
@@ -98,5 +104,24 @@ static FIRVisionTextRecognizer *recognizer;
     @"recognizedLanguages" : allLanguageData,
     @"text" : text,
   }];
+}
+
++ (FIRVisionCloudTextRecognizerOptions *)parseCloudOptions:(NSDictionary *)optionsData {
+  FIRVisionCloudTextRecognizerOptions *options = [[FIRVisionCloudTextRecognizerOptions alloc] init];
+
+  options.APIKeyOverride = optionsData[@"apiKeyOverride"];
+  options.languageHints = optionsData[@"hintedLanguages"];
+
+  NSString *modelType = optionsData[@"modelType"];
+  if ([modelType isEqualToString:@"sparse"]) {
+    options.modelType = FIRVisionCloudTextModelTypeSparse;
+  } else if ([modelType isEqualToString:@"dense"]) {
+    options.modelType = FIRVisionCloudTextModelTypeDense;
+  } else {
+    NSString *errorString = [NSString stringWithFormat:@"No model for type: %@", modelType];
+    @throw([NSException exceptionWithName:NSInvalidArgumentException reason:errorString userInfo:nil]);
+  }
+
+  return options;
 }
 @end
