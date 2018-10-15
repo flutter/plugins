@@ -25,7 +25,7 @@ class _MyAppState extends State<MyApp> {
   Future<Null> _checkBiometrics() async {
     bool canCheckBiometrics;
     try {
-      canCheckBiometrics = await auth.canCheckBiometrics();
+      canCheckBiometrics = await auth.canCheckBiometrics;
     } on PlatformException catch (e) {
       print(e);
     }

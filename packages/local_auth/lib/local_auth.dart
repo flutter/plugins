@@ -78,11 +78,8 @@ class LocalAuthentication {
   /// Returns true if device is capable of checking biometrics
   ///
   /// Returns a [Future] bool true or false:
-  Future<bool> canCheckBiometrics() async {
-    final List<dynamic> biometrics =
-        await _channel.invokeMethod('getAvailableBiometrics');
-    return biometrics.isNotEmpty;
-  }
+  Future<bool> get canCheckBiometrics async =>
+      (await _channel.invokeMethod('getAvailableBiometrics')).isNotEmpty;
 
   /// Returns a list of enrolled biometrics
   ///
