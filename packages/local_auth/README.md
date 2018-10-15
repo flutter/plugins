@@ -14,6 +14,33 @@ Import the relevant file:
 import 'package:local_auth/local_auth.dart';
 ```
 
+To check whether there is local authentication available on this device or not, call canCheckBiometrics:
+
+```dart
+bool canCheckBiometrics =
+    await localAuth.canCheckBiometrics;
+```
+
+Currently the following biometric types are implemented:
+
+* BiometricType.face
+* BiometricType.fingerprint
+
+To get a list of enrolled biometrics, call getAvailableBiometrics:
+
+```dart
+List<BiometricType> availableBiometrics;
+    await auth.getAvailableBiometrics();
+
+if (Platform.isIOS) {
+    if (availableBiometrics.contains(BiometricType.face)) {
+        // Face ID.
+    } else if (availableBiometrics.contains(BiometricType.fingerprint)) {
+        // Touch ID.
+    }
+}
+```
+
 We have default dialogs with an 'OK' button to show authentication error
 messages for the following 2 cases:
 
@@ -32,7 +59,7 @@ Use the exported APIs to trigger local authentication with default dialogs:
 var localAuth = new LocalAuthentication();
 bool didAuthenticate =
     await localAuth.authenticateWithBiometrics(
-    localizedReason: 'Please authenticate to show account balance');
+        localizedReason: 'Please authenticate to show account balance');
 ```
 
 If you don't want to use the default dialogs, call this API with
