@@ -126,6 +126,7 @@ class GoogleMapOptions {
   /// True if the map view should respond to zoom gestures.
   final bool zoomGesturesEnabled;
 
+  // True if the map toolbar (Directions, Open in Maps) is enabled.
   final bool mapToolbarEnabled;
 
   /// Default user interface options.
