@@ -86,6 +86,7 @@ class GoogleMapOptions {
     this.tiltGesturesEnabled,
     this.trackCameraPosition,
     this.zoomGesturesEnabled,
+    this.mapToolbarEnabled,
   });
 
   /// The desired position of the map camera.
@@ -125,6 +126,8 @@ class GoogleMapOptions {
   /// True if the map view should respond to zoom gestures.
   final bool zoomGesturesEnabled;
 
+  final bool mapToolbarEnabled;
+
   /// Default user interface options.
   ///
   /// Specifies a map view that
@@ -149,6 +152,7 @@ class GoogleMapOptions {
     tiltGesturesEnabled: true,
     trackCameraPosition: false,
     zoomGesturesEnabled: true,
+    mapToolbarEnabled: true,
   );
 
   /// Creates a new options object whose values are the same as this instance,
@@ -172,6 +176,7 @@ class GoogleMapOptions {
       tiltGesturesEnabled: change.tiltGesturesEnabled ?? tiltGesturesEnabled,
       trackCameraPosition: change.trackCameraPosition ?? trackCameraPosition,
       zoomGesturesEnabled: change.zoomGesturesEnabled ?? zoomGesturesEnabled,
+      mapToolbarEnabled: change.mapToolbarEnabled ?? mapToolbarEnabled,
     );
   }
 
@@ -194,6 +199,7 @@ class GoogleMapOptions {
     addIfPresent('tiltGesturesEnabled', tiltGesturesEnabled);
     addIfPresent('trackCameraPosition', trackCameraPosition);
     addIfPresent('zoomGesturesEnabled', zoomGesturesEnabled);
+    addIfPresent('mapToolbarEnabled', mapToolbarEnabled);
     return json;
   }
 }

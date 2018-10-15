@@ -78,4 +78,9 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   public void setZoomGesturesEnabled(boolean zoomGesturesEnabled) {
     options.zoomGesturesEnabled(zoomGesturesEnabled);
   }
+
+  @Override
+  public void setMapToolbarEnabled(boolean mapToolbarEnabled) {
+    options.mapToolbarEnabled(mapToolbarEnabled);
+  }
 }
