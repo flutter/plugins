@@ -37,7 +37,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<Null> _getAvailableBiometrics() async {
-    List<dynamic> availableBiometrics;
+    List<BiometricType> availableBiometrics;
     try {
       availableBiometrics = await auth.getAvailableBiometrics();
     } on PlatformException catch (e) {
