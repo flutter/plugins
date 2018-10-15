@@ -158,7 +158,7 @@ public class TextRecognizer implements Detector {
     builder.setLanguageHints(hintedLanguages);
 
     String modelType = (String) options.get("modelType");
-    switch(modelType) {
+    switch (modelType) {
       case "sparse":
         builder.setModelType(FirebaseVisionCloudTextRecognizerOptions.SPARSE_MODEL);
         break;
@@ -166,7 +166,8 @@ public class TextRecognizer implements Detector {
         builder.setModelType(FirebaseVisionCloudTextRecognizerOptions.DENSE_MODEL);
         break;
       default:
-        result.error("cloudOptionsError", String.format("No support for model type: %s", modelType), null);
+        result.error(
+            "cloudOptionsError", String.format("No support for model type: %s", modelType), null);
         return null;
     }
 

@@ -12,7 +12,8 @@ static FIRVisionTextRecognizer *recognizer;
   if ([recognizerType isEqualToString:@"onDevice"]) {
     recognizer = [vision onDeviceTextRecognizer];
   } else if ([recognizerType isEqualToString:@"cloud"]) {
-    FIRVisionCloudTextRecognizerOptions *recognizerOptions = [TextRecognizer parseCloudOptions:options result:result];
+    FIRVisionCloudTextRecognizerOptions *recognizerOptions =
+        [TextRecognizer parseCloudOptions:options result:result];
     if (!recognizerOptions) return;
 
     recognizer = [vision cloudTextRecognizerWithOptions:recognizerOptions];
