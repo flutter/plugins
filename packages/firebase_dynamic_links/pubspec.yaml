@@ -1,7 +1,7 @@
 name: firebase_dynamic_links
 description: Flutter plugin for Google Dynamic Links for Firebase, an app solution for creating
   and handling links across multiple platforms.
-version: 0.1.0
+version: 0.1.0+1
 author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/firebase_dynamic_links
 
@@ -12,6 +12,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  firebase_core: ^0.2.5+1
 
 flutter:
   plugin:

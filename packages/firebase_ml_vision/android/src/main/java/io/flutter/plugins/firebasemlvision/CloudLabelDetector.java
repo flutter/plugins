@@ -55,7 +55,20 @@ class CloudLabelDetector implements Detector {
 
   private FirebaseVisionCloudDetectorOptions parseOptions(Map<String, Object> optionsData) {
     final int maxResults = (int) optionsData.get("maxResults");
-    final int modelType = (int) optionsData.get("modelType");
+    final String modelTypeStr = (String) optionsData.get("modelType");
+
+    final int modelType;
+    switch (modelTypeStr) {
+      case "stable":
+        modelType = FirebaseVisionCloudDetectorOptions.STABLE_MODEL;
+        break;
+      case "latest":
+        modelType = FirebaseVisionCloudDetectorOptions.LATEST_MODEL;
+        break;
+      default:
+        throw new IllegalArgumentException(String.format("No type for model: %s", modelTypeStr));
+    }
+
     return new FirebaseVisionCloudDetectorOptions.Builder()
         .setMaxResults(maxResults)
         .setModelType(modelType)
