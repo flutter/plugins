@@ -34,10 +34,15 @@ public class TextRecognizer implements Detector {
         textRecognizer = FirebaseVision.getInstance().getOnDeviceTextRecognizer();
         break;
       case "cloud":
-        textRecognizer = FirebaseVision.getInstance().getCloudTextRecognizer(parseCloudOptions(options));
+        FirebaseVisionCloudTextRecognizerOptions recognizerOptions =
+            parseCloudOptions(options, result);
+        if (recognizerOptions == null) return;
+
+        textRecognizer = FirebaseVision.getInstance().getCloudTextRecognizer(recognizerOptions);
         break;
       default:
-        throw new IllegalArgumentException(String.format("No TextRecognizer for type: %s", recognizerType));
+        throw new IllegalArgumentException(
+            String.format("No TextRecognizer for type: %s", recognizerType));
     }
 
     textRecognizer
@@ -140,7 +145,8 @@ public class TextRecognizer implements Detector {
     addTo.put("text", text);
   }
 
-  private FirebaseVisionCloudTextRecognizerOptions parseCloudOptions(Map<String, Object> options) {
+  private FirebaseVisionCloudTextRecognizerOptions parseCloudOptions(
+      Map<String, Object> options, MethodChannel.Result result) {
     FirebaseVisionCloudTextRecognizerOptions.Builder builder =
         new FirebaseVisionCloudTextRecognizerOptions.Builder();
 
@@ -160,7 +166,8 @@ public class TextRecognizer implements Detector {
         builder.setModelType(FirebaseVisionCloudTextRecognizerOptions.DENSE_MODEL);
         break;
       default:
-        throw new IllegalArgumentException(String.format("No model for type: %s", modelType));
+        result.error("cloudOptionsError", String.format("No support for model type: %s", modelType), null);
+        return null;
     }
 
     return builder.build();

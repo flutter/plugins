@@ -12,7 +12,15 @@ static FIRVisionTextRecognizer *recognizer;
   if ([recognizerType isEqualToString:@"onDevice"]) {
     recognizer = [vision onDeviceTextRecognizer];
   } else if ([recognizerType isEqualToString:@"cloud"]) {
-    recognizer = [vision cloudTextRecognizerWithOptions:[TextRecognizer parseCloudOptions:options]];
+    FIRVisionCloudTextRecognizerOptions *recognizerOptions = [TextRecognizer parseCloudOptions:options result:result];
+    if (!recognizerOptions) return;
+
+    recognizer = [vision cloudTextRecognizerWithOptions:recognizerOptions];
+  } else {
+    NSString *errorString =
+        [NSString stringWithFormat:@"No TextRecognizer for type: %@", recognizerType];
+    @throw(
+        [NSException exceptionWithName:NSInvalidArgumentException reason:errorString userInfo:nil]);
   }
 
   [recognizer processImage:image
@@ -106,7 +114,8 @@ static FIRVisionTextRecognizer *recognizer;
   }];
 }
 
-+ (FIRVisionCloudTextRecognizerOptions *)parseCloudOptions:(NSDictionary *)optionsData {
++ (FIRVisionCloudTextRecognizerOptions *)parseCloudOptions:(NSDictionary *)optionsData
+                                                    result:(FlutterResult)result {
   FIRVisionCloudTextRecognizerOptions *options = [[FIRVisionCloudTextRecognizerOptions alloc] init];
 
   options.APIKeyOverride = optionsData[@"apiKeyOverride"];
@@ -118,8 +127,11 @@ static FIRVisionTextRecognizer *recognizer;
   } else if ([modelType isEqualToString:@"dense"]) {
     options.modelType = FIRVisionCloudTextModelTypeDense;
   } else {
-    NSString *errorString = [NSString stringWithFormat:@"No model for type: %@", modelType];
-    @throw([NSException exceptionWithName:NSInvalidArgumentException reason:errorString userInfo:nil]);
+    NSString *errorString = [NSString stringWithFormat:@"No support for model type: %@", modelType];
+    NSError *error = [NSError errorWithDomain:errorString code:[@0 integerValue] userInfo:nil];
+    [FLTFirebaseMlVisionPlugin handleError:error result:result];
+
+    return nil;
   }
 
   return options;
