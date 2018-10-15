@@ -177,10 +177,10 @@ abstract class MobileAd extends AdListener {
     void dispose() {
       super.dispose();
 
+      adView.destroy();
+
       View contentView = activity.findViewById(id);
       if (contentView == null || !(contentView.getParent() instanceof ViewGroup)) return;
-
-      adView.destroy();
 
       ViewGroup contentParent = (ViewGroup) (contentView.getParent());
       contentParent.removeView(contentView);
