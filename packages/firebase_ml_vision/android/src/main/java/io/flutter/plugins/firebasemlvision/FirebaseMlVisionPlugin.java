@@ -1,6 +1,8 @@
 package io.flutter.plugins.firebasemlvision;
 
 import android.net.Uri;
+
+import com.google.firebase.ml.vision.cloud.FirebaseVisionCloudDetectorOptions;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -79,5 +81,27 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
   private FirebaseVisionImage filePathToVisionImage(String path) throws IOException {
     File file = new File(path);
     return FirebaseVisionImage.fromFilePath(registrar.context(), Uri.fromFile(file));
+  }
+
+  public static FirebaseVisionCloudDetectorOptions parseCloudDetectorOptions(Map<String, Object> optionsData) {
+    final int maxResults = (int) optionsData.get("maxResults");
+    final String modelTypeStr = (String) optionsData.get("modelType");
+
+    final int modelType;
+    switch (modelTypeStr) {
+      case "stable":
+        modelType = FirebaseVisionCloudDetectorOptions.STABLE_MODEL;
+        break;
+      case "latest":
+        modelType = FirebaseVisionCloudDetectorOptions.LATEST_MODEL;
+        break;
+      default:
+        throw new IllegalArgumentException(String.format("No type for model: %s", modelTypeStr));
+    }
+
+    return new FirebaseVisionCloudDetectorOptions.Builder()
+        .setMaxResults(maxResults)
+        .setModelType(modelType)
+        .build();
   }
 }

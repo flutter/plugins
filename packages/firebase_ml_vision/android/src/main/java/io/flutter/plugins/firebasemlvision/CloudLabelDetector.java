@@ -22,8 +22,9 @@ class CloudLabelDetector implements Detector {
   @Override
   public void handleDetection(
       FirebaseVisionImage image, Map<String, Object> options, final MethodChannel.Result result) {
+    FirebaseVisionCloudDetectorOptions detectorOptions = FirebaseMlVisionPlugin.parseCloudDetectorOptions(options);
     FirebaseVisionCloudLabelDetector detector =
-        FirebaseVision.getInstance().getVisionCloudLabelDetector(parseOptions(options));
+        FirebaseVision.getInstance().getVisionCloudLabelDetector(detectorOptions);
     detector
         .detectInImage(image)
         .addOnSuccessListener(
@@ -51,27 +52,5 @@ class CloudLabelDetector implements Detector {
                 result.error("labelDetectorError", e.getLocalizedMessage(), null);
               }
             });
-  }
-
-  private FirebaseVisionCloudDetectorOptions parseOptions(Map<String, Object> optionsData) {
-    final int maxResults = (int) optionsData.get("maxResults");
-    final String modelTypeStr = (String) optionsData.get("modelType");
-
-    final int modelType;
-    switch (modelTypeStr) {
-      case "stable":
-        modelType = FirebaseVisionCloudDetectorOptions.STABLE_MODEL;
-        break;
-      case "latest":
-        modelType = FirebaseVisionCloudDetectorOptions.LATEST_MODEL;
-        break;
-      default:
-        throw new IllegalArgumentException(String.format("No type for model: %s", modelTypeStr));
-    }
-
-    return new FirebaseVisionCloudDetectorOptions.Builder()
-        .setMaxResults(maxResults)
-        .setModelType(modelType)
-        .build();
   }
 }
