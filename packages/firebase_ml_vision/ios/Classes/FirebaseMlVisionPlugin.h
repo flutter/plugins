@@ -4,6 +4,7 @@
 
 @interface FLTFirebaseMlVisionPlugin : NSObject<FlutterPlugin>
 + (void)handleError:(NSError *)error result:(FlutterResult)result;
++ (FIRVisionCloudDetectorOptions *)parseCloudDetectorOptions:(NSDictionary *)optionsData;
 @end
 
 @protocol Detector
@@ -27,4 +28,7 @@
 @end
 
 @interface TextRecognizer : NSObject<Detector>
+@end
+
+@interface CloudLandmarkDetector : NSObject<Detector>
 @end
