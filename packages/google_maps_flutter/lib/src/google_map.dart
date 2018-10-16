@@ -11,7 +11,7 @@ class GoogleMap extends StatefulWidget {
     @required this.onMapCreated,
     GoogleMapOptions options,
     this.gestureRecognizers,
-  }) : this.options = GoogleMapOptions.defaultOptions.copyWith(options);
+  }) : options = GoogleMapOptions.defaultOptions.copyWith(options);
 
   final MapCreatedCallback onMapCreated;
 
