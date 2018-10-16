@@ -46,7 +46,7 @@ class WebView extends StatefulWidget {
   /// vertical drags. The web view will claim gestures that are recognized by any of the
   /// recognizers on this list.
   ///
-  /// When set list is empty or null, the web view will only handle pointer events for gestures that
+  /// When this set is empty or null, the web view will only handle pointer events for gestures that
   /// were not claimed by any other gesture recognizer.
   final Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers;
 
