@@ -65,6 +65,7 @@ public class CameraPlugin implements MethodCallHandler {
   private Camera camera;
   private Activity activity;
   private Registrar registrar;
+  private Application.ActivityLifecycleCallbacks activityLifecycleCallbacks;
   // The code to run after requesting camera permissions.
   private Runnable cameraPermissionContinuation;
   private boolean requestingPermission;
@@ -76,53 +77,51 @@ public class CameraPlugin implements MethodCallHandler {
 
     registrar.addRequestPermissionsResultListener(new CameraRequestPermissionsListener());
 
-    activity
-        .getApplication()
-        .registerActivityLifecycleCallbacks(
-            new Application.ActivityLifecycleCallbacks() {
-              @Override
-              public void onActivityCreated(Activity activity, Bundle savedInstanceState) {}
+    this.activityLifecycleCallbacks =
+        new Application.ActivityLifecycleCallbacks() {
+          @Override
+          public void onActivityCreated(Activity activity, Bundle savedInstanceState) {}
 
-              @Override
-              public void onActivityStarted(Activity activity) {}
+          @Override
+          public void onActivityStarted(Activity activity) {}
 
-              @Override
-              public void onActivityResumed(Activity activity) {
-                if (requestingPermission) {
-                  requestingPermission = false;
-                  return;
-                }
-                if (activity == CameraPlugin.this.activity) {
-                  if (camera != null) {
-                    camera.open(null);
-                  }
-                }
+          @Override
+          public void onActivityResumed(Activity activity) {
+            if (requestingPermission) {
+              requestingPermission = false;
+              return;
+            }
+            if (activity == CameraPlugin.this.activity) {
+              if (camera != null) {
+                camera.open(null);
               }
+            }
+          }
 
-              @Override
-              public void onActivityPaused(Activity activity) {
-                if (activity == CameraPlugin.this.activity) {
-                  if (camera != null) {
-                    camera.close();
-                  }
-                }
+          @Override
+          public void onActivityPaused(Activity activity) {
+            if (activity == CameraPlugin.this.activity) {
+              if (camera != null) {
+                camera.close();
               }
+            }
+          }
 
-              @Override
-              public void onActivityStopped(Activity activity) {
-                if (activity == CameraPlugin.this.activity) {
-                  if (camera != null) {
-                    camera.close();
-                  }
-                }
+          @Override
+          public void onActivityStopped(Activity activity) {
+            if (activity == CameraPlugin.this.activity) {
+              if (camera != null) {
+                camera.close();
               }
+            }
+          }
 
-              @Override
-              public void onActivitySaveInstanceState(Activity activity, Bundle outState) {}
+          @Override
+          public void onActivitySaveInstanceState(Activity activity, Bundle outState) {}
 
-              @Override
-              public void onActivityDestroyed(Activity activity) {}
-            });
+          @Override
+          public void onActivityDestroyed(Activity activity) {}
+        };
   }
 
   public static void registerWith(Registrar registrar) {
@@ -181,6 +180,9 @@ public class CameraPlugin implements MethodCallHandler {
             camera.close();
           }
           camera = new Camera(cameraName, resolutionPreset, result);
+          this.activity
+              .getApplication()
+              .registerActivityLifecycleCallbacks(this.activityLifecycleCallbacks);
           break;
         }
       case "takePicture":
@@ -203,6 +205,11 @@ public class CameraPlugin implements MethodCallHandler {
         {
           if (camera != null) {
             camera.dispose();
+          }
+          if (this.activity != null && this.activityLifecycleCallbacks != null) {
+            this.activity
+                .getApplication()
+                .unregisterActivityLifecycleCallbacks(this.activityLifecycleCallbacks);
           }
           result.success(null);
           break;
@@ -376,7 +383,8 @@ public class CameraPlugin implements MethodCallHandler {
       } else {
         previewSize = goodEnough.get(0);
 
-        // Video capture size should not be greater than 1080 because MediaRecorder cannot handle higher resolutions.
+        // Video capture size should not be greater than 1080 because MediaRecorder cannot handle
+        // higher resolutions.
         videoSize = goodEnough.get(0);
         for (int i = goodEnough.size() - 1; i >= 0; i--) {
           if (goodEnough.get(i).getHeight() <= 1080) {

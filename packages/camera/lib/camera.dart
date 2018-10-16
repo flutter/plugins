@@ -54,10 +54,10 @@ Future<List<CameraDescription>> availableCameras() async {
 }
 
 class CameraDescription {
+  CameraDescription({this.name, this.lensDirection});
+
   final String name;
   final CameraLensDirection lensDirection;
-
-  CameraDescription({this.name, this.lensDirection});
 
   @override
   bool operator ==(Object o) {
@@ -79,10 +79,10 @@ class CameraDescription {
 
 /// This is thrown when the plugin reports an error.
 class CameraException implements Exception {
+  CameraException(this.code, this.description);
+
   String code;
   String description;
-
-  CameraException(this.code, this.description);
 
   @override
   String toString() => '$runtimeType($code, $description)';
@@ -90,9 +90,9 @@ class CameraException implements Exception {
 
 // Build the UI texture view of the video data with textureId.
 class CameraPreview extends StatelessWidget {
-  final CameraController controller;
-
   const CameraPreview(this.controller);
+
+  final CameraController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -104,6 +104,20 @@ class CameraPreview extends StatelessWidget {
 
 /// The state of a [CameraController].
 class CameraValue {
+  const CameraValue({
+    this.isInitialized,
+    this.errorDescription,
+    this.previewSize,
+    this.isRecordingVideo,
+    this.isTakingPicture,
+  });
+
+  const CameraValue.uninitialized()
+      : this(
+            isInitialized: false,
+            isRecordingVideo: false,
+            isTakingPicture: false);
+
   /// True after [CameraController.initialize] has completed successfully.
   final bool isInitialized;
 
@@ -119,20 +133,6 @@ class CameraValue {
   ///
   /// Is `null` until  [isInitialized] is `true`.
   final Size previewSize;
-
-  const CameraValue({
-    this.isInitialized,
-    this.errorDescription,
-    this.previewSize,
-    this.isRecordingVideo,
-    this.isTakingPicture,
-  });
-
-  const CameraValue.uninitialized()
-      : this(
-            isInitialized: false,
-            isRecordingVideo: false,
-            isTakingPicture: false);
 
   /// Convenience getter for `previewSize.height / previewSize.width`.
   ///
@@ -176,6 +176,9 @@ class CameraValue {
 ///
 /// To show the camera preview on the screen use a [CameraPreview] widget.
 class CameraController extends ValueNotifier<CameraValue> {
+  CameraController(this.description, this.resolutionPreset)
+      : super(const CameraValue.uninitialized());
+
   final CameraDescription description;
   final ResolutionPreset resolutionPreset;
 
@@ -183,9 +186,6 @@ class CameraController extends ValueNotifier<CameraValue> {
   bool _isDisposed = false;
   StreamSubscription<dynamic> _eventSubscription;
   Completer<Null> _creatingCompleter;
-
-  CameraController(this.description, this.resolutionPreset)
-      : super(const CameraValue.uninitialized());
 
   /// Initializes the camera on the device.
   ///

@@ -80,9 +80,9 @@ class MyHomePage extends StatelessWidget {
 }
 
 class ExplicitIntentsWidget extends StatelessWidget {
-  static const String routeName = "/explicitIntents";
-
   const ExplicitIntentsWidget();
+
+  static const String routeName = "/explicitIntents";
 
   void _openGoogleMapsStreetView() {
     final AndroidIntent intent = AndroidIntent(
