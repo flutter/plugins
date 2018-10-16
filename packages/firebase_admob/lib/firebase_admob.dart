@@ -404,7 +404,7 @@ class RewardedVideoAd {
 ///
 /// Apps can create, load, and show mobile ads. For example:
 /// ```
-/// BannerAd myBanner = new BannerAd(unitId: myBannerAdUnitId)
+/// BannerAd myBanner = BannerAd(unitId: myBannerAdUnitId)
 ///   ..load()
 ///   ..show();
 /// ```
