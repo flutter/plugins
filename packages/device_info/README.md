@@ -13,7 +13,7 @@ Example:
 ```dart
 import 'package:device_info/device_info.dart';
 
-DeviceInfoPlugin deviceInfo = new DeviceInfoPlugin();
+DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
 AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
 print('Running on ${androidInfo.model}');  // e.g. "Moto G (4)"
 

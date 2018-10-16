@@ -44,7 +44,7 @@ class StorageMetadata {
         contentEncoding = map['contentEncoding'],
         customMetadata = map['customMetadata'] == null
             ? null
-            : new Map<String, String>.unmodifiable(
+            : Map<String, String>.unmodifiable(
                 map['customMetadata'].cast<String, String>());
 
   /// The owning Google Cloud Storage bucket for the [StorageReference].

@@ -9,8 +9,6 @@ import android.support.annotation.NonNull;
 import android.util.SparseArray;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import com.google.firebase.FirebaseApiNotAvailableException;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseException;
@@ -21,6 +19,8 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -111,11 +111,17 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       case "linkWithFacebookCredential":
         handleLinkWithFacebookCredential(call, result);
         break;
-      case "updateProfile":
-        handleUpdateProfile(call, result);
+      case "linkWithTwitterCredential":
+        handleLinkWithTwitterCredential(call, result);
         break;
       case "updateEmail":
         handleUpdateEmail(call, result);
+        break;
+      case "updatePassword":
+        handleUpdatePassword(call, result);
+        break;
+      case "updateProfile":
+        handleUpdateProfile(call, result);
         break;
       case "startListeningAuthState":
         handleStartListeningAuthState(call, result);
@@ -139,6 +145,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
   }
 
   private void handleSignInWithPhoneNumber(MethodCall call, Result result) {
+    @SuppressWarnings("unchecked")
     Map<String, String> arguments = (Map<String, String>) call.arguments;
     String verificationId = arguments.get("verificationId");
     String smsCode = arguments.get("smsCode");
@@ -263,7 +270,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
           public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
             firebaseAuth.removeAuthStateListener(this);
             FirebaseUser user = firebaseAuth.getCurrentUser();
-            ImmutableMap<String, Object> userMap = mapFromUser(user);
+            Map<String, Object> userMap = mapFromUser(user);
             result.success(userMap);
           }
         };
@@ -372,6 +379,18 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         .addOnCompleteListener(new SignInCompleteListener(result));
   }
 
+  private void handleLinkWithTwitterCredential(MethodCall call, final Result result) {
+    @SuppressWarnings("unchecked")
+    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    String authToken = arguments.get("authToken");
+    String authTokenSecret = arguments.get("authTokenSecret");
+    AuthCredential credential = TwitterAuthProvider.getCredential(authToken, authTokenSecret);
+    firebaseAuth
+        .getCurrentUser()
+        .linkWithCredential(credential)
+        .addOnCompleteListener(new SignInCompleteListener(result));
+  }
+
   private void handleSignInWithFacebook(MethodCall call, final Result result) {
     @SuppressWarnings("unchecked")
     Map<String, String> arguments = (Map<String, String>) call.arguments;
@@ -424,6 +443,24 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
             });
   }
 
+  private void handleUpdateEmail(MethodCall call, final Result result) {
+    @SuppressWarnings("unchecked")
+    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    firebaseAuth
+        .getCurrentUser()
+        .updateEmail(arguments.get("email"))
+        .addOnCompleteListener(new TaskVoidCompleteListener(result));
+  }
+
+  private void handleUpdatePassword(MethodCall call, final Result result) {
+    @SuppressWarnings("unchecked")
+    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    firebaseAuth
+        .getCurrentUser()
+        .updatePassword(arguments.get("password"))
+        .addOnCompleteListener(new TaskVoidCompleteListener(result));
+  }
+
   private void handleUpdateProfile(MethodCall call, final Result result) {
     @SuppressWarnings("unchecked")
     Map<String, String> arguments = (Map<String, String>) call.arguments;
@@ -439,40 +476,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     firebaseAuth
         .getCurrentUser()
         .updateProfile(builder.build())
-        .addOnCompleteListener(
-            new OnCompleteListener<Void>() {
-              @Override
-              public void onComplete(@NonNull Task<Void> task) {
-                if (!task.isSuccessful()) {
-                  Exception e = task.getException();
-                  result.error(ERROR_REASON_EXCEPTION, e.getMessage(), null);
-                } else {
-                  result.success(null);
-                }
-              }
-            });
-  }
-
-  private void handleUpdateEmail(MethodCall call, final Result result) {
-    @SuppressWarnings("unchecked")
-    Map<String, String> arguments = (Map<String, String>) call.arguments;
-    String email = arguments.get("email");
-
-    firebaseAuth
-        .getCurrentUser()
-        .updateEmail(email)
-        .addOnCompleteListener(
-            new OnCompleteListener<Void>() {
-              @Override
-              public void onComplete(@NonNull Task<Void> task) {
-                if (!task.isSuccessful()) {
-                  Exception e = task.getException();
-                  result.error(ERROR_REASON_EXCEPTION, e.getMessage(), null);
-                } else {
-                  result.success(null);
-                }
-              }
-            });
+        .addOnCompleteListener(new TaskVoidCompleteListener(result));
   }
 
   private void handleStartListeningAuthState(MethodCall call, final Result result) {
@@ -482,14 +486,14 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
           @Override
           public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
             FirebaseUser user = firebaseAuth.getCurrentUser();
-            ImmutableMap<String, Object> userMap = mapFromUser(user);
-            ImmutableMap.Builder<String, Object> builder =
-                ImmutableMap.<String, Object>builder().put("id", handle);
+            Map<String, Object> userMap = mapFromUser(user);
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", handle);
 
             if (userMap != null) {
-              builder.put("user", userMap);
+              map.put("user", userMap);
             }
-            channel.invokeMethod("onAuthStateChanged", builder.build());
+            channel.invokeMethod("onAuthStateChanged", Collections.unmodifiableMap(map));
           }
         };
     FirebaseAuth.getInstance().addAuthStateListener(listener);
@@ -537,7 +541,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         result.error(ERROR_REASON_EXCEPTION, e.getMessage(), null);
       } else {
         FirebaseUser user = task.getResult().getUser();
-        ImmutableMap<String, Object> userMap = mapFromUser(user);
+        Map<String, Object> userMap = Collections.unmodifiableMap(mapFromUser(user));
         result.success(userMap);
       }
     }
@@ -580,44 +584,42 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     }
   }
 
-  private ImmutableMap.Builder<String, Object> userInfoToMap(UserInfo userInfo) {
-    ImmutableMap.Builder<String, Object> builder =
-        ImmutableMap.<String, Object>builder()
-            .put("providerId", userInfo.getProviderId())
-            .put("uid", userInfo.getUid());
+  private Map<String, Object> userInfoToMap(UserInfo userInfo) {
+    Map<String, Object> map = new HashMap<>();
+    map.put("providerId", userInfo.getProviderId());
+    map.put("uid", userInfo.getUid());
     if (userInfo.getDisplayName() != null) {
-      builder.put("displayName", userInfo.getDisplayName());
+      map.put("displayName", userInfo.getDisplayName());
     }
     if (userInfo.getPhotoUrl() != null) {
-      builder.put("photoUrl", userInfo.getPhotoUrl().toString());
+      map.put("photoUrl", userInfo.getPhotoUrl().toString());
     }
     if (userInfo.getEmail() != null) {
-      builder.put("email", userInfo.getEmail());
+      map.put("email", userInfo.getEmail());
     }
     if (userInfo.getPhoneNumber() != null) {
-      builder.put("phoneNumber", userInfo.getPhoneNumber());
+      map.put("phoneNumber", userInfo.getPhoneNumber());
     }
-    return builder;
+    return map;
   }
 
-  private ImmutableMap<String, Object> mapFromUser(FirebaseUser user) {
+  private Map<String, Object> mapFromUser(FirebaseUser user) {
     if (user != null) {
-      ImmutableList.Builder<ImmutableMap<String, Object>> providerDataBuilder =
-          ImmutableList.<ImmutableMap<String, Object>>builder();
+      List<Map<String, Object>> providerData = new ArrayList<>();
       for (UserInfo userInfo : user.getProviderData()) {
         // Ignore phone provider since firebase provider is a super set of the phone provider.
         if (userInfo.getProviderId().equals("phone")) {
           continue;
         }
-        providerDataBuilder.add(userInfoToMap(userInfo).build());
+        providerData.add(Collections.unmodifiableMap(userInfoToMap(userInfo)));
       }
-      ImmutableMap<String, Object> userMap =
-          userInfoToMap(user)
-              .put("isAnonymous", user.isAnonymous())
-              .put("isEmailVerified", user.isEmailVerified())
-              .put("providerData", providerDataBuilder.build())
-              .build();
-      return userMap;
+      Map<String, Object> userMap = userInfoToMap(user);
+      userMap.put("creationTimestamp", user.getMetadata().getCreationTimestamp());
+      userMap.put("lastSignInTimestamp", user.getMetadata().getLastSignInTimestamp());
+      userMap.put("isAnonymous", user.isAnonymous());
+      userMap.put("isEmailVerified", user.isEmailVerified());
+      userMap.put("providerData", Collections.unmodifiableList(providerData));
+      return Collections.unmodifiableMap(userMap);
     } else {
       return null;
     }

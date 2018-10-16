@@ -18,10 +18,10 @@ Future<void> main() async {
       projectID: 'flutter-firestore',
     ),
   );
-  final Firestore firestore = new Firestore(app: app);
+  final Firestore firestore = Firestore(app: app);
 
-  runApp(new MaterialApp(
-      title: 'Firestore Example', home: new MyHomePage(firestore: firestore)));
+  runApp(MaterialApp(
+      title: 'Firestore Example', home: MyHomePage(firestore: firestore)));
 }
 
 class MessageList extends StatelessWidget {
@@ -31,18 +31,18 @@ class MessageList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new StreamBuilder<QuerySnapshot>(
+    return StreamBuilder<QuerySnapshot>(
       stream: firestore.collection('messages').snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (!snapshot.hasData) return const Text('Loading...');
         final int messageCount = snapshot.data.documents.length;
-        return new ListView.builder(
+        return ListView.builder(
           itemCount: messageCount,
           itemBuilder: (_, int index) {
             final DocumentSnapshot document = snapshot.data.documents[index];
-            return new ListTile(
-              title: new Text(document['message'] ?? '<No message retrieved>'),
-              subtitle: new Text('Message ${index + 1} of $messageCount'),
+            return ListTile(
+              title: Text(document['message'] ?? '<No message retrieved>'),
+              subtitle: Text('Message ${index + 1} of $messageCount'),
             );
           },
         );
@@ -65,12 +65,12 @@ class MyHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
+    return Scaffold(
+      appBar: AppBar(
         title: const Text('Firestore Example'),
       ),
-      body: new MessageList(firestore: firestore),
-      floatingActionButton: new FloatingActionButton(
+      body: MessageList(firestore: firestore),
+      floatingActionButton: FloatingActionButton(
         onPressed: _addMessage,
         tooltip: 'Increment',
         child: const Icon(Icons.add),

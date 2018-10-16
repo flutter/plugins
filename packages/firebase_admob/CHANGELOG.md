@@ -1,3 +1,12 @@
+## 0.6.1+1
+
+* Bump Android dependencies to latest.
+
+## 0.6.1
+
+* listener on MobileAd shouldn't be final.
+* Ad listeners can to be set in or out of Ad initialization.
+
 ## 0.6.0
 
 * Add nonPersonalizedAds option to MobileAdTargetingInfo

@@ -15,4 +15,5 @@ part 'src/barcode_detector.dart';
 part 'src/face_detector.dart';
 part 'src/firebase_vision.dart';
 part 'src/label_detector.dart';
-part 'src/text_detector.dart';
+part 'src/text_recognizer.dart';
+part 'src/cloud_detector_options.dart';

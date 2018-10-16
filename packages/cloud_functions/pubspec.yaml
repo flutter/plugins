@@ -13,11 +13,11 @@ dependencies:
   meta: ^1.1.6
   flutter:
     sdk: flutter
-  firebase_core: ^0.2.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  firebase_core: ^0.2.5+1
 
 environment:
   sdk: ">=2.0.0-dev.28.0 <3.0.0"
