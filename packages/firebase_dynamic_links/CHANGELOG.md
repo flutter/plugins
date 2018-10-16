@@ -1,3 +1,7 @@
+## 0.1.0+2
+
+* Change android `invites` dependency to `dynamic links` dependency.
+
 ## 0.1.0+1
 
 * Bump Android dependencies to latest.
