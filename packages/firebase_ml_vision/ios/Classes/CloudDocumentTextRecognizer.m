@@ -7,7 +7,7 @@ static FIRVisionDocumentTextRecognizer *recognizer;
                 options:(NSDictionary *)options
                  result:(FlutterResult)result {
     FIRVision *vision = [FIRVision vision];
-    recognizer = [vision cloudDocumentTextRecognizer];
+    recognizer = [vision cloudDocumentTextRecognizerWithOptions:[CloudDocumentTextRecognizer parseOptions:options]];
     
     [recognizer processImage:image
                   completion:^(FIRVisionDocumentText *_Nullable documentText, NSError *_Nullable error) {
@@ -102,5 +102,14 @@ static FIRVisionDocumentTextRecognizer *recognizer;
     @"recognizedLanguages" : allLanguageData,
     @"text" : text,
   }];
+}
+
++ (FIRVisionCloudDocumentTextRecognizerOptions *)parseOptions:(NSDictionary *)optionsData {
+  FIRVisionCloudTextRecognizerOptions *options = [[FIRVisionCloudTextRecognizerOptions alloc] init];
+
+  options.APIKeyOverride = optionsData[@"apiKeyOverride"];
+  options.languageHints = optionsData[@"hintedLanguages"];
+
+  return options;
 }
 @end
