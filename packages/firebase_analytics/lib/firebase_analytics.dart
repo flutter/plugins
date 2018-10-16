@@ -36,7 +36,7 @@ class FirebaseAnalytics {
   ///
   /// Example:
   ///
-  ///     FirebaseAnalytics analytics = new FirebaseAnalytics();
+  ///     FirebaseAnalytics analytics = FirebaseAnalytics();
   ///     analytics.android?.setMinimumSessionDuration(200000);
   final FirebaseAnalyticsAndroid android;
 
