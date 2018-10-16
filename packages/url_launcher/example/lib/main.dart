@@ -8,18 +8,18 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 void main() {
-  runApp(new MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
+    return MaterialApp(
       title: 'URL Launcher',
-      theme: new ThemeData(
+      theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: new MyHomePage(title: 'URL Launcher'),
+      home: MyHomePage(title: 'URL Launcher'),
     );
   }
 }
@@ -29,7 +29,7 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  _MyHomePageState createState() => new _MyHomePageState();
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -51,9 +51,22 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  Future<Null> _launchInWebViewWithJavaScript(String url) async {
+    if (await canLaunch(url)) {
+      await launch(
+        url,
+        forceSafariVC: true,
+        forceWebView: true,
+        enableJavaScript: true,
+      );
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
   Widget _launchStatus(BuildContext context, AsyncSnapshot<Null> snapshot) {
     if (snapshot.hasError) {
-      return new Text('Error: ${snapshot.error}');
+      return Text('Error: ${snapshot.error}');
     } else {
       return const Text('');
     }
@@ -62,33 +75,40 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     const String toLaunch = 'https://flutter.io';
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text(widget.title),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
       ),
-      body: new Center(
-        child: new Column(
+      body: Center(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const Padding(
               padding: EdgeInsets.all(16.0),
               child: Text(toLaunch),
             ),
-            new RaisedButton(
+            RaisedButton(
               onPressed: () => setState(() {
                     _launched = _launchInBrowser(toLaunch);
                   }),
               child: const Text('Launch in browser'),
             ),
             const Padding(padding: EdgeInsets.all(16.0)),
-            new RaisedButton(
+            RaisedButton(
               onPressed: () => setState(() {
                     _launched = _launchInWebViewOrVC(toLaunch);
                   }),
               child: const Text('Launch in app'),
             ),
             const Padding(padding: EdgeInsets.all(16.0)),
-            new FutureBuilder<Null>(future: _launched, builder: _launchStatus),
+            RaisedButton(
+              onPressed: () => setState(() {
+                    _launched = _launchInWebViewWithJavaScript(toLaunch);
+                  }),
+              child: const Text('Launch in app(JavaScript ON)'),
+            ),
+            const Padding(padding: EdgeInsets.all(16.0)),
+            FutureBuilder<Null>(future: _launched, builder: _launchStatus),
           ],
         ),
       ),

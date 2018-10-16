@@ -5,9 +5,10 @@
 part of cloud_firestore;
 
 class GeoPoint {
+  const GeoPoint(this.latitude, this.longitude);
+
   final double latitude;
   final double longitude;
-  const GeoPoint(this.latitude, this.longitude);
 
   @override
   bool operator ==(dynamic o) =>

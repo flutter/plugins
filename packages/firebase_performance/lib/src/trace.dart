@@ -21,8 +21,8 @@ part of firebase_performance;
 class Trace extends PerformanceAttributes {
   Trace._(this._handle, this._name) {
     assert(_name != null);
-    assert(!_name.startsWith(new RegExp(r'[_\s]')));
-    assert(!_name.contains(new RegExp(r'[_\s]$')));
+    assert(!_name.startsWith(RegExp(r'[_\s]')));
+    assert(!_name.contains(RegExp(r'[_\s]$')));
     assert(_name.length <= maxTraceNameLength);
   }
 
@@ -35,7 +35,7 @@ class Trace extends PerformanceAttributes {
   bool _hasStarted = false;
   bool _hasStopped = false;
 
-  final HashMap<String, int> _counters = new HashMap<String, int>();
+  final HashMap<String, int> _counters = HashMap<String, int>();
 
   /// Starts this trace.
   ///
@@ -89,8 +89,8 @@ class Trace extends PerformanceAttributes {
   void incrementCounter(String name, [int incrementBy = 1]) {
     assert(!_hasStopped);
     assert(name != null);
-    assert(!name.startsWith(new RegExp(r'[_\s]')));
-    assert(!name.contains(new RegExp(r'[_\s]$')));
+    assert(!name.startsWith(RegExp(r'[_\s]')));
+    assert(!name.contains(RegExp(r'[_\s]$')));
     assert(name.length <= 32);
 
     _counters.putIfAbsent(name, () => 0);

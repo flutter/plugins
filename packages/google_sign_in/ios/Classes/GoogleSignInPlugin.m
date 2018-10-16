@@ -113,6 +113,10 @@ static NSString *const kErrorReasonSignInFailed = @"sign_in_failed";
     if ([self setAccountRequest:result]) {
       [[GIDSignIn sharedInstance] disconnect];
     }
+  } else if ([call.method isEqualToString:@"clearAuthCache"]) {
+    // There's nothing to be done here on iOS since the expired/invalid
+    // tokens are refreshed automatically by getTokensWithHandler.
+    result(nil);
   } else {
     result(FlutterMethodNotImplemented);
   }

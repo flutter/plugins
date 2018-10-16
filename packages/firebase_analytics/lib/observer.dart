@@ -49,13 +49,13 @@ String defaultNameExtractor(RouteSettings settings) => settings.name;
 /// [PageRouteAware] and subscribing it to [FirebaseAnalyticsObserver]. See the
 /// [PageRouteObserver] docs for an example.
 class FirebaseAnalyticsObserver extends RouteObserver<PageRoute<dynamic>> {
-  final FirebaseAnalytics analytics;
-  final ScreenNameExtractor nameExtractor;
-
   FirebaseAnalyticsObserver({
     @required this.analytics,
     this.nameExtractor = defaultNameExtractor,
   });
+
+  final FirebaseAnalytics analytics;
+  final ScreenNameExtractor nameExtractor;
 
   void _sendScreenView(PageRoute<dynamic> route) {
     final String screenName = nameExtractor(route.settings);

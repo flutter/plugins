@@ -26,9 +26,9 @@ class PlaceMarkerBody extends StatefulWidget {
 }
 
 class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
-  static final LatLng center = const LatLng(-33.86711, 151.1947171);
-
   PlaceMarkerBodyState();
+
+  static final LatLng center = const LatLng(-33.86711, 151.1947171);
 
   GoogleMapController controller;
   int _markerCount = 0;
@@ -170,12 +170,12 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         Center(
-          child: new SizedBox(
+          child: SizedBox(
             width: 300.0,
             height: 200.0,
             child: GoogleMap(
               onMapCreated: _onMapCreated,
-              options: new GoogleMapOptions(
+              options: GoogleMapOptions(
                 cameraPosition: const CameraPosition(
                   target: LatLng(-33.852, 151.211),
                   zoom: 11.0,

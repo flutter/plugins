@@ -16,6 +16,8 @@ const String kMockEmail = 'test@example.com';
 const String kMockPassword = 'passw0rd';
 const String kMockIdToken = '12345';
 const String kMockAccessToken = '67890';
+const String kMockAuthToken = '23456';
+const String kMockAuthTokenSecret = '78901';
 const String kMockCustomToken = '12345';
 const String kMockPhoneNumber = '5555555555';
 const String kMockVerificationId = '12345';
@@ -41,14 +43,13 @@ void main() {
             return mockHandleId++;
             break;
           case "sendPasswordResetEmail":
+          case "updateEmail":
+          case "updatePassword":
           case "updateProfile":
             return null;
             break;
-          case "updateEmail":
-            return null;
-            break;
           case "fetchProvidersForEmail":
-            return new List<String>(0);
+            return List<String>(0);
             break;
           case "verifyPhoneNumber":
             return null;
@@ -247,6 +248,26 @@ void main() {
       );
     });
 
+    test('linkWithTwitterCredential', () async {
+      final FirebaseUser user = await auth.linkWithTwitterCredential(
+        authToken: kMockAuthToken,
+        authTokenSecret: kMockAuthTokenSecret,
+      );
+      verifyUser(user);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'linkWithTwitterCredential',
+            arguments: <String, String>{
+              'authToken': kMockAuthToken,
+              'authTokenSecret': kMockAuthTokenSecret,
+            },
+          ),
+        ],
+      );
+    });
+
     test('signInWithFacebook', () async {
       final FirebaseUser user = await auth.signInWithFacebook(
         accessToken: kMockAccessToken,
@@ -359,13 +380,52 @@ void main() {
       );
     });
 
+    test('updateEmail', () async {
+      final FirebaseUser user = await auth.currentUser();
+      await user.updateEmail(kMockEmail);
+      expect(log, <Matcher>[
+        isMethodCall(
+          'currentUser',
+          arguments: null,
+        ),
+        isMethodCall(
+          'updateEmail',
+          arguments: <String, String>{
+            'email': kMockEmail,
+          },
+        ),
+      ]);
+    });
+
+    test('updatePassword', () async {
+      final FirebaseUser user = await auth.currentUser();
+      await user.updatePassword(kMockPassword);
+      expect(log, <Matcher>[
+        isMethodCall(
+          'currentUser',
+          arguments: null,
+        ),
+        isMethodCall(
+          'updatePassword',
+          arguments: <String, String>{
+            'password': kMockPassword,
+          },
+        ),
+      ]);
+    });
+
     test('updateProfile', () async {
-      final UserUpdateInfo userUpdateInfo = new UserUpdateInfo();
+      final UserUpdateInfo userUpdateInfo = UserUpdateInfo();
       userUpdateInfo.photoUrl = kMockPhotoUrl;
       userUpdateInfo.displayName = kMockDisplayName;
 
-      await auth.updateProfile(userUpdateInfo);
+      final FirebaseUser user = await auth.currentUser();
+      await user.updateProfile(userUpdateInfo);
       expect(log, <Matcher>[
+        isMethodCall(
+          'currentUser',
+          arguments: null,
+        ),
         isMethodCall(
           'updateProfile',
           arguments: <String, String>{
@@ -374,20 +434,6 @@ void main() {
           },
         ),
       ]);
-    });
-
-    test('updateEmail', () async {
-      final String updatedEmail = 'atestemail@gmail.com';
-      auth.updateEmail(email: updatedEmail);
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall(
-            'updateEmail',
-            arguments: <String, String>{'email': updatedEmail},
-          ),
-        ],
-      );
     });
 
     test('signInWithCustomToken', () async {
@@ -411,7 +457,7 @@ void main() {
         await BinaryMessages.handlePlatformMessage(
           FirebaseAuth.channel.name,
           FirebaseAuth.channel.codec.encodeMethodCall(
-            new MethodCall(
+            MethodCall(
               'onAuthStateChanged',
               <String, dynamic>{'id': 42, 'user': user},
             ),
@@ -420,12 +466,12 @@ void main() {
         );
       }
 
-      final AsyncQueue<FirebaseUser> events = new AsyncQueue<FirebaseUser>();
+      final AsyncQueue<FirebaseUser> events = AsyncQueue<FirebaseUser>();
 
       // Subscribe and allow subscription to complete.
       final StreamSubscription<FirebaseUser> subscription =
           auth.onAuthStateChanged.listen(events.add);
-      await new Future<Null>.delayed(const Duration(seconds: 0));
+      await Future<Null>.delayed(const Duration(seconds: 0));
 
       await simulateEvent(null);
       await simulateEvent(mockFirebaseUser());
@@ -438,7 +484,7 @@ void main() {
 
       // Cancel subscription and allow cancellation to complete.
       subscription.cancel();
-      await new Future<Null>.delayed(const Duration(seconds: 0));
+      await Future<Null>.delayed(const Duration(seconds: 0));
 
       expect(
         log,
@@ -511,7 +557,7 @@ class AsyncQueue<T> {
     if (_completers.containsKey(index)) {
       return _completers.remove(index);
     } else {
-      return _completers[index] = new Completer<T>();
+      return _completers[index] = Completer<T>();
     }
   }
 }

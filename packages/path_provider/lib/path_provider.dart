@@ -25,7 +25,7 @@ Future<Directory> getTemporaryDirectory() async {
   if (path == null) {
     return null;
   }
-  return new Directory(path);
+  return Directory(path);
 }
 
 /// Path to a directory where the application may place files that are private
@@ -41,7 +41,7 @@ Future<Directory> getApplicationDocumentsDirectory() async {
   if (path == null) {
     return null;
   }
-  return new Directory(path);
+  return Directory(path);
 }
 
 /// Path to a directory where the application may access top level storage.
@@ -54,10 +54,10 @@ Future<Directory> getApplicationDocumentsDirectory() async {
 /// On Android this returns getExternalStorageDirectory.
 Future<Directory> getExternalStorageDirectory() async {
   if (Platform.isIOS)
-    throw new UnsupportedError("Functionality not available on iOS");
+    throw UnsupportedError("Functionality not available on iOS");
   final String path = await _channel.invokeMethod('getStorageDirectory');
   if (path == null) {
     return null;
   }
-  return new Directory(path);
+  return Directory(path);
 }
