@@ -194,19 +194,19 @@ int nextHandle = 0;
     NSString *authTokenSecret = call.arguments[@"authTokenSecret"];
     FIRAuthCredential *credential =
         [FIRTwitterAuthProvider credentialWithToken:authToken secret:authTokenSecret];
-    [[FIRAuth auth].currentUser linkWithCredential:credential
+    [[self getAuth:call.arguments].currentUser linkWithCredential:credential
                                         completion:^(FIRUser *user, NSError *error) {
                                           [self sendResult:result forUser:user error:error];
                                         }];
   } else if ([@"updateEmail" isEqualToString:call.method]) {
     NSString *email = call.arguments[@"email"];
-    [[FIRAuth auth].currentUser updateEmail:email
+    [[self getAuth:call.arguments].currentUser updateEmail:email
                                  completion:^(NSError *error) {
                                    [self sendResult:result forUser:nil error:error];
                                  }];
   } else if ([@"updatePassword" isEqualToString:call.method]) {
     NSString *password = call.arguments[@"password"];
-    [[FIRAuth auth].currentUser updatePassword:password
+    [[self getAuth:call.arguments].currentUser updatePassword:password
                                     completion:^(NSError *error) {
                                       [self sendResult:result forUser:nil error:error];
                                     }];

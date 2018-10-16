@@ -122,7 +122,7 @@ class FirebaseUser extends UserInfo {
     assert(email != null);
     return await FirebaseAuth.channel.invokeMethod(
       'updateEmail',
-      <String, String>{'email': email},
+      <String, String>{'email': email, 'app': app.name},
     );
   }
 
@@ -131,16 +131,18 @@ class FirebaseUser extends UserInfo {
     assert(password != null);
     return await FirebaseAuth.channel.invokeMethod(
       'updatePassword',
-      <String, String>{'password': password},
+      <String, String>{'password': password, 'app': app.name},
     );
   }
 
   /// Updates the user profile information.
   Future<void> updateProfile(UserUpdateInfo userUpdateInfo) async {
     assert(userUpdateInfo != null);
+    final Map<String, String> data = userUpdateInfo._updateData;
+    data['app'] = app.name;
     return await FirebaseAuth.channel.invokeMethod(
       'updateProfile',
-      userUpdateInfo._updateData,
+      data,
     );
   }
 
@@ -413,29 +415,6 @@ class FirebaseAuth {
     return currentUser;
   }
 
-  Future<void> updateEmail({
-    @required String email,
-  }) async {
-    assert(email != null);
-    return await channel.invokeMethod(
-      'updateEmail',
-      <String, String>{
-        'email': email,
-        'app': app.name,
-      },
-    );
-  }
-
-  Future<void> updateProfile(UserUpdateInfo userUpdateInfo) async {
-    assert(userUpdateInfo != null);
-    final Map<String, String> data = userUpdateInfo._updateData;
-    data['app'] = app.name;
-    return await channel.invokeMethod(
-      'updateProfile',
-      data,
-    );
-  }
-
   /// Links google account with current user and returns [Future<FirebaseUser>]
   ///
   /// throws [PlatformException] when
@@ -481,11 +460,12 @@ class FirebaseAuth {
     final Map<dynamic, dynamic> data = await channel.invokeMethod(
       'linkWithTwitterCredential',
       <String, String>{
+        'app': app.name,
         'authToken': authToken,
         'authTokenSecret': authTokenSecret,
       },
     );
-    final FirebaseUser currentUser = FirebaseUser._(data);
+    final FirebaseUser currentUser = FirebaseUser._(data, app);
     return currentUser;
   }
 

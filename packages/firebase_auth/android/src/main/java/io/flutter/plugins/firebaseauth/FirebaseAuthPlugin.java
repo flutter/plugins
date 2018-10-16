@@ -117,9 +117,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         handleLinkWithFacebookCredential(call, result, getAuth(call));
         break;
       case "linkWithTwitterCredential":
-        handleLinkWithTwitterCredential(call, result);
-      case "updateProfile":
-        handleUpdateProfile(call, result, getAuth(call));
+        handleLinkWithTwitterCredential(call, result, getAuth(call));
         break;
       case "updateEmail":
         handleUpdateEmail(call, result, getAuth(call));
@@ -393,7 +391,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         .addOnCompleteListener(new SignInCompleteListener(result));
   }
 
-  private void handleLinkWithTwitterCredential(MethodCall call, final Result result) {
+  private void handleLinkWithTwitterCredential(MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
     @SuppressWarnings("unchecked")
     Map<String, String> arguments = (Map<String, String>) call.arguments;
     String authToken = arguments.get("authToken");
@@ -460,7 +458,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
             });
   }
 
-  private void handleUpdateEmail(MethodCall call, final Result result) {
+  private void handleUpdateEmail(MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
     @SuppressWarnings("unchecked")
     Map<String, String> arguments = (Map<String, String>) call.arguments;
     firebaseAuth
@@ -469,7 +467,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         .addOnCompleteListener(new TaskVoidCompleteListener(result));
   }
 
-  private void handleUpdatePassword(MethodCall call, final Result result) {
+  private void handleUpdatePassword(MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
     @SuppressWarnings("unchecked")
     Map<String, String> arguments = (Map<String, String>) call.arguments;
     firebaseAuth
