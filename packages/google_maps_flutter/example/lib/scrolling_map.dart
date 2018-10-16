@@ -53,7 +53,6 @@ class ScrollingMapBody extends StatelessWidget {
                           <Factory<OneSequenceGestureRecognizer>>[
                         new Factory<OneSequenceGestureRecognizer>(
                           () => new EagerGestureRecognizer(),
-                          type: EagerGestureRecognizer,
                         ),
                       ].toSet(),
                     ),
@@ -90,7 +89,6 @@ class ScrollingMapBody extends StatelessWidget {
                           <Factory<OneSequenceGestureRecognizer>>[
                         new Factory<OneSequenceGestureRecognizer>(
                           () => new ScaleGestureRecognizer(),
-                          type: ScaleGestureRecognizer,
                         ),
                       ].toSet(),
                     ),
