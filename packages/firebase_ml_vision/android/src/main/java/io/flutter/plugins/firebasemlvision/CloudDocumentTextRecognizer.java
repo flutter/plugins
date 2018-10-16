@@ -37,7 +37,8 @@ public class CloudDocumentTextRecognizer implements Detector {
                 visionDocumentData.put("text", firebaseVisionDocumentText.getText());
 
                 List<Map<String, Object>> allBlockData = new ArrayList<>();
-                for (FirebaseVisionDocumentText.Block block : firebaseVisionDocumentText.getBlocks()) {
+                for (FirebaseVisionDocumentText.Block block :
+                    firebaseVisionDocumentText.getBlocks()) {
                   Map<String, Object> blockData = new HashMap<>();
                   addData(
                       blockData,
