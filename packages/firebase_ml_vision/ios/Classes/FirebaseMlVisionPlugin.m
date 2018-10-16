@@ -59,19 +59,19 @@
 }
 
 + (FIRVisionCloudDetectorOptions *)parseCloudDetectorOptions:(NSDictionary *)optionsData {
-    FIRVisionCloudDetectorOptions *options = [[FIRVisionCloudDetectorOptions alloc] init];
-    
-    NSNumber *maxResults = optionsData[@"maxResults"];
-    options.maxResults = [maxResults unsignedIntegerValue];
-    
-    NSString *modelTypeStr = optionsData[@"modelType"];
-    if ([@"stable" isEqualToString:modelTypeStr]) {
-        options.modelType = FIRVisionCloudModelTypeStable;
-    } else if ([@"latest" isEqualToString:modelTypeStr]) {
-        options.modelType = FIRVisionCloudModelTypeLatest;
-    }
-    // TODO(bmparr): Throw exception if model type is wrong
-    
-    return options;
+  FIRVisionCloudDetectorOptions *options = [[FIRVisionCloudDetectorOptions alloc] init];
+
+  NSNumber *maxResults = optionsData[@"maxResults"];
+  options.maxResults = [maxResults unsignedIntegerValue];
+
+  NSString *modelTypeStr = optionsData[@"modelType"];
+  if ([@"stable" isEqualToString:modelTypeStr]) {
+    options.modelType = FIRVisionCloudModelTypeStable;
+  } else if ([@"latest" isEqualToString:modelTypeStr]) {
+    options.modelType = FIRVisionCloudModelTypeLatest;
+  }
+  // TODO(bmparr): Throw exception if model type is wrong
+
+  return options;
 }
 @end

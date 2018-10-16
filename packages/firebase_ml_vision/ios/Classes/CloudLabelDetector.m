@@ -7,7 +7,9 @@ static FIRVisionCloudLabelDetector *detector;
                 options:(NSDictionary *)options
                  result:(FlutterResult)result {
   FIRVision *vision = [FIRVision vision];
-    FIRVisionCloudDetectorOptions *detectorOptions = [FLTFirebaseMlVisionPlugin parseCloudDetectorOptions:options];
+  FIRVisionCloudDetectorOptions *detectorOptions =
+      [FLTFirebaseMlVisionPlugin parseCloudDetectorOptions:options];
+
   detector = [vision cloudLabelDetectorWithOptions:detectorOptions];
 
   [detector

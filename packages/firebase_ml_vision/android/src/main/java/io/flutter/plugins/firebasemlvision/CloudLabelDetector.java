@@ -22,9 +22,12 @@ class CloudLabelDetector implements Detector {
   @Override
   public void handleDetection(
       FirebaseVisionImage image, Map<String, Object> options, final MethodChannel.Result result) {
-    FirebaseVisionCloudDetectorOptions detectorOptions = FirebaseMlVisionPlugin.parseCloudDetectorOptions(options);
+    FirebaseVisionCloudDetectorOptions detectorOptions =
+        FirebaseMlVisionPlugin.parseCloudDetectorOptions(options);
+
     FirebaseVisionCloudLabelDetector detector =
         FirebaseVision.getInstance().getVisionCloudLabelDetector(detectorOptions);
+
     detector
         .detectInImage(image)
         .addOnSuccessListener(
