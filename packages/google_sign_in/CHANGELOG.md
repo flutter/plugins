@@ -1,3 +1,7 @@
+## 3.2.2
+
+* Update gradle and change google-services.json for the example.
+
 ## 3.2.1
 
 * Set http version to be compatible with flutter_test.
