@@ -79,8 +79,8 @@ int nextHandle = 0;
   } else if ([@"signInWithGoogle" isEqualToString:call.method]) {
     NSString *idToken = call.arguments[@"idToken"];
     NSString *accessToken = call.arguments[@"accessToken"];
-    FIRAuthCredential *credential =
-      [FIRGoogleAuthProvider credentialWithIDToken:idToken accessToken:accessToken];
+    FIRAuthCredential *credential = [FIRGoogleAuthProvider credentialWithIDToken:idToken
+                                                                     accessToken:accessToken];
     [[self getAuth:call.arguments] signInWithCredential:credential
                                              completion:^(FIRUser *user, NSError *error) {
                                                [self sendResult:result forUser:user error:error];
@@ -176,8 +176,8 @@ int nextHandle = 0;
   } else if ([@"linkWithGoogleCredential" isEqualToString:call.method]) {
     NSString *idToken = call.arguments[@"idToken"];
     NSString *accessToken = call.arguments[@"accessToken"];
-    FIRAuthCredential *credential =
-      [FIRGoogleAuthProvider credentialWithIDToken:idToken accessToken:accessToken];
+    FIRAuthCredential *credential = [FIRGoogleAuthProvider credentialWithIDToken:idToken
+                                                                     accessToken:accessToken];
     [[self getAuth:call.arguments].currentUser linkWithCredential:credential
                                                        completion:^(FIRUser *user, NSError *error) {
                                                          [self sendResult:result
@@ -196,8 +196,8 @@ int nextHandle = 0;
   } else if ([@"linkWithTwitterCredential" isEqualToString:call.method]) {
     NSString *authToken = call.arguments[@"authToken"];
     NSString *authTokenSecret = call.arguments[@"authTokenSecret"];
-    FIRAuthCredential *credential =
-      [FIRTwitterAuthProvider credentialWithToken:authToken secret:authTokenSecret];
+    FIRAuthCredential *credential = [FIRTwitterAuthProvider credentialWithToken:authToken
+                                                                         secret:authTokenSecret];
     [[self getAuth:call.arguments].currentUser linkWithCredential:credential
                                                        completion:^(FIRUser *user, NSError *error) {
                                                          [self sendResult:result
