@@ -178,15 +178,15 @@ class FirebaseAuth {
       <int, Map<String, dynamic>>{};
 
   FirebaseAuth({FirebaseApp app})
-      : this.app = app != null ? app : FirebaseApp.instance {
+      : app = app != null ? app : FirebaseApp.instance {
     channel.setMethodCallHandler(_callHandler);
   }
-
-  FirebaseApp app;
 
   FirebaseAuth._() {
     channel.setMethodCallHandler(_callHandler);
   }
+
+  FirebaseApp app;
 
   /// Receive [FirebaseUser] each time the user signIn or signOut
   Stream<FirebaseUser> get onAuthStateChanged {
