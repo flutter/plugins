@@ -26,7 +26,8 @@ class ImageResizer {
    *
    * <p>If no resizing is needed, returns the path for the original image.
    */
-  String resizeImageIfNeeded(String imagePath, Double maxWidth, Double maxHeight, Double resizeQuality) {
+  String resizeImageIfNeeded(
+      String imagePath, Double maxWidth, Double maxHeight, Double resizeQuality) {
     boolean shouldScale = maxWidth != null || maxHeight != null;
 
     if (!shouldScale) {
@@ -43,7 +44,8 @@ class ImageResizer {
     }
   }
 
-  private File resizedImage(String path, Double maxWidth, Double maxHeight, Double resizeQuality) throws IOException {
+  private File resizedImage(String path, Double maxWidth, Double maxHeight, Double resizeQuality)
+      throws IOException {
     Bitmap bmp = BitmapFactory.decodeFile(path);
     double originalWidth = bmp.getWidth() * 1.0;
     double originalHeight = bmp.getHeight() * 1.0;
@@ -58,7 +60,7 @@ class ImageResizer {
     boolean shouldDownscaleHeight = hasMaxHeight && maxHeight < originalHeight;
     boolean shouldDownscale = shouldDownscaleWidth || shouldDownscaleHeight;
 
-    resizeQuality = resizeQuality != null ? resizeQuality  : new Double(1.0);
+    resizeQuality = resizeQuality != null ? resizeQuality : new Double(1.0);
 
     if (shouldDownscale) {
       double downscaledWidth = (height / originalHeight) * originalWidth;
@@ -87,7 +89,7 @@ class ImageResizer {
 
     Bitmap scaledBmp = Bitmap.createScaledBitmap(bmp, width.intValue(), height.intValue(), false);
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    scaledBmp.compress(Bitmap.CompressFormat.JPEG, (int)(resizeQuality * 100), outputStream);
+    scaledBmp.compress(Bitmap.CompressFormat.JPEG, (int) (resizeQuality * 100), outputStream);
 
     String[] pathParts = path.split("/");
     String imageName = pathParts[pathParts.length - 1];

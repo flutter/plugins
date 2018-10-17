@@ -26,6 +26,7 @@ import org.mockito.MockitoAnnotations;
 public class ImagePickerDelegateTest {
   private static final double WIDTH = 10.0;
   private static final double HEIGHT = 10.0;
+  private static final double QUALITY = 0.5;
 
   @Mock Activity mockActivity;
   @Mock ImageResizer mockImageResizer;
@@ -60,12 +61,13 @@ public class ImagePickerDelegateTest {
     when(mockFileUtils.getPathFromUri(any(Context.class), any(Uri.class)))
         .thenReturn("pathFromUri");
 
-    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", null, null))
+    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", null, null, QUALITY))
         .thenReturn("originalPath");
-    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", WIDTH, HEIGHT))
+    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", WIDTH, HEIGHT, QUALITY))
         .thenReturn("scaledPath");
-    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", WIDTH, null)).thenReturn("scaledPath");
-    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", null, HEIGHT))
+    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", WIDTH, null, QUALITY))
+        .thenReturn("scaledPath");
+    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", null, HEIGHT, QUALITY))
         .thenReturn("scaledPath");
 
     mockFileUriResolver = new MockFileUriResolver();

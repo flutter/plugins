@@ -8,7 +8,7 @@
 #import <Photos/Photos.h>
 #import <UIKit/UIKit.h>
 
-@interface FLTImagePickerPlugin ()<UINavigationControllerDelegate, UIImagePickerControllerDelegate>
+@interface FLTImagePickerPlugin () <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 @end
 
 static const int SOURCE_CAMERA = 0;
@@ -155,7 +155,10 @@ static const int SOURCE_GALLERY = 1;
     NSNumber *resizeQuality = [_arguments objectForKey:@"resizeQuality"];
 
     if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
-      image = [self scaledImage:image maxWidth:maxWidth maxHeight:maxHeight resizeQuality:resizeQuality];
+      image = [self scaledImage:image
+                       maxWidth:maxWidth
+                      maxHeight:maxHeight
+                  resizeQuality:resizeQuality];
     }
 
     NSData *data = UIImageJPEGRepresentation(image, 1.0);
@@ -203,7 +206,7 @@ static const int SOURCE_GALLERY = 1;
 - (UIImage *)scaledImage:(UIImage *)image
                 maxWidth:(NSNumber *)maxWidth
                maxHeight:(NSNumber *)maxHeight
-               resizeQuality:(NSNumber *)resizeQuality {
+           resizeQuality:(NSNumber *)resizeQuality {
   double originalWidth = image.size.width;
   double originalHeight = image.size.height;
 
@@ -242,10 +245,9 @@ static const int SOURCE_GALLERY = 1;
     }
   }
 
-  if(resizeQuality == (id)[NSNull null]){
+  if (resizeQuality == (id)[NSNull null]) {
     resizeQuality = [NSNumber numberWithFloat:1.0f];
   }
-
 
   UIGraphicsBeginImageContextWithOptions(CGSizeMake(width, height), NO, [resizeQuality floatValue]);
   [image drawInRect:CGRectMake(0, 0, width, height)];
