@@ -92,7 +92,7 @@ public class VideoPlayerPlugin implements MethodCallHandler {
                 true);
       }
 
-      MediaSource mediaSource = buildMediaSource(uri, dataSourceFactory);
+      MediaSource mediaSource = buildMediaSource(uri, dataSourceFactory, context);
       exoPlayer.prepare(mediaSource);
 
       setupVideoPlayer(eventChannel, textureEntry, result);
