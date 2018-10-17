@@ -227,7 +227,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         case 'initialized':
           value = value.copyWith(
             duration: Duration(milliseconds: map['duration']),
-            size: Size(map['width'].toDouble(), map['height'].toDouble()),
+            size: Size(map['width']?.toDouble() ?? 0.0,
+                map['height']?.toDouble() ?? 0.0),
           );
           initializingCompleter.complete(null);
           _applyLooping();
