@@ -1,3 +1,7 @@
+## 0.7.1
+
+* Fixed null exception on Android when the video has a width or height of 0.
+
 ## 0.7.0
 
 * Add a unit test for controller and texture changes. This is a breaking change since the interface
