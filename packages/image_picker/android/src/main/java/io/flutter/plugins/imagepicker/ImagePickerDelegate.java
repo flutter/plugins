@@ -450,8 +450,9 @@ public class ImagePickerDelegate
     if (pendingResult != null) {
       Double maxWidth = methodCall.argument("maxWidth");
       Double maxHeight = methodCall.argument("maxHeight");
+      Double resizeQuality = methodCall.argument("resizeQuality");
 
-      String finalImagePath = imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight);
+      String finalImagePath = imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight, resizeQuality);
       finishWithSuccess(finalImagePath);
     } else {
       throw new IllegalStateException("Received image from picker that was not requested");

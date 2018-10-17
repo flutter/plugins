@@ -34,11 +34,13 @@ void main() {
               'source': 0,
               'maxWidth': null,
               'maxHeight': null,
+              'resizeQuality': null,
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 1,
               'maxWidth': null,
               'maxHeight': null,
+              'resizeQuality': null,
             }),
           ],
         );
@@ -59,6 +61,26 @@ void main() {
           maxWidth: 10.0,
           maxHeight: 20.0,
         );
+        await ImagePicker.pickImage(
+          source: ImageSource.camera,
+          resizeQuality: 0.5,
+        );
+        await ImagePicker.pickImage(
+          source: ImageSource.camera,
+          maxWidth: 10.0,
+          resizeQuality: 0.5,
+        );
+        await ImagePicker.pickImage(
+          source: ImageSource.camera,
+          maxHeight: 20.0,
+          resizeQuality: 0.5,
+        );
+        await ImagePicker.pickImage(
+          source: ImageSource.camera,
+          maxWidth: 10.0,
+          maxHeight: 20.0,
+          resizeQuality: 0.5,
+        );
 
         expect(
           log,
@@ -67,21 +89,49 @@ void main() {
               'source': 0,
               'maxWidth': null,
               'maxHeight': null,
+              'resizeQuality': null,
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': 10.0,
               'maxHeight': null,
+              'resizeQuality': null,
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': null,
               'maxHeight': 10.0,
+              'resizeQuality': null,
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': 10.0,
               'maxHeight': 20.0,
+              'resizeQuality': null,
+            }),
+            isMethodCall('pickImage', arguments: <String, dynamic>{
+              'source': 0,
+              'maxWidth': null,
+              'maxHeight': null,
+              'resizeQuality': 0.5,
+            }),
+            isMethodCall('pickImage', arguments: <String, dynamic>{
+              'source': 0,
+              'maxWidth': 10.0,
+              'maxHeight': null,
+              'resizeQuality': 0.5,
+            }),
+            isMethodCall('pickImage', arguments: <String, dynamic>{
+              'source': 0,
+              'maxWidth': null,
+              'maxHeight': 20.0,
+              'resizeQuality': 0.5,
+            }),
+            isMethodCall('pickImage', arguments: <String, dynamic>{
+              'source': 0,
+              'maxWidth': 10.0,
+              'maxHeight': 20.0,
+              'resizeQuality': 0.5,
             }),
           ],
         );

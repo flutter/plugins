@@ -152,9 +152,10 @@ static const int SOURCE_GALLERY = 1;
 
     NSNumber *maxWidth = [_arguments objectForKey:@"maxWidth"];
     NSNumber *maxHeight = [_arguments objectForKey:@"maxHeight"];
+    NSNumber *resizeQuality = [_arguments objectForKey:@"resizeQuality"];
 
     if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
-      image = [self scaledImage:image maxWidth:maxWidth maxHeight:maxHeight];
+      image = [self scaledImage:image maxWidth:maxWidth maxHeight:maxHeight resizeQuality:resizeQuality];
     }
 
     NSData *data = UIImageJPEGRepresentation(image, 1.0);
@@ -201,7 +202,8 @@ static const int SOURCE_GALLERY = 1;
 
 - (UIImage *)scaledImage:(UIImage *)image
                 maxWidth:(NSNumber *)maxWidth
-               maxHeight:(NSNumber *)maxHeight {
+               maxHeight:(NSNumber *)maxHeight
+               resizeQuality:(NSNumber *)resizeQuality {
   double originalWidth = image.size.width;
   double originalHeight = image.size.height;
 
@@ -240,7 +242,12 @@ static const int SOURCE_GALLERY = 1;
     }
   }
 
-  UIGraphicsBeginImageContextWithOptions(CGSizeMake(width, height), NO, 1.0);
+  if(resizeQuality == (id)[NSNull null]){
+    resizeQuality = [NSNumber numberWithFloat:1.0f];
+  }
+
+
+  UIGraphicsBeginImageContextWithOptions(CGSizeMake(width, height), NO, [resizeQuality floatValue]);
   [image drawInRect:CGRectMake(0, 0, width, height)];
 
   UIImage *scaledImage = UIGraphicsGetImageFromCurrentImageContext();
