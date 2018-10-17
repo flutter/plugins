@@ -165,6 +165,15 @@ typedef void PhoneCodeSent(String verificationId, [int forceResendingToken]);
 typedef void PhoneCodeAutoRetrievalTimeout(String verificationId);
 
 class FirebaseAuth {
+  FirebaseAuth({FirebaseApp app})
+      : app = app != null ? app : FirebaseApp.instance {
+    channel.setMethodCallHandler(_callHandler);
+  }
+
+  FirebaseAuth._() {
+    channel.setMethodCallHandler(_callHandler);
+  }
+
   @visibleForTesting
   static const MethodChannel channel = MethodChannel(
     'plugins.flutter.io/firebase_auth',
@@ -176,15 +185,6 @@ class FirebaseAuth {
   static int nextHandle = 0;
   final Map<int, Map<String, dynamic>> _phoneAuthCallbacks =
       <int, Map<String, dynamic>>{};
-
-  FirebaseAuth({FirebaseApp app})
-      : app = app != null ? app : FirebaseApp.instance {
-    channel.setMethodCallHandler(_callHandler);
-  }
-
-  FirebaseAuth._() {
-    channel.setMethodCallHandler(_callHandler);
-  }
 
   FirebaseApp app;
 
