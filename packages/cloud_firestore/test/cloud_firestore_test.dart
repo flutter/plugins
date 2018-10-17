@@ -279,7 +279,7 @@ void main() {
         expect(document.reference.path, equals('foo/0'));
         expect(document.data, equals(kMockDocumentSnapshotData));
         // Flush the async removeListener call
-        await Future<Null>.delayed(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
         expect(log, <Matcher>[
           isMethodCall(
             'Query#addSnapshotListener',
@@ -305,7 +305,7 @@ void main() {
                 .snapshots()
                 .listen((QuerySnapshot querySnapshot) {});
         subscription.cancel();
-        await Future<Null>.delayed(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
         expect(
           log,
           equals(<Matcher>[
@@ -336,7 +336,7 @@ void main() {
                 .snapshots()
                 .listen((QuerySnapshot querySnapshot) {});
         subscription.cancel();
-        await Future<Null>.delayed(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
         expect(
           log,
           equals(<Matcher>[
@@ -367,7 +367,7 @@ void main() {
                 .snapshots()
                 .listen((QuerySnapshot querySnapshot) {});
         subscription.cancel();
-        await Future<Null>.delayed(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
         expect(
           log,
           equals(<Matcher>[
@@ -401,7 +401,7 @@ void main() {
         expect(snapshot.reference.path, equals('path/to/foo'));
         expect(snapshot.data, equals(kMockDocumentSnapshotData));
         // Flush the async removeListener call
-        await Future<Null>.delayed(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
         expect(
           log,
           <Matcher>[

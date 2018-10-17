@@ -22,7 +22,7 @@ class _MyAppState extends State<MyApp> {
   List<BiometricType> _availableBiometrics;
   String _authorized = 'Not Authorized';
 
-  Future<Null> _checkBiometrics() async {
+  Future<void> _checkBiometrics() async {
     bool canCheckBiometrics;
     try {
       canCheckBiometrics = await auth.canCheckBiometrics;
@@ -36,7 +36,7 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  Future<Null> _getAvailableBiometrics() async {
+  Future<void> _getAvailableBiometrics() async {
     List<BiometricType> availableBiometrics;
     try {
       availableBiometrics = await auth.getAvailableBiometrics();
@@ -50,7 +50,7 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  Future<Null> _authenticate() async {
+  Future<void> _authenticate() async {
     bool authenticated = false;
     try {
       authenticated = await auth.authenticateWithBiometrics(

@@ -474,7 +474,7 @@ class FirebaseAuth {
     });
   }
 
-  Future<Null> _callHandler(MethodCall call) async {
+  Future<dynamic> _callHandler(MethodCall call) async {
     switch (call.method) {
       case 'onAuthStateChanged':
         _onAuthStageChangedHandler(call);
@@ -514,7 +514,6 @@ class FirebaseAuth {
         codeAutoRetrievalTimeout(verificationId);
         break;
     }
-    return null;
   }
 
   void _onAuthStageChangedHandler(MethodCall call) {

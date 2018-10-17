@@ -56,7 +56,7 @@ class MyHomePage extends StatelessWidget {
   final Firestore firestore;
   CollectionReference get messages => firestore.collection('messages');
 
-  Future<Null> _addMessage() async {
+  Future<void> _addMessage() async {
     final DocumentReference document = messages.document();
     document.setData(<String, dynamic>{
       'message': 'Hello world!',
