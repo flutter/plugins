@@ -391,7 +391,8 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         .addOnCompleteListener(new SignInCompleteListener(result));
   }
 
-  private void handleLinkWithTwitterCredential(MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
+  private void handleLinkWithTwitterCredential(
+      MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
     @SuppressWarnings("unchecked")
     Map<String, String> arguments = (Map<String, String>) call.arguments;
     String authToken = arguments.get("authToken");
@@ -467,7 +468,8 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         .addOnCompleteListener(new TaskVoidCompleteListener(result));
   }
 
-  private void handleUpdatePassword(MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
+  private void handleUpdatePassword(
+      MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
     @SuppressWarnings("unchecked")
     Map<String, String> arguments = (Map<String, String>) call.arguments;
     firebaseAuth

@@ -20,11 +20,11 @@ class FirebaseUserMetadata {
 }
 
 class UserInfo {
+  UserInfo._(this._data, this.app);
+
   FirebaseApp app;
 
   final Map<dynamic, dynamic> _data;
-
-  UserInfo._(this._data, this.app);
 
   /// The provider identifier.
   String get providerId => _data['providerId'];
@@ -165,8 +165,6 @@ typedef void PhoneCodeSent(String verificationId, [int forceResendingToken]);
 typedef void PhoneCodeAutoRetrievalTimeout(String verificationId);
 
 class FirebaseAuth {
-  FirebaseApp app;
-
   @visibleForTesting
   static const MethodChannel channel = MethodChannel(
     'plugins.flutter.io/firebase_auth',
@@ -184,9 +182,7 @@ class FirebaseAuth {
     channel.setMethodCallHandler(_callHandler);
   }
 
-  /// Provides an instance of this class corresponding to the default app.
-  ///
-  /// TODO(jackson): Support for non-default apps.
+  FirebaseApp app;
 
   FirebaseAuth._() {
     channel.setMethodCallHandler(_callHandler);
