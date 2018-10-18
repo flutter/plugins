@@ -431,8 +431,8 @@ const UInt8 TIMESTAMP = 136;
           [self.channel invokeMethod:@"DocumentSnapshot"
                            arguments:@{
                              @"handle" : handle,
-                             @"path" : snapshot.reference.path,
-                             @"data" : snapshot.exists ? snapshot.data : [NSNull null],
+                             @"path" : snapshot ? snapshot.reference.path : [NSNull null],
+                             @"data" : snapshot && snapshot.exists ? snapshot.data : [NSNull null],
                            }];
         }];
     _listeners[handle] = listener;
