@@ -1,3 +1,7 @@
+## 0.8.2+1
+
+* Avoid crash in document snapshot callback.
+
 ## 0.8.2
 
 * Added `Firestore.settings`
