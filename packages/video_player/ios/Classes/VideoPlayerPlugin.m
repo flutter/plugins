@@ -368,6 +368,9 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
     } else if ([@"setVolume" isEqualToString:call.method]) {
       [player setVolume:[[argsMap objectForKey:@"volume"] doubleValue]];
       result(nil);
+    } else if ([@"setSpeed" isEqualToString:call.method]) {
+      // TODO: Implement setSpeed
+      result(nil);
     } else if ([@"play" isEqualToString:call.method]) {
       [player play];
       result(nil);

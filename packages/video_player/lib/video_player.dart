@@ -44,6 +44,7 @@ class VideoPlayerValue {
     this.isLooping = false,
     this.isBuffering = false,
     this.volume = 1.0,
+    this.speed = 1.0,
     this.errorDescription,
   });
 
@@ -75,6 +76,9 @@ class VideoPlayerValue {
   /// The current volume of the playback.
   final double volume;
 
+  /// The current speed of the playback.
+  final double speed;
+
   /// A description of the error if present.
   ///
   /// If [hasError] is false this is [null].
@@ -98,6 +102,7 @@ class VideoPlayerValue {
     bool isLooping,
     bool isBuffering,
     double volume,
+    double speed,
     String errorDescription,
   }) {
     return VideoPlayerValue(
@@ -109,6 +114,7 @@ class VideoPlayerValue {
       isLooping: isLooping ?? this.isLooping,
       isBuffering: isBuffering ?? this.isBuffering,
       volume: volume ?? this.volume,
+      speed: speed ?? this.speed,
       errorDescription: errorDescription ?? this.errorDescription,
     );
   }
@@ -122,8 +128,9 @@ class VideoPlayerValue {
         'buffered: [${buffered.join(', ')}], '
         'isPlaying: $isPlaying, '
         'isLooping: $isLooping, '
-        'isBuffering: $isBuffering'
+        'isBuffering: $isBuffering, '
         'volume: $volume, '
+        'speed: $speed, '
         'errorDescription: $errorDescription)';
   }
 }
@@ -233,6 +240,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           initializingCompleter.complete(null);
           _applyLooping();
           _applyVolume();
+          _applySpeed();
           _applyPlayPause();
           break;
         case 'completed':
@@ -355,6 +363,16 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     );
   }
 
+  Future<void> _applySpeed() async {
+    if (!value.initialized || _isDisposed) {
+      return;
+    }
+    await _channel.invokeMethod(
+      'setSpeed',
+      <String, dynamic>{'textureId': _textureId, 'speed': value.speed},
+    );
+  }
+
   /// The position in the current video.
   Future<Duration> get position async {
     if (_isDisposed) {
@@ -391,6 +409,15 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   Future<void> setVolume(double volume) async {
     value = value.copyWith(volume: volume.clamp(0.0, 1.0));
     await _applyVolume();
+  }
+
+  /// Sets the playback speed of [this].
+  ///
+  /// [speed] must be greater than zero.
+  Future<void> setSpeed(double speed) async {
+    if (speed <= 0.0) return;
+    value = value.copyWith(speed: speed);
+    await _applySpeed();
   }
 }
 
