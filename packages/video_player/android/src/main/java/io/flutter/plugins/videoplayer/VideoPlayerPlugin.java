@@ -98,27 +98,27 @@ public class VideoPlayerPlugin implements MethodCallHandler {
       setupVideoPlayer(eventChannel, textureEntry, result);
     }
 
-
-    private MediaSource buildMediaSource(Uri uri, DataSource.Factory mediaDataSourceFactory, Context context) {
+    private MediaSource buildMediaSource(
+        Uri uri, DataSource.Factory mediaDataSourceFactory, Context context) {
       int type = Util.inferContentType(uri.getLastPathSegment());
       switch (type) {
         case C.TYPE_SS:
           return new SsMediaSource.Factory(
-              new DefaultSsChunkSource.Factory(mediaDataSourceFactory),
-              new DefaultDataSourceFactory(context, null, mediaDataSourceFactory))
+                  new DefaultSsChunkSource.Factory(mediaDataSourceFactory),
+                  new DefaultDataSourceFactory(context, null, mediaDataSourceFactory))
               .createMediaSource(uri);
         case C.TYPE_DASH:
           return new DashMediaSource.Factory(
-              new DefaultDashChunkSource.Factory(mediaDataSourceFactory),
-              new DefaultDataSourceFactory(context, null, mediaDataSourceFactory))
+                  new DefaultDashChunkSource.Factory(mediaDataSourceFactory),
+                  new DefaultDataSourceFactory(context, null, mediaDataSourceFactory))
               .createMediaSource(uri);
         case C.TYPE_HLS:
           return new HlsMediaSource.Factory(mediaDataSourceFactory).createMediaSource(uri);
         case C.TYPE_OTHER:
           return new ExtractorMediaSource.Factory(mediaDataSourceFactory)
-            .setExtractorsFactory(new DefaultExtractorsFactory())
-            .createMediaSource(uri);
-        default: 
+              .setExtractorsFactory(new DefaultExtractorsFactory())
+              .createMediaSource(uri);
+        default:
           {
             throw new IllegalStateException("Unsupported type: " + type);
           }
