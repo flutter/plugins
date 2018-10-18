@@ -1,3 +1,8 @@
+## 0.8.2
+
+* Added `Firestore.settings`
+* Added `Timestamp` class
+
 ## 0.8.1+1
 
 * Bump Android dependencies to latest.

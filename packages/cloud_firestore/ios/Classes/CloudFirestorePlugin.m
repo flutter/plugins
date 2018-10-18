@@ -133,6 +133,7 @@ const UInt8 ARRAY_UNION = 132;
 const UInt8 ARRAY_REMOVE = 133;
 const UInt8 DELETE = 134;
 const UInt8 SERVER_TIMESTAMP = 135;
+const UInt8 TIMESTAMP = 136;
 
 @interface FirestoreWriter : FlutterStandardWriter
 - (void)writeValue:(id)value;
@@ -146,6 +147,13 @@ const UInt8 SERVER_TIMESTAMP = 135;
     NSTimeInterval time = date.timeIntervalSince1970;
     SInt64 ms = (SInt64)(time * 1000.0);
     [self writeBytes:&ms length:8];
+  } else if ([value isKindOfClass:[FIRTimestamp class]]) {
+    FIRTimestamp *timestamp = value;
+    SInt64 seconds = timestamp.seconds;
+    int nanoseconds = timestamp.nanoseconds;
+    [self writeByte:TIMESTAMP];
+    [self writeBytes:(UInt8 *)&seconds length:8];
+    [self writeBytes:(UInt8 *)&nanoseconds length:4];
   } else if ([value isKindOfClass:[FIRGeoPoint class]]) {
     FIRGeoPoint *geoPoint = value;
     Float64 latitude = geoPoint.latitude;
@@ -183,6 +191,13 @@ const UInt8 SERVER_TIMESTAMP = 135;
       [self readBytes:&value length:8];
       NSTimeInterval time = [NSNumber numberWithLong:value].doubleValue / 1000.0;
       return [NSDate dateWithTimeIntervalSince1970:time];
+    }
+    case TIMESTAMP: {
+      SInt64 seconds;
+      int nanoseconds;
+      [self readBytes:&seconds length:8];
+      [self readBytes:&nanoseconds length:4];
+      return [[FIRTimestamp alloc] initWithSeconds:seconds nanoseconds:nanoseconds];
     }
     case GEO_POINT: {
       Float64 latitude;
@@ -479,6 +494,23 @@ const UInt8 SERVER_TIMESTAMP = 135;
     bool enable = (bool)call.arguments[@"enable"];
     FIRFirestoreSettings *settings = [[FIRFirestoreSettings alloc] init];
     settings.persistenceEnabled = enable;
+    FIRFirestore *db = getFirestore(call.arguments);
+    db.settings = settings;
+    result(nil);
+  } else if ([@"Firestore#settings" isEqualToString:call.method]) {
+    FIRFirestoreSettings *settings = [[FIRFirestoreSettings alloc] init];
+    if (![call.arguments[@"persistenceEnabled"] isEqual:[NSNull null]]) {
+      settings.persistenceEnabled = (bool)call.arguments[@"persistenceEnabled"];
+    }
+    if (![call.arguments[@"host"] isEqual:[NSNull null]]) {
+      settings.host = (NSString *)call.arguments[@"host"];
+    }
+    if (![call.arguments[@"sslEnabled"] isEqual:[NSNull null]]) {
+      settings.sslEnabled = (bool)call.arguments[@"sslEnabled"];
+    }
+    if (![call.arguments[@"timestampsInSnapshotsEnabled"] isEqual:[NSNull null]]) {
+      settings.timestampsInSnapshotsEnabled = (bool)call.arguments[@"timestampsInSnapshotsEnabled"];
+    }
     FIRFirestore *db = getFirestore(call.arguments);
     db.settings = settings;
     result(nil);

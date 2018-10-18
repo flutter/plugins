@@ -1,3 +1,7 @@
+## 2.0.2
+
+* Use boolean values when checking for notification types on iOS.
+
 ## 2.0.1
 
 * Bump Android dependencies to latest.
