@@ -49,7 +49,7 @@
     if ([arguments[@"sound"] boolValue]) {
       notificationTypes |= UIUserNotificationTypeSound;
     }
-    if ([[arguments[@"alert"] boolValue]) {
+    if ([arguments[@"alert"] boolValue]) {
       notificationTypes |= UIUserNotificationTypeAlert;
     }
     if ([arguments[@"badge"] boolValue]) {
