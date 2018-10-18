@@ -550,7 +550,7 @@ public class CameraPlugin implements MethodCallHandler {
         int displayOrientation = ORIENTATIONS.get(displayRotation);
         if (isFrontFacing) displayOrientation = -displayOrientation;
         captureBuilder.set(
-            CaptureRequest.JPEG_ORIENTATION, (displayOrientation + sensorOrientation) % 360);
+            CaptureRequest.JPEG_ORIENTATION, (displayOrientation + sensorOrientation + 360) % 360);
 
         cameraCaptureSession.capture(
             captureBuilder.build(),
