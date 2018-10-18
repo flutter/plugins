@@ -25,12 +25,6 @@ void _check(bool expr, String name, int value) {
 ///
 /// For more information, see [the reference timestamp definition](https://github.com/google/protobuf/blob/master/src/google/protobuf/timestamp.proto)
 class Timestamp implements Comparable<Timestamp> {
-  static const int _kStartOfTime = -62135596800;
-  static const int _kEndOfTime = 253402300800;
-
-  final int _seconds;
-  final int _nanoseconds;
-
   Timestamp(this._seconds, this._nanoseconds) {
     _validateRange(_seconds, _nanoseconds);
   }
@@ -55,6 +49,12 @@ class Timestamp implements Comparable<Timestamp> {
     return Timestamp.fromMicrosecondsSinceEpoch(
         DateTime.now().microsecondsSinceEpoch);
   }
+
+  final int _seconds;
+  final int _nanoseconds;
+
+  static const int _kStartOfTime = -62135596800;
+  static const int _kEndOfTime = 253402300800;
 
   int get seconds => _seconds;
 
