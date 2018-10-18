@@ -119,11 +119,26 @@ class Firestore {
     return result?.cast<String, dynamic>() ?? <String, dynamic>{};
   }
 
+  @deprecated
   Future<void> enablePersistence(bool enable) async {
     assert(enable != null);
     await channel.invokeMethod('Firestore#enablePersistence', <String, dynamic>{
       'app': app.name,
       'enable': enable,
+    });
+  }
+
+  Future<void> settings(
+      {bool persistenceEnabled,
+      String host,
+      bool sslEnabled,
+      bool timestampsInSnapshotsEnabled}) async {
+    await channel.invokeMethod('Firestore#settings', <String, dynamic>{
+      'app': app.name,
+      'persistenceEnabled': persistenceEnabled,
+      'host': host,
+      'sslEnabled': sslEnabled,
+      'timestampsInSnapshotsEnabled': timestampsInSnapshotsEnabled,
     });
   }
 }
