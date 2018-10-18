@@ -16,21 +16,21 @@ FirebaseAdMob.instance.initialize(appId: appId);
 ```
 
 ## Using banners and interstitials
-Banner and interstitial ads can be configured with target information. 
+Banner and interstitial ads can be configured with target information.
 And in the example below, the ads are given test ad unit IDs for a quick start.
 
-```
-MobileAdTargetingInfo targetingInfo = new MobileAdTargetingInfo(
+```dart
+MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
   keywords: <String>['flutterio', 'beautiful apps'],
   contentUrl: 'https://flutter.io',
-  birthday: new DateTime.now(),
+  birthday: DateTime.now(),
   childDirected: false,
   designedForFamilies: false,
   gender: MobileAdGender.male, // or MobileAdGender.female, MobileAdGender.unknown
   testDevices: <String>[], // Android emulators are considered test devices
 );
 
-BannerAd myBanner = new BannerAd(
+BannerAd myBanner = BannerAd(
   // Replace the testAdUnitId with an ad unit id from the AdMob dash.
   // https://developers.google.com/admob/android/test-ads
   // https://developers.google.com/admob/ios/test-ads
@@ -42,7 +42,7 @@ BannerAd myBanner = new BannerAd(
   },
 );
 
-InterstitialAd myInterstitial = new InterstitialAd(
+InterstitialAd myInterstitial = InterstitialAd(
   // Replace the testAdUnitId with an ad unit id from the AdMob dash.
   // https://developers.google.com/admob/android/test-ads
   // https://developers.google.com/admob/ios/test-ads
