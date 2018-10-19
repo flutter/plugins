@@ -96,7 +96,7 @@ class FirebaseMessaging {
     _channel.invokeMethod('unsubscribeFromTopic', topic);
   }
 
-  Future<Null> _handleMethod(MethodCall call) async {
+  Future<dynamic> _handleMethod(MethodCall call) async {
     switch (call.method) {
       case "onToken":
         final String token = call.arguments;

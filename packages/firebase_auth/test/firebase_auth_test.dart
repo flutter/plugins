@@ -453,7 +453,7 @@ void main() {
     test('onAuthStateChanged', () async {
       mockHandleId = 42;
 
-      Future<Null> simulateEvent(Map<String, dynamic> user) async {
+      Future<void> simulateEvent(Map<String, dynamic> user) async {
         await BinaryMessages.handlePlatformMessage(
           FirebaseAuth.channel.name,
           FirebaseAuth.channel.codec.encodeMethodCall(
@@ -471,7 +471,7 @@ void main() {
       // Subscribe and allow subscription to complete.
       final StreamSubscription<FirebaseUser> subscription =
           auth.onAuthStateChanged.listen(events.add);
-      await Future<Null>.delayed(const Duration(seconds: 0));
+      await Future<void>.delayed(const Duration(seconds: 0));
 
       await simulateEvent(null);
       await simulateEvent(mockFirebaseUser());
@@ -484,7 +484,7 @@ void main() {
 
       // Cancel subscription and allow cancellation to complete.
       subscription.cancel();
-      await Future<Null>.delayed(const Duration(seconds: 0));
+      await Future<void>.delayed(const Duration(seconds: 0));
 
       expect(
         log,
