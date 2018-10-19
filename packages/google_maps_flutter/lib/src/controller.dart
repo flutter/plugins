@@ -74,7 +74,7 @@ class GoogleMapController extends ChangeNotifier {
 
   final int _id;
 
-  Future<void> _handleMethodCall(MethodCall call) async {
+  Future<dynamic> _handleMethodCall(MethodCall call) async {
     switch (call.method) {
       case 'infoWindow#onTap':
         final String markerId = call.arguments['marker'];

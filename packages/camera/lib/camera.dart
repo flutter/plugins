@@ -185,17 +185,17 @@ class CameraController extends ValueNotifier<CameraValue> {
   int _textureId;
   bool _isDisposed = false;
   StreamSubscription<dynamic> _eventSubscription;
-  Completer<Null> _creatingCompleter;
+  Completer<void> _creatingCompleter;
 
   /// Initializes the camera on the device.
   ///
   /// Throws a [CameraException] if the initialization fails.
-  Future<Null> initialize() async {
+  Future<void> initialize() async {
     if (_isDisposed) {
-      return Future<Null>.value(null);
+      return Future<void>.value();
     }
     try {
-      _creatingCompleter = Completer<Null>();
+      _creatingCompleter = Completer<void>();
       final Map<dynamic, dynamic> reply = await _channel.invokeMethod(
         'initialize',
         <String, dynamic>{
@@ -218,7 +218,7 @@ class CameraController extends ValueNotifier<CameraValue> {
         EventChannel('flutter.io/cameraPlugin/cameraEvents$_textureId')
             .receiveBroadcastStream()
             .listen(_listener);
-    _creatingCompleter.complete(null);
+    _creatingCompleter.complete();
     return _creatingCompleter.future;
   }
 
@@ -250,7 +250,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   /// The file can be read as this function returns.
   ///
   /// Throws a [CameraException] if the capture fails.
-  Future<Null> takePicture(String path) async {
+  Future<void> takePicture(String path) async {
     if (!value.isInitialized || _isDisposed) {
       throw CameraException(
         'Uninitialized CameraController.',
@@ -286,7 +286,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   /// The file can be read as soon as [stopVideoRecording] returns.
   ///
   /// Throws a [CameraException] if the capture fails.
-  Future<Null> startVideoRecording(String filePath) async {
+  Future<void> startVideoRecording(String filePath) async {
     if (!value.isInitialized || _isDisposed) {
       throw CameraException(
         'Uninitialized CameraController',
@@ -311,7 +311,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   }
 
   /// Stop recording.
-  Future<Null> stopVideoRecording() async {
+  Future<void> stopVideoRecording() async {
     if (!value.isInitialized || _isDisposed) {
       throw CameraException(
         'Uninitialized CameraController',
@@ -337,22 +337,19 @@ class CameraController extends ValueNotifier<CameraValue> {
 
   /// Releases the resources of this camera.
   @override
-  Future<Null> dispose() async {
+  Future<void> dispose() async {
     if (_isDisposed) {
-      return Future<Null>.value(null);
+      return;
     }
     _isDisposed = true;
     super.dispose();
-    if (_creatingCompleter == null) {
-      return Future<Null>.value(null);
-    } else {
-      return _creatingCompleter.future.then((_) async {
-        await _channel.invokeMethod(
-          'dispose',
-          <String, dynamic>{'textureId': _textureId},
-        );
-        await _eventSubscription?.cancel();
-      });
+    if (_creatingCompleter != null) {
+      await _creatingCompleter.future;
+      await _channel.invokeMethod(
+        'dispose',
+        <String, dynamic>{'textureId': _textureId},
+      );
+      await _eventSubscription?.cancel();
     }
   }
 }

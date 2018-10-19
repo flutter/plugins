@@ -501,7 +501,7 @@ class FirebaseAdMob {
       }
     }
 
-    return Future<Null>(null);
+    return Future<dynamic>.value(null);
   }
 }
 
