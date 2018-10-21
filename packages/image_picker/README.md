@@ -21,7 +21,11 @@ Add the following keys to your _Info.plist_ file, located in `<project root>/ios
 
 ### Android
 
-No configuration required - the plugin should work out of the box.
+Add the following permissions to your `AndroidManifest.xml`:
+```xml
+<uses-permission android:name="android.permission.CAMERA" />
+<uses-permission android:name="android.permission.FLASHLIGHT" />
+```
 
 ### Example
 
