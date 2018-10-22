@@ -92,7 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _counterSubscription.cancel();
   }
 
-  Future<Null> _increment() async {
+  Future<void> _increment() async {
     // Increment counter in transaction.
     final TransactionResult transactionResult =
         await _counterRef.runTransaction((MutableData mutableData) async {

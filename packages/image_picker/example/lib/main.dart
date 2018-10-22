@@ -194,9 +194,9 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class AspectRatioVideo extends StatefulWidget {
-  final VideoPlayerController controller;
-
   AspectRatioVideo(this.controller);
+
+  final VideoPlayerController controller;
 
   @override
   AspectRatioVideoState createState() => AspectRatioVideoState();

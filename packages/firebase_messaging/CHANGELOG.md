@@ -1,3 +1,11 @@
+## 2.0.2
+
+* Use boolean values when checking for notification types on iOS.
+
+## 2.0.1
+
+* Bump Android dependencies to latest.
+
 ## 2.0.0
 
 * Updated Android to send Remote Message's title and body to Dart.
