@@ -63,14 +63,22 @@ static const int SOURCE_GALLERY = 1;
       case SOURCE_CAMERA:
         [self showCamera];
         break;
-      case SOURCE_GALLERY:
-        [self showPhotoLibrary];
+      case SOURCE_GALLERY: {
+        [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+          if (status == PHAuthorizationStatusAuthorized) {
+            [self showPhotoLibrary];
+          } else {
+            result(nil);
+          }
+        }];
         break;
-      default:
+      }
+      default: {
         result([FlutterError errorWithCode:@"invalid_source"
                                    message:@"Invalid image source."
                                    details:nil]);
         break;
+      }
     }
   } else if ([@"pickVideo" isEqualToString:call.method]) {
     _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
@@ -90,14 +98,22 @@ static const int SOURCE_GALLERY = 1;
       case SOURCE_CAMERA:
         [self showCamera];
         break;
-      case SOURCE_GALLERY:
-        [self showPhotoLibrary];
+      case SOURCE_GALLERY: {
+        [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+          if (status == PHAuthorizationStatusAuthorized) {
+            [self showPhotoLibrary];
+          } else {
+            result(nil);
+          }
+        }];
         break;
-      default:
+      }
+      default: {
         result([FlutterError errorWithCode:@"invalid_source"
                                    message:@"Invalid video source."
                                    details:nil]);
         break;
+      }
     }
   } else {
     result(FlutterMethodNotImplemented);
@@ -150,6 +166,11 @@ static const int SOURCE_GALLERY = 1;
                                   details:nil]);
     }
   } else {
+    NSURL *assetURL = [info objectForKey:UIImagePickerControllerReferenceURL];
+    PHFetchResult<PHAsset *> *result = [PHAsset fetchAssetsWithALAssetURLs:@[ assetURL ]
+                                                                   options:nil];
+    PHAsset *asset = result.firstObject;
+
     if (image == nil) {
       image = [info objectForKey:UIImagePickerControllerOriginalImage];
     }
@@ -158,27 +179,71 @@ static const int SOURCE_GALLERY = 1;
     NSNumber *maxWidth = [_arguments objectForKey:@"maxWidth"];
     NSNumber *maxHeight = [_arguments objectForKey:@"maxHeight"];
 
+    bool isScaled = false;
+
     if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
+      isScaled = true;
       image = [self scaledImage:image maxWidth:maxWidth maxHeight:maxHeight];
     }
 
-    NSData *data = UIImageJPEGRepresentation(image, 1.0);
-    NSString *guid = [[NSProcessInfo processInfo] globallyUniqueString];
-    NSString *tmpFile = [NSString stringWithFormat:@"image_picker_%@.jpg", guid];
-    NSString *tmpDirectory = NSTemporaryDirectory();
-    NSString *tmpPath = [tmpDirectory stringByAppendingPathComponent:tmpFile];
+    [[PHImageManager defaultManager]
+        requestImageDataForAsset:asset
+                         options:nil
+                   resultHandler:^(NSData *_Nullable imageData, NSString *_Nullable dataUTI,
+                                   UIImageOrientation orientation, NSDictionary *_Nullable info) {
+                     NSString *guid = [[NSProcessInfo processInfo] globallyUniqueString];
+                     NSString *tmpFile = [NSString stringWithFormat:@"image_picker_%@", guid];
+                     NSString *tmpDirectory = NSTemporaryDirectory();
+                     NSString *tmpPath = [tmpDirectory stringByAppendingPathComponent:tmpFile];
 
-    if ([[NSFileManager defaultManager] createFileAtPath:tmpPath contents:data attributes:nil]) {
-      _result(tmpPath);
-    } else {
-      _result([FlutterError errorWithCode:@"create_error"
-                                  message:@"Temporary file could not be created"
-                                  details:nil]);
-    }
+                     uint8_t c;
+                     [imageData getBytes:&c length:1];
+                     switch (c) {
+                       case 0x47:
+                         // image/gif
+                         if (isScaled == true) {
+                           // TODO When scaled, animation disappears. Drawing as JPEG.
+                           [self createImageFileAtPath:[tmpPath stringByAppendingString:@".gif"]
+                                              contents:UIImageJPEGRepresentation(image, 1)];
+                         } else {
+                           [self createImageFileAtPath:[tmpPath stringByAppendingString:@".gif"]
+                                              contents:imageData];
+                         }
+                         break;
+                       case 0x89:
+                         // image/png
+                         [self createImageFileAtPath:[tmpPath stringByAppendingString:@".png"]
+                                            contents:UIImagePNGRepresentation(image)];
+                         break;
+                       case 0xff:
+                         // image/jpeg
+                         [self createImageFileAtPath:[tmpPath stringByAppendingString:@".jpeg"]
+                                            contents:UIImageJPEGRepresentation(image, 1)
+                                                with:asset];
+                         break;
+                       case 0x49:
+                         // image/tiff
+                         // TODO Drawing as JPEG.
+                         [self createImageFileAtPath:[tmpPath stringByAppendingString:@".tiff"]
+                                            contents:UIImageJPEGRepresentation(image, 1)
+                                                with:asset];
+                         break;
+                       case 0x4d:
+                         // image/tiff
+                         // TODO Drawing as JPEG.
+                         [self createImageFileAtPath:[tmpPath stringByAppendingString:@".tiff"]
+                                            contents:UIImageJPEGRepresentation(image, 1)
+                                                with:asset];
+                         break;
+                       default:
+                         // Drawing as JPEG.
+                         [self createImageFileAtPath:[tmpPath stringByAppendingString:@".jpeg"]
+                                            contents:UIImageJPEGRepresentation(image, 1)
+                                                with:asset];
+                         break;
+                     }
+                   }];
   }
-
-  _result = nil;
-  _arguments = nil;
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
@@ -252,6 +317,96 @@ static const int SOURCE_GALLERY = 1;
   UIGraphicsEndImageContext();
 
   return scaledImage;
+}
+
+- (void)createImageFileAtPath:(NSString *)path contents:(NSData *)data {
+  if ([[NSFileManager defaultManager] createFileAtPath:path contents:data attributes:nil]) {
+    _result(path);
+  } else {
+    _result([FlutterError errorWithCode:@"create_error"
+                                message:@"Temporary file could not be created"
+                                details:nil]);
+  }
+  _result = nil;
+  _arguments = nil;
+}
+
+- (void)createImageFileAtPath:(NSString *)path contents:(NSData *)data with:(PHAsset *)asset {
+  NSMutableDictionary *exifDict = [self fetchExifFrom:asset];
+  NSMutableDictionary *gpsDict = [self fetchGpsFrom:asset];
+
+  NSMutableData *imageData = [NSMutableData data];
+  CGImageSourceRef cgImage = CGImageSourceCreateWithData((__bridge CFDataRef)data, NULL);
+  CGImageDestinationRef destination = CGImageDestinationCreateWithData(
+      (__bridge CFMutableDataRef)imageData, CGImageSourceGetType(cgImage), 1, nil);
+  CGImageDestinationAddImageFromSource(
+      destination, cgImage, 0,
+      (__bridge CFDictionaryRef)[NSDictionary
+          dictionaryWithObjectsAndKeys:exifDict,
+                                       (__bridge NSString *)kCGImagePropertyExifDictionary, gpsDict,
+                                       (__bridge NSString *)kCGImagePropertyGPSDictionary, nil]);
+  CGImageDestinationFinalize(destination);
+
+  [imageData writeToFile:path atomically:YES];
+
+  CFRelease(cgImage);
+  CFRelease(destination);
+
+  _result(path);
+  _result = nil;
+  _arguments = nil;
+}
+
+- (NSMutableDictionary *)fetchExifFrom:(PHAsset *)asset {
+  NSMutableDictionary *result = [NSMutableDictionary dictionary];
+  NSDate *creationDate = asset.creationDate;
+
+  NSDateFormatter *outputFormatter = [[NSDateFormatter alloc] init];
+  [outputFormatter setDateFormat:@"yyyy:MM:dd HH:mm:ss"];
+  NSString *original = [outputFormatter stringFromDate:creationDate];
+  [result setObject:original forKey:(__bridge NSString *)kCGImagePropertyExifDateTimeOriginal];
+  [result setObject:original forKey:(__bridge NSString *)kCGImagePropertyExifDateTimeDigitized];
+  return result;
+}
+
+- (NSMutableDictionary *)fetchGpsFrom:(PHAsset *)asset {
+  NSMutableDictionary *result = [NSMutableDictionary dictionary];
+  CLLocation *location = asset.location;
+  CGFloat latitude = location.coordinate.latitude;
+  NSString *gpsLatitudeRef;
+  if (latitude < 0) {
+    latitude = -latitude;
+    gpsLatitudeRef = @"S";
+  } else {
+    gpsLatitudeRef = @"N";
+  }
+  [result setObject:gpsLatitudeRef forKey:(__bridge NSString *)kCGImagePropertyGPSLatitudeRef];
+  [result setObject:@(latitude) forKey:(__bridge NSString *)kCGImagePropertyGPSLatitude];
+
+  CGFloat longitude = location.coordinate.longitude;
+  NSString *gpsLongitudeRef;
+  if (longitude < 0) {
+    longitude = -longitude;
+    gpsLongitudeRef = @"W";
+  } else {
+    gpsLongitudeRef = @"E";
+  }
+  [result setObject:gpsLongitudeRef forKey:(__bridge NSString *)kCGImagePropertyGPSLongitudeRef];
+  [result setObject:@(longitude) forKey:(__bridge NSString *)kCGImagePropertyGPSLongitude];
+
+  CGFloat altitude = location.altitude;
+  if (!isnan(altitude)) {
+    NSString *gpsAltitudeRef;
+    if (altitude < 0) {
+      altitude = -altitude;
+      gpsAltitudeRef = @"1";
+    } else {
+      gpsAltitudeRef = @"0";
+    }
+    [result setObject:gpsAltitudeRef forKey:(__bridge NSString *)kCGImagePropertyGPSAltitudeRef];
+    [result setObject:@(altitude) forKey:(__bridge NSString *)kCGImagePropertyGPSAltitude];
+  }
+  return result;
 }
 
 @end
