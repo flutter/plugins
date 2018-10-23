@@ -1,6 +1,6 @@
-## 0.7.0
+## 0.6.3
 
-* **Breaking Change** Add multi app support.
+* Add multi app support.
 
 ## 0.6.2+1
 
