@@ -96,7 +96,7 @@ class FirebaseMessaging {
     _channel.invokeMethod('unsubscribeFromTopic', topic);
   }
 
-  Future<Null> _handleMethod(MethodCall call) async {
+  Future<dynamic> _handleMethod(MethodCall call) async {
     switch (call.method) {
       case "onToken":
         final String token = call.arguments;
@@ -122,10 +122,6 @@ class FirebaseMessaging {
 }
 
 class IosNotificationSettings {
-  final bool sound;
-  final bool alert;
-  final bool badge;
-
   const IosNotificationSettings({
     this.sound = true,
     this.alert = true,
@@ -136,6 +132,10 @@ class IosNotificationSettings {
       : sound = settings['sound'],
         alert = settings['alert'],
         badge = settings['badge'];
+
+  final bool sound;
+  final bool alert;
+  final bool badge;
 
   @visibleForTesting
   Map<String, dynamic> toMap() {

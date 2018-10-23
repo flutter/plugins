@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-final FirebaseAuth _auth = FirebaseAuth.instance;
+final FirebaseAuth _auth = FirebaseAuth();
 final GoogleSignIn _googleSignIn = GoogleSignIn();
 
 void main() {
@@ -99,7 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
         (AuthException authException) {
       setState(() {
         _message = Future<String>.value(
-            'Phone numbber verification failed. Code: ${authException.code}. Message: ${authException.message}');
+            'Phone number verification failed. Code: ${authException.code}. Message: ${authException.message}');
       });
     };
 

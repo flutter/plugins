@@ -46,13 +46,13 @@
   if ([@"requestNotificationPermissions" isEqualToString:method]) {
     UIUserNotificationType notificationTypes = 0;
     NSDictionary *arguments = call.arguments;
-    if (arguments[@"sound"]) {
+    if ([arguments[@"sound"] boolValue]) {
       notificationTypes |= UIUserNotificationTypeSound;
     }
-    if (arguments[@"alert"]) {
+    if ([arguments[@"alert"] boolValue]) {
       notificationTypes |= UIUserNotificationTypeAlert;
     }
-    if (arguments[@"badge"]) {
+    if ([arguments[@"badge"] boolValue]) {
       notificationTypes |= UIUserNotificationTypeBadge;
     }
     UIUserNotificationSettings *settings =

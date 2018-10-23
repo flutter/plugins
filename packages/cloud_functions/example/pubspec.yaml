@@ -7,12 +7,13 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^0.1.2
+  cloud_functions:
+    path: ..
+  firebase_core: 0.2.5+1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  cloud_functions:
-    path: ..
 
 flutter:
   uses-material-design: true

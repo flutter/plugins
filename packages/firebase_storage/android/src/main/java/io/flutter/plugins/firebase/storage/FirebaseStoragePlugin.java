@@ -285,6 +285,7 @@ public class FirebaseStoragePlugin implements MethodCallHandler {
     builder.setContentLanguage((String) map.get("contentLanguage"));
     builder.setContentType((String) map.get("contentType"));
 
+    @SuppressWarnings("unchecked")
     Map<String, String> customMetadata = (Map<String, String>) map.get("customMetadata");
     if (customMetadata != null) {
       for (String key : customMetadata.keySet()) {

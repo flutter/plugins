@@ -14,6 +14,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.Blob;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
@@ -576,6 +577,33 @@ public class CloudFirestorePlugin implements MethodCallHandler {
           result.success(null);
           break;
         }
+      case "Firestore#settings":
+        {
+          final Map<String, Object> arguments = call.arguments();
+          final FirebaseFirestoreSettings.Builder builder = new FirebaseFirestoreSettings.Builder();
+
+          if (arguments.get("persistenceEnabled") != null) {
+            builder.setPersistenceEnabled((Boolean) arguments.get("persistenceEnabled"));
+          }
+
+          if (arguments.get("host") != null) {
+            builder.setHost((String) arguments.get("host"));
+          }
+
+          if (arguments.get("sslEnabled") != null) {
+            builder.setSslEnabled((Boolean) arguments.get("sslEnabled"));
+          }
+
+          if (arguments.get("timestampsInSnapshotsEnabled") != null) {
+            builder.setTimestampsInSnapshotsEnabled(
+                (Boolean) arguments.get("timestampsInSnapshotsEnabled"));
+          }
+
+          FirebaseFirestoreSettings settings = builder.build();
+          getFirestore(arguments).setFirestoreSettings(settings);
+          result.success(null);
+          break;
+        }
       default:
         {
           result.notImplemented();
@@ -596,12 +624,17 @@ final class FirestoreMessageCodec extends StandardMessageCodec {
   private static final byte ARRAY_REMOVE = (byte) 133;
   private static final byte DELETE = (byte) 134;
   private static final byte SERVER_TIMESTAMP = (byte) 135;
+  private static final byte TIMESTAMP = (byte) 136;
 
   @Override
   protected void writeValue(ByteArrayOutputStream stream, Object value) {
     if (value instanceof Date) {
       stream.write(DATE_TIME);
       writeLong(stream, ((Date) value).getTime());
+    } else if (value instanceof Timestamp) {
+      stream.write(TIMESTAMP);
+      writeLong(stream, ((Timestamp) value).getSeconds());
+      writeInt(stream, ((Timestamp) value).getNanoseconds());
     } else if (value instanceof GeoPoint) {
       stream.write(GEO_POINT);
       writeAlignment(stream, 8);
@@ -625,6 +658,8 @@ final class FirestoreMessageCodec extends StandardMessageCodec {
     switch (type) {
       case DATE_TIME:
         return new Date(buffer.getLong());
+      case TIMESTAMP:
+        return new Timestamp(buffer.getLong(), buffer.getInt());
       case GEO_POINT:
         readAlignment(buffer, 8);
         return new GeoPoint(buffer.getDouble(), buffer.getDouble());
@@ -640,9 +675,9 @@ final class FirestoreMessageCodec extends StandardMessageCodec {
         final byte[] bytes = readBytes(buffer);
         return Blob.fromBytes(bytes);
       case ARRAY_UNION:
-        return FieldValue.arrayUnion(readValue(buffer));
+        return FieldValue.arrayUnion(toArray(readValue(buffer)));
       case ARRAY_REMOVE:
-        return FieldValue.arrayRemove(readValue(buffer));
+        return FieldValue.arrayRemove(toArray(readValue(buffer)));
       case DELETE:
         return FieldValue.delete();
       case SERVER_TIMESTAMP:
@@ -650,5 +685,19 @@ final class FirestoreMessageCodec extends StandardMessageCodec {
       default:
         return super.readValueOfType(type, buffer);
     }
+  }
+
+  private Object[] toArray(Object source) {
+    if (source instanceof List) {
+      return ((List) source).toArray();
+    }
+
+    if (source == null) {
+      return new Object[0];
+    }
+
+    String sourceType = source.getClass().getCanonicalName();
+    String message = "java.util.List was expected, unable to convert '%s' to an object array";
+    throw new IllegalArgumentException(String.format(message, sourceType));
   }
 }
