@@ -201,6 +201,24 @@ public class CameraPlugin implements MethodCallHandler {
           camera.stopVideoRecording(result);
           break;
         }
+      case "startByteStream":
+        {
+          try {
+            camera.startPreviewWithByteStream();
+            result.success(null);
+          } catch (CameraAccessException e) {
+            result.error("CameraAccess", e.getMessage(), null);
+          }
+        }
+      case "stopByteStream":
+        {
+          try {
+            camera.startPreview();
+            result.success(null);
+          } catch (CameraAccessException e) {
+            result.error("CameraAccess", e.getMessage(), null);
+          }
+        }
       case "dispose":
         {
           if (camera != null) {
@@ -246,7 +264,8 @@ public class CameraPlugin implements MethodCallHandler {
     private CameraDevice cameraDevice;
     private CameraCaptureSession cameraCaptureSession;
     private EventChannel.EventSink eventSink;
-    private ImageReader imageReader;
+    private ImageReader pictureImageReader;
+    private ImageReader byteImageReader; // Used to pass bytes to dart side.
     private int sensorOrientation;
     private boolean isFrontFacing;
     private String cameraName;
@@ -432,9 +451,13 @@ public class CameraPlugin implements MethodCallHandler {
         if (result != null) result.error("cameraPermission", "Camera permission not granted", null);
       } else {
         try {
-          imageReader =
+          pictureImageReader =
               ImageReader.newInstance(
                   captureSize.getWidth(), captureSize.getHeight(), ImageFormat.JPEG, 2);
+          byteImageReader =
+              ImageReader.newInstance(
+                  previewSize.getWidth(), previewSize.getHeight(), ImageFormat.YUV_420_888, 2);
+
           cameraManager.openCamera(
               cameraName,
               new CameraDevice.StateCallback() {
@@ -527,7 +550,7 @@ public class CameraPlugin implements MethodCallHandler {
         return;
       }
 
-      imageReader.setOnImageAvailableListener(
+      pictureImageReader.setOnImageAvailableListener(
           new ImageReader.OnImageAvailableListener() {
             @Override
             public void onImageAvailable(ImageReader reader) {
@@ -545,7 +568,7 @@ public class CameraPlugin implements MethodCallHandler {
       try {
         final CaptureRequest.Builder captureBuilder =
             cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
-        captureBuilder.addTarget(imageReader.getSurface());
+        captureBuilder.addTarget(pictureImageReader.getSurface());
         int displayRotation = activity.getWindowManager().getDefaultDisplay().getRotation();
         int displayOrientation = ORIENTATIONS.get(displayRotation);
         if (isFrontFacing) displayOrientation = -displayOrientation;
@@ -675,7 +698,7 @@ public class CameraPlugin implements MethodCallHandler {
       surfaces.add(previewSurface);
       captureRequestBuilder.addTarget(previewSurface);
 
-      surfaces.add(imageReader.getSurface());
+      surfaces.add(pictureImageReader.getSurface());
 
       cameraDevice.createCaptureSession(
           surfaces,
@@ -705,6 +728,107 @@ public class CameraPlugin implements MethodCallHandler {
           null);
     }
 
+    private void startPreviewWithByteStream() throws CameraAccessException {
+      closeCaptureSession();
+
+      SurfaceTexture surfaceTexture = textureEntry.surfaceTexture();
+      surfaceTexture.setDefaultBufferSize(previewSize.getWidth(), previewSize.getHeight());
+
+      captureRequestBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
+
+      List<Surface> surfaces = new ArrayList<>();
+
+      Surface previewSurface = new Surface(surfaceTexture);
+      surfaces.add(previewSurface);
+      captureRequestBuilder.addTarget(previewSurface);
+
+      surfaces.add(byteImageReader.getSurface());
+      captureRequestBuilder.addTarget(byteImageReader.getSurface());
+
+      cameraDevice.createCaptureSession(
+          surfaces,
+          new CameraCaptureSession.StateCallback() {
+            @Override
+            public void onConfigured(@NonNull CameraCaptureSession session) {
+              if (cameraDevice == null) {
+                sendErrorEvent("The camera was closed during configuration.");
+                return;
+              }
+              try {
+                cameraCaptureSession = session;
+                captureRequestBuilder.set(
+                    CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
+                cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
+              } catch (CameraAccessException e) {
+                sendErrorEvent(e.getMessage());
+              }
+            }
+            @Override
+            public void onConfigureFailed(@NonNull CameraCaptureSession cameraCaptureSession) {
+              sendErrorEvent("Failed to configure the camera for streaming bytes.");
+            }
+          },
+          null);
+
+      registerByteStreamEventChannel();
+    }
+
+    private void registerByteStreamEventChannel() {
+      final EventChannel cameraChannel =
+          new EventChannel(registrar.messenger(), "plugins.flutter.io/camera/bytes");
+
+      cameraChannel.setStreamHandler(new EventChannel.StreamHandler() {
+        @Override
+        public void onListen(Object o, EventChannel.EventSink eventSink) {
+          setByteStreamImageAvailableListener(eventSink);
+        }
+
+        @Override
+        public void onCancel(Object o) {
+          byteImageReader.setOnImageAvailableListener(null, null);
+        }
+      });
+    }
+
+    private void setByteStreamImageAvailableListener(final EventChannel.EventSink eventSink) {
+      byteImageReader.setOnImageAvailableListener(new ImageReader.OnImageAvailableListener() {
+        @Override
+        public void onImageAvailable(final ImageReader reader) {
+          new Runnable() {
+            @Override
+            public void run() {
+              Image img = reader.acquireLatestImage();
+              if (img == null) return;
+
+              eventSink.success(YUV_420_888toNV21(img));
+              img.close();
+            }
+          };
+        }
+      }, null);
+    }
+
+    private byte[] YUV_420_888toNV21(Image image) {
+      byte[] nv21;
+
+      ByteBuffer yBuffer = image.getPlanes()[0].getBuffer();
+      ByteBuffer uBuffer = image.getPlanes()[1].getBuffer();
+      ByteBuffer vBuffer = image.getPlanes()[2].getBuffer();
+
+      int ySize = yBuffer.remaining();
+      int uSize = uBuffer.remaining();
+      int vSize = vBuffer.remaining();
+
+      nv21 = new byte[ySize + uSize + vSize];
+
+      //U and V are swapped
+      yBuffer.get(nv21, 0, ySize);
+      vBuffer.get(nv21, ySize, vSize);
+      uBuffer.get(nv21, ySize + vSize, uSize);
+
+      return nv21;
+    }
+
     private void sendErrorEvent(String errorDescription) {
       if (eventSink != null) {
         Map<String, String> event = new HashMap<>();
@@ -728,9 +852,13 @@ public class CameraPlugin implements MethodCallHandler {
         cameraDevice.close();
         cameraDevice = null;
       }
-      if (imageReader != null) {
-        imageReader.close();
-        imageReader = null;
+      if (pictureImageReader != null) {
+        pictureImageReader.close();
+        pictureImageReader = null;
+      }
+      if (byteImageReader != null) {
+        byteImageReader.close();
+        byteImageReader = null;
       }
       if (mediaRecorder != null) {
         mediaRecorder.reset();
