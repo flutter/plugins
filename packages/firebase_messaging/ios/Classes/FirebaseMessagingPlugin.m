@@ -74,6 +74,8 @@
     NSString *topic = call.arguments;
     [[FIRMessaging messaging] unsubscribeFromTopic:topic];
     result(nil);
+  } else if ([@"getToken" isEqualToString:method]) {
+    result([[FIRMessaging messaging] FCMToken]);
   } else {
     result(FlutterMethodNotImplemented);
   }
