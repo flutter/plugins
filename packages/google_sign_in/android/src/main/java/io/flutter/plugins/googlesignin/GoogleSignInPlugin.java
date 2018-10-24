@@ -492,12 +492,13 @@ public class GoogleSignInPlugin implements MethodCallHandler {
           }
           return true;
         case REQUEST_CODE_SIGNIN:
-          if (resultCode == Activity.RESULT_OK && data != null) {
+          // Whether resultCode is OK or not, the Task returned by GoogleSigIn will determine
+          // failure with better specifics which are extracted in onSignInResult method.
+          if (data != null) {
             onSignInResult(GoogleSignIn.getSignedInAccountFromIntent(data));
-          } else if (resultCode == Activity.RESULT_CANCELED) {
-            finishWithError(ERROR_REASON_SIGN_IN_CANCELED, "User canceled sign in");
           } else {
-            finishWithError(ERROR_REASON_STATUS, "Sign in failed with " + resultCode);
+            // data is null which is highly unusual for a sign in result.
+            finishWithError(ERROR_REASON_SIGN_IN_FAILED, "Signin failed");
           }
           return true;
         default:
