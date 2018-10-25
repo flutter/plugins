@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -9,6 +10,8 @@ final MethodChannel _channel = const MethodChannel('plugins.flutter.io/camera')
 enum CameraLensDirection { front, back, external }
 
 enum ResolutionPreset { low, medium, high }
+
+typedef void OnLatestImageAvailable(Uint8List bytes);
 
 /// Returns the resolution preset as a String.
 String serializeResolutionPreset(ResolutionPreset resolutionPreset) {
@@ -110,13 +113,15 @@ class CameraValue {
     this.previewSize,
     this.isRecordingVideo,
     this.isTakingPicture,
+    this.isStreamingBytes,
   });
 
   const CameraValue.uninitialized()
       : this(
             isInitialized: false,
             isRecordingVideo: false,
-            isTakingPicture: false);
+            isTakingPicture: false,
+            isStreamingBytes: false);
 
   /// True after [CameraController.initialize] has completed successfully.
   final bool isInitialized;
@@ -126,6 +131,9 @@ class CameraValue {
 
   /// True when the camera is recording (not the same as previewing).
   final bool isRecordingVideo;
+
+  /// True when bytes from the camera are being streamed.
+  final bool isStreamingBytes;
 
   final String errorDescription;
 
@@ -145,6 +153,7 @@ class CameraValue {
     bool isInitialized,
     bool isRecordingVideo,
     bool isTakingPicture,
+    bool isStreamingBytes,
     String errorDescription,
     Size previewSize,
   }) {
@@ -154,6 +163,7 @@ class CameraValue {
       previewSize: previewSize ?? this.previewSize,
       isRecordingVideo: isRecordingVideo ?? this.isRecordingVideo,
       isTakingPicture: isTakingPicture ?? this.isTakingPicture,
+      isStreamingBytes: isStreamingBytes ?? this.isStreamingBytes,
     );
   }
 
@@ -164,7 +174,8 @@ class CameraValue {
         'isRecordingVideo: $isRecordingVideo, '
         'isInitialized: $isInitialized, '
         'errorDescription: $errorDescription, '
-        'previewSize: $previewSize)';
+        'previewSize: $previewSize, '
+        'isStreamingBytes: $isStreamingBytes)';
   }
 }
 
@@ -185,6 +196,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   int _textureId;
   bool _isDisposed = false;
   StreamSubscription<dynamic> _eventSubscription;
+  StreamSubscription<Uint8List> _byteStreamSubscription;
   Completer<void> _creatingCompleter;
 
   /// Initializes the camera on the device.
@@ -276,6 +288,69 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
   }
 
+  Future<void> startByteStream(OnLatestImageAvailable onAvailable) async {
+    if (!value.isInitialized || _isDisposed) {
+      throw CameraException(
+        'Uninitialized CameraController',
+        'startByteStream was called on uninitialized CameraController.',
+      );
+    }
+    if (value.isRecordingVideo) {
+      throw CameraException(
+        'A video recording is already started.',
+        'startByteStream was called while a video is being recorded.',
+      );
+    }
+    if (value.isStreamingBytes) {
+      throw CameraException(
+        'A camera has started streaming bytes.',
+        'startByteStream was called while a camera was streaming bytes.',
+      );
+    }
+
+    try {
+      await _channel.invokeMethod('startByteStream');
+      value = value.copyWith(isStreamingBytes: true);
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+    const EventChannel cameraEventChannel =
+        EventChannel('plugins.flutter.io/camera/bytes');
+    _byteStreamSubscription =
+        cameraEventChannel.receiveBroadcastStream().listen(onAvailable);
+  }
+
+  Future<void> stopByteStream() async {
+    if (!value.isInitialized || _isDisposed) {
+      throw CameraException(
+        'Uninitialized CameraController',
+        'stopByteStream was called on uninitialized CameraController.',
+      );
+    }
+    if (value.isRecordingVideo) {
+      throw CameraException(
+        'A video recording is already started.',
+        'stopByteStream was called while a video is being recorded.',
+      );
+    }
+    if (!value.isStreamingBytes) {
+      throw CameraException(
+        'No camera is streaming bytes',
+        'stopByteStream was called when no camera is streaming bytes.',
+      );
+    }
+
+    try {
+      value = value.copyWith(isStreamingBytes: false);
+      await _channel.invokeMethod('stopByteStream');
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+
+    _byteStreamSubscription.cancel();
+    _byteStreamSubscription = null;
+  }
+
   /// Start a video recording and save the file to [path].
   ///
   /// A path can for example be obtained using
@@ -299,6 +374,13 @@ class CameraController extends ValueNotifier<CameraValue> {
         'startVideoRecording was called when a recording is already started.',
       );
     }
+    if (value.isStreamingBytes) {
+      throw CameraException(
+        'A camera has started streaming bytes.',
+        'startVideoRecording was called while a camera was streaming bytes.',
+      );
+    }
+
     try {
       await _channel.invokeMethod(
         'startVideoRecording',
