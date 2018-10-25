@@ -4,6 +4,8 @@
 
 part of firebase_ml_vision;
 
+enum _FirebaseVisionImageType { file, bytes }
+
 /// The Firebase machine learning vision API.
 ///
 /// You can get an instance by calling [FirebaseVision.instance] and then get
@@ -56,22 +58,44 @@ class FirebaseVision {
 ///
 /// Create an instance by calling one of the factory constructors.
 class FirebaseVisionImage {
-  FirebaseVisionImage._(this.imageFile);
+  FirebaseVisionImage._({
+    @required _FirebaseVisionImageType type,
+    File imageFile,
+    Uint8List bytes,
+  })  : _imageFile = imageFile,
+        _bytes = bytes,
+        _type = type;
 
   /// Construct a [FirebaseVisionImage] from a file.
   factory FirebaseVisionImage.fromFile(File imageFile) {
     assert(imageFile != null);
-    return FirebaseVisionImage._(imageFile);
+    return FirebaseVisionImage._(
+      type: _FirebaseVisionImageType.file,
+      imageFile: imageFile,
+    );
   }
 
   /// Construct a [FirebaseVisionImage] from a file path.
   factory FirebaseVisionImage.fromFilePath(String imagePath) {
     assert(imagePath != null);
-    return FirebaseVisionImage._(File(imagePath));
+    return FirebaseVisionImage._(
+      type: _FirebaseVisionImageType.file,
+      imageFile: File(imagePath),
+    );
   }
 
-  /// The file location of the image.
-  final File imageFile;
+  /// Construct a [FirebaseVisionImage] from a list of bytes.
+  factory FirebaseVisionImage.fromBytes(Uint8List bytes) {
+    assert(bytes != null);
+    return FirebaseVisionImage._(
+      type: _FirebaseVisionImageType.bytes,
+      bytes: bytes,
+    );
+  }
+
+  final File _imageFile;
+  final Uint8List _bytes;
+  final _FirebaseVisionImageType _type;
 }
 
 /// Abstract class for detectors in [FirebaseVision] API.

@@ -189,7 +189,9 @@ class BarcodeDetector extends FirebaseVisionDetector {
     final List<dynamic> reply = await FirebaseVision.channel.invokeMethod(
       'BarcodeDetector#detectInImage',
       <String, dynamic>{
-        'path': visionImage.imageFile.path,
+        'type': _enumToString(visionImage._type),
+        'path': visionImage._imageFile.path,
+        'bytes': visionImage._bytes,
         'options': <String, dynamic>{
           'barcodeFormats': options.barcodeFormats.value,
         },

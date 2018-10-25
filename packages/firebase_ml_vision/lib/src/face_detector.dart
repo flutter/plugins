@@ -44,7 +44,9 @@ class FaceDetector extends FirebaseVisionDetector {
     final List<dynamic> reply = await FirebaseVision.channel.invokeMethod(
       'FaceDetector#detectInImage',
       <String, dynamic>{
-        'path': visionImage.imageFile.path,
+        'type': _enumToString(visionImage._type),
+        'path': visionImage._imageFile.path,
+        'bytes': visionImage._bytes,
         'options': <String, dynamic>{
           'enableClassification': options.enableClassification,
           'enableLandmarks': options.enableLandmarks,
