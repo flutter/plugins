@@ -209,6 +209,7 @@ public class CameraPlugin implements MethodCallHandler {
           } catch (CameraAccessException e) {
             result.error("CameraAccess", e.getMessage(), null);
           }
+          break;
         }
       case "stopByteStream":
         {
@@ -218,6 +219,7 @@ public class CameraPlugin implements MethodCallHandler {
           } catch (CameraAccessException e) {
             result.error("CameraAccess", e.getMessage(), null);
           }
+          break;
         }
       case "dispose":
         {
@@ -794,16 +796,11 @@ public class CameraPlugin implements MethodCallHandler {
       byteImageReader.setOnImageAvailableListener(new ImageReader.OnImageAvailableListener() {
         @Override
         public void onImageAvailable(final ImageReader reader) {
-          new Runnable() {
-            @Override
-            public void run() {
-              Image img = reader.acquireLatestImage();
-              if (img == null) return;
+          Image img = reader.acquireLatestImage();
+          if (img == null) return;
 
-              eventSink.success(YUV_420_888toNV21(img));
-              img.close();
-            }
-          };
+          eventSink.success(YUV_420_888toNV21(img));
+          img.close();
         }
       }, null);
     }

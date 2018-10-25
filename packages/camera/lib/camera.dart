@@ -196,7 +196,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   int _textureId;
   bool _isDisposed = false;
   StreamSubscription<dynamic> _eventSubscription;
-  StreamSubscription<Uint8List> _byteStreamSubscription;
+  StreamSubscription<dynamic> _byteStreamSubscription;
   Completer<void> _creatingCompleter;
 
   /// Initializes the camera on the device.
@@ -317,7 +317,9 @@ class CameraController extends ValueNotifier<CameraValue> {
     const EventChannel cameraEventChannel =
         EventChannel('plugins.flutter.io/camera/bytes');
     _byteStreamSubscription =
-        cameraEventChannel.receiveBroadcastStream().listen(onAvailable);
+        cameraEventChannel.receiveBroadcastStream().listen((dynamic bytes) {
+      onAvailable(bytes);
+    });
   }
 
   Future<void> stopByteStream() async {
