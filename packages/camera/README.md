@@ -84,10 +84,19 @@ class _CameraAppState extends State<CameraApp> {
     if (!controller.value.isInitialized) {
       return Container();
     }
-    return AspectRatio(
-        aspectRatio:
-        controller.value.aspectRatio,
-        child: CameraPreview(controller));
+    
+    final size = MediaQuery.of(context).size;
+    final deviceRatio = size.width / size.height;
+
+    return Transform.scale(
+      scale: controller.value.aspectRatio / deviceRatio,
+      child: Center(
+        child: AspectRatio(
+          aspectRatio: controller.value.aspectRatio,
+          child: CameraPreview(controller),
+        ),
+      ),
+    );
   }
 }
 ```
