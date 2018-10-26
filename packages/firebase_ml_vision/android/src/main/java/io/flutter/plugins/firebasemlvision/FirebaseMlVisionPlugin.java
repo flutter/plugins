@@ -2,6 +2,7 @@ package io.flutter.plugins.firebasemlvision;
 
 import android.net.Uri;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
+import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -33,7 +34,8 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
     switch (call.method) {
       case "BarcodeDetector#detectInImage":
         try {
-          image = filePathToVisionImage((String) call.argument("path"));
+          Map<String, Object> imageData = call.arguments();
+          image = dataToVisionImage(imageData);
           BarcodeDetector.instance.handleDetection(image, options, result);
         } catch (IOException e) {
           result.error("barcodeDetectorIOError", e.getLocalizedMessage(), null);
@@ -41,7 +43,8 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
         break;
       case "FaceDetector#detectInImage":
         try {
-          image = filePathToVisionImage((String) call.argument("path"));
+          Map<String, Object> imageData = call.arguments();
+          image = dataToVisionImage(imageData);
           FaceDetector.instance.handleDetection(image, options, result);
         } catch (IOException e) {
           result.error("faceDetectorIOError", e.getLocalizedMessage(), null);
@@ -49,7 +52,8 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
         break;
       case "LabelDetector#detectInImage":
         try {
-          image = filePathToVisionImage((String) call.argument("path"));
+          Map<String, Object> imageData = call.arguments();
+          image = dataToVisionImage(imageData);
           LabelDetector.instance.handleDetection(image, options, result);
         } catch (IOException e) {
           result.error("labelDetectorIOError", e.getLocalizedMessage(), null);
@@ -57,7 +61,8 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
         break;
       case "CloudLabelDetector#detectInImage":
         try {
-          image = filePathToVisionImage((String) call.argument("path"));
+          Map<String, Object> imageData = call.arguments();
+          image = dataToVisionImage(imageData);
           CloudLabelDetector.instance.handleDetection(image, options, result);
         } catch (IOException e) {
           result.error("cloudLabelDetectorIOError", e.getLocalizedMessage(), null);
@@ -65,7 +70,8 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
         break;
       case "TextRecognizer#processImage":
         try {
-          image = filePathToVisionImage((String) call.argument("path"));
+          Map<String, Object> imageData = call.arguments();
+          image = dataToVisionImage(imageData);
           TextRecognizer.instance.handleDetection(image, options, result);
         } catch (IOException e) {
           result.error("textRecognizerIOError", e.getLocalizedMessage(), null);
@@ -76,8 +82,42 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
     }
   }
 
-  private FirebaseVisionImage filePathToVisionImage(String path) throws IOException {
-    File file = new File(path);
-    return FirebaseVisionImage.fromFilePath(registrar.context(), Uri.fromFile(file));
+  private FirebaseVisionImage dataToVisionImage(Map<String, Object> imageData) throws IOException {
+    String imageType = (String) imageData.get("type");
+
+    switch(imageType) {
+      case "file":
+        File file = new File((String) imageData.get("path"));
+        return FirebaseVisionImage.fromFilePath(registrar.context(), Uri.fromFile(file));
+      case "bytes":
+        @SuppressWarnings("unchecked")
+        Map<String, Object> metadataData = (Map<String, Object>) imageData.get("metadata");
+
+        FirebaseVisionImageMetadata metadata = new FirebaseVisionImageMetadata.Builder()
+            .setWidth((int) (double) metadataData.get("width"))
+            .setHeight((int) (double) metadataData.get("height"))
+            .setFormat(FirebaseVisionImageMetadata.IMAGE_FORMAT_NV21)
+            .setRotation(getRotation((String) metadataData.get("orientation")))
+            .build();
+
+        return FirebaseVisionImage.fromByteArray((byte[]) imageData.get("bytes"), metadata);
+      default:
+        throw new IllegalArgumentException(String.format("No file type for: %s", imageType));
+    }
+  }
+
+  private int getRotation(String rotation) {
+    switch(rotation) {
+      case "landscapeLeft":
+        return FirebaseVisionImageMetadata.ROTATION_90;
+      case "landscapeRight":
+        return FirebaseVisionImageMetadata.ROTATION_90;
+      case "portraitUp":
+        return FirebaseVisionImageMetadata.ROTATION_90;
+      case "portraitDown":
+        return FirebaseVisionImageMetadata.ROTATION_90;
+      default:
+        throw new IllegalArgumentException(String.format("No rotation for: %s", rotation));
+    }
   }
 }
