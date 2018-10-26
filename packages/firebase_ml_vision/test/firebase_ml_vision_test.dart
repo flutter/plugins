@@ -71,7 +71,10 @@ void main() {
           isMethodCall(
             'BarcodeDetector#detectInImage',
             arguments: <String, dynamic>{
+              'type': 'file',
               'path': 'empty',
+              'bytes': null,
+              'metadata': null,
               'options': <String, dynamic>{
                 'barcodeFormats': 0xFFFF,
               },
@@ -488,7 +491,10 @@ void main() {
           isMethodCall(
             'FaceDetector#detectInImage',
             arguments: <String, dynamic>{
+              'type': 'file',
               'path': 'empty',
+              'bytes': null,
+              'metadata': null,
               'options': <String, dynamic>{
                 'enableClassification': true,
                 'enableLandmarks': true,
@@ -591,7 +597,10 @@ void main() {
           isMethodCall(
             'LabelDetector#detectInImage',
             arguments: <String, dynamic>{
+              'type': 'file',
               'path': 'empty',
+              'bytes': null,
+              'metadata': null,
               'options': <String, dynamic>{
                 'confidenceThreshold': 0.2,
               },
@@ -623,7 +632,10 @@ void main() {
           isMethodCall(
             'LabelDetector#detectInImage',
             arguments: <String, dynamic>{
+              'type': 'file',
               'path': 'empty',
+              'bytes': null,
+              'metadata': null,
               'options': <String, dynamic>{
                 'confidenceThreshold': 0.5,
               },
@@ -670,7 +682,10 @@ void main() {
           isMethodCall(
             'CloudLabelDetector#detectInImage',
             arguments: <String, dynamic>{
+              'type': 'file',
               'path': 'empty',
+              'bytes': null,
+              'metadata': null,
               'options': <String, dynamic>{
                 'maxResults': 5,
                 'modelType': 'latest',
@@ -704,7 +719,10 @@ void main() {
           isMethodCall(
             'CloudLabelDetector#detectInImage',
             arguments: <String, dynamic>{
+              'type': 'file',
               'path': 'empty',
+              'bytes': null,
+              'metadata': null,
               'options': <String, dynamic>{
                 'maxResults': 10,
                 'modelType': 'stable',
@@ -936,7 +954,10 @@ void main() {
           isMethodCall(
             'TextRecognizer#processImage',
             arguments: <String, dynamic>{
+              'type': 'file',
               'path': 'empty',
+              'bytes': null,
+              'metadata': null,
               'options': <String, dynamic>{},
             },
           ),
