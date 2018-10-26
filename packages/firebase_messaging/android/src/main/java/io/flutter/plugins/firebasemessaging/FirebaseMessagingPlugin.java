@@ -11,7 +11,9 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
-import com.google.android.gms.tasks.OnSuccessListener;
+import android.util.Log;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
@@ -33,6 +35,7 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
   private final MethodChannel channel;
 
   private static final String CLICK_ACTION_VALUE = "FLUTTER_NOTIFICATION_CLICK";
+  private static final String TAG = "FirebaseMessagingPlugin";
 
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel =
@@ -112,11 +115,17 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
     } else if ("getToken".equals(call.method)) {
       FirebaseInstanceId.getInstance()
           .getInstanceId()
-          .addOnSuccessListener(
-              new OnSuccessListener<InstanceIdResult>() {
+          .addOnCompleteListener(
+              new OnCompleteListener<InstanceIdResult>() {
                 @Override
-                public void onSuccess(InstanceIdResult instanceIdResult) {
-                  result.success(instanceIdResult.getToken());
+                public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                  if (!task.isSuccessful()) {
+                    Log.w(TAG, "getToken, error fetching instanceID: ", task.getException());
+                    result.success(null);
+                    return;
+                  }
+
+                  result.success(task.getResult().getToken());
                 }
               });
     } else {

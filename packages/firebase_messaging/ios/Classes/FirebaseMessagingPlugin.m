@@ -75,7 +75,16 @@
     [[FIRMessaging messaging] unsubscribeFromTopic:topic];
     result(nil);
   } else if ([@"getToken" isEqualToString:method]) {
-    result([[FIRMessaging messaging] FCMToken]);
+    [[FIRInstanceID instanceID]
+        instanceIDWithHandler:^(FIRInstanceIDResult *_Nullable instanceIDResult,
+                                NSError *_Nullable error) {
+          if (error != nil) {
+            NSLog(@"getToken, error fetching instanceID: %@", error);
+            result(nil);
+          } else {
+            result(instanceIDResult.token);
+          }
+        }];
   } else {
     result(FlutterMethodNotImplemented);
   }
