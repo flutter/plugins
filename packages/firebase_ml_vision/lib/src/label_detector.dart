@@ -34,13 +34,10 @@ class LabelDetector extends FirebaseVisionDetector {
     final List<dynamic> reply = await FirebaseVision.channel.invokeMethod(
       'LabelDetector#detectInImage',
       <String, dynamic>{
-        'type': _enumToString(visionImage._type),
-        'path': visionImage._imageFile.path,
-        'bytes': visionImage._bytes,
         'options': <String, dynamic>{
           'confidenceThreshold': options.confidenceThreshold,
         },
-      },
+      }..addAll(visionImage._serialize()),
     );
 
     final List<Label> labels = <Label>[];
@@ -82,11 +79,8 @@ class CloudLabelDetector extends FirebaseVisionDetector {
     final List<dynamic> reply = await FirebaseVision.channel.invokeMethod(
       'CloudLabelDetector#detectInImage',
       <String, dynamic>{
-        'type': _enumToString(visionImage._type),
-        'path': visionImage._imageFile.path,
-        'bytes': visionImage._bytes,
-        'options': options._toMap(),
-      },
+        'options': options._serialize(),
+      }..addAll(visionImage._serialize()),
     );
 
     final List<Label> labels = <Label>[];

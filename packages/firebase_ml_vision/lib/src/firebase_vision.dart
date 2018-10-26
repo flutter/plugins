@@ -58,11 +58,13 @@ class FirebaseVision {
 ///
 /// Create an instance by calling one of the factory constructors.
 class FirebaseVisionImage {
-  FirebaseVisionImage._({
+  const FirebaseVisionImage._({
     @required _FirebaseVisionImageType type,
+    FirebaseVisionImageMetadata metadata,
     File imageFile,
     Uint8List bytes,
   })  : _imageFile = imageFile,
+        _metadata = metadata,
         _bytes = bytes,
         _type = type;
 
@@ -85,17 +87,48 @@ class FirebaseVisionImage {
   }
 
   /// Construct a [FirebaseVisionImage] from a list of bytes.
-  factory FirebaseVisionImage.fromBytes(Uint8List bytes) {
+  factory FirebaseVisionImage.fromBytes(
+    Uint8List bytes,
+    FirebaseVisionImageMetadata metadata,
+  ) {
     assert(bytes != null);
     return FirebaseVisionImage._(
       type: _FirebaseVisionImageType.bytes,
       bytes: bytes,
+      metadata: metadata,
     );
   }
 
-  final File _imageFile;
   final Uint8List _bytes;
+  final File _imageFile;
+  final FirebaseVisionImageMetadata _metadata;
   final _FirebaseVisionImageType _type;
+
+  Map<String, dynamic> _serialize() => <String, dynamic>{
+        'type': _enumToString(_type),
+        'bytes': _bytes,
+        'path': _imageFile?.path,
+        'metadata': _type == _FirebaseVisionImageType.bytes
+            ? _metadata._serialize()
+            : null,
+      };
+}
+
+/// Image metadata used by [FirebaseVision] detectors.
+class FirebaseVisionImageMetadata {
+  const FirebaseVisionImageMetadata({
+    @required this.size,
+    @required this.orientation,
+  });
+
+  final Size size;
+  final DeviceOrientation orientation;
+
+  Map<String, dynamic> _serialize() => <String, dynamic>{
+        'width': size.width,
+        'height': size.height,
+        'orientation': _enumToString(orientation),
+      };
 }
 
 /// Abstract class for detectors in [FirebaseVision] API.

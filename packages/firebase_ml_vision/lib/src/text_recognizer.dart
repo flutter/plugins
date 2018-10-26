@@ -22,11 +22,8 @@ class TextRecognizer implements FirebaseVisionDetector {
         await FirebaseVision.channel.invokeMethod(
       'TextRecognizer#processImage',
       <String, dynamic>{
-        'type': _enumToString(visionImage._type),
-        'path': visionImage._imageFile.path,
-        'bytes': visionImage._bytes,
         'options': <String, dynamic>{},
-      },
+      }..addAll(visionImage._serialize()),
     );
 
     return VisionText._(reply);
