@@ -32,7 +32,8 @@ class CloudLabelDetector implements Detector {
 
     if (detector == null) {
       lastOptions = options;
-      detector = FirebaseVision.getInstance().getVisionCloudLabelDetector(parseOptions(lastOptions));
+      detector =
+          FirebaseVision.getInstance().getVisionCloudLabelDetector(parseOptions(lastOptions));
     } else if (!options.equals(lastOptions)) {
       try {
         detector.close();
@@ -42,7 +43,8 @@ class CloudLabelDetector implements Detector {
       }
 
       lastOptions = options;
-      detector = FirebaseVision.getInstance().getVisionCloudLabelDetector(parseOptions(lastOptions));
+      detector =
+          FirebaseVision.getInstance().getVisionCloudLabelDetector(parseOptions(lastOptions));
     }
 
     detector
