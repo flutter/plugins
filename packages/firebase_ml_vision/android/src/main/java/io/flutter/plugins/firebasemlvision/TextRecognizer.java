@@ -35,7 +35,7 @@ public class TextRecognizer implements Detector {
     if (textRecognizer == null) {
       lastOptions = options;
       textRecognizer = FirebaseVision.getInstance().getOnDeviceTextRecognizer();
-    } else if (options != null && !options.equals(lastOptions)) {
+    } else if (!options.equals(lastOptions)) {
       try {
         textRecognizer.close();
       } catch (IOException e) {
