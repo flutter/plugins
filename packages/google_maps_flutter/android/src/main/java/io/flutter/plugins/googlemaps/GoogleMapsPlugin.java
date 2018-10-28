@@ -7,8 +7,8 @@ package io.flutter.plugins.googlemaps;
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.app.FlutterActivity;
+import io.flutter.plugin.common.PluginRegistry.Registrar;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
