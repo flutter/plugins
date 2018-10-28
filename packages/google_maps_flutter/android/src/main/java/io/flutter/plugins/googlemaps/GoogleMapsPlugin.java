@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
+import io.flutter.app.FlutterActivity;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -36,27 +37,37 @@ public class GoogleMapsPlugin implements Application.ActivityLifecycleCallbacks 
 
   @Override
   public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-    state.set(CREATED);
+    if (activity instanceof FlutterActivity) {
+      state.set(CREATED);
+    }
   }
 
   @Override
   public void onActivityStarted(Activity activity) {
-    state.set(STARTED);
+    if (activity instanceof FlutterActivity) {
+      state.set(STARTED);
+    }
   }
 
   @Override
   public void onActivityResumed(Activity activity) {
-    state.set(RESUMED);
+    if (activity instanceof FlutterActivity) {
+      state.set(RESUMED);
+    }
   }
 
   @Override
   public void onActivityPaused(Activity activity) {
-    state.set(PAUSED);
+    if (activity instanceof FlutterActivity) {
+      state.set(PAUSED);
+    }
   }
 
   @Override
   public void onActivityStopped(Activity activity) {
-    state.set(STOPPED);
+    if (activity instanceof FlutterActivity) {
+      state.set(STOPPED);
+    }
   }
 
   @Override
@@ -64,6 +75,8 @@ public class GoogleMapsPlugin implements Application.ActivityLifecycleCallbacks 
 
   @Override
   public void onActivityDestroyed(Activity activity) {
-    state.set(DESTROYED);
+    if (activity instanceof FlutterActivity) {
+      state.set(DESTROYED);
+    }
   }
 }

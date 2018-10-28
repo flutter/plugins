@@ -29,6 +29,7 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.platform.PlatformView;
+import io.flutter.app.FlutterActivity;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -282,7 +283,7 @@ final class GoogleMapController
 
   @Override
   public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-    if (disposed) {
+    if (disposed || !(activity instanceof FlutterActivity)) {
       return;
     }
     mapView.onCreate(savedInstanceState);
@@ -290,7 +291,7 @@ final class GoogleMapController
 
   @Override
   public void onActivityStarted(Activity activity) {
-    if (disposed) {
+    if (disposed || !(activity instanceof FlutterActivity)) {
       return;
     }
     mapView.onStart();
@@ -298,7 +299,7 @@ final class GoogleMapController
 
   @Override
   public void onActivityResumed(Activity activity) {
-    if (disposed) {
+    if (disposed || !(activity instanceof FlutterActivity)) {
       return;
     }
     mapView.onResume();
@@ -306,7 +307,7 @@ final class GoogleMapController
 
   @Override
   public void onActivityPaused(Activity activity) {
-    if (disposed) {
+    if (disposed || !(activity instanceof FlutterActivity)) {
       return;
     }
     mapView.onPause();
@@ -314,7 +315,7 @@ final class GoogleMapController
 
   @Override
   public void onActivityStopped(Activity activity) {
-    if (disposed) {
+    if (disposed || !(activity instanceof FlutterActivity)) {
       return;
     }
     mapView.onStop();
@@ -322,7 +323,7 @@ final class GoogleMapController
 
   @Override
   public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
-    if (disposed) {
+    if (disposed || !(activity instanceof FlutterActivity)) {
       return;
     }
     mapView.onSaveInstanceState(outState);
@@ -330,7 +331,7 @@ final class GoogleMapController
 
   @Override
   public void onActivityDestroyed(Activity activity) {
-    if (disposed) {
+    if (disposed || !(activity instanceof FlutterActivity)) {
       return;
     }
     mapView.onDestroy();
