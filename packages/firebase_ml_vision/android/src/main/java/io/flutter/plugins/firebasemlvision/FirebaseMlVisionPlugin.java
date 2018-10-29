@@ -102,7 +102,7 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
 
         return FirebaseVisionImage.fromByteArray((byte[]) imageData.get("bytes"), metadata);
       default:
-        throw new IllegalArgumentException(String.format("No file type for: %s", imageType));
+        throw new IllegalArgumentException(String.format("No image type for: %s", imageType));
     }
   }
 
