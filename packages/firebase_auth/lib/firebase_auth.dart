@@ -176,7 +176,7 @@ class FirebaseAuth {
   }
 
   /// Provides an instance of this class corresponding to the default app.
-  static FirebaseAuth instance = FirebaseAuth._(FirebaseApp.instance);
+  final static FirebaseAuth instance = FirebaseAuth._(FirebaseApp.instance);
 
   @visibleForTesting
   static const MethodChannel channel = MethodChannel(
