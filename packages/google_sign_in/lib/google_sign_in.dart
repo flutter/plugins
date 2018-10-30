@@ -36,7 +36,8 @@ class GoogleSignInAccount implements GoogleIdentity {
         email = data['email'],
         id = data['id'],
         photoUrl = data['photoUrl'],
-        _idToken = data['idToken'] {
+        _idToken = data['idToken'],
+        serverAuthCode = data['serverAuthCode'] {
     assert(id != null);
   }
 
@@ -62,6 +63,7 @@ class GoogleSignInAccount implements GoogleIdentity {
 
   final String _idToken;
   final GoogleSignIn _googleSignIn;
+  final String serverAuthCode;
 
   /// Retrieve [GoogleSignInAuthentication] for this account.
   ///
@@ -163,14 +165,17 @@ class GoogleSignIn {
   /// The [hostedDomain] argument specifies a hosted domain restriction. By
   /// setting this, sign in will be restricted to accounts of the user in the
   /// specified domain. By default, the list of accounts will not be restricted.
-  GoogleSignIn({this.signInOption, this.scopes, this.hostedDomain});
+  GoogleSignIn(
+      {this.signInOption, this.scopes, this.hostedDomain, this.serverClientId});
 
   /// Factory for creating default sign in user experience.
-  factory GoogleSignIn.standard({List<String> scopes, String hostedDomain}) {
+  factory GoogleSignIn.standard(
+      {List<String> scopes, String hostedDomain, String serverClientId}) {
     return GoogleSignIn(
         signInOption: SignInOption.standard,
         scopes: scopes,
-        hostedDomain: hostedDomain);
+        hostedDomain: hostedDomain,
+        serverClientId: serverClientId);
   }
 
   /// Factory for creating sign in suitable for games. This option must not be
@@ -206,6 +211,8 @@ class GoogleSignIn {
 
   /// Domain to restrict sign-in to.
   final String hostedDomain;
+
+  final String serverClientId;
 
   StreamController<GoogleSignInAccount> _currentUserController =
       StreamController<GoogleSignInAccount>.broadcast();
@@ -246,6 +253,7 @@ class GoogleSignIn {
         'signInOption': (signInOption ?? SignInOption.standard).toString(),
         'scopes': scopes ?? <String>[],
         'hostedDomain': hostedDomain,
+        'serverClientId': serverClientId,
       })
         ..catchError((dynamic _) {
           // Invalidate initialization if it errored out.
