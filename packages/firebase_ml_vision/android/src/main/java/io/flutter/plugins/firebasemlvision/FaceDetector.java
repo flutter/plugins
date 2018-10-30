@@ -19,6 +19,8 @@ import java.util.Map;
 class FaceDetector implements Detector {
   static final FaceDetector instance = new FaceDetector();
 
+  private FaceDetector() {}
+
   private FirebaseVisionFaceDetector detector;
   private Map<String, Object> lastOptions;
 
