@@ -1,3 +1,7 @@
+## 1.0.5
+
+* Update the `METHOD` Android constant used for `logSignUp` method.
+
 ## 1.0.4
 
 * Bump Android dependencies to latest.
