@@ -137,6 +137,26 @@ void main() {
     firebaseMessaging.getToken();
     verify(mockChannel.invokeMethod('getToken'));
   });
+
+  test('deleteInstanceID', () {
+    firebaseMessaging.deleteInstanceID();
+    verify(mockChannel.invokeMethod('deleteInstanceID'));
+  });
+
+  test('autoInitEnabled', () {
+    firebaseMessaging.autoInitEnabled();
+    verify(mockChannel.invokeMethod('autoInitEnabled'));
+  });
+
+  test('setAutoInitEnabled', () {
+    bool enabled = true;
+    firebaseMessaging.setAutoInitEnabled(enabled);
+    verify(mockChannel.invokeMethod('setAutoInitEnabled', enabled));
+
+    enabled = false;
+    firebaseMessaging.setAutoInitEnabled(enabled);
+    verify(mockChannel.invokeMethod('setAutoInitEnabled', enabled));
+  });
 }
 
 class MockMethodChannel extends Mock implements MethodChannel {}
