@@ -2,9 +2,9 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-#import "Firebase/Firebase.h"
 #import "GoogleSignInPlugin.h"
 #import <GoogleSignIn/GoogleSignIn.h>
+#import "Firebase/Firebase.h"
 
 // The key within `GoogleService-Info.plist` used to hold the application's
 // client id.  See https://developers.google.com/identity/sign-in/ios/start
