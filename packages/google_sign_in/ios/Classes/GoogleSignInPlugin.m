@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+#import "Firebase/Firebase.h"
 #import "GoogleSignInPlugin.h"
 #import <GoogleSignIn/GoogleSignIn.h>
 
@@ -53,6 +54,10 @@ static NSString *const kErrorReasonSignInFailed = @"sign_in_failed";
 - (instancetype)init {
   self = [super init];
   if (self) {
+    if (![FIRApp defaultApp]) {
+      [FIRApp configure];
+    }
+
     [GIDSignIn sharedInstance].delegate = self;
     [GIDSignIn sharedInstance].uiDelegate = self;
 
