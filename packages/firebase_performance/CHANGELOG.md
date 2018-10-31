@@ -1,3 +1,15 @@
+## 0.0.8+1
+
+* Bump Android dependencies to latest.
+
+## 0.0.8
+
+* Set http version to be compatible with flutter_test.
+
+## 0.0.7
+
+* Added missing http package dependency.
+
 ## 0.0.6
 
 * Bump Android and Firebase dependency versions.

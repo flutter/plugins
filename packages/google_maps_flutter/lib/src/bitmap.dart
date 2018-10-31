@@ -8,6 +8,8 @@ part of google_maps_flutter;
 /// image of the marker icon. For a ground overlay, it can be used to set the
 /// image to place on the surface of the earth.
 class BitmapDescriptor {
+  const BitmapDescriptor._(this._json);
+
   static const double hueRed = 0.0;
   static const double hueOrange = 30.0;
   static const double hueYellow = 60.0;
@@ -19,8 +21,6 @@ class BitmapDescriptor {
   static const double hueMagenta = 300.0;
   static const double hueRose = 330.0;
 
-  const BitmapDescriptor._(this._json);
-
   /// Creates a BitmapDescriptor that refers to the default marker image.
   static const BitmapDescriptor defaultMarker =
       BitmapDescriptor._(<dynamic>['defaultMarker']);
@@ -30,16 +30,16 @@ class BitmapDescriptor {
   /// See e.g. [hueYellow].
   static BitmapDescriptor defaultMarkerWithHue(double hue) {
     assert(0.0 <= hue && hue < 360.0);
-    return new BitmapDescriptor._(<dynamic>['defaultMarker', hue]);
+    return BitmapDescriptor._(<dynamic>['defaultMarker', hue]);
   }
 
   /// Creates a BitmapDescriptor using the name of a bitmap image in the assets
   /// directory.
   static BitmapDescriptor fromAsset(String assetName, {String package}) {
     if (package == null) {
-      return new BitmapDescriptor._(<dynamic>['fromAsset', assetName]);
+      return BitmapDescriptor._(<dynamic>['fromAsset', assetName]);
     } else {
-      return new BitmapDescriptor._(<dynamic>['fromAsset', assetName, package]);
+      return BitmapDescriptor._(<dynamic>['fromAsset', assetName, package]);
     }
   }
 

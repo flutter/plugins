@@ -6,14 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:firebase_analytics/observer.dart';
 
 class TabsPage extends StatefulWidget {
-  static const String routeName = '/tab';
-
   TabsPage(this.observer);
 
   final FirebaseAnalyticsObserver observer;
 
+  static const String routeName = '/tab';
+
   @override
-  State<StatefulWidget> createState() => new _TabsPageState(observer);
+  State<StatefulWidget> createState() => _TabsPageState(observer);
 }
 
 class _TabsPageState extends State<TabsPage>
@@ -44,7 +44,7 @@ class _TabsPageState extends State<TabsPage>
   @override
   void initState() {
     super.initState();
-    _controller = new TabController(
+    _controller = TabController(
       vsync: this,
       length: tabs.length,
       initialIndex: selectedIndex,
@@ -61,17 +61,17 @@ class _TabsPageState extends State<TabsPage>
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        bottom: new TabBar(
+    return Scaffold(
+      appBar: AppBar(
+        bottom: TabBar(
           controller: _controller,
           tabs: tabs,
         ),
       ),
-      body: new TabBarView(
+      body: TabBarView(
         controller: _controller,
         children: tabs.map((Tab tab) {
-          return new Center(child: new Text(tab.text));
+          return Center(child: Text(tab.text));
         }).toList(),
       ),
     );

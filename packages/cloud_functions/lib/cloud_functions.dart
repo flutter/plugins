@@ -8,11 +8,11 @@ import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
 class CloudFunctionsException implements Exception {
+  CloudFunctionsException._(this.code, this.message, this.details);
+
   final String code;
   final String message;
   final dynamic details;
-
-  CloudFunctionsException._(this.code, this.message, this.details);
 }
 
 /// The entry point for accessing a CloudFunctions.
@@ -22,7 +22,7 @@ class CloudFunctions {
   @visibleForTesting
   static const MethodChannel channel = MethodChannel('cloud_functions');
 
-  static CloudFunctions _instance = new CloudFunctions();
+  static CloudFunctions _instance = CloudFunctions();
 
   static CloudFunctions get instance => _instance;
 

@@ -1,3 +1,7 @@
+## 0.3.0
+
+* **Breaking change**. Add canCheckBiometrics and getAvailableBiometrics which leads to a new API.
+
 ## 0.2.1
 
 * Updated Gradle tooling to match Android Studio 3.1.2.

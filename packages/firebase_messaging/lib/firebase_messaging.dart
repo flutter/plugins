@@ -22,7 +22,7 @@ class FirebaseMessaging {
       : _channel = channel,
         _platform = platform;
 
-  static final FirebaseMessaging _instance = new FirebaseMessaging.private(
+  static final FirebaseMessaging _instance = FirebaseMessaging.private(
       const MethodChannel('plugins.flutter.io/firebase_messaging'),
       const LocalPlatform());
 
@@ -32,7 +32,6 @@ class FirebaseMessaging {
   MessageHandler _onMessage;
   MessageHandler _onLaunch;
   MessageHandler _onResume;
-  String _token;
 
   /// On iOS, prompts the user for notification permissions the first time
   /// it is called.
@@ -48,7 +47,7 @@ class FirebaseMessaging {
   }
 
   final StreamController<IosNotificationSettings> _iosSettingsStreamController =
-      new StreamController<IosNotificationSettings>.broadcast();
+      StreamController<IosNotificationSettings>.broadcast();
 
   /// Stream that fires when the user changes their notification settings.
   ///
@@ -71,7 +70,7 @@ class FirebaseMessaging {
   }
 
   final StreamController<String> _tokenStreamController =
-      new StreamController<String>.broadcast();
+      StreamController<String>.broadcast();
 
   /// Fires when a new FCM token is generated.
   Stream<String> get onTokenRefresh {
@@ -79,10 +78,8 @@ class FirebaseMessaging {
   }
 
   /// Returns the FCM token.
-  Future<String> getToken() {
-    return _token != null
-        ? new Future<String>.value(_token)
-        : onTokenRefresh.first;
+  Future<String> getToken() async {
+    return await _channel.invokeMethod('getToken');
   }
 
   /// Subscribe to topic in background.
@@ -98,17 +95,14 @@ class FirebaseMessaging {
     _channel.invokeMethod('unsubscribeFromTopic', topic);
   }
 
-  Future<Null> _handleMethod(MethodCall call) async {
+  Future<dynamic> _handleMethod(MethodCall call) async {
     switch (call.method) {
       case "onToken":
         final String token = call.arguments;
-        if (_token != token) {
-          _token = token;
-          _tokenStreamController.add(_token);
-        }
+        _tokenStreamController.add(token);
         return null;
       case "onIosSettingsRegistered":
-        _iosSettingsStreamController.add(new IosNotificationSettings._fromMap(
+        _iosSettingsStreamController.add(IosNotificationSettings._fromMap(
             call.arguments.cast<String, bool>()));
         return null;
       case "onMessage":
@@ -118,16 +112,12 @@ class FirebaseMessaging {
       case "onResume":
         return _onResume(call.arguments.cast<String, dynamic>());
       default:
-        throw new UnsupportedError("Unrecognized JSON message");
+        throw UnsupportedError("Unrecognized JSON message");
     }
   }
 }
 
 class IosNotificationSettings {
-  final bool sound;
-  final bool alert;
-  final bool badge;
-
   const IosNotificationSettings({
     this.sound = true,
     this.alert = true,
@@ -138,6 +128,10 @@ class IosNotificationSettings {
       : sound = settings['sound'],
         alert = settings['alert'],
         badge = settings['badge'];
+
+  final bool sound;
+  final bool alert;
+  final bool badge;
 
   @visibleForTesting
   Map<String, dynamic> toMap() {

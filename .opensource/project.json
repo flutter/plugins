@@ -1,0 +1,23 @@
+{
+  "name": "FlutterFire",
+  "platforms": [
+    "Android",
+    "iOS"
+  ],
+  "content": "FlutterFire.md",
+  "pages": {
+    "packages/cloud_firestore/README.md": "Cloud Firestore",
+    "packages/cloud_functions/README.md": "Cloud Functions",
+    "packages/firebase_admob/README.md": "Admob",
+    "packages/firebase_analytics/README.md": "Analytics",
+    "packages/firebase_auth/README.md": "Authentication",
+    "packages/firebase_core/README.md": "Core",
+    "packages/firebase_database/README.md": "Realtime Database",
+    "packages/firebase_dynamic_links/README.md": "Dynamic Links",
+    "packages/firebase_messaging/README.md": "Cloud Messaging",
+    "packages/firebase_ml_vision/README.md": "ML Kit: Vision",
+    "packages/firebase_performance/README.md": "Performance Monitoring",
+    "packages/firebase_remote_config/README.md": "Remote Config",
+    "packages/firebase_storage/README.md": "Cloud Storage"
+  }
+}

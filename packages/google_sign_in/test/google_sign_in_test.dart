@@ -29,6 +29,10 @@ void main() {
       'signOut': null,
       'disconnect': null,
       'isSignedIn': true,
+      'getTokens': <dynamic, dynamic>{
+        'idToken': '123',
+        'accessToken': '456',
+      },
     };
 
     final List<MethodCall> log = <MethodCall>[];
@@ -36,12 +40,12 @@ void main() {
     GoogleSignIn googleSignIn;
 
     setUp(() {
-      responses = new Map<String, dynamic>.from(kDefaultResponses);
+      responses = Map<String, dynamic>.from(kDefaultResponses);
       channel.setMockMethodCallHandler((MethodCall methodCall) {
         log.add(methodCall);
-        return new Future<dynamic>.value(responses[methodCall.method]);
+        return Future<dynamic>.value(responses[methodCall.method]);
       });
-      googleSignIn = new GoogleSignIn();
+      googleSignIn = GoogleSignIn();
       log.clear();
     });
 
@@ -285,14 +289,14 @@ void main() {
             throw "First init fails";
           }
         }
-        return new Future<dynamic>.value(responses[methodCall.method]);
+        return Future<dynamic>.value(responses[methodCall.method]);
       });
       expect(googleSignIn.signIn(), throwsA(isInstanceOf<PlatformException>()));
       expect(await googleSignIn.signIn(), isNotNull);
     });
 
     test('created with standard factory uses correct options', () async {
-      googleSignIn = new GoogleSignIn.standard();
+      googleSignIn = GoogleSignIn.standard();
 
       await googleSignIn.signInSilently();
       expect(googleSignIn.currentUser, isNotNull);
@@ -311,7 +315,7 @@ void main() {
 
     test('created with defaultGamesSignIn factory uses correct options',
         () async {
-      googleSignIn = new GoogleSignIn.games();
+      googleSignIn = GoogleSignIn.games();
 
       await googleSignIn.signInSilently();
       expect(googleSignIn.currentUser, isNotNull);
@@ -324,6 +328,26 @@ void main() {
             'hostedDomain': null,
           }),
           isMethodCall('signInSilently', arguments: null),
+        ],
+      );
+    });
+
+    test('authentication', () async {
+      await googleSignIn.signIn();
+      log.clear();
+
+      final GoogleSignInAccount user = googleSignIn.currentUser;
+      final GoogleSignInAuthentication auth = await user.authentication;
+
+      expect(auth.accessToken, '456');
+      expect(auth.idToken, '123');
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall('getTokens', arguments: <String, dynamic>{
+            'email': 'john.doe@gmail.com',
+            'shouldRecoverAuth': true,
+          }),
         ],
       );
     });
@@ -341,8 +365,8 @@ void main() {
 
     setUp(() {
       GoogleSignIn.channel.setMockMethodCallHandler(
-          (new FakeSignInBackend()..user = kUserData).handleMethodCall);
-      googleSignIn = new GoogleSignIn();
+          (FakeSignInBackend()..user = kUserData).handleMethodCall);
+      googleSignIn = GoogleSignIn();
     });
 
     test('user starts as null', () async {

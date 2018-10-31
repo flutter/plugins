@@ -24,24 +24,23 @@ enum LocationActivityType {
 
 /// A representation of a location update.
 class Location {
+  Location(
+      this._time, this.latitude, this.longitude, this.altitude, this.speed);
+
+  factory Location.fromJson(String jsonLocation) {
+    final Map<String, dynamic> location = json.decode(jsonLocation);
+    return Location(location['time'], location['latitude'],
+        location['longitude'], location['altitude'], location['speed']);
+  }
+
   final double _time;
   final double latitude;
   final double longitude;
   final double altitude;
   final double speed;
 
-  Location(
-      this._time, this.latitude, this.longitude, this.altitude, this.speed);
-
-  factory Location.fromJson(String jsonLocation) {
-    final Map<String, dynamic> location = json.decode(jsonLocation);
-    return new Location(location['time'], location['latitude'],
-        location['longitude'], location['altitude'], location['speed']);
-  }
-
   DateTime get time =>
-      new DateTime.fromMillisecondsSinceEpoch((_time * 1000).round(),
-          isUtc: true);
+      DateTime.fromMillisecondsSinceEpoch((_time * 1000).round(), isUtc: true);
 
   @override
   String toString() =>
@@ -98,7 +97,7 @@ void _backgroundCallbackDispatcher() {
     if (call.method == kOnLocationEvent) {
       onLocationEvent ??= _performCallbackLookup();
       final Location location =
-          new Location(args[1], args[2], args[3], args[4], args[5]);
+          Location(args[1], args[2], args[3], args[4], args[5]);
       onLocationEvent(location);
     } else {
       assert(false, "No handler defined for method type: '${call.method}'");
@@ -107,19 +106,6 @@ void _backgroundCallbackDispatcher() {
 }
 
 class LocationBackgroundPlugin {
-  // The method channel we'll use to communicate with the native portion of our
-  // plugin.
-  static const MethodChannel _channel =
-      MethodChannel('plugins.flutter.io/ios_background_location');
-
-  static const String _kCancelLocationUpdates = 'cancelLocationUpdates';
-  static const String _kMonitorLocationChanges = 'monitorLocationChanges';
-  static const String _kStartHeadlessService = 'startHeadlessService';
-
-  bool pauseLocationUpdatesAutomatically;
-  bool showsBackgroundLocationIndicator;
-  LocationActivityType activityType;
-
   LocationBackgroundPlugin(
       {this.pauseLocationUpdatesAutomatically = false,
       this.showsBackgroundLocationIndicator = true,
@@ -134,6 +120,19 @@ class LocationBackgroundPlugin {
     _channel
         .invokeMethod(_kStartHeadlessService, <dynamic>[handle.toRawHandle()]);
   }
+
+  // The method channel we'll use to communicate with the native portion of our
+  // plugin.
+  static const MethodChannel _channel =
+      MethodChannel('plugins.flutter.io/ios_background_location');
+
+  static const String _kCancelLocationUpdates = 'cancelLocationUpdates';
+  static const String _kMonitorLocationChanges = 'monitorLocationChanges';
+  static const String _kStartHeadlessService = 'startHeadlessService';
+
+  bool pauseLocationUpdatesAutomatically;
+  bool showsBackgroundLocationIndicator;
+  LocationActivityType activityType;
 
   /// Start getting significant location updates through `callback`.
   ///

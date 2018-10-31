@@ -25,7 +25,9 @@ void main() {
             return returnValue;
           case 'LabelDetector#detectInImage':
             return returnValue;
-          case 'TextDetector#detectInImage':
+          case 'TextRecognizer#processImage':
+            return returnValue;
+          case 'CloudLabelDetector#detectInImage':
             return returnValue;
           default:
             return null;
@@ -41,7 +43,7 @@ void main() {
 
       setUp(() {
         detector = FirebaseVision.instance.barcodeDetector();
-        image = new FirebaseVisionImage.fromFilePath('empty');
+        image = FirebaseVisionImage.fromFilePath('empty');
         returnBarcodes = <dynamic>[
           <dynamic, dynamic>{
             'rawValue': 'hello:raw',
@@ -476,7 +478,7 @@ void main() {
           ),
         );
 
-        final FirebaseVisionImage image = new FirebaseVisionImage.fromFilePath(
+        final FirebaseVisionImage image = FirebaseVisionImage.fromFilePath(
           'empty',
         );
 
@@ -534,7 +536,7 @@ void main() {
         final FaceDetector detector = FirebaseVision.instance.faceDetector(
           const FaceDetectorOptions(),
         );
-        final FirebaseVisionImage image = new FirebaseVisionImage.fromFilePath(
+        final FirebaseVisionImage image = FirebaseVisionImage.fromFilePath(
           'empty',
         );
 
@@ -549,7 +551,7 @@ void main() {
         final FaceDetector detector = FirebaseVision.instance.faceDetector(
           const FaceDetectorOptions(),
         );
-        final FirebaseVisionImage image = new FirebaseVisionImage.fromFilePath(
+        final FirebaseVisionImage image = FirebaseVisionImage.fromFilePath(
           'empty',
         );
 
@@ -579,7 +581,7 @@ void main() {
           const LabelDetectorOptions(confidenceThreshold: 0.2),
         );
 
-        final FirebaseVisionImage image = new FirebaseVisionImage.fromFilePath(
+        final FirebaseVisionImage image = FirebaseVisionImage.fromFilePath(
           'empty',
         );
 
@@ -613,7 +615,7 @@ void main() {
           const LabelDetectorOptions(),
         );
         final FirebaseVisionImage image =
-            new FirebaseVisionImage.fromFilePath('empty');
+            FirebaseVisionImage.fromFilePath('empty');
 
         final List<Label> labels = await detector.detectInImage(image);
 
@@ -633,36 +635,171 @@ void main() {
       });
     });
 
-    group('$TextDetector', () {
+    group('$CloudLabelDetector', () {
       test('detectInImage', () async {
-        final Map<dynamic, dynamic> textElement = <dynamic, dynamic>{
-          'text': 'hello',
-          'left': 1,
-          'top': 2,
-          'width': 3,
-          'height': 4,
-          'points': <dynamic>[
-            <dynamic>[5, 6],
-            <dynamic>[7, 8],
-          ],
-        };
+        final List<dynamic> labelData = <dynamic>[
+          <dynamic, dynamic>{
+            'confidence': 0.6,
+            'entityId': '/m/0',
+            'label': 'banana',
+          },
+          <dynamic, dynamic>{
+            'confidence': 0.8,
+            'entityId': '/m/1',
+            'label': 'apple',
+          },
+        ];
 
-        final Map<dynamic, dynamic> textLine = <dynamic, dynamic>{
-          'text': 'my',
-          'left': 5,
-          'top': 6,
-          'width': 7,
-          'height': 8,
-          'points': <dynamic>[
-            <dynamic>[9, 10],
-            <dynamic>[11, 12],
-          ],
-          'elements': <dynamic>[
-            textElement,
-          ],
-        };
+        returnValue = labelData;
 
-        final List<dynamic> textBlocks = <dynamic>[
+        final CloudLabelDetector detector =
+            FirebaseVision.instance.cloudLabelDetector(
+          const CloudDetectorOptions(
+            maxResults: 5,
+            modelType: CloudModelType.latest,
+          ),
+        );
+
+        final FirebaseVisionImage image = FirebaseVisionImage.fromFilePath(
+          'empty',
+        );
+
+        final List<Label> labels = await detector.detectInImage(image);
+
+        expect(log, <Matcher>[
+          isMethodCall(
+            'CloudLabelDetector#detectInImage',
+            arguments: <String, dynamic>{
+              'path': 'empty',
+              'options': <String, dynamic>{
+                'maxResults': 5,
+                'modelType': 'latest',
+              },
+            },
+          ),
+        ]);
+
+        expect(labels[0].confidence, 0.6);
+        expect(labels[0].entityId, '/m/0');
+        expect(labels[0].label, 'banana');
+
+        expect(labels[1].confidence, 0.8);
+        expect(labels[1].entityId, '/m/1');
+        expect(labels[1].label, 'apple');
+      });
+
+      test('detectInImage no blocks', () async {
+        returnValue = <dynamic>[];
+
+        final CloudLabelDetector detector =
+            FirebaseVision.instance.cloudLabelDetector(
+          const CloudDetectorOptions(),
+        );
+        final FirebaseVisionImage image =
+            FirebaseVisionImage.fromFilePath('empty');
+
+        final List<Label> labels = await detector.detectInImage(image);
+
+        expect(log, <Matcher>[
+          isMethodCall(
+            'CloudLabelDetector#detectInImage',
+            arguments: <String, dynamic>{
+              'path': 'empty',
+              'options': <String, dynamic>{
+                'maxResults': 10,
+                'modelType': 'stable',
+              },
+            },
+          ),
+        ]);
+
+        expect(labels, isEmpty);
+      });
+    });
+
+    group('$TextRecognizer', () {
+      final TextRecognizer recognizer =
+          FirebaseVision.instance.textRecognizer();
+      final FirebaseVisionImage image = FirebaseVisionImage.fromFilePath(
+        'empty',
+      );
+
+      setUp(() {
+        final List<dynamic> elements = <dynamic>[
+          <dynamic, dynamic>{
+            'text': 'hello',
+            'left': 1,
+            'top': 2,
+            'width': 3,
+            'height': 4,
+            'points': <dynamic>[
+              <dynamic>[5, 6],
+              <dynamic>[7, 8],
+            ],
+            'recognizedLanguages': <dynamic>[
+              <dynamic, dynamic>{
+                'languageCode': 'ab',
+              },
+              <dynamic, dynamic>{
+                'languageCode': 'cd',
+              }
+            ],
+            'confidence': 0.1,
+          },
+          <dynamic, dynamic>{
+            'text': 'my',
+            'left': 4,
+            'top': 3,
+            'width': 2,
+            'height': 1,
+            'points': <dynamic>[
+              <dynamic>[6, 5],
+              <dynamic>[8, 7],
+            ],
+            'recognizedLanguages': <dynamic>[],
+            'confidence': 0.2,
+          },
+        ];
+
+        final List<dynamic> lines = <dynamic>[
+          <dynamic, dynamic>{
+            'text': 'friend',
+            'left': 5,
+            'top': 6,
+            'width': 7,
+            'height': 8,
+            'points': <dynamic>[
+              <dynamic>[9, 10],
+              <dynamic>[11, 12],
+            ],
+            'recognizedLanguages': <dynamic>[
+              <dynamic, dynamic>{
+                'languageCode': 'ef',
+              },
+              <dynamic, dynamic>{
+                'languageCode': 'gh',
+              }
+            ],
+            'elements': elements,
+            'confidence': 0.3,
+          },
+          <dynamic, dynamic>{
+            'text': 'how',
+            'left': 8,
+            'top': 7,
+            'width': 4,
+            'height': 5,
+            'points': <dynamic>[
+              <dynamic>[10, 9],
+              <dynamic>[12, 11],
+            ],
+            'recognizedLanguages': <dynamic>[],
+            'elements': <dynamic>[],
+            'confidence': 0.4,
+          },
+        ];
+
+        final List<dynamic> blocks = <dynamic>[
           <dynamic, dynamic>{
             'text': 'friend',
             'left': 13,
@@ -673,112 +810,155 @@ void main() {
               <dynamic>[17, 18],
               <dynamic>[19, 20],
             ],
-            'lines': <dynamic>[
-              textLine,
+            'recognizedLanguages': <dynamic>[
+              <dynamic, dynamic>{
+                'languageCode': 'ij',
+              },
+              <dynamic, dynamic>{
+                'languageCode': 'kl',
+              }
             ],
+            'lines': lines,
+            'confidence': 0.5,
           },
-        ];
-
-        returnValue = textBlocks;
-
-        final TextDetector detector = FirebaseVision.instance.textDetector();
-        final FirebaseVisionImage image =
-            new FirebaseVisionImage.fromFilePath('empty');
-
-        final List<TextBlock> blocks = await detector.detectInImage(image);
-
-        expect(log, <Matcher>[
-          isMethodCall(
-            'TextDetector#detectInImage',
-            arguments: <String, dynamic>{
-              'path': 'empty',
-              'options': <String, dynamic>{},
-            },
-          ),
-        ]);
-
-        final TextBlock block = blocks[0];
-        expect(block.boundingBox, const Rectangle<int>(13, 14, 15, 16));
-        expect(block.text, 'friend');
-        expect(block.cornerPoints, const <Point<int>>[
-          Point<int>(17, 18),
-          Point<int>(19, 20),
-        ]);
-
-        final TextLine line = block.lines[0];
-        expect(line.boundingBox, const Rectangle<int>(5, 6, 7, 8));
-        expect(line.text, 'my');
-        expect(line.cornerPoints, const <Point<int>>[
-          Point<int>(9, 10),
-          Point<int>(11, 12),
-        ]);
-
-        final TextElement element = line.elements[0];
-        expect(element.boundingBox, const Rectangle<int>(1, 2, 3, 4));
-        expect(element.text, 'hello');
-        expect(element.cornerPoints, const <Point<int>>[
-          Point<int>(5, 6),
-          Point<int>(7, 8),
-        ]);
-      });
-
-      test('detectInImage no blocks', () async {
-        returnValue = <dynamic>[];
-
-        final TextDetector detector = FirebaseVision.instance.textDetector();
-        final FirebaseVisionImage image =
-            new FirebaseVisionImage.fromFilePath('empty');
-
-        final List<TextBlock> blocks = await detector.detectInImage(image);
-
-        expect(log, <Matcher>[
-          isMethodCall(
-            'TextDetector#detectInImage',
-            arguments: <String, dynamic>{
-              'path': 'empty',
-              'options': <String, dynamic>{},
-            },
-          ),
-        ]);
-
-        expect(blocks, isEmpty);
-      });
-
-      test('detectInImage no bounding box', () async {
-        returnValue = <dynamic>[
           <dynamic, dynamic>{
-            'text': 'potato',
+            'text': 'hello',
+            'left': 14,
+            'top': 13,
+            'width': 16,
+            'height': 15,
             'points': <dynamic>[
-              <dynamic>[17, 18],
-              <dynamic>[19, 20],
+              <dynamic>[18, 17],
+              <dynamic>[20, 19],
             ],
+            'recognizedLanguages': <dynamic>[],
             'lines': <dynamic>[],
+            'confidence': 0.6,
           },
         ];
 
-        final TextDetector detector = FirebaseVision.instance.textDetector();
-        final FirebaseVisionImage image =
-            new FirebaseVisionImage.fromFilePath('empty');
+        final dynamic visionText = <dynamic, dynamic>{
+          'text': 'testext',
+          'blocks': blocks,
+        };
 
-        final List<TextBlock> blocks = await detector.detectInImage(image);
+        returnValue = visionText;
+      });
 
+      group('$TextBlock', () {
+        test('processImage', () async {
+          final VisionText text = await recognizer.processImage(image);
+
+          expect(text.blocks, hasLength(2));
+
+          TextBlock block = text.blocks[0];
+          expect(block.boundingBox, const Rectangle<int>(13, 14, 15, 16));
+          expect(block.text, 'friend');
+          expect(block.cornerPoints, const <Point<int>>[
+            Point<int>(17, 18),
+            Point<int>(19, 20),
+          ]);
+          expect(block.recognizedLanguages, hasLength(2));
+          expect(block.recognizedLanguages[0].languageCode, 'ij');
+          expect(block.recognizedLanguages[1].languageCode, 'kl');
+          expect(block.confidence, 0.5);
+
+          block = text.blocks[1];
+          expect(block.boundingBox, const Rectangle<int>(14, 13, 16, 15));
+          expect(block.text, 'hello');
+          expect(block.cornerPoints, const <Point<int>>[
+            Point<int>(18, 17),
+            Point<int>(20, 19),
+          ]);
+          expect(block.confidence, 0.6);
+        });
+      });
+
+      group('$TextLine', () {
+        test('processImage', () async {
+          final VisionText text = await recognizer.processImage(image);
+
+          TextLine line = text.blocks[0].lines[0];
+          expect(line.boundingBox, const Rectangle<int>(5, 6, 7, 8));
+          expect(line.text, 'friend');
+          expect(line.cornerPoints, const <Point<int>>[
+            Point<int>(9, 10),
+            Point<int>(11, 12),
+          ]);
+          expect(line.recognizedLanguages, hasLength(2));
+          expect(line.recognizedLanguages[0].languageCode, 'ef');
+          expect(line.recognizedLanguages[1].languageCode, 'gh');
+          expect(line.confidence, 0.3);
+
+          line = text.blocks[0].lines[1];
+          expect(line.boundingBox, const Rectangle<int>(8, 7, 4, 5));
+          expect(line.text, 'how');
+          expect(line.cornerPoints, const <Point<int>>[
+            Point<int>(10, 9),
+            Point<int>(12, 11),
+          ]);
+          expect(line.confidence, 0.4);
+        });
+      });
+
+      group('$TextElement', () {
+        test('processImage', () async {
+          final VisionText text = await recognizer.processImage(image);
+
+          TextElement element = text.blocks[0].lines[0].elements[0];
+          expect(element.boundingBox, const Rectangle<int>(1, 2, 3, 4));
+          expect(element.text, 'hello');
+          expect(element.cornerPoints, const <Point<int>>[
+            Point<int>(5, 6),
+            Point<int>(7, 8),
+          ]);
+          expect(element.recognizedLanguages, hasLength(2));
+          expect(element.recognizedLanguages[0].languageCode, 'ab');
+          expect(element.recognizedLanguages[1].languageCode, 'cd');
+          expect(element.confidence, 0.1);
+
+          element = text.blocks[0].lines[0].elements[1];
+          expect(element.boundingBox, const Rectangle<int>(4, 3, 2, 1));
+          expect(element.text, 'my');
+          expect(element.cornerPoints, const <Point<int>>[
+            Point<int>(6, 5),
+            Point<int>(8, 7),
+          ]);
+          expect(element.confidence, 0.2);
+        });
+      });
+
+      test('processImage', () async {
+        final VisionText text = await recognizer.processImage(image);
+
+        expect(text.text, 'testext');
         expect(log, <Matcher>[
           isMethodCall(
-            'TextDetector#detectInImage',
+            'TextRecognizer#processImage',
             arguments: <String, dynamic>{
               'path': 'empty',
               'options': <String, dynamic>{},
             },
           ),
         ]);
+      });
 
-        final TextBlock block = blocks[0];
+      test('processImage no bounding box', () async {
+        returnValue = <dynamic, dynamic>{
+          'blocks': <dynamic>[
+            <dynamic, dynamic>{
+              'text': '',
+              'points': <dynamic>[],
+              'recognizedLanguages': <dynamic>[],
+              'lines': <dynamic>[],
+            },
+          ],
+        };
+
+        final VisionText text = await recognizer.processImage(image);
+
+        final TextBlock block = text.blocks[0];
         expect(block.boundingBox, null);
-        expect(block.text, 'potato');
-        expect(block.cornerPoints, const <Point<int>>[
-          Point<int>(17, 18),
-          Point<int>(19, 20),
-        ]);
       });
     });
   });

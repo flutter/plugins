@@ -34,18 +34,19 @@ void main() {
     dynamic arguments;
 
     setUp(() {
-      final MockPlatformChannel mockChannel = new MockPlatformChannel();
+      final MockPlatformChannel mockChannel = MockPlatformChannel();
 
       invokedMethod = null;
       arguments = null;
 
-      when(mockChannel.invokeMethod(typed(any), any))
+      when(mockChannel.invokeMethod(any, any))
           .thenAnswer((Invocation invocation) {
         invokedMethod = invocation.positionalArguments[0];
         arguments = invocation.positionalArguments[1];
+        return Future<void>.value();
       });
 
-      analytics = new FirebaseAnalytics.private(mockChannel);
+      analytics = FirebaseAnalytics.private(mockChannel);
     });
 
     test('setUserId', () async {
@@ -119,7 +120,7 @@ void main() {
     Map<String, dynamic> parameters;
 
     setUp(() {
-      final MockPlatformChannel mockChannel = new MockPlatformChannel();
+      final MockPlatformChannel mockChannel = MockPlatformChannel();
 
       name = null;
       parameters = null;
@@ -130,12 +131,13 @@ void main() {
         name = args['name'];
         parameters = args['parameters'];
         expect(args.keys, unorderedEquals(<String>['name', 'parameters']));
+        return Future<void>.value();
       });
 
-      when(mockChannel.invokeMethod(typed(argThat(isNot('logEvent'))), any))
-          .thenThrow(new ArgumentError('Only logEvent invocations expected'));
+      when(mockChannel.invokeMethod(argThat(isNot('logEvent')), any))
+          .thenThrow(ArgumentError('Only logEvent invocations expected'));
 
-      analytics = new FirebaseAnalytics.private(mockChannel);
+      analytics = FirebaseAnalytics.private(mockChannel);
     });
 
     test('logEvent log events', () async {
@@ -153,7 +155,7 @@ void main() {
       expect(analytics.logEvent(name: 'firebase_foo'), throwsArgumentError);
     });
 
-    void smokeTest(String testFunctionName, Future<Null> testFunction()) {
+    void smokeTest(String testFunctionName, Future<void> testFunction()) {
       test('$testFunctionName works', () async {
         await testFunction();
         expect(name, testFunctionName);
@@ -299,7 +301,7 @@ void main() {
             ));
 
     void testRequiresValueAndCurrencyTogether(
-        String methodName, Future<Null> testFn()) {
+        String methodName, Future<void> testFn()) {
       test('$methodName requires value and currency together', () async {
         try {
           testFn();

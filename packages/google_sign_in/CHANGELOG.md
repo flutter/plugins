@@ -1,3 +1,27 @@
+## 3.2.2
+
+* Don't use the result code when handling signin. This results in better error codes because result code always returns "cancelled".
+
+## 3.2.1
+
+* Set http version to be compatible with flutter_test.
+
+## 3.2.0
+
+* Add support for clearing authentication cache for Android.
+
+## 3.1.0
+
+* Add support to recover authentication for Android.
+
+## 3.0.6
+
+* Remove flaky displayName assertion
+
+## 3.0.5
+
+* Added missing http package dependency.
+
 ## 3.0.4
 
 * Updated Gradle tooling to match Android Studio 3.1.2.

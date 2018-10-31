@@ -25,13 +25,13 @@ with Xcode, and within Xcode place the file inside ios/Runner. Don't follow the 
 
 ## Usage
 
-```
-dart import 'package:cloud_functions/cloud_functions.dart';
+```dart
+import 'package:cloud_functions/cloud_functions.dart';
 ```
 
 Calling a function:
 
-```
+```dart
 dynamic resp = await CloudFunctions.instance.call(functionName: 'YOUR_CALLABLE_FUNCTION_NAME');
 ```
 

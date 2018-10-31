@@ -44,22 +44,37 @@ Binding a `CollectionReference` to a `ListView`:
 class BookList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new StreamBuilder<QuerySnapshot>(
+    return StreamBuilder<QuerySnapshot>(
       stream: Firestore.instance.collection('books').snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (!snapshot.hasData) return new Text('Loading...');
-        return new ListView(
-          children: snapshot.data.documents.map((DocumentSnapshot document) {
-            return new ListTile(
-              title: new Text(document['title']),
-              subtitle: new Text(document['author']),
+        if (snapshot.hasError)
+          return new Text('Error: ${snapshot.error}');
+        switch (snapshot.connectionState) {
+          case ConnectionState.waiting: return new Text('Loading...');
+          default:
+            return new ListView(
+              children: snapshot.data.documents.map((DocumentSnapshot document) {
+                return new ListTile(
+                  title: new Text(document['title']),
+                  subtitle: new Text(document['author']),
+                );
+              }).toList(),
             );
-          }).toList(),
-        );
+        }
       },
     );
   }
 }
+```
+
+Performing a query:
+```dart
+Firestore.instance
+    .collection('talks')
+    .where("topic", isEqualTo: "flutter")
+    .snapshots()
+    .listen((data) =>
+        data.documents.forEach((doc) => print(doc["title"])));
 ```
 
 Running a transaction:
