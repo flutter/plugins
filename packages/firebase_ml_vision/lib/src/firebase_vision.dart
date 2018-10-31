@@ -119,7 +119,8 @@ class FirebaseVisionImageMetadata {
   const FirebaseVisionImageMetadata({
     @required this.size,
     @required this.rotation,
-  });
+  })  : assert(size != null),
+        assert(rotation != null);
 
   final Size size;
   final ImageRotation rotation;
