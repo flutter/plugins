@@ -55,22 +55,22 @@
 
 - (FIRVisionImage *)filePathToVisionImage:(NSString *)path {
   UIImage *image = [UIImage imageWithContentsOfFile:path];
-  
-  if (image.imageOrientation != UIImageOrientationUp) {
-      CGImageRef imgRef = image.CGImage;
-      CGFloat width = CGImageGetWidth(imgRef);
-      CGFloat height = CGImageGetHeight(imgRef);
-      CGRect bounds = CGRectMake(0, 0, width, height);
-      UIGraphicsBeginImageContext(bounds.size);
-      CGSize size = image.size;
-      UIGraphicsBeginImageContext(CGSizeMake(height, width));
-      CGContextDrawImage(UIGraphicsGetCurrentContext(), CGRectMake(0, 0, width, height), imgRef);
-      UIImage* newImage = UIGraphicsGetImageFromCurrentImageContext();
-      UIGraphicsEndImageContext();
 
-      image = newImage;
+  if (image.imageOrientation != UIImageOrientationUp) {
+    CGImageRef imgRef = image.CGImage;
+    CGFloat width = CGImageGetWidth(imgRef);
+    CGFloat height = CGImageGetHeight(imgRef);
+    CGRect bounds = CGRectMake(0, 0, width, height);
+    UIGraphicsBeginImageContext(bounds.size);
+    CGSize size = image.size;
+    UIGraphicsBeginImageContext(CGSizeMake(height, width));
+    CGContextDrawImage(UIGraphicsGetCurrentContext(), CGRectMake(0, 0, width, height), imgRef);
+    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+
+    image = newImage;
   }
-  
+
   return [[FIRVisionImage alloc] initWithImage:image];
 }
 @end
