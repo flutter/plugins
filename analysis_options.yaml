@@ -112,6 +112,7 @@ linter:
     # - prefer_interpolation_to_compose_strings # not yet tested
     - prefer_is_empty
     - prefer_is_not_empty
+    - prefer_void_to_null
     # - recursive_getters # https://github.com/dart-lang/linter/issues/452
     - slash_for_doc_comments
     - sort_constructors_first

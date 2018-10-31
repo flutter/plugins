@@ -1,6 +1,10 @@
-## 3.2.2
+## 3.2.3
 
 * Update gradle and change google-services.json for the example.
+
+## 3.2.2
+
+* Don't use the result code when handling signin. This results in better error codes because result code always returns "cancelled".
 
 ## 3.2.1
 

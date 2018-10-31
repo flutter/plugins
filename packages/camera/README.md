@@ -48,7 +48,7 @@ import 'package:camera/camera.dart';
 
 List<CameraDescription> cameras;
 
-Future<Null> main() async {
+Future<void> main() async {
   cameras = await availableCameras();
   runApp(CameraApp());
 }
