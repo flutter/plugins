@@ -11,9 +11,6 @@ import 'package:flutter/foundation.dart';
 
 /// Firebase Analytics API.
 class FirebaseAnalytics {
-  static final FirebaseAnalytics _instance = new FirebaseAnalytics.private(
-      const MethodChannel('plugins.flutter.io/firebase_analytics'));
-
   /// Provides an instance of this class.
   factory FirebaseAnalytics() => _instance;
 
@@ -23,8 +20,11 @@ class FirebaseAnalytics {
   FirebaseAnalytics.private(MethodChannel platformChannel)
       : _channel = platformChannel,
         android = defaultTargetPlatform == TargetPlatform.android
-            ? new FirebaseAnalyticsAndroid.private(platformChannel)
+            ? FirebaseAnalyticsAndroid.private(platformChannel)
             : null;
+
+  static final FirebaseAnalytics _instance = FirebaseAnalytics.private(
+      const MethodChannel('plugins.flutter.io/firebase_analytics'));
 
   final MethodChannel _channel;
 
@@ -36,22 +36,22 @@ class FirebaseAnalytics {
   ///
   /// Example:
   ///
-  ///     FirebaseAnalytics analytics = new FirebaseAnalytics();
+  ///     FirebaseAnalytics analytics = FirebaseAnalytics();
   ///     analytics.android?.setMinimumSessionDuration(200000);
   final FirebaseAnalyticsAndroid android;
 
   /// Logs a custom Flutter Analytics event with the given [name] and event [parameters].
-  Future<Null> logEvent(
+  Future<void> logEvent(
       {@required String name, Map<String, dynamic> parameters}) async {
     if (_reservedEventNames.contains(name)) {
-      throw new ArgumentError.value(
+      throw ArgumentError.value(
           name, 'name', 'Event name is reserved and cannot be used');
     }
 
     const String kReservedPrefix = 'firebase_';
 
     if (name.startsWith(kReservedPrefix)) {
-      throw new ArgumentError.value(name, 'name',
+      throw ArgumentError.value(name, 'name',
           'Prefix "$kReservedPrefix" is reserved and cannot be used.');
     }
 
@@ -66,9 +66,9 @@ class FirebaseAnalytics {
   /// This feature must be used in accordance with [Google's Privacy Policy][1].
   ///
   /// [1]: https://www.google.com/policies/privacy/
-  Future<Null> setUserId(String id) async {
+  Future<void> setUserId(String id) async {
     if (id == null) {
-      throw new ArgumentError.notNull('id');
+      throw ArgumentError.notNull('id');
     }
 
     await _channel.invokeMethod('setUserId', id);
@@ -91,11 +91,11 @@ class FirebaseAnalytics {
   ///
   /// https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.html#setCurrentScreen(android.app.Activity, java.lang.String, java.lang.String)
   /// https://firebase.google.com/docs/reference/ios/firebaseanalytics/api/reference/Classes/FIRAnalytics#setscreennamescreenclass
-  Future<Null> setCurrentScreen(
+  Future<void> setCurrentScreen(
       {@required String screenName,
-      String screenClassOverride: 'Flutter'}) async {
+      String screenClassOverride = 'Flutter'}) async {
     if (screenName == null) {
-      throw new ArgumentError.notNull('screenName');
+      throw ArgumentError.notNull('screenName');
     }
 
     await _channel.invokeMethod('setCurrentScreen', <String, String>{
@@ -104,8 +104,8 @@ class FirebaseAnalytics {
     });
   }
 
-  static final RegExp _nonAlphaNumeric = new RegExp(r'[^a-zA-Z0-9_]');
-  static final RegExp _alpha = new RegExp(r'[a-zA-Z]');
+  static final RegExp _nonAlphaNumeric = RegExp(r'[^a-zA-Z0-9_]');
+  static final RegExp _alpha = RegExp(r'[a-zA-Z]');
 
   /// Sets a user property to a given value.
   ///
@@ -116,22 +116,21 @@ class FirebaseAnalytics {
   /// alphanumeric characters or underscores and must start with an alphabetic
   /// character. The "firebase_" prefix is reserved and should not be used for
   /// user property names.
-  Future<Null> setUserProperty(
+  Future<void> setUserProperty(
       {@required String name, @required String value}) async {
     if (name == null) {
-      throw new ArgumentError.notNull('name');
+      throw ArgumentError.notNull('name');
     }
 
     if (name.isEmpty ||
         name.length > 24 ||
         name.indexOf(_alpha) != 0 ||
         name.contains(_nonAlphaNumeric))
-      throw new ArgumentError.value(
+      throw ArgumentError.value(
           name, 'name', 'must contain 1 to 24 alphanumeric characters.');
 
     if (name.startsWith('firebase_'))
-      throw new ArgumentError.value(
-          name, 'name', '"firebase_" prefix is reserved');
+      throw ArgumentError.value(name, 'name', '"firebase_" prefix is reserved');
 
     await _channel.invokeMethod('setUserProperty', <String, String>{
       'name': name,
@@ -145,7 +144,7 @@ class FirebaseAnalytics {
   /// to your app.
   ///
   /// See: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event.html#ADD_PAYMENT_INFO
-  Future<Null> logAddPaymentInfo() {
+  Future<void> logAddPaymentInfo() {
     return logEvent(name: 'add_payment_info');
   }
 
@@ -158,7 +157,7 @@ class FirebaseAnalytics {
   /// revenue metrics can be computed accurately.
   ///
   /// See: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event.html#ADD_TO_CART
-  Future<Null> logAddToCart({
+  Future<void> logAddToCart({
     @required String itemId,
     @required String itemName,
     @required String itemCategory,
@@ -201,7 +200,7 @@ class FirebaseAnalytics {
   /// revenue metrics can be computed accurately.
   ///
   /// See: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event.html#ADD_TO_WISHLIST
-  Future<Null> logAddToWishlist({
+  Future<void> logAddToWishlist({
     @required String itemId,
     @required String itemName,
     @required String itemCategory,
@@ -231,7 +230,7 @@ class FirebaseAnalytics {
   /// Logs the standard `app_open` event.
   ///
   /// See: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event.html#APP_OPEN
-  Future<Null> logAppOpen() {
+  Future<void> logAppOpen() {
     return logEvent(name: 'app_open');
   }
 
@@ -244,7 +243,7 @@ class FirebaseAnalytics {
   /// revenue metrics can be computed accurately.
   ///
   /// See: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event.html#BEGIN_CHECKOUT
-  Future<Null> logBeginCheckout({
+  Future<void> logBeginCheckout({
     double value,
     String currency,
     String transactionId,
@@ -282,7 +281,7 @@ class FirebaseAnalytics {
   /// Log this event to supply the referral details of a re-engagement campaign.
   ///
   /// See: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event.html#CAMPAIGN_DETAILS
-  Future<Null> logCampaignDetails({
+  Future<void> logCampaignDetails({
     @required String source,
     @required String medium,
     @required String campaign,
@@ -312,7 +311,7 @@ class FirebaseAnalytics {
   /// economy.
   ///
   /// See: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event.html#EARN_VIRTUAL_CURRENCY
-  Future<Null> logEarnVirtualCurrency({
+  Future<void> logEarnVirtualCurrency({
     @required String virtualCurrencyName,
     @required num value,
   }) {
@@ -334,7 +333,7 @@ class FirebaseAnalytics {
   /// be computed accurately.
   ///
   /// See: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event.html#ECOMMERCE_PURCHASE
-  Future<Null> logEcommercePurchase({
+  Future<void> logEcommercePurchase({
     String currency,
     double value,
     String transactionId,
@@ -383,7 +382,7 @@ class FirebaseAnalytics {
   /// parameter so that revenue metrics can be computed accurately.
   ///
   /// See: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event.html#GENERATE_LEAD
-  Future<Null> logGenerateLead({
+  Future<void> logGenerateLead({
     String currency,
     double value,
   }) {
@@ -405,7 +404,7 @@ class FirebaseAnalytics {
   /// are in your app.
   ///
   /// See: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event.html#JOIN_GROUP
-  Future<Null> logJoinGroup({
+  Future<void> logJoinGroup({
     @required String groupId,
   }) {
     return logEvent(
@@ -423,7 +422,7 @@ class FirebaseAnalytics {
   /// identify certain levels that are difficult to pass.
   ///
   /// See: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event.html#LEVEL_UP
-  Future<Null> logLevelUp({
+  Future<void> logLevelUp({
     @required int level,
     String character,
   }) {
@@ -442,7 +441,7 @@ class FirebaseAnalytics {
   /// has logged in.
   ///
   /// See: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event.html#LOGIN
-  Future<Null> logLogin() {
+  Future<void> logLogin() {
     return logEvent(name: 'login');
   }
 
@@ -454,7 +453,7 @@ class FirebaseAnalytics {
   /// behaviors.
   ///
   /// See: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event.html#POST_SCORE
-  Future<Null> logPostScore({
+  Future<void> logPostScore({
     @required int score,
     int level,
     String character,
@@ -478,7 +477,7 @@ class FirebaseAnalytics {
   /// parameter so that revenue metrics can be computed accurately.
   ///
   /// See: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event.html#PRESENT_OFFER
-  Future<Null> logPresentOffer({
+  Future<void> logPresentOffer({
     @required String itemId,
     @required String itemName,
     @required String itemCategory,
@@ -512,7 +511,7 @@ class FirebaseAnalytics {
   /// parameter so that revenue metrics can be computed accurately.
   ///
   /// See: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event.html#PURCHASE_REFUND
-  Future<Null> logPurchaseRefund({
+  Future<void> logPurchaseRefund({
     String currency,
     double value,
     String transactionId,
@@ -536,7 +535,7 @@ class FirebaseAnalytics {
   /// This event can help you identify the most popular content in your app.
   ///
   /// See: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event.html#SEARCH
-  Future<Null> logSearch({
+  Future<void> logSearch({
     @required String searchTerm,
     int numberOfNights,
     int numberOfRooms,
@@ -571,7 +570,7 @@ class FirebaseAnalytics {
   /// of content in your app.
   ///
   /// See: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event.html#SELECT_CONTENT
-  Future<Null> logSelectContent({
+  Future<void> logSelectContent({
     @required String contentType,
     @required String itemId,
   }) {
@@ -590,7 +589,7 @@ class FirebaseAnalytics {
   /// viral content.
   ///
   /// See: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event.html#SHARE
-  Future<Null> logShare({
+  Future<void> logShare({
     @required String contentType,
     @required String itemId,
   }) {
@@ -611,13 +610,13 @@ class FirebaseAnalytics {
   /// logged out users.
   ///
   /// See: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event.html#SIGN_UP
-  Future<Null> logSignUp({
+  Future<void> logSignUp({
     @required String signUpMethod,
   }) {
     return logEvent(
       name: 'sign_up',
       parameters: filterOutNulls(<String, dynamic>{
-        _SIGN_UP_METHOD: signUpMethod,
+        _METHOD: signUpMethod,
       }),
     );
   }
@@ -628,7 +627,7 @@ class FirebaseAnalytics {
   /// identify which virtual goods are the most popular objects of purchase.
   ///
   /// See: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event.html#SPEND_VIRTUAL_CURRENCY
-  Future<Null> logSpendVirtualCurrency({
+  Future<void> logSpendVirtualCurrency({
     @required String itemName,
     @required String virtualCurrencyName,
     @required num value,
@@ -650,7 +649,7 @@ class FirebaseAnalytics {
   /// users complete this process and move on to the full app experience.
   ///
   /// See: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event.html#TUTORIAL_BEGIN
-  Future<Null> logTutorialBegin() {
+  Future<void> logTutorialBegin() {
     return logEvent(name: 'tutorial_begin');
   }
 
@@ -661,7 +660,7 @@ class FirebaseAnalytics {
   /// completion rate of your on-boarding process.
   ///
   /// See: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event.html#TUTORIAL_COMPLETE
-  Future<Null> logTutorialComplete() {
+  Future<void> logTutorialComplete() {
     return logEvent(name: 'tutorial_complete');
   }
 
@@ -674,7 +673,7 @@ class FirebaseAnalytics {
   /// experiencing all that your game has to offer.
   ///
   /// See: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event.html#UNLOCK_ACHIEVEMENT
-  Future<Null> logUnlockAchievement({
+  Future<void> logUnlockAchievement({
     @required String id,
   }) {
     return logEvent(
@@ -695,7 +694,7 @@ class FirebaseAnalytics {
   /// that revenue metrics can be computed accurately.
   ///
   /// See: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event.html#VIEW_ITEM
-  Future<Null> logViewItem({
+  Future<void> logViewItem({
     @required String itemId,
     @required String itemName,
     @required String itemCategory,
@@ -748,7 +747,7 @@ class FirebaseAnalytics {
   /// certain category.
   ///
   /// See: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event.html#VIEW_ITEM_LIST
-  Future<Null> logViewItemList({
+  Future<void> logViewItemList({
     @required String itemCategory,
   }) {
     return logEvent(
@@ -765,7 +764,7 @@ class FirebaseAnalytics {
   /// search.
   ///
   /// See: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event.html#VIEW_SEARCH_RESULTS
-  Future<Null> logViewSearchResults({
+  Future<void> logViewSearchResults({
     @required String searchTerm,
   }) {
     return logEvent(
@@ -779,17 +778,17 @@ class FirebaseAnalytics {
 
 /// Android-specific analytics API.
 class FirebaseAnalyticsAndroid {
-  final MethodChannel _channel;
-
   @visibleForTesting
   const FirebaseAnalyticsAndroid.private(this._channel);
+
+  final MethodChannel _channel;
 
   /// Sets whether analytics collection is enabled for this app on this device.
   ///
   /// This setting is persisted across app sessions. By default it is enabled.
-  Future<Null> setAnalyticsCollectionEnabled(bool enabled) async {
+  Future<void> setAnalyticsCollectionEnabled(bool enabled) async {
     if (enabled == null) {
-      throw new ArgumentError.notNull('enabled');
+      throw ArgumentError.notNull('enabled');
     }
 
     await _channel.invokeMethod('setAnalyticsCollectionEnabled', enabled);
@@ -798,9 +797,9 @@ class FirebaseAnalyticsAndroid {
   /// Sets the minimum engagement time required before starting a session.
   ///
   /// The default value is 10000 (10 seconds).
-  Future<Null> setMinimumSessionDuration(int milliseconds) async {
+  Future<void> setMinimumSessionDuration(int milliseconds) async {
     if (milliseconds == null) {
-      throw new ArgumentError.notNull('milliseconds');
+      throw ArgumentError.notNull('milliseconds');
     }
 
     await _channel.invokeMethod('setMinimumSessionDuration', milliseconds);
@@ -809,9 +808,9 @@ class FirebaseAnalyticsAndroid {
   /// Sets the duration of inactivity that terminates the current session.
   ///
   /// The default value is 1800000 (30 minutes).
-  Future<Null> setSessionTimeoutDuration(int milliseconds) async {
+  Future<void> setSessionTimeoutDuration(int milliseconds) async {
     if (milliseconds == null) {
-      throw new ArgumentError.notNull('milliseconds');
+      throw ArgumentError.notNull('milliseconds');
     }
 
     await _channel.invokeMethod('setSessionTimeoutDuration', milliseconds);
@@ -837,14 +836,14 @@ const String valueAndCurrencyMustBeTogetherError = 'If you supply the "value" '
 
 void _requireValueAndCurrencyTogether(double value, String currency) {
   if (value != null && currency == null) {
-    throw new ArgumentError(valueAndCurrencyMustBeTogetherError);
+    throw ArgumentError(valueAndCurrencyMustBeTogetherError);
   }
 }
 
 /// Reserved event names that cannot be used.
 ///
 /// See: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event.html
-const List<String> _reservedEventNames = const <String>[
+const List<String> _reservedEventNames = <String>[
   'app_clear_data',
   'app_uninstall',
   'app_update',
@@ -954,8 +953,9 @@ const String _SEARCH_TERM = 'search_term';
 /// Shipping cost (double).
 const String _SHIPPING = 'shipping';
 
-/// Signup method.
-const String _SIGN_UP_METHOD = 'sign_up_method';
+/// A particular approach used in an operation; for example, "facebook" or
+/// "email" in the context of a sign_up or login event.
+const String _METHOD = 'method';
 
 /// `CAMPAIGN_DETAILS` source; used to identify a search engine, newsletter, or
 /// other source.

@@ -43,6 +43,7 @@ public class UrlLauncherPlugin implements MethodCallHandler {
     } else if (call.method.equals("launch")) {
       Intent launchIntent;
       boolean useWebView = call.argument("useWebView");
+      boolean enableJavaScript = call.argument("enableJavaScript");
       Context context;
       if (mRegistrar.activity() != null) {
         context = (Context) mRegistrar.activity();
@@ -52,6 +53,7 @@ public class UrlLauncherPlugin implements MethodCallHandler {
       if (useWebView) {
         launchIntent = new Intent(context, WebViewActivity.class);
         launchIntent.putExtra("url", url);
+        launchIntent.putExtra("enableJavaScript", enableJavaScript);
       } else {
         launchIntent = new Intent(Intent.ACTION_VIEW);
         launchIntent.setData(Uri.parse(url));
@@ -91,7 +93,11 @@ public class UrlLauncherPlugin implements MethodCallHandler {
       // Get the Intent that started this activity and extract the string
       Intent intent = getIntent();
       String url = intent.getStringExtra("url");
+      Boolean enableJavaScript = intent.getBooleanExtra("enableJavaScript", false);
       webview.loadUrl(url);
+      if (enableJavaScript) {
+        webview.getSettings().setJavaScriptEnabled(enableJavaScript);
+      }
       // Open new urls inside the webview itself.
       webview.setWebViewClient(
           new WebViewClient() {

@@ -37,8 +37,6 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
           BarcodeDetector.instance.handleDetection(image, options, result);
         } catch (IOException e) {
           result.error("barcodeDetectorIOError", e.getLocalizedMessage(), null);
-        } catch (Exception e) {
-          result.error("barcodeDetectorError", e.getLocalizedMessage(), null);
         }
         break;
       case "FaceDetector#detectInImage":
@@ -47,8 +45,6 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
           FaceDetector.instance.handleDetection(image, options, result);
         } catch (IOException e) {
           result.error("faceDetectorIOError", e.getLocalizedMessage(), null);
-        } catch (Exception e) {
-          result.error("faceDetectorError", e.getLocalizedMessage(), null);
         }
         break;
       case "LabelDetector#detectInImage":
@@ -57,18 +53,22 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
           LabelDetector.instance.handleDetection(image, options, result);
         } catch (IOException e) {
           result.error("labelDetectorIOError", e.getLocalizedMessage(), null);
-        } catch (Exception e) {
-          result.error("labelDetectorError", e.getLocalizedMessage(), null);
         }
         break;
-      case "TextDetector#detectInImage":
+      case "CloudLabelDetector#detectInImage":
         try {
           image = filePathToVisionImage((String) call.argument("path"));
-          TextDetector.instance.handleDetection(image, options, result);
+          CloudLabelDetector.instance.handleDetection(image, options, result);
         } catch (IOException e) {
-          result.error("textDetectorIOError", e.getLocalizedMessage(), null);
-        } catch (Exception e) {
-          result.error("textDetectorError", e.getLocalizedMessage(), null);
+          result.error("cloudLabelDetectorIOError", e.getLocalizedMessage(), null);
+        }
+        break;
+      case "TextRecognizer#processImage":
+        try {
+          image = filePathToVisionImage((String) call.argument("path"));
+          TextRecognizer.instance.handleDetection(image, options, result);
+        } catch (IOException e) {
+          result.error("textRecognizerIOError", e.getLocalizedMessage(), null);
         }
         break;
       default:

@@ -6,21 +6,22 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
-import 'package:firebase_ml_vision_example/detector_painters.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-void main() => runApp(new MaterialApp(home: _MyHomePage()));
+import 'detector_painters.dart';
+
+void main() => runApp(MaterialApp(home: _MyHomePage()));
 
 class _MyHomePage extends StatefulWidget {
   @override
-  _MyHomePageState createState() => new _MyHomePageState();
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<_MyHomePage> {
   File _imageFile;
   Size _imageSize;
-  List<dynamic> _scanResults;
+  dynamic _scanResults;
   Detector _currentDetector = Detector.text;
 
   Future<void> _getAndScanImage() async {
@@ -43,9 +44,9 @@ class _MyHomePageState extends State<_MyHomePage> {
   }
 
   Future<void> _getImageSize(File imageFile) async {
-    final Completer<Size> completer = new Completer<Size>();
+    final Completer<Size> completer = Completer<Size>();
 
-    final Image image = new Image.file(imageFile);
+    final Image image = Image.file(imageFile);
     image.image.resolve(const ImageConfiguration()).addListener(
       (ImageInfo info, bool _) {
         completer.complete(Size(
@@ -80,14 +81,17 @@ class _MyHomePageState extends State<_MyHomePage> {
       case Detector.label:
         detector = FirebaseVision.instance.labelDetector();
         break;
+      case Detector.cloudLabel:
+        detector = FirebaseVision.instance.cloudLabelDetector();
+        break;
       case Detector.text:
-        detector = FirebaseVision.instance.textDetector();
+        detector = FirebaseVision.instance.textRecognizer();
         break;
       default:
         return;
     }
 
-    final List<dynamic> results =
+    final dynamic results =
         await detector.detectInImage(visionImage) ?? <dynamic>[];
 
     setState(() {
@@ -95,45 +99,48 @@ class _MyHomePageState extends State<_MyHomePage> {
     });
   }
 
-  CustomPaint _buildResults(Size imageSize, List<dynamic> results) {
+  CustomPaint _buildResults(Size imageSize, dynamic results) {
     CustomPainter painter;
 
     switch (_currentDetector) {
       case Detector.barcode:
-        painter = new BarcodeDetectorPainter(_imageSize, results);
+        painter = BarcodeDetectorPainter(_imageSize, results);
         break;
       case Detector.face:
-        painter = new FaceDetectorPainter(_imageSize, results);
+        painter = FaceDetectorPainter(_imageSize, results);
         break;
       case Detector.label:
-        painter = new LabelDetectorPainter(_imageSize, results);
+        painter = LabelDetectorPainter(_imageSize, results);
+        break;
+      case Detector.cloudLabel:
+        painter = LabelDetectorPainter(_imageSize, results);
         break;
       case Detector.text:
-        painter = new TextDetectorPainter(_imageSize, results);
+        painter = TextDetectorPainter(_imageSize, results);
         break;
       default:
         break;
     }
 
-    return new CustomPaint(
+    return CustomPaint(
       painter: painter,
     );
   }
 
   Widget _buildImage() {
-    return new Container(
+    return Container(
       constraints: const BoxConstraints.expand(),
-      decoration: new BoxDecoration(
-        image: new DecorationImage(
+      decoration: BoxDecoration(
+        image: DecorationImage(
           image: Image.file(_imageFile).image,
           fit: BoxFit.fill,
         ),
       ),
       child: _imageSize == null || _scanResults == null
           ? const Center(
-              child: const Text(
+              child: Text(
                 'Scanning...',
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.green,
                   fontSize: 30.0,
                 ),
@@ -145,30 +152,34 @@ class _MyHomePageState extends State<_MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
+    return Scaffold(
+      appBar: AppBar(
         title: const Text('ML Vision Example'),
         actions: <Widget>[
-          new PopupMenuButton<Detector>(
+          PopupMenuButton<Detector>(
             onSelected: (Detector result) {
               _currentDetector = result;
               if (_imageFile != null) _scanImage(_imageFile);
             },
             itemBuilder: (BuildContext context) => <PopupMenuEntry<Detector>>[
                   const PopupMenuItem<Detector>(
-                    child: const Text('Detect Barcode'),
+                    child: Text('Detect Barcode'),
                     value: Detector.barcode,
                   ),
                   const PopupMenuItem<Detector>(
-                    child: const Text('Detect Face'),
+                    child: Text('Detect Face'),
                     value: Detector.face,
                   ),
                   const PopupMenuItem<Detector>(
-                    child: const Text('Detect Label'),
+                    child: Text('Detect Label'),
                     value: Detector.label,
                   ),
                   const PopupMenuItem<Detector>(
-                    child: const Text('Detect Text'),
+                    child: Text('Detect Cloud Label'),
+                    value: Detector.cloudLabel,
+                  ),
+                  const PopupMenuItem<Detector>(
+                    child: Text('Detect Text'),
                     value: Detector.text,
                   ),
                 ],
@@ -176,9 +187,9 @@ class _MyHomePageState extends State<_MyHomePage> {
         ],
       ),
       body: _imageFile == null
-          ? const Center(child: const Text('No image selected.'))
+          ? const Center(child: Text('No image selected.'))
           : _buildImage(),
-      floatingActionButton: new FloatingActionButton(
+      floatingActionButton: FloatingActionButton(
         onPressed: _getAndScanImage,
         tooltip: 'Pick Image',
         child: const Icon(Icons.add_a_photo),

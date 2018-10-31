@@ -46,6 +46,8 @@ FIRQuery *getQuery(NSDictionary *arguments) {
       query = [query queryWhereField:fieldName isGreaterThan:value];
     } else if ([op isEqualToString:@">="]) {
       query = [query queryWhereField:fieldName isGreaterThanOrEqualTo:value];
+    } else if ([op isEqualToString:@"array-contains"]) {
+      query = [query queryWhereField:fieldName arrayContains:value];
     } else {
       // Unsupported operator
     }
@@ -127,6 +129,11 @@ const UInt8 DATE_TIME = 128;
 const UInt8 GEO_POINT = 129;
 const UInt8 DOCUMENT_REFERENCE = 130;
 const UInt8 BLOB = 131;
+const UInt8 ARRAY_UNION = 132;
+const UInt8 ARRAY_REMOVE = 133;
+const UInt8 DELETE = 134;
+const UInt8 SERVER_TIMESTAMP = 135;
+const UInt8 TIMESTAMP = 136;
 
 @interface FirestoreWriter : FlutterStandardWriter
 - (void)writeValue:(id)value;
@@ -140,6 +147,13 @@ const UInt8 BLOB = 131;
     NSTimeInterval time = date.timeIntervalSince1970;
     SInt64 ms = (SInt64)(time * 1000.0);
     [self writeBytes:&ms length:8];
+  } else if ([value isKindOfClass:[FIRTimestamp class]]) {
+    FIRTimestamp *timestamp = value;
+    SInt64 seconds = timestamp.seconds;
+    int nanoseconds = timestamp.nanoseconds;
+    [self writeByte:TIMESTAMP];
+    [self writeBytes:(UInt8 *)&seconds length:8];
+    [self writeBytes:(UInt8 *)&nanoseconds length:4];
   } else if ([value isKindOfClass:[FIRGeoPoint class]]) {
     FIRGeoPoint *geoPoint = value;
     Float64 latitude = geoPoint.latitude;
@@ -178,6 +192,13 @@ const UInt8 BLOB = 131;
       NSTimeInterval time = [NSNumber numberWithLong:value].doubleValue / 1000.0;
       return [NSDate dateWithTimeIntervalSince1970:time];
     }
+    case TIMESTAMP: {
+      SInt64 seconds;
+      int nanoseconds;
+      [self readBytes:&seconds length:8];
+      [self readBytes:&nanoseconds length:4];
+      return [[FIRTimestamp alloc] initWithSeconds:seconds nanoseconds:nanoseconds];
+    }
     case GEO_POINT: {
       Float64 latitude;
       Float64 longitude;
@@ -195,6 +216,18 @@ const UInt8 BLOB = 131;
     case BLOB: {
       UInt32 elementCount = [self readSize];
       return [self readData:elementCount];
+    }
+    case ARRAY_UNION: {
+      return [FIRFieldValue fieldValueForArrayUnion:[self readValue]];
+    }
+    case ARRAY_REMOVE: {
+      return [FIRFieldValue fieldValueForArrayRemove:[self readValue]];
+    }
+    case DELETE: {
+      return [FIRFieldValue fieldValueForDelete];
+    }
+    case SERVER_TIMESTAMP: {
+      return [FIRFieldValue fieldValueForServerTimestamp];
     }
     default:
       return [super readValueOfType:type];
@@ -398,8 +431,8 @@ const UInt8 BLOB = 131;
           [self.channel invokeMethod:@"DocumentSnapshot"
                            arguments:@{
                              @"handle" : handle,
-                             @"path" : snapshot.reference.path,
-                             @"data" : snapshot.exists ? snapshot.data : [NSNull null],
+                             @"path" : snapshot ? snapshot.reference.path : [NSNull null],
+                             @"data" : snapshot && snapshot.exists ? snapshot.data : [NSNull null],
                            }];
         }];
     _listeners[handle] = listener;
@@ -457,6 +490,30 @@ const UInt8 BLOB = 131;
     FIRWriteBatch *batch = [_batches objectForKey:handle];
     [batch commitWithCompletion:defaultCompletionBlock];
     [_batches removeObjectForKey:handle];
+  } else if ([@"Firestore#enablePersistence" isEqualToString:call.method]) {
+    bool enable = (bool)call.arguments[@"enable"];
+    FIRFirestoreSettings *settings = [[FIRFirestoreSettings alloc] init];
+    settings.persistenceEnabled = enable;
+    FIRFirestore *db = getFirestore(call.arguments);
+    db.settings = settings;
+    result(nil);
+  } else if ([@"Firestore#settings" isEqualToString:call.method]) {
+    FIRFirestoreSettings *settings = [[FIRFirestoreSettings alloc] init];
+    if (![call.arguments[@"persistenceEnabled"] isEqual:[NSNull null]]) {
+      settings.persistenceEnabled = (bool)call.arguments[@"persistenceEnabled"];
+    }
+    if (![call.arguments[@"host"] isEqual:[NSNull null]]) {
+      settings.host = (NSString *)call.arguments[@"host"];
+    }
+    if (![call.arguments[@"sslEnabled"] isEqual:[NSNull null]]) {
+      settings.sslEnabled = (bool)call.arguments[@"sslEnabled"];
+    }
+    if (![call.arguments[@"timestampsInSnapshotsEnabled"] isEqual:[NSNull null]]) {
+      settings.timestampsInSnapshotsEnabled = (bool)call.arguments[@"timestampsInSnapshotsEnabled"];
+    }
+    FIRFirestore *db = getFirestore(call.arguments);
+    db.settings = settings;
+    result(nil);
   } else {
     result(FlutterMethodNotImplemented);
   }

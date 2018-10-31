@@ -8,9 +8,9 @@ import 'package:test/test.dart';
 void main() {
   test('$accelerometerEvents are streamed', () async {
     const String channelName = 'plugins.flutter.io/sensors/accelerometer';
-    const List<double> sensorData = const <double>[1.0, 2.0, 3.0];
+    const List<double> sensorData = <double>[1.0, 2.0, 3.0];
 
-    const StandardMethodCodec standardMethod = const StandardMethodCodec();
+    const StandardMethodCodec standardMethod = StandardMethodCodec();
 
     void emitEvent(ByteData event) {
       BinaryMessages.handlePlatformMessage(
@@ -40,7 +40,7 @@ void main() {
     expect(event.y, 2.0);
     expect(event.z, 3.0);
 
-    await new Future<Null>.delayed(Duration.zero);
+    await Future<void>.delayed(Duration.zero);
     expect(isCanceled, isTrue);
   });
 }

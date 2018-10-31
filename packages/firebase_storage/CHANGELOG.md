@@ -1,3 +1,17 @@
+## 1.0.4
+
+* Bump Android dependencies to latest.
+
+## 1.0.3
+
+* Added monitoring of StorageUploadTask via `events` stream.
+* Added support for StorageUploadTask functions: `pause`, `resume`, `cancel`.
+* Set http version to be compatible with flutter_test.
+
+## 1.0.2
+
+* Added missing http package dependency.
+
 ## 1.0.1
 
 * Bump Android and Firebase dependency versions.

@@ -27,9 +27,9 @@ String defaultNameExtractor(RouteSettings settings) => settings.name;
 /// ```dart
 /// Navigator.pushNamed(context, '/contact/123');
 ///
-/// Navigator.push(context, new MaterialPageRoute(
-///   settings: new RouteSettings(name: '/contact/123',
-///   builder: new ContactDetail(123)))),
+/// Navigator.push(context, MaterialPageRoute(
+///   settings: RouteSettings(name: '/contact/123',
+///   builder: ContactDetail(123)))),
 ///
 /// Navigator.pop(context);
 /// ```
@@ -38,9 +38,9 @@ String defaultNameExtractor(RouteSettings settings) => settings.name;
 /// you're using a [MaterialApp]:
 /// ```dart
 /// MaterialApp(
-///   home: new MyAppHome(),
+///   home: MyAppHome(),
 ///   navigatorObservers: [
-///     new FirebaseAnalyticsObserver(analytics: service.analytics),
+///     FirebaseAnalyticsObserver(analytics: service.analytics),
 ///   ],
 /// );
 /// ```
@@ -49,13 +49,13 @@ String defaultNameExtractor(RouteSettings settings) => settings.name;
 /// [PageRouteAware] and subscribing it to [FirebaseAnalyticsObserver]. See the
 /// [PageRouteObserver] docs for an example.
 class FirebaseAnalyticsObserver extends RouteObserver<PageRoute<dynamic>> {
-  final FirebaseAnalytics analytics;
-  final ScreenNameExtractor nameExtractor;
-
   FirebaseAnalyticsObserver({
     @required this.analytics,
-    this.nameExtractor: defaultNameExtractor,
+    this.nameExtractor = defaultNameExtractor,
   });
+
+  final FirebaseAnalytics analytics;
+  final ScreenNameExtractor nameExtractor;
 
   void _sendScreenView(PageRoute<dynamic> route) {
     final String screenName = nameExtractor(route.settings);

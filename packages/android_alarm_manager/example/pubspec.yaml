@@ -6,10 +6,9 @@ dependencies:
     sdk: flutter
   android_alarm_manager:
     path: ../
-  firebase_auth:
-    path: ../../firebase_auth
-  google_sign_in:
-    path: ../../google_sign_in
+  firebase_auth: ^0.5.18
+  google_sign_in: ^3.0.4
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

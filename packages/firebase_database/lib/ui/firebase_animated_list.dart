@@ -25,14 +25,14 @@ class FirebaseAnimatedList extends StatefulWidget {
     @required this.itemBuilder,
     this.sort,
     this.defaultChild,
-    this.scrollDirection: Axis.vertical,
-    this.reverse: false,
+    this.scrollDirection = Axis.vertical,
+    this.reverse = false,
     this.controller,
     this.primary,
     this.physics,
-    this.shrinkWrap: false,
+    this.shrinkWrap = false,
     this.padding,
-    this.duration: const Duration(milliseconds: 300),
+    this.duration = const Duration(milliseconds: 300),
   }) : super(key: key) {
     assert(itemBuilder != null);
   }
@@ -128,19 +128,19 @@ class FirebaseAnimatedList extends StatefulWidget {
   final Duration duration;
 
   @override
-  FirebaseAnimatedListState createState() => new FirebaseAnimatedListState();
+  FirebaseAnimatedListState createState() => FirebaseAnimatedListState();
 }
 
 class FirebaseAnimatedListState extends State<FirebaseAnimatedList> {
   final GlobalKey<AnimatedListState> _animatedListKey =
-      new GlobalKey<AnimatedListState>();
+      GlobalKey<AnimatedListState>();
   List<DataSnapshot> _model;
   bool _loaded = false;
 
   @override
   void didChangeDependencies() {
     if (widget.sort != null) {
-      _model = new FirebaseSortedList(
+      _model = FirebaseSortedList(
         query: widget.query,
         comparator: widget.sort,
         onChildAdded: _onChildAdded,
@@ -149,7 +149,7 @@ class FirebaseAnimatedListState extends State<FirebaseAnimatedList> {
         onValue: _onValue,
       );
     } else {
-      _model = new FirebaseList(
+      _model = FirebaseList(
         query: widget.query,
         onChildAdded: _onChildAdded,
         onChildRemoved: _onChildRemoved,
@@ -212,9 +212,9 @@ class FirebaseAnimatedListState extends State<FirebaseAnimatedList> {
   @override
   Widget build(BuildContext context) {
     if (!_loaded) {
-      return widget.defaultChild ?? new Container();
+      return widget.defaultChild ?? Container();
     }
-    return new AnimatedList(
+    return AnimatedList(
       key: _animatedListKey,
       itemBuilder: _buildItem,
       initialItemCount: _model.length,

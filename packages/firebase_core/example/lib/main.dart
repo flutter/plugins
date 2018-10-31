@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
-void main() => runApp(new MyApp());
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   final String name = 'foo';
@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
     apiKey: 'AIzaSyBq6mcufFXfyqr79uELCiqM_O_1-G72PVU',
   );
 
-  Future<Null> _configure() async {
+  Future<void> _configure() async {
     final FirebaseApp app = await FirebaseApp.configure(
       name: name,
       options: options,
@@ -21,12 +21,12 @@ class MyApp extends StatelessWidget {
     print('Configured $app');
   }
 
-  Future<Null> _allApps() async {
+  Future<void> _allApps() async {
     final List<FirebaseApp> apps = await FirebaseApp.allApps();
     print('Currently configured apps: $apps');
   }
 
-  Future<Null> _options() async {
+  Future<void> _options() async {
     final FirebaseApp app = await FirebaseApp.appNamed(name);
     final FirebaseOptions options = await app?.options;
     print('Current options for app $name: $options');
@@ -34,23 +34,21 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
-      home: new Scaffold(
-        appBar: new AppBar(
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
           title: const Text('Firebase Core example app'),
         ),
-        body: new Padding(
+        body: Padding(
           padding: const EdgeInsets.all(20.0),
-          child: new Column(
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              new RaisedButton(
+              RaisedButton(
                   onPressed: _configure, child: const Text('initialize')),
-              new RaisedButton(
-                  onPressed: _allApps, child: const Text('allApps')),
-              new RaisedButton(
-                  onPressed: _options, child: const Text('options')),
+              RaisedButton(onPressed: _allApps, child: const Text('allApps')),
+              RaisedButton(onPressed: _options, child: const Text('options')),
             ],
           ),
         ),
