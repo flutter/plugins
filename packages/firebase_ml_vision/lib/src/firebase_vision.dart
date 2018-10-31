@@ -4,7 +4,9 @@
 
 part of firebase_ml_vision;
 
-enum _FirebaseVisionImageType { file, bytes }
+enum _ImageType { file, bytes }
+
+enum ImageRotation { rotation_0, rotation_90, rotation_180, rotation_270 }
 
 /// The Firebase machine learning vision API.
 ///
@@ -59,7 +61,7 @@ class FirebaseVision {
 /// Create an instance by calling one of the factory constructors.
 class FirebaseVisionImage {
   const FirebaseVisionImage._({
-    @required _FirebaseVisionImageType type,
+    @required _ImageType type,
     FirebaseVisionImageMetadata metadata,
     File imageFile,
     Uint8List bytes,
@@ -72,7 +74,7 @@ class FirebaseVisionImage {
   factory FirebaseVisionImage.fromFile(File imageFile) {
     assert(imageFile != null);
     return FirebaseVisionImage._(
-      type: _FirebaseVisionImageType.file,
+      type: _ImageType.file,
       imageFile: imageFile,
     );
   }
@@ -81,7 +83,7 @@ class FirebaseVisionImage {
   factory FirebaseVisionImage.fromFilePath(String imagePath) {
     assert(imagePath != null);
     return FirebaseVisionImage._(
-      type: _FirebaseVisionImageType.file,
+      type: _ImageType.file,
       imageFile: File(imagePath),
     );
   }
@@ -93,7 +95,7 @@ class FirebaseVisionImage {
   ) {
     assert(bytes != null);
     return FirebaseVisionImage._(
-      type: _FirebaseVisionImageType.bytes,
+      type: _ImageType.bytes,
       bytes: bytes,
       metadata: metadata,
     );
@@ -102,15 +104,13 @@ class FirebaseVisionImage {
   final Uint8List _bytes;
   final File _imageFile;
   final FirebaseVisionImageMetadata _metadata;
-  final _FirebaseVisionImageType _type;
+  final _ImageType _type;
 
   Map<String, dynamic> _serialize() => <String, dynamic>{
         'type': _enumToString(_type),
         'bytes': _bytes,
         'path': _imageFile?.path,
-        'metadata': _type == _FirebaseVisionImageType.bytes
-            ? _metadata._serialize()
-            : null,
+        'metadata': _type == _ImageType.bytes ? _metadata._serialize() : null,
       };
 }
 
@@ -118,16 +118,16 @@ class FirebaseVisionImage {
 class FirebaseVisionImageMetadata {
   const FirebaseVisionImageMetadata({
     @required this.size,
-    @required this.orientation,
+    @required this.rotation,
   });
 
   final Size size;
-  final DeviceOrientation orientation;
+  final ImageRotation rotation;
 
   Map<String, dynamic> _serialize() => <String, dynamic>{
         'width': size.width,
         'height': size.height,
-        'orientation': _enumToString(orientation),
+        'rotation': rotation,
       };
 }
 

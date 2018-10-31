@@ -97,7 +97,7 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
             .setWidth((int) (double) metadataData.get("width"))
             .setHeight((int) (double) metadataData.get("height"))
             .setFormat(FirebaseVisionImageMetadata.IMAGE_FORMAT_NV21)
-            .setRotation(getRotation((String) metadataData.get("orientation")))
+            .setRotation(getRotation((int) metadataData.get("rotation")))
             .build();
 
         return FirebaseVisionImage.fromByteArray((byte[]) imageData.get("bytes"), metadata);
@@ -106,18 +106,18 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
     }
   }
 
-  private int getRotation(String rotation) {
+  private int getRotation(int rotation) {
     switch(rotation) {
-      case "landscapeLeft":
+      case 0:
+        return FirebaseVisionImageMetadata.ROTATION_0;
+      case 90:
         return FirebaseVisionImageMetadata.ROTATION_90;
-      case "landscapeRight":
-        return FirebaseVisionImageMetadata.ROTATION_90;
-      case "portraitUp":
-        return FirebaseVisionImageMetadata.ROTATION_90;
-      case "portraitDown":
-        return FirebaseVisionImageMetadata.ROTATION_90;
+      case 180:
+        return FirebaseVisionImageMetadata.ROTATION_180;
+      case 270:
+        return FirebaseVisionImageMetadata.ROTATION_270;
       default:
-        throw new IllegalArgumentException(String.format("No rotation for: %s", rotation));
+        throw new IllegalArgumentException(String.format("No rotation for: %d", rotation));
     }
   }
 }
