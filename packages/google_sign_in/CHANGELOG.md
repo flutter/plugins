@@ -1,6 +1,6 @@
 ## 3.2.3
 
-* Update gradle and change google-services.json for the example.
+* Change google-services.json and GoogleService-Info.plist of example.
 
 ## 3.2.2
 

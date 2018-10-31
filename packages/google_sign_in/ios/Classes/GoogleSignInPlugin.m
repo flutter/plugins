@@ -4,7 +4,6 @@
 
 #import "GoogleSignInPlugin.h"
 #import <GoogleSignIn/GoogleSignIn.h>
-#import "Firebase/Firebase.h"
 
 // The key within `GoogleService-Info.plist` used to hold the application's
 // client id.  See https://developers.google.com/identity/sign-in/ios/start
@@ -54,10 +53,6 @@ static NSString *const kErrorReasonSignInFailed = @"sign_in_failed";
 - (instancetype)init {
   self = [super init];
   if (self) {
-    if (![FIRApp defaultApp]) {
-      [FIRApp configure];
-    }
-
     [GIDSignIn sharedInstance].delegate = self;
     [GIDSignIn sharedInstance].uiDelegate = self;
 
