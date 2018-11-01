@@ -5,6 +5,7 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -26,7 +27,9 @@ const String kMockLanguage = 'en';
 
 void main() {
   group('$FirebaseAuth', () {
-    final FirebaseAuth auth = FirebaseAuth.instance;
+    final String appName = 'testApp';
+    final FirebaseApp app = FirebaseApp(name: appName);
+    final FirebaseAuth auth = FirebaseAuth(app: app);
     final List<MethodCall> log = <MethodCall>[];
 
     int mockHandleId = 0;
@@ -79,7 +82,8 @@ void main() {
       expect(
         log,
         <Matcher>[
-          isMethodCall('currentUser', arguments: null),
+          isMethodCall('currentUser',
+              arguments: <String, String>{'app': auth.app.name}),
         ],
       );
     });
@@ -92,14 +96,18 @@ void main() {
       expect(
         log,
         <Matcher>[
-          isMethodCall('signInAnonymously', arguments: null),
+          isMethodCall('signInAnonymously',
+              arguments: <String, String>{'app': auth.app.name}),
           isMethodCall(
             'getIdToken',
-            arguments: <String, bool>{'refresh': false},
+            arguments: <String, dynamic>{
+              'refresh': false,
+              'app': auth.app.name
+            },
           ),
           isMethodCall(
             'getIdToken',
-            arguments: <String, bool>{'refresh': true},
+            arguments: <String, dynamic>{'refresh': true, 'app': auth.app.name},
           ),
         ],
       );
@@ -119,6 +127,7 @@ void main() {
             arguments: <String, String>{
               'email': kMockEmail,
               'password': kMockPassword,
+              'app': auth.app.name,
             },
           ),
         ],
@@ -135,7 +144,10 @@ void main() {
         <Matcher>[
           isMethodCall(
             'fetchProvidersForEmail',
-            arguments: <String, String>{'email': kMockEmail},
+            arguments: <String, String>{
+              'email': kMockEmail,
+              'app': auth.app.name
+            },
           ),
         ],
       );
@@ -155,6 +167,7 @@ void main() {
             arguments: <String, String>{
               'email': kMockEmail,
               'password': kMockPassword,
+              'app': auth.app.name
             },
           ),
         ],
@@ -175,6 +188,7 @@ void main() {
             arguments: <String, String>{
               'idToken': kMockIdToken,
               'accessToken': kMockAccessToken,
+              'app': auth.app.name
             },
           ),
         ],
@@ -188,6 +202,7 @@ void main() {
         isMethodCall('signInWithPhoneNumber', arguments: <String, dynamic>{
           'verificationId': kMockVerificationId,
           'smsCode': kMockSmsCode,
+          'app': auth.app.name,
         })
       ]);
     });
@@ -206,6 +221,7 @@ void main() {
           'phoneNumber': kMockPhoneNumber,
           'timeout': 5000,
           'forceResendingToken': null,
+          'app': auth.app.name,
         })
       ]);
     });
@@ -224,6 +240,7 @@ void main() {
             arguments: <String, String>{
               'idToken': kMockIdToken,
               'accessToken': kMockAccessToken,
+              'app': auth.app.name,
             },
           ),
         ],
@@ -242,6 +259,7 @@ void main() {
             'linkWithFacebookCredential',
             arguments: <String, String>{
               'accessToken': kMockAccessToken,
+              'app': auth.app.name,
             },
           ),
         ],
@@ -262,6 +280,7 @@ void main() {
             arguments: <String, String>{
               'authToken': kMockAuthToken,
               'authTokenSecret': kMockAuthTokenSecret,
+              'app': auth.app.name,
             },
           ),
         ],
@@ -280,6 +299,7 @@ void main() {
             'signInWithFacebook',
             arguments: <String, String>{
               'accessToken': kMockAccessToken,
+              'app': auth.app.name,
             },
           ),
         ],
@@ -300,6 +320,7 @@ void main() {
             arguments: <String, String>{
               'email': kMockEmail,
               'password': kMockPassword,
+              'app': auth.app.name,
             },
           ),
         ],
@@ -315,11 +336,11 @@ void main() {
         <Matcher>[
           isMethodCall(
             'currentUser',
-            arguments: null,
+            arguments: <String, String>{'app': auth.app.name},
           ),
           isMethodCall(
             'sendEmailVerification',
-            arguments: null,
+            arguments: <String, String>{'app': auth.app.name},
           ),
         ],
       );
@@ -334,11 +355,11 @@ void main() {
         <Matcher>[
           isMethodCall(
             'currentUser',
-            arguments: null,
+            arguments: <String, String>{'app': auth.app.name},
           ),
           isMethodCall(
             'reload',
-            arguments: null,
+            arguments: <String, String>{'app': auth.app.name},
           ),
         ],
       );
@@ -353,11 +374,11 @@ void main() {
         <Matcher>[
           isMethodCall(
             'currentUser',
-            arguments: null,
+            arguments: <String, String>{'app': auth.app.name},
           ),
           isMethodCall(
             'delete',
-            arguments: null,
+            arguments: <String, String>{'app': auth.app.name},
           ),
         ],
       );
@@ -374,6 +395,7 @@ void main() {
             'sendPasswordResetEmail',
             arguments: <String, String>{
               'email': kMockEmail,
+              'app': auth.app.name
             },
           ),
         ],
@@ -386,12 +408,13 @@ void main() {
       expect(log, <Matcher>[
         isMethodCall(
           'currentUser',
-          arguments: null,
+          arguments: <String, String>{'app': auth.app.name},
         ),
         isMethodCall(
           'updateEmail',
           arguments: <String, String>{
             'email': kMockEmail,
+            'app': auth.app.name,
           },
         ),
       ]);
@@ -403,12 +426,13 @@ void main() {
       expect(log, <Matcher>[
         isMethodCall(
           'currentUser',
-          arguments: null,
+          arguments: <String, String>{'app': auth.app.name},
         ),
         isMethodCall(
           'updatePassword',
           arguments: <String, String>{
             'password': kMockPassword,
+            'app': auth.app.name,
           },
         ),
       ]);
@@ -424,13 +448,14 @@ void main() {
       expect(log, <Matcher>[
         isMethodCall(
           'currentUser',
-          arguments: null,
+          arguments: <String, String>{'app': auth.app.name},
         ),
         isMethodCall(
           'updateProfile',
           arguments: <String, String>{
             'photoUrl': kMockPhotoUrl,
             'displayName': kMockDisplayName,
+            'app': auth.app.name,
           },
         ),
       ]);
@@ -445,6 +470,7 @@ void main() {
         <Matcher>[
           isMethodCall('signInWithCustomToken', arguments: <String, String>{
             'token': kMockCustomToken,
+            'app': auth.app.name,
           })
         ],
       );
@@ -459,7 +485,7 @@ void main() {
           FirebaseAuth.channel.codec.encodeMethodCall(
             MethodCall(
               'onAuthStateChanged',
-              <String, dynamic>{'id': 42, 'user': user},
+              <String, dynamic>{'id': 42, 'user': user, 'app': auth.app.name},
             ),
           ),
           (_) {},
@@ -489,11 +515,14 @@ void main() {
       expect(
         log,
         <Matcher>[
-          isMethodCall('startListeningAuthState', arguments: null),
+          isMethodCall('startListeningAuthState', arguments: <String, String>{
+            'app': auth.app.name,
+          }),
           isMethodCall(
             'stopListeningAuthState',
             arguments: <String, dynamic>{
               'id': 42,
+              'app': auth.app.name,
             },
           ),
         ],
@@ -510,6 +539,7 @@ void main() {
             'setLanguageCode',
             arguments: <String, String>{
               'language': kMockLanguage,
+              'app': auth.app.name,
             },
           ),
         ],
