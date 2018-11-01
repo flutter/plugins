@@ -136,7 +136,7 @@ class VideoPlayerValue {
         'isLooping: $isLooping, '
         'isBuffering: $isBuffering'
         'volume: $volume, '
-        'errorDescription: $errorDescription,'
+        'errorDescription: $errorDescription, '
         'rotationDegrees: $rotationDegrees)';
   }
 }
