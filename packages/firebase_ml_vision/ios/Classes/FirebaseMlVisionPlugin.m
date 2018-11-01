@@ -62,9 +62,8 @@
     CGFloat height = CGImageGetHeight(imgRef);
     CGRect bounds = CGRectMake(0, 0, width, height);
     UIGraphicsBeginImageContext(bounds.size);
-    CGSize size = image.size;
     UIGraphicsBeginImageContext(CGSizeMake(height, width));
-    CGContextDrawImage(UIGraphicsGetCurrentContext(), CGRectMake(0, 0, width, height), imgRef);
+    CGContextDrawImage(UIGraphicsGetCurrentContext(), bounds, imgRef);
     UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
 
