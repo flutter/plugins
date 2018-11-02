@@ -7,7 +7,7 @@
 ## 0.6.1+1
 
 * Bump Android dependencies to latest.
-* __THIS WAS AN BREAKING CHANGE__. Users should consume 0.6.1 instead if they need the old API, or 0.7.0 for the bumped version.
+* __THIS WAS AN UNINTENTIONAL BREAKING CHANGE__. Users should consume 0.6.1 instead if they need the old API, or 0.7.0 for the bumped version.
 
 ## 0.6.1
 
