@@ -25,6 +25,7 @@ enum MobileAdEvent {
 /// The user's gender for the sake of ad targeting using [MobileAdTargetingInfo].
 // Warning: the index values of the enums must match the values of the corresponding
 // AdMob constants. For example MobileAdGender.female.index == kGADGenderFemale.
+@deprecated('This functionality is deprecated in AdMob without replacement.')
 enum MobileAdGender {
   unknown,
   male,
@@ -51,8 +52,11 @@ class MobileAdTargetingInfo {
 
   final List<String> keywords;
   final String contentUrl;
+  @deprecated('This functionality is deprecated in AdMob without replacement.')
   final DateTime birthday;
+  @deprecated('This functionality is deprecated in AdMob without replacement.')
   final MobileAdGender gender;
+  @deprecated('This functionality is deprecated in AdMob.  Use `childDirected` instead.')
   final bool designedForFamilies;
   final bool childDirected;
   final List<String> testDevices;
