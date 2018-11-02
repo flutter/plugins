@@ -57,7 +57,8 @@ class MobileAdTargetingInfo {
   final DateTime birthday;
   @Deprecated('This functionality is deprecated in AdMob without replacement.')
   final MobileAdGender gender;
-  @Deprecated('This functionality is deprecated in AdMob.  Use `childDirected` instead.')
+  @Deprecated(
+      'This functionality is deprecated in AdMob.  Use `childDirected` instead.')
   final bool designedForFamilies;
   final bool childDirected;
   final List<String> testDevices;
