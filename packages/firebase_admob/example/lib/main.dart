@@ -19,9 +19,7 @@ class _MyAppState extends State<MyApp> {
     testDevices: testDevice != null ? <String>[testDevice] : null,
     keywords: <String>['foo', 'bar'],
     contentUrl: 'http://foo.com/bar.html',
-    birthday: DateTime.now(),
     childDirected: true,
-    gender: MobileAdGender.male,
     nonPersonalizedAds: true,
   );
 
