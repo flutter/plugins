@@ -15,11 +15,13 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  static const MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
+  static final MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
     testDevices: testDevice != null ? <String>[testDevice] : null,
     keywords: <String>['foo', 'bar'],
     contentUrl: 'http://foo.com/bar.html',
+    birthday: DateTime.now(),
     childDirected: true,
+    gender: MobileAdGender.male,
     nonPersonalizedAds: true,
   );
 

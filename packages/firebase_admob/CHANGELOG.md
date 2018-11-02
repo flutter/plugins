@@ -1,13 +1,6 @@
-## 0.7.0
-
-* Mark Dart code as deprecated where the newer version AdMob deprecates features (Birthday, Gender, and Family targeting).
-* Update gradle dependencies.
-* Add documentation for new AndroidManifest requirements.
-
 ## 0.6.1+1
 
 * Bump Android dependencies to latest.
-* __THIS WAS AN UNINTENTIONAL BREAKING CHANGE__. Users should consume 0.6.1 instead if they need the old API, or 0.7.0 for the bumped version.
 
 ## 0.6.1
 
