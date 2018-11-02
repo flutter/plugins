@@ -1,3 +1,4 @@
+// ignore_for_file: deprecated_member_use
 // Copyright 2017 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -25,7 +26,7 @@ enum MobileAdEvent {
 /// The user's gender for the sake of ad targeting using [MobileAdTargetingInfo].
 // Warning: the index values of the enums must match the values of the corresponding
 // AdMob constants. For example MobileAdGender.female.index == kGADGenderFemale.
-@deprecated('This functionality is deprecated in AdMob without replacement.')
+@Deprecated('This functionality is deprecated in AdMob without replacement.')
 enum MobileAdGender {
   unknown,
   male,
@@ -43,20 +44,20 @@ class MobileAdTargetingInfo {
   const MobileAdTargetingInfo(
       {this.keywords,
       this.contentUrl,
-      this.birthday,
-      this.gender,
-      this.designedForFamilies,
+      @deprecated this.birthday,
+      @deprecated this.gender,
+      @deprecated this.designedForFamilies,
       this.childDirected,
       this.testDevices,
       this.nonPersonalizedAds});
 
   final List<String> keywords;
   final String contentUrl;
-  @deprecated('This functionality is deprecated in AdMob without replacement.')
+  @Deprecated('This functionality is deprecated in AdMob without replacement.')
   final DateTime birthday;
-  @deprecated('This functionality is deprecated in AdMob without replacement.')
+  @Deprecated('This functionality is deprecated in AdMob without replacement.')
   final MobileAdGender gender;
-  @deprecated('This functionality is deprecated in AdMob.  Use `childDirected` instead.')
+  @Deprecated('This functionality is deprecated in AdMob.  Use `childDirected` instead.')
   final bool designedForFamilies;
   final bool childDirected;
   final List<String> testDevices;
