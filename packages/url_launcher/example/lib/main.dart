@@ -33,9 +33,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Future<Null> _launched;
+  Future<void> _launched;
 
-  Future<Null> _launchInBrowser(String url) async {
+  Future<void> _launchInBrowser(String url) async {
     if (await canLaunch(url)) {
       await launch(url, forceSafariVC: false, forceWebView: false);
     } else {
@@ -43,7 +43,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  Future<Null> _launchInWebViewOrVC(String url) async {
+  Future<void> _launchInWebViewOrVC(String url) async {
     if (await canLaunch(url)) {
       await launch(url, forceSafariVC: true, forceWebView: true);
     } else {
@@ -51,7 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  Future<Null> _launchInWebViewWithJavaScript(String url) async {
+  Future<void> _launchInWebViewWithJavaScript(String url) async {
     if (await canLaunch(url)) {
       await launch(
         url,
@@ -64,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  Widget _launchStatus(BuildContext context, AsyncSnapshot<Null> snapshot) {
+  Widget _launchStatus(BuildContext context, AsyncSnapshot<void> snapshot) {
     if (snapshot.hasError) {
       return Text('Error: ${snapshot.error}');
     } else {
@@ -108,7 +108,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: const Text('Launch in app(JavaScript ON)'),
             ),
             const Padding(padding: EdgeInsets.all(16.0)),
-            FutureBuilder<Null>(future: _launched, builder: _launchStatus),
+            FutureBuilder<void>(future: _launched, builder: _launchStatus),
           ],
         ),
       ),
