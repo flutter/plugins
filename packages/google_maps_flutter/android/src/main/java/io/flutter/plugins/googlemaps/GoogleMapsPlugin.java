@@ -7,6 +7,7 @@ package io.flutter.plugins.googlemaps;
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
+
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -24,9 +25,10 @@ public class GoogleMapsPlugin implements Application.ActivityLifecycleCallbacks 
   static final int STOPPED = 5;
   static final int DESTROYED = 6;
   private final AtomicInteger state = new AtomicInteger(0);
+  private final int registrarActivityHashCode;
 
   public static void registerWith(Registrar registrar) {
-    final GoogleMapsPlugin plugin = new GoogleMapsPlugin();
+    final GoogleMapsPlugin plugin = new GoogleMapsPlugin(registrar);
     registrar.activity().getApplication().registerActivityLifecycleCallbacks(plugin);
     registrar
         .platformViewRegistry()
@@ -36,26 +38,41 @@ public class GoogleMapsPlugin implements Application.ActivityLifecycleCallbacks 
 
   @Override
   public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+    if (activity.hashCode() != registrarActivityHashCode) {
+      return;
+    }
     state.set(CREATED);
   }
 
   @Override
   public void onActivityStarted(Activity activity) {
+    if (activity.hashCode() != registrarActivityHashCode) {
+      return;
+    }
     state.set(STARTED);
   }
 
   @Override
   public void onActivityResumed(Activity activity) {
+    if (activity.hashCode() != registrarActivityHashCode) {
+      return;
+    }
     state.set(RESUMED);
   }
 
   @Override
   public void onActivityPaused(Activity activity) {
+    if (activity.hashCode() != registrarActivityHashCode) {
+      return;
+    }
     state.set(PAUSED);
   }
 
   @Override
   public void onActivityStopped(Activity activity) {
+    if (activity.hashCode() != registrarActivityHashCode) {
+      return;
+    }
     state.set(STOPPED);
   }
 
@@ -64,6 +81,13 @@ public class GoogleMapsPlugin implements Application.ActivityLifecycleCallbacks 
 
   @Override
   public void onActivityDestroyed(Activity activity) {
+    if (activity.hashCode() != registrarActivityHashCode) {
+      return;
+    }
     state.set(DESTROYED);
+  }
+
+  private GoogleMapsPlugin(Registrar registrar) {
+    this.registrarActivityHashCode = registrar.activity().hashCode();
   }
 }
