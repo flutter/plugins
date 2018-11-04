@@ -58,11 +58,8 @@
 
   if (image.imageOrientation != UIImageOrientationUp) {
     CGImageRef imgRef = image.CGImage;
-    CGFloat width = CGImageGetWidth(imgRef);
-    CGFloat height = CGImageGetHeight(imgRef);
-    CGRect bounds = CGRectMake(0, 0, width, height);
+    CGRect bounds = CGRectMake(0, 0, CGImageGetWidth(imgRef), CGImageGetHeight(imgRef));
     UIGraphicsBeginImageContext(bounds.size);
-    UIGraphicsBeginImageContext(CGSizeMake(height, width));
     CGContextDrawImage(UIGraphicsGetCurrentContext(), bounds, imgRef);
     UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
