@@ -174,9 +174,11 @@ class _PushMessagingExampleState extends State<PushMessagingExample> {
         ),
         // For testing -- simulate a message being received
         floatingActionButton: FloatingActionButton(
-          onPressed: () => _showItemDialog(<String, dynamic>{
-                "id": "2",
-                "status": "out of stock",
+          onPressed: () => _showItemDialog(<String, dynamic >{
+                "data" : {
+                  "id": "2",
+                  "status": "out of stock",
+                }
               }),
           tooltip: 'Simulate Message',
           child: const Icon(Icons.message),
