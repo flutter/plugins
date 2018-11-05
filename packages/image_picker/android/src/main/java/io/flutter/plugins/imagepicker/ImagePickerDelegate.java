@@ -419,7 +419,11 @@ public class ImagePickerDelegate
           new OnPathReadyListener() {
             @Override
             public void onPathReady(String path) {
-              handleImageResult(path);
+              String ansPath = handleImageResult(path);
+              if(!path.equals(ansPath)){
+                File oldFile = new File(path);
+                oldFile.delete();
+              }
             }
           });
       return;
@@ -446,13 +450,14 @@ public class ImagePickerDelegate
     finishWithSuccess(null);
   }
 
-  private void handleImageResult(String path) {
+  private String handleImageResult(String path) {
     if (pendingResult != null) {
       Double maxWidth = methodCall.argument("maxWidth");
       Double maxHeight = methodCall.argument("maxHeight");
 
       String finalImagePath = imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight);
       finishWithSuccess(finalImagePath);
+      return finalImagePath;
     } else {
       throw new IllegalStateException("Received image from picker that was not requested");
     }
