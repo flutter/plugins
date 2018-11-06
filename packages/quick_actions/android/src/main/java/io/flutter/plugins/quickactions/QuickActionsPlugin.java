@@ -37,7 +37,7 @@ public class QuickActionsPlugin implements MethodCallHandler {
     this.registrar = registrar;
   }
 
-  /** 
+  /**
    * Plugin registration.
    *
    * <p>Must be called when the application is created.
