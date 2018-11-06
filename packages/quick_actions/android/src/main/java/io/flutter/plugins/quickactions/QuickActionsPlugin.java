@@ -40,7 +40,7 @@ public class QuickActionsPlugin implements MethodCallHandler {
   /** 
    * Plugin registration.
    *
-   * Must be called when the application is created.
+   * <p>Must be called when the application is created.
    */
   public static void registerWith(Registrar registrar) {
     channel = new MethodChannel(registrar.messenger(), "plugins.flutter.io/quick_actions");
