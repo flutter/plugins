@@ -401,7 +401,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 
     /** Clears the token kept in the client side cache. */
     @Override
-    public void clearAuthCache(Result result, String token) {
+    public void clearAuthCache(final Result result, final String token) {
       Callable<Void> clearTokenTask =
           new Callable<Void>() {
             @Override
