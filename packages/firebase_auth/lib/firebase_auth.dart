@@ -395,8 +395,8 @@ class FirebaseAuth {
     return currentUser;
   }
 
-  /// Links phone number with current user and returns [Future<FirebaseUser>], which will contain the phone number information.
-  ///
+  /// Links phone number with current user and returns [Future<FirebaseUser>],
+  /// which will contain the phone number information.
   /// This throws a [PlatformException] when the [smsCode] could not be validated or the [verificationId] is invalid.
   Future<FirebaseUser> linkWithPhoneNumber({
     @required String verificationId,
