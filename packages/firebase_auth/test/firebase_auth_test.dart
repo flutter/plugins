@@ -29,7 +29,7 @@ void main() {
   group('$FirebaseAuth', () {
     final String appName = 'testApp';
     final FirebaseApp app = FirebaseApp(name: appName);
-    final FirebaseAuth auth = FirebaseAuth(app: app);
+    final FirebaseAuth auth = FirebaseAuth.fromApp(app);
     final List<MethodCall> log = <MethodCall>[];
 
     int mockHandleId = 0;

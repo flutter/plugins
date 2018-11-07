@@ -1,3 +1,7 @@
+## 0.6.3
+
+* Add multi app support.
+
 ## 0.6.2+1
 
 * Bump Android dependencies to latest.

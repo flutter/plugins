@@ -20,9 +20,9 @@ class FirebaseUserMetadata {
 }
 
 class UserInfo {
-  UserInfo._(this._data, this.app);
+  UserInfo._(this._data, this._app);
 
-  FirebaseApp app;
+  final FirebaseApp _app;
 
   final Map<dynamic, dynamic> _data;
 
@@ -96,25 +96,25 @@ class FirebaseUser extends UserInfo {
     return await FirebaseAuth.channel
         .invokeMethod('getIdToken', <String, dynamic>{
       'refresh': refresh,
-      'app': app.name,
+      'app': _app.name,
     });
   }
 
   Future<void> sendEmailVerification() async {
     await FirebaseAuth.channel.invokeMethod(
-        'sendEmailVerification', <String, String>{'app': app.name});
+        'sendEmailVerification', <String, String>{'app': _app.name});
   }
 
   /// Manually refreshes the data of the current user (for example, attached providers, display name, and so on).
   Future<void> reload() async {
     await FirebaseAuth.channel
-        .invokeMethod('reload', <String, String>{'app': app.name});
+        .invokeMethod('reload', <String, String>{'app': _app.name});
   }
 
   /// Deletes the user record from your Firebase project's database.
   Future<void> delete() async {
     await FirebaseAuth.channel
-        .invokeMethod('delete', <String, String>{'app': app.name});
+        .invokeMethod('delete', <String, String>{'app': _app.name});
   }
 
   /// Updates the email address of the user.
@@ -122,7 +122,7 @@ class FirebaseUser extends UserInfo {
     assert(email != null);
     return await FirebaseAuth.channel.invokeMethod(
       'updateEmail',
-      <String, String>{'email': email, 'app': app.name},
+      <String, String>{'email': email, 'app': _app.name},
     );
   }
 
@@ -131,7 +131,7 @@ class FirebaseUser extends UserInfo {
     assert(password != null);
     return await FirebaseAuth.channel.invokeMethod(
       'updatePassword',
-      <String, String>{'password': password, 'app': app.name},
+      <String, String>{'password': password, 'app': _app.name},
     );
   }
 
@@ -139,7 +139,7 @@ class FirebaseUser extends UserInfo {
   Future<void> updateProfile(UserUpdateInfo userUpdateInfo) async {
     assert(userUpdateInfo != null);
     final Map<String, String> data = userUpdateInfo._updateData;
-    data['app'] = app.name;
+    data['app'] = _app.name;
     return await FirebaseAuth.channel.invokeMethod(
       'updateProfile',
       data,
@@ -165,14 +165,18 @@ typedef void PhoneCodeSent(String verificationId, [int forceResendingToken]);
 typedef void PhoneCodeAutoRetrievalTimeout(String verificationId);
 
 class FirebaseAuth {
-  FirebaseAuth({FirebaseApp app})
-      : app = app != null ? app : FirebaseApp.instance {
+  FirebaseAuth._(this.app) {
     channel.setMethodCallHandler(_callHandler);
   }
 
-  FirebaseAuth._() {
-    channel.setMethodCallHandler(_callHandler);
+  /// Provides an instance of this class corresponding to `app`.
+  factory FirebaseAuth.fromApp(FirebaseApp app) {
+    assert(app != null);
+    return FirebaseAuth._(app);
   }
+
+  /// Provides an instance of this class corresponding to the default app.
+  static final FirebaseAuth instance = FirebaseAuth._(FirebaseApp.instance);
 
   @visibleForTesting
   static const MethodChannel channel = MethodChannel(
@@ -186,7 +190,7 @@ class FirebaseAuth {
   final Map<int, Map<String, dynamic>> _phoneAuthCallbacks =
       <int, Map<String, dynamic>>{};
 
-  FirebaseApp app;
+  final FirebaseApp app;
 
   /// Receive [FirebaseUser] each time the user signIn or signOut
   Stream<FirebaseUser> get onAuthStateChanged {

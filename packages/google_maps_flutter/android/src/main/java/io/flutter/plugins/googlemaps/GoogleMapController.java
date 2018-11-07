@@ -5,6 +5,7 @@
 package io.flutter.plugins.googlemaps;
 
 import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.CREATED;
+import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.DESTROYED;
 import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.PAUSED;
 import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.RESUMED;
 import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.STARTED;
@@ -58,6 +59,7 @@ final class GoogleMapController
   private boolean disposed = false;
   private final float density;
   private MethodChannel.Result mapReadyResult;
+  private final int registrarActivityHashCode;
 
   GoogleMapController(
       int id,
@@ -74,6 +76,7 @@ final class GoogleMapController
     methodChannel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/google_maps_" + id);
     methodChannel.setMethodCallHandler(this);
+    this.registrarActivityHashCode = registrar.activity().hashCode();
   }
 
   @Override
@@ -107,6 +110,9 @@ final class GoogleMapController
         break;
       case CREATED:
         mapView.onCreate(null);
+        break;
+      case DESTROYED:
+        // Nothing to do, the activity has been completely destroyed.
         break;
       default:
         throw new IllegalArgumentException(
@@ -282,7 +288,7 @@ final class GoogleMapController
 
   @Override
   public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-    if (disposed) {
+    if (disposed || activity.hashCode() != registrarActivityHashCode) {
       return;
     }
     mapView.onCreate(savedInstanceState);
@@ -290,7 +296,7 @@ final class GoogleMapController
 
   @Override
   public void onActivityStarted(Activity activity) {
-    if (disposed) {
+    if (disposed || activity.hashCode() != registrarActivityHashCode) {
       return;
     }
     mapView.onStart();
@@ -298,7 +304,7 @@ final class GoogleMapController
 
   @Override
   public void onActivityResumed(Activity activity) {
-    if (disposed) {
+    if (disposed || activity.hashCode() != registrarActivityHashCode) {
       return;
     }
     mapView.onResume();
@@ -306,7 +312,7 @@ final class GoogleMapController
 
   @Override
   public void onActivityPaused(Activity activity) {
-    if (disposed) {
+    if (disposed || activity.hashCode() != registrarActivityHashCode) {
       return;
     }
     mapView.onPause();
@@ -314,7 +320,7 @@ final class GoogleMapController
 
   @Override
   public void onActivityStopped(Activity activity) {
-    if (disposed) {
+    if (disposed || activity.hashCode() != registrarActivityHashCode) {
       return;
     }
     mapView.onStop();
@@ -322,7 +328,7 @@ final class GoogleMapController
 
   @Override
   public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
-    if (disposed) {
+    if (disposed || activity.hashCode() != registrarActivityHashCode) {
       return;
     }
     mapView.onSaveInstanceState(outState);
@@ -330,7 +336,7 @@ final class GoogleMapController
 
   @Override
   public void onActivityDestroyed(Activity activity) {
-    if (disposed) {
+    if (disposed || activity.hashCode() != registrarActivityHashCode) {
       return;
     }
     mapView.onDestroy();
