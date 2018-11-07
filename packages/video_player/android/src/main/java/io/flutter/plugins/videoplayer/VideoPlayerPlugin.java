@@ -92,26 +92,32 @@ public class VideoPlayerPlugin implements MethodCallHandler {
                 true);
       }
 
-      MediaSource mediaSource = buildMediaSource(uri, dataSourceFactory);
+      MediaSource mediaSource = buildMediaSource(uri, dataSourceFactory, context);
       exoPlayer.prepare(mediaSource);
 
       setupVideoPlayer(eventChannel, textureEntry, result);
     }
 
-    private MediaSource buildMediaSource(Uri uri, DataSource.Factory mediaDataSourceFactory) {
+    private MediaSource buildMediaSource(
+        Uri uri, DataSource.Factory mediaDataSourceFactory, Context context) {
       int type = Util.inferContentType(uri.getLastPathSegment());
       switch (type) {
         case C.TYPE_SS:
-          return new SsMediaSource(
-              uri, null, new DefaultSsChunkSource.Factory(mediaDataSourceFactory), null, null);
+          return new SsMediaSource.Factory(
+                  new DefaultSsChunkSource.Factory(mediaDataSourceFactory),
+                  new DefaultDataSourceFactory(context, null, mediaDataSourceFactory))
+              .createMediaSource(uri);
         case C.TYPE_DASH:
-          return new DashMediaSource(
-              uri, null, new DefaultDashChunkSource.Factory(mediaDataSourceFactory), null, null);
+          return new DashMediaSource.Factory(
+                  new DefaultDashChunkSource.Factory(mediaDataSourceFactory),
+                  new DefaultDataSourceFactory(context, null, mediaDataSourceFactory))
+              .createMediaSource(uri);
         case C.TYPE_HLS:
-          return new HlsMediaSource(uri, mediaDataSourceFactory, null, null);
+          return new HlsMediaSource.Factory(mediaDataSourceFactory).createMediaSource(uri);
         case C.TYPE_OTHER:
-          return new ExtractorMediaSource(
-              uri, mediaDataSourceFactory, new DefaultExtractorsFactory(), null, null);
+          return new ExtractorMediaSource.Factory(mediaDataSourceFactory)
+              .setExtractorsFactory(new DefaultExtractorsFactory())
+              .createMediaSource(uri);
         default:
           {
             throw new IllegalStateException("Unsupported type: " + type);

@@ -64,13 +64,11 @@ void main() {
     Future<String> tokenFromStream = firebaseMessaging.onTokenRefresh.first;
     await handler(MethodCall('onToken', token1));
 
-    expect(await firebaseMessaging.getToken(), token1);
     expect(await tokenFromStream, token1);
 
     tokenFromStream = firebaseMessaging.onTokenRefresh.first;
     await handler(MethodCall('onToken', token2));
 
-    expect(await firebaseMessaging.getToken(), token2);
     expect(await tokenFromStream, token2);
   });
 
@@ -133,6 +131,11 @@ void main() {
   test('unsubscribe from topic', () {
     firebaseMessaging.unsubscribeFromTopic(myTopic);
     verify(mockChannel.invokeMethod('unsubscribeFromTopic', myTopic));
+  });
+
+  test('getToken', () {
+    firebaseMessaging.getToken();
+    verify(mockChannel.invokeMethod('getToken'));
   });
 }
 

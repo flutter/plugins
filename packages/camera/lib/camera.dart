@@ -54,10 +54,10 @@ Future<List<CameraDescription>> availableCameras() async {
 }
 
 class CameraDescription {
+  CameraDescription({this.name, this.lensDirection});
+
   final String name;
   final CameraLensDirection lensDirection;
-
-  CameraDescription({this.name, this.lensDirection});
 
   @override
   bool operator ==(Object o) {
@@ -79,10 +79,10 @@ class CameraDescription {
 
 /// This is thrown when the plugin reports an error.
 class CameraException implements Exception {
+  CameraException(this.code, this.description);
+
   String code;
   String description;
-
-  CameraException(this.code, this.description);
 
   @override
   String toString() => '$runtimeType($code, $description)';
@@ -90,9 +90,9 @@ class CameraException implements Exception {
 
 // Build the UI texture view of the video data with textureId.
 class CameraPreview extends StatelessWidget {
-  final CameraController controller;
-
   const CameraPreview(this.controller);
+
+  final CameraController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -104,6 +104,20 @@ class CameraPreview extends StatelessWidget {
 
 /// The state of a [CameraController].
 class CameraValue {
+  const CameraValue({
+    this.isInitialized,
+    this.errorDescription,
+    this.previewSize,
+    this.isRecordingVideo,
+    this.isTakingPicture,
+  });
+
+  const CameraValue.uninitialized()
+      : this(
+            isInitialized: false,
+            isRecordingVideo: false,
+            isTakingPicture: false);
+
   /// True after [CameraController.initialize] has completed successfully.
   final bool isInitialized;
 
@@ -119,20 +133,6 @@ class CameraValue {
   ///
   /// Is `null` until  [isInitialized] is `true`.
   final Size previewSize;
-
-  const CameraValue({
-    this.isInitialized,
-    this.errorDescription,
-    this.previewSize,
-    this.isRecordingVideo,
-    this.isTakingPicture,
-  });
-
-  const CameraValue.uninitialized()
-      : this(
-            isInitialized: false,
-            isRecordingVideo: false,
-            isTakingPicture: false);
 
   /// Convenience getter for `previewSize.height / previewSize.width`.
   ///
@@ -176,26 +176,26 @@ class CameraValue {
 ///
 /// To show the camera preview on the screen use a [CameraPreview] widget.
 class CameraController extends ValueNotifier<CameraValue> {
+  CameraController(this.description, this.resolutionPreset)
+      : super(const CameraValue.uninitialized());
+
   final CameraDescription description;
   final ResolutionPreset resolutionPreset;
 
   int _textureId;
   bool _isDisposed = false;
   StreamSubscription<dynamic> _eventSubscription;
-  Completer<Null> _creatingCompleter;
-
-  CameraController(this.description, this.resolutionPreset)
-      : super(const CameraValue.uninitialized());
+  Completer<void> _creatingCompleter;
 
   /// Initializes the camera on the device.
   ///
   /// Throws a [CameraException] if the initialization fails.
-  Future<Null> initialize() async {
+  Future<void> initialize() async {
     if (_isDisposed) {
-      return Future<Null>.value(null);
+      return Future<void>.value();
     }
     try {
-      _creatingCompleter = Completer<Null>();
+      _creatingCompleter = Completer<void>();
       final Map<dynamic, dynamic> reply = await _channel.invokeMethod(
         'initialize',
         <String, dynamic>{
@@ -218,7 +218,7 @@ class CameraController extends ValueNotifier<CameraValue> {
         EventChannel('flutter.io/cameraPlugin/cameraEvents$_textureId')
             .receiveBroadcastStream()
             .listen(_listener);
-    _creatingCompleter.complete(null);
+    _creatingCompleter.complete();
     return _creatingCompleter.future;
   }
 
@@ -250,7 +250,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   /// The file can be read as this function returns.
   ///
   /// Throws a [CameraException] if the capture fails.
-  Future<Null> takePicture(String path) async {
+  Future<void> takePicture(String path) async {
     if (!value.isInitialized || _isDisposed) {
       throw CameraException(
         'Uninitialized CameraController.',
@@ -286,7 +286,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   /// The file can be read as soon as [stopVideoRecording] returns.
   ///
   /// Throws a [CameraException] if the capture fails.
-  Future<Null> startVideoRecording(String filePath) async {
+  Future<void> startVideoRecording(String filePath) async {
     if (!value.isInitialized || _isDisposed) {
       throw CameraException(
         'Uninitialized CameraController',
@@ -311,7 +311,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   }
 
   /// Stop recording.
-  Future<Null> stopVideoRecording() async {
+  Future<void> stopVideoRecording() async {
     if (!value.isInitialized || _isDisposed) {
       throw CameraException(
         'Uninitialized CameraController',
@@ -337,22 +337,19 @@ class CameraController extends ValueNotifier<CameraValue> {
 
   /// Releases the resources of this camera.
   @override
-  Future<Null> dispose() async {
+  Future<void> dispose() async {
     if (_isDisposed) {
-      return Future<Null>.value(null);
+      return;
     }
     _isDisposed = true;
     super.dispose();
-    if (_creatingCompleter == null) {
-      return Future<Null>.value(null);
-    } else {
-      return _creatingCompleter.future.then((_) async {
-        await _channel.invokeMethod(
-          'dispose',
-          <String, dynamic>{'textureId': _textureId},
-        );
-        await _eventSubscription?.cancel();
-      });
+    if (_creatingCompleter != null) {
+      await _creatingCompleter.future;
+      await _channel.invokeMethod(
+        'dispose',
+        <String, dynamic>{'textureId': _textureId},
+      );
+      await _eventSubscription?.cancel();
     }
   }
 }

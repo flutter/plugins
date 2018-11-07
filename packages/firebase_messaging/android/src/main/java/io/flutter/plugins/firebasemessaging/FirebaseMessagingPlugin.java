@@ -11,7 +11,12 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
 import io.flutter.plugin.common.MethodCall;
@@ -30,6 +35,7 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
   private final MethodChannel channel;
 
   private static final String CLICK_ACTION_VALUE = "FLUTTER_NOTIFICATION_CLICK";
+  private static final String TAG = "FirebaseMessagingPlugin";
 
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel =
@@ -91,7 +97,7 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
   }
 
   @Override
-  public void onMethodCall(MethodCall call, Result result) {
+  public void onMethodCall(final MethodCall call, final Result result) {
     if ("configure".equals(call.method)) {
       FlutterFirebaseInstanceIDService.broadcastToken(registrar.context());
       if (registrar.activity() != null) {
@@ -106,6 +112,22 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
       String topic = call.arguments();
       FirebaseMessaging.getInstance().unsubscribeFromTopic(topic);
       result.success(null);
+    } else if ("getToken".equals(call.method)) {
+      FirebaseInstanceId.getInstance()
+          .getInstanceId()
+          .addOnCompleteListener(
+              new OnCompleteListener<InstanceIdResult>() {
+                @Override
+                public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                  if (!task.isSuccessful()) {
+                    Log.w(TAG, "getToken, error fetching instanceID: ", task.getException());
+                    result.success(null);
+                    return;
+                  }
+
+                  result.success(task.getResult().getToken());
+                }
+              });
     } else {
       result.notImplemented();
     }

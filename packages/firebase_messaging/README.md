@@ -52,7 +52,7 @@ From your Dart code, you need to import the plugin and instantiate it:
 ```dart
 import 'package:firebase_messaging/firebase_messaging.dart';
 
-final FirebaseMessaging _firebaseMessaging = new FirebaseMessaging();
+final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 ```
 
 Next, you should probably request permissions for receiving Push Notifications. For this, call `_firebaseMessaging.requestNotificationPermissions()`. This will bring up a permissions dialog for the user to confirm on iOS. It's a no-op on Android. Last, but not least, register `onMessage`, `onResume`, and `onLaunch` callbacks via `_firebaseMessaging.configure()` to listen for incoming messages (see table below for more information).

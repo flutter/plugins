@@ -1,3 +1,16 @@
+## 0.8.2+1
+
+* Avoid crash in document snapshot callback.
+
+## 0.8.2
+
+* Added `Firestore.settings`
+* Added `Timestamp` class
+
+## 0.8.1+1
+
+* Bump Android dependencies to latest.
+
 ## 0.8.1
 
 * Fixed bug where updating arrays in with `FieldValue` always throws an Exception on Android.

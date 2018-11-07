@@ -46,7 +46,7 @@
     [LabelDetector handleDetection:image options:options result:result];
   } else if ([@"CloudLabelDetector#detectInImage" isEqualToString:call.method]) {
     [CloudLabelDetector handleDetection:image options:options result:result];
-  } else if ([@"TextRecognizer#detectInImage" isEqualToString:call.method]) {
+  } else if ([@"TextRecognizer#processImage" isEqualToString:call.method]) {
     [TextRecognizer handleDetection:image options:options result:result];
   } else {
     result(FlutterMethodNotImplemented);

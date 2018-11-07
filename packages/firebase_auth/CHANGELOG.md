@@ -1,6 +1,11 @@
 ## 0.6.3
 
 * Added support for `linkWithPhoneNumber` in `FirebaseAuth`.
+* Add multi app support.
+
+## 0.6.2+1
+
+* Bump Android dependencies to latest.
 
 ## 0.6.2
 

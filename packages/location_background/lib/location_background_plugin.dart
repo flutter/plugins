@@ -24,12 +24,6 @@ enum LocationActivityType {
 
 /// A representation of a location update.
 class Location {
-  final double _time;
-  final double latitude;
-  final double longitude;
-  final double altitude;
-  final double speed;
-
   Location(
       this._time, this.latitude, this.longitude, this.altitude, this.speed);
 
@@ -38,6 +32,12 @@ class Location {
     return Location(location['time'], location['latitude'],
         location['longitude'], location['altitude'], location['speed']);
   }
+
+  final double _time;
+  final double latitude;
+  final double longitude;
+  final double altitude;
+  final double speed;
 
   DateTime get time =>
       DateTime.fromMillisecondsSinceEpoch((_time * 1000).round(), isUtc: true);
@@ -106,19 +106,6 @@ void _backgroundCallbackDispatcher() {
 }
 
 class LocationBackgroundPlugin {
-  // The method channel we'll use to communicate with the native portion of our
-  // plugin.
-  static const MethodChannel _channel =
-      MethodChannel('plugins.flutter.io/ios_background_location');
-
-  static const String _kCancelLocationUpdates = 'cancelLocationUpdates';
-  static const String _kMonitorLocationChanges = 'monitorLocationChanges';
-  static const String _kStartHeadlessService = 'startHeadlessService';
-
-  bool pauseLocationUpdatesAutomatically;
-  bool showsBackgroundLocationIndicator;
-  LocationActivityType activityType;
-
   LocationBackgroundPlugin(
       {this.pauseLocationUpdatesAutomatically = false,
       this.showsBackgroundLocationIndicator = true,
@@ -133,6 +120,19 @@ class LocationBackgroundPlugin {
     _channel
         .invokeMethod(_kStartHeadlessService, <dynamic>[handle.toRawHandle()]);
   }
+
+  // The method channel we'll use to communicate with the native portion of our
+  // plugin.
+  static const MethodChannel _channel =
+      MethodChannel('plugins.flutter.io/ios_background_location');
+
+  static const String _kCancelLocationUpdates = 'cancelLocationUpdates';
+  static const String _kMonitorLocationChanges = 'monitorLocationChanges';
+  static const String _kStartHeadlessService = 'startHeadlessService';
+
+  bool pauseLocationUpdatesAutomatically;
+  bool showsBackgroundLocationIndicator;
+  LocationActivityType activityType;
 
   /// Start getting significant location updates through `callback`.
   ///
