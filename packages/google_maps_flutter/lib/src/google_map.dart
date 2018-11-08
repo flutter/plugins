@@ -43,6 +43,14 @@ class _GoogleMapState extends State<GoogleMap> {
         creationParams: widget.options._toJson(),
         creationParamsCodec: const StandardMessageCodec(),
       );
+    } else if (defaultTargetPlatform == TargetPlatform.iOS) {
+      return UiKitView(
+        viewType: 'plugins.flutter.io/google_maps',
+        onPlatformViewCreated: onPlatformViewCreated,
+        gestureRecognizers: widget.gestureRecognizers,
+        creationParams: widget.options._toJson(),
+        creationParamsCodec: const StandardMessageCodec(),
+      );
     }
 
     return Text(
