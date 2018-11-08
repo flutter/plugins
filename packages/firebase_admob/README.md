@@ -14,6 +14,21 @@ The AdMob plugin must be initialized with an AdMob App ID.
 ```
 FirebaseAdMob.instance.initialize(appId: appId);
 ```
+*Note Android*:
+Starting in version 17.0.0, if you are an AdMob publisher you are now required to add your AdMob app ID in your **AndroidManifest.xml** file. Once you find your AdMob app ID in the AdMob UI, add it to your manifest adding the following tag:
+
+```
+<manifest>
+    <application>
+        <!-- TODO: Replace with your real AdMob app ID -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-################~##########"/>
+    </application>
+</manifest>
+```
+
+Failure to add this tag will result in the app crashing at app launch with a message starting with *"The Google Mobile Ads SDK was initialized incorrectly."*
 
 ## Using banners and interstitials
 Banner and interstitial ads can be configured with target information.
