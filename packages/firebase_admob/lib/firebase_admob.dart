@@ -44,9 +44,12 @@ class MobileAdTargetingInfo {
   const MobileAdTargetingInfo(
       {this.keywords,
       this.contentUrl,
-      @Deprecated('This functionality is deprecated in AdMob without replacement.') this.birthday,
-      @Deprecated('This functionality is deprecated in AdMob without replacement.') this.gender,
-      @Deprecated('Use `childDirected` instead.') this.designedForFamilies,
+      @Deprecated('This functionality is deprecated in AdMob without replacement.')
+          this.birthday,
+      @Deprecated('This functionality is deprecated in AdMob without replacement.')
+          this.gender,
+      @Deprecated('Use `childDirected` instead.')
+          this.designedForFamilies,
       this.childDirected,
       this.testDevices,
       this.nonPersonalizedAds});
