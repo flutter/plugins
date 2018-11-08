@@ -26,15 +26,14 @@ class WebView extends StatefulWidget {
   /// The web view can be controlled using a `WebViewController` that is passed to the
   /// `onWebViewCreated` callback once the web view is created.
   ///
-  /// The `gestureRecognizers` and `javaScriptMode` parameters must not be null.
+  /// The `javaScriptMode` parameter must not be null.
   const WebView({
     Key key,
     this.onWebViewCreated,
     this.initialUrl,
     this.javaScriptMode = JavaScriptMode.disabled,
-    this.gestureRecognizers = const <OneSequenceGestureRecognizer>[],
-  })  : assert(gestureRecognizers != null),
-        assert(javaScriptMode != null),
+    this.gestureRecognizers,
+  })  : assert(javaScriptMode != null),
         super(key: key);
 
   /// If not null invoked once the web view is created.
@@ -43,13 +42,13 @@ class WebView extends StatefulWidget {
   /// Which gestures should be consumed by the web view.
   ///
   /// It is possible for other gesture recognizers to be competing with the web view on pointer
-  /// events, e.g if the webview is inside a [ListView] the [ListView] will want to handle
+  /// events, e.g if the web view is inside a [ListView] the [ListView] will want to handle
   /// vertical drags. The web view will claim gestures that are recognized by any of the
   /// recognizers on this list.
   ///
-  /// When this list is empty, the web view will only handle pointer events for gestures that
+  /// When this set is empty or null, the web view will only handle pointer events for gestures that
   /// were not claimed by any other gesture recognizer.
-  final List<OneSequenceGestureRecognizer> gestureRecognizers;
+  final Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers;
 
   /// The initial URL to load.
   final String initialUrl;

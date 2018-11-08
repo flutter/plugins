@@ -8,11 +8,11 @@ import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
 class CloudFunctionsException implements Exception {
+  CloudFunctionsException._(this.code, this.message, this.details);
+
   final String code;
   final String message;
   final dynamic details;
-
-  CloudFunctionsException._(this.code, this.message, this.details);
 }
 
 /// The entry point for accessing a CloudFunctions.

@@ -7,9 +7,9 @@ mode, we assert that the platform should be Android.
 Use it by specifying action, category, data and extra arguments for the intent.
 It does not support returning the result of the launched activity. Sample usage:
 
-```
+```dart
 if (platform.isAndroid) {
-  AndroidIntent intent = new AndroidIntent(
+  AndroidIntent intent = AndroidIntent(
       action: 'action_view',
       data: 'https://play.google.com/store/apps/details?'
           'id=com.google.android.apps.myapp',

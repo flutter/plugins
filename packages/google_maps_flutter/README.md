@@ -50,7 +50,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 void main() {
   runApp(MaterialApp(
-    home: new Scaffold(
+    home: Scaffold(
       appBar: AppBar(title: const Text('Google Maps demo')),
       body: MapsDemo(),
     ),

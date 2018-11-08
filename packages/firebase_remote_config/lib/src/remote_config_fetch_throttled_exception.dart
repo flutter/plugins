@@ -2,11 +2,11 @@ part of firebase_remote_config;
 
 /// Exception thrown when the fetch() operation cannot be completed successfully, due to throttling.
 class FetchThrottledException implements Exception {
-  DateTime _throttleEnd;
-
   FetchThrottledException._({int endTimeInMills}) {
     _throttleEnd = DateTime.fromMillisecondsSinceEpoch(endTimeInMills);
   }
+
+  DateTime _throttleEnd;
 
   DateTime get throttleEnd => _throttleEnd;
 

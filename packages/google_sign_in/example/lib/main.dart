@@ -48,7 +48,7 @@ class SignInDemoState extends State<SignInDemo> {
     _googleSignIn.signInSilently();
   }
 
-  Future<Null> _handleGetContact() async {
+  Future<void> _handleGetContact() async {
     setState(() {
       _contactText = "Loading contact info...";
     });
@@ -94,7 +94,7 @@ class SignInDemoState extends State<SignInDemo> {
     return null;
   }
 
-  Future<Null> _handleSignIn() async {
+  Future<void> _handleSignIn() async {
     try {
       await _googleSignIn.signIn();
     } catch (error) {
@@ -102,7 +102,7 @@ class SignInDemoState extends State<SignInDemo> {
     }
   }
 
-  Future<Null> _handleSignOut() async {
+  Future<void> _handleSignOut() async {
     _googleSignIn.disconnect();
   }
 

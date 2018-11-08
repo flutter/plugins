@@ -356,7 +356,7 @@ class CameraApp extends StatelessWidget {
 
 List<CameraDescription> cameras;
 
-Future<Null> main() async {
+Future<void> main() async {
   // Fetch the available cameras before initializing the app.
   try {
     cameras = await availableCameras();

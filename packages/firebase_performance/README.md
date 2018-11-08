@@ -70,11 +70,10 @@ class _MyAppState extends State<MyApp> {
 .
 .
   Future<void> testHttpMetric() async {
-    final _MetricHttpClient metricHttpClient =
-        new _MetricHttpClient(new Client());
+    final _MetricHttpClient metricHttpClient = _MetricHttpClient(Client());
 
     final Request request =
-        new Request("SEND", Uri.parse("https://www.google.com"));
+        Request("SEND", Uri.parse("https://www.google.com"));
 
     metricHttpClient.send(request);
   }
