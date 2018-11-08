@@ -1,4 +1,4 @@
-import 'package:test/test.dart';
+import 'package:test_api/test_api.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 void main() {
@@ -22,6 +22,20 @@ void main() {
   });
 
   group('LatLngBounds', () {
+    test('south > north (must throw AssertionError)', () {
+      bool assertionError = false;
+      try {
+        final LatLngBounds bounds = LatLngBounds(
+          southwest: LatLng(30.0, 20.0),
+          northeast: LatLng(-10.0, 40.0),
+        );
+      }
+      on AssertionError catch (e){
+        assertionError = true;
+      }
+      expect(assertionError, true);
+    });
+
     group('LatLngBounds.isEmpty()', () {
       test('empty.', () {
         final LatLngBounds bounds = LatLngBounds();
@@ -252,3 +266,7 @@ void main() {
     });
   });
 }
+
+
+
+
