@@ -1,3 +1,7 @@
+## ## 0.8.0+1
+
+* Resolved "explicit self reference" and "loses accuracy" compiler warnings.
+
 ## 0.8.0
 
 Note: this version depends on features available in iOS SDK versions 5.5.0 or later.
