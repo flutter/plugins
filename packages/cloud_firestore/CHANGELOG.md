@@ -1,3 +1,7 @@
+## 0.8.2+3
+
+* Resolved "explicit self reference" and "loses accuracy" compiler warnings.
+
 ## 0.8.2+2
 
 * Clean up Android build logs. @SuppressWarnings("unchecked")
