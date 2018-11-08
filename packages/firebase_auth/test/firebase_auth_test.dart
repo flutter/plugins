@@ -17,6 +17,7 @@ const String kMockEmail = 'test@example.com';
 const String kMockPassword = 'passw0rd';
 const String kMockIdToken = '12345';
 const String kMockAccessToken = '67890';
+const String kMockGithubToken = 'github';
 const String kMockAuthToken = '23456';
 const String kMockAuthTokenSecret = '78901';
 const String kMockCustomToken = '12345';
@@ -300,6 +301,86 @@ void main() {
             arguments: <String, String>{
               'accessToken': kMockAccessToken,
               'app': auth.app.name,
+            },
+          ),
+        ],
+      );
+    });
+
+    test('linkWithTwitterCredential', () async {
+      final FirebaseUser user = await auth.linkWithTwitterCredential(
+        authToken: kMockAuthToken,
+        authTokenSecret: kMockAuthTokenSecret,
+      );
+      verifyUser(user);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'linkWithTwitterCredential',
+            arguments: <String, String>{
+              'app': auth.app.name,
+              'authToken': kMockAuthToken,
+              'authTokenSecret': kMockAuthTokenSecret,
+            },
+          ),
+        ],
+      );
+    });
+
+    test('signInWithTwitter', () async {
+      final FirebaseUser user = await auth.signInWithTwitter(
+        authToken: kMockAuthToken,
+        authTokenSecret: kMockAuthTokenSecret,
+      );
+      verifyUser(user);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'signInWithTwitter',
+            arguments: <String, String>{
+              'app': auth.app.name,
+              'authToken': kMockAuthToken,
+              'authTokenSecret': kMockAuthTokenSecret,
+            },
+          ),
+        ],
+      );
+    });
+
+    test('linkWithGithubCredential', () async {
+      final FirebaseUser user = await auth.linkWithGithubCredential(
+        token: kMockGithubToken,
+      );
+      verifyUser(user);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'linkWithGithubCredential',
+            arguments: <String, String>{
+              'app': auth.app.name,
+              'token': kMockGithubToken,
+            },
+          ),
+        ],
+      );
+    });
+
+    test('signInWithGithub', () async {
+      final FirebaseUser user = await auth.signInWithGithub(
+        token: kMockGithubToken,
+      );
+      verifyUser(user);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'signInWithGithub',
+            arguments: <String, String>{
+              'app': auth.app.name,
+              'token': kMockGithubToken,
             },
           ),
         ],

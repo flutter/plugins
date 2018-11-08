@@ -101,6 +101,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       case "signInWithTwitter":
         handleSignInWithTwitter(call, result, getAuth(call));
         break;
+      case "signInWithGithub":
+        handleSignInWithGithub(call, result, getAuth(call));
+        break;
       case "signOut":
         handleSignOut(call, result, getAuth(call));
         break;
@@ -118,6 +121,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         break;
       case "linkWithTwitterCredential":
         handleLinkWithTwitterCredential(call, result, getAuth(call));
+        break;
+      case "linkWithGithubCredential":
+        handleLinkWithGithubCredential(call, result, getAuth(call));
         break;
       case "updateEmail":
         handleUpdateEmail(call, result, getAuth(call));
@@ -404,6 +410,16 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         .addOnCompleteListener(new SignInCompleteListener(result));
   }
 
+  private void handleLinkWithGithubCredential(
+      MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
+    String token = call.argument("token");
+    AuthCredential credential = GithubAuthProvider.getCredential(token);
+    firebaseAuth
+        .getCurrentUser()
+        .linkWithCredential(credential)
+        .addOnCompleteListener(new SignInCompleteListener(result));
+  }
+
   private void handleSignInWithFacebook(
       MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
     @SuppressWarnings("unchecked")
@@ -420,6 +436,15 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     String authToken = call.argument("authToken");
     String authTokenSecret = call.argument("authTokenSecret");
     AuthCredential credential = TwitterAuthProvider.getCredential(authToken, authTokenSecret);
+    firebaseAuth
+        .signInWithCredential(credential)
+        .addOnCompleteListener(new SignInCompleteListener(result));
+  }
+
+  private void handleSignInWithGithub(
+      MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
+    String token = call.argument("token");
+    AuthCredential credential = GithubAuthProvider.getCredential(token);
     firebaseAuth
         .signInWithCredential(credential)
         .addOnCompleteListener(new SignInCompleteListener(result));
