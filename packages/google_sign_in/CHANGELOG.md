@@ -1,3 +1,7 @@
+## 3.2.3
+
+* Increase play-services-auth version to 16.0.1
+
 ## 3.2.2
 
 * Don't use the result code when handling signin. This results in better error codes because result code always returns "cancelled".
