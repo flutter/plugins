@@ -1,3 +1,7 @@
+## 0.6.4
+
+* Added support for Github signin and linking Github accounts to existing users.
+
 ## 0.6.3
 
 * Add multi app support.

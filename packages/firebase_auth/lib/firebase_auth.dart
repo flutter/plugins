@@ -308,6 +308,17 @@ class FirebaseAuth {
     return currentUser;
   }
 
+  Future<FirebaseUser> signInWithGithub({@required String token}) async {
+    assert(token != null);
+    final Map<dynamic, dynamic> data =
+        await channel.invokeMethod('signInWithGithub', <String, String>{
+      'token': token,
+      'app': app.name,
+    });
+    final FirebaseUser currentUser = FirebaseUser._(data, app);
+    return currentUser;
+  }
+
   Future<FirebaseUser> signInWithGoogle({
     @required String idToken,
     @required String accessToken,
@@ -465,6 +476,16 @@ class FirebaseAuth {
         'authTokenSecret': authTokenSecret,
       },
     );
+    final FirebaseUser currentUser = FirebaseUser._(data, app);
+    return currentUser;
+  }
+
+  Future<FirebaseUser> linkWithGithubCredential(
+      {@required String token}) async {
+    assert(token != null);
+    final Map<dynamic, dynamic> data = await channel.invokeMethod(
+        'linkWithGithubCredential',
+        <String, String>{'app': app.name, 'token': token});
     final FirebaseUser currentUser = FirebaseUser._(data, app);
     return currentUser;
   }
