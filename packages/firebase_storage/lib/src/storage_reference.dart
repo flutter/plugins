@@ -5,16 +5,17 @@
 part of firebase_storage;
 
 class StorageReference {
-  final FirebaseStorage _firebaseStorage;
   const StorageReference._(this._pathComponents, this._firebaseStorage);
+
+  final FirebaseStorage _firebaseStorage;
   final List<String> _pathComponents;
 
   /// Returns a new instance of [StorageReference] pointing to a child
   /// location of the current reference.
   StorageReference child(String path) {
-    final List<String> childPath = new List<String>.from(_pathComponents)
+    final List<String> childPath = List<String>.from(_pathComponents)
       ..addAll(path.split("/"));
-    return new StorageReference._(childPath, _firebaseStorage);
+    return StorageReference._(childPath, _firebaseStorage);
   }
 
   /// Returns a new instance of [StorageReference] pointing to the parent
@@ -25,7 +26,7 @@ class StorageReference {
       return null;
     }
 
-    final List<String> parentPath = new List<String>.from(_pathComponents);
+    final List<String> parentPath = List<String>.from(_pathComponents);
     // Trim for trailing empty path components that can
     // come from trailing slashes in the path.
     while (parentPath.last.isEmpty) {
@@ -33,12 +34,12 @@ class StorageReference {
     }
     parentPath.removeLast();
 
-    return new StorageReference._(parentPath, _firebaseStorage);
+    return StorageReference._(parentPath, _firebaseStorage);
   }
 
   /// Returns a new instance of [StorageReference] pointing to the root location.
   StorageReference getRoot() {
-    return new StorageReference._(<String>[], _firebaseStorage);
+    return StorageReference._(<String>[], _firebaseStorage);
   }
 
   /// Returns the [FirebaseStorage] service which created this reference.
@@ -59,7 +60,7 @@ class StorageReference {
   /// [StorageReference], with an optional [metadata].
   StorageUploadTask putFile(File file, [StorageMetadata metadata]) {
     final _StorageFileUploadTask task =
-        new _StorageFileUploadTask._(file, _firebaseStorage, this, metadata);
+        _StorageFileUploadTask._(file, _firebaseStorage, this, metadata);
     task._start();
     return task;
   }
@@ -68,7 +69,7 @@ class StorageReference {
   /// [StorageReference], with an optional [metadata].
   StorageUploadTask putData(Uint8List data, [StorageMetadata metadata]) {
     final StorageUploadTask task =
-        new _StorageDataUploadTask._(data, _firebaseStorage, this, metadata);
+        _StorageDataUploadTask._(data, _firebaseStorage, this, metadata);
     task._start();
     return task;
   }
@@ -121,7 +122,7 @@ class StorageReference {
   /// Asynchronously downloads the object at this [StorageReference] to a
   /// specified system file.
   StorageFileDownloadTask writeToFile(File file) {
-    final StorageFileDownloadTask task = new StorageFileDownloadTask._(
+    final StorageFileDownloadTask task = StorageFileDownloadTask._(
         _firebaseStorage, _pathComponents.join("/"), file);
     task._start();
     return task;
@@ -150,7 +151,7 @@ class StorageReference {
 
   /// Retrieves metadata associated with an object at this [StorageReference].
   Future<StorageMetadata> getMetadata() async {
-    return new StorageMetadata._fromMap(await FirebaseStorage.channel
+    return StorageMetadata._fromMap(await FirebaseStorage.channel
         .invokeMethod("StorageReference#getMetadata", <String, String>{
       'app': _firebaseStorage.app?.name,
       'bucket': _firebaseStorage.storageBucket,
@@ -166,7 +167,7 @@ class StorageReference {
   /// [StorageMetadata] constructor. Writable metadata properties can be deleted
   /// by passing the empty string.
   Future<StorageMetadata> updateMetadata(StorageMetadata metadata) async {
-    return new StorageMetadata._fromMap(await FirebaseStorage.channel
+    return StorageMetadata._fromMap(await FirebaseStorage.channel
         .invokeMethod("StorageReference#updateMetadata", <String, dynamic>{
       'app': _firebaseStorage.app?.name,
       'bucket': _firebaseStorage.storageBucket,

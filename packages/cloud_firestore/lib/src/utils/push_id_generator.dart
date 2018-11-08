@@ -17,25 +17,25 @@ class PushIdGenerator {
   static const String PUSH_CHARS =
       '-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz';
 
-  static final Random _random = new Random();
+  static final Random _random = Random();
 
   static int _lastPushTime;
 
-  static final List<int> _lastRandChars = new List<int>(12);
+  static final List<int> _lastRandChars = List<int>(12);
 
   static String generatePushChildName() {
-    int now = new DateTime.now().millisecondsSinceEpoch;
+    int now = DateTime.now().millisecondsSinceEpoch;
     final bool duplicateTime = (now == _lastPushTime);
     _lastPushTime = now;
 
-    final List<String> timeStampChars = new List<String>(8);
+    final List<String> timeStampChars = List<String>(8);
     for (int i = 7; i >= 0; i--) {
       timeStampChars[i] = PUSH_CHARS[now % 64];
       now = (now / 64).floor();
     }
     assert(now == 0);
 
-    final StringBuffer result = new StringBuffer(timeStampChars.join());
+    final StringBuffer result = StringBuffer(timeStampChars.join());
 
     if (!duplicateTime) {
       for (int i = 0; i < 12; i++) {

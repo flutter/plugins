@@ -11,23 +11,23 @@ import 'package:firebase_analytics/observer.dart';
 import 'tabs_page.dart';
 
 void main() {
-  runApp(new MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  static FirebaseAnalytics analytics = new FirebaseAnalytics();
+  static FirebaseAnalytics analytics = FirebaseAnalytics();
   static FirebaseAnalyticsObserver observer =
-      new FirebaseAnalyticsObserver(analytics: analytics);
+      FirebaseAnalyticsObserver(analytics: analytics);
 
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
+    return MaterialApp(
       title: 'Firebase Analytics Demo',
-      theme: new ThemeData(
+      theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
       navigatorObservers: <NavigatorObserver>[observer],
-      home: new MyHomePage(
+      home: MyHomePage(
         title: 'Firebase Analytics Demo',
         analytics: analytics,
         observer: observer,
@@ -45,7 +45,7 @@ class MyHomePage extends StatefulWidget {
   final FirebaseAnalyticsObserver observer;
 
   @override
-  _MyHomePageState createState() => new _MyHomePageState(analytics, observer);
+  _MyHomePageState createState() => _MyHomePageState(analytics, observer);
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -61,7 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  Future<Null> _sendAnalyticsEvent() async {
+  Future<void> _sendAnalyticsEvent() async {
     await analytics.logEvent(
       name: 'test_event',
       parameters: <String, dynamic>{
@@ -75,12 +75,12 @@ class _MyHomePageState extends State<MyHomePage> {
     setMessage('logEvent succeeded');
   }
 
-  Future<Null> _testSetUserId() async {
+  Future<void> _testSetUserId() async {
     await analytics.setUserId('some-user');
     setMessage('setUserId succeeded');
   }
 
-  Future<Null> _testSetCurrentScreen() async {
+  Future<void> _testSetCurrentScreen() async {
     await analytics.setCurrentScreen(
       screenName: 'Analytics Demo',
       screenClassOverride: 'AnalyticsDemo',
@@ -88,28 +88,28 @@ class _MyHomePageState extends State<MyHomePage> {
     setMessage('setCurrentScreen succeeded');
   }
 
-  Future<Null> _testSetAnalyticsCollectionEnabled() async {
+  Future<void> _testSetAnalyticsCollectionEnabled() async {
     await analytics.android?.setAnalyticsCollectionEnabled(false);
     await analytics.android?.setAnalyticsCollectionEnabled(true);
     setMessage('setAnalyticsCollectionEnabled succeeded');
   }
 
-  Future<Null> _testSetMinimumSessionDuration() async {
+  Future<void> _testSetMinimumSessionDuration() async {
     await analytics.android?.setMinimumSessionDuration(20000);
     setMessage('setMinimumSessionDuration succeeded');
   }
 
-  Future<Null> _testSetSessionTimeoutDuration() async {
+  Future<void> _testSetSessionTimeoutDuration() async {
     await analytics.android?.setSessionTimeoutDuration(2000000);
     setMessage('setSessionTimeoutDuration succeeded');
   }
 
-  Future<Null> _testSetUserProperty() async {
+  Future<void> _testSetUserProperty() async {
     await analytics.setUserProperty(name: 'regular', value: 'indeed');
     setMessage('setUserProperty succeeded');
   }
 
-  Future<Null> _testAllEventTypes() async {
+  Future<void> _testAllEventTypes() async {
     await analytics.logAddPaymentInfo();
     await analytics.logAddToCart(
       currency: 'USD',
@@ -272,55 +272,55 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text(widget.title),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
       ),
-      body: new Column(
+      body: Column(
         children: <Widget>[
-          new MaterialButton(
+          MaterialButton(
             child: const Text('Test logEvent'),
             onPressed: _sendAnalyticsEvent,
           ),
-          new MaterialButton(
+          MaterialButton(
             child: const Text('Test standard event types'),
             onPressed: _testAllEventTypes,
           ),
-          new MaterialButton(
+          MaterialButton(
             child: const Text('Test setUserId'),
             onPressed: _testSetUserId,
           ),
-          new MaterialButton(
+          MaterialButton(
             child: const Text('Test setCurrentScreen'),
             onPressed: _testSetCurrentScreen,
           ),
-          new MaterialButton(
+          MaterialButton(
             child: const Text('Test setAnalyticsCollectionEnabled'),
             onPressed: _testSetAnalyticsCollectionEnabled,
           ),
-          new MaterialButton(
+          MaterialButton(
             child: const Text('Test setMinimumSessionDuration'),
             onPressed: _testSetMinimumSessionDuration,
           ),
-          new MaterialButton(
+          MaterialButton(
             child: const Text('Test setSessionTimeoutDuration'),
             onPressed: _testSetSessionTimeoutDuration,
           ),
-          new MaterialButton(
+          MaterialButton(
             child: const Text('Test setUserProperty'),
             onPressed: _testSetUserProperty,
           ),
-          new Text(_message,
+          Text(_message,
               style: const TextStyle(color: Color.fromARGB(255, 0, 155, 0))),
         ],
       ),
-      floatingActionButton: new FloatingActionButton(
+      floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.tab),
           onPressed: () {
-            Navigator.of(context).push(new MaterialPageRoute<TabsPage>(
+            Navigator.of(context).push(MaterialPageRoute<TabsPage>(
                 settings: const RouteSettings(name: TabsPage.routeName),
                 builder: (BuildContext context) {
-                  return new TabsPage(observer);
+                  return TabsPage(observer);
                 }));
           }),
     );

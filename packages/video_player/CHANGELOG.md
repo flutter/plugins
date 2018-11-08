@@ -1,3 +1,20 @@
+## 0.7.2
+
+* Updated to use factories on exoplayer `MediaSource`s for Android instead of the now-deprecated constructors.
+
+## 0.7.1
+
+* Fixed null exception on Android when the video has a width or height of 0.
+
+## 0.7.0
+
+* Add a unit test for controller and texture changes. This is a breaking change since the interface
+  had to be cleaned up to facilitate faking.
+
+## 0.6.6
+
+* Fix the condition where the player doesn't update when attached controller is changed.
+
 ## 0.6.5
 
 * Eliminate race conditions around initialization: now initialization events are queued and guaranteed

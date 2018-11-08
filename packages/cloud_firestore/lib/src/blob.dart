@@ -5,8 +5,9 @@
 part of cloud_firestore;
 
 class Blob {
-  final Uint8List bytes;
   const Blob(this.bytes);
+
+  final Uint8List bytes;
 
   @override
   bool operator ==(dynamic other) =>

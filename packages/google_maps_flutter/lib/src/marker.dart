@@ -15,7 +15,12 @@ class Marker {
   @visibleForTesting
   Marker(this._id, this._options);
 
+  /// A unique identifier for this marker.
+  ///
+  /// The identirifer is an arbitrary unique string.
   final String _id;
+  String get id => _id;
+
   MarkerOptions _options;
 
   /// The marker configuration options most recently applied programmatically
@@ -58,6 +63,25 @@ class InfoWindowText {
 /// When used to change configuration, null values will be interpreted as
 /// "do not change this configuration option".
 class MarkerOptions {
+  /// Creates a set of marker configuration options.
+  ///
+  /// By default, every non-specified field is null, meaning no desire to change
+  /// marker defaults or current configuration.
+  const MarkerOptions({
+    this.alpha,
+    this.anchor,
+    this.consumeTapEvents,
+    this.draggable,
+    this.flat,
+    this.icon,
+    this.infoWindowAnchor,
+    this.infoWindowText,
+    this.position,
+    this.rotation,
+    this.visible,
+    this.zIndex,
+  }) : assert(alpha == null || (0.0 <= alpha && alpha <= 1.0));
+
   /// The opacity of the marker, between 0.0 and 1.0 inclusive.
   ///
   /// 0.0 means fully transparent, 1.0 means fully opaque.
@@ -112,25 +136,6 @@ class MarkerOptions {
   /// earlier, and thus appearing to be closer to the surface of the Earth.
   final double zIndex;
 
-  /// Creates a set of marker configuration options.
-  ///
-  /// By default, every non-specified field is null, meaning no desire to change
-  /// marker defaults or current configuration.
-  const MarkerOptions({
-    this.alpha,
-    this.anchor,
-    this.consumeTapEvents,
-    this.draggable,
-    this.flat,
-    this.icon,
-    this.infoWindowAnchor,
-    this.infoWindowText,
-    this.position,
-    this.rotation,
-    this.visible,
-    this.zIndex,
-  }) : assert(alpha == null || (0.0 <= alpha && alpha <= 1.0));
-
   /// Default marker options.
   ///
   /// Specifies a marker that
@@ -169,7 +174,7 @@ class MarkerOptions {
     if (changes == null) {
       return this;
     }
-    return new MarkerOptions(
+    return MarkerOptions(
       alpha: changes.alpha ?? alpha,
       anchor: changes.anchor ?? anchor,
       consumeTapEvents: changes.consumeTapEvents ?? consumeTapEvents,
