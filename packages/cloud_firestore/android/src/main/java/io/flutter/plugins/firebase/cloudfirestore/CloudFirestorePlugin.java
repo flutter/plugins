@@ -283,6 +283,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
                           "DoTransaction",
                           arguments,
                           new Result() {
+                            @SuppressWarnings("unchecked")
                             @Override
                             public void success(Object doTransactionResult) {
                               transactionTCS.setResult((Map<String, Object>) doTransactionResult);
@@ -351,6 +352,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
           final Map<String, Object> arguments = call.arguments();
           final Transaction transaction = getTransaction(arguments);
           new AsyncTask<Void, Void, Void>() {
+            @SuppressWarnings("unchecked")
             @Override
             protected Void doInBackground(Void... voids) {
               Map<String, Object> data = (Map<String, Object>) arguments.get("data");
@@ -370,6 +372,7 @@ public class CloudFirestorePlugin implements MethodCallHandler {
           final Map<String, Object> arguments = call.arguments();
           final Transaction transaction = getTransaction(arguments);
           new AsyncTask<Void, Void, Void>() {
+            @SuppressWarnings("unchecked")
             @Override
             protected Void doInBackground(Void... voids) {
               Map<String, Object> data = (Map<String, Object>) arguments.get("data");
