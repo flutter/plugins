@@ -67,10 +67,6 @@ class FirebaseAnalytics {
   ///
   /// [1]: https://www.google.com/policies/privacy/
   Future<void> setUserId(String id) async {
-    if (id == null) {
-      throw ArgumentError.notNull('id');
-    }
-
     await _channel.invokeMethod('setUserId', id);
   }
 
