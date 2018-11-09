@@ -1,4 +1,4 @@
-import 'package:test_api/test_api.dart';
+import 'package:test/test.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 void main() {
