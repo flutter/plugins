@@ -8,6 +8,7 @@
 
 * Bump Android dependencies to latest.
 * __THIS WAS AN UNINTENTIONAL BREAKING CHANGE__. Users should consume 0.6.1 instead if they need the old API, or 0.7.0 for the bumped version.
+* Guide how to fix crash with admob version 17.0.0 in README
 
 ## 0.6.1
 

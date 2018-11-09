@@ -1,6 +1,6 @@
 name: cloud_functions
 description: Flutter plugin for Cloud Functions.
-version: 0.0.4+1
+version: 0.0.5
 author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/cloud_functions
 

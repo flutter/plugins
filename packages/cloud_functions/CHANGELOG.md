@@ -1,6 +1,11 @@
+## 0.0.5
+
+* Set iOS deployment target to 8.0 (minimum supported by both Firebase SDKs and Flutter), fixes compilation errors.
+* Fixes null pointer error when callable function fails with exception (iOS).
+
 ## 0.0.4+1
 
-* Bump Android dependncies to latest.
+* Bump Android dependencies to latest.
 
 ## 0.0.4
 
