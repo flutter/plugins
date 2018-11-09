@@ -20,12 +20,6 @@ T wrap<T extends num>(T val, T low, T high) {
 
 /// A pair of latitude and longitude coordinates, stored as degrees.
 class LatLng {
-  /// The latitude in degrees between -90.0 and 90.0, both inclusive.
-  final double latitude;
-
-  /// The longitude in degrees between -180.0 (inclusive) and 180.0 (exclusive).
-  final double longitude;
-
   /// Creates a geographical location specified in degrees [latitude] and
   /// [longitude].
   ///
@@ -39,6 +33,12 @@ class LatLng {
         latitude =
             (latitude < -90.0 ? -90.0 : (90.0 < latitude ? 90.0 : latitude)),
         longitude = (longitude + 180.0) % 360.0 - 180.0;
+
+  /// The latitude in degrees between -90.0 and 90.0, both inclusive.
+  final double latitude;
+
+  /// The longitude in degrees between -180.0 (inclusive) and 180.0 (exclusive).
+  final double longitude;
 
   dynamic _toJson() {
     return <double>[latitude, longitude];
@@ -66,10 +66,10 @@ class LatLng {
 }
 
 class _LatRange {
+  _LatRange(this.south, this.north);
+
   double north;
   double south;
-
-  _LatRange(this.south, this.north);
 
   double get center => (north + south) / 2;
 
@@ -100,12 +100,12 @@ class _LatRange {
 }
 
 class _LngRange {
-  double west;
-  double east;
-
   _LngRange(double west, double east)
       : west = -180.0 == west && 180.0 != east ? 180.0 : west,
         east = -180.0 == east && 180.0 != west ? 180.0 : east;
+
+  double west;
+  double east;
 
   bool isEmpty() {
     return 360.0 == west - east;
