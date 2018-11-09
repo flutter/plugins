@@ -1,6 +1,7 @@
 ## 0.6.1+1
 
 * Bump Android dependencies to latest.
+* Guide how to fix crash with admob version 17.0.0 in README
 
 ## 0.6.1
 
