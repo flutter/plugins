@@ -55,7 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
   List<StorageUploadTask> _tasks = <StorageUploadTask>[];
 
-  Future<Null> _uploadFile() async {
+  Future<void> _uploadFile() async {
     final String uuid = Uuid().v1();
     final Directory systemTempDir = Directory.systemTemp;
     final File file = await File('${systemTempDir.path}/foo$uuid.txt').create();
@@ -76,7 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  Future<Null> _downloadFile(StorageReference ref) async {
+  Future<void> _downloadFile(StorageReference ref) async {
     final String url = await ref.getDownloadURL();
     final String uuid = Uuid().v1();
     final http.Response downloadData = await http.get(url);

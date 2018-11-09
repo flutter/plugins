@@ -5,6 +5,7 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -16,6 +17,9 @@ const String kMockEmail = 'test@example.com';
 const String kMockPassword = 'passw0rd';
 const String kMockIdToken = '12345';
 const String kMockAccessToken = '67890';
+const String kMockGithubToken = 'github';
+const String kMockAuthToken = '23456';
+const String kMockAuthTokenSecret = '78901';
 const String kMockCustomToken = '12345';
 const String kMockPhoneNumber = '5555555555';
 const String kMockVerificationId = '12345';
@@ -24,7 +28,9 @@ const String kMockLanguage = 'en';
 
 void main() {
   group('$FirebaseAuth', () {
-    final FirebaseAuth auth = FirebaseAuth.instance;
+    final String appName = 'testApp';
+    final FirebaseApp app = FirebaseApp(name: appName);
+    final FirebaseAuth auth = FirebaseAuth.fromApp(app);
     final List<MethodCall> log = <MethodCall>[];
 
     int mockHandleId = 0;
@@ -41,10 +47,9 @@ void main() {
             return mockHandleId++;
             break;
           case "sendPasswordResetEmail":
-          case "updateProfile":
-            return null;
-            break;
           case "updateEmail":
+          case "updatePassword":
+          case "updateProfile":
             return null;
             break;
           case "fetchProvidersForEmail":
@@ -78,7 +83,8 @@ void main() {
       expect(
         log,
         <Matcher>[
-          isMethodCall('currentUser', arguments: null),
+          isMethodCall('currentUser',
+              arguments: <String, String>{'app': auth.app.name}),
         ],
       );
     });
@@ -91,14 +97,18 @@ void main() {
       expect(
         log,
         <Matcher>[
-          isMethodCall('signInAnonymously', arguments: null),
+          isMethodCall('signInAnonymously',
+              arguments: <String, String>{'app': auth.app.name}),
           isMethodCall(
             'getIdToken',
-            arguments: <String, bool>{'refresh': false},
+            arguments: <String, dynamic>{
+              'refresh': false,
+              'app': auth.app.name
+            },
           ),
           isMethodCall(
             'getIdToken',
-            arguments: <String, bool>{'refresh': true},
+            arguments: <String, dynamic>{'refresh': true, 'app': auth.app.name},
           ),
         ],
       );
@@ -118,6 +128,7 @@ void main() {
             arguments: <String, String>{
               'email': kMockEmail,
               'password': kMockPassword,
+              'app': auth.app.name,
             },
           ),
         ],
@@ -134,7 +145,10 @@ void main() {
         <Matcher>[
           isMethodCall(
             'fetchProvidersForEmail',
-            arguments: <String, String>{'email': kMockEmail},
+            arguments: <String, String>{
+              'email': kMockEmail,
+              'app': auth.app.name
+            },
           ),
         ],
       );
@@ -154,6 +168,7 @@ void main() {
             arguments: <String, String>{
               'email': kMockEmail,
               'password': kMockPassword,
+              'app': auth.app.name
             },
           ),
         ],
@@ -174,6 +189,7 @@ void main() {
             arguments: <String, String>{
               'idToken': kMockIdToken,
               'accessToken': kMockAccessToken,
+              'app': auth.app.name
             },
           ),
         ],
@@ -187,6 +203,7 @@ void main() {
         isMethodCall('signInWithPhoneNumber', arguments: <String, dynamic>{
           'verificationId': kMockVerificationId,
           'smsCode': kMockSmsCode,
+          'app': auth.app.name,
         })
       ]);
     });
@@ -205,6 +222,7 @@ void main() {
           'phoneNumber': kMockPhoneNumber,
           'timeout': 5000,
           'forceResendingToken': null,
+          'app': auth.app.name,
         })
       ]);
     });
@@ -223,6 +241,7 @@ void main() {
             arguments: <String, String>{
               'idToken': kMockIdToken,
               'accessToken': kMockAccessToken,
+              'app': auth.app.name,
             },
           ),
         ],
@@ -241,6 +260,28 @@ void main() {
             'linkWithFacebookCredential',
             arguments: <String, String>{
               'accessToken': kMockAccessToken,
+              'app': auth.app.name,
+            },
+          ),
+        ],
+      );
+    });
+
+    test('linkWithTwitterCredential', () async {
+      final FirebaseUser user = await auth.linkWithTwitterCredential(
+        authToken: kMockAuthToken,
+        authTokenSecret: kMockAuthTokenSecret,
+      );
+      verifyUser(user);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'linkWithTwitterCredential',
+            arguments: <String, String>{
+              'authToken': kMockAuthToken,
+              'authTokenSecret': kMockAuthTokenSecret,
+              'app': auth.app.name,
             },
           ),
         ],
@@ -259,6 +300,87 @@ void main() {
             'signInWithFacebook',
             arguments: <String, String>{
               'accessToken': kMockAccessToken,
+              'app': auth.app.name,
+            },
+          ),
+        ],
+      );
+    });
+
+    test('linkWithTwitterCredential', () async {
+      final FirebaseUser user = await auth.linkWithTwitterCredential(
+        authToken: kMockAuthToken,
+        authTokenSecret: kMockAuthTokenSecret,
+      );
+      verifyUser(user);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'linkWithTwitterCredential',
+            arguments: <String, String>{
+              'app': auth.app.name,
+              'authToken': kMockAuthToken,
+              'authTokenSecret': kMockAuthTokenSecret,
+            },
+          ),
+        ],
+      );
+    });
+
+    test('signInWithTwitter', () async {
+      final FirebaseUser user = await auth.signInWithTwitter(
+        authToken: kMockAuthToken,
+        authTokenSecret: kMockAuthTokenSecret,
+      );
+      verifyUser(user);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'signInWithTwitter',
+            arguments: <String, String>{
+              'app': auth.app.name,
+              'authToken': kMockAuthToken,
+              'authTokenSecret': kMockAuthTokenSecret,
+            },
+          ),
+        ],
+      );
+    });
+
+    test('linkWithGithubCredential', () async {
+      final FirebaseUser user = await auth.linkWithGithubCredential(
+        token: kMockGithubToken,
+      );
+      verifyUser(user);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'linkWithGithubCredential',
+            arguments: <String, String>{
+              'app': auth.app.name,
+              'token': kMockGithubToken,
+            },
+          ),
+        ],
+      );
+    });
+
+    test('signInWithGithub', () async {
+      final FirebaseUser user = await auth.signInWithGithub(
+        token: kMockGithubToken,
+      );
+      verifyUser(user);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'signInWithGithub',
+            arguments: <String, String>{
+              'app': auth.app.name,
+              'token': kMockGithubToken,
             },
           ),
         ],
@@ -279,6 +401,7 @@ void main() {
             arguments: <String, String>{
               'email': kMockEmail,
               'password': kMockPassword,
+              'app': auth.app.name,
             },
           ),
         ],
@@ -294,11 +417,11 @@ void main() {
         <Matcher>[
           isMethodCall(
             'currentUser',
-            arguments: null,
+            arguments: <String, String>{'app': auth.app.name},
           ),
           isMethodCall(
             'sendEmailVerification',
-            arguments: null,
+            arguments: <String, String>{'app': auth.app.name},
           ),
         ],
       );
@@ -313,11 +436,11 @@ void main() {
         <Matcher>[
           isMethodCall(
             'currentUser',
-            arguments: null,
+            arguments: <String, String>{'app': auth.app.name},
           ),
           isMethodCall(
             'reload',
-            arguments: null,
+            arguments: <String, String>{'app': auth.app.name},
           ),
         ],
       );
@@ -332,11 +455,11 @@ void main() {
         <Matcher>[
           isMethodCall(
             'currentUser',
-            arguments: null,
+            arguments: <String, String>{'app': auth.app.name},
           ),
           isMethodCall(
             'delete',
-            arguments: null,
+            arguments: <String, String>{'app': auth.app.name},
           ),
         ],
       );
@@ -353,10 +476,47 @@ void main() {
             'sendPasswordResetEmail',
             arguments: <String, String>{
               'email': kMockEmail,
+              'app': auth.app.name
             },
           ),
         ],
       );
+    });
+
+    test('updateEmail', () async {
+      final FirebaseUser user = await auth.currentUser();
+      await user.updateEmail(kMockEmail);
+      expect(log, <Matcher>[
+        isMethodCall(
+          'currentUser',
+          arguments: <String, String>{'app': auth.app.name},
+        ),
+        isMethodCall(
+          'updateEmail',
+          arguments: <String, String>{
+            'email': kMockEmail,
+            'app': auth.app.name,
+          },
+        ),
+      ]);
+    });
+
+    test('updatePassword', () async {
+      final FirebaseUser user = await auth.currentUser();
+      await user.updatePassword(kMockPassword);
+      expect(log, <Matcher>[
+        isMethodCall(
+          'currentUser',
+          arguments: <String, String>{'app': auth.app.name},
+        ),
+        isMethodCall(
+          'updatePassword',
+          arguments: <String, String>{
+            'password': kMockPassword,
+            'app': auth.app.name,
+          },
+        ),
+      ]);
     });
 
     test('updateProfile', () async {
@@ -364,30 +524,22 @@ void main() {
       userUpdateInfo.photoUrl = kMockPhotoUrl;
       userUpdateInfo.displayName = kMockDisplayName;
 
-      await auth.updateProfile(userUpdateInfo);
+      final FirebaseUser user = await auth.currentUser();
+      await user.updateProfile(userUpdateInfo);
       expect(log, <Matcher>[
+        isMethodCall(
+          'currentUser',
+          arguments: <String, String>{'app': auth.app.name},
+        ),
         isMethodCall(
           'updateProfile',
           arguments: <String, String>{
             'photoUrl': kMockPhotoUrl,
             'displayName': kMockDisplayName,
+            'app': auth.app.name,
           },
         ),
       ]);
-    });
-
-    test('updateEmail', () async {
-      final String updatedEmail = 'atestemail@gmail.com';
-      auth.updateEmail(email: updatedEmail);
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall(
-            'updateEmail',
-            arguments: <String, String>{'email': updatedEmail},
-          ),
-        ],
-      );
     });
 
     test('signInWithCustomToken', () async {
@@ -399,6 +551,7 @@ void main() {
         <Matcher>[
           isMethodCall('signInWithCustomToken', arguments: <String, String>{
             'token': kMockCustomToken,
+            'app': auth.app.name,
           })
         ],
       );
@@ -407,13 +560,13 @@ void main() {
     test('onAuthStateChanged', () async {
       mockHandleId = 42;
 
-      Future<Null> simulateEvent(Map<String, dynamic> user) async {
+      Future<void> simulateEvent(Map<String, dynamic> user) async {
         await BinaryMessages.handlePlatformMessage(
           FirebaseAuth.channel.name,
           FirebaseAuth.channel.codec.encodeMethodCall(
             MethodCall(
               'onAuthStateChanged',
-              <String, dynamic>{'id': 42, 'user': user},
+              <String, dynamic>{'id': 42, 'user': user, 'app': auth.app.name},
             ),
           ),
           (_) {},
@@ -425,7 +578,7 @@ void main() {
       // Subscribe and allow subscription to complete.
       final StreamSubscription<FirebaseUser> subscription =
           auth.onAuthStateChanged.listen(events.add);
-      await Future<Null>.delayed(const Duration(seconds: 0));
+      await Future<void>.delayed(const Duration(seconds: 0));
 
       await simulateEvent(null);
       await simulateEvent(mockFirebaseUser());
@@ -438,16 +591,19 @@ void main() {
 
       // Cancel subscription and allow cancellation to complete.
       subscription.cancel();
-      await Future<Null>.delayed(const Duration(seconds: 0));
+      await Future<void>.delayed(const Duration(seconds: 0));
 
       expect(
         log,
         <Matcher>[
-          isMethodCall('startListeningAuthState', arguments: null),
+          isMethodCall('startListeningAuthState', arguments: <String, String>{
+            'app': auth.app.name,
+          }),
           isMethodCall(
             'stopListeningAuthState',
             arguments: <String, dynamic>{
               'id': 42,
+              'app': auth.app.name,
             },
           ),
         ],
@@ -464,6 +620,7 @@ void main() {
             'setLanguageCode',
             arguments: <String, String>{
               'language': kMockLanguage,
+              'app': auth.app.name,
             },
           ),
         ],

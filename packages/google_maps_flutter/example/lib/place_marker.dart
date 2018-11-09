@@ -26,9 +26,9 @@ class PlaceMarkerBody extends StatefulWidget {
 }
 
 class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
-  static final LatLng center = const LatLng(-33.86711, 151.1947171);
-
   PlaceMarkerBodyState();
+
+  static final LatLng center = const LatLng(-33.86711, 151.1947171);
 
   GoogleMapController controller;
   int _markerCount = 0;
