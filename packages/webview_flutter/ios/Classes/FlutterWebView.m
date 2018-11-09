@@ -17,8 +17,8 @@
 }
 
 - (NSObject<FlutterPlatformView>*)createWithFrame:(CGRect)frame
-            viewIdentifier:(int64_t)viewId
-                 arguments:(id _Nullable)args {
+                                   viewIdentifier:(int64_t)viewId
+                                        arguments:(id _Nullable)args {
   FLTWebViewController* webviewController =
       [[FLTWebViewController alloc] initWithWithFrame:frame
                                        viewIdentifier:viewId
@@ -43,8 +43,7 @@
     _viewId = viewId;
     _webView = [[WKWebView alloc] initWithFrame:frame];
     NSString* channelName = [NSString stringWithFormat:@"plugins.flutter.io/webview_%lld", viewId];
-    _channel =
-        [FlutterMethodChannel methodChannelWithName:channelName binaryMessenger:messenger];
+    _channel = [FlutterMethodChannel methodChannelWithName:channelName binaryMessenger:messenger];
     __weak __typeof__(self) weakSelf = self;
     [_channel setMethodCallHandler:^(FlutterMethodCall* call, FlutterResult result) {
       [weakSelf onMethodCall:call result:result];

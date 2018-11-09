@@ -3,7 +3,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface FLTWebViewController : NSObject<FlutterPlatformView>
+@interface FLTWebViewController : NSObject <FlutterPlatformView>
 
 - (instancetype)initWithWithFrame:(CGRect)frame
                    viewIdentifier:(int64_t)viewId
