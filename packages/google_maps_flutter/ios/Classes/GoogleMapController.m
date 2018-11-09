@@ -135,62 +135,6 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
   _mapView.hidden = YES;
 }
 
-#pragma mark - Implementations of JSON conversion functions.
-
-static id locationToJson(CLLocationCoordinate2D position) {
-  return @[ @(position.latitude), @(position.longitude) ];
-}
-
-static id positionToJson(GMSCameraPosition* position) {
-  if (!position) {
-    return nil;
-  }
-  return @{
-           @"target" : locationToJson([position target]),
-           @"zoom" : @([position zoom]),
-           @"bearing" : @([position bearing]),
-           @"tilt" : @([position viewingAngle]),
-           };
-}
-
-static bool toBool(id json) {
-  NSNumber* data = json;
-  return data.boolValue;
-}
-
-static int toInt(id json) {
-  NSNumber* data = json;
-  return data.intValue;
-}
-
-static double toDouble(id json) {
-  NSNumber* data = json;
-  return data.doubleValue;
-}
-
-static float toFloat(id json) {
-  NSNumber* data = json;
-  return data.floatValue;
-}
-
-static CLLocationCoordinate2D toLocation(id json) {
-  NSArray* data = json;
-  return CLLocationCoordinate2DMake(toDouble(data[0]), toDouble(data[1]));
-}
-
-static CGPoint toPoint(id json) {
-  NSArray* data = json;
-  return CGPointMake(toDouble(data[0]), toDouble(data[1]));
-}
-
-static GMSCameraPosition* toCameraPosition(id json) {
-  NSDictionary* data = json;
-  return [GMSCameraPosition cameraWithTarget:toLocation(data[@"target"])
-                                        zoom:toFloat(data[@"zoom"])
-                                     bearing:toDouble(data[@"bearing"])
-                                viewingAngle:toDouble(data[@"tilt"])];
-}
-
 - (void)animateWithCameraUpdate:(GMSCameraUpdate*)cameraUpdate {
   [_mapView animateWithCameraUpdate:cameraUpdate];
 }
@@ -295,6 +239,62 @@ static GMSCameraPosition* toCameraPosition(id json) {
   [_delegate onInfoWindowTappedOnMap:_mapId marker:markerId];
 }
 @end
+
+#pragma mark - Implementations of JSON conversion functions.
+
+static id locationToJson(CLLocationCoordinate2D position) {
+  return @[ @(position.latitude), @(position.longitude) ];
+}
+
+static id positionToJson(GMSCameraPosition* position) {
+  if (!position) {
+    return nil;
+  }
+  return @{
+           @"target" : locationToJson([position target]),
+           @"zoom" : @([position zoom]),
+           @"bearing" : @([position bearing]),
+           @"tilt" : @([position viewingAngle]),
+           };
+}
+
+static bool toBool(id json) {
+  NSNumber* data = json;
+  return data.boolValue;
+}
+
+static int toInt(id json) {
+  NSNumber* data = json;
+  return data.intValue;
+}
+
+static double toDouble(id json) {
+  NSNumber* data = json;
+  return data.doubleValue;
+}
+
+static float toFloat(id json) {
+  NSNumber* data = json;
+  return data.floatValue;
+}
+
+static CLLocationCoordinate2D toLocation(id json) {
+  NSArray* data = json;
+  return CLLocationCoordinate2DMake(toDouble(data[0]), toDouble(data[1]));
+}
+
+static CGPoint toPoint(id json) {
+  NSArray* data = json;
+  return CGPointMake(toDouble(data[0]), toDouble(data[1]));
+}
+
+static GMSCameraPosition* toCameraPosition(id json) {
+  NSDictionary* data = json;
+  return [GMSCameraPosition cameraWithTarget:toLocation(data[@"target"])
+                                        zoom:toFloat(data[@"zoom"])
+                                     bearing:toDouble(data[@"bearing"])
+                                viewingAngle:toDouble(data[@"tilt"])];
+}
 
 static GMSCameraPosition* toOptionalCameraPosition(id json) {
   return json ? toCameraPosition(json) : nil;
