@@ -37,7 +37,10 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
 - (NSObject<FlutterPlatformView>*)createWithFrame:(CGRect)frame
                                    viewIdentifier:(int64_t)viewId
                                         arguments:(id _Nullable)args {
-  return [[FLTGoogleMapController alloc] initWithFrame:frame viewIdentifier:viewId arguments:args registrar:_registrar];
+  return [[FLTGoogleMapController alloc] initWithFrame:frame
+                                        viewIdentifier:viewId
+                                             arguments:args
+                                             registrar:_registrar];
 }
 @end
 
@@ -51,9 +54,9 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
-                   viewIdentifier:(int64_t)viewId
-                        arguments:(id _Nullable)args
-                  registrar:(NSObject<FlutterPluginRegistrar>*)registrar {
+               viewIdentifier:(int64_t)viewId
+                    arguments:(id _Nullable)args
+                    registrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   if ([super init]) {
     _viewId = viewId;
 
@@ -63,11 +66,13 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
     _markers = [NSMutableDictionary dictionaryWithCapacity:1];
     _trackCameraPosition = NO;
     interpretMapOptions(options, self);
-    NSString* channelName = [NSString stringWithFormat:@"plugins.flutter.io/google_maps_%lld", viewId];
-    _channel = [FlutterMethodChannel methodChannelWithName:channelName binaryMessenger:registrar.messenger];
+    NSString* channelName =
+        [NSString stringWithFormat:@"plugins.flutter.io/google_maps_%lld", viewId];
+    _channel = [FlutterMethodChannel methodChannelWithName:channelName
+                                           binaryMessenger:registrar.messenger];
     __weak __typeof__(self) weakSelf = self;
     [_channel setMethodCallHandler:^(FlutterMethodCall* call, FlutterResult result) {
-      if(weakSelf) {
+      if (weakSelf) {
         [weakSelf onMethodCall:call result:result];
       }
     }];
@@ -251,11 +256,11 @@ static id positionToJson(GMSCameraPosition* position) {
     return nil;
   }
   return @{
-           @"target" : locationToJson([position target]),
-           @"zoom" : @([position zoom]),
-           @"bearing" : @([position bearing]),
-           @"tilt" : @([position viewingAngle]),
-           };
+    @"target" : locationToJson([position target]),
+    @"zoom" : @([position zoom]),
+    @"bearing" : @([position bearing]),
+    @"tilt" : @([position viewingAngle]),
+  };
 }
 
 static bool toBool(id json) {
@@ -421,8 +426,8 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
       if (iconData.count == 2) {
         image = [UIImage imageNamed:[registrar lookupKeyForAsset:iconData[1]]];
       } else {
-        image =
-        [UIImage imageNamed:[registrar lookupKeyForAsset:iconData[1] fromPackage:iconData[2]]];
+        image = [UIImage imageNamed:[registrar lookupKeyForAsset:iconData[1]
+                                                     fromPackage:iconData[2]]];
       }
     }
     [sink setIcon:image];

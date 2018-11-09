@@ -30,7 +30,8 @@
 @end
 
 // Defines map overlay controllable from Flutter.
-@interface FLTGoogleMapController : NSObject<GMSMapViewDelegate, FLTGoogleMapOptionsSink, FlutterPlatformView>
+@interface FLTGoogleMapController
+    : NSObject<GMSMapViewDelegate, FLTGoogleMapOptionsSink, FlutterPlatformView>
 @property(atomic) id<FLTGoogleMapDelegate> delegate;
 @property(atomic, readonly) id mapId;
 - (instancetype)initWithFrame:(CGRect)frame
@@ -50,6 +51,6 @@
 @end
 
 // Allows the engine to create new Google Map instances.
-@interface FLTGoogleMapFactory : NSObject <FlutterPlatformViewFactory>
+@interface FLTGoogleMapFactory : NSObject<FlutterPlatformViewFactory>
 - (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar;
 @end

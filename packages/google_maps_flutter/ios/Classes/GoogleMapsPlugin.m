@@ -6,8 +6,6 @@
 #import "GoogleMapController.h"
 #import "GoogleMapMarkerController.h"
 
-
-
 #pragma mark - GoogleMaps plugin implementation
 
 @implementation FLTGoogleMapsPlugin {
@@ -30,5 +28,3 @@
   return controller;
 }
 @end
-
-
