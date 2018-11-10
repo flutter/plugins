@@ -1,3 +1,7 @@
+## 3.2.4
+
+* Increase play-services-auth version to 16.0.1
+
 ## 3.2.3
 
 * Change google-services.json and GoogleService-Info.plist of example.
