@@ -8,6 +8,23 @@ displaying banner, interstitial (full-screen), and rewarded video ads using the
 [Feedback](https://github.com/flutter/flutter/issues) and
 [Pull Requests](https://github.com/flutter/plugins/pulls) are welcome.
 
+## AndroidManifest changes
+
+AdMob 17 requires the App ID to be included in the `AndroidManifest.xml`. Failure
+to do so will result in a crash on launch of your app.  The line should look like:
+
+```xml
+<meta-data
+    android:name="com.google.android.gms.ads.APPLICATION_ID"
+    android:value="[ADMOB_APP_ID]"/>
+```
+
+where `[ADMOB_APP_ID]` is your App ID.  You must pass the same value when you 
+initialize the plugin in your Dart code.
+
+See https://goo.gl/fQ2neu for more information about configuring `AndroidManifest.xml`
+and setting up your App ID.
+
 ## Initializing the plugin
 The AdMob plugin must be initialized with an AdMob App ID.
 
@@ -29,6 +46,9 @@ Starting in version 17.0.0, if you are an AdMob publisher you are now required t
 ```
 
 Failure to add this tag will result in the app crashing at app launch with a message starting with *"The Google Mobile Ads SDK was initialized incorrectly."*
+
+On Android, this value must be the same as the App ID value set in your 
+`AndroidManifest.xml`.
 
 ## Using banners and interstitials
 Banner and interstitial ads can be configured with target information.
