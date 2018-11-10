@@ -88,6 +88,14 @@ class _WebViewState extends State<WebView> {
           creationParamsCodec: const StandardMessageCodec(),
         ),
       );
+    } else if (defaultTargetPlatform == TargetPlatform.iOS) {
+      return UiKitView(
+        viewType: 'plugins.flutter.io/webview',
+        onPlatformViewCreated: _onPlatformViewCreated,
+        gestureRecognizers: widget.gestureRecognizers,
+        creationParams: _CreationParams.fromWidget(widget).toMap(),
+        creationParamsCodec: const StandardMessageCodec(),
+      );
     }
     return Text(
         '$defaultTargetPlatform is not yet supported by the webview_flutter plugin');
