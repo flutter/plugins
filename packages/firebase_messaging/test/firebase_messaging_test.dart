@@ -149,13 +149,21 @@ void main() {
   });
 
   test('setAutoInitEnabled', () {
-    bool enabled = true;
-    firebaseMessaging.setAutoInitEnabled(enabled);
-    verify(mockChannel.invokeMethod('setAutoInitEnabled', enabled));
+    // assert that we havent called the method yet
+    verifyNever(firebaseMessaging.setAutoInitEnabled(true));
 
-    enabled = false;
-    firebaseMessaging.setAutoInitEnabled(enabled);
-    verify(mockChannel.invokeMethod('setAutoInitEnabled', enabled));
+    firebaseMessaging.setAutoInitEnabled(true);
+
+    // assert we called the method with enabled = true
+    verify(mockChannel.invokeMethod('setAutoInitEnabled', true));
+
+    // assert that enabled = false was not yet called
+    verifyNever(firebaseMessaging.setAutoInitEnabled(false));
+
+    firebaseMessaging.setAutoInitEnabled(false);
+
+    // assert call with enabled = false was properly done
+    verify(mockChannel.invokeMethod('setAutoInitEnabled', false));
   });
 }
 
