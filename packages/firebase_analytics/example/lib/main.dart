@@ -89,8 +89,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _testSetAnalyticsCollectionEnabled() async {
-    await analytics.android?.setAnalyticsCollectionEnabled(false);
-    await analytics.android?.setAnalyticsCollectionEnabled(true);
+    await analytics.setAnalyticsCollectionEnabled(false);
+    await analytics.setAnalyticsCollectionEnabled(true);
     setMessage('setAnalyticsCollectionEnabled succeeded');
   }
 

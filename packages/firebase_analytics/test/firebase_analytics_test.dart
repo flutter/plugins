@@ -95,7 +95,7 @@ void main() {
     });
 
     test('setAnalyticsCollectionEnabled', () async {
-      await analytics.android.setAnalyticsCollectionEnabled(false);
+      await analytics.setAnalyticsCollectionEnabled(false);
       expect(invokedMethod, 'setAnalyticsCollectionEnabled');
       expect(arguments, false);
     });
