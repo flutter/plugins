@@ -61,6 +61,17 @@ class FirebaseAnalytics {
     });
   }
 
+  /// Sets whether analytics collection is enabled for this app on this device.
+  ///
+  /// This setting is persisted across app sessions. By default it is enabled.
+  Future<void> setAnalyticsCollectionEnabled(bool enabled) async {
+    if (enabled == null) {
+      throw ArgumentError.notNull('enabled');
+    }
+
+    await _channel.invokeMethod('setAnalyticsCollectionEnabled', enabled);
+  }
+
   /// Sets the user ID property.
   ///
   /// This feature must be used in accordance with [Google's Privacy Policy][1].
@@ -782,6 +793,8 @@ class FirebaseAnalyticsAndroid {
   /// Sets whether analytics collection is enabled for this app on this device.
   ///
   /// This setting is persisted across app sessions. By default it is enabled.
+  /// Deprecated: Use [FirebaseAnalytics.setAnalyticsCollectionEnabled] instead.
+  @deprecated
   Future<void> setAnalyticsCollectionEnabled(bool enabled) async {
     if (enabled == null) {
       throw ArgumentError.notNull('enabled');
