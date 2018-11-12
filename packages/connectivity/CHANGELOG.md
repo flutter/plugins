@@ -1,3 +1,8 @@
+##0.3.3
+
+* Adding getWifiIP() to obtain current wifi network's IP.
+
+
 ## 0.3.2
 
 * Adding getWifiName() to obtain current wifi network's SSID.

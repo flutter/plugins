@@ -56,6 +56,17 @@ class Connectivity {
     if (wifiName == '<unknown ssid>') wifiName = null;
     return wifiName;
   }
+
+  /// Obtains the wifi ip (IP) of the connected network
+  ///
+  /// Please note that it DOESN'T WORK on emulators (returns null).
+  Future<String> getWifiIP() async {
+    String wifiIP = await _methodChannel.invokeMethod('wifiIPAddress');
+    // as Android might return <unknown ssid>, uniforming result
+    // our iOS implementation will return null
+    if (wifiIP == '<unknown ip>') wifiIP = null;
+    return wifiIP;
+  }
 }
 
 ConnectivityResult _parseConnectivityResult(String state) {

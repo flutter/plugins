@@ -37,6 +37,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   String _connectionStatus = 'Unknown';
+  String _wifiName, _wifiIP;
   final Connectivity _connectivity = Connectivity();
   StreamSubscription<ConnectivityResult> _connectivitySubscription;
 
@@ -85,7 +86,49 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: const Text('Plugin example app'),
       ),
-      body: Center(child: Text('Connection Status: $_connectionStatus\n')),
+      body: Center(child: Text(getText())),
     );
+  }
+
+  String getText() {
+    if (_connectionStatus.contains('wifi')) {
+      getWifiName();
+
+      return 'Connection Status: $_connectionStatus\n' +
+          'Wifi Name: $_wifiName\n' +
+          'Wifi IP: $_wifiIP\n';
+    } else {
+      return 'Connection Status: $_connectionStatus\n';
+    }
+  }
+
+  Future getWifiName() async {
+    String wifiName;
+
+    try {
+      wifiName = (await _connectivity.getWifiName()).toString();
+
+      setState(() {
+        _wifiName = wifiName;
+      });
+    } on PlatformException catch (e) {
+      print(e.toString());
+    }
+
+    getWifiIp();
+  }
+
+  Future getWifiIp() async {
+    String wifiIp;
+
+    try {
+      wifiIp = (await _connectivity.getWifiIP()).toString();
+
+      setState(() {
+        _wifiIP = wifiIp;
+      });
+    } on PlatformException catch (e) {
+      print(e.toString());
+    }
   }
 }
