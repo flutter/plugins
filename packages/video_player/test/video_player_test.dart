@@ -23,6 +23,8 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
   @override
   String get package => null;
   @override
+  Map<String, String> httpHeaders;
+  @override
   Future<Duration> get position async => value.position;
 
   @override

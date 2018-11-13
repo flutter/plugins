@@ -73,6 +73,7 @@ public class VideoPlayerPlugin implements MethodCallHandler {
         EventChannel eventChannel,
         TextureRegistry.SurfaceTextureEntry textureEntry,
         String dataSource,
+        Map<String, String> httpHeaders,
         Result result) {
       this.eventChannel = eventChannel;
       this.textureEntry = textureEntry;
@@ -86,13 +87,18 @@ public class VideoPlayerPlugin implements MethodCallHandler {
       if (uri.getScheme().equals("asset") || uri.getScheme().equals("file")) {
         dataSourceFactory = new DefaultDataSourceFactory(context, "ExoPlayer");
       } else {
-        dataSourceFactory =
+        DefaultHttpDataSourceFactory httpDataSourceFactory =
             new DefaultHttpDataSourceFactory(
                 "ExoPlayer",
                 null,
                 DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
                 DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS,
                 true);
+
+        dataSourceFactory = httpDataSourceFactory;
+        if (httpHeaders != null) {
+          httpDataSourceFactory.getDefaultRequestProperties().set(httpHeaders);
+        }
       }
 
       MediaSource mediaSource = buildMediaSource(uri, dataSourceFactory, context);
@@ -328,15 +334,19 @@ public class VideoPlayerPlugin implements MethodCallHandler {
                     eventChannel,
                     handle,
                     "asset:///" + assetLookupKey,
+                    null,
                     result);
             videoPlayers.put(handle.id(), player);
           } else {
+            @SuppressWarnings("unchecked")
+            Map<String, String> httpHeaders = call.argument("httpHeaders");
             player =
                 new VideoPlayer(
                     registrar.context(),
                     eventChannel,
                     handle,
                     (String) call.argument("uri"),
+                    httpHeaders,
                     result);
             videoPlayers.put(handle.id(), player);
           }

@@ -157,8 +157,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// the network.
   ///
   /// The URI for the video is given by the [dataSource] argument and must not be
-  /// null.
-  VideoPlayerController.network(this.dataSource)
+  /// null. The [httpHeaders] for the request to the [dataSource] is optional and may be null.
+  VideoPlayerController.network(this.dataSource, {this.httpHeaders})
       : dataSourceType = DataSourceType.network,
         package = null,
         super(VideoPlayerValue(duration: null));
@@ -175,6 +175,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
   int _textureId;
   final String dataSource;
+  Map<String, String> httpHeaders;
 
   /// Describes the type of data source this [VideoPlayerController]
   /// is constructed with.
@@ -203,7 +204,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         };
         break;
       case DataSourceType.network:
-        dataSourceDescription = <String, dynamic>{'uri': dataSource};
+        dataSourceDescription = <String, dynamic>{
+          'uri': dataSource,
+          'httpHeaders': httpHeaders
+        };
         break;
       case DataSourceType.file:
         dataSourceDescription = <String, dynamic>{'uri': dataSource};
