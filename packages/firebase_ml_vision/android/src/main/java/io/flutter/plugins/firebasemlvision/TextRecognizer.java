@@ -11,21 +11,42 @@ import com.google.firebase.ml.vision.text.FirebaseVisionText;
 import com.google.firebase.ml.vision.text.FirebaseVisionTextRecognizer;
 import com.google.firebase.ml.vision.text.RecognizedLanguage;
 import io.flutter.plugin.common.MethodChannel;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class TextRecognizer implements Detector {
-  public static final TextRecognizer instance = new TextRecognizer();
+  static final TextRecognizer instance = new TextRecognizer();
 
   private TextRecognizer() {}
+
+  private FirebaseVisionTextRecognizer textRecognizer;
+  private Map<String, Object> lastOptions;
 
   @Override
   public void handleDetection(
       FirebaseVisionImage image, Map<String, Object> options, final MethodChannel.Result result) {
-    FirebaseVisionTextRecognizer textRecognizer =
-        FirebaseVision.getInstance().getOnDeviceTextRecognizer();
+
+    // Use instantiated detector if the options are the same. Otherwise, close and instantiate new
+    // options.
+
+    if (textRecognizer == null) {
+      lastOptions = options;
+      textRecognizer = FirebaseVision.getInstance().getOnDeviceTextRecognizer();
+    } else if (!options.equals(lastOptions)) {
+      try {
+        textRecognizer.close();
+      } catch (IOException e) {
+        result.error("textRecognizerIOError", e.getLocalizedMessage(), null);
+        return;
+      }
+
+      lastOptions = options;
+      textRecognizer = FirebaseVision.getInstance().getOnDeviceTextRecognizer();
+    }
+
     textRecognizer
         .processImage(image)
         .addOnSuccessListener(
