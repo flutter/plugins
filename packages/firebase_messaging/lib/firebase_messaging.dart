@@ -95,6 +95,25 @@ class FirebaseMessaging {
     _channel.invokeMethod('unsubscribeFromTopic', topic);
   }
 
+  /// Resets Instance ID and revokes all tokens. In iOS, it also unregisters from remote notifications.
+  ///
+  /// A new Instance ID is generated asynchronously if Firebase Cloud Messaging auto-init is enabled.
+  ///
+  /// returns true if the operations executed successfully and false if an error ocurred
+  Future<bool> deleteInstanceID() async {
+    return await _channel.invokeMethod('deleteInstanceID');
+  }
+
+  /// Determine whether FCM auto-initialization is enabled or disabled.
+  Future<bool> autoInitEnabled() async {
+    return await _channel.invokeMethod('autoInitEnabled');
+  }
+
+  /// Enable or disable auto-initialization of Firebase Cloud Messaging.
+  Future<void> setAutoInitEnabled(bool enabled) async {
+    await _channel.invokeMethod('setAutoInitEnabled', enabled);
+  }
+
   Future<dynamic> _handleMethod(MethodCall call) async {
     switch (call.method) {
       case "onToken":
