@@ -74,7 +74,10 @@ public class VideoPlayerPlugin implements MethodCallHandler {
       this.eventChannel = eventChannel;
       this.textureEntry = textureEntry;
 
-      TrackSelector trackSelector = new DefaultTrackSelector();
+      BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter.Builder().build();
+      TrackSelection.Factory videoTrackSelectionFactory =
+          new AdaptiveTrackSelection.Factory(bandwidthMeter);
+      TrackSelector trackSelector = new DefaultTrackSelector(videoTrackSelectionFactory);
       exoPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
 
       Uri uri = Uri.parse(dataSource);
@@ -82,6 +85,10 @@ public class VideoPlayerPlugin implements MethodCallHandler {
       DataSource.Factory dataSourceFactory;
       if (uri.getScheme().equals("asset") || uri.getScheme().equals("file")) {
         dataSourceFactory = new DefaultDataSourceFactory(context, "ExoPlayer");
+      } else if (Util.inferContentType(uri.getLastPathSegment()) == C.TYPE_DASH) {
+        dataSourceFactory =
+            new DefaultHttpDataSourceFactory(
+                "ExoPlayer", (TransferListener<? super DataSource>) bandwidthMeter);
       } else {
         dataSourceFactory =
             new DefaultHttpDataSourceFactory(
