@@ -67,10 +67,6 @@ class FirebaseAnalytics {
   ///
   /// [1]: https://www.google.com/policies/privacy/
   Future<void> setUserId(String id) async {
-    if (id == null) {
-      throw ArgumentError.notNull('id');
-    }
-
     await _channel.invokeMethod('setUserId', id);
   }
 
@@ -616,7 +612,7 @@ class FirebaseAnalytics {
     return logEvent(
       name: 'sign_up',
       parameters: filterOutNulls(<String, dynamic>{
-        _SIGN_UP_METHOD: signUpMethod,
+        _METHOD: signUpMethod,
       }),
     );
   }
@@ -953,8 +949,9 @@ const String _SEARCH_TERM = 'search_term';
 /// Shipping cost (double).
 const String _SHIPPING = 'shipping';
 
-/// Signup method.
-const String _SIGN_UP_METHOD = 'sign_up_method';
+/// A particular approach used in an operation; for example, "facebook" or
+/// "email" in the context of a sign_up or login event.
+const String _METHOD = 'method';
 
 /// `CAMPAIGN_DETAILS` source; used to identify a search engine, newsletter, or
 /// other source.
