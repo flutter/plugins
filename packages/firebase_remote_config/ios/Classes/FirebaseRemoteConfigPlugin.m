@@ -81,9 +81,8 @@
                                                            message:errorMessage
                                                            details:resultDict];
                       } else {
-                        NSString *errorMessage =
-                            @"Unable to complete fetch. Reason is unknown "
-                             "but this could be due to lack of connectivity.";
+                        NSString *errorMessage = @"Unable to complete fetch. Reason is unknown "
+                                                  "but this could be due to lack of connectivity.";
                         flutterError = [FlutterError errorWithCode:@"fetchFailed"
                                                            message:errorMessage
                                                            details:resultDict];

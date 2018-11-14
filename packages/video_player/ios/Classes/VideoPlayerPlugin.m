@@ -26,7 +26,7 @@ int64_t FLTCMTimeToMillis(CMTime time) { return time.value * 1000 / time.timesca
 }
 @end
 
-@interface FLTVideoPlayer : NSObject<FlutterTexture, FlutterStreamHandler>
+@interface FLTVideoPlayer : NSObject <FlutterTexture, FlutterStreamHandler>
 @property(readonly, nonatomic) AVPlayer* player;
 @property(readonly, nonatomic) AVPlayerItemVideoOutput* videoOutput;
 @property(readonly, nonatomic) CADisplayLink* displayLink;
@@ -113,8 +113,8 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
         AVAssetTrack* videoTrack = [tracks objectAtIndex:0];
         void (^trackCompletionHandler)(void) = ^{
           if (_disposed) return;
-          if ([videoTrack statusOfValueForKey:@"preferredTransform" error:nil] ==
-              AVKeyValueStatusLoaded) {
+          if ([videoTrack statusOfValueForKey:@"preferredTransform"
+                                        error:nil] == AVKeyValueStatusLoaded) {
             dispatch_async(dispatch_get_main_queue(), ^{
               [_player replaceCurrentItemWithPlayerItem:item];
             });
@@ -126,8 +126,8 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
     }
   };
   [asset loadValuesAsynchronouslyForKeys:@[ @"tracks" ] completionHandler:assetCompletionHandler];
-  _displayLink =
-      [CADisplayLink displayLinkWithTarget:frameUpdater selector:@selector(onDisplayLink:)];
+  _displayLink = [CADisplayLink displayLinkWithTarget:frameUpdater
+                                             selector:@selector(onDisplayLink:)];
   [_displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
   _displayLink.paused = YES;
   return self;
@@ -352,7 +352,7 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
     [eventChannel setStreamHandler:player];
     player.eventChannel = eventChannel;
     _players[@(textureId)] = player;
-    result(@{ @"textureId" : @(textureId) });
+    result(@{@"textureId" : @(textureId)});
   } else {
     NSDictionary* argsMap = call.arguments;
     int64_t textureId = ((NSNumber*)argsMap[@"textureId"]).unsignedIntegerValue;

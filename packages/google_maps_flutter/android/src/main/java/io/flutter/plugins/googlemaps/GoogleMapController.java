@@ -11,10 +11,14 @@ import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.RESUMED;
 import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.STARTED;
 import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.STOPPED;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.View;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -56,20 +60,25 @@ final class GoogleMapController
   private final Map<String, MarkerController> markers;
   private GoogleMap googleMap;
   private boolean trackCameraPosition = false;
+  private boolean myLocationEnabled;
   private boolean disposed = false;
   private final float density;
   private MethodChannel.Result mapReadyResult;
   private final int registrarActivityHashCode;
+  private final Context context;
 
   GoogleMapController(
       int id,
       Context context,
       AtomicInteger activityState,
       PluginRegistry.Registrar registrar,
-      GoogleMapOptions options) {
+      GoogleMapOptions options,
+      boolean myLocationEnabled) {
     this.id = id;
+    this.context = context;
     this.activityState = activityState;
     this.registrar = registrar;
+    this.myLocationEnabled = myLocationEnabled;
     this.mapView = new MapView(context, options);
     this.markers = new HashMap<>();
     this.density = context.getResources().getDisplayMetrics().density;
@@ -171,6 +180,7 @@ final class GoogleMapController
     googleMap.setOnCameraMoveListener(this);
     googleMap.setOnCameraIdleListener(this);
     googleMap.setOnMarkerClickListener(this);
+    setMyLocationEnabled(myLocationEnabled);
   }
 
   @Override
@@ -398,5 +408,18 @@ final class GoogleMapController
   @Override
   public void setZoomGesturesEnabled(boolean zoomGesturesEnabled) {
     googleMap.getUiSettings().setZoomGesturesEnabled(zoomGesturesEnabled);
+  }
+
+  @Override
+  public void setMyLocationEnabled(boolean myLocationEnabled) {
+    // TODO(amirh): Make the options update fail.
+    // https://github.com/flutter/flutter/issues/24327
+    Log.e("Options update fail", "Location permissions not granted");
+    if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED
+        || ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED) {
+      googleMap.setMyLocationEnabled(myLocationEnabled);
+    }
   }
 }

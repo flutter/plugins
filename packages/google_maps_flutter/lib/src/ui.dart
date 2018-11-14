@@ -86,6 +86,7 @@ class GoogleMapOptions {
     this.tiltGesturesEnabled,
     this.trackCameraPosition,
     this.zoomGesturesEnabled,
+    this.myLocationEnabled,
   });
 
   /// The desired position of the map camera.
@@ -125,6 +126,18 @@ class GoogleMapOptions {
   /// True if the map view should respond to zoom gestures.
   final bool zoomGesturesEnabled;
 
+  /// Whether to show a "My Location" layer over the map.
+  ///
+  /// The layer includes a location indicator and My Location button at the current device location if it is known.
+  /// The indicator is a small blue dot if the device is stationary, or a chevron if the device is moving.
+  /// The My Location button animates to focus on the user's current location if the user's location is currently known.
+  ///
+  /// Enabling this feature requires adding location permissions.
+  /// On Android add either `<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />` or `<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />` to your `AndroidManifest.xml` file.
+  /// You will need to request this permissions during run-time. If they are not granted, the My Location feature will fail silently.
+  /// On iOS add a `NSLocationWhenInUseUsageDescription` key to your `Info.plist` file. This will automatically prompt the user for permissions when the map tries to turn on the My Location layer.
+  final bool myLocationEnabled;
+
   /// Default user interface options.
   ///
   /// Specifies a map view that
@@ -138,18 +151,19 @@ class GoogleMapOptions {
   /// * responds to tilt gestures; [tiltGesturesEnabled] is true
   /// * is silent about camera movement; [trackCameraPosition] is false
   /// * responds to zoom gestures; [zoomGesturesEnabled] is true
+  /// * does not show user location; [myLocationEnabled] is false
   static final GoogleMapOptions defaultOptions = GoogleMapOptions(
-    compassEnabled: true,
-    cameraPosition: const CameraPosition(target: LatLng(0.0, 0.0)),
-    cameraTargetBounds: CameraTargetBounds.unbounded,
-    mapType: MapType.normal,
-    minMaxZoomPreference: MinMaxZoomPreference.unbounded,
-    rotateGesturesEnabled: true,
-    scrollGesturesEnabled: true,
-    tiltGesturesEnabled: true,
-    trackCameraPosition: false,
-    zoomGesturesEnabled: true,
-  );
+      compassEnabled: true,
+      cameraPosition: const CameraPosition(target: LatLng(0.0, 0.0)),
+      cameraTargetBounds: CameraTargetBounds.unbounded,
+      mapType: MapType.normal,
+      minMaxZoomPreference: MinMaxZoomPreference.unbounded,
+      rotateGesturesEnabled: true,
+      scrollGesturesEnabled: true,
+      tiltGesturesEnabled: true,
+      trackCameraPosition: false,
+      zoomGesturesEnabled: true,
+      myLocationEnabled: false);
 
   /// Creates a new options object whose values are the same as this instance,
   /// unless overwritten by the specified [changes].
@@ -172,6 +186,7 @@ class GoogleMapOptions {
       tiltGesturesEnabled: change.tiltGesturesEnabled ?? tiltGesturesEnabled,
       trackCameraPosition: change.trackCameraPosition ?? trackCameraPosition,
       zoomGesturesEnabled: change.zoomGesturesEnabled ?? zoomGesturesEnabled,
+      myLocationEnabled: change.myLocationEnabled ?? myLocationEnabled,
     );
   }
 
@@ -194,6 +209,7 @@ class GoogleMapOptions {
     addIfPresent('tiltGesturesEnabled', tiltGesturesEnabled);
     addIfPresent('trackCameraPosition', trackCameraPosition);
     addIfPresent('zoomGesturesEnabled', zoomGesturesEnabled);
+    addIfPresent('myLocationEnabled', myLocationEnabled);
     return json;
   }
 }

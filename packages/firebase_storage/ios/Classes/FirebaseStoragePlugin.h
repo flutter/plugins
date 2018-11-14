@@ -4,5 +4,5 @@
 
 #import <Flutter/Flutter.h>
 
-@interface FLTFirebaseStoragePlugin : NSObject<FlutterPlugin>
+@interface FLTFirebaseStoragePlugin : NSObject <FlutterPlugin>
 @end

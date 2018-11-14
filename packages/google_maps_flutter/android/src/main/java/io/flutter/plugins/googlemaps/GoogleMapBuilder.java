@@ -14,11 +14,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 class GoogleMapBuilder implements GoogleMapOptionsSink {
   private final GoogleMapOptions options = new GoogleMapOptions();
   private boolean trackCameraPosition = false;
+  private boolean myLocationEnabled = false;
 
   GoogleMapController build(
       int id, Context context, AtomicInteger state, PluginRegistry.Registrar registrar) {
     final GoogleMapController controller =
-        new GoogleMapController(id, context, state, registrar, options);
+        new GoogleMapController(id, context, state, registrar, options, myLocationEnabled);
     controller.init();
     controller.setTrackCameraPosition(trackCameraPosition);
     return controller;
@@ -77,5 +78,10 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   @Override
   public void setZoomGesturesEnabled(boolean zoomGesturesEnabled) {
     options.zoomGesturesEnabled(zoomGesturesEnabled);
+  }
+
+  @Override
+  public void setMyLocationEnabled(boolean myLocationEnabled) {
+    this.myLocationEnabled = myLocationEnabled;
   }
 }
