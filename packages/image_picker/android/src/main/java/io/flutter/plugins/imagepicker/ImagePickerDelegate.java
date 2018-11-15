@@ -420,7 +420,7 @@ public class ImagePickerDelegate
             @Override
             public void onPathReady(String path) {
               String ansPath = handleImageResult(path);
-              if(!path.equals(ansPath)){
+              if (!path.equals(ansPath)) {
                 File oldFile = new File(path);
                 oldFile.delete();
               }
