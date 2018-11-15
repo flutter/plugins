@@ -21,6 +21,21 @@
 - initWithPath:(NSString *)filename result:(FlutterResult)result;
 @end
 
+@interface FLTByteStreamHandler : NSObject<FlutterStreamHandler>
+@property(readonly, nonatomic) FlutterEventSink eventSink;
+@end
+
+@implementation FLTByteStreamHandler {}
+- (FlutterError *_Nullable)onCancelWithArguments:(id _Nullable)arguments {
+  return nil;
+}
+
+- (FlutterError *_Nullable)onListenWithArguments:(id _Nullable)arguments eventSink:(nonnull FlutterEventSink)events {
+  _eventSink = events;
+  return nil;
+}
+@end
+
 @implementation FLTSavePhotoDelegate {
   /// Used to keep the delegate alive until didFinishProcessingPhotoSampleBuffer.
   FLTSavePhotoDelegate *selfReference;
@@ -64,6 +79,7 @@
 @property(readonly, nonatomic) int64_t textureId;
 @property(nonatomic, copy) void (^onFrameAvailable)();
 @property(nonatomic) FlutterEventChannel *eventChannel;
+@property(nonatomic) FLTByteStreamHandler *byteStreamHandler;
 @property(nonatomic) FlutterEventSink eventSink;
 @property(readonly, nonatomic) AVCaptureSession *captureSession;
 @property(readonly, nonatomic) AVCaptureDevice *captureDevice;
@@ -81,6 +97,7 @@
 @property(strong, nonatomic) AVCaptureAudioDataOutput *audioOutput;
 @property(assign, nonatomic) BOOL isRecording;
 @property(assign, nonatomic) BOOL isAudioSetup;
+@property(assign, nonatomic) BOOL isStreamingBytes;
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
                              error:(NSError **)error;
@@ -88,6 +105,8 @@
 - (void)stop;
 - (void)startVideoRecordingAtPath:(NSString *)path result:(FlutterResult)result;
 - (void)stopVideoRecordingWithResult:(FlutterResult)result;
+- (void)startByteStream;
+- (void)stopByteStream;
 - (void)captureToFile:(NSString *)filename result:(FlutterResult)result;
 @end
 
@@ -182,6 +201,23 @@
       @"errorDescription" : @"sample buffer is not ready. Skipping sample"
     });
     return;
+  }
+  if (_isStreamingBytes) {
+    if (!_byteStreamHandler.eventSink) return;
+
+    CVImageBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+    CVPixelBufferLockBaseAddress(pixelBuffer, 0);
+
+    size_t bytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer);
+    size_t height = CVPixelBufferGetHeight(pixelBuffer);
+
+    void *src_buff = CVPixelBufferGetBaseAddress(pixelBuffer);
+
+    NSData *data = [NSData dataWithBytes:src_buff length:bytesPerRow * height];
+
+    FlutterStandardTypedData *eventData = [FlutterStandardTypedData typedDataWithBytes:data];
+    CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
+    _byteStreamHandler.eventSink(eventData);
   }
   if (_isRecording) {
     if (_videoWriter.status == AVAssetWriterStatusFailed) {
@@ -280,6 +316,7 @@
   _eventSink = events;
   return nil;
 }
+
 - (void)startVideoRecordingAtPath:(NSString *)path result:(FlutterResult)result {
   if (!_isRecording) {
     if (![self setupWriterForPath:path]) {
@@ -316,6 +353,30 @@
                             code:NSURLErrorResourceUnavailable
                         userInfo:@{NSLocalizedDescriptionKey : @"Video is not recording!"}];
     result([error flutterError]);
+  }
+}
+
+- (void)startByteStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger {
+  if (!_isStreamingBytes) {
+    FlutterEventChannel *eventChannel = [FlutterEventChannel
+                                         eventChannelWithName:@"plugins.flutter.io/camera/bytes"
+                                         binaryMessenger:messenger];
+
+    _byteStreamHandler = [[FLTByteStreamHandler alloc] init];
+    [eventChannel setStreamHandler:_byteStreamHandler];
+
+    _isStreamingBytes = YES;
+  } else {
+    _eventSink(@{@"event" : @"error", @"errorDescription" : @"Bytes from camera are already streaming!"});
+  }
+}
+
+- (void)stopByteStream {
+  if (_isStreamingBytes) {
+    _isStreamingBytes = NO;
+    _byteStreamHandler = nil;
+  } else {
+    _eventSink(@{@"event" : @"error", @"errorDescription" : @"Bytes from camera are not streaming!"});
   }
 }
 
@@ -492,6 +553,12 @@
       });
       [cam start];
     }
+  } else if ([@"startByteStream" isEqualToString:call.method]) {
+    [_camera startByteStreamWithMessenger:_messenger];
+    result(nil);
+  } else if ([@"stopByteStream" isEqualToString:call.method]) {
+    [_camera stopByteStream];
+    result(nil);
   } else {
     NSDictionary *argsMap = call.arguments;
     NSUInteger textureId = ((NSNumber *)argsMap[@"textureId"]).unsignedIntegerValue;
