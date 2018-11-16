@@ -85,7 +85,7 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
   private FirebaseVisionImage dataToVisionImage(Map<String, Object> imageData) throws IOException {
     String imageType = (String) imageData.get("type");
 
-    switch(imageType) {
+    switch (imageType) {
       case "file":
         File file = new File((String) imageData.get("path"));
         return FirebaseVisionImage.fromFilePath(registrar.context(), Uri.fromFile(file));
@@ -93,12 +93,13 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
         @SuppressWarnings("unchecked")
         Map<String, Object> metadataData = (Map<String, Object>) imageData.get("metadata");
 
-        FirebaseVisionImageMetadata metadata = new FirebaseVisionImageMetadata.Builder()
-            .setWidth((int) (double) metadataData.get("width"))
-            .setHeight((int) (double) metadataData.get("height"))
-            .setFormat(FirebaseVisionImageMetadata.IMAGE_FORMAT_NV21)
-            .setRotation(getRotation((int) metadataData.get("rotation")))
-            .build();
+        FirebaseVisionImageMetadata metadata =
+            new FirebaseVisionImageMetadata.Builder()
+                .setWidth((int) (double) metadataData.get("width"))
+                .setHeight((int) (double) metadataData.get("height"))
+                .setFormat(FirebaseVisionImageMetadata.IMAGE_FORMAT_NV21)
+                .setRotation(getRotation((int) metadataData.get("rotation")))
+                .build();
 
         return FirebaseVisionImage.fromByteArray((byte[]) imageData.get("bytes"), metadata);
       default:
@@ -107,7 +108,7 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
   }
 
   private int getRotation(int rotation) {
-    switch(rotation) {
+    switch (rotation) {
       case 0:
         return FirebaseVisionImageMetadata.ROTATION_0;
       case 90:
