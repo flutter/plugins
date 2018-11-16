@@ -1,3 +1,7 @@
+## 0.6.5
+
+* Fixing async method `verifyPhoneNumber`, that would never return even in a successful call.
+
 ## 0.6.4
 
 * Added support for Github signin and linking Github accounts to existing users.
