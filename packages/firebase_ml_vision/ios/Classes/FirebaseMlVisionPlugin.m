@@ -62,23 +62,8 @@
   } else if ([@"bytes" isEqualToString:imageType]) {
     FlutterStandardTypedData *byteData = imageData[@"bytes"];
     NSData *imageData = byteData.data;
-
-    CVPixelBufferRef pixelBuffer = NULL;
-    CVPixelBufferCreateWithBytes(NULL, 1080, 1920, kCVPixelFormatType_32BGRA, (void *) imageData.bytes, 4352, NULL, NULL, NULL, &pixelBuffer);
-
-    CMVideoFormatDescriptionRef description = NULL;
-    CMVideoFormatDescriptionCreateForImageBuffer(NULL, pixelBuffer, &description);
-
-    CMSampleTimingInfo timingInfo;
-    timingInfo.decodeTimeStamp = kCMTimeZero;
-    timingInfo.duration = kCMTimeInvalid;
-    timingInfo.presentationTimeStamp = kCMTimeInvalid;
-
-    CMSampleBufferRef samplebuffer = NULL;
-    CMSampleBufferCreateReadyWithImageBuffer(kCFAllocatorDefault, pixelBuffer, description, &timingInfo, &samplebuffer);
-
-    FIRVisionImage *image = [[FIRVisionImage alloc] initWithBuffer:samplebuffer];
-    return image;
+    UIImage *uiImage = [[UIImage alloc] initWithData:imageData];
+    return [[FIRVisionImage alloc] initWithImage:uiImage];
   } else {
     // TODO(bmparr): Throw illegal argument exception
   }
