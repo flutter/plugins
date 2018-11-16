@@ -10,8 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 final MethodChannel _channel = const MethodChannel('flutter.io/videoPlayer')
-// This will clear all open videos on the platform when a full restart is
-// performed.
+  // This will clear all open videos on the platform when a full restart is
+  // performed.
   ..invokeMethod('init');
 
 class DurationRange {

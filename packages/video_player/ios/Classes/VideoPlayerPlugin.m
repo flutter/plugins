@@ -4,7 +4,6 @@
 
 #import "VideoPlayerPlugin.h"
 #import <AVFoundation/AVFoundation.h>
-#import <Photos/Photos.h>
 
 int64_t FLTCMTimeToMillis(CMTime time) { return time.value * 1000 / time.timescale; }
 
@@ -37,7 +36,6 @@ int64_t FLTCMTimeToMillis(CMTime time) { return time.value * 1000 / time.timesca
 @property(nonatomic, readonly) bool disposed;
 @property(nonatomic, readonly) bool isPlaying;
 @property(nonatomic, readonly) bool isLooping;
-@property(nonatomic, readonly) bool isReady;
 @property(nonatomic, readonly) bool isInitialized;
 - (instancetype)initWithURL:(NSURL*)url frameUpdater:(FLTFrameUpdater*)frameUpdater;
 - (void)play;
@@ -125,8 +123,8 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
   NSLog(@"Using width, height: %f, %f, %d", width, height, rotationDegrees);
   videoComposition.renderSize = CGSizeMake(width, height);
 
-  // TODO use videoTrack.nominalFrameRate ?
-  // Currently set at 30 FPS
+  // TODO(@recastrodiaz): should we use videoTrack.nominalFrameRate ?
+  // Currently set at a constant 30 FPS
   videoComposition.frameDuration = CMTimeMake(1, 30);
 
   return videoComposition;
@@ -152,10 +150,10 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
 
 - (CGAffineTransform)fixTransform:(AVAssetTrack*)videoTrack {
   CGAffineTransform transform = videoTrack.preferredTransform;
-  // TODO: why do we need to do this? Why is the preferredTransform incorrect?
-  // At least 2 videos show a black screen otherwise when in portrait mode
-  // Setting tx to the height of the video, properly displays the video
-  // https://github.com/flutter/flutter/issues/17606#issuecomment-413473181
+  // TODO(@recastrodiaz): why do we need to do this? Why is the preferredTransform incorrect?
+  // At least 2 user videos show a black screen when in portrait mode if we directly use the
+  // videoTrack.preferredTransform Setting tx to the height of the video instead of 0, properly
+  // displays the video https://github.com/flutter/flutter/issues/17606#issuecomment-413473181
   if (transform.tx == 0 && transform.ty == 0) {
     NSInteger rotationDegrees = (NSInteger)round(radiansToDegrees(atan2(transform.b, transform.a)));
     NSLog(@"TX and TY are 0. Rotation: %d. Natural width,height: %f, %f", rotationDegrees,
@@ -177,7 +175,6 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
   _isInitialized = false;
-  _isReady = false;
   _isPlaying = false;
   _disposed = false;
 
@@ -198,7 +195,7 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
             _preferredTransform = [self fixTransform:videoTrack];
             // Note:
             // https://developer.apple.com/documentation/avfoundation/avplayeritem/1388818-videocomposition
-            // Aideo composition can only be used with file-based media and is not supported for
+            // Video composition can only be used with file-based media and is not supported for
             // use with media served using HTTP Live Streaming.
             AVMutableVideoComposition* videoComposition =
                 [self getVideoCompositionWithTransform:_preferredTransform
@@ -206,11 +203,13 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
                                         withVideoTrack:videoTrack];
             item.videoComposition = videoComposition;
             dispatch_async(dispatch_get_main_queue(), ^{
-                               // TODO explain why this line was here in the first place
-                               // The plugin seems to work OK without it
-                               // Even with this line, videos are sometimes blank in app
-                               // [_player replaceCurrentItemWithPlayerItem:item];
-                           });
+              // TODO(@recastrodiaz): explain why this line is required.
+              // The plugin seems to work OK without it.
+              // Even with this line, videos are sometimes not shown (black screen with sound).
+              // which is probably due to a race condition in the video player:
+              // https://github.com/flutter/flutter/issues/21483
+              [_player replaceCurrentItemWithPlayerItem:item];
+            });
           }
         };
         [videoTrack loadValuesAsynchronouslyForKeys:@[ @"preferredTransform" ]
@@ -263,7 +262,6 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
       case AVPlayerItemStatusUnknown:
         break;
       case AVPlayerItemStatusReadyToPlay:
-        _isReady = true;
         [item addOutput:_videoOutput];
         [self sendInitialized];
         [self updatePlayingState];
@@ -288,7 +286,7 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
 }
 
 - (void)updatePlayingState {
-  if (!_isReady) {
+  if (!_isInitialized) {
     return;
   }
   if (_isPlaying) {
@@ -311,7 +309,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 };
 
 - (void)sendInitialized {
-  if (_eventSink && !_isInitialized && _isReady) {
+  if (_eventSink && !_isInitialized) {
     _isInitialized = true;
     // atan2 returns values in the closed interval [-pi,pi]. See:
     // https://www.mathworks.com/help/matlab/ref/atan2.html#buct8h0-4
@@ -327,8 +325,8 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     CGAffineTransform t = _preferredTransform;
     NSLog(@"Affine2 (a, b, c, d, tx, ty): (%f, %f, %f, %f, %f, %f)", t.a, t.b, t.c, t.d, t.tx,
           t.ty);
-    NSLog(@"sendInitialized width, height, rotationDegrees: %f, %f, %d", width, height,
-          rotationDegrees);
+    NSLog(@"sendInitialized width, height, rotationDegrees: %f, %f, %ld", width, height,
+          (long)rotationDegrees);
 
     _eventSink(@{
       @"event" : @"initialized",
@@ -389,8 +387,12 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 - (FlutterError* _Nullable)onListenWithArguments:(id _Nullable)arguments
                                        eventSink:(nonnull FlutterEventSink)events {
   _eventSink = events;
-  // TODO do we need this?
-  // [self sendInitialized];
+  // TODO(@recastrodiaz): remove the line below when the race condition is resolved:
+  // https://github.com/flutter/flutter/issues/21483
+  // This line ensures the 'initialized' event is sent when the event
+  // 'AVPlayerItemStatusReadyToPlay' fires before _eventSink is set (this function,
+  // onListenWithArguments, is called)
+  [self sendInitialized];
   return nil;
 }
 
