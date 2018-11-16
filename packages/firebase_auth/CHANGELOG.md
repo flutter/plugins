@@ -1,3 +1,15 @@
+## 0.6.5
+
+* Fixing async method `verifyPhoneNumber`, that would never return even in a successful call.
+
+## 0.6.4
+
+* Added support for Github signin and linking Github accounts to existing users.
+
+## 0.6.3
+
+* Add multi app support.
+
 ## 0.6.2+1
 
 * Bump Android dependencies to latest.

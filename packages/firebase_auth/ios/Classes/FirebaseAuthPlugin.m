@@ -101,6 +101,13 @@ int nextHandle = 0;
                                              completion:^(FIRUser *user, NSError *error) {
                                                [self sendResult:result forUser:user error:error];
                                              }];
+  } else if ([@"signInWithGithub" isEqualToString:call.method]) {
+    NSString *token = call.arguments[@"token"];
+    FIRAuthCredential *credential = [FIRGitHubAuthProvider credentialWithToken:token];
+    [[self getAuth:call.arguments] signInWithCredential:credential
+                                             completion:^(FIRUser *user, NSError *error) {
+                                               [self sendResult:result forUser:user error:error];
+                                             }];
   } else if ([@"createUserWithEmailAndPassword" isEqualToString:call.method]) {
     NSString *email = call.arguments[@"email"];
     NSString *password = call.arguments[@"password"];
@@ -199,6 +206,14 @@ int nextHandle = 0;
                 completion:^(FIRUser *user, NSError *error) {
                   [self sendResult:result forUser:user error:error];
                 }];
+  } else if ([@"linkWithGithubCredential" isEqualToString:call.method]) {
+    NSString *token = call.arguments[@"token"];
+    FIRAuthCredential *credential = [FIRGitHubAuthProvider credentialWithToken:token];
+    [[self getAuth:call.arguments].currentUser
+        linkWithCredential:credential
+                completion:^(FIRUser *user, NSError *error) {
+                  [self sendResult:result forUser:user error:error];
+                }];
   } else if ([@"updateEmail" isEqualToString:call.method]) {
     NSString *email = call.arguments[@"email"];
     [[self getAuth:call.arguments].currentUser updateEmail:email
@@ -288,6 +303,7 @@ int nextHandle = 0;
                           arguments:@{@"verificationId" : verificationID, @"handle" : handle}];
                  }
                }];
+    result(nil);
   } else if ([@"signInWithPhoneNumber" isEqualToString:call.method]) {
     NSString *verificationId = call.arguments[@"verificationId"];
     NSString *smsCode = call.arguments[@"smsCode"];

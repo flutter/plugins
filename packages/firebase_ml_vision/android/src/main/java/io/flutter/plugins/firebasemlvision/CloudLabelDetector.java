@@ -9,21 +9,44 @@ import com.google.firebase.ml.vision.cloud.label.FirebaseVisionCloudLabel;
 import com.google.firebase.ml.vision.cloud.label.FirebaseVisionCloudLabelDetector;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import io.flutter.plugin.common.MethodChannel;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 class CloudLabelDetector implements Detector {
-  public static final CloudLabelDetector instance = new CloudLabelDetector();
+  static final CloudLabelDetector instance = new CloudLabelDetector();
 
   private CloudLabelDetector() {}
+
+  private FirebaseVisionCloudLabelDetector detector;
+  private Map<String, Object> lastOptions;
 
   @Override
   public void handleDetection(
       FirebaseVisionImage image, Map<String, Object> options, final MethodChannel.Result result) {
-    FirebaseVisionCloudLabelDetector detector =
-        FirebaseVision.getInstance().getVisionCloudLabelDetector(parseOptions(options));
+
+    // Use instantiated detector if the options are the same. Otherwise, close and instantiate new
+    // options.
+
+    if (detector == null) {
+      lastOptions = options;
+      detector =
+          FirebaseVision.getInstance().getVisionCloudLabelDetector(parseOptions(lastOptions));
+    } else if (!options.equals(lastOptions)) {
+      try {
+        detector.close();
+      } catch (IOException e) {
+        result.error("cloudLabelDetectorIOError", e.getLocalizedMessage(), null);
+        return;
+      }
+
+      lastOptions = options;
+      detector =
+          FirebaseVision.getInstance().getVisionCloudLabelDetector(parseOptions(lastOptions));
+    }
+
     detector
         .detectInImage(image)
         .addOnSuccessListener(

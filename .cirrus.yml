@@ -33,7 +33,7 @@ task:
 task:
   name: build-ipas
   osx_instance:
-    image: high-sierra-xcode-9.4
+    image: high-sierra-xcode-9.4.1
   env:
     PATH: $PATH:/usr/local/bin
     matrix:
