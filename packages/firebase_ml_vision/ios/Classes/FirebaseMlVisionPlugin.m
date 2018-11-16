@@ -62,12 +62,11 @@
   } else if ([@"bytes" isEqualToString:imageType]) {
     FlutterStandardTypedData *byteData = imageData[@"bytes"];
     NSData *imageData = byteData.data;
-    UIImage *uiImage = [[UIImage alloc] initWithData:imageData];
-    return [[FIRVisionImage alloc] initWithImage:uiImage];
+    UIImage *image = [[UIImage alloc] initWithData:imageData];
+    return [[FIRVisionImage alloc] initWithImage:image];
   } else {
-    // TODO(bmparr): Throw illegal argument exception
+    NSString *errorReason = [NSString stringWithFormat:@"No image type for: %@", imageType];
+    @throw [NSException exceptionWithName:NSInvalidArgumentException reason:errorReason userInfo:nil];
   }
-
-  return nil;
 }
 @end
