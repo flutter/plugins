@@ -205,19 +205,43 @@
   if (_isStreamingBytes) {
     if (!_byteStreamHandler.eventSink) return;
 
-    CVImageBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
-    CVPixelBufferLockBaseAddress(pixelBuffer, 0);
+    // Get a CMSampleBuffer's Core Video image buffer for the media data
+    CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+    // Lock the base address of the pixel buffer
+    CVPixelBufferLockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
 
+
+    // Get the number of bytes per row for the pixel buffer
+    void *baseAddress = CVPixelBufferGetBaseAddress(pixelBuffer);
+
+    // Get the number of bytes per row for the pixel buffer
     size_t bytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer);
+    // Get the pixel buffer width and height
+    size_t width = CVPixelBufferGetWidth(pixelBuffer);
     size_t height = CVPixelBufferGetHeight(pixelBuffer);
 
-    void *src_buff = CVPixelBufferGetBaseAddress(pixelBuffer);
+    // Create a device-dependent RGB color space
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
 
-    NSData *data = [NSData dataWithBytes:src_buff length:bytesPerRow * height];
+    // Create a bitmap graphics context with the sample buffer data
+    CGBitmapInfo bitmapInfo =
+    (kCGBitmapAlphaInfoMask & kCGImageAlphaPremultipliedFirst) | kCGBitmapByteOrder32Little;
+
+    CGContextRef context = CGBitmapContextCreate(baseAddress, width, height, 8, bytesPerRow, colorSpace, bitmapInfo);
+
+    // Create a Quartz image from the pixel data in the bitmap graphics context
+    CGImageRef quartzImage = CGBitmapContextCreateImage(context);
+
+    // Unlock the pixel buffer
+    CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
+
+    // Create an image object from the Quartz image
+    NSData *data = UIImageJPEGRepresentation([[UIImage alloc] initWithCGImage:quartzImage], 1);
 
     FlutterStandardTypedData *eventData = [FlutterStandardTypedData typedDataWithBytes:data];
-    CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
     _byteStreamHandler.eventSink(eventData);
+
+    CGImageRelease(quartzImage);
   }
   if (_isRecording) {
     if (_videoWriter.status == AVAssetWriterStatusFailed) {
