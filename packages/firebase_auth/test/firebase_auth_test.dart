@@ -227,6 +227,101 @@ void main() {
       ]);
     });
 
+    test('reauthenticateWithEmailAndPassword', () async {
+      await auth.reauthenticateWithEmailAndPassword(
+        email: kMockEmail,
+        password: kMockPassword,
+      );
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'reauthenticateWithEmailAndPassword',
+            arguments: <String, String>{
+              'email': kMockEmail,
+              'password': kMockPassword,
+              'app': auth.app.name,
+            },
+          ),
+        ],
+      );
+    });
+    test('reauthenticateWithGoogleCredential', () async {
+      await auth.reauthenticateWithGoogleCredential(
+        idToken: kMockIdToken,
+        accessToken: kMockAccessToken,
+      );
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'reauthenticateWithGoogleCredential',
+            arguments: <String, String>{
+              'idToken': kMockIdToken,
+              'accessToken': kMockAccessToken,
+              'app': auth.app.name,
+            },
+          ),
+        ],
+      );
+    });
+
+    test('reauthenticateWithFacebookCredential', () async {
+      await auth.reauthenticateWithFacebookCredential(
+        accessToken: kMockAccessToken,
+      );
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'reauthenticateWithFacebookCredential',
+            arguments: <String, String>{
+              'accessToken': kMockAccessToken,
+              'app': auth.app.name,
+            },
+          ),
+        ],
+      );
+    });
+
+    test('reauthenticateWithTwitterCredential', () async {
+      await auth.reauthenticateWithTwitterCredential(
+        authToken: kMockAuthToken,
+        authTokenSecret: kMockAuthTokenSecret,
+      );
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'reauthenticateWithTwitterCredential',
+            arguments: <String, String>{
+              'authToken': kMockAuthToken,
+              'authTokenSecret': kMockAuthTokenSecret,
+              'app': auth.app.name,
+            },
+          ),
+        ],
+      );
+    });
+
+    test('reauthenticateWithGithubCredential', () async {
+      await auth.reauthenticateWithGithubCredential(
+        token: kMockGithubToken,
+      );
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'reauthenticateWithGithubCredential',
+            arguments: <String, String>{
+              'app': auth.app.name,
+              'token': kMockGithubToken,
+            },
+          ),
+        ],
+      );
+    });
+
     test('linkWithGoogleCredential', () async {
       final FirebaseUser user = await auth.linkWithGoogleCredential(
         idToken: kMockIdToken,

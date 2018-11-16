@@ -4,9 +4,9 @@
 
 import 'dart:async';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
-import 'package:firebase_core/firebase_core.dart';
 
 /// Represents user data returned from an identity provider.
 
@@ -16,6 +16,7 @@ class FirebaseUserMetadata {
   final Map<dynamic, dynamic> _data;
 
   int get creationTimestamp => _data['creationTimestamp'];
+
   int get lastSignInTimestamp => _data['lastSignInTimestamp'];
 }
 
@@ -488,6 +489,64 @@ class FirebaseAuth {
         <String, String>{'app': app.name, 'token': token});
     final FirebaseUser currentUser = FirebaseUser._(data, app);
     return currentUser;
+  }
+
+  Future<void> reauthenticateWithEmailAndPassword({
+    @required String email,
+    @required String password,
+  }) {
+    assert(email != null);
+    assert(password != null);
+    return channel.invokeMethod(
+      'reauthenticateWithEmailAndPassword',
+      <String, String>{'email': email, 'password': password, 'app': app.name},
+    );
+  }
+
+  Future<void> reauthenticateWithGoogleCredential({
+    @required String idToken,
+    @required String accessToken,
+  }) {
+    assert(idToken != null);
+    assert(accessToken != null);
+    return channel.invokeMethod(
+      'reauthenticateWithGoogleCredential',
+      <String, String>{
+        'idToken': idToken,
+        'accessToken': accessToken,
+        'app': app.name
+      },
+    );
+  }
+
+  Future<void> reauthenticateWithFacebookCredential({
+    @required String accessToken,
+  }) {
+    assert(accessToken != null);
+    return channel.invokeMethod(
+      'reauthenticateWithFacebookCredential',
+      <String, String>{'accessToken': accessToken, 'app': app.name},
+    );
+  }
+
+  Future<void> reauthenticateWithTwitterCredential({
+    @required String authToken,
+    @required String authTokenSecret,
+  }) {
+    return channel.invokeMethod(
+      'reauthenticateWithTwitterCredential',
+      <String, String>{
+        'app': app.name,
+        'authToken': authToken,
+        'authTokenSecret': authTokenSecret,
+      },
+    );
+  }
+
+  Future<void> reauthenticateWithGithubCredential({@required String token}) {
+    assert(token != null);
+    return channel.invokeMethod('reauthenticateWithGithubCredential',
+        <String, String>{'app': app.name, 'token': token});
   }
 
   /// Sets the user-facing language code for auth operations that can be
