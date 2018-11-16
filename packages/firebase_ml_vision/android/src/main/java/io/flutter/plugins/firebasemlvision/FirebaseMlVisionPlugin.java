@@ -30,52 +30,31 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
   @Override
   public void onMethodCall(MethodCall call, Result result) {
     Map<String, Object> options = call.argument("options");
+
     FirebaseVisionImage image;
+    Map<String, Object> imageData = call.arguments();
+    try {
+      image = dataToVisionImage(imageData);
+    } catch (IOException exception) {
+      result.error("MLVisionDetectorIOError", exception.getLocalizedMessage(), null);
+      return;
+    }
+
     switch (call.method) {
       case "BarcodeDetector#detectInImage":
-        try {
-          Map<String, Object> imageData = call.arguments();
-          image = dataToVisionImage(imageData);
-          BarcodeDetector.instance.handleDetection(image, options, result);
-        } catch (IOException e) {
-          result.error("barcodeDetectorIOError", e.getLocalizedMessage(), null);
-        }
+        BarcodeDetector.instance.handleDetection(image, options, result);
         break;
       case "FaceDetector#detectInImage":
-        try {
-          Map<String, Object> imageData = call.arguments();
-          image = dataToVisionImage(imageData);
-          FaceDetector.instance.handleDetection(image, options, result);
-        } catch (IOException e) {
-          result.error("faceDetectorIOError", e.getLocalizedMessage(), null);
-        }
+        FaceDetector.instance.handleDetection(image, options, result);
         break;
       case "LabelDetector#detectInImage":
-        try {
-          Map<String, Object> imageData = call.arguments();
-          image = dataToVisionImage(imageData);
-          LabelDetector.instance.handleDetection(image, options, result);
-        } catch (IOException e) {
-          result.error("labelDetectorIOError", e.getLocalizedMessage(), null);
-        }
+        LabelDetector.instance.handleDetection(image, options, result);
         break;
       case "CloudLabelDetector#detectInImage":
-        try {
-          Map<String, Object> imageData = call.arguments();
-          image = dataToVisionImage(imageData);
-          CloudLabelDetector.instance.handleDetection(image, options, result);
-        } catch (IOException e) {
-          result.error("cloudLabelDetectorIOError", e.getLocalizedMessage(), null);
-        }
+        CloudLabelDetector.instance.handleDetection(image, options, result);
         break;
       case "TextRecognizer#processImage":
-        try {
-          Map<String, Object> imageData = call.arguments();
-          image = dataToVisionImage(imageData);
-          TextRecognizer.instance.handleDetection(image, options, result);
-        } catch (IOException e) {
-          result.error("textRecognizerIOError", e.getLocalizedMessage(), null);
-        }
+        TextRecognizer.instance.handleDetection(image, options, result);
         break;
       default:
         result.notImplemented();
