@@ -243,6 +243,8 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
               registrar.activity(),
               verificationCallbacks);
     }
+
+    result.success(null);
   }
 
   private Map<String, Object> getVerifyPhoneNumberExceptionMap(FirebaseException e) {
