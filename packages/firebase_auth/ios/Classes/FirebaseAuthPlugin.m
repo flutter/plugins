@@ -303,6 +303,7 @@ int nextHandle = 0;
                           arguments:@{@"verificationId" : verificationID, @"handle" : handle}];
                  }
                }];
+    result(nil);
   } else if ([@"signInWithPhoneNumber" isEqualToString:call.method]) {
     NSString *verificationId = call.arguments[@"verificationId"];
     NSString *smsCode = call.arguments[@"smsCode"];
