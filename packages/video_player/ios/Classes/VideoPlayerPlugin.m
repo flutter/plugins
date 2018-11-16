@@ -262,6 +262,7 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
       case AVPlayerItemStatusUnknown:
         break;
       case AVPlayerItemStatusReadyToPlay:
+        _isInitialized = true;
         [item addOutput:_videoOutput];
         [self sendInitialized];
         [self updatePlayingState];
@@ -309,8 +310,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 };
 
 - (void)sendInitialized {
-  if (_eventSink && !_isInitialized) {
-    _isInitialized = true;
+  if (_eventSink && _isInitialized) {
     // atan2 returns values in the closed interval [-pi,pi]. See:
     // https://www.mathworks.com/help/matlab/ref/atan2.html#buct8h0-4
     // https://developer.apple.com/documentation/coregraphics/cgaffinetransform
@@ -390,8 +390,8 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   // TODO(@recastrodiaz): remove the line below when the race condition is resolved:
   // https://github.com/flutter/flutter/issues/21483
   // This line ensures the 'initialized' event is sent when the event
-  // 'AVPlayerItemStatusReadyToPlay' fires before _eventSink is set (this function,
-  // onListenWithArguments, is called)
+  // 'AVPlayerItemStatusReadyToPlay' fires before _eventSink is set (this function
+  // onListenWithArguments is called)
   [self sendInitialized];
   return nil;
 }
