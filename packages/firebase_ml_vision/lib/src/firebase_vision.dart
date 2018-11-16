@@ -6,7 +6,39 @@ part of firebase_ml_vision;
 
 enum _ImageType { file, bytes }
 
+/// Indicates the image rotation.
+///
+/// Rotation is counter-clockwise and is only used to rotate Android images.
 enum ImageRotation { rotation_0, rotation_90, rotation_180, rotation_270 }
+
+/// This enum specifies where the origin (0,0) of the image is located.
+///
+/// Only used to change orientation of iOS images.
+enum ImageOrientation {
+  /// Orientation code indicating the 0th row is the top and the 0th column is the left side.
+  topLeft,
+
+  /// Orientation code indicating the 0th row is the top and the 0th column is the right side.
+  topRight,
+
+  /// Orientation code indicating the 0th row is the bottom and the 0th column is the left side.
+  bottomLeft,
+
+  /// Orientation code indicating the 0th row is the bottom and the 0th column is the right side.
+  bottomRight,
+
+  /// Orientation code indicating the 0th row is the left side and the 0th column is the top.
+  leftTop,
+
+  /// Orientation code indicating the 0th row is the left side and the 0th column is the bottom.
+  leftBottom,
+
+  /// Orientation code indicating the 0th row is the right side and the 0th column is the top.
+  rightTop,
+
+  /// Orientation code indicating the 0th row is the right side and the 0th column is the bottom.
+  rightBottom,
+}
 
 /// The Firebase machine learning vision API.
 ///
@@ -118,17 +150,19 @@ class FirebaseVisionImage {
 class FirebaseVisionImageMetadata {
   const FirebaseVisionImageMetadata({
     @required this.size,
-    @required this.rotation,
-  })  : assert(size != null),
-        assert(rotation != null);
+    this.androidRotation = ImageRotation.rotation_0,
+    this.iosOrientation = ImageOrientation.topLeft,
+  }) : assert(size != null);
 
   final Size size;
-  final ImageRotation rotation;
+  final ImageRotation androidRotation;
+  final ImageOrientation iosOrientation;
 
   Map<String, dynamic> _serialize() => <String, dynamic>{
         'width': size.width,
         'height': size.height,
-        'rotation': rotation.index * 90, // TODO(bmparr): Test for this.
+        'rotation': androidRotation.index * 90,
+        'orientation': _enumToString(iosOrientation),
       };
 }
 
