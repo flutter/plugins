@@ -136,7 +136,8 @@ class FirebaseVisionImageMetadata {
   Map<String, dynamic> _serialize() => <String, dynamic>{
         'width': size.width,
         'height': size.height,
-        'rotation': rotation.index * 90, // TODO(bmparr): Add testing to make sure this always works.
+        'rotation': rotation.index *
+            90, // TODO(bmparr): Add testing to make sure this always works.
       };
 }
 

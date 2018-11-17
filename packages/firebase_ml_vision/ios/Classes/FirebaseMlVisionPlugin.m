@@ -67,7 +67,8 @@
     return [[FIRVisionImage alloc] initWithImage:image];
   } else {
     NSString *errorReason = [NSString stringWithFormat:@"No image type for: %@", imageType];
-    @throw [NSException exceptionWithName:NSInvalidArgumentException reason:errorReason userInfo:nil];
+    @throw
+        [NSException exceptionWithName:NSInvalidArgumentException reason:errorReason userInfo:nil];
   }
 }
 @end
