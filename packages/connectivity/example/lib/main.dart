@@ -94,15 +94,15 @@ class _MyHomePageState extends State<MyHomePage> {
     if (_connectionStatus.contains('wifi')) {
       getWifiName();
 
-      return 'Connection Status: $_connectionStatus\n' +
-          'Wifi Name: $_wifiName\n' +
+      return 'Connection Status: $_connectionStatus\n'
+          'Wifi Name: $_wifiName\n'
           'Wifi IP: $_wifiIP\n';
     } else {
       return 'Connection Status: $_connectionStatus\n';
     }
   }
 
-  Future getWifiName() async {
+  Future<void> getWifiName() async {
     String wifiName;
 
     try {
@@ -118,7 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
     getWifiIp();
   }
 
-  Future getWifiIp() async {
+  Future<void> getWifiIp() async {
     String wifiIp;
 
     try {
