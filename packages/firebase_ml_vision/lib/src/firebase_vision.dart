@@ -93,6 +93,9 @@ class FirebaseVisionImage {
   }
 
   /// Construct a [FirebaseVisionImage] from a list of bytes.
+  ///
+  /// Expects `ImageFormat.NV21` on Android and expects `NSData` from `UIImage`
+  /// on iOS.
   factory FirebaseVisionImage.fromBytes(
     Uint8List bytes,
     FirebaseVisionImageMetadata metadata,
