@@ -1,3 +1,7 @@
+## 0.2.1
+
+* Add capability to create image from bytes.
+
 ## 0.2.0+2
 
 * Fix bug with empty text object.
