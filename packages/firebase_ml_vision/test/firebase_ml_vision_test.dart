@@ -67,7 +67,6 @@ void main() {
                 'width': 1.0,
                 'height': 1.0,
                 'rotation': 0,
-                'orientation': 'topLeft',
               },
               'options': <String, dynamic>{},
             },

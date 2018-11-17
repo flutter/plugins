@@ -61,8 +61,9 @@
     return [[FIRVisionImage alloc] initWithImage:image];
   } else if ([@"bytes" isEqualToString:imageType]) {
     FlutterStandardTypedData *byteData = imageData[@"bytes"];
-    NSData *imageData = byteData.data;
-    UIImage *image = [[UIImage alloc] initWithData:imageData];
+    NSData *imageBytes = byteData.data;
+    UIImage *image = [[UIImage alloc] initWithData:imageBytes];
+    // TODO(bmparr): Rotate image from imageData[@"rotation"].
     return [[FIRVisionImage alloc] initWithImage:image];
   } else {
     NSString *errorReason = [NSString stringWithFormat:@"No image type for: %@", imageType];

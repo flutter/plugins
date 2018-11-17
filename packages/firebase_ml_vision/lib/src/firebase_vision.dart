@@ -8,37 +8,8 @@ enum _ImageType { file, bytes }
 
 /// Indicates the image rotation.
 ///
-/// Rotation is counter-clockwise and is only used to rotate Android images.
+/// Rotation is counter-clockwise.
 enum ImageRotation { rotation_0, rotation_90, rotation_180, rotation_270 }
-
-/// This enum specifies where the origin (0,0) of the image is located.
-///
-/// Only used to change orientation of iOS images.
-enum ImageOrientation {
-  /// Orientation code indicating the 0th row is the top and the 0th column is the left side.
-  topLeft,
-
-  /// Orientation code indicating the 0th row is the top and the 0th column is the right side.
-  topRight,
-
-  /// Orientation code indicating the 0th row is the bottom and the 0th column is the left side.
-  bottomLeft,
-
-  /// Orientation code indicating the 0th row is the bottom and the 0th column is the right side.
-  bottomRight,
-
-  /// Orientation code indicating the 0th row is the left side and the 0th column is the top.
-  leftTop,
-
-  /// Orientation code indicating the 0th row is the left side and the 0th column is the bottom.
-  leftBottom,
-
-  /// Orientation code indicating the 0th row is the right side and the 0th column is the top.
-  rightTop,
-
-  /// Orientation code indicating the 0th row is the right side and the 0th column is the bottom.
-  rightBottom,
-}
 
 /// The Firebase machine learning vision API.
 ///
@@ -149,24 +120,20 @@ class FirebaseVisionImage {
 
 /// Image metadata used by [FirebaseVision] detectors.
 ///
-/// [androidRotation] defaults to [ImageRotation.rotation_0].
-/// [iosOrientation] defaults to [ImageOrientation.topLeft].
+/// [rotation] defaults to [ImageRotation.rotation_0]. Only rotates on Android.
 class FirebaseVisionImageMetadata {
   const FirebaseVisionImageMetadata({
     @required this.size,
-    this.androidRotation = ImageRotation.rotation_0,
-    this.iosOrientation = ImageOrientation.topLeft,
+    this.rotation = ImageRotation.rotation_0,
   }) : assert(size != null);
 
   final Size size;
-  final ImageRotation androidRotation;
-  final ImageOrientation iosOrientation;
+  final ImageRotation rotation;
 
   Map<String, dynamic> _serialize() => <String, dynamic>{
         'width': size.width,
         'height': size.height,
-        'rotation': androidRotation.index * 90, // TODO(bmparr): Add testing to make sure this always works.
-        'orientation': _enumToString(iosOrientation),
+        'rotation': rotation.index * 90, // TODO(bmparr): Add testing to make sure this always works.
       };
 }
 
