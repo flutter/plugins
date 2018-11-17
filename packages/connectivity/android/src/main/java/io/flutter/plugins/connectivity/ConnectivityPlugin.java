@@ -124,8 +124,12 @@ public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
     String ip = null;
     int i_ip = 0;
     if (wifiInfo != null) i_ip = wifiInfo.getIpAddress();
-    
-    if (i_ip != 0) ip = String.format("%d.%d.%d.%d", (i_ip & 0xff), (i_ip >> 8 & 0xff), (i_ip >> 16 & 0xff),(i_ip >> 24 & 0xff));
+
+    if (i_ip != 0)
+      ip =
+          String.format(
+              "%d.%d.%d.%d",
+              (i_ip & 0xff), (i_ip >> 8 & 0xff), (i_ip >> 16 & 0xff), (i_ip >> 24 & 0xff));
 
     result.success(ip);
   }
