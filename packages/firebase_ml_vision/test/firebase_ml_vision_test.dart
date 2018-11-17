@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import 'dart:math';
+import 'dart:typed_data';
+import 'dart:ui';
 
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:flutter/services.dart';
@@ -34,6 +36,44 @@ void main() {
         }
       });
       log.clear();
+    });
+
+    group('$FirebaseVisionImageMetadata', () {
+      final TextRecognizer recognizer =
+          FirebaseVision.instance.textRecognizer();
+
+      setUp(() {
+        returnValue = <dynamic, dynamic>{
+          'text': '',
+          'blocks': <dynamic>[],
+        };
+      });
+
+      test('default serialization', () async {
+        final FirebaseVisionImageMetadata metadata =
+            const FirebaseVisionImageMetadata(size: Size(1.0, 1.0));
+        final FirebaseVisionImage image =
+            FirebaseVisionImage.fromBytes(Uint8List(0), metadata);
+        await recognizer.processImage(image);
+
+        expect(log, <Matcher>[
+          isMethodCall(
+            'TextRecognizer#processImage',
+            arguments: <String, dynamic>{
+              'type': 'bytes',
+              'path': null,
+              'bytes': Uint8List(0),
+              'metadata': <String, dynamic>{
+                'width': 1.0,
+                'height': 1.0,
+                'rotation': 0,
+                'orientation': 'topLeft',
+              },
+              'options': <String, dynamic>{},
+            },
+          ),
+        ]);
+      });
     });
 
     group('$BarcodeDetector', () {

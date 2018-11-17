@@ -102,6 +102,7 @@ class FirebaseVisionImage {
         _bytes = bytes,
         _type = type;
 
+  // TODO(bmparr): Add [ImageOrientation] when passing file.
   /// Construct a [FirebaseVisionImage] from a file.
   factory FirebaseVisionImage.fromFile(File imageFile) {
     assert(imageFile != null);
@@ -147,6 +148,9 @@ class FirebaseVisionImage {
 }
 
 /// Image metadata used by [FirebaseVision] detectors.
+///
+/// [androidRotation] defaults to [ImageRotation.rotation_0].
+/// [iosOrientation] defaults to [ImageOrientation.topLeft].
 class FirebaseVisionImageMetadata {
   const FirebaseVisionImageMetadata({
     @required this.size,
@@ -161,7 +165,7 @@ class FirebaseVisionImageMetadata {
   Map<String, dynamic> _serialize() => <String, dynamic>{
         'width': size.width,
         'height': size.height,
-        'rotation': androidRotation.index * 90,
+        'rotation': androidRotation.index * 90, // TODO(bmparr): Add testing to make sure this always works.
         'orientation': _enumToString(iosOrientation),
       };
 }
