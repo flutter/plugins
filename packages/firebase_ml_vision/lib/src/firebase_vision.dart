@@ -94,8 +94,9 @@ class FirebaseVisionImage {
 
   /// Construct a [FirebaseVisionImage] from a list of bytes.
   ///
-  /// Expects `ImageFormat.NV21` on Android and expects `NSData` from `UIImage`
-  /// on iOS.
+  /// Expects `ImageFormat.NV21` on Android and expects bytes from `NSData`
+  /// provided from a `UIImage` on iOS. (e.g. using
+  /// `UIImageJPEGRepresentation()` on the platform side).
   factory FirebaseVisionImage.fromBytes(
     Uint8List bytes,
     FirebaseVisionImageMetadata metadata,
@@ -123,7 +124,8 @@ class FirebaseVisionImage {
 
 /// Image metadata used by [FirebaseVision] detectors.
 ///
-/// [rotation] defaults to [ImageRotation.rotation_0]. Only rotates on Android.
+/// [rotation] defaults to [ImageRotation.rotation_0]. Currently only rotates on
+/// Android.
 class FirebaseVisionImageMetadata {
   const FirebaseVisionImageMetadata({
     @required this.size,
