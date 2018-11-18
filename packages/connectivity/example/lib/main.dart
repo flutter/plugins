@@ -60,12 +60,35 @@ class _MyHomePageState extends State<MyHomePage> {
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initConnectivity() async {
     String connectionStatus;
+    String wifiName;
+    String wifiIp;
+
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
       connectionStatus = (await _connectivity.checkConnectivity()).toString();
     } on PlatformException catch (e) {
       print(e.toString());
       connectionStatus = 'Failed to get connectivity.';
+    }
+
+    try {
+      wifiName = (await _connectivity.getWifiName()).toString();
+
+      setState(() {
+        _wifiName = wifiName;
+      });
+    } on PlatformException catch (e) {
+      print(e.toString());
+    }
+
+    try {
+      wifiIp = (await _connectivity.getWifiIP()).toString();
+
+      setState(() {
+        _wifiIP = wifiIp;
+      });
+    } on PlatformException catch (e) {
+      print(e.toString());
     }
 
     // If the widget was removed from the tree while the asynchronous platform
@@ -86,13 +109,13 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: const Text('Plugin example app'),
       ),
-      body: Center(child: Text(getText())),
+      body: Center(child: Text(getConnectionText())),
     );
   }
 
-  String getText() {
+  String getConnectionText() {
     if (_connectionStatus.contains('wifi')) {
-      getWifiName();
+      getWifiDetails();
 
       return 'Connection Status: $_connectionStatus\n'
           'Wifi Name: $_wifiName\n'
@@ -102,33 +125,28 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  Future<void> getWifiName() async {
-    String wifiName;
+  Future<void> getWifiDetails() async {
+    String wifiName, wifiIp;
 
     try {
       wifiName = (await _connectivity.getWifiName()).toString();
-
-      setState(() {
-        _wifiName = wifiName;
-      });
     } on PlatformException catch (e) {
       print(e.toString());
+
+      wifiName = "Failed to get Wifi Name";
     }
-
-    getWifiIp();
-  }
-
-  Future<void> getWifiIp() async {
-    String wifiIp;
 
     try {
       wifiIp = (await _connectivity.getWifiIP()).toString();
-
-      setState(() {
-        _wifiIP = wifiIp;
-      });
     } on PlatformException catch (e) {
       print(e.toString());
+
+      wifiName = "Failed to get Wifi IP";
     }
+
+    setState(() {
+      _wifiName = wifiName;
+      _wifiIP = wifiIp;
+    });
   }
 }

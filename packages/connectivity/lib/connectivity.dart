@@ -61,10 +61,7 @@ class Connectivity {
   ///
   /// Please note that it DOESN'T WORK on emulators (returns null).
   Future<String> getWifiIP() async {
-    String wifiIP = await _methodChannel.invokeMethod('wifiIPAddress');
-    // as Android might return <unknown ssid>, uniforming result
-    // our iOS implementation will return null
-    if (wifiIP == '<unknown ip>') wifiIP = null;
+    final String wifiIP = await _methodChannel.invokeMethod('wifiIPAddress');
     return wifiIP;
   }
 }

@@ -1,4 +1,4 @@
-##0.3.3
+## 0.3.3
 
 * Adding getWifiIP() to obtain current wifi network's IP.
 
