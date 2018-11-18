@@ -757,7 +757,8 @@ public class CameraPlugin implements MethodCallHandler {
       SurfaceTexture surfaceTexture = textureEntry.surfaceTexture();
       surfaceTexture.setDefaultBufferSize(previewSize.getWidth(), previewSize.getHeight());
 
-      captureRequestBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
+      captureRequestBuilder =
+          cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
 
       List<Surface> surfaces = new ArrayList<>();
 
@@ -786,6 +787,7 @@ public class CameraPlugin implements MethodCallHandler {
                 sendErrorEvent(e.getMessage());
               }
             }
+
             @Override
             public void onConfigureFailed(@NonNull CameraCaptureSession cameraCaptureSession) {
               sendErrorEvent("Failed to configure the camera for streaming bytes.");
@@ -800,30 +802,33 @@ public class CameraPlugin implements MethodCallHandler {
       final EventChannel cameraChannel =
           new EventChannel(registrar.messenger(), "plugins.flutter.io/camera/bytes");
 
-      cameraChannel.setStreamHandler(new EventChannel.StreamHandler() {
-        @Override
-        public void onListen(Object o, EventChannel.EventSink eventSink) {
-          setByteStreamImageAvailableListener(eventSink);
-        }
+      cameraChannel.setStreamHandler(
+          new EventChannel.StreamHandler() {
+            @Override
+            public void onListen(Object o, EventChannel.EventSink eventSink) {
+              setByteStreamImageAvailableListener(eventSink);
+            }
 
-        @Override
-        public void onCancel(Object o) {
-          byteImageReader.setOnImageAvailableListener(null, null);
-        }
-      });
+            @Override
+            public void onCancel(Object o) {
+              byteImageReader.setOnImageAvailableListener(null, null);
+            }
+          });
     }
 
     private void setByteStreamImageAvailableListener(final EventChannel.EventSink eventSink) {
-      byteImageReader.setOnImageAvailableListener(new ImageReader.OnImageAvailableListener() {
-        @Override
-        public void onImageAvailable(final ImageReader reader) {
-          Image img = reader.acquireLatestImage();
-          if (img == null) return;
+      byteImageReader.setOnImageAvailableListener(
+          new ImageReader.OnImageAvailableListener() {
+            @Override
+            public void onImageAvailable(final ImageReader reader) {
+              Image img = reader.acquireLatestImage();
+              if (img == null) return;
 
-          eventSink.success(YUV_420_888toNV21(img));
-          img.close();
-        }
-      }, null);
+              eventSink.success(YUV_420_888toNV21(img));
+              img.close();
+            }
+          },
+          null);
     }
 
     private byte[] YUV_420_888toNV21(Image image) {

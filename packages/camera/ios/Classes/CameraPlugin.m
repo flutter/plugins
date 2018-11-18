@@ -25,12 +25,14 @@
 @property(readonly, nonatomic) FlutterEventSink eventSink;
 @end
 
-@implementation FLTByteStreamHandler {}
+@implementation FLTByteStreamHandler {
+}
 - (FlutterError *_Nullable)onCancelWithArguments:(id _Nullable)arguments {
   return nil;
 }
 
-- (FlutterError *_Nullable)onListenWithArguments:(id _Nullable)arguments eventSink:(nonnull FlutterEventSink)events {
+- (FlutterError *_Nullable)onListenWithArguments:(id _Nullable)arguments
+                                       eventSink:(nonnull FlutterEventSink)events {
   _eventSink = events;
   return nil;
 }
@@ -210,7 +212,6 @@
     // Lock the base address of the pixel buffer
     CVPixelBufferLockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
 
-
     // Get the number of bytes per row for the pixel buffer
     void *baseAddress = CVPixelBufferGetBaseAddress(pixelBuffer);
 
@@ -225,9 +226,10 @@
 
     // Create a bitmap graphics context with the sample buffer data
     CGBitmapInfo bitmapInfo =
-    (kCGBitmapAlphaInfoMask & kCGImageAlphaPremultipliedFirst) | kCGBitmapByteOrder32Little;
+        (kCGBitmapAlphaInfoMask & kCGImageAlphaPremultipliedFirst) | kCGBitmapByteOrder32Little;
 
-    CGContextRef context = CGBitmapContextCreate(baseAddress, width, height, 8, bytesPerRow, colorSpace, bitmapInfo);
+    CGContextRef context =
+        CGBitmapContextCreate(baseAddress, width, height, 8, bytesPerRow, colorSpace, bitmapInfo);
 
     // Create a Quartz image from the pixel data in the bitmap graphics context
     CGImageRef quartzImage = CGBitmapContextCreateImage(context);
@@ -382,16 +384,17 @@
 
 - (void)startByteStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger {
   if (!_isStreamingBytes) {
-    FlutterEventChannel *eventChannel = [FlutterEventChannel
-                                         eventChannelWithName:@"plugins.flutter.io/camera/bytes"
-                                         binaryMessenger:messenger];
+    FlutterEventChannel *eventChannel =
+        [FlutterEventChannel eventChannelWithName:@"plugins.flutter.io/camera/bytes"
+                                  binaryMessenger:messenger];
 
     _byteStreamHandler = [[FLTByteStreamHandler alloc] init];
     [eventChannel setStreamHandler:_byteStreamHandler];
 
     _isStreamingBytes = YES;
   } else {
-    _eventSink(@{@"event" : @"error", @"errorDescription" : @"Bytes from camera are already streaming!"});
+    _eventSink(
+        @{@"event" : @"error", @"errorDescription" : @"Bytes from camera are already streaming!"});
   }
 }
 
@@ -400,7 +403,8 @@
     _isStreamingBytes = NO;
     _byteStreamHandler = nil;
   } else {
-    _eventSink(@{@"event" : @"error", @"errorDescription" : @"Bytes from camera are not streaming!"});
+    _eventSink(
+        @{@"event" : @"error", @"errorDescription" : @"Bytes from camera are not streaming!"});
   }
 }
 
