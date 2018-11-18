@@ -138,8 +138,7 @@ class FirebaseVisionImageMetadata {
   Map<String, dynamic> _serialize() => <String, dynamic>{
         'width': size.width,
         'height': size.height,
-        'rotation': rotation.index *
-            90, // TODO(bmparr): Add testing to make sure this always works.
+        'rotation': _imageRotationToInt(rotation),
       };
 }
 
@@ -147,6 +146,21 @@ class FirebaseVisionImageMetadata {
 abstract class FirebaseVisionDetector {
   /// Uses machine learning model to detect objects of interest in an image.
   Future<dynamic> detectInImage(FirebaseVisionImage visionImage);
+}
+
+int _imageRotationToInt(ImageRotation rotation) {
+  switch(rotation) {
+    case ImageRotation.rotation_0:
+      return 0;
+    case ImageRotation.rotation_90:
+      return 90;
+    case ImageRotation.rotation_180:
+      return 180;
+    case ImageRotation.rotation_270:
+      return 270;
+    default:
+      return -1;
+  }
 }
 
 String _enumToString(dynamic enumValue) {
