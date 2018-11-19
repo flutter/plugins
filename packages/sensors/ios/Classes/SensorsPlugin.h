@@ -4,14 +4,14 @@
 
 #import <Flutter/Flutter.h>
 
-@interface FLTSensorsPlugin : NSObject<FlutterPlugin>
+@interface FLTSensorsPlugin : NSObject <FlutterPlugin>
 @end
 
-@interface FLTUserAccelStreamHandler : NSObject<FlutterStreamHandler>
+@interface FLTUserAccelStreamHandler : NSObject <FlutterStreamHandler>
 @end
 
-@interface FLTAccelerometerStreamHandler : NSObject<FlutterStreamHandler>
+@interface FLTAccelerometerStreamHandler : NSObject <FlutterStreamHandler>
 @end
 
-@interface FLTGyroscopeStreamHandler : NSObject<FlutterStreamHandler>
+@interface FLTGyroscopeStreamHandler : NSObject <FlutterStreamHandler>
 @end
