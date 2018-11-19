@@ -61,8 +61,7 @@ class Connectivity {
   ///
   /// Please note that it DOESN'T WORK on emulators (returns null).
   Future<String> getWifiIP() async {
-    final String wifiIP = await _methodChannel.invokeMethod('wifiIPAddress');
-    return wifiIP;
+    return await _methodChannel.invokeMethod('wifiIPAddress');
   }
 }
 

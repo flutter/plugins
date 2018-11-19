@@ -89,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: const Text('Plugin example app'),
       ),
-      body: Center(child: Text('$_connectionStatus')),
+      body: Center(child: Text('Connection Status: $_connectionStatus')),
     );
   }
 
@@ -113,7 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     setState(() {
-      _connectionStatus = 'Connection Status: $wifiStatus\n'
+      _connectionStatus = '$wifiStatus\n'
           'Wifi Name: $wifiName\n'
           'Wifi IP: $wifiIP\n';
     });
