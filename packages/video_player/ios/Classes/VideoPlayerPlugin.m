@@ -202,14 +202,6 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
                                              withAsset:asset
                                         withVideoTrack:videoTrack];
             item.videoComposition = videoComposition;
-            dispatch_async(dispatch_get_main_queue(), ^{
-              // TODO(@recastrodiaz): explain why this line is required.
-              // The plugin seems to work OK without it.
-              // Even with this line, videos are sometimes not shown (black screen with sound).
-              // which is probably due to a race condition in the video player:
-              // https://github.com/flutter/flutter/issues/21483
-              [_player replaceCurrentItemWithPlayerItem:item];
-            });
           }
         };
         [videoTrack loadValuesAsynchronouslyForKeys:@[ @"preferredTransform" ]
