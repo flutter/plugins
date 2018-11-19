@@ -37,7 +37,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   String _connectionStatus = 'Unknown';
-  String _wifiName, _wifiIP;
   final Connectivity _connectivity = Connectivity();
   StreamSubscription<ConnectivityResult> _connectivitySubscription;
 
@@ -47,7 +46,11 @@ class _MyHomePageState extends State<MyHomePage> {
     initConnectivity();
     _connectivitySubscription =
         _connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
-      setState(() => _connectionStatus = result.toString());
+      if (result == ConnectivityResult.wifi) {
+        _getWifiDetails(result.toString());
+      } else {
+        setState(() => _connectionStatus = result.toString());
+      }
     });
   }
 
@@ -60,35 +63,12 @@ class _MyHomePageState extends State<MyHomePage> {
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initConnectivity() async {
     String connectionStatus;
-    String wifiName;
-    String wifiIp;
-
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
       connectionStatus = (await _connectivity.checkConnectivity()).toString();
     } on PlatformException catch (e) {
       print(e.toString());
       connectionStatus = 'Failed to get connectivity.';
-    }
-
-    try {
-      wifiName = (await _connectivity.getWifiName()).toString();
-
-      setState(() {
-        _wifiName = wifiName;
-      });
-    } on PlatformException catch (e) {
-      print(e.toString());
-    }
-
-    try {
-      wifiIp = (await _connectivity.getWifiIP()).toString();
-
-      setState(() {
-        _wifiIP = wifiIp;
-      });
-    } on PlatformException catch (e) {
-      print(e.toString());
     }
 
     // If the widget was removed from the tree while the asynchronous platform
@@ -101,6 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _connectionStatus = connectionStatus;
     });
+
   }
 
   @override
@@ -109,24 +90,13 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: const Text('Plugin example app'),
       ),
-      body: Center(child: Text(getConnectionText())),
+      body: Center(child: Text('$_connectionStatus')),
     );
   }
 
-  String getConnectionText() {
-    if (_connectionStatus.contains('wifi')) {
-      getWifiDetails();
 
-      return 'Connection Status: $_connectionStatus\n'
-          'Wifi Name: $_wifiName\n'
-          'Wifi IP: $_wifiIP\n';
-    } else {
-      return 'Connection Status: $_connectionStatus\n';
-    }
-  }
-
-  Future<void> getWifiDetails() async {
-    String wifiName, wifiIp;
+  Future<void> _getWifiDetails(String wifiStatus) async {
+    String wifiName, wifiIP;
 
     try {
       wifiName = (await _connectivity.getWifiName()).toString();
@@ -137,7 +107,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     try {
-      wifiIp = (await _connectivity.getWifiIP()).toString();
+      wifiIP = (await _connectivity.getWifiIP()).toString();
     } on PlatformException catch (e) {
       print(e.toString());
 
@@ -145,8 +115,9 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     setState(() {
-      _wifiName = wifiName;
-      _wifiIP = wifiIp;
+      _connectionStatus = 'Connection Status: $wifiStatus\n'
+          'Wifi Name: $wifiName\n'
+          'Wifi IP: $wifiIP\n';
     });
   }
 }
