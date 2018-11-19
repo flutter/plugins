@@ -5,12 +5,15 @@
 package io.flutter.plugins.share;
 
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
-import android.net.Uri;
-import java.io.File;
+
+import java.io.*;
 import java.util.Map;
 
 /** Plugin method host for presenting a share sheet via Intent */
@@ -32,19 +35,27 @@ public class SharePlugin implements MethodChannel.MethodCallHandler {
 
   @Override
   public void onMethodCall(MethodCall call, MethodChannel.Result result) {
-    if (call.method.equals("share")) {
-      expectMapArguments(call);
-      // Android does not support showing the share sheet at a particular point on screen.
-      share((String) call.argument("text"));
-      result.success(null);
-    } else if (call.method.equals("shareFile")) {
-      expectMapArguments(call);
-      // Android does not support showing the share sheet at a particular point on screen.
-      shareFile((String) call.argument("path"), (String) call.argument("mimeType"),
+    switch (call.method) {
+      case "share":
+        expectMapArguments(call);
+        // Android does not support showing the share sheet at a particular point on screen.
+        share((String) call.argument("text"));
+        result.success(null);
+        break;
+      case "shareFile":
+        expectMapArguments(call);
+        // Android does not support showing the share sheet at a particular point on screen.
+        try {
+          shareFile((String) call.argument("path"), (String) call.argument("mimeType"),
               (String) call.argument("subject"), (String) call.argument("text"));
-      result.success(null);
-    } else {
-      result.notImplemented();
+          result.success(null);
+        } catch (IOException e) {
+          result.error(e.getMessage(), null, null);
+        }
+        break;
+      default:
+        result.notImplemented();
+        break;
     }
   }
 
@@ -72,25 +83,21 @@ public class SharePlugin implements MethodChannel.MethodCallHandler {
     }
   }
 
-  private void shareFile(String path, String mimeType, String subject, String text) {
+  private void shareFile(String path, String mimeType, String subject, String text) throws IOException {
     if (path == null || path.isEmpty()) {
       throw new IllegalArgumentException("Non-empty path expected");
     }
 
-    // TODO use normal EXTRA_STREAM with Uri.fromFile()
-    // TODO if file is not on external storage, then copy it to external storage into a directory
-    // TODO or can we share if it is in the external-files-dir ? then we might not need any permissions!! if that is true, copy it to that cache
-    // copy:
-    // String fileName = Uri.parse(fileUrl).getLastPathSegment();
-    // TODO if copied, make that file deleteOnExit()?
-    // TODO when coming here, always clear (or even remove?) the directory on the external storage
+    File file = new File(path);
+    clearExternalShareFolder();
+    if (!fileIsOnExternal(file)) {
+      file = copyToExternalShareFolder(file);
+    }
+
     Uri fileUri = FileProvider.getUriForFile(
         mRegistrar.context(),
         mRegistrar.context().getPackageName() + ".flutter.share_provider",
-        new File(path));
-
-    String tempDirPath = mRegistrar.context().getExternalCacheDir()
-            + File.separator + "TempFiles" + File.separator;
+        file);
 
     Intent shareIntent = new Intent();
     shareIntent.setAction(Intent.ACTION_SEND);
@@ -105,6 +112,63 @@ public class SharePlugin implements MethodChannel.MethodCallHandler {
     } else {
       chooserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
       mRegistrar.context().startActivity(chooserIntent);
+    }
+  }
+
+  private boolean fileIsOnExternal(File file) {
+    try {
+      String filePath = file.getCanonicalPath();
+      File externalDir = Environment.getExternalStorageDirectory();
+      return externalDir != null && filePath.startsWith(externalDir.getCanonicalPath());
+    } catch (IOException e) {
+      return false;
+    }
+  }
+
+  @SuppressWarnings("ResultOfMethodCallIgnored")
+  private void clearExternalShareFolder() {
+    File folder = getExternalShareFolder();
+    if (folder.exists()) {
+      for (File file : folder.listFiles()) {
+        file.delete();
+      }
+      folder.delete();
+    }
+  }
+
+  @SuppressWarnings("ResultOfMethodCallIgnored")
+  private File copyToExternalShareFolder(File file) throws IOException {
+    File folder = getExternalShareFolder();
+    if (!folder.exists()) {
+      folder.mkdirs();
+    }
+
+    File newFile = new File(folder, file.getName());
+    copy(file, newFile);
+    return newFile;
+  }
+
+  @NonNull
+  private File getExternalShareFolder() {
+    return new File(mRegistrar.context().getExternalCacheDir(), "share");
+  }
+
+  private static void copy(File src, File dst) throws IOException {
+    InputStream in = new FileInputStream(src);
+    try {
+      OutputStream out = new FileOutputStream(dst);
+      try {
+        // Transfer bytes from in to out
+        byte[] buf = new byte[1024];
+        int len;
+        while ((len = in.read(buf)) > 0) {
+          out.write(buf, 0, len);
+        }
+      } finally {
+        out.close();
+      }
+    } finally {
+      in.close();
     }
   }
 }
