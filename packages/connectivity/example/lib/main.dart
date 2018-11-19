@@ -81,7 +81,6 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _connectionStatus = connectionStatus;
     });
-
   }
 
   @override
@@ -93,7 +92,6 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(child: Text('$_connectionStatus')),
     );
   }
-
 
   Future<void> _getWifiDetails(String wifiStatus) async {
     String wifiName, wifiIP;
