@@ -8,7 +8,7 @@
 
 @implementation LocationBackgroundPlugin {
   CLLocationManager *_locationManager;
-  FlutterEngine *_headlessRunner;
+  FlutterEngine *_headlessEngine;
   FlutterMethodChannel *_callbackChannel;
   FlutterMethodChannel *_mainChannel;
   NSObject<FlutterPluginRegistrar> *_registrar;
@@ -99,7 +99,7 @@ static LocationBackgroundPlugin *instance = nil;
   [_locationManager setDelegate:self];
   [_locationManager requestAlwaysAuthorization];
 
-  _headlessRunner =
+  _headlessEngine =
       [[FlutterEngine alloc] initWithName:@"io.flutter.plugins.location_background" project:nil];
   _registrar = registrar;
 
@@ -116,7 +116,7 @@ static LocationBackgroundPlugin *instance = nil;
   // `startHeadlessService` below.
   _callbackChannel = [FlutterMethodChannel
       methodChannelWithName:@"plugins.flutter.io/ios_background_location_callback"
-            binaryMessenger:_headlessRunner];
+            binaryMessenger:_headlessEngine];
   return self;
 }
 
@@ -181,7 +181,7 @@ static LocationBackgroundPlugin *instance = nil;
 
   // Here we actually launch the background isolate to start executing our
   // callback dispatcher, `_backgroundCallbackDispatcher`, in Dart.
-  [_headlessRunner runWithEntrypoint:entrypoint libraryURI:uri];
+  [_headlessEngine runWithEntrypoint:entrypoint libraryURI:uri];
 
   // The headless runner needs to be initialized before we can register it as a
   // MethodCallDelegate or else we get an illegal memory access. If we don't
