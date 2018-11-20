@@ -99,8 +99,8 @@ static LocationBackgroundPlugin *instance = nil;
   [_locationManager setDelegate:self];
   [_locationManager requestAlwaysAuthorization];
 
-  _headlessEngine =
-      [[FlutterEngine alloc] initWithName:@"io.flutter.plugins.location_background" project:nil];
+  _headlessEngine = [[FlutterEngine alloc] initWithName:@"io.flutter.plugins.location_background"
+                                                project:nil];
   _registrar = registrar;
 
   // This is the method channel used to communicate with the UI Isolate.

@@ -147,8 +147,8 @@
   NSURL *link = [NSURL URLWithString:arguments[@"link"]];
   NSString *domain = arguments[@"domain"];
 
-  FIRDynamicLinkComponents *components =
-      [FIRDynamicLinkComponents componentsWithLink:link domain:domain];
+  FIRDynamicLinkComponents *components = [FIRDynamicLinkComponents componentsWithLink:link
+                                                                               domain:domain];
 
   if (![arguments[@"androidParameters"] isEqual:[NSNull null]]) {
     NSDictionary *params = arguments[@"androidParameters"];

@@ -4,5 +4,5 @@
 
 #import <Flutter/Flutter.h>
 
-@interface FLTFirebaseMessagingPlugin : NSObject<FlutterPlugin>
+@interface FLTFirebaseMessagingPlugin : NSObject <FlutterPlugin>
 @end

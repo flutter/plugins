@@ -426,8 +426,8 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
       if (iconData.count == 2) {
         image = [UIImage imageNamed:[registrar lookupKeyForAsset:iconData[1]]];
       } else {
-        image =
-            [UIImage imageNamed:[registrar lookupKeyForAsset:iconData[1] fromPackage:iconData[2]]];
+        image = [UIImage imageNamed:[registrar lookupKeyForAsset:iconData[1]
+                                                     fromPackage:iconData[2]]];
       }
     }
     [sink setIcon:image];
