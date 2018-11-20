@@ -236,7 +236,6 @@ public class VideoPlayerPlugin implements MethodCallHandler {
           }
           event.put("width", width);
           event.put("height", height);
-          event.put("rotationDegrees", rotationDegrees);
         }
         eventSink.success(event);
       }

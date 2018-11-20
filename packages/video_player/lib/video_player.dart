@@ -45,7 +45,6 @@ class VideoPlayerValue {
     this.isBuffering = false,
     this.volume = 1.0,
     this.errorDescription,
-    this.rotationDegrees,
   });
 
   VideoPlayerValue.uninitialized() : this(duration: null);
@@ -86,17 +85,9 @@ class VideoPlayerValue {
   /// Is null when [initialized] is false.
   final Size size;
 
-  /// The [rotationDegrees] of the currently loaded video.
-  /// Possible values are: 0 or 180 for videos recorded in landscape format,
-  /// 90 and 270 for videos taken in portrait mode.
-  ///
-  /// Is null when [initialized] is false.
-  final int rotationDegrees;
 
   bool get initialized => duration != null;
-
   bool get hasError => errorDescription != null;
-
   double get aspectRatio => size != null ? size.width / size.height : 1.0;
 
   VideoPlayerValue copyWith({
@@ -109,7 +100,6 @@ class VideoPlayerValue {
     bool isBuffering,
     double volume,
     String errorDescription,
-    int rotationDegrees,
   }) {
     return VideoPlayerValue(
       duration: duration ?? this.duration,
@@ -121,7 +111,6 @@ class VideoPlayerValue {
       isBuffering: isBuffering ?? this.isBuffering,
       volume: volume ?? this.volume,
       errorDescription: errorDescription ?? this.errorDescription,
-      rotationDegrees: rotationDegrees ?? this.rotationDegrees,
     );
   }
 
@@ -136,8 +125,7 @@ class VideoPlayerValue {
         'isLooping: $isLooping, '
         'isBuffering: $isBuffering'
         'volume: $volume, '
-        'errorDescription: $errorDescription, '
-        'rotationDegrees: $rotationDegrees)';
+        'errorDescription: $errorDescription)';
   }
 }
 
@@ -242,7 +230,6 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
             duration: Duration(milliseconds: map['duration']),
             size: Size(map['width']?.toDouble() ?? 0.0,
                 map['height']?.toDouble() ?? 0.0),
-            rotationDegrees: map['rotationDegrees'].toInt() ?? 0.0,
           );
           initializingCompleter.complete(null);
           _applyLooping();

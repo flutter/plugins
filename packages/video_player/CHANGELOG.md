@@ -1,7 +1,6 @@
 ## 0.7.3
 
-* Added access to the video rotation in degrees (rotationDegrees). Possible values are: 0, 90, 180 and 270.
-* Updated the aspectRatio getter to use the video rotation.
+* Take into account the video rotation when computing the aspect ratio.
 * Fixed the aspect ratio of videos in the video_player plugin example. It now properly displays videos taken in portrait mode.
 
 ## 0.7.2

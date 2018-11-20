@@ -298,13 +298,6 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 
 - (void)sendInitialized {
   if (_eventSink && _isInitialized) {
-    // atan2 returns values in the closed interval [-pi,pi]. See:
-    // https://www.mathworks.com/help/matlab/ref/atan2.html#buct8h0-4
-    // https://developer.apple.com/documentation/coregraphics/cgaffinetransform
-    // https://en.wikipedia.org/wiki/File:2D_affine_transformation_matrix.svg
-    NSInteger rotationDegrees =
-        (NSInteger)round(radiansToDegrees(atan2(_preferredTransform.b, _preferredTransform.a)));
-
     CGSize size = [self.player currentItem].presentationSize;
     CGFloat width = size.width;
     CGFloat height = size.height;
@@ -313,8 +306,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
       @"event" : @"initialized",
       @"duration" : @([self duration]),
       @"width" : @(width),
-      @"height" : @(height),
-      @"rotationDegrees" : @(rotationDegrees),
+      @"height" : @(height)
     });
   }
 }
