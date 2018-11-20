@@ -85,7 +85,6 @@ class VideoPlayerValue {
   /// Is null when [initialized] is false.
   final Size size;
 
-
   bool get initialized => duration != null;
   bool get hasError => errorDescription != null;
   double get aspectRatio => size != null ? size.width / size.height : 1.0;
@@ -264,7 +263,6 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     _eventSubscription = _eventChannelFor(_textureId)
         .receiveBroadcastStream()
         .listen(eventListener, onError: errorListener);
-
     return initializingCompleter.future;
   }
 
