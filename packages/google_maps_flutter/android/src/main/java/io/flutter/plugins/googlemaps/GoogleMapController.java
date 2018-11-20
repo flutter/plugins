@@ -17,7 +17,6 @@ import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import com.google.android.gms.maps.CameraUpdate;
@@ -421,15 +420,27 @@ final class GoogleMapController
   }
 
   private void updateMyLocationEnabled() {
-    if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
-            == PackageManager.PERMISSION_GRANTED
-        || ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
-            == PackageManager.PERMISSION_GRANTED) {
+    if (hasLocationPermission()) {
       googleMap.setMyLocationEnabled(myLocationEnabled);
     } else {
       // TODO(amirh): Make the options update fail.
       // https://github.com/flutter/flutter/issues/24327
       Log.e(TAG, "Cannot enable MyLocation layer as location permissions are not granted");
     }
+  }
+
+  private boolean hasLocationPermission() {
+    return checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED
+        || checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED;
+  }
+
+  private int checkSelfPermission(String permission) {
+    if (permission == null) {
+      throw new IllegalArgumentException("permission is null");
+    }
+    return context.checkPermission(
+        permission, android.os.Process.myPid(), android.os.Process.myUid());
   }
 }
