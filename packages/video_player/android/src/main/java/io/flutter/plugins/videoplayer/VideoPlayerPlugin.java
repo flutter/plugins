@@ -11,7 +11,6 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
-import android.util.Log;
 import android.view.Surface;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -167,8 +166,6 @@ public class VideoPlayerPlugin implements MethodCallHandler {
               } else if (playbackState == Player.STATE_READY && !isInitialized) {
                 isInitialized = true;
                 sendInitialized();
-              } else {
-                Log.d(TAG, "Received unhandled state: " + playbackState);
               }
             }
 
@@ -223,7 +220,6 @@ public class VideoPlayerPlugin implements MethodCallHandler {
 
     private void sendInitialized() {
       if (isInitialized) {
-        Log.d(TAG, "sending isInitialized");
         Map<String, Object> event = new HashMap<>();
         event.put("event", "initialized");
         event.put("duration", exoPlayer.getDuration());
@@ -243,8 +239,6 @@ public class VideoPlayerPlugin implements MethodCallHandler {
           event.put("rotationDegrees", rotationDegrees);
         }
         eventSink.success(event);
-      } else {
-        Log.e(TAG, "failed sending sendInitialized(isInitialized: " + isInitialized + ")");
       }
     }
 

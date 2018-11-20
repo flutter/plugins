@@ -4,6 +4,7 @@
 
 #import "VideoPlayerPlugin.h"
 #import <AVFoundation/AVFoundation.h>
+#import <GLKit/GLKit.h>
 
 int64_t FLTCMTimeToMillis(CMTime time) { return time.value * 1000 / time.timescale; }
 
@@ -96,8 +97,6 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
 - (AVMutableVideoComposition*)getVideoCompositionWithTransform:(CGAffineTransform)transform
                                                      withAsset:(AVAsset*)asset
                                                 withVideoTrack:(AVAssetTrack*)videoTrack {
-  CGAffineTransform t = _preferredTransform;
-  NSLog(@"Affine1 (a, b, c, d, tx, ty): (%f, %f, %f, %f, %f, %f)", t.a, t.b, t.c, t.d, t.tx, t.ty);
 
   AVMutableVideoCompositionInstruction* instruction =
       [AVMutableVideoCompositionInstruction videoCompositionInstruction];
@@ -120,7 +119,6 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
     width = videoTrack.naturalSize.height;
     height = videoTrack.naturalSize.width;
   }
-  NSLog(@"Using width, height: %f, %f, %d", width, height, rotationDegrees);
   videoComposition.renderSize = CGSizeMake(width, height);
 
   // TODO(@recastrodiaz): should we use videoTrack.nominalFrameRate ?
@@ -189,7 +187,6 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
           if ([videoTrack statusOfValueForKey:@"preferredTransform" error:nil] ==
               AVKeyValueStatusLoaded) {
             CGSize size = videoTrack.naturalSize;
-            NSLog(@"preferredTransform width, height: %f, %f", size.width, size.height);
 
             // Rotate the video by using a videoComposition and the preferredTransform
             _preferredTransform = [self fixTransform:videoTrack];
@@ -214,7 +211,6 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
   _player.actionAtItemEnd = AVPlayerActionAtItemEndNone;
 
   CGSize size = item.presentationSize;
-  NSLog(@"_player create width, height: %f, %f", size.width, size.height);
 
   [self createVideoOutputAndDisplayLink:frameUpdater];
 
@@ -292,7 +288,7 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
 
 static inline CGFloat radiansToDegrees(CGFloat radians) {
   // Input range [-pi, pi] or [-180, 180]
-  CGFloat degrees = radians * 180 / M_PI;
+  CGFloat degrees =  GLKMathRadiansToDegrees(radians);
   if (degrees < 0) {
     // Convert -90 to 270 and -180 to 180
     return degrees + 360;
@@ -315,10 +311,6 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     CGFloat height = size.height;
 
     CGAffineTransform t = _preferredTransform;
-    NSLog(@"Affine2 (a, b, c, d, tx, ty): (%f, %f, %f, %f, %f, %f)", t.a, t.b, t.c, t.d, t.tx,
-          t.ty);
-    NSLog(@"sendInitialized width, height, rotationDegrees: %f, %f, %ld", width, height,
-          (long)rotationDegrees);
 
     _eventSink(@{
       @"event" : @"initialized",

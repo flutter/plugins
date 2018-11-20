@@ -68,8 +68,7 @@ class _VideoAppState extends State<VideoApp> {
         // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
         setState(() {});
       })
-      ..initialize()
-          .catchError((dynamic error) => print('Unexpected error: $error'));
+      ..initialize();
   }
 
   @override
