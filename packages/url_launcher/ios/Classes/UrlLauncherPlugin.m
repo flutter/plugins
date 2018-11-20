@@ -6,7 +6,7 @@
 
 #import "UrlLauncherPlugin.h"
 
-@interface FLTUrlLaunchSession : NSObject<SFSafariViewControllerDelegate>
+@interface FLTUrlLaunchSession : NSObject <SFSafariViewControllerDelegate>
 @end
 
 @implementation FLTUrlLaunchSession {
@@ -92,7 +92,7 @@
   UIApplication *application = [UIApplication sharedApplication];
   if ([application respondsToSelector:@selector(openURL:options:completionHandler:)]) {
     [application openURL:url
-        options:@{}
+                  options:@{}
         completionHandler:^(BOOL success) {
           if (success) {
             result(nil);
