@@ -31,6 +31,7 @@ class WebView extends StatefulWidget {
     Key key,
     this.onWebViewCreated,
     this.initialUrl,
+    this.blockedUrls = const <String>[],
     this.javaScriptMode = JavaScriptMode.disabled,
     this.gestureRecognizers,
   })  : assert(javaScriptMode != null),
@@ -49,6 +50,9 @@ class WebView extends StatefulWidget {
   /// When this set is empty or null, the web view will only handle pointer events for gestures that
   /// were not claimed by any other gesture recognizer.
   final Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers;
+
+  /// List of URLS that are not allowed to load
+  final List<String> blockedUrls;
 
   /// The initial URL to load.
   final String initialUrl;
@@ -111,8 +115,7 @@ class _WebViewState extends State<WebView> {
   void didUpdateWidget(WebView oldWidget) {
     super.didUpdateWidget(oldWidget);
     final _WebSettings newSettings = _WebSettings.fromWidget(widget);
-    final Map<String, dynamic> settingsUpdate =
-        _settings.updatesMap(newSettings);
+    final Map<String, dynamic> settingsUpdate = _settings.updatesMap(newSettings);
     _updateSettings(settingsUpdate);
     _settings = newSettings;
   }
@@ -135,21 +138,24 @@ class _WebViewState extends State<WebView> {
 }
 
 class _CreationParams {
-  _CreationParams({this.initialUrl, this.settings});
+  _CreationParams({this.initialUrl, this.blockedUrls, this.settings});
 
   static _CreationParams fromWidget(WebView widget) {
     return _CreationParams(
       initialUrl: widget.initialUrl,
+      blockedUrls: widget.blockedUrls,
       settings: _WebSettings.fromWidget(widget),
     );
   }
 
   final String initialUrl;
+  final List<String> blockedUrls;
   final _WebSettings settings;
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'initialUrl': initialUrl,
+      'blockedUrls': blockedUrls,
       'settings': settings.toMap(),
     };
   }
