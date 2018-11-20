@@ -8,7 +8,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.2'
+        classpath 'com.android.tools.build:gradle:3.2.1'
     }
 }
 
@@ -22,7 +22,7 @@ rootProject.allprojects {
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
 
     defaultConfig {
         minSdkVersion 16
@@ -31,11 +31,17 @@ android {
     lintOptions {
         disable 'InvalidPackage'
     }
+    android {
+        compileOptions {
+            sourceCompatibility 1.8
+            targetCompatibility 1.8
+        }
+    }
 
     dependencies {
-        implementation 'com.google.android.exoplayer:exoplayer-core:2.8.0'
-        implementation 'com.google.android.exoplayer:exoplayer-hls:2.8.0'
-        implementation 'com.google.android.exoplayer:exoplayer-dash:2.8.0'
-        implementation 'com.google.android.exoplayer:exoplayer-smoothstreaming:2.8.0'
+        implementation 'com.google.android.exoplayer:exoplayer-core:2.9.1'
+        implementation 'com.google.android.exoplayer:exoplayer-hls:2.9.1'
+        implementation 'com.google.android.exoplayer:exoplayer-dash:2.9.1'
+        implementation 'com.google.android.exoplayer:exoplayer-smoothstreaming:2.9.1'
     }
 }
