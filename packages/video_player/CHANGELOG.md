@@ -1,4 +1,4 @@
-## 0.7.3
+## 0.8.0
 
 * Android: Upgrade ExoPlayer to 2.9.1
 * Android: Use current gradle dependencies
