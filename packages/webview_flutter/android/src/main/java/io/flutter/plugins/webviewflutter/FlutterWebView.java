@@ -38,6 +38,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     webView.setWebViewClient(new WebViewClient() {
       @Override
       public boolean shouldOverrideUrlLoading(final WebView view,final  String url) {
+        methodChannel.invokeMethod("onUrlAboutToLoad", url);
         return blockedUrls.contains(url);
       }
     });
