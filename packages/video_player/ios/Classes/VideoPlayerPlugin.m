@@ -309,8 +309,6 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     CGFloat width = size.width;
     CGFloat height = size.height;
 
-    CGAffineTransform t = _preferredTransform;
-
     _eventSink(@{
       @"event" : @"initialized",
       @"duration" : @([self duration]),
