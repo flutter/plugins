@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 typedef void WebViewCreatedCallback(WebViewController controller);
+typedef void OnUrlAboutToLoadCallback(String url);
 
 enum JavaScriptMode {
   /// JavaScript execution is disabled.
@@ -30,6 +31,7 @@ class WebView extends StatefulWidget {
   const WebView({
     Key key,
     this.onWebViewCreated,
+    this.onUrlAboutToLoadCallback,
     this.initialUrl,
     this.blockedUrls = const <String>[],
     this.javaScriptMode = JavaScriptMode.disabled,
@@ -39,6 +41,9 @@ class WebView extends StatefulWidget {
 
   /// If not null invoked once the web view is created.
   final WebViewCreatedCallback onWebViewCreated;
+
+  /// Callback to notify when a url is about to load.
+  final OnUrlAboutToLoadCallback onUrlAboutToLoadCallback;
 
   /// Which gestures should be consumed by the web view.
   ///
@@ -129,7 +134,7 @@ class _WebViewState extends State<WebView> {
   }
 
   void _onPlatformViewCreated(int id) {
-    final WebViewController controller = WebViewController._(id);
+    final WebViewController controller = WebViewController._(id, widget.onUrlAboutToLoadCallback);
     _controller.complete(controller);
     if (widget.onWebViewCreated != null) {
       widget.onWebViewCreated(controller);
@@ -193,8 +198,18 @@ class _WebSettings {
 /// A [WebViewController] instance can be obtained by setting the [WebView.onWebViewCreated]
 /// callback for a [WebView] widget.
 class WebViewController {
-  WebViewController._(int id)
-      : _channel = MethodChannel('plugins.flutter.io/webview_$id');
+  WebViewController._(int id, OnUrlAboutToLoadCallback onUrlAboutToLoadCallback)
+      : _channel = MethodChannel('plugins.flutter.io/webview_$id') {
+    _channel.setMethodCallHandler((MethodCall methodCall) {
+      switch (methodCall.method) {
+        case "onUrlAboutToLoad":
+          onUrlAboutToLoadCallback(methodCall.arguments);
+          break;
+        default:
+          print("${methodCall.method} not handled");
+      }
+    });
+  }
 
   final MethodChannel _channel;
 
