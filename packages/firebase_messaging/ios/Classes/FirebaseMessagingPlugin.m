@@ -85,6 +85,23 @@
             result(instanceIDResult.token);
           }
         }];
+  } else if ([@"deleteInstanceID" isEqualToString:method]) {
+    [[FIRInstanceID instanceID] deleteIDWithHandler:^void(NSError *_Nullable error) {
+      if (error.code != 0) {
+        NSLog(@"deleteInstanceID, error: %@", error);
+        result([NSNumber numberWithBool:NO]);
+      } else {
+        [[UIApplication sharedApplication] unregisterForRemoteNotifications];
+        result([NSNumber numberWithBool:YES]);
+      }
+    }];
+  } else if ([@"autoInitEnabled" isEqualToString:method]) {
+    BOOL *value = [[FIRMessaging messaging] isAutoInitEnabled];
+    result([NSNumber numberWithBool:value]);
+  } else if ([@"setAutoInitEnabled" isEqualToString:method]) {
+    NSNumber *value = call.arguments;
+    [FIRMessaging messaging].autoInitEnabled = value.boolValue;
+    result(nil);
   } else {
     result(FlutterMethodNotImplemented);
   }
