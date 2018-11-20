@@ -1,3 +1,7 @@
+## 0.6.6
+
+* Adding support for FirebaseUser.unlink(providerId)
+
 ## 0.6.5
 
 * Fixing async method `verifyPhoneNumber`, that would never return even in a successful call.
@@ -9,7 +13,6 @@
 ## 0.6.3
 
 * Add multi app support.
-* Adding support for FirebaseUser.unlink(providerId)
 
 ## 0.6.2+1
 
