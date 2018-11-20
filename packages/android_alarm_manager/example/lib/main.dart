@@ -12,7 +12,7 @@ import 'package:flutter/widgets.dart';
 final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 FirebaseUser firebaseUser;
 
-Future<Null> ensureFirebaseUser() async {
+Future<void> ensureFirebaseUser() async {
   if (firebaseUser == null) {
     firebaseUser = await firebaseAuth.currentUser();
     if (firebaseUser == null) {
@@ -67,7 +67,7 @@ void printOneShot() {
   printHelloMessage("Hello, once!");
 }
 
-Future<Null> main() async {
+Future<void> main() async {
   final int helloAlarmID = 0;
   final int goodbyeAlarmID = 1;
   final int oneShotID = 2;

@@ -1,3 +1,7 @@
+## 0.0.6+1
+
+* Bump Android dependencies to latest.
+
 ## 0.0.6
 
 * Allowed extending the RemoteConfig class.

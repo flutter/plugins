@@ -32,7 +32,6 @@ class FirebaseMessaging {
   MessageHandler _onMessage;
   MessageHandler _onLaunch;
   MessageHandler _onResume;
-  String _token;
 
   /// On iOS, prompts the user for notification permissions the first time
   /// it is called.
@@ -79,8 +78,8 @@ class FirebaseMessaging {
   }
 
   /// Returns the FCM token.
-  Future<String> getToken() {
-    return _token != null ? Future<String>.value(_token) : onTokenRefresh.first;
+  Future<String> getToken() async {
+    return await _channel.invokeMethod('getToken');
   }
 
   /// Subscribe to topic in background.
@@ -96,14 +95,30 @@ class FirebaseMessaging {
     _channel.invokeMethod('unsubscribeFromTopic', topic);
   }
 
-  Future<Null> _handleMethod(MethodCall call) async {
+  /// Resets Instance ID and revokes all tokens. In iOS, it also unregisters from remote notifications.
+  ///
+  /// A new Instance ID is generated asynchronously if Firebase Cloud Messaging auto-init is enabled.
+  ///
+  /// returns true if the operations executed successfully and false if an error ocurred
+  Future<bool> deleteInstanceID() async {
+    return await _channel.invokeMethod('deleteInstanceID');
+  }
+
+  /// Determine whether FCM auto-initialization is enabled or disabled.
+  Future<bool> autoInitEnabled() async {
+    return await _channel.invokeMethod('autoInitEnabled');
+  }
+
+  /// Enable or disable auto-initialization of Firebase Cloud Messaging.
+  Future<void> setAutoInitEnabled(bool enabled) async {
+    await _channel.invokeMethod('setAutoInitEnabled', enabled);
+  }
+
+  Future<dynamic> _handleMethod(MethodCall call) async {
     switch (call.method) {
       case "onToken":
         final String token = call.arguments;
-        if (_token != token) {
-          _token = token;
-          _tokenStreamController.add(_token);
-        }
+        _tokenStreamController.add(token);
         return null;
       case "onIosSettingsRegistered":
         _iosSettingsStreamController.add(IosNotificationSettings._fromMap(

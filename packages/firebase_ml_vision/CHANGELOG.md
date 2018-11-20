@@ -1,3 +1,12 @@
+## 0.2.0+2
+
+* Fix bug with empty text object.
+* Fix bug with crash from passing nil to map.
+
+## 0.2.0+1
+
+Bump Android dependencies to latest.
+
 ## 0.2.0
 
 * **Breaking Change** Update TextDetector to TextRecognizer for android mlkit '17.0.0' and

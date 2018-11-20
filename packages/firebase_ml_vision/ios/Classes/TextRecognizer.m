@@ -15,7 +15,7 @@ static FIRVisionTextRecognizer *recognizer;
                     [FLTFirebaseMlVisionPlugin handleError:error result:result];
                     return;
                   } else if (!visionText) {
-                    result(@[]);
+                    result(@{@"text" : @"", @"blocks" : @[]});
                     return;
                   }
 
@@ -85,7 +85,9 @@ static FIRVisionTextRecognizer *recognizer;
 
   __block NSMutableArray<NSDictionary *> *allLanguageData = [NSMutableArray array];
   for (FIRVisionTextRecognizedLanguage *language in languages) {
-    [allLanguageData addObject:@{@"languageCode" : language.languageCode}];
+    [allLanguageData addObject:@{
+      @"languageCode" : language.languageCode ? language.languageCode : [NSNull null]
+    }];
   }
 
   [addTo addEntriesFromDictionary:@{

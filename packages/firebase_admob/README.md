@@ -8,29 +8,64 @@ displaying banner, interstitial (full-screen), and rewarded video ads using the
 [Feedback](https://github.com/flutter/flutter/issues) and
 [Pull Requests](https://github.com/flutter/plugins/pulls) are welcome.
 
+## AndroidManifest changes
+
+AdMob 17 requires the App ID to be included in the `AndroidManifest.xml`. Failure
+to do so will result in a crash on launch of your app.  The line should look like:
+
+```xml
+<meta-data
+    android:name="com.google.android.gms.ads.APPLICATION_ID"
+    android:value="[ADMOB_APP_ID]"/>
+```
+
+where `[ADMOB_APP_ID]` is your App ID.  You must pass the same value when you 
+initialize the plugin in your Dart code.
+
+See https://goo.gl/fQ2neu for more information about configuring `AndroidManifest.xml`
+and setting up your App ID.
+
 ## Initializing the plugin
 The AdMob plugin must be initialized with an AdMob App ID.
 
 ```
 FirebaseAdMob.instance.initialize(appId: appId);
 ```
-
-## Using banners and interstitials
-Banner and interstitial ads can be configured with target information. 
-And in the example below, the ads are given test ad unit IDs for a quick start.
+*Note Android*:
+Starting in version 17.0.0, if you are an AdMob publisher you are now required to add your AdMob app ID in your **AndroidManifest.xml** file. Once you find your AdMob app ID in the AdMob UI, add it to your manifest adding the following tag:
 
 ```
-MobileAdTargetingInfo targetingInfo = new MobileAdTargetingInfo(
+<manifest>
+    <application>
+        <!-- TODO: Replace with your real AdMob app ID -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-################~##########"/>
+    </application>
+</manifest>
+```
+
+Failure to add this tag will result in the app crashing at app launch with a message starting with *"The Google Mobile Ads SDK was initialized incorrectly."*
+
+On Android, this value must be the same as the App ID value set in your 
+`AndroidManifest.xml`.
+
+## Using banners and interstitials
+Banner and interstitial ads can be configured with target information.
+And in the example below, the ads are given test ad unit IDs for a quick start.
+
+```dart
+MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
   keywords: <String>['flutterio', 'beautiful apps'],
   contentUrl: 'https://flutter.io',
-  birthday: new DateTime.now(),
+  birthday: DateTime.now(),
   childDirected: false,
   designedForFamilies: false,
   gender: MobileAdGender.male, // or MobileAdGender.female, MobileAdGender.unknown
   testDevices: <String>[], // Android emulators are considered test devices
 );
 
-BannerAd myBanner = new BannerAd(
+BannerAd myBanner = BannerAd(
   // Replace the testAdUnitId with an ad unit id from the AdMob dash.
   // https://developers.google.com/admob/android/test-ads
   // https://developers.google.com/admob/ios/test-ads
@@ -42,7 +77,7 @@ BannerAd myBanner = new BannerAd(
   },
 );
 
-InterstitialAd myInterstitial = new InterstitialAd(
+InterstitialAd myInterstitial = InterstitialAd(
   // Replace the testAdUnitId with an ad unit id from the AdMob dash.
   // https://developers.google.com/admob/android/test-ads
   // https://developers.google.com/admob/ios/test-ads

@@ -16,6 +16,7 @@ class FirestoreMessageCodec extends StandardMessageCodec {
   static const int _kArrayRemove = 133;
   static const int _kDelete = 134;
   static const int _kServerTimestamp = 135;
+  static const int _kTimestamp = 136;
 
   static const Map<FieldValueType, int> _kFieldValueCodes =
       <FieldValueType, int>{
@@ -30,6 +31,10 @@ class FirestoreMessageCodec extends StandardMessageCodec {
     if (value is DateTime) {
       buffer.putUint8(_kDateTime);
       buffer.putInt64(value.millisecondsSinceEpoch);
+    } else if (value is Timestamp) {
+      buffer.putUint8(_kTimestamp);
+      buffer.putInt64(value.seconds);
+      buffer.putInt32(value.nanoseconds);
     } else if (value is GeoPoint) {
       buffer.putUint8(_kGeoPoint);
       buffer.putFloat64(value.latitude);
@@ -61,6 +66,8 @@ class FirestoreMessageCodec extends StandardMessageCodec {
     switch (type) {
       case _kDateTime:
         return DateTime.fromMillisecondsSinceEpoch(buffer.getInt64());
+      case _kTimestamp:
+        return Timestamp(buffer.getInt64(), buffer.getInt32());
       case _kGeoPoint:
         return GeoPoint(buffer.getFloat64(), buffer.getFloat64());
       case _kDocumentReference:

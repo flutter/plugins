@@ -14,10 +14,10 @@ task:
     - name: test+format
       install_script:
         - wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-        - sudo apt-add-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-5.0 main"
+        - sudo apt-add-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-7 main"
         - sudo apt-get update
-        - sudo apt-get install -y --allow-unauthenticated clang-format-5.0
-      format_script: ./script/incremental_build.sh format --travis --clang-format=clang-format-5.0
+        - sudo apt-get install -y --allow-unauthenticated clang-format-7
+      format_script: ./script/incremental_build.sh format --travis --clang-format=clang-format-7
       test_script: ./script/incremental_build.sh test
     - name: analyze
       script: ./script/incremental_build.sh analyze
@@ -33,7 +33,7 @@ task:
 task:
   name: build-ipas
   osx_instance:
-    image: high-sierra-xcode-9.4
+    image: high-sierra-xcode-9.4.1
   env:
     PATH: $PATH:/usr/local/bin
     matrix:

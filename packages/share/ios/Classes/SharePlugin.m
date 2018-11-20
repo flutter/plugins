@@ -19,8 +19,9 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
       NSString *shareText = arguments[@"text"];
 
       if (shareText.length == 0) {
-        result(
-            [FlutterError errorWithCode:@"error" message:@"Non-empty text expected" details:nil]);
+        result([FlutterError errorWithCode:@"error"
+                                   message:@"Non-empty text expected"
+                                   details:nil]);
         return;
       }
 
