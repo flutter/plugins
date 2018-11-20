@@ -4,5 +4,5 @@
 
 #import <Flutter/Flutter.h>
 
-@interface FLTConnectivityPlugin : NSObject<FlutterPlugin>
+@interface FLTConnectivityPlugin : NSObject <FlutterPlugin>
 @end

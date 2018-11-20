@@ -271,10 +271,9 @@
 
   NSNumber *mobileAdId = (NSNumber *)call.arguments[@"id"];
   if (mobileAdId == nil) {
-    NSString *message =
-        @"FirebaseAdMobPlugin method calls for banners and "
-        @"interstitials must specify an "
-        @"integer mobile ad id";
+    NSString *message = @"FirebaseAdMobPlugin method calls for banners and "
+                        @"interstitials must specify an "
+                        @"integer mobile ad id";
     result([FlutterError errorWithCode:@"no_id" message:message details:nil]);
     return;
   }

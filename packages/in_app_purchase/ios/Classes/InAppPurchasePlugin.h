@@ -1,4 +1,4 @@
 #import <Flutter/Flutter.h>
 
-@interface InAppPurchasePlugin : NSObject<FlutterPlugin>
+@interface InAppPurchasePlugin : NSObject <FlutterPlugin>
 @end
