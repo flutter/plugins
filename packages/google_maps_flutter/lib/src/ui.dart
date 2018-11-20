@@ -126,7 +126,7 @@ class GoogleMapOptions {
   /// True if the map view should respond to zoom gestures.
   final bool zoomGesturesEnabled;
 
-  /// True if a "My Location" layer should be shown on the map
+  /// True if a "My Location" layer should be shown on the map.
   ///
   /// This layer includes a location indicator at the current device location,
   /// as well as a My Location button.
