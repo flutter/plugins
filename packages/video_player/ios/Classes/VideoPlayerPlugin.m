@@ -27,7 +27,7 @@ int64_t FLTCMTimeToMillis(CMTime time) { return time.value * 1000 / time.timesca
 }
 @end
 
-@interface FLTVideoPlayer : NSObject<FlutterTexture, FlutterStreamHandler>
+@interface FLTVideoPlayer : NSObject <FlutterTexture, FlutterStreamHandler>
 @property(readonly, nonatomic) AVPlayer* player;
 @property(readonly, nonatomic) AVPlayerItemVideoOutput* videoOutput;
 @property(readonly, nonatomic) CADisplayLink* displayLink;
@@ -97,7 +97,6 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
 - (AVMutableVideoComposition*)getVideoCompositionWithTransform:(CGAffineTransform)transform
                                                      withAsset:(AVAsset*)asset
                                                 withVideoTrack:(AVAssetTrack*)videoTrack {
-
   AVMutableVideoCompositionInstruction* instruction =
       [AVMutableVideoCompositionInstruction videoCompositionInstruction];
   instruction.timeRange = CMTimeRangeMake(kCMTimeZero, [asset duration]);
@@ -135,8 +134,8 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
   };
   _videoOutput = [[AVPlayerItemVideoOutput alloc] initWithPixelBufferAttributes:pixBuffAttributes];
 
-  _displayLink =
-      [CADisplayLink displayLinkWithTarget:frameUpdater selector:@selector(onDisplayLink:)];
+  _displayLink = [CADisplayLink displayLinkWithTarget:frameUpdater
+                                             selector:@selector(onDisplayLink:)];
   [_displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
   _displayLink.paused = YES;
 }
@@ -184,8 +183,8 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
         AVAssetTrack* videoTrack = [tracks objectAtIndex:0];
         void (^trackCompletionHandler)(void) = ^{
           if (_disposed) return;
-          if ([videoTrack statusOfValueForKey:@"preferredTransform" error:nil] ==
-              AVKeyValueStatusLoaded) {
+          if ([videoTrack statusOfValueForKey:@"preferredTransform"
+                                        error:nil] == AVKeyValueStatusLoaded) {
             CGSize size = videoTrack.naturalSize;
 
             // Rotate the video by using a videoComposition and the preferredTransform
@@ -288,7 +287,7 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
 
 static inline CGFloat radiansToDegrees(CGFloat radians) {
   // Input range [-pi, pi] or [-180, 180]
-  CGFloat degrees =  GLKMathRadiansToDegrees(radians);
+  CGFloat degrees = GLKMathRadiansToDegrees(radians);
   if (degrees < 0) {
     // Convert -90 to 270 and -180 to 180
     return degrees + 360;
@@ -442,7 +441,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   [eventChannel setStreamHandler:player];
   player.eventChannel = eventChannel;
   _players[@(textureId)] = player;
-  result(@{ @"textureId" : @(textureId) });
+  result(@{@"textureId" : @(textureId)});
 }
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
