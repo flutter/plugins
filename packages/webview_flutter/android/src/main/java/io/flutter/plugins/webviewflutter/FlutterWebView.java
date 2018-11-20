@@ -1,28 +1,46 @@
 package io.flutter.plugins.webviewflutter;
 
-import static io.flutter.plugin.common.MethodChannel.MethodCallHandler;
-import static io.flutter.plugin.common.MethodChannel.Result;
-
 import android.content.Context;
 import android.view.View;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.platform.PlatformView;
-import java.util.Map;
+
+import static io.flutter.plugin.common.MethodChannel.MethodCallHandler;
+import static io.flutter.plugin.common.MethodChannel.Result;
 
 public class FlutterWebView implements PlatformView, MethodCallHandler {
   private final WebView webView;
   private final MethodChannel methodChannel;
+  private final Set<String> blockedUrls;
 
   @SuppressWarnings("unchecked")
   FlutterWebView(Context context, BinaryMessenger messenger, int id, Map<String, Object> params) {
     webView = new WebView(context);
+    if (params.containsKey("blockedUrls")) {
+      blockedUrls = new HashSet<>((List<String>) params.get("blockedUrls"));
+    } else {
+      blockedUrls = new HashSet<>();
+    }
     if (params.containsKey("initialUrl")) {
       String url = (String) params.get("initialUrl");
       webView.loadUrl(url);
     }
+    webView.setWebViewClient(new WebViewClient() {
+      @Override
+      public boolean shouldOverrideUrlLoading(final WebView view,final  String url) {
+        return blockedUrls.contains(url);
+      }
+    });
     applySettings((Map<String, Object>) params.get("settings"));
     methodChannel = new MethodChannel(messenger, "plugins.flutter.io/webview_" + id);
     methodChannel.setMethodCallHandler(this);
