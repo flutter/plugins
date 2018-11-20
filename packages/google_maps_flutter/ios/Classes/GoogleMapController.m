@@ -60,12 +60,11 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
   if ([super init]) {
     _viewId = viewId;
 
-    NSDictionary* options = args[@"options"];
-    GMSCameraPosition* camera = toOptionalCameraPosition(options[@"cameraPosition"]);
+    GMSCameraPosition* camera = toOptionalCameraPosition(args[@"cameraPosition"]);
     _mapView = [GMSMapView mapWithFrame:frame camera:camera];
     _markers = [NSMutableDictionary dictionaryWithCapacity:1];
     _trackCameraPosition = NO;
-    interpretMapOptions(options, self);
+    interpretMapOptions(args, self);
     NSString* channelName =
         [NSString stringWithFormat:@"plugins.flutter.io/google_maps_%lld", viewId];
     _channel = [FlutterMethodChannel methodChannelWithName:channelName
@@ -215,6 +214,11 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
 
 - (void)setZoomGesturesEnabled:(BOOL)enabled {
   _mapView.settings.zoomGestures = enabled;
+}
+
+- (void)setMyLocationEnabled:(BOOL)enabled {
+  _mapView.myLocationEnabled = enabled;
+  _mapView.settings.myLocationButton = enabled;
 }
 
 #pragma mark - GMSMapViewDelegate methods
@@ -394,6 +398,10 @@ static void interpretMapOptions(id json, id<FLTGoogleMapOptionsSink> sink) {
   id zoomGesturesEnabled = data[@"zoomGesturesEnabled"];
   if (zoomGesturesEnabled) {
     [sink setZoomGesturesEnabled:toBool(zoomGesturesEnabled)];
+  }
+  id myLocationEnabled = data[@"myLocationEnabled"];
+  if (myLocationEnabled) {
+    [sink setMyLocationEnabled:toBool(myLocationEnabled)];
   }
 }
 
