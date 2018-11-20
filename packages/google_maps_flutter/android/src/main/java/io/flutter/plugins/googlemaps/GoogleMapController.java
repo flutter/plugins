@@ -423,7 +423,7 @@ final class GoogleMapController
   private void updateMyLocationEnabled() {
     if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
             == PackageManager.PERMISSION_GRANTED
-            || ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
+        || ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
             == PackageManager.PERMISSION_GRANTED) {
       googleMap.setMyLocationEnabled(myLocationEnabled);
     } else {
@@ -432,5 +432,4 @@ final class GoogleMapController
       Log.e(TAG, "Cannot enable MyLocation layer as location permissions are not granted");
     }
   }
-
 }
