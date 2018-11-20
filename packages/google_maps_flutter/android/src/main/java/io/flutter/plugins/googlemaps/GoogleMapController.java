@@ -52,7 +52,7 @@ final class GoogleMapController
         OnMapReadyCallback,
         OnMarkerTappedListener,
         PlatformView {
-  private static final String TAG = "OptionsUpdateFail";
+  private static final String TAG = "GoogleMapController";
   private final int id;
   private final AtomicInteger activityState;
   private final MethodChannel methodChannel;
@@ -179,7 +179,7 @@ final class GoogleMapController
     googleMap.setOnCameraMoveListener(this);
     googleMap.setOnCameraIdleListener(this);
     googleMap.setOnMarkerClickListener(this);
-    setMyLocationEnabled(myLocationEnabled);
+    updateMyLocationEnabled();
   }
 
   @Override
@@ -409,25 +409,28 @@ final class GoogleMapController
     googleMap.getUiSettings().setZoomGesturesEnabled(zoomGesturesEnabled);
   }
 
-  public void setMyLocationEnabledBool(boolean myLocationEnabledBool) {
-    this.myLocationEnabled = myLocationEnabledBool;
-  }
-
   @Override
   public void setMyLocationEnabled(boolean myLocationEnabled) {
-    if (myLocationEnabled) {
-      if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
-              == PackageManager.PERMISSION_GRANTED
-          || ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
-              == PackageManager.PERMISSION_GRANTED) {
-        googleMap.setMyLocationEnabled(true);
-      } else {
-        // TODO(amirh): Make the options update fail.
-        // https://github.com/flutter/flutter/issues/24327
-        Log.e(TAG, "Location permissions  not granted");
-      }
-    } else {
-      googleMap.setMyLocationEnabled(false);
+    if (this.myLocationEnabled == myLocationEnabled) {
+      return;
+    }
+    this.myLocationEnabled = myLocationEnabled;
+    if (googleMap != null) {
+      updateMyLocationEnabled();
     }
   }
+
+  private void updateMyLocationEnabled() {
+    if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED
+            || ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED) {
+      googleMap.setMyLocationEnabled(myLocationEnabled);
+    } else {
+      // TODO(amirh): Make the options update fail.
+      // https://github.com/flutter/flutter/issues/24327
+      Log.e(TAG, "Cannot enable MyLocation layer as location permissions are not granted");
+    }
+  }
+
 }
