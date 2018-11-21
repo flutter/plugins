@@ -28,13 +28,13 @@ and setting up your App ID.
 ## Initializing the plugin
 The AdMob plugin must be initialized with an AdMob App ID.
 
-```
+```dart
 FirebaseAdMob.instance.initialize(appId: appId);
 ```
 *Note Android*:
 Starting in version 17.0.0, if you are an AdMob publisher you are now required to add your AdMob app ID in your **AndroidManifest.xml** file. Once you find your AdMob app ID in the AdMob UI, add it to your manifest adding the following tag:
 
-```
+```xml
 <manifest>
     <application>
         <!-- TODO: Replace with your real AdMob app ID -->
@@ -90,7 +90,7 @@ InterstitialAd myInterstitial = InterstitialAd(
 ```
 
 Ads must be loaded before they're shown.
-```
+```dart
 myBanner
   // typically this happens well before the ad is shown
   ..load()
@@ -102,7 +102,7 @@ myBanner
   );
 ```
 
-```
+```dart
 myInterstitial
   ..load()
   ..show(
@@ -124,7 +124,7 @@ listener can be used to detect when the ad has actually finished loading
 Unlike banners and interstitials, rewarded video ads are loaded one at a time
 via a singleton object, `RewardedVideoAd.instance`. Its `load` method takes an
 AdMob ad unit ID and an instance of `MobileAdTargetingInfo`:
-```
+```dart
 RewardedVideoAd.instance.load(myAdMobAdUnitId, targetingInfo);
 ```
 
@@ -135,13 +135,13 @@ function will be invoked whenever one of the events in the `RewardedVideAdEvent`
 enum occurs. After a rewarded video ad loads, for example, the
 `RewardedVideoAdEvent.loaded` is sent. Any time after that, apps can show the ad
 by calling `show`:
-```
+```dart
 RewardedVideoAd.instance.show();
 ```
 
 When the AdMob SDK decides it's time to grant an in-app reward, it does so via
 the `RewardedVideoAdEvent.rewarded` event:
-```
+```dart
 RewardedVideoAd.instance.listener =
     (RewardedVideoAdEvent event, [String rewardType, int rewardAmount]) {
   if (event == RewardedVideoAdEvent.rewarded) {
