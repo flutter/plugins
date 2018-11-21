@@ -36,7 +36,7 @@ void main() {
             return true;
           case 'DatabaseReference#runTransaction':
             Map<String, dynamic> updatedValue;
-            Future<Null> simulateEvent(
+            Future<void> simulateEvent(
                 int transactionKey, final MutableData mutableData) async {
               await BinaryMessages.handlePlatformMessage(
                 channel.name,
@@ -454,7 +454,7 @@ void main() {
         const int errorCode = 12;
         const String errorDetails = 'Some details';
         final Query query = database.reference().child('some path');
-        Future<Null> simulateError(String errorMessage) async {
+        Future<void> simulateError(String errorMessage) async {
           await BinaryMessages.handlePlatformMessage(
             channel.name,
             channel.codec.encodeMethodCall(
@@ -476,7 +476,7 @@ void main() {
         // Subscribe and allow subscription to complete.
         final StreamSubscription<Event> subscription =
             query.onValue.listen((_) {}, onError: errors.add);
-        await Future<Null>.delayed(const Duration(seconds: 0));
+        await Future<void>.delayed(const Duration(seconds: 0));
 
         await simulateError('Bad foo');
         await simulateError('Bad bar');
@@ -494,7 +494,7 @@ void main() {
         mockHandleId = 87;
         final String path = 'foo';
         final Query query = database.reference().child(path);
-        Future<Null> simulateEvent(String value) async {
+        Future<void> simulateEvent(String value) async {
           await BinaryMessages.handlePlatformMessage(
             channel.name,
             channel.codec.encodeMethodCall(
@@ -515,7 +515,7 @@ void main() {
         // Subscribe and allow subscription to complete.
         final StreamSubscription<Event> subscription =
             query.onValue.listen(events.add);
-        await Future<Null>.delayed(const Duration(seconds: 0));
+        await Future<void>.delayed(const Duration(seconds: 0));
 
         await simulateEvent('1');
         await simulateEvent('2');
@@ -528,7 +528,7 @@ void main() {
 
         // Cancel subscription and allow cancellation to complete.
         subscription.cancel();
-        await Future<Null>.delayed(const Duration(seconds: 0));
+        await Future<void>.delayed(const Duration(seconds: 0));
 
         expect(
           log,

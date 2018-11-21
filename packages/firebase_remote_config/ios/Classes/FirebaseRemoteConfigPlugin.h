@@ -1,4 +1,4 @@
 #import <Flutter/Flutter.h>
 
-@interface FirebaseRemoteConfigPlugin : NSObject<FlutterPlugin>
+@interface FirebaseRemoteConfigPlugin : NSObject <FlutterPlugin>
 @end

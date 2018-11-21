@@ -192,6 +192,20 @@ class MapUiBodyState extends State<MapUiBody> {
             zoomControlsEnabled: !_options.zoomControlsEnabled,
           ),
         );
+      }
+    );
+  }
+  
+  Widget _myLocationToggler() {
+    return FlatButton(
+      child: Text(
+          '${_options.myLocationEnabled ? 'disable' : 'enable'} my location'),
+      onPressed: () {
+        mapController.updateMapOptions(
+          GoogleMapOptions(
+            myLocationEnabled: !_options.myLocationEnabled,
+          ),
+        );
       },
     );
   }
@@ -241,6 +255,7 @@ class MapUiBodyState extends State<MapUiBody> {
               _tiltToggler(),
               _zoomToggler(),
               _zoomControlsToggler(),
+              _myLocationToggler(),
             ],
           ),
         ),

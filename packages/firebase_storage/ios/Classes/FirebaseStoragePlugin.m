@@ -391,7 +391,7 @@ typedef NS_ENUM(NSUInteger, StorageTaskEventType) {
   }];
 }
 
-- (void) delete:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)delete:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSString *path = call.arguments[@"path"];
   FIRStorageReference *ref = [storage.reference child:path];
   [ref deleteWithCompletion:^(NSError *error) {
