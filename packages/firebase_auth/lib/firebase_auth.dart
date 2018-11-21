@@ -1,13 +1,15 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
+// Copyright 2018, the Flutter project authors.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
+library firebase_auth;
 
 import 'dart:async';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
-
+/*
 /// Represents user data returned from an identity provider.
 
 class FirebaseUserMetadata {
@@ -1041,3 +1043,10 @@ class FirebaseAuth {
     _authStateChangedControllers[id].add(currentUser);
   }
 }
+*/
+part 'src/auth_exception.dart';
+part 'src/firebase_auth.dart';
+part 'src/firebase_user.dart';
+part 'src/user_info.dart';
+part 'src/user_metadata.dart';
+part 'src/user_update_info.dart';
