@@ -15,7 +15,7 @@ To use this plugin, add `firebase_ml_vision` as a [dependency in your pubspec.ya
 ### Android
 Optional but recommended: If you use the on-device API, configure your app to automatically download the ML model to the device after your app is installed from the Play Store. To do so, add the following declaration to your app's AndroidManifest.xml file:
 
-```manifest
+```xml
 <application ...>
   ...
   <meta-data
