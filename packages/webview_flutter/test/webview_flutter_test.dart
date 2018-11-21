@@ -122,7 +122,7 @@ class FakePlatformWebView {
     switch (call.method) {
       case 'loadUrl':
         lastUrlLoaded = call.arguments;
-        return Future<Null>.sync(() => null);
+        return Future<void>.sync(() {});
       case 'updateSettings':
         if (call.arguments['jsMode'] == null) {
           break;
@@ -130,7 +130,7 @@ class FakePlatformWebView {
         javaScriptMode = JavaScriptMode.values[call.arguments['jsMode']];
         break;
     }
-    return Future<Null>.sync(() => null);
+    return Future<void>.sync(() {});
   }
 }
 
@@ -148,7 +148,7 @@ class _FakePlatformViewsController {
         );
         return Future<int>.sync(() => 1);
       default:
-        return Future<Null>.sync(() => null);
+        return Future<void>.sync(() {});
     }
   }
 

@@ -27,15 +27,18 @@
 - (void)setTiltGesturesEnabled:(BOOL)enabled;
 - (void)setTrackCameraPosition:(BOOL)enabled;
 - (void)setZoomGesturesEnabled:(BOOL)enabled;
+- (void)setMyLocationEnabled:(BOOL)enabled;
 @end
 
 // Defines map overlay controllable from Flutter.
-@interface FLTGoogleMapController : NSObject<GMSMapViewDelegate, FLTGoogleMapOptionsSink>
+@interface FLTGoogleMapController
+    : NSObject <GMSMapViewDelegate, FLTGoogleMapOptionsSink, FlutterPlatformView>
 @property(atomic) id<FLTGoogleMapDelegate> delegate;
 @property(atomic, readonly) id mapId;
-+ (instancetype)controllerWithWidth:(CGFloat)width
-                             height:(CGFloat)height
-                             camera:(GMSCameraPosition*)camera;
+- (instancetype)initWithFrame:(CGRect)frame
+               viewIdentifier:(int64_t)viewId
+                    arguments:(id _Nullable)args
+                    registrar:(NSObject<FlutterPluginRegistrar>*)registrar;
 - (void)addToView:(UIView*)view;
 - (void)removeFromView;
 - (void)showAtX:(CGFloat)x Y:(CGFloat)y;
@@ -46,4 +49,9 @@
 - (NSString*)addMarkerWithPosition:(CLLocationCoordinate2D)position;
 - (FLTGoogleMapMarkerController*)markerWithId:(NSString*)markerId;
 - (void)removeMarkerWithId:(NSString*)markerId;
+@end
+
+// Allows the engine to create new Google Map instances.
+@interface FLTGoogleMapFactory : NSObject <FlutterPlatformViewFactory>
+- (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar;
 @end

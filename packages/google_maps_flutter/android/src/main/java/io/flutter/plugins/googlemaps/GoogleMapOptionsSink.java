@@ -28,4 +28,6 @@ interface GoogleMapOptionsSink {
   void setTrackCameraPosition(boolean trackCameraPosition);
 
   void setZoomGesturesEnabled(boolean zoomGesturesEnabled);
+
+  void setMyLocationEnabled(boolean myLocationEnabled);
 }

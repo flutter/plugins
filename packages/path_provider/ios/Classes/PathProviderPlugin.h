@@ -4,5 +4,5 @@
 
 #import <Flutter/Flutter.h>
 
-@interface FLTPathProviderPlugin : NSObject<FlutterPlugin>
+@interface FLTPathProviderPlugin : NSObject <FlutterPlugin>
 @end

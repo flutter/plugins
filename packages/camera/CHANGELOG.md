@@ -1,3 +1,7 @@
+## 0.2.5
+
+* Fix preview and video size with satisfying conditions of multiple outputs.
+
 ## 0.2.4
 
 * Unregister the activity lifecycle callbacks when disposing the camera.

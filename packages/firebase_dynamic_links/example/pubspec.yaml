@@ -9,5 +9,7 @@ dependencies:
     path: ../
   firebase_core: ^0.2.5+1
 
+  url_launcher: ^3.0.3
+
 flutter:
   uses-material-design: true

@@ -4,7 +4,7 @@ description: Flutter plugin for Firebase Auth, enabling Android and iOS
   like Google, Facebook and Twitter.
 author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/firebase_auth
-version: 0.6.2+1
+version: 0.6.6
 
 flutter:
   plugin:
@@ -14,6 +14,8 @@ flutter:
 
 dependencies:
   meta: ^1.0.4
+  firebase_core: ^0.2.5+1
+
   flutter:
     sdk: flutter
 
@@ -22,7 +24,6 @@ dev_dependencies:
   test: ^1.3.0
   flutter_test:
     sdk: flutter
-  firebase_core: ^0.2.5+1
 
 environment:
   sdk: ">=2.0.0-dev.28.0 <3.0.0"

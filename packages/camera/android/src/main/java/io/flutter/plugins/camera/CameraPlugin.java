@@ -6,6 +6,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
+import android.graphics.Point;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
@@ -25,6 +26,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Size;
 import android.util.SparseIntArray;
+import android.view.Display;
 import android.view.Surface;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodCall;
@@ -365,12 +367,24 @@ public class CameraPlugin implements MethodCallHandler {
     private void computeBestPreviewAndRecordingSize(
         StreamConfigurationMap streamConfigurationMap, Size minPreviewSize, Size captureSize) {
       Size[] sizes = streamConfigurationMap.getOutputSizes(SurfaceTexture.class);
-      float captureSizeRatio = (float) captureSize.getWidth() / captureSize.getHeight();
+
+      // Preview size and video size should not be greater than screen resolution or 1080.
+      Point screenResolution = new Point();
+      Display display = activity.getWindowManager().getDefaultDisplay();
+      display.getRealSize(screenResolution);
+
+      int displayRotation = activity.getWindowManager().getDefaultDisplay().getRotation();
+      boolean swapWH = (displayRotation + sensorOrientation) % 180 == 90;
+      int screenWidth = swapWH ? screenResolution.y : screenResolution.x;
+      int screenHeight = swapWH ? screenResolution.x : screenResolution.y;
+
       List<Size> goodEnough = new ArrayList<>();
       for (Size s : sizes) {
-        if ((float) s.getWidth() / s.getHeight() == captureSizeRatio
-            && minPreviewSize.getWidth() < s.getWidth()
-            && minPreviewSize.getHeight() < s.getHeight()) {
+        if (minPreviewSize.getWidth() < s.getWidth()
+            && minPreviewSize.getHeight() < s.getHeight()
+            && s.getWidth() <= screenWidth
+            && s.getHeight() <= screenHeight
+            && s.getHeight() <= 1080) {
           goodEnough.add(s);
         }
       }
@@ -381,14 +395,21 @@ public class CameraPlugin implements MethodCallHandler {
         previewSize = sizes[0];
         videoSize = sizes[0];
       } else {
-        previewSize = goodEnough.get(0);
+        float captureSizeRatio = (float) captureSize.getWidth() / captureSize.getHeight();
 
-        // Video capture size should not be greater than 1080 because MediaRecorder cannot handle
-        // higher resolutions.
+        previewSize = goodEnough.get(0);
+        for (Size s : goodEnough) {
+          if ((float) s.getWidth() / s.getHeight() == captureSizeRatio) {
+            previewSize = s;
+            break;
+          }
+        }
+
+        Collections.reverse(goodEnough);
         videoSize = goodEnough.get(0);
-        for (int i = goodEnough.size() - 1; i >= 0; i--) {
-          if (goodEnough.get(i).getHeight() <= 1080) {
-            videoSize = goodEnough.get(i);
+        for (Size s : goodEnough) {
+          if ((float) s.getWidth() / s.getHeight() == captureSizeRatio) {
+            videoSize = s;
             break;
           }
         }

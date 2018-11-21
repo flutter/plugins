@@ -32,6 +32,6 @@ android {
         disable 'InvalidPackage'
     }
     dependencies {
-        api 'com.google.firebase:firebase-invites:16.0.4'
+        api 'com.google.firebase:firebase-dynamic-links:16.1.2'
     }
 }
