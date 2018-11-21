@@ -169,6 +169,52 @@ int nextHandle = 0;
                       completion:^(NSString *_Nullable token, NSError *_Nullable error) {
                         result(error != nil ? error.flutterError : token);
                       }];
+  } else if ([@"reauthenticateWithEmailAndPassword" isEqualToString:call.method]) {
+    NSString *email = call.arguments[@"email"];
+    NSString *password = call.arguments[@"password"];
+    FIRAuthCredential *credential =
+        [FIREmailAuthProvider credentialWithEmail:email password:password];
+    [[self getAuth:call.arguments].currentUser
+        reauthenticateWithCredential:credential
+                          completion:^(NSError *_Nullable error) {
+                            [self sendResult:result forUser:nil error:error];
+                          }];
+  } else if ([@"reauthenticateWithGoogleCredential" isEqualToString:call.method]) {
+    NSString *idToken = call.arguments[@"idToken"];
+    NSString *accessToken = call.arguments[@"accessToken"];
+    FIRAuthCredential *credential =
+        [FIRGoogleAuthProvider credentialWithIDToken:idToken accessToken:accessToken];
+    [[self getAuth:call.arguments].currentUser
+        reauthenticateWithCredential:credential
+                          completion:^(NSError *_Nullable error) {
+                            [self sendResult:result forUser:nil error:error];
+                          }];
+  } else if ([@"reauthenticateWithFacebookCredential" isEqualToString:call.method]) {
+    NSString *accessToken = call.arguments[@"accessToken"];
+    FIRAuthCredential *credential = [FIRFacebookAuthProvider credentialWithAccessToken:accessToken];
+    [[self getAuth:call.arguments].currentUser
+        reauthenticateWithCredential:credential
+                          completion:^(NSError *_Nullable error) {
+                            [self sendResult:result forUser:nil error:error];
+                          }];
+  } else if ([@"reauthenticateWithTwitterCredential" isEqualToString:call.method]) {
+    NSString *authToken = call.arguments[@"authToken"];
+    NSString *authTokenSecret = call.arguments[@"authTokenSecret"];
+    FIRAuthCredential *credential =
+        [FIRTwitterAuthProvider credentialWithToken:authToken secret:authTokenSecret];
+    [[self getAuth:call.arguments].currentUser
+        reauthenticateWithCredential:credential
+                          completion:^(NSError *_Nullable error) {
+                            [self sendResult:result forUser:nil error:error];
+                          }];
+  } else if ([@"reauthenticateWithGithubCredential" isEqualToString:call.method]) {
+    NSString *token = call.arguments[@"token"];
+    FIRAuthCredential *credential = [FIRGitHubAuthProvider credentialWithToken:token];
+    [[self getAuth:call.arguments].currentUser
+        reauthenticateWithCredential:credential
+                          completion:^(NSError *_Nullable error) {
+                            [self sendResult:result forUser:nil error:error];
+                          }];
   } else if ([@"linkWithEmailAndPassword" isEqualToString:call.method]) {
     NSString *email = call.arguments[@"email"];
     NSString *password = call.arguments[@"password"];

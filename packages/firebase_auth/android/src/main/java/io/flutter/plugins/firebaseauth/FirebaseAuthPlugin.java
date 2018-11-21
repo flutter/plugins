@@ -110,6 +110,21 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
       case "getIdToken":
         handleGetToken(call, result, getAuth(call));
         break;
+      case "reauthenticateWithEmailAndPassword":
+        handleReauthenticateWithEmailAndPassword(call, result, getAuth(call));
+        break;
+      case "reauthenticateWithGoogleCredential":
+        handleReauthenticateWithGoogleCredential(call, result, getAuth(call));
+        break;
+      case "reauthenticateWithFacebookCredential":
+        handleReauthenticateWithFacebookCredential(call, result, getAuth(call));
+        break;
+      case "reauthenticateWithTwitterCredential":
+        handleReauthenticateWithTwitterCredential(call, result, getAuth(call));
+        break;
+      case "reauthenticateWithGithubCredential":
+        handleReauthenticateWithGithubCredential(call, result, getAuth(call));
+        break;
       case "linkWithEmailAndPassword":
         handleLinkWithEmailAndPassword(call, result, getAuth(call));
         break;
@@ -372,6 +387,68 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     firebaseAuth
         .signInWithCredential(credential)
         .addOnCompleteListener(new SignInCompleteListener(result));
+  }
+
+  private void handleReauthenticateWithEmailAndPassword(
+      MethodCall call, Result result, FirebaseAuth firebaseAuth) {
+    @SuppressWarnings("unchecked")
+    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    String email = arguments.get("email");
+    String password = arguments.get("password");
+
+    AuthCredential credential = EmailAuthProvider.getCredential(email, password);
+    firebaseAuth
+        .getCurrentUser()
+        .reauthenticate(credential)
+        .addOnCompleteListener(new TaskVoidCompleteListener(result));
+  }
+
+  private void handleReauthenticateWithGoogleCredential(
+      MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
+    @SuppressWarnings("unchecked")
+    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    String idToken = arguments.get("idToken");
+    String accessToken = arguments.get("accessToken");
+    AuthCredential credential = GoogleAuthProvider.getCredential(idToken, accessToken);
+    firebaseAuth
+        .getCurrentUser()
+        .reauthenticate(credential)
+        .addOnCompleteListener(new TaskVoidCompleteListener(result));
+  }
+
+  private void handleReauthenticateWithFacebookCredential(
+      MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
+    @SuppressWarnings("unchecked")
+    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    String accessToken = arguments.get("accessToken");
+    AuthCredential credential = FacebookAuthProvider.getCredential(accessToken);
+    firebaseAuth
+        .getCurrentUser()
+        .reauthenticate(credential)
+        .addOnCompleteListener(new TaskVoidCompleteListener(result));
+  }
+
+  private void handleReauthenticateWithTwitterCredential(
+      MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
+    @SuppressWarnings("unchecked")
+    Map<String, String> arguments = (Map<String, String>) call.arguments;
+    String authToken = arguments.get("authToken");
+    String authTokenSecret = arguments.get("authTokenSecret");
+    AuthCredential credential = TwitterAuthProvider.getCredential(authToken, authTokenSecret);
+    firebaseAuth
+        .getCurrentUser()
+        .reauthenticate(credential)
+        .addOnCompleteListener(new TaskVoidCompleteListener(result));
+  }
+
+  private void handleReauthenticateWithGithubCredential(
+      MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
+    String token = call.argument("token");
+    AuthCredential credential = GithubAuthProvider.getCredential(token);
+    firebaseAuth
+        .getCurrentUser()
+        .reauthenticate(credential)
+        .addOnCompleteListener(new TaskVoidCompleteListener(result));
   }
 
   private void handleLinkWithGoogleCredential(
