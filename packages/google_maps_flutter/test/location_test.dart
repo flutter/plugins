@@ -30,8 +30,7 @@ void main() {
           southwest: const LatLng(30.0, 20.0),
           northeast: const LatLng(-10.0, 40.0),
         );
-      }
-      on AssertionError catch (e){
+      } on AssertionError catch (e) {
         print(e);
         assertionError = true;
       }
@@ -82,7 +81,8 @@ void main() {
         final bool res = bounds.contains(const LatLng(20.0, 30.0));
         expect(res, true);
       });
-      test('all positive outside()'
+      test(
+          'all positive outside()'
           '8', () {
         final LatLngBounds bounds = LatLngBounds(
           southwest: const LatLng(10.0, 20.0),
@@ -255,7 +255,3 @@ void main() {
     });
   });
 }
-
-
-
-
