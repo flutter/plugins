@@ -1,7 +1,13 @@
-## 0.7.3
+## 0.8.1
 
-* Take into account the video rotation when computing the aspect ratio.
-* Fixed the aspect ratio of videos in the video_player plugin example. It now properly displays videos taken in portrait mode.
+* Fixed the aspect ratio and orientation of videos. Videos are now properly displayed when recorded 
+ in portrait mode both in iOS and Android.
+
+## 0.8.0
+
+* Android: Upgrade ExoPlayer to 2.9.1
+* Android: Use current gradle dependencies
+* Android 9 compatibility fixes for Demo App
 
 ## 0.7.2
 

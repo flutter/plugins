@@ -1,14 +1,13 @@
 package io.flutter.plugins.webviewflutter;
 
-import static io.flutter.plugin.common.MethodChannel.MethodCallHandler;
-import static io.flutter.plugin.common.MethodChannel.Result;
-
 import android.content.Context;
 import android.view.View;
 import android.webkit.WebView;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
+import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
+import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.platform.PlatformView;
 import java.util.Map;
 

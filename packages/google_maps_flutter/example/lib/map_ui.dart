@@ -182,6 +182,20 @@ class MapUiBodyState extends State<MapUiBody> {
     );
   }
 
+  Widget _myLocationToggler() {
+    return FlatButton(
+      child: Text(
+          '${_options.myLocationEnabled ? 'disable' : 'enable'} my location'),
+      onPressed: () {
+        mapController.updateMapOptions(
+          GoogleMapOptions(
+            myLocationEnabled: !_options.myLocationEnabled,
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final List<Widget> columnChildren = <Widget>[
@@ -226,6 +240,7 @@ class MapUiBodyState extends State<MapUiBody> {
               _scrollToggler(),
               _tiltToggler(),
               _zoomToggler(),
+              _myLocationToggler(),
             ],
           ),
         ),

@@ -27,6 +27,7 @@
 - (void)setTiltGesturesEnabled:(BOOL)enabled;
 - (void)setTrackCameraPosition:(BOOL)enabled;
 - (void)setZoomGesturesEnabled:(BOOL)enabled;
+- (void)setMyLocationEnabled:(BOOL)enabled;
 @end
 
 // Defines map overlay controllable from Flutter.
