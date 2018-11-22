@@ -2,31 +2,26 @@ package io.flutter.plugins.firebasedynamiclinks;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;
-
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.dynamiclinks.DynamicLink;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 import com.google.firebase.dynamiclinks.ShortDynamicLink;
-
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * FirebaseDynamicLinksPlugin
- */
+/** FirebaseDynamicLinksPlugin */
 public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
     private Registrar registrar;
+    private long clickTimestamp;
 
     private FirebaseDynamicLinksPlugin(Registrar registrar) {
         this.registrar = registrar;
@@ -68,27 +63,33 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
     private void handleRetrieveDynamicLink(final Result result) {
         FirebaseDynamicLinks.getInstance()
                 .getDynamicLink(registrar.activity().getIntent())
-                .addOnSuccessListener(registrar.activity(), new OnSuccessListener<PendingDynamicLinkData>() {
-                    @Override
-                    public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
-                        // Get deep link from result (may be null if no link is found)
-                        Uri deepLink = null;
-                        if (pendingDynamicLinkData != null) {
-                            deepLink = pendingDynamicLinkData.getLink();
-                            if (deepLink != null) {
-                                Map<String, Object> dynamicLink = new HashMap<>();
-                                dynamicLink.put("link", deepLink.toString());
-                                Map<String, Object> androidData = new HashMap<>();
-                                androidData.put("clickTimestamp", pendingDynamicLinkData.getClickTimestamp());
-                                androidData.put("minimumVersion", pendingDynamicLinkData.getMinimumAppVersion());
-                                dynamicLink.put("android", androidData);
-                                result.success(dynamicLink);
-                                return;
+                .addOnCompleteListener(
+                        registrar.activity(),
+                        new OnCompleteListener<PendingDynamicLinkData>() {
+                            @Override
+                            public void onComplete(@NonNull Task<PendingDynamicLinkData> task) {
+                                if (task.isSuccessful()) {
+                                    PendingDynamicLinkData data = task.getResult();
+                                    if (data != null) {
+                                        final long currentClickTimeStamp = data.getClickTimestamp();
+                                        if (clickTimestamp != currentClickTimeStamp) {
+                                            Map<String, Object> dynamicLink = new HashMap<>();
+                                            dynamicLink.put("link", data.getLink().toString());
+
+                                            Map<String, Object> androidData = new HashMap<>();
+                                            androidData.put("clickTimestamp", data.getClickTimestamp());
+                                            androidData.put("minimumVersion", data.getMinimumAppVersion());
+
+                                            dynamicLink.put("android", androidData);
+                                            result.success(dynamicLink);
+                                            clickTimestamp = currentClickTimeStamp;
+                                            return;
+                                        }
+                                    }
+                                }
+                                result.success(null);
                             }
-                        }
-                        result.success(null);
-                    }
-                });
+                        });
     }
 
     private OnCompleteListener<ShortDynamicLink> createShortLinkListener(final Result result) {
@@ -238,8 +239,7 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
             DynamicLink.NavigationInfoParameters.Builder builder =
                     new DynamicLink.NavigationInfoParameters.Builder();
 
-            if (forcedRedirectEnabled != null)
-                builder.setForcedRedirectEnabled(forcedRedirectEnabled);
+            if (forcedRedirectEnabled != null) builder.setForcedRedirectEnabled(forcedRedirectEnabled);
 
             dynamicLinkBuilder.setNavigationInfoParameters(builder.build());
         }
