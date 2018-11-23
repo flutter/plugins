@@ -1,3 +1,13 @@
+## 0.6.7
+
+* `FirebaseAuth` and `FirebaseUser` are now fully documented.
+* `PlatformExceptions` now report error codes as stated in docs.
+* Credentials can now be unlinked from Accounts with new methods on `FirebaseUser`.
+
+## 0.6.6
+
+* Users can now reauthenticate in response to operations that require a recent sign-in.
+
 ## 0.6.5
 
 * Fixing async method `verifyPhoneNumber`, that would never return even in a successful call.
