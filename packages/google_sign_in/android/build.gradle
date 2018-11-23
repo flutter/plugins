@@ -35,5 +35,5 @@ android {
 
 dependencies {
     api 'com.google.android.gms:play-services-auth:16.0.1'
-    implementation 'com.google.guava:guava:26.0-android'
+    implementation 'com.google.guava:guava:27.0.1-android'
 }

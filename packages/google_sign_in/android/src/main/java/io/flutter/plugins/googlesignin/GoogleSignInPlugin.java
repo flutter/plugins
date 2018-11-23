@@ -8,6 +8,7 @@ import android.accounts.Account;
 import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -21,8 +22,6 @@ import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.RuntimeExecutionException;
 import com.google.android.gms.tasks.Task;
-import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -244,7 +243,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
         for (String scope : requestedScopes) {
           optionsBuilder.requestScopes(new Scope(scope));
         }
-        if (!Strings.isNullOrEmpty(hostedDomain)) {
+        if (!TextUtils.isEmpty(hostedDomain)) {
           optionsBuilder.setHostedDomain(hostedDomain);
         }
 
@@ -449,7 +448,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
             @Override
             public String call() throws Exception {
               Account account = new Account(email, "com.google");
-              String scopesStr = "oauth2:" + Joiner.on(' ').join(requestedScopes);
+              String scopesStr = "oauth2:" + TextUtils.join(" ", requestedScopes);
               return GoogleAuthUtil.getToken(registrar.context(), account, scopesStr);
             }
           };
