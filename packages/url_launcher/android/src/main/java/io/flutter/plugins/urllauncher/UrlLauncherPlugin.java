@@ -49,7 +49,7 @@ public class UrlLauncherPlugin implements MethodCallHandler {
     if (call.method.equals("canLaunch")) {
       canLaunch(url, result);
     } else if (call.method.equals("launch")) {
-      final Intent launchIntent;
+      Intent launchIntent;
       boolean useWebView = call.argument("useWebView");
       boolean enableJavaScript = call.argument("enableJavaScript");
       if (useWebView) {
@@ -63,7 +63,6 @@ public class UrlLauncherPlugin implements MethodCallHandler {
       if (mRegistrar.activity() == null) {
         launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
       }
-
       context.startActivity(launchIntent);
       result.success(null);
     } else if (call.method.equals("closeWebView")) {
