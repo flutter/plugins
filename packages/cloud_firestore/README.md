@@ -71,7 +71,9 @@ Firestore.instance
     .listen((data) =>
         data.documents.forEach((doc) => print(doc["title"])));
 ```
+
 Get a specific document:
+
 ```dart
 Firestore.instance
     .collection('talks')
