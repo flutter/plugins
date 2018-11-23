@@ -111,15 +111,15 @@ class _MyHomePageState extends State<MyHomePage> {
             RaisedButton(
               onPressed: () => setState(() {
                     _launched = _launchInWebViewOrVC(toLaunch);
-                    new Timer(const Duration(seconds: 15), () {
-                      print('Closing WebView after 15 seconds...');
+                    Timer(const Duration(seconds: 5), () {
+                      print('Closing WebView after 5 seconds...');
                       closeWebView();
                     });
                   }),
-              child: const Text('Launch in app + close after 15 seconds'),
+              child: const Text('Launch in app + close after 5 seconds'),
             ),
             const Padding(padding: EdgeInsets.all(16.0)),
-            FutureBuilder<Null>(future: _launched, builder: _launchStatus),
+            FutureBuilder<void>(future: _launched, builder: _launchStatus),
           ],
         ),
       ),

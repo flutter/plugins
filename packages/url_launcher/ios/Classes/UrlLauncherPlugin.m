@@ -7,12 +7,12 @@
 #import "UrlLauncherPlugin.h"
 
 @interface FLTUrlLaunchSession : NSObject <SFSafariViewControllerDelegate>
+@property (copy) SFSafariViewController *safari;
 @end
 
 @implementation FLTUrlLaunchSession {
   NSURL *_url;
   FlutterResult _flutterResult;
-  @public SFSafariViewController *safari;
 }
 
 - (instancetype)initWithUrl:url withFlutterResult:result {
@@ -20,6 +20,8 @@
   if (self) {
     _url = url;
     _flutterResult = result;
+    _safari = [[SFSafariViewController alloc] initWithURL:url];
+    _safari.delegate = self;
   }
   return self;
 }
@@ -41,7 +43,7 @@
 }
 
 - (void)close {
-  [self safariViewControllerDidFinish:safari];
+  [self safariViewControllerDidFinish:_safari];
 }
 
 @end
@@ -125,19 +127,14 @@
 
 - (void)launchURLInVC:(NSString *)urlString result:(FlutterResult)result {
   NSURL *url = [NSURL URLWithString:urlString];
-
-  SFSafariViewController *safari = [[SFSafariViewController alloc] initWithURL:url];
   _currentSession = [[FLTUrlLaunchSession alloc] initWithUrl:url withFlutterResult:result];
-  safari.delegate = _currentSession;
-  _currentSession->safari = safari;
-  [_viewController presentViewController:safari animated:YES completion:nil];
+  [_viewController presentViewController:_currentSession.safari animated:YES completion:nil];
 }
 
 - (void)closeWebView:(NSString *)urlString result:(FlutterResult)result {
     if (_currentSession != nil) {
         [_currentSession close];
     }
-    
     result(nil);
 }
 
