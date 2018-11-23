@@ -5,12 +5,13 @@
 package io.flutter.plugins.urllauncher;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.ResultReceiver;
 import android.view.KeyEvent;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
@@ -24,7 +25,6 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 /** UrlLauncherPlugin */
 public class UrlLauncherPlugin implements MethodCallHandler {
   private final Registrar mRegistrar;
-  private ResultReceiver mWebViewFinisher;
 
   public static void registerWith(Registrar registrar) {
     MethodChannel channel =
@@ -35,24 +35,23 @@ public class UrlLauncherPlugin implements MethodCallHandler {
 
   private UrlLauncherPlugin(Registrar registrar) {
     this.mRegistrar = registrar;
-    this.mWebViewFinisher = null;
   }
 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
+    Context context;
+    if (mRegistrar.activity() != null) {
+      context = mRegistrar.activity();
+    } else {
+      context = mRegistrar.context();
+    }
     String url = call.argument("url");
     if (call.method.equals("canLaunch")) {
       canLaunch(url, result);
     } else if (call.method.equals("launch")) {
-      Intent launchIntent;
+      final Intent launchIntent;
       boolean useWebView = call.argument("useWebView");
       boolean enableJavaScript = call.argument("enableJavaScript");
-      Context context;
-      if (mRegistrar.activity() != null) {
-        context = (Context) mRegistrar.activity();
-      } else {
-        context = mRegistrar.context();
-      }
       if (useWebView) {
         launchIntent = new Intent(context, WebViewActivity.class);
         launchIntent.putExtra("url", url);
@@ -65,19 +64,12 @@ public class UrlLauncherPlugin implements MethodCallHandler {
         launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
       }
 
-      // Create a ResultReceiver, so that the WebView can tell us how to close it.
-      launchIntent.putExtra("callback", new ResultReceiver(null) {
-          @Override
-          protected void onReceiveResult(int resultCode, Bundle resultData) {
-              ResultReceiver finisher = resultData.getParcelable("finisher");
-              UrlLauncherPlugin.this.mWebViewFinisher = finisher;
-          }
-      });
-
       context.startActivity(launchIntent);
       result.success(null);
     } else if (call.method.equals("closeWebView")) {
-      closeWebView(result);
+      Intent intent = new Intent("close");
+      context.sendBroadcast(intent);
+      result.success(null);
     } else {
       result.notImplemented();
     }
@@ -94,14 +86,6 @@ public class UrlLauncherPlugin implements MethodCallHandler {
             && !"{com.android.fallback/com.android.fallback.Fallback}"
                 .equals(componentName.toShortString());
     result.success(canLaunch);
-  }
-
-  private void closeWebView(Result result) {
-    if (mWebViewFinisher != null) {
-      mWebViewFinisher.send(1, new Bundle());
-    }
-
-    result.success(null);
   }
 
   /*  Launches WebView activity */
@@ -131,17 +115,18 @@ public class UrlLauncherPlugin implements MethodCallHandler {
             }
           });
 
-      // The launcher plugin sent a result receiver; send another result receiver back.
-      // This will be used to ultimately close the WebView.
-      ResultReceiver callback = intent.getParcelableExtra("callback");
-      Bundle resultBundle = new Bundle();
-      resultBundle.putParcelable("finisher",new ResultReceiver(null) {
-          @Override
-          protected void onReceiveResult(int resultCode, Bundle resultData) {
-              WebViewActivity.this.finish();
-          }
-      });
-      callback.send(Activity.RESULT_OK, resultBundle);
+      // Set broadcast receiver to handle calls to close the web view
+      BroadcastReceiver broadcast_receiver =
+          new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context arg0, Intent intent) {
+              String action = intent.getAction();
+              if (action.equals("close")) {
+                finish();
+              }
+            }
+          };
+      registerReceiver(broadcast_receiver, new IntentFilter("close"));
     }
 
     @Override

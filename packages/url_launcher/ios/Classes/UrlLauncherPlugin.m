@@ -7,7 +7,7 @@
 #import "UrlLauncherPlugin.h"
 
 @interface FLTUrlLaunchSession : NSObject <SFSafariViewControllerDelegate>
-@property (copy) SFSafariViewController *safari;
+@property(copy) SFSafariViewController *safari;
 @end
 
 @implementation FLTUrlLaunchSession {
@@ -84,7 +84,7 @@
       [self launchURL:url result:result];
     }
   } else if ([@"closeWebView" isEqualToString:call.method]) {
-      [self closeWebView:url result:result];
+    [self closeWebView:url result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -132,10 +132,10 @@
 }
 
 - (void)closeWebView:(NSString *)urlString result:(FlutterResult)result {
-    if (_currentSession != nil) {
-        [_currentSession close];
-    }
-    result(nil);
+  if (_currentSession != nil) {
+    [_currentSession close];
+  }
+  result(nil);
 }
 
 @end
