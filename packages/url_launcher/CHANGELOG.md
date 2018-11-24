@@ -1,3 +1,7 @@
+## 4.0.2
+
+* Added `closeWebView` function to programmatically close the current WebView.
+
 ## 4.0.1
 
 * Added enableJavaScript field to `launch` to enable javascript in Android WebView.
