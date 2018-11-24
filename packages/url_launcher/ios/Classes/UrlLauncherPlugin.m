@@ -7,7 +7,7 @@
 #import "UrlLauncherPlugin.h"
 
 @interface FLTUrlLaunchSession : NSObject <SFSafariViewControllerDelegate>
-@property(copy) SFSafariViewController *safari;
+@property(strong) SFSafariViewController *safari;
 @end
 
 @implementation FLTUrlLaunchSession {
@@ -128,7 +128,11 @@
 - (void)launchURLInVC:(NSString *)urlString result:(FlutterResult)result {
   NSURL *url = [NSURL URLWithString:urlString];
   _currentSession = [[FLTUrlLaunchSession alloc] initWithUrl:url withFlutterResult:result];
-  [_viewController presentViewController:_currentSession.safari animated:YES completion:nil];
+  [_viewController presentViewController:_currentSession.safari
+                                animated:YES
+                              completion:^void() {
+                                self->_currentSession = nil;
+                              }];
 }
 
 - (void)closeWebView:(NSString *)urlString result:(FlutterResult)result {
