@@ -110,4 +110,12 @@ void main() {
     expect(() async => await launch('tel:555-555-5555', forceWebView: true),
         throwsA(isInstanceOf<PlatformException>()));
   });
+
+  test('closeWebView default behavior', () async {
+    await closeWebView();
+    expect(
+      log,
+      <Matcher>[isMethodCall('closeWebView', arguments: null)],
+    );
+  });
 }
