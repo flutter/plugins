@@ -30,11 +30,11 @@ class FirebaseAuth {
   );
 
   final Map<int, StreamController<FirebaseUser>> _authStateChangedControllers =
-  <int, StreamController<FirebaseUser>>{};
+      <int, StreamController<FirebaseUser>>{};
 
   static int nextHandle = 0;
   final Map<int, Map<String, dynamic>> _phoneAuthCallbacks =
-  <int, Map<String, dynamic>>{};
+      <int, Map<String, dynamic>>{};
 
   final FirebaseApp app;
 
@@ -188,7 +188,8 @@ class FirebaseAuth {
   Future<FirebaseUser> signInWithCredential(AuthCredential credential) async {
     assert(credential != null);
     final Map<dynamic, dynamic> data = await channel.invokeMethod(
-      'signInWithCredential', <String, dynamic>{
+      'signInWithCredential',
+      <String, dynamic>{
         'app': app.name,
         'provider': credential._provider,
         'data': credential._data,
@@ -311,7 +312,7 @@ class FirebaseAuth {
     final Map<dynamic, dynamic> data = await channel
         .invokeMethod("currentUser", <String, String>{'app': app.name});
     final FirebaseUser currentUser =
-    data == null ? null : FirebaseUser._(data, app);
+        data == null ? null : FirebaseUser._(data, app);
     return currentUser;
   }
 
@@ -332,7 +333,8 @@ class FirebaseAuth {
   Future<FirebaseUser> linkWithCredential(AuthCredential credential) async {
     assert(credential != null);
     final Map<dynamic, dynamic> data = await channel.invokeMethod(
-      'linkWithCredential', <String, dynamic>{
+      'linkWithCredential',
+      <String, dynamic>{
         'app': app.name,
         'provider': credential._provider,
         'data': credential._data,
@@ -361,13 +363,13 @@ class FirebaseAuth {
       case 'phoneVerificationCompleted':
         final int handle = call.arguments['handle'];
         final PhoneVerificationCompleted verificationCompleted =
-        _phoneAuthCallbacks[handle]['PhoneVerificationCompleted'];
+            _phoneAuthCallbacks[handle]['PhoneVerificationCompleted'];
         verificationCompleted(await currentUser());
         break;
       case 'phoneVerificationFailed':
         final int handle = call.arguments['handle'];
         final PhoneVerificationFailed verificationFailed =
-        _phoneAuthCallbacks[handle]['PhoneVerificationFailed'];
+            _phoneAuthCallbacks[handle]['PhoneVerificationFailed'];
         final Map<dynamic, dynamic> exception = call.arguments['exception'];
         verificationFailed(
             AuthException(exception['code'], exception['message']));
@@ -378,7 +380,7 @@ class FirebaseAuth {
         final int forceResendingToken = call.arguments['forceResendingToken'];
 
         final PhoneCodeSent codeSent =
-        _phoneAuthCallbacks[handle]['PhoneCodeSent'];
+            _phoneAuthCallbacks[handle]['PhoneCodeSent'];
         if (forceResendingToken == null) {
           codeSent(verificationId);
         } else {
@@ -388,7 +390,7 @@ class FirebaseAuth {
       case 'phoneCodeAutoRetrievalTimeout':
         final int handle = call.arguments['handle'];
         final PhoneCodeAutoRetrievalTimeout codeAutoRetrievalTimeout =
-        _phoneAuthCallbacks[handle]['PhoneCodeAutoRetrievealTimeout'];
+            _phoneAuthCallbacks[handle]['PhoneCodeAutoRetrievealTimeout'];
         final String verificationId = call.arguments['verificationId'];
         codeAutoRetrievalTimeout(verificationId);
         break;
@@ -400,7 +402,7 @@ class FirebaseAuth {
     final int id = call.arguments["id"];
 
     final FirebaseUser currentUser =
-    data != null ? FirebaseUser._(data, app) : null;
+        data != null ? FirebaseUser._(data, app) : null;
     _authStateChangedControllers[id].add(currentUser);
   }
 }

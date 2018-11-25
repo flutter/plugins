@@ -348,46 +348,52 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
   private AuthCredential getCredential(Map<String, Object> arguments) {
     AuthCredential credential;
     Map<String, String> data = (Map<String, String>) arguments.get("data");
-    switch((String) arguments.get("provider")) {
-      case "password": {
-        String email = data.get("email");
-        String password = data.get("password");
-        credential = EmailAuthProvider.getCredential(email, password);
-        break;
-      }
-      case "google.com": {
-        String idToken = data.get("idToken");
-        String accessToken = data.get("accessToken");
-        credential = GoogleAuthProvider.getCredential(idToken, accessToken);
-        break;
-      }
-      case "facebook.com": {
-        String accessToken = data.get("accessToken");
-        credential = FacebookAuthProvider.getCredential(accessToken);
-        break;
-      }
-      case "twitter.com": {
-        String authToken = data.get("authToken");
-        String authTokenSecret = data.get("authTokenSecret");
-        credential = TwitterAuthProvider.getCredential(authToken, authTokenSecret);
-        break;
-      }
-      case "github.com": {
-        String token = data.get("token");
-        credential = GithubAuthProvider.getCredential(token);
-        break;
-      }
-      default: {
-        credential = null;
-        break;
-      }
+    switch ((String) arguments.get("provider")) {
+      case "password":
+        {
+          String email = data.get("email");
+          String password = data.get("password");
+          credential = EmailAuthProvider.getCredential(email, password);
+          break;
+        }
+      case "google.com":
+        {
+          String idToken = data.get("idToken");
+          String accessToken = data.get("accessToken");
+          credential = GoogleAuthProvider.getCredential(idToken, accessToken);
+          break;
+        }
+      case "facebook.com":
+        {
+          String accessToken = data.get("accessToken");
+          credential = FacebookAuthProvider.getCredential(accessToken);
+          break;
+        }
+      case "twitter.com":
+        {
+          String authToken = data.get("authToken");
+          String authTokenSecret = data.get("authTokenSecret");
+          credential = TwitterAuthProvider.getCredential(authToken, authTokenSecret);
+          break;
+        }
+      case "github.com":
+        {
+          String token = data.get("token");
+          credential = GithubAuthProvider.getCredential(token);
+          break;
+        }
+      default:
+        {
+          credential = null;
+          break;
+        }
     }
     return credential;
   }
 
   private void handleSignInWithCredential(
       MethodCall call, Result result, FirebaseAuth firebaseAuth) {
-    AuthCredential credential = getCredential((Map<String, Object>)call.arguments());
+    AuthCredential credential = getCredential((Map<String, Object>) call.arguments());
     firebaseAuth
         .signInWithCredential(credential)
         .addOnCompleteListener(new SignInCompleteListener(result));
@@ -395,12 +401,13 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
 
   private void handleReauthenticateWithCredential(
       MethodCall call, Result result, FirebaseAuth firebaseAuth) {
-    AuthCredential credential = getCredential((Map<String, Object>)call.arguments());
+    AuthCredential credential = getCredential((Map<String, Object>) call.arguments());
     firebaseAuth
         .getCurrentUser()
         .reauthenticate(credential)
         .addOnCompleteListener(new TaskVoidCompleteListener(result));
   }
+
   private void handleUnlinkFromProvider(MethodCall call, Result result, FirebaseAuth firebaseAuth) {
     Map<String, String> arguments = call.arguments();
     final String provider = arguments.get("provider");

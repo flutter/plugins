@@ -350,10 +350,13 @@ void main() {
         <Matcher>[
           isMethodCall(
             'reauthenticateWithCredential',
-            arguments: <String, String>{
-              'email': kMockEmail,
-              'password': kMockPassword,
+            arguments: <String, dynamic>{
               'app': auth.app.name,
+              'provider': 'password',
+              'data': <String, String>{
+                'email': kMockEmail,
+                'password': kMockPassword,
+              }
             },
           ),
         ],
@@ -372,17 +375,20 @@ void main() {
         <Matcher>[
           isMethodCall(
             'reauthenticateWithCredential',
-            arguments: <String, String>{
-              'idToken': kMockIdToken,
-              'accessToken': kMockAccessToken,
+            arguments: <String, dynamic>{
               'app': auth.app.name,
+              'provider': 'google.com',
+              'data': <String, String>{
+                'idToken': kMockIdToken,
+                'accessToken': kMockAccessToken,
+              },
             },
           ),
         ],
       );
     });
 
-    test('GoogleAuthProvider reauthenticateWithCredential', () async {
+    test('FacebookAuthProvider reauthenticateWithCredential', () async {
       final FirebaseUser user = await auth.currentUser();
       log.clear();
       final AuthCredential credential = FacebookAuthProvider.getCredential(
@@ -394,9 +400,12 @@ void main() {
         <Matcher>[
           isMethodCall(
             'reauthenticateWithCredential',
-            arguments: <String, String>{
-              'accessToken': kMockAccessToken,
+            arguments: <String, dynamic>{
               'app': auth.app.name,
+              'provider': 'facebook.com',
+              'data': <String, String>{
+                'accessToken': kMockAccessToken,
+              },
             },
           ),
         ],
@@ -416,10 +425,13 @@ void main() {
         <Matcher>[
           isMethodCall(
             'reauthenticateWithCredential',
-            arguments: <String, String>{
-              'authToken': kMockAuthToken,
-              'authTokenSecret': kMockAuthTokenSecret,
+            arguments: <String, dynamic>{
               'app': auth.app.name,
+              'provider': 'twitter.com',
+              'data': <String, String>{
+                'authToken': kMockAuthToken,
+                'authTokenSecret': kMockAuthTokenSecret,
+              },
             },
           ),
         ],
@@ -438,9 +450,12 @@ void main() {
         <Matcher>[
           isMethodCall(
             'reauthenticateWithCredential',
-            arguments: <String, String>{
+            arguments: <String, dynamic>{
               'app': auth.app.name,
-              'token': kMockGithubToken,
+              'provider': 'github.com',
+              'data': <String, String>{
+                'token': kMockGithubToken,
+              },
             },
           ),
         ],

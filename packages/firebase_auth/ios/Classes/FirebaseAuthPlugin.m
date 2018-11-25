@@ -79,10 +79,11 @@ int nextHandle = 0;
           [self sendResult:result forUser:authResult.user error:error];
         }];
   } else if ([@"signInWithCredential" isEqualToString:call.method]) {
-    [[self getAuth:call.arguments] signInAndRetrieveDataWithCredential:[self getCredential:call.arguments]
-                                             completion:^(FIRAuthDataResult *authResult, NSError *error) {
-                                               [self sendResult:result forUser:authResult.user error:error];
-                                             }];
+    [[self getAuth:call.arguments]
+        signInAndRetrieveDataWithCredential:[self getCredential:call.arguments]
+                                 completion:^(FIRAuthDataResult *authResult, NSError *error) {
+                                   [self sendResult:result forUser:authResult.user error:error];
+                                 }];
   } else if ([@"createUserWithEmailAndPassword" isEqualToString:call.method]) {
     NSString *email = call.arguments[@"email"];
     NSString *password = call.arguments[@"password"];
@@ -151,12 +152,11 @@ int nextHandle = 0;
                             [self sendResult:result forObject:nil error:error];
                           }];
   } else if ([@"linkWithCredential" isEqualToString:call.method]) {
-    [[self getAuth:call.arguments].currentUser linkWithCredential:[self getCredential:call.arguments]
-                                                       completion:^(FIRUser *user, NSError *error) {
-                                                         [self sendResult:result
-                                                                  forUser:user
-                                                                    error:error];
-                                                       }];
+    [[self getAuth:call.arguments].currentUser
+        linkWithCredential:[self getCredential:call.arguments]
+                completion:^(FIRUser *user, NSError *error) {
+                  [self sendResult:result forUser:user error:error];
+                }];
   } else if ([@"unlinkFromProvider" isEqualToString:call.method]) {
     NSString *provider = call.arguments[@"provider"];
     [[self getAuth:call.arguments].currentUser
@@ -324,39 +324,37 @@ int nextHandle = 0;
   return @{@"code" : errorCode, @"message" : error.localizedDescription};
 }
 
-- (FIRAuthCredential*)getCredential:(NSDictionary *)arguments
-{
-    NSString *provider = arguments[@"provider"];
-    NSDictionary *data = arguments[@"data"];
-    FIRAuthCredential *credential;
-    if ([FIREmailAuthProviderID isEqualToString:provider]) {
-      NSString *email = data[@"email"];
-      NSString *password = data[@"password"];
-      credential = [FIREmailAuthProvider credentialWithEmail:email
-                                                    password:password];
-    } else if ([FIRGoogleAuthProviderID isEqualToString:provider]) {
-      NSString *idToken = data[@"idToken"];
-      NSString *accessToken = data[@"accessToken"];
-      credential = [FIRGoogleAuthProvider credentialWithIDToken:idToken
-                                                    accessToken:accessToken];
-    } else if ([FIRFacebookAuthProviderID isEqualToString:provider]) {
-      NSString *accessToken = data[@"accessToken"];
-      credential = [FIRFacebookAuthProvider credentialWithAccessToken:accessToken];
-    } else if ([FIRTwitterAuthProviderID isEqualToString:provider]) {
-      NSString *authToken = data[@"authToken"];
-      NSString *authTokenSecret = data[@"authTokenSecret"];
-      credential = [FIRTwitterAuthProvider credentialWithToken:authToken
-                                                                         secret:authTokenSecret];
-    } else if ([FIRGitHubAuthProviderID isEqualToString:provider]) {
-      NSString *token = data[@"token"];
-      credential = [FIRGitHubAuthProvider credentialWithToken:token];
-    } else if ([FIRPhoneAuthProviderID isEqualToString:provider]) {
-      NSString *verificationId = data[@"verificationId"];
-      NSString *smsCode = data[@"smsCode"];
-      credential = [[FIRPhoneAuthProvider providerWithAuth:[self getAuth:arguments]] credentialWithVerificationID:verificationId verificationCode:smsCode];
-    } else {
-      NSLog(@"Support for an auth provider with identifier '%@' is not implemented.", provider);
-    }
-    return credential;
+- (FIRAuthCredential *)getCredential:(NSDictionary *)arguments {
+  NSString *provider = arguments[@"provider"];
+  NSDictionary *data = arguments[@"data"];
+  FIRAuthCredential *credential;
+  if ([FIREmailAuthProviderID isEqualToString:provider]) {
+    NSString *email = data[@"email"];
+    NSString *password = data[@"password"];
+    credential = [FIREmailAuthProvider credentialWithEmail:email password:password];
+  } else if ([FIRGoogleAuthProviderID isEqualToString:provider]) {
+    NSString *idToken = data[@"idToken"];
+    NSString *accessToken = data[@"accessToken"];
+    credential = [FIRGoogleAuthProvider credentialWithIDToken:idToken accessToken:accessToken];
+  } else if ([FIRFacebookAuthProviderID isEqualToString:provider]) {
+    NSString *accessToken = data[@"accessToken"];
+    credential = [FIRFacebookAuthProvider credentialWithAccessToken:accessToken];
+  } else if ([FIRTwitterAuthProviderID isEqualToString:provider]) {
+    NSString *authToken = data[@"authToken"];
+    NSString *authTokenSecret = data[@"authTokenSecret"];
+    credential = [FIRTwitterAuthProvider credentialWithToken:authToken secret:authTokenSecret];
+  } else if ([FIRGitHubAuthProviderID isEqualToString:provider]) {
+    NSString *token = data[@"token"];
+    credential = [FIRGitHubAuthProvider credentialWithToken:token];
+  } else if ([FIRPhoneAuthProviderID isEqualToString:provider]) {
+    NSString *verificationId = data[@"verificationId"];
+    NSString *smsCode = data[@"smsCode"];
+    credential = [[FIRPhoneAuthProvider providerWithAuth:[self getAuth:arguments]]
+        credentialWithVerificationID:verificationId
+                    verificationCode:smsCode];
+  } else {
+    NSLog(@"Support for an auth provider with identifier '%@' is not implemented.", provider);
+  }
+  return credential;
 }
 @end
