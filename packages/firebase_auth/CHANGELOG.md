@@ -1,3 +1,9 @@
+## 0.7.0
+
+* Introduce AuthProvider classes that produce AuthCredentials
+* Support for signing in and linking with AuthCredential
+* Move reauthentication to FirebaseUser
+
 ## 0.6.7
 
 * `FirebaseAuth` and `FirebaseUser` are now fully documented.

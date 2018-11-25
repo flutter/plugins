@@ -114,86 +114,50 @@ class FirebaseAuth {
   Future<FirebaseUser> signInWithEmailAndPassword({
     @required String email,
     @required String password,
-  }) async {
+  }) {
     assert(email != null);
     assert(password != null);
+    return signInAndRetrieveData(
+      credential: EmailAuthProvider.getCredential(
+        email: email,
+        password: password,
+     ),
+    );
+  }
+
+  /// Asynchronously signs in to Firebase with the given 3rd-party credentials
+  /// (e.g. a Facebook login Access Token, a Google ID Token/Access Token pair,
+  /// etc.) and returns additional identity provider data.
+  Future<FirebaseUser> signInAndRetrieveData({
+    @required AuthCredential credential
+  }) async {
+    assert(credential != null);
     final Map<dynamic, dynamic> data = await channel.invokeMethod(
-      'signInWithEmailAndPassword',
-      <String, String>{'email': email, 'password': password, 'app': app.name},
+      'signInAndRetrieveData',
+      Map<String, String>.from(credential._data)..addAll(
+        <String, String>{ 'app': app.name },
+      ),
     );
     final FirebaseUser currentUser = FirebaseUser._(data, app);
     return currentUser;
   }
 
-  Future<FirebaseUser> signInWithFacebook(
-      {@required String accessToken}) async {
-    assert(accessToken != null);
-    final Map<dynamic, dynamic> data = await channel.invokeMethod(
-        'signInWithFacebook',
-        <String, String>{'accessToken': accessToken, 'app': app.name});
-    final FirebaseUser currentUser = FirebaseUser._(data, app);
-    return currentUser;
-  }
-
-  /// Signs in with a Twitter account using the specified credentials.
+  /// Associates a user account from a third-party identity provider with this
+  /// user and returns additional identity provider data.
   ///
-  /// The returned future completes with the signed-in user or a [PlatformException], if sign in failed.
-  Future<FirebaseUser> signInWithTwitter({
-    @required String authToken,
-    @required String authTokenSecret,
+  /// throws [PlatformException] when
+  /// 1. No current user provided (user has not logged in)
+  /// 2. Invalid auth credential
+  /// 3. Credential already linked to another [FirebaseUser]
+  Future<FirebaseUser> linkAndRetrieveData({
+    @required AuthCredential credential,
   }) async {
-    assert(authToken != null);
-    assert(authTokenSecret != null);
+    assert(credential != null);
     final Map<dynamic, dynamic> data = await channel.invokeMethod(
-        'signInWithTwitter', <String, String>{
-      'authToken': authToken,
-      'authTokenSecret': authTokenSecret,
-      'app': app.name
-    });
-    final FirebaseUser currentUser = FirebaseUser._(data, app);
-    return currentUser;
-  }
-
-  Future<FirebaseUser> signInWithGithub({@required String token}) async {
-    assert(token != null);
-    final Map<dynamic, dynamic> data =
-        await channel.invokeMethod('signInWithGithub', <String, String>{
-      'token': token,
-      'app': app.name,
-    });
-    final FirebaseUser currentUser = FirebaseUser._(data, app);
-    return currentUser;
-  }
-
-  Future<FirebaseUser> signInWithGoogle({
-    @required String idToken,
-    @required String accessToken,
-  }) async {
-    assert(idToken != null);
-    assert(accessToken != null);
-    final Map<dynamic, dynamic> data = await channel.invokeMethod(
-      'signInWithGoogle',
-      <String, String>{
-        'idToken': idToken,
-        'accessToken': accessToken,
-        'app': app.name
-      },
-    );
-    final FirebaseUser currentUser = FirebaseUser._(data, app);
-    return currentUser;
-  }
-
-  Future<FirebaseUser> signInWithPhoneNumber({
-    @required String verificationId,
-    @required String smsCode,
-  }) async {
-    final Map<dynamic, dynamic> data = await channel.invokeMethod(
-      'signInWithPhoneNumber',
-      <String, String>{
-        'verificationId': verificationId,
-        'smsCode': smsCode,
-        'app': app.name
-      },
+      'linkAndRetrieveData',
+      Map<String, String>.from(credential._data)..addAll(
+        <String, String>{ 'app': app.name },
+      ),
     );
     final FirebaseUser currentUser = FirebaseUser._(data, app);
     return currentUser;
@@ -250,148 +214,6 @@ class FirebaseAuth {
     final FirebaseUser currentUser =
         data == null ? null : FirebaseUser._(data, app);
     return currentUser;
-  }
-
-  /// Links email account with current user and returns [Future<FirebaseUser>]
-  /// basically current user with additional email information
-  ///
-  /// throws [PlatformException] when
-  /// 1. email address is already used
-  /// 2. wrong email and password provided
-  Future<FirebaseUser> linkWithEmailAndPassword({
-    @required String email,
-    @required String password,
-  }) async {
-    assert(email != null);
-    assert(password != null);
-    final Map<dynamic, dynamic> data = await channel.invokeMethod(
-      'linkWithEmailAndPassword',
-      <String, String>{'email': email, 'password': password, 'app': app.name},
-    );
-    final FirebaseUser currentUser = FirebaseUser._(data, app);
-    return currentUser;
-  }
-
-  /// Links google account with current user and returns [Future<FirebaseUser>]
-  ///
-  /// throws [PlatformException] when
-  /// 1. No current user provided (user has not logged in)
-  /// 2. No google credentials were found for given [idToken] and [accessToken]
-  /// 3. Google account already linked with another [FirebaseUser]
-  /// Detailed documentation on possible error causes can be found in [Android docs](https://firebase.google.com/docs/reference/android/com/google/firebase/auth/FirebaseUser#exceptions_4) and [iOS docs](https://firebase.google.com/docs/reference/ios/firebaseauth/api/reference/Classes/FIRUser#/c:objc(cs)FIRUser(im)linkWithCredential:completion:)
-  /// TODO: Throw custom exceptions with error codes indicating cause of exception
-  Future<FirebaseUser> linkWithGoogleCredential({
-    @required String idToken,
-    @required String accessToken,
-  }) async {
-    assert(idToken != null);
-    assert(accessToken != null);
-    final Map<dynamic, dynamic> data = await channel.invokeMethod(
-      'linkWithGoogleCredential',
-      <String, String>{
-        'idToken': idToken,
-        'accessToken': accessToken,
-        'app': app.name
-      },
-    );
-    final FirebaseUser currentUser = FirebaseUser._(data, app);
-    return currentUser;
-  }
-
-  Future<FirebaseUser> linkWithFacebookCredential({
-    @required String accessToken,
-  }) async {
-    assert(accessToken != null);
-    final Map<dynamic, dynamic> data = await channel.invokeMethod(
-      'linkWithFacebookCredential',
-      <String, String>{'accessToken': accessToken, 'app': app.name},
-    );
-    final FirebaseUser currentUser = FirebaseUser._(data, app);
-    return currentUser;
-  }
-
-  Future<FirebaseUser> linkWithTwitterCredential({
-    @required String authToken,
-    @required String authTokenSecret,
-  }) async {
-    final Map<dynamic, dynamic> data = await channel.invokeMethod(
-      'linkWithTwitterCredential',
-      <String, String>{
-        'app': app.name,
-        'authToken': authToken,
-        'authTokenSecret': authTokenSecret,
-      },
-    );
-    final FirebaseUser currentUser = FirebaseUser._(data, app);
-    return currentUser;
-  }
-
-  Future<FirebaseUser> linkWithGithubCredential(
-      {@required String token}) async {
-    assert(token != null);
-    final Map<dynamic, dynamic> data = await channel.invokeMethod(
-        'linkWithGithubCredential',
-        <String, String>{'app': app.name, 'token': token});
-    final FirebaseUser currentUser = FirebaseUser._(data, app);
-    return currentUser;
-  }
-
-  Future<void> reauthenticateWithEmailAndPassword({
-    @required String email,
-    @required String password,
-  }) {
-    assert(email != null);
-    assert(password != null);
-    return channel.invokeMethod(
-      'reauthenticateWithEmailAndPassword',
-      <String, String>{'email': email, 'password': password, 'app': app.name},
-    );
-  }
-
-  Future<void> reauthenticateWithGoogleCredential({
-    @required String idToken,
-    @required String accessToken,
-  }) {
-    assert(idToken != null);
-    assert(accessToken != null);
-    return channel.invokeMethod(
-      'reauthenticateWithGoogleCredential',
-      <String, String>{
-        'idToken': idToken,
-        'accessToken': accessToken,
-        'app': app.name
-      },
-    );
-  }
-
-  Future<void> reauthenticateWithFacebookCredential({
-    @required String accessToken,
-  }) {
-    assert(accessToken != null);
-    return channel.invokeMethod(
-      'reauthenticateWithFacebookCredential',
-      <String, String>{'accessToken': accessToken, 'app': app.name},
-    );
-  }
-
-  Future<void> reauthenticateWithTwitterCredential({
-    @required String authToken,
-    @required String authTokenSecret,
-  }) {
-    return channel.invokeMethod(
-      'reauthenticateWithTwitterCredential',
-      <String, String>{
-        'app': app.name,
-        'authToken': authToken,
-        'authTokenSecret': authTokenSecret,
-      },
-    );
-  }
-
-  Future<void> reauthenticateWithGithubCredential({@required String token}) {
-    assert(token != null);
-    return channel.invokeMethod('reauthenticateWithGithubCredential',
-        <String, String>{'app': app.name, 'token': token});
   }
 
   /// Sets the user-facing language code for auth operations that can be

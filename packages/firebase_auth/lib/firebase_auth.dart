@@ -1044,6 +1044,15 @@ class FirebaseAuth {
   }
 }
 */
+
+part 'src/auth_provider/auth_provider.dart';
+part 'src/auth_provider/email_auth_provider.dart';
+part 'src/auth_provider/facebook_auth_provider.dart';
+part 'src/auth_provider/github_auth_provider.dart';
+part 'src/auth_provider/google_auth_provider.dart';
+part 'src/auth_provider/phone_auth_provider.dart';
+part 'src/auth_provider/twitter_auth_provider.dart';
+part 'src/auth_credential.dart';
 part 'src/auth_exception.dart';
 part 'src/firebase_auth.dart';
 part 'src/firebase_user.dart';

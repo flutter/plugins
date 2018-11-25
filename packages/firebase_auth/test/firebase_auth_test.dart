@@ -234,10 +234,12 @@ void main() {
       );
     });
 
-    test('linkWithEmailAndPassword', () async {
-      final FirebaseUser user = await auth.linkWithEmailAndPassword(
-        email: kMockEmail,
-        password: kMockPassword,
+    test('EmailAuthProvider link', () async {
+      final FirebaseUser user = await auth.linkAndRetrieveData(
+        credential: EmailAuthProvider.getCredential(
+          email: kMockEmail,
+          password: kMockPassword,
+        ),
       );
       verifyUser(user);
       expect(
@@ -255,10 +257,12 @@ void main() {
       );
     });
 
-    test('signInWithGoogle', () async {
-      final FirebaseUser user = await auth.signInWithGoogle(
-        idToken: kMockIdToken,
-        accessToken: kMockAccessToken,
+    test('GoogleAuthProvider signInAndRetrieveData', () async {
+      final FirebaseUser user = await auth.signInAndRetrieveData(
+        credential: GoogleAuthProvider.getCredential(
+          idToken: kMockIdToken,
+          accessToken: kMockAccessToken,
+        ),
       );
       verifyUser(user);
       expect(
@@ -276,9 +280,13 @@ void main() {
       );
     });
 
-    test('signInWithPhoneNumber', () async {
-      await auth.signInWithPhoneNumber(
-          verificationId: kMockVerificationId, smsCode: kMockSmsCode);
+    test('PhoneAuthProvider signInAndRetrieveData', () async {
+      await auth.signInAndRetrieveData(
+        credential: PhoneAuthProvider.getCredential(
+          verificationId: kMockVerificationId,
+          smsCode: kMockSmsCode,
+        ),
+      );
       expect(log, <Matcher>[
         isMethodCall('signInWithPhoneNumber', arguments: <String, dynamic>{
           'verificationId': kMockVerificationId,
@@ -307,10 +315,14 @@ void main() {
       ]);
     });
 
-    test('reauthenticateWithEmailAndPassword', () async {
-      await auth.reauthenticateWithEmailAndPassword(
-        email: kMockEmail,
-        password: kMockPassword,
+    test('EmailAuthProvider reauthenticate', () async {
+      final FirebaseUser user = await auth.currentUser();
+      log.clear();
+      await user.reauthenticate(
+        credential: EmailAuthProvider.getCredential(
+          email: kMockEmail,
+          password: kMockPassword,
+        ),
       );
       expect(
         log,
@@ -326,10 +338,14 @@ void main() {
         ],
       );
     });
-    test('reauthenticateWithGoogleCredential', () async {
-      await auth.reauthenticateWithGoogleCredential(
-        idToken: kMockIdToken,
-        accessToken: kMockAccessToken,
+    test('GoogleAuthProvider reauthenticate', () async {
+      final FirebaseUser user = await auth.currentUser();
+      log.clear();
+      await user.reauthenticate(
+        credential: GoogleAuthProvider.getCredential(
+          idToken: kMockIdToken,
+          accessToken: kMockAccessToken,
+        ),
       );
       expect(
         log,
@@ -346,9 +362,13 @@ void main() {
       );
     });
 
-    test('reauthenticateWithFacebookCredential', () async {
-      await auth.reauthenticateWithFacebookCredential(
-        accessToken: kMockAccessToken,
+    test('GoogleAuthProvider reauthenticate', () async {
+      final FirebaseUser user = await auth.currentUser();
+      log.clear();
+      await user.reauthenticate(
+        credential: FacebookAuthProvider.getCredential(
+          accessToken: kMockAccessToken,
+        ),
       );
       expect(
         log,
@@ -364,10 +384,14 @@ void main() {
       );
     });
 
-    test('reauthenticateWithTwitterCredential', () async {
-      await auth.reauthenticateWithTwitterCredential(
-        authToken: kMockAuthToken,
-        authTokenSecret: kMockAuthTokenSecret,
+    test('TwitterAuthProvider reauthenticate', () async {
+      final FirebaseUser user = await auth.currentUser();
+      log.clear();
+      await user.reauthenticate(
+        credential: TwitterAuthProvider.getCredential(
+          authToken: kMockAuthToken,
+          authTokenSecret: kMockAuthTokenSecret,
+        ),
       );
       expect(
         log,
@@ -384,9 +408,13 @@ void main() {
       );
     });
 
-    test('reauthenticateWithGithubCredential', () async {
-      await auth.reauthenticateWithGithubCredential(
-        token: kMockGithubToken,
+    test('GithubAuthProvider reauthenticate', () async {
+      final FirebaseUser user = await auth.currentUser();
+      log.clear();
+      await user.reauthenticate(
+        credential: GithubAuthProvider.getCredential(
+          token: kMockGithubToken,
+        ),
       );
       expect(
         log,
@@ -402,10 +430,12 @@ void main() {
       );
     });
 
-    test('linkWithGoogleCredential', () async {
-      final FirebaseUser user = await auth.linkWithGoogleCredential(
-        idToken: kMockIdToken,
-        accessToken: kMockAccessToken,
+    test('GoogleAuthProvider link', () async {
+      final FirebaseUser user = await auth.linkAndRetrieveData(
+        credential: GoogleAuthProvider.getCredential(
+          idToken: kMockIdToken,
+          accessToken: kMockAccessToken,
+        ),
       );
       verifyUser(user);
       expect(
@@ -423,9 +453,11 @@ void main() {
       );
     });
 
-    test('linkWithFacebookCredential', () async {
-      final FirebaseUser user = await auth.linkWithFacebookCredential(
-        accessToken: kMockAccessToken,
+    test('FacebookAuthProvider link', () async {
+      final FirebaseUser user = await auth.linkAndRetrieveData(
+        credential: FacebookAuthProvider.getCredential(
+          accessToken: kMockAccessToken,
+        ),
       );
       verifyUser(user);
       expect(
@@ -442,30 +474,11 @@ void main() {
       );
     });
 
-    test('linkWithTwitterCredential', () async {
-      final FirebaseUser user = await auth.linkWithTwitterCredential(
-        authToken: kMockAuthToken,
-        authTokenSecret: kMockAuthTokenSecret,
-      );
-      verifyUser(user);
-      expect(
-        log,
-        <Matcher>[
-          isMethodCall(
-            'linkWithTwitterCredential',
-            arguments: <String, String>{
-              'authToken': kMockAuthToken,
-              'authTokenSecret': kMockAuthTokenSecret,
-              'app': auth.app.name,
-            },
-          ),
-        ],
-      );
-    });
-
-    test('signInWithFacebook', () async {
-      final FirebaseUser user = await auth.signInWithFacebook(
-        accessToken: kMockAccessToken,
+    test('FacebookAuthProvider signInAndRetrieveData', () async {
+      final FirebaseUser user = await auth.signInAndRetrieveData(
+        credential: FacebookAuthProvider.getCredential(
+          accessToken: kMockAccessToken,
+        ),
       );
       verifyUser(user);
       expect(
@@ -482,10 +495,12 @@ void main() {
       );
     });
 
-    test('linkWithTwitterCredential', () async {
-      final FirebaseUser user = await auth.linkWithTwitterCredential(
-        authToken: kMockAuthToken,
-        authTokenSecret: kMockAuthTokenSecret,
+    test('TwitterAuthProvider link', () async {
+      final FirebaseUser user = await auth.linkAndRetrieveData(
+        credential: TwitterAuthProvider.getCredential(
+          authToken: kMockAuthToken,
+          authTokenSecret: kMockAuthTokenSecret,
+        ),
       );
       verifyUser(user);
       expect(
@@ -503,10 +518,12 @@ void main() {
       );
     });
 
-    test('signInWithTwitter', () async {
-      final FirebaseUser user = await auth.signInWithTwitter(
-        authToken: kMockAuthToken,
-        authTokenSecret: kMockAuthTokenSecret,
+    test('TwitterAuthProvider signInAndRetrieveData', () async {
+      final FirebaseUser user = await auth.signInAndRetrieveData(
+        credential: TwitterAuthProvider.getCredential(
+          authToken: kMockAuthToken,
+          authTokenSecret: kMockAuthTokenSecret,
+        ),
       );
       verifyUser(user);
       expect(
@@ -524,9 +541,11 @@ void main() {
       );
     });
 
-    test('linkWithGithubCredential', () async {
-      final FirebaseUser user = await auth.linkWithGithubCredential(
-        token: kMockGithubToken,
+    test('GithubAuthProvider link', () async {
+      final FirebaseUser user = await auth.linkAndRetrieveData(
+        credential: GithubAuthProvider.getCredential(
+          token: kMockGithubToken,
+        ),
       );
       verifyUser(user);
       expect(
@@ -543,9 +562,11 @@ void main() {
       );
     });
 
-    test('signInWithGithub', () async {
-      final FirebaseUser user = await auth.signInWithGithub(
-        token: kMockGithubToken,
+    test('GithubAuthProvider signInAndRetrieveData', () async {
+      final FirebaseUser user = await auth.signInAndRetrieveData(
+        credential: GithubAuthProvider.getCredential(
+          token: kMockGithubToken,
+        ),
       );
       verifyUser(user);
       expect(
@@ -562,10 +583,12 @@ void main() {
       );
     });
 
-    test('linkWithEmailAndPassword', () async {
-      final FirebaseUser user = await auth.linkWithEmailAndPassword(
-        email: kMockEmail,
-        password: kMockPassword,
+    test('EmailAuthProvider link', () async {
+      final FirebaseUser user = await auth.linkAndRetrieveData(
+        credential: EmailAuthProvider.getCredential(
+          email: kMockEmail,
+          password: kMockPassword,
+        ),
       );
       verifyUser(user);
       expect(

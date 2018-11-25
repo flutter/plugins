@@ -83,6 +83,19 @@ class FirebaseUser extends UserInfo {
     );
   }
 
+  Future<FirebaseUser> reauthenticate({
+    @required AuthCredential credential,
+  }) async {
+    assert(credential != null);
+    await FirebaseAuth.channel.invokeMethod(
+      'reauthenticate',
+      Map<String, String>.from(credential._data)..addAll(
+        <String, String>{ 'app': _app.name },
+      ),
+    );
+    return this;
+  }
+
   @override
   String toString() {
     return '$runtimeType($_data)';
