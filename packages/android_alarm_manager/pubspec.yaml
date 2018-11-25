@@ -9,6 +9,9 @@ dependencies:
   flutter:
     sdk: flutter
 
+dev_dependencies:
+  firebase_auth: ^0.6.6
+
 flutter:
   plugin:
     androidPackage: io.flutter.plugins.androidalarmmanager
