@@ -11,7 +11,7 @@ class EmailAuthProvider {
     String email,
     String password,
   }) {
-    return AuthCredential._('EmailAndPassword', <String, String>{
+    return AuthCredential._(providerId, <String, String>{
       'email': email,
       'password': password,
     });

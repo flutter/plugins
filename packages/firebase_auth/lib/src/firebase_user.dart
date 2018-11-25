@@ -122,7 +122,7 @@ class FirebaseUser extends UserInfo {
   }
 
   /// Renews the user’s authentication tokens by validating a fresh set of
-  /// credentials supplied by the user and returns additional identity provider
+  /// [credential]s supplied by the user and returns additional identity provider
   /// data.
   ///
   /// This is used to prevent or resolve `ERROR_REQUIRES_RECENT_LOGIN`
@@ -137,12 +137,10 @@ class FirebaseUser extends UserInfo {
   ///   • `ERROR_USER_DISABLED` - If the user has been disabled (for example, in the Firebase console)
   ///   • `ERROR_USER_NOT_FOUND` - If the user has been deleted (for example, in the Firebase console)
   ///   • `ERROR_OPERATION_NOT_ALLOWED` - Indicates that Email & Password accounts are not enabled.
-  Future<FirebaseUser> reauthenticate({
-    @required AuthCredential credential,
-  }) async {
+  Future<FirebaseUser> reauthenticateWithCredential(AuthCredential credential) async {
     assert(credential != null);
     await FirebaseAuth.channel.invokeMethod(
-      'reauthenticate',
+      'reauthenticateWithCredential',
       Map<String, String>.from(credential._data)..addAll(
         <String, String>{ 'app': _app.name },
       ),
@@ -163,9 +161,10 @@ class FirebaseUser extends UserInfo {
   /// Errors:
   ///   • `ERROR_NO_SUCH_PROVIDER` - If the user does not have a Github Account linked to their account.
   ///   • `ERROR_REQUIRES_RECENT_LOGIN` - If the user's last sign-in time does not meet the security threshold. Use reauthenticate methods to resolve.
-  Future<void> unlink(@required String provider) async {
+  Future<void> unlinkFromProvider(String provider) async {
+    assert(provider != null);
     return await FirebaseAuth.channel.invokeMethod(
-      'unlinkCredential',
+      'unlinkFromProvider',
       <String, String>{'provider': provider, 'app': _app.name},
     );
   }

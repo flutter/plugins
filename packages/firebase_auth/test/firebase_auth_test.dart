@@ -154,144 +154,166 @@ void main() {
       );
     });
 
-    test('linkWithTwitterCredential', () async {
-      final FirebaseUser user = await auth.linkWithTwitterCredential(
+    test('TwitterAuthProvider linkWithCredential', () async {
+      final AuthCredential credential = TwitterAuthProvider.getCredential(
         authToken: kMockIdToken,
         authTokenSecret: kMockAccessToken,
       );
+      final FirebaseUser user = await auth.linkWithCredential(credential);
       verifyUser(user);
       expect(
         log,
         <Matcher>[
           isMethodCall(
-            'linkWithTwitterCredential',
-            arguments: <String, String>{
-              'authToken': kMockIdToken,
-              'authTokenSecret': kMockAccessToken,
+            'linkWithCredential',
+            arguments: <String, dynamic>{
               'app': auth.app.name,
+              'provider': 'twitter.com',
+              'data': <String, String>{
+                'authToken': kMockIdToken,
+                'authTokenSecret': kMockAccessToken,
+              },
             },
           ),
         ],
       );
     });
 
-    test('signInWithTwitter', () async {
-      final FirebaseUser user = await auth.signInWithTwitter(
+    test('TwitterAuthProvider signInWithCredential', () async {
+      final AuthCredential credential = TwitterAuthProvider.getCredential(
         authToken: kMockIdToken,
         authTokenSecret: kMockAccessToken,
       );
+      final FirebaseUser user = await auth.signInWithCredential(credential);
       verifyUser(user);
       expect(
         log,
         <Matcher>[
           isMethodCall(
-            'signInWithTwitter',
-            arguments: <String, String>{
-              'authToken': kMockIdToken,
-              'authTokenSecret': kMockAccessToken,
+            'signInWithCredential',
+            arguments: <String, dynamic>{
               'app': auth.app.name,
+              'provider': 'twitter.com',
+              'data': <String, String>{
+                'authToken': kMockIdToken,
+                'authTokenSecret': kMockAccessToken,
+              },
             },
           ),
         ],
       );
     });
 
-    test('linkWithGithubCredential', () async {
-      final FirebaseUser user = await auth.linkWithGithubCredential(
+    test('GithubAuthProvider linkWithCredential', () async {
+      final AuthCredential credential = GithubAuthProvider.getCredential(
         token: kMockGithubToken,
       );
+      final FirebaseUser user = await auth.linkWithCredential(credential);
       verifyUser(user);
       expect(
         log,
         <Matcher>[
           isMethodCall(
-            'linkWithGithubCredential',
-            arguments: <String, String>{
-              'token': kMockGithubToken,
+            'linkWithCredential',
+            arguments: <String, dynamic>{
               'app': auth.app.name,
+              'provider': 'github.com',
+              'data': <String, String>{
+                'token': kMockGithubToken,
+              }
             },
           ),
         ],
       );
     });
 
-    test('signInWithGithub', () async {
-      final FirebaseUser user = await auth.signInWithGithub(
+    test('GitHubAuthProvider signInWithCredential', () async {
+      final AuthCredential credential = GithubAuthProvider.getCredential(
         token: kMockGithubToken,
       );
+      final FirebaseUser user = await auth.signInWithCredential(credential);
       verifyUser(user);
       expect(
         log,
         <Matcher>[
           isMethodCall(
-            'signInWithGithub',
-            arguments: <String, String>{
-              'token': kMockGithubToken,
+            'signInWithCredential',
+            arguments: <String, dynamic>{
               'app': auth.app.name,
+              'provider': 'github.com',
+              'data': <String, String>{
+                'token': kMockGithubToken,
+              },
             },
           ),
         ],
       );
     });
 
-    test('EmailAuthProvider link', () async {
-      final FirebaseUser user = await auth.linkAndRetrieveData(
-        credential: EmailAuthProvider.getCredential(
-          email: kMockEmail,
-          password: kMockPassword,
-        ),
+    test('EmailAuthProvider linkWithCredential', () async {
+      final AuthCredential credential = EmailAuthProvider.getCredential(
+        email: kMockEmail,
+        password: kMockPassword,
       );
+      final FirebaseUser user = await auth.linkWithCredential(credential);
       verifyUser(user);
       expect(
         log,
         <Matcher>[
           isMethodCall(
-            'linkWithEmailAndPassword',
-            arguments: <String, String>{
-              'email': kMockEmail,
-              'password': kMockPassword,
-              'app': auth.app.name
+            'linkWithCredential',
+            arguments: <String, dynamic>{
+              'app': auth.app.name,
+              'provider': 'password',
+              'data': <String, String>{
+                'email': kMockEmail,
+                'password': kMockPassword,
+              },
             },
           ),
         ],
       );
     });
 
-    test('GoogleAuthProvider signInAndRetrieveData', () async {
-      final FirebaseUser user = await auth.signInAndRetrieveData(
-        credential: GoogleAuthProvider.getCredential(
-          idToken: kMockIdToken,
-          accessToken: kMockAccessToken,
-        ),
+    test('GoogleAuthProvider signInWithCredential', () async {
+      final AuthCredential credential = GoogleAuthProvider.getCredential(
+        idToken: kMockIdToken,
+        accessToken: kMockAccessToken,
       );
+      final FirebaseUser user = await auth.signInWithCredential(credential);
       verifyUser(user);
       expect(
         log,
         <Matcher>[
           isMethodCall(
-            'signInWithGoogle',
-            arguments: <String, String>{
-              'idToken': kMockIdToken,
-              'accessToken': kMockAccessToken,
-              'app': auth.app.name
+            'signInWithCredential',
+            arguments: <String, dynamic>{
+              'app': auth.app.name,
+              'provider': 'google.com',
+              'data': <String, String>{
+                'idToken': kMockIdToken,
+                'accessToken': kMockAccessToken,
+              },
             },
           ),
         ],
       );
     });
 
-    test('PhoneAuthProvider signInAndRetrieveData', () async {
-      await auth.signInAndRetrieveData(
-        credential: PhoneAuthProvider.getCredential(
-          verificationId: kMockVerificationId,
-          smsCode: kMockSmsCode,
-        ),
+    test('PhoneAuthProvider signInWithCredential', () async {
+      final AuthCredential credential = PhoneAuthProvider.getCredential(
+        verificationId: kMockVerificationId,
+        smsCode: kMockSmsCode,
       );
+      await auth.signInWithCredential(credential);
       expect(log, <Matcher>[
-        isMethodCall('signInWithPhoneNumber', arguments: <String, dynamic>{
-          'verificationId': kMockVerificationId,
-          'smsCode': kMockSmsCode,
+        isMethodCall('signInWithCredential', arguments: <String, dynamic>{
           'app': auth.app.name,
+          'provider': 'phone',
+          'data': <String, String>{
+            'verificationId': kMockVerificationId,
+            'smsCode': kMockSmsCode,
+          },
         })
       ]);
     });
@@ -315,20 +337,19 @@ void main() {
       ]);
     });
 
-    test('EmailAuthProvider reauthenticate', () async {
+    test('EmailAuthProvider reauthenticateWithCredential', () async {
       final FirebaseUser user = await auth.currentUser();
       log.clear();
-      await user.reauthenticate(
-        credential: EmailAuthProvider.getCredential(
-          email: kMockEmail,
-          password: kMockPassword,
-        ),
+      final AuthCredential credential = EmailAuthProvider.getCredential(
+        email: kMockEmail,
+        password: kMockPassword,
       );
+      await user.reauthenticateWithCredential(credential);
       expect(
         log,
         <Matcher>[
           isMethodCall(
-            'reauthenticateWithEmailAndPassword',
+            'reauthenticateWithCredential',
             arguments: <String, String>{
               'email': kMockEmail,
               'password': kMockPassword,
@@ -338,20 +359,19 @@ void main() {
         ],
       );
     });
-    test('GoogleAuthProvider reauthenticate', () async {
+    test('GoogleAuthProvider reauthenticateWithCredential', () async {
       final FirebaseUser user = await auth.currentUser();
       log.clear();
-      await user.reauthenticate(
-        credential: GoogleAuthProvider.getCredential(
-          idToken: kMockIdToken,
-          accessToken: kMockAccessToken,
-        ),
+      final AuthCredential credential = GoogleAuthProvider.getCredential(
+        idToken: kMockIdToken,
+        accessToken: kMockAccessToken,
       );
+      await user.reauthenticateWithCredential(credential);
       expect(
         log,
         <Matcher>[
           isMethodCall(
-            'reauthenticateWithGoogleCredential',
+            'reauthenticateWithCredential',
             arguments: <String, String>{
               'idToken': kMockIdToken,
               'accessToken': kMockAccessToken,
@@ -362,19 +382,18 @@ void main() {
       );
     });
 
-    test('GoogleAuthProvider reauthenticate', () async {
+    test('GoogleAuthProvider reauthenticateWithCredential', () async {
       final FirebaseUser user = await auth.currentUser();
       log.clear();
-      await user.reauthenticate(
-        credential: FacebookAuthProvider.getCredential(
-          accessToken: kMockAccessToken,
-        ),
+      final AuthCredential credential = FacebookAuthProvider.getCredential(
+        accessToken: kMockAccessToken,
       );
+      await user.reauthenticateWithCredential(credential);
       expect(
         log,
         <Matcher>[
           isMethodCall(
-            'reauthenticateWithFacebookCredential',
+            'reauthenticateWithCredential',
             arguments: <String, String>{
               'accessToken': kMockAccessToken,
               'app': auth.app.name,
@@ -384,20 +403,19 @@ void main() {
       );
     });
 
-    test('TwitterAuthProvider reauthenticate', () async {
+    test('TwitterAuthProvider reauthenticateWithCredential', () async {
       final FirebaseUser user = await auth.currentUser();
       log.clear();
-      await user.reauthenticate(
-        credential: TwitterAuthProvider.getCredential(
-          authToken: kMockAuthToken,
-          authTokenSecret: kMockAuthTokenSecret,
-        ),
+      final AuthCredential credential = TwitterAuthProvider.getCredential(
+        authToken: kMockAuthToken,
+        authTokenSecret: kMockAuthTokenSecret,
       );
+      await user.reauthenticateWithCredential(credential);
       expect(
         log,
         <Matcher>[
           isMethodCall(
-            'reauthenticateWithTwitterCredential',
+            'reauthenticateWithCredential',
             arguments: <String, String>{
               'authToken': kMockAuthToken,
               'authTokenSecret': kMockAuthTokenSecret,
@@ -408,19 +426,18 @@ void main() {
       );
     });
 
-    test('GithubAuthProvider reauthenticate', () async {
+    test('GithubAuthProvider reauthenticateWithCredential', () async {
       final FirebaseUser user = await auth.currentUser();
       log.clear();
-      await user.reauthenticate(
-        credential: GithubAuthProvider.getCredential(
-          token: kMockGithubToken,
-        ),
+      final AuthCredential credential = GithubAuthProvider.getCredential(
+        token: kMockGithubToken,
       );
+      await user.reauthenticateWithCredential(credential);
       expect(
         log,
         <Matcher>[
           isMethodCall(
-            'reauthenticateWithGithubCredential',
+            'reauthenticateWithCredential',
             arguments: <String, String>{
               'app': auth.app.name,
               'token': kMockGithubToken,
@@ -430,176 +447,192 @@ void main() {
       );
     });
 
-    test('GoogleAuthProvider link', () async {
-      final FirebaseUser user = await auth.linkAndRetrieveData(
-        credential: GoogleAuthProvider.getCredential(
-          idToken: kMockIdToken,
-          accessToken: kMockAccessToken,
-        ),
+    test('GoogleAuthProvider linkWithCredential', () async {
+      final AuthCredential credential = GoogleAuthProvider.getCredential(
+        idToken: kMockIdToken,
+        accessToken: kMockAccessToken,
       );
+      final FirebaseUser user = await auth.linkWithCredential(credential);
       verifyUser(user);
       expect(
         log,
         <Matcher>[
           isMethodCall(
-            'linkWithGoogleCredential',
-            arguments: <String, String>{
-              'idToken': kMockIdToken,
-              'accessToken': kMockAccessToken,
+            'linkWithCredential',
+            arguments: <String, dynamic>{
               'app': auth.app.name,
+              'provider': 'google.com',
+              'data': <String, String>{
+                'idToken': kMockIdToken,
+                'accessToken': kMockAccessToken,
+              },
             },
           ),
         ],
       );
     });
 
-    test('FacebookAuthProvider link', () async {
-      final FirebaseUser user = await auth.linkAndRetrieveData(
-        credential: FacebookAuthProvider.getCredential(
-          accessToken: kMockAccessToken,
-        ),
+    test('FacebookAuthProvider linkWithCredential', () async {
+      final AuthCredential credential = FacebookAuthProvider.getCredential(
+        accessToken: kMockAccessToken,
       );
+      final FirebaseUser user = await auth.linkWithCredential(credential);
       verifyUser(user);
       expect(
         log,
         <Matcher>[
           isMethodCall(
-            'linkWithFacebookCredential',
-            arguments: <String, String>{
-              'accessToken': kMockAccessToken,
+            'linkWithCredential',
+            arguments: <String, dynamic>{
               'app': auth.app.name,
+              'provider': 'facebook.com',
+              'data': {
+                'accessToken': kMockAccessToken,
+              },
             },
           ),
         ],
       );
     });
 
-    test('FacebookAuthProvider signInAndRetrieveData', () async {
-      final FirebaseUser user = await auth.signInAndRetrieveData(
-        credential: FacebookAuthProvider.getCredential(
-          accessToken: kMockAccessToken,
-        ),
+    test('FacebookAuthProvider signInWithCredential', () async {
+      final AuthCredential credential = FacebookAuthProvider.getCredential(
+        accessToken: kMockAccessToken,
       );
+      final FirebaseUser user = await auth.signInWithCredential(credential);
       verifyUser(user);
       expect(
         log,
         <Matcher>[
           isMethodCall(
-            'signInWithFacebook',
-            arguments: <String, String>{
-              'accessToken': kMockAccessToken,
+            'signInWithCredential',
+            arguments: <String, dynamic>{
               'app': auth.app.name,
+              'provider': 'facebook.com',
+              'data': <String, String>{
+                'accessToken': kMockAccessToken,
+              }
             },
           ),
         ],
       );
     });
 
-    test('TwitterAuthProvider link', () async {
-      final FirebaseUser user = await auth.linkAndRetrieveData(
-        credential: TwitterAuthProvider.getCredential(
-          authToken: kMockAuthToken,
-          authTokenSecret: kMockAuthTokenSecret,
-        ),
+    test('TwitterAuthProvider linkWithCredential', () async {
+      final AuthCredential credential = TwitterAuthProvider.getCredential(
+        authToken: kMockAuthToken,
+        authTokenSecret: kMockAuthTokenSecret,
       );
+      final FirebaseUser user = await auth.linkWithCredential(credential);
       verifyUser(user);
       expect(
         log,
         <Matcher>[
           isMethodCall(
-            'linkWithTwitterCredential',
-            arguments: <String, String>{
+            'linkWithCredential',
+            arguments: <String, dynamic>{
               'app': auth.app.name,
-              'authToken': kMockAuthToken,
-              'authTokenSecret': kMockAuthTokenSecret,
+              'provider': 'twitter.com',
+              'data': <String, String>{
+                'authToken': kMockAuthToken,
+                'authTokenSecret': kMockAuthTokenSecret,
+              },
             },
           ),
         ],
       );
     });
 
-    test('TwitterAuthProvider signInAndRetrieveData', () async {
-      final FirebaseUser user = await auth.signInAndRetrieveData(
-        credential: TwitterAuthProvider.getCredential(
-          authToken: kMockAuthToken,
-          authTokenSecret: kMockAuthTokenSecret,
-        ),
+    test('TwitterAuthProvider signInWithCredential', () async {
+      final AuthCredential credential = TwitterAuthProvider.getCredential(
+        authToken: kMockAuthToken,
+        authTokenSecret: kMockAuthTokenSecret,
       );
+      final FirebaseUser user = await auth.signInWithCredential(credential);
       verifyUser(user);
       expect(
         log,
         <Matcher>[
           isMethodCall(
-            'signInWithTwitter',
-            arguments: <String, String>{
+            'signInWithCredential',
+            arguments: <String, dynamic>{
               'app': auth.app.name,
-              'authToken': kMockAuthToken,
-              'authTokenSecret': kMockAuthTokenSecret,
+              'provider': 'twitter.com',
+              'data': <String, String>{
+                'authToken': kMockAuthToken,
+                'authTokenSecret': kMockAuthTokenSecret,
+              },
             },
           ),
         ],
       );
     });
 
-    test('GithubAuthProvider link', () async {
-      final FirebaseUser user = await auth.linkAndRetrieveData(
-        credential: GithubAuthProvider.getCredential(
-          token: kMockGithubToken,
-        ),
+    test('GithubAuthProvider linkWithCredential', () async {
+      final AuthCredential credential = GithubAuthProvider.getCredential(
+        token: kMockGithubToken,
       );
+      final FirebaseUser user = await auth.linkWithCredential(credential);
       verifyUser(user);
       expect(
         log,
         <Matcher>[
           isMethodCall(
-            'linkWithGithubCredential',
-            arguments: <String, String>{
+            'linkWithCredential',
+            arguments: <String, dynamic>{
               'app': auth.app.name,
-              'token': kMockGithubToken,
+              'provider': 'github.com',
+              'data': <String, String>{
+                'token': kMockGithubToken,
+              },
             },
           ),
         ],
       );
     });
 
-    test('GithubAuthProvider signInAndRetrieveData', () async {
-      final FirebaseUser user = await auth.signInAndRetrieveData(
-        credential: GithubAuthProvider.getCredential(
-          token: kMockGithubToken,
-        ),
+    test('GithubAuthProvider signInWithCredential', () async {
+      final AuthCredential credential = GithubAuthProvider.getCredential(
+        token: kMockGithubToken,
       );
+      final FirebaseUser user = await auth.signInWithCredential(credential);
       verifyUser(user);
       expect(
         log,
         <Matcher>[
           isMethodCall(
-            'signInWithGithub',
-            arguments: <String, String>{
+            'signInWithCredential',
+            arguments: <String, dynamic>{
               'app': auth.app.name,
-              'token': kMockGithubToken,
+              'provider': 'github.com',
+              'data': <String, String>{
+                'token': kMockGithubToken,
+              },
             },
           ),
         ],
       );
     });
 
-    test('EmailAuthProvider link', () async {
-      final FirebaseUser user = await auth.linkAndRetrieveData(
-        credential: EmailAuthProvider.getCredential(
-          email: kMockEmail,
-          password: kMockPassword,
-        ),
+    test('EmailAuthProvider linkWithCredential', () async {
+      final AuthCredential credential = EmailAuthProvider.getCredential(
+        email: kMockEmail,
+        password: kMockPassword,
       );
+      final FirebaseUser user = await auth.linkWithCredential(credential);
       verifyUser(user);
       expect(
         log,
         <Matcher>[
           isMethodCall(
-            'linkWithEmailAndPassword',
-            arguments: <String, String>{
-              'email': kMockEmail,
-              'password': kMockPassword,
+            'linkWithCredential',
+            arguments: <String, dynamic>{
               'app': auth.app.name,
+              'provider': 'password',
+              'data': <String, String>{
+                'email': kMockEmail,
+                'password': kMockPassword,
+              },
             },
           ),
         ],
@@ -740,16 +773,16 @@ void main() {
       ]);
     });
 
-    test('EmailAuthProvider unlink', () async {
+    test('EmailAuthProvider unlinkFromProvider', () async {
       final FirebaseUser user = await auth.currentUser();
-      await user.unlink(EmailAuthProvider.providerId);
+      await user.unlinkFromProvider(EmailAuthProvider.providerId);
       expect(log, <Matcher>[
         isMethodCall(
           'currentUser',
           arguments: <String, String>{'app': auth.app.name},
         ),
         isMethodCall(
-          'unlinkCredential',
+          'unlinkFromProvider',
           arguments: <String, String>{
             'app': auth.app.name,
             'provider': 'password',
@@ -758,16 +791,16 @@ void main() {
       ]);
     });
 
-    test('GoogleAuthProvider unlink', () async {
+    test('GoogleAuthProvider unlinkFromProvider', () async {
       final FirebaseUser user = await auth.currentUser();
-      await user.unlink(GoogleAuthProvider.providerId);
+      await user.unlinkFromProvider(GoogleAuthProvider.providerId);
       expect(log, <Matcher>[
         isMethodCall(
           'currentUser',
           arguments: <String, String>{'app': auth.app.name},
         ),
         isMethodCall(
-          'unlinkCredential',
+          'unlinkFromProvider',
           arguments: <String, String>{
             'app': auth.app.name,
             'provider': 'google.com',
@@ -776,16 +809,16 @@ void main() {
       ]);
     });
 
-    test('FacebookAuthProvider unlink', () async {
+    test('FacebookAuthProvider unlinkFromProvider', () async {
       final FirebaseUser user = await auth.currentUser();
-      await user.unlink(FacebookAuthProvider.providerId);
+      await user.unlinkFromProvider(FacebookAuthProvider.providerId);
       expect(log, <Matcher>[
         isMethodCall(
           'currentUser',
           arguments: <String, String>{'app': auth.app.name},
         ),
         isMethodCall(
-          'unlinkCredential',
+          'unlinkFromProvider',
           arguments: <String, String>{
             'app': auth.app.name,
             'provider': 'facebook.com',
@@ -794,16 +827,16 @@ void main() {
       ]);
     });
 
-    test('PhoneAuthProvider unlink', () async {
+    test('PhoneAuthProvider unlinkFromProvider', () async {
       final FirebaseUser user = await auth.currentUser();
-      await user.unlink(PhoneAuthProvider.providerId);
+      await user.unlinkFromProvider(PhoneAuthProvider.providerId);
       expect(log, <Matcher>[
         isMethodCall(
           'currentUser',
           arguments: <String, String>{'app': auth.app.name},
         ),
         isMethodCall(
-          'unlinkCredential',
+          'unlinkFromProvider',
           arguments: <String, String>{
             'app': auth.app.name,
             'provider': 'phone',
@@ -812,16 +845,16 @@ void main() {
       ]);
     });
 
-    test('TwitterAuthProvider unlink', () async {
+    test('TwitterAuthProvider unlinkFromProvider', () async {
       final FirebaseUser user = await auth.currentUser();
-      await user.unlink(TwitterAuthProvider.providerId);
+      await user.unlinkFromProvider(TwitterAuthProvider.providerId);
       expect(log, <Matcher>[
         isMethodCall(
           'currentUser',
           arguments: <String, String>{'app': auth.app.name},
         ),
         isMethodCall(
-          'unlinkCredential',
+          'unlinkFromProvider',
           arguments: <String, String>{
             'app': auth.app.name,
             'provider': 'twitter.com',
@@ -830,16 +863,16 @@ void main() {
       ]);
     });
 
-    test('GithubAuthProvider unlink', () async {
+    test('GithubAuthProvider unlinkFromProvider', () async {
       final FirebaseUser user = await auth.currentUser();
-      await user.unlink(GithubAuthProvider.providerId);
+      await user.unlinkFromProvider(GithubAuthProvider.providerId);
       expect(log, <Matcher>[
         isMethodCall(
           'currentUser',
           arguments: <String, String>{'app': auth.app.name},
         ),
         isMethodCall(
-          'unlinkCredential',
+          'unlinkFromProvider',
           arguments: <String, String>{
             'app': auth.app.name,
             'provider': 'github.com',

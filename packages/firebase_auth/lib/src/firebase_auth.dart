@@ -159,12 +159,11 @@ class FirebaseAuth {
   }) {
     assert(email != null);
     assert(password != null);
-    return signInAndRetrieveData(
-      credential: EmailAuthProvider.getCredential(
-        email: email,
-        password: password,
-     ),
+    final AuthCredential credential = EmailAuthProvider.getCredential(
+      email: email,
+      password: password,
     );
+    return signInWithCredential(credential);
   }
 
   /// Asynchronously signs in to Firebase with the given 3rd-party credentials
@@ -180,21 +179,20 @@ class FirebaseAuth {
   /// of the Firebase console before being able to use them.
   ///
   /// Errors:
-  ///   • `ERROR_INVALID_CREDENTIAL` - If the [authToken] or [authTokenSecret] is malformed or has expired.
+  ///   • `ERROR_INVALID_CREDENTIAL` - If the credential data is malformed or has expired.
   ///   • `ERROR_USER_DISABLED` - If the user has been disabled (for example, in the Firebase console)
   ///   • `ERROR_ACCOUNT_EXISTS_WITH_DIFFERENT_CREDENTIAL` - If there already exists an account with the email address asserted by Google.
   ///       Resolve this case by calling [fetchSignInMethodsForEmail] and then asking the user to sign in using one of them.
   ///       This error will only be thrown if the "One account per email address" setting is enabled in the Firebase console (recommended).
   ///   • `ERROR_OPERATION_NOT_ALLOWED` - Indicates that Google accounts are not enabled.
-  Future<FirebaseUser> signInAndRetrieveData({
-    @required AuthCredential credential
-  }) async {
+  Future<FirebaseUser> signInWithCredential(AuthCredential credential) async {
     assert(credential != null);
     final Map<dynamic, dynamic> data = await channel.invokeMethod(
-      'signInAndRetrieveData',
-      Map<String, String>.from(credential._data)..addAll(
-        <String, String>{ 'app': app.name },
-      ),
+      'signInWithCredential', <String, dynamic>{
+        'app': app.name,
+        'provider': credential._provider,
+        'data': credential._data,
+      },
     );
     final FirebaseUser currentUser = FirebaseUser._(data, app);
     return currentUser;
@@ -331,15 +329,14 @@ class FirebaseAuth {
   ///   • `ERROR_REQUIRES_RECENT_LOGIN` - If the user's last sign-in time does not meet the security threshold. Use reauthenticate methods to resolve.
   ///   • `ERROR_PROVIDER_ALREADY_LINKED` - If the current user already has an account of this type linked.
   ///   • `ERROR_OPERATION_NOT_ALLOWED` - Indicates that this type of account is not enabled.
-  Future<FirebaseUser> linkAndRetrieveData({
-    @required AuthCredential credential,
-  }) async {
+  Future<FirebaseUser> linkWithCredential(AuthCredential credential) async {
     assert(credential != null);
     final Map<dynamic, dynamic> data = await channel.invokeMethod(
-      'linkAndRetrieveData',
-      Map<String, String>.from(credential._data)..addAll(
-        <String, String>{ 'app': app.name },
-      ),
+      'linkWithCredential', <String, dynamic>{
+        'app': app.name,
+        'provider': credential._provider,
+        'data': credential._data,
+      },
     );
     final FirebaseUser currentUser = FirebaseUser._(data, app);
     return currentUser;

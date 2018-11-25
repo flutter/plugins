@@ -5,7 +5,7 @@
 part of firebase_auth;
 
 /// Represents the credentials returned by calling the `getCredential` method of
-/// [AuthProvider].
+/// an auth provider.
 class AuthCredential {
   AuthCredential._(this._provider, this._data);
   final String _provider;

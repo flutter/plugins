@@ -8,7 +8,7 @@ class FacebookAuthProvider {
   static final String providerId = 'facebook.com';
 
   static AuthCredential getCredential({ String accessToken }) {
-    return AuthCredential._('Facebook', <String, String>{
+    return AuthCredential._(providerId, <String, String>{
       'accessToken': accessToken
     });
   }

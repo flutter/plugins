@@ -11,7 +11,7 @@ class PhoneAuthProvider {
     @required String verificationId,
     @required String smsCode,
   }) {
-    return AuthCredential._('PhoneNumber', <String, String>{
+    return AuthCredential._(providerId, <String, String>{
       'verificationId': verificationId,
       'smsCode': smsCode,
     });
