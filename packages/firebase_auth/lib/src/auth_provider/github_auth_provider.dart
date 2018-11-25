@@ -5,6 +5,8 @@
 part of firebase_auth;
 
 class GithubAuthProvider {
+  static final String providerId = 'github.com';
+
   static AuthCredential getCredential({ @required String token }) {
     return AuthCredential._('Github', <String, String>{
       'token': token

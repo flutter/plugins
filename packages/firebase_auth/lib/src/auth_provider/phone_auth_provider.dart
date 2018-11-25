@@ -5,6 +5,8 @@
 part of firebase_auth;
 
 class PhoneAuthProvider {
+  static final String providerId = 'phone';
+
   static AuthCredential getCredential({
     @required String verificationId,
     @required String smsCode,

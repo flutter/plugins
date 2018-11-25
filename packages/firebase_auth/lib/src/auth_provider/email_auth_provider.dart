@@ -5,6 +5,8 @@
 part of firebase_auth;
 
 class EmailAuthProvider {
+  static final String providerId = 'password';
+
   static AuthCredential getCredential({
     String email,
     String password,

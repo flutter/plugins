@@ -5,6 +5,7 @@
 part of firebase_auth;
 
 /// Represents user profile data that can be updated by [updateProfile]
+///
 /// The purpose of having separate class with a map is to give possibility
 /// to check if value was set to null or not provided
 class UserUpdateInfo {
@@ -12,11 +13,11 @@ class UserUpdateInfo {
   final Map<String, String> _updateData = <String, String>{};
 
   set displayName(String displayName) =>
-      _updateData["displayName"] = displayName;
+      _updateData['displayName'] = displayName;
 
-  String get displayName => _updateData["displayName"];
+  String get displayName => _updateData['displayName'];
 
-  set photoUrl(String photoUri) => _updateData["photoUrl"] = photoUri;
+  set photoUrl(String photoUri) => _updateData['photoUrl'] = photoUri;
 
-  String get photoUrl => _updateData["photoUrl"];
+  String get photoUrl => _updateData['photoUrl'];
 }

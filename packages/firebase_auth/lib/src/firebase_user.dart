@@ -8,8 +8,8 @@ part of firebase_auth;
 class FirebaseUser extends UserInfo {
   FirebaseUser._(Map<dynamic, dynamic> data, FirebaseApp app)
       : providerData = data['providerData']
-            .map<UserInfo>((dynamic item) => UserInfo._(item, app))
-            .toList(),
+      .map<UserInfo>((dynamic item) => UserInfo._(item, app))
+      .toList(),
         _metadata = FirebaseUserMetadata._(data),
         super._(data, app);
 
@@ -28,6 +28,10 @@ class FirebaseUser extends UserInfo {
 
   /// Obtains the id token for the current user, forcing a [refresh] if desired.
   ///
+  /// Useful when authenticating against your own backend. Use our server
+  /// SDKs or follow the official documentation to securely verify the
+  /// integrity and validity of this token.
+  ///
   /// Completes with an error if the user is signed out.
   Future<String> getIdToken({bool refresh = false}) async {
     return await FirebaseAuth.channel
@@ -37,12 +41,14 @@ class FirebaseUser extends UserInfo {
     });
   }
 
+  /// Initiates email verification for the user.
   Future<void> sendEmailVerification() async {
     await FirebaseAuth.channel.invokeMethod(
         'sendEmailVerification', <String, String>{'app': _app.name});
   }
 
-  /// Manually refreshes the data of the current user (for example, attached providers, display name, and so on).
+  /// Manually refreshes the data of the current user (for example,
+  /// attached providers, display name, and so on).
   Future<void> reload() async {
     await FirebaseAuth.channel
         .invokeMethod('reload', <String, String>{'app': _app.name});
@@ -55,6 +61,21 @@ class FirebaseUser extends UserInfo {
   }
 
   /// Updates the email address of the user.
+  ///
+  /// The original email address recipient will receive an email that allows
+  /// them to revoke the email address change, in order to protect them
+  /// from account hijacking.
+  ///
+  /// **Important**: This is a security sensitive operation that requires
+  /// the user to have recently signed in.
+  ///
+  /// Errors:
+  ///   • `ERROR_INVALID_CREDENTIAL` - If the email address is malformed.
+  ///   • `ERROR_EMAIL_ALREADY_IN_USE` - If the email is already in use by a different account.
+  ///   • `ERROR_USER_DISABLED` - If the user has been disabled (for example, in the Firebase console)
+  ///   • `ERROR_USER_NOT_FOUND` - If the user has been deleted (for example, in the Firebase console)
+  ///   • `ERROR_REQUIRES_RECENT_LOGIN` - If the user's last sign-in time does not meet the security threshold. Use reauthenticate methods to resolve.
+  ///   • `ERROR_OPERATION_NOT_ALLOWED` - Indicates that Email & Password accounts are not enabled.
   Future<void> updateEmail(String email) async {
     assert(email != null);
     return await FirebaseAuth.channel.invokeMethod(
@@ -64,6 +85,19 @@ class FirebaseUser extends UserInfo {
   }
 
   /// Updates the password of the user.
+  ///
+  /// Anonymous users who update both their email and password will no
+  /// longer be anonymous. They will be able to log in with these credentials.
+  ///
+  /// **Important**: This is a security sensitive operation that requires
+  /// the user to have recently signed in.
+  ///
+  /// Errors:
+  ///   • `ERROR_WEAK_PASSWORD` - If the password is not strong enough.
+  ///   • `ERROR_USER_DISABLED` - If the user has been disabled (for example, in the Firebase console)
+  ///   • `ERROR_USER_NOT_FOUND` - If the user has been deleted (for example, in the Firebase console)
+  ///   • `ERROR_REQUIRES_RECENT_LOGIN` - If the user's last sign-in time does not meet the security threshold. Use reauthenticate methods to resolve.
+  ///   • `ERROR_OPERATION_NOT_ALLOWED` - Indicates that Email & Password accounts are not enabled.
   Future<void> updatePassword(String password) async {
     assert(password != null);
     return await FirebaseAuth.channel.invokeMethod(
@@ -73,6 +107,10 @@ class FirebaseUser extends UserInfo {
   }
 
   /// Updates the user profile information.
+  ///
+  /// Errors:
+  ///   • `ERROR_USER_DISABLED` - If the user has been disabled (for example, in the Firebase console)
+  ///   • `ERROR_USER_NOT_FOUND` - If the user has been deleted (for example, in the Firebase console)
   Future<void> updateProfile(UserUpdateInfo userUpdateInfo) async {
     assert(userUpdateInfo != null);
     final Map<String, String> data = userUpdateInfo._updateData;
@@ -83,6 +121,22 @@ class FirebaseUser extends UserInfo {
     );
   }
 
+  /// Renews the user’s authentication tokens by validating a fresh set of
+  /// credentials supplied by the user and returns additional identity provider
+  /// data.
+  ///
+  /// This is used to prevent or resolve `ERROR_REQUIRES_RECENT_LOGIN`
+  /// response to operations that require a recent sign-in.
+  ///
+  /// If the user associated with the supplied credential is different from the
+  /// current user, or if the validation of the supplied credentials fails; an
+  /// error is returned and the current user remains signed in.
+  ///
+  /// Errors:
+  ///   • `ERROR_INVALID_CREDENTIAL` - If the [authToken] or [authTokenSecret] is malformed or has expired.
+  ///   • `ERROR_USER_DISABLED` - If the user has been disabled (for example, in the Firebase console)
+  ///   • `ERROR_USER_NOT_FOUND` - If the user has been deleted (for example, in the Firebase console)
+  ///   • `ERROR_OPERATION_NOT_ALLOWED` - Indicates that Email & Password accounts are not enabled.
   Future<FirebaseUser> reauthenticate({
     @required AuthCredential credential,
   }) async {
@@ -94,6 +148,26 @@ class FirebaseUser extends UserInfo {
       ),
     );
     return this;
+  }
+
+  /// Detaches the [provider] account from the current user.
+  ///
+  /// This will prevent the user from signing in to this account with those
+  /// credentials.
+  ///
+  /// **Important**: This is a security sensitive operation that requires
+  /// the user to have recently signed in.
+  ///
+  /// Use the `providerId` method of an auth provider for [provider].
+  ///
+  /// Errors:
+  ///   • `ERROR_NO_SUCH_PROVIDER` - If the user does not have a Github Account linked to their account.
+  ///   • `ERROR_REQUIRES_RECENT_LOGIN` - If the user's last sign-in time does not meet the security threshold. Use reauthenticate methods to resolve.
+  Future<void> unlink(@required String provider) async {
+    return await FirebaseAuth.channel.invokeMethod(
+      'unlinkCredential',
+      <String, String>{'provider': provider, 'app': _app.name},
+    );
   }
 
   @override

@@ -740,9 +740,9 @@ void main() {
       ]);
     });
 
-    test('unlinkEmailAndPassword', () async {
+    test('EmailAuthProvider unlink', () async {
       final FirebaseUser user = await auth.currentUser();
-      await user.unlinkEmailAndPassword();
+      await user.unlink(EmailAuthProvider.providerId);
       expect(log, <Matcher>[
         isMethodCall(
           'currentUser',
@@ -758,9 +758,9 @@ void main() {
       ]);
     });
 
-    test('unlinkGoogleCredential', () async {
+    test('GoogleAuthProvider unlink', () async {
       final FirebaseUser user = await auth.currentUser();
-      await user.unlinkGoogleCredential();
+      await user.unlink(GoogleAuthProvider.providerId);
       expect(log, <Matcher>[
         isMethodCall(
           'currentUser',
@@ -776,9 +776,9 @@ void main() {
       ]);
     });
 
-    test('unlinkFacebookCredential', () async {
+    test('FacebookAuthProvider unlink', () async {
       final FirebaseUser user = await auth.currentUser();
-      await user.unlinkFacebookCredential();
+      await user.unlink(FacebookAuthProvider.providerId);
       expect(log, <Matcher>[
         isMethodCall(
           'currentUser',
@@ -794,9 +794,27 @@ void main() {
       ]);
     });
 
-    test('unlinkTwitterCredential', () async {
+    test('PhoneAuthProvider unlink', () async {
       final FirebaseUser user = await auth.currentUser();
-      await user.unlinkTwitterCredential();
+      await user.unlink(PhoneAuthProvider.providerId);
+      expect(log, <Matcher>[
+        isMethodCall(
+          'currentUser',
+          arguments: <String, String>{'app': auth.app.name},
+        ),
+        isMethodCall(
+          'unlinkCredential',
+          arguments: <String, String>{
+            'app': auth.app.name,
+            'provider': 'phone',
+          },
+        ),
+      ]);
+    });
+
+    test('TwitterAuthProvider unlink', () async {
+      final FirebaseUser user = await auth.currentUser();
+      await user.unlink(TwitterAuthProvider.providerId);
       expect(log, <Matcher>[
         isMethodCall(
           'currentUser',
@@ -812,9 +830,9 @@ void main() {
       ]);
     });
 
-    test('unlinkGithubCredential', () async {
+    test('GithubAuthProvider unlink', () async {
       final FirebaseUser user = await auth.currentUser();
-      await user.unlinkGithubCredential();
+      await user.unlink(GithubAuthProvider.providerId);
       expect(log, <Matcher>[
         isMethodCall(
           'currentUser',

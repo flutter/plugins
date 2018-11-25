@@ -30,11 +30,11 @@ class FirebaseAuth {
   );
 
   final Map<int, StreamController<FirebaseUser>> _authStateChangedControllers =
-      <int, StreamController<FirebaseUser>>{};
+  <int, StreamController<FirebaseUser>>{};
 
   static int nextHandle = 0;
   final Map<int, Map<String, dynamic>> _phoneAuthCallbacks =
-      <int, Map<String, dynamic>>{};
+  <int, Map<String, dynamic>>{};
 
   final FirebaseApp app;
 
@@ -66,9 +66,11 @@ class FirebaseAuth {
   /// returned instead. If there is any other existing user signed in, that
   /// user will be signed out.
   ///
-  /// Will throw a PlatformException if
-  /// FIRAuthErrorCodeOperationNotAllowed - Indicates that anonymous accounts are not enabled. Enable them in the Auth section of the Firebase console.
-  /// See FIRAuthErrors for a list of error codes that are common to all API methods.
+  /// **Important**: You must enable Anonymous accounts in the Auth section
+  /// of the Firebase console before being able to use them.
+  ///
+  /// Errors:
+  ///   • `ERROR_OPERATION_NOT_ALLOWED` - Indicates that Anonymous accounts are not enabled.
   Future<FirebaseUser> signInAnonymously() async {
     final Map<dynamic, dynamic> data = await channel
         .invokeMethod('signInAnonymously', <String, String>{"app": app.name});
@@ -76,6 +78,15 @@ class FirebaseAuth {
     return currentUser;
   }
 
+  /// Tries to create a new user account with the given email address and password.
+  ///
+  /// If successful, it also signs the user in into the app and updates
+  /// the [onAuthStateChanged] stream.
+  ///
+  /// Errors:
+  ///   • `ERROR_WEAK_PASSWORD` - If the password is not strong enough.
+  ///   • `ERROR_INVALID_CREDENTIAL` - If the email address is malformed.
+  ///   • `ERROR_EMAIL_ALREADY_IN_USE` - If the email is already in use by a different account.
   Future<FirebaseUser> createUserWithEmailAndPassword({
     @required String email,
     @required String password,
@@ -90,17 +101,33 @@ class FirebaseAuth {
     return currentUser;
   }
 
-  Future<List<String>> fetchProvidersForEmail({
+  /// Returns a list of sign-in methods that can be used to sign in a given
+  /// user (identified by its main email address).
+  ///
+  /// This method is useful when you support multiple authentication mechanisms
+  /// if you want to implement an email-first authentication flow.
+  ///
+  /// Errors:
+  ///   • `ERROR_INVALID_CREDENTIAL` - If the [email] address is malformed.
+  ///   • `ERROR_USER_NOT_FOUND` - If there is no user corresponding to the given [email] address.
+  Future<List<String>> fetchSignInMethodsForEmail({
     @required String email,
   }) async {
     assert(email != null);
     final List<dynamic> providers = await channel.invokeMethod(
-      'fetchProvidersForEmail',
+      'fetchSignInMethodsForEmail',
       <String, String>{'email': email, 'app': app.name},
     );
     return providers?.cast<String>();
   }
 
+  /// Triggers the Firebase Authentication backend to send a password-reset
+  /// email to the given email address, which must correspond to an existing
+  /// user of your app.
+  ///
+  /// Errors:
+  ///   • `ERROR_INVALID_EMAIL` - If the [email] address is malformed.
+  ///   • `ERROR_USER_NOT_FOUND` - If there is no user corresponding to the given [email] address.
   Future<void> sendPasswordResetEmail({
     @required String email,
   }) async {
@@ -111,6 +138,21 @@ class FirebaseAuth {
     );
   }
 
+  /// Tries to sign in a user with the given email address and password.
+  ///
+  /// If successful, it also signs the user in into the app and updates
+  /// the [onAuthStateChanged] stream.
+  ///
+  /// **Important**: You must enable Email & Password accounts in the Auth
+  /// section of the Firebase console before being able to use them.
+  ///
+  /// Errors:
+  ///   • `ERROR_INVALID_EMAIL` - If the [email] address is malformed.
+  ///   • `ERROR_WRONG_PASSWORD` - If the [password] is wrong.
+  ///   • `ERROR_USER_NOT_FOUND` - If there is no user corresponding to the given [email] address, or if the user has been deleted.
+  ///   • `ERROR_USER_DISABLED` - If the user has been disabled (for example, in the Firebase console)
+  ///   • `ERROR_TOO_MANY_REQUESTS` - If there was too many attempts to sign in as this user.
+  ///   • `ERROR_OPERATION_NOT_ALLOWED` - Indicates that Email & Password accounts are not enabled.
   Future<FirebaseUser> signInWithEmailAndPassword({
     @required String email,
     @required String password,
@@ -128,6 +170,22 @@ class FirebaseAuth {
   /// Asynchronously signs in to Firebase with the given 3rd-party credentials
   /// (e.g. a Facebook login Access Token, a Google ID Token/Access Token pair,
   /// etc.) and returns additional identity provider data.
+  ///
+  /// If successful, it also signs the user in into the app and updates
+  /// the [onAuthStateChanged] stream.
+  ///
+  /// If the user doesn't have an account already, one will be created automatically.
+  ///
+  /// **Important**: You must enable the relevant accounts in the Auth section
+  /// of the Firebase console before being able to use them.
+  ///
+  /// Errors:
+  ///   • `ERROR_INVALID_CREDENTIAL` - If the [authToken] or [authTokenSecret] is malformed or has expired.
+  ///   • `ERROR_USER_DISABLED` - If the user has been disabled (for example, in the Firebase console)
+  ///   • `ERROR_ACCOUNT_EXISTS_WITH_DIFFERENT_CREDENTIAL` - If there already exists an account with the email address asserted by Google.
+  ///       Resolve this case by calling [fetchSignInMethodsForEmail] and then asking the user to sign in using one of them.
+  ///       This error will only be thrown if the "One account per email address" setting is enabled in the Firebase console (recommended).
+  ///   • `ERROR_OPERATION_NOT_ALLOWED` - Indicates that Google accounts are not enabled.
   Future<FirebaseUser> signInAndRetrieveData({
     @required AuthCredential credential
   }) async {
@@ -142,27 +200,48 @@ class FirebaseAuth {
     return currentUser;
   }
 
-  /// Associates a user account from a third-party identity provider with this
-  /// user and returns additional identity provider data.
+  /// Starts the phone number verification process for the given phone number.
   ///
-  /// throws [PlatformException] when
-  /// 1. No current user provided (user has not logged in)
-  /// 2. Invalid auth credential
-  /// 3. Credential already linked to another [FirebaseUser]
-  Future<FirebaseUser> linkAndRetrieveData({
-    @required AuthCredential credential,
-  }) async {
-    assert(credential != null);
-    final Map<dynamic, dynamic> data = await channel.invokeMethod(
-      'linkAndRetrieveData',
-      Map<String, String>.from(credential._data)..addAll(
-        <String, String>{ 'app': app.name },
-      ),
-    );
-    final FirebaseUser currentUser = FirebaseUser._(data, app);
-    return currentUser;
-  }
-
+  /// Either sends an SMS with a 6 digit code to the phone number specified,
+  /// or sign's the user in and [verificationCompleted] is called.
+  ///
+  /// No duplicated SMS will be sent out upon re-entry (before timeout).
+  ///
+  /// Make sure to test all scenarios below:
+  ///   • You directly get logged in if Google Play Services verified the phone
+  ///     number instantly or helped you auto-retrieve the verification code.
+  ///   • Auto-retrieve verification code timed out.
+  ///   • Error cases when you receive [verificationFailed] callback.
+  ///
+  /// [phoneNumber] The phone number for the account the user is signing up
+  ///   for or signing into. Make sure to pass in a phone number with country
+  ///   code prefixed with plus sign ('+').
+  ///
+  /// [timeout] The maximum amount of time you are willing to wait for SMS
+  ///   auto-retrieval to be completed by the library. Maximum allowed value
+  ///   is 2 minutes. Use 0 to disable SMS-auto-retrieval. Setting this to 0
+  ///   will also cause [codeAutoRetrievalTimeout] to be called immediately.
+  ///   If you specified a positive value less than 30 seconds, library will
+  ///   default to 30 seconds.
+  ///
+  /// [forceResendingToken] The [forceResendingToken] obtained from [codeSent]
+  ///   callback to force re-sending another verification SMS before the
+  ///   auto-retrieval timeout.
+  ///
+  /// [verificationCompleted] This callback must be implemented.
+  ///   It will trigger when an SMS is auto-retrieved or the phone number has
+  ///   been instantly verified. The callback will provide a [FirebaseUser].
+  ///
+  /// [verificationFailed] This callback must be implemented.
+  ///   Triggered when an error occurred during phone number verification.
+  ///
+  /// [codeSent] Optional callback.
+  ///   It will trigger when an SMS has been sent to the users phone,
+  ///   and will include a [verificationId] and [forceResendingToken].
+  ///
+  /// [codeAutoRetrievalTimeout] Optional callback.
+  ///   It will trigger when SMS auto-retrieval times out and provide a
+  ///   [verificationId].
   Future<void> verifyPhoneNumber({
     @required String phoneNumber,
     @required Duration timeout,
@@ -186,12 +265,30 @@ class FirebaseAuth {
       'phoneNumber': phoneNumber,
       'timeout': timeout.inMilliseconds,
       'forceResendingToken': forceResendingToken,
-      'app': app.name
+      'app': app.name,
     };
 
     await channel.invokeMethod('verifyPhoneNumber', params);
   }
 
+  /// Tries to sign in a user with a given Custom Token [token].
+  ///
+  /// If successful, it also signs the user in into the app and updates
+  /// the [onAuthStateChanged] stream.
+  ///
+  /// Use this method after you retrieve a Firebase Auth Custom Token from your server.
+  ///
+  /// If the user identified by the [uid] specified in the token doesn't
+  /// have an account already, one will be created automatically.
+  ///
+  /// Read how to use Custom Token authentication and the cases where it is
+  /// useful in [the guides](https://firebase.google.com/docs/auth/android/custom-auth).
+  ///
+  /// Errors:
+  ///   • `ERROR_INVALID_CUSTOM_TOKEN` - The custom token format is incorrect.
+  ///     Please check the documentation.
+  ///   • `ERROR_CUSTOM_TOKEN_MISMATCH` - Invalid configuration.
+  ///     Ensure your app's SHA1 is correct in the Firebase console.
   Future<FirebaseUser> signInWithCustomToken({@required String token}) async {
     assert(token != null);
     final Map<dynamic, dynamic> data = await channel.invokeMethod(
@@ -202,17 +299,49 @@ class FirebaseAuth {
     return currentUser;
   }
 
+  /// Signs out the current user and clears it from the disk cache.
+  ///
+  /// If successful, it signs the user out of the app and updates
+  /// the [onAuthStateChanged] stream.
   Future<void> signOut() async {
     return await channel
         .invokeMethod("signOut", <String, String>{'app': app.name});
   }
 
-  /// Asynchronously gets current user, or `null` if there is none.
+  /// Returns the currently signed-in [FirebaseUser] or [null] if there is none.
   Future<FirebaseUser> currentUser() async {
     final Map<dynamic, dynamic> data = await channel
         .invokeMethod("currentUser", <String, String>{'app': app.name});
     final FirebaseUser currentUser =
-        data == null ? null : FirebaseUser._(data, app);
+    data == null ? null : FirebaseUser._(data, app);
+    return currentUser;
+  }
+
+  /// Associates a user account from a third-party identity provider with this
+  /// user and returns additional identity provider data.
+  ///
+  /// This allows the user to sign in to this account in the future with
+  /// the given account.
+  ///
+  /// Errors:
+  ///   • `ERROR_WEAK_PASSWORD` - If the password is not strong enough.
+  ///   • `ERROR_INVALID_CREDENTIAL` - If the credential is malformed or has expired.
+  ///   • `ERROR_CREDENTIAL_ALREADY_IN_USE` - If the account is already in use by a different account.
+  ///   • `ERROR_USER_DISABLED` - If the user has been disabled (for example, in the Firebase console)
+  ///   • `ERROR_REQUIRES_RECENT_LOGIN` - If the user's last sign-in time does not meet the security threshold. Use reauthenticate methods to resolve.
+  ///   • `ERROR_PROVIDER_ALREADY_LINKED` - If the current user already has an account of this type linked.
+  ///   • `ERROR_OPERATION_NOT_ALLOWED` - Indicates that this type of account is not enabled.
+  Future<FirebaseUser> linkAndRetrieveData({
+    @required AuthCredential credential,
+  }) async {
+    assert(credential != null);
+    final Map<dynamic, dynamic> data = await channel.invokeMethod(
+      'linkAndRetrieveData',
+      Map<String, String>.from(credential._data)..addAll(
+        <String, String>{ 'app': app.name },
+      ),
+    );
+    final FirebaseUser currentUser = FirebaseUser._(data, app);
     return currentUser;
   }
 
@@ -227,7 +356,7 @@ class FirebaseAuth {
     });
   }
 
-  Future<dynamic> _callHandler(MethodCall call) async {
+  Future<void> _callHandler(MethodCall call) async {
     switch (call.method) {
       case 'onAuthStateChanged':
         _onAuthStageChangedHandler(call);
@@ -235,13 +364,13 @@ class FirebaseAuth {
       case 'phoneVerificationCompleted':
         final int handle = call.arguments['handle'];
         final PhoneVerificationCompleted verificationCompleted =
-            _phoneAuthCallbacks[handle]['PhoneVerificationCompleted'];
+        _phoneAuthCallbacks[handle]['PhoneVerificationCompleted'];
         verificationCompleted(await currentUser());
         break;
       case 'phoneVerificationFailed':
         final int handle = call.arguments['handle'];
         final PhoneVerificationFailed verificationFailed =
-            _phoneAuthCallbacks[handle]['PhoneVerificationFailed'];
+        _phoneAuthCallbacks[handle]['PhoneVerificationFailed'];
         final Map<dynamic, dynamic> exception = call.arguments['exception'];
         verificationFailed(
             AuthException(exception['code'], exception['message']));
@@ -252,7 +381,7 @@ class FirebaseAuth {
         final int forceResendingToken = call.arguments['forceResendingToken'];
 
         final PhoneCodeSent codeSent =
-            _phoneAuthCallbacks[handle]['PhoneCodeSent'];
+        _phoneAuthCallbacks[handle]['PhoneCodeSent'];
         if (forceResendingToken == null) {
           codeSent(verificationId);
         } else {
@@ -262,7 +391,7 @@ class FirebaseAuth {
       case 'phoneCodeAutoRetrievalTimeout':
         final int handle = call.arguments['handle'];
         final PhoneCodeAutoRetrievalTimeout codeAutoRetrievalTimeout =
-            _phoneAuthCallbacks[handle]['PhoneCodeAutoRetrievealTimeout'];
+        _phoneAuthCallbacks[handle]['PhoneCodeAutoRetrievealTimeout'];
         final String verificationId = call.arguments['verificationId'];
         codeAutoRetrievalTimeout(verificationId);
         break;
@@ -274,8 +403,7 @@ class FirebaseAuth {
     final int id = call.arguments["id"];
 
     final FirebaseUser currentUser =
-        data != null ? FirebaseUser._(data, app) : null;
+    data != null ? FirebaseUser._(data, app) : null;
     _authStateChangedControllers[id].add(currentUser);
   }
 }
-

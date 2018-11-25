@@ -5,6 +5,8 @@
 part of firebase_auth;
 
 class FacebookAuthProvider {
+  static final String providerId = 'facebook.com';
+
   static AuthCredential getCredential({ String accessToken }) {
     return AuthCredential._('Facebook', <String, String>{
       'accessToken': accessToken
