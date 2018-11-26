@@ -40,12 +40,14 @@ Specify your API key in the application manifest `android/app/src/main/AndroidMa
 <manifest ...
   <application ...
     <meta-data android:name="com.google.android.geo.API_KEY"
-               android:value="YOUR KEY HERE"/>
+               android:value="YOUR_KEY_HERE"/>
 ```
 
 ### iOS
 
 Specify your API key in the application delegate `ios/Runner/AppDelegate.m`:
+
+#### Objective-C
 
 ```objectivec
 #include "AppDelegate.h"
@@ -56,11 +58,33 @@ Specify your API key in the application delegate `ios/Runner/AppDelegate.m`:
 
 - (BOOL)application:(UIApplication *)application
     didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-  [GMSServices provideAPIKey:@"YOUR KEY HERE"];
+  [GMSServices provideAPIKey:@"YOUR_KEY_HERE"];
   [GeneratedPluginRegistrant registerWithRegistry:self];
   return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }
 @end
+```
+
+#### Swift
+
+Specify your API key in the application delegate `ios/Runner/AppDelegate.swift`:
+
+```
+import UIKit
+import Flutter
+import GoogleMaps
+
+@UIApplicationMain
+@objc class AppDelegate: FlutterAppDelegate {
+  override func application(
+    _ application: UIApplication,
+    didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?
+  ) -> Bool {
+    GeneratedPluginRegistrant.register(with: self)
+    GMSServices.provideAPIKey("YOUR_KEY_HERE")
+    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+}
 ```
 
 Opt-in to the embedded views preview by adding a boolean property to the app's `Info.plist` file
