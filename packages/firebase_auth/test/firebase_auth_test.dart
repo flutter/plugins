@@ -501,7 +501,7 @@ void main() {
             arguments: <String, dynamic>{
               'app': auth.app.name,
               'provider': 'facebook.com',
-              'data': {
+              'data': <String, String>{
                 'accessToken': kMockAccessToken,
               },
             },

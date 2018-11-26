@@ -142,7 +142,7 @@ class FirebaseUser extends UserInfo {
     assert(credential != null);
     await FirebaseAuth.channel.invokeMethod(
       'reauthenticateWithCredential',
-      {
+      <String, dynamic>{
         'app': _app.name,
         'provider': credential._provider,
         'data': credential._data,
