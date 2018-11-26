@@ -150,8 +150,6 @@ abstract class FirebaseVisionDetector {
 
 int _imageRotationToInt(ImageRotation rotation) {
   switch (rotation) {
-    case ImageRotation.rotation_0:
-      return 0;
     case ImageRotation.rotation_90:
       return 90;
     case ImageRotation.rotation_180:
@@ -159,7 +157,8 @@ int _imageRotationToInt(ImageRotation rotation) {
     case ImageRotation.rotation_270:
       return 270;
     default:
-      return -1;
+      assert(rotation == ImageRotation.rotation_0);
+      return 0;
   }
 }
 
