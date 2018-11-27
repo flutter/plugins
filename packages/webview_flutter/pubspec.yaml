@@ -3,6 +3,7 @@ description: A WebView Plugin for Flutter.
 version: 0.0.1
 author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/webview_flutter
+publish_to: none  # do not publish this package while under active development.
 
 environment:
   sdk: ">=2.0.0-dev.68.0 <3.0.0"
