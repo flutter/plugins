@@ -349,34 +349,34 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     AuthCredential credential;
     Map<String, String> data = (Map<String, String>) arguments.get("data");
     switch ((String) arguments.get("provider")) {
-      case "password":
+      case EmailAuthProvider.PROVIDER_ID:
         {
           String email = data.get("email");
           String password = data.get("password");
           credential = EmailAuthProvider.getCredential(email, password);
           break;
         }
-      case "google.com":
+      case GoogleAuthProvider.PROVIDER_ID:
         {
           String idToken = data.get("idToken");
           String accessToken = data.get("accessToken");
           credential = GoogleAuthProvider.getCredential(idToken, accessToken);
           break;
         }
-      case "facebook.com":
+      case FacebookAuthProvider.PROVIDER_ID:
         {
           String accessToken = data.get("accessToken");
           credential = FacebookAuthProvider.getCredential(accessToken);
           break;
         }
-      case "twitter.com":
+      case TwitterAuthProvider.PROVIDER_ID:
         {
           String authToken = data.get("authToken");
           String authTokenSecret = data.get("authTokenSecret");
           credential = TwitterAuthProvider.getCredential(authToken, authTokenSecret);
           break;
         }
-      case "github.com":
+      case GithubAuthProvider.PROVIDER_ID:
         {
           String token = data.get("token");
           credential = GithubAuthProvider.getCredential(token);
