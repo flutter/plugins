@@ -1,3 +1,10 @@
+## 0.7.0
+
+* Introduce third-party auth provider classes that generate `AuthCredential`s
+* **Breaking Change** Signing in, linking, and reauthenticating now require an `AuthCredential`
+* **Breaking Change** Unlinking now uses providerId
+* **Breaking Change** Moved reauthentication to FirebaseUser
+
 ## 0.6.7
 
 * `FirebaseAuth` and `FirebaseUser` are now fully documented.
