@@ -24,7 +24,6 @@
 // Defines map overlay controllable from Flutter.
 @interface FLTGoogleMapController
     : NSObject <GMSMapViewDelegate, FLTGoogleMapOptionsSink, FlutterPlatformView>
-@property(atomic, readonly) id mapId;
 - (instancetype)initWithFrame:(CGRect)frame
                viewIdentifier:(int64_t)viewId
                     arguments:(id _Nullable)args
