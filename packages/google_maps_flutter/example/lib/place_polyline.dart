@@ -27,35 +27,35 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
   Polyline _selectedPolyline;
 
   int colorsIndex = 0;
-  List<int> colors = [
+  List<int> colors = <int>[
     0xFF000000,
     0xFF2196F3,
     0xFFF44336,
   ];
 
   int widthsIndex = 0;
-  List<double> widths = [10.0, 20.0, 5.0];
+  List<double> widths = <double>[10.0, 20.0, 5.0];
 
   int jointTypesIndex = 0;
-  List<int> jointTypes = [JointType.mitered, JointType.bevel, JointType.round];
+  List<int> jointTypes = <int>[JointType.mitered, JointType.bevel, JointType.round];
 
   int endCapsIndex = 0;
-  List<Cap> endCaps = [Cap.buttCap, Cap.squareCap, Cap.roundCap];
+  List<Cap> endCaps = <Cap>[Cap.buttCap, Cap.squareCap, Cap.roundCap];
 
   int startCapsIndex = 0;
-  List<Cap> startCaps = [Cap.buttCap, Cap.squareCap, Cap.roundCap];
+  List<Cap> startCaps = <Cap>[Cap.buttCap, Cap.squareCap, Cap.roundCap];
 
   int patternsIndex = 0;
-  List<List<PatternItem>> patterns = [
+  List<List<PatternItem>> patterns = <List<PatternItem>>[
     null,
-    [
+    <PatternItem>[
       PatternItem.dash(30.0),
       PatternItem.gap(20.0),
       PatternItem.dot,
       PatternItem.gap(20.0)
     ],
-    [PatternItem.dash(30.0), PatternItem.gap(20.0)],
-    [PatternItem.dot, PatternItem.gap(10.0)],
+    <PatternItem>[PatternItem.dash(30.0), PatternItem.gap(20.0)],
+    <PatternItem>[PatternItem.dot, PatternItem.gap(10.0)],
   ];
 
   void _onMapCreated(GoogleMapController controller) {
@@ -261,7 +261,7 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
   }
 
   List<LatLng> _createPoints() {
-    final List<LatLng> points = [];
+    final List<LatLng> points = <LatLng>[];
     points.add(_createLatLng(51.4816, -3.1791));
     points.add(_createLatLng(53.0430, -2.9925));
     points.add(_createLatLng(53.1396, -4.2739));
