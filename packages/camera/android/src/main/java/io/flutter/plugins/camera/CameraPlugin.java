@@ -1,5 +1,7 @@
 package io.flutter.plugins.camera;
 
+import static android.view.OrientationEventListener.ORIENTATION_UNKNOWN;
+
 import android.Manifest;
 import android.app.Activity;
 import android.app.Application;
@@ -25,8 +27,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Size;
-import android.util.SparseIntArray;
 import android.view.Display;
+import android.view.OrientationEventListener;
 import android.view.Surface;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodCall;
@@ -52,15 +54,6 @@ public class CameraPlugin implements MethodCallHandler {
 
   private static final int CAMERA_REQUEST_ID = 513469796;
   private static final String TAG = "CameraPlugin";
-  private static final SparseIntArray ORIENTATIONS =
-      new SparseIntArray() {
-        {
-          append(Surface.ROTATION_0, 0);
-          append(Surface.ROTATION_90, 90);
-          append(Surface.ROTATION_180, 180);
-          append(Surface.ROTATION_270, 270);
-        }
-      };
 
   private static CameraManager cameraManager;
   private final FlutterView view;
@@ -71,11 +64,25 @@ public class CameraPlugin implements MethodCallHandler {
   // The code to run after requesting camera permissions.
   private Runnable cameraPermissionContinuation;
   private boolean requestingPermission;
+  private final OrientationEventListener orientationEventListener;
+  private int currentOrientation = ORIENTATION_UNKNOWN;
 
   private CameraPlugin(Registrar registrar, FlutterView view, Activity activity) {
     this.registrar = registrar;
     this.view = view;
     this.activity = activity;
+
+    orientationEventListener =
+        new OrientationEventListener(activity.getApplicationContext()) {
+          @Override
+          public void onOrientationChanged(int i) {
+            if (i == ORIENTATION_UNKNOWN) {
+              return;
+            }
+            // Convert the raw deg angle to the nearest multiple of 90.
+            currentOrientation = (int) Math.round(i / 90.0) * 90;
+          }
+        };
 
     registrar.addRequestPermissionsResultListener(new CameraRequestPermissionsListener());
 
@@ -94,6 +101,7 @@ public class CameraPlugin implements MethodCallHandler {
               return;
             }
             if (activity == CameraPlugin.this.activity) {
+              orientationEventListener.enable();
               if (camera != null) {
                 camera.open(null);
               }
@@ -103,6 +111,7 @@ public class CameraPlugin implements MethodCallHandler {
           @Override
           public void onActivityPaused(Activity activity) {
             if (activity == CameraPlugin.this.activity) {
+              orientationEventListener.disable();
               if (camera != null) {
                 camera.close();
               }
@@ -185,6 +194,7 @@ public class CameraPlugin implements MethodCallHandler {
           this.activity
               .getApplication()
               .registerActivityLifecycleCallbacks(this.activityLifecycleCallbacks);
+          orientationEventListener.enable();
           break;
         }
       case "takePicture":
@@ -373,8 +383,7 @@ public class CameraPlugin implements MethodCallHandler {
       Display display = activity.getWindowManager().getDefaultDisplay();
       display.getRealSize(screenResolution);
 
-      int displayRotation = activity.getWindowManager().getDefaultDisplay().getRotation();
-      boolean swapWH = (displayRotation + sensorOrientation) % 180 == 90;
+      final boolean swapWH = getMediaOrientation() % 180 == 90;
       int screenWidth = swapWH ? screenResolution.y : screenResolution.x;
       int screenHeight = swapWH ? screenResolution.x : screenResolution.y;
 
@@ -439,11 +448,7 @@ public class CameraPlugin implements MethodCallHandler {
       mediaRecorder.setVideoFrameRate(27);
       mediaRecorder.setVideoSize(videoSize.getWidth(), videoSize.getHeight());
       mediaRecorder.setOutputFile(outputFilePath);
-
-      int displayRotation = activity.getWindowManager().getDefaultDisplay().getRotation();
-      int displayOrientation = ORIENTATIONS.get(displayRotation);
-      if (isFrontFacing) displayOrientation = -displayOrientation;
-      mediaRecorder.setOrientationHint((displayOrientation + sensorOrientation) % 360);
+      mediaRecorder.setOrientationHint(getMediaOrientation());
 
       mediaRecorder.prepare();
     }
@@ -567,11 +572,7 @@ public class CameraPlugin implements MethodCallHandler {
         final CaptureRequest.Builder captureBuilder =
             cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
         captureBuilder.addTarget(imageReader.getSurface());
-        int displayRotation = activity.getWindowManager().getDefaultDisplay().getRotation();
-        int displayOrientation = ORIENTATIONS.get(displayRotation);
-        if (isFrontFacing) displayOrientation = -displayOrientation;
-        captureBuilder.set(
-            CaptureRequest.JPEG_ORIENTATION, (-displayOrientation + sensorOrientation) % 360);
+        captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, getMediaOrientation());
 
         cameraCaptureSession.capture(
             captureBuilder.build(),
@@ -763,6 +764,12 @@ public class CameraPlugin implements MethodCallHandler {
     private void dispose() {
       close();
       textureEntry.release();
+    }
+
+    private int getMediaOrientation() {
+      final int sensorOrientationOffset =
+          (isFrontFacing) ? -currentOrientation : currentOrientation;
+      return (sensorOrientationOffset + sensorOrientation + 360) % 360;
     }
   }
 }
