@@ -1,5 +1,7 @@
 package io.flutter.plugins.camera;
 
+import static android.view.OrientationEventListener.ORIENTATION_UNKNOWN;
+
 import android.Manifest;
 import android.app.Activity;
 import android.app.Application;
@@ -63,7 +65,7 @@ public class CameraPlugin implements MethodCallHandler {
   private Runnable cameraPermissionContinuation;
   private boolean requestingPermission;
   private final OrientationEventListener orientationEventListener;
-  private int currentOrientation;
+  private int currentOrientation = ORIENTATION_UNKNOWN;
 
   private CameraPlugin(Registrar registrar, FlutterView view, Activity activity) {
     this.registrar = registrar;
@@ -74,6 +76,9 @@ public class CameraPlugin implements MethodCallHandler {
         new OrientationEventListener(activity.getApplicationContext()) {
           @Override
           public void onOrientationChanged(int i) {
+            if (i == ORIENTATION_UNKNOWN) {
+              return;
+            }
             // Convert the raw deg angle to the nearest multiple of 90.
             currentOrientation = (int) Math.round(i / 90.0) * 90;
           }
