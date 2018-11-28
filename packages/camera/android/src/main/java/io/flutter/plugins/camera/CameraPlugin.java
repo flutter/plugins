@@ -28,7 +28,6 @@ import android.util.Size;
 import android.view.Display;
 import android.view.OrientationEventListener;
 import android.view.Surface;
-
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -71,13 +70,14 @@ public class CameraPlugin implements MethodCallHandler {
     this.view = view;
     this.activity = activity;
 
-    orientationEventListener = new OrientationEventListener(activity.getApplicationContext()) {
-      @Override
-      public void onOrientationChanged(int i) {
-        // Convert the raw deg angle to the nearest multiple of 90.
-        currentOrientation = ((i + 45) / 90) * 90;
-      }
-    };
+    orientationEventListener =
+        new OrientationEventListener(activity.getApplicationContext()) {
+          @Override
+          public void onOrientationChanged(int i) {
+            // Convert the raw deg angle to the nearest multiple of 90.
+            currentOrientation = ((i + 45) / 90) * 90;
+          }
+        };
 
     registrar.addRequestPermissionsResultListener(new CameraRequestPermissionsListener());
 
@@ -445,7 +445,8 @@ public class CameraPlugin implements MethodCallHandler {
       mediaRecorder.setVideoSize(videoSize.getWidth(), videoSize.getHeight());
       mediaRecorder.setOutputFile(outputFilePath);
 
-      final int sensorOrientationOffset = (isFrontFacing) ? -currentOrientation : currentOrientation;
+      final int sensorOrientationOffset =
+          (isFrontFacing) ? -currentOrientation : currentOrientation;
       mediaRecorder.setOrientationHint((sensorOrientationOffset + sensorOrientation + 360) % 360);
 
       mediaRecorder.prepare();
@@ -572,9 +573,11 @@ public class CameraPlugin implements MethodCallHandler {
         captureBuilder.addTarget(imageReader.getSurface());
 
         // Set image orientation
-        final int sensorOrientationOffset = (isFrontFacing) ? -currentOrientation : currentOrientation;
+        final int sensorOrientationOffset =
+            (isFrontFacing) ? -currentOrientation : currentOrientation;
         captureBuilder.set(
-            CaptureRequest.JPEG_ORIENTATION, (sensorOrientationOffset + sensorOrientation + 360) % 360);
+            CaptureRequest.JPEG_ORIENTATION,
+            (sensorOrientationOffset + sensorOrientation + 360) % 360);
 
         cameraCaptureSession.capture(
             captureBuilder.build(),
