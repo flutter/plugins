@@ -144,7 +144,7 @@
 
   _captureVideoOutput = [AVCaptureVideoDataOutput new];
   _captureVideoOutput.videoSettings =
-      @{(NSString *)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_32BGRA) };
+      @{(NSString *)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_420YpCbCr8BiPlanarFullRange) };
   [_captureVideoOutput setAlwaysDiscardsLateVideoFrames:YES];
   [_captureVideoOutput setSampleBufferDelegate:self queue:dispatch_get_main_queue()];
 
@@ -209,6 +209,35 @@
 
     // Get a CMSampleBuffer's Core Video image buffer for the media data
     CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+    CVPixelBufferLockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
+
+    size_t planeCount = CVPixelBufferGetPlaneCount(pixelBuffer);
+    NSLog(@"%zu", planeCount);
+
+    NSMutableData *mutableData = [NSMutableData data];
+
+    for (int i = 0; i < planeCount; i++) {
+      void *planeAddress = CVPixelBufferGetBaseAddressOfPlane(pixelBuffer, 0);
+      size_t bytesPerRow = CVPixelBufferGetBytesPerRowOfPlane(pixelBuffer, 0);
+      size_t height = CVPixelBufferGetHeightOfPlane(pixelBuffer, 0);
+      size_t width = CVPixelBufferGetWidthOfPlane(pixelBuffer, 0);
+
+      unsigned long length = bytesPerRow * height;
+      [mutableData appendBytes:planeAddress length:[NSNumber numberWithUnsignedLong:length].unsignedIntegerValue];
+
+      NSLog(@"%zu", bytesPerRow);
+      NSLog(@"%zu", height);
+      NSLog(@"%zu", width);
+    }
+
+    FlutterStandardTypedData *eventData = [FlutterStandardTypedData typedDataWithBytes:mutableData];
+    _byteStreamHandler.eventSink(eventData);
+
+    CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
+
+    //NSData *data0 = [NSData dataWithBytes:planeAddress0 length:0];
+
+    /*
     // Lock the base address of the pixel buffer
     CVPixelBufferLockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
 
@@ -244,6 +273,7 @@
     _byteStreamHandler.eventSink(eventData);
 
     CGImageRelease(quartzImage);
+     */
   }
   if (_isRecording) {
     if (_videoWriter.status == AVAssetWriterStatusFailed) {
