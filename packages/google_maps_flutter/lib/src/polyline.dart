@@ -58,9 +58,9 @@ class PolylineOptions {
   final int jointType;
 
   /// The stroke pattern for the polyline.
-  /// 
-  /// Solid (default, represented by null) or a sequence of PatternItem objects to be repeated along the line. 
-  /// Available PatternItem types: Gap (defined by gap length in pixels), Dash (defined by line width and dash 
+  ///
+  /// Solid (default, represented by null) or a sequence of PatternItem objects to be repeated along the line.
+  /// Available PatternItem types: Gap (defined by gap length in pixels), Dash (defined by line width and dash
   /// length in pixels) and Dot (circular, centered on the line, diameter defined by line width in pixels).
   final List<PatternItem> pattern;
 
@@ -75,12 +75,12 @@ class PolylineOptions {
   /// polyline is not drawn, but retains all of its other properties. The default is true, i.e., visible.
   final bool visible;
 
-  /// Line segment width in screen pixels. The width is constant and independent of the camera's zoom level. 
+  /// Line segment width in screen pixels. The width is constant and independent of the camera's zoom level.
   /// The default value is 10.
   final double width;
 
-  /// The order in which this tile overlay is drawn with respect to other overlays. An overlay with a larger 
-  /// z-index is drawn over overlays with smaller z-indices. The order of overlays with the same z-index is 
+  /// The order in which this tile overlay is drawn with respect to other overlays. An overlay with a larger
+  /// z-index is drawn over overlays with smaller z-indices. The order of overlays with the same z-index is
   /// arbitrary. The default zIndex is 0.
   final double zIndex;
 
@@ -151,13 +151,13 @@ class PolylineOptions {
     addIfPresent('startCap', startCap?._toJson());
     addIfPresent('visible', visible);
     addIfPresent('width', width);
-    addIfPresent('zIndex', zIndex);    
+    addIfPresent('zIndex', zIndex);
 
     if (points != null) {
       json['points'] = _pointsToJson();
     }
-     
-    json['pattern'] = _patternToJson();    
+
+    json['pattern'] = _patternToJson();
 
     return json;
   }

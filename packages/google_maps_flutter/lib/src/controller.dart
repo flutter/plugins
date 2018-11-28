@@ -48,7 +48,8 @@ class GoogleMapController extends ChangeNotifier {
   final ArgumentCallbacks<Marker> onMarkerTapped = ArgumentCallbacks<Marker>();
 
   /// Callbacks to receive tap events for polylines placed on this map.
-  final ArgumentCallbacks<Polyline> onPolylineTapped = ArgumentCallbacks<Polyline>();
+  final ArgumentCallbacks<Polyline> onPolylineTapped =
+      ArgumentCallbacks<Polyline>();
 
   /// Callbacks to receive tap events for info windows on markers
   final ArgumentCallbacks<Marker> onInfoWindowTapped =
@@ -271,7 +272,8 @@ class GoogleMapController extends ChangeNotifier {
   /// platform side.
   ///
   /// The returned [Future] completes once listeners have been notified.
-  Future<void> updatePolyline(Polyline polyline, PolylineOptions changes) async {
+  Future<void> updatePolyline(
+      Polyline polyline, PolylineOptions changes) async {
     assert(polyline != null);
     assert(_polylines[polyline._id] == polyline);
     assert(changes != null);

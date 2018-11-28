@@ -22,7 +22,6 @@ import com.google.android.gms.maps.model.PatternItem;
 import com.google.android.gms.maps.model.RoundCap;
 import com.google.android.gms.maps.model.SquareCap;
 import io.flutter.view.FlutterMain;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -360,7 +359,7 @@ class Convert {
           break;
         default:
           throw new IllegalArgumentException("Cannot interpret " + pattern + " as PatternItem");
-        }
+      }
     }
 
     return pattern;

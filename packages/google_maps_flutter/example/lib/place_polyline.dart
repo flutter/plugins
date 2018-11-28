@@ -37,7 +37,11 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
   List<double> widths = <double>[10.0, 20.0, 5.0];
 
   int jointTypesIndex = 0;
-  List<int> jointTypes = <int>[JointType.mitered, JointType.bevel, JointType.round];
+  List<int> jointTypes = <int>[
+    JointType.mitered,
+    JointType.bevel,
+    JointType.round
+  ];
 
   int endCapsIndex = 0;
   List<Cap> endCaps = <Cap>[Cap.buttCap, Cap.squareCap, Cap.roundCap];

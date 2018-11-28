@@ -1,10 +1,8 @@
 package io.flutter.plugins.googlemaps;
 
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.Cap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PatternItem;
-
 import java.util.List;
 
 /** Receiver of Polyline configuration options. */

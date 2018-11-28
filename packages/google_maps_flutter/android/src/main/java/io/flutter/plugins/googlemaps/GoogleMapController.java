@@ -269,14 +269,14 @@ final class GoogleMapController
           break;
         }
       case "polyline#add":
-      {
+        {
           final PolylineBuilder polylineBuilder = newPolylineBuilder();
           Convert.interpretPolylineOptions(call.argument("options"), polylineBuilder);
           final String polylineId = polylineBuilder.build();
           result.success(polylineId);
           break;
         }
-        case "polyline#remove":
+      case "polyline#remove":
         {
           final String polylineId = call.argument("polyline");
           removePolyline(polylineId);
