@@ -4,8 +4,6 @@
 
 #import "GoogleMapController.h"
 
-static uint64_t _nextMapId = 0;
-
 #pragma mark - Conversion of JSON-like values sent via platform channels. Forward declarations.
 
 static id positionToJson(GMSCameraPosition* position);
