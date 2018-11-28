@@ -74,6 +74,7 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
       }
     }];
     _mapView.delegate = weakSelf;
+    _registrar = registrar;
   }
   return self;
 }
