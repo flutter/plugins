@@ -9,10 +9,21 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.ButtCap;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Cap;
+import com.google.android.gms.maps.model.CustomCap;
+import com.google.android.gms.maps.model.Dash;
+import com.google.android.gms.maps.model.Dot;
+import com.google.android.gms.maps.model.Gap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.PatternItem;
+import com.google.android.gms.maps.model.RoundCap;
+import com.google.android.gms.maps.model.SquareCap;
 import io.flutter.view.FlutterMain;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -267,6 +278,111 @@ class Convert {
     final Object zIndex = data.get("zIndex");
     if (zIndex != null) {
       sink.setZIndex(toFloat(zIndex));
+    }
+  }
+
+  static void interpretPolylineOptions(Object o, PolylineOptionsSink sink) {
+    final Map<?, ?> data = toMap(o);
+    final Object consumeTapEvents = data.get("consumeTapEvents");
+    if (consumeTapEvents != null) {
+      sink.setConsumeTapEvents(toBoolean(consumeTapEvents));
+    }
+    final Object color = data.get("color");
+    if (color != null) {
+      sink.setColor(toInt(color));
+    }
+    final Object endCap = data.get("endCap");
+    if (endCap != null) {
+      sink.setEndCap(_toCap(endCap));
+    }
+    final Object geodesic = data.get("geodesic");
+    if (geodesic != null) {
+      sink.setGeodesic(toBoolean(geodesic));
+    }
+    final Object jointType = data.get("jointType");
+    if (jointType != null) {
+      sink.setJointType(toInt(jointType));
+    }
+    final Object startCap = data.get("startCap");
+    if (startCap != null) {
+      sink.setStartCap(_toCap(startCap));
+    }
+    final Object visible = data.get("visible");
+    if (visible != null) {
+      sink.setVisible(toBoolean(visible));
+    }
+    final Object width = data.get("width");
+    if (width != null) {
+      sink.setWidth(toInt(width));
+    }
+    final Object zIndex = data.get("zIndex");
+    if (zIndex != null) {
+      sink.setZIndex(toFloat(zIndex));
+    }
+    final Object points = data.get("points");
+    if (points != null) {
+      sink.setPoints(_toPoints(points));
+    }
+    final Object pattern = data.get("pattern");
+    if (pattern != null) {
+      sink.setPattern(_toPattern(pattern));
+    } else if (data.containsKey("pattern")) {
+      sink.setPattern(null);
+    }
+  }
+
+  private static List<LatLng> _toPoints(Object o) {
+    final List<?> data = toList(o);
+    final List<LatLng> points = new ArrayList<>(data.size());
+
+    for (Object ob : data) {
+      final List<?> point = toList(ob);
+      points.add(new LatLng(toFloat(point.get(0)), toFloat(point.get(1))));
+    }
+    return points;
+  }
+
+  private static List<PatternItem> _toPattern(Object o) {
+    final List<?> data = toList(o);
+    final List<PatternItem> pattern = new ArrayList<>(data.size());
+
+    for (Object ob : data) {
+      final List<?> patternItem = toList(ob);
+      switch (toString(patternItem.get(0))) {
+        case "dot":
+          pattern.add(new Dot());
+          break;
+        case "dash":
+          pattern.add(new Dash(toFloat(patternItem.get(1))));
+          break;
+        case "gap":
+          pattern.add(new Gap(toFloat(patternItem.get(1))));
+          break;
+        default:
+          throw new IllegalArgumentException("Cannot interpret " + pattern + " as PatternItem");
+        }
+    }
+
+    return pattern;
+  }
+
+  private static Cap _toCap(Object o) {
+    final List<?> data = toList(o);
+    switch (toString(data.get(0))) {
+      case "buttCap":
+        return new ButtCap();
+      case "roundCap":
+        return new RoundCap();
+      case "squareCap":
+        return new SquareCap();
+      case "customCap":
+        if (data.size() == 2) {
+          return new CustomCap(toBitmapDescriptor(data.get(1)));
+        } else {
+          return new CustomCap(toBitmapDescriptor(data.get(1)), toFloat(data.get(2)));
+        }
+      default:
+        throw new IllegalArgumentException("Cannot interpret " + o + " as Cap");
     }
   }
 }
