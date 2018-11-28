@@ -62,9 +62,30 @@
   } else if ([@"bytes" isEqualToString:imageType]) {
     FlutterStandardTypedData *byteData = imageData[@"bytes"];
     NSData *imageBytes = byteData.data;
+
+    CVPixelBufferRef pxbuffer = NULL;
+    size_t widths[2] = {1080, 1080};
+    size_t heights[2] = {1920, 1920};
+    size_t bytesPerRows[2] = {1088, 1080};
+    CVPixelBufferCreateWithPlanarBytes(kCFAllocatorDefault, 1080, 1920, kCVPixelFormatType_420YpCbCr8BiPlanarFullRange, NULL, 4177920, 2, (void *) imageBytes.bytes, widths, heights, bytesPerRows, NULL, NULL, NULL, &pxbuffer);
+
+    CMSampleTimingInfo info;
+    info.presentationTimeStamp = kCMTimeZero;
+    info.duration = kCMTimeInvalid;
+    info.decodeTimeStamp = kCMTimeInvalid;
+
+    CMFormatDescriptionRef formatDesc = NULL;
+    CMVideoFormatDescriptionCreateForImageBuffer(kCFAllocatorDefault, pxbuffer, &formatDesc);
+
+    CMSampleBufferRef sampleBuffer = NULL;
+    CMSampleBufferCreateReadyWithImageBuffer(kCFAllocatorDefault, pxbuffer, formatDesc, &info, &sampleBuffer);
+
+    return [[FIRVisionImage alloc] initWithBuffer:sampleBuffer];
+    /*
     UIImage *image = [[UIImage alloc] initWithData:imageBytes];
     // TODO(bmparr): Rotate image from imageData[@"rotation"].
     return [[FIRVisionImage alloc] initWithImage:image];
+     */
   } else {
     NSString *errorReason = [NSString stringWithFormat:@"No image type for: %@", imageType];
     @throw
