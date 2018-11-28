@@ -75,7 +75,7 @@ public class CameraPlugin implements MethodCallHandler {
           @Override
           public void onOrientationChanged(int i) {
             // Convert the raw deg angle to the nearest multiple of 90.
-            currentOrientation = ((i + 45) / 90) * 90;
+            currentOrientation = (int) Math.round(i / 90.0) * 90;
           }
         };
 
@@ -128,10 +128,6 @@ public class CameraPlugin implements MethodCallHandler {
           @Override
           public void onActivityDestroyed(Activity activity) {}
         };
-
-    this.activity
-        .getApplication()
-        .registerActivityLifecycleCallbacks(this.activityLifecycleCallbacks);
   }
 
   public static void registerWith(Registrar registrar) {
@@ -190,6 +186,10 @@ public class CameraPlugin implements MethodCallHandler {
             camera.close();
           }
           camera = new Camera(cameraName, resolutionPreset, result);
+          this.activity
+              .getApplication()
+              .registerActivityLifecycleCallbacks(this.activityLifecycleCallbacks);
+          orientationEventListener.enable();
           break;
         }
       case "takePicture":
@@ -378,8 +378,7 @@ public class CameraPlugin implements MethodCallHandler {
       Display display = activity.getWindowManager().getDefaultDisplay();
       display.getRealSize(screenResolution);
 
-      int displayRotation = activity.getWindowManager().getDefaultDisplay().getRotation();
-      boolean swapWH = (displayRotation + sensorOrientation) % 180 == 90;
+      final boolean swapWH = getMediaOrientation() % 180 == 90;
       int screenWidth = swapWH ? screenResolution.y : screenResolution.x;
       int screenHeight = swapWH ? screenResolution.x : screenResolution.y;
 
@@ -444,10 +443,7 @@ public class CameraPlugin implements MethodCallHandler {
       mediaRecorder.setVideoFrameRate(27);
       mediaRecorder.setVideoSize(videoSize.getWidth(), videoSize.getHeight());
       mediaRecorder.setOutputFile(outputFilePath);
-
-      final int sensorOrientationOffset =
-          (isFrontFacing) ? -currentOrientation : currentOrientation;
-      mediaRecorder.setOrientationHint((sensorOrientationOffset + sensorOrientation + 360) % 360);
+      mediaRecorder.setOrientationHint(getMediaOrientation());
 
       mediaRecorder.prepare();
     }
@@ -571,13 +567,7 @@ public class CameraPlugin implements MethodCallHandler {
         final CaptureRequest.Builder captureBuilder =
             cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
         captureBuilder.addTarget(imageReader.getSurface());
-
-        // Set image orientation
-        final int sensorOrientationOffset =
-            (isFrontFacing) ? -currentOrientation : currentOrientation;
-        captureBuilder.set(
-            CaptureRequest.JPEG_ORIENTATION,
-            (sensorOrientationOffset + sensorOrientation + 360) % 360);
+        captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, getMediaOrientation());
 
         cameraCaptureSession.capture(
             captureBuilder.build(),
@@ -769,6 +759,12 @@ public class CameraPlugin implements MethodCallHandler {
     private void dispose() {
       close();
       textureEntry.release();
+    }
+
+    private int getMediaOrientation() {
+      final int sensorOrientationOffset =
+          (isFrontFacing) ? -currentOrientation : currentOrientation;
+      return (sensorOrientationOffset + sensorOrientation + 360) % 360;
     }
   }
 }
