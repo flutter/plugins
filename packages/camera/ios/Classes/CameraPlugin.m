@@ -28,6 +28,7 @@
 @implementation FLTByteStreamHandler {
 }
 - (FlutterError *_Nullable)onCancelWithArguments:(id _Nullable)arguments {
+  _eventSink = nil;
   return nil;
 }
 
@@ -210,27 +211,40 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarFullRange;
   if (_isStreamingBytes) {
     if (!_byteStreamHandler.eventSink) return;
 
-    // Get a CMSampleBuffer's Core Video image buffer for the media data
     CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
     CVPixelBufferLockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
 
+    size_t imageWidth = CVPixelBufferGetWidth(pixelBuffer);
+    size_t imageHeight = CVPixelBufferGetHeight(pixelBuffer);
+
+    NSMutableArray *planes = [NSMutableArray array];
+
     size_t planeCount = CVPixelBufferGetPlaneCount(pixelBuffer);
-    NSLog(@"%zu", planeCount);
-
-    NSMutableData *mutableData = [NSMutableData data];
-
     for (int i = 0; i < planeCount; i++) {
-      void *planeAddress = CVPixelBufferGetBaseAddressOfPlane(pixelBuffer, 0);
-      size_t bytesPerRow = CVPixelBufferGetBytesPerRowOfPlane(pixelBuffer, 0);
-      size_t height = CVPixelBufferGetHeightOfPlane(pixelBuffer, 0);
-      size_t width = CVPixelBufferGetWidthOfPlane(pixelBuffer, 0);
+      void *planeAddress = CVPixelBufferGetBaseAddressOfPlane(pixelBuffer, i);
+      size_t bytesPerRow = CVPixelBufferGetBytesPerRowOfPlane(pixelBuffer, i);
+      size_t height = CVPixelBufferGetHeightOfPlane(pixelBuffer, i);
+      size_t width = CVPixelBufferGetWidthOfPlane(pixelBuffer, i);
 
-      unsigned long length = bytesPerRow * height;
-      [mutableData appendBytes:planeAddress length:[NSNumber numberWithUnsignedLong:length].unsignedIntegerValue];
+      NSNumber *length = @(bytesPerRow * height);
+      NSData *bytes = [NSData dataWithBytes:planeAddress length:length.unsignedIntegerValue];
+
+      NSMutableDictionary *planeBuffer = [NSMutableDictionary dictionary];
+      planeBuffer[@"bytesPerRow"] = @(bytesPerRow);
+      planeBuffer[@"width"] = @(width);
+      planeBuffer[@"height"] = @(height);
+      planeBuffer[@"bytes"] = [FlutterStandardTypedData typedDataWithBytes:bytes];
+
+      [planes addObject:planeBuffer];
     }
 
-    FlutterStandardTypedData *eventData = [FlutterStandardTypedData typedDataWithBytes:mutableData];
-    _byteStreamHandler.eventSink(eventData);
+    NSMutableDictionary *imageBuffer = [NSMutableDictionary dictionary];
+    imageBuffer[@"width"] = [NSNumber numberWithUnsignedLong:imageWidth];
+    imageBuffer[@"height"] = [NSNumber numberWithUnsignedLong:imageHeight];
+    imageBuffer[@"format"] = @(videoFormat);
+    imageBuffer[@"planes"] = planes;
+
+    _byteStreamHandler.eventSink(imageBuffer);
 
     CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
   }
