@@ -824,32 +824,33 @@ public class CameraPlugin implements MethodCallHandler {
               Image img = reader.acquireLatestImage();
               if (img == null) return;
 
-              eventSink.success(YUV_420_888toNV21(img));
+              List<Map<String, Object>> planes = new ArrayList<>();
+              for (Image.Plane plane : img.getPlanes()) {
+                ByteBuffer buffer = plane.getBuffer();
+
+                byte[] bytes = new byte[buffer.remaining()];
+                buffer.get(bytes, 0, bytes.length);
+
+                Map<String, Object> planeBuffer = new HashMap<>();
+                planeBuffer.put("bytesPerRow", plane.getRowStride());
+                planeBuffer.put("width", img.getWidth());
+                planeBuffer.put("height", img.getHeight());
+                planeBuffer.put("bytes", bytes);
+
+                planes.add(planeBuffer);
+              }
+
+              Map<String, Object> imageBuffer = new HashMap<>();
+              imageBuffer.put("width", img.getWidth());
+              imageBuffer.put("height", img.getHeight());
+              imageBuffer.put("format", img.getFormat());
+              imageBuffer.put("planes", planes);
+
+              eventSink.success(imageBuffer);
               img.close();
             }
           },
           null);
-    }
-
-    private byte[] YUV_420_888toNV21(Image image) {
-      byte[] nv21;
-
-      ByteBuffer yBuffer = image.getPlanes()[0].getBuffer();
-      ByteBuffer uBuffer = image.getPlanes()[1].getBuffer();
-      ByteBuffer vBuffer = image.getPlanes()[2].getBuffer();
-
-      int ySize = yBuffer.remaining();
-      int uSize = uBuffer.remaining();
-      int vSize = vBuffer.remaining();
-
-      nv21 = new byte[ySize + uSize + vSize];
-
-      //U and V are swapped
-      yBuffer.get(nv21, 0, ySize);
-      vBuffer.get(nv21, ySize, vSize);
-      uBuffer.get(nv21, ySize + vSize, uSize);
-
-      return nv21;
     }
 
     private void sendErrorEvent(String errorDescription) {
