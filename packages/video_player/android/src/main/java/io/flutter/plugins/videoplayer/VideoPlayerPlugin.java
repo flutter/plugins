@@ -12,6 +12,7 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.view.Surface;
+import android.support.annotation.Nullable;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -33,6 +34,10 @@ import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
+import com.google.android.exoplayer2.upstream.HttpDataSource.BaseFactory;
+import com.google.android.exoplayer2.upstream.HttpDataSource.Factory;
+import com.google.android.exoplayer2.upstream.HttpDataSource.RequestProperties;
+import com.google.android.exoplayer2.upstream.TransferListener;
 import com.google.android.exoplayer2.util.Util;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodCall;
@@ -50,6 +55,57 @@ import java.util.List;
 import java.util.Map;
 
 public class VideoPlayerPlugin implements MethodCallHandler {
+
+  // near copy and paste from final class DefaultHttpDataSourceFactory
+  private static class VideoPlayerHttpDataSourceFactory extends BaseFactory {
+    private final String userAgent;
+    private final @Nullable TransferListener listener;
+    private final int connectTimeoutMillis;
+    private final int readTimeoutMillis;
+    private final boolean allowCrossProtocolRedirects;
+    
+    private final Map<String, String> headers;
+
+    public VideoPlayerHttpDataSourceFactory(
+        String userAgent,
+        @Nullable TransferListener listener,
+        int connectTimeoutMillis,
+        int readTimeoutMillis,
+        boolean allowCrossProtocolRedirects,
+        Map<String, String> headers) {
+      this.userAgent = userAgent;
+      this.listener = listener;
+      this.connectTimeoutMillis = connectTimeoutMillis;
+      this.readTimeoutMillis = readTimeoutMillis;
+      this.allowCrossProtocolRedirects = allowCrossProtocolRedirects;
+      this.headers = headers;
+    }
+
+    @Override
+    protected DefaultHttpDataSource createDataSourceInternal(
+        RequestProperties defaultRequestProperties) {
+      if (this.headers != null) {
+        if (defaultRequestProperties == null) {
+          defaultRequestProperties = new RequestProperties();
+        }
+        for (Map.Entry<String, String> header : this.headers.entrySet()) {
+          defaultRequestProperties.set(header.getKey(), header.getValue());
+        }
+      }
+      DefaultHttpDataSource dataSource =
+        new DefaultHttpDataSource(
+            userAgent,
+            /* contentTypePredicate= */ null,
+            connectTimeoutMillis,
+            readTimeoutMillis,
+            allowCrossProtocolRedirects,
+            defaultRequestProperties);
+      if (listener != null) {
+        dataSource.addTransferListener(listener);
+      }
+      return dataSource;
+    }
+  }
 
   private static class VideoPlayer {
 
@@ -70,6 +126,7 @@ public class VideoPlayerPlugin implements MethodCallHandler {
         EventChannel eventChannel,
         TextureRegistry.SurfaceTextureEntry textureEntry,
         String dataSource,
+        Map<String, String> headers,
         Result result) {
       this.eventChannel = eventChannel;
       this.textureEntry = textureEntry;
@@ -84,12 +141,13 @@ public class VideoPlayerPlugin implements MethodCallHandler {
         dataSourceFactory = new DefaultDataSourceFactory(context, "ExoPlayer");
       } else {
         dataSourceFactory =
-            new DefaultHttpDataSourceFactory(
+            new VideoPlayerHttpDataSourceFactory(
                 "ExoPlayer",
                 null,
                 DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
                 DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS,
-                true);
+                true,
+                headers);
       }
 
       MediaSource mediaSource = buildMediaSource(uri, dataSourceFactory, context);
@@ -315,6 +373,7 @@ public class VideoPlayerPlugin implements MethodCallHandler {
                     eventChannel,
                     handle,
                     "asset:///" + assetLookupKey,
+                    null,
                     result);
             videoPlayers.put(handle.id(), player);
           } else {
@@ -324,6 +383,7 @@ public class VideoPlayerPlugin implements MethodCallHandler {
                     eventChannel,
                     handle,
                     (String) call.argument("uri"),
+                    (Map<String, String>) call.argument("headers"),
                     result);
             videoPlayers.put(handle.id(), player);
           }

@@ -52,17 +52,23 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
 @implementation FLTVideoPlayer
 - (instancetype)initWithAsset:(NSString*)asset frameUpdater:(FLTFrameUpdater*)frameUpdater {
   NSString* path = [[NSBundle mainBundle] pathForResource:asset ofType:nil];
-  return [self initWithURL:[NSURL fileURLWithPath:path] frameUpdater:frameUpdater];
+  return [self initWithURL:[NSURL fileURLWithPath:path] headers:nil frameUpdater:frameUpdater];
 }
 
-- (instancetype)initWithURL:(NSURL*)url frameUpdater:(FLTFrameUpdater*)frameUpdater {
+- (instancetype)initWithURL:(NSURL*)url headers:(NSDictionary*)headers frameUpdater:(FLTFrameUpdater*)frameUpdater {
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
   _isInitialized = false;
   _isPlaying = false;
   _disposed = false;
 
-  AVPlayerItem* item = [AVPlayerItem playerItemWithURL:url];
+  AVPlayerItem* item;
+  if (headers) {
+    AVURLAsset * asset = [AVURLAsset URLAssetWithURL:url options:@{@"AVURLAssetHTTPHeaderFieldsKey" : headers}];
+    item = [AVPlayerItem playerItemWithAsset:asset];
+  } else {
+    item = [AVPlayerItem playerItemWithURL:url];
+  }
   [item addObserver:self
          forKeyPath:@"loadedTimeRanges"
             options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
@@ -340,7 +346,8 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
       player = [[FLTVideoPlayer alloc] initWithAsset:assetPath frameUpdater:frameUpdater];
     } else {
       dataSource = argsMap[@"uri"];
-      player = [[FLTVideoPlayer alloc] initWithURL:[NSURL URLWithString:dataSource]
+      NSDictionary* headers = argsMap[@"headers"];
+      player = [[FLTVideoPlayer alloc] initWithURL:[NSURL URLWithString:dataSource] headers:headers
                                       frameUpdater:frameUpdater];
     }
     int64_t textureId = [_registry registerTexture:player];
