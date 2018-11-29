@@ -103,16 +103,19 @@
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
                              error:(NSError **)error;
+
 - (void)start;
 - (void)stop;
 - (void)startVideoRecordingAtPath:(NSString *)path result:(FlutterResult)result;
 - (void)stopVideoRecordingWithResult:(FlutterResult)result;
-- (void)startByteStream;
+- (void)startByteStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger;
 - (void)stopByteStream;
 - (void)captureToFile:(NSString *)filename result:(FlutterResult)result;
 @end
 
 @implementation FLTCam
+FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarFullRange;
+
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
                              error:(NSError **)error {
@@ -144,7 +147,7 @@
 
   _captureVideoOutput = [AVCaptureVideoDataOutput new];
   _captureVideoOutput.videoSettings =
-      @{(NSString *)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_420YpCbCr8BiPlanarFullRange) };
+      @{(NSString *)kCVPixelBufferPixelFormatTypeKey : @(videoFormat) };
   [_captureVideoOutput setAlwaysDiscardsLateVideoFrames:YES];
   [_captureVideoOutput setSampleBufferDelegate:self queue:dispatch_get_main_queue()];
 
@@ -224,56 +227,12 @@
 
       unsigned long length = bytesPerRow * height;
       [mutableData appendBytes:planeAddress length:[NSNumber numberWithUnsignedLong:length].unsignedIntegerValue];
-
-      NSLog(@"%zu", bytesPerRow);
-      NSLog(@"%zu", height);
-      NSLog(@"%zu", width);
     }
 
     FlutterStandardTypedData *eventData = [FlutterStandardTypedData typedDataWithBytes:mutableData];
     _byteStreamHandler.eventSink(eventData);
 
     CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
-
-    //NSData *data0 = [NSData dataWithBytes:planeAddress0 length:0];
-
-    /*
-    // Lock the base address of the pixel buffer
-    CVPixelBufferLockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
-
-    // Get the number of bytes per row for the pixel buffer
-    void *baseAddress = CVPixelBufferGetBaseAddress(pixelBuffer);
-
-    // Get the number of bytes per row for the pixel buffer
-    size_t bytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer);
-    // Get the pixel buffer width and height
-    size_t width = CVPixelBufferGetWidth(pixelBuffer);
-    size_t height = CVPixelBufferGetHeight(pixelBuffer);
-
-    // Create a device-dependent RGB color space
-    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-
-    // Create a bitmap graphics context with the sample buffer data
-    CGBitmapInfo bitmapInfo =
-        (kCGBitmapAlphaInfoMask & kCGImageAlphaPremultipliedFirst) | kCGBitmapByteOrder32Little;
-
-    CGContextRef context =
-        CGBitmapContextCreate(baseAddress, width, height, 8, bytesPerRow, colorSpace, bitmapInfo);
-
-    // Create a Quartz image from the pixel data in the bitmap graphics context
-    CGImageRef quartzImage = CGBitmapContextCreateImage(context);
-
-    // Unlock the pixel buffer
-    CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
-
-    // Create an image object from the Quartz image
-    NSData *data = UIImageJPEGRepresentation([[UIImage alloc] initWithCGImage:quartzImage], 1);
-
-    FlutterStandardTypedData *eventData = [FlutterStandardTypedData typedDataWithBytes:data];
-    _byteStreamHandler.eventSink(eventData);
-
-    CGImageRelease(quartzImage);
-     */
   }
   if (_isRecording) {
     if (_videoWriter.status == AVAssetWriterStatusFailed) {
