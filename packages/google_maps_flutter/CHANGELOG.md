@@ -1,3 +1,7 @@
+## 0.0.3+2
+
+* Update README to recommend using the package from pub.
+
 ## 0.0.3+1
 
 * Bug fix: custom marker images were not working on iOS as we were not keeping
