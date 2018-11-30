@@ -11,7 +11,34 @@ enum CameraLensDirection { front, back, external }
 
 enum ResolutionPreset { low, medium, high }
 
-typedef void OnLatestImageAvailable(Uint8List bytes);
+typedef void OnLatestImageAvailable(CameraImage image);
+
+class Plane {
+  Plane._fromPlatformData(dynamic data)
+      : bytes = data['bytes'],
+        bytesPerRow = data['bytesPerRow'],
+        height = data['height'],
+        width = data['width'];
+
+  final Uint8List bytes;
+  final int bytesPerRow;
+  final int height;
+  final int width;
+}
+
+class CameraImage {
+  CameraImage._fromPlatformData(dynamic data)
+      : format = data['format'],
+        height = data['height'],
+        width = data['width'],
+        planes = List<Plane>.unmodifiable(data['planes']
+            .map((dynamic planeData) => Plane._fromPlatformData(planeData)));
+
+  final dynamic format;
+  final int height;
+  final int width;
+  final List<Plane> planes;
+}
 
 /// Returns the resolution preset as a String.
 String serializeResolutionPreset(ResolutionPreset resolutionPreset) {
@@ -317,9 +344,11 @@ class CameraController extends ValueNotifier<CameraValue> {
     const EventChannel cameraEventChannel =
         EventChannel('plugins.flutter.io/camera/bytes');
     _byteStreamSubscription =
-        cameraEventChannel.receiveBroadcastStream().listen((dynamic bytes) {
-      onAvailable(bytes);
-    });
+        cameraEventChannel.receiveBroadcastStream().listen(
+      (dynamic imageData) {
+        onAvailable(CameraImage._fromPlatformData(imageData));
+      },
+    );
   }
 
   Future<void> stopByteStream() async {
