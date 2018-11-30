@@ -17,7 +17,7 @@ class WebViewExample extends StatelessWidget {
         actions: <Widget>[const SampleMenu()],
       ),
       body: const WebView(
-        initialUrl: 'https://youtube.com',
+        initialUrl: 'https://flutter.io',
         javaScriptMode: JavaScriptMode.unrestricted,
       ),
     );
