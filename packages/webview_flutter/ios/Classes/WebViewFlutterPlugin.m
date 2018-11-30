@@ -1,7 +1,7 @@
 #import "WebViewFlutterPlugin.h"
 #import "FlutterWebView.h"
 
-@implementation FLTWebViewFlutterPlugin
+@implementation FLTWebviewFlutterPlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   FLTWebViewFactory* webviewFactory =
