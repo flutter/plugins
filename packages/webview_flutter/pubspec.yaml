@@ -20,4 +20,4 @@ flutter:
   plugin:
     androidPackage: io.flutter.plugins.webviewflutter
     iosPrefix: FLT
-    pluginClass: WebviewFlutterPlugin
+    pluginClass: WebViewFlutterPlugin
