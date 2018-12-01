@@ -52,7 +52,6 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
     FirebaseApp.initializeApp(registrar.context());
 
     IntentFilter intentFilter = new IntentFilter();
-    intentFilter.addAction(FlutterFirebaseInstanceIDService.ACTION_TOKEN);
     intentFilter.addAction(FlutterFirebaseMessagingService.ACTION_REMOTE_MESSAGE);
     LocalBroadcastManager manager = LocalBroadcastManager.getInstance(registrar.context());
     manager.registerReceiver(this, intentFilter);
@@ -67,8 +66,8 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
       return;
     }
 
-    if (action.equals(FlutterFirebaseInstanceIDService.ACTION_TOKEN)) {
-      String token = intent.getStringExtra(FlutterFirebaseInstanceIDService.EXTRA_TOKEN);
+    if (action.equals(FlutterFirebaseMessagingService.ACTION_TOKEN)) {
+      String token = intent.getStringExtra(FlutterFirebaseMessagingService.EXTRA_TOKEN);
       channel.invokeMethod("onToken", token);
     } else if (action.equals(FlutterFirebaseMessagingService.ACTION_REMOTE_MESSAGE)) {
       RemoteMessage message =
@@ -100,7 +99,7 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
   @Override
   public void onMethodCall(final MethodCall call, final Result result) {
     if ("configure".equals(call.method)) {
-      FlutterFirebaseInstanceIDService.broadcastToken(registrar.context());
+      FlutterFirebaseMessagingService.broadcastToken(registrar.context());
       if (registrar.activity() != null) {
         sendMessageFromIntent("onLaunch", registrar.activity().getIntent());
       }
