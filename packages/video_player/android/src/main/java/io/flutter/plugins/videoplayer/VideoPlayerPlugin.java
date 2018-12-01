@@ -11,8 +11,8 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
-import android.view.Surface;
 import android.support.annotation.Nullable;
+import android.view.Surface;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -33,9 +33,7 @@ import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.upstream.HttpDataSource.BaseFactory;
-import com.google.android.exoplayer2.upstream.HttpDataSource.Factory;
 import com.google.android.exoplayer2.upstream.HttpDataSource.RequestProperties;
 import com.google.android.exoplayer2.upstream.TransferListener;
 import com.google.android.exoplayer2.util.Util;
@@ -63,7 +61,6 @@ public class VideoPlayerPlugin implements MethodCallHandler {
     private final int connectTimeoutMillis;
     private final int readTimeoutMillis;
     private final boolean allowCrossProtocolRedirects;
-    
     private final Map<String, String> headers;
 
     public VideoPlayerHttpDataSourceFactory(
@@ -93,13 +90,13 @@ public class VideoPlayerPlugin implements MethodCallHandler {
         }
       }
       DefaultHttpDataSource dataSource =
-        new DefaultHttpDataSource(
-            userAgent,
-            /* contentTypePredicate= */ null,
-            connectTimeoutMillis,
-            readTimeoutMillis,
-            allowCrossProtocolRedirects,
-            defaultRequestProperties);
+          new DefaultHttpDataSource(
+              userAgent,
+              /* contentTypePredicate= */ null,
+              connectTimeoutMillis,
+              readTimeoutMillis,
+              allowCrossProtocolRedirects,
+              defaultRequestProperties);
       if (listener != null) {
         dataSource.addTransferListener(listener);
       }
