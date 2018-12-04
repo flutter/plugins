@@ -95,7 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: TextField(
-                  onChanged: (text) => _phone = text,
+                  onChanged: (String text) => _phone = text,
                   decoration: const InputDecoration(
                       hintText: 'Input the phone number to launch')),
             ),
