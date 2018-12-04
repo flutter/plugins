@@ -205,6 +205,10 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
   _mapView.settings.zoomGestures = enabled;
 }
 
+- (void)setMapToolbarEnabled:(BOOL)enabled {
+  _mapView.settings.mapToolbarEnabled;
+}
+
 - (void)setMyLocationEnabled:(BOOL)enabled {
   _mapView.myLocationEnabled = enabled;
   _mapView.settings.myLocationButton = enabled;
@@ -388,6 +392,10 @@ static void interpretMapOptions(id json, id<FLTGoogleMapOptionsSink> sink) {
   id zoomGesturesEnabled = data[@"zoomGesturesEnabled"];
   if (zoomGesturesEnabled) {
     [sink setZoomGesturesEnabled:toBool(zoomGesturesEnabled)];
+  }
+  id mapToolbarEnabled = data[@"mapToolbarEnabled"];
+  if (mapToolbarEnabled) {
+    [sink setMapToolbarEnabled:toBool(mapToolbarEnabled)];
   }
   id myLocationEnabled = data[@"myLocationEnabled"];
   if (myLocationEnabled) {
