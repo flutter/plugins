@@ -129,8 +129,8 @@ public class UrlLauncherPlugin implements MethodCallHandler {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
-        unregisterReceiver(broadcastReceiver);
+      super.onDestroy();
+      unregisterReceiver(broadcastReceiver);
     }
 
     @Override
