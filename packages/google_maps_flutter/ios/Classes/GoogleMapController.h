@@ -18,7 +18,6 @@
 - (void)setTiltGesturesEnabled:(BOOL)enabled;
 - (void)setTrackCameraPosition:(BOOL)enabled;
 - (void)setZoomGesturesEnabled:(BOOL)enabled;
-- (void)setMapToolbarEnabled:(BOOL)enabled;
 - (void)setMyLocationEnabled:(BOOL)enabled;
 @end
 
