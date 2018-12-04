@@ -213,6 +213,10 @@ class Convert {
     if (mapToolbarEnabled != null) {
       sink.setMapToolbarEnabled(toBoolean(mapToolbarEnabled));
     }
+    final Object myLocationEnabled = data.get("myLocationEnabled");
+    if (myLocationEnabled != null) {
+      sink.setMyLocationEnabled(toBoolean(myLocationEnabled));
+    }
   }
 
   static void interpretMarkerOptions(Object o, MarkerOptionsSink sink) {

@@ -10,9 +10,8 @@ class GoogleMap extends StatefulWidget {
   GoogleMap({
     @required this.onMapCreated,
     GoogleMapOptions options,
-    this.gestureRecognizers = const <OneSequenceGestureRecognizer>[],
-  })  : assert(gestureRecognizers != null),
-        options = GoogleMapOptions.defaultOptions.copyWith(options);
+    this.gestureRecognizers,
+  }) : options = GoogleMapOptions.defaultOptions.copyWith(options);
 
   final MapCreatedCallback onMapCreated;
 
@@ -25,9 +24,9 @@ class GoogleMap extends StatefulWidget {
   /// vertical drags. The map will claim gestures that are recognized by any of the
   /// recognizers on this list.
   ///
-  /// When this list is empty, the map will only handle pointer events for gestures that
+  /// When this set is empty or null, the map will only handle pointer events for gestures that
   /// were not claimed by any other gesture recognizer.
-  final List<OneSequenceGestureRecognizer> gestureRecognizers;
+  final Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers;
 
   @override
   State createState() => _GoogleMapState();
@@ -38,6 +37,14 @@ class _GoogleMapState extends State<GoogleMap> {
   Widget build(BuildContext context) {
     if (defaultTargetPlatform == TargetPlatform.android) {
       return AndroidView(
+        viewType: 'plugins.flutter.io/google_maps',
+        onPlatformViewCreated: onPlatformViewCreated,
+        gestureRecognizers: widget.gestureRecognizers,
+        creationParams: widget.options._toJson(),
+        creationParamsCodec: const StandardMessageCodec(),
+      );
+    } else if (defaultTargetPlatform == TargetPlatform.iOS) {
+      return UiKitView(
         viewType: 'plugins.flutter.io/google_maps',
         onPlatformViewCreated: onPlatformViewCreated,
         gestureRecognizers: widget.gestureRecognizers,

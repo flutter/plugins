@@ -155,7 +155,7 @@ void main() {
       expect(analytics.logEvent(name: 'firebase_foo'), throwsArgumentError);
     });
 
-    void smokeTest(String testFunctionName, Future<Null> testFunction()) {
+    void smokeTest(String testFunctionName, Future<void> testFunction()) {
       test('$testFunctionName works', () async {
         await testFunction();
         expect(name, testFunctionName);
@@ -301,7 +301,7 @@ void main() {
             ));
 
     void testRequiresValueAndCurrencyTogether(
-        String methodName, Future<Null> testFn()) {
+        String methodName, Future<void> testFn()) {
       test('$methodName requires value and currency together', () async {
         try {
           testFn();

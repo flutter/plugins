@@ -48,14 +48,14 @@ import 'package:camera/camera.dart';
 
 List<CameraDescription> cameras;
 
-Future<Null> main() async {
+Future<void> main() async {
   cameras = await availableCameras();
-  runApp(new CameraApp());
+  runApp(CameraApp());
 }
 
 class CameraApp extends StatefulWidget {
   @override
-  _CameraAppState createState() => new _CameraAppState();
+  _CameraAppState createState() => _CameraAppState();
 }
 
 class _CameraAppState extends State<CameraApp> {
@@ -64,7 +64,7 @@ class _CameraAppState extends State<CameraApp> {
   @override
   void initState() {
     super.initState();
-    controller = new CameraController(cameras[0], ResolutionPreset.medium);
+    controller = CameraController(cameras[0], ResolutionPreset.medium);
     controller.initialize().then((_) {
       if (!mounted) {
         return;
@@ -82,12 +82,12 @@ class _CameraAppState extends State<CameraApp> {
   @override
   Widget build(BuildContext context) {
     if (!controller.value.isInitialized) {
-      return new Container();
+      return Container();
     }
-    return new AspectRatio(
+    return AspectRatio(
         aspectRatio:
         controller.value.aspectRatio,
-        child: new CameraPreview(controller));
+        child: CameraPreview(controller));
   }
 }
 ```

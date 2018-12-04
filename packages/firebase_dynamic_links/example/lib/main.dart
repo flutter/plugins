@@ -6,6 +6,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -22,16 +24,32 @@ class _MainScreen extends StatefulWidget {
   State<StatefulWidget> createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<_MainScreen> {
+class _MainScreenState extends State<_MainScreen> with WidgetsBindingObserver {
   String _linkMessage;
   bool _isCreatingLink = false;
-  @override
-  BuildContext get context => super.context;
+  String _testString =
+      "To test: long press link and then copy and click from a non-browser "
+      "app. Make sure this isn't being tested on iOS simulator and iOS xcode "
+      "is properly setup. Look at firebase_dynamic_links/README.md for more "
+      "details.";
 
   @override
   void initState() {
     super.initState();
-    _retrieveDynamicLink();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _retrieveDynamicLink();
+    }
   }
 
   Future<void> _retrieveDynamicLink() async {
@@ -86,34 +104,50 @@ class _MainScreenState extends State<_MainScreen> {
         appBar: AppBar(
           title: const Text('Dynamic Links Example'),
         ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              ButtonBar(
-                alignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  RaisedButton(
-                    onPressed: !_isCreatingLink
-                        ? () => _createDynamicLink(false)
-                        : null,
-                    child: const Text('Get Long Link'),
+        body: Builder(builder: (BuildContext context) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                ButtonBar(
+                  alignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    RaisedButton(
+                      onPressed: !_isCreatingLink
+                          ? () => _createDynamicLink(false)
+                          : null,
+                      child: const Text('Get Long Link'),
+                    ),
+                    RaisedButton(
+                      onPressed: !_isCreatingLink
+                          ? () => _createDynamicLink(true)
+                          : null,
+                      child: const Text('Get Short Link'),
+                    ),
+                  ],
+                ),
+                InkWell(
+                  child: Text(
+                    _linkMessage ?? '',
+                    style: const TextStyle(color: Colors.blue),
                   ),
-                  RaisedButton(
-                    onPressed: !_isCreatingLink
-                        ? () => _createDynamicLink(true)
-                        : null,
-                    child: const Text('Get Short Link'),
-                  ),
-                ],
-              ),
-              Text(
-                _linkMessage ?? '',
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        ),
+                  onTap: () async {
+                    if (_linkMessage != null) {
+                      await launch(_linkMessage);
+                    }
+                  },
+                  onLongPress: () {
+                    Clipboard.setData(ClipboardData(text: _linkMessage));
+                    Scaffold.of(context).showSnackBar(
+                      const SnackBar(content: Text('Copied Link!')),
+                    );
+                  },
+                ),
+                Text(_linkMessage == null ? '' : _testString)
+              ],
+            ),
+          );
+        }),
       ),
     );
   }

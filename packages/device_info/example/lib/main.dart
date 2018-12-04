@@ -33,7 +33,7 @@ class _MyAppState extends State<MyApp> {
     initPlatformState();
   }
 
-  Future<Null> initPlatformState() async {
+  Future<void> initPlatformState() async {
     Map<String, dynamic> deviceData;
 
     try {

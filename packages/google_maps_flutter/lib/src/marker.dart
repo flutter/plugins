@@ -15,8 +15,9 @@ class Marker {
   @visibleForTesting
   Marker(this._id, this._options);
 
-  /// The id parameter is intended to uniquely identify a marker.
-  /// Note the formatting is not guaranteed to be in any particular format.
+  /// A unique identifier for this marker.
+  ///
+  /// The identirifer is an arbitrary unique string.
   final String _id;
   String get id => _id;
 

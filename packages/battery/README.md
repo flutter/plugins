@@ -14,7 +14,7 @@ To use this plugin, add `battery` as a [dependency in your pubspec.yaml file](ht
 import 'package:battery/battery.dart';
 
 // Instantiate it
-var battery = new Battery();
+var battery = Battery();
 
 // Access current battery level
 print(battery.batteryLevel);

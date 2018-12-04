@@ -56,7 +56,7 @@ instructions will pop up to let the user set up fingerprint. If the user clicks
 Use the exported APIs to trigger local authentication with default dialogs:
 
 ```dart
-var localAuth = new LocalAuthentication();
+var localAuth = LocalAuthentication();
 bool didAuthenticate =
     await localAuth.authenticateWithBiometrics(
         localizedReason: 'Please authenticate to show account balance');
@@ -116,7 +116,7 @@ try {
 Note that this plugin works with both TouchID and FaceID. However, to use the latter,
 you need to also add:
 
-```
+```xml
 <key>NSFaceIDUsageDescription</key>
 <string>Why is my app authenticating using face id?</string>
 ```
@@ -130,7 +130,7 @@ app has not been updated to use TouchID.
 Update your project's `AndroidManifest.xml` file to include the
 `USE_FINGERPRINT` permissions:
 
-```
+```xml
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.example.app">
   <uses-permission android:name="android.permission.USE_FINGERPRINT"/>

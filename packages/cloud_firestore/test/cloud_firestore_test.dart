@@ -279,7 +279,7 @@ void main() {
         expect(document.reference.path, equals('foo/0'));
         expect(document.data, equals(kMockDocumentSnapshotData));
         // Flush the async removeListener call
-        await Future<Null>.delayed(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
         expect(log, <Matcher>[
           isMethodCall(
             'Query#addSnapshotListener',
@@ -305,7 +305,7 @@ void main() {
                 .snapshots()
                 .listen((QuerySnapshot querySnapshot) {});
         subscription.cancel();
-        await Future<Null>.delayed(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
         expect(
           log,
           equals(<Matcher>[
@@ -336,7 +336,7 @@ void main() {
                 .snapshots()
                 .listen((QuerySnapshot querySnapshot) {});
         subscription.cancel();
-        await Future<Null>.delayed(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
         expect(
           log,
           equals(<Matcher>[
@@ -367,7 +367,7 @@ void main() {
                 .snapshots()
                 .listen((QuerySnapshot querySnapshot) {});
         subscription.cancel();
-        await Future<Null>.delayed(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
         expect(
           log,
           equals(<Matcher>[
@@ -401,7 +401,7 @@ void main() {
         expect(snapshot.reference.path, equals('path/to/foo'));
         expect(snapshot.data, equals(kMockDocumentSnapshotData));
         // Flush the async removeListener call
-        await Future<Null>.delayed(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
         expect(
           log,
           <Matcher>[
@@ -559,8 +559,10 @@ void main() {
     group('FirestoreMessageCodec', () {
       const MessageCodec<dynamic> codec = FirestoreMessageCodec();
       final DateTime testTime = DateTime(2015, 10, 30, 11, 16);
+      final Timestamp timestamp = Timestamp.fromDate(testTime);
       test('should encode and decode simple messages', () {
         _checkEncodeDecode<dynamic>(codec, testTime);
+        _checkEncodeDecode<dynamic>(codec, timestamp);
         _checkEncodeDecode<dynamic>(
             codec, const GeoPoint(37.421939, -122.083509));
         _checkEncodeDecode<dynamic>(codec, firestore.document('foo/bar'));
@@ -585,6 +587,78 @@ void main() {
         _checkEncodeDecode<dynamic>(codec, FieldValue.arrayRemove(<int>[123]));
         _checkEncodeDecode<dynamic>(codec, FieldValue.delete());
         _checkEncodeDecode<dynamic>(codec, FieldValue.serverTimestamp());
+      });
+    });
+
+    group('Timestamp', () {
+      test('is accurate for dates after epoch', () {
+        final DateTime date = DateTime.fromMillisecondsSinceEpoch(22501);
+        final Timestamp timestamp = Timestamp.fromDate(date);
+
+        expect(timestamp.seconds, equals(22));
+        expect(timestamp.nanoseconds, equals(501000000));
+      });
+
+      test('is accurate for dates before epoch', () {
+        final DateTime date = DateTime.fromMillisecondsSinceEpoch(-1250);
+        final Timestamp timestamp = Timestamp.fromDate(date);
+
+        expect(timestamp.seconds, equals(-2));
+        expect(timestamp.nanoseconds, equals(750000000));
+      });
+
+      test('creates equivalent timestamps regardless of factory', () {
+        const int kMilliseconds = 22501;
+        const int kMicroseconds = 22501000;
+        final DateTime date =
+            DateTime.fromMicrosecondsSinceEpoch(kMicroseconds);
+
+        final Timestamp timestamp = Timestamp(22, 501000000);
+        final Timestamp milliTimestamp =
+            Timestamp.fromMillisecondsSinceEpoch(kMilliseconds);
+        final Timestamp microTimestamp =
+            Timestamp.fromMicrosecondsSinceEpoch(kMicroseconds);
+        final Timestamp dateTimestamp = Timestamp.fromDate(date);
+
+        expect(timestamp, equals(milliTimestamp));
+        expect(milliTimestamp, equals(microTimestamp));
+        expect(microTimestamp, equals(dateTimestamp));
+      });
+
+      test('correctly compares timestamps', () {
+        final Timestamp alpha = Timestamp.fromDate(DateTime(2017, 5, 11));
+        final Timestamp beta1 = Timestamp.fromDate(DateTime(2018, 2, 19));
+        final Timestamp beta2 = Timestamp.fromDate(DateTime(2018, 4, 2));
+        final Timestamp beta3 = Timestamp.fromDate(DateTime(2018, 4, 20));
+        final Timestamp preview = Timestamp.fromDate(DateTime(2018, 6, 20));
+        final List<Timestamp> inOrder = <Timestamp>[
+          alpha,
+          beta1,
+          beta2,
+          beta3,
+          preview
+        ];
+
+        final List<Timestamp> timestamps = <Timestamp>[
+          beta2,
+          beta3,
+          alpha,
+          preview,
+          beta1
+        ];
+        timestamps.sort();
+        expect(_deepEqualsList(timestamps, inOrder), isTrue);
+      });
+
+      test('rejects dates outside RFC 3339 range', () {
+        final List<DateTime> invalidDates = <DateTime>[
+          DateTime.fromMillisecondsSinceEpoch(-70000000000000),
+          DateTime.fromMillisecondsSinceEpoch(300000000000000),
+        ];
+
+        invalidDates.forEach((DateTime date) {
+          expect(() => Timestamp.fromDate(date), throwsArgumentError);
+        });
       });
     });
 

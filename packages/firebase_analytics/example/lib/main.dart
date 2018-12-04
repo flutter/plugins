@@ -61,7 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  Future<Null> _sendAnalyticsEvent() async {
+  Future<void> _sendAnalyticsEvent() async {
     await analytics.logEvent(
       name: 'test_event',
       parameters: <String, dynamic>{
@@ -75,12 +75,12 @@ class _MyHomePageState extends State<MyHomePage> {
     setMessage('logEvent succeeded');
   }
 
-  Future<Null> _testSetUserId() async {
+  Future<void> _testSetUserId() async {
     await analytics.setUserId('some-user');
     setMessage('setUserId succeeded');
   }
 
-  Future<Null> _testSetCurrentScreen() async {
+  Future<void> _testSetCurrentScreen() async {
     await analytics.setCurrentScreen(
       screenName: 'Analytics Demo',
       screenClassOverride: 'AnalyticsDemo',
@@ -88,28 +88,28 @@ class _MyHomePageState extends State<MyHomePage> {
     setMessage('setCurrentScreen succeeded');
   }
 
-  Future<Null> _testSetAnalyticsCollectionEnabled() async {
+  Future<void> _testSetAnalyticsCollectionEnabled() async {
     await analytics.android?.setAnalyticsCollectionEnabled(false);
     await analytics.android?.setAnalyticsCollectionEnabled(true);
     setMessage('setAnalyticsCollectionEnabled succeeded');
   }
 
-  Future<Null> _testSetMinimumSessionDuration() async {
+  Future<void> _testSetMinimumSessionDuration() async {
     await analytics.android?.setMinimumSessionDuration(20000);
     setMessage('setMinimumSessionDuration succeeded');
   }
 
-  Future<Null> _testSetSessionTimeoutDuration() async {
+  Future<void> _testSetSessionTimeoutDuration() async {
     await analytics.android?.setSessionTimeoutDuration(2000000);
     setMessage('setSessionTimeoutDuration succeeded');
   }
 
-  Future<Null> _testSetUserProperty() async {
+  Future<void> _testSetUserProperty() async {
     await analytics.setUserProperty(name: 'regular', value: 'indeed');
     setMessage('setUserProperty succeeded');
   }
 
-  Future<Null> _testAllEventTypes() async {
+  Future<void> _testAllEventTypes() async {
     await analytics.logAddPaymentInfo();
     await analytics.logAddToCart(
       currency: 'USD',
