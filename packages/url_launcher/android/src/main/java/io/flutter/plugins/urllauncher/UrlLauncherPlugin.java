@@ -128,10 +128,10 @@ public class UrlLauncherPlugin implements MethodCallHandler {
     }
 
     @Override
-      protected void onDestroy() {
-          super.onDestroy();
-          unregisterReceiver(broadcastReceiver);
-      }
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(broadcastReceiver);
+    }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
