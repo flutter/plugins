@@ -60,7 +60,9 @@ public class UrlLauncherPlugin implements MethodCallHandler {
         launchIntent = new Intent(Intent.ACTION_VIEW);
         launchIntent.setData(Uri.parse(url));
       }
-      launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      if (mRegistrar.activity() == null) {
+        launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      }
       context.startActivity(launchIntent);
       result.success(null);
     } else if (call.method.equals("closeWebView")) {
