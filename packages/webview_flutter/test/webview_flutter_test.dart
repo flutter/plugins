@@ -129,6 +129,34 @@ void main() {
     expect(canGoBackSecondPageLoaded, true);
   });
 
+  testWidgets('Check can go forward', (WidgetTester tester) async {
+    WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+
+    final bool canGoForwardAnyPageLoaded = await controller.canGoForward;
+
+    expect(canGoForwardAnyPageLoaded, false);
+
+    await controller.loadUrl('https://flutter.io');
+    final bool canGoForwardFirstPageLoaded = await controller.canGoForward;
+
+    expect(canGoForwardFirstPageLoaded, false);
+
+    await controller.loadUrl('https://youtube.com');
+    await controller.goBack();
+    final bool canGoForwardFirstPageBacked = await controller.canGoForward;
+
+    expect(canGoForwardFirstPageBacked, true);
+  });
+
   testWidgets('Go back', (WidgetTester tester) async {
     WebViewController controller;
     await tester.pumpWidget(
@@ -214,10 +242,14 @@ class FakePlatformWebView {
     switch (call.method) {
       case 'loadUrl':
         final _HistoryNode loading = _HistoryNode(call.arguments);
-        if (current != null && !history.contains(current)) {
-          history.add(current);
+        if (current != null) {
+          if (!history.contains(current)) {
+            history.add(current);
+          }
+          current.insertAfter(loading);
+        } else {
+          history.add(loading);
         }
-        current?.insertAfter(loading);
         current = loading;
         return Future<void>.sync(() {});
       case 'updateSettings':
@@ -228,6 +260,9 @@ class FakePlatformWebView {
         break;
       case 'canGoBack':
         return Future<bool>.sync(() => current?.previous != null);
+        break;
+      case 'canGoForward':
+        return Future<bool>.sync(() => current?.next != null);
         break;
       case 'goBack':
         current = current?.previous;

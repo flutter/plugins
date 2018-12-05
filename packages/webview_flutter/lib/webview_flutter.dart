@@ -210,6 +210,11 @@ class WebViewController {
     return canGoBack;
   }
 
+  Future<bool> get canGoForward async {
+    final bool canGoForward = await _channel.invokeMethod("canGoForward");
+    return canGoForward;
+  }
+
   Future<void> goBack() async {
     return _channel.invokeMethod("goBack");
   }

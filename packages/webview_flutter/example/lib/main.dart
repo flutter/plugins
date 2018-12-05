@@ -77,10 +77,19 @@ class MoveControl extends StatelessWidget {
           final bool canGoBack = await _webViewController.canGoBack;
           if (canGoBack) {
             await _webViewController.goBack();
+          } else {
+            Scaffold.of(context)
+                .showSnackBar(const SnackBar(content: Text("Can't go back")));
           }
         }),
         IconButton(icon: const Icon(Icons.arrow_forward_ios), onPressed: () async {
-          await _webViewController.goForward();
+          final bool canGoForward = await _webViewController.canGoForward;
+          if (canGoForward) {
+            await _webViewController.goForward();
+          } else {
+            Scaffold.of(context)
+                .showSnackBar(const SnackBar(content: Text("Can't go forward")));
+          }
         }),
       ],
     );

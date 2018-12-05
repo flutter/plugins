@@ -69,7 +69,9 @@
     [self onLoadUrl:call result:result];
   } else if ([[call method] isEqualToString:@"canGoBack"]) {
     [self onCanGoBack:call result:result];
-  }  else if ([[call method] isEqualToString:@"goBack"]) {
+  } else if ([[call method] isEqualToString:@"canGoForward"]) {
+    [self onCanGoForward:call result:result];
+  } else if ([[call method] isEqualToString:@"goBack"]) {
     [self onGoBack:call result:result];
   }  else if ([[call method] isEqualToString:@"goForward"]) {
       [self onGoForward:call result:result];
@@ -97,6 +99,11 @@
 - (void)onCanGoBack:(FlutterMethodCall*)call result:(FlutterResult)result {
     BOOL canGoBack = [_webView canGoBack];
     result([NSNumber numberWithBool:canGoBack]);
+}
+
+- (void)onCanGoForward:(FlutterMethodCall*)call result:(FlutterResult)result {
+    BOOL canGoForward = [_webView canGoForward];
+    result([NSNumber numberWithBool:canGoForward]);
 }
 
 - (void)onGoBack:(FlutterMethodCall*)call result:(FlutterResult)result {
