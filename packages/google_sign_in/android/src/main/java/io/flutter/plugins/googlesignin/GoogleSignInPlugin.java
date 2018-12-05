@@ -36,6 +36,8 @@ import java.util.concurrent.Future;
 
 /** Google sign-in plugin for Flutter. */
 public class GoogleSignInPlugin implements MethodCallHandler {
+  private static final String TAG = "flutter";
+  
   private static final String CHANNEL_NAME = "plugins.flutter.io/google_sign_in";
 
   private static final String METHOD_INIT = "init";
@@ -469,12 +471,16 @@ public class GoogleSignInPlugin implements MethodCallHandler {
               } catch (ExecutionException e) {
                 if (e.getCause() instanceof UserRecoverableAuthException) {
                   if (shouldRecoverAuth && pendingOperation == null) {
-                    checkAndSetPendingOperation(METHOD_GET_TOKENS, result, email);
-                    Intent recoveryIntent =
-                        ((UserRecoverableAuthException) e.getCause()).getIntent();
-                    registrar
-                        .activity()
-                        .startActivityForResult(recoveryIntent, REQUEST_CODE_RECOVER_AUTH);
+                    Activity activity = registrar.activity();
+                    if (activity == null) {
+                      Log.w(TAG, "Cannot recover auth because app is not in foreground");
+                      result.error(ERROR_USER_RECOVERABLE_AUTH, e.getLocalizedMessage(), null);
+                    } else {
+                      checkAndSetPendingOperation(METHOD_GET_TOKENS, result, email);
+                      Intent recoveryIntent =
+                          ((UserRecoverableAuthException) e.getCause()).getIntent();
+                      activity.startActivityForResult(recoveryIntent, REQUEST_CODE_RECOVER_AUTH);
+                    }
                   } else {
                     result.error(ERROR_USER_RECOVERABLE_AUTH, e.getLocalizedMessage(), null);
                   }
