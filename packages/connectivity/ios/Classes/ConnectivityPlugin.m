@@ -8,6 +8,10 @@
 
 #import "SystemConfiguration/CaptiveNetwork.h"
 
+#include <ifaddrs.h>
+
+#include <arpa/inet.h>
+
 @interface FLTConnectivityPlugin () <FlutterStreamHandler>
 @end
 
