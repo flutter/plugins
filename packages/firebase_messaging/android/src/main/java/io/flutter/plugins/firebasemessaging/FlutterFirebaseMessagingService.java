@@ -58,6 +58,7 @@ public class FlutterFirebaseMessagingService extends FirebaseMessagingService {
   private void sendBackgroundBroadcast(RemoteMessage remoteMessage) {
     Intent intent = new Intent(ACTION_BACKGROUND_REMOTE_MESSAGE);
     intent.putExtra(EXTRA_REMOTE_MESSAGE, remoteMessage);
+    intent.setPackage(getPackageName());
     sendBroadcast(intent);
   }
 }
