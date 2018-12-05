@@ -205,6 +205,11 @@ class WebViewController {
     return _channel.invokeMethod('loadUrl', url);
   }
 
+  Future<bool> get canGoBack async {
+    final bool canGoBack = await _channel.invokeMethod("canGoBack");
+    return canGoBack;
+  }
+
   Future<void> _updateSettings(Map<String, dynamic> update) async {
     return _channel.invokeMethod('updateSettings', update);
   }

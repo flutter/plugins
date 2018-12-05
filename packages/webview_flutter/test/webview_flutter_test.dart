@@ -100,6 +100,27 @@ void main() {
     expect(() => controller.loadUrl('flutter.io'), throwsA(anything));
     expect(platformWebView.lastUrlLoaded, isNull);
   });
+
+  testWidgets('Check can go back', (WidgetTester tester) async {
+    WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+
+    final FakePlatformWebView platformWebView =
+        fakePlatformViewsController.lastCreatedView;
+
+    await controller.loadUrl('https://flutter.io');
+    final canGoBack = await controller.canGoBack;
+
+    expect(canGoBack, false);
+  });
 }
 
 class FakePlatformWebView {
@@ -129,6 +150,8 @@ class FakePlatformWebView {
         }
         javaScriptMode = JavaScriptMode.values[call.arguments['jsMode']];
         break;
+      case 'canGoBack':
+        return Future<bool>.sync(() => false);
     }
     return Future<void>.sync(() {});
   }

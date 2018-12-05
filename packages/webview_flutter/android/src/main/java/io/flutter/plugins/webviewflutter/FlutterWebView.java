@@ -41,6 +41,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       case "updateSettings":
         updateSettings(methodCall, result);
         break;
+      case "canGoBack":
+        canGoBack(methodCall, result);
+        break;
       default:
         result.notImplemented();
     }
@@ -50,6 +53,10 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     String url = (String) methodCall.arguments;
     webView.loadUrl(url);
     result.success(null);
+  }
+
+  private void canGoBack(MethodCall methodCall, Result result) {
+    result.success(webView.canGoBack());
   }
 
   @SuppressWarnings("unchecked")
