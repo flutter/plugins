@@ -39,12 +39,6 @@ public class UrlLauncherPlugin implements MethodCallHandler {
 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
-    Context context;
-    if (mRegistrar.activity() != null) {
-      context = mRegistrar.activity();
-    } else {
-      context = mRegistrar.context();
-    }
     String url = call.argument("url");
     if (call.method.equals("canLaunch")) {
       canLaunch(url, result);
@@ -52,6 +46,7 @@ public class UrlLauncherPlugin implements MethodCallHandler {
       Intent launchIntent;
       boolean useWebView = call.argument("useWebView");
       boolean enableJavaScript = call.argument("enableJavaScript");
+      Context context = mRegistrar.context();
       if (useWebView) {
         launchIntent = new Intent(context, WebViewActivity.class);
         launchIntent.putExtra("url", url);
@@ -60,14 +55,12 @@ public class UrlLauncherPlugin implements MethodCallHandler {
         launchIntent = new Intent(Intent.ACTION_VIEW);
         launchIntent.setData(Uri.parse(url));
       }
-      if (mRegistrar.activity() == null) {
-        launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      }
+      launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
       context.startActivity(launchIntent);
       result.success(null);
     } else if (call.method.equals("closeWebView")) {
       Intent intent = new Intent("close");
-      context.sendBroadcast(intent);
+      mRegistrar.context().sendBroadcast(intent);
       result.success(null);
     } else {
       result.notImplemented();
