@@ -113,13 +113,19 @@ void main() {
 
     expect(controller, isNotNull);
 
-    final FakePlatformWebView platformWebView =
-        fakePlatformViewsController.lastCreatedView;
+    final bool canGoBackAnyPageLoaded = await controller.canGoBack;
+
+    expect(canGoBackAnyPageLoaded, false);
 
     await controller.loadUrl('https://flutter.io');
-    final canGoBack = await controller.canGoBack;
+    final bool canGoBackFirstPageLoaded = await controller.canGoBack;
 
-    expect(canGoBack, false);
+    expect(canGoBackFirstPageLoaded, false);
+
+    await controller.loadUrl('https://www.google.com');
+    final bool canGoBackSecondPageLoaded = await controller.canGoBack;
+
+    expect(canGoBackSecondPageLoaded, true);
   });
 
   testWidgets('Go back', (WidgetTester tester) async {
