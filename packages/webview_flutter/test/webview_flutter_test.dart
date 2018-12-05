@@ -149,6 +149,10 @@ void main() {
     controller.loadUrl('https://flutter.io');
 
     expect(platformWebView.lastUrlLoaded, 'https://flutter.io');
+
+    controller.goBack();
+
+    expect(platformWebView.lastUrlLoaded, 'https://youtube.com');
   });
 }
 
