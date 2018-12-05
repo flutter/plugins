@@ -11,9 +11,23 @@ import com.google.firebase.messaging.RemoteMessage;
 
 public class FlutterFirebaseMessagingService extends FirebaseMessagingService {
 
-  public static final String ACTION_REMOTE_MESSAGE =
-      "io.flutter.plugins.firebasemessaging.NOTIFICATION";
+  public static final String ACTION_FOREGROUND_REMOTE_MESSAGE =
+          "io.flutter.plugins.firebasemessaging.FOREGROUND_NOTIFICATION";
+  public static final String ACTION_BACKGROUND_REMOTE_MESSAGE =
+          "io.flutter.plugins.firebasemessaging.BACKGROUND_NOTIFICATION";
   public static final String EXTRA_REMOTE_MESSAGE = "notification";
+
+  /**
+   * true, if application receive messages with type "Data messages"
+   * About FCM messages {@https://firebase.google.com/docs/cloud-messaging/concept-options}
+   */
+  private boolean isDataMessages;
+
+  @Override
+  public void onCreate() {
+    super.onCreate();
+    isDataMessages = FlutterFirebaseMessagingUtils.isDataMessages(this);
+  }
 
   /**
    * Called when message is received.
@@ -22,8 +36,28 @@ public class FlutterFirebaseMessagingService extends FirebaseMessagingService {
    */
   @Override
   public void onMessageReceived(RemoteMessage remoteMessage) {
-    Intent intent = new Intent(ACTION_REMOTE_MESSAGE);
+    if (!isDataMessages) {
+      sendForegroundBroadcast(remoteMessage);
+    }
+
+    boolean applicationForeground = FlutterFirebaseMessagingUtils.isApplicationForeground(getApplicationContext());
+
+    if (applicationForeground) {
+      sendForegroundBroadcast(remoteMessage);
+    } else {
+      sendBackgroundBroadcast(remoteMessage);
+    }
+  }
+
+  private void sendForegroundBroadcast(RemoteMessage remoteMessage) {
+    Intent intent = new Intent(ACTION_FOREGROUND_REMOTE_MESSAGE);
     intent.putExtra(EXTRA_REMOTE_MESSAGE, remoteMessage);
     LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+  }
+
+  private void sendBackgroundBroadcast(RemoteMessage remoteMessage) {
+    Intent intent = new Intent(ACTION_BACKGROUND_REMOTE_MESSAGE);
+    intent.putExtra(EXTRA_REMOTE_MESSAGE, remoteMessage);
+    sendBroadcast(intent);
   }
 }
