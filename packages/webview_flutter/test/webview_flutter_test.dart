@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:typed_data';
+import 'dart:collection';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -154,6 +155,37 @@ void main() {
 
     expect(platformWebView.lastUrlLoaded, 'https://youtube.com');
   });
+
+  testWidgets('Go forward', (WidgetTester tester) async {
+    WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://youtube.com',
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+
+    final FakePlatformWebView platformWebView =
+        fakePlatformViewsController.lastCreatedView;
+
+    expect(platformWebView.lastUrlLoaded, 'https://youtube.com');
+
+    controller.loadUrl('https://flutter.io');
+
+    expect(platformWebView.lastUrlLoaded, 'https://flutter.io');
+
+    controller.goBack();
+
+    expect(platformWebView.lastUrlLoaded, 'https://youtube.com');
+
+    controller.goForward();
+
+    expect(platformWebView.lastUrlLoaded, 'https://flutter.io');
+  });
 }
 
 class FakePlatformWebView {
@@ -161,7 +193,8 @@ class FakePlatformWebView {
     if (params.containsKey('initialUrl')) {
       final String initialUrl = params['initialUrl'];
       if (initialUrl != null) {
-        history.add(initialUrl);
+        current = _HistoryNode(initialUrl);
+        history.add(current);
       }
       javaScriptMode = JavaScriptMode.values[params['settings']['jsMode']];
     }
@@ -172,14 +205,20 @@ class FakePlatformWebView {
 
   MethodChannel channel;
 
-  List<String> history = <String>[];
-  String get lastUrlLoaded => (history.isEmpty) ? null : history.last;
+  LinkedList<_HistoryNode> history = LinkedList<_HistoryNode>();
+  _HistoryNode current;
+  String get lastUrlLoaded => current?.url;
   JavaScriptMode javaScriptMode;
 
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
       case 'loadUrl':
-        history.add(call.arguments);
+        final _HistoryNode loading = _HistoryNode(call.arguments);
+        if (current != null && !history.contains(current)) {
+          history.add(current);
+        }
+        current?.insertAfter(loading);
+        current = loading;
         return Future<void>.sync(() {});
       case 'updateSettings':
         if (call.arguments['jsMode'] == null) {
@@ -188,10 +227,14 @@ class FakePlatformWebView {
         javaScriptMode = JavaScriptMode.values[call.arguments['jsMode']];
         break;
       case 'canGoBack':
-        return Future<bool>.sync(() => history.length > 1);
+        return Future<bool>.sync(() => current?.previous != null);
         break;
       case 'goBack':
-        history.removeLast();
+        current = current?.previous;
+        return Future<void>.sync(() {});
+        break;
+      case 'goForward':
+        current = current?.next ?? current;
         return Future<void>.sync(() {});
         break;
     }
@@ -229,4 +272,10 @@ Map<dynamic, dynamic> _decodeParams(Uint8List paramsMessage) {
     paramsMessage.lengthInBytes,
   );
   return const StandardMessageCodec().decodeMessage(messageBytes);
+}
+
+class _HistoryNode extends LinkedListEntry<_HistoryNode> {
+  _HistoryNode(this.url);
+
+  final String url;
 }

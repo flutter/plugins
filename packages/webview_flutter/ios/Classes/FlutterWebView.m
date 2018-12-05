@@ -71,6 +71,8 @@
     [self onCanGoBack:call result:result];
   }  else if ([[call method] isEqualToString:@"goBack"]) {
     [self onGoBack:call result:result];
+  }  else if ([[call method] isEqualToString:@"goForward"]) {
+      [self onGoForward:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -99,6 +101,11 @@
 
 - (void)onGoBack:(FlutterMethodCall*)call result:(FlutterResult)result {
     [_webView goBack];
+    result(nil);
+}
+
+- (void)onGoForward:(FlutterMethodCall*)call result:(FlutterResult)result {
+    [_webView goForward];
     result(nil);
 }
 

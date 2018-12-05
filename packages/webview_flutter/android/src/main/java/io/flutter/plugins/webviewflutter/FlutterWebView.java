@@ -47,6 +47,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       case "goBack":
         goBack(methodCall, result);
         break;
+      case "goForward":
+        goBack(methodCall, result);
+        break;
       default:
         result.notImplemented();
     }
@@ -64,6 +67,11 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
   private void goBack(MethodCall methodCall, Result result) {
     webView.goBack();
+    result.success(null);
+  }
+
+  private void goForward(MethodCall methodCall, Result result) {
+    webView.goForward();
     result.success(null);
   }
 

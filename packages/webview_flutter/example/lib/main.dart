@@ -7,18 +7,34 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 void main() => runApp(MaterialApp(home: WebViewExample()));
 
-class WebViewExample extends StatelessWidget {
+class WebViewExample extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => WebViewExampleState();
+}
+
+class WebViewExampleState extends State<WebViewExample> {
+
+  WebViewController controller;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Flutter WebView example'),
         // This drop down menu demonstrates that Flutter widgets can be shown over the web view.
-        actions: <Widget>[const SampleMenu()],
+        actions: <Widget>[
+          (controller != null) ? MoveControl(controller) : Container(),
+          const SampleMenu(),
+        ],
       ),
-      body: const WebView(
+      body: WebView(
         initialUrl: 'https://flutter.io',
         javaScriptMode: JavaScriptMode.unrestricted,
+        onWebViewCreated: (WebViewController webViewController) {
+          setState(() {
+            controller = webViewController;
+          });
+        },
       ),
     );
   }
@@ -44,6 +60,29 @@ class SampleMenu extends StatelessWidget {
               child: Text('Item 2'),
             ),
           ],
+    );
+  }
+}
+
+class MoveControl extends StatelessWidget {
+  const MoveControl(this._webViewController) : assert(_webViewController != null);
+
+  final WebViewController _webViewController;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: <Widget>[
+        IconButton(icon: const Icon(Icons.arrow_back_ios), onPressed: () async {
+          final bool canGoBack = await _webViewController.canGoBack;
+          if (canGoBack) {
+            await _webViewController.goBack();
+          }
+        }),
+        IconButton(icon: const Icon(Icons.arrow_forward_ios), onPressed: () async {
+          await _webViewController.goForward();
+        }),
+      ],
     );
   }
 }
