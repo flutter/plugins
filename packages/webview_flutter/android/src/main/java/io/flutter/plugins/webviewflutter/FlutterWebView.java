@@ -51,7 +51,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         goBack(methodCall, result);
         break;
       case "goForward":
-        goBack(methodCall, result);
+        goForward(methodCall, result);
         break;
       default:
         result.notImplemented();
