@@ -210,6 +210,10 @@ class WebViewController {
     return canGoBack;
   }
 
+  Future<void> goBack() async {
+    return _channel.invokeMethod("goBack");
+  }
+
   Future<void> _updateSettings(Map<String, dynamic> update) async {
     return _channel.invokeMethod('updateSettings', update);
   }

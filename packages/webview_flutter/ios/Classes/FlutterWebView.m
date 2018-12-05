@@ -69,7 +69,9 @@
     [self onLoadUrl:call result:result];
   } else if ([[call method] isEqualToString:@"canGoBack"]) {
     [self onCanGoBack:call result:result];
-  }else {
+  }  else if ([[call method] isEqualToString:@"goBack"]) {
+    [self onGoBack:call result:result];
+  } else {
     result(FlutterMethodNotImplemented);
   }
 }
@@ -93,6 +95,11 @@
 - (void)onCanGoBack:(FlutterMethodCall*)call result:(FlutterResult)result {
     BOOL canGoBack = [_webView canGoBack];
     result([NSNumber numberWithBool:canGoBack]);
+}
+
+- (void)onGoBack:(FlutterMethodCall*)call result:(FlutterResult)result {
+    [_webView goBack];
+    result(nil);
 }
 
 - (void)applySettings:(NSDictionary<NSString*, id>*)settings {

@@ -121,12 +121,38 @@ void main() {
 
     expect(canGoBack, false);
   });
+
+  testWidgets('Go back', (WidgetTester tester) async {
+    WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://youtube.com',
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+
+    final FakePlatformWebView platformWebView =
+        fakePlatformViewsController.lastCreatedView;
+
+    expect(platformWebView.lastUrlLoaded, 'https://youtube.com');
+
+    controller.loadUrl('https://flutter.io');
+
+    expect(platformWebView.lastUrlLoaded, 'https://flutter.io');
+  });
 }
 
 class FakePlatformWebView {
   FakePlatformWebView(int id, Map<dynamic, dynamic> params) {
     if (params.containsKey('initialUrl')) {
-      lastUrlLoaded = params['initialUrl'];
+      final String initialUrl = params['initialUrl'];
+      if (initialUrl != null) {
+        history.add(initialUrl);
+      }
       javaScriptMode = JavaScriptMode.values[params['settings']['jsMode']];
     }
     channel = MethodChannel(
@@ -136,13 +162,14 @@ class FakePlatformWebView {
 
   MethodChannel channel;
 
-  String lastUrlLoaded;
+  List<String> history = <String>[];
+  String get lastUrlLoaded => (history.isEmpty) ? null : history.last;
   JavaScriptMode javaScriptMode;
 
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
       case 'loadUrl':
-        lastUrlLoaded = call.arguments;
+        history.add(call.arguments);
         return Future<void>.sync(() {});
       case 'updateSettings':
         if (call.arguments['jsMode'] == null) {
@@ -151,7 +178,12 @@ class FakePlatformWebView {
         javaScriptMode = JavaScriptMode.values[call.arguments['jsMode']];
         break;
       case 'canGoBack':
-        return Future<bool>.sync(() => false);
+        return Future<bool>.sync(() => history.length > 1);
+        break;
+      case 'goBack':
+        history.removeLast();
+        return Future<void>.sync(() {});
+        break;
     }
     return Future<void>.sync(() {});
   }
