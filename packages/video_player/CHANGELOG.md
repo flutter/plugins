@@ -1,3 +1,9 @@
+## 0.8.0
+
+* Android: Upgrade ExoPlayer to 2.9.1
+* Android: Use current gradle dependencies
+* Android 9 compatibility fixes for Demo App
+
 ## 0.7.2
 
 * Updated to use factories on exoplayer `MediaSource`s for Android instead of the now-deprecated constructors.

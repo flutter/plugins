@@ -1,10 +1,5 @@
-# in_app_purchase
+# In App Purchase
 
-A Flutter plugin for in-app purchases.
-
-## Getting Started
-
-For help getting started with Flutter, view our online
-[documentation](https://flutter.io/).
-
-For help on editing plugin code, view the [documentation](https://flutter.io/platform-plugins/#edit-code).
+This plugin is not ready to be used yet. Follow
+[flutter/flutter#9591](https://github.com/flutter/flutter/issues/9591) for more
+updates.

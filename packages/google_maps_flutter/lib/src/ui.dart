@@ -86,6 +86,7 @@ class GoogleMapOptions {
     this.tiltGesturesEnabled,
     this.trackCameraPosition,
     this.zoomGesturesEnabled,
+    this.myLocationEnabled,
   });
 
   /// The desired position of the map camera.
@@ -125,6 +126,31 @@ class GoogleMapOptions {
   /// True if the map view should respond to zoom gestures.
   final bool zoomGesturesEnabled;
 
+  /// True if a "My Location" layer should be shown on the map.
+  ///
+  /// This layer includes a location indicator at the current device location,
+  /// as well as a My Location button.
+  /// * The indicator is a small blue dot if the device is stationary, or a
+  /// chevron if the device is moving.
+  /// * The My Location button animates to focus on the user's current location
+  /// if the user's location is currently known.
+  ///
+  /// Enabling this feature requires adding location permissions to both native
+  /// platforms of your app.
+  /// * On Android add either
+  /// `<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />`
+  /// or `<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />`
+  /// to your `AndroidManifest.xml` file. `ACCESS_COARSE_LOCATION` returns a
+  /// location with an accuracy approximately equivalent to a city block, while
+  /// `ACCESS_FINE_LOCATION` returns as precise a location as possible, although
+  /// it consumes more battery power. You will also need to request these
+  /// permissions during run-time. If they are not granted, the My Location
+  /// feature will fail silently.
+  /// * On iOS add a `NSLocationWhenInUseUsageDescription` key to your
+  /// `Info.plist` file. This will automatically prompt the user for permissions
+  /// when the map tries to turn on the My Location layer.
+  final bool myLocationEnabled;
+
   /// Default user interface options.
   ///
   /// Specifies a map view that
@@ -138,6 +164,7 @@ class GoogleMapOptions {
   /// * responds to tilt gestures; [tiltGesturesEnabled] is true
   /// * is silent about camera movement; [trackCameraPosition] is false
   /// * responds to zoom gestures; [zoomGesturesEnabled] is true
+  /// * does not show user location; [myLocationEnabled] is false
   static final GoogleMapOptions defaultOptions = GoogleMapOptions(
     compassEnabled: true,
     cameraPosition: const CameraPosition(target: LatLng(0.0, 0.0)),
@@ -149,6 +176,7 @@ class GoogleMapOptions {
     tiltGesturesEnabled: true,
     trackCameraPosition: false,
     zoomGesturesEnabled: true,
+    myLocationEnabled: false,
   );
 
   /// Creates a new options object whose values are the same as this instance,
@@ -172,6 +200,7 @@ class GoogleMapOptions {
       tiltGesturesEnabled: change.tiltGesturesEnabled ?? tiltGesturesEnabled,
       trackCameraPosition: change.trackCameraPosition ?? trackCameraPosition,
       zoomGesturesEnabled: change.zoomGesturesEnabled ?? zoomGesturesEnabled,
+      myLocationEnabled: change.myLocationEnabled ?? myLocationEnabled,
     );
   }
 
@@ -194,6 +223,7 @@ class GoogleMapOptions {
     addIfPresent('tiltGesturesEnabled', tiltGesturesEnabled);
     addIfPresent('trackCameraPosition', trackCameraPosition);
     addIfPresent('zoomGesturesEnabled', zoomGesturesEnabled);
+    addIfPresent('myLocationEnabled', myLocationEnabled);
     return json;
   }
 }

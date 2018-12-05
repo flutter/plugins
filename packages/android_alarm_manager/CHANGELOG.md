@@ -1,3 +1,6 @@
+## 0.2.2
+* Update dependencies for example to point to published versions of firebase_auth
+
 ## 0.2.1
 * Update dependencies for example to point to published versions of firebase_auth
   and google_sign_in.
