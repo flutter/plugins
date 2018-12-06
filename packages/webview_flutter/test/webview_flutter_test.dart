@@ -114,9 +114,9 @@ void main() {
 
     expect(controller, isNotNull);
 
-    final bool canGoBackAnyPageLoaded = await controller.canGoBack();
+    final bool canGoBackNoPageLoaded = await controller.canGoBack();
 
-    expect(canGoBackAnyPageLoaded, false);
+    expect(canGoBackNoPageLoaded, false);
 
     await controller.loadUrl('https://flutter.io');
     final bool canGoBackFirstPageLoaded = await controller.canGoBack();
@@ -141,9 +141,9 @@ void main() {
 
     expect(controller, isNotNull);
 
-    final bool canGoForwardAnyPageLoaded = await controller.canGoForward();
+    final bool canGoForwardNoPageLoaded = await controller.canGoForward();
 
-    expect(canGoForwardAnyPageLoaded, false);
+    expect(canGoForwardNoPageLoaded, false);
 
     await controller.loadUrl('https://flutter.io');
     final bool canGoForwardFirstPageLoaded = await controller.canGoForward();
