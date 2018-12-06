@@ -78,7 +78,7 @@ class NavigationControls extends StatelessWidget {
             onPressed: () async {
               final bool canGoBack = await _webViewController.canGoBack;
               if (canGoBack) {
-                await _webViewController.goBack();
+                _webViewController.goBack();
               } else {
                 Scaffold.of(context).showSnackBar(
                     const SnackBar(content: Text("Can't go back")));
@@ -89,7 +89,7 @@ class NavigationControls extends StatelessWidget {
             onPressed: () async {
               final bool canGoForward = await _webViewController.canGoForward;
               if (canGoForward) {
-                await _webViewController.goForward();
+                _webViewController.goForward();
               } else {
                 Scaffold.of(context).showSnackBar(
                     const SnackBar(content: Text("Can't go forward")));
