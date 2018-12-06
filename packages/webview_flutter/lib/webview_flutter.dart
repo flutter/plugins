@@ -206,13 +206,13 @@ class WebViewController {
   }
 
   /// Check that there is back item in the history list.
-  Future<bool> get canGoBack async {
+  Future<bool> canGoBack() async {
     final bool canGoBack = await _channel.invokeMethod("canGoBack");
     return canGoBack;
   }
 
   /// Check that there is forward item in the history list.
-  Future<bool> get canGoForward async {
+  Future<bool> canGoForward() async {
     final bool canGoForward = await _channel.invokeMethod("canGoForward");
     return canGoForward;
   }

@@ -114,17 +114,17 @@ void main() {
 
     expect(controller, isNotNull);
 
-    final bool canGoBackAnyPageLoaded = await controller.canGoBack;
+    final bool canGoBackAnyPageLoaded = await controller.canGoBack();
 
     expect(canGoBackAnyPageLoaded, false);
 
     await controller.loadUrl('https://flutter.io');
-    final bool canGoBackFirstPageLoaded = await controller.canGoBack;
+    final bool canGoBackFirstPageLoaded = await controller.canGoBack();
 
     expect(canGoBackFirstPageLoaded, false);
 
     await controller.loadUrl('https://www.google.com');
-    final bool canGoBackSecondPageLoaded = await controller.canGoBack;
+    final bool canGoBackSecondPageLoaded = await controller.canGoBack();
 
     expect(canGoBackSecondPageLoaded, true);
   });
@@ -141,18 +141,18 @@ void main() {
 
     expect(controller, isNotNull);
 
-    final bool canGoForwardAnyPageLoaded = await controller.canGoForward;
+    final bool canGoForwardAnyPageLoaded = await controller.canGoForward();
 
     expect(canGoForwardAnyPageLoaded, false);
 
     await controller.loadUrl('https://flutter.io');
-    final bool canGoForwardFirstPageLoaded = await controller.canGoForward;
+    final bool canGoForwardFirstPageLoaded = await controller.canGoForward();
 
     expect(canGoForwardFirstPageLoaded, false);
 
     await controller.loadUrl('https://youtube.com');
     await controller.goBack();
-    final bool canGoForwardFirstPageBacked = await controller.canGoForward;
+    final bool canGoForwardFirstPageBacked = await controller.canGoForward();
 
     expect(canGoForwardFirstPageBacked, true);
   });

@@ -76,7 +76,7 @@ class NavigationControls extends StatelessWidget {
         IconButton(
             icon: const Icon(Icons.arrow_back_ios),
             onPressed: () async {
-              final bool canGoBack = await _webViewController.canGoBack;
+              final bool canGoBack = await _webViewController.canGoBack();
               if (canGoBack) {
                 _webViewController.goBack();
               } else {
@@ -87,7 +87,7 @@ class NavigationControls extends StatelessWidget {
         IconButton(
             icon: const Icon(Icons.arrow_forward_ios),
             onPressed: () async {
-              final bool canGoForward = await _webViewController.canGoForward;
+              final bool canGoForward = await _webViewController.canGoForward();
               if (canGoForward) {
                 _webViewController.goForward();
               } else {
