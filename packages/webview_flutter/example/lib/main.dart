@@ -22,7 +22,7 @@ class WebViewExampleState extends State<WebViewExample> {
         title: const Text('Flutter WebView example'),
         // This drop down menu demonstrates that Flutter widgets can be shown over the web view.
         actions: <Widget>[
-          (controller != null) ? MoveControl(controller) : Container(),
+          (controller != null) ? NavigationControls(controller) : Container(),
           const SampleMenu(),
         ],
       ),
@@ -63,8 +63,8 @@ class SampleMenu extends StatelessWidget {
   }
 }
 
-class MoveControl extends StatelessWidget {
-  const MoveControl(this._webViewController)
+class NavigationControls extends StatelessWidget {
+  const NavigationControls(this._webViewController)
       : assert(_webViewController != null);
 
   final WebViewController _webViewController;
