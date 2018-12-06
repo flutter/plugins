@@ -266,6 +266,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
   private void handleLinkWithCredential(
       MethodCall call, Result result, FirebaseAuth firebaseAuth) {
         AuthCredential credential = getCredential((Map<String, Object>) call.arguments());
+        
     firebaseAuth
         .getCurrentUser()
         .linkWithCredential(credential)
@@ -376,6 +377,13 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         {
           String token = data.get("token");
           credential = GithubAuthProvider.getCredential(token);
+          break;
+        }
+      case PhoneAuthProvider.PROVIDER_ID:
+        {
+          String verificationId = data.get("verificationId");
+          String smsCode = data.get("smsCode");
+          credential = PhoneAuthProvider.getCredential(verificationId,smsCode);
           break;
         }
       default:
