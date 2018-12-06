@@ -1,3 +1,7 @@
+## 0.2.7
+
+* Add byte streaming capability for the camera
+
 ## 0.2.6
 
 * Update the camera to use the physical device's orientation instead of the UI
