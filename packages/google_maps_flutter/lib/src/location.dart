@@ -177,6 +177,7 @@ class _LngRange {
 class LatLngBounds {
   /// Constructs a rectangle from the points at its
   /// south-west and north-east corners.
+  /// The constructor also accepts null as an argument.
   LatLngBounds({LatLng southwest, LatLng northeast}) {
     if (southwest != null || northeast != null) {
       if (southwest != null) northeast = northeast ??= southwest;
@@ -201,7 +202,7 @@ class LatLngBounds {
     }
   }
 
-  /// the center of this LatLngBounds
+  /// The center of this LatLngBounds
   LatLng get center => LatLng(_latRange.center, _lngRange.center);
 
   /// Returns true if the given lat/lng is within this bounds.
