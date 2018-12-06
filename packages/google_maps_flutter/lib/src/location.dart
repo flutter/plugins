@@ -4,6 +4,7 @@
 
 part of google_maps_flutter;
 
+/// returns val for low ≤ val ≤ high, low for val < low and high for val > high.
 T clip<T extends num>(T val, T low, T high) {
   assert(low <= high);
   assert(val != null);
@@ -11,6 +12,7 @@ T clip<T extends num>(T val, T low, T high) {
   return null != high ? val = min(val, high) : val;
 }
 
+/// returns val wrapped (folded) into the interval low ... high
 T wrap<T extends num>(T val, T low, T high) {
   assert(low <= high);
   assert(val != null && low != null && high != null);
@@ -56,6 +58,10 @@ class LatLng {
     return '$runtimeType[$latitude, $longitude]';
   }
 
+  //Todo: Decide whether it is preferable to accept approximate equality.
+  //Todo: find out what tolerances can be accepted.
+  /// Comparison function. Two LatLngs pointing to the exact same
+  /// coordinates are considered equal.
   @override
   bool operator ==(Object o) {
     return o is LatLng && o.latitude == latitude && o.longitude == longitude;
@@ -169,6 +175,8 @@ class _LngRange {
 /// * lng ∈ [-180, `northeast.longitude`] ∪ [`southwest.longitude`, 180[,
 ///   if `northeast.longitude` < `southwest.longitude`
 class LatLngBounds {
+  /// Constructs a rectangle from the points at its
+  /// south-west and north-east corners.
   LatLngBounds({LatLng southwest, LatLng northeast}) {
     if (southwest != null || northeast != null) {
       if (southwest != null) northeast = northeast ??= southwest;
@@ -193,43 +201,70 @@ class LatLngBounds {
     }
   }
 
+  /// the center of this LatLngBounds
   LatLng get center => LatLng(_latRange.center, _lngRange.center);
 
+  /// Returns true if the given lat/lng is within this bounds.
   bool contains(LatLng point) {
     return _latRange.contains(point.latitude) &&
         _lngRange.contains(point.longitude);
   }
 
-  bool intersects(LatLngBounds a) {
-    return _latRange.intersects(a._latRange) &&
-        _lngRange.intersects(a._lngRange);
-  }
-
+  /// Extends this bounds to contain the given point.
   LatLngBounds extend(LatLng a) {
     _latRange.extend(a.latitude);
     _lngRange.extend(a.longitude);
     return this;
   }
 
-  LatLngBounds union(LatLngBounds a) {
-    if (a == null || a.isEmpty()) return this;
-    extend(a.southwest);
-    extend(a.northeast);
-    return this;
+  /// Returns true if this bounds shares any points with the other bounds.
+  bool intersects(LatLngBounds a) {
+    return _latRange.intersects(a._latRange) &&
+        _lngRange.intersects(a._lngRange);
   }
 
+  /// Returns true if the bounds are empty.
   bool isEmpty() {
     return _latRange.isEmpty() || _lngRange.isEmpty();
   }
 
+  /// Extends this bounds to contain the union of this and the given bounds.
+  LatLngBounds union(LatLngBounds a) {
+    if (a == null || a.isEmpty()) return this;
+    extend(a.southWest);
+    extend(a.northEast);
+    return this;
+  }
+
+  /// The the north-east corner of this bounds.
+  LatLng get northEast => LatLng(_latRange.north, _lngRange.east);
+
+  /// The the north-west corner of this bounds.
+  LatLng get northWest => LatLng(_latRange.north, _lngRange.west);
+
+  /// The south-east corner of this bounds.
+  LatLng get southEast => LatLng(_latRange.south, _lngRange.east);
+
+  /// The south-west corner of this bounds.
+  LatLng get southWest => LatLng(_latRange.south, _lngRange.west);
+
+  /// The north latitude of this bounds.
+  double get north => _latRange.north;
+
+  /// The south latitude of this bounds.
+  double get south => _latRange.south;
+
+  /// the west longitude of this bounds.
+  double get west => _lngRange.west;
+
+  /// the east longitude of this bounds.
+  double get east => _lngRange.east;
+
   _LatRange _latRange;
   _LngRange _lngRange;
 
-  LatLng get southwest => LatLng(_latRange.south, _lngRange.west);
-  LatLng get northeast => LatLng(_latRange.north, _lngRange.east);
-
   dynamic _toJson() {
-    return <dynamic>[southwest._toJson(), northeast._toJson()];
+    return <dynamic>[southWest._toJson(), northEast._toJson()];
   }
 
   static LatLngBounds _fromJson(dynamic json) {
@@ -244,16 +279,19 @@ class LatLngBounds {
 
   @override
   String toString() {
-    return '$runtimeType[$southwest, $northeast]';
+    return '$runtimeType[$southWest, $northEast]';
   }
 
+  //Todo: implement js api behavior to accept approximate equality.
+  //Todo: find out what tolerances are accepted.
+  /// Returns true if this bounds exactly equals the given bounds.
   @override
   bool operator ==(Object o) {
     return o is LatLngBounds &&
-        o.southwest == southwest &&
-        o.northeast == northeast;
+        o.southWest == southWest &&
+        o.northEast == northEast;
   }
 
   @override
-  int get hashCode => hashValues(southwest, northeast);
+  int get hashCode => hashValues(southWest, northEast);
 }
