@@ -46,17 +46,20 @@ public class UrlLauncherPlugin implements MethodCallHandler {
       Intent launchIntent;
       boolean useWebView = call.argument("useWebView");
       boolean enableJavaScript = call.argument("enableJavaScript");
-      Context context = mRegistrar.context();
+      Activity activity = mRegistrar.activity();
+      if (activity == null) {
+        result.error("Launching a URL requires a foreground activity.", null, null);
+        return;
+      }
       if (useWebView) {
-        launchIntent = new Intent(context, WebViewActivity.class);
+        launchIntent = new Intent(activity, WebViewActivity.class);
         launchIntent.putExtra("url", url);
         launchIntent.putExtra("enableJavaScript", enableJavaScript);
       } else {
         launchIntent = new Intent(Intent.ACTION_VIEW);
         launchIntent.setData(Uri.parse(url));
       }
-      launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      context.startActivity(launchIntent);
+      activity.startActivity(launchIntent);
       result.success(null);
     } else if (call.method.equals("closeWebView")) {
       Intent intent = new Intent("close");
