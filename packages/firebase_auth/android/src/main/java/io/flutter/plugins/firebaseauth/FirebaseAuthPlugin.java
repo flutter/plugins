@@ -265,11 +265,17 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
 
   private void handleLinkWithEmailAndPassword(
       MethodCall call, Result result, FirebaseAuth firebaseAuth) {
+    if (firebaseAuth.getCurrentUser() == null) {
+      markUserRequired(result);
+      return;
+    }
+
     Map<String, String> arguments = call.arguments();
     String email = arguments.get("email");
     String password = arguments.get("password");
 
     AuthCredential credential = EmailAuthProvider.getCredential(email, password);
+
     firebaseAuth
         .getCurrentUser()
         .linkWithCredential(credential)
@@ -325,20 +331,37 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
 
   private void handleSendEmailVerification(
       @SuppressWarnings("unused") MethodCall call, Result result, FirebaseAuth firebaseAuth) {
+    if (firebaseAuth.getCurrentUser() == null) {
+      markUserRequired(result);
+      return;
+    }
+
     firebaseAuth
         .getCurrentUser()
         .sendEmailVerification()
         .addOnCompleteListener(new TaskVoidCompleteListener(result));
   }
 
-  private void handleReload(MethodCall call, Result result, FirebaseAuth firebaseAuth) {
+  private void handleReload(
+      @SuppressWarnings("unused") MethodCall call, Result result, FirebaseAuth firebaseAuth) {
+    if (firebaseAuth.getCurrentUser() == null) {
+      markUserRequired(result);
+      return;
+    }
+
     firebaseAuth
         .getCurrentUser()
         .reload()
         .addOnCompleteListener(new TaskVoidCompleteListener(result));
   }
 
-  private void handleDelete(MethodCall call, Result result, FirebaseAuth firebaseAuth) {
+  private void handleDelete(
+      @SuppressWarnings("unused") MethodCall call, Result result, FirebaseAuth firebaseAuth) {
+    if (firebaseAuth.getCurrentUser() == null) {
+      markUserRequired(result);
+      return;
+    }
+
     firebaseAuth
         .getCurrentUser()
         .delete()
@@ -347,7 +370,10 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
 
   private AuthCredential getCredential(Map<String, Object> arguments) {
     AuthCredential credential;
+
+    @SuppressWarnings("unchecked")
     Map<String, String> data = (Map<String, String>) arguments.get("data");
+
     switch ((String) arguments.get("provider")) {
       case EmailAuthProvider.PROVIDER_ID:
         {
@@ -393,7 +419,10 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
 
   private void handleSignInWithCredential(
       MethodCall call, Result result, FirebaseAuth firebaseAuth) {
+
+    @SuppressWarnings("unchecked")
     AuthCredential credential = getCredential((Map<String, Object>) call.arguments());
+
     firebaseAuth
         .signInWithCredential(credential)
         .addOnCompleteListener(new SignInCompleteListener(result));
@@ -401,7 +430,14 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
 
   private void handleReauthenticateWithCredential(
       MethodCall call, Result result, FirebaseAuth firebaseAuth) {
+    if (firebaseAuth.getCurrentUser() == null) {
+      markUserRequired(result);
+      return;
+    }
+
+    @SuppressWarnings("unchecked")
     AuthCredential credential = getCredential((Map<String, Object>) call.arguments());
+
     firebaseAuth
         .getCurrentUser()
         .reauthenticate(credential)
@@ -409,6 +445,11 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
   }
 
   private void handleUnlinkFromProvider(MethodCall call, Result result, FirebaseAuth firebaseAuth) {
+    if (firebaseAuth.getCurrentUser() == null) {
+      markUserRequired(result);
+      return;
+    }
+
     Map<String, String> arguments = call.arguments();
     final String provider = arguments.get("provider");
 
@@ -428,12 +469,18 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         .addOnCompleteListener(new SignInCompleteListener(result));
   }
 
-  private void handleSignOut(MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
+  private void handleSignOut(
+      @SuppressWarnings("unused") MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
     firebaseAuth.signOut();
     result.success(null);
   }
 
   private void handleGetToken(MethodCall call, final Result result, FirebaseAuth firebaseAuth) {
+    if (firebaseAuth.getCurrentUser() == null) {
+      markUserRequired(result);
+      return;
+    }
+
     Map<String, Boolean> arguments = call.arguments();
     boolean refresh = arguments.get("refresh");
 
@@ -443,7 +490,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         .addOnCompleteListener(
             new OnCompleteListener<GetTokenResult>() {
               public void onComplete(@NonNull Task<GetTokenResult> task) {
-                if (task.isSuccessful()) {
+                if (task.isSuccessful() && task.getResult() != null) {
                   String idToken = task.getResult().getToken();
                   result.success(idToken);
                 } else {
@@ -454,6 +501,11 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
   }
 
   private void handleUpdateEmail(MethodCall call, Result result, FirebaseAuth firebaseAuth) {
+    if (firebaseAuth.getCurrentUser() == null) {
+      markUserRequired(result);
+      return;
+    }
+
     Map<String, String> arguments = call.arguments();
     final String email = arguments.get("email");
 
@@ -464,6 +516,11 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
   }
 
   private void handleUpdatePassword(MethodCall call, Result result, FirebaseAuth firebaseAuth) {
+    if (firebaseAuth.getCurrentUser() == null) {
+      markUserRequired(result);
+      return;
+    }
+
     Map<String, String> arguments = call.arguments();
     final String password = arguments.get("password");
 
@@ -474,6 +531,11 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
   }
 
   private void handleUpdateProfile(MethodCall call, Result result, FirebaseAuth firebaseAuth) {
+    if (firebaseAuth.getCurrentUser() == null) {
+      markUserRequired(result);
+      return;
+    }
+
     Map<String, String> arguments = call.arguments();
 
     UserProfileChangeRequest.Builder builder = new UserProfileChangeRequest.Builder();
@@ -617,15 +679,18 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     if (user != null) {
       List<Map<String, Object>> providerData = new ArrayList<>();
       for (UserInfo userInfo : user.getProviderData()) {
-        // Ignore phone provider since firebase provider is a super set of the phone provider.
+        // Ignore phone provider since firebase provider is a super set of the phone
+        // provider.
         if (userInfo.getProviderId().equals("phone")) {
           continue;
         }
         providerData.add(Collections.unmodifiableMap(userInfoToMap(userInfo)));
       }
       Map<String, Object> userMap = userInfoToMap(user);
-      userMap.put("creationTimestamp", user.getMetadata().getCreationTimestamp());
-      userMap.put("lastSignInTimestamp", user.getMetadata().getLastSignInTimestamp());
+      if (user.getMetadata() != null) {
+        userMap.put("creationTimestamp", user.getMetadata().getCreationTimestamp());
+        userMap.put("lastSignInTimestamp", user.getMetadata().getLastSignInTimestamp());
+      }
       userMap.put("isAnonymous", user.isAnonymous());
       userMap.put("isEmailVerified", user.isEmailVerified());
       userMap.put("providerData", Collections.unmodifiableList(providerData));
@@ -633,6 +698,10 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     } else {
       return null;
     }
+  }
+
+  private void markUserRequired(Result result) {
+    result.error("USER_REQUIRED", "Please authenticate with Firebase first", null);
   }
 
   private void reportException(Result result, @Nullable Exception exception) {

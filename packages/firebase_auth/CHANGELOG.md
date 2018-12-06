@@ -1,3 +1,8 @@
+## 0.7.1
+
+* Reduce compiler warnings in Android plugin
+* Raise errors early when accessing methods that require a Firebase User
+
 ## 0.7.0
 
 * Introduce third-party auth provider classes that generate `AuthCredential`s
