@@ -58,11 +58,11 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
   if ([super init]) {
     _viewId = viewId;
 
-    GMSCameraPosition* camera = toOptionalCameraPosition(args[@"cameraPosition"]);
+    GMSCameraPosition* camera = toOptionalCameraPosition(args[@"initialCameraPosition"]);
     _mapView = [GMSMapView mapWithFrame:frame camera:camera];
     _markers = [NSMutableDictionary dictionaryWithCapacity:1];
     _trackCameraPosition = NO;
-    interpretMapOptions(args, self);
+    interpretMapOptions(args[@"options"], self);
     NSString* channelName =
         [NSString stringWithFormat:@"plugins.flutter.io/google_maps_%lld", viewId];
     _channel = [FlutterMethodChannel methodChannelWithName:channelName
@@ -346,10 +346,6 @@ static GMSCameraUpdate* toCameraUpdate(id json) {
 
 static void interpretMapOptions(id json, id<FLTGoogleMapOptionsSink> sink) {
   NSDictionary* data = json;
-  id cameraPosition = data[@"cameraPosition"];
-  if (cameraPosition) {
-    [sink setCamera:toCameraPosition(cameraPosition)];
-  }
   id cameraTargetBounds = data[@"cameraTargetBounds"];
   if (cameraTargetBounds) {
     [sink setCameraTargetBounds:toOptionalBounds(cameraTargetBounds)];

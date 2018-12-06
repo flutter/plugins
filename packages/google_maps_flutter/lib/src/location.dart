@@ -38,9 +38,7 @@ class LatLng {
   }
 
   @override
-  String toString() {
-    return '$runtimeType[$latitude, $longitude]';
-  }
+  String toString() => '$runtimeType($latitude, $longitude)';
 
   @override
   bool operator ==(Object o) {
@@ -75,11 +73,12 @@ class LatLngBounds {
   /// The northeast corner of the rectangle.
   final LatLng northeast;
 
-  dynamic _toJson() {
+  dynamic _toList() {
     return <dynamic>[southwest._toJson(), northeast._toJson()];
   }
 
-  static LatLngBounds _fromJson(dynamic json) {
+  @visibleForTesting
+  static LatLngBounds fromList(dynamic json) {
     if (json == null) {
       return null;
     }
@@ -91,7 +90,7 @@ class LatLngBounds {
 
   @override
   String toString() {
-    return '$runtimeType[$southwest, $northeast]';
+    return '$runtimeType($southwest, $northeast)';
   }
 
   @override
