@@ -1,7 +1,7 @@
 #import "CameraPlugin.h"
 #import <AVFoundation/AVFoundation.h>
-#import <libkern/OSAtomic.h>
 #import <Accelerate/Accelerate.h>
+#import <libkern/OSAtomic.h>
 
 @interface NSError (FlutterError)
 @property(readonly, nonatomic) FlutterError *flutterError;
@@ -22,7 +22,7 @@
 - initWithPath:(NSString *)filename result:(FlutterResult)result;
 @end
 
-@interface FLTByteStreamHandler : NSObject<FlutterStreamHandler>
+@interface FLTByteStreamHandler : NSObject <FlutterStreamHandler>
 @property(readonly, nonatomic) FlutterEventSink eventSink;
 @end
 
@@ -153,7 +153,7 @@ vImage_Buffer conversionBuffer;
 
   _captureVideoOutput = [AVCaptureVideoDataOutput new];
   _captureVideoOutput.videoSettings =
-      @{(NSString *)kCVPixelBufferPixelFormatTypeKey : @(videoFormat) };
+      @{(NSString *)kCVPixelBufferPixelFormatTypeKey : @(videoFormat)};
   [_captureVideoOutput setAlwaysDiscardsLateVideoFrames:YES];
   [_captureVideoOutput setSampleBufferDelegate:self queue:dispatch_get_main_queue()];
 
@@ -355,12 +355,14 @@ vImage_Buffer conversionBuffer;
   pixelRange.CbCrMax = 240;
   pixelRange.CbCrMin = 16;
 
-  vImageConvert_YpCbCrToARGB_GenerateConversion(kvImage_YpCbCrToARGBMatrix_ITU_R_601_4, &pixelRange, &infoYpCbCrToARGB, kvImage420Yp8_CbCr8, kvImageARGB8888, kvImageNoFlags);
+  vImageConvert_YpCbCrToARGB_GenerateConversion(kvImage_YpCbCrToARGBMatrix_ITU_R_601_4, &pixelRange,
+                                                &infoYpCbCrToARGB, kvImage420Yp8_CbCr8,
+                                                kvImageARGB8888, kvImageNoFlags);
 
   vImage_Buffer sourceLumaBuffer;
   sourceLumaBuffer.data = CVPixelBufferGetBaseAddressOfPlane(pixelBuffer, 0);
   sourceLumaBuffer.height = CVPixelBufferGetHeightOfPlane(pixelBuffer, 0);
-  sourceLumaBuffer.width = CVPixelBufferGetWidthOfPlane(pixelBuffer, 0);;
+  sourceLumaBuffer.width = CVPixelBufferGetWidthOfPlane(pixelBuffer, 0);
   sourceLumaBuffer.rowBytes = CVPixelBufferGetBytesPerRowOfPlane(pixelBuffer, 0);
 
   vImage_Buffer sourceChromaBuffer;
@@ -369,20 +371,30 @@ vImage_Buffer conversionBuffer;
   sourceChromaBuffer.width = CVPixelBufferGetWidthOfPlane(pixelBuffer, 1);
   sourceChromaBuffer.rowBytes = CVPixelBufferGetBytesPerRowOfPlane(pixelBuffer, 1);
 
-  if(!destinationBuffer.height) vImageBuffer_Init(&destinationBuffer, sourceLumaBuffer.height, sourceLumaBuffer.width, 32, kvImageNoFlags);
+  if (!destinationBuffer.height) {
+    vImageBuffer_Init(&destinationBuffer, sourceLumaBuffer.height, sourceLumaBuffer.width, 32,
+                      kvImageNoFlags);
+  }
 
-  vImageConvert_420Yp8_CbCr8ToARGB8888(&sourceLumaBuffer, &sourceChromaBuffer, &destinationBuffer, &infoYpCbCrToARGB, NULL, 255, kvImagePrintDiagnosticsToConsole);
+  vImageConvert_420Yp8_CbCr8ToARGB8888(&sourceLumaBuffer, &sourceChromaBuffer, &destinationBuffer,
+                                       &infoYpCbCrToARGB, NULL, 255,
+                                       kvImagePrintDiagnosticsToConsole);
 
   CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
   CVPixelBufferRelease(pixelBuffer);
 
-  if(!conversionBuffer.height) vImageBuffer_Init(&conversionBuffer, sourceLumaBuffer.height, sourceLumaBuffer.width, 32, kvImageNoFlags);
+  if (!conversionBuffer.height) {
+    vImageBuffer_Init(&conversionBuffer, sourceLumaBuffer.height, sourceLumaBuffer.width, 32,
+                      kvImageNoFlags);
+  }
 
-  const uint8_t map[4] = { 3, 2, 1, 0 };
+  const uint8_t map[4] = {3, 2, 1, 0};
   vImagePermuteChannels_ARGB8888(&destinationBuffer, &conversionBuffer, map, kvImageNoFlags);
 
   CVPixelBufferRef newPixelBuffer = NULL;
-  CVPixelBufferCreateWithBytes(NULL, conversionBuffer.width, conversionBuffer.height, kCVPixelFormatType_32BGRA, conversionBuffer.data, conversionBuffer.rowBytes, NULL, NULL, NULL, &newPixelBuffer);
+  CVPixelBufferCreateWithBytes(NULL, conversionBuffer.width, conversionBuffer.height,
+                               kCVPixelFormatType_32BGRA, conversionBuffer.data,
+                               conversionBuffer.rowBytes, NULL, NULL, NULL, &newPixelBuffer);
 
   return newPixelBuffer;
 }
