@@ -833,8 +833,7 @@ public class CameraPlugin implements MethodCallHandler {
 
                 Map<String, Object> planeBuffer = new HashMap<>();
                 planeBuffer.put("bytesPerRow", plane.getRowStride());
-                planeBuffer.put("width", img.getWidth());
-                planeBuffer.put("height", img.getHeight());
+                planeBuffer.put("bytesPerPixel", plane.getPixelStride());
                 planeBuffer.put("bytes", bytes);
 
                 planes.add(planeBuffer);
