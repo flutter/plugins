@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:collection';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
@@ -275,8 +276,8 @@ class FakePlatformWebView {
     if (params.containsKey('initialUrl')) {
       final String initialUrl = params['initialUrl'];
       if (initialUrl != null) {
-        current = _HistoryNode(initialUrl);
-        history.add(current);
+        history.add(initialUrl);
+        currentPosition++;
       }
       javaScriptMode = JavaScriptMode.values[params['settings']['jsMode']];
     }
@@ -287,24 +288,23 @@ class FakePlatformWebView {
 
   MethodChannel channel;
 
-  LinkedList<_HistoryNode> history = LinkedList<_HistoryNode>();
-  _HistoryNode current;
-  String get lastUrlLoaded => current?.url;
+  List<String> history = <String>[];
+  int currentPosition = -1;
+  String get lastUrlLoaded =>
+      (currentPosition > -1 && history.length > currentPosition)
+          ? history[currentPosition]
+          : null;
   JavaScriptMode javaScriptMode;
 
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
       case 'loadUrl':
-        final _HistoryNode loading = _HistoryNode(call.arguments);
-        if (current != null) {
-          if (!history.contains(current)) {
-            history.add(current);
-          }
-          current.insertAfter(loading);
-        } else {
-          history.add(loading);
+        final String url = call.arguments;
+        if (history.length - 1 > currentPosition) {
+          history = history.sublist(0, currentPosition + 1);
         }
-        current = loading;
+        history.add(url);
+        currentPosition++;
         return Future<void>.sync(() {});
       case 'updateSettings':
         if (call.arguments['jsMode'] == null) {
@@ -313,17 +313,17 @@ class FakePlatformWebView {
         javaScriptMode = JavaScriptMode.values[call.arguments['jsMode']];
         break;
       case 'canGoBack':
-        return Future<bool>.sync(() => current?.previous != null);
+        return Future<bool>.sync(() => currentPosition > 0);
         break;
       case 'canGoForward':
-        return Future<bool>.sync(() => current?.next != null);
+        return Future<bool>.sync(() => currentPosition < history.length - 1);
         break;
       case 'goBack':
-        current = current?.previous;
+        currentPosition = max(-1, currentPosition - 1);
         return Future<void>.sync(() {});
         break;
       case 'goForward':
-        current = current?.next ?? current;
+        currentPosition = min(history.length - 1, currentPosition + 1);
         return Future<void>.sync(() {});
         break;
     }
@@ -361,10 +361,4 @@ Map<dynamic, dynamic> _decodeParams(Uint8List paramsMessage) {
     paramsMessage.lengthInBytes,
   );
   return const StandardMessageCodec().decodeMessage(messageBytes);
-}
-
-class _HistoryNode extends LinkedListEntry<_HistoryNode> {
-  _HistoryNode(this.url);
-
-  final String url;
 }
