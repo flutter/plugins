@@ -173,24 +173,42 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     final int handle = (int) arguments.get("handle");
     String phoneNumber = (String) arguments.get("phoneNumber");
     int timeout = (int) arguments.get("timeout");
+    final boolean link = (boolean) arguments.get("link");
 
     PhoneAuthProvider.OnVerificationStateChangedCallbacks verificationCallbacks =
         new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
           @Override
           public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
-            firebaseAuth
+            if (link) {
+              firebaseAuth
+                .getCurrentUser().linkWithCredential(phoneAuthCredential)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                  
+                  @Override
+                  public void onComplete(@NonNull Task<AuthResult> task) {
+                    if (task.isSuccessful()) {
+                      Map<String, Object> arguments = new HashMap<>();
+                      arguments.put("handle", handle);
+                      channel.invokeMethod("phoneVerificationCompleted", arguments);
+                    }
+                  }
+                });
+              } else {
+                firebaseAuth
                 .signInWithCredential(phoneAuthCredential)
                 .addOnCompleteListener(
-                    new OnCompleteListener<AuthResult>() {
-                      @Override
-                      public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                          Map<String, Object> arguments = new HashMap<>();
-                          arguments.put("handle", handle);
-                          channel.invokeMethod("phoneVerificationCompleted", arguments);
-                        }
+                  new OnCompleteListener<AuthResult>() {
+                    
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                      if (task.isSuccessful()) {
+                        Map<String, Object> arguments = new HashMap<>();
+                        arguments.put("handle", handle);
+                        channel.invokeMethod("phoneVerificationCompleted", arguments);
                       }
-                    });
+                    }
+                  });
+                }
           }
 
           @Override
