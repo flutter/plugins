@@ -81,7 +81,7 @@ class NavigationControls extends StatelessWidget {
                 _webViewController.goBack();
               } else {
                 Scaffold.of(context).showSnackBar(
-                    const SnackBar(content: Text("Can't go back")));
+                    const SnackBar(content: Text("No back history item")));
               }
             }),
         IconButton(
@@ -92,7 +92,7 @@ class NavigationControls extends StatelessWidget {
                 _webViewController.goForward();
               } else {
                 Scaffold.of(context).showSnackBar(
-                    const SnackBar(content: Text("Can't go forward")));
+                    const SnackBar(content: Text("No forward history item")));
               }
             }),
       ],
