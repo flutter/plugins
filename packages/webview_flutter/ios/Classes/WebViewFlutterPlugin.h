@@ -4,5 +4,5 @@
 
 #import <Flutter/Flutter.h>
 
-@interface FLTWebviewFlutterPlugin : NSObject<FlutterPlugin>
+@interface FLTWebviewFlutterPlugin : NSObject <FlutterPlugin>
 @end

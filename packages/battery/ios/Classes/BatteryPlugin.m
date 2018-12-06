@@ -4,7 +4,7 @@
 
 #import "BatteryPlugin.h"
 
-@interface FLTBatteryPlugin ()<FlutterStreamHandler>
+@interface FLTBatteryPlugin () <FlutterStreamHandler>
 @end
 
 @implementation FLTBatteryPlugin {

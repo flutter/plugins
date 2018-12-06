@@ -8,7 +8,7 @@
 
 #import "SystemConfiguration/CaptiveNetwork.h"
 
-@interface FLTConnectivityPlugin ()<FlutterStreamHandler>
+@interface FLTConnectivityPlugin () <FlutterStreamHandler>
 @end
 
 @implementation FLTConnectivityPlugin {

@@ -137,6 +137,34 @@ void main() {
     firebaseMessaging.getToken();
     verify(mockChannel.invokeMethod('getToken'));
   });
+
+  test('deleteInstanceID', () {
+    firebaseMessaging.deleteInstanceID();
+    verify(mockChannel.invokeMethod('deleteInstanceID'));
+  });
+
+  test('autoInitEnabled', () {
+    firebaseMessaging.autoInitEnabled();
+    verify(mockChannel.invokeMethod('autoInitEnabled'));
+  });
+
+  test('setAutoInitEnabled', () {
+    // assert that we havent called the method yet
+    verifyNever(firebaseMessaging.setAutoInitEnabled(true));
+
+    firebaseMessaging.setAutoInitEnabled(true);
+
+    // assert we called the method with enabled = true
+    verify(mockChannel.invokeMethod('setAutoInitEnabled', true));
+
+    // assert that enabled = false was not yet called
+    verifyNever(firebaseMessaging.setAutoInitEnabled(false));
+
+    firebaseMessaging.setAutoInitEnabled(false);
+
+    // assert call with enabled = false was properly done
+    verify(mockChannel.invokeMethod('setAutoInitEnabled', false));
+  });
 }
 
 class MockMethodChannel extends Mock implements MethodChannel {}
