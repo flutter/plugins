@@ -181,34 +181,36 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
           public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
             if (link) {
               firebaseAuth
-                .getCurrentUser().linkWithCredential(phoneAuthCredential)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                  
-                  @Override
-                  public void onComplete(@NonNull Task<AuthResult> task) {
-                    if (task.isSuccessful()) {
-                      Map<String, Object> arguments = new HashMap<>();
-                      arguments.put("handle", handle);
-                      channel.invokeMethod("phoneVerificationCompleted", arguments);
-                    }
-                  }
-                });
-              } else {
-                firebaseAuth
-                .signInWithCredential(phoneAuthCredential)
-                .addOnCompleteListener(
-                  new OnCompleteListener<AuthResult>() {
-                    
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                      if (task.isSuccessful()) {
-                        Map<String, Object> arguments = new HashMap<>();
-                        arguments.put("handle", handle);
-                        channel.invokeMethod("phoneVerificationCompleted", arguments);
-                      }
-                    }
-                  });
-                }
+                  .getCurrentUser()
+                  .linkWithCredential(phoneAuthCredential)
+                  .addOnCompleteListener(
+                      new OnCompleteListener<AuthResult>() {
+
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                          if (task.isSuccessful()) {
+                            Map<String, Object> arguments = new HashMap<>();
+                            arguments.put("handle", handle);
+                            channel.invokeMethod("phoneVerificationCompleted", arguments);
+                          }
+                        }
+                      });
+            } else {
+              firebaseAuth
+                  .signInWithCredential(phoneAuthCredential)
+                  .addOnCompleteListener(
+                      new OnCompleteListener<AuthResult>() {
+
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                          if (task.isSuccessful()) {
+                            Map<String, Object> arguments = new HashMap<>();
+                            arguments.put("handle", handle);
+                            channel.invokeMethod("phoneVerificationCompleted", arguments);
+                          }
+                        }
+                      });
+            }
           }
 
           @Override
@@ -281,10 +283,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     return exceptionMap;
   }
 
-  private void handleLinkWithCredential(
-      MethodCall call, Result result, FirebaseAuth firebaseAuth) {
-        AuthCredential credential = getCredential((Map<String, Object>) call.arguments());
-        
+  private void handleLinkWithCredential(MethodCall call, Result result, FirebaseAuth firebaseAuth) {
+    AuthCredential credential = getCredential((Map<String, Object>) call.arguments());
+
     firebaseAuth
         .getCurrentUser()
         .linkWithCredential(credential)
@@ -401,7 +402,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         {
           String verificationId = data.get("verificationId");
           String smsCode = data.get("smsCode");
-          credential = PhoneAuthProvider.getCredential(verificationId,smsCode);
+          credential = PhoneAuthProvider.getCredential(verificationId, smsCode);
           break;
         }
       default:

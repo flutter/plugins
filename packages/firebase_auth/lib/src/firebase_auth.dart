@@ -241,21 +241,20 @@ class FirebaseAuth {
   /// [codeAutoRetrievalTimeout] Optional callback.
   ///   It will trigger when SMS auto-retrieval times out and provide a
   ///   [verificationId].
-  /// 
+  ///
   /// [linkCredentials] Default false.
   ///   Set to true when phone number verification is used to link a phone number to an existing user who is
   ///   currently logged in
 
-  Future<void> verifyPhoneNumber({
-    @required String phoneNumber,
-    @required Duration timeout,
-    int forceResendingToken,
-    @required PhoneVerificationCompleted verificationCompleted,
-    @required PhoneVerificationFailed verificationFailed,
-    @required PhoneCodeSent codeSent,
-    @required PhoneCodeAutoRetrievalTimeout codeAutoRetrievalTimeout,
-    bool linkCredentials = false
-  }) async {
+  Future<void> verifyPhoneNumber(
+      {@required String phoneNumber,
+      @required Duration timeout,
+      int forceResendingToken,
+      @required PhoneVerificationCompleted verificationCompleted,
+      @required PhoneVerificationFailed verificationFailed,
+      @required PhoneCodeSent codeSent,
+      @required PhoneCodeAutoRetrievalTimeout codeAutoRetrievalTimeout,
+      bool linkCredentials = false}) async {
     final Map<String, dynamic> callbacks = <String, dynamic>{
       'PhoneVerificationCompleted': verificationCompleted,
       'PhoneVerificationFailed': verificationFailed,
