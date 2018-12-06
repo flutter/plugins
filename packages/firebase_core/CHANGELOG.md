@@ -1,3 +1,7 @@
+## 0.2.6
+
+* Bump firebase-core dependency on Android to 16.0.6.
+
 ## 0.2.5+1
 
 * Bump Android dependencies to latest.
