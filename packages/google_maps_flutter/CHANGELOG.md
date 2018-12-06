@@ -1,3 +1,7 @@
+## 0.1.0
+
+* Move the map options from the GoogleMapOptions class to GoogleMap widget parameters.
+
 ## 0.0.3+3
 
 * Relax Flutter version requirement to 0.11.9.
