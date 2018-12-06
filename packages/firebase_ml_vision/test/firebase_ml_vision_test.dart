@@ -51,7 +51,17 @@ void main() {
 
       test('default serialization', () async {
         final FirebaseVisionImageMetadata metadata =
-            const FirebaseVisionImageMetadata(size: Size(1.0, 1.0));
+            const FirebaseVisionImageMetadata(
+          rawFormat: 35,
+          size: Size(1.0, 1.0),
+          planeData: <FirebaseVisionImagePlaneMetadata>[
+            FirebaseVisionImagePlaneMetadata(
+              bytesPerRow: 1000,
+              height: 480,
+              width: 480,
+            ),
+          ],
+        );
         final FirebaseVisionImage image =
             FirebaseVisionImage.fromBytes(Uint8List(0), metadata);
         await recognizer.processImage(image);
@@ -67,6 +77,14 @@ void main() {
                 'width': 1.0,
                 'height': 1.0,
                 'rotation': 0,
+                'rawFormat': 35,
+                'planeData': <dynamic>[
+                  <String, dynamic>{
+                    'bytesPerRow': 1000,
+                    'height': 480,
+                    'width': 480,
+                  },
+                ],
               },
               'options': <String, dynamic>{},
             },

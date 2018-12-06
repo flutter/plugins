@@ -123,17 +123,23 @@ class FirebaseVisionImage {
 }
 
 class FirebaseVisionImagePlaneMetadata {
-  FirebaseVisionImagePlaneMetadata({this.bytesPerRow, this.height, this.width});
+  const FirebaseVisionImagePlaneMetadata({
+    @required this.bytesPerRow,
+    @required this.height,
+    @required this.width,
+  })  : assert(bytesPerRow != null),
+        assert(height != null),
+        assert(width != null);
 
   final int bytesPerRow;
   final int height;
   final int width;
 
   Map<String, dynamic> _serialize() => <String, dynamic>{
-    'bytesPerRow': bytesPerRow,
-    'height': height,
-    'width': width,
-  };
+        'bytesPerRow': bytesPerRow,
+        'height': height,
+        'width': width,
+      };
 }
 
 /// Image metadata used by [FirebaseVision] detectors.
@@ -146,7 +152,9 @@ class FirebaseVisionImageMetadata {
     @required this.size,
     @required this.planeData,
     this.rotation = ImageRotation.rotation_0,
-  }) : assert(size != null);
+  })  : assert(size != null),
+        assert(rawFormat != null),
+        assert(planeData != null);
 
   final Size size;
   final ImageRotation rotation;
@@ -154,14 +162,14 @@ class FirebaseVisionImageMetadata {
   final List<FirebaseVisionImagePlaneMetadata> planeData;
 
   Map<String, dynamic> _serialize() => <String, dynamic>{
-    'width': size.width,
-    'height': size.height,
-    'rotation': _imageRotationToInt(rotation),
-    'rawFormat': rawFormat,
-    'planeData': planeData
-        .map((FirebaseVisionImagePlaneMetadata plane) => plane._serialize())
-        .toList(),
-  };
+        'width': size.width,
+        'height': size.height,
+        'rotation': _imageRotationToInt(rotation),
+        'rawFormat': rawFormat,
+        'planeData': planeData
+            .map((FirebaseVisionImagePlaneMetadata plane) => plane._serialize())
+            .toList(),
+      };
 }
 
 /// Abstract class for detectors in [FirebaseVision] API.
