@@ -55,8 +55,7 @@ class GoogleMapController extends ChangeNotifier {
   bool _isCameraMoving = false;
 
   /// Returns the most recent camera position reported by the platform side.
-  /// Will be null, if camera position tracking is not enabled via
-  /// [_GoogleMapOptions].
+  /// Will be null, if [GoogleMap.trackCameraPosition] is false.
   CameraPosition get cameraPosition => _cameraPosition;
   CameraPosition _cameraPosition;
 
