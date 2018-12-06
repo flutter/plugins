@@ -122,24 +122,46 @@ class FirebaseVisionImage {
       };
 }
 
+class FirebaseVisionImagePlaneMetadata {
+  FirebaseVisionImagePlaneMetadata({this.bytesPerRow, this.height, this.width});
+
+  final int bytesPerRow;
+  final int height;
+  final int width;
+
+  Map<String, dynamic> _serialize() => <String, dynamic>{
+    'bytesPerRow': bytesPerRow,
+    'height': height,
+    'width': width,
+  };
+}
+
 /// Image metadata used by [FirebaseVision] detectors.
 ///
 /// [rotation] defaults to [ImageRotation.rotation_0]. Currently only rotates on
 /// Android.
 class FirebaseVisionImageMetadata {
   const FirebaseVisionImageMetadata({
+    @required this.rawFormat,
     @required this.size,
+    @required this.planeData,
     this.rotation = ImageRotation.rotation_0,
   }) : assert(size != null);
 
   final Size size;
   final ImageRotation rotation;
+  final dynamic rawFormat;
+  final List<FirebaseVisionImagePlaneMetadata> planeData;
 
   Map<String, dynamic> _serialize() => <String, dynamic>{
-        'width': size.width,
-        'height': size.height,
-        'rotation': _imageRotationToInt(rotation),
-      };
+    'width': size.width,
+    'height': size.height,
+    'rotation': _imageRotationToInt(rotation),
+    'rawFormat': rawFormat,
+    'planeData': planeData
+        .map((FirebaseVisionImagePlaneMetadata plane) => plane._serialize())
+        .toList(),
+  };
 }
 
 /// Abstract class for detectors in [FirebaseVision] API.
