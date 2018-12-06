@@ -330,6 +330,7 @@ void main() {
         isMethodCall('verifyPhoneNumber', arguments: <String, dynamic>{
           'handle': 1,
           'phoneNumber': kMockPhoneNumber,
+          'link': false,
           'timeout': 5000,
           'forceResendingToken': null,
           'app': auth.app.name,
