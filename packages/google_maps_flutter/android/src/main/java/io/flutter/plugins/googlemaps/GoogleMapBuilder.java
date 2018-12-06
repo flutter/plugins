@@ -26,8 +26,7 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
     return controller;
   }
 
-  @Override
-  public void setCameraPosition(CameraPosition position) {
+  public void setInitialCameraPosition(CameraPosition position) {
     options.camera(position);
   }
 

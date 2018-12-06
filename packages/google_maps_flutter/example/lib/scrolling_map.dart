@@ -43,11 +43,9 @@ class ScrollingMapBody extends StatelessWidget {
                     height: 300.0,
                     child: GoogleMap(
                       onMapCreated: onMapCreated,
-                      options: GoogleMapOptions(
-                        cameraPosition: CameraPosition(
-                          target: center,
-                          zoom: 11.0,
-                        ),
+                      initialCameraPosition: CameraPosition(
+                        target: center,
+                        zoom: 11.0,
                       ),
                       gestureRecognizers:
                           <Factory<OneSequenceGestureRecognizer>>[
@@ -79,11 +77,9 @@ class ScrollingMapBody extends StatelessWidget {
                     height: 300.0,
                     child: GoogleMap(
                       onMapCreated: onMapCreated,
-                      options: GoogleMapOptions(
-                        cameraPosition: CameraPosition(
-                          target: center,
-                          zoom: 11.0,
-                        ),
+                      initialCameraPosition: CameraPosition(
+                        target: center,
+                        zoom: 11.0,
                       ),
                       gestureRecognizers:
                           <Factory<OneSequenceGestureRecognizer>>[

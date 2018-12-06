@@ -37,11 +37,14 @@ class MoveCameraState extends State<MoveCamera> {
       children: <Widget>[
         Center(
           child: SizedBox(
-              width: 300.0,
-              height: 200.0,
-              child: GoogleMap(
-                  onMapCreated: _onMapCreated,
-                  options: GoogleMapOptions.defaultOptions)),
+            width: 300.0,
+            height: 200.0,
+            child: GoogleMap(
+              onMapCreated: _onMapCreated,
+              initialCameraPosition:
+                  const CameraPosition(target: LatLng(0.0, 0.0)),
+            ),
+          ),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
