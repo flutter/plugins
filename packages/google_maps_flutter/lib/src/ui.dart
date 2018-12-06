@@ -53,11 +53,7 @@ class CameraTargetBounds {
   }
 
   @override
-  int get hashCode {
-    // We cast bounds to Object to make sure we get a proper hash code when it's null.
-    final Object boundsObject = bounds;
-    return boundsObject.hashCode;
-  }
+  int get hashCode => bounds.hashCode;
 
   @override
   String toString() {
