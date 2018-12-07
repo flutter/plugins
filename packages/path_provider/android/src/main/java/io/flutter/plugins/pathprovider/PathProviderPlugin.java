@@ -4,6 +4,8 @@
 
 package io.flutter.plugins.pathprovider;
 
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Environment;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -11,8 +13,12 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.util.PathUtils;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PathProviderPlugin implements MethodCallHandler {
+
   private final Registrar mRegistrar;
 
   public static void registerWith(Registrar registrar) {
@@ -38,6 +44,13 @@ public class PathProviderPlugin implements MethodCallHandler {
       case "getStorageDirectory":
         result.success(getPathProviderStorageDirectory());
         break;
+      case "getExternalCacheDirectories":
+        result.success(getPathProviderExternalCacheDirectories());
+        break;
+      case "getExternalStorageDirectories":
+        final String type = call.argument("type");
+        result.success(getPathProviderExternalStorageDirectories(type));
+        break;
       default:
         result.notImplemented();
     }
@@ -53,5 +66,43 @@ public class PathProviderPlugin implements MethodCallHandler {
 
   private String getPathProviderStorageDirectory() {
     return Environment.getExternalStorageDirectory().getAbsolutePath();
+  }
+
+  private List<String> getPathProviderExternalCacheDirectories() {
+    final List<String> paths = new ArrayList<>();
+
+    if (VERSION.SDK_INT >= VERSION_CODES.KITKAT) {
+      for (File dir : mRegistrar.context().getExternalCacheDirs()) {
+        if (dir != null) {
+          paths.add(dir.getAbsolutePath());
+        }
+      }
+    } else {
+      File dir = mRegistrar.context().getExternalCacheDir();
+      if (dir != null) {
+        paths.add(dir.getAbsolutePath());
+      }
+    }
+
+    return paths;
+  }
+
+  private List<String> getPathProviderExternalStorageDirectories(String type) {
+    final List<String> paths = new ArrayList<>();
+
+    if (VERSION.SDK_INT >= VERSION_CODES.KITKAT) {
+      for (File dir : mRegistrar.context().getExternalFilesDirs(type)) {
+        if (dir != null) {
+          paths.add(dir.getAbsolutePath());
+        }
+      }
+    } else {
+      File dir = mRegistrar.context().getExternalFilesDir(type);
+      if (dir != null) {
+        paths.add(dir.getAbsolutePath());
+      }
+    }
+
+    return paths;
   }
 }
