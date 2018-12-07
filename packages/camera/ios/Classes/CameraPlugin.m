@@ -213,9 +213,7 @@ vImage_Buffer conversionBuffer;
     });
     return;
   }
-  if (_isStreamingBytes) {
-    if (!_byteStreamHandler.eventSink) return;
-
+  if (_isStreamingBytes && _byteStreamHandler.eventSink) {
     CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
     CVPixelBufferLockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
 
