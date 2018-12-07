@@ -37,6 +37,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<Directory> _tempDirectory;
   Future<Directory> _appDocumentsDirectory;
   Future<Directory> _externalDocumentsDirectory;
+  Future<List<Directory>> _externalStorageDirectories;
+  Future<List<Directory>> _externalCacheDirectories;
 
   void _requestTempDirectory() {
     setState(() {
@@ -59,6 +61,23 @@ class _MyHomePageState extends State<MyHomePage> {
     return Padding(padding: const EdgeInsets.all(16.0), child: text);
   }
 
+  Widget _buildDirectories(
+      BuildContext context, AsyncSnapshot<List<Directory>> snapshot) {
+    Text text = const Text('');
+    if (snapshot.connectionState == ConnectionState.done) {
+      if (snapshot.hasError) {
+        text = Text('Error: ${snapshot.error}');
+      } else if (snapshot.hasData) {
+        final String combined =
+            snapshot.data.map((Directory d) => d.path).join(', ');
+        text = Text('paths: $combined');
+      } else {
+        text = const Text('path unavailable');
+      }
+    }
+    return Padding(padding: const EdgeInsets.all(16.0), child: text);
+  }
+
   void _requestAppDocumentsDirectory() {
     setState(() {
       _appDocumentsDirectory = getApplicationDocumentsDirectory();
@@ -71,13 +90,25 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void _requestExternalStorageDirectories(String type) {
+    setState(() {
+      _externalStorageDirectories = getExternalStorageDirectories(type);
+    });
+  }
+
+  void _requestExternalCacheDirectories() {
+    setState(() {
+      _externalCacheDirectories = getExternalCacheDirectories();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Center(
+      body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
@@ -92,10 +123,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ],
             ),
-            Expanded(
-              child: FutureBuilder<Directory>(
-                  future: _tempDirectory, builder: _buildDirectory),
-            ),
+            FutureBuilder<Directory>(
+                future: _tempDirectory, builder: _buildDirectory),
             Column(
               children: <Widget>[
                 Padding(
@@ -107,10 +136,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ],
             ),
-            Expanded(
-              child: FutureBuilder<Directory>(
-                  future: _appDocumentsDirectory, builder: _buildDirectory),
-            ),
+            FutureBuilder<Directory>(
+                future: _appDocumentsDirectory, builder: _buildDirectory),
             Column(children: <Widget>[
               Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -122,11 +149,36 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
             ]),
-            Expanded(
-              child: FutureBuilder<Directory>(
-                  future: _externalDocumentsDirectory,
-                  builder: _buildDirectory),
-            ),
+            FutureBuilder<Directory>(
+                future: _externalDocumentsDirectory, builder: _buildDirectory),
+            Column(children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: RaisedButton(
+                  child: Text(
+                      '${Platform.isIOS ? "External directories are unavailable " "on iOS" : "Get External Storage Directories"}'),
+                  onPressed: Platform.isIOS
+                      ? null
+                      : () => _requestExternalStorageDirectories(null),
+                ),
+              ),
+            ]),
+            FutureBuilder<List<Directory>>(
+                future: _externalStorageDirectories,
+                builder: _buildDirectories),
+            Column(children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: RaisedButton(
+                  child: Text(
+                      '${Platform.isIOS ? "External directories are unavailable " "on iOS" : "Get External Cache Directories"}'),
+                  onPressed:
+                      Platform.isIOS ? null : _requestExternalCacheDirectories,
+                ),
+              ),
+            ]),
+            FutureBuilder<List<Directory>>(
+                future: _externalCacheDirectories, builder: _buildDirectories),
           ],
         ),
       ),

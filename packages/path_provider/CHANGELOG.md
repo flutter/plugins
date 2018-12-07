@@ -1,3 +1,7 @@
+## 0.4.2
+
+* Support Android devices with multiple external storage options.
+
 ## 0.4.1
 
 * Updated Gradle tooling to match Android Studio 3.1.2.
