@@ -27,8 +27,8 @@ void main() {
       try {
         // ignore: unused_local_variable
         final LatLngBounds bounds = LatLngBounds(
-          southwest: const LatLng(30.0, 20.0),
-          northeast: const LatLng(-10.0, 40.0),
+          southWest: const LatLng(30.0, 20.0),
+          northEast: const LatLng(-10.0, 40.0),
         );
       } on AssertionError catch (e) {
         print(e);
@@ -45,8 +45,8 @@ void main() {
       });
       test('not empty.', () {
         final LatLngBounds bounds = LatLngBounds(
-          southwest: const LatLng(10.0, 20.0),
-          northeast: const LatLng(30.0, 40.0),
+          southWest: const LatLng(10.0, 20.0),
+          northEast: const LatLng(30.0, 40.0),
         );
         final bool res = bounds.isEmpty();
         expect(res, false);
@@ -56,16 +56,16 @@ void main() {
     group('LatLngBounds.center', () {
       test('all positive', () {
         final LatLngBounds bounds = LatLngBounds(
-          southwest: const LatLng(10.0, 20.0),
-          northeast: const LatLng(30.0, 40.0),
+          southWest: const LatLng(10.0, 20.0),
+          northEast: const LatLng(30.0, 40.0),
         );
         final LatLng res = bounds.center;
         expect(res, const LatLng(20.0, 30.0));
       });
       test('east < west', () {
         final LatLngBounds bounds = LatLngBounds(
-          southwest: const LatLng(-40.0, 150.0),
-          northeast: const LatLng(20.0, -170.0),
+          southWest: const LatLng(-40.0, 150.0),
+          northEast: const LatLng(20.0, -170.0),
         );
         final LatLng res = bounds.center;
         expect(res, const LatLng(-10.0, 170.0));
@@ -75,8 +75,8 @@ void main() {
     group('LatLngBounds.contains()', () {
       test('all positive', () {
         final LatLngBounds bounds = LatLngBounds(
-          southwest: const LatLng(10.0, 20.0),
-          northeast: const LatLng(30.0, 40.0),
+          southWest: const LatLng(10.0, 20.0),
+          northEast: const LatLng(30.0, 40.0),
         );
         final bool res = bounds.contains(const LatLng(20.0, 30.0));
         expect(res, true);
@@ -85,24 +85,24 @@ void main() {
           'all positive outside()'
           '8', () {
         final LatLngBounds bounds = LatLngBounds(
-          southwest: const LatLng(10.0, 20.0),
-          northeast: const LatLng(30.0, 40.0),
+          southWest: const LatLng(10.0, 20.0),
+          northEast: const LatLng(30.0, 40.0),
         );
         final bool res = bounds.contains(const LatLng(1.0, 1.0));
         expect(res, false);
       });
       test('east < west', () {
         final LatLngBounds bounds = LatLngBounds(
-          southwest: const LatLng(-40.0, 150.0),
-          northeast: const LatLng(20.0, -170.0),
+          southWest: const LatLng(-40.0, 150.0),
+          northEast: const LatLng(20.0, -170.0),
         );
         final bool res = bounds.contains(const LatLng(-10.0, 170.0));
         expect(res, true);
       });
       test('east < west outside', () {
         final LatLngBounds bounds = LatLngBounds(
-          southwest: const LatLng(-40.0, 150.0),
-          northeast: const LatLng(20.0, -170.0),
+          southWest: const LatLng(-40.0, 150.0),
+          northEast: const LatLng(20.0, -170.0),
         );
         final bool res = bounds.contains(const LatLng(-10.0, 130.0));
         expect(res, false);
@@ -111,48 +111,48 @@ void main() {
       group('LatLngBounds.intersects()', () {
         test('all positive', () {
           final LatLngBounds bounds = LatLngBounds(
-            southwest: const LatLng(10.0, 20.0),
-            northeast: const LatLng(30.0, 40.0),
+            southWest: const LatLng(10.0, 20.0),
+            northEast: const LatLng(30.0, 40.0),
           );
           final LatLngBounds bounds2 = LatLngBounds(
-            southwest: const LatLng(10.0, 30.0),
-            northeast: const LatLng(30.0, 50.0),
+            southWest: const LatLng(10.0, 30.0),
+            northEast: const LatLng(30.0, 50.0),
           );
           final bool res = bounds.intersects(bounds2);
           expect(res, true);
         });
         test('all positive outside', () {
           final LatLngBounds bounds = LatLngBounds(
-            southwest: const LatLng(10.0, 20.0),
-            northeast: const LatLng(30.0, 40.0),
+            southWest: const LatLng(10.0, 20.0),
+            northEast: const LatLng(30.0, 40.0),
           );
           final LatLngBounds bounds2 = LatLngBounds(
-            southwest: const LatLng(10.0, 50.0),
-            northeast: const LatLng(30.0, 70.0),
+            southWest: const LatLng(10.0, 50.0),
+            northEast: const LatLng(30.0, 70.0),
           );
           final bool res = bounds.intersects(bounds2);
           expect(res, false);
         });
         test('east < west', () {
           final LatLngBounds bounds = LatLngBounds(
-            southwest: const LatLng(-40.0, 150.0),
-            northeast: const LatLng(20.0, -170.0),
+            southWest: const LatLng(-40.0, 150.0),
+            northEast: const LatLng(20.0, -170.0),
           );
           final LatLngBounds bounds2 = LatLngBounds(
-            southwest: const LatLng(-40.0, -175.0),
-            northeast: const LatLng(20.0, -130.0),
+            southWest: const LatLng(-40.0, -175.0),
+            northEast: const LatLng(20.0, -130.0),
           );
           final bool res = bounds.intersects(bounds2);
           expect(res, true);
         });
         test('east < west outside', () {
           final LatLngBounds bounds = LatLngBounds(
-            southwest: const LatLng(-40.0, 150.0),
-            northeast: const LatLng(20.0, -170.0),
+            southWest: const LatLng(-40.0, 150.0),
+            northEast: const LatLng(20.0, -170.0),
           );
           final LatLngBounds bounds2 = LatLngBounds(
-            southwest: const LatLng(-40.0, 20.0),
-            northeast: const LatLng(20.0, 40.0),
+            southWest: const LatLng(-40.0, 20.0),
+            northEast: const LatLng(20.0, 40.0),
           );
           final bool res = bounds.intersects(bounds2);
           expect(res, false);
@@ -162,94 +162,94 @@ void main() {
       group('LatLngBounds.union()', () {
         test('all positive', () {
           final LatLngBounds bounds = LatLngBounds(
-            southwest: const LatLng(10.0, 20.0),
-            northeast: const LatLng(30.0, 40.0),
+            southWest: const LatLng(10.0, 20.0),
+            northEast: const LatLng(30.0, 40.0),
           );
           final LatLngBounds bounds2 = LatLngBounds(
-            southwest: const LatLng(10.0, 30.0),
-            northeast: const LatLng(30.0, 50.0),
+            southWest: const LatLng(10.0, 30.0),
+            northEast: const LatLng(30.0, 50.0),
           );
           final LatLngBounds res = bounds.union(bounds2);
-          expect(res.southwest, const LatLng(10.0, 20.0));
-          expect(res.northeast, const LatLng(30.0, 50.0));
+          expect(res.southWest, const LatLng(10.0, 20.0));
+          expect(res.northEast, const LatLng(30.0, 50.0));
         });
         test('all positive outside', () {
           final LatLngBounds bounds = LatLngBounds(
-            southwest: const LatLng(10.0, 20.0),
-            northeast: const LatLng(30.0, 40.0),
+            southWest: const LatLng(10.0, 20.0),
+            northEast: const LatLng(30.0, 40.0),
           );
           final LatLngBounds bounds2 = LatLngBounds(
-            southwest: const LatLng(10.0, 50.0),
-            northeast: const LatLng(30.0, 70.0),
+            southWest: const LatLng(10.0, 50.0),
+            northEast: const LatLng(30.0, 70.0),
           );
           final LatLngBounds res = bounds.union(bounds2);
-          expect(res.southwest, const LatLng(10.0, 20.0));
-          expect(res.northeast, const LatLng(30.0, 70.0));
+          expect(res.southWest, const LatLng(10.0, 20.0));
+          expect(res.northEast, const LatLng(30.0, 70.0));
         });
         test('east < west', () {
           final LatLngBounds bounds = LatLngBounds(
-            southwest: const LatLng(-40.0, 150.0),
-            northeast: const LatLng(20.0, -170.0),
+            southWest: const LatLng(-40.0, 150.0),
+            northEast: const LatLng(20.0, -170.0),
           );
           final LatLngBounds bounds2 = LatLngBounds(
-            southwest: const LatLng(-40.0, -175.0),
-            northeast: const LatLng(20.0, -130.0),
+            southWest: const LatLng(-40.0, -175.0),
+            northEast: const LatLng(20.0, -130.0),
           );
           final LatLngBounds res = bounds.union(bounds2);
-          expect(res.southwest, const LatLng(-40.0, 150.0));
-          expect(res.northeast, const LatLng(20.0, -130.0));
+          expect(res.southWest, const LatLng(-40.0, 150.0));
+          expect(res.northEast, const LatLng(20.0, -130.0));
         });
         test('east < west outside', () {
           final LatLngBounds bounds = LatLngBounds(
-            southwest: const LatLng(-40.0, 150.0),
-            northeast: const LatLng(20.0, -170.0),
+            southWest: const LatLng(-40.0, 150.0),
+            northEast: const LatLng(20.0, -170.0),
           );
           final LatLngBounds bounds2 = LatLngBounds(
-            southwest: const LatLng(-40.0, 20.0),
-            northeast: const LatLng(20.0, 40.0),
+            southWest: const LatLng(-40.0, 20.0),
+            northEast: const LatLng(20.0, 40.0),
           );
           final LatLngBounds res = bounds.union(bounds2);
-          expect(res.southwest, const LatLng(-40.0, 20.0));
-          expect(res.northeast, const LatLng(20.0, -170.0));
+          expect(res.southWest, const LatLng(-40.0, 20.0));
+          expect(res.northEast, const LatLng(20.0, -170.0));
         });
       });
 
       group('LatLngBounds.extend()', () {
         test('all positive within', () {
           final LatLngBounds bounds = LatLngBounds(
-            southwest: const LatLng(10.0, 20.0),
-            northeast: const LatLng(30.0, 40.0),
+            southWest: const LatLng(10.0, 20.0),
+            northEast: const LatLng(30.0, 40.0),
           );
           final LatLngBounds res = bounds.extend(const LatLng(20.0, 30.0));
-          expect(res.southwest, const LatLng(10.0, 20.0));
-          expect(res.northeast, const LatLng(30.0, 40.0));
+          expect(res.southWest, const LatLng(10.0, 20.0));
+          expect(res.northEast, const LatLng(30.0, 40.0));
         });
         test('all positive outside', () {
           final LatLngBounds bounds = LatLngBounds(
-            southwest: const LatLng(10.0, 20.0),
-            northeast: const LatLng(30.0, 40.0),
+            southWest: const LatLng(10.0, 20.0),
+            northEast: const LatLng(30.0, 40.0),
           );
           final LatLngBounds res = bounds.extend(const LatLng(1.0, 1.0));
-          expect(res.southwest, const LatLng(1.0, 1.0));
-          expect(res.northeast, const LatLng(30.0, 40.0));
+          expect(res.southWest, const LatLng(1.0, 1.0));
+          expect(res.northEast, const LatLng(30.0, 40.0));
         });
         test('east < west', () {
           final LatLngBounds bounds = LatLngBounds(
-            southwest: const LatLng(-40.0, 150.0),
-            northeast: const LatLng(20.0, -170.0),
+            southWest: const LatLng(-40.0, 150.0),
+            northEast: const LatLng(20.0, -170.0),
           );
           final LatLngBounds res = bounds.extend(const LatLng(-10.0, 170.0));
-          expect(res.southwest, const LatLng(-40.0, 150.0));
-          expect(res.northeast, const LatLng(20.0, -170.0));
+          expect(res.southWest, const LatLng(-40.0, 150.0));
+          expect(res.northEast, const LatLng(20.0, -170.0));
         });
         test('east < west outside', () {
           final LatLngBounds bounds = LatLngBounds(
-            southwest: const LatLng(-40.0, 150.0),
-            northeast: const LatLng(20.0, -170.0),
+            southWest: const LatLng(-40.0, 150.0),
+            northEast: const LatLng(20.0, -170.0),
           );
           final LatLngBounds res = bounds.extend(const LatLng(-10.0, 130.0));
-          expect(res.southwest, const LatLng(-40.0, 130.0));
-          expect(res.northeast, const LatLng(20.0, -170.0));
+          expect(res.southWest, const LatLng(-40.0, 130.0));
+          expect(res.northEast, const LatLng(20.0, -170.0));
         });
       });
     });
