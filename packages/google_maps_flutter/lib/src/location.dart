@@ -178,17 +178,17 @@ class LatLngBounds {
   /// Constructs a rectangle from the points at its
   /// south-west and north-east corners.
   /// The constructor also accepts null as an argument.
-  LatLngBounds({LatLng southwest, LatLng northeast}) {
-    if (southwest != null || northeast != null) {
-      if (southwest != null) northeast = northeast ??= southwest;
-      if (southwest != null) southwest = southwest ??= northeast;
+  LatLngBounds({LatLng southWest, LatLng northEast}) {
+    if (southWest != null || northEast != null) {
+      if (southWest != null) northEast = northEast ??= southWest;
+      if (southWest != null) southWest = southWest ??= northEast;
 
-      final double south = clip(southwest.latitude, -90.0, 90.0);
-      final double north = clip(northeast.latitude, -90.0, 90.0);
+      final double south = clip(southWest.latitude, -90.0, 90.0);
+      final double north = clip(northEast.latitude, -90.0, 90.0);
       assert(south <= north);
       _latRange = _LatRange(south, north);
-      double west = southwest.longitude;
-      double east = northeast.longitude;
+      double west = southWest.longitude;
+      double east = northEast.longitude;
       if (360.0 <= east - west) {
         _lngRange = _LngRange(-180.0, 180.0);
       } else {
@@ -273,8 +273,8 @@ class LatLngBounds {
       return null;
     }
     return LatLngBounds(
-      southwest: LatLng._fromJson(json[0]),
-      northeast: LatLng._fromJson(json[1]),
+      southWest: LatLng._fromJson(json[0]),
+      northEast: LatLng._fromJson(json[1]),
     );
   }
 

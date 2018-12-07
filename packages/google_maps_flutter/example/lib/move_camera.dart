@@ -78,8 +78,8 @@ class MoveCameraState extends State<MoveCamera> {
                     mapController.moveCamera(
                       CameraUpdate.newLatLngBounds(
                         LatLngBounds(
-                          southwest: const LatLng(-38.483935, 113.248673),
-                          northeast: const LatLng(-8.982446, 153.823821),
+                          southWest: const LatLng(-38.483935, 113.248673),
+                          northEast: const LatLng(-8.982446, 153.823821),
                         ),
                         10.0,
                       ),

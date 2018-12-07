@@ -69,6 +69,7 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
 
   void _add() {
     controller.addMarker(MarkerOptions(
+      consumeTapEvents: true,
       position: LatLng(
         center.latitude + sin(_markerCount * pi / 6.0) / 20.0,
         center.longitude + cos(_markerCount * pi / 6.0) / 20.0,
