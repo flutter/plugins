@@ -36,7 +36,7 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
         return;
       }
 
-      [self share:shareText
+      [self share:@[ shareText ]
           withController:[UIApplication sharedApplication].keyWindow.rootViewController
                 atSource:originRect];
       result(nil);
@@ -65,11 +65,11 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
   }];
 }
 
-+ (void)share:(id)sharedItems
++ (void)share:(NSArray *)shareItems
     withController:(UIViewController *)controller
           atSource:(CGRect)origin {
   UIActivityViewController *activityViewController =
-      [[UIActivityViewController alloc] initWithActivityItems:@[ sharedItems ]
+      [[UIActivityViewController alloc] initWithActivityItems:shareItems
                                         applicationActivities:nil];
   activityViewController.popoverPresentationController.sourceView = controller.view;
   if (!CGRectIsEmpty(origin)) {
@@ -93,7 +93,6 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
     [items addObject:text];
   }
 
-  // TODO maybe we can just call share here?
   if ([mimeType hasPrefix:@"image/"]) {
     UIImage *image = [UIImage imageWithContentsOfFile:path];
     [items addObject:image];
@@ -102,14 +101,9 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
     [items addObject:url];
   }
 
-  UIActivityViewController *activityViewController =
-      [[UIActivityViewController alloc] initWithActivityItems:items
-                                        applicationActivities:nil];
-  activityViewController.popoverPresentationController.sourceView = controller.view;
-  if (!CGRectIsEmpty(origin)) {
-    activityViewController.popoverPresentationController.sourceRect = origin;
-  }
-  [controller presentViewController:activityViewController animated:YES completion:nil];
+  [self share:items
+      withController:controller
+            atSource:origin];
 }
 
 @end
