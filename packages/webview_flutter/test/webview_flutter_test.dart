@@ -297,9 +297,7 @@ class FakePlatformWebView {
     switch (call.method) {
       case 'loadUrl':
         final String url = call.arguments;
-        if (history.length - 1 > currentPosition) {
-          history = history.sublist(0, currentPosition + 1);
-        }
+        history = history.sublist(0, currentPosition + 1);
         history.add(url);
         currentPosition++;
         return Future<void>.sync(() {});
