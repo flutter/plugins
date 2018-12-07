@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
@@ -33,7 +34,7 @@ void main() {
     final FakePlatformWebView platformWebView =
         fakePlatformViewsController.lastCreatedView;
 
-    expect(platformWebView.lastUrlLoaded, 'https://youtube.com');
+    expect(platformWebView.currentUrl, 'https://youtube.com');
   });
 
   testWidgets('JavaScript mode', (WidgetTester tester) async {
@@ -72,7 +73,7 @@ void main() {
 
     controller.loadUrl('https://flutter.io');
 
-    expect(platformWebView.lastUrlLoaded, 'https://flutter.io');
+    expect(platformWebView.currentUrl, 'https://flutter.io');
   });
 
   testWidgets('Invald urls', (WidgetTester tester) async {
@@ -91,21 +92,192 @@ void main() {
         fakePlatformViewsController.lastCreatedView;
 
     expect(() => controller.loadUrl(null), throwsA(anything));
-    expect(platformWebView.lastUrlLoaded, isNull);
+    expect(platformWebView.currentUrl, isNull);
 
     expect(() => controller.loadUrl(''), throwsA(anything));
-    expect(platformWebView.lastUrlLoaded, isNull);
+    expect(platformWebView.currentUrl, isNull);
 
     // Missing schema.
     expect(() => controller.loadUrl('flutter.io'), throwsA(anything));
-    expect(platformWebView.lastUrlLoaded, isNull);
+    expect(platformWebView.currentUrl, isNull);
+  });
+
+  testWidgets("Can't go back before loading a page",
+      (WidgetTester tester) async {
+    WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+
+    final bool canGoBackNoPageLoaded = await controller.canGoBack();
+
+    expect(canGoBackNoPageLoaded, false);
+  });
+
+  testWidgets("Can't go back with no history", (WidgetTester tester) async {
+    WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://flutter.io',
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+    final bool canGoBackFirstPageLoaded = await controller.canGoBack();
+
+    expect(canGoBackFirstPageLoaded, false);
+  });
+
+  testWidgets('Can go back', (WidgetTester tester) async {
+    WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://flutter.io',
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+
+    await controller.loadUrl('https://www.google.com');
+    final bool canGoBackSecondPageLoaded = await controller.canGoBack();
+
+    expect(canGoBackSecondPageLoaded, true);
+  });
+
+  testWidgets("Can't go forward before loading a page",
+      (WidgetTester tester) async {
+    WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+
+    final bool canGoForwardNoPageLoaded = await controller.canGoForward();
+
+    expect(canGoForwardNoPageLoaded, false);
+  });
+
+  testWidgets("Can't go forward with no history", (WidgetTester tester) async {
+    WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://flutter.io',
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+    final bool canGoForwardFirstPageLoaded = await controller.canGoForward();
+
+    expect(canGoForwardFirstPageLoaded, false);
+  });
+
+  testWidgets('Can go forward', (WidgetTester tester) async {
+    WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://flutter.io',
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+
+    await controller.loadUrl('https://youtube.com');
+    await controller.goBack();
+    final bool canGoForwardFirstPageBacked = await controller.canGoForward();
+
+    expect(canGoForwardFirstPageBacked, true);
+  });
+
+  testWidgets('Go back', (WidgetTester tester) async {
+    WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://youtube.com',
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+
+    final FakePlatformWebView platformWebView =
+        fakePlatformViewsController.lastCreatedView;
+
+    expect(platformWebView.currentUrl, 'https://youtube.com');
+
+    controller.loadUrl('https://flutter.io');
+
+    expect(platformWebView.currentUrl, 'https://flutter.io');
+
+    controller.goBack();
+
+    expect(platformWebView.currentUrl, 'https://youtube.com');
+  });
+
+  testWidgets('Go forward', (WidgetTester tester) async {
+    WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://youtube.com',
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+
+    final FakePlatformWebView platformWebView =
+        fakePlatformViewsController.lastCreatedView;
+
+    expect(platformWebView.currentUrl, 'https://youtube.com');
+
+    controller.loadUrl('https://flutter.io');
+
+    expect(platformWebView.currentUrl, 'https://flutter.io');
+
+    controller.goBack();
+
+    expect(platformWebView.currentUrl, 'https://youtube.com');
+
+    controller.goForward();
+
+    expect(platformWebView.currentUrl, 'https://flutter.io');
   });
 }
 
 class FakePlatformWebView {
   FakePlatformWebView(int id, Map<dynamic, dynamic> params) {
     if (params.containsKey('initialUrl')) {
-      lastUrlLoaded = params['initialUrl'];
+      final String initialUrl = params['initialUrl'];
+      if (initialUrl != null) {
+        history.add(initialUrl);
+        currentPosition++;
+      }
       javaScriptMode = JavaScriptMode.values[params['settings']['jsMode']];
     }
     channel = MethodChannel(
@@ -115,19 +287,39 @@ class FakePlatformWebView {
 
   MethodChannel channel;
 
-  String lastUrlLoaded;
+  List<String> history = <String>[];
+  int currentPosition = -1;
+
+  String get currentUrl => history.isEmpty ? null : history[currentPosition];
   JavaScriptMode javaScriptMode;
 
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
       case 'loadUrl':
-        lastUrlLoaded = call.arguments;
+        final String url = call.arguments;
+        history = history.sublist(0, currentPosition + 1);
+        history.add(url);
+        currentPosition++;
         return Future<void>.sync(() {});
       case 'updateSettings':
         if (call.arguments['jsMode'] == null) {
           break;
         }
         javaScriptMode = JavaScriptMode.values[call.arguments['jsMode']];
+        break;
+      case 'canGoBack':
+        return Future<bool>.sync(() => currentPosition > 0);
+        break;
+      case 'canGoForward':
+        return Future<bool>.sync(() => currentPosition < history.length - 1);
+        break;
+      case 'goBack':
+        currentPosition = max(-1, currentPosition - 1);
+        return Future<void>.sync(() {});
+        break;
+      case 'goForward':
+        currentPosition = min(history.length - 1, currentPosition + 1);
+        return Future<void>.sync(() {});
         break;
     }
     return Future<void>.sync(() {});
