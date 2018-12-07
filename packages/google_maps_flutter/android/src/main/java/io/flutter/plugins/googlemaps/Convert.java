@@ -46,7 +46,7 @@ class Convert {
     return (Boolean) o;
   }
 
-  private static CameraPosition toCameraPosition(Object o) {
+  static CameraPosition toCameraPosition(Object o) {
     final Map<?, ?> data = toMap(o);
     final CameraPosition.Builder builder = CameraPosition.builder();
     builder.bearing(toFloat(data.get("bearing")));
@@ -165,10 +165,6 @@ class Convert {
 
   static void interpretGoogleMapOptions(Object o, GoogleMapOptionsSink sink) {
     final Map<?, ?> data = toMap(o);
-    final Object cameraPosition = data.get("cameraPosition");
-    if (cameraPosition != null) {
-      sink.setCameraPosition(toCameraPosition(cameraPosition));
-    }
     final Object cameraTargetBounds = data.get("cameraTargetBounds");
     if (cameraTargetBounds != null) {
       final List<?> targetData = toList(cameraTargetBounds);
@@ -208,6 +204,10 @@ class Convert {
     final Object zoomGesturesEnabled = data.get("zoomGesturesEnabled");
     if (zoomGesturesEnabled != null) {
       sink.setZoomGesturesEnabled(toBoolean(zoomGesturesEnabled));
+    }
+    final Object myLocationEnabled = data.get("myLocationEnabled");
+    if (myLocationEnabled != null) {
+      sink.setMyLocationEnabled(toBoolean(myLocationEnabled));
     }
   }
 

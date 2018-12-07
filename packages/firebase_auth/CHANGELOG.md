@@ -1,3 +1,20 @@
+## 0.7.0
+
+* Introduce third-party auth provider classes that generate `AuthCredential`s
+* **Breaking Change** Signing in, linking, and reauthenticating now require an `AuthCredential`
+* **Breaking Change** Unlinking now uses providerId
+* **Breaking Change** Moved reauthentication to FirebaseUser
+
+## 0.6.7
+
+* `FirebaseAuth` and `FirebaseUser` are now fully documented.
+* `PlatformExceptions` now report error codes as stated in docs.
+* Credentials can now be unlinked from Accounts with new methods on `FirebaseUser`.
+
+## 0.6.6
+
+* Users can now reauthenticate in response to operations that require a recent sign-in.
+
 ## 0.6.5
 
 * Fixing async method `verifyPhoneNumber`, that would never return even in a successful call.

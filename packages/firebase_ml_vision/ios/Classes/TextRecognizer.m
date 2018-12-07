@@ -15,7 +15,7 @@ static FIRVisionTextRecognizer *recognizer;
                     [FLTFirebaseMlVisionPlugin handleError:error result:result];
                     return;
                   } else if (!visionText) {
-                    result(@{ @"text" : @"", @"blocks" : @[] });
+                    result(@{@"text" : @"", @"blocks" : @[]});
                     return;
                   }
 

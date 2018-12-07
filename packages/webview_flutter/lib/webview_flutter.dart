@@ -70,11 +70,13 @@ class _WebViewState extends State<WebView> {
   Widget build(BuildContext context) {
     if (defaultTargetPlatform == TargetPlatform.android) {
       return GestureDetector(
-        // We prevent text selection by intercepting long press event.
-        // This is a temporary workaround to prevent a native crash on a second
-        // text selection.
-        // TODO(amirh): remove this when the selection handles crash is resolved.
-        // https://github.com/flutter/flutter/issues/21239
+        // We prevent text selection by intercepting the long press event.
+        // This is a temporary stop gap due to issues with text selection on Android:
+        // https://github.com/flutter/flutter/issues/24585 - the text selection
+        // dialog is not responding to touch events.
+        // https://github.com/flutter/flutter/issues/24584 - the text selection
+        // handles are not showing.
+        // TODO(amirh): remove this when the issues above are fixed.
         onLongPress: () {},
         child: AndroidView(
           viewType: 'plugins.flutter.io/webview',
