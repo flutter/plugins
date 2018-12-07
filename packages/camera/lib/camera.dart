@@ -102,7 +102,7 @@ ImageFormatGroup _asImageFormatGroup(dynamic rawFormat) {
 /// images as single planar images.
 class CameraImage {
   CameraImage._fromPlatformData(dynamic data)
-      : format = data['format'],
+      : format = ImageFormat._fromPlatformData(data['format']),
         height = data['height'],
         width = data['width'],
         planes = List<Plane>.unmodifiable(data['planes']
