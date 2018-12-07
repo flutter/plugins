@@ -47,8 +47,9 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
       NSString *text = arguments[@"text"];
 
       if (path.length == 0) {
-        result(
-            [FlutterError errorWithCode:@"error" message:@"Non-empty path expected" details:nil]);
+        result([FlutterError errorWithCode:@"error"
+                                   message:@"Non-empty path expected"
+                                   details:nil]);
         return;
       }
 
@@ -69,8 +70,7 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
     withController:(UIViewController *)controller
           atSource:(CGRect)origin {
   UIActivityViewController *activityViewController =
-      [[UIActivityViewController alloc] initWithActivityItems:shareItems
-                                        applicationActivities:nil];
+      [[UIActivityViewController alloc] initWithActivityItems:shareItems applicationActivities:nil];
   activityViewController.popoverPresentationController.sourceView = controller.view;
   if (!CGRectIsEmpty(origin)) {
     activityViewController.popoverPresentationController.sourceRect = origin;
@@ -84,7 +84,7 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
           withText:(NSString *)text
     withController:(UIViewController *)controller
           atSource:(CGRect)origin {
-  NSMutableArray *items = [[NSMutableArray alloc]init];
+  NSMutableArray *items = [[NSMutableArray alloc] init];
 
   if (subject != nil && subject.length != 0) {
     [items addObject:subject];
@@ -101,9 +101,7 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
     [items addObject:url];
   }
 
-  [self share:items
-      withController:controller
-            atSource:origin];
+  [self share:items withController:controller atSource:origin];
 }
 
 @end

@@ -12,7 +12,6 @@ import android.support.v4.content.FileProvider;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
-
 import java.io.*;
 import java.util.Map;
 
@@ -46,8 +45,11 @@ public class SharePlugin implements MethodChannel.MethodCallHandler {
         expectMapArguments(call);
         // Android does not support showing the share sheet at a particular point on screen.
         try {
-          shareFile((String) call.argument("path"), (String) call.argument("mimeType"),
-              (String) call.argument("subject"), (String) call.argument("text"));
+          shareFile(
+              (String) call.argument("path"),
+              (String) call.argument("mimeType"),
+              (String) call.argument("subject"),
+              (String) call.argument("text"));
           result.success(null);
         } catch (IOException e) {
           result.error(e.getMessage(), null, null);
@@ -83,7 +85,8 @@ public class SharePlugin implements MethodChannel.MethodCallHandler {
     }
   }
 
-  private void shareFile(String path, String mimeType, String subject, String text) throws IOException {
+  private void shareFile(String path, String mimeType, String subject, String text)
+      throws IOException {
     if (path == null || path.isEmpty()) {
       throw new IllegalArgumentException("Non-empty path expected");
     }
@@ -94,10 +97,11 @@ public class SharePlugin implements MethodChannel.MethodCallHandler {
       file = copyToExternalShareFolder(file);
     }
 
-    Uri fileUri = FileProvider.getUriForFile(
-        mRegistrar.context(),
-        mRegistrar.context().getPackageName() + ".flutter.share_provider",
-        file);
+    Uri fileUri =
+        FileProvider.getUriForFile(
+            mRegistrar.context(),
+            mRegistrar.context().getPackageName() + ".flutter.share_provider",
+            file);
 
     Intent shareIntent = new Intent();
     shareIntent.setAction(Intent.ACTION_SEND);

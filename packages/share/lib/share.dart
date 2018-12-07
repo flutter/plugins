@@ -58,7 +58,10 @@ class Share {
   /// May throw [PlatformException] or [FormatException]
   /// from [MethodChannel].
   static Future<void> shareFile(File file,
-      {String mimeType, String subject, String text, Rect sharePositionOrigin}) {
+      {String mimeType,
+      String subject,
+      String text,
+      Rect sharePositionOrigin}) {
     assert(file != null);
     assert(file.existsSync());
     final Map<String, dynamic> params = <String, dynamic>{
