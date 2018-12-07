@@ -206,12 +206,18 @@ class WebViewController {
   }
 
   /// Checks whether there's a back history item.
+  ///
+  /// Note that this operation is asynchronous, and it is possible that the "canGoBack" state has
+  /// changed by the time the future completed.
   Future<bool> canGoBack() async {
     final bool canGoBack = await _channel.invokeMethod("canGoBack");
     return canGoBack;
   }
 
   /// Checks whether there's a forward history item.
+  ///
+  /// Note that this operation is asynchronous, and it is possible that the "canGoForward" state has
+  /// changed by the time the future completed.
   Future<bool> canGoForward() async {
     final bool canGoForward = await _channel.invokeMethod("canGoForward");
     return canGoForward;

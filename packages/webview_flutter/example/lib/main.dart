@@ -67,40 +67,48 @@ class NavigationControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<WebViewController>(
-        future: _webViewControllerFuture,
-        builder:
-            (BuildContext context, AsyncSnapshot<WebViewController> snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            final WebViewController controller = snapshot.data;
-            return Row(
-              children: <Widget>[
-                IconButton(
-                    icon: const Icon(Icons.arrow_back_ios),
-                    onPressed: () async {
-                      final bool canGoBack = await controller.canGoBack();
-                      if (canGoBack) {
+      future: _webViewControllerFuture,
+      builder:
+          (BuildContext context, AsyncSnapshot<WebViewController> snapshot) {
+        final bool webViewReady =
+            snapshot.connectionState == ConnectionState.done;
+        final WebViewController controller = snapshot.data;
+        return Row(
+          children: <Widget>[
+            IconButton(
+              icon: const Icon(Icons.arrow_back_ios),
+              onPressed: !webViewReady
+                  ? null
+                  : () async {
+                      if (await controller.canGoBack()) {
                         controller.goBack();
                       } else {
-                        Scaffold.of(context).showSnackBar(const SnackBar(
-                            content: Text("No back history item")));
+                        Scaffold.of(context).showSnackBar(
+                          const SnackBar(content: Text("No back history item")),
+                        );
+                        return;
                       }
-                    }),
-                IconButton(
-                    icon: const Icon(Icons.arrow_forward_ios),
-                    onPressed: () async {
-                      final bool canGoForward = await controller.canGoForward();
-                      if (canGoForward) {
+                    },
+            ),
+            IconButton(
+              icon: const Icon(Icons.arrow_forward_ios),
+              onPressed: !webViewReady
+                  ? null
+                  : () async {
+                      if (await controller.canGoForward()) {
                         controller.goForward();
                       } else {
-                        Scaffold.of(context).showSnackBar(const SnackBar(
-                            content: Text("No forward history item")));
+                        Scaffold.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text("No forward history item")),
+                        );
+                        return;
                       }
-                    })
-              ],
-            );
-          } else {
-            return Container();
-          }
-        });
+                    },
+            ),
+          ],
+        );
+      },
+    );
   }
 }
