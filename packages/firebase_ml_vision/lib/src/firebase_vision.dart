@@ -161,7 +161,7 @@ class FirebaseVisionImageMetadata {
     @required this.rawFormat,
     @required this.planeData,
     this.rotation = ImageRotation.rotation_0,
-  })  : assert(size != null);
+  }) : assert(size != null);
 
   /// Size of the image in pixels.
   final Size size;

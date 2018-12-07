@@ -72,9 +72,9 @@
     size_t bytesPerRows[planeCount];
 
     void *baseAddresses[planeCount];
-    baseAddresses[0] = (void *) imageBytes.bytes;
+    baseAddresses[0] = (void *)imageBytes.bytes;
 
-    size_t lastAddressIndex = 0; // Used to get base address for each plane
+    size_t lastAddressIndex = 0;  // Used to get base address for each plane
     for (int i = 0; i < planeCount; i++) {
       NSDictionary *plane = planeData[i];
 
@@ -88,7 +88,7 @@
 
       if (i > 0) {
         size_t addressIndex = lastAddressIndex + heights[i - 1] * bytesPerRows[i - 1];
-        baseAddresses[i] = (void *) imageBytes.bytes + addressIndex;
+        baseAddresses[i] = (void *)imageBytes.bytes + addressIndex;
       }
     }
 
@@ -99,7 +99,10 @@
     FourCharCode format = FOUR_CHAR_CODE(rawFormat.unsignedIntValue);
 
     CVPixelBufferRef pxbuffer = NULL;
-    CVPixelBufferCreateWithPlanarBytes(kCFAllocatorDefault, width.unsignedLongValue, height.unsignedLongValue, format, NULL, imageBytes.length, 2, baseAddresses, widths, heights, bytesPerRows, NULL, NULL, NULL, &pxbuffer);
+    CVPixelBufferCreateWithPlanarBytes(kCFAllocatorDefault, width.unsignedLongValue,
+                                       height.unsignedLongValue, format, NULL, imageBytes.length, 2,
+                                       baseAddresses, widths, heights, bytesPerRows, NULL, NULL,
+                                       NULL, &pxbuffer);
 
     CMSampleTimingInfo info;
     info.presentationTimeStamp = kCMTimeZero;
@@ -110,13 +113,15 @@
     CMVideoFormatDescriptionCreateForImageBuffer(kCFAllocatorDefault, pxbuffer, &formatDesc);
 
     CMSampleBufferRef sampleBuffer = NULL;
-    CMSampleBufferCreateReadyWithImageBuffer(kCFAllocatorDefault, pxbuffer, formatDesc, &info, &sampleBuffer);
+    CMSampleBufferCreateReadyWithImageBuffer(kCFAllocatorDefault, pxbuffer, formatDesc, &info,
+                                             &sampleBuffer);
 
     return [[FIRVisionImage alloc] initWithBuffer:sampleBuffer];
   } else {
     NSString *errorReason = [NSString stringWithFormat:@"No image type for: %@", imageType];
-    @throw
-        [NSException exceptionWithName:NSInvalidArgumentException reason:errorReason userInfo:nil];
+    @throw [NSException exceptionWithName:NSInvalidArgumentException
+                                   reason:errorReason
+                                 userInfo:nil];
   }
 }
 @end
