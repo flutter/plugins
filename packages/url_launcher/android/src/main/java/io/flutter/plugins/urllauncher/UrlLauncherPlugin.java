@@ -39,7 +39,6 @@ public class UrlLauncherPlugin implements MethodCallHandler {
 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
-    Context context = mRegistrar.context();
     String url = call.argument("url");
     if (call.method.equals("canLaunch")) {
       canLaunch(url, result);
@@ -47,22 +46,24 @@ public class UrlLauncherPlugin implements MethodCallHandler {
       Intent launchIntent;
       boolean useWebView = call.argument("useWebView");
       boolean enableJavaScript = call.argument("enableJavaScript");
+      Activity activity = mRegistrar.activity();
+      if (activity == null) {
+        result.error("NO_ACTIVITY", "Launching a URL requires a foreground activity.", null);
+        return;
+      }
       if (useWebView) {
-        launchIntent = new Intent(context, WebViewActivity.class);
+        launchIntent = new Intent(activity, WebViewActivity.class);
         launchIntent.putExtra("url", url);
         launchIntent.putExtra("enableJavaScript", enableJavaScript);
       } else {
         launchIntent = new Intent(Intent.ACTION_VIEW);
         launchIntent.setData(Uri.parse(url));
       }
-      if (mRegistrar.activity() == null) {
-        launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      }
-      context.startActivity(launchIntent);
+      activity.startActivity(launchIntent);
       result.success(null);
     } else if (call.method.equals("closeWebView")) {
       Intent intent = new Intent("close");
-      context.sendBroadcast(intent);
+      mRegistrar.context().sendBroadcast(intent);
       result.success(null);
     } else {
       result.notImplemented();
@@ -85,6 +86,7 @@ public class UrlLauncherPlugin implements MethodCallHandler {
   /*  Launches WebView activity */
   public static class WebViewActivity extends Activity {
     private WebView webview;
+    private BroadcastReceiver broadcastReceiver;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -110,17 +112,23 @@ public class UrlLauncherPlugin implements MethodCallHandler {
           });
 
       // Set broadcast receiver to handle calls to close the web view
-      BroadcastReceiver broadcast_receiver =
+      broadcastReceiver =
           new BroadcastReceiver() {
             @Override
             public void onReceive(Context arg0, Intent intent) {
               String action = intent.getAction();
-              if (action.equals("close")) {
+              if ("close".equals(action)) {
                 finish();
               }
             }
           };
-      registerReceiver(broadcast_receiver, new IntentFilter("close"));
+      registerReceiver(broadcastReceiver, new IntentFilter("close"));
+    }
+
+    @Override
+    protected void onDestroy() {
+      super.onDestroy();
+      unregisterReceiver(broadcastReceiver);
     }
 
     @Override
