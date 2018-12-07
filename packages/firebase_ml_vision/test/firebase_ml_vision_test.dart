@@ -51,9 +51,9 @@ void main() {
 
       test('default serialization', () async {
         final FirebaseVisionImageMetadata metadata =
-            const FirebaseVisionImageMetadata(
+            FirebaseVisionImageMetadata(
           rawFormat: 35,
-          size: Size(1.0, 1.0),
+          size: const Size(1.0, 1.0),
           planeData: <FirebaseVisionImagePlaneMetadata>[
             FirebaseVisionImagePlaneMetadata(
               bytesPerRow: 1000,

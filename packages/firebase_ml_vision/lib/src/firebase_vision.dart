@@ -63,7 +63,7 @@ class FirebaseVision {
 ///
 /// Create an instance by calling one of the factory constructors.
 class FirebaseVisionImage {
-  const FirebaseVisionImage._({
+  FirebaseVisionImage._({
     @required _ImageType type,
     FirebaseVisionImageMetadata metadata,
     File imageFile,
@@ -126,14 +126,22 @@ class FirebaseVisionImage {
 }
 
 /// Plane attributes to create the image buffer on iOS.
+///
+/// When using iOS, [bytesPerRow], [height], and [width] throw [AssertionError]
+/// if `null`.
 class FirebaseVisionImagePlaneMetadata {
-  const FirebaseVisionImagePlaneMetadata({
+  FirebaseVisionImagePlaneMetadata({
     @required this.bytesPerRow,
     @required this.height,
     @required this.width,
-  })  : assert(bytesPerRow != null),
-        assert(height != null),
-        assert(width != null);
+  })  : assert(defaultTargetPlatform == TargetPlatform.iOS
+            ? bytesPerRow != null
+            : true),
+        assert(defaultTargetPlatform == TargetPlatform.iOS
+            ? height != null
+            : true),
+        assert(
+            defaultTargetPlatform == TargetPlatform.iOS ? width != null : true);
 
   /// The row stride for this color plane, in bytes.
   final int bytesPerRow;
@@ -155,13 +163,22 @@ class FirebaseVisionImagePlaneMetadata {
 ///
 /// [rotation] defaults to [ImageRotation.rotation_0]. Currently only rotates on
 /// Android.
+///
+/// When using iOS, [rawFormat] and [planeData] throw [AssertionError] if
+/// `null`.
 class FirebaseVisionImageMetadata {
-  const FirebaseVisionImageMetadata({
+  FirebaseVisionImageMetadata({
     @required this.size,
     @required this.rawFormat,
     @required this.planeData,
     this.rotation = ImageRotation.rotation_0,
-  }) : assert(size != null);
+  })  : assert(size != null),
+        assert(defaultTargetPlatform == TargetPlatform.iOS
+            ? rawFormat != null
+            : true),
+        assert(defaultTargetPlatform == TargetPlatform.iOS
+            ? planeData != null
+            : true);
 
   /// Size of the image in pixels.
   final Size size;
