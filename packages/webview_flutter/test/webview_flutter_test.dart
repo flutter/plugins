@@ -34,7 +34,7 @@ void main() {
     final FakePlatformWebView platformWebView =
         fakePlatformViewsController.lastCreatedView;
 
-    expect(platformWebView.lastUrlLoaded, 'https://youtube.com');
+    expect(platformWebView.currentUrl, 'https://youtube.com');
   });
 
   testWidgets('JavaScript mode', (WidgetTester tester) async {
@@ -73,7 +73,7 @@ void main() {
 
     controller.loadUrl('https://flutter.io');
 
-    expect(platformWebView.lastUrlLoaded, 'https://flutter.io');
+    expect(platformWebView.currentUrl, 'https://flutter.io');
   });
 
   testWidgets('Invald urls', (WidgetTester tester) async {
@@ -92,14 +92,14 @@ void main() {
         fakePlatformViewsController.lastCreatedView;
 
     expect(() => controller.loadUrl(null), throwsA(anything));
-    expect(platformWebView.lastUrlLoaded, isNull);
+    expect(platformWebView.currentUrl, isNull);
 
     expect(() => controller.loadUrl(''), throwsA(anything));
-    expect(platformWebView.lastUrlLoaded, isNull);
+    expect(platformWebView.currentUrl, isNull);
 
     // Missing schema.
     expect(() => controller.loadUrl('flutter.io'), throwsA(anything));
-    expect(platformWebView.lastUrlLoaded, isNull);
+    expect(platformWebView.currentUrl, isNull);
   });
 
   testWidgets("Can't go back before loading a page",
@@ -227,15 +227,15 @@ void main() {
     final FakePlatformWebView platformWebView =
         fakePlatformViewsController.lastCreatedView;
 
-    expect(platformWebView.lastUrlLoaded, 'https://youtube.com');
+    expect(platformWebView.currentUrl, 'https://youtube.com');
 
     controller.loadUrl('https://flutter.io');
 
-    expect(platformWebView.lastUrlLoaded, 'https://flutter.io');
+    expect(platformWebView.currentUrl, 'https://flutter.io');
 
     controller.goBack();
 
-    expect(platformWebView.lastUrlLoaded, 'https://youtube.com');
+    expect(platformWebView.currentUrl, 'https://youtube.com');
   });
 
   testWidgets('Go forward', (WidgetTester tester) async {
@@ -254,19 +254,19 @@ void main() {
     final FakePlatformWebView platformWebView =
         fakePlatformViewsController.lastCreatedView;
 
-    expect(platformWebView.lastUrlLoaded, 'https://youtube.com');
+    expect(platformWebView.currentUrl, 'https://youtube.com');
 
     controller.loadUrl('https://flutter.io');
 
-    expect(platformWebView.lastUrlLoaded, 'https://flutter.io');
+    expect(platformWebView.currentUrl, 'https://flutter.io');
 
     controller.goBack();
 
-    expect(platformWebView.lastUrlLoaded, 'https://youtube.com');
+    expect(platformWebView.currentUrl, 'https://youtube.com');
 
     controller.goForward();
 
-    expect(platformWebView.lastUrlLoaded, 'https://flutter.io');
+    expect(platformWebView.currentUrl, 'https://flutter.io');
   });
 }
 
@@ -289,10 +289,8 @@ class FakePlatformWebView {
 
   List<String> history = <String>[];
   int currentPosition = -1;
-  String get lastUrlLoaded =>
-      (currentPosition > -1 && history.length > currentPosition)
-          ? history[currentPosition]
-          : null;
+
+  String get currentUrl => history.isEmpty ? null : history[currentPosition];
   JavaScriptMode javaScriptMode;
 
   Future<dynamic> onMethodCall(MethodCall call) {
