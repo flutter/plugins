@@ -48,7 +48,7 @@ public class UrlLauncherPlugin implements MethodCallHandler {
       boolean enableJavaScript = call.argument("enableJavaScript");
       Activity activity = mRegistrar.activity();
       if (activity == null) {
-        result.error("Launching a URL requires a foreground activity.", null, null);
+        result.error("NO_ACTIVITY", "Launching a URL requires a foreground activity.", null);
         return;
       }
       if (useWebView) {
