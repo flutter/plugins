@@ -73,7 +73,6 @@ class FirebaseVisionImage {
         _bytes = bytes,
         _type = type;
 
-  // TODO(bmparr): Add [ImageOrientation] when passing file.
   /// Construct a [FirebaseVisionImage] from a file.
   factory FirebaseVisionImage.fromFile(File imageFile) {
     assert(imageFile != null);

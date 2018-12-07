@@ -63,11 +63,43 @@
     FlutterStandardTypedData *byteData = imageData[@"bytes"];
     NSData *imageBytes = byteData.data;
 
+    NSDictionary *metadata = imageData[@"metadata"];
+    NSArray *planeData = metadata[@"planeData"];
+    size_t planeCount = planeData.count;
+
+    size_t widths[planeCount];
+    size_t heights[planeCount];
+    size_t bytesPerRows[planeCount];
+
+    void *baseAddresses[planeCount];
+    baseAddresses[0] = (void *) imageBytes.bytes;
+
+    size_t lastAddressIndex = 0; // Used to get base address for each plane
+    for (int i = 0; i < planeCount; i++) {
+      NSDictionary *plane = planeData[i];
+
+      NSNumber *width = plane[@"width"];
+      NSNumber *height = plane[@"height"];
+      NSNumber *bytesPerRow = plane[@"bytesPerRow"];
+
+      widths[i] = width.unsignedLongValue;
+      heights[i] = height.unsignedLongValue;
+      bytesPerRows[i] = bytesPerRow.unsignedLongValue;
+
+      if (i > 0) {
+        size_t addressIndex = lastAddressIndex + heights[i - 1] * bytesPerRows[i - 1];
+        baseAddresses[i] = (void *) imageBytes.bytes + addressIndex;
+      }
+    }
+
+    NSNumber *width = metadata[@"width"];
+    NSNumber *height = metadata[@"height"];
+
+    NSNumber *rawFormat = metadata[@"rawFormat"];
+    FourCharCode format = FOUR_CHAR_CODE(rawFormat.unsignedIntValue);
+
     CVPixelBufferRef pxbuffer = NULL;
-    size_t widths[2] = {1080, 1080};
-    size_t heights[2] = {1920, 1920};
-    size_t bytesPerRows[2] = {1088, 1080};
-    CVPixelBufferCreateWithPlanarBytes(kCFAllocatorDefault, 1080, 1920, kCVPixelFormatType_420YpCbCr8BiPlanarFullRange, NULL, 4177920, 2, (void *) imageBytes.bytes, widths, heights, bytesPerRows, NULL, NULL, NULL, &pxbuffer);
+    CVPixelBufferCreateWithPlanarBytes(kCFAllocatorDefault, width.unsignedLongValue, height.unsignedLongValue, format, NULL, imageBytes.length, 2, baseAddresses, widths, heights, bytesPerRows, NULL, NULL, NULL, &pxbuffer);
 
     CMSampleTimingInfo info;
     info.presentationTimeStamp = kCMTimeZero;
@@ -81,11 +113,6 @@
     CMSampleBufferCreateReadyWithImageBuffer(kCFAllocatorDefault, pxbuffer, formatDesc, &info, &sampleBuffer);
 
     return [[FIRVisionImage alloc] initWithBuffer:sampleBuffer];
-    /*
-    UIImage *image = [[UIImage alloc] initWithData:imageBytes];
-    // TODO(bmparr): Rotate image from imageData[@"rotation"].
-    return [[FIRVisionImage alloc] initWithImage:image];
-     */
   } else {
     NSString *errorReason = [NSString stringWithFormat:@"No image type for: %@", imageType];
     @throw
