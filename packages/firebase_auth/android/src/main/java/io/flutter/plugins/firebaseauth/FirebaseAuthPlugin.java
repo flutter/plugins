@@ -119,7 +119,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         handleReauthenticateWithCredential(call, result, getAuth(call));
         break;
       case "linkWithCredential":
-        handleLinkWithEmailAndPassword(call, result, getAuth(call));
+        handleLinkWithCredential(call, result, getAuth(call));
         break;
       case "unlinkFromProvider":
         handleUnlinkFromProvider(call, result, getAuth(call));
@@ -173,24 +173,44 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     final int handle = (int) arguments.get("handle");
     String phoneNumber = (String) arguments.get("phoneNumber");
     int timeout = (int) arguments.get("timeout");
+    final boolean link = (boolean) arguments.get("link");
 
     PhoneAuthProvider.OnVerificationStateChangedCallbacks verificationCallbacks =
         new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
           @Override
           public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
-            firebaseAuth
-                .signInWithCredential(phoneAuthCredential)
-                .addOnCompleteListener(
-                    new OnCompleteListener<AuthResult>() {
-                      @Override
-                      public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                          Map<String, Object> arguments = new HashMap<>();
-                          arguments.put("handle", handle);
-                          channel.invokeMethod("phoneVerificationCompleted", arguments);
+            if (link) {
+              firebaseAuth
+                  .getCurrentUser()
+                  .linkWithCredential(phoneAuthCredential)
+                  .addOnCompleteListener(
+                      new OnCompleteListener<AuthResult>() {
+
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                          if (task.isSuccessful()) {
+                            Map<String, Object> arguments = new HashMap<>();
+                            arguments.put("handle", handle);
+                            channel.invokeMethod("phoneVerificationCompleted", arguments);
+                          }
                         }
-                      }
-                    });
+                      });
+            } else {
+              firebaseAuth
+                  .signInWithCredential(phoneAuthCredential)
+                  .addOnCompleteListener(
+                      new OnCompleteListener<AuthResult>() {
+
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                          if (task.isSuccessful()) {
+                            Map<String, Object> arguments = new HashMap<>();
+                            arguments.put("handle", handle);
+                            channel.invokeMethod("phoneVerificationCompleted", arguments);
+                          }
+                        }
+                      });
+            }
           }
 
           @Override
@@ -263,13 +283,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     return exceptionMap;
   }
 
-  private void handleLinkWithEmailAndPassword(
-      MethodCall call, Result result, FirebaseAuth firebaseAuth) {
-    Map<String, String> arguments = call.arguments();
-    String email = arguments.get("email");
-    String password = arguments.get("password");
+  private void handleLinkWithCredential(MethodCall call, Result result, FirebaseAuth firebaseAuth) {
+    AuthCredential credential = getCredential((Map<String, Object>) call.arguments());
 
-    AuthCredential credential = EmailAuthProvider.getCredential(email, password);
     firebaseAuth
         .getCurrentUser()
         .linkWithCredential(credential)
@@ -380,6 +396,13 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         {
           String token = data.get("token");
           credential = GithubAuthProvider.getCredential(token);
+          break;
+        }
+      case PhoneAuthProvider.PROVIDER_ID:
+        {
+          String verificationId = data.get("verificationId");
+          String smsCode = data.get("smsCode");
+          credential = PhoneAuthProvider.getCredential(verificationId, smsCode);
           break;
         }
       default:
