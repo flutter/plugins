@@ -19,11 +19,10 @@
 - (NSObject<FlutterPlatformView>*)createWithFrame:(CGRect)frame
                                    viewIdentifier:(int64_t)viewId
                                         arguments:(id _Nullable)args {
-  FLTWebViewController* webviewController =
-      [[FLTWebViewController alloc] initWithWithFrame:frame
-                                       viewIdentifier:viewId
-                                            arguments:args
-                                      binaryMessenger:_messenger];
+  FLTWebViewController* webviewController = [[FLTWebViewController alloc] initWithFrame:frame
+                                                                         viewIdentifier:viewId
+                                                                              arguments:args
+                                                                        binaryMessenger:_messenger];
   return webviewController;
 }
 
@@ -35,10 +34,10 @@
   FlutterMethodChannel* _channel;
 }
 
-- (instancetype)initWithWithFrame:(CGRect)frame
-                   viewIdentifier:(int64_t)viewId
-                        arguments:(id _Nullable)args
-                  binaryMessenger:(NSObject<FlutterBinaryMessenger>*)messenger {
+- (instancetype)initWithFrame:(CGRect)frame
+               viewIdentifier:(int64_t)viewId
+                    arguments:(id _Nullable)args
+              binaryMessenger:(NSObject<FlutterBinaryMessenger>*)messenger {
   if ([super init]) {
     _viewId = viewId;
     _webView = [[WKWebView alloc] initWithFrame:frame];
