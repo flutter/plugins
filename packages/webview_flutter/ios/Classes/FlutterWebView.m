@@ -50,8 +50,8 @@
     }];
     NSDictionary<NSString*, id>* settings = args[@"settings"];
     [self applySettings:settings];
-    NSString* initialUrl = [args[@"initialUrl"] isEqual:[NSNull null]] ? nil : args[@"initialUrl"];
-    if (initialUrl) {
+    NSString* initialUrl = args[@"initialUrl"];
+    if (initialUrl && initialUrl != [NSNull null]) {
       [self loadUrl:initialUrl];
     }
   }
