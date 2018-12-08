@@ -1,3 +1,7 @@
+## 0.1.0+1
+
+* Fix null crash when initialUrl is unset on iOS.
+
 ## 0.1.0
 
 * Add goBack, goForward, canGoBack, and canGoForward methods to the WebView controller.
