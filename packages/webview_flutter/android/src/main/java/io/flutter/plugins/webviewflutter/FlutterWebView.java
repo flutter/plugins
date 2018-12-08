@@ -53,6 +53,8 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       case "goForward":
         goForward(methodCall, result);
         break;
+      case "reload":
+        reload(methodCall, result);
       default:
         result.notImplemented();
     }
@@ -86,6 +88,11 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     result.success(null);
   }
 
+  private void reload(MethodCall methodCall, Result result) {
+    webView.reload();
+    result.success(null);
+  }
+
   @SuppressWarnings("unchecked")
   private void updateSettings(MethodCall methodCall, Result result) {
     applySettings((Map<String, Object>) methodCall.arguments);
@@ -109,7 +116,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       case 0: // disabled
         webView.getSettings().setJavaScriptEnabled(false);
         break;
-      case 1: //unrestricted
+      case 1: // unrestricted
         webView.getSettings().setJavaScriptEnabled(true);
         break;
       default:

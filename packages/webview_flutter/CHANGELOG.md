@@ -1,3 +1,7 @@
+## 0.2.0
+
+* Add reload method to the WebView controller.
+
 ## 0.1.0+1
 
 * Fix null crash when initialUrl is unset on iOS.

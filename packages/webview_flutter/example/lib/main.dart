@@ -106,6 +106,14 @@ class NavigationControls extends StatelessWidget {
                       }
                     },
             ),
+            IconButton(
+              icon: const Icon(Icons.replay),
+              onPressed: !webViewReady
+                  ? null
+                  : () {
+                      controller.reload();
+                    },
+            ),
           ],
         );
       },

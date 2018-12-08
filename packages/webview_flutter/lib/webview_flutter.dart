@@ -237,6 +237,11 @@ class WebViewController {
     return _channel.invokeMethod("goForward");
   }
 
+  /// Reloads the current url of this WebView.
+  Future<void> reload() async {
+    return _channel.invokeMethod("reload");
+  }
+
   Future<void> _updateSettings(Map<String, dynamic> update) async {
     return _channel.invokeMethod('updateSettings', update);
   }

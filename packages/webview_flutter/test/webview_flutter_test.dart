@@ -76,7 +76,7 @@ void main() {
     expect(platformWebView.currentUrl, 'https://flutter.io');
   });
 
-  testWidgets('Invald urls', (WidgetTester tester) async {
+  testWidgets('Invalid urls', (WidgetTester tester) async {
     WebViewController controller;
     await tester.pumpWidget(
       WebView(
@@ -268,6 +268,33 @@ void main() {
 
     expect(platformWebView.currentUrl, 'https://flutter.io');
   });
+
+  testWidgets('Reload url', (WidgetTester tester) async {
+    WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://flutter.io',
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    final FakePlatformWebView platformWebView =
+        fakePlatformViewsController.lastCreatedView;
+
+    expect(platformWebView.currentUrl, 'https://flutter.io');
+    expect(platformWebView.amountOfReloadsOnCurrentUrl, 0);
+
+    controller.reload();
+
+    expect(platformWebView.currentUrl, 'https://flutter.io');
+    expect(platformWebView.amountOfReloadsOnCurrentUrl, 1);
+
+    controller.loadUrl('https://youtube.com');
+
+    expect(platformWebView.amountOfReloadsOnCurrentUrl, 0);
+  });
 }
 
 class FakePlatformWebView {
@@ -289,6 +316,7 @@ class FakePlatformWebView {
 
   List<String> history = <String>[];
   int currentPosition = -1;
+  int amountOfReloadsOnCurrentUrl = 0;
 
   String get currentUrl => history.isEmpty ? null : history[currentPosition];
   JavaScriptMode javaScriptMode;
@@ -300,6 +328,7 @@ class FakePlatformWebView {
         history = history.sublist(0, currentPosition + 1);
         history.add(url);
         currentPosition++;
+        amountOfReloadsOnCurrentUrl = 0;
         return Future<void>.sync(() {});
       case 'updateSettings':
         if (call.arguments['jsMode'] == null) {
@@ -319,6 +348,9 @@ class FakePlatformWebView {
         break;
       case 'goForward':
         currentPosition = min(history.length - 1, currentPosition + 1);
+        return Future<void>.sync(() {});
+      case 'reload':
+        amountOfReloadsOnCurrentUrl++;
         return Future<void>.sync(() {});
         break;
     }
