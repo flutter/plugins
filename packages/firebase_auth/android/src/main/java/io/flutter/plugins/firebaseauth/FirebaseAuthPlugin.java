@@ -183,33 +183,11 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
               firebaseAuth
                   .getCurrentUser()
                   .linkWithCredential(phoneAuthCredential)
-                  .addOnCompleteListener(
-                      new OnCompleteListener<AuthResult>() {
-
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                          if (task.isSuccessful()) {
-                            Map<String, Object> arguments = new HashMap<>();
-                            arguments.put("handle", handle);
-                            channel.invokeMethod("phoneVerificationCompleted", arguments);
-                          }
-                        }
-                      });
+                  .addOnCompleteListener(new PhoneVerificationCompleteListener(handle));
             } else {
               firebaseAuth
                   .signInWithCredential(phoneAuthCredential)
-                  .addOnCompleteListener(
-                      new OnCompleteListener<AuthResult>() {
-
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                          if (task.isSuccessful()) {
-                            Map<String, Object> arguments = new HashMap<>();
-                            arguments.put("handle", handle);
-                            channel.invokeMethod("phoneVerificationCompleted", arguments);
-                          }
-                        }
-                      });
+                  .addOnCompleteListener(new PhoneVerificationCompleteListener(handle));
             }
           }
 
@@ -577,6 +555,23 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         FirebaseUser user = task.getResult().getUser();
         Map<String, Object> userMap = Collections.unmodifiableMap(mapFromUser(user));
         result.success(userMap);
+      }
+    }
+  }
+
+  private class PhoneVerificationCompleteListener implements OnCompleteListener<AuthResult> {
+    private final Int handle;
+
+    PhoneVerificationCompleteListener(Int handle) {
+      this.handle = handle;
+    }
+
+    @Override
+    public void onComplete(@NonNull Task<AuthResult> task) {
+      if (task.isSuccessful()) {
+        Map<String, Object> arguments = new HashMap<>();
+        arguments.put("handle", handle);
+        channel.invokeMethod("phoneVerificationCompleted", arguments);
       }
     }
   }
