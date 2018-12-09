@@ -5,14 +5,25 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:meta/meta.dart' show visibleForTesting;
 
 /// Provides device and operating system information.
 class DeviceInfoPlugin {
-  DeviceInfoPlugin();
+  factory DeviceInfoPlugin() {
+    if (_instance == null) {
+      final MethodChannel channel =
+          const MethodChannel('plugins.flutter.io/device_info');
+      _instance = DeviceInfoPlugin.private(channel);
+    }
+    return _instance;
+  }
+  @visibleForTesting
+  DeviceInfoPlugin.private(this.channel);
+
+  static DeviceInfoPlugin _instance;
 
   /// Channel used to communicate to native code.
-  static const MethodChannel channel =
-      MethodChannel('plugins.flutter.io/device_info');
+  final MethodChannel channel;
 
   /// This information does not change from call to call. Cache it.
   AndroidDeviceInfo _cachedAndroidDeviceInfo;
