@@ -55,6 +55,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         break;
       case "reload":
         reload(methodCall, result);
+        break;
       default:
         result.notImplemented();
     }
