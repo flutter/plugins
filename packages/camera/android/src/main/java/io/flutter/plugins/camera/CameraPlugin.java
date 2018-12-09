@@ -767,8 +767,10 @@ public class CameraPlugin implements MethodCallHandler {
     }
 
     private int getMediaOrientation() {
-      final int sensorOrientationOffset = (currentOrientation == ORIENTATION_UNKNOWN) ? 0
-          : (isFrontFacing) ? -currentOrientation : currentOrientation;
+      final int sensorOrientationOffset =
+          (currentOrientation == ORIENTATION_UNKNOWN)
+              ? 0
+              : (isFrontFacing) ? -currentOrientation : currentOrientation;
       return (sensorOrientationOffset + sensorOrientation + 360) % 360;
     }
   }
