@@ -560,9 +560,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
   }
 
   private class PhoneVerificationCompleteListener implements OnCompleteListener<AuthResult> {
-    private final Int handle;
+    private final int handle;
 
-    PhoneVerificationCompleteListener(Int handle) {
+    PhoneVerificationCompleteListener(int handle) {
       this.handle = handle;
     }
 
