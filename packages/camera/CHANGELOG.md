@@ -1,6 +1,6 @@
 ## 0.2.7
 
-* Add byte streaming capability for the camera
+* Add byte streaming capability for the camera.
 
 ## 0.2.6
 

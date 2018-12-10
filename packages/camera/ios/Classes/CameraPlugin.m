@@ -23,7 +23,7 @@
 @end
 
 @interface FLTByteStreamHandler : NSObject <FlutterStreamHandler>
-@property(readonly, nonatomic) FlutterEventSink eventSink;
+@property FlutterEventSink eventSink;
 @end
 
 @implementation FLTByteStreamHandler {
@@ -104,6 +104,8 @@
 @property(assign, nonatomic) BOOL isRecording;
 @property(assign, nonatomic) BOOL isAudioSetup;
 @property(assign, nonatomic) BOOL isStreamingBytes;
+@property(nonatomic) vImage_Buffer destinationBuffer;
+@property(nonatomic) vImage_Buffer conversionBuffer;
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
                              error:(NSError **)error;
@@ -119,8 +121,6 @@
 
 @implementation FLTCam
 FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;
-vImage_Buffer destinationBuffer;
-vImage_Buffer conversionBuffer;
 
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
@@ -150,6 +150,9 @@ vImage_Buffer conversionBuffer;
   CMVideoDimensions dimensions =
       CMVideoFormatDescriptionGetDimensions([[_captureDevice activeFormat] formatDescription]);
   _previewSize = CGSizeMake(dimensions.width, dimensions.height);
+
+  vImageBuffer_Init(&_destinationBuffer, 1280, 720, 32, kvImageNoFlags);
+  vImageBuffer_Init(&_conversionBuffer, 1280, 720, 32, kvImageNoFlags);
 
   _captureVideoOutput = [AVCaptureVideoDataOutput new];
   _captureVideoOutput.videoSettings =
@@ -213,43 +216,45 @@ vImage_Buffer conversionBuffer;
     });
     return;
   }
-  if (_isStreamingBytes && _byteStreamHandler.eventSink) {
-    CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
-    CVPixelBufferLockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
+  if (_isStreamingBytes) {
+    if (_byteStreamHandler.eventSink) {
+      CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+      CVPixelBufferLockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
 
-    size_t imageWidth = CVPixelBufferGetWidth(pixelBuffer);
-    size_t imageHeight = CVPixelBufferGetHeight(pixelBuffer);
+      size_t imageWidth = CVPixelBufferGetWidth(pixelBuffer);
+      size_t imageHeight = CVPixelBufferGetHeight(pixelBuffer);
 
-    NSMutableArray *planes = [NSMutableArray array];
+      NSMutableArray *planes = [NSMutableArray array];
 
-    size_t planeCount = CVPixelBufferGetPlaneCount(pixelBuffer);
-    for (int i = 0; i < planeCount; i++) {
-      void *planeAddress = CVPixelBufferGetBaseAddressOfPlane(pixelBuffer, i);
-      size_t bytesPerRow = CVPixelBufferGetBytesPerRowOfPlane(pixelBuffer, i);
-      size_t height = CVPixelBufferGetHeightOfPlane(pixelBuffer, i);
-      size_t width = CVPixelBufferGetWidthOfPlane(pixelBuffer, i);
+      size_t planeCount = CVPixelBufferGetPlaneCount(pixelBuffer);
+      for (int i = 0; i < planeCount; i++) {
+        void *planeAddress = CVPixelBufferGetBaseAddressOfPlane(pixelBuffer, i);
+        size_t bytesPerRow = CVPixelBufferGetBytesPerRowOfPlane(pixelBuffer, i);
+        size_t height = CVPixelBufferGetHeightOfPlane(pixelBuffer, i);
+        size_t width = CVPixelBufferGetWidthOfPlane(pixelBuffer, i);
 
-      NSNumber *length = @(bytesPerRow * height);
-      NSData *bytes = [NSData dataWithBytes:planeAddress length:length.unsignedIntegerValue];
+        NSNumber *length = @(bytesPerRow * height);
+        NSData *bytes = [NSData dataWithBytes:planeAddress length:length.unsignedIntegerValue];
 
-      NSMutableDictionary *planeBuffer = [NSMutableDictionary dictionary];
-      planeBuffer[@"bytesPerRow"] = @(bytesPerRow);
-      planeBuffer[@"width"] = @(width);
-      planeBuffer[@"height"] = @(height);
-      planeBuffer[@"bytes"] = [FlutterStandardTypedData typedDataWithBytes:bytes];
+        NSMutableDictionary *planeBuffer = [NSMutableDictionary dictionary];
+        planeBuffer[@"bytesPerRow"] = @(bytesPerRow);
+        planeBuffer[@"width"] = @(width);
+        planeBuffer[@"height"] = @(height);
+        planeBuffer[@"bytes"] = [FlutterStandardTypedData typedDataWithBytes:bytes];
 
-      [planes addObject:planeBuffer];
+        [planes addObject:planeBuffer];
+      }
+
+      NSMutableDictionary *imageBuffer = [NSMutableDictionary dictionary];
+      imageBuffer[@"width"] = [NSNumber numberWithUnsignedLong:imageWidth];
+      imageBuffer[@"height"] = [NSNumber numberWithUnsignedLong:imageHeight];
+      imageBuffer[@"format"] = @(videoFormat);
+      imageBuffer[@"planes"] = planes;
+
+      _byteStreamHandler.eventSink(imageBuffer);
+
+      CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
     }
-
-    NSMutableDictionary *imageBuffer = [NSMutableDictionary dictionary];
-    imageBuffer[@"width"] = [NSNumber numberWithUnsignedLong:imageWidth];
-    imageBuffer[@"height"] = [NSNumber numberWithUnsignedLong:imageHeight];
-    imageBuffer[@"format"] = @(videoFormat);
-    imageBuffer[@"planes"] = planes;
-
-    _byteStreamHandler.eventSink(imageBuffer);
-
-    CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
   }
   if (_isRecording) {
     if (_videoWriter.status == AVAssetWriterStatusFailed) {
@@ -336,10 +341,10 @@ vImage_Buffer conversionBuffer;
     pixelBuffer = _latestPixelBuffer;
   }
 
-  return [self convertYUVImageTOBGRA:pixelBuffer];
+  return [self convertYUVImageToBGRA:pixelBuffer];
 }
 
-- (CVPixelBufferRef)convertYUVImageTOBGRA:(CVPixelBufferRef)pixelBuffer {
+- (CVPixelBufferRef)convertYUVImageToBGRA:(CVPixelBufferRef)pixelBuffer {
   CVPixelBufferLockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
 
   vImage_YpCbCrToARGB infoYpCbCrToARGB;
@@ -369,30 +374,20 @@ vImage_Buffer conversionBuffer;
   sourceChromaBuffer.width = CVPixelBufferGetWidthOfPlane(pixelBuffer, 1);
   sourceChromaBuffer.rowBytes = CVPixelBufferGetBytesPerRowOfPlane(pixelBuffer, 1);
 
-  if (!destinationBuffer.height) {
-    vImageBuffer_Init(&destinationBuffer, sourceLumaBuffer.height, sourceLumaBuffer.width, 32,
-                      kvImageNoFlags);
-  }
-
-  vImageConvert_420Yp8_CbCr8ToARGB8888(&sourceLumaBuffer, &sourceChromaBuffer, &destinationBuffer,
+  vImageConvert_420Yp8_CbCr8ToARGB8888(&sourceLumaBuffer, &sourceChromaBuffer, &_destinationBuffer,
                                        &infoYpCbCrToARGB, NULL, 255,
                                        kvImagePrintDiagnosticsToConsole);
 
   CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
   CVPixelBufferRelease(pixelBuffer);
 
-  if (!conversionBuffer.height) {
-    vImageBuffer_Init(&conversionBuffer, sourceLumaBuffer.height, sourceLumaBuffer.width, 32,
-                      kvImageNoFlags);
-  }
-
   const uint8_t map[4] = {3, 2, 1, 0};
-  vImagePermuteChannels_ARGB8888(&destinationBuffer, &conversionBuffer, map, kvImageNoFlags);
+  vImagePermuteChannels_ARGB8888(&_destinationBuffer, &_conversionBuffer, map, kvImageNoFlags);
 
   CVPixelBufferRef newPixelBuffer = NULL;
-  CVPixelBufferCreateWithBytes(NULL, conversionBuffer.width, conversionBuffer.height,
-                               kCVPixelFormatType_32BGRA, conversionBuffer.data,
-                               conversionBuffer.rowBytes, NULL, NULL, NULL, &newPixelBuffer);
+  CVPixelBufferCreateWithBytes(NULL, _conversionBuffer.width, _conversionBuffer.height,
+                               kCVPixelFormatType_32BGRA, _conversionBuffer.data,
+                               _conversionBuffer.rowBytes, NULL, NULL, NULL, &newPixelBuffer);
 
   return newPixelBuffer;
 }
