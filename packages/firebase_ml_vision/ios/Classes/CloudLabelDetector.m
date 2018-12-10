@@ -12,6 +12,8 @@ static FIRVisionCloudLabelDetector *detector;
   [detector
       detectInImage:image
          completion:^(NSArray<FIRVisionCloudLabel *> *_Nullable labels, NSError *_Nullable error) {
+           [FLTFirebaseMlVisionPlugin releaseImage];
+
            if (error) {
              [FLTFirebaseMlVisionPlugin handleError:error result:result];
              return;

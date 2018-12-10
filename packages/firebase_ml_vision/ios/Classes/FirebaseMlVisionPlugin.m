@@ -12,9 +12,16 @@
 }
 @end
 
+// Used to keep image bytes accessible.
+static NSData *currentImage;
+
 @implementation FLTFirebaseMlVisionPlugin
 + (void)handleError:(NSError *)error result:(FlutterResult)result {
   result([error flutterError]);
+}
+
++ (void)releaseImage {
+  currentImage = nil;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -60,8 +67,10 @@
     UIImage *image = [UIImage imageWithContentsOfFile:imageData[@"path"]];
     return [[FIRVisionImage alloc] initWithImage:image];
   } else if ([@"bytes" isEqualToString:imageType]) {
+    NSAssert(!currentImage, @"Detection on an image is already in progress!");
+
     FlutterStandardTypedData *byteData = imageData[@"bytes"];
-    NSData *imageBytes = byteData.data;
+    currentImage = byteData.data;
 
     NSDictionary *metadata = imageData[@"metadata"];
     NSArray *planeData = metadata[@"planeData"];
@@ -72,7 +81,7 @@
     size_t bytesPerRows[planeCount];
 
     void *baseAddresses[planeCount];
-    baseAddresses[0] = (void *)imageBytes.bytes;
+    baseAddresses[0] = (void *)currentImage.bytes;
 
     size_t lastAddressIndex = 0;  // Used to get base address for each plane
     for (int i = 0; i < planeCount; i++) {
@@ -88,7 +97,8 @@
 
       if (i > 0) {
         size_t addressIndex = lastAddressIndex + heights[i - 1] * bytesPerRows[i - 1];
-        baseAddresses[i] = (void *)imageBytes.bytes + addressIndex;
+        baseAddresses[i] = (void *)currentImage.bytes + addressIndex;
+        lastAddressIndex = addressIndex;
       }
     }
 
@@ -100,7 +110,7 @@
 
     CVPixelBufferRef pxbuffer = NULL;
     CVPixelBufferCreateWithPlanarBytes(kCFAllocatorDefault, width.unsignedLongValue,
-                                       height.unsignedLongValue, format, NULL, imageBytes.length, 2,
+                                       height.unsignedLongValue, format, NULL, currentImage.length, 2,
                                        baseAddresses, widths, heights, bytesPerRows, NULL, NULL,
                                        NULL, &pxbuffer);
 

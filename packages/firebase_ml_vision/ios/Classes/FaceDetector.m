@@ -12,6 +12,8 @@ static FIRVisionFaceDetector *faceDetector;
   [faceDetector
       processImage:image
         completion:^(NSArray<FIRVisionFace *> *_Nullable faces, NSError *_Nullable error) {
+          [FLTFirebaseMlVisionPlugin releaseImage];
+
           if (error) {
             [FLTFirebaseMlVisionPlugin handleError:error result:result];
             return;
