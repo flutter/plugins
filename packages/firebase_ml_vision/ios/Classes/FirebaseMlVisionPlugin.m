@@ -110,8 +110,8 @@ static NSData *currentImage;
 
     CVPixelBufferRef pxbuffer = NULL;
     CVPixelBufferCreateWithPlanarBytes(kCFAllocatorDefault, width.unsignedLongValue,
-                                       height.unsignedLongValue, format, NULL, currentImage.length, 2,
-                                       baseAddresses, widths, heights, bytesPerRows, NULL, NULL,
+                                       height.unsignedLongValue, format, NULL, currentImage.length,
+                                       2, baseAddresses, widths, heights, bytesPerRows, NULL, NULL,
                                        NULL, &pxbuffer);
 
     CMSampleTimingInfo info;
