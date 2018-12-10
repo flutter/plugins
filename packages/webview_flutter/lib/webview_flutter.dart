@@ -205,6 +205,38 @@ class WebViewController {
     return _channel.invokeMethod('loadUrl', url);
   }
 
+  /// Checks whether there's a back history item.
+  ///
+  /// Note that this operation is asynchronous, and it is possible that the "canGoBack" state has
+  /// changed by the time the future completed.
+  Future<bool> canGoBack() async {
+    final bool canGoBack = await _channel.invokeMethod("canGoBack");
+    return canGoBack;
+  }
+
+  /// Checks whether there's a forward history item.
+  ///
+  /// Note that this operation is asynchronous, and it is possible that the "canGoForward" state has
+  /// changed by the time the future completed.
+  Future<bool> canGoForward() async {
+    final bool canGoForward = await _channel.invokeMethod("canGoForward");
+    return canGoForward;
+  }
+
+  /// Goes back in the history of this WebView.
+  ///
+  /// If there is no back history item this is a no-op.
+  Future<void> goBack() async {
+    return _channel.invokeMethod("goBack");
+  }
+
+  /// Goes forward in the history of this WebView.
+  ///
+  /// If there is no forward history item this is a no-op.
+  Future<void> goForward() async {
+    return _channel.invokeMethod("goForward");
+  }
+
   Future<void> _updateSettings(Map<String, dynamic> update) async {
     return _channel.invokeMethod('updateSettings', update);
   }
