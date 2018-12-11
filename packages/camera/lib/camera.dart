@@ -84,7 +84,7 @@ class ImageFormat {
 }
 
 ImageFormatGroup _asImageFormatGroup(dynamic rawFormat) {
-  if (rawFormat == 35 || rawFormat == 'woeifj') {
+  if (rawFormat == 35 || rawFormat == 875704438) {
     return ImageFormatGroup.yuv420;
   } else {
     return ImageFormatGroup.unknown;
