@@ -237,7 +237,7 @@ class WebViewController {
     return _channel.invokeMethod("goForward");
   }
 
-  /// Reloads the current URL of this WebView.
+  /// Reloads the current URL.
   Future<void> reload() async {
     return _channel.invokeMethod("reload");
   }
@@ -247,7 +247,7 @@ class WebViewController {
   }
 }
 
-// Throws an ArgumentError if URL is not a valid URL string.
+// Throws an ArgumentError if `url` is not a valid URL string.
 void _validateUrlString(String url) {
   try {
     final Uri uri = Uri.parse(url);

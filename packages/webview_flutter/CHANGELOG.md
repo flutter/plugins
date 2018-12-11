@@ -1,4 +1,4 @@
-## 0.2.0
+## 0.1.1
 
 * Add reload method to the WebView controller.
 
