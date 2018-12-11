@@ -254,7 +254,7 @@ class FirebaseAuth {
       'PhoneVerificationCompleted': verificationCompleted,
       'PhoneVerificationFailed': verificationFailed,
       'PhoneCodeSent': codeSent,
-      'PhoneCodeAuthRetrievalTimeout': codeAutoRetrievalTimeout,
+      'PhoneCodeAutoRetrievalTimeout': codeAutoRetrievalTimeout,
     };
     nextHandle += 1;
     _phoneAuthCallbacks[nextHandle] = callbacks;
