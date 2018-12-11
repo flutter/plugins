@@ -1,3 +1,7 @@
+## 0.1.0+2
+
+* Add error display on iOS when failing to load.
+
 ## 0.1.0+1
 
 * Fix null crash when initialUrl is unset on iOS.

@@ -153,16 +153,16 @@
 
 #pragma mark -
 #pragma mark WKNavigationDelegate
-- (void)webView:(WKWebView *)webView
-didFailNavigation:(WKNavigation *)navigation
-      withError:(NSError *)error{
-    NSLog(@"%@", error.description);
+- (void)webView:(WKWebView*)webView
+    didFailNavigation:(WKNavigation*)navigation
+            withError:(NSError*)error {
+  NSLog(@"%@", error.description);
 }
 
-- (void)webView:(WKWebView *)webView
-didFailProvisionalNavigation:(WKNavigation *)navigation
-      withError:(NSError *)error{
-    NSLog(@"%@", error.description);
+- (void)webView:(WKWebView*)webView
+    didFailProvisionalNavigation:(WKNavigation*)navigation
+                       withError:(NSError*)error {
+  NSLog(@"%@", error.description);
 }
 
 @end
