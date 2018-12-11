@@ -130,13 +130,16 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
   _captureSession = [[AVCaptureSession alloc] init];
   AVCaptureSessionPreset preset;
   if ([resolutionPreset isEqualToString:@"high"]) {
-    preset = AVCaptureSessionPresetHigh;
+    preset = AVCaptureSessionPreset1280x720;
+    _previewSize = CGSizeMake(1280, 720);
   } else if ([resolutionPreset isEqualToString:@"medium"]) {
-    preset = AVCaptureSessionPresetMedium;
+    preset = AVCaptureSessionPreset640x480;
+    _previewSize = CGSizeMake(640, 480);
   } else {
     NSAssert([resolutionPreset isEqualToString:@"low"], @"Unknown resolution preset %@",
              resolutionPreset);
-    preset = AVCaptureSessionPresetLow;
+    preset = AVCaptureSessionPreset352x288;
+    _previewSize = CGSizeMake(352, 288);
   }
   _captureSession.sessionPreset = preset;
   _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraName];
@@ -147,12 +150,9 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
     *error = localError;
     return nil;
   }
-  CMVideoDimensions dimensions =
-      CMVideoFormatDescriptionGetDimensions([[_captureDevice activeFormat] formatDescription]);
-  _previewSize = CGSizeMake(dimensions.width, dimensions.height);
 
-  vImageBuffer_Init(&_destinationBuffer, 1280, 720, 32, kvImageNoFlags);
-  vImageBuffer_Init(&_conversionBuffer, 1280, 720, 32, kvImageNoFlags);
+  vImageBuffer_Init(&_destinationBuffer, _previewSize.width, _previewSize.height, 32, kvImageNoFlags);
+  vImageBuffer_Init(&_conversionBuffer, _previewSize.width, _previewSize.height, 32, kvImageNoFlags);
 
   _captureVideoOutput = [AVCaptureVideoDataOutput new];
   _captureVideoOutput.videoSettings =
