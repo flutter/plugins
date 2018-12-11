@@ -56,7 +56,7 @@
                                         message:@"Firebase function failed with exception."
                                         details:details];
               } else {
-                flutterError = [FlutterError errorWithCode:@"formattingError"
+                flutterError = [FlutterError errorWithCode:@"genericError"
                                                    message:error.localizedDescription
                                                    details:nil];
               }
