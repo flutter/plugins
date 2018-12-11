@@ -42,6 +42,7 @@ class VideoPlayerValue {
     @required this.duration,
     this.size,
     this.position = const Duration(),
+    this.absolutePosition,
     this.buffered = const <DurationRange>[],
     this.isPlaying = false,
     this.isLooping = false,
@@ -62,6 +63,11 @@ class VideoPlayerValue {
 
   /// The current playback position.
   final Duration position;
+
+  /// The current absolute playback position.
+  ///
+  /// Is null when is not available.
+  final DateTime absolutePosition;
 
   /// The currently buffered ranges.
   final List<DurationRange> buffered;
@@ -96,6 +102,7 @@ class VideoPlayerValue {
     Duration duration,
     Size size,
     Duration position,
+    DateTime absolutePosition,
     List<DurationRange> buffered,
     bool isPlaying,
     bool isLooping,
@@ -107,6 +114,7 @@ class VideoPlayerValue {
       duration: duration ?? this.duration,
       size: size ?? this.size,
       position: position ?? this.position,
+      absolutePosition: absolutePosition ?? this.absolutePosition,
       buffered: buffered ?? this.buffered,
       isPlaying: isPlaying ?? this.isPlaying,
       isLooping: isLooping ?? this.isLooping,
@@ -122,6 +130,7 @@ class VideoPlayerValue {
         'duration: $duration, '
         'size: $size, '
         'position: $position, '
+        'absolutePosition: $absolutePosition, '
         'buffered: [${buffered.join(', ')}], '
         'isPlaying: $isPlaying, '
         'isLooping: $isLooping, '
@@ -345,10 +354,12 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
             return;
           }
           final Duration newPosition = await position;
+          final DateTime newAbsolutePosition = await absolutePosition;
           if (_isDisposed) {
             return;
           }
-          value = value.copyWith(position: newPosition);
+          value = value.copyWith(
+              position: newPosition, absolutePosition: newAbsolutePosition);
         },
       );
     } else {
@@ -390,6 +401,22 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         <String, dynamic>{'textureId': _textureId},
       ),
     );
+  }
+
+  /// The absolute position in the current video stream
+  /// (i.e. EXT-X-PROGRAM-DATE-TIME in HLS).
+  Future<DateTime> get absolutePosition async {
+    if (_isDisposed) {
+      return null;
+    }
+    final int miliseconds = await _channel.invokeMethod(
+      'absolutePosition',
+      <String, dynamic>{'textureId': _textureId},
+    );
+
+    if (miliseconds <= 0) return null;
+
+    return DateTime.fromMillisecondsSinceEpoch(miliseconds);
   }
 
   Future<void> seekTo(Duration moment) async {

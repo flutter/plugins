@@ -19,6 +19,7 @@ import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.Player.DefaultEventListener;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.audio.AudioAttributes;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
@@ -218,6 +219,16 @@ public class VideoPlayerPlugin implements MethodCallHandler {
       return exoPlayer.getCurrentPosition();
     }
 
+    long getAbsolutePosition() {
+      Timeline timeline = exoPlayer.getCurrentTimeline();
+      if (!timeline.isEmpty()) {
+        long windowStartTimeMs = timeline.getWindow(0, new Timeline.Window()).windowStartTimeMs;
+        long pos = exoPlayer.getCurrentPosition();
+        return (windowStartTimeMs + pos);
+      }
+      return exoPlayer.getCurrentPosition();
+    }
+
     private void sendInitialized() {
       if (isInitialized) {
         Map<String, Object> event = new HashMap<>();
@@ -384,6 +395,9 @@ public class VideoPlayerPlugin implements MethodCallHandler {
         break;
       case "position":
         result.success(player.getPosition());
+        break;
+      case "absolutePosition":
+        result.success(player.getAbsolutePosition());
         break;
       case "dispose":
         player.dispose();

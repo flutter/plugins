@@ -7,6 +7,7 @@
 #import <GLKit/GLKit.h>
 
 int64_t FLTCMTimeToMillis(CMTime time) { return time.value * 1000 / time.timescale; }
+int64_t FLTNSTimeIntervalToMillis(NSTimeInterval interval) { return (int64_t)(interval * 1000.0); }
 
 @interface FLTFrameUpdater : NSObject
 @property(nonatomic) int64_t textureId;
@@ -325,6 +326,10 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   return FLTCMTimeToMillis([_player currentTime]);
 }
 
+- (int64_t)absolutePosition {
+  return FLTNSTimeIntervalToMillis([[[_player currentItem] currentDate] timeIntervalSince1970]);
+}
+
 - (int64_t)duration {
   return FLTCMTimeToMillis([[_player currentItem] duration]);
 }
@@ -489,6 +494,8 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
       result(nil);
     } else if ([@"position" isEqualToString:call.method]) {
       result(@([player position]));
+    } else if ([@"absolutePosition" isEqualToString:call.method]) {
+      result(@([player absolutePosition]));
     } else if ([@"seekTo" isEqualToString:call.method]) {
       [player seekTo:[[argsMap objectForKey:@"location"] intValue]];
       result(nil);

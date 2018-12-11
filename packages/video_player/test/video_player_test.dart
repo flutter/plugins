@@ -24,6 +24,8 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
   String get package => null;
   @override
   Future<Duration> get position async => value.position;
+  @override
+  Future<DateTime> get absolutePosition async => value.absolutePosition;
 
   @override
   Future<void> seekTo(Duration moment) async {}
