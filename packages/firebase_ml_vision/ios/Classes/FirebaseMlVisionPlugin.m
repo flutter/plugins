@@ -108,11 +108,10 @@
     CIImage *ciImage = [CIImage imageWithCVPixelBuffer:pxbuffer];
 
     CIContext *temporaryContext = [CIContext contextWithOptions:nil];
-    CGImageRef videoImage = [temporaryContext
-                             createCGImage:ciImage
-                             fromRect:CGRectMake(0, 0,
-                                                 CVPixelBufferGetWidth(pxbuffer),
-                                                 CVPixelBufferGetHeight(pxbuffer))];
+    CGImageRef videoImage =
+        [temporaryContext createCGImage:ciImage
+                               fromRect:CGRectMake(0, 0, CVPixelBufferGetWidth(pxbuffer),
+                                                   CVPixelBufferGetHeight(pxbuffer))];
 
     UIImage *uiImage = [UIImage imageWithCGImage:videoImage];
     CGImageRelease(videoImage);
