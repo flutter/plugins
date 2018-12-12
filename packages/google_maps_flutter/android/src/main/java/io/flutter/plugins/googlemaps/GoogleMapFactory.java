@@ -22,13 +22,12 @@ public class GoogleMapFactory extends PlatformViewFactory {
   }
 
   @Override
-  public PlatformView create(Context context, int id, Object args) {
-    Map<String, Object> params = (Map<String, Object>) args;
+  public PlatformView create(Context context, int id, Map<String, Object> args) {
     final GoogleMapBuilder builder = new GoogleMapBuilder();
 
-    Convert.interpretGoogleMapOptions(params.get("options"), builder);
-    if (params.containsKey("initialCameraPosition")) {
-      CameraPosition position = Convert.toCameraPosition(params.get("initialCameraPosition"));
+    Convert.interpretGoogleMapOptions(args.get("options"), builder);
+    if (args.containsKey("initialCameraPosition")) {
+      CameraPosition position = Convert.toCameraPosition(args.get("initialCameraPosition"));
       builder.setInitialCameraPosition(position);
     }
     return builder.build(id, context, mActivityState, mPluginRegistrar);
