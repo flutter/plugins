@@ -49,6 +49,10 @@ class LatLng {
   int get hashCode => hashValues(latitude, longitude);
 }
 
+/// Provides a way for creating bounds based on a list of [Marker], provided
+/// through the method include.
+/// It will iterate through all the markers and retrieve a new instance of the
+/// class [LatLngBounds] with the southwest and northeast edges.
 class LatLngBoundsBuilder {
   List<LatLng> _positions = <LatLng>[];
 
