@@ -61,7 +61,7 @@ class _VideoAppState extends State<VideoApp> {
   void initState() {
     super.initState();
     _controller = VideoPlayerController.network(
-      'http://www.sample-videos.com/video/mp4/720/big_buck_bunny_720p_20mb.mp4',
+      'https://www.sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4',
     )
       ..addListener(() {
         final bool isPlaying = _controller.value.isPlaying;
