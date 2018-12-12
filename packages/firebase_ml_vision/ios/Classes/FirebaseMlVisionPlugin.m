@@ -12,16 +12,9 @@
 }
 @end
 
-// Used to keep image bytes accessible.
-static NSData *currentImage;
-
 @implementation FLTFirebaseMlVisionPlugin
 + (void)handleError:(NSError *)error result:(FlutterResult)result {
   result([error flutterError]);
-}
-
-+ (void)releaseImage {
-  currentImage = nil;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -67,10 +60,8 @@ static NSData *currentImage;
     UIImage *image = [UIImage imageWithContentsOfFile:imageData[@"path"]];
     return [[FIRVisionImage alloc] initWithImage:image];
   } else if ([@"bytes" isEqualToString:imageType]) {
-    NSAssert(!currentImage, @"Detection on an image is already in progress!");
-
     FlutterStandardTypedData *byteData = imageData[@"bytes"];
-    currentImage = byteData.data;
+    NSData *imageBytes = byteData.data;
 
     NSDictionary *metadata = imageData[@"metadata"];
     NSArray *planeData = metadata[@"planeData"];
@@ -81,7 +72,7 @@ static NSData *currentImage;
     size_t bytesPerRows[planeCount];
 
     void *baseAddresses[planeCount];
-    baseAddresses[0] = (void *)currentImage.bytes;
+    baseAddresses[0] = (void *)imageBytes.bytes;
 
     size_t lastAddressIndex = 0;  // Used to get base address for each plane
     for (int i = 0; i < planeCount; i++) {
@@ -97,7 +88,7 @@ static NSData *currentImage;
 
       if (i > 0) {
         size_t addressIndex = lastAddressIndex + heights[i - 1] * bytesPerRows[i - 1];
-        baseAddresses[i] = (void *)currentImage.bytes + addressIndex;
+        baseAddresses[i] = (void *)imageBytes.bytes + addressIndex;
         lastAddressIndex = addressIndex;
       }
     }
@@ -110,23 +101,22 @@ static NSData *currentImage;
 
     CVPixelBufferRef pxbuffer = NULL;
     CVPixelBufferCreateWithPlanarBytes(kCFAllocatorDefault, width.unsignedLongValue,
-                                       height.unsignedLongValue, format, NULL, currentImage.length,
-                                       2, baseAddresses, widths, heights, bytesPerRows, NULL, NULL,
+                                       height.unsignedLongValue, format, NULL, imageBytes.length, 2,
+                                       baseAddresses, widths, heights, bytesPerRows, NULL, NULL,
                                        NULL, &pxbuffer);
 
-    CMSampleTimingInfo info;
-    info.presentationTimeStamp = kCMTimeZero;
-    info.duration = kCMTimeInvalid;
-    info.decodeTimeStamp = kCMTimeInvalid;
+    CIImage *ciImage = [CIImage imageWithCVPixelBuffer:pxbuffer];
 
-    CMFormatDescriptionRef formatDesc = NULL;
-    CMVideoFormatDescriptionCreateForImageBuffer(kCFAllocatorDefault, pxbuffer, &formatDesc);
+    CIContext *temporaryContext = [CIContext contextWithOptions:nil];
+    CGImageRef videoImage = [temporaryContext
+                             createCGImage:ciImage
+                             fromRect:CGRectMake(0, 0,
+                                                 CVPixelBufferGetWidth(pxbuffer),
+                                                 CVPixelBufferGetHeight(pxbuffer))];
 
-    CMSampleBufferRef sampleBuffer = NULL;
-    CMSampleBufferCreateReadyWithImageBuffer(kCFAllocatorDefault, pxbuffer, formatDesc, &info,
-                                             &sampleBuffer);
-
-    return [[FIRVisionImage alloc] initWithBuffer:sampleBuffer];
+    UIImage *uiImage = [UIImage imageWithCGImage:videoImage];
+    CGImageRelease(videoImage);
+    return [[FIRVisionImage alloc] initWithImage:uiImage];
   } else {
     NSString *errorReason = [NSString stringWithFormat:@"No image type for: %@", imageType];
     @throw [NSException exceptionWithName:NSInvalidArgumentException

@@ -11,8 +11,6 @@ static FIRVisionTextRecognizer *recognizer;
 
   [recognizer processImage:image
                 completion:^(FIRVisionText *_Nullable visionText, NSError *_Nullable error) {
-                  [FLTFirebaseMlVisionPlugin releaseImage];
-
                   if (error) {
                     [FLTFirebaseMlVisionPlugin handleError:error result:result];
                     return;

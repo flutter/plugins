@@ -4,7 +4,6 @@
 
 @interface FLTFirebaseMlVisionPlugin : NSObject <FlutterPlugin>
 + (void)handleError:(NSError *)error result:(FlutterResult)result;
-+ (void)releaseImage;
 @end
 
 @protocol Detector
