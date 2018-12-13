@@ -40,6 +40,18 @@ Ensure the following permission is present in your Android Manifest file, locate
 
 The Flutter project template adds it, so it may already be there.
 
+The Android ExoPlayer dependency requires Java 8 desugaring to be enabled. Ensure that this
+is .present in your Gradle configuration, located in `<project root>/android/app/build.gradle:
+
+```groovy
+android {
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
+}
+```
+
 ### Example
 
 ```dart
