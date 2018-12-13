@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+part of camera;
+
 /// A single color plane of image data.
 ///
 /// The number and meaning of the planes in an image are determined by the
@@ -95,7 +97,7 @@ class CameraImage {
         height = data['height'],
         width = data['width'],
         planes = List<Plane>.unmodifiable(data['planes']
-      .map((dynamic planeData) => Plane._fromPlatformData(planeData)));
+            .map((dynamic planeData) => Plane._fromPlatformData(planeData)));
 
   /// Format of the image provided.
   ///
