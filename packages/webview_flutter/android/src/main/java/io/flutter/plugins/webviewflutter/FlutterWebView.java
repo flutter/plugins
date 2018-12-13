@@ -7,7 +7,6 @@ import android.view.View;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -128,9 +127,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 }
 
 class FlutterWebViewClient extends WebViewClient {
-    @Override
-    public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-        super.onReceivedSslError(view, handler, error);
-        Log.e("webview_flutter",error.toString());
-    }
+  @Override
+  public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+    super.onReceivedSslError(view, handler, error);
+    Log.e("webview_flutter", error.toString());
+  }
 }
