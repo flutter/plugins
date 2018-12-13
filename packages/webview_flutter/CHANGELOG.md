@@ -1,6 +1,6 @@
 ## 0.1.0+2
 
-* Add error display on iOS when failing to load.
+* Add error display on both iOS and Android when failing to load (e.g. due to 'ATS' on iOS or ssl error on Android).
 
 ## 0.1.0+1
 

@@ -1,8 +1,13 @@
 package io.flutter.plugins.webviewflutter;
 
 import android.content.Context;
+import android.net.http.SslError;
+import android.util.Log;
 import android.view.View;
+import android.webkit.SslErrorHandler;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
+
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -18,6 +23,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   @SuppressWarnings("unchecked")
   FlutterWebView(Context context, BinaryMessenger messenger, int id, Map<String, Object> params) {
     webView = new WebView(context);
+    webView.setWebViewClient(new FlutterWebViewClient());
     if (params.containsKey("initialUrl")) {
       String url = (String) params.get("initialUrl");
       webView.loadUrl(url);
@@ -119,4 +125,12 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
   @Override
   public void dispose() {}
+}
+
+class FlutterWebViewClient extends WebViewClient {
+    @Override
+    public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+        super.onReceivedSslError(view, handler, error);
+        Log.e("webview_flutter",error.toString());
+    }
 }
