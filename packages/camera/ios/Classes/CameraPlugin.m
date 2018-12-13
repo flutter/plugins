@@ -26,8 +26,8 @@
 @property FlutterEventSink eventSink;
 @end
 
-@implementation FLTByteStreamHandler {
-}
+@implementation FLTByteStreamHandler
+
 - (FlutterError *_Nullable)onCancelWithArguments:(id _Nullable)arguments {
   _eventSink = nil;
   return nil;
@@ -151,8 +151,10 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
     return nil;
   }
 
-  vImageBuffer_Init(&_destinationBuffer, _previewSize.width, _previewSize.height, 32, kvImageNoFlags);
-  vImageBuffer_Init(&_conversionBuffer, _previewSize.width, _previewSize.height, 32, kvImageNoFlags);
+  vImageBuffer_Init(&_destinationBuffer, _previewSize.width, _previewSize.height, 32,
+                    kvImageNoFlags);
+  vImageBuffer_Init(&_conversionBuffer, _previewSize.width, _previewSize.height, 32,
+                    kvImageNoFlags);
 
   _captureVideoOutput = [AVCaptureVideoDataOutput new];
   _captureVideoOutput.videoSettings =
