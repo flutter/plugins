@@ -32,6 +32,7 @@ class WebView extends StatefulWidget {
     this.onWebViewCreated,
     this.initialUrl,
     this.javaScriptMode = JavaScriptMode.disabled,
+    this.clearCookies = false,
     this.gestureRecognizers,
   })  : assert(javaScriptMode != null),
         super(key: key);
@@ -55,6 +56,11 @@ class WebView extends StatefulWidget {
 
   /// Whether JavaScript execution is enabled.
   final JavaScriptMode javaScriptMode;
+
+  /// Whether removing all cookies is enabled.
+  ///
+  /// It is possible without iOS 8.
+  final bool clearCookies;
 
   @override
   State<StatefulWidget> createState() => _WebViewState();
@@ -160,26 +166,34 @@ class _CreationParams {
 class _WebSettings {
   _WebSettings({
     this.javaScriptMode,
+    this.clearCookies,
   });
 
   static _WebSettings fromWidget(WebView widget) {
-    return _WebSettings(javaScriptMode: widget.javaScriptMode);
+    return _WebSettings(
+        javaScriptMode: widget.javaScriptMode,
+        clearCookies: widget.clearCookies);
   }
 
   final JavaScriptMode javaScriptMode;
 
+  final bool clearCookies;
+
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'jsMode': javaScriptMode.index,
+      'clearCookies': clearCookies,
     };
   }
 
   Map<String, dynamic> updatesMap(_WebSettings newSettings) {
-    if (javaScriptMode == newSettings.javaScriptMode) {
+    if (javaScriptMode == newSettings.javaScriptMode &&
+        clearCookies == newSettings.clearCookies) {
       return null;
     }
     return <String, dynamic>{
       'jsMode': newSettings.javaScriptMode.index,
+      'clearCookies': newSettings.clearCookies,
     };
   }
 }

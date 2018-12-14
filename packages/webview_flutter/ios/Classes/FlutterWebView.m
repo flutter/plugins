@@ -120,6 +120,11 @@
     if ([key isEqualToString:@"jsMode"]) {
       NSNumber* mode = settings[key];
       [self updateJsMode:mode];
+    } else if ([key isEqualToString:@"clearCookies"]) {
+      NSNumber* isClearCookies = settings[key];
+      if ([isClearCookies boolValue]) {
+        [self removeAllCookies];
+      }
     } else {
       NSLog(@"webview_flutter: unknown setting key: %@", key);
     }
@@ -137,6 +142,23 @@
       break;
     default:
       NSLog(@"webview_flutter: unknown javascript mode: %@", mode);
+  }
+}
+
+- (void)removeAllCookies {
+  if (@available(iOS 11.0, *)) {
+    WKHTTPCookieStore* cookieStore = [_webView.configuration.websiteDataStore httpCookieStore];
+    [cookieStore getAllCookies:^(NSArray<NSHTTPCookie*>* cookies) {
+      for (NSHTTPCookie* cookie in cookies) {
+        [cookieStore deleteCookie:cookie completionHandler:nil];
+      }
+    }];
+  } else if (@available(iOS 9.0, *)) {
+    NSSet* types = [NSSet setWithObjects:WKWebsiteDataTypeCookies, nil];
+    [_webView.configuration.websiteDataStore removeDataOfTypes:types
+                                                 modifiedSince:NSDate.distantPast
+                                             completionHandler:^(){
+                                             }];
   }
 }
 
