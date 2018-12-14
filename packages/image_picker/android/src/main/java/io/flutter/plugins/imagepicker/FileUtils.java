@@ -106,7 +106,7 @@ class FileUtils {
     return null;
   }
 
-  private static String getDataColumn(
+  protected static String getDataColumn(
       Context context, Uri uri, String selection, String[] selectionArgs) {
     Cursor cursor = null;
 

@@ -38,4 +38,5 @@ android {
 
 dependencies {
     api 'com.android.support:support-v4:27.1.1'
+    testImplementation 'junit:junit:4.12'
 }
