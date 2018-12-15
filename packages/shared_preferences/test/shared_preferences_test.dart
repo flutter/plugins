@@ -140,5 +140,11 @@ void main() {
       SharedPreferences.setMockInitialValues(kTestValues2);
       expect(await channel.invokeMethod('getAll'), kTestValues2);
     });
+
+    test('reset instance', () async {
+      SharedPreferences.resetInstance();
+      final newInstance = await SharedPreferences.getInstance();
+      expect(newInstance, isNot(same(preferences)));
+    });
   });
 }

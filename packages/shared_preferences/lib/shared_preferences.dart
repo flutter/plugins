@@ -150,4 +150,9 @@ class SharedPreferences {
       return null;
     });
   }
+
+  @visibleForTesting
+  static void resetInstance() {
+    _instance = null;
+  }
 }
