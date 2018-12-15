@@ -8,11 +8,12 @@ Neither platform can guarantee that writes will be persisted to disk after
 returning and this plugin must not be used for storing critical data.
 
 ## Usage
+
 To use this plugin, add `shared_preferences` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
 
 ### Example
 
-``` dart
+```dart
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -49,4 +50,12 @@ const MethodChannel('plugins.flutter.io/shared_preferences')
     }
     return null;
   });
+```
+
+You can reset `SharedPreferences` singleton instance by this code, so the value won't pollute other tests:
+
+```dart
+tearDown(() {
+  SharedPreferences.resetInstance();
+});
 ```
