@@ -143,7 +143,8 @@ void main() {
 
     test('reset instance', () async {
       SharedPreferences.resetInstance();
-      final newInstance = await SharedPreferences.getInstance();
+      final SharedPreferences newInstance =
+          await SharedPreferences.getInstance();
       expect(newInstance, isNot(same(preferences)));
     });
   });
