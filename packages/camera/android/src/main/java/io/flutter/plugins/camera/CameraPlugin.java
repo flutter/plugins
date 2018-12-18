@@ -383,7 +383,9 @@ public class CameraPlugin implements MethodCallHandler {
       Display display = activity.getWindowManager().getDefaultDisplay();
       display.getRealSize(screenResolution);
 
-      final boolean swapWH = getMediaOrientation() % 180 == 90;
+      // Camera sizes and minPreviewSize are both in landscape mode and
+      // screenResolution needs to be as well.
+      final boolean swapWH = screenResolution.x < screeResolution.y;
       int screenWidth = swapWH ? screenResolution.y : screenResolution.x;
       int screenHeight = swapWH ? screenResolution.x : screenResolution.y;
 
@@ -393,12 +395,13 @@ public class CameraPlugin implements MethodCallHandler {
             && minPreviewSize.getHeight() < s.getHeight()
             && s.getWidth() <= screenWidth
             && s.getHeight() <= screenHeight
-            && s.getHeight() <= 1080) {
+            && (s.getHeight() <= 1080 || s.getWidth() <= 1080)) {
           goodEnough.add(s);
         }
       }
 
       Collections.sort(goodEnough, new CompareSizesByArea());
+      Collections.reverse(goodEnough);
 
       if (goodEnough.isEmpty()) {
         previewSize = sizes[0];
