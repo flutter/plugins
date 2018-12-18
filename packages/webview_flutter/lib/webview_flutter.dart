@@ -27,6 +27,7 @@ class WebView extends StatefulWidget {
   /// `onWebViewCreated` callback once the web view is created.
   ///
   /// The `javaScriptMode` parameter must not be null.
+  /// The `clearCookies` parameter must not be null.
   const WebView({
     Key key,
     this.onWebViewCreated,
@@ -35,6 +36,7 @@ class WebView extends StatefulWidget {
     this.clearCookies = false,
     this.gestureRecognizers,
   })  : assert(javaScriptMode != null),
+        assert(clearCookies != null),
         super(key: key);
 
   /// If not null invoked once the web view is created.
