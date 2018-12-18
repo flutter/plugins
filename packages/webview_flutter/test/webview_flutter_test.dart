@@ -321,7 +321,8 @@ class FakePlatformWebView {
         currentPosition++;
         return Future<void>.sync(() {});
       case 'updateSettings':
-        if (call.arguments['jsMode'] == null || call.arguments['clearCookies'] == null) {
+        if (call.arguments['jsMode'] == null ||
+            call.arguments['clearCookies'] == null) {
           break;
         }
         javaScriptMode = JavaScriptMode.values[call.arguments['jsMode']];
