@@ -17,14 +17,15 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
   @SuppressWarnings("unchecked")
   FlutterWebView(Context context, BinaryMessenger messenger, int id, Map<String, Object> params) {
+    methodChannel = new MethodChannel(messenger, "plugins.flutter.io/webview_" + id);
+    methodChannel.setMethodCallHandler(this);
     webView = new WebView(context);
+    webView.setWebViewClient(new FlutterWebViewClient(methodChannel));
     if (params.containsKey("initialUrl")) {
       String url = (String) params.get("initialUrl");
       webView.loadUrl(url);
     }
     applySettings((Map<String, Object>) params.get("settings"));
-    methodChannel = new MethodChannel(messenger, "plugins.flutter.io/webview_" + id);
-    methodChannel.setMethodCallHandler(this);
   }
 
   @Override

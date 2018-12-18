@@ -42,6 +42,7 @@
   if ([super init]) {
     _viewId = viewId;
     _webView = [[WKWebView alloc] initWithFrame:frame];
+    _webView.navigationDelegate = self;
     NSString* channelName = [NSString stringWithFormat:@"plugins.flutter.io/webview_%lld", viewId];
     _channel = [FlutterMethodChannel methodChannelWithName:channelName binaryMessenger:messenger];
     __weak __typeof__(self) weakSelf = self;
@@ -170,6 +171,16 @@
   NSURLRequest* req = [NSURLRequest requestWithURL:nsUrl];
   [_webView loadRequest:req];
   return true;
+}
+
+#pragma mark-- WKNavigationDelegate
+
+- (void)webView:(WKWebView*)webView didStartProvisionalNavigation:(WKNavigation*)navigation {
+  [_channel invokeMethod:@"onPageStarted" arguments:@{@"url" : webView.URL.absoluteString}];
+}
+
+- (void)webView:(WKWebView*)webView didFinishNavigation:(WKNavigation*)navigation {
+  [_channel invokeMethod:@"onPageFinished" arguments:@{@"url" : webView.URL.absoluteString}];
 }
 
 @end

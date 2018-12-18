@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+library webview_flutter;
+
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+
+part 'src/callbacks.dart';
 
 typedef void WebViewCreatedCallback(WebViewController controller);
 
@@ -190,9 +194,17 @@ class _WebSettings {
 /// callback for a [WebView] widget.
 class WebViewController {
   WebViewController._(int id)
-      : _channel = MethodChannel('plugins.flutter.io/webview_$id');
+      : _channel = MethodChannel('plugins.flutter.io/webview_$id') {
+    _channel.setMethodCallHandler(_handleMethodCall);
+  }
 
   final MethodChannel _channel;
+
+  /// Callbacks to receive start loading web page events.
+  final ArgumentCallbacks<String> onPageStarted = ArgumentCallbacks<String>();
+
+  /// Callbacks to receive finish loading web page events.
+  final ArgumentCallbacks<String> onPageFinished = ArgumentCallbacks<String>();
 
   /// Loads the specified URL.
   ///
@@ -257,6 +269,25 @@ class WebViewController {
   /// Stops loading of this WebView.
   Future<void> stopLoading() async {
     return _channel.invokeMethod('stopLoading');
+  }
+
+  Future<dynamic> _handleMethodCall(MethodCall call) async {
+    switch (call.method) {
+      case 'onPageStarted':
+        final String url = call.arguments['url'];
+        if (url != null) {
+          onPageStarted(url);
+        }
+        break;
+      case 'onPageFinished':
+        final String url = call.arguments['url'];
+        if (url != null) {
+          onPageFinished(url);
+        }
+        break;
+      default:
+        throw MissingPluginException();
+    }
   }
 
   Future<void> _updateSettings(Map<String, dynamic> update) async {
