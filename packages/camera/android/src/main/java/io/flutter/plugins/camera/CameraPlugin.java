@@ -385,7 +385,7 @@ public class CameraPlugin implements MethodCallHandler {
 
       // Camera sizes and minPreviewSize are both in landscape mode and
       // screenResolution needs to be as well.
-      final boolean swapWH = screenResolution.x < screeResolution.y;
+      final boolean swapWH = screenResolution.x < screenResolution.y;
       int screenWidth = swapWH ? screenResolution.y : screenResolution.x;
       int screenHeight = swapWH ? screenResolution.x : screenResolution.y;
 
