@@ -207,7 +207,7 @@ class WebViewController {
 
   /// Accessor to the current URL that the WebView is displaying.
   ///
-  /// If [WebView.initialUrl] was never specified, or if , currentUrl returns `null`.
+  /// If [WebView.initialUrl] was never specified, returns `null`.
   /// Note that this operation is asynchronous, and it is possible that the
   /// current URL changes again by the time this function returns (in other
   /// words, by the time this future completes, the WebView may be displaying a
