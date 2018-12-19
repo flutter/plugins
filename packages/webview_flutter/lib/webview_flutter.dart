@@ -205,6 +205,18 @@ class WebViewController {
     return _channel.invokeMethod('loadUrl', url);
   }
 
+  /// Accessor to the current URL that the WebView is displaying.
+  ///
+  /// If [WebView.initialUrl] was never specified, returns `null`.
+  /// Note that this operation is asynchronous, and it is possible that the
+  /// current URL changes again by the time this function returns (in other
+  /// words, by the time this future completes, the WebView may be displaying a
+  /// different URL).
+  Future<String> currentUrl() async {
+    final String url = await _channel.invokeMethod('currentUrl');
+    return url;
+  }
+
   /// Checks whether there's a back history item.
   ///
   /// Note that this operation is asynchronous, and it is possible that the "canGoBack" state has

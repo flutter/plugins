@@ -53,6 +53,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       case "goForward":
         goForward(methodCall, result);
         break;
+      case "currentUrl":
+        currentUrl(methodCall, result);
+        break;
       default:
         result.notImplemented();
     }
@@ -84,6 +87,10 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       webView.goForward();
     }
     result.success(null);
+  }
+
+  private void currentUrl(MethodCall methodCall, Result result) {
+    result.success(webView.getUrl());
   }
 
   @SuppressWarnings("unchecked")
