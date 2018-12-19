@@ -401,7 +401,6 @@ public class CameraPlugin implements MethodCallHandler {
       }
 
       Collections.sort(goodEnough, new CompareSizesByArea());
-      Collections.reverse(goodEnough);
 
       if (goodEnough.isEmpty()) {
         previewSize = sizes[0];
