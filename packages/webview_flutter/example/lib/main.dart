@@ -37,20 +37,21 @@ class WebViewExample extends StatelessWidget {
   Widget favoriteButton() {
     return FutureBuilder<WebViewController>(
         future: _controller.future,
-        builder: (BuildContext context, AsyncSnapshot<WebViewController> controller) {
+        builder: (BuildContext context,
+            AsyncSnapshot<WebViewController> controller) {
           if (controller.hasData) {
-      return FloatingActionButton(
-        onPressed: () async {
-            final String url = await controller.data.currentUrl();
-            Scaffold.of(context).showSnackBar(
-              SnackBar(content: Text("Favorited $url")),
+            return FloatingActionButton(
+              onPressed: () async {
+                final String url = await controller.data.currentUrl();
+                Scaffold.of(context).showSnackBar(
+                  SnackBar(content: Text("Favorited $url")),
+                );
+              },
+              child: const Icon(Icons.favorite),
             );
-        },
-        child: const Icon(Icons.favorite),
-      );
           }
           return Container();
-    });
+        });
   }
 }
 

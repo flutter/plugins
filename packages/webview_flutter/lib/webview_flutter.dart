@@ -213,7 +213,7 @@ class WebViewController {
   /// words, by the time this future completes, the WebView may be displaying a
   /// different URL).
   Future<String> currentUrl() async {
-    String url = await _channel.invokeMethod('currentUrl');
+    final String url = await _channel.invokeMethod('currentUrl');
     return url;
   }
 

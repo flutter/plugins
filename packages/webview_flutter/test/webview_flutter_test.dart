@@ -260,7 +260,6 @@ void main() {
     expect(await controller.currentUrl(), 'https://flutter.io');
   });
 
-
   testWidgets('Current URL', (WidgetTester tester) async {
     WebViewController controller;
     await tester.pumpWidget(
