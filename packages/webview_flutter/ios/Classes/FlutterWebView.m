@@ -32,6 +32,7 @@
   WKWebView* _webView;
   int64_t _viewId;
   FlutterMethodChannel* _channel;
+  NSString* _currentUrl;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -74,6 +75,8 @@
     [self onGoBack:call result:result];
   } else if ([[call method] isEqualToString:@"goForward"]) {
     [self onGoForward:call result:result];
+  } else if ([[call method] isEqualToString:@"currentUrl"]) {
+    [self onCurrentUrl:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -113,6 +116,11 @@
 - (void)onGoForward:(FlutterMethodCall*)call result:(FlutterResult)result {
   [_webView goForward];
   result(nil);
+}
+
+- (void)onCurrentUrl:(FlutterMethodCall*)call result:(FlutterResult)result {
+  _currentUrl = [[_webView URL] absoluteString];
+  result(_currentUrl);
 }
 
 - (void)applySettings:(NSDictionary<NSString*, id>*)settings {
