@@ -120,6 +120,8 @@
 @end
 
 @implementation FLTCam
+// Yuv420 format used for iOS 10+, which is minimum requirement for this plugin.
+// Format is used to stream image byte data to dart.
 FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;
 
 - (instancetype)initWithCameraName:(NSString *)cameraName
@@ -346,6 +348,8 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
   return [self convertYUVImageToBGRA:pixelBuffer];
 }
 
+// Since video format was changed to kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange we have to convert
+// image to a usable format for flutter textures. Which is kCVPixelFormatType_32BGRA.
 - (CVPixelBufferRef)convertYUVImageToBGRA:(CVPixelBufferRef)pixelBuffer {
   CVPixelBufferLockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
 

@@ -279,7 +279,7 @@ public class CameraPlugin implements MethodCallHandler {
     private CameraCaptureSession cameraCaptureSession;
     private EventChannel.EventSink eventSink;
     private ImageReader pictureImageReader;
-    private ImageReader byteImageReader; // Used to pass bytes to dart side.
+    private ImageReader imageStreamReader;
     private int sensorOrientation;
     private boolean isFrontFacing;
     private String cameraName;
@@ -482,7 +482,9 @@ public class CameraPlugin implements MethodCallHandler {
           pictureImageReader =
               ImageReader.newInstance(
                   captureSize.getWidth(), captureSize.getHeight(), ImageFormat.JPEG, 2);
-          byteImageReader =
+
+          // Used to steam image byte data to dart side.
+          imageStreamReader =
               ImageReader.newInstance(
                   previewSize.getWidth(), previewSize.getHeight(), ImageFormat.YUV_420_888, 2);
 
@@ -767,8 +769,8 @@ public class CameraPlugin implements MethodCallHandler {
       surfaces.add(previewSurface);
       captureRequestBuilder.addTarget(previewSurface);
 
-      surfaces.add(byteImageReader.getSurface());
-      captureRequestBuilder.addTarget(byteImageReader.getSurface());
+      surfaces.add(imageStreamReader.getSurface());
+      captureRequestBuilder.addTarget(imageStreamReader.getSurface());
 
       cameraDevice.createCaptureSession(
           surfaces,
@@ -812,13 +814,13 @@ public class CameraPlugin implements MethodCallHandler {
 
             @Override
             public void onCancel(Object o) {
-              byteImageReader.setOnImageAvailableListener(null, null);
+              imageStreamReader.setOnImageAvailableListener(null, null);
             }
           });
     }
 
     private void setByteStreamImageAvailableListener(final EventChannel.EventSink eventSink) {
-      byteImageReader.setOnImageAvailableListener(
+      imageStreamReader.setOnImageAvailableListener(
           new ImageReader.OnImageAvailableListener() {
             @Override
             public void onImageAvailable(final ImageReader reader) {
@@ -880,9 +882,9 @@ public class CameraPlugin implements MethodCallHandler {
         pictureImageReader.close();
         pictureImageReader = null;
       }
-      if (byteImageReader != null) {
-        byteImageReader.close();
-        byteImageReader = null;
+      if (imageStreamReader != null) {
+        imageStreamReader.close();
+        imageStreamReader = null;
       }
       if (mediaRecorder != null) {
         mediaRecorder.reset();
