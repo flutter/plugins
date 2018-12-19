@@ -6,9 +6,11 @@ author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/android_alarm_manager
 
 dependencies:
-  firebase_auth: ^0.6.6
   flutter:
     sdk: flutter
+
+dev_dependencies:
+  firebase_auth: ^0.6.6
 
 flutter:
   plugin:
