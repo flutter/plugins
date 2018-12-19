@@ -283,7 +283,6 @@ void main() {
     expect(controller, isNotNull);
 
     // Test a WebView without an explicitly set first URL.
-    // TODO(efortuna): expect null? empty string? specify in lower level code?
     expect(await controller.currentUrl(), null);
 
     final FakePlatformWebView platformWebView =
