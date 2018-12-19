@@ -50,14 +50,14 @@ String defaultNameExtractor(RouteSettings settings) => settings.name;
 /// [PageRouteAware] and subscribing it to [FirebaseAnalyticsObserver]. See the
 /// [PageRouteObserver] docs for an example.
 class FirebaseAnalyticsObserver extends RouteObserver<PageRoute<dynamic>> {
-  /// Creates a [NavigatorObserver] that sends events to Firebase Analytics.
+  /// Creates a [NavigatorObserver] that sends events to [FirebaseAnalytics].
   ///
   /// When a route is pushed or popped, [nameExtractor] is used to extract a
   /// name from [RouteSettings] of the now active route and that name is sent to
   /// Firebase. Defaults to `defaultNameExtractor`.
   ///
   /// If a [PlatformException] is thrown while the Observer attempts to send the
-  /// active route to Firebase Analytics, [onError] will be called with the
+  /// active route to [analytics], [onError] will be called with the
   /// exception. If [onError] is omitted, the error will be thrown as normal.
   FirebaseAnalyticsObserver({
     @required this.analytics,
