@@ -32,6 +32,7 @@
   WKWebView* _webView;
   int64_t _viewId;
   FlutterMethodChannel* _channel;
+  NSString* _currentUrl;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -76,6 +77,8 @@
     [self onGoForward:call result:result];
   } else if ([[call method] isEqualToString:@"reload"]) {
     [self onReload:call result:result];
+  } else if ([[call method] isEqualToString:@"currentUrl"]) {
+    [self onCurrentUrl:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -120,6 +123,11 @@
 - (void)onReload:(FlutterMethodCall*)call result:(FlutterResult)result {
   [_webView reload];
   result(nil);
+}
+
+- (void)onCurrentUrl:(FlutterMethodCall*)call result:(FlutterResult)result {
+  _currentUrl = [[_webView URL] absoluteString];
+  result(_currentUrl);
 }
 
 - (void)applySettings:(NSDictionary<NSString*, id>*)settings {
