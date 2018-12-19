@@ -213,17 +213,17 @@ public class CameraPlugin implements MethodCallHandler {
           camera.stopVideoRecording(result);
           break;
         }
-      case "startByteStream":
+      case "startImageStream":
         {
           try {
-            camera.startPreviewWithByteStream();
+            camera.startPreviewWithImageStream();
             result.success(null);
           } catch (CameraAccessException e) {
             result.error("CameraAccess", e.getMessage(), null);
           }
           break;
         }
-      case "stopByteStream":
+      case "stopImageStream":
         {
           try {
             camera.startPreview();
@@ -754,7 +754,7 @@ public class CameraPlugin implements MethodCallHandler {
           null);
     }
 
-    private void startPreviewWithByteStream() throws CameraAccessException {
+    private void startPreviewWithImageStream() throws CameraAccessException {
       closeCaptureSession();
 
       SurfaceTexture surfaceTexture = textureEntry.surfaceTexture();
@@ -793,23 +793,23 @@ public class CameraPlugin implements MethodCallHandler {
 
             @Override
             public void onConfigureFailed(@NonNull CameraCaptureSession cameraCaptureSession) {
-              sendErrorEvent("Failed to configure the camera for streaming bytes.");
+              sendErrorEvent("Failed to configure the camera for streaming images.");
             }
           },
           null);
 
-      registerByteStreamEventChannel();
+      registerImageStreamEventChannel();
     }
 
-    private void registerByteStreamEventChannel() {
+    private void registerImageStreamEventChannel() {
       final EventChannel cameraChannel =
-          new EventChannel(registrar.messenger(), "plugins.flutter.io/camera/bytes");
+          new EventChannel(registrar.messenger(), "plugins.flutter.io/camera/imageStream");
 
       cameraChannel.setStreamHandler(
           new EventChannel.StreamHandler() {
             @Override
             public void onListen(Object o, EventChannel.EventSink eventSink) {
-              setByteStreamImageAvailableListener(eventSink);
+              setImageStreamImageAvailableListener(eventSink);
             }
 
             @Override
@@ -819,7 +819,7 @@ public class CameraPlugin implements MethodCallHandler {
           });
     }
 
-    private void setByteStreamImageAvailableListener(final EventChannel.EventSink eventSink) {
+    private void setImageStreamImageAvailableListener(final EventChannel.EventSink eventSink) {
       imageStreamReader.setOnImageAvailableListener(
           new ImageReader.OnImageAvailableListener() {
             @Override

@@ -9,7 +9,7 @@ part of 'camera.dart';
 /// The number and meaning of the planes in an image are determined by the
 /// format of the Image.
 class Plane {
-  Plane._fromPlatformData(dynamic data)
+  Plane._fromPlatformData(Map<dynamic, dynamic> data)
       : bytes = data['bytes'],
         bytesPerPixel = data['bytesPerPixel'],
         bytesPerRow = data['bytesPerRow'],
@@ -92,7 +92,7 @@ ImageFormatGroup _asImageFormatGroup(dynamic rawFormat) {
 /// Although not all image formats are planar on iOS, we treat 1-dimensional
 /// images as single planar images.
 class CameraImage {
-  CameraImage._fromPlatformData(dynamic data)
+  CameraImage._fromPlatformData(Map<dynamic, dynamic> data)
       : format = ImageFormat._fromPlatformData(data['format']),
         height = data['height'],
         width = data['width'],

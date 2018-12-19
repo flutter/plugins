@@ -22,11 +22,11 @@
 - initWithPath:(NSString *)filename result:(FlutterResult)result;
 @end
 
-@interface FLTByteStreamHandler : NSObject <FlutterStreamHandler>
+@interface FLTImageStreamHandler : NSObject <FlutterStreamHandler>
 @property FlutterEventSink eventSink;
 @end
 
-@implementation FLTByteStreamHandler
+@implementation FLTImageStreamHandler
 
 - (FlutterError *_Nullable)onCancelWithArguments:(id _Nullable)arguments {
   _eventSink = nil;
@@ -85,7 +85,7 @@
 @property(readonly, nonatomic) int64_t textureId;
 @property(nonatomic, copy) void (^onFrameAvailable)();
 @property(nonatomic) FlutterEventChannel *eventChannel;
-@property(nonatomic) FLTByteStreamHandler *byteStreamHandler;
+@property(nonatomic) FLTImageStreamHandler *imageStreamHandler;
 @property(nonatomic) FlutterEventSink eventSink;
 @property(readonly, nonatomic) AVCaptureSession *captureSession;
 @property(readonly, nonatomic) AVCaptureDevice *captureDevice;
@@ -103,7 +103,7 @@
 @property(strong, nonatomic) AVCaptureAudioDataOutput *audioOutput;
 @property(assign, nonatomic) BOOL isRecording;
 @property(assign, nonatomic) BOOL isAudioSetup;
-@property(assign, nonatomic) BOOL isStreamingBytes;
+@property(assign, nonatomic) BOOL isStreamingImages;
 @property(nonatomic) vImage_Buffer destinationBuffer;
 @property(nonatomic) vImage_Buffer conversionBuffer;
 - (instancetype)initWithCameraName:(NSString *)cameraName
@@ -114,8 +114,8 @@
 - (void)stop;
 - (void)startVideoRecordingAtPath:(NSString *)path result:(FlutterResult)result;
 - (void)stopVideoRecordingWithResult:(FlutterResult)result;
-- (void)startByteStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger;
-- (void)stopByteStream;
+- (void)startImageStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger;
+- (void)stopImageStream;
 - (void)captureToFile:(NSString *)filename result:(FlutterResult)result;
 @end
 
@@ -220,8 +220,8 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
     });
     return;
   }
-  if (_isStreamingBytes) {
-    if (_byteStreamHandler.eventSink) {
+  if (_isStreamingImages) {
+    if (_imageStreamHandler.eventSink) {
       CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
       CVPixelBufferLockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
 
@@ -255,7 +255,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
       imageBuffer[@"format"] = @(videoFormat);
       imageBuffer[@"planes"] = planes;
 
-      _byteStreamHandler.eventSink(imageBuffer);
+      _imageStreamHandler.eventSink(imageBuffer);
 
       CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
     }
@@ -448,29 +448,29 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
   }
 }
 
-- (void)startByteStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger {
-  if (!_isStreamingBytes) {
+- (void)startImageStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger {
+  if (!_isStreamingImages) {
     FlutterEventChannel *eventChannel =
-        [FlutterEventChannel eventChannelWithName:@"plugins.flutter.io/camera/bytes"
+        [FlutterEventChannel eventChannelWithName:@"plugins.flutter.io/camera/imageStream"
                                   binaryMessenger:messenger];
 
-    _byteStreamHandler = [[FLTByteStreamHandler alloc] init];
-    [eventChannel setStreamHandler:_byteStreamHandler];
+    _imageStreamHandler = [[FLTImageStreamHandler alloc] init];
+    [eventChannel setStreamHandler:_imageStreamHandler];
 
-    _isStreamingBytes = YES;
+    _isStreamingImages = YES;
   } else {
     _eventSink(
-        @{@"event" : @"error", @"errorDescription" : @"Bytes from camera are already streaming!"});
+        @{@"event" : @"error", @"errorDescription" : @"Images from camera are already streaming!"});
   }
 }
 
-- (void)stopByteStream {
-  if (_isStreamingBytes) {
-    _isStreamingBytes = NO;
-    _byteStreamHandler = nil;
+- (void)stopImageStream {
+  if (_isStreamingImages) {
+    _isStreamingImages = NO;
+    _imageStreamHandler = nil;
   } else {
     _eventSink(
-        @{@"event" : @"error", @"errorDescription" : @"Bytes from camera are not streaming!"});
+        @{@"event" : @"error", @"errorDescription" : @"Images from camera are not streaming!"});
   }
 }
 
@@ -648,11 +648,11 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
       });
       [cam start];
     }
-  } else if ([@"startByteStream" isEqualToString:call.method]) {
-    [_camera startByteStreamWithMessenger:_messenger];
+  } else if ([@"startImageStream" isEqualToString:call.method]) {
+    [_camera startImageStreamWithMessenger:_messenger];
     result(nil);
-  } else if ([@"stopByteStream" isEqualToString:call.method]) {
-    [_camera stopByteStream];
+  } else if ([@"stopImageStream" isEqualToString:call.method]) {
+    [_camera stopImageStream];
     result(nil);
   } else {
     NSDictionary *argsMap = call.arguments;
