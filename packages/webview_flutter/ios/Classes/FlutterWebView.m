@@ -75,6 +75,8 @@
     [self onGoBack:call result:result];
   } else if ([[call method] isEqualToString:@"goForward"]) {
     [self onGoForward:call result:result];
+  } else if ([[call method] isEqualToString:@"reload"]) {
+    [self onReload:call result:result];
   } else if ([[call method] isEqualToString:@"currentUrl"]) {
     [self onCurrentUrl:call result:result];
   } else {
@@ -115,6 +117,11 @@
 
 - (void)onGoForward:(FlutterMethodCall*)call result:(FlutterResult)result {
   [_webView goForward];
+  result(nil);
+}
+
+- (void)onReload:(FlutterMethodCall*)call result:(FlutterResult)result {
+  [_webView reload];
   result(nil);
 }
 

@@ -53,6 +53,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       case "goForward":
         goForward(methodCall, result);
         break;
+      case "reload":
+        reload(methodCall, result);
+        break;
       case "currentUrl":
         currentUrl(methodCall, result);
         break;
@@ -89,6 +92,11 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     result.success(null);
   }
 
+  private void reload(MethodCall methodCall, Result result) {
+    webView.reload();
+    result.success(null);
+  }
+
   private void currentUrl(MethodCall methodCall, Result result) {
     result.success(webView.getUrl());
   }
@@ -116,7 +124,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       case 0: // disabled
         webView.getSettings().setJavaScriptEnabled(false);
         break;
-      case 1: //unrestricted
+      case 1: // unrestricted
         webView.getSettings().setJavaScriptEnabled(true);
         break;
       default:
