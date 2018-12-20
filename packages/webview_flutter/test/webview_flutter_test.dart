@@ -76,7 +76,33 @@ void main() {
     expect(await controller.currentUrl(), 'https://flutter.io');
   });
 
-  testWidgets('Invalid urls', (WidgetTester tester) async {
+  testWidgets('Loading state', (WidgetTester tester) async {
+    WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+
+    final FakePlatformWebView platformWebView =
+        fakePlatformViewsController.lastCreatedView;
+
+    expect(platformWebView.isLoading, false);
+
+    controller.loadUrl('https://flutter.io');
+
+    expect(platformWebView.isLoading, true);
+
+    controller.stopLoading();
+
+    expect(platformWebView.isLoading, false);
+  });
+
+  testWidgets('Invald urls', (WidgetTester tester) async {
     WebViewController controller;
     await tester.pumpWidget(
       WebView(
@@ -336,6 +362,7 @@ class FakePlatformWebView {
 
   String get currentUrl => history.isEmpty ? null : history[currentPosition];
   JavaScriptMode javaScriptMode;
+  bool isLoading = false;
 
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
@@ -345,7 +372,13 @@ class FakePlatformWebView {
         history.add(url);
         currentPosition++;
         amountOfReloadsOnCurrentUrl = 0;
+        isLoading = true;
         return Future<void>.sync(() {});
+        break;
+      case 'stopLoading':
+        isLoading = false;
+        return Future<void>.sync(() {});
+        break;
       case 'updateSettings':
         if (call.arguments['jsMode'] == null) {
           break;
