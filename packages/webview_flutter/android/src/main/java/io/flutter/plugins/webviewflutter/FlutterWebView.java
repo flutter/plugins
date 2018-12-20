@@ -59,6 +59,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       case "currentUrl":
         currentUrl(methodCall, result);
         break;
+      case "stopLoading":
+        stopLoading(methodCall, result);
+        break;
       default:
         result.notImplemented();
     }
@@ -104,6 +107,11 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   @SuppressWarnings("unchecked")
   private void updateSettings(MethodCall methodCall, Result result) {
     applySettings((Map<String, Object>) methodCall.arguments);
+    result.success(null);
+  }
+
+  private void stopLoading(MethodCall methodCall, Result result) {
+    webView.stopLoading();
     result.success(null);
   }
 

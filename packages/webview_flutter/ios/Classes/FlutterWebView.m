@@ -79,6 +79,8 @@
     [self onReload:call result:result];
   } else if ([[call method] isEqualToString:@"currentUrl"]) {
     [self onCurrentUrl:call result:result];
+  } else if ([[call method] isEqualToString:@"stopLoading"]) {
+    [self onStopLoading:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -128,6 +130,11 @@
 - (void)onCurrentUrl:(FlutterMethodCall*)call result:(FlutterResult)result {
   _currentUrl = [[_webView URL] absoluteString];
   result(_currentUrl);
+}
+
+- (void)onStopLoading:(FlutterMethodCall*)call result:(FlutterResult)result {
+  [_webView stopLoading];
+  result(nil);
 }
 
 - (void)applySettings:(NSDictionary<NSString*, id>*)settings {

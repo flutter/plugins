@@ -254,6 +254,11 @@ class WebViewController {
     return _channel.invokeMethod("reload");
   }
 
+  /// Stops loading of this WebView.
+  Future<void> stopLoading() async {
+    return _channel.invokeMethod('stopLoading');
+  }
+
   Future<void> _updateSettings(Map<String, dynamic> update) async {
     return _channel.invokeMethod('updateSettings', update);
   }
