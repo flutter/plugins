@@ -1,0 +1,19 @@
+buildscript {
+    ext.kotlin_version = '1.3.11'
+    repositories {
+        google()
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.dicedmelon.gradle:jacoco-android:0.1.3'
+        classpath 'com.android.tools.build:gradle:3.2.1'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+apply from: "./_build.gradle"
+
+dependencies {
+    implementation files("${System.getenv('FLUTTER_ROOT')}/bin/cache/artifacts/engine/android-arm/flutter.jar")
+}

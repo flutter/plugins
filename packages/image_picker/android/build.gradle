@@ -44,7 +44,6 @@ android {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     api 'com.android.support:support-v4:27.1.1'
-   api files('/usr/local/Cellar/flutter/1.1.1/bin/cache/artifacts/engine/android-arm/flutter.jar')
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.mockito:mockito-core:2.17.0'
 }
