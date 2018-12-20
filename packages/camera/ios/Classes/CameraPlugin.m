@@ -348,8 +348,8 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
   return [self convertYUVImageToBGRA:pixelBuffer];
 }
 
-// Since video format was changed to kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange we have to convert
-// image to a usable format for flutter textures. Which is kCVPixelFormatType_32BGRA.
+// Since video format was changed to kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange we have to
+// convert image to a usable format for flutter textures. Which is kCVPixelFormatType_32BGRA.
 - (CVPixelBufferRef)convertYUVImageToBGRA:(CVPixelBufferRef)pixelBuffer {
   CVPixelBufferLockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
 
