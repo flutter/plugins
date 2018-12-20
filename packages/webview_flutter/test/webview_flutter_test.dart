@@ -102,6 +102,31 @@ void main() {
     expect(platformWebView.isLoading, false);
   });
 
+  testWidgets('Call on page loading events', (WidgetTester tester) async {
+    WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+
+    controller.onPageStarted.add(expectAsync1((String actual) {
+      expect(actual, 'https://flutter.io');
+    }, count: 1, max: 1));
+
+    controller.loadUrl('https://flutter.io');
+
+    controller.onPageFinished.add(expectAsync1((String actual) {
+      expect(actual, 'https://flutter.io');
+    }, count: 1, max: 1));
+
+    controller.stopLoading();
+  });
+
   testWidgets('Invald urls', (WidgetTester tester) async {
     WebViewController controller;
     await tester.pumpWidget(
@@ -373,10 +398,18 @@ class FakePlatformWebView {
         currentPosition++;
         amountOfReloadsOnCurrentUrl = 0;
         isLoading = true;
+        final MethodCall onPageStarted =
+            MethodCall('onPageStarted', <String, String>{'url': url});
+        final ByteData message = channel.codec.encodeMethodCall(onPageStarted);
+        BinaryMessages.handlePlatformMessage(channel.name, message, (_) {});
         return Future<void>.sync(() {});
         break;
       case 'stopLoading':
         isLoading = false;
+        final MethodCall onPageFinished =
+            MethodCall('onPageFinished', <String, String>{'url': currentUrl});
+        final ByteData message = channel.codec.encodeMethodCall(onPageFinished);
+        BinaryMessages.handlePlatformMessage(channel.name, message, (_) {});
         return Future<void>.sync(() {});
         break;
       case 'updateSettings':
