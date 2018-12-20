@@ -78,7 +78,7 @@ class FirebaseAnalyticsObserver extends RouteObserver<PageRoute<dynamic>> {
           if (error is! PlatformException) throw error;
 
           if (_onError == null) {
-            debugPrint(error);
+            debugPrint('$FirebaseAnalyticsObserver: $error');
           } else {
             _onError(error);
           }
