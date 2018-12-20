@@ -1,6 +1,7 @@
 ## 0.2.7
 
-* Add byte streaming capability for the camera.
+* Add access to the image stream from Dart.
+* Use `cameraController.startImageStream(listener)` to process the images.
 
 ## 0.2.6
 

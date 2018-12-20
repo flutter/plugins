@@ -802,10 +802,10 @@ public class CameraPlugin implements MethodCallHandler {
     }
 
     private void registerImageStreamEventChannel() {
-      final EventChannel cameraChannel =
+      final EventChannel imageStreamChannel =
           new EventChannel(registrar.messenger(), "plugins.flutter.io/camera/imageStream");
 
-      cameraChannel.setStreamHandler(
+      imageStreamChannel.setStreamHandler(
           new EventChannel.StreamHandler() {
             @Override
             public void onListen(Object o, EventChannel.EventSink eventSink) {

@@ -297,11 +297,12 @@ class CameraController extends ValueNotifier<CameraValue> {
   /// Start streaming images from platform camera.
   ///
   /// Settings for capturing images on iOS and Android is set to always use the
-  /// latest image available and drop all others.
+  /// latest image available from the camera and will drop all other images.
   ///
-  /// When running continuously, this function runs best with
-  /// [ResolutionPreset.low]. Running on [ResolutionPreset.high] can have
-  /// significant frame rate drops depending on the device.
+  /// When running continuously with [CameraPreview] widget, this function runs
+  /// best with [ResolutionPreset.low]. Running on [ResolutionPreset.high] can
+  /// have significant frame rate drops for [CameraPreview] on lower end
+  /// devices.
   ///
   /// Throws a [CameraException] if image streaming or video recording has
   /// already started.
