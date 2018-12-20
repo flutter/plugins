@@ -56,9 +56,10 @@ class FirebaseAnalyticsObserver extends RouteObserver<PageRoute<dynamic>> {
   /// name from [RouteSettings] of the now active route and that name is sent to
   /// Firebase. Defaults to `defaultNameExtractor`.
   ///
-  /// If a [PlatformException] is thrown while the Observer attempts to send the
-  /// active route to [analytics], [onError] will be called with the
-  /// exception. If [onError] is omitted, the error will be thrown as normal.
+  /// If a [PlatformException] is thrown while the observer attempts to send the
+  /// active route to [analytics], `onError` will be called with the
+  /// exception. If `onError` is omitted, the exception will be printed using
+  /// `debugPrint()`.
   FirebaseAnalyticsObserver({
     @required this.analytics,
     this.nameExtractor = defaultNameExtractor,
@@ -74,8 +75,13 @@ class FirebaseAnalyticsObserver extends RouteObserver<PageRoute<dynamic>> {
     if (screenName != null) {
       analytics.setCurrentScreen(screenName: screenName).catchError(
         (Object error) {
-          if (error is! PlatformException || _onError == null) throw error;
-          _onError(error);
+          if (error is! PlatformException) throw error;
+
+          if (_onError == null) {
+            debugPrint(error);
+          } else {
+            _onError(error);
+          }
         },
       );
     }
