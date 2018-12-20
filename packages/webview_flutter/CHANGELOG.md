@@ -1,3 +1,7 @@
+## 0.1.2
+
+* Added a reload method to the WebView controller.
+
 ## 0.1.1
 
 * Added a `currentUrl` accessor for the WebView controller to look up what URL
