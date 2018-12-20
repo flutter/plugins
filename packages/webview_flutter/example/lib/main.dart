@@ -26,9 +26,7 @@ class WebViewExample extends StatelessWidget {
       body: WebView(
         initialUrl: 'https://flutter.io',
         javaScriptMode: JavaScriptMode.unrestricted,
-        onWebViewCreated: (WebViewController webViewController) {
-          _controller.complete(webViewController);
-        },
+        onWebViewCreated: _onWebViewCreated,
       ),
       floatingActionButton: favoriteButton(),
     );
@@ -52,6 +50,20 @@ class WebViewExample extends StatelessWidget {
           }
           return Container();
         });
+  }
+
+  void _onWebViewCreated(WebViewController webViewController) {
+    webViewController.onPageStarted.add(_onPageStarted);
+    webViewController.onPageFinished.add(_onPageFinished);
+    _controller.complete(webViewController);
+  }
+
+  void _onPageStarted(String url) {
+    print("Load page started: - $url");
+  }
+
+  void _onPageFinished(String url) {
+    print("Load page finished: - $url");
   }
 }
 
