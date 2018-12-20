@@ -306,6 +306,8 @@ class CameraController extends ValueNotifier<CameraValue> {
   ///
   /// Throws a [CameraException] if image streaming or video recording has
   /// already started.
+  ///
+  /// TODO(bmparr): Add settings for resolution and fps.
   Future<void> startImageStream(onLatestImageAvailable onAvailable) async {
     if (!value.isInitialized || _isDisposed) {
       throw CameraException(
