@@ -9,7 +9,7 @@ enum _ImageType { file, bytes }
 /// Indicates the image rotation.
 ///
 /// Rotation is counter-clockwise.
-enum ImageRotation { rotation_0, rotation_90, rotation_180, rotation_270 }
+enum ImageRotation { rotation0, rotation90, rotation180, rotation270 }
 
 /// The Firebase machine learning vision API.
 ///
@@ -161,7 +161,7 @@ class FirebaseVisionImagePlaneMetadata {
 
 /// Image metadata used by [FirebaseVision] detectors.
 ///
-/// [rotation] defaults to [ImageRotation.rotation_0]. Currently only rotates on
+/// [rotation] defaults to [ImageRotation.rotation0]. Currently only rotates on
 /// Android.
 ///
 /// When using iOS, [rawFormat] and [planeData] throw [AssertionError] if
@@ -171,7 +171,7 @@ class FirebaseVisionImageMetadata {
     @required this.size,
     @required this.rawFormat,
     @required this.planeData,
-    this.rotation = ImageRotation.rotation_0,
+    this.rotation = ImageRotation.rotation0,
   })  : assert(size != null),
         assert(defaultTargetPlatform == TargetPlatform.iOS
             ? rawFormat != null
@@ -206,14 +206,14 @@ class FirebaseVisionImageMetadata {
 
   int _imageRotationToInt(ImageRotation rotation) {
     switch (rotation) {
-      case ImageRotation.rotation_90:
+      case ImageRotation.rotation90:
         return 90;
-      case ImageRotation.rotation_180:
+      case ImageRotation.rotation180:
         return 180;
-      case ImageRotation.rotation_270:
+      case ImageRotation.rotation270:
         return 270;
       default:
-        assert(rotation == ImageRotation.rotation_0);
+        assert(rotation == ImageRotation.rotation0);
         return 0;
     }
   }
