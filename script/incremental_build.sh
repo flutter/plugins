@@ -23,7 +23,9 @@ if [[ "$CHANGED_PACKAGES" == "" || "${BRANCH_NAME}" == "master" ]]; then
 fi
 # @todo move this to flutter_plugin_tools
 if [[ "$@" == "java-test" ]]; then
-  PACKAGE=${CHANGED_PACKAGE_LIST[0]} $SCRIPT_DIR/test_coverage_single_package.sh
+  for PACKAGE in "${CHANGED_PACKAGE_LIST[@]}"; do
+    PACKAGE=$PACKAGE $SCRIPT_DIR/test_coverage_single_package.sh
+  done
 else
   (cd "$REPO_DIR" && pub global run flutter_plugin_tools "${ACTIONS[@]}" --plugins="$CHANGED_PACKAGES" $PLUGIN_SHARDING)
 fi
