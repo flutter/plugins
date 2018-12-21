@@ -75,14 +75,13 @@ class FirebaseAnalyticsObserver extends RouteObserver<PageRoute<dynamic>> {
     if (screenName != null) {
       analytics.setCurrentScreen(screenName: screenName).catchError(
         (Object error) {
-          if (error is! PlatformException) throw error;
-
           if (_onError == null) {
             debugPrint('$FirebaseAnalyticsObserver: $error');
           } else {
             _onError(error);
           }
         },
+        test: (Object error) => error is PlatformException,
       );
     }
   }
