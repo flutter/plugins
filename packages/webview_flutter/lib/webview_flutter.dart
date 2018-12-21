@@ -208,7 +208,8 @@ class WebViewController {
   final ArgumentCallbacks<String> onPageFinished = ArgumentCallbacks<String>();
 
   /// Callbacks to receive error loading web page events.
-  final ArgumentCallbacks<WebViewError> onReceivedError = ArgumentCallbacks<WebViewError>();
+  final ArgumentCallbacks<WebViewError> onReceivedError =
+      ArgumentCallbacks<WebViewError>();
 
   /// Loads the specified URL.
   ///
