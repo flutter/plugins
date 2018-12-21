@@ -217,6 +217,18 @@ class WebViewController {
     return url;
   }
 
+  /// Runs the Javascript code specified
+  /// Returns the result of the execution
+  Future<String> evaluateJavaScript(String source) async {
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      final dynamic result =
+          await _channel.invokeMethod('evaluateJavascript', source);
+      return result;
+    }
+
+    throw UnimplementedError("Not yet implemented on $defaultTargetPlatform.");
+  }
+
   /// Checks whether there's a back history item.
   ///
   /// Note that this operation is asynchronous, and it is possible that the "canGoBack" state has

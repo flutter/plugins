@@ -38,6 +38,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       case "loadUrl":
         loadUrl(methodCall, result);
         break;
+      case "evaluateJavascript":
+        evaluateJavascript(methodCall, result);
+        break;
       case "updateSettings":
         updateSettings(methodCall, result);
         break;
@@ -68,6 +71,23 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     String url = (String) methodCall.arguments;
     webView.loadUrl(url);
     result.success(null);
+  }
+
+  private void evaluateJavascript(MethodCall methodCall, final Result result) {
+    if (!webView.getSettings().getJavaScriptEnabled()) {
+      throw new UnsupportedOperationException(
+          "Cannot evaluate Javascript in a webview with Javascript disabled.");
+    } else {
+      String jsSource = (String) methodCall.arguments;
+      webView.evaluateJavascript(
+          jsSource,
+          new android.webkit.ValueCallback<String>() {
+            @Override
+            public void onReceiveValue(String value) {
+              result.success(value);
+            }
+          });
+    }
   }
 
   private void canGoBack(MethodCall methodCall, Result result) {
