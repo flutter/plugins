@@ -3,6 +3,8 @@ task:
     image: cirrusci/flutter:latest
     cpu: 4
     memory: 8G
+  env:
+    CODECOV_TOKEN: ENCRYPTED[b386dab525d9af8d807245b40c6812add427f42eb27fe8f3798bbf3970e338b45a93a2d208c08ae76abc2e9de7a31a32]
   upgrade_script:
     - flutter channel master
     - flutter upgrade
@@ -21,7 +23,7 @@ task:
       test_script: ./script/incremental_build.sh test
     - name: analyze
       script: ./script/incremental_build.sh analyze
-    - name: build-apks+java-test
+    - name: build-apks+java-test+codecov
       env:
         matrix:
           PLUGIN_SHARDING: "--shardIndex 0 --shardCount 2"
