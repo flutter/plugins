@@ -12,7 +12,6 @@ if [[ "${#ACTIONS[@]}" == 0 ]]; then
   ACTIONS=("test" "analyze" "java-test")
 fi
 
-BRANCH_NAME="${BRANCH_NAME:-"$(git rev-parse --abbrev-ref HEAD)"}"
 if [[ "${BRANCH_NAME}" == "master" ]]; then
   echo "Running for all packages"
   (cd "$REPO_DIR" && pub global run flutter_plugin_tools "${ACTIONS[@]}" $PLUGIN_SHARDING)
@@ -24,6 +23,11 @@ else
     echo "Running for all packages"
     (cd "$REPO_DIR" && pub global run flutter_plugin_tools "${ACTIONS[@]}" $PLUGIN_SHARDING)
   else
-    (cd "$REPO_DIR" && pub global run flutter_plugin_tools "${ACTIONS[@]}" --plugins="$CHANGED_PACKAGES" $PLUGIN_SHARDING)
+    # @todo move this to flutter_plugin_tools
+    if [[ "$@" == "test" ]]; then
+      PACKAGE=${CHANGED_PACKAGE_LIST[0]} $SCRIPT_DIR/test_coverage_single_package.sh
+    else
+      (cd "$REPO_DIR" && pub global run flutter_plugin_tools "${ACTIONS[@]}" --plugins="$CHANGED_PACKAGES" $PLUGIN_SHARDING)
+    fi
   fi
 fi
