@@ -17,4 +17,4 @@ cd android
 $SCRIPT_DIR/gradle_work_around.sh jacocoTestDebugUnitTestReport
 
 cd $REPO_DIR
-bash <(curl -s https://codecov.io/bash) -B "$PACKAGE/$BRANCH_NAME"
+bash <(curl -s https://codecov.io/bash) -B "$PACKAGE/$BRANCH_NAME" -s packages/$PACKAGE
