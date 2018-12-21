@@ -183,4 +183,15 @@
   [_channel invokeMethod:@"onPageFinished" arguments:@{@"url" : webView.URL.absoluteString}];
 }
 
+- (void)webView:(WKWebView*)webView
+    didFailNavigation:(WKNavigation*)navigation
+            withError:(NSError*)error {
+  [_channel invokeMethod:@"onReceivedError"
+               arguments:@{
+                 @"errorCode" : [NSNumber numberWithInteger:error.code],
+                 @"description" : error.localizedDescription,
+                 @"url" : webView.URL.absoluteString
+               }];
+}
+
 @end

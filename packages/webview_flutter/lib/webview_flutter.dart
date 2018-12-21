@@ -12,6 +12,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 part 'src/callbacks.dart';
+part 'src/error.dart';
 
 typedef void WebViewCreatedCallback(WebViewController controller);
 
@@ -206,6 +207,9 @@ class WebViewController {
   /// Callbacks to receive finish loading web page events.
   final ArgumentCallbacks<String> onPageFinished = ArgumentCallbacks<String>();
 
+  /// Callbacks to receive error loading web page events.
+  final ArgumentCallbacks<WebViewError> onReceivedError = ArgumentCallbacks<WebViewError>();
+
   /// Loads the specified URL.
   ///
   /// `url` must not be null.
@@ -283,6 +287,15 @@ class WebViewController {
         final String url = call.arguments['url'];
         if (url != null) {
           onPageFinished(url);
+        }
+        break;
+      case 'onReceivedError':
+        final String url = call.arguments['url'];
+        final int errorCode = call.arguments['errorCode'];
+        final String description = call.arguments['description'];
+        if (url != null) {
+          final WebViewError error = WebViewError(url, errorCode, description);
+          onReceivedError(error);
         }
         break;
       default:
