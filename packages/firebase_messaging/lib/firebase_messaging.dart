@@ -82,6 +82,11 @@ class FirebaseMessaging {
     return await _channel.invokeMethod('getToken');
   }
 
+  /// Returns the Instance Id.
+  Future<String> getInstanceId() async {
+    return await _channel.invokeMethod('getInstanceId');
+  }
+
   /// Subscribe to topic in background.
   ///
   /// [topic] must match the following regular expression:

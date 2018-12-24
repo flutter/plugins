@@ -138,6 +138,11 @@ void main() {
     verify(mockChannel.invokeMethod('getToken'));
   });
 
+  test('getInstanceId', () {
+    firebaseMessaging.getInstanceId();
+    verify(mockChannel.invokeMethod('getInstanceId'));
+  });
+
   test('deleteInstanceID', () {
     firebaseMessaging.deleteInstanceID();
     verify(mockChannel.invokeMethod('deleteInstanceID'));
