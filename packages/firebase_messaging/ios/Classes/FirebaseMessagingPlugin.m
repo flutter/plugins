@@ -102,6 +102,15 @@
     NSNumber *value = call.arguments;
     [FIRMessaging messaging].autoInitEnabled = value.boolValue;
     result(nil);
+  } else if ([@"getInstanceId" isEqualToString:method]) {
+    [[FIRInstanceID instanceID] getIDWithHandler:^void(NSString *_Nullable identity, NSError *_Nullable error) {
+      if (error) {
+        NSLog(@"getInstanceId, error: %@", error);
+        result(nil);
+      } else {
+        result(identity);
+      }
+    }];
   } else {
     result(FlutterMethodNotImplemented);
   }
