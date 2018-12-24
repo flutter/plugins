@@ -14,7 +14,7 @@
 }
 @end
 
-@interface FLTSavePhotoDelegate : NSObject<AVCapturePhotoCaptureDelegate>
+@interface FLTSavePhotoDelegate : NSObject <AVCapturePhotoCaptureDelegate>
 @property(readonly, nonatomic) NSString *path;
 @property(readonly, nonatomic) FlutterResult result;
 
@@ -59,8 +59,10 @@
 }
 @end
 
-@interface FLTCam : NSObject<FlutterTexture, AVCaptureVideoDataOutputSampleBufferDelegate,
-                             AVCaptureAudioDataOutputSampleBufferDelegate, FlutterStreamHandler>
+@interface FLTCam : NSObject <FlutterTexture,
+                              AVCaptureVideoDataOutputSampleBufferDelegate,
+                              AVCaptureAudioDataOutputSampleBufferDelegate,
+                              FlutterStreamHandler>
 @property(readonly, nonatomic) int64_t textureId;
 @property(nonatomic, copy) void (^onFrameAvailable)();
 @property(nonatomic) FlutterEventChannel *eventChannel;
@@ -111,8 +113,8 @@
   _captureSession.sessionPreset = preset;
   _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraName];
   NSError *localError = nil;
-  _captureVideoInput =
-      [AVCaptureDeviceInput deviceInputWithDevice:_captureDevice error:&localError];
+  _captureVideoInput = [AVCaptureDeviceInput deviceInputWithDevice:_captureDevice
+                                                             error:&localError];
   if (localError) {
     *error = localError;
     return nil;
@@ -123,7 +125,7 @@
 
   _captureVideoOutput = [AVCaptureVideoDataOutput new];
   _captureVideoOutput.videoSettings =
-      @{(NSString *)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_32BGRA) };
+      @{(NSString *)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_32BGRA)};
   [_captureVideoOutput setAlwaysDiscardsLateVideoFrames:YES];
   [_captureVideoOutput setSampleBufferDelegate:self queue:dispatch_get_main_queue()];
 
@@ -154,9 +156,9 @@
 - (void)captureToFile:(NSString *)path result:(FlutterResult)result {
   AVCapturePhotoSettings *settings = [AVCapturePhotoSettings photoSettings];
   [settings setHighResolutionPhotoEnabled:YES];
-  [_capturePhotoOutput
-      capturePhotoWithSettings:settings
-                      delegate:[[FLTSavePhotoDelegate alloc] initWithPath:path result:result]];
+  [_capturePhotoOutput capturePhotoWithSettings:settings
+                                       delegate:[[FLTSavePhotoDelegate alloc] initWithPath:path
+                                                                                    result:result]];
 }
 
 - (void)captureOutput:(AVCaptureOutput *)output
@@ -330,8 +332,9 @@
   if (!_isAudioSetup) {
     [self setUpCaptureSessionForAudio];
   }
-  _videoWriter =
-      [[AVAssetWriter alloc] initWithURL:outputURL fileType:AVFileTypeQuickTimeMovie error:&error];
+  _videoWriter = [[AVAssetWriter alloc] initWithURL:outputURL
+                                           fileType:AVFileTypeQuickTimeMovie
+                                              error:&error];
   NSParameterAssert(_videoWriter);
   if (error) {
     _eventSink(@{@"event" : @"error", @"errorDescription" : error.description});
@@ -375,8 +378,8 @@
   // Create a device input with the device and add it to the session.
   // Setup the audio input.
   AVCaptureDevice *audioDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeAudio];
-  AVCaptureDeviceInput *audioInput =
-      [AVCaptureDeviceInput deviceInputWithDevice:audioDevice error:&error];
+  AVCaptureDeviceInput *audioInput = [AVCaptureDeviceInput deviceInputWithDevice:audioDevice
+                                                                           error:&error];
   if (error) {
     _eventSink(@{@"event" : @"error", @"errorDescription" : error.description});
   }
@@ -411,8 +414,8 @@
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/camera"
                                   binaryMessenger:[registrar messenger]];
-  CameraPlugin *instance =
-      [[CameraPlugin alloc] initWithRegistry:[registrar textures] messenger:[registrar messenger]];
+  CameraPlugin *instance = [[CameraPlugin alloc] initWithRegistry:[registrar textures]
+                                                        messenger:[registrar messenger]];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 

@@ -26,7 +26,7 @@ enable the [Google People API](https://developers.google.com/people/).
 4. A dialog will show up and ask you to select the targets, select the `Runner` target.
 5. Then add the `CFBundleURLTypes` attributes below into the `[my_project]/ios/Runner/Info.plist` file.
 
-```
+```xml
 <!-- Put me in the [my_project]/ios/Runner/Info.plist file -->
 <!-- Google Sign-in Section -->
 <key>CFBundleURLTypes</key>
@@ -53,7 +53,7 @@ To use this plugin, follow the [plugin installation instructions](https://pub.da
 ### Use the plugin
 Add the following import to your Dart code:
 
-```
+```dart
 import 'package:google_sign_in/google_sign_in.dart';
 ```
 
@@ -71,7 +71,7 @@ GoogleSignIn _googleSignIn = GoogleSignIn(
 
 You can now use the `GoogleSignIn` class to authenticate in your Dart code, e.g.
 
-```
+```dart
 Future<void> _handleSignIn() async {
   try {
     await _googleSignIn.signIn();

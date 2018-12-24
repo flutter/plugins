@@ -1,3 +1,8 @@
+## 0.2.6
+
+* Update the camera to use the physical device's orientation instead of the UI
+  orientation on Android.
+
 ## 0.2.5
 
 * Fix preview and video size with satisfying conditions of multiple outputs.

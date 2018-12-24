@@ -23,12 +23,12 @@ typedef enum : NSUInteger {
 - (void)dispose;
 @end
 
-@interface FLTBannerAd : FLTMobileAd<GADBannerViewDelegate>
+@interface FLTBannerAd : FLTMobileAd <GADBannerViewDelegate>
 + (instancetype)withId:(NSNumber *)mobileAdId
                 adSize:(GADAdSize)adSize
                channel:(FlutterMethodChannel *)channel;
 @end
 
-@interface FLTInterstitialAd : FLTMobileAd<GADInterstitialDelegate>
+@interface FLTInterstitialAd : FLTMobileAd <GADInterstitialDelegate>
 + (instancetype)withId:(NSNumber *)mobileAdId channel:(FlutterMethodChannel *)channel;
 @end

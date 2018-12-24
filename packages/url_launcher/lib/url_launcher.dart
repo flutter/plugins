@@ -90,3 +90,14 @@ Future<bool> canLaunch(String urlString) async {
     <String, Object>{'url': urlString},
   );
 }
+
+/// Closes the current WebView, if one was previously opened via a call to [launch].
+///
+/// If [launch] was never called, then this call will not have any effect.
+///
+/// On Android systems, if [launch] was called without `forceWebView` being set to
+/// `true`, this call will not do anything either, simply because there is no
+/// WebView available to be closed.
+Future<void> closeWebView() async {
+  return await _channel.invokeMethod('closeWebView');
+}

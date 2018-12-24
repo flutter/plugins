@@ -1,3 +1,7 @@
+## 0.2.2
+
+* Allow to register more than once.
+
 ## 0.2.1
 
 * Updated Gradle tooling to match Android Studio 3.1.2.
