@@ -263,4 +263,4 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
     T result = (T) map.get(key);
     return result;
   }
-} 
+}
