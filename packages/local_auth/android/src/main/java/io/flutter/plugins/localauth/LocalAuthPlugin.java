@@ -78,24 +78,28 @@ public class LocalAuthPlugin implements MethodCallHandler {
       authenticationHelper.authenticate();
     } else if (call.method.equals("getAvailableBiometrics")) {
       ArrayList<String> biometrics = new ArrayList<String>();
-      if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-        FingerprintManager fingerprintMgr = registrar.activity().getSystemService(FingerprintManager.class);
-        if (fingerprintMgr.isHardwareDetected()) {
-          if (fingerprintMgr.hasEnrolledFingerprints()) {
-            biometrics.add("fingerprint");
-          } else {
-            biometrics.add("undefined");
+      try {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+          FingerprintManager fingerprintMgr = registrar.activity().getSystemService(FingerprintManager.class);
+          if (fingerprintMgr.isHardwareDetected()) {
+            if (fingerprintMgr.hasEnrolledFingerprints()) {
+              biometrics.add("fingerprint");
+            } else {
+              biometrics.add("undefined");
+            }
+          }
+        } else {
+          FingerprintManagerCompat fingerprintMgr = FingerprintManagerCompat.from(registrar.activity());
+          if (fingerprintMgr.isHardwareDetected()) {
+            if (fingerprintMgr.hasEnrolledFingerprints()) {
+              biometrics.add("fingerprint");
+            } else {
+              biometrics.add("undefined");
+            }
           }
         }
-      } else {
-        FingerprintManagerCompat fingerprintMgr = FingerprintManagerCompat.from(registrar.activity());
-        if (fingerprintMgr.isHardwareDetected()) {
-          if (fingerprintMgr.hasEnrolledFingerprints()) {
-            biometrics.add("fingerprint");
-          } else {
-            biometrics.add("undefined");
-          }
-        }
+      } catch (Exception e){
+        e.printStackTrace();
       }
       result.success(biometrics);
     } else {
