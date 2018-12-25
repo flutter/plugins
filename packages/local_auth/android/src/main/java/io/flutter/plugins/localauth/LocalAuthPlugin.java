@@ -5,7 +5,7 @@
 package io.flutter.plugins.localauth;
 
 import android.app.Activity;
-import android.hardware.fingerprint.FingerprintManager;
+import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -75,17 +75,22 @@ public class LocalAuthPlugin implements MethodCallHandler {
               });
       authenticationHelper.authenticate();
     } else if (call.method.equals("getAvailableBiometrics")) {
-      FingerprintManager fingerprintMgr =
-          registrar.activity().getSystemService(FingerprintManager.class);
-      ArrayList<String> biometrics = new ArrayList<String>();
-      if (fingerprintMgr.isHardwareDetected()) {
-        if (fingerprintMgr.hasEnrolledFingerprints()) {
-          biometrics.add("fingerprint");
-        } else {
-          biometrics.add("undefined");
+      try {
+        ArrayList<String> biometrics = new ArrayList<String>();
+        FingerprintManagerCompat fingerprintMgr =
+            FingerprintManagerCompat.from(registrar.activity());
+        if (fingerprintMgr.isHardwareDetected()) {
+          if (fingerprintMgr.hasEnrolledFingerprints()) {
+            biometrics.add("fingerprint");
+          } else {
+            biometrics.add("undefined");
+          }
         }
+        result.success(biometrics);
+      } catch (Exception e) {
+        result.error("no_biometrics_available", e.getMessage(), null);
       }
-      result.success(biometrics);
+
     } else {
       result.notImplemented();
     }
