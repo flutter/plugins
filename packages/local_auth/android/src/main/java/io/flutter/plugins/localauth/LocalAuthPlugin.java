@@ -5,7 +5,6 @@
 package io.flutter.plugins.localauth;
 
 import android.app.Activity;
-import android.hardware.fingerprint.FingerprintManager;
 import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -76,33 +75,22 @@ public class LocalAuthPlugin implements MethodCallHandler {
               });
       authenticationHelper.authenticate();
     } else if (call.method.equals("getAvailableBiometrics")) {
-      ArrayList<String> biometrics = new ArrayList<String>();
       try {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-          FingerprintManager fingerprintMgr =
-              registrar.activity().getSystemService(FingerprintManager.class);
-          if (fingerprintMgr.isHardwareDetected()) {
-            if (fingerprintMgr.hasEnrolledFingerprints()) {
-              biometrics.add("fingerprint");
-            } else {
-              biometrics.add("undefined");
-            }
-          }
-        } else {
-          FingerprintManagerCompat fingerprintMgr =
-              FingerprintManagerCompat.from(registrar.activity());
-          if (fingerprintMgr.isHardwareDetected()) {
-            if (fingerprintMgr.hasEnrolledFingerprints()) {
-              biometrics.add("fingerprint");
-            } else {
-              biometrics.add("undefined");
-            }
+        ArrayList<String> biometrics = new ArrayList<String>();
+        FingerprintManagerCompat fingerprintMgr =
+            FingerprintManagerCompat.from(registrar.activity());
+        if (fingerprintMgr.isHardwareDetected()) {
+          if (fingerprintMgr.hasEnrolledFingerprints()) {
+            biometrics.add("fingerprint");
+          } else {
+            biometrics.add("undefined");
           }
         }
+        result.success(biometrics);
       } catch (Exception e) {
-        e.printStackTrace();
+        result.error("no_biometrics_available", e.getMessage(), null);
       }
-      result.success(biometrics);
+
     } else {
       result.notImplemented();
     }
