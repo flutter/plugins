@@ -35,4 +35,11 @@ android {
     dependencies {
         implementation 'com.google.android.gms:play-services-maps:15.+'
     }
+
+    aaptOptions {
+        // Disabling compression for JSON files.
+        // The JSON files are not automatically exluded from compression by aapt,
+        // but AssetManager requires uncompressed asset.
+        noCompress 'json'
+    }
 }

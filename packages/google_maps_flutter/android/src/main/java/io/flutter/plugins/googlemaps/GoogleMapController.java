@@ -16,33 +16,32 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.MapStyleOptions;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.platform.PlatformView;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-import android.content.pm.PackageManager;
-import android.content.res.AssetManager;
-import android.util.Log;
-import java.io.InputStream;
-import java.io.IOException;
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /** Controller of a single GoogleMaps MapView instance. */
 final class GoogleMapController
@@ -174,10 +173,9 @@ final class GoogleMapController
 
   @Override
   public void onMapReady(GoogleMap googleMap) {
-
     try {
       // Customise the styling of the map using a JSON asset file.
-      // First check the assets whether the style.json file is exist or not,
+      // First check the assets whether the style.json file exists or not,
       // then convert it to a String and pass that string to the setMapStyle.
       AssetManager assetManager = registrar.context().getAssets();
 
@@ -193,10 +191,10 @@ final class GoogleMapController
 
       // TODO: Handle errors and exceptions appropriately.
       if (!success) {
-        Log.e("onMapReady", "Map styling - key: " + key + ", json: " + str);
+        Log.e(TAG, "Cannot set map style, check whether 'asstets/map/style.json' exists or not");
       }
     } catch (IOException e) {
-      Log.e("onMapReady", "Map styling - : error msg: " + e.getMessage());
+      Log.e(TAG, "Cannot enable map styling. Error msg: " + e.getMessage());
     }
 
     this.googleMap = googleMap;
