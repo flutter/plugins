@@ -1,3 +1,6 @@
+## 0.2.3
+* Move firebase_auth from a dependency to a dev_dependency
+
 ## 0.2.2
 * Update dependencies for example to point to published versions of firebase_auth
 
