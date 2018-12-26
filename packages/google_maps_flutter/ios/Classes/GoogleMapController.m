@@ -82,17 +82,17 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
       // then convert it to a String and pass that string to the setMapStyle.
       NSString* assetPath = [_registrar lookupKeyForAsset:@"assets/map/style.json"];
       NSString* path = [[NSBundle mainBundle] pathForResource:assetPath ofType:nil];
-      NSURL *styleUrl = [NSURL fileURLWithPath:path];
-      NSError *error;
+      NSURL* styleUrl = [NSURL fileURLWithPath:path];
+      NSError* error;
 
-      GMSMapStyle *style = [GMSMapStyle styleWithContentsOfFileURL:styleUrl error:&error];
+      GMSMapStyle* style = [GMSMapStyle styleWithContentsOfFileURL:styleUrl error:&error];
 
       if (!style) {
         NSLog(@"The style definition could not be loaded: %@", error);
       } else {
         _mapView.mapStyle = style;
       }
-    } @catch (NSException *exception) {
+    } @catch (NSException* exception) {
       NSLog(@"Cannot enable map styling. Reason: %@", exception.reason);
     }
   }
