@@ -16,7 +16,7 @@ enum StorageTaskEventType {
 class StorageTaskEvent {
   StorageTaskEvent._(int type, StorageReference ref, Map<dynamic, dynamic> data)
       : type = StorageTaskEventType.values[type],
-        snapshot = new StorageTaskSnapshot._(ref, data);
+        snapshot = StorageTaskSnapshot._(ref, data);
 
   final StorageTaskEventType type;
   final StorageTaskSnapshot snapshot;
@@ -31,7 +31,7 @@ class StorageTaskSnapshot {
             ? Uri.parse(m['uploadSessionUri'])
             : null,
         storageMetadata = m['storageMetadata'] != null
-            ? new StorageMetadata._fromMap(m['storageMetadata'])
+            ? StorageMetadata._fromMap(m['storageMetadata'])
             : null;
 
   final StorageReference ref;

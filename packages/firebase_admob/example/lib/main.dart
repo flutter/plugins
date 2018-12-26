@@ -11,17 +11,15 @@ const String testDevice = 'YOUR_DEVICE_ID';
 
 class MyApp extends StatefulWidget {
   @override
-  _MyAppState createState() => new _MyAppState();
+  _MyAppState createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-  static final MobileAdTargetingInfo targetingInfo = new MobileAdTargetingInfo(
+  static const MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
     testDevices: testDevice != null ? <String>[testDevice] : null,
     keywords: <String>['foo', 'bar'],
     contentUrl: 'http://foo.com/bar.html',
-    birthday: new DateTime.now(),
     childDirected: true,
-    gender: MobileAdGender.male,
     nonPersonalizedAds: true,
   );
 
@@ -30,7 +28,7 @@ class _MyAppState extends State<MyApp> {
   int _coins = 0;
 
   BannerAd createBannerAd() {
-    return new BannerAd(
+    return BannerAd(
       adUnitId: BannerAd.testAdUnitId,
       size: AdSize.banner,
       targetingInfo: targetingInfo,
@@ -41,7 +39,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   InterstitialAd createInterstitialAd() {
-    return new InterstitialAd(
+    return InterstitialAd(
       adUnitId: InterstitialAd.testAdUnitId,
       targetingInfo: targetingInfo,
       listener: (MobileAdEvent event) {
@@ -75,18 +73,18 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
-      home: new Scaffold(
-        appBar: new AppBar(
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
           title: const Text('AdMob Plugin example app'),
         ),
-        body: new SingleChildScrollView(
-          child: new Center(
-            child: new Column(
+        body: SingleChildScrollView(
+          child: Center(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                new RaisedButton(
+                RaisedButton(
                     child: const Text('SHOW BANNER'),
                     onPressed: () {
                       _bannerAd ??= createBannerAd();
@@ -94,26 +92,26 @@ class _MyAppState extends State<MyApp> {
                         ..load()
                         ..show();
                     }),
-                new RaisedButton(
+                RaisedButton(
                     child: const Text('REMOVE BANNER'),
                     onPressed: () {
                       _bannerAd?.dispose();
                       _bannerAd = null;
                     }),
-                new RaisedButton(
+                RaisedButton(
                   child: const Text('LOAD INTERSTITIAL'),
                   onPressed: () {
                     _interstitialAd?.dispose();
                     _interstitialAd = createInterstitialAd()..load();
                   },
                 ),
-                new RaisedButton(
+                RaisedButton(
                   child: const Text('SHOW INTERSTITIAL'),
                   onPressed: () {
                     _interstitialAd?.show();
                   },
                 ),
-                new RaisedButton(
+                RaisedButton(
                   child: const Text('LOAD REWARDED VIDEO'),
                   onPressed: () {
                     RewardedVideoAd.instance.load(
@@ -121,15 +119,15 @@ class _MyAppState extends State<MyApp> {
                         targetingInfo: targetingInfo);
                   },
                 ),
-                new RaisedButton(
+                RaisedButton(
                   child: const Text('SHOW REWARDED VIDEO'),
                   onPressed: () {
                     RewardedVideoAd.instance.show();
                   },
                 ),
-                new Text("You have $_coins coins."),
+                Text("You have $_coins coins."),
               ].map((Widget button) {
-                return new Padding(
+                return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: button,
                 );
@@ -143,5 +141,5 @@ class _MyAppState extends State<MyApp> {
 }
 
 void main() {
-  runApp(new MyApp());
+  runApp(MyApp());
 }

@@ -8,15 +8,6 @@ import 'package:intl/intl.dart';
 ///
 /// Provides default values for all messages.
 class AndroidAuthMessages {
-  final String fingerprintHint;
-  final String fingerprintNotRecognized;
-  final String fingerprintSuccess;
-  final String cancelButton;
-  final String signInTitle;
-  final String fingerprintRequiredTitle;
-  final String goToSettingsButton;
-  final String goToSettingsDescription;
-
   const AndroidAuthMessages({
     this.fingerprintHint,
     this.fingerprintNotRecognized,
@@ -27,6 +18,15 @@ class AndroidAuthMessages {
     this.goToSettingsButton,
     this.goToSettingsDescription,
   });
+
+  final String fingerprintHint;
+  final String fingerprintNotRecognized;
+  final String fingerprintSuccess;
+  final String cancelButton;
+  final String signInTitle;
+  final String fingerprintRequiredTitle;
+  final String goToSettingsButton;
+  final String goToSettingsDescription;
 
   Map<String, String> get args {
     return <String, String>{
@@ -49,17 +49,17 @@ class AndroidAuthMessages {
 ///
 /// Provides default values for all messages.
 class IOSAuthMessages {
-  final String lockOut;
-  final String goToSettingsButton;
-  final String goToSettingsDescription;
-  final String cancelButton;
-
   const IOSAuthMessages({
     this.lockOut,
     this.goToSettingsButton,
     this.goToSettingsDescription,
     this.cancelButton,
   });
+
+  final String lockOut;
+  final String goToSettingsButton;
+  final String goToSettingsDescription;
+  final String cancelButton;
 
   Map<String, String> get args {
     return <String, String>{

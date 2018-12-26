@@ -3,16 +3,18 @@ description: Demonstrates how to use the firebase_performance plugin.
 author: Flutter Team <flutter-dev@googlegroups.com>
 
 dependencies:
-  http: 0.11.3+17
+  http: ^0.12.0
   flutter:
     sdk: flutter
+  firebase_performance:
+    path: ../
+  firebase_core: ^0.2.5+1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  firebase_performance:
-    path: ../
+
 
 flutter:
   uses-material-design: true

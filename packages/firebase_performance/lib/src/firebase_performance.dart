@@ -21,7 +21,7 @@ class FirebasePerformance {
       MethodChannel('plugins.flutter.io/firebase_performance');
 
   /// Singleton of [FirebasePerformance].
-  static final FirebasePerformance instance = new FirebasePerformance._();
+  static final FirebasePerformance instance = FirebasePerformance._();
 
   /// Determines whether performance monitoring is enabled or disabled.
   ///
@@ -49,12 +49,12 @@ class FirebasePerformance {
   /// underscore _ character, max length of [Trace.maxTraceNameLength]
   /// characters.
   Trace newTrace(String name) {
-    return new Trace._(_traceCount++, name);
+    return Trace._(_traceCount++, name);
   }
 
   /// Creates [HttpMetric] for collecting performance for one request/response.
   HttpMetric newHttpMetric(String url, HttpMethod httpMethod) {
-    return new HttpMetric._(_httpMetricCount++, url, httpMethod);
+    return HttpMetric._(_httpMetricCount++, url, httpMethod);
   }
 
   /// Creates a [Trace] object with given [name] and start the trace.

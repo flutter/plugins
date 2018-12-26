@@ -30,12 +30,12 @@ class PackageInfo {
   /// The result is cached.
   static Future<PackageInfo> fromPlatform() async {
     if (_fromPlatform == null) {
-      final Completer<PackageInfo> completer = new Completer<PackageInfo>();
+      final Completer<PackageInfo> completer = Completer<PackageInfo>();
 
       _kChannel.invokeMethod('getAll').then((dynamic result) {
         final Map<dynamic, dynamic> map = result;
 
-        completer.complete(new PackageInfo(
+        completer.complete(PackageInfo(
           appName: map["appName"],
           packageName: map["packageName"],
           version: map["version"],

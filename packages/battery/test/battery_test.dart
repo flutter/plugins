@@ -16,14 +16,14 @@ void main() {
   Battery battery;
 
   setUp(() {
-    methodChannel = new MockMethodChannel();
-    eventChannel = new MockEventChannel();
-    battery = new Battery.private(methodChannel, eventChannel);
+    methodChannel = MockMethodChannel();
+    eventChannel = MockEventChannel();
+    battery = Battery.private(methodChannel, eventChannel);
   });
 
   test('batteryLevel', () async {
     when(methodChannel.invokeMethod('getBatteryLevel'))
-        .thenAnswer((Invocation invoke) => new Future<int>.value(42));
+        .thenAnswer((Invocation invoke) => Future<int>.value(42));
     expect(await battery.batteryLevel, 42);
   });
 
@@ -31,7 +31,7 @@ void main() {
     StreamController<String> controller;
 
     setUp(() {
-      controller = new StreamController<String>();
+      controller = StreamController<String>();
       when(eventChannel.receiveBroadcastStream())
           .thenAnswer((Invocation invoke) => controller.stream);
     });
@@ -49,7 +49,7 @@ void main() {
 
     test('receive values', () async {
       final StreamQueue<BatteryState> queue =
-          new StreamQueue<BatteryState>(battery.onBatteryStateChanged);
+          StreamQueue<BatteryState>(battery.onBatteryStateChanged);
 
       controller.add("full");
       expect(await queue.next, BatteryState.full);

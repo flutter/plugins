@@ -137,7 +137,15 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
           status = editor.commit();
           break;
         case "setString":
-          status = preferences.edit().putString(key, (String) call.argument("value")).commit();
+          String value = (String) call.argument("value");
+          if (value.startsWith(LIST_IDENTIFIER) || value.startsWith(BIG_INTEGER_PREFIX)) {
+            result.error(
+                "StorageError",
+                "This string cannot be stored as it clashes with special identifier prefixes.",
+                null);
+            return;
+          }
+          status = preferences.edit().putString(key, value).commit();
           break;
         case "setStringList":
           List<String> list = call.argument("value");

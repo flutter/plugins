@@ -14,7 +14,7 @@ void main() {
   MockMethodChannel mockChannel;
 
   setUp(() {
-    mockChannel = new MockMethodChannel();
+    mockChannel = MockMethodChannel();
     // Re-pipe to mockito for easier verifies.
     Share.channel.setMockMethodCallHandler((MethodCall call) async {
       mockChannel.invokeMethod(call.method, call.arguments);
@@ -40,7 +40,7 @@ void main() {
   test('sharing origin sets the right params', () async {
     await Share.share(
       'some text to share',
-      sharePositionOrigin: new Rect.fromLTWH(1.0, 2.0, 3.0, 4.0),
+      sharePositionOrigin: Rect.fromLTWH(1.0, 2.0, 3.0, 4.0),
     );
     verify(mockChannel.invokeMethod('share', <String, dynamic>{
       'text': 'some text to share',

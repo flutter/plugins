@@ -18,49 +18,36 @@ part of google_maps_flutter;
 /// Marker tap events can be received by adding callbacks to [onMarkerTapped].
 class GoogleMapController extends ChangeNotifier {
   GoogleMapController._(
-      this._id, GoogleMapOptions options, MethodChannel channel)
+      this._id, MethodChannel channel, CameraPosition initialCameraPosition)
       : assert(_id != null),
-        assert(options != null),
-        assert(options.cameraPosition != null),
         assert(channel != null),
         _channel = channel {
-    if (options.trackCameraPosition) {
-      _cameraPosition = options.cameraPosition;
-    }
+    _cameraPosition = initialCameraPosition;
     _channel.setMethodCallHandler(_handleMethodCall);
-    _options = GoogleMapOptions.defaultOptions.copyWith(options);
   }
 
   static Future<GoogleMapController> init(
-      int id, GoogleMapOptions options) async {
+      int id, CameraPosition initialCameraPosition) async {
     assert(id != null);
-    assert(options != null);
-    assert(options.cameraPosition != null);
     final MethodChannel channel =
-        new MethodChannel('plugins.flutter.io/google_maps_$id');
+        MethodChannel('plugins.flutter.io/google_maps_$id');
     await channel.invokeMethod('map#waitForMap');
-    return GoogleMapController._(id, options, channel);
+    return GoogleMapController._(id, channel, initialCameraPosition);
   }
 
   final MethodChannel _channel;
 
   /// Callbacks to receive tap events for markers placed on this map.
-  final ArgumentCallbacks<Marker> onMarkerTapped =
-      new ArgumentCallbacks<Marker>();
+  final ArgumentCallbacks<Marker> onMarkerTapped = ArgumentCallbacks<Marker>();
 
   /// Callbacks to receive tap events for info windows on markers
   final ArgumentCallbacks<Marker> onInfoWindowTapped =
-      new ArgumentCallbacks<Marker>();
-
-  /// The configuration options most recently applied via controller
-  /// initialization or [updateMapOptions].
-  GoogleMapOptions get options => _options;
-  GoogleMapOptions _options;
+      ArgumentCallbacks<Marker>();
 
   /// The current set of markers on this map.
   ///
   /// The returned set will be a detached snapshot of the markers collection.
-  Set<Marker> get markers => new Set<Marker>.from(_markers.values);
+  Set<Marker> get markers => Set<Marker>.from(_markers.values);
   final Map<String, Marker> _markers = <String, Marker>{};
 
   /// True if the map camera is currently moving.
@@ -68,14 +55,13 @@ class GoogleMapController extends ChangeNotifier {
   bool _isCameraMoving = false;
 
   /// Returns the most recent camera position reported by the platform side.
-  /// Will be null, if camera position tracking is not enabled via
-  /// [GoogleMapOptions].
+  /// Will be null, if [GoogleMap.trackCameraPosition] is false.
   CameraPosition get cameraPosition => _cameraPosition;
   CameraPosition _cameraPosition;
 
   final int _id;
 
-  Future<void> _handleMethodCall(MethodCall call) async {
+  Future<dynamic> _handleMethodCall(MethodCall call) async {
     switch (call.method) {
       case 'infoWindow#onTap':
         final String markerId = call.arguments['marker'];
@@ -97,7 +83,7 @@ class GoogleMapController extends ChangeNotifier {
         notifyListeners();
         break;
       case 'camera#onMove':
-        _cameraPosition = CameraPosition._fromJson(call.arguments['position']);
+        _cameraPosition = CameraPosition.fromMap(call.arguments['position']);
         notifyListeners();
         break;
       case 'camera#onIdle':
@@ -105,7 +91,7 @@ class GoogleMapController extends ChangeNotifier {
         notifyListeners();
         break;
       default:
-        throw new MissingPluginException();
+        throw MissingPluginException();
     }
   }
 
@@ -115,16 +101,15 @@ class GoogleMapController extends ChangeNotifier {
   /// platform side.
   ///
   /// The returned [Future] completes after listeners have been notified.
-  Future<void> updateMapOptions(GoogleMapOptions changes) async {
-    assert(changes != null);
+  Future<void> _updateMapOptions(Map<String, dynamic> optionsUpdate) async {
+    assert(optionsUpdate != null);
     final dynamic json = await _channel.invokeMethod(
       'map#update',
       <String, dynamic>{
-        'options': changes._toJson(),
+        'options': optionsUpdate,
       },
     );
-    _options = _options.copyWith(changes);
-    _cameraPosition = CameraPosition._fromJson(json);
+    _cameraPosition = CameraPosition.fromMap(json);
     notifyListeners();
   }
 
@@ -164,7 +149,7 @@ class GoogleMapController extends ChangeNotifier {
         'options': effectiveOptions._toJson(),
       },
     );
-    final Marker marker = new Marker(markerId, effectiveOptions);
+    final Marker marker = Marker(markerId, effectiveOptions);
     _markers[markerId] = marker;
     notifyListeners();
     return marker;
@@ -199,10 +184,34 @@ class GoogleMapController extends ChangeNotifier {
   Future<void> removeMarker(Marker marker) async {
     assert(marker != null);
     assert(_markers[marker._id] == marker);
-    await _channel.invokeMethod('marker#remove', <String, dynamic>{
-      'marker': marker._id,
-    });
-    _markers.remove(marker._id);
+    await _removeMarker(marker._id);
     notifyListeners();
+  }
+
+  /// Removes all [markers] from the map.
+  ///
+  /// Change listeners are notified once all markers have been removed on the
+  /// platform side.
+  ///
+  /// The returned [Future] completes once listeners have been notified.
+  Future<void> clearMarkers() async {
+    assert(_markers != null);
+    final List<String> markerIds = List<String>.from(_markers.keys);
+    for (String id in markerIds) {
+      await _removeMarker(id);
+    }
+    notifyListeners();
+  }
+
+  /// Helper method to remove a single marker from the map. Consumed by
+  /// [removeMarker] and [clearMarkers].
+  ///
+  /// The returned [Future] completes once the marker has been removed from
+  /// [_markers].
+  Future<void> _removeMarker(String id) async {
+    await _channel.invokeMethod('marker#remove', <String, dynamic>{
+      'marker': id,
+    });
+    _markers.remove(id);
   }
 }

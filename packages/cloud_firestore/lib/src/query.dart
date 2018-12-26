@@ -12,10 +12,9 @@ class Query {
       Map<String, dynamic> parameters})
       : _pathComponents = pathComponents,
         _parameters = parameters ??
-            new Map<String, dynamic>.unmodifiable(<String, dynamic>{
-              'where': new List<List<dynamic>>.unmodifiable(<List<dynamic>>[]),
-              'orderBy':
-                  new List<List<dynamic>>.unmodifiable(<List<dynamic>>[]),
+            Map<String, dynamic>.unmodifiable(<String, dynamic>{
+              'where': List<List<dynamic>>.unmodifiable(<List<dynamic>>[]),
+              'orderBy': List<List<dynamic>>.unmodifiable(<List<dynamic>>[]),
             }),
         assert(firestore != null),
         assert(pathComponents != null);
@@ -29,17 +28,17 @@ class Query {
   String get _path => _pathComponents.join('/');
 
   Query _copyWithParameters(Map<String, dynamic> parameters) {
-    return new Query._(
+    return Query._(
       firestore: firestore,
       pathComponents: _pathComponents,
-      parameters: new Map<String, dynamic>.unmodifiable(
-        new Map<String, dynamic>.from(_parameters)..addAll(parameters),
+      parameters: Map<String, dynamic>.unmodifiable(
+        Map<String, dynamic>.from(_parameters)..addAll(parameters),
       ),
     );
   }
 
   Map<String, dynamic> buildArguments() {
-    return new Map<String, dynamic>.from(_parameters)
+    return Map<String, dynamic>.from(_parameters)
       ..addAll(<String, dynamic>{
         'path': _path,
       });
@@ -52,7 +51,7 @@ class Query {
     // It's fine to let the StreamController be garbage collected once all the
     // subscribers have cancelled; this analyzer warning is safe to ignore.
     StreamController<QuerySnapshot> controller; // ignore: close_sinks
-    controller = new StreamController<QuerySnapshot>.broadcast(
+    controller = StreamController<QuerySnapshot>.broadcast(
       onListen: () {
         _handle = Firestore.channel.invokeMethod(
           'Query#addSnapshotListener',
@@ -89,12 +88,12 @@ class Query {
         'parameters': _parameters,
       },
     );
-    return new QuerySnapshot._(data, firestore);
+    return QuerySnapshot._(data, firestore);
   }
 
   /// Obtains a CollectionReference corresponding to this query's location.
   CollectionReference reference() =>
-      new CollectionReference._(firestore, _pathComponents);
+      CollectionReference._(firestore, _pathComponents);
 
   /// Creates and returns a new [Query] with additional filter on specified
   /// [field]. [field] refers to a field in a document.
@@ -117,7 +116,7 @@ class Query {
   }) {
     final ListEquality<dynamic> equality = const ListEquality<dynamic>();
     final List<List<dynamic>> conditions =
-        new List<List<dynamic>>.from(_parameters['where']);
+        List<List<dynamic>>.from(_parameters['where']);
 
     void addCondition(String field, String operator, dynamic value) {
       final List<dynamic> condition = <dynamic>[field, operator, value];
@@ -153,7 +152,7 @@ class Query {
   /// [field].
   Query orderBy(String field, {bool descending = false}) {
     final List<List<dynamic>> orders =
-        new List<List<dynamic>>.from(_parameters['orderBy']);
+        List<List<dynamic>>.from(_parameters['orderBy']);
 
     final List<dynamic> order = <dynamic>[field, descending];
     assert(orders.where((List<dynamic> item) => field == item[0]).isEmpty,

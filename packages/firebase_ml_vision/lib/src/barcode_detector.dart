@@ -198,7 +198,7 @@ class BarcodeDetector extends FirebaseVisionDetector {
 
     final List<Barcode> barcodes = <Barcode>[];
     reply.forEach((dynamic barcode) {
-      barcodes.add(new Barcode._(barcode));
+      barcodes.add(Barcode._(barcode));
     });
 
     return barcodes;

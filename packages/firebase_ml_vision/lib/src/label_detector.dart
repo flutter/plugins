@@ -50,6 +50,50 @@ class LabelDetector extends FirebaseVisionDetector {
   }
 }
 
+/// Detector for detecting and labeling entities in an input image.
+///
+/// Uses cloud machine learning models and will require enabling Cloud API.
+///
+/// When you use the API, you get a list of the entities that were recognized:
+/// people, things, places, activities, and so on. Each label found comes with a
+/// score that indicates the confidence the ML model has in its relevance. With
+/// this information, you can perform tasks such as automatic metadata
+/// generation and content moderation.
+///
+/// A cloud label detector is created via cloudLabelDetector(CloudDetectorOptions options)
+/// in [FirebaseVision]:
+///
+/// ```dart
+/// CloudLabelDetector cloudLabelDetector = FirebaseVision.instance.cloudLabelDetector(options);
+/// ```
+class CloudLabelDetector extends FirebaseVisionDetector {
+  CloudLabelDetector._(this.options) : assert(options != null);
+
+  /// Options used to configure this cloud detector.
+  final CloudDetectorOptions options;
+
+  /// Detects entities in the input image.
+  ///
+  /// Performed asynchronously.
+  @override
+  Future<List<Label>> detectInImage(FirebaseVisionImage visionImage) async {
+    final List<dynamic> reply = await FirebaseVision.channel.invokeMethod(
+      'CloudLabelDetector#detectInImage',
+      <String, dynamic>{
+        'path': visionImage.imageFile.path,
+        'options': options._toMap(),
+      },
+    );
+
+    final List<Label> labels = <Label>[];
+    for (dynamic data in reply) {
+      labels.add(Label._(data));
+    }
+
+    return labels;
+  }
+}
+
 /// Options for Label detector.
 ///
 /// Confidence threshold could be provided for the label detection. For example,

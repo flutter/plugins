@@ -9,10 +9,10 @@ enum FieldValueType { arrayUnion, arrayRemove, delete, serverTimestamp }
 /// Sentinel values that can be used when writing document fields with set() or
 /// update().
 class FieldValue {
+  FieldValue._(this.type, this.value);
+
   final FieldValueType type;
   final dynamic value;
-
-  FieldValue._(this.type, this.value);
 
   /// Returns a special value that tells the server to union the given elements
   /// with any array value that already exists on the server.

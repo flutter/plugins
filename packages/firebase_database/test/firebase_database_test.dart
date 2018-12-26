@@ -22,7 +22,7 @@ void main() {
     );
     final String databaseURL = 'https://fake-database-url2.firebaseio.com';
     final FirebaseDatabase database =
-        new FirebaseDatabase(app: app, databaseURL: databaseURL);
+        FirebaseDatabase(app: app, databaseURL: databaseURL);
 
     setUp(() async {
       channel.setMockMethodCallHandler((MethodCall methodCall) async {
@@ -36,12 +36,12 @@ void main() {
             return true;
           case 'DatabaseReference#runTransaction':
             Map<String, dynamic> updatedValue;
-            Future<Null> simulateEvent(
+            Future<void> simulateEvent(
                 int transactionKey, final MutableData mutableData) async {
               await BinaryMessages.handlePlatformMessage(
                 channel.name,
                 channel.codec.encodeMethodCall(
-                  new MethodCall(
+                  MethodCall(
                     'DoTransaction',
                     <String, dynamic>{
                       'transactionKey': transactionKey,
@@ -62,7 +62,7 @@ void main() {
 
             await simulateEvent(
                 0,
-                new MutableData.private(<String, dynamic>{
+                MutableData.private(<String, dynamic>{
                   'key': 'fakeKey',
                   'value': <String, dynamic>{'fakeKey': 'fakeValue'},
                 }));
@@ -248,7 +248,7 @@ void main() {
             .reference()
             .child('foo')
             .runTransaction((MutableData mutableData) {
-          return new Future<MutableData>(() {
+          return Future<MutableData>(() {
             mutableData.value['fakeKey'] =
                 'updated ' + mutableData.value['fakeKey'];
             return mutableData;
@@ -454,11 +454,11 @@ void main() {
         const int errorCode = 12;
         const String errorDetails = 'Some details';
         final Query query = database.reference().child('some path');
-        Future<Null> simulateError(String errorMessage) async {
+        Future<void> simulateError(String errorMessage) async {
           await BinaryMessages.handlePlatformMessage(
             channel.name,
             channel.codec.encodeMethodCall(
-              new MethodCall('Error', <String, dynamic>{
+              MethodCall('Error', <String, dynamic>{
                 'handle': 99,
                 'error': <String, dynamic>{
                   'code': errorCode,
@@ -471,13 +471,12 @@ void main() {
           );
         }
 
-        final AsyncQueue<DatabaseError> errors =
-            new AsyncQueue<DatabaseError>();
+        final AsyncQueue<DatabaseError> errors = AsyncQueue<DatabaseError>();
 
         // Subscribe and allow subscription to complete.
         final StreamSubscription<Event> subscription =
             query.onValue.listen((_) {}, onError: errors.add);
-        await new Future<Null>.delayed(const Duration(seconds: 0));
+        await Future<void>.delayed(const Duration(seconds: 0));
 
         await simulateError('Bad foo');
         await simulateError('Bad bar');
@@ -495,11 +494,11 @@ void main() {
         mockHandleId = 87;
         final String path = 'foo';
         final Query query = database.reference().child(path);
-        Future<Null> simulateEvent(String value) async {
+        Future<void> simulateEvent(String value) async {
           await BinaryMessages.handlePlatformMessage(
             channel.name,
             channel.codec.encodeMethodCall(
-              new MethodCall('Event', <String, dynamic>{
+              MethodCall('Event', <String, dynamic>{
                 'handle': 87,
                 'snapshot': <String, dynamic>{
                   'key': path,
@@ -511,12 +510,12 @@ void main() {
           );
         }
 
-        final AsyncQueue<Event> events = new AsyncQueue<Event>();
+        final AsyncQueue<Event> events = AsyncQueue<Event>();
 
         // Subscribe and allow subscription to complete.
         final StreamSubscription<Event> subscription =
             query.onValue.listen(events.add);
-        await new Future<Null>.delayed(const Duration(seconds: 0));
+        await Future<void>.delayed(const Duration(seconds: 0));
 
         await simulateEvent('1');
         await simulateEvent('2');
@@ -529,7 +528,7 @@ void main() {
 
         // Cancel subscription and allow cancellation to complete.
         subscription.cancel();
-        await new Future<Null>.delayed(const Duration(seconds: 0));
+        await Future<void>.delayed(const Duration(seconds: 0));
 
         expect(
           log,
@@ -579,7 +578,7 @@ class AsyncQueue<T> {
     if (_completers.containsKey(index)) {
       return _completers.remove(index);
     } else {
-      return _completers[index] = new Completer<T>();
+      return _completers[index] = Completer<T>();
     }
   }
 }

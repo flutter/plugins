@@ -30,7 +30,7 @@ import 'package:image_picker/image_picker.dart';
 
 class MyHomePage extends StatefulWidget {
   @override
-  _MyHomePageState createState() => new _MyHomePageState();
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -46,19 +46,19 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text('Image Picker Example'),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Image Picker Example'),
       ),
-      body: new Center(
+      body: Center(
         child: _image == null
-            ? new Text('No image selected.')
-            : new Image.file(_image),
+            ? Text('No image selected.')
+            : Image.file(_image),
       ),
-      floatingActionButton: new FloatingActionButton(
+      floatingActionButton: FloatingActionButton(
         onPressed: getImage,
         tooltip: 'Pick Image',
-        child: new Icon(Icons.add_a_photo),
+        child: Icon(Icons.add_a_photo),
       ),
     );
   }

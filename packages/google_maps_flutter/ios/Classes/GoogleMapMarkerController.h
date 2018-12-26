@@ -22,7 +22,7 @@
 @end
 
 // Defines marker controllable by Flutter.
-@interface FLTGoogleMapMarkerController : NSObject<FLTGoogleMapMarkerOptionsSink>
+@interface FLTGoogleMapMarkerController : NSObject <FLTGoogleMapMarkerOptionsSink>
 @property(atomic, readonly) NSString* markerId;
 - (instancetype)initWithPosition:(CLLocationCoordinate2D)position mapView:(GMSMapView*)mapView;
 @end

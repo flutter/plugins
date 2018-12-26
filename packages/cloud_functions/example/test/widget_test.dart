@@ -12,7 +12,7 @@ import '../lib/main.dart';
 void main() {
   testWidgets('Verify Response', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(new MyApp());
+    await tester.pumpWidget(MyApp());
 
     // Verify that platform version is retrieved.
     expect(

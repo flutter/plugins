@@ -14,11 +14,11 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 void main() {
-  runApp(new Scaffold(
-    body: new Center(
-      child: new RaisedButton(
+  runApp(Scaffold(
+    body: Center(
+      child: RaisedButton(
         onPressed: _launchURL,
-        child: new Text('Show Flutter homepage'),
+        child: Text('Show Flutter homepage'),
       ),
     ),
   ));

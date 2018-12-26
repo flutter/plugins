@@ -1,3 +1,7 @@
+## 0.3.0
+
+* Added ability to get Android ID for Android devices
+
 ## 0.2.1
 
 * Updated Gradle tooling to match Android Studio 3.1.2.

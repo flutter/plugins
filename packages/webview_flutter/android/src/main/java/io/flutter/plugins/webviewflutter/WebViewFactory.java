@@ -5,6 +5,7 @@ import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.StandardMessageCodec;
 import io.flutter.plugin.platform.PlatformView;
 import io.flutter.plugin.platform.PlatformViewFactory;
+import java.util.Map;
 
 public class WebViewFactory extends PlatformViewFactory {
   private final BinaryMessenger messenger;
@@ -14,8 +15,10 @@ public class WebViewFactory extends PlatformViewFactory {
     this.messenger = messenger;
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public PlatformView create(Context context, int id, Object args) {
-    return new FlutterWebView(context, messenger, id);
+    Map<String, Object> params = (Map<String, Object>) args;
+    return new FlutterWebView(context, messenger, id, params);
   }
 }

@@ -29,12 +29,13 @@ static NSString *const kErrorReasonSignInFailed = @"sign_in_failed";
   } else {
     errorCode = kErrorReasonSignInFailed;
   }
-  return
-      [FlutterError errorWithCode:errorCode message:self.domain details:self.localizedDescription];
+  return [FlutterError errorWithCode:errorCode
+                             message:self.domain
+                             details:self.localizedDescription];
 }
 @end
 
-@interface FLTGoogleSignInPlugin ()<GIDSignInDelegate, GIDSignInUIDelegate>
+@interface FLTGoogleSignInPlugin () <GIDSignInDelegate, GIDSignInUIDelegate>
 @end
 
 @implementation FLTGoogleSignInPlugin {
@@ -73,8 +74,8 @@ static NSString *const kErrorReasonSignInFailed = @"sign_in_failed";
                                  message:@"Games sign in is not supported on iOS"
                                  details:nil]);
     } else {
-      NSString *path =
-          [[NSBundle mainBundle] pathForResource:@"GoogleService-Info" ofType:@"plist"];
+      NSString *path = [[NSBundle mainBundle] pathForResource:@"GoogleService-Info"
+                                                       ofType:@"plist"];
       if (path) {
         NSMutableDictionary *plist = [[NSMutableDictionary alloc] initWithContentsOfFile:path];
         [GIDSignIn sharedInstance].clientID = plist[kClientIdKey];
@@ -113,6 +114,10 @@ static NSString *const kErrorReasonSignInFailed = @"sign_in_failed";
     if ([self setAccountRequest:result]) {
       [[GIDSignIn sharedInstance] disconnect];
     }
+  } else if ([call.method isEqualToString:@"clearAuthCache"]) {
+    // There's nothing to be done here on iOS since the expired/invalid
+    // tokens are refreshed automatically by getTokensWithHandler.
+    result(nil);
   } else {
     result(FlutterMethodNotImplemented);
   }

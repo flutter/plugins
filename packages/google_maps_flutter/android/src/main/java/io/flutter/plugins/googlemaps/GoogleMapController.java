@@ -5,18 +5,21 @@
 package io.flutter.plugins.googlemaps;
 
 import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.CREATED;
+import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.DESTROYED;
 import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.PAUSED;
 import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.RESUMED;
 import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.STARTED;
 import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.STOPPED;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapView;
@@ -54,6 +57,7 @@ final class GoogleMapController
         OnMapReadyCallback,
         OnMarkerTappedListener,
         PlatformView {
+  private static final String TAG = "GoogleMapController";
   private final int id;
   private final AtomicInteger activityState;
   private final MethodChannel methodChannel;
@@ -62,9 +66,12 @@ final class GoogleMapController
   private final Map<String, MarkerController> markers;
   private GoogleMap googleMap;
   private boolean trackCameraPosition = false;
+  private boolean myLocationEnabled = false;
   private boolean disposed = false;
   private final float density;
   private MethodChannel.Result mapReadyResult;
+  private final int registrarActivityHashCode;
+  private final Context context;
 
   GoogleMapController(
       int id,
@@ -73,6 +80,7 @@ final class GoogleMapController
       PluginRegistry.Registrar registrar,
       GoogleMapOptions options) {
     this.id = id;
+    this.context = context;
     this.activityState = activityState;
     this.registrar = registrar;
     this.mapView = new MapView(context, options);
@@ -81,6 +89,7 @@ final class GoogleMapController
     methodChannel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/google_maps_" + id);
     methodChannel.setMethodCallHandler(this);
+    this.registrarActivityHashCode = registrar.activity().hashCode();
   }
 
   @Override
@@ -114,6 +123,9 @@ final class GoogleMapController
         break;
       case CREATED:
         mapView.onCreate(null);
+        break;
+      case DESTROYED:
+        // Nothing to do, the activity has been completely destroyed.
         break;
       default:
         throw new IllegalArgumentException(
@@ -197,6 +209,7 @@ final class GoogleMapController
     googleMap.setOnCameraMoveListener(this);
     googleMap.setOnCameraIdleListener(this);
     googleMap.setOnMarkerClickListener(this);
+    updateMyLocationEnabled();
   }
 
   @Override
@@ -314,7 +327,7 @@ final class GoogleMapController
 
   @Override
   public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-    if (disposed) {
+    if (disposed || activity.hashCode() != registrarActivityHashCode) {
       return;
     }
     mapView.onCreate(savedInstanceState);
@@ -322,7 +335,7 @@ final class GoogleMapController
 
   @Override
   public void onActivityStarted(Activity activity) {
-    if (disposed) {
+    if (disposed || activity.hashCode() != registrarActivityHashCode) {
       return;
     }
     mapView.onStart();
@@ -330,7 +343,7 @@ final class GoogleMapController
 
   @Override
   public void onActivityResumed(Activity activity) {
-    if (disposed) {
+    if (disposed || activity.hashCode() != registrarActivityHashCode) {
       return;
     }
     mapView.onResume();
@@ -338,7 +351,7 @@ final class GoogleMapController
 
   @Override
   public void onActivityPaused(Activity activity) {
-    if (disposed) {
+    if (disposed || activity.hashCode() != registrarActivityHashCode) {
       return;
     }
     mapView.onPause();
@@ -346,7 +359,7 @@ final class GoogleMapController
 
   @Override
   public void onActivityStopped(Activity activity) {
-    if (disposed) {
+    if (disposed || activity.hashCode() != registrarActivityHashCode) {
       return;
     }
     mapView.onStop();
@@ -354,7 +367,7 @@ final class GoogleMapController
 
   @Override
   public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
-    if (disposed) {
+    if (disposed || activity.hashCode() != registrarActivityHashCode) {
       return;
     }
     mapView.onSaveInstanceState(outState);
@@ -362,18 +375,13 @@ final class GoogleMapController
 
   @Override
   public void onActivityDestroyed(Activity activity) {
-    if (disposed) {
+    if (disposed || activity.hashCode() != registrarActivityHashCode) {
       return;
     }
     mapView.onDestroy();
   }
 
   // GoogleMapOptionsSink methods
-
-  @Override
-  public void setCameraPosition(CameraPosition position) {
-    googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(position));
-  }
 
   @Override
   public void setCameraTargetBounds(LatLngBounds bounds) {
@@ -424,5 +432,41 @@ final class GoogleMapController
   @Override
   public void setZoomGesturesEnabled(boolean zoomGesturesEnabled) {
     googleMap.getUiSettings().setZoomGesturesEnabled(zoomGesturesEnabled);
+  }
+
+  @Override
+  public void setMyLocationEnabled(boolean myLocationEnabled) {
+    if (this.myLocationEnabled == myLocationEnabled) {
+      return;
+    }
+    this.myLocationEnabled = myLocationEnabled;
+    if (googleMap != null) {
+      updateMyLocationEnabled();
+    }
+  }
+
+  private void updateMyLocationEnabled() {
+    if (hasLocationPermission()) {
+      googleMap.setMyLocationEnabled(myLocationEnabled);
+    } else {
+      // TODO(amirh): Make the options update fail.
+      // https://github.com/flutter/flutter/issues/24327
+      Log.e(TAG, "Cannot enable MyLocation layer as location permissions are not granted");
+    }
+  }
+
+  private boolean hasLocationPermission() {
+    return checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED
+        || checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED;
+  }
+
+  private int checkSelfPermission(String permission) {
+    if (permission == null) {
+      throw new IllegalArgumentException("permission is null");
+    }
+    return context.checkPermission(
+        permission, android.os.Process.myPid(), android.os.Process.myUid());
   }
 }

@@ -1,3 +1,7 @@
+## 1.0.5
+
+* Bumped Android dependencies to latest.
+
 ## 1.0.4
 
 * Bumped test and mockito versions to pick up Dart 2 support.

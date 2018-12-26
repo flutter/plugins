@@ -17,6 +17,12 @@ typedef void QuickActionHandler(String type);
 
 /// Home screen quick-action shortcut item.
 class ShortcutItem {
+  const ShortcutItem({
+    @required this.type,
+    @required this.localizedTitle,
+    this.icon,
+  });
+
   /// The identifier of this item; should be unique within the app.
   final String type;
 
@@ -26,12 +32,6 @@ class ShortcutItem {
   /// Name of native resource (xcassets etc; NOT a Flutter asset) to be
   /// displayed as the icon for this item.
   final String icon;
-
-  const ShortcutItem({
-    @required this.type,
-    @required this.localizedTitle,
-    this.icon,
-  });
 }
 
 /// Quick actions plugin.
@@ -49,14 +49,14 @@ class QuickActions {
   }
 
   /// Sets the [ShortcutItem]s to become the app's quick actions.
-  Future<Null> setShortcutItems(List<ShortcutItem> items) async {
+  Future<void> setShortcutItems(List<ShortcutItem> items) async {
     final List<Map<String, String>> itemsList =
         items.map(_serializeItem).toList();
     await _kChannel.invokeMethod('setShortcutItems', itemsList);
   }
 
   /// Removes all [ShortcutItem]s registered for the app.
-  Future<Null> clearShortcutItems() =>
+  Future<void> clearShortcutItems() =>
       _kChannel.invokeMethod('clearShortcutItems');
 
   Map<String, String> _serializeItem(ShortcutItem item) {

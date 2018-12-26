@@ -39,7 +39,7 @@ void main() {
           'url': 'http://example.com/',
           'useSafariVC': true,
           'useWebView': false,
-          'statusBarBrightness': Brightness.light.toString(),
+          'enableJavaScript': false,
         })
       ],
     );
@@ -54,7 +54,7 @@ void main() {
           'url': 'http://example.com/',
           'useSafariVC': true,
           'useWebView': false,
-          'statusBarBrightness': Brightness.light.toString(),
+          'enableJavaScript': false,
         })
       ],
     );
@@ -69,7 +69,23 @@ void main() {
           'url': 'http://example.com/',
           'useSafariVC': true,
           'useWebView': true,
-          'statusBarBrightness': Brightness.light.toString(),
+          'enableJavaScript': false,
+        })
+      ],
+    );
+  });
+
+  test('launch force WebView enable javascript', () async {
+    await launch('http://example.com/',
+        forceWebView: true, enableJavaScript: true);
+    expect(
+      log,
+      <Matcher>[
+        isMethodCall('launch', arguments: <String, Object>{
+          'url': 'http://example.com/',
+          'useSafariVC': true,
+          'useWebView': true,
+          'enableJavaScript': true,
         })
       ],
     );
@@ -84,7 +100,7 @@ void main() {
           'url': 'http://example.com/',
           'useSafariVC': false,
           'useWebView': false,
-          'statusBarBrightness': Brightness.light.toString(),
+          'enableJavaScript': false,
         })
       ],
     );
@@ -93,5 +109,13 @@ void main() {
   test('cannot launch a non-web in webview', () async {
     expect(() async => await launch('tel:555-555-5555', forceWebView: true),
         throwsA(isInstanceOf<PlatformException>()));
+  });
+
+  test('closeWebView default behavior', () async {
+    await closeWebView();
+    expect(
+      log,
+      <Matcher>[isMethodCall('closeWebView', arguments: null)],
+    );
   });
 }

@@ -3,7 +3,7 @@ description: Flutter plugin for Firebase Remote Config. Update your application 
   re-releasing.
 author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/firebase_remote_config
-version: 0.0.6
+version: 0.0.6+1
 
 dependencies:
   flutter:
@@ -12,6 +12,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  firebase_core: ^0.2.5+1
 
 flutter:
   plugin:

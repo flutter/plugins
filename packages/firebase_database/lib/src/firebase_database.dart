@@ -8,9 +8,36 @@ part of firebase_database;
 /// by calling `FirebaseDatabase.instance`. To access a location in the database
 /// and read or write data, use `reference()`.
 class FirebaseDatabase {
-  final MethodChannel _channel = const MethodChannel(
-    'plugins.flutter.io/firebase_database',
-  );
+  /// Gets an instance of [FirebaseDatabase].
+  ///
+  /// If [app] is specified, its options should include a [databaseURL].
+  FirebaseDatabase({this.app, this.databaseURL}) {
+    if (_initialized) return;
+    _channel.setMethodCallHandler((MethodCall call) async {
+      switch (call.method) {
+        case 'Event':
+          final Event event = Event._(call.arguments);
+          _observers[call.arguments['handle']].add(event);
+          return null;
+        case 'Error':
+          final DatabaseError error = DatabaseError._(call.arguments['error']);
+          _observers[call.arguments['handle']].addError(error);
+          return null;
+        case 'DoTransaction':
+          final MutableData mutableData =
+              MutableData.private(call.arguments['snapshot']);
+          final MutableData updated =
+              await _transactions[call.arguments['transactionKey']](
+                  mutableData);
+          return <String, dynamic>{'value': updated.value};
+        default:
+          throw MissingPluginException(
+            '${call.method} method not implemented on the Dart side.',
+          );
+      }
+    });
+    _initialized = true;
+  }
 
   static final Map<int, StreamController<Event>> _observers =
       <int, StreamController<Event>>{};
@@ -20,39 +47,11 @@ class FirebaseDatabase {
 
   static bool _initialized = false;
 
-  /// Gets an instance of [FirebaseDatabase].
-  ///
-  /// If [app] is specified, its options should include a [databaseURL].
-  FirebaseDatabase({this.app, this.databaseURL}) {
-    if (_initialized) return;
-    _channel.setMethodCallHandler((MethodCall call) async {
-      switch (call.method) {
-        case 'Event':
-          final Event event = new Event._(call.arguments);
-          _observers[call.arguments['handle']].add(event);
-          return null;
-        case 'Error':
-          final DatabaseError error =
-              new DatabaseError._(call.arguments['error']);
-          _observers[call.arguments['handle']].addError(error);
-          return null;
-        case 'DoTransaction':
-          final MutableData mutableData =
-              new MutableData.private(call.arguments['snapshot']);
-          final MutableData updated =
-              await _transactions[call.arguments['transactionKey']](
-                  mutableData);
-          return <String, dynamic>{'value': updated.value};
-        default:
-          throw new MissingPluginException(
-            '${call.method} method not implemented on the Dart side.',
-          );
-      }
-    });
-    _initialized = true;
-  }
+  static FirebaseDatabase _instance = FirebaseDatabase();
 
-  static FirebaseDatabase _instance = new FirebaseDatabase();
+  final MethodChannel _channel = const MethodChannel(
+    'plugins.flutter.io/firebase_database',
+  );
 
   /// The [FirebaseApp] instance to which this [FirebaseDatabase] belongs.
   ///
@@ -68,7 +67,7 @@ class FirebaseDatabase {
   static FirebaseDatabase get instance => _instance;
 
   /// Gets a DatabaseReference for the root of your Firebase Database.
-  DatabaseReference reference() => new DatabaseReference._(this, <String>[]);
+  DatabaseReference reference() => DatabaseReference._(this, <String>[]);
 
   /// Attempts to sets the database persistence to [enabled].
   ///

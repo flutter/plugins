@@ -16,7 +16,7 @@ const String kTestString = 'Hello world!';
 void main() async {
   final FirebaseApp app = await FirebaseApp.configure(
     name: 'test',
-    options: new FirebaseOptions(
+    options: FirebaseOptions(
       googleAppID: Platform.isIOS
           ? '1:159623150305:ios:4a213ef3dbd8997b'
           : '1:159623150305:android:ef48439a0cc0263d',
@@ -25,9 +25,9 @@ void main() async {
       projectID: 'flutter-firebase-plugins',
     ),
   );
-  final FirebaseStorage storage = new FirebaseStorage(
+  final FirebaseStorage storage = FirebaseStorage(
       app: app, storageBucket: 'gs://flutter-firebase-plugins.appspot.com');
-  runApp(new MyApp(storage: storage));
+  runApp(MyApp(storage: storage));
 }
 
 class MyApp extends StatelessWidget {
@@ -36,9 +36,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
+    return MaterialApp(
       title: 'Flutter Storage Example',
-      home: new MyHomePage(storage: storage),
+      home: MyHomePage(storage: storage),
     );
   }
 }
@@ -48,25 +48,24 @@ class MyHomePage extends StatefulWidget {
   final FirebaseStorage storage;
 
   @override
-  _MyHomePageState createState() => new _MyHomePageState();
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
+  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
   List<StorageUploadTask> _tasks = <StorageUploadTask>[];
 
-  Future<Null> _uploadFile() async {
+  Future<void> _uploadFile() async {
     final String uuid = Uuid().v1();
     final Directory systemTempDir = Directory.systemTemp;
-    final File file =
-        await new File('${systemTempDir.path}/foo$uuid.txt').create();
+    final File file = await File('${systemTempDir.path}/foo$uuid.txt').create();
     await file.writeAsString(kTestString);
     assert(await file.readAsString() == kTestString);
     final StorageReference ref =
         widget.storage.ref().child('text').child('foo$uuid.txt');
     final StorageUploadTask uploadTask = ref.putFile(
       file,
-      new StorageMetadata(
+      StorageMetadata(
         contentLanguage: 'en',
         customMetadata: <String, String>{'activity': 'test'},
       ),
@@ -77,12 +76,12 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  Future<Null> _downloadFile(StorageReference ref) async {
+  Future<void> _downloadFile(StorageReference ref) async {
     final String url = await ref.getDownloadURL();
     final String uuid = Uuid().v1();
     final http.Response downloadData = await http.get(url);
     final Directory systemTempDir = Directory.systemTemp;
-    final File tempFile = new File('${systemTempDir.path}/tmp$uuid.txt');
+    final File tempFile = File('${systemTempDir.path}/tmp$uuid.txt');
     if (tempFile.existsSync()) {
       await tempFile.delete();
     }
@@ -98,8 +97,8 @@ class _MyHomePageState extends State<MyHomePage> {
     final String name = await ref.getName();
     final String bucket = await ref.getBucket();
     final String path = await ref.getPath();
-    _scaffoldKey.currentState.showSnackBar(new SnackBar(
-      content: new Text(
+    _scaffoldKey.currentState.showSnackBar(SnackBar(
+      content: Text(
         'Success!\n Downloaded $name \n from url: $url @ bucket: $bucket\n '
             'at path: $path \n\nFile contents: "$fileContents" \n'
             'Wrote "$tempFileContents" to tmp.txt',
@@ -121,7 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
     return Scaffold(
       key: _scaffoldKey,
-      appBar: new AppBar(
+      appBar: AppBar(
         title: const Text('Flutter Storage Example'),
         actions: <Widget>[
           IconButton(
@@ -134,7 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: ListView(
         children: children,
       ),
-      floatingActionButton: new FloatingActionButton(
+      floatingActionButton: FloatingActionButton(
         onPressed: _uploadFile,
         tooltip: 'Upload',
         child: const Icon(Icons.file_upload),
@@ -189,7 +188,7 @@ class UploadTaskListTile extends StatelessWidget {
           subtitle = const Text('Starting...');
         }
         return Dismissible(
-          key: new Key(task.hashCode.toString()),
+          key: Key(task.hashCode.toString()),
           onDismissed: (_) => onDismissed(),
           child: ListTile(
             title: Text('Upload Task #${task.hashCode}'),

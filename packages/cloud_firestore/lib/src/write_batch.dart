@@ -25,14 +25,14 @@ class WriteBatch {
   /// Commits all of the writes in this write batch as a single atomic unit.
   ///
   /// Calling this method prevents any future operations from being added.
-  Future<Null> commit() async {
+  Future<void> commit() async {
     if (!_committed) {
       _committed = true;
       await Future.wait<dynamic>(_actions);
-      return await Firestore.channel.invokeMethod(
+      await Firestore.channel.invokeMethod(
           'WriteBatch#commit', <String, dynamic>{'handle': await _handle});
     } else {
-      throw new StateError("This batch has already been committed.");
+      throw StateError("This batch has already been committed.");
     }
   }
 
@@ -52,7 +52,7 @@ class WriteBatch {
         );
       });
     } else {
-      throw new StateError(
+      throw StateError(
           "This batch has been committed and can no longer be changed.");
     }
   }
@@ -81,7 +81,7 @@ class WriteBatch {
         );
       });
     } else {
-      throw new StateError(
+      throw StateError(
           "This batch has been committed and can no longer be changed.");
     }
   }
@@ -105,7 +105,7 @@ class WriteBatch {
         );
       });
     } else {
-      throw new StateError(
+      throw StateError(
           "This batch has been committed and can no longer be changed.");
     }
   }

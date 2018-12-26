@@ -20,17 +20,17 @@ void main() {
     Completer<ListChange> callbackCompleter;
 
     setUp(() {
-      onChildAddedStreamController = new StreamController<Event>();
-      onChildRemovedStreamController = new StreamController<Event>();
-      onChildChangedStreamController = new StreamController<Event>();
-      onChildMovedStreamController = new StreamController<Event>();
-      query = new MockQuery(
+      onChildAddedStreamController = StreamController<Event>();
+      onChildRemovedStreamController = StreamController<Event>();
+      onChildChangedStreamController = StreamController<Event>();
+      onChildMovedStreamController = StreamController<Event>();
+      query = MockQuery(
         onChildAddedStreamController.stream,
         onChildRemovedStreamController.stream,
         onChildChangedStreamController.stream,
         onChildMovedStreamController.stream,
       );
-      callbackCompleter = new Completer<ListChange>();
+      callbackCompleter = Completer<ListChange>();
 
       void completeWithChange(int index, DataSnapshot snapshot) {
         callbackCompleter.complete(ListChange.at(index, snapshot));
@@ -40,7 +40,7 @@ void main() {
         callbackCompleter.complete(ListChange.move(from, to, snapshot));
       }
 
-      list = new FirebaseList(
+      list = FirebaseList(
         query: query,
         onChildAdded: completeWithChange,
         onChildRemoved: completeWithChange,
@@ -51,7 +51,7 @@ void main() {
 
     Future<ListChange> resetCompleterOnCallback() async {
       final ListChange result = await callbackCompleter.future;
-      callbackCompleter = new Completer<ListChange>();
+      callbackCompleter = Completer<ListChange>();
       return result;
     }
 
@@ -76,94 +76,94 @@ void main() {
     }
 
     test('can add to empty list', () async {
-      final DataSnapshot snapshot = new MockDataSnapshot('key10', 10);
+      final DataSnapshot snapshot = MockDataSnapshot('key10', 10);
       expect(
-        await processChildAddedEvent(new MockEvent(null, snapshot)),
-        new ListChange.at(0, snapshot),
+        await processChildAddedEvent(MockEvent(null, snapshot)),
+        ListChange.at(0, snapshot),
       );
       expect(list, <DataSnapshot>[snapshot]);
     });
 
     test('can add before first element', () async {
-      final DataSnapshot snapshot1 = new MockDataSnapshot('key10', 10);
-      final DataSnapshot snapshot2 = new MockDataSnapshot('key20', 20);
-      await processChildAddedEvent(new MockEvent(null, snapshot2));
+      final DataSnapshot snapshot1 = MockDataSnapshot('key10', 10);
+      final DataSnapshot snapshot2 = MockDataSnapshot('key20', 20);
+      await processChildAddedEvent(MockEvent(null, snapshot2));
       expect(
-        await processChildAddedEvent(new MockEvent(null, snapshot1)),
-        new ListChange.at(0, snapshot1),
+        await processChildAddedEvent(MockEvent(null, snapshot1)),
+        ListChange.at(0, snapshot1),
       );
       expect(list, <DataSnapshot>[snapshot1, snapshot2]);
     });
 
     test('can add after last element', () async {
-      final DataSnapshot snapshot1 = new MockDataSnapshot('key10', 10);
-      final DataSnapshot snapshot2 = new MockDataSnapshot('key20', 20);
-      await processChildAddedEvent(new MockEvent(null, snapshot1));
+      final DataSnapshot snapshot1 = MockDataSnapshot('key10', 10);
+      final DataSnapshot snapshot2 = MockDataSnapshot('key20', 20);
+      await processChildAddedEvent(MockEvent(null, snapshot1));
       expect(
-        await processChildAddedEvent(new MockEvent('key10', snapshot2)),
-        new ListChange.at(1, snapshot2),
+        await processChildAddedEvent(MockEvent('key10', snapshot2)),
+        ListChange.at(1, snapshot2),
       );
       expect(list, <DataSnapshot>[snapshot1, snapshot2]);
     });
 
     test('can remove from singleton list', () async {
-      final DataSnapshot snapshot = new MockDataSnapshot('key10', 10);
-      await processChildAddedEvent(new MockEvent(null, snapshot));
+      final DataSnapshot snapshot = MockDataSnapshot('key10', 10);
+      await processChildAddedEvent(MockEvent(null, snapshot));
       expect(
-        await processChildRemovedEvent(new MockEvent(null, snapshot)),
-        new ListChange.at(0, snapshot),
+        await processChildRemovedEvent(MockEvent(null, snapshot)),
+        ListChange.at(0, snapshot),
       );
       expect(list, isEmpty);
     });
 
     test('can remove former of two elements', () async {
-      final DataSnapshot snapshot1 = new MockDataSnapshot('key10', 10);
-      final DataSnapshot snapshot2 = new MockDataSnapshot('key20', 20);
-      await processChildAddedEvent(new MockEvent(null, snapshot2));
-      await processChildAddedEvent(new MockEvent(null, snapshot1));
+      final DataSnapshot snapshot1 = MockDataSnapshot('key10', 10);
+      final DataSnapshot snapshot2 = MockDataSnapshot('key20', 20);
+      await processChildAddedEvent(MockEvent(null, snapshot2));
+      await processChildAddedEvent(MockEvent(null, snapshot1));
       expect(
-        await processChildRemovedEvent(new MockEvent(null, snapshot1)),
-        new ListChange.at(0, snapshot1),
+        await processChildRemovedEvent(MockEvent(null, snapshot1)),
+        ListChange.at(0, snapshot1),
       );
       expect(list, <DataSnapshot>[snapshot2]);
     });
 
     test('can remove latter of two elements', () async {
-      final DataSnapshot snapshot1 = new MockDataSnapshot('key10', 10);
-      final DataSnapshot snapshot2 = new MockDataSnapshot('key20', 20);
-      await processChildAddedEvent(new MockEvent(null, snapshot2));
-      await processChildAddedEvent(new MockEvent(null, snapshot1));
+      final DataSnapshot snapshot1 = MockDataSnapshot('key10', 10);
+      final DataSnapshot snapshot2 = MockDataSnapshot('key20', 20);
+      await processChildAddedEvent(MockEvent(null, snapshot2));
+      await processChildAddedEvent(MockEvent(null, snapshot1));
       expect(
-        await processChildRemovedEvent(new MockEvent('key10', snapshot2)),
-        new ListChange.at(1, snapshot2),
+        await processChildRemovedEvent(MockEvent('key10', snapshot2)),
+        ListChange.at(1, snapshot2),
       );
       expect(list, <DataSnapshot>[snapshot1]);
     });
 
     test('can change child', () async {
-      final DataSnapshot snapshot1 = new MockDataSnapshot('key10', 10);
-      final DataSnapshot snapshot2a = new MockDataSnapshot('key20', 20);
-      final DataSnapshot snapshot2b = new MockDataSnapshot('key20', 25);
-      final DataSnapshot snapshot3 = new MockDataSnapshot('key30', 30);
-      await processChildAddedEvent(new MockEvent(null, snapshot3));
-      await processChildAddedEvent(new MockEvent(null, snapshot2a));
-      await processChildAddedEvent(new MockEvent(null, snapshot1));
+      final DataSnapshot snapshot1 = MockDataSnapshot('key10', 10);
+      final DataSnapshot snapshot2a = MockDataSnapshot('key20', 20);
+      final DataSnapshot snapshot2b = MockDataSnapshot('key20', 25);
+      final DataSnapshot snapshot3 = MockDataSnapshot('key30', 30);
+      await processChildAddedEvent(MockEvent(null, snapshot3));
+      await processChildAddedEvent(MockEvent(null, snapshot2a));
+      await processChildAddedEvent(MockEvent(null, snapshot1));
       expect(
-        await processChildChangedEvent(new MockEvent('key10', snapshot2b)),
-        new ListChange.at(1, snapshot2b),
+        await processChildChangedEvent(MockEvent('key10', snapshot2b)),
+        ListChange.at(1, snapshot2b),
       );
       expect(list, <DataSnapshot>[snapshot1, snapshot2b, snapshot3]);
     });
     test('can move child', () async {
-      final DataSnapshot snapshot1 = new MockDataSnapshot('key10', 10);
-      final DataSnapshot snapshot2 = new MockDataSnapshot('key20', 20);
-      final DataSnapshot snapshot3 = new MockDataSnapshot('key30', 30);
-      await processChildAddedEvent(new MockEvent(null, snapshot3));
-      await processChildAddedEvent(new MockEvent(null, snapshot2));
-      await processChildAddedEvent(new MockEvent(null, snapshot1));
+      final DataSnapshot snapshot1 = MockDataSnapshot('key10', 10);
+      final DataSnapshot snapshot2 = MockDataSnapshot('key20', 20);
+      final DataSnapshot snapshot3 = MockDataSnapshot('key30', 30);
+      await processChildAddedEvent(MockEvent(null, snapshot3));
+      await processChildAddedEvent(MockEvent(null, snapshot2));
+      await processChildAddedEvent(MockEvent(null, snapshot1));
       expect(
-        await processChildMovedEvent(new MockEvent('key30', snapshot1)),
-        new ListChange.move(0, 2, snapshot1),
+        await processChildMovedEvent(MockEvent('key30', snapshot1)),
+        ListChange.move(0, 2, snapshot1),
       );
       expect(list, <DataSnapshot>[snapshot2, snapshot3, snapshot1]);
     });

@@ -13,7 +13,7 @@ class Query {
       : _database = database,
         _pathComponents = pathComponents,
         _parameters = parameters ??
-            new Map<String, dynamic>.unmodifiable(<String, dynamic>{}),
+            Map<String, dynamic>.unmodifiable(<String, dynamic>{}),
         assert(database != null);
 
   final FirebaseDatabase _database;
@@ -24,17 +24,17 @@ class Query {
   String get path => _pathComponents.join('/');
 
   Query _copyWithParameters(Map<String, dynamic> parameters) {
-    return new Query._(
+    return Query._(
       database: _database,
       pathComponents: _pathComponents,
-      parameters: new Map<String, dynamic>.unmodifiable(
-        new Map<String, dynamic>.from(_parameters)..addAll(parameters),
+      parameters: Map<String, dynamic>.unmodifiable(
+        Map<String, dynamic>.from(_parameters)..addAll(parameters),
       ),
     );
   }
 
   Map<String, dynamic> buildArguments() {
-    return new Map<String, dynamic>.from(_parameters)
+    return Map<String, dynamic>.from(_parameters)
       ..addAll(<String, dynamic>{
         'path': path,
       });
@@ -45,7 +45,7 @@ class Query {
     // It's fine to let the StreamController be garbage collected once all the
     // subscribers have cancelled; this analyzer warning is safe to ignore.
     StreamController<Event> controller; // ignore: close_sinks
-    controller = new StreamController<Event>.broadcast(
+    controller = StreamController<Event>.broadcast(
       onListen: () {
         _handle = _database._channel.invokeMethod(
           'Query#observe',
@@ -199,7 +199,7 @@ class Query {
 
   /// Obtains a DatabaseReference corresponding to this query's location.
   DatabaseReference reference() =>
-      new DatabaseReference._(_database, _pathComponents);
+      DatabaseReference._(_database, _pathComponents);
 
   /// By calling keepSynced(true) on a location, the data for that location will
   /// automatically be downloaded and kept in sync, even when no listeners are

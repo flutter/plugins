@@ -15,7 +15,7 @@ class FirebaseDynamicLinks {
       MethodChannel('plugins.flutter.io/firebase_dynamic_links');
 
   /// Singleton of [FirebaseDynamicLinks].
-  static final FirebaseDynamicLinks instance = new FirebaseDynamicLinks._();
+  static final FirebaseDynamicLinks instance = FirebaseDynamicLinks._();
 
   /// Attempts to retrieve a pending dynamic link.
   ///

@@ -6,12 +6,6 @@ part of google_maps_flutter;
 
 /// A pair of latitude and longitude coordinates, stored as degrees.
 class LatLng {
-  /// The latitude in degrees between -90.0 and 90.0, both inclusive.
-  final double latitude;
-
-  /// The longitude in degrees between -180.0 (inclusive) and 180.0 (exclusive).
-  final double longitude;
-
   /// Creates a geographical location specified in degrees [latitude] and
   /// [longitude].
   ///
@@ -26,6 +20,12 @@ class LatLng {
             (latitude < -90.0 ? -90.0 : (90.0 < latitude ? 90.0 : latitude)),
         longitude = (longitude + 180.0) % 360.0 - 180.0;
 
+  /// The latitude in degrees between -90.0 and 90.0, both inclusive.
+  final double latitude;
+
+  /// The longitude in degrees between -180.0 (inclusive) and 180.0 (exclusive).
+  final double longitude;
+
   dynamic _toJson() {
     return <double>[latitude, longitude];
   }
@@ -34,13 +34,11 @@ class LatLng {
     if (json == null) {
       return null;
     }
-    return new LatLng(json[0], json[1]);
+    return LatLng(json[0], json[1]);
   }
 
   @override
-  String toString() {
-    return '$runtimeType[$latitude, $longitude]';
-  }
+  String toString() => '$runtimeType($latitude, $longitude)';
 
   @override
   bool operator ==(Object o) {
@@ -60,12 +58,6 @@ class LatLng {
 /// * lng ∈ [-180, `northeast.longitude`] ∪ [`southwest.longitude`, 180[,
 ///   if `northeast.longitude` < `southwest.longitude`
 class LatLngBounds {
-  /// The southwest corner of the rectangle.
-  final LatLng southwest;
-
-  /// The northeast corner of the rectangle.
-  final LatLng northeast;
-
   /// Creates geographical bounding box with the specified corners.
   ///
   /// The latitude of the southwest corner cannot be larger than the
@@ -75,15 +67,22 @@ class LatLngBounds {
         assert(northeast != null),
         assert(southwest.latitude <= northeast.latitude);
 
-  dynamic _toJson() {
+  /// The southwest corner of the rectangle.
+  final LatLng southwest;
+
+  /// The northeast corner of the rectangle.
+  final LatLng northeast;
+
+  dynamic _toList() {
     return <dynamic>[southwest._toJson(), northeast._toJson()];
   }
 
-  static LatLngBounds _fromJson(dynamic json) {
+  @visibleForTesting
+  static LatLngBounds fromList(dynamic json) {
     if (json == null) {
       return null;
     }
-    return new LatLngBounds(
+    return LatLngBounds(
       southwest: LatLng._fromJson(json[0]),
       northeast: LatLng._fromJson(json[1]),
     );
@@ -91,7 +90,7 @@ class LatLngBounds {
 
   @override
   String toString() {
-    return '$runtimeType[$southwest, $northeast]';
+    return '$runtimeType($southwest, $northeast)';
   }
 
   @override

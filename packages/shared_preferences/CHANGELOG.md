@@ -1,3 +1,7 @@
+## 0.4.3
+
+* Prevent strings that match special prefixes from being saved. This is a bugfix that prevents apps from accidentally setting special values that would be interpreted incorrectly.
+
 ## 0.4.2
 
 * Updated Gradle tooling to match Android Studio 3.1.2.

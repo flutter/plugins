@@ -16,6 +16,7 @@ class FirestoreMessageCodec extends StandardMessageCodec {
   static const int _kArrayRemove = 133;
   static const int _kDelete = 134;
   static const int _kServerTimestamp = 135;
+  static const int _kTimestamp = 136;
 
   static const Map<FieldValueType, int> _kFieldValueCodes =
       <FieldValueType, int>{
@@ -30,6 +31,10 @@ class FirestoreMessageCodec extends StandardMessageCodec {
     if (value is DateTime) {
       buffer.putUint8(_kDateTime);
       buffer.putInt64(value.millisecondsSinceEpoch);
+    } else if (value is Timestamp) {
+      buffer.putUint8(_kTimestamp);
+      buffer.putInt64(value.seconds);
+      buffer.putInt32(value.nanoseconds);
     } else if (value is GeoPoint) {
       buffer.putUint8(_kGeoPoint);
       buffer.putFloat64(value.latitude);
@@ -60,15 +65,17 @@ class FirestoreMessageCodec extends StandardMessageCodec {
   dynamic readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
       case _kDateTime:
-        return new DateTime.fromMillisecondsSinceEpoch(buffer.getInt64());
+        return DateTime.fromMillisecondsSinceEpoch(buffer.getInt64());
+      case _kTimestamp:
+        return Timestamp(buffer.getInt64(), buffer.getInt32());
       case _kGeoPoint:
-        return new GeoPoint(buffer.getFloat64(), buffer.getFloat64());
+        return GeoPoint(buffer.getFloat64(), buffer.getFloat64());
       case _kDocumentReference:
         final int appNameLength = readSize(buffer);
         final String appName =
             utf8.decoder.convert(buffer.getUint8List(appNameLength));
-        final FirebaseApp app = new FirebaseApp(name: appName);
-        final Firestore firestore = new Firestore(app: app);
+        final FirebaseApp app = FirebaseApp(name: appName);
+        final Firestore firestore = Firestore(app: app);
         final int pathLength = readSize(buffer);
         final String path =
             utf8.decoder.convert(buffer.getUint8List(pathLength));
@@ -76,7 +83,7 @@ class FirestoreMessageCodec extends StandardMessageCodec {
       case _kBlob:
         final int length = readSize(buffer);
         final List<int> bytes = buffer.getUint8List(length);
-        return new Blob(bytes);
+        return Blob(bytes);
       case _kArrayUnion:
         final List<dynamic> value = readValue(buffer);
         return FieldValue.arrayUnion(value);

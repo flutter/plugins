@@ -1,3 +1,50 @@
+## 0.7.0
+
+* Introduce third-party auth provider classes that generate `AuthCredential`s
+* **Breaking Change** Signing in, linking, and reauthenticating now require an `AuthCredential`
+* **Breaking Change** Unlinking now uses providerId
+* **Breaking Change** Moved reauthentication to FirebaseUser
+
+## 0.6.7
+
+* `FirebaseAuth` and `FirebaseUser` are now fully documented.
+* `PlatformExceptions` now report error codes as stated in docs.
+* Credentials can now be unlinked from Accounts with new methods on `FirebaseUser`.
+
+## 0.6.6
+
+* Users can now reauthenticate in response to operations that require a recent sign-in.
+
+## 0.6.5
+
+* Fixing async method `verifyPhoneNumber`, that would never return even in a successful call.
+
+## 0.6.4
+
+* Added support for Github signin and linking Github accounts to existing users.
+
+## 0.6.3
+
+* Add multi app support.
+
+## 0.6.2+1
+
+* Bump Android dependencies to latest.
+
+## 0.6.2
+
+* Add access to user metadata.
+
+## 0.6.1
+
+* Adding support for linkWithTwitterCredential in FirebaseAuth.
+
+## 0.6.0
+
+* Added support for `updatePassword` in `FirebaseUser`.
+* **Breaking Change** Moved `updateEmail` and `updateProfile` to `FirebaseUser`.
+  This brings the `firebase_auth` package inline with other implementations and documentation.
+
 ## 0.5.20
 
 * Replaced usages of guava's: ImmutableList and ImmutableMap with platform
@@ -15,7 +62,7 @@ Collections.unmodifiableList() and Collections.unmodifiableMap().
 
 ## 0.5.17
 
-* Adding support for FirebaseUser.delete. 
+* Adding support for FirebaseUser.delete.
 
 ## 0.5.16
 

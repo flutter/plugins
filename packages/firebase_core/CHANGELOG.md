@@ -1,3 +1,7 @@
+## 0.2.5+1
+
+* Bump Android dependencies to latest.
+
 ## 0.2.5
 
 * Bump Android and Firebase dependency versions.

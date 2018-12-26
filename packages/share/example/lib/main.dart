@@ -6,12 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:share/share.dart';
 
 void main() {
-  runApp(new DemoApp());
+  runApp(DemoApp());
 }
 
 class DemoApp extends StatefulWidget {
   @override
-  DemoAppState createState() => new DemoAppState();
+  DemoAppState createState() => DemoAppState();
 }
 
 class DemoAppState extends State<DemoApp> {
@@ -19,18 +19,18 @@ class DemoAppState extends State<DemoApp> {
 
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
+    return MaterialApp(
       title: 'Share Plugin Demo',
-      home: new Scaffold(
-          appBar: new AppBar(
+      home: Scaffold(
+          appBar: AppBar(
             title: const Text('Share Plugin Demo'),
           ),
-          body: new Padding(
+          body: Padding(
             padding: const EdgeInsets.all(24.0),
-            child: new Column(
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                new TextField(
+                TextField(
                   decoration: const InputDecoration(
                     labelText: 'Share:',
                     hintText: 'Enter some text and/or link to share',
@@ -41,9 +41,9 @@ class DemoAppState extends State<DemoApp> {
                       }),
                 ),
                 const Padding(padding: EdgeInsets.only(top: 24.0)),
-                new Builder(
+                Builder(
                   builder: (BuildContext context) {
-                    return new RaisedButton(
+                    return RaisedButton(
                       child: const Text('Share'),
                       onPressed: text.isEmpty
                           ? null
