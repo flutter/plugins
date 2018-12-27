@@ -263,7 +263,7 @@
 // UNUserNotificationCenter with completion handler is used instead
 #else
 - (void)application:(UIApplication *)application
-    didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings API_UNAVAILABLE(ios(10)) {
+    didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
 
     [_channel invokeMethod:@"onIosSettingsRegistered"
                arguments:[self notificationTypeStringRepresentation: notificationSettings.types]];
