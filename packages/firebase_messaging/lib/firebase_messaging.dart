@@ -141,20 +141,40 @@ class IosNotificationSettings {
     this.sound = true,
     this.alert = true,
     this.badge = true,
+    this.provisional = false,
+    this.carPlay = false,
+    this.criticalAlert = false,
+    this.notificationSetting = false,
   });
 
   IosNotificationSettings._fromMap(Map<String, bool> settings)
       : sound = settings['sound'],
         alert = settings['alert'],
-        badge = settings['badge'];
+        badge = settings['badge'],
+        provisional = settings['provisional'],
+        carPlay = settings['carPlay'],
+        criticalAlert = settings['criticalAlert'],
+        notificationSetting = settings['notificationSetting'];
 
   final bool sound;
   final bool alert;
   final bool badge;
+  final bool provisional;
+  final bool carPlay;
+  final bool criticalAlert;
+  final bool notificationSetting;
 
   @visibleForTesting
   Map<String, dynamic> toMap() {
-    return <String, bool>{'sound': sound, 'alert': alert, 'badge': badge};
+    return <String, bool>{
+      'sound': sound,
+      'alert': alert,
+      'badge': badge,
+      'provisional': provisional,
+      'carPlay': carPlay,
+      'criticalAlert': criticalAlert,
+      'notificationSetting': notificationSetting,
+    };
   }
 
   @override
