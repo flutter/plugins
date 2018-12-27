@@ -37,6 +37,12 @@ import java.io.OutputStream;
 
 class FileUtils {
 
+  private static final String[] DOWNLOAD_CONTENT_URI_PREFIXES = {
+          "content://downloads/public_downloads",
+          "content://downloads/my_downloads",
+          "content://downloads/all_downloads"
+  };
+
   String getPathFromUri(final Context context, final Uri uri) {
     String path = getPathFromLocalUri(context, uri);
     if (path == null) {
@@ -62,13 +68,15 @@ class FileUtils {
         final String id = DocumentsContract.getDocumentId(uri);
 
         if (!TextUtils.isEmpty(id)) {
-          try {
-            final Uri contentUri =
-                ContentUris.withAppendedId(
-                    Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
-            return getDataColumn(context, contentUri, null, null);
-          } catch (NumberFormatException e) {
-            return null;
+          for (String contentUriPrefix : DOWNLOAD_CONTENT_URI_PREFIXES) {
+            try {
+              final Uri contentUri =
+                      ContentUris.withAppendedId(
+                              Uri.parse(contentUriPrefix), Long.valueOf(id));
+              return getDataColumn(context, contentUri, null, null);
+            } catch (NumberFormatException e) {
+              return null;
+            } catch (Exception e){}
           }
         }
 
