@@ -471,8 +471,13 @@ class FirebaseAnalytics {
   /// has logged in.
   ///
   /// See: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event.html#LOGIN
-  Future<void> logLogin() {
-    return logEvent(name: 'login');
+  Future<void> logLogin({String loginMethod}) {
+    return logEvent(
+      name: 'login',
+      parameters: filterOutNulls(<String, dynamic>{
+        _METHOD: loginMethod,
+      }),
+    );
   }
 
   /// Logs the standard `post_score` event.
