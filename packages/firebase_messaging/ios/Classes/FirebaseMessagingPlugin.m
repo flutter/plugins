@@ -38,11 +38,19 @@
     _resumingFromBackground = NO;
       
      if (@available(iOS 10, *)) {
-        _authorizationOptions = @{
-                              @"sound": @(UNAuthorizationOptionSound),
-                              @"alert": @(UNAuthorizationOptionAlert),
-                              @"badge": @(UNAuthorizationOptionBadge)
-                              };
+         NSMutableDictionary<NSString*, NSNumber*> *authOptions =
+         [[NSMutableDictionary<NSString*, NSNumber*> alloc] initWithDictionary: @{@"sound": @(UNAuthorizationOptionSound),
+                                                                                  @"alert": @(UNAuthorizationOptionAlert),
+                                                                                  @"badge": @(UNAuthorizationOptionBadge),
+                                                                                  @"carPlay": @(UNAuthorizationOptionCarPlay),
+                                                                                  }];
+         if (@available(iOS 12, *)) {
+             authOptions[@"provisional"] = @(UNAuthorizationOptionProvisional);
+             authOptions[@"criticalAlert"] = @(UNAuthorizationOptionCriticalAlert);
+             authOptions[@"notificationSetting"] = @(UNAuthorizationOptionProvidesAppNotificationSettings);
+         }
+         
+         _authorizationOptions = [authOptions copy];
      } else {
          _authorizationOptions = @{
                                    @"sound" : @(UIUserNotificationTypeSound),
