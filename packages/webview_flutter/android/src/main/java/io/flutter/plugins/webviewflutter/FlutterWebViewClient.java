@@ -39,24 +39,29 @@ public class FlutterWebViewClient extends WebViewClient {
     if (shouldOverrideUrlLoading) {
       Map<String, Object> args = new HashMap<>();
       args.put("url", url);
-      methodChannel.invokeMethod("shouldOverrideUrlLoading", args, new MethodChannel.Result() {
-        @Override
-        public void success(Object result) {
-          shouldOverrideUrlLoading = (Boolean) result;
-          if (!shouldOverrideUrlLoading) {
-            view.loadUrl(url);
-          }
-        }
+      methodChannel.invokeMethod(
+          "shouldOverrideUrlLoading",
+          args,
+          new MethodChannel.Result() {
+            @Override
+            public void success(Object result) {
+              shouldOverrideUrlLoading = (Boolean) result;
+              if (!shouldOverrideUrlLoading) {
+                view.loadUrl(url);
+              }
+            }
 
-        @Override
-        public void error(String errorCode, String errorMessage, Object errorDetails) {
-          Log.e(TAG, String.format("Failed to handle channel reply: %s: %s" + errorCode, errorMessage));
-        }
+            @Override
+            public void error(String errorCode, String errorMessage, Object errorDetails) {
+              Log.e(
+                  TAG,
+                  String.format(
+                      "Failed to handle channel reply: %s: %s" + errorCode, errorMessage));
+            }
 
-        @Override
-        public void notImplemented() {
-        }
-      });
+            @Override
+            public void notImplemented() {}
+          });
       return true;
     } else {
       shouldOverrideUrlLoading = true;
