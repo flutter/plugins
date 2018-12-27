@@ -16,6 +16,9 @@ part 'src/error.dart';
 
 typedef void WebViewCreatedCallback(WebViewController controller);
 
+/// Handler to prevent loading a web page.
+typedef U ArgumentHandler<T, U>(T argument);
+
 enum JavaScriptMode {
   /// JavaScript execution is disabled.
   disabled,
@@ -201,6 +204,9 @@ class WebViewController {
 
   final MethodChannel _channel;
 
+  /// Handles to receive ready to load web page events.
+  ArgumentHandler<String, bool> shouldOverrideUrlLoading;
+
   /// Callbacks to receive start loading web page events.
   final ArgumentCallbacks<String> onPageStarted = ArgumentCallbacks<String>();
 
@@ -278,6 +284,13 @@ class WebViewController {
 
   Future<dynamic> _handleMethodCall(MethodCall call) async {
     switch (call.method) {
+      case 'shouldOverrideUrlLoading':
+        final String url = call.arguments['url'];
+        if (url != null) {
+          final bool result = shouldOverrideUrlLoading?.call(url) ?? false;
+          return Future<bool>.value(result);
+        }
+        break;
       case 'onPageStarted':
         final String url = call.arguments['url'];
         if (url != null) {

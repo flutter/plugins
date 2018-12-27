@@ -114,13 +114,13 @@ void main() {
 
     expect(controller, isNotNull);
 
-    controller.onPageStarted.add(expectAsync1((String actual) {
+    controller.onPageStarted.add(expectAsync1<void, String>((String actual) {
       expect(actual, 'https://flutter.io');
     }, count: 1, max: 1));
 
     controller.loadUrl('https://flutter.io');
 
-    controller.onPageFinished.add(expectAsync1((String actual) {
+    controller.onPageFinished.add(expectAsync1<void, String>((String actual) {
       expect(actual, 'https://flutter.io');
     }, count: 1, max: 1));
 

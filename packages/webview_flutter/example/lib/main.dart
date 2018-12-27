@@ -55,6 +55,7 @@ class WebViewExample extends StatelessWidget {
   void _onWebViewCreated(WebViewController webViewController) {
     webViewController.onPageStarted.add(_onPageStarted);
     webViewController.onPageFinished.add(_onPageFinished);
+    webViewController.shouldOverrideUrlLoading = _shouldOverrideUrlLoading;
     _controller.complete(webViewController);
   }
 
@@ -64,6 +65,11 @@ class WebViewExample extends StatelessWidget {
 
   void _onPageFinished(String url) {
     print("Load page finished: - $url");
+  }
+
+  bool _shouldOverrideUrlLoading(String url) {
+    print("Ready to load page: - $url");
+    return false;
   }
 }
 
