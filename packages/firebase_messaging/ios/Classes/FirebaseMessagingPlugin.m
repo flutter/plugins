@@ -44,22 +44,7 @@
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSString *method = call.method;
   if ([@"requestNotificationPermissions" isEqualToString:method]) {
-    UIUserNotificationType notificationTypes = 0;
-    NSDictionary *arguments = call.arguments;
-    if ([arguments[@"sound"] boolValue]) {
-      notificationTypes |= UIUserNotificationTypeSound;
-    }
-    if ([arguments[@"alert"] boolValue]) {
-      notificationTypes |= UIUserNotificationTypeAlert;
-    }
-    if ([arguments[@"badge"] boolValue]) {
-      notificationTypes |= UIUserNotificationTypeBadge;
-    }
-    UIUserNotificationSettings *settings =
-        [UIUserNotificationSettings settingsForTypes:notificationTypes categories:nil];
-    [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
-
-    result(nil);
+      [self requestNotificationPermissions:call result:result];
   } else if ([@"configure" isEqualToString:method]) {
     [[UIApplication sharedApplication] registerForRemoteNotifications];
     if (_launchNotification != nil) {
@@ -105,6 +90,57 @@
   } else {
     result(FlutterMethodNotImplemented);
   }
+}
+
+- (void)requestNotificationPermissions:(FlutterMethodCall *)call result:(FlutterResult)result {
+    NSDictionary *arguments = call.arguments;
+    
+    if (@available(iOS 10, *)) {
+      [UNUserNotificationCenter.currentNotificationCenter
+       requestAuthorizationWithOptions: [self mapAuthorizationOptions:arguments]
+       completionHandler:^(BOOL granted, NSError * _Nullable error) {
+         result([NSNumber numberWithBool:granted]);
+       }];
+    } else {
+      UIUserNotificationSettings *settings = [UIUserNotificationSettings
+                                              settingsForTypes:[self mapNotificationTypes:arguments]
+                                              categories:nil];
+      [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
+        
+      result(nil);
+  }
+}
+
+- (UIUserNotificationType)mapNotificationTypes:(nullable NSDictionary *)arguments {
+  UIUserNotificationType notificationTypes = 0;
+   
+  if ([arguments[@"sound"] boolValue]) {
+    notificationTypes |= UIUserNotificationTypeSound;
+  }
+  if ([arguments[@"alert"] boolValue]) {
+    notificationTypes |= UIUserNotificationTypeAlert;
+  }
+  if ([arguments[@"badge"] boolValue]) {
+    notificationTypes |= UIUserNotificationTypeBadge;
+  }
+    
+  return notificationTypes;
+}
+
+- (UNAuthorizationOptions)mapAuthorizationOptions:(nullable NSDictionary *)arguments API_AVAILABLE(ios(10)) {
+  UNAuthorizationOptions options = 0;
+
+  if ([arguments[@"sound"] boolValue]) {
+    options |= UNAuthorizationOptionSound;
+  }
+  if ([arguments[@"alert"] boolValue]) {
+    options |= UNAuthorizationOptionAlert;
+  }
+  if ([arguments[@"badge"] boolValue]) {
+    options |= UNAuthorizationOptionBadge;
+  }
+
+  return options;
 }
 
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
