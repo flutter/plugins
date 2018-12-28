@@ -28,6 +28,7 @@ class WebViewExample extends StatelessWidget {
         javaScriptMode: JavaScriptMode.unrestricted,
         onWebViewCreated: (WebViewController webViewController) {
           _controller.complete(webViewController);
+          _runSampleJSEvaluation(webViewController);
         },
       ),
       floatingActionButton: favoriteButton(),
@@ -52,6 +53,16 @@ class WebViewExample extends StatelessWidget {
           }
           return Container();
         });
+  }
+
+  void _runSampleJSEvaluation(WebViewController controller) {
+    controller.evaluateJavaScript("window.alert('test js')").then<dynamic>((dynamic result){
+      print("hhhhhhhh");
+      print(result);
+    }).catchError((dynamic error){
+      print("eeeeeeeeee");
+      print(error);
+    });
   }
 }
 
