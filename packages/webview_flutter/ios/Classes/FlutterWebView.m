@@ -140,22 +140,25 @@
                                details:@"JavaScript Mode disabled"]);
     return;
   }
-  NSString *jsString = [call arguments];
+  NSString* jsString = [call arguments];
   if (!jsString || [jsString isKindOfClass:[NSNull class]]) {
     result([FlutterError errorWithCode:@"evaluateJavaScript_failed"
                                message:@"JavaScript String cannot be null"
                                details:@"JavaScript String cannot be null"]);
     return;
   }
-  [_webView evaluateJavaScript:jsString completionHandler:^(_Nullable id evaluateResult, NSError * _Nullable error) {
-    if (error) {
-      result([FlutterError errorWithCode:@"evaluateJavaScript_failed"
-                                 message:@"Failed evaluating JavaScript"
-                                 details:[NSString stringWithFormat:@"JavaScript string was: '%@'", jsString]]);
-    } else {
-      result([NSString stringWithFormat:@"EvaluateJavaScript result: %@", evaluateResult]);
-    }
-  }];
+  [_webView
+      evaluateJavaScript:jsString
+       completionHandler:^(_Nullable id evaluateResult, NSError* _Nullable error) {
+         if (error) {
+           result([FlutterError
+               errorWithCode:@"evaluateJavaScript_failed"
+                     message:@"Failed evaluating JavaScript"
+                     details:[NSString stringWithFormat:@"JavaScript string was: '%@'", jsString]]);
+         } else {
+           result([NSString stringWithFormat:@"EvaluateJavaScript result: %@", evaluateResult]);
+         }
+       }];
 }
 
 - (void)applySettings:(NSDictionary<NSString*, id>*)settings {

@@ -112,22 +112,22 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
   private void evaluateJavaScript(MethodCall methodCall, final Result result) {
     if (!webView.getSettings().getJavaScriptEnabled()) {
-      throw new UnsupportedOperationException(
-          "JavaScript Mode disabled");
+      throw new UnsupportedOperationException("JavaScript Mode disabled");
     } else {
-      String jsString = (String)methodCall.arguments;
+      String jsString = (String) methodCall.arguments;
       if (jsString == null) {
         throw new UnsupportedOperationException("JavaScript String cannot be null");
       }
-      webView.evaluateJavascript(jsString,
-        new android.webkit.ValueCallback<String>() {
-          @Override
-          public void onReceiveValue(String value) {
-            result.success("EvaluateJavaScript result: " + value);
-          }
-      });
+      webView.evaluateJavascript(
+          jsString,
+          new android.webkit.ValueCallback<String>() {
+            @Override
+            public void onReceiveValue(String value) {
+              result.success("EvaluateJavaScript result: " + value);
+            }
+          });
     }
-}
+  }
 
   private void applySettings(Map<String, Object> settings) {
     for (String key : settings.keySet()) {
