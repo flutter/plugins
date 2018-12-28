@@ -134,9 +134,7 @@
                                                   completion:^void() {
                                                     self->_currentSession = nil;
                                                   }];
-  [_viewController presentViewController:_currentSession.safari
-                                animated:YES
-                              completion:nil];
+  [_viewController presentViewController:_currentSession.safari animated:YES completion:nil];
 }
 
 - (void)closeWebView:(NSString *)urlString result:(FlutterResult)result {
