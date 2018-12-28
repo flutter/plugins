@@ -13,15 +13,17 @@
 @implementation FLTUrlLaunchSession {
   NSURL *_url;
   FlutterResult _flutterResult;
+  void (^_completion)();
 }
 
-- (instancetype)initWithUrl:url withFlutterResult:result {
+- (instancetype)initWithUrl:url withFlutterResult:result completion:completion {
   self = [super init];
   if (self) {
     _url = url;
     _flutterResult = result;
     _safari = [[SFSafariViewController alloc] initWithURL:url];
     _safari.delegate = self;
+    _completion = completion;
   }
   return self;
 }
@@ -39,7 +41,7 @@
 }
 
 - (void)safariViewControllerDidFinish:(SFSafariViewController *)controller {
-  [controller dismissViewControllerAnimated:YES completion:nil];
+  [controller dismissViewControllerAnimated:YES completion:_completion];
 }
 
 - (void)close {
@@ -127,12 +129,14 @@
 
 - (void)launchURLInVC:(NSString *)urlString result:(FlutterResult)result {
   NSURL *url = [NSURL URLWithString:urlString];
-  _currentSession = [[FLTUrlLaunchSession alloc] initWithUrl:url withFlutterResult:result];
+  _currentSession = [[FLTUrlLaunchSession alloc] initWithUrl:url
+                                           withFlutterResult:result
+                                                  completion:^void() {
+                                                    self->_currentSession = nil;
+                                                  }];
   [_viewController presentViewController:_currentSession.safari
                                 animated:YES
-                              completion:^void() {
-                                self->_currentSession = nil;
-                              }];
+                              completion:nil];
 }
 
 - (void)closeWebView:(NSString *)urlString result:(FlutterResult)result {
