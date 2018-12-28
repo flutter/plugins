@@ -56,11 +56,9 @@ class WebViewExample extends StatelessWidget {
   }
 
   void _runSampleJSEvaluation(WebViewController controller) {
-    controller.evaluateJavaScript("window.alert('test js')").then<dynamic>((dynamic result){
-      print("hhhhhhhh");
+    controller.evaluateJavaScript("window.location='https://google.com'").then<dynamic>((dynamic result){
       print(result);
     }).catchError((dynamic error){
-      print("eeeeeeeeee");
       print(error);
     });
   }
