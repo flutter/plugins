@@ -15,9 +15,9 @@
   FlutterMethodChannel *_channel;
   NSDictionary *_launchNotification;
   BOOL _resumingFromBackground;
-    
+
   /// used for UNAuthorizationOptions(>= iOS 10) or older UIUserNotificationTypes(< iOS 10)
-  NSDictionary<NSString*, NSNumber*> *_authorizationOptions;
+  NSDictionary<NSString *, NSNumber *> *_authorizationOptions;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -36,29 +36,31 @@
   if (self) {
     _channel = channel;
     _resumingFromBackground = NO;
-      
-     if (@available(iOS 10, *)) {
-         NSMutableDictionary<NSString*, NSNumber*> *authOptions =
-         [[NSMutableDictionary<NSString*, NSNumber*> alloc] initWithDictionary: @{@"sound": @(UNAuthorizationOptionSound),
-                                                                                  @"alert": @(UNAuthorizationOptionAlert),
-                                                                                  @"badge": @(UNAuthorizationOptionBadge),
-                                                                                  @"carPlay": @(UNAuthorizationOptionCarPlay),
-                                                                                  }];
-         if (@available(iOS 12, *)) {
-             authOptions[@"provisional"] = @(UNAuthorizationOptionProvisional);
-             authOptions[@"criticalAlert"] = @(UNAuthorizationOptionCriticalAlert);
-             authOptions[@"notificationSetting"] = @(UNAuthorizationOptionProvidesAppNotificationSettings);
-         }
-         
-         _authorizationOptions = [authOptions copy];
-     } else {
-         _authorizationOptions = @{
-                                   @"sound" : @(UIUserNotificationTypeSound),
-                                   @"badge" : @(UIUserNotificationTypeBadge),
-                                   @"alert" : @(UIUserNotificationTypeAlert)
-                                   };
-     }
-      
+
+    if (@available(iOS 10, *)) {
+      NSMutableDictionary<NSString *, NSNumber *> *authOptions =
+          [[NSMutableDictionary<NSString *, NSNumber *> alloc] initWithDictionary:@{
+            @"sound" : @(UNAuthorizationOptionSound),
+            @"alert" : @(UNAuthorizationOptionAlert),
+            @"badge" : @(UNAuthorizationOptionBadge),
+            @"carPlay" : @(UNAuthorizationOptionCarPlay),
+          }];
+      if (@available(iOS 12, *)) {
+        authOptions[@"provisional"] = @(UNAuthorizationOptionProvisional);
+        authOptions[@"criticalAlert"] = @(UNAuthorizationOptionCriticalAlert);
+        authOptions[@"notificationSetting"] =
+            @(UNAuthorizationOptionProvidesAppNotificationSettings);
+      }
+
+      _authorizationOptions = [authOptions copy];
+    } else {
+      _authorizationOptions = @{
+        @"sound" : @(UIUserNotificationTypeSound),
+        @"badge" : @(UIUserNotificationTypeBadge),
+        @"alert" : @(UIUserNotificationTypeAlert)
+      };
+    }
+
     if (![FIRApp defaultApp]) {
       [FIRApp configure];
     }
@@ -70,7 +72,7 @@
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSString *method = call.method;
   if ([@"requestNotificationPermissions" isEqualToString:method]) {
-      [self requestNotificationPermissions:call result:result];
+    [self requestNotificationPermissions:call result:result];
   } else if ([@"configure" isEqualToString:method]) {
     [[UIApplication sharedApplication] registerForRemoteNotifications];
     if (_launchNotification != nil) {
@@ -119,77 +121,95 @@
 }
 
 - (void)requestNotificationPermissions:(FlutterMethodCall *)call result:(FlutterResult)result {
-    NSDictionary *arguments = call.arguments;
-    
-    if (@available(iOS 10, *)) {
-      UNAuthorizationOptions authorizationOptions = [self mapAuthorizationOptions:arguments];
-      [UNUserNotificationCenter.currentNotificationCenter
-       requestAuthorizationWithOptions: authorizationOptions
-       completionHandler:^(BOOL granted, NSError * _Nullable error) {
-           
-        if (granted) {
-          [self->_channel invokeMethod:@"onIosSettingsRegistered"
-                             arguments:[self authorizationOptionsStringRepresentation: authorizationOptions]];
-          } else {
-               // there is no callback for failed notification permission requests
-          }
+  NSDictionary *arguments = call.arguments;
 
-          result(nil);
-       }];
-    } else {
-      UIUserNotificationSettings *settings = [UIUserNotificationSettings
-                                              settingsForTypes:[self mapNotificationTypes:arguments]
-                                              categories:nil];
-      [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
-        
-      result(nil);
+  if (@available(iOS 10, *)) {
+    UNAuthorizationOptions authorizationOptions = [self mapAuthorizationOptions:arguments];
+    [UNUserNotificationCenter.currentNotificationCenter
+        requestAuthorizationWithOptions:authorizationOptions
+                      completionHandler:^(BOOL granted, NSError *_Nullable error) {
+                        if (granted) {
+                          [self->_channel
+                              invokeMethod:@"onIosSettingsRegistered"
+                                 arguments:[self authorizationOptionsStringRepresentation:
+                                                     authorizationOptions]];
+                        } else {
+                          // there is no callback for failed notification permission requests
+                        }
+
+                        result(nil);
+                      }];
+  } else {
+    UIUserNotificationSettings *settings =
+        [UIUserNotificationSettings settingsForTypes:[self mapNotificationTypes:arguments]
+                                          categories:nil];
+    [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
+
+    result(nil);
   }
 }
 
-- (NSDictionary *)authorizationOptionsStringRepresentation:(UNAuthorizationOptions)options API_AVAILABLE(ios(10)) {
-    __block NSMutableDictionary<NSString*, NSNumber*> *authorizationOptionsDic = [[NSMutableDictionary<NSString*, NSNumber*> alloc] initWithCapacity:_authorizationOptions.allKeys.count];
-    
-    [_authorizationOptions enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull authOptionKey, NSNumber * _Nonnull authOption, BOOL * _Nonnull stop) {
-        authorizationOptionsDic[authOptionKey] = [NSNumber numberWithBool: options & authOption.unsignedIntegerValue];
-    }];
-    
-    return [authorizationOptionsDic copy];
+- (NSDictionary *)authorizationOptionsStringRepresentation:(UNAuthorizationOptions)options
+    API_AVAILABLE(ios(10)) {
+  __block NSMutableDictionary<NSString *, NSNumber *> *authorizationOptionsDic =
+      [[NSMutableDictionary<NSString *, NSNumber *> alloc]
+          initWithCapacity:_authorizationOptions.allKeys.count];
+
+  [_authorizationOptions
+      enumerateKeysAndObjectsUsingBlock:^(NSString *_Nonnull authOptionKey,
+                                          NSNumber *_Nonnull authOption, BOOL *_Nonnull stop) {
+        authorizationOptionsDic[authOptionKey] =
+            [NSNumber numberWithBool:options & authOption.unsignedIntegerValue];
+      }];
+
+  return [authorizationOptionsDic copy];
 }
 
-- (NSDictionary<NSString*, NSNumber*> *)notificationTypeStringRepresentation:(UIUserNotificationType)notificationTypes {
-    __block NSMutableDictionary<NSString*, NSNumber*> *notificationTypeDic = [[NSMutableDictionary<NSString*, NSNumber*> alloc] initWithCapacity:_authorizationOptions.allKeys.count];
+- (NSDictionary<NSString *, NSNumber *> *)notificationTypeStringRepresentation:
+    (UIUserNotificationType)notificationTypes {
+  __block NSMutableDictionary<NSString *, NSNumber *> *notificationTypeDic =
+      [[NSMutableDictionary<NSString *, NSNumber *> alloc]
+          initWithCapacity:_authorizationOptions.allKeys.count];
 
-    [_authorizationOptions enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull notificationTypeKey, NSNumber * _Nonnull notificationType, BOOL * _Nonnull stop) {
-        // notificationTypeDic[notificationTypeKey] = @(notificationTypes & notificationType.unsignedIntegerValue);
-        notificationTypeDic[notificationTypeKey] = [NSNumber numberWithBool: notificationTypes & notificationType.unsignedIntegerValue];
+  [_authorizationOptions enumerateKeysAndObjectsUsingBlock:^(NSString *_Nonnull notificationTypeKey,
+                                                             NSNumber *_Nonnull notificationType,
+                                                             BOOL *_Nonnull stop) {
+    // notificationTypeDic[notificationTypeKey] = @(notificationTypes &
+    // notificationType.unsignedIntegerValue);
+    notificationTypeDic[notificationTypeKey] =
+        [NSNumber numberWithBool:notificationTypes & notificationType.unsignedIntegerValue];
+  }];
 
-    }];
-
-    return [notificationTypeDic copy];
+  return [notificationTypeDic copy];
 }
 
 - (UIUserNotificationType)mapNotificationTypes:(nullable NSDictionary *)arguments {
-    __block UIUserNotificationType notificationTypes = 0;
+  __block UIUserNotificationType notificationTypes = 0;
 
-    [_authorizationOptions enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull notificationTypeKey, NSNumber * _Nonnull notificationType, BOOL * _Nonnull stop) {
-      if ([arguments[notificationTypeKey] boolValue]) {
-        notificationTypes |= notificationType.unsignedIntegerValue;
-      }
-    }];
+  [_authorizationOptions enumerateKeysAndObjectsUsingBlock:^(NSString *_Nonnull notificationTypeKey,
+                                                             NSNumber *_Nonnull notificationType,
+                                                             BOOL *_Nonnull stop) {
+    if ([arguments[notificationTypeKey] boolValue]) {
+      notificationTypes |= notificationType.unsignedIntegerValue;
+    }
+  }];
 
-    return notificationTypes;
+  return notificationTypes;
 }
 
-- (UNAuthorizationOptions)mapAuthorizationOptions:(nullable NSDictionary *)arguments API_AVAILABLE(ios(10)) {
-    __block UNAuthorizationOptions options = 0;
-    
-    [_authorizationOptions enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull authOptionKey, NSNumber * _Nonnull authOption, BOOL * _Nonnull stop) {
-      if ([arguments[authOptionKey] boolValue]) {
-        options |= authOption.unsignedIntegerValue;
-      }
-    }];
-    
-    return options;
+- (UNAuthorizationOptions)mapAuthorizationOptions:(nullable NSDictionary *)arguments
+    API_AVAILABLE(ios(10)) {
+  __block UNAuthorizationOptions options = 0;
+
+  [_authorizationOptions
+      enumerateKeysAndObjectsUsingBlock:^(NSString *_Nonnull authOptionKey,
+                                          NSNumber *_Nonnull authOption, BOOL *_Nonnull stop) {
+        if ([arguments[authOptionKey] boolValue]) {
+          options |= authOption.unsignedIntegerValue;
+        }
+      }];
+
+  return options;
 }
 
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
@@ -264,9 +284,8 @@
 #else
 - (void)application:(UIApplication *)application
     didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
-
-    [_channel invokeMethod:@"onIosSettingsRegistered"
-               arguments:[self notificationTypeStringRepresentation: notificationSettings.types]];
+  [_channel invokeMethod:@"onIosSettingsRegistered"
+               arguments:[self notificationTypeStringRepresentation:notificationSettings.types]];
 }
 #endif
 

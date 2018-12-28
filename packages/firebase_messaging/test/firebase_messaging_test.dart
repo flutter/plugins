@@ -22,15 +22,31 @@ void main() {
 
   test('requestNotificationPermissions on ios with default permissions', () {
     firebaseMessaging.requestNotificationPermissions();
-    verify(mockChannel.invokeMethod('requestNotificationPermissions',
-        <String, bool>{'sound': true, 'badge': true, 'alert': true}));
+    verify(mockChannel
+        .invokeMethod('requestNotificationPermissions', <String, bool>{
+      'sound': true,
+      'badge': true,
+      'alert': true,
+      'provisional': false,
+      'carPlay': false,
+      'criticalAlert': false,
+      'notificationSetting': false
+    }));
   });
 
   test('requestNotificationPermissions on ios with custom permissions', () {
     firebaseMessaging.requestNotificationPermissions(
-        const IosNotificationSettings(sound: false));
-    verify(mockChannel.invokeMethod('requestNotificationPermissions',
-        <String, bool>{'sound': false, 'badge': true, 'alert': true}));
+        const IosNotificationSettings(sound: false, provisional: true));
+    verify(mockChannel
+        .invokeMethod('requestNotificationPermissions', <String, bool>{
+      'sound': false,
+      'badge': true,
+      'alert': true,
+      'provisional': true,
+      'carPlay': false,
+      'criticalAlert': false,
+      'notificationSetting': false
+    }));
   });
 
   test('requestNotificationPermissions on android', () {
