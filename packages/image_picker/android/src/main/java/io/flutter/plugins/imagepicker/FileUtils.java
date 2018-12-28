@@ -59,32 +59,28 @@ class FileUtils {
           return Environment.getExternalStorageDirectory() + "/" + split[1];
         }
       } else if (isDownloadsDocument(uri)) {
-                Log.e("message: ", "Downloads External Document URI");
-                final String id = DocumentsContract.getDocumentId(uri);
-
-                if (!TextUtils.isEmpty(id)) {
-                    if (id.startsWith("raw:")) {
-                        return id.replaceFirst("raw:", "");
-                    }
-
-                    String[] contentUriPrefixesToTry = new String[]{
-                            "content://downloads/public_downloads",
-                            "content://downloads/my_downloads",
-                            "content://downloads/all_downloads"
-                    };
-                    for (String contentUriPrefix : contentUriPrefixesToTry) {
-                        Uri contentUri = ContentUris.withAppendedId(Uri.parse(contentUriPrefix), Long.valueOf(id));
-                        try {
-                            String path = getDataColumn(context, contentUri, null, null);
-                            if (path != null) {
-                                return path;
-                            }
-                        } catch (Exception e) {
-                            Log.e("message: ", "Something went wrong while retrieving document path: " + e.toString());
-                        }
-                    }
-
+          final String id = DocumentsContract.getDocumentId(uri);
+          if (!TextUtils.isEmpty(id)) {
+            if (id.startsWith("raw:")) {
+              return id.replaceFirst("raw:", "");
+            }
+            String[] contentUriPrefixesToTry = new String[]{
+              "content://downloads/public_downloads",
+              "content://downloads/my_downloads",
+              "content://downloads/all_downloads"
+            };
+            for (String contentUriPrefix : contentUriPrefixesToTry) {
+              Uri contentUri = ContentUris.withAppendedId(Uri.parse(contentUriPrefix), Long.valueOf(id));
+              try {
+                String path = getDataColumn(context, contentUri, null, null);
+                if (path != null) {
+                  return path;
                 }
+              } catch (Exception e) {
+                return null;
+              }
+            }
+          }
       } else if (isMediaDocument(uri)) {
         final String docId = DocumentsContract.getDocumentId(uri);
         final String[] split = docId.split(":");
