@@ -153,7 +153,7 @@
                                  message:@"Failed evaluating JavaScript"
                                  details:[NSString stringWithFormat:@"JavaScript string was: '%@'", jsString]]);
     } else {
-      result(evaluateResult);
+      result([NSString stringWithFormat:@"EvaluateJavaScript result: %@", evaluateResult]);
     }
   }];
 }

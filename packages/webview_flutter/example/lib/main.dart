@@ -8,9 +8,15 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 void main() => runApp(MaterialApp(home: WebViewExample()));
 
-class WebViewExample extends StatelessWidget {
+class WebViewExample extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => WebViewExampleState();
+}
+
+class WebViewExampleState extends State<WebViewExample> {
   final Completer<WebViewController> _controller =
       Completer<WebViewController>();
+  WebViewController _webViewController;
 
   @override
   Widget build(BuildContext context) {
@@ -20,15 +26,28 @@ class WebViewExample extends StatelessWidget {
         // This drop down menu demonstrates that Flutter widgets can be shown over the web view.
         actions: <Widget>[
           NavigationControls(_controller.future),
-          const SampleMenu(),
+          Builder(
+            builder: (BuildContext context) {
+              return SampleMenu(onSelected: (String value) {
+                if (value == "toast") {
+                  Scaffold.of(context).showSnackBar(
+                      SnackBar(content: Text('You selected: $value')));
+                } else if (value == "js") {
+                  _runSampleJSEvaluation(_webViewController);
+                }
+              });
+            },
+          )
         ],
       ),
       body: WebView(
         initialUrl: 'https://flutter.io',
         javaScriptMode: JavaScriptMode.unrestricted,
         onWebViewCreated: (WebViewController webViewController) {
-          _controller.complete(webViewController);
-          _runSampleJSEvaluation(webViewController);
+          setState(() {
+            _controller.complete(webViewController);
+            _webViewController = webViewController;
+          });
         },
       ),
       floatingActionButton: favoriteButton(),
@@ -56,32 +75,34 @@ class WebViewExample extends StatelessWidget {
   }
 
   void _runSampleJSEvaluation(WebViewController controller) {
-    controller.evaluateJavaScript("window.location='https://google.com'").then<dynamic>((dynamic result){
+    controller
+        .evaluateJavaScript(
+            "document.body.setAttribute('style','background: red')")
+        .then<dynamic>((dynamic result) {
       print(result);
-    }).catchError((dynamic error){
+    }).catchError((dynamic error) {
       print(error);
     });
   }
 }
 
 class SampleMenu extends StatelessWidget {
-  const SampleMenu();
+  SampleMenu({this.onSelected});
+
+  final Function onSelected;
 
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<String>(
-      onSelected: (String value) {
-        Scaffold.of(context)
-            .showSnackBar(SnackBar(content: Text('You selected: $value')));
-      },
+      onSelected: onSelected,
       itemBuilder: (BuildContext context) => <PopupMenuItem<String>>[
             const PopupMenuItem<String>(
-              value: 'Item 1',
-              child: Text('Item 1'),
+              value: 'js',
+              child: Text('evaluate JavaScript (change bg)'),
             ),
             const PopupMenuItem<String>(
-              value: 'Item 2',
-              child: Text('Item 2'),
+              value: 'toast',
+              child: Text('Make a toast'),
             ),
           ],
     );
