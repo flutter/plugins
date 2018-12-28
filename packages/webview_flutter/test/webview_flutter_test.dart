@@ -311,6 +311,19 @@ void main() {
 
     expect(platformWebView.amountOfReloadsOnCurrentUrl, 0);
   });
+
+  testWidgets('evaluate JavaScript', (WidgetTester tester) async {
+    WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://flutter.io',
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+    expect(await controller.evaluateJavaScript("fake js string"), 1);
+  });
 }
 
 class FakePlatformWebView {
@@ -372,6 +385,8 @@ class FakePlatformWebView {
       case 'currentUrl':
         return Future<String>.value(currentUrl);
         break;
+      case 'evaluateJavaScript':
+        return Future<dynamic>.value(1);
     }
     return Future<void>.sync(() {});
   }
