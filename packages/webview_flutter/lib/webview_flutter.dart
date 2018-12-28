@@ -257,6 +257,13 @@ class WebViewController {
   Future<void> _updateSettings(Map<String, dynamic> update) async {
     return _channel.invokeMethod('updateSettings', update);
   }
+
+  /// Evaluate JavaScript string
+  ///
+  /// Certain functionalities directly using JavaScript are blocked from original platform. (e.g. Showing a popup Alert using window.alert())
+  Future<dynamic> evaluateJavaScript(String jsString) async {
+    return _channel.invokeMethod('evaluateJavaScript', jsString);
+  }
 }
 
 // Throws an ArgumentError if `url` is not a valid URL string.

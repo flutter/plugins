@@ -51,7 +51,7 @@
     NSDictionary<NSString*, id>* settings = args[@"settings"];
     [self applySettings:settings];
     NSString* initialUrl = args[@"initialUrl"];
-    if (initialUrl && initialUrl != [NSNull null]) {
+    if (initialUrl && ![initialUrl isKindOfClass:[NSNull class]]) {
       [self loadUrl:initialUrl];
     }
   }
@@ -79,6 +79,8 @@
     [self onReload:call result:result];
   } else if ([[call method] isEqualToString:@"currentUrl"]) {
     [self onCurrentUrl:call result:result];
+  } else if ([[call method] isEqualToString:@"evaluateJavaScript"]) {
+    [self onEvaluateJavaScript:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -128,6 +130,35 @@
 - (void)onCurrentUrl:(FlutterMethodCall*)call result:(FlutterResult)result {
   _currentUrl = [[_webView URL] absoluteString];
   result(_currentUrl);
+}
+
+- (void)onEvaluateJavaScript:(FlutterMethodCall*)call result:(FlutterResult)result {
+  WKPreferences* preferences = [[_webView configuration] preferences];
+  if (!preferences.javaScriptEnabled) {
+    result([FlutterError errorWithCode:@"evaluateJavaScript_failed"
+                               message:@"JavaScript Mode disabled"
+                               details:@"JavaScript Mode disabled"]);
+    return;
+  }
+  NSString* jsString = [call arguments];
+  if (!jsString || [jsString isKindOfClass:[NSNull class]]) {
+    result([FlutterError errorWithCode:@"evaluateJavaScript_failed"
+                               message:@"JavaScript String cannot be null"
+                               details:@"JavaScript String cannot be null"]);
+    return;
+  }
+  [_webView
+      evaluateJavaScript:jsString
+       completionHandler:^(_Nullable id evaluateResult, NSError* _Nullable error) {
+         if (error) {
+           result([FlutterError
+               errorWithCode:@"evaluateJavaScript_failed"
+                     message:@"Failed evaluating JavaScript"
+                     details:[NSString stringWithFormat:@"JavaScript string was: '%@'", jsString]]);
+         } else {
+           result([NSString stringWithFormat:@"EvaluateJavaScript result: %@", evaluateResult]);
+         }
+       }];
 }
 
 - (void)applySettings:(NSDictionary<NSString*, id>*)settings {
