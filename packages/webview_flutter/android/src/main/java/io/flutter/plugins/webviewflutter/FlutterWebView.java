@@ -115,8 +115,8 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       throw new UnsupportedOperationException(
           "JavaScript Mode disabled");
     } else {
-      String jsSource = (String) methodCall.arguments;
-      if (jsSource == null) {
+      String jsString = (String)methodCall.arguments;
+      if (jsString == null) {
         throw new UnsupportedOperationException("JavaScript String cannot be null");
       }
       webView.evaluateJavascript(jsString,
