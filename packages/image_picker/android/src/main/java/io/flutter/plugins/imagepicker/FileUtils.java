@@ -59,28 +59,25 @@ class FileUtils {
           return Environment.getExternalStorageDirectory() + "/" + split[1];
         }
       } else if (isDownloadsDocument(uri)) {
-          final String id = DocumentsContract.getDocumentId(uri);
-          if (!TextUtils.isEmpty(id)) {
-            if (id.startsWith("raw:")) {
-              return id.replaceFirst("raw:", "");
-            }
-            String[] contentUriPrefixesToTry = new String[]{
-              "content://downloads/public_downloads",
-              "content://downloads/my_downloads",
-              "content://downloads/all_downloads"
-            };
-            for (String contentUriPrefix : contentUriPrefixesToTry) {
-              Uri contentUri = ContentUris.withAppendedId(Uri.parse(contentUriPrefix), Long.valueOf(id));
-              try {
-                String path = getDataColumn(context, contentUri, null, null);
-                if (path != null) {
-                  return path;
-                }
-              } catch (Exception e) {
-                return null;
+        final String id = DocumentsContract.getDocumentId(uri);
+        if (!TextUtils.isEmpty(id)) {
+          if (id.startsWith("raw:")) {
+            return id.replaceFirst("raw:", "");
+          }
+          String[] contentUriPrefixesToTry = new String[] { "content://downloads/public_downloads",
+              "content://downloads/my_downloads", "content://downloads/all_downloads" };
+          for (String contentUriPrefix : contentUriPrefixesToTry) {
+            Uri contentUri = ContentUris.withAppendedId(Uri.parse(contentUriPrefix), Long.valueOf(id));
+            try {
+              String path = getDataColumn(context, contentUri, null, null);
+              if (path != null) {
+                return path;
               }
+            } catch (Exception e) {
+              return null;
             }
           }
+        }
       } else if (isMediaDocument(uri)) {
         final String docId = DocumentsContract.getDocumentId(uri);
         final String[] split = docId.split(":");
@@ -96,7 +93,7 @@ class FileUtils {
         }
 
         final String selection = "_id=?";
-        final String[] selectionArgs = new String[] {split[1]};
+        final String[] selectionArgs = new String[] { split[1] };
 
         return getDataColumn(context, contentUri, selection, selectionArgs);
       }
@@ -115,12 +112,11 @@ class FileUtils {
     return null;
   }
 
-  private static String getDataColumn(
-      Context context, Uri uri, String selection, String[] selectionArgs) {
+  private static String getDataColumn(Context context, Uri uri, String selection, String[] selectionArgs) {
     Cursor cursor = null;
 
     final String column = "_data";
-    final String[] projection = {column};
+    final String[] projection = { column };
 
     try {
       cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, null);
@@ -153,11 +149,13 @@ class FileUtils {
     } catch (IOException ignored) {
     } finally {
       try {
-        if (inputStream != null) inputStream.close();
+        if (inputStream != null)
+          inputStream.close();
       } catch (IOException ignored) {
       }
       try {
-        if (outputStream != null) outputStream.close();
+        if (outputStream != null)
+          outputStream.close();
       } catch (IOException ignored) {
         // If closing the output stream fails, we cannot be sure that the
         // target file was written in full. Flushing the stream merely moves
