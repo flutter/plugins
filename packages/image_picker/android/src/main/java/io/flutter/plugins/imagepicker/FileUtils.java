@@ -38,9 +38,9 @@ import java.io.OutputStream;
 class FileUtils {
 
   private static final String[] DOWNLOAD_CONTENT_URI_PREFIXES = {
-          "content://downloads/public_downloads",
-          "content://downloads/my_downloads",
-          "content://downloads/all_downloads"
+    "content://downloads/public_downloads",
+    "content://downloads/my_downloads",
+    "content://downloads/all_downloads"
   };
 
   String getPathFromUri(final Context context, final Uri uri) {
@@ -71,12 +71,12 @@ class FileUtils {
           for (String contentUriPrefix : DOWNLOAD_CONTENT_URI_PREFIXES) {
             try {
               final Uri contentUri =
-                      ContentUris.withAppendedId(
-                              Uri.parse(contentUriPrefix), Long.valueOf(id));
+                  ContentUris.withAppendedId(Uri.parse(contentUriPrefix), Long.valueOf(id));
               return getDataColumn(context, contentUri, null, null);
             } catch (NumberFormatException e) {
               return null;
-            } catch (Exception e){}
+            } catch (Exception e) {
+            }
           }
         }
 
