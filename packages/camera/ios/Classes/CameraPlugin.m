@@ -288,9 +288,7 @@
       _eventSink(@{@"event" : @"error", @"errorDescription" : @"Setup Writer Failed"});
       return;
     }
-    [_captureSession stopRunning];
     _isRecording = YES;
-    [_captureSession startRunning];
     result(nil);
   } else {
     _eventSink(@{@"event" : @"error", @"errorDescription" : @"Video is already recording!"});
@@ -504,6 +502,9 @@
     } else if ([@"dispose" isEqualToString:call.method]) {
       [_registry unregisterTexture:textureId];
       [_camera close];
+      result(nil);
+    } else if ([@"prepareForVideoRecording" isEqualToString:call.method]) {
+      [_camera setUpCaptureSessionForAudio];
       result(nil);
     } else if ([@"startVideoRecording" isEqualToString:call.method]) {
       [_camera startVideoRecordingAtPath:call.arguments[@"filePath"] result:result];

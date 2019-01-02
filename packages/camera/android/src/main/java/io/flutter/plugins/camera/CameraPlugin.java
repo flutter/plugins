@@ -202,6 +202,12 @@ public class CameraPlugin implements MethodCallHandler {
           camera.takePicture((String) call.argument("path"), result);
           break;
         }
+      case "prepareForVideoRecording":
+        {
+          // not yet implemented for Android
+          result.success(null);
+          break;
+        }
       case "startVideoRecording":
         {
           final String filePath = call.argument("filePath");
