@@ -572,7 +572,10 @@ public class CameraPlugin implements MethodCallHandler {
         final CaptureRequest.Builder captureBuilder =
             cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
         captureBuilder.addTarget(imageReader.getSurface());
-        captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, getMediaOrientation());
+        
+        //sometimes in android will get 271 orientation, so this script will round it to just 270
+        int mediaOrientation = Math.round(getMediaOrientation() / 90) * 90;
+        captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, mediaOrientation);
 
         cameraCaptureSession.capture(
             captureBuilder.build(),
