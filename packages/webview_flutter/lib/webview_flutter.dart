@@ -258,9 +258,8 @@ class WebViewController {
     return _channel.invokeMethod('updateSettings', update);
   }
 
-  /// Evaluate JavaScript string
-  ///
-  /// Certain functionalities directly using JavaScript are blocked from original platform. (e.g. Showing a popup Alert using window.alert())
+  /// Evaluates JavaScript in the context of the current page.
+  /// Returns a Future containing the result of the JavaScript execution. 
   Future<dynamic> evaluateJavaScript(String jsString) async {
     return _channel.invokeMethod('evaluateJavaScript', jsString);
   }
