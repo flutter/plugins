@@ -8,15 +8,9 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 void main() => runApp(MaterialApp(home: WebViewExample()));
 
-class WebViewExample extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() => WebViewExampleState();
-}
-
-class WebViewExampleState extends State<WebViewExample> {
+class WebViewExample extends StatelessWidget {
   final Completer<WebViewController> _controller =
       Completer<WebViewController>();
-  WebViewController _webViewController;
 
   @override
   Widget build(BuildContext context) {
@@ -26,31 +20,36 @@ class WebViewExampleState extends State<WebViewExample> {
         // This drop down menu demonstrates that Flutter widgets can be shown over the web view.
         actions: <Widget>[
           NavigationControls(_controller.future),
-          Builder(
-            builder: (BuildContext context) {
-              return SampleMenu(onSelected: (String value) {
-                if (value == "toast") {
-                  Scaffold.of(context).showSnackBar(
-                      SnackBar(content: Text('You selected: $value')));
-                } else if (value == "js") {
-                  _runSampleJSEvaluation(_webViewController);
-                }
-              });
-            },
-          )
+          listButton(),
         ],
       ),
       body: WebView(
         initialUrl: 'https://flutter.io',
         javaScriptMode: JavaScriptMode.unrestricted,
         onWebViewCreated: (WebViewController webViewController) {
-          setState(() {
-            _controller.complete(webViewController);
-            _webViewController = webViewController;
-          });
+          _controller.complete(webViewController);
         },
       ),
       floatingActionButton: favoriteButton(),
+    );
+  }
+
+  Widget listButton() {
+    return FutureBuilder<WebViewController>(
+      future: _controller.future,
+      builder: (BuildContext context,
+          AsyncSnapshot<WebViewController> controller) {
+            if (controller.hasData) {
+              return SampleMenu(onSelected: (String value) {
+                if (value == "toast") {
+                  Scaffold.of(context).showSnackBar(
+                      SnackBar(content: Text('You selected: $value')));
+                } else if (value == "js") {
+                  _runSampleJSEvaluation(controller.data);
+                }
+              });
+            }
+          },
     );
   }
 
