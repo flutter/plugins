@@ -141,7 +141,7 @@
     return;
   }
   NSString* jsString = [call arguments];
-  if (!jsString || [jsString isKindOfClass:[NSNull class]]) {
+  if (!jsString) {
     result([FlutterError errorWithCode:@"evaluateJavaScript_failed"
                                message:@"JavaScript String cannot be null"
                                details:@"JavaScript String cannot be null"]);
