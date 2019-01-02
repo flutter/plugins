@@ -106,23 +106,20 @@ class _WebViewState extends State<WebView> {
   @override
   void initState() {
     super.initState();
-    _settings = _WebSettings.fromWidget(widget);
+    _updateSettings(_WebSettings.fromWidget(widget));
   }
 
   @override
   void didUpdateWidget(WebView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    final _WebSettings newSettings = _WebSettings.fromWidget(widget);
-    final Map<String, dynamic> settingsUpdate =
-        _settings.updatesMap(newSettings);
-    _updateSettings(settingsUpdate);
-    _settings = newSettings;
+    _updateSettings(_WebSettings.fromWidget(widget));
   }
 
-  Future<void> _updateSettings(Map<String, dynamic> update) async {
+  Future<void> _updateSettings(_WebSettings update) async {
     if (update == null) {
       return;
     }
+    _settings = update;
     final WebViewController controller = await _controller.future;
     controller._updateSettings(update);
   }
@@ -194,6 +191,9 @@ class WebViewController {
 
   final MethodChannel _channel;
 
+  /// cached web settings
+  _WebSettings _settings;
+
   /// Loads the specified URL.
   ///
   /// `url` must not be null.
@@ -254,13 +254,21 @@ class WebViewController {
     return _channel.invokeMethod("reload");
   }
 
-  Future<void> _updateSettings(Map<String, dynamic> update) async {
-    return _channel.invokeMethod('updateSettings', update);
+  Future<void> _updateSettings(_WebSettings update) async {
+    Map<String, dynamic> updateMap;
+    if (_settings == null) {
+      updateMap = update.toMap();
+    } else {
+      updateMap = _settings.updatesMap(update);
+    }
+    _settings = update;
+    return _channel.invokeMethod('updateSettings', updateMap);
   }
 
   /// Evaluates JavaScript in the context of the current page.
-  /// Returns a Future containing the result of the JavaScript execution. 
+  /// Returns a Future containing the result of the JavaScript execution.
   Future<dynamic> evaluateJavaScript(String jsString) async {
+    assert(_settings.javaScriptMode == JavaScriptMode.unrestricted);
     return _channel.invokeMethod('evaluateJavaScript', jsString);
   }
 }

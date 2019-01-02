@@ -49,6 +49,7 @@ class WebViewExample extends StatelessWidget {
             }
           });
         }
+        return Container();
       },
     );
   }

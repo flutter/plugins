@@ -322,7 +322,8 @@ void main() {
         },
       ),
     );
-    expect(await controller.evaluateJavaScript("fake js string"), "fake js string");
+    expect(await controller.evaluateJavaScript("fake js string"),
+        "fake js string");
   });
 }
 

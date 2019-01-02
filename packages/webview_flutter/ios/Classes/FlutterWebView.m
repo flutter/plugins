@@ -133,13 +133,6 @@
 }
 
 - (void)onEvaluateJavaScript:(FlutterMethodCall*)call result:(FlutterResult)result {
-  WKPreferences* preferences = [[_webView configuration] preferences];
-  if (!preferences.javaScriptEnabled) {
-    result([FlutterError errorWithCode:@"evaluateJavaScript_failed"
-                               message:@"JavaScript Mode disabled"
-                               details:@"JavaScript Mode disabled"]);
-    return;
-  }
   NSString* jsString = [call arguments];
   if (!jsString) {
     result([FlutterError errorWithCode:@"evaluateJavaScript_failed"
