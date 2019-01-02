@@ -85,7 +85,7 @@
 @property(assign, nonatomic) BOOL isAudioSetup;
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
-                    dispatchQueue:(dispatch_queue_t)dispatchQueue
+                     dispatchQueue:(dispatch_queue_t)dispatchQueue
                              error:(NSError **)error;
 - (void)start;
 - (void)stop;
