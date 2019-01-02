@@ -322,7 +322,7 @@ void main() {
         },
       ),
     );
-    expect(await controller.evaluateJavaScript("fake js string"), 1);
+    expect(await controller.evaluateJavaScript("fake js string"), "fake js string");
   });
 }
 
@@ -386,7 +386,7 @@ class FakePlatformWebView {
         return Future<String>.value(currentUrl);
         break;
       case 'evaluateJavaScript':
-        return Future<dynamic>.value(1);
+        return Future<dynamic>.value(call.arguments);
     }
     return Future<void>.sync(() {});
   }
