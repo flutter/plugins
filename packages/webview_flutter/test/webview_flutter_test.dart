@@ -317,6 +317,7 @@ void main() {
     await tester.pumpWidget(
       WebView(
         initialUrl: 'https://flutter.io',
+        javaScriptMode: JavaScriptMode.unrestricted,
         onWebViewCreated: (WebViewController webViewController) {
           controller = webViewController;
         },
