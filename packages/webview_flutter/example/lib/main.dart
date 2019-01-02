@@ -37,19 +37,19 @@ class WebViewExample extends StatelessWidget {
   Widget listButton() {
     return FutureBuilder<WebViewController>(
       future: _controller.future,
-      builder: (BuildContext context,
-          AsyncSnapshot<WebViewController> controller) {
-            if (controller.hasData) {
-              return SampleMenu(onSelected: (String value) {
-                if (value == "toast") {
-                  Scaffold.of(context).showSnackBar(
-                      SnackBar(content: Text('You selected: $value')));
-                } else if (value == "js") {
-                  _runSampleJSEvaluation(controller.data);
-                }
-              });
+      builder:
+          (BuildContext context, AsyncSnapshot<WebViewController> controller) {
+        if (controller.hasData) {
+          return SampleMenu(onSelected: (String value) {
+            if (value == "toast") {
+              Scaffold.of(context).showSnackBar(
+                  SnackBar(content: Text('You selected: $value')));
+            } else if (value == "js") {
+              _runSampleJSEvaluation(controller.data);
             }
-          },
+          });
+        }
+      },
     );
   }
 
