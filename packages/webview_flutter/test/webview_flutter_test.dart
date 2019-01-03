@@ -27,14 +27,17 @@ void main() {
   });
 
   testWidgets('Initial url', (WidgetTester tester) async {
-    await tester.pumpWidget(const WebView(
-      initialUrl: 'https://youtube.com',
-    ));
+    WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://youtube.com',
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
 
-    final FakePlatformWebView platformWebView =
-        fakePlatformViewsController.lastCreatedView;
-
-    expect(platformWebView.currentUrl, 'https://youtube.com');
+    expect(await controller.currentUrl(), 'https://youtube.com');
   });
 
   testWidgets('JavaScript mode', (WidgetTester tester) async {
@@ -68,15 +71,12 @@ void main() {
 
     expect(controller, isNotNull);
 
-    final FakePlatformWebView platformWebView =
-        fakePlatformViewsController.lastCreatedView;
-
     controller.loadUrl('https://flutter.io');
 
-    expect(platformWebView.currentUrl, 'https://flutter.io');
+    expect(await controller.currentUrl(), 'https://flutter.io');
   });
 
-  testWidgets('Invald urls', (WidgetTester tester) async {
+  testWidgets('Invalid urls', (WidgetTester tester) async {
     WebViewController controller;
     await tester.pumpWidget(
       WebView(
@@ -88,18 +88,15 @@ void main() {
 
     expect(controller, isNotNull);
 
-    final FakePlatformWebView platformWebView =
-        fakePlatformViewsController.lastCreatedView;
-
     expect(() => controller.loadUrl(null), throwsA(anything));
-    expect(platformWebView.currentUrl, isNull);
+    expect(await controller.currentUrl(), isNull);
 
     expect(() => controller.loadUrl(''), throwsA(anything));
-    expect(platformWebView.currentUrl, isNull);
+    expect(await controller.currentUrl(), isNull);
 
     // Missing schema.
     expect(() => controller.loadUrl('flutter.io'), throwsA(anything));
-    expect(platformWebView.currentUrl, isNull);
+    expect(await controller.currentUrl(), isNull);
   });
 
   testWidgets("Can't go back before loading a page",
@@ -224,18 +221,15 @@ void main() {
 
     expect(controller, isNotNull);
 
-    final FakePlatformWebView platformWebView =
-        fakePlatformViewsController.lastCreatedView;
-
-    expect(platformWebView.currentUrl, 'https://youtube.com');
+    expect(await controller.currentUrl(), 'https://youtube.com');
 
     controller.loadUrl('https://flutter.io');
 
-    expect(platformWebView.currentUrl, 'https://flutter.io');
+    expect(await controller.currentUrl(), 'https://flutter.io');
 
     controller.goBack();
 
-    expect(platformWebView.currentUrl, 'https://youtube.com');
+    expect(await controller.currentUrl(), 'https://youtube.com');
   });
 
   testWidgets('Go forward', (WidgetTester tester) async {
@@ -251,22 +245,71 @@ void main() {
 
     expect(controller, isNotNull);
 
-    final FakePlatformWebView platformWebView =
-        fakePlatformViewsController.lastCreatedView;
-
-    expect(platformWebView.currentUrl, 'https://youtube.com');
+    expect(await controller.currentUrl(), 'https://youtube.com');
 
     controller.loadUrl('https://flutter.io');
 
-    expect(platformWebView.currentUrl, 'https://flutter.io');
+    expect(await controller.currentUrl(), 'https://flutter.io');
 
     controller.goBack();
 
-    expect(platformWebView.currentUrl, 'https://youtube.com');
+    expect(await controller.currentUrl(), 'https://youtube.com');
 
     controller.goForward();
 
+    expect(await controller.currentUrl(), 'https://flutter.io');
+  });
+
+  testWidgets('Current URL', (WidgetTester tester) async {
+    WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+
+    // Test a WebView without an explicitly set first URL.
+    expect(await controller.currentUrl(), isNull);
+
+    controller.loadUrl('https://youtube.com');
+    expect(await controller.currentUrl(), 'https://youtube.com');
+
+    controller.loadUrl('https://flutter.io');
+    expect(await controller.currentUrl(), 'https://flutter.io');
+
+    controller.goBack();
+    expect(await controller.currentUrl(), 'https://youtube.com');
+  });
+
+  testWidgets('Reload url', (WidgetTester tester) async {
+    WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://flutter.io',
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    final FakePlatformWebView platformWebView =
+        fakePlatformViewsController.lastCreatedView;
+
     expect(platformWebView.currentUrl, 'https://flutter.io');
+    expect(platformWebView.amountOfReloadsOnCurrentUrl, 0);
+
+    controller.reload();
+
+    expect(platformWebView.currentUrl, 'https://flutter.io');
+    expect(platformWebView.amountOfReloadsOnCurrentUrl, 1);
+
+    controller.loadUrl('https://youtube.com');
+
+    expect(platformWebView.amountOfReloadsOnCurrentUrl, 0);
   });
 }
 
@@ -289,6 +332,7 @@ class FakePlatformWebView {
 
   List<String> history = <String>[];
   int currentPosition = -1;
+  int amountOfReloadsOnCurrentUrl = 0;
 
   String get currentUrl => history.isEmpty ? null : history[currentPosition];
   JavaScriptMode javaScriptMode;
@@ -300,6 +344,7 @@ class FakePlatformWebView {
         history = history.sublist(0, currentPosition + 1);
         history.add(url);
         currentPosition++;
+        amountOfReloadsOnCurrentUrl = 0;
         return Future<void>.sync(() {});
       case 'updateSettings':
         if (call.arguments['jsMode'] == null) {
@@ -320,6 +365,12 @@ class FakePlatformWebView {
       case 'goForward':
         currentPosition = min(history.length - 1, currentPosition + 1);
         return Future<void>.sync(() {});
+      case 'reload':
+        amountOfReloadsOnCurrentUrl++;
+        return Future<void>.sync(() {});
+        break;
+      case 'currentUrl':
+        return Future<String>.value(currentUrl);
         break;
     }
     return Future<void>.sync(() {});

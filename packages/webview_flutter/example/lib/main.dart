@@ -30,7 +30,28 @@ class WebViewExample extends StatelessWidget {
           _controller.complete(webViewController);
         },
       ),
+      floatingActionButton: favoriteButton(),
     );
+  }
+
+  Widget favoriteButton() {
+    return FutureBuilder<WebViewController>(
+        future: _controller.future,
+        builder: (BuildContext context,
+            AsyncSnapshot<WebViewController> controller) {
+          if (controller.hasData) {
+            return FloatingActionButton(
+              onPressed: () async {
+                final String url = await controller.data.currentUrl();
+                Scaffold.of(context).showSnackBar(
+                  SnackBar(content: Text("Favorited $url")),
+                );
+              },
+              child: const Icon(Icons.favorite),
+            );
+          }
+          return Container();
+        });
   }
 }
 
@@ -104,6 +125,14 @@ class NavigationControls extends StatelessWidget {
                         );
                         return;
                       }
+                    },
+            ),
+            IconButton(
+              icon: const Icon(Icons.replay),
+              onPressed: !webViewReady
+                  ? null
+                  : () {
+                      controller.reload();
                     },
             ),
           ],
