@@ -80,7 +80,7 @@
   } else if ([[call method] isEqualToString:@"currentUrl"]) {
     [self onCurrentUrl:call result:result];
   } else if ([[call method] isEqualToString:@"evaluateJavascript"]) {
-    [self onEvaluateJavascript:call result:result];
+    [self onEvaluateJavaScript:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -132,21 +132,21 @@
   result(_currentUrl);
 }
 
-- (void)onEvaluateJavascript:(FlutterMethodCall*)call result:(FlutterResult)result {
+- (void)onEvaluateJavaScript:(FlutterMethodCall*)call result:(FlutterResult)result {
   NSString* jsString = [call arguments];
   if (!jsString) {
-    result([FlutterError errorWithCode:@"evaluateJavascript_failed"
-                               message:@"Javascript String cannot be null"
-                               details:@"Javascript String cannot be null"]);
+    result([FlutterError errorWithCode:@"evaluateJavaScript_failed"
+                               message:@"JavaScript String cannot be null"
+                               details:@"JavaScript String cannot be null"]);
     return;
   }
   [_webView evaluateJavaScript:jsString
              completionHandler:^(_Nullable id evaluateResult, NSError* _Nullable error) {
                if (error) {
                  result([FlutterError
-                     errorWithCode:@"evaluateJavascript_failed"
-                           message:@"Failed evaluating Javascript"
-                           details:[NSString stringWithFormat:@"Javascript string was: '%@'\n%@",
+                     errorWithCode:@"evaluateJavaScript_failed"
+                           message:@"Failed evaluating JavaScript"
+                           details:[NSString stringWithFormat:@"JavaScript string was: '%@'\n%@",
                                                               jsString, error]]);
                } else {
                  result([NSString stringWithFormat:@"%@", evaluateResult]);
@@ -175,7 +175,7 @@
       [preferences setJavaScriptEnabled:YES];
       break;
     default:
-      NSLog(@"webview_flutter: unknown javascript mode: %@", mode);
+      NSLog(@"webview_flutter: unknown JavaScript mode: %@", mode);
   }
 }
 

@@ -43,20 +43,20 @@ void main() {
   testWidgets('Javascript mode', (WidgetTester tester) async {
     await tester.pumpWidget(const WebView(
       initialUrl: 'https://youtube.com',
-      javaScriptMode: JavascriptMode.unrestricted,
+      javascriptMode: JavascriptMode.unrestricted,
     ));
 
     final FakePlatformWebView platformWebView =
         fakePlatformViewsController.lastCreatedView;
 
-    expect(platformWebView.javaScriptMode, JavascriptMode.unrestricted);
+    expect(platformWebView.javascriptMode, JavascriptMode.unrestricted);
 
     await tester.pumpWidget(const WebView(
       initialUrl: 'https://youtube.com',
-      javaScriptMode: JavascriptMode.disabled,
+      javascriptMode: JavascriptMode.disabled,
     ));
 
-    expect(platformWebView.javaScriptMode, JavascriptMode.disabled);
+    expect(platformWebView.javascriptMode, JavascriptMode.disabled);
   });
 
   testWidgets('Load url', (WidgetTester tester) async {
@@ -317,7 +317,7 @@ void main() {
     await tester.pumpWidget(
       WebView(
         initialUrl: 'https://flutter.io',
-        javaScriptMode: JavascriptMode.unrestricted,
+        javascriptMode: JavascriptMode.unrestricted,
         onWebViewCreated: (WebViewController webViewController) {
           controller = webViewController;
         },
@@ -338,7 +338,7 @@ void main() {
     await tester.pumpWidget(
       WebView(
         initialUrl: 'https://flutter.io',
-        javaScriptMode: JavascriptMode.disabled,
+        javascriptMode: JavascriptMode.disabled,
         onWebViewCreated: (WebViewController webViewController) {
           controller = webViewController;
         },
@@ -363,7 +363,7 @@ class FakePlatformWebView {
         history.add(initialUrl);
         currentPosition++;
       }
-      javaScriptMode = JavascriptMode.values[params['settings']['jsMode']];
+      javascriptMode = JavascriptMode.values[params['settings']['jsMode']];
     }
     channel = MethodChannel(
         'plugins.flutter.io/webview_$id', const StandardMethodCodec());
@@ -377,7 +377,7 @@ class FakePlatformWebView {
   int amountOfReloadsOnCurrentUrl = 0;
 
   String get currentUrl => history.isEmpty ? null : history[currentPosition];
-  JavascriptMode javaScriptMode;
+  JavascriptMode javascriptMode;
 
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
@@ -392,7 +392,7 @@ class FakePlatformWebView {
         if (call.arguments['jsMode'] == null) {
           break;
         }
-        javaScriptMode = JavascriptMode.values[call.arguments['jsMode']];
+        javascriptMode = JavascriptMode.values[call.arguments['jsMode']];
         break;
       case 'canGoBack':
         return Future<bool>.sync(() => currentPosition > 0);

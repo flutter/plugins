@@ -25,7 +25,7 @@ class WebViewExample extends StatelessWidget {
       ),
       body: WebView(
         initialUrl: 'https://flutter.io',
-        javaScriptMode: JavascriptMode.unrestricted,
+        javascriptMode: JavascriptMode.unrestricted,
         onWebViewCreated: (WebViewController webViewController) {
           _controller.complete(webViewController);
         },
@@ -88,7 +88,7 @@ class SampleMenu extends StatelessWidget {
           itemBuilder: (BuildContext context) => <PopupMenuItem<MenuOptions>>[
                 PopupMenuItem<MenuOptions>(
                   value: MenuOptions.evaluateJavascript,
-                  child: const Text('Evaluate Javascript (change bg)'),
+                  child: const Text('Evaluate JavaScript (change bg)'),
                   enabled: controller.hasData,
                 ),
                 const PopupMenuItem<MenuOptions>(
@@ -107,7 +107,7 @@ class SampleMenu extends StatelessWidget {
         .evaluateJavascript("document.body.style.backgroundColor = 'red'");
     Scaffold.of(context).showSnackBar(
       SnackBar(
-        content: Text('Javascript evaluated, the result is: $result'),
+        content: Text('JavaScript evaluated, the result is: $result'),
       ),
     );
   }
