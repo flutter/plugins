@@ -383,7 +383,7 @@ public class CameraPlugin implements MethodCallHandler {
       Display display = activity.getWindowManager().getDefaultDisplay();
       display.getRealSize(screenResolution);
 
-      // Camera sizes and minPreviewSize are both in landscape mode and
+      // Camera sizes and minPreviewSize are both in landscape mode so
       // screenResolution needs to be as well.
       final boolean swapWH = screenResolution.x < screenResolution.y;
       int screenWidth = swapWH ? screenResolution.y : screenResolution.x;
