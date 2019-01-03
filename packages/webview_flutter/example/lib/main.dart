@@ -20,12 +20,12 @@ class WebViewExample extends StatelessWidget {
         // This drop down menu demonstrates that Flutter widgets can be shown over the web view.
         actions: <Widget>[
           NavigationControls(_controller.future),
-          SampleMenu(_controller),
+          SampleMenu(_controller.future),
         ],
       ),
       body: WebView(
         initialUrl: 'https://flutter.io',
-        javaScriptMode: JavaScriptMode.unrestricted,
+        javaScriptMode: JavascriptMode.unrestricted,
         onWebViewCreated: (WebViewController webViewController) {
           _controller.complete(webViewController);
         },
@@ -56,42 +56,25 @@ class WebViewExample extends StatelessWidget {
 }
 
 enum MenuOptions {
-  evaluateJavaScript,
+  evaluateJavascript,
   toast,
 }
 
 class SampleMenu extends StatelessWidget {
   SampleMenu(this.controller);
-  final Completer<WebViewController> controller;
+  final Future<WebViewController> controller;
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<WebViewController>(
-      future: controller.future,
+      future: controller,
       builder:
           (BuildContext context, AsyncSnapshot<WebViewController> controller) {
         return PopupMenuButton<MenuOptions>(
           onSelected: (MenuOptions value) {
             switch (value) {
-              case MenuOptions.evaluateJavaScript:
-                controller.data
-                    .evaluateJavaScript(
-                        "document.body.style.backgroundColor = 'red'")
-                    .then(
-                  (String result) {
-                    Scaffold.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                            'JavaScript evaluated, the result is: $result'),
-                      ),
-                    );
-                    print(result);
-                  },
-                ).catchError(
-                  (Error error) {
-                    print(error);
-                  },
-                );
+              case MenuOptions.evaluateJavascript:
+                _onEvaluateJavascript(controller.data, context);
                 break;
               case MenuOptions.toast:
                 Scaffold.of(context).showSnackBar(
@@ -104,8 +87,8 @@ class SampleMenu extends StatelessWidget {
           },
           itemBuilder: (BuildContext context) => <PopupMenuItem<MenuOptions>>[
                 PopupMenuItem<MenuOptions>(
-                  value: MenuOptions.evaluateJavaScript,
-                  child: const Text('evaluate JavaScript (change bg)'),
+                  value: MenuOptions.evaluateJavascript,
+                  child: const Text('Evaluate Javascript (change bg)'),
                   enabled: controller.hasData,
                 ),
                 const PopupMenuItem<MenuOptions>(
@@ -115,6 +98,17 @@ class SampleMenu extends StatelessWidget {
               ],
         );
       },
+    );
+  }
+
+  void _onEvaluateJavascript(
+      WebViewController controller, BuildContext context) async {
+    final String result = await controller
+        .evaluateJavascript("document.body.style.backgroundColor = 'red'");
+    Scaffold.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Javascript evaluated, the result is: $result'),
+      ),
     );
   }
 }

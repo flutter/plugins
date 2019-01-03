@@ -59,8 +59,8 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       case "currentUrl":
         currentUrl(methodCall, result);
         break;
-      case "evaluateJavaScript":
-        evaluateJavaScript(methodCall, result);
+      case "evaluateJavascript":
+        evaluateJavascript(methodCall, result);
         break;
       default:
         result.notImplemented();
@@ -110,10 +110,10 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     result.success(null);
   }
 
-  private void evaluateJavaScript(MethodCall methodCall, final Result result) {
+  private void evaluateJavascript(MethodCall methodCall, final Result result) {
     String jsString = (String) methodCall.arguments;
     if (jsString == null) {
-      throw new UnsupportedOperationException("JavaScript string cannot be null");
+      throw new UnsupportedOperationException("Javascript string cannot be null");
     }
     webView.evaluateJavascript(
         jsString,
@@ -140,10 +140,10 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   private void updateJsMode(int mode) {
     switch (mode) {
       case 0: // disabled
-        webView.getSettings().setJavaScriptEnabled(false);
+        webView.getSettings().setJavascriptEnabled(false);
         break;
       case 1: // unrestricted
-        webView.getSettings().setJavaScriptEnabled(true);
+        webView.getSettings().setJavascriptEnabled(true);
         break;
       default:
         throw new IllegalArgumentException("Trying to set unknown Javascript mode: " + mode);

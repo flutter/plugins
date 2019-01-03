@@ -79,8 +79,8 @@
     [self onReload:call result:result];
   } else if ([[call method] isEqualToString:@"currentUrl"]) {
     [self onCurrentUrl:call result:result];
-  } else if ([[call method] isEqualToString:@"evaluateJavaScript"]) {
-    [self onEvaluateJavaScript:call result:result];
+  } else if ([[call method] isEqualToString:@"evaluateJavascript"]) {
+    [self onEvaluateJavascript:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -132,21 +132,21 @@
   result(_currentUrl);
 }
 
-- (void)onEvaluateJavaScript:(FlutterMethodCall*)call result:(FlutterResult)result {
+- (void)onEvaluateJavascript:(FlutterMethodCall*)call result:(FlutterResult)result {
   NSString* jsString = [call arguments];
   if (!jsString) {
-    result([FlutterError errorWithCode:@"evaluateJavaScript_failed"
-                               message:@"JavaScript String cannot be null"
-                               details:@"JavaScript String cannot be null"]);
+    result([FlutterError errorWithCode:@"evaluateJavascript_failed"
+                               message:@"Javascript String cannot be null"
+                               details:@"Javascript String cannot be null"]);
     return;
   }
   [_webView evaluateJavaScript:jsString
              completionHandler:^(_Nullable id evaluateResult, NSError* _Nullable error) {
                if (error) {
                  result([FlutterError
-                     errorWithCode:@"evaluateJavaScript_failed"
-                           message:@"Failed evaluating JavaScript"
-                           details:[NSString stringWithFormat:@"JavaScript string was: '%@'\n%@",
+                     errorWithCode:@"evaluateJavascript_failed"
+                           message:@"Failed evaluating Javascript"
+                           details:[NSString stringWithFormat:@"Javascript string was: '%@'\n%@",
                                                               jsString, error]]);
                } else {
                  result([NSString stringWithFormat:@"%@", evaluateResult]);

@@ -40,23 +40,23 @@ void main() {
     expect(await controller.currentUrl(), 'https://youtube.com');
   });
 
-  testWidgets('JavaScript mode', (WidgetTester tester) async {
+  testWidgets('Javascript mode', (WidgetTester tester) async {
     await tester.pumpWidget(const WebView(
       initialUrl: 'https://youtube.com',
-      javaScriptMode: JavaScriptMode.unrestricted,
+      javaScriptMode: JavascriptMode.unrestricted,
     ));
 
     final FakePlatformWebView platformWebView =
         fakePlatformViewsController.lastCreatedView;
 
-    expect(platformWebView.javaScriptMode, JavaScriptMode.unrestricted);
+    expect(platformWebView.javaScriptMode, JavascriptMode.unrestricted);
 
     await tester.pumpWidget(const WebView(
       initialUrl: 'https://youtube.com',
-      javaScriptMode: JavaScriptMode.disabled,
+      javaScriptMode: JavascriptMode.disabled,
     ));
 
-    expect(platformWebView.javaScriptMode, JavaScriptMode.disabled);
+    expect(platformWebView.javaScriptMode, JavascriptMode.disabled);
   });
 
   testWidgets('Load url', (WidgetTester tester) async {
@@ -312,44 +312,44 @@ void main() {
     expect(platformWebView.amountOfReloadsOnCurrentUrl, 0);
   });
 
-  testWidgets('evaluate JavaScript', (WidgetTester tester) async {
+  testWidgets('evaluate Javascript', (WidgetTester tester) async {
     WebViewController controller;
     await tester.pumpWidget(
       WebView(
         initialUrl: 'https://flutter.io',
-        javaScriptMode: JavaScriptMode.unrestricted,
+        javaScriptMode: JavascriptMode.unrestricted,
         onWebViewCreated: (WebViewController webViewController) {
           controller = webViewController;
         },
       ),
     );
     expect(
-        await controller.evaluateJavaScript("fake js string"), "fake js string",
+        await controller.evaluateJavascript("fake js string"), "fake js string",
         reason: 'should get the argument');
     expect(
-      () => controller.evaluateJavaScript(null),
+      () => controller.evaluateJavascript(null),
       throwsA(anything),
     );
   });
 
-  testWidgets('evaluate JavaScript with JavaScriptMode disabled',
+  testWidgets('evaluate Javascript with JavascriptMode disabled',
       (WidgetTester tester) async {
     WebViewController controller;
     await tester.pumpWidget(
       WebView(
         initialUrl: 'https://flutter.io',
-        javaScriptMode: JavaScriptMode.disabled,
+        javaScriptMode: JavascriptMode.disabled,
         onWebViewCreated: (WebViewController webViewController) {
           controller = webViewController;
         },
       ),
     );
     expect(
-      () => controller.evaluateJavaScript('fake js string'),
+      () => controller.evaluateJavascript('fake js string'),
       throwsA(anything),
     );
     expect(
-      () => controller.evaluateJavaScript(null),
+      () => controller.evaluateJavascript(null),
       throwsA(anything),
     );
   });
@@ -363,7 +363,7 @@ class FakePlatformWebView {
         history.add(initialUrl);
         currentPosition++;
       }
-      javaScriptMode = JavaScriptMode.values[params['settings']['jsMode']];
+      javaScriptMode = JavascriptMode.values[params['settings']['jsMode']];
     }
     channel = MethodChannel(
         'plugins.flutter.io/webview_$id', const StandardMethodCodec());
@@ -377,7 +377,7 @@ class FakePlatformWebView {
   int amountOfReloadsOnCurrentUrl = 0;
 
   String get currentUrl => history.isEmpty ? null : history[currentPosition];
-  JavaScriptMode javaScriptMode;
+  JavascriptMode javaScriptMode;
 
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
@@ -392,7 +392,7 @@ class FakePlatformWebView {
         if (call.arguments['jsMode'] == null) {
           break;
         }
-        javaScriptMode = JavaScriptMode.values[call.arguments['jsMode']];
+        javaScriptMode = JavascriptMode.values[call.arguments['jsMode']];
         break;
       case 'canGoBack':
         return Future<bool>.sync(() => currentPosition > 0);
@@ -414,7 +414,7 @@ class FakePlatformWebView {
       case 'currentUrl':
         return Future<String>.value(currentUrl);
         break;
-      case 'evaluateJavaScript':
+      case 'evaluateJavascript':
         return Future<dynamic>.value(call.arguments);
     }
     return Future<void>.sync(() {});

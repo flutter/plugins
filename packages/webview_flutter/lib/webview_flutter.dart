@@ -11,11 +11,11 @@ import 'package:flutter/widgets.dart';
 
 typedef void WebViewCreatedCallback(WebViewController controller);
 
-enum JavaScriptMode {
-  /// JavaScript execution is disabled.
+enum JavascriptMode {
+  /// Javascript execution is disabled.
   disabled,
 
-  /// JavaScript execution is not restricted.
+  /// Javascript execution is not restricted.
   unrestricted,
 }
 
@@ -31,7 +31,7 @@ class WebView extends StatefulWidget {
     Key key,
     this.onWebViewCreated,
     this.initialUrl,
-    this.javaScriptMode = JavaScriptMode.disabled,
+    this.javaScriptMode = JavascriptMode.disabled,
     this.gestureRecognizers,
   })  : assert(javaScriptMode != null),
         super(key: key);
@@ -53,8 +53,8 @@ class WebView extends StatefulWidget {
   /// The initial URL to load.
   final String initialUrl;
 
-  /// Whether JavaScript execution is enabled.
-  final JavaScriptMode javaScriptMode;
+  /// Whether Javascript execution is enabled.
+  final JavascriptMode javaScriptMode;
 
   @override
   State<StatefulWidget> createState() => _WebViewState();
@@ -163,7 +163,7 @@ class _WebSettings {
     return _WebSettings(javaScriptMode: widget.javaScriptMode);
   }
 
-  final JavaScriptMode javaScriptMode;
+  final JavascriptMode javaScriptMode;
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
@@ -260,27 +260,29 @@ class WebViewController {
     return _channel.invokeMethod('updateSettings', updateMap);
   }
 
-  /// Evaluates a JavaScript expression in the context of the current page.
+  /// Evaluates a Javascript expression in the context of the current page.
   ///
   /// On Android returns the evaluation result as a JSON formatted string.
   ///
   /// On iOS depending on the value type the return value would be one of:
   ///
-  ///  - For primitive JavaScript types: the value string formatted (e.g JavaScript 100 returns '100').
-  ///  - For JavaScript arrays of supported types: a string formatted NSArray(e.g '(1,2,3), note that the string for NSArray is formatted and might contain newlines and extra spaces.').
+  ///  - For primitive Javascript types: the value string formatted (e.g Javascript 100 returns '100').
+  ///  - For Javascript arrays of supported types: a string formatted NSArray(e.g '(1,2,3), note that the string for NSArray is formatted and might contain newlines and extra spaces.').
   ///  - Other non-primitive types are not supported on iOS and will complete the Future with an error.
   ///
-  /// The Future completes with an error if a JavaScript error occurred, or on iOS, if the type of the
+  /// The Future completes with an error if a Javascript error occurred, or on iOS, if the type of the
   /// evaluated expression is not supported as described above.
-  Future<String> evaluateJavaScript(String jsString) async {
-    if (_settings.javaScriptMode == JavaScriptMode.disabled) {
-      throw Exception('JavaScript mode disabled');
+  Future<String> evaluateJavascript(String javascriptString) async {
+    if (_settings.javaScriptMode == JavascriptMode.disabled) {
+      throw FlutterError(
+          'Error calling evaluateJavascript. Javascript mode must be enabled/unrestricted when calling evaluateJavascript.');
     }
-    if (jsString == null) {
-      throw ArgumentError('JavaScript string is null');
+    if (javascriptString == null) {
+      throw ArgumentError(
+          'Error calling evaluateJavascript. The argument javascriptString must not be null. ');
     }
     final String result =
-        await _channel.invokeMethod('evaluateJavaScript', jsString);
+        await _channel.invokeMethod('evaluateJavascript', javascriptString);
     return result;
   }
 }
