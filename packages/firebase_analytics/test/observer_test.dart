@@ -103,10 +103,12 @@ void main() {
 
     test('runs onError', () async {
       bool didRun = false;
+      final PlatformException thrownException = PlatformException(code: '');
 
       final void Function(PlatformException error) handleError =
           (PlatformException error) {
         didRun = true;
+        expect(error, thrownException);
       };
 
       observer = FirebaseAnalyticsObserver(
@@ -118,8 +120,7 @@ void main() {
       final PageRoute<dynamic> route = MockPageRoute();
       final PageRoute<dynamic> previousRoute = MockPageRoute();
 
-      Future<void> throwPlatformException() async =>
-          throw PlatformException(code: '');
+      Future<void> throwPlatformException() async => throw thrownException;
 
       when(analytics.setCurrentScreen(screenName: anyNamed('screenName')))
           .thenAnswer((Invocation invocation) => throwPlatformException());
