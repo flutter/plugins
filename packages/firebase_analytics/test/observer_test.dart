@@ -87,7 +87,7 @@ void main() {
 
       // Print PlatformExceptions
       Future<void> throwPlatformException() async =>
-          throw PlatformException(code: '');
+          throw PlatformException(code: 'a');
 
       when(analytics.setCurrentScreen(screenName: anyNamed('screenName')))
           .thenAnswer((Invocation invocation) => throwPlatformException());
@@ -97,18 +97,16 @@ void main() {
       await pumpEventQueue();
       expect(
         printLog,
-        <String>['$FirebaseAnalyticsObserver: ${PlatformException(code: '')}'],
+        <String>['$FirebaseAnalyticsObserver: ${PlatformException(code: 'a')}'],
       );
     });
 
     test('runs onError', () async {
-      bool didRun = false;
-      final PlatformException thrownException = PlatformException(code: '');
+      PlatformException passedException;
 
       final void Function(PlatformException error) handleError =
           (PlatformException error) {
-        didRun = true;
-        expect(error, thrownException);
+        passedException = error;
       };
 
       observer = FirebaseAnalyticsObserver(
@@ -120,6 +118,7 @@ void main() {
       final PageRoute<dynamic> route = MockPageRoute();
       final PageRoute<dynamic> previousRoute = MockPageRoute();
 
+      final PlatformException thrownException = PlatformException(code: 'b');
       Future<void> throwPlatformException() async => throw thrownException;
 
       when(analytics.setCurrentScreen(screenName: anyNamed('screenName')))
@@ -128,7 +127,7 @@ void main() {
       observer.didPush(route, previousRoute);
 
       await pumpEventQueue();
-      expect(didRun, isTrue);
+      expect(passedException, thrownException);
     });
   });
 }
