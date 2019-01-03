@@ -3,7 +3,7 @@ description: Flutter plugin for Google ML Vision for Firebase, an SDK that bring
   learning expertise to Android and iOS apps in a powerful yet easy-to-use package.
 author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/firebase_ml_vision
-version: 0.2.0+2
+version: 0.2.1
 
 dependencies:
   flutter:
