@@ -24,10 +24,6 @@ task:
     - name: analyze
       script: ./script/incremental_build.sh analyze
     - name: build-apks+java-test+codecov
-      env:
-        matrix:
-          PLUGIN_SHARDING: "--shardIndex 0 --shardCount 2"
-          PLUGIN_SHARDING: "--shardIndex 1 --shardCount 2"
       script:
         - ./script/incremental_build.sh build-examples --apk
         - ./script/incremental_build.sh java-test  # must come after apk build
