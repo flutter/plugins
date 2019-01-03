@@ -260,12 +260,18 @@ class WebViewController {
     return _channel.invokeMethod('updateSettings', updateMap);
   }
 
-  /// Evaluates JavaScript in the context of the current page.
-  ///
-  /// Certain JavaScript expressions will throw exception by the platform. E.g. a JavaScript dictioanry might throw exception.
-  /// Returns a Future containing the result of evaluating the JavaScript expression.
-  /// Even the result of JavaScript expression is always a String type, there could be difference between Android and IOS.
-  /// E.g. If the result is an array, on android it returns as "[1,"b","c","d"]", on ios it returns as "(1,b,c,d)"
+/// Evaluates a JavaScript expression in the context of the current page.
+///
+/// On Android returns the evaluation result as a JSON formatted string.
+///
+/// On iOS depending on the value type the return value would be one of:
+///
+///  - For primitive JavaScript types: the value string formatted (e.g JavaScript 100 returns '100').
+///  - For JavaScript arrays of supported types: a string formatted NSArray(e.g '(1,2,3)').
+///  - Other non-primitive types are not supported on iOS and will complete the Future with an error.
+///
+/// The Future completes with an error if a JavaScript error occurred, or on iOS, if the type of the
+/// evaluated expression is not supported as described above.
   Future<String> evaluateJavaScript(String jsString) async {
     if (_settings.javaScriptMode == JavaScriptMode.disabled) {
       throw Exception('JavaScript mode disabled');
