@@ -191,7 +191,6 @@ class WebViewController {
 
   final MethodChannel _channel;
 
-  /// cached web settings
   _WebSettings _settings;
 
   /// Loads the specified URL.
@@ -266,7 +265,8 @@ class WebViewController {
   }
 
   /// Evaluates JavaScript in the context of the current page.
-  /// Returns a Future containing the result of the JavaScript execution.
+  /// 
+  /// Returns a Future containing the result of evaluating the JavaScript expression.
   Future<dynamic> evaluateJavaScript(String jsString) async {
     assert(_settings.javaScriptMode == JavaScriptMode.unrestricted);
     return _channel.invokeMethod('evaluateJavaScript', jsString);

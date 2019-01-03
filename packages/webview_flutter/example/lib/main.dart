@@ -45,7 +45,7 @@ class WebViewExample extends StatelessWidget {
               Scaffold.of(context).showSnackBar(
                   SnackBar(content: Text('You selected: $value')));
             } else if (value == "js") {
-              _runSampleJSEvaluation(controller.data).then((dynamic result) {
+              _runSampleJsEvaluation(controller.data).then((dynamic result) {
                 Scaffold.of(context).showSnackBar(SnackBar(
                     content:
                         Text('JavaScript evaluated, the result is: $result')));
@@ -78,8 +78,7 @@ class WebViewExample extends StatelessWidget {
         });
   }
 
-  Future<dynamic> _runSampleJSEvaluation(WebViewController controller) async {
-    // "document.body.setAttribute('style','background: red')
+  Future<dynamic> _runSampleJsEvaluation(WebViewController controller) async {
     return controller.evaluateJavaScript(
         "document.body.setAttribute('style','background: red');document.body.style.backgroundColor;");
   }
