@@ -21,6 +21,9 @@ public class ImagePickerPlugin implements MethodChannel.MethodCallHandler {
   private final ImagePickerDelegate delegate;
 
   public static void registerWith(PluginRegistry.Registrar registrar) {
+    if (registrar.activity() == null) {
+      return;
+    }
     final MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL);
 
     final File externalFilesDirectory =
@@ -45,10 +48,6 @@ public class ImagePickerPlugin implements MethodChannel.MethodCallHandler {
 
   @Override
   public void onMethodCall(MethodCall call, MethodChannel.Result result) {
-    if (registrar.activity() == null) {
-      result.error("no_activity", "image_picker plugin requires a foreground activity.", null);
-      return;
-    }
     if (call.method.equals("pickImage")) {
       int imageSource = call.argument("source");
       switch (imageSource) {
