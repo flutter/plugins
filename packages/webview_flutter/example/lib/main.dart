@@ -74,7 +74,10 @@ class SampleMenu extends StatelessWidget {
           onSelected: (MenuOptions value) {
             switch (value) {
               case MenuOptions.evaluateJavaScript:
-                controller.data.evaluateJavaScript("['1','2']").then(
+                controller.data
+                    .evaluateJavaScript(
+                        "document.body.style.backgroundColor = 'red'")
+                    .then(
                   (String result) {
                     Scaffold.of(context).showSnackBar(
                       SnackBar(

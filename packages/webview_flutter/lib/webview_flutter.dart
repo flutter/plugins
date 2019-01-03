@@ -124,7 +124,8 @@ class _WebViewState extends State<WebView> {
   }
 
   void _onPlatformViewCreated(int id) {
-    final WebViewController controller = WebViewController._(id, _WebSettings.fromWidget(widget));
+    final WebViewController controller =
+        WebViewController._(id, _WebSettings.fromWidget(widget));
     _controller.complete(controller);
     if (widget.onWebViewCreated != null) {
       widget.onWebViewCreated(controller);
@@ -185,9 +186,9 @@ class _WebSettings {
 /// A [WebViewController] instance can be obtained by setting the [WebView.onWebViewCreated]
 /// callback for a [WebView] widget.
 class WebViewController {
-  WebViewController._(int id, _WebSettings settings)  
-      :_channel = MethodChannel('plugins.flutter.io/webview_$id'), _settings = settings;
-
+  WebViewController._(int id, _WebSettings settings)
+      : _channel = MethodChannel('plugins.flutter.io/webview_$id'),
+        _settings = settings;
 
   final MethodChannel _channel;
 
@@ -261,16 +262,19 @@ class WebViewController {
 
   /// Evaluates JavaScript in the context of the current page.
   ///
+  /// Certain JavaScript expressions will throw exception by the platform. E.g. a JavaScript dictioanry might throw exception.
   /// Returns a Future containing the result of evaluating the JavaScript expression.
-  /// On Android the result is always String type, on IOS it can be any type.
+  /// Even the result of JavaScript expression is always a String type, there could be difference between Android and IOS.
+  /// E.g. If the result is an array, on android it returns as "[1,"b","c","d"]", on ios it returns as "(1,b,c,d)"
   Future<String> evaluateJavaScript(String jsString) async {
-    if (_settings.javaScriptMode == JavaScriptMode.disabled){
+    if (_settings.javaScriptMode == JavaScriptMode.disabled) {
       throw Exception('JavaScript mode disabled');
     }
     if (jsString == null) {
       throw ArgumentError('JavaScript string is null');
     }
-    final String result = await _channel.invokeMethod('evaluateJavaScript', jsString);
+    final String result =
+        await _channel.invokeMethod('evaluateJavaScript', jsString);
     return result;
   }
 }
