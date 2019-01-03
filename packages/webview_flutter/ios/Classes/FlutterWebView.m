@@ -19,11 +19,10 @@
 - (NSObject<FlutterPlatformView>*)createWithFrame:(CGRect)frame
                                    viewIdentifier:(int64_t)viewId
                                         arguments:(id _Nullable)args {
-  FLTWebViewController* webviewController =
-      [[FLTWebViewController alloc] initWithWithFrame:frame
-                                       viewIdentifier:viewId
-                                            arguments:args
-                                      binaryMessenger:_messenger];
+  FLTWebViewController* webviewController = [[FLTWebViewController alloc] initWithFrame:frame
+                                                                         viewIdentifier:viewId
+                                                                              arguments:args
+                                                                        binaryMessenger:_messenger];
   return webviewController;
 }
 
@@ -33,12 +32,13 @@
   WKWebView* _webView;
   int64_t _viewId;
   FlutterMethodChannel* _channel;
+  NSString* _currentUrl;
 }
 
-- (instancetype)initWithWithFrame:(CGRect)frame
-                   viewIdentifier:(int64_t)viewId
-                        arguments:(id _Nullable)args
-                  binaryMessenger:(NSObject<FlutterBinaryMessenger>*)messenger {
+- (instancetype)initWithFrame:(CGRect)frame
+               viewIdentifier:(int64_t)viewId
+                    arguments:(id _Nullable)args
+              binaryMessenger:(NSObject<FlutterBinaryMessenger>*)messenger {
   if ([super init]) {
     _viewId = viewId;
     _webView = [[WKWebView alloc] initWithFrame:frame];
@@ -51,7 +51,7 @@
     NSDictionary<NSString*, id>* settings = args[@"settings"];
     [self applySettings:settings];
     NSString* initialUrl = args[@"initialUrl"];
-    if (initialUrl) {
+    if (initialUrl && initialUrl != [NSNull null]) {
       [self loadUrl:initialUrl];
     }
   }
@@ -67,6 +67,18 @@
     [self onUpdateSettings:call result:result];
   } else if ([[call method] isEqualToString:@"loadUrl"]) {
     [self onLoadUrl:call result:result];
+  } else if ([[call method] isEqualToString:@"canGoBack"]) {
+    [self onCanGoBack:call result:result];
+  } else if ([[call method] isEqualToString:@"canGoForward"]) {
+    [self onCanGoForward:call result:result];
+  } else if ([[call method] isEqualToString:@"goBack"]) {
+    [self onGoBack:call result:result];
+  } else if ([[call method] isEqualToString:@"goForward"]) {
+    [self onGoForward:call result:result];
+  } else if ([[call method] isEqualToString:@"reload"]) {
+    [self onReload:call result:result];
+  } else if ([[call method] isEqualToString:@"currentUrl"]) {
+    [self onCurrentUrl:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -86,6 +98,36 @@
   } else {
     result(nil);
   }
+}
+
+- (void)onCanGoBack:(FlutterMethodCall*)call result:(FlutterResult)result {
+  BOOL canGoBack = [_webView canGoBack];
+  result([NSNumber numberWithBool:canGoBack]);
+}
+
+- (void)onCanGoForward:(FlutterMethodCall*)call result:(FlutterResult)result {
+  BOOL canGoForward = [_webView canGoForward];
+  result([NSNumber numberWithBool:canGoForward]);
+}
+
+- (void)onGoBack:(FlutterMethodCall*)call result:(FlutterResult)result {
+  [_webView goBack];
+  result(nil);
+}
+
+- (void)onGoForward:(FlutterMethodCall*)call result:(FlutterResult)result {
+  [_webView goForward];
+  result(nil);
+}
+
+- (void)onReload:(FlutterMethodCall*)call result:(FlutterResult)result {
+  [_webView reload];
+  result(nil);
+}
+
+- (void)onCurrentUrl:(FlutterMethodCall*)call result:(FlutterResult)result {
+  _currentUrl = [[_webView URL] absoluteString];
+  result(_currentUrl);
 }
 
 - (void)applySettings:(NSDictionary<NSString*, id>*)settings {

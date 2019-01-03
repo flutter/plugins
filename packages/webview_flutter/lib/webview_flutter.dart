@@ -205,12 +205,61 @@ class WebViewController {
     return _channel.invokeMethod('loadUrl', url);
   }
 
+  /// Accessor to the current URL that the WebView is displaying.
+  ///
+  /// If [WebView.initialUrl] was never specified, returns `null`.
+  /// Note that this operation is asynchronous, and it is possible that the
+  /// current URL changes again by the time this function returns (in other
+  /// words, by the time this future completes, the WebView may be displaying a
+  /// different URL).
+  Future<String> currentUrl() async {
+    final String url = await _channel.invokeMethod('currentUrl');
+    return url;
+  }
+
+  /// Checks whether there's a back history item.
+  ///
+  /// Note that this operation is asynchronous, and it is possible that the "canGoBack" state has
+  /// changed by the time the future completed.
+  Future<bool> canGoBack() async {
+    final bool canGoBack = await _channel.invokeMethod("canGoBack");
+    return canGoBack;
+  }
+
+  /// Checks whether there's a forward history item.
+  ///
+  /// Note that this operation is asynchronous, and it is possible that the "canGoForward" state has
+  /// changed by the time the future completed.
+  Future<bool> canGoForward() async {
+    final bool canGoForward = await _channel.invokeMethod("canGoForward");
+    return canGoForward;
+  }
+
+  /// Goes back in the history of this WebView.
+  ///
+  /// If there is no back history item this is a no-op.
+  Future<void> goBack() async {
+    return _channel.invokeMethod("goBack");
+  }
+
+  /// Goes forward in the history of this WebView.
+  ///
+  /// If there is no forward history item this is a no-op.
+  Future<void> goForward() async {
+    return _channel.invokeMethod("goForward");
+  }
+
+  /// Reloads the current URL.
+  Future<void> reload() async {
+    return _channel.invokeMethod("reload");
+  }
+
   Future<void> _updateSettings(Map<String, dynamic> update) async {
     return _channel.invokeMethod('updateSettings', update);
   }
 }
 
-// Throws an ArgumentError if url is not a valid url string.
+// Throws an ArgumentError if `url` is not a valid URL string.
 void _validateUrlString(String url) {
   try {
     final Uri uri = Uri.parse(url);
