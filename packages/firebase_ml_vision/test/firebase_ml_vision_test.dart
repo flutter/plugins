@@ -415,6 +415,9 @@ void main() {
 
       group('$BarcodeDetectorOptions', () {
         test('barcodeFormats', () async {
+          // The constructor for `BarcodeDetectorOptions` can't be `const`
+          // without triggering a `CONST_EVAL_TYPE_BOOL_INT` error.
+          // ignore: prefer_const_constructors
           final BarcodeDetectorOptions options = BarcodeDetectorOptions(
             barcodeFormats: BarcodeFormat.code128 |
                 BarcodeFormat.dataMatrix |
