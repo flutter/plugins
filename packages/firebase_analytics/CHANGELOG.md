@@ -1,3 +1,7 @@
+## 1.1.0
+
+* Allow user to handle `PlatformException`s caught by `FirebaseAnalyticsObserver._sendScreenView()`.
+
 ## 1.0.6
 
 * Allow user ID to be set to null.
