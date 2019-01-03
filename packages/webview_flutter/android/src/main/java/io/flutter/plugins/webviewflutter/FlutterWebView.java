@@ -140,10 +140,10 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   private void updateJsMode(int mode) {
     switch (mode) {
       case 0: // disabled
-        webView.getSettings().setJavascriptEnabled(false);
+        webView.getSettings().setJavaScriptEnabled(false);
         break;
       case 1: // unrestricted
-        webView.getSettings().setJavascriptEnabled(true);
+        webView.getSettings().setJavaScriptEnabled(true);
         break;
       default:
         throw new IllegalArgumentException("Trying to set unknown Javascript mode: " + mode);
