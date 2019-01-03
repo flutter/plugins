@@ -94,7 +94,7 @@ void main() {
 
       overridePrint(() => observer.didPush(route, previousRoute));
 
-      await Future<void>.delayed(Duration(seconds: 1));
+      await pumpEventQueue();
       expect(
         printLog,
         <String>['$FirebaseAnalyticsObserver: ${PlatformException(code: '')}'],
@@ -126,7 +126,7 @@ void main() {
 
       observer.didPush(route, previousRoute);
 
-      await Future<void>.delayed(Duration(seconds: 1));
+      await pumpEventQueue();
       expect(didRun, isTrue);
     });
   });
