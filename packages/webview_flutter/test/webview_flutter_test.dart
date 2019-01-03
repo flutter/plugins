@@ -323,8 +323,35 @@ void main() {
         },
       ),
     );
-    expect(await controller.evaluateJavaScript("fake js string"),
-        "fake js string");
+    expect(
+        await controller.evaluateJavaScript("fake js string"), "fake js string",
+        reason: 'should get the argument');
+    expect(
+      () => controller.evaluateJavaScript(null),
+      throwsA(anything),
+    );
+  });
+
+  testWidgets('evaluate JavaScript with JavaScriptMode disabled',
+      (WidgetTester tester) async {
+    WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://flutter.io',
+        javaScriptMode: JavaScriptMode.disabled,
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+    expect(
+      () => controller.evaluateJavaScript('fake js string'),
+      throwsA(anything),
+    );
+    expect(
+      () => controller.evaluateJavaScript(null),
+      throwsA(anything),
+    );
   });
 }
 

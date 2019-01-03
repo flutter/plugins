@@ -147,9 +147,9 @@
            result([FlutterError
                errorWithCode:@"evaluateJavaScript_failed"
                      message:@"Failed evaluating JavaScript"
-                     details:[NSString stringWithFormat:@"JavaScript string was: '%@'", jsString]]);
+                     details:[NSString stringWithFormat:@"JavaScript string was: '%@'\n%@", jsString, error]]);
          } else {
-           result(evaluateResult);
+           result([NSString stringWithFormat:@"%@",evaluateResult]);
          }
        }];
 }

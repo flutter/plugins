@@ -106,7 +106,6 @@ class _WebViewState extends State<WebView> {
   @override
   void initState() {
     super.initState();
-    _updateSettings(_WebSettings.fromWidget(widget));
   }
 
   @override
@@ -125,7 +124,7 @@ class _WebViewState extends State<WebView> {
   }
 
   void _onPlatformViewCreated(int id) {
-    final WebViewController controller = WebViewController._(id);
+    final WebViewController controller = WebViewController._(id, _WebSettings.fromWidget(widget));
     _controller.complete(controller);
     if (widget.onWebViewCreated != null) {
       widget.onWebViewCreated(controller);
@@ -186,8 +185,9 @@ class _WebSettings {
 /// A [WebViewController] instance can be obtained by setting the [WebView.onWebViewCreated]
 /// callback for a [WebView] widget.
 class WebViewController {
-  WebViewController._(int id)
-      : _channel = MethodChannel('plugins.flutter.io/webview_$id');
+  WebViewController._(int id, _WebSettings settings)  
+      :_channel = MethodChannel('plugins.flutter.io/webview_$id'), _settings = settings;
+
 
   final MethodChannel _channel;
 
@@ -254,22 +254,24 @@ class WebViewController {
   }
 
   Future<void> _updateSettings(_WebSettings update) async {
-    Map<String, dynamic> updateMap;
-    if (_settings == null) {
-      updateMap = update.toMap();
-    } else {
-      updateMap = _settings.updatesMap(update);
-    }
+    final Map<String, dynamic> updateMap = _settings.updatesMap(update);
     _settings = update;
     return _channel.invokeMethod('updateSettings', updateMap);
   }
 
   /// Evaluates JavaScript in the context of the current page.
-  /// 
+  ///
   /// Returns a Future containing the result of evaluating the JavaScript expression.
-  Future<dynamic> evaluateJavaScript(String jsString) async {
-    assert(_settings.javaScriptMode == JavaScriptMode.unrestricted);
-    return _channel.invokeMethod('evaluateJavaScript', jsString);
+  /// On Android the result is always String type, on IOS it can be any type.
+  Future<String> evaluateJavaScript(String jsString) async {
+    if (_settings.javaScriptMode == JavaScriptMode.disabled){
+      throw Exception('JavaScript mode disabled');
+    }
+    if (jsString == null) {
+      throw ArgumentError('JavaScript string is null');
+    }
+    final String result = await _channel.invokeMethod('evaluateJavaScript', jsString);
+    return result;
   }
 }
 

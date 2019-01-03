@@ -20,7 +20,7 @@ class WebViewExample extends StatelessWidget {
         // This drop down menu demonstrates that Flutter widgets can be shown over the web view.
         actions: <Widget>[
           NavigationControls(_controller.future),
-          listButton(),
+          SampleMenu(_controller),
         ],
       ),
       body: WebView(
@@ -31,30 +31,6 @@ class WebViewExample extends StatelessWidget {
         },
       ),
       floatingActionButton: favoriteButton(),
-    );
-  }
-
-  Widget listButton() {
-    return FutureBuilder<WebViewController>(
-      future: _controller.future,
-      builder:
-          (BuildContext context, AsyncSnapshot<WebViewController> controller) {
-        if (controller.hasData) {
-          return SampleMenu(onSelected: (String value) {
-            if (value == "toast") {
-              Scaffold.of(context).showSnackBar(
-                  SnackBar(content: Text('You selected: $value')));
-            } else if (value == "js") {
-              _runSampleJsEvaluation(controller.data).then((dynamic result) {
-                Scaffold.of(context).showSnackBar(SnackBar(
-                    content:
-                        Text('JavaScript evaluated, the result is: $result')));
-              });
-            }
-          });
-        }
-        return Container();
-      },
     );
   }
 
@@ -77,32 +53,65 @@ class WebViewExample extends StatelessWidget {
           return Container();
         });
   }
+}
 
-  Future<dynamic> _runSampleJsEvaluation(WebViewController controller) async {
-    return controller.evaluateJavaScript(
-        "document.body.setAttribute('style','background: red');document.body.style.backgroundColor;");
-  }
+enum MenuOptions {
+  evaluateJavaScript,
+  toast,
 }
 
 class SampleMenu extends StatelessWidget {
-  SampleMenu({this.onSelected});
-
-  final Function onSelected;
+  SampleMenu(this.controller);
+  final Completer<WebViewController> controller;
 
   @override
   Widget build(BuildContext context) {
-    return PopupMenuButton<String>(
-      onSelected: onSelected,
-      itemBuilder: (BuildContext context) => <PopupMenuItem<String>>[
-            const PopupMenuItem<String>(
-              value: 'js',
-              child: Text('evaluate JavaScript (change bg)'),
-            ),
-            const PopupMenuItem<String>(
-              value: 'toast',
-              child: Text('Make a toast'),
-            ),
-          ],
+    return FutureBuilder<WebViewController>(
+      future: controller.future,
+      builder:
+          (BuildContext context, AsyncSnapshot<WebViewController> controller) {
+        return PopupMenuButton<MenuOptions>(
+          onSelected: (MenuOptions value) {
+            switch (value) {
+              case MenuOptions.evaluateJavaScript:
+                controller.data.evaluateJavaScript("['1','2']").then(
+                  (String result) {
+                    Scaffold.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                            'JavaScript evaluated, the result is: $result'),
+                      ),
+                    );
+                    print(result);
+                  },
+                ).catchError(
+                  (Error error) {
+                    print(error);
+                  },
+                );
+                break;
+              case MenuOptions.toast:
+                Scaffold.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('You selected: $value'),
+                  ),
+                );
+                break;
+            }
+          },
+          itemBuilder: (BuildContext context) => <PopupMenuItem<MenuOptions>>[
+                PopupMenuItem<MenuOptions>(
+                  value: MenuOptions.evaluateJavaScript,
+                  child: const Text('evaluate JavaScript (change bg)'),
+                  enabled: controller.hasData,
+                ),
+                const PopupMenuItem<MenuOptions>(
+                  value: MenuOptions.toast,
+                  child: Text('Make a toast'),
+                ),
+              ],
+        );
+      },
     );
   }
 }
