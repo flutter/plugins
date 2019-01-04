@@ -3,6 +3,8 @@ task:
     image: cirrusci/flutter:latest
     cpu: 4
     memory: 8G
+  env:
+    CODECOV_TOKEN: ENCRYPTED[b386dab525d9af8d807245b40c6812add427f42eb27fe8f3798bbf3970e338b45a93a2d208c08ae76abc2e9de7a31a32]
   upgrade_script:
     - flutter channel master
     - flutter upgrade
@@ -18,16 +20,16 @@ task:
         - sudo apt-get update
         - sudo apt-get install -y --allow-unauthenticated clang-format-7
       format_script: ./script/incremental_build.sh format --travis --clang-format=clang-format-7
-      test_script: ./script/incremental_build.sh test
+      test_script: ./script/incremental_build.sh test #@todo move dart coverage here
     - name: analyze
       script: ./script/incremental_build.sh analyze
-    - name: build-apks+java-test
+    - name: build-apks+java-test+codecov
       env:
         matrix:
           PLUGIN_SHARDING: "--shardIndex 0 --shardCount 2"
           PLUGIN_SHARDING: "--shardIndex 1 --shardCount 2"
       script:
-        - ./script/incremental_build.sh build-examples --apk
+        - ./script/incremental_build.sh build-examples --apk #@todo refactor so that java-test with cov not depend on this
         - ./script/incremental_build.sh java-test  # must come after apk build
 
 task:
