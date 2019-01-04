@@ -29,6 +29,7 @@ class WebViewExample extends StatelessWidget {
         onWebViewCreated: (WebViewController webViewController) {
           _controller.complete(webViewController);
         },
+        invalidUrlRegex: r'^(https://flutter.io).*(install)$',
       ),
       floatingActionButton: favoriteButton(),
     );
@@ -40,6 +41,7 @@ class WebViewExample extends StatelessWidget {
         builder: (BuildContext context,
             AsyncSnapshot<WebViewController> controller) {
           if (controller.hasData) {
+            _setupWebController(controller.data);
             return FloatingActionButton(
               onPressed: () async {
                 final String url = await controller.data.currentUrl();
@@ -53,6 +55,19 @@ class WebViewExample extends StatelessWidget {
           return Container();
         });
   }
+
+  void _setupWebController(WebViewController controller) {
+    controller.onPageStarted.listen((String url) {
+      print('onPageStarted: $url');
+    });
+    controller.onPageFinished.listen((String url) {
+      print('onPageFinished: $url');
+    });
+    controller.onUrlShouldLoad.listen((String url) {
+      print('onUrlShouldLoad: $url');
+    });
+  }
+
 }
 
 class SampleMenu extends StatelessWidget {

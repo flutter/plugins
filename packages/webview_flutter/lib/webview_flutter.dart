@@ -33,6 +33,7 @@ class WebView extends StatefulWidget {
     this.initialUrl,
     this.javaScriptMode = JavaScriptMode.disabled,
     this.gestureRecognizers,
+    this.invalidUrlRegex,
   })  : assert(javaScriptMode != null),
         super(key: key);
 
@@ -55,6 +56,9 @@ class WebView extends StatefulWidget {
 
   /// Whether JavaScript execution is enabled.
   final JavaScriptMode javaScriptMode;
+
+  /// The Regex of URLs that WebView shouldn't load
+  final String invalidUrlRegex;
 
   @override
   State<StatefulWidget> createState() => _WebViewState();
@@ -110,6 +114,12 @@ class _WebViewState extends State<WebView> {
   }
 
   @override
+  void dispose() {
+    _disposeController();
+    super.dispose();
+  }
+
+  @override
   void didUpdateWidget(WebView oldWidget) {
     super.didUpdateWidget(oldWidget);
     final _WebSettings newSettings = _WebSettings.fromWidget(widget);
@@ -125,6 +135,13 @@ class _WebViewState extends State<WebView> {
     }
     final WebViewController controller = await _controller.future;
     controller._updateSettings(update);
+  }
+
+  void _disposeController() async {
+    if (_controller.isCompleted) {
+      final WebViewController controller = await _controller.future;
+      controller?.dispose();
+    }
   }
 
   void _onPlatformViewCreated(int id) {
@@ -160,26 +177,33 @@ class _CreationParams {
 class _WebSettings {
   _WebSettings({
     this.javaScriptMode,
+    this.invalidUrlRegex,
   });
 
   static _WebSettings fromWidget(WebView widget) {
-    return _WebSettings(javaScriptMode: widget.javaScriptMode);
+    return _WebSettings(
+        javaScriptMode: widget.javaScriptMode,
+        invalidUrlRegex: widget.invalidUrlRegex);
   }
 
   final JavaScriptMode javaScriptMode;
+  final String invalidUrlRegex;
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'jsMode': javaScriptMode.index,
+      'invalidUrlRegex': invalidUrlRegex,
     };
   }
 
   Map<String, dynamic> updatesMap(_WebSettings newSettings) {
-    if (javaScriptMode == newSettings.javaScriptMode) {
+    if (javaScriptMode == newSettings.javaScriptMode &&
+        invalidUrlRegex == newSettings.invalidUrlRegex) {
       return null;
     }
     return <String, dynamic>{
       'jsMode': newSettings.javaScriptMode.index,
+      'invalidUrlRegex': invalidUrlRegex,
     };
   }
 }
@@ -190,7 +214,20 @@ class _WebSettings {
 /// callback for a [WebView] widget.
 class WebViewController {
   WebViewController._(int id)
-      : _channel = MethodChannel('plugins.flutter.io/webview_$id');
+      : _channel = MethodChannel('plugins.flutter.io/webview_$id') {
+    _channel.setMethodCallHandler((MethodCall call) async {
+      if (call.method == 'onPageStarted') {
+        final String url = call.arguments['url'];
+        _onPageStartedController.sink.add(url);
+      } else if (call.method == 'onPageFinished') {
+        final String url = call.arguments['url'];
+        _onPageFinishedController.sink.add(url);
+      } else if (call.method == 'onUrlShouldLoad') {
+        final String url = call.arguments['url'];
+        _onUrlShouldLoad.sink.add(url);
+      }
+    });
+  }
 
   final MethodChannel _channel;
 
@@ -256,6 +293,22 @@ class WebViewController {
 
   Future<void> _updateSettings(Map<String, dynamic> update) async {
     return _channel.invokeMethod('updateSettings', update);
+  }
+
+  StreamController<String> _onPageStartedController =
+      StreamController<String>.broadcast();
+  StreamController<String> _onPageFinishedController =
+      StreamController<String>.broadcast();
+  StreamController<String> _onUrlShouldLoad = StreamController<String>.broadcast();
+
+  Stream<String> get onPageStarted => _onPageStartedController.stream;
+  Stream<String> get onPageFinished => _onPageFinishedController.stream;
+  Stream<String> get onUrlShouldLoad => _onUrlShouldLoad.stream;
+
+  void dispose() {
+    _onPageStartedController.close();
+    _onPageFinishedController.close();
+    _onUrlShouldLoad.close();
   }
 }
 

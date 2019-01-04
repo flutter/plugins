@@ -1,28 +1,88 @@
 package io.flutter.plugins.webviewflutter;
 
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.os.Build;
 import android.view.View;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
+
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.platform.PlatformView;
+
+import java.util.HashMap;
 import java.util.Map;
 
 public class FlutterWebView implements PlatformView, MethodCallHandler {
   private final WebView webView;
   private final MethodChannel methodChannel;
+  private final WebViewClient webClient;
+  private String invalidUrlRegex;
 
   @SuppressWarnings("unchecked")
-  FlutterWebView(Context context, BinaryMessenger messenger, int id, Map<String, Object> params) {
+  FlutterWebView(Context context, final BinaryMessenger messenger, int id, Map<String, Object> params) {
     webView = new WebView(context);
     if (params.containsKey("initialUrl")) {
       String url = (String) params.get("initialUrl");
       webView.loadUrl(url);
     }
+    if (params.containsKey("invalidUrlRegex")) {
+      invalidUrlRegex = (String) params.get("invalidUrlRegex");
+    } else {
+      invalidUrlRegex = null;
+    }
+
+    webClient = new WebViewClient() {
+      @Override
+      public void onPageStarted(WebView view, String url, Bitmap favicon) {
+        super.onPageStarted(view, url, favicon);
+        Map<String, Object> args = new HashMap<>();
+        args.put("url", url);
+        methodChannel.invokeMethod("onPageStarted", args);
+      }
+
+      @Override
+      public void onPageFinished(WebView view, String url) {
+        super.onPageFinished(view, url);
+        Map<String, Object> args = new HashMap<>();
+        args.put("url", url);
+        methodChannel.invokeMethod("onPageFinished", args);
+      }
+
+      @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+      @Override
+      public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+        // returning true causes the current WebView to abort loading the URL,
+        // while returning false causes the WebView to continue loading the URL as usual.
+        String url = request.getUrl().toString();
+        onUrlShouldLoad(url);
+        return invalidUrlRegex != null && url.matches(invalidUrlRegex);
+      }
+
+      @Override
+      public boolean shouldOverrideUrlLoading(WebView view, String url) {
+        // returning true causes the current WebView to abort loading the URL,
+        // while returning false causes the WebView to continue loading the URL as usual.
+        onUrlShouldLoad(url);
+        return invalidUrlRegex != null && url.matches(invalidUrlRegex);
+      }
+
+      private void onUrlShouldLoad(String url) {
+        Map<String, Object> args = new HashMap<>();
+        args.put("url", url);
+        methodChannel.invokeMethod("onUrlShouldLoad", args);
+      }
+    };
+    webView.setWebViewClient(webClient);
+
     applySettings((Map<String, Object>) params.get("settings"));
+
     methodChannel = new MethodChannel(messenger, "plugins.flutter.io/webview_" + id);
     methodChannel.setMethodCallHandler(this);
   }
@@ -113,6 +173,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         case "jsMode":
           updateJsMode((Integer) settings.get(key));
           break;
+        case "invalidUrlRegex":
+          updateInvalidUrlRegex((String) settings.get(key));
+          break;
         default:
           throw new IllegalArgumentException("Unknown WebView setting: " + key);
       }
@@ -130,6 +193,10 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       default:
         throw new IllegalArgumentException("Trying to set unknown Javascript mode: " + mode);
     }
+  }
+
+  private void updateInvalidUrlRegex(String regex) {
+    invalidUrlRegex = regex;
   }
 
   @Override
