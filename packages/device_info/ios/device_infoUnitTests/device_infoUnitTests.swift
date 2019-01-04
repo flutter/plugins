@@ -7,6 +7,7 @@
 //
 
 import XCTest
+@testable import Runner
 
 class device_infoUnitTests: XCTestCase {
 
