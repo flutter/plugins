@@ -5,5 +5,4 @@
 #import <Flutter/Flutter.h>
 
 @interface FLTDeviceInfoPlugin : NSObject <FlutterPlugin>
-- (NSString*)isDevicePhysical;
 @end
