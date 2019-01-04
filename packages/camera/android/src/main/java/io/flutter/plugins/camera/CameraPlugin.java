@@ -26,6 +26,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Range;
 import android.util.Size;
 import android.view.Display;
 import android.view.OrientationEventListener;
@@ -39,7 +40,6 @@ import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.view.FlutterView;
 
-import java.awt.font.NumericShaper.Range;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -51,8 +51,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class CameraPlugin implements MethodCallHandler {
 
@@ -293,7 +291,7 @@ public class CameraPlugin implements MethodCallHandler {
     private Size videoSize;
     private MediaRecorder mediaRecorder;
     private boolean recordingVideo;
-    private android.util.Range<Integer> aeFPSRange;
+    private Range<Integer> aeFPSRange;
 
     Camera(final String cameraName, final String resolutionPreset, @NonNull final Result result) {
 
@@ -403,7 +401,7 @@ public class CameraPlugin implements MethodCallHandler {
     }
 
     private void setBestAERange(CameraCharacteristics characteristics) {
-      android.util.Range<Integer>[] fpsRanges = characteristics.get(CameraCharacteristics.CONTROL_AE_AVAILABLE_TARGET_FPS_RANGES);
+      Range<Integer>[] fpsRanges = characteristics.get(CameraCharacteristics.CONTROL_AE_AVAILABLE_TARGET_FPS_RANGES);
       
       if(fpsRanges.length > 0) {
         aeFPSRange = fpsRanges[0];
