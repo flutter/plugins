@@ -38,6 +38,8 @@ import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.view.FlutterView;
+
+import java.awt.font.NumericShaper.Range;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -49,6 +51,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class CameraPlugin implements MethodCallHandler {
 
@@ -289,6 +293,7 @@ public class CameraPlugin implements MethodCallHandler {
     private Size videoSize;
     private MediaRecorder mediaRecorder;
     private boolean recordingVideo;
+    private android.util.Range<Integer> aeFPSRange;
 
     Camera(final String cameraName, final String resolutionPreset, @NonNull final Result result) {
 
@@ -322,6 +327,8 @@ public class CameraPlugin implements MethodCallHandler {
         isFrontFacing =
             characteristics.get(CameraCharacteristics.LENS_FACING)
                 == CameraMetadata.LENS_FACING_FRONT;
+
+        setBestAERange(characteristics);
         computeBestCaptureSize(streamConfigurationMap);
         computeBestPreviewAndRecordingSize(streamConfigurationMap, minPreviewSize, captureSize);
 
@@ -393,6 +400,14 @@ public class CameraPlugin implements MethodCallHandler {
       return Build.VERSION.SDK_INT < Build.VERSION_CODES.M
           || registrar.activity().checkSelfPermission(Manifest.permission.RECORD_AUDIO)
               == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void setBestAERange(CameraCharacteristics characteristics) {
+      android.util.Range<Integer>[] fpsRanges = characteristics.get(CameraCharacteristics.CONTROL_AE_AVAILABLE_TARGET_FPS_RANGES);
+      
+      if(fpsRanges.length > 0) {
+        aeFPSRange = fpsRanges[0];
+      }
     }
 
     private void computeBestPreviewAndRecordingSize(
@@ -738,8 +753,15 @@ public class CameraPlugin implements MethodCallHandler {
               }
               try {
                 cameraCaptureSession = session;
+
                 captureRequestBuilder.set(
                     CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
+
+                if(Camera.this.aeFPSRange != null) {
+                  captureRequestBuilder.set(
+                    CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE, Camera.this.aeFPSRange);
+                }
+
                 cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
               } catch (CameraAccessException e) {
                 sendErrorEvent(e.getMessage());
