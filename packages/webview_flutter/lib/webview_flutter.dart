@@ -104,23 +104,15 @@ class _WebViewState extends State<WebView> {
   }
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   void didUpdateWidget(WebView oldWidget) {
     super.didUpdateWidget(oldWidget);
     _updateSettings(_WebSettings.fromWidget(widget));
   }
 
-  Future<void> _updateSettings(_WebSettings update) async {
-    if (update == null) {
-      return;
-    }
-    _settings = update;
+  Future<void> _updateSettings(_WebSettings settings) async {
+    _settings = settings;
     final WebViewController controller = await _controller.future;
-    controller._updateSettings(update);
+    controller._updateSettings(settings);
   }
 
   void _onPlatformViewCreated(int id) {
@@ -254,9 +246,12 @@ class WebViewController {
     return _channel.invokeMethod("reload");
   }
 
-  Future<void> _updateSettings(_WebSettings update) async {
-    final Map<String, dynamic> updateMap = _settings.updatesMap(update);
-    _settings = update;
+  Future<void> _updateSettings(_WebSettings setting) async {
+    final Map<String, dynamic> updateMap = _settings.updatesMap(setting);
+    if (updateMap == null) {
+      return null;
+    }
+    _settings = setting;
     return _channel.invokeMethod('updateSettings', updateMap);
   }
 
@@ -275,11 +270,10 @@ class WebViewController {
   Future<String> evaluateJavascript(String javascriptString) async {
     if (_settings.javascriptMode == JavascriptMode.disabled) {
       throw FlutterError(
-          'Error calling evaluateJavascript. JavaScript mode must be enabled/unrestricted when calling evaluateJavascript.');
+          'JavaScript mode must be enabled/unrestricted when calling evaluateJavascript.');
     }
     if (javascriptString == null) {
-      throw ArgumentError(
-          'Error calling evaluateJavascript. The argument javascriptString must not be null. ');
+      throw ArgumentError('The argument javascriptString must not be null. ');
     }
     final String result =
         await _channel.invokeMethod('evaluateJavascript', javascriptString);

@@ -137,7 +137,7 @@
   if (!jsString) {
     result([FlutterError errorWithCode:@"evaluateJavaScript_failed"
                                message:@"JavaScript String cannot be null"
-                               details:@"JavaScript String cannot be null"]);
+                               details:nil]);
     return;
   }
   [_webView evaluateJavaScript:jsString
