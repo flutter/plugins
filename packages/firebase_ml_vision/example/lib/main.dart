@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
-import 'dart:io';
-
+import 'package:camera/camera.dart';
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 
 import 'detector_painters.dart';
+import 'utils.dart';
 
 void main() => runApp(MaterialApp(home: _MyHomePage()));
 
@@ -19,107 +17,98 @@ class _MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<_MyHomePage> {
-  File _imageFile;
-  Size _imageSize;
   dynamic _scanResults;
+  CameraController _camera;
+
   Detector _currentDetector = Detector.text;
+  bool _isDetecting = false;
+  CameraLensDirection _direction = CameraLensDirection.back;
 
-  Future<void> _getAndScanImage() async {
-    setState(() {
-      _imageFile = null;
-      _imageSize = null;
-    });
-
-    final File imageFile =
-        await ImagePicker.pickImage(source: ImageSource.gallery);
-
-    if (imageFile != null) {
-      _getImageSize(imageFile);
-      _scanImage(imageFile);
-    }
-
-    setState(() {
-      _imageFile = imageFile;
-    });
+  @override
+  void initState() {
+    super.initState();
+    _initializeCamera();
   }
 
-  Future<void> _getImageSize(File imageFile) async {
-    final Completer<Size> completer = Completer<Size>();
-
-    final Image image = Image.file(imageFile);
-    image.image.resolve(const ImageConfiguration()).addListener(
-      (ImageInfo info, bool _) {
-        completer.complete(Size(
-          info.image.width.toDouble(),
-          info.image.height.toDouble(),
-        ));
-      },
+  void _initializeCamera() async {
+    _camera = CameraController(
+      await getCamera(_direction),
+      ResolutionPreset.low,
     );
+    await _camera.initialize();
 
-    final Size imageSize = await completer.future;
-    setState(() {
-      _imageSize = imageSize;
+    _camera.startImageStream((CameraImage image) {
+      if (_isDetecting) return;
+
+      _isDetecting = true;
+
+      final Detector currentDetector = _currentDetector;
+      detect(image, _getDetectionMethod()).then(
+        (dynamic result) {
+          if (currentDetector == _currentDetector) {
+            _scanResults = result;
+          } else {
+            _scanResults = null;
+          }
+
+          setState(() {});
+
+          _isDetecting = false;
+        },
+      ).catchError(
+        () {
+          _isDetecting = false;
+        },
+      );
     });
   }
 
-  Future<void> _scanImage(File imageFile) async {
-    setState(() {
-      _scanResults = null;
-    });
+  HandleDetection _getDetectionMethod() {
+    final FirebaseVision mlVision = FirebaseVision.instance;
 
-    final FirebaseVisionImage visionImage =
-        FirebaseVisionImage.fromFile(imageFile);
-
-    FirebaseVisionDetector detector;
     switch (_currentDetector) {
-      case Detector.barcode:
-        detector = FirebaseVision.instance.barcodeDetector();
-        break;
-      case Detector.face:
-        detector = FirebaseVision.instance.faceDetector();
-        break;
-      case Detector.label:
-        detector = FirebaseVision.instance.labelDetector();
-        break;
-      case Detector.cloudLabel:
-        detector = FirebaseVision.instance.cloudLabelDetector();
-        break;
       case Detector.text:
-        detector = FirebaseVision.instance.textRecognizer();
-        break;
+        return mlVision.textRecognizer().processImage;
+      case Detector.barcode:
+        return mlVision.barcodeDetector().detectInImage;
+      case Detector.label:
+        return mlVision.labelDetector().detectInImage;
+      case Detector.cloudLabel:
+        return mlVision.cloudLabelDetector().detectInImage;
       default:
-        return;
+        assert(_currentDetector == Detector.face);
+        return mlVision.faceDetector().detectInImage;
+    }
+  }
+
+  Widget _buildResults() {
+    if (_scanResults == null || _camera == null) {
+      return const Text('No results!');
     }
 
-    final dynamic results =
-        await detector.detectInImage(visionImage) ?? <dynamic>[];
-
-    setState(() {
-      _scanResults = results;
-    });
-  }
-
-  CustomPaint _buildResults(Size imageSize, dynamic results) {
     CustomPainter painter;
 
+    final Size imageSize = Size(
+      _camera.value.previewSize.height,
+      _camera.value.previewSize.width,
+    );
+
     switch (_currentDetector) {
       case Detector.barcode:
-        painter = BarcodeDetectorPainter(_imageSize, results);
+        painter = BarcodeDetectorPainter(imageSize, _scanResults);
         break;
       case Detector.face:
-        painter = FaceDetectorPainter(_imageSize, results);
+        painter = FaceDetectorPainter(imageSize, _scanResults);
         break;
       case Detector.label:
-        painter = LabelDetectorPainter(_imageSize, results);
+        painter = LabelDetectorPainter(imageSize, _scanResults);
         break;
       case Detector.cloudLabel:
-        painter = LabelDetectorPainter(_imageSize, results);
-        break;
-      case Detector.text:
-        painter = TextDetectorPainter(_imageSize, results);
+        painter = LabelDetectorPainter(imageSize, _scanResults);
         break;
       default:
-        break;
+        assert(_currentDetector == Detector.text);
+        painter = TextDetectorPainter(imageSize, _scanResults);
     }
 
     return CustomPaint(
@@ -130,24 +119,41 @@ class _MyHomePageState extends State<_MyHomePage> {
   Widget _buildImage() {
     return Container(
       constraints: const BoxConstraints.expand(),
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: Image.file(_imageFile).image,
-          fit: BoxFit.fill,
-        ),
-      ),
-      child: _imageSize == null || _scanResults == null
+      child: _camera == null
           ? const Center(
               child: Text(
-                'Scanning...',
+                'Initializing Camera...',
                 style: TextStyle(
                   color: Colors.green,
                   fontSize: 30.0,
                 ),
               ),
             )
-          : _buildResults(_imageSize, _scanResults),
+          : Stack(
+              fit: StackFit.expand,
+              children: <Widget>[
+                CameraPreview(_camera),
+                _buildResults(),
+              ],
+            ),
     );
+  }
+
+  void _toggleCameraDirection() async {
+    if (_direction == CameraLensDirection.back) {
+      _direction = CameraLensDirection.front;
+    } else {
+      _direction = CameraLensDirection.back;
+    }
+
+    await _camera.stopImageStream();
+    await _camera.dispose();
+
+    setState(() {
+      _camera = null;
+    });
+
+    _initializeCamera();
   }
 
   @override
@@ -159,7 +165,6 @@ class _MyHomePageState extends State<_MyHomePage> {
           PopupMenuButton<Detector>(
             onSelected: (Detector result) {
               _currentDetector = result;
-              if (_imageFile != null) _scanImage(_imageFile);
             },
             itemBuilder: (BuildContext context) => <PopupMenuEntry<Detector>>[
                   const PopupMenuItem<Detector>(
@@ -186,13 +191,12 @@ class _MyHomePageState extends State<_MyHomePage> {
           ),
         ],
       ),
-      body: _imageFile == null
-          ? const Center(child: Text('No image selected.'))
-          : _buildImage(),
+      body: _buildImage(),
       floatingActionButton: FloatingActionButton(
-        onPressed: _getAndScanImage,
-        tooltip: 'Pick Image',
-        child: const Icon(Icons.add_a_photo),
+        onPressed: _toggleCameraDirection,
+        child: _direction == CameraLensDirection.back
+            ? const Icon(Icons.camera_front)
+            : const Icon(Icons.camera_rear),
       ),
     );
   }

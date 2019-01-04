@@ -2,61 +2,57 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:math';
 import 'dart:ui' as ui;
 
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 enum Detector { barcode, face, label, cloudLabel, text }
 
 class BarcodeDetectorPainter extends CustomPainter {
-  BarcodeDetectorPainter(this.absoluteImageSize, this.barcodeLocations);
+  BarcodeDetectorPainter(this.imageSize, this.barcodes);
 
-  final Size absoluteImageSize;
-  final List<Barcode> barcodeLocations;
+  final Size imageSize;
+  final List<Barcode> barcodes;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final double scaleX = size.width / absoluteImageSize.width;
-    final double scaleY = size.height / absoluteImageSize.height;
-
-    Rect scaleRect(Barcode barcode) {
-      return Rect.fromLTRB(
-        barcode.boundingBox.left * scaleX,
-        barcode.boundingBox.top * scaleY,
-        barcode.boundingBox.right * scaleX,
-        barcode.boundingBox.bottom * scaleY,
-      );
-    }
-
     final Paint paint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.0;
 
-    for (Barcode barcode in barcodeLocations) {
+    for (Barcode barcode in barcodes) {
       paint.color = Colors.green;
-      canvas.drawRect(scaleRect(barcode), paint);
+      canvas.drawRect(
+        _scaleAndFlipRectangle(
+          rect: barcode.boundingBox,
+          imageSize: imageSize,
+          widgetSize: size,
+          shouldFlipX: defaultTargetPlatform != TargetPlatform.iOS,
+          shouldFlipY: defaultTargetPlatform != TargetPlatform.iOS,
+        ),
+        paint,
+      );
     }
   }
 
   @override
   bool shouldRepaint(BarcodeDetectorPainter oldDelegate) {
-    return oldDelegate.absoluteImageSize != absoluteImageSize ||
-        oldDelegate.barcodeLocations != barcodeLocations;
+    return oldDelegate.imageSize != imageSize ||
+        oldDelegate.barcodes != barcodes;
   }
 }
 
 class FaceDetectorPainter extends CustomPainter {
-  FaceDetectorPainter(this.absoluteImageSize, this.faces);
+  FaceDetectorPainter(this.imageSize, this.faces);
 
-  final Size absoluteImageSize;
+  final Size imageSize;
   final List<Face> faces;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final double scaleX = size.width / absoluteImageSize.width;
-    final double scaleY = size.height / absoluteImageSize.height;
-
     final Paint paint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.0
@@ -64,11 +60,12 @@ class FaceDetectorPainter extends CustomPainter {
 
     for (Face face in faces) {
       canvas.drawRect(
-        Rect.fromLTRB(
-          face.boundingBox.left * scaleX,
-          face.boundingBox.top * scaleY,
-          face.boundingBox.right * scaleX,
-          face.boundingBox.bottom * scaleY,
+        _scaleAndFlipRectangle(
+          rect: face.boundingBox,
+          imageSize: imageSize,
+          widgetSize: size,
+          shouldFlipY: false,
+          shouldFlipX: defaultTargetPlatform != TargetPlatform.iOS,
         ),
         paint,
       );
@@ -77,15 +74,14 @@ class FaceDetectorPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(FaceDetectorPainter oldDelegate) {
-    return oldDelegate.absoluteImageSize != absoluteImageSize ||
-        oldDelegate.faces != faces;
+    return oldDelegate.imageSize != imageSize || oldDelegate.faces != faces;
   }
 }
 
 class LabelDetectorPainter extends CustomPainter {
-  LabelDetectorPainter(this.absoluteImageSize, this.labels);
+  LabelDetectorPainter(this.imageSize, this.labels);
 
-  final Size absoluteImageSize;
+  final Size imageSize;
   final List<Label> labels;
 
   @override
@@ -115,55 +111,92 @@ class LabelDetectorPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(LabelDetectorPainter oldDelegate) {
-    return oldDelegate.absoluteImageSize != absoluteImageSize ||
-        oldDelegate.labels != labels;
+    return oldDelegate.imageSize != imageSize || oldDelegate.labels != labels;
   }
 }
 
 // Paints rectangles around all the text in the image.
 class TextDetectorPainter extends CustomPainter {
-  TextDetectorPainter(this.absoluteImageSize, this.visionText);
+  TextDetectorPainter(this.imageSize, this.visionText);
 
-  final Size absoluteImageSize;
+  final Size imageSize;
   final VisionText visionText;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final double scaleX = size.width / absoluteImageSize.width;
-    final double scaleY = size.height / absoluteImageSize.height;
-
-    Rect scaleRect(TextContainer container) {
-      return Rect.fromLTRB(
-        container.boundingBox.left * scaleX,
-        container.boundingBox.top * scaleY,
-        container.boundingBox.right * scaleX,
-        container.boundingBox.bottom * scaleY,
-      );
-    }
-
     final Paint paint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.0;
+
+    Rect _getRect(TextContainer container) {
+      return _scaleAndFlipRectangle(
+        rect: container.boundingBox,
+        imageSize: imageSize,
+        widgetSize: size,
+        shouldFlipY: defaultTargetPlatform != TargetPlatform.iOS,
+        shouldFlipX: defaultTargetPlatform != TargetPlatform.iOS,
+      );
+    }
 
     for (TextBlock block in visionText.blocks) {
       for (TextLine line in block.lines) {
         for (TextElement element in line.elements) {
           paint.color = Colors.green;
-          canvas.drawRect(scaleRect(element), paint);
+          canvas.drawRect(_getRect(element), paint);
         }
 
         paint.color = Colors.yellow;
-        canvas.drawRect(scaleRect(line), paint);
+        canvas.drawRect(_getRect(line), paint);
       }
 
       paint.color = Colors.red;
-      canvas.drawRect(scaleRect(block), paint);
+      canvas.drawRect(_getRect(block), paint);
     }
   }
 
   @override
   bool shouldRepaint(TextDetectorPainter oldDelegate) {
-    return oldDelegate.absoluteImageSize != absoluteImageSize ||
+    return oldDelegate.imageSize != imageSize ||
         oldDelegate.visionText != visionText;
   }
+}
+
+Rect _scaleAndFlipRectangle({
+  @required Rectangle<int> rect,
+  @required Size imageSize,
+  @required Size widgetSize,
+  bool shouldScaleX = true,
+  bool shouldScaleY = true,
+  bool shouldFlipX = true,
+  bool shouldFlipY = true,
+}) {
+  final double scaleX = shouldScaleX ? widgetSize.width / imageSize.width : 1;
+  final double scaleY = shouldScaleY ? widgetSize.height / imageSize.height : 1;
+
+  double left;
+  double right;
+  if (shouldFlipX) {
+    left = imageSize.width - rect.left;
+    right = imageSize.width - rect.right;
+  } else {
+    left = rect.left.toDouble();
+    right = rect.right.toDouble();
+  }
+
+  double top;
+  double bottom;
+  if (shouldFlipY) {
+    top = imageSize.height - rect.top;
+    bottom = imageSize.height - rect.bottom;
+  } else {
+    top = rect.top.toDouble();
+    bottom = rect.bottom.toDouble();
+  }
+
+  return Rect.fromLTRB(
+    left * scaleX,
+    top * scaleY,
+    right * scaleX,
+    bottom * scaleY,
+  );
 }
