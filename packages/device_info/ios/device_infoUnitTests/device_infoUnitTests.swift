@@ -7,7 +7,7 @@
 //
 
 import XCTest
-@testable import Runner
+@testable import device_info
 
 class device_infoUnitTests: XCTestCase {
 
@@ -20,7 +20,8 @@ class device_infoUnitTests: XCTestCase {
     }
 
     func testExampleFail() {
-        XCTAssertEqual(1, 3)
+        let r = FLTDeviceInfoPlugin()
+        XCTAssertEqual(r.isDevicePhysical(), "false")
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct results.
     }
