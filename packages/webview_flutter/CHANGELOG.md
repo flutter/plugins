@@ -1,3 +1,9 @@
+## 0.2.0
+
+* Added a evaluateJavascript method to WebView controller. 
+* Updated the enum name from JavaScriptMode to JavascriptMode
+* Updated the variable name from javaScriptMode to javascriptMode in Webview 
+
 ## 0.1.2
 
 * Added a reload method to the WebView controller.
