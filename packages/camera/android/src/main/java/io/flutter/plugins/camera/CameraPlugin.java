@@ -39,7 +39,6 @@ import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.view.FlutterView;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -401,23 +400,23 @@ public class CameraPlugin implements MethodCallHandler {
     }
 
     private void setBestAERange(CameraCharacteristics characteristics) {
-      Range<Integer>[] fpsRanges = characteristics.get(CameraCharacteristics.CONTROL_AE_AVAILABLE_TARGET_FPS_RANGES);
-      
-      if(fpsRanges.length <= 0) {
+      Range<Integer>[] fpsRanges =
+          characteristics.get(CameraCharacteristics.CONTROL_AE_AVAILABLE_TARGET_FPS_RANGES);
+
+      if (fpsRanges.length <= 0) {
         return;
       }
 
       Integer idx = 0;
       Integer biggestDiference = 0;
 
-      for(Integer i = 0; i < fpsRanges.length; i++) {
+      for (Integer i = 0; i < fpsRanges.length; i++) {
         Integer currentDifference = fpsRanges[i].getUpper() - fpsRanges[i].getLower();
 
-        if(currentDifference > biggestDiference) {
+        if (currentDifference > biggestDiference) {
           idx = i;
           biggestDiference = currentDifference;
         }
-
       }
 
       aeFPSRange = fpsRanges[idx];
@@ -770,9 +769,9 @@ public class CameraPlugin implements MethodCallHandler {
                 captureRequestBuilder.set(
                     CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
 
-                if(Camera.this.aeFPSRange != null) {
+                if (Camera.this.aeFPSRange != null) {
                   captureRequestBuilder.set(
-                    CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE, Camera.this.aeFPSRange);
+                      CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE, Camera.this.aeFPSRange);
                 }
 
                 cameraCaptureSession.setRepeatingRequest(captureRequestBuilder.build(), null, null);
