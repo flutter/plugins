@@ -1,10 +1,11 @@
+env:
+    CODECOV_TOKEN: ENCRYPTED[b386dab525d9af8d807245b40c6812add427f42eb27fe8f3798bbf3970e338b45a93a2d208c08ae76abc2e9de7a31a32]
+
 task:
   container:
     image: cirrusci/flutter:latest
     cpu: 4
     memory: 8G
-  env:
-    CODECOV_TOKEN: ENCRYPTED[b386dab525d9af8d807245b40c6812add427f42eb27fe8f3798bbf3970e338b45a93a2d208c08ae76abc2e9de7a31a32]
   upgrade_script:
     - flutter channel master
     - flutter upgrade

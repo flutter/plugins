@@ -20,4 +20,4 @@ xcodebuild \
   -enableCodeCoverage YES \
   test
 
-bash <(curl -s https://codecov.io/bash) -F "$PACKAGE"
+bash <(curl -s https://codecov.io/bash) -cF "$PACKAGE"
