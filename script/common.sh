@@ -4,6 +4,9 @@ function error() {
   echo "$@" 1>&2
 }
 
+BRANCH_NAME="${BRANCH_NAME:-$BRANCH}"
+BRANCH_NAME="${BRANCH_NAME:-"$(git rev-parse --abbrev-ref HEAD)"}"
+
 function check_changed_packages() {
   # Try get a merge base for the branch and calculate affected packages.
   # We need this check because some CIs can do a single branch clones with a limited history of commits.
