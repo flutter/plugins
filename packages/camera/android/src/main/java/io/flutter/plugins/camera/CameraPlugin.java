@@ -403,9 +403,24 @@ public class CameraPlugin implements MethodCallHandler {
     private void setBestAERange(CameraCharacteristics characteristics) {
       Range<Integer>[] fpsRanges = characteristics.get(CameraCharacteristics.CONTROL_AE_AVAILABLE_TARGET_FPS_RANGES);
       
-      if(fpsRanges.length > 0) {
-        aeFPSRange = fpsRanges[0];
+      if(fpsRanges.length <= 0) {
+        return;
       }
+
+      Integer idx = 0;
+      Integer biggestDiference = 0;
+
+      for(Integer i = 0; i < fpsRanges.length; i++) {
+        Integer currentDifference = fpsRanges[i].getUpper() - fpsRanges[i].getLower();
+
+        if(currentDifference > biggestDiference) {
+          idx = i;
+          biggestDiference = currentDifference;
+        }
+
+      }
+
+      aeFPSRange = fpsRanges[idx];
     }
 
     private void computeBestPreviewAndRecordingSize(
