@@ -13,8 +13,7 @@
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
 		3B80C3941E831B6300D905FE /* App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B80C3931E831B6300D905FE /* App.framework */; };
 		3B80C3951E831B6300D905FE /* App.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3B80C3931E831B6300D905FE /* App.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		936FC0C721E0243700CCF7FA /* DeviceInfoPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 936FC0C521E0243700CCF7FA /* DeviceInfoPlugin.m */; };
-		93FD40F521DFF1E700A20A0C /* device_infoUnitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93FD40F421DFF1E700A20A0C /* device_infoUnitTests.swift */; };
+		93FD40F521DFF1E700A20A0C /* unit_test.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93FD40F421DFF1E700A20A0C /* unit_test.swift */; };
 		9705A1C61CF904A100538489 /* Flutter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9740EEBA1CF902C7004384FC /* Flutter.framework */; };
 		9705A1C71CF904A300538489 /* Flutter.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9740EEBA1CF902C7004384FC /* Flutter.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		9740EEB41CF90195004384FC /* Debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 9740EEB21CF90195004384FC /* Debug.xcconfig */; };
@@ -61,12 +60,9 @@
 		7AFFD8ED1D35381100E5BB4D /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		7AFFD8EE1D35381100E5BB4D /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		936FC06621E0034F00CCF7FA /* Runner-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Runner-Bridging-Header.h"; sourceTree = "<group>"; };
-		936FC0C221E0243700CCF7FA /* DeviceInfoPlugin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceInfoPlugin.h; sourceTree = "<group>"; };
-		936FC0C521E0243700CCF7FA /* DeviceInfoPlugin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeviceInfoPlugin.m; sourceTree = "<group>"; };
-		936FC0CA21E0268600CCF7FA /* DeviceInfoPlugin+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "DeviceInfoPlugin+Internal.h"; sourceTree = "<group>"; };
-		936FC0CB21E0281C00CCF7FA /* device_infoUnitTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "device_infoUnitTests-Bridging-Header.h"; sourceTree = "<group>"; };
+		936FC0CB21E0281C00CCF7FA /* unit_test-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "unit_test-Bridging-Header.h"; sourceTree = "<group>"; };
 		93FD40F221DFF1E700A20A0C /* device_infoUnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = device_infoUnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		93FD40F421DFF1E700A20A0C /* device_infoUnitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = device_infoUnitTests.swift; sourceTree = "<group>"; };
+		93FD40F421DFF1E700A20A0C /* unit_test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = unit_test.swift; sourceTree = "<group>"; };
 		93FD40F621DFF1E700A20A0C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9740EEB21CF90195004384FC /* Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Debug.xcconfig; path = Flutter/Debug.xcconfig; sourceTree = "<group>"; };
 		9740EEB31CF90195004384FC /* Generated.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Generated.xcconfig; path = Flutter/Generated.xcconfig; sourceTree = "<group>"; };
@@ -111,32 +107,20 @@
 		936FC0BF21E0230000CCF7FA /* Pluggin */ = {
 			isa = PBXGroup;
 			children = (
-				936FC0C121E0243700CCF7FA /* device_info */,
-				93FD40F321DFF1E700A20A0C /* device_infoUnitTests */,
+				93FD40F321DFF1E700A20A0C /* Tests */,
 			);
 			name = Pluggin;
 			sourceTree = "<group>";
 		};
-		936FC0C121E0243700CCF7FA /* device_info */ = {
+		93FD40F321DFF1E700A20A0C /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				936FC0C221E0243700CCF7FA /* DeviceInfoPlugin.h */,
-				936FC0CA21E0268600CCF7FA /* DeviceInfoPlugin+Internal.h */,
-				936FC0C521E0243700CCF7FA /* DeviceInfoPlugin.m */,
-			);
-			name = device_info;
-			path = ../../ios/Classes;
-			sourceTree = "<group>";
-		};
-		93FD40F321DFF1E700A20A0C /* device_infoUnitTests */ = {
-			isa = PBXGroup;
-			children = (
-				93FD40F421DFF1E700A20A0C /* device_infoUnitTests.swift */,
-				936FC0CB21E0281C00CCF7FA /* device_infoUnitTests-Bridging-Header.h */,
+				93FD40F421DFF1E700A20A0C /* unit_test.swift */,
+				936FC0CB21E0281C00CCF7FA /* unit_test-Bridging-Header.h */,
 				93FD40F621DFF1E700A20A0C /* Info.plist */,
 			);
-			name = device_infoUnitTests;
-			path = ../../ios/device_infoUnitTests;
+			name = Tests;
+			path = ../../ios/Tests;
 			sourceTree = SOURCE_ROOT;
 		};
 		9740EEB11CF90186004384FC /* Flutter */ = {
@@ -387,8 +371,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				93FD40F521DFF1E700A20A0C /* device_infoUnitTests.swift in Sources */,
-				936FC0C721E0243700CCF7FA /* DeviceInfoPlugin.m in Sources */,
+				93FD40F521DFF1E700A20A0C /* unit_test.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -452,7 +435,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
-				INFOPLIST_FILE = ../../ios/device_infoUnitTests/Info.plist;
+				INFOPLIST_FILE = ../../ios/Tests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
@@ -460,7 +443,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "flutter.device-infoUnitTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_OBJC_BRIDGING_HEADER = "../../ios/device_infoUnitTests/device_infoUnitTests-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "../../ios/Tests/unit_test-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -488,13 +471,13 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
-				INFOPLIST_FILE = ../../ios/device_infoUnitTests/Info.plist;
+				INFOPLIST_FILE = ../../ios/Tests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "flutter.device-infoUnitTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "../../ios/device_infoUnitTests/device_infoUnitTests-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "../../ios/Tests/unit_test-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";

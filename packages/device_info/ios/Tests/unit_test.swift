@@ -1,8 +1,5 @@
 //
-//  device_infoUnitTests.swift
-//  device_infoUnitTests
-//
-//  Created by TruongSinh Tran-Nguyen on 1/5/19.
+//  Created by TruongSinh Tran-Nguyen on 2019-01-05.
 //  Copyright © 2019 The Chromium Authors. All rights reserved.
 //
 
@@ -18,16 +15,9 @@ class device_infoUnitTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
 
-    func testExampleFail() {
+    func testIsPhysicalDevice() {
         let r = FLTDeviceInfoPlugin()
         XCTAssertEqual(r.isDevicePhysical(), "false")
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-    }
-    func testExamplePass() {
-        XCTAssertEqual(2, 2)
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
     }
 
 }
