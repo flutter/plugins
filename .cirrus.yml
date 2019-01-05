@@ -46,7 +46,7 @@ task:
         - export CIRRUS_COMMIT_MESSAGE=`cat /tmp/cirrus_commit_message.txt`
 
 task:
-  name: build-ipas
+  name: build-ipas+ios-test
   osx_instance:
     image: high-sierra-xcode-9.4.1
   env:
@@ -68,3 +68,4 @@ task:
   build_script:
     - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
     - ./script/incremental_build.sh build-examples --ipa
+    - ./script/incremental_build.sh ios-test  # @todo possible we don't have to build ipa anymore?
