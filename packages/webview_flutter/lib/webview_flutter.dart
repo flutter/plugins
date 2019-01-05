@@ -11,7 +11,7 @@ import 'package:flutter/widgets.dart';
 
 typedef void WebViewCreatedCallback(WebViewController controller);
 
-enum JavaScriptMode {
+enum JavascriptMode {
   /// JavaScript execution is disabled.
   disabled,
 
@@ -26,12 +26,12 @@ class WebView extends StatefulWidget {
   /// The web view can be controlled using a `WebViewController` that is passed to the
   /// `onWebViewCreated` callback once the web view is created.
   ///
-  /// The `javaScriptMode` parameter must not be null.
+  /// The `javascriptMode` parameter must not be null.
   const WebView({
     Key key,
     this.onWebViewCreated,
     this.initialUrl,
-    this.javaScriptMode = JavaScriptMode.disabled,
+    this.javascriptMode = JavascriptMode.disabled,
     this.gestureRecognizers,
     this.invalidUrlRegex,
   })  : assert(javaScriptMode != null),
@@ -54,8 +54,8 @@ class WebView extends StatefulWidget {
   /// The initial URL to load.
   final String initialUrl;
 
-  /// Whether JavaScript execution is enabled.
-  final JavaScriptMode javaScriptMode;
+  /// Whether Javascript execution is enabled.
+  final JavascriptMode javascriptMode;
 
   /// The regular expression (regex) of URLs that WebView should not load.
   ///
@@ -125,19 +125,13 @@ class _WebViewState extends State<WebView> {
   @override
   void didUpdateWidget(WebView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    final _WebSettings newSettings = _WebSettings.fromWidget(widget);
-    final Map<String, dynamic> settingsUpdate =
-        _settings.updatesMap(newSettings);
-    _updateSettings(settingsUpdate);
-    _settings = newSettings;
+    _updateSettings(_WebSettings.fromWidget(widget));
   }
 
-  Future<void> _updateSettings(Map<String, dynamic> update) async {
-    if (update == null) {
-      return;
-    }
+  Future<void> _updateSettings(_WebSettings settings) async {
+    _settings = settings;
     final WebViewController controller = await _controller.future;
-    controller._updateSettings(update);
+    controller._updateSettings(settings);
   }
 
   void _disposeController() async {
@@ -148,7 +142,8 @@ class _WebViewState extends State<WebView> {
   }
 
   void _onPlatformViewCreated(int id) {
-    final WebViewController controller = WebViewController._(id);
+    final WebViewController controller =
+        WebViewController._(id, _WebSettings.fromWidget(widget));
     _controller.complete(controller);
     if (widget.onWebViewCreated != null) {
       widget.onWebViewCreated(controller);
@@ -234,6 +229,8 @@ class WebViewController {
 
   final MethodChannel _channel;
 
+  _WebSettings _settings;
+
   /// Loads the specified URL.
   ///
   /// `url` must not be null.
@@ -294,8 +291,38 @@ class WebViewController {
     return _channel.invokeMethod("reload");
   }
 
-  Future<void> _updateSettings(Map<String, dynamic> update) async {
-    return _channel.invokeMethod('updateSettings', update);
+  Future<void> _updateSettings(_WebSettings setting) async {
+    final Map<String, dynamic> updateMap = _settings.updatesMap(setting);
+    if (updateMap == null) {
+      return null;
+    }
+    _settings = setting;
+    return _channel.invokeMethod('updateSettings', updateMap);
+  }
+
+  /// Evaluates a JavaScript expression in the context of the current page.
+  ///
+  /// On Android returns the evaluation result as a JSON formatted string.
+  ///
+  /// On iOS depending on the value type the return value would be one of:
+  ///
+  ///  - For primitive JavaScript types: the value string formatted (e.g JavaScript 100 returns '100').
+  ///  - For JavaScript arrays of supported types: a string formatted NSArray(e.g '(1,2,3), note that the string for NSArray is formatted and might contain newlines and extra spaces.').
+  ///  - Other non-primitive types are not supported on iOS and will complete the Future with an error.
+  ///
+  /// The Future completes with an error if a JavaScript error occurred, or on iOS, if the type of the
+  /// evaluated expression is not supported as described above.
+  Future<String> evaluateJavascript(String javascriptString) async {
+    if (_settings.javascriptMode == JavascriptMode.disabled) {
+      throw FlutterError(
+          'JavaScript mode must be enabled/unrestricted when calling evaluateJavascript.');
+    }
+    if (javascriptString == null) {
+      throw ArgumentError('The argument javascriptString must not be null. ');
+    }
+    final String result =
+        await _channel.invokeMethod('evaluateJavascript', javascriptString);
+    return result;
   }
 
   StreamController<String> _onUrlShouldLoad =
