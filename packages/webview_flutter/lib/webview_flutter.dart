@@ -348,6 +348,7 @@ class WebViewController {
     _onPageStartedController.close();
     _onPageFinishedController.close();
     _onUrlShouldLoad.close();
+    _channel.setMethodCallHandler(null);
   }
 }
 
