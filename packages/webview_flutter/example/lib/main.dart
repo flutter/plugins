@@ -9,12 +9,15 @@ import 'package:webview_flutter/webview_flutter.dart';
 void main() => runApp(MaterialApp(home: WebViewExample()));
 
 class WebViewExample extends StatelessWidget {
+  final GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
   final Completer<WebViewController> _controller =
       Completer<WebViewController>();
+  final String _invalidUrlRegex = r'^(https).+(twitter.com)';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _key,
       appBar: AppBar(
         title: const Text('Flutter WebView example'),
         // This drop down menu demonstrates that Flutter widgets can be shown over the web view.
@@ -28,8 +31,9 @@ class WebViewExample extends StatelessWidget {
         javaScriptMode: JavaScriptMode.unrestricted,
         onWebViewCreated: (WebViewController webViewController) {
           _controller.complete(webViewController);
+          _setupListeners(webViewController);
         },
-        invalidUrlRegex: r'^(https://flutter.io).*(install)$',
+        invalidUrlRegex: _invalidUrlRegex,
       ),
       floatingActionButton: favoriteButton(),
     );
@@ -41,7 +45,6 @@ class WebViewExample extends StatelessWidget {
         builder: (BuildContext context,
             AsyncSnapshot<WebViewController> controller) {
           if (controller.hasData) {
-            _setupWebController(controller.data);
             return FloatingActionButton(
               onPressed: () async {
                 final String url = await controller.data.currentUrl();
@@ -56,7 +59,7 @@ class WebViewExample extends StatelessWidget {
         });
   }
 
-  void _setupWebController(WebViewController controller) {
+  void _setupListeners(WebViewController controller) {
     controller.onPageStarted.listen((String url) {
       print('onPageStarted: $url');
     });
@@ -65,9 +68,16 @@ class WebViewExample extends StatelessWidget {
     });
     controller.onUrlShouldLoad.listen((String url) {
       print('onUrlShouldLoad: $url');
+      final RegExp regex = RegExp(_invalidUrlRegex);
+      if (regex.firstMatch(url) != null) {
+        _key.currentState.showSnackBar(
+          SnackBar(
+              content: Text("Denied"
+                  " $url")),
+        );
+      }
     });
   }
-
 }
 
 class SampleMenu extends StatelessWidget {

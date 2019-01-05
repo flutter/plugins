@@ -57,7 +57,10 @@ class WebView extends StatefulWidget {
   /// Whether JavaScript execution is enabled.
   final JavaScriptMode javaScriptMode;
 
-  /// The Regex of URLs that WebView shouldn't load
+  /// The regular expression (regex) of URLs that WebView should not load.
+  ///
+  /// The web view will use this regex to validate an URL before it is about to be loaded.
+  /// Any URL which there's at least a part matching the regex will be aborted loading.
   final String invalidUrlRegex;
 
   @override
@@ -295,15 +298,23 @@ class WebViewController {
     return _channel.invokeMethod('updateSettings', update);
   }
 
+  StreamController<String> _onUrlShouldLoad =
+      StreamController<String>.broadcast();
+
+  /// A stream that emits the url which is about to be loaded in the current WebView.
+  Stream<String> get onUrlShouldLoad => _onUrlShouldLoad.stream;
+
   StreamController<String> _onPageStartedController =
       StreamController<String>.broadcast();
+
+  /// A stream that emits the url which is started loading into the current WebView.
+  Stream<String> get onPageStarted => _onPageStartedController.stream;
+
   StreamController<String> _onPageFinishedController =
       StreamController<String>.broadcast();
-  StreamController<String> _onUrlShouldLoad = StreamController<String>.broadcast();
 
-  Stream<String> get onPageStarted => _onPageStartedController.stream;
+  /// A stream that emits the url which is finished loading into the current WebView.
   Stream<String> get onPageFinished => _onPageFinishedController.stream;
-  Stream<String> get onUrlShouldLoad => _onUrlShouldLoad.stream;
 
   void dispose() {
     _onPageStartedController.close();

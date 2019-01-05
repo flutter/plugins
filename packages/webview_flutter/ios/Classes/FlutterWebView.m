@@ -28,11 +28,17 @@
 
 @end
 
+@interface FLTWebViewController () <WKNavigationDelegate>
+
+@end
+
 @implementation FLTWebViewController {
   WKWebView* _webView;
   int64_t _viewId;
   FlutterMethodChannel* _channel;
   NSString* _currentUrl;
+  NSURL* _currentNSURL;
+  NSString* _invalidUrlRegex;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -42,6 +48,7 @@
   if ([super init]) {
     _viewId = viewId;
     _webView = [[WKWebView alloc] initWithFrame:frame];
+    _webView.navigationDelegate = self;
     NSString* channelName = [NSString stringWithFormat:@"plugins.flutter.io/webview_%lld", viewId];
     _channel = [FlutterMethodChannel methodChannelWithName:channelName binaryMessenger:messenger];
     __weak __typeof__(self) weakSelf = self;
@@ -135,6 +142,8 @@
     if ([key isEqualToString:@"jsMode"]) {
       NSNumber* mode = settings[key];
       [self updateJsMode:mode];
+    } else if ([key isEqualToString:@"invalidUrlRegex"]) {
+      _invalidUrlRegex = settings[key];
     } else {
       NSLog(@"webview_flutter: unknown setting key: %@", key);
     }
@@ -163,6 +172,52 @@
   NSURLRequest* req = [NSURLRequest requestWithURL:nsUrl];
   [_webView loadRequest:req];
   return true;
+}
+
+#pragma mark - WKNavigationDelegate
+
+- (void)webView:(WKWebView*)webView
+    decidePolicyForNavigationAction:(WKNavigationAction*)navigationAction
+                    decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
+  _currentNSURL = navigationAction.request.URL;
+  if ([self checkInvalidUrl:_currentNSURL]) {
+    decisionHandler(WKNavigationActionPolicyCancel);
+  } else {
+    decisionHandler(WKNavigationActionPolicyAllow);
+  }
+  [self onNavigateUrl:_currentNSURL method:@"onUrlShouldLoad"];
+}
+
+- (void)webView:(WKWebView*)webView didStartProvisionalNavigation:(WKNavigation*)navigation {
+  [self onNavigateUrl:_currentNSURL method:@"onPageStarted"];
+}
+
+- (void)webView:(WKWebView*)webView didFinishNavigation:(WKNavigation*)navigation {
+  [self onNavigateUrl:_currentNSURL method:@"onPageFinished"];
+}
+
+- (bool)checkInvalidUrl:(NSURL*)url {
+  NSString* urlString = url != nil ? [url absoluteString] : nil;
+  if (_invalidUrlRegex && urlString) {
+    NSError* error = NULL;
+    NSRegularExpression* regex =
+        [NSRegularExpression regularExpressionWithPattern:_invalidUrlRegex
+                                                  options:NSRegularExpressionCaseInsensitive
+                                                    error:&error];
+    NSTextCheckingResult* match = [regex firstMatchInString:urlString
+                                                    options:0
+                                                      range:NSMakeRange(0, [urlString length])];
+    return match != nil;
+  } else {
+    return false;
+  }
+}
+
+- (void)onNavigateUrl:(NSURL*)url method:(NSString*)method {
+  if (url) {
+    NSDictionary* args = @{@"url" : [url absoluteString]};
+    [_channel invokeMethod:method arguments:args];
+  }
 }
 
 @end

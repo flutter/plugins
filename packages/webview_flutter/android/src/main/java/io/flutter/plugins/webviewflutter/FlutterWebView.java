@@ -8,77 +8,89 @@ import android.view.View;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.platform.PlatformView;
-
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class FlutterWebView implements PlatformView, MethodCallHandler {
   private final WebView webView;
   private final MethodChannel methodChannel;
   private final WebViewClient webClient;
-  private String invalidUrlRegex;
+  private Pattern invalidUrlPattern;
 
   @SuppressWarnings("unchecked")
-  FlutterWebView(Context context, final BinaryMessenger messenger, int id, Map<String, Object> params) {
+  FlutterWebView(
+      Context context, final BinaryMessenger messenger, int id, Map<String, Object> params) {
     webView = new WebView(context);
     if (params.containsKey("initialUrl")) {
       String url = (String) params.get("initialUrl");
       webView.loadUrl(url);
     }
     if (params.containsKey("invalidUrlRegex")) {
-      invalidUrlRegex = (String) params.get("invalidUrlRegex");
+      String invalidUrlRegex = (String) params.get("invalidUrlRegex");
+      invalidUrlPattern = Pattern.compile(invalidUrlRegex);
     } else {
-      invalidUrlRegex = null;
+      invalidUrlPattern = null;
     }
 
-    webClient = new WebViewClient() {
-      @Override
-      public void onPageStarted(WebView view, String url, Bitmap favicon) {
-        super.onPageStarted(view, url, favicon);
-        Map<String, Object> args = new HashMap<>();
-        args.put("url", url);
-        methodChannel.invokeMethod("onPageStarted", args);
-      }
+    webClient =
+        new WebViewClient() {
+          @Override
+          public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            super.onPageStarted(view, url, favicon);
+            Map<String, Object> args = new HashMap<>();
+            args.put("url", url);
+            methodChannel.invokeMethod("onPageStarted", args);
+          }
 
-      @Override
-      public void onPageFinished(WebView view, String url) {
-        super.onPageFinished(view, url);
-        Map<String, Object> args = new HashMap<>();
-        args.put("url", url);
-        methodChannel.invokeMethod("onPageFinished", args);
-      }
+          @Override
+          public void onPageFinished(WebView view, String url) {
+            super.onPageFinished(view, url);
+            Map<String, Object> args = new HashMap<>();
+            args.put("url", url);
+            methodChannel.invokeMethod("onPageFinished", args);
+          }
 
-      @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-      @Override
-      public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-        // returning true causes the current WebView to abort loading the URL,
-        // while returning false causes the WebView to continue loading the URL as usual.
-        String url = request.getUrl().toString();
-        onUrlShouldLoad(url);
-        return invalidUrlRegex != null && url.matches(invalidUrlRegex);
-      }
+          @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+          @Override
+          public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+            // returning true causes the current WebView to abort loading the URL,
+            // while returning false causes the WebView to continue loading the URL as usual.
+            String url = request.getUrl().toString();
+            onUrlShouldLoad(url);
+            return checkInvalidUrl(url);
+          }
 
-      @Override
-      public boolean shouldOverrideUrlLoading(WebView view, String url) {
-        // returning true causes the current WebView to abort loading the URL,
-        // while returning false causes the WebView to continue loading the URL as usual.
-        onUrlShouldLoad(url);
-        return invalidUrlRegex != null && url.matches(invalidUrlRegex);
-      }
+          @Override
+          public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            // returning true causes the current WebView to abort loading the URL,
+            // while returning false causes the WebView to continue loading the URL as usual.
+            onUrlShouldLoad(url);
+            return checkInvalidUrl(url);
+          }
 
-      private void onUrlShouldLoad(String url) {
-        Map<String, Object> args = new HashMap<>();
-        args.put("url", url);
-        methodChannel.invokeMethod("onUrlShouldLoad", args);
-      }
-    };
+          private void onUrlShouldLoad(String url) {
+            Map<String, Object> args = new HashMap<>();
+            args.put("url", url);
+            methodChannel.invokeMethod("onUrlShouldLoad", args);
+          }
+
+          private boolean checkInvalidUrl(String url) {
+            if (invalidUrlPattern == null) {
+              return false;
+            } else {
+              Matcher matcher = invalidUrlPattern.matcher(url);
+              return matcher.lookingAt();
+            }
+          }
+        };
     webView.setWebViewClient(webClient);
 
     applySettings((Map<String, Object>) params.get("settings"));
@@ -196,9 +208,12 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   }
 
   private void updateInvalidUrlRegex(String regex) {
-    invalidUrlRegex = regex;
+    invalidUrlPattern = Pattern.compile(regex);
+    ;
   }
 
   @Override
-  public void dispose() {}
+  public void dispose() {
+    webView.setWebViewClient(null);
+  }
 }
