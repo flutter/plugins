@@ -227,7 +227,6 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
   private void updateInvalidUrlRegex(String regex) {
     invalidUrlPattern = Pattern.compile(regex);
-    ;
   }
 
   @Override

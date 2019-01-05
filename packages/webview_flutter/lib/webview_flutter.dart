@@ -34,7 +34,7 @@ class WebView extends StatefulWidget {
     this.javascriptMode = JavascriptMode.disabled,
     this.gestureRecognizers,
     this.invalidUrlRegex,
-  })  : assert(javaScriptMode != null),
+  })  : assert(javascriptMode != null),
         super(key: key);
 
   /// If not null invoked once the web view is created.
@@ -174,33 +174,33 @@ class _CreationParams {
 
 class _WebSettings {
   _WebSettings({
-    this.javaScriptMode,
+    this.javascriptMode,
     this.invalidUrlRegex,
   });
 
   static _WebSettings fromWidget(WebView widget) {
     return _WebSettings(
-        javaScriptMode: widget.javaScriptMode,
+        javascriptMode: widget.javascriptMode,
         invalidUrlRegex: widget.invalidUrlRegex);
   }
 
-  final JavaScriptMode javaScriptMode;
+  final JavascriptMode javascriptMode;
   final String invalidUrlRegex;
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'jsMode': javaScriptMode.index,
+      'jsMode': javascriptMode.index,
       'invalidUrlRegex': invalidUrlRegex,
     };
   }
 
   Map<String, dynamic> updatesMap(_WebSettings newSettings) {
-    if (javaScriptMode == newSettings.javaScriptMode &&
+    if (javascriptMode == newSettings.javascriptMode &&
         invalidUrlRegex == newSettings.invalidUrlRegex) {
       return null;
     }
     return <String, dynamic>{
-      'jsMode': newSettings.javaScriptMode.index,
+      'jsMode': newSettings.javascriptMode.index,
       'invalidUrlRegex': invalidUrlRegex,
     };
   }
@@ -211,8 +211,9 @@ class _WebSettings {
 /// A [WebViewController] instance can be obtained by setting the [WebView.onWebViewCreated]
 /// callback for a [WebView] widget.
 class WebViewController {
-  WebViewController._(int id)
-      : _channel = MethodChannel('plugins.flutter.io/webview_$id') {
+  WebViewController._(int id, _WebSettings settings)
+      : _channel = MethodChannel('plugins.flutter.io/webview_$id'),
+        _settings = settings {
     _channel.setMethodCallHandler((MethodCall call) async {
       if (call.method == 'onPageStarted') {
         final String url = call.arguments['url'];
