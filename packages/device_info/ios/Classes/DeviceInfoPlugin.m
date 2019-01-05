@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #import "DeviceInfoPlugin.h"
-#import "DeviceInfoPlugin+Internal.h"
 #import <sys/utsname.h>
+#import "DeviceInfoPlugin+Internal.h"
 
 @implementation FLTDeviceInfoPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
