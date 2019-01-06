@@ -22,4 +22,4 @@ else
 fi
 
 cd $REPO_DIR
-bash <(curl -s https://codecov.io/bash) -cF "$PACKAGE" -s packages/$PACKAGE
+bash <(curl -s https://codecov.io/bash) -F "$PACKAGE" -s packages/$PACKAGE -cz
