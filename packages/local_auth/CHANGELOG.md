@@ -1,3 +1,6 @@
+## 0.3.1
+* Fix crash on Android versions earlier than 24.
+
 ## 0.3.0
 
 * **Breaking change**. Add canCheckBiometrics and getAvailableBiometrics which leads to a new API.
