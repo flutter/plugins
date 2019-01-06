@@ -36,6 +36,10 @@ if [[ "$@" == "java-test" ]]; then
   for PACKAGE in "${CHANGED_PACKAGE_LIST[@]:${startIndex}:${shardSize}}"; do
     PACKAGE=$PACKAGE $SCRIPT_DIR/test_coverage_single_package.sh
   done
+elif [[ "$@" == "ios-test" ]]; then
+  for PACKAGE in "${CHANGED_PACKAGE_LIST[@]:${startIndex}:${shardSize}}"; do
+    PACKAGE=$PACKAGE $SCRIPT_DIR/ios_test_coverage_single_package.sh
+  done
 else
   (cd "$REPO_DIR" && pub global run flutter_plugin_tools "${ACTIONS[@]}" --plugins="$CHANGED_PACKAGES" $PLUGIN_SHARDING)
 fi

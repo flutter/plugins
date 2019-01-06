@@ -1,10 +1,11 @@
+env:
+    CODECOV_TOKEN: ENCRYPTED[b386dab525d9af8d807245b40c6812add427f42eb27fe8f3798bbf3970e338b45a93a2d208c08ae76abc2e9de7a31a32]
+
 task:
   container:
     image: cirrusci/flutter:latest
     cpu: 4
     memory: 8G
-  env:
-    CODECOV_TOKEN: ENCRYPTED[b386dab525d9af8d807245b40c6812add427f42eb27fe8f3798bbf3970e338b45a93a2d208c08ae76abc2e9de7a31a32]
   upgrade_script:
     - flutter channel master
     - flutter upgrade
@@ -46,7 +47,7 @@ task:
         - export CIRRUS_COMMIT_MESSAGE=`cat /tmp/cirrus_commit_message.txt`
 
 task:
-  name: build-ipas
+  name: build-ipas+ios-test
   osx_instance:
     image: high-sierra-xcode-9.4.1
   env:
@@ -68,3 +69,4 @@ task:
   build_script:
     - export PATH=`pwd`/flutter/bin:`pwd`/flutter/bin/cache/dart-sdk/bin:$PATH
     - ./script/incremental_build.sh build-examples --ipa
+    - ./script/incremental_build.sh ios-test  # @todo possible we don't have to build ipa anymore?
