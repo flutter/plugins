@@ -1,7 +1,13 @@
+## 0.2.3
+* Move firebase_auth from a dependency to a dev_dependency.
+
+## 0.2.2
+* Update dependencies for example to point to published versions of firebase_auth.
+
 ## 0.2.1
 * Update dependencies for example to point to published versions of firebase_auth
   and google_sign_in.
-* Add missing dependency on firebase_auth.1
+* Add missing dependency on firebase_auth.
 
 ## 0.2.0
 

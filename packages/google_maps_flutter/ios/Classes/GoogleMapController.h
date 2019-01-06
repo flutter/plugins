@@ -6,18 +6,8 @@
 #import <GoogleMaps/GoogleMaps.h>
 #import "GoogleMapMarkerController.h"
 
-// Defines events to be sent to Flutter.
-@protocol FLTGoogleMapDelegate
-- (void)onCameraMoveStartedOnMap:(id)mapId gesture:(BOOL)gesture;
-- (void)onCameraMoveOnMap:(id)mapId cameraPosition:(GMSCameraPosition*)cameraPosition;
-- (void)onCameraIdleOnMap:(id)mapId;
-- (void)onMarkerTappedOnMap:(id)mapId marker:(NSString*)markerId;
-- (void)onInfoWindowTappedOnMap:(id)mapId marker:(NSString*)markerId;
-@end
-
 // Defines map UI options writable from Flutter.
 @protocol FLTGoogleMapOptionsSink
-- (void)setCamera:(GMSCameraPosition*)camera;
 - (void)setCameraTargetBounds:(GMSCoordinateBounds*)bounds;
 - (void)setCompassEnabled:(BOOL)enabled;
 - (void)setMapType:(GMSMapViewType)type;
@@ -33,14 +23,10 @@
 // Defines map overlay controllable from Flutter.
 @interface FLTGoogleMapController
     : NSObject <GMSMapViewDelegate, FLTGoogleMapOptionsSink, FlutterPlatformView>
-@property(atomic) id<FLTGoogleMapDelegate> delegate;
-@property(atomic, readonly) id mapId;
 - (instancetype)initWithFrame:(CGRect)frame
                viewIdentifier:(int64_t)viewId
                     arguments:(id _Nullable)args
                     registrar:(NSObject<FlutterPluginRegistrar>*)registrar;
-- (void)addToView:(UIView*)view;
-- (void)removeFromView;
 - (void)showAtX:(CGFloat)x Y:(CGFloat)y;
 - (void)hide;
 - (void)animateWithCameraUpdate:(GMSCameraUpdate*)cameraUpdate;

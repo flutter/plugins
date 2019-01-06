@@ -5,9 +5,11 @@
 package io.flutter.plugins.urllauncher;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -44,24 +46,24 @@ public class UrlLauncherPlugin implements MethodCallHandler {
       Intent launchIntent;
       boolean useWebView = call.argument("useWebView");
       boolean enableJavaScript = call.argument("enableJavaScript");
-      Context context;
-      if (mRegistrar.activity() != null) {
-        context = (Context) mRegistrar.activity();
-      } else {
-        context = mRegistrar.context();
+      Activity activity = mRegistrar.activity();
+      if (activity == null) {
+        result.error("NO_ACTIVITY", "Launching a URL requires a foreground activity.", null);
+        return;
       }
       if (useWebView) {
-        launchIntent = new Intent(context, WebViewActivity.class);
+        launchIntent = new Intent(activity, WebViewActivity.class);
         launchIntent.putExtra("url", url);
         launchIntent.putExtra("enableJavaScript", enableJavaScript);
       } else {
         launchIntent = new Intent(Intent.ACTION_VIEW);
         launchIntent.setData(Uri.parse(url));
       }
-      if (mRegistrar.activity() == null) {
-        launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      }
-      context.startActivity(launchIntent);
+      activity.startActivity(launchIntent);
+      result.success(null);
+    } else if (call.method.equals("closeWebView")) {
+      Intent intent = new Intent("close");
+      mRegistrar.context().sendBroadcast(intent);
       result.success(null);
     } else {
       result.notImplemented();
@@ -84,6 +86,7 @@ public class UrlLauncherPlugin implements MethodCallHandler {
   /*  Launches WebView activity */
   public static class WebViewActivity extends Activity {
     private WebView webview;
+    private BroadcastReceiver broadcastReceiver;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -107,6 +110,25 @@ public class UrlLauncherPlugin implements MethodCallHandler {
               return false;
             }
           });
+
+      // Set broadcast receiver to handle calls to close the web view
+      broadcastReceiver =
+          new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context arg0, Intent intent) {
+              String action = intent.getAction();
+              if ("close".equals(action)) {
+                finish();
+              }
+            }
+          };
+      registerReceiver(broadcastReceiver, new IntentFilter("close"));
+    }
+
+    @Override
+    protected void onDestroy() {
+      super.onDestroy();
+      unregisterReceiver(broadcastReceiver);
     }
 
     @Override
