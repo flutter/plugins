@@ -189,7 +189,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
 }
 
 - (AVCaptureFlashMode)unserializeFlashMode:(NSNumber *)flashMode {
-    switch (flashMode) {
+    switch ([flashMode integerValue]) {
         case 1:
             return AVCaptureFlashModeOn;
         case 2:
