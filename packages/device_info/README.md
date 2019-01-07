@@ -1,3 +1,5 @@
+[![](https://img.shields.io/badge/dynamic/yaml.svg?label=codecov&url=https%3A%2F%2Fraw.githubusercontent.com%2Ftruongsinh%2Fflutter-plugins%2Fmaster%2Fcodecov_generated.yml&query=device_info&colorB=orange&suffix=%)](https://codecov.io/gh/truongsinh/flutter-plugins/tree/master/packages/device_info)
+
 # device_info
 
 Get current device information from within the Flutter application.

@@ -21,17 +21,17 @@ repo](https://github.com/flutter/flutter).
 ## Plugins
 These are the available plugins in this repository. The coverage badges of each plugin are manually generated now, see [my tweet](https://twitter.com/truongsinhtn/status/1082253861195108354)
 
-| Plugin | Pub |
-|--------|-----|
+| Plugin | Pub | Coverage |
+|--------|-----| -------- |
 | [android_alarm_manager](./packages/android_alarm_manager/) | [![pub package](https://img.shields.io/pub/v/android_alarm_manager.svg)](https://pub.dartlang.org/packages/android_alarm_manager) |
 | [android_intent](./packages/android_intent/) | [![pub package](https://img.shields.io/pub/v/android_intent.svg)](https://pub.dartlang.org/packages/android_intent) |
 | [battery](./packages/battery/) | [![pub package](https://img.shields.io/pub/v/battery.svg)](https://pub.dartlang.org/packages/battery) |
 | [camera](./packages/camera/) | [![pub package](https://img.shields.io/pub/v/camera.svg)](https://pub.dartlang.org/packages/camera) |
 | [connectivity](./packages/connectivity/) | [![pub package](https://img.shields.io/pub/v/connectivity.svg)](https://pub.dartlang.org/packages/connectivity) |
-| [device_info](./packages/device_info/) | [![pub package](https://img.shields.io/pub/v/device_info.svg)](https://pub.dartlang.org/packages/device_info) |
+| [device_info](./packages/device_info/) | [![pub package](https://img.shields.io/pub/v/device_info.svg)](https://pub.dartlang.org/packages/device_info) | [![](https://img.shields.io/badge/dynamic/yaml.svg?label=codecov&url=https%3A%2F%2Fraw.githubusercontent.com%2Ftruongsinh%2Fflutter-plugins%2Fmaster%2Fcodecov_generated.yml&query=device_info&colorB=orange&suffix=%)](https://codecov.io/gh/truongsinh/flutter-plugins/tree/master/packages/device_info)
 | [google_maps_flutter](./packages/google_maps_flutter) | [![pub package](https://img.shields.io/pub/v/google_maps_flutter.svg)](https://pub.dartlang.org/packages/google_maps_flutter) |
 | [google_sign_in](./packages/google_sign_in/) | [![pub package](https://img.shields.io/pub/v/google_sign_in.svg)](https://pub.dartlang.org/packages/google_sign_in) |
-| [image_picker](./packages/image_picker/) | [![pub package](https://img.shields.io/pub/v/image_picker.svg)](https://pub.dartlang.org/packages/image_picker) |
+| [image_picker](./packages/image_picker/) | [![pub package](https://img.shields.io/pub/v/image_picker.svg)](https://pub.dartlang.org/packages/image_picker) | [![](https://img.shields.io/badge/dynamic/yaml.svg?label=codecov&url=https%3A%2F%2Fraw.githubusercontent.com%2Ftruongsinh%2Fflutter-plugins%2Fmaster%2Fcodecov_generated.yml&query=image_picker&colorB=orange&suffix=%)](https://codecov.io/gh/truongsinh/flutter-plugins/tree/master/packages/image_picker)
 | [local_auth](./packages/local_auth/) | [![pub package](https://img.shields.io/pub/v/local_auth.svg)](https://pub.dartlang.org/packages/local_auth) |
 | [package_info](./packages/package_info/) | [![pub package](https://img.shields.io/pub/v/package_info.svg)](https://pub.dartlang.org/packages/package_info) |
 | [path_provider](./packages/path_provider/) | [![pub package](https://img.shields.io/pub/v/path_provider.svg)](https://pub.dartlang.org/packages/path_provider) |
