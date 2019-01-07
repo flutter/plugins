@@ -17,8 +17,6 @@ public class FlutterWebViewClient extends WebViewClient {
 
   private final MethodChannel methodChannel;
 
-  private Boolean shouldOverrideUrlLoading = false;
-
   FlutterWebViewClient(MethodChannel methodChannel) {
     assert methodChannel != null;
     this.methodChannel = methodChannel;
@@ -36,37 +34,31 @@ public class FlutterWebViewClient extends WebViewClient {
   }
 
   private boolean onShouldOverrideUrlLoading(final WebView view, final String url) {
-    if (shouldOverrideUrlLoading) {
-      Map<String, Object> args = new HashMap<>();
-      args.put("url", url);
-      methodChannel.invokeMethod(
-          "shouldOverrideUrlLoading",
-          args,
-          new MethodChannel.Result() {
-            @Override
-            public void success(Object result) {
-              shouldOverrideUrlLoading = (Boolean) result;
-              if (!shouldOverrideUrlLoading) {
-                view.loadUrl(url);
-              }
+    Map<String, Object> args = new HashMap<>();
+    args.put("url", url);
+    methodChannel.invokeMethod(
+        "shouldOverrideUrlLoading",
+        args,
+        new MethodChannel.Result() {
+          @Override
+          public void success(Object result) {
+            Boolean shouldOverrideUrlLoading = (Boolean) result;
+            if (!shouldOverrideUrlLoading) {
+              view.loadUrl(url);
             }
+          }
 
-            @Override
-            public void error(String errorCode, String errorMessage, Object errorDetails) {
-              Log.e(
-                  TAG,
-                  String.format(
-                      "Failed to handle channel reply: %s: %s" + errorCode, errorMessage));
-            }
+          @Override
+          public void error(String errorCode, String errorMessage, Object errorDetails) {
+            Log.e(
+                TAG,
+                String.format("Failed to handle channel reply: %s: %s" + errorCode, errorMessage));
+          }
 
-            @Override
-            public void notImplemented() {}
-          });
-      return true;
-    } else {
-      shouldOverrideUrlLoading = true;
-      return false;
-    }
+          @Override
+          public void notImplemented() {}
+        });
+    return true;
   }
 
   @Override
