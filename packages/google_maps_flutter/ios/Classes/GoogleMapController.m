@@ -9,11 +9,14 @@
 static id positionToJson(GMSCameraPosition* position);
 static double toDouble(id json);
 static CLLocationCoordinate2D toLocation(id json);
+static NSMutableArray* toPoints(id json);
 static GMSCameraPosition* toOptionalCameraPosition(id json);
 static GMSCoordinateBounds* toOptionalBounds(id json);
 static GMSCameraUpdate* toCameraUpdate(id json);
 static void interpretMapOptions(id json, id<FLTGoogleMapOptionsSink> sink);
 static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> sink,
+                                   NSObject<FlutterPluginRegistrar>* registrar);
+static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink> sink,
                                    NSObject<FlutterPluginRegistrar>* registrar);
 
 @implementation FLTGoogleMapFactory {
@@ -46,6 +49,7 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
   GMSMapView* _mapView;
   int64_t _viewId;
   NSMutableDictionary* _markers;
+  NSMutableDictionary* _polylines;
   FlutterMethodChannel* _channel;
   BOOL _trackCameraPosition;
   NSObject<FlutterPluginRegistrar>* _registrar;
@@ -61,6 +65,7 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
     GMSCameraPosition* camera = toOptionalCameraPosition(args[@"cameraPosition"]);
     _mapView = [GMSMapView mapWithFrame:frame camera:camera];
     _markers = [NSMutableDictionary dictionaryWithCapacity:1];
+    _polylines = [NSMutableDictionary dictionaryWithCapacity:1];
     _trackCameraPosition = NO;
     interpretMapOptions(args, self);
     NSString* channelName =
@@ -112,6 +117,18 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
   } else if ([call.method isEqualToString:@"marker#remove"]) {
     [self removeMarkerWithId:call.arguments[@"marker"]];
     result(nil);
+  } else if ([call.method isEqualToString:@"polyline#add"]) {
+      NSDictionary* options = call.arguments[@"options"];
+      NSString* polylineId = [self addPolylineWithPoints:toPoints(options[@"points"])];
+      interpretPolylineOptions(options, [self polylineWithId:polylineId], _registrar);
+      result(polylineId);
+  } else if ([call.method isEqualToString:@"polyline#update"]) {
+      interpretPolylineOptions(call.arguments[@"options"],
+                             [self polylineWithId:call.arguments[@"polyline"]], _registrar);
+      result(nil);
+  } else if ([call.method isEqualToString:@"polyline#remove"]) {
+      [self removePolylineWithId:call.arguments[@"polyline"]];
+      result(nil);
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -144,23 +161,43 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
 }
 
 - (NSString*)addMarkerWithPosition:(CLLocationCoordinate2D)position {
-  FLTGoogleMapMarkerController* markerController =
-      [[FLTGoogleMapMarkerController alloc] initWithPosition:position mapView:_mapView];
-  _markers[markerController.markerId] = markerController;
-  return markerController.markerId;
+    FLTGoogleMapMarkerController* markerController =
+    [[FLTGoogleMapMarkerController alloc] initWithPosition:position mapView:_mapView];
+    _markers[markerController.markerId] = markerController;
+    return markerController.markerId;
 }
 
 - (FLTGoogleMapMarkerController*)markerWithId:(NSString*)markerId {
-  return _markers[markerId];
+    return _markers[markerId];
 }
 
 - (void)removeMarkerWithId:(NSString*)markerId {
-  FLTGoogleMapMarkerController* markerController = _markers[markerId];
-  if (markerController) {
-    [markerController setVisible:NO];
-    [_markers removeObjectForKey:markerId];
-  }
+    FLTGoogleMapMarkerController* markerController = _markers[markerId];
+    if (markerController) {
+        [markerController setVisible:NO];
+        [_markers removeObjectForKey:markerId];
+    }
 }
+
+- (NSString*)addPolylineWithPoints:(NSMutableArray*)points {
+    FLTGoogleMapPolylineController* polylineController =
+    [[FLTGoogleMapPolylineController alloc] init: _mapView];
+    _polylines[polylineController.polylineId] = polylineController;
+    return polylineController.polylineId;
+}
+
+- (FLTGoogleMapPolylineController*)polylineWithId:(NSString*)polylineId {
+    return _polylines[polylineId];
+}
+
+- (void)removePolylineWithId:(NSString*)polylineId {
+    FLTGoogleMapPolylineController* polylineController = _polylines[polylineId];
+    if (polylineController) {
+        [polylineController setVisible:NO];
+        [_polylines removeObjectForKey:polylineId];
+    }
+}
+
 
 #pragma mark - FLTGoogleMapOptionsSink methods
 
@@ -236,6 +273,11 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
   [_channel invokeMethod:@"infoWindow#onTap" arguments:@{@"marker" : markerId}];
 }
 
+- (void)mapView:(GMSMapView *)mapView didTapOverlay:(GMSOverlay *)overlay {
+  NSString* polylineId = overlay.userData[0];
+  [_channel invokeMethod:@"polyline#onTap" arguments:@{@"polyline" : polylineId}];
+}
+
 @end
 
 #pragma mark - Implementations of JSON conversion functions.
@@ -279,6 +321,17 @@ static float toFloat(id json) {
 static CLLocationCoordinate2D toLocation(id json) {
   NSArray* data = json;
   return CLLocationCoordinate2DMake(toDouble(data[0]), toDouble(data[1]));
+}
+
+static NSMutableArray* toPoints(id json) {
+    NSMutableArray *points = [[NSMutableArray alloc] init];
+    NSArray* data = json;
+    for(int i = 0; i< [data count]; i++){
+        CLLocation *point = [[CLLocation alloc]  initWithLatitude:toDouble(data[i][0]) longitude:toDouble(data[i][1])];
+        [points addObject:point];
+    }
+    
+    return points;
 }
 
 static CGPoint toPoint(id json) {
@@ -461,3 +514,34 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
     [sink setZIndex:toInt(zIndex)];
   }
 }
+
+static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink> sink,
+                                   NSObject<FlutterPluginRegistrar>* registrar) {
+  NSDictionary* data = json;
+
+  id position = data[@"points"];
+  if (position) {
+    [sink setPoints:toPoints(position)];
+  }
+  id visible = data[@"visible"];
+  if (visible) {
+    [sink setVisible:toBool(visible)];
+  }
+  id color = data[@"color"];
+  if (color) {
+      NSInteger intColor = (NSInteger) color;
+      [sink setColor: [UIColor colorWithRed:((float)((intColor & 0xFF0000) >> 16))/255.0
+               green:((float)((intColor & 0xFF00) >> 8))/255.0
+                blue:((float)(intColor & 0xFF))/255.0
+               alpha:1.0]];
+  }
+  id width = data[@"width"];
+  if (width) {
+    [sink setStrokeWidth:toFloat(width)];
+  }
+  id zIndex = data[@"zIndex"];
+  if (zIndex) {
+    [sink setZIndex:toInt(zIndex)];
+  }
+}
+
