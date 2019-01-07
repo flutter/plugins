@@ -12,7 +12,6 @@ class WebViewExample extends StatelessWidget {
   final GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
   final Completer<WebViewController> _controller =
       Completer<WebViewController>();
-  final String _invalidUrlRegex = r'^(https).+(twitter.com)';
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +32,6 @@ class WebViewExample extends StatelessWidget {
           _controller.complete(webViewController);
           _setupListeners(webViewController);
         },
-        invalidUrlRegex: _invalidUrlRegex,
       ),
       floatingActionButton: favoriteButton(),
     );
@@ -65,17 +63,6 @@ class WebViewExample extends StatelessWidget {
     });
     controller.onPageFinished.listen((String url) {
       print('onPageFinished: $url');
-    });
-    controller.onUrlShouldLoad.listen((String url) {
-      print('onUrlShouldLoad: $url');
-      final RegExp regex = RegExp(_invalidUrlRegex);
-      if (regex.firstMatch(url) != null) {
-        _key.currentState.showSnackBar(
-          SnackBar(
-              content: Text("Denied"
-                  " $url")),
-        );
-      }
     });
   }
 }
