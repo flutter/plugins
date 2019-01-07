@@ -35,8 +35,9 @@ for purchase to call their in-app-purchase APIs.
    ID in the PDC.
 
 5. Create an `example/android/keystore.properties` file with all your signing
-   information. It's impossible to use any of the `BillingClient` APIs from an
-   unsigned APK. See
+   information. `keystore.example.properties` exists as an example to follow.
+   It's impossible to use any of the `BillingClient` APIs from an unsigned APK.
+   See
    [here](https://developer.android.com/studio/publish/app-signing#secure-shared-keystore)
    and [here](https://developer.android.com/studio/publish/app-signing#sign-apk)
    for more information.

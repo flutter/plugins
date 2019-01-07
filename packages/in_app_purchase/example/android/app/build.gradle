@@ -7,7 +7,9 @@ if (localPropertiesFile.exists()) {
 }
 
 // Load the build signing secrets from a local `keystore.properties` file.
-// TODO: Create release keys and a `keystore.properties` file. See `example/README.md` for more info.
+// TODO(YOU): Create release keys and a `keystore.properties` file. See
+// `example/README.md` for more info and `keystore.example.properties` for an
+// example.
 def keystorePropertiesFile = rootProject.file("keystore.properties")
 def keystoreProperties = new Properties()
 def configured = true
@@ -18,9 +20,9 @@ try {
     logger.error('Release signing information not found.')
 }
 
-def DEFAULT_APP_ID = "io.flutter.plugins.inapppurchaseexample"
 project.ext {
-    APP_ID = DEFAULT_APP_ID // TODO: Update this to match your package ID in the Play Developer Console (see example/README.md).
+    // TODO(YOU): Set this to match your package ID in the Play Developer Console (see example/README.md).
+    APP_ID = "io.flutter.plugins.inapppurchaseexample.DEFAULT_DO_NOT_USE"
     KEYSTORE_STORE_FILE = configured ? rootProject.file(keystoreProperties['storeFile']) : null
     KEYSTORE_STORE_PASSWORD = keystoreProperties['storePassword']
     KEYSTORE_KEY_ALIAS = keystoreProperties['keyAlias']
@@ -29,9 +31,9 @@ project.ext {
     VERSION_NAME = "0.1"
 }
 
-if (project.APP_ID == DEFAULT_APP_ID) {
+if (project.APP_ID == "io.flutter.plugins.inapppurchaseexample.DEFAULT_DO_NOT_USE") {
     configured = false
-    logger.error('Unique package name not set, defaulting to "{}".', DEFAULT_APP_ID)
+    logger.error('Unique package name not set, defaulting to "io.flutter.plugins.inapppurchaseexample.DEFAULT_DO_NOT_USE".')
 }
 
 // Log a final error message if we're unable to create a release key signed
