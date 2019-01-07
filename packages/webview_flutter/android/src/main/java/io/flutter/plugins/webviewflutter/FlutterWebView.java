@@ -33,7 +33,8 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       String url = (String) params.get("initialUrl");
       webView.loadUrl(url);
     }
-    String invalidUrlRegex = params.containsKey("invalidUrlRegex") ? (String) params.get("invalidUrlRegex") : null;
+    String invalidUrlRegex =
+        params.containsKey("invalidUrlRegex") ? (String) params.get("invalidUrlRegex") : null;
     if (invalidUrlRegex != null) {
       invalidUrlPattern = Pattern.compile(invalidUrlRegex);
     } else {
@@ -226,7 +227,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   }
 
   private void updateInvalidUrlRegex(String regex) {
-    invalidUrlPattern = Pattern.compile(regex);
+    invalidUrlPattern = regex != null ? Pattern.compile(regex) : null;
   }
 
   @Override
