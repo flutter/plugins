@@ -1,3 +1,12 @@
+## 0.2.1
+
+* Add capability to create image from bytes.
+
+## 0.2.0+2
+
+* Fix bug with empty text object.
+* Fix bug with crash from passing nil to map.
+
 ## 0.2.0+1
 
 Bump Android dependencies to latest.

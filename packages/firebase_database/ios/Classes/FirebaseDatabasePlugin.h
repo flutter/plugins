@@ -4,7 +4,7 @@
 
 #import <Flutter/Flutter.h>
 
-@interface FLTFirebaseDatabasePlugin : NSObject<FlutterPlugin>
+@interface FLTFirebaseDatabasePlugin : NSObject <FlutterPlugin>
 
 @property(nonatomic) NSMutableDictionary *updatedSnapshots;
 

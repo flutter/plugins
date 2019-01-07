@@ -6,18 +6,8 @@
 #import <GoogleMaps/GoogleMaps.h>
 #import "GoogleMapMarkerController.h"
 
-// Defines events to be sent to Flutter.
-@protocol FLTGoogleMapDelegate
-- (void)onCameraMoveStartedOnMap:(id)mapId gesture:(BOOL)gesture;
-- (void)onCameraMoveOnMap:(id)mapId cameraPosition:(GMSCameraPosition*)cameraPosition;
-- (void)onCameraIdleOnMap:(id)mapId;
-- (void)onMarkerTappedOnMap:(id)mapId marker:(NSString*)markerId;
-- (void)onInfoWindowTappedOnMap:(id)mapId marker:(NSString*)markerId;
-@end
-
 // Defines map UI options writable from Flutter.
 @protocol FLTGoogleMapOptionsSink
-- (void)setCamera:(GMSCameraPosition*)camera;
 - (void)setCameraTargetBounds:(GMSCoordinateBounds*)bounds;
 - (void)setCompassEnabled:(BOOL)enabled;
 - (void)setMapType:(GMSMapViewType)type;
@@ -27,19 +17,16 @@
 - (void)setTiltGesturesEnabled:(BOOL)enabled;
 - (void)setTrackCameraPosition:(BOOL)enabled;
 - (void)setZoomGesturesEnabled:(BOOL)enabled;
+- (void)setMyLocationEnabled:(BOOL)enabled;
 @end
 
 // Defines map overlay controllable from Flutter.
 @interface FLTGoogleMapController
-    : NSObject<GMSMapViewDelegate, FLTGoogleMapOptionsSink, FlutterPlatformView>
-@property(atomic) id<FLTGoogleMapDelegate> delegate;
-@property(atomic, readonly) id mapId;
+    : NSObject <GMSMapViewDelegate, FLTGoogleMapOptionsSink, FlutterPlatformView>
 - (instancetype)initWithFrame:(CGRect)frame
                viewIdentifier:(int64_t)viewId
                     arguments:(id _Nullable)args
                     registrar:(NSObject<FlutterPluginRegistrar>*)registrar;
-- (void)addToView:(UIView*)view;
-- (void)removeFromView;
 - (void)showAtX:(CGFloat)x Y:(CGFloat)y;
 - (void)hide;
 - (void)animateWithCameraUpdate:(GMSCameraUpdate*)cameraUpdate;
@@ -51,6 +38,6 @@
 @end
 
 // Allows the engine to create new Google Map instances.
-@interface FLTGoogleMapFactory : NSObject<FlutterPlatformViewFactory>
+@interface FLTGoogleMapFactory : NSObject <FlutterPlatformViewFactory>
 - (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar;
 @end

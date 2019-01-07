@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import 'dart:math';
+import 'dart:typed_data';
+import 'dart:ui';
 
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:flutter/services.dart';
@@ -34,6 +36,61 @@ void main() {
         }
       });
       log.clear();
+    });
+
+    group('$FirebaseVisionImageMetadata', () {
+      final TextRecognizer recognizer =
+          FirebaseVision.instance.textRecognizer();
+
+      setUp(() {
+        returnValue = <dynamic, dynamic>{
+          'text': '',
+          'blocks': <dynamic>[],
+        };
+      });
+
+      test('default serialization', () async {
+        final FirebaseVisionImageMetadata metadata =
+            FirebaseVisionImageMetadata(
+          rawFormat: 35,
+          size: const Size(1.0, 1.0),
+          planeData: <FirebaseVisionImagePlaneMetadata>[
+            FirebaseVisionImagePlaneMetadata(
+              bytesPerRow: 1000,
+              height: 480,
+              width: 480,
+            ),
+          ],
+        );
+        final FirebaseVisionImage image =
+            FirebaseVisionImage.fromBytes(Uint8List(0), metadata);
+        await recognizer.processImage(image);
+
+        expect(log, <Matcher>[
+          isMethodCall(
+            'TextRecognizer#processImage',
+            arguments: <String, dynamic>{
+              'type': 'bytes',
+              'path': null,
+              'bytes': Uint8List(0),
+              'metadata': <String, dynamic>{
+                'width': 1.0,
+                'height': 1.0,
+                'rotation': 0,
+                'rawFormat': 35,
+                'planeData': <dynamic>[
+                  <String, dynamic>{
+                    'bytesPerRow': 1000,
+                    'height': 480,
+                    'width': 480,
+                  },
+                ],
+              },
+              'options': <String, dynamic>{},
+            },
+          ),
+        ]);
+      });
     });
 
     group('$BarcodeDetector', () {
@@ -71,7 +128,10 @@ void main() {
           isMethodCall(
             'BarcodeDetector#detectInImage',
             arguments: <String, dynamic>{
+              'type': 'file',
               'path': 'empty',
+              'bytes': null,
+              'metadata': null,
               'options': <String, dynamic>{
                 'barcodeFormats': 0xFFFF,
               },
@@ -415,6 +475,9 @@ void main() {
 
       group('$BarcodeDetectorOptions', () {
         test('barcodeFormats', () async {
+          // The constructor for `BarcodeDetectorOptions` can't be `const`
+          // without triggering a `CONST_EVAL_TYPE_BOOL_INT` error.
+          // ignore: prefer_const_constructors
           final BarcodeDetectorOptions options = BarcodeDetectorOptions(
             barcodeFormats: BarcodeFormat.code128 |
                 BarcodeFormat.dataMatrix |
@@ -488,7 +551,10 @@ void main() {
           isMethodCall(
             'FaceDetector#detectInImage',
             arguments: <String, dynamic>{
+              'type': 'file',
               'path': 'empty',
+              'bytes': null,
+              'metadata': null,
               'options': <String, dynamic>{
                 'enableClassification': true,
                 'enableLandmarks': true,
@@ -591,7 +657,10 @@ void main() {
           isMethodCall(
             'LabelDetector#detectInImage',
             arguments: <String, dynamic>{
+              'type': 'file',
               'path': 'empty',
+              'bytes': null,
+              'metadata': null,
               'options': <String, dynamic>{
                 'confidenceThreshold': 0.2,
               },
@@ -623,7 +692,10 @@ void main() {
           isMethodCall(
             'LabelDetector#detectInImage',
             arguments: <String, dynamic>{
+              'type': 'file',
               'path': 'empty',
+              'bytes': null,
+              'metadata': null,
               'options': <String, dynamic>{
                 'confidenceThreshold': 0.5,
               },
@@ -670,7 +742,10 @@ void main() {
           isMethodCall(
             'CloudLabelDetector#detectInImage',
             arguments: <String, dynamic>{
+              'type': 'file',
               'path': 'empty',
+              'bytes': null,
+              'metadata': null,
               'options': <String, dynamic>{
                 'maxResults': 5,
                 'modelType': 'latest',
@@ -704,7 +779,10 @@ void main() {
           isMethodCall(
             'CloudLabelDetector#detectInImage',
             arguments: <String, dynamic>{
+              'type': 'file',
               'path': 'empty',
+              'bytes': null,
+              'metadata': null,
               'options': <String, dynamic>{
                 'maxResults': 10,
                 'modelType': 'stable',
@@ -936,7 +1014,10 @@ void main() {
           isMethodCall(
             'TextRecognizer#processImage',
             arguments: <String, dynamic>{
+              'type': 'file',
               'path': 'empty',
+              'bytes': null,
+              'metadata': null,
               'options': <String, dynamic>{},
             },
           ),

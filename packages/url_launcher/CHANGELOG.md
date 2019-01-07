@@ -1,3 +1,12 @@
+## 4.0.3
+
+* Fixed launch url fail for Android: `launch` now assert activity not null and using activity to startActivity.
+* Fixed `WebViewActivity has leaked IntentReceiver` for Android.
+
+## 4.0.2
+
+* Added `closeWebView` function to programmatically close the current WebView.
+
 ## 4.0.1
 
 * Added enableJavaScript field to `launch` to enable javascript in Android WebView.

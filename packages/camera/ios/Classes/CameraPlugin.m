@@ -1,5 +1,6 @@
 #import "CameraPlugin.h"
 #import <AVFoundation/AVFoundation.h>
+#import <Accelerate/Accelerate.h>
 #import <libkern/OSAtomic.h>
 
 @interface NSError (FlutterError)
@@ -14,11 +15,29 @@
 }
 @end
 
-@interface FLTSavePhotoDelegate : NSObject<AVCapturePhotoCaptureDelegate>
+@interface FLTSavePhotoDelegate : NSObject <AVCapturePhotoCaptureDelegate>
 @property(readonly, nonatomic) NSString *path;
 @property(readonly, nonatomic) FlutterResult result;
 
 - initWithPath:(NSString *)filename result:(FlutterResult)result;
+@end
+
+@interface FLTImageStreamHandler : NSObject <FlutterStreamHandler>
+@property FlutterEventSink eventSink;
+@end
+
+@implementation FLTImageStreamHandler
+
+- (FlutterError *_Nullable)onCancelWithArguments:(id _Nullable)arguments {
+  _eventSink = nil;
+  return nil;
+}
+
+- (FlutterError *_Nullable)onListenWithArguments:(id _Nullable)arguments
+                                       eventSink:(nonnull FlutterEventSink)events {
+  _eventSink = events;
+  return nil;
+}
 @end
 
 @implementation FLTSavePhotoDelegate {
@@ -59,11 +78,14 @@
 }
 @end
 
-@interface FLTCam : NSObject<FlutterTexture, AVCaptureVideoDataOutputSampleBufferDelegate,
-                             AVCaptureAudioDataOutputSampleBufferDelegate, FlutterStreamHandler>
+@interface FLTCam : NSObject <FlutterTexture,
+                              AVCaptureVideoDataOutputSampleBufferDelegate,
+                              AVCaptureAudioDataOutputSampleBufferDelegate,
+                              FlutterStreamHandler>
 @property(readonly, nonatomic) int64_t textureId;
 @property(nonatomic, copy) void (^onFrameAvailable)();
 @property(nonatomic) FlutterEventChannel *eventChannel;
+@property(nonatomic) FLTImageStreamHandler *imageStreamHandler;
 @property(nonatomic) FlutterEventSink eventSink;
 @property(readonly, nonatomic) AVCaptureSession *captureSession;
 @property(readonly, nonatomic) AVCaptureDevice *captureDevice;
@@ -81,17 +103,27 @@
 @property(strong, nonatomic) AVCaptureAudioDataOutput *audioOutput;
 @property(assign, nonatomic) BOOL isRecording;
 @property(assign, nonatomic) BOOL isAudioSetup;
+@property(assign, nonatomic) BOOL isStreamingImages;
+@property(nonatomic) vImage_Buffer destinationBuffer;
+@property(nonatomic) vImage_Buffer conversionBuffer;
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
                              error:(NSError **)error;
+
 - (void)start;
 - (void)stop;
 - (void)startVideoRecordingAtPath:(NSString *)path result:(FlutterResult)result;
 - (void)stopVideoRecordingWithResult:(FlutterResult)result;
+- (void)startImageStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger;
+- (void)stopImageStream;
 - (void)captureToFile:(NSString *)filename result:(FlutterResult)result;
 @end
 
 @implementation FLTCam
+// Yuv420 format used for iOS 10+, which is minimum requirement for this plugin.
+// Format is used to stream image byte data to dart.
+FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;
+
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
                              error:(NSError **)error {
@@ -100,30 +132,35 @@
   _captureSession = [[AVCaptureSession alloc] init];
   AVCaptureSessionPreset preset;
   if ([resolutionPreset isEqualToString:@"high"]) {
-    preset = AVCaptureSessionPresetHigh;
+    preset = AVCaptureSessionPreset1280x720;
+    _previewSize = CGSizeMake(1280, 720);
   } else if ([resolutionPreset isEqualToString:@"medium"]) {
-    preset = AVCaptureSessionPresetMedium;
+    preset = AVCaptureSessionPreset640x480;
+    _previewSize = CGSizeMake(640, 480);
   } else {
     NSAssert([resolutionPreset isEqualToString:@"low"], @"Unknown resolution preset %@",
              resolutionPreset);
-    preset = AVCaptureSessionPresetLow;
+    preset = AVCaptureSessionPreset352x288;
+    _previewSize = CGSizeMake(352, 288);
   }
   _captureSession.sessionPreset = preset;
   _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraName];
   NSError *localError = nil;
-  _captureVideoInput =
-      [AVCaptureDeviceInput deviceInputWithDevice:_captureDevice error:&localError];
+  _captureVideoInput = [AVCaptureDeviceInput deviceInputWithDevice:_captureDevice
+                                                             error:&localError];
   if (localError) {
     *error = localError;
     return nil;
   }
-  CMVideoDimensions dimensions =
-      CMVideoFormatDescriptionGetDimensions([[_captureDevice activeFormat] formatDescription]);
-  _previewSize = CGSizeMake(dimensions.width, dimensions.height);
+
+  vImageBuffer_Init(&_destinationBuffer, _previewSize.width, _previewSize.height, 32,
+                    kvImageNoFlags);
+  vImageBuffer_Init(&_conversionBuffer, _previewSize.width, _previewSize.height, 32,
+                    kvImageNoFlags);
 
   _captureVideoOutput = [AVCaptureVideoDataOutput new];
   _captureVideoOutput.videoSettings =
-      @{(NSString *)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_32BGRA) };
+      @{(NSString *)kCVPixelBufferPixelFormatTypeKey : @(videoFormat)};
   [_captureVideoOutput setAlwaysDiscardsLateVideoFrames:YES];
   [_captureVideoOutput setSampleBufferDelegate:self queue:dispatch_get_main_queue()];
 
@@ -154,9 +191,9 @@
 - (void)captureToFile:(NSString *)path result:(FlutterResult)result {
   AVCapturePhotoSettings *settings = [AVCapturePhotoSettings photoSettings];
   [settings setHighResolutionPhotoEnabled:YES];
-  [_capturePhotoOutput
-      capturePhotoWithSettings:settings
-                      delegate:[[FLTSavePhotoDelegate alloc] initWithPath:path result:result]];
+  [_capturePhotoOutput capturePhotoWithSettings:settings
+                                       delegate:[[FLTSavePhotoDelegate alloc] initWithPath:path
+                                                                                    result:result]];
 }
 
 - (void)captureOutput:(AVCaptureOutput *)output
@@ -182,6 +219,46 @@
       @"errorDescription" : @"sample buffer is not ready. Skipping sample"
     });
     return;
+  }
+  if (_isStreamingImages) {
+    if (_imageStreamHandler.eventSink) {
+      CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+      CVPixelBufferLockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
+
+      size_t imageWidth = CVPixelBufferGetWidth(pixelBuffer);
+      size_t imageHeight = CVPixelBufferGetHeight(pixelBuffer);
+
+      NSMutableArray *planes = [NSMutableArray array];
+
+      size_t planeCount = CVPixelBufferGetPlaneCount(pixelBuffer);
+      for (int i = 0; i < planeCount; i++) {
+        void *planeAddress = CVPixelBufferGetBaseAddressOfPlane(pixelBuffer, i);
+        size_t bytesPerRow = CVPixelBufferGetBytesPerRowOfPlane(pixelBuffer, i);
+        size_t height = CVPixelBufferGetHeightOfPlane(pixelBuffer, i);
+        size_t width = CVPixelBufferGetWidthOfPlane(pixelBuffer, i);
+
+        NSNumber *length = @(bytesPerRow * height);
+        NSData *bytes = [NSData dataWithBytes:planeAddress length:length.unsignedIntegerValue];
+
+        NSMutableDictionary *planeBuffer = [NSMutableDictionary dictionary];
+        planeBuffer[@"bytesPerRow"] = @(bytesPerRow);
+        planeBuffer[@"width"] = @(width);
+        planeBuffer[@"height"] = @(height);
+        planeBuffer[@"bytes"] = [FlutterStandardTypedData typedDataWithBytes:bytes];
+
+        [planes addObject:planeBuffer];
+      }
+
+      NSMutableDictionary *imageBuffer = [NSMutableDictionary dictionary];
+      imageBuffer[@"width"] = [NSNumber numberWithUnsignedLong:imageWidth];
+      imageBuffer[@"height"] = [NSNumber numberWithUnsignedLong:imageHeight];
+      imageBuffer[@"format"] = @(videoFormat);
+      imageBuffer[@"planes"] = planes;
+
+      _imageStreamHandler.eventSink(imageBuffer);
+
+      CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
+    }
   }
   if (_isRecording) {
     if (_videoWriter.status == AVAssetWriterStatusFailed) {
@@ -267,7 +344,58 @@
   while (!OSAtomicCompareAndSwapPtrBarrier(pixelBuffer, nil, (void **)&_latestPixelBuffer)) {
     pixelBuffer = _latestPixelBuffer;
   }
-  return pixelBuffer;
+
+  return [self convertYUVImageToBGRA:pixelBuffer];
+}
+
+// Since video format was changed to kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange we have to
+// convert image to a usable format for flutter textures. Which is kCVPixelFormatType_32BGRA.
+- (CVPixelBufferRef)convertYUVImageToBGRA:(CVPixelBufferRef)pixelBuffer {
+  CVPixelBufferLockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
+
+  vImage_YpCbCrToARGB infoYpCbCrToARGB;
+  vImage_YpCbCrPixelRange pixelRange;
+  pixelRange.Yp_bias = 16;
+  pixelRange.CbCr_bias = 128;
+  pixelRange.YpRangeMax = 235;
+  pixelRange.CbCrRangeMax = 240;
+  pixelRange.YpMax = 235;
+  pixelRange.YpMin = 16;
+  pixelRange.CbCrMax = 240;
+  pixelRange.CbCrMin = 16;
+
+  vImageConvert_YpCbCrToARGB_GenerateConversion(kvImage_YpCbCrToARGBMatrix_ITU_R_601_4, &pixelRange,
+                                                &infoYpCbCrToARGB, kvImage420Yp8_CbCr8,
+                                                kvImageARGB8888, kvImageNoFlags);
+
+  vImage_Buffer sourceLumaBuffer;
+  sourceLumaBuffer.data = CVPixelBufferGetBaseAddressOfPlane(pixelBuffer, 0);
+  sourceLumaBuffer.height = CVPixelBufferGetHeightOfPlane(pixelBuffer, 0);
+  sourceLumaBuffer.width = CVPixelBufferGetWidthOfPlane(pixelBuffer, 0);
+  sourceLumaBuffer.rowBytes = CVPixelBufferGetBytesPerRowOfPlane(pixelBuffer, 0);
+
+  vImage_Buffer sourceChromaBuffer;
+  sourceChromaBuffer.data = CVPixelBufferGetBaseAddressOfPlane(pixelBuffer, 1);
+  sourceChromaBuffer.height = CVPixelBufferGetHeightOfPlane(pixelBuffer, 1);
+  sourceChromaBuffer.width = CVPixelBufferGetWidthOfPlane(pixelBuffer, 1);
+  sourceChromaBuffer.rowBytes = CVPixelBufferGetBytesPerRowOfPlane(pixelBuffer, 1);
+
+  vImageConvert_420Yp8_CbCr8ToARGB8888(&sourceLumaBuffer, &sourceChromaBuffer, &_destinationBuffer,
+                                       &infoYpCbCrToARGB, NULL, 255,
+                                       kvImagePrintDiagnosticsToConsole);
+
+  CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
+  CVPixelBufferRelease(pixelBuffer);
+
+  const uint8_t map[4] = {3, 2, 1, 0};
+  vImagePermuteChannels_ARGB8888(&_destinationBuffer, &_conversionBuffer, map, kvImageNoFlags);
+
+  CVPixelBufferRef newPixelBuffer = NULL;
+  CVPixelBufferCreateWithBytes(NULL, _conversionBuffer.width, _conversionBuffer.height,
+                               kCVPixelFormatType_32BGRA, _conversionBuffer.data,
+                               _conversionBuffer.rowBytes, NULL, NULL, NULL, &newPixelBuffer);
+
+  return newPixelBuffer;
 }
 
 - (FlutterError *_Nullable)onCancelWithArguments:(id _Nullable)arguments {
@@ -280,6 +408,7 @@
   _eventSink = events;
   return nil;
 }
+
 - (void)startVideoRecordingAtPath:(NSString *)path result:(FlutterResult)result {
   if (!_isRecording) {
     if (![self setupWriterForPath:path]) {
@@ -319,6 +448,32 @@
   }
 }
 
+- (void)startImageStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger {
+  if (!_isStreamingImages) {
+    FlutterEventChannel *eventChannel =
+        [FlutterEventChannel eventChannelWithName:@"plugins.flutter.io/camera/imageStream"
+                                  binaryMessenger:messenger];
+
+    _imageStreamHandler = [[FLTImageStreamHandler alloc] init];
+    [eventChannel setStreamHandler:_imageStreamHandler];
+
+    _isStreamingImages = YES;
+  } else {
+    _eventSink(
+        @{@"event" : @"error", @"errorDescription" : @"Images from camera are already streaming!"});
+  }
+}
+
+- (void)stopImageStream {
+  if (_isStreamingImages) {
+    _isStreamingImages = NO;
+    _imageStreamHandler = nil;
+  } else {
+    _eventSink(
+        @{@"event" : @"error", @"errorDescription" : @"Images from camera are not streaming!"});
+  }
+}
+
 - (BOOL)setupWriterForPath:(NSString *)path {
   NSError *error = nil;
   NSURL *outputURL;
@@ -330,8 +485,9 @@
   if (!_isAudioSetup) {
     [self setUpCaptureSessionForAudio];
   }
-  _videoWriter =
-      [[AVAssetWriter alloc] initWithURL:outputURL fileType:AVFileTypeQuickTimeMovie error:&error];
+  _videoWriter = [[AVAssetWriter alloc] initWithURL:outputURL
+                                           fileType:AVFileTypeQuickTimeMovie
+                                              error:&error];
   NSParameterAssert(_videoWriter);
   if (error) {
     _eventSink(@{@"event" : @"error", @"errorDescription" : error.description});
@@ -375,8 +531,8 @@
   // Create a device input with the device and add it to the session.
   // Setup the audio input.
   AVCaptureDevice *audioDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeAudio];
-  AVCaptureDeviceInput *audioInput =
-      [AVCaptureDeviceInput deviceInputWithDevice:audioDevice error:&error];
+  AVCaptureDeviceInput *audioInput = [AVCaptureDeviceInput deviceInputWithDevice:audioDevice
+                                                                           error:&error];
   if (error) {
     _eventSink(@{@"event" : @"error", @"errorDescription" : error.description});
   }
@@ -411,8 +567,8 @@
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/camera"
                                   binaryMessenger:[registrar messenger]];
-  CameraPlugin *instance =
-      [[CameraPlugin alloc] initWithRegistry:[registrar textures] messenger:[registrar messenger]];
+  CameraPlugin *instance = [[CameraPlugin alloc] initWithRegistry:[registrar textures]
+                                                        messenger:[registrar messenger]];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
@@ -492,6 +648,12 @@
       });
       [cam start];
     }
+  } else if ([@"startImageStream" isEqualToString:call.method]) {
+    [_camera startImageStreamWithMessenger:_messenger];
+    result(nil);
+  } else if ([@"stopImageStream" isEqualToString:call.method]) {
+    [_camera stopImageStream];
+    result(nil);
   } else {
     NSDictionary *argsMap = call.arguments;
     NSUInteger textureId = ((NSNumber *)argsMap[@"textureId"]).unsignedIntegerValue;
