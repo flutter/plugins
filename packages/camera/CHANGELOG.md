@@ -1,3 +1,7 @@
+## 0.2.9
+
+* Save photo orientation data on iOS.
+
 ## 0.2.8
 
 * Add access to the image stream from Dart.
