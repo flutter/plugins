@@ -431,14 +431,11 @@
   NSAssert(self, @"super init cannot be nil");
   _registry = registry;
   _messenger = messenger;
+  _dispatchQueue = dispatch_queue_create("io.flutter.camera.dispatchqueue", NULL);
   return self;
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
-  if (!_dispatchQueue) {
-    _dispatchQueue = dispatch_queue_create("FlutterCameraQueue", NULL);
-  }
-
   // Invoke the plugin on another dispatch queue to avoid blocking the UI.
   dispatch_async(_dispatchQueue, ^{
     [self handleMethodCallAsync:call result:result];
