@@ -199,7 +199,7 @@ public class CameraPlugin implements MethodCallHandler {
         }
       case "takePicture":
         {
-          camera.takePicture((String) call.argument("path"), result);
+          camera.takePicture((String) call.argument("path"), (Integer) call.argument("flashMode"), result);
           break;
         }
       case "startVideoRecording":
@@ -569,7 +569,7 @@ public class CameraPlugin implements MethodCallHandler {
       }
     }
 
-    private void takePicture(String filePath, @NonNull final Result result) {
+    private void takePicture(String filePath, Integer flashMode, @NonNull final Result result) {
       final File file = new File(filePath);
 
       if (file.exists()) {
@@ -600,6 +600,22 @@ public class CameraPlugin implements MethodCallHandler {
             cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
         captureBuilder.addTarget(pictureImageReader.getSurface());
         captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, getMediaOrientation());
+
+        // Set flashMode
+        if (activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)) {
+          if (flashMode == CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH) {
+            captureBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
+            captureBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
+          } else if (flashMode == CaptureRequest.CONTROL_AE_MODE_ON_ALWAYS_FLASH) {
+            captureBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON_ALWAYS_FLASH);
+            captureBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
+          } else {
+            captureBuilder.set(CaptureRequest.CONTROL_AE_LOCK, false);
+            captureBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF);
+            captureBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
+            captureBuilder.set(CaptureRequest.CONTROL_AE_LOCK, true);
+          }
+        }
 
         cameraCaptureSession.capture(
             captureBuilder.build(),
