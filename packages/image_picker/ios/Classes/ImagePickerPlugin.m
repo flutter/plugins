@@ -9,17 +9,20 @@
 #import <UIKit/UIKit.h>
 
 @interface FLTImagePickerPlugin () <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
+
+@property(nullable, copy, nonatomic) FlutterResult result;
+@property(nullable, copy, nonatomic) NSDictionary *arguments;
+@property(strong, nonatomic) UIImagePickerController *imagePickerController;
+@property(strong, nonatomic) UIViewController *viewController;
+
 @end
 
-static const int SOURCE_CAMERA = 0;
-static const int SOURCE_GALLERY = 1;
+typedef enum : NSUInteger {
+  SOURCE_CAMERA = 0,
+  SOURCE_GALLERY = 1,
+} SOURCE;
 
-@implementation FLTImagePickerPlugin {
-  FlutterResult _result;
-  NSDictionary *_arguments;
-  UIImagePickerController *_imagePickerController;
-  UIViewController *_viewController;
-}
+@implementation FLTImagePickerPlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
@@ -35,29 +38,29 @@ static const int SOURCE_GALLERY = 1;
 - (instancetype)initWithViewController:(UIViewController *)viewController {
   self = [super init];
   if (self) {
-    _viewController = viewController;
-    _imagePickerController = [[UIImagePickerController alloc] init];
+    self.viewController = viewController;
+    self.imagePickerController = [[UIImagePickerController alloc] init];
   }
   return self;
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
-  if (_result) {
-    _result([FlutterError errorWithCode:@"multiple_request"
-                                message:@"Cancelled by a second request"
-                                details:nil]);
-    _result = nil;
+  if (self.result) {
+    self.result([FlutterError errorWithCode:@"multiple_request"
+                                    message:@"Cancelled by a second request"
+                                    details:nil]);
+    self.result = nil;
   }
 
   if ([@"pickImage" isEqualToString:call.method]) {
-    _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
-    _imagePickerController.delegate = self;
-    _imagePickerController.mediaTypes = @[ (NSString *)kUTTypeImage ];
+    self.imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
+    self.imagePickerController.delegate = self;
+    self.imagePickerController.mediaTypes = @[ (NSString *)kUTTypeImage ];
 
-    _result = result;
-    _arguments = call.arguments;
+    self.result = result;
+    self.arguments = call.arguments;
 
-    int imageSource = [[_arguments objectForKey:@"source"] intValue];
+    int imageSource = [[self.arguments objectForKey:@"source"] intValue];
 
     switch (imageSource) {
       case SOURCE_CAMERA:
@@ -73,18 +76,18 @@ static const int SOURCE_GALLERY = 1;
         break;
     }
   } else if ([@"pickVideo" isEqualToString:call.method]) {
-    _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
-    _imagePickerController.delegate = self;
-    _imagePickerController.mediaTypes = @[
+    self.imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
+    self.imagePickerController.delegate = self;
+    self.imagePickerController.mediaTypes = @[
       (NSString *)kUTTypeMovie, (NSString *)kUTTypeAVIMovie, (NSString *)kUTTypeVideo,
       (NSString *)kUTTypeMPEG4
     ];
-    _imagePickerController.videoQuality = UIImagePickerControllerQualityTypeHigh;
+    self.imagePickerController.videoQuality = UIImagePickerControllerQualityTypeHigh;
 
-    _result = result;
-    _arguments = call.arguments;
+    self.result = result;
+    self.arguments = call.arguments;
 
-    int imageSource = [[_arguments objectForKey:@"source"] intValue];
+    int imageSource = [[self.arguments objectForKey:@"source"] intValue];
 
     switch (imageSource) {
       case SOURCE_CAMERA:
@@ -107,8 +110,10 @@ static const int SOURCE_GALLERY = 1;
 - (void)showCamera {
   // Camera is not available on simulators
   if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-    _imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
-    [_viewController presentViewController:_imagePickerController animated:YES completion:nil];
+    self.imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
+    [self.viewController presentViewController:self.imagePickerController
+                                      animated:YES
+                                    completion:nil];
   } else {
     [[[UIAlertView alloc] initWithTitle:@"Error"
                                 message:@"Camera not available."
@@ -120,16 +125,25 @@ static const int SOURCE_GALLERY = 1;
 
 - (void)showPhotoLibrary {
   // No need to check if SourceType is available. It always is.
-  _imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-  [_viewController presentViewController:_imagePickerController animated:YES completion:nil];
+  self.imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+  [self.viewController presentViewController:self.imagePickerController
+                                    animated:YES
+                                  completion:nil];
 }
 
 - (void)imagePickerController:(UIImagePickerController *)picker
     didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info {
+  [self.imagePickerController dismissViewControllerAnimated:YES completion:nil];
+  // By checking self.result, we avoid a crash where user can tap the image multiple times and the
+  // delegate method was triggered multile times, which leads to self.result gets called when it is
+  // already set to nil.
+  if (!self.result) {
+    return;
+  }
+  // We place the code outside of the completion handler to make the completion
+  // happening concurrently, which results a faster user experience.
   NSURL *videoURL = [info objectForKey:UIImagePickerControllerMediaURL];
   UIImage *image = [info objectForKey:UIImagePickerControllerEditedImage];
-  [_imagePickerController dismissViewControllerAnimated:YES completion:nil];
-
   if (videoURL != nil) {
     NSData *data = [NSData dataWithContentsOfURL:videoURL];
     NSString *guid = [[NSProcessInfo processInfo] globallyUniqueString];
@@ -138,11 +152,11 @@ static const int SOURCE_GALLERY = 1;
     NSString *tmpPath = [tmpDirectory stringByAppendingPathComponent:tmpFile];
 
     if ([[NSFileManager defaultManager] createFileAtPath:tmpPath contents:data attributes:nil]) {
-      _result(tmpPath);
+      self.result(tmpPath);
     } else {
-      _result([FlutterError errorWithCode:@"create_error"
-                                  message:@"Temporary file could not be created"
-                                  details:nil]);
+      self.result([FlutterError errorWithCode:@"create_error"
+                                      message:@"Temporary file could not be created"
+                                      details:nil]);
     }
   } else {
     if (image == nil) {
@@ -150,8 +164,8 @@ static const int SOURCE_GALLERY = 1;
     }
     image = [self normalizedImage:image];
 
-    NSNumber *maxWidth = [_arguments objectForKey:@"maxWidth"];
-    NSNumber *maxHeight = [_arguments objectForKey:@"maxHeight"];
+    NSNumber *maxWidth = [self.arguments objectForKey:@"maxWidth"];
+    NSNumber *maxHeight = [self.arguments objectForKey:@"maxHeight"];
 
     if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
       image = [self scaledImage:image maxWidth:maxWidth maxHeight:maxHeight];
@@ -164,24 +178,24 @@ static const int SOURCE_GALLERY = 1;
     NSString *tmpPath = [tmpDirectory stringByAppendingPathComponent:tmpFile];
 
     if ([[NSFileManager defaultManager] createFileAtPath:tmpPath contents:data attributes:nil]) {
-      _result(tmpPath);
+      self.result(tmpPath);
     } else {
-      _result([FlutterError errorWithCode:@"create_error"
-                                  message:@"Temporary file could not be created"
-                                  details:nil]);
+      self.result([FlutterError errorWithCode:@"create_error"
+                                      message:@"Temporary file could not be created"
+                                      details:nil]);
     }
   }
 
-  _result = nil;
-  _arguments = nil;
+  self.result = nil;
+  self.arguments = nil;
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
-  [_imagePickerController dismissViewControllerAnimated:YES completion:nil];
-  _result(nil);
+  [self.imagePickerController dismissViewControllerAnimated:YES completion:nil];
+  self.result(nil);
 
-  _result = nil;
-  _arguments = nil;
+  self.result = nil;
+  self.arguments = nil;
 }
 
 // The way we save images to the tmp dir currently throws away all EXIF data
