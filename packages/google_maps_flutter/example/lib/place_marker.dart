@@ -37,11 +37,13 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
   void _onMapCreated(GoogleMapController controller) {
     this.controller = controller;
     controller.onMarkerTapped.add(_onMarkerTapped);
+    controller.onMarkerDragged.add(_onMarkerDragged);
   }
 
   @override
   void dispose() {
     controller?.onMarkerTapped?.remove(_onMarkerTapped);
+    controller?.onMarkerDragged?.remove(_onMarkerDragged);
     super.dispose();
   }
 
@@ -61,6 +63,11 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
         ),
       ),
     );
+  }
+
+  void _onMarkerDragged(Marker marker) {
+    print("dragged you little twak");
+    print(marker.options.position);
   }
 
   void _updateSelectedMarker(MarkerOptions changes) {
