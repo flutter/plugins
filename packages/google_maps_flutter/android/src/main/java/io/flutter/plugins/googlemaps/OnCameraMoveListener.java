@@ -7,9 +7,9 @@ package io.flutter.plugins.googlemaps;
 import com.google.android.gms.maps.model.CameraPosition;
 
 interface OnCameraMoveListener {
-    void onCameraMoveStarted(boolean isGesture);
+  void onCameraMoveStarted(boolean isGesture);
 
-    void onCameraMove(CameraPosition newPosition);
+  void onCameraMove(CameraPosition newPosition);
 
-    void onCameraIdle();
+  void onCameraIdle();
 }

@@ -9,8 +9,8 @@
 
 // Defines map UI options writable from Flutter.
 @protocol FLTGoogleMapOptionsSink
-- (void)setCamera:(GMSCameraPosition *)camera;
-- (void)setCameraTargetBounds:(GMSCoordinateBounds *)bounds;
+- (void)setCamera:(GMSCameraPosition*)camera;
+- (void)setCameraTargetBounds:(GMSCoordinateBounds*)bounds;
 - (void)setCompassEnabled:(BOOL)enabled;
 - (void)setMapType:(GMSMapViewType)type;
 - (void)setMinZoom:(float)minZoom maxZoom:(float)maxZoom;
@@ -24,7 +24,7 @@
 
 // Defines map overlay controllable from Flutter.
 @interface FLTGoogleMapController
-: NSObject <GMSMapViewDelegate, FLTGoogleMapOptionsSink, FlutterPlatformView>
+    : NSObject <GMSMapViewDelegate, FLTGoogleMapOptionsSink, FlutterPlatformView>
 - (instancetype)initWithFrame:(CGRect)frame
                viewIdentifier:(int64_t)viewId
                     arguments:(id _Nullable)args

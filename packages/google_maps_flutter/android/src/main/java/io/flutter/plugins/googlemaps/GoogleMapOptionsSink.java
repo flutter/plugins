@@ -7,29 +7,27 @@ package io.flutter.plugins.googlemaps;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLngBounds;
 
-/**
- * Receiver of GoogleMap configuration options.
- */
+/** Receiver of GoogleMap configuration options. */
 interface GoogleMapOptionsSink {
-    void setCameraPosition(CameraPosition position);
+  void setCameraPosition(CameraPosition position);
 
-    void setCameraTargetBounds(LatLngBounds bounds);
+  void setCameraTargetBounds(LatLngBounds bounds);
 
-    void setCompassEnabled(boolean compassEnabled);
+  void setCompassEnabled(boolean compassEnabled);
 
-    void setMapType(int mapType);
+  void setMapType(int mapType);
 
-    void setMinMaxZoomPreference(Float min, Float max);
+  void setMinMaxZoomPreference(Float min, Float max);
 
-    void setRotateGesturesEnabled(boolean rotateGesturesEnabled);
+  void setRotateGesturesEnabled(boolean rotateGesturesEnabled);
 
-    void setScrollGesturesEnabled(boolean scrollGesturesEnabled);
+  void setScrollGesturesEnabled(boolean scrollGesturesEnabled);
 
-    void setTiltGesturesEnabled(boolean tiltGesturesEnabled);
+  void setTiltGesturesEnabled(boolean tiltGesturesEnabled);
 
-    void setTrackCameraPosition(boolean trackCameraPosition);
+  void setTrackCameraPosition(boolean trackCameraPosition);
 
-    void setZoomGesturesEnabled(boolean zoomGesturesEnabled);
+  void setZoomGesturesEnabled(boolean zoomGesturesEnabled);
 
-    void setMyLocationEnabled(boolean myLocationEnabled);
+  void setMyLocationEnabled(boolean myLocationEnabled);
 }

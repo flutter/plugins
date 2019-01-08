@@ -9,13 +9,11 @@
 
 // Defines marker UI options writable from Flutter.
 @protocol FLTGoogleMapPolylineOptionsSink
-
-- (void)setColor:(UIColor*)color;
 - (void)setConsumeTapEvents:(BOOL)consume;
-- (void)setGeodesic:(BOOL)geodesic;
-- (void)setPoints:(NSMutableArray *)points;
-- (void)setStrokeWidth:(CGFloat)width;
 - (void)setVisible:(BOOL)visible;
+- (void)setColor:(UIColor*)color;
+- (void)setStrokeWidth:(CGFloat)width;
+- (void)setPoints:(NSMutableArray *)points;
 - (void)setZIndex:(int)zIndex;
 @end
 

@@ -32,9 +32,6 @@ static uint64_t _nextPolylineId = 0;
 - (void)setVisible:(BOOL)visible {
     _polyline.map = visible ? _mapView : nil;
 }
-- (void)setGeodesic:(BOOL)geodesic {
-    _polyline.geodesic = geodesic;
-}
 - (void)setZIndex:(int)zIndex {
     _polyline.zIndex = zIndex;
 }
