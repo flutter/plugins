@@ -4,7 +4,7 @@ import 'package:google_maps_flutter_example/page.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class PlacePolygonPage extends Page {
-  PlacePolygonPage() : super(const Icon(Icons.arrow_back), 'Place polygon');
+  PlacePolygonPage() : super(const Icon(Icons.map), 'Place polygon');
 
   @override
   Widget build(BuildContext context) {
