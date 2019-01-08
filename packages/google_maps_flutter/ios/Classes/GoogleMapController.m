@@ -539,10 +539,11 @@ static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink
   }
   id color = data[@"color"];
   if (color) {
-      NSInteger intColor = (NSInteger) color;
-      [sink setColor: [UIColor colorWithRed:((float)((intColor & 0xFF0000) >> 16))/255.0
-               green:((float)((intColor & 0xFF00) >> 8))/255.0
-                blue:((float)(intColor & 0xFF))/255.0
+      NSNumber* numberColor = (NSNumber*) color;
+      long value = [numberColor longValue];
+      [sink setColor: [UIColor colorWithRed:((float)((value & 0xFF0000) >> 16))/255.0
+               green:((float)((value & 0xFF00) >> 8))/255.0
+                blue:((float)(value & 0xFF))/255.0
                alpha:1.0]];
   }
   id width = data[@"width"];
