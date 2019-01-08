@@ -48,6 +48,7 @@ final class GoogleMapController
         GoogleMap.OnCameraMoveStartedListener,
         GoogleMap.OnInfoWindowClickListener,
         GoogleMap.OnMarkerClickListener,
+        GoogleMap.OnMarkerDragListener,
         GoogleMap.OnPolylineClickListener,
         GoogleMapOptionsSink,
         MethodChannel.MethodCallHandler,
@@ -209,6 +210,7 @@ final class GoogleMapController
     googleMap.setOnCameraMoveListener(this);
     googleMap.setOnCameraIdleListener(this);
     googleMap.setOnMarkerClickListener(this);
+    googleMap.setOnMarkerDragListener(this);
     googleMap.setOnPolylineClickListener(this);
     updateMyLocationEnabled();
   }
@@ -512,5 +514,23 @@ final class GoogleMapController
     }
     return context.checkPermission(
         permission, android.os.Process.myPid(), android.os.Process.myUid());
+  }
+
+  @Override
+  public void onMarkerDragStart(Marker marker) {
+
+  }
+
+  @Override
+  public void onMarkerDrag(Marker marker) {
+
+  }
+
+  @Override
+  public void onMarkerDragEnd(Marker marker) {
+    final Map<String, Object> arguments = new HashMap<>(2);
+    arguments.put("marker", marker.getId());
+    arguments.put("position",Convert.toJson( marker.getPosition()));
+    methodChannel.invokeMethod("marker#onDrag", arguments);
   }
 }

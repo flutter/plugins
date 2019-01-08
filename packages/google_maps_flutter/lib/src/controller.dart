@@ -47,6 +47,9 @@ class GoogleMapController extends ChangeNotifier {
   /// Callbacks to receive tap events for markers placed on this map.
   final ArgumentCallbacks<Marker> onMarkerTapped = ArgumentCallbacks<Marker>();
 
+  /// Callbacks to receive end drag events for markers placed on this map.
+  final ArgumentCallbacks<Marker> onMarkerDragged = ArgumentCallbacks<Marker>();
+
   /// Callbacks to receive tap events for polylines placed on this map.
   final ArgumentCallbacks<Polyline> onPolylineTapped =
       ArgumentCallbacks<Polyline>();
@@ -90,12 +93,21 @@ class GoogleMapController extends ChangeNotifier {
           onInfoWindowTapped(marker);
         }
         break;
-
       case 'marker#onTap':
         final String markerId = call.arguments['marker'];
         final Marker marker = _markers[markerId];
         if (marker != null) {
           onMarkerTapped(marker);
+        }
+        break;
+      case 'marker#onDrag':
+        final String markerId = call.arguments['marker'];
+        final Marker marker = _markers[markerId];
+        final LatLng position = LatLng._fromJson(call.arguments['position']);
+        if (marker != null) {
+          marker._options =
+              marker._options.copyWith(MarkerOptions(position: position));
+          onMarkerDragged(marker);
         }
         break;
       case 'polyline#onTap':

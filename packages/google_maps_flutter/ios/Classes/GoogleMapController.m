@@ -7,6 +7,7 @@
 #pragma mark - Conversion of JSON-like values sent via platform channels. Forward declarations.
 
 static id positionToJson(GMSCameraPosition* position);
+static id markerToJson(GMSMarker * marker);
 static double toDouble(id json);
 static CLLocationCoordinate2D toLocation(id json);
 static NSMutableArray* toPoints(id json);
@@ -268,6 +269,11 @@ static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink
   return [marker.userData[1] boolValue];
 }
 
+- (void)mapView:(GMSMapView *)mapView didDragMarker:(GMSMarker *)marker{
+    NSString* markerId = marker.userData[0];
+    [_channel invokeMethod:@"marker#onDrag" arguments:@{@"marker" : markerId, @"position" : markerToJson(marker)}];
+}
+
 - (void)mapView:(GMSMapView*)mapView didTapInfoWindowOfMarker:(GMSMarker*)marker {
   NSString* markerId = marker.userData[0];
   [_channel invokeMethod:@"infoWindow#onTap" arguments:@{@"marker" : markerId}];
@@ -284,6 +290,10 @@ static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink
 
 static id locationToJson(CLLocationCoordinate2D position) {
   return @[ @(position.latitude), @(position.longitude) ];
+}
+
+static id markerToJson(GMSMarker* marker) {
+    return @[ @(marker.position.latitude), @(marker.position.longitude) ];
 }
 
 static id positionToJson(GMSCameraPosition* position) {
