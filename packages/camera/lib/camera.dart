@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
@@ -40,7 +41,8 @@ int serializeFlashMode(FlashMode flashMode) {
     case FlashMode.off:
       return 0;
     case FlashMode.on:
-      return 1;
+      // Have difference on iOS and Android
+      return Platform.isIOS ? 1 : 3;
     case FlashMode.auto:
       return 2;
   }
