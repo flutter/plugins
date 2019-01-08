@@ -86,6 +86,8 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
   void _add() {
     controller.addPolyline(PolylineOptions(
       consumeTapEvents: true,
+      color: Colors.orange.value,
+      width: 10,
       points: _createPoints(),
     ));
     setState(() {
