@@ -119,7 +119,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         handleReauthenticateWithCredential(call, result, getAuth(call));
         break;
       case "linkWithCredential":
-        handleLinkWithEmailAndPassword(call, result, getAuth(call));
+        handleLinkWithCredential(call, result, getAuth(call));
         break;
       case "unlinkFromProvider":
         handleUnlinkFromProvider(call, result, getAuth(call));
@@ -261,6 +261,14 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     exceptionMap.put("code", errorCode);
     exceptionMap.put("message", e.getMessage());
     return exceptionMap;
+  }
+
+  private void handleLinkWithCredential(MethodCall call, Result result, FirebaseAuth firebaseAuth) {
+    AuthCredential credential = getCredential((Map<String, Object>) call.arguments());
+    firebaseAuth
+        .getCurrentUser()
+        .linkWithCredential(credential)
+        .addOnCompleteListener(new SignInCompleteListener(result));
   }
 
   private void handleLinkWithEmailAndPassword(
