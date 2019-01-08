@@ -199,7 +199,8 @@ public class CameraPlugin implements MethodCallHandler {
         }
       case "takePicture":
         {
-          camera.takePicture((String) call.argument("path"), (Integer) call.argument("flashMode"), result);
+          camera.takePicture(
+              (String) call.argument("path"), (Integer) call.argument("flashMode"), result);
           break;
         }
       case "startVideoRecording":
@@ -604,10 +605,12 @@ public class CameraPlugin implements MethodCallHandler {
         // Set flashMode
         if (activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)) {
           if (flashMode == CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH) {
-            captureBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
+            captureBuilder.set(
+                CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
             captureBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
           } else if (flashMode == CaptureRequest.CONTROL_AE_MODE_ON_ALWAYS_FLASH) {
-            captureBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON_ALWAYS_FLASH);
+            captureBuilder.set(
+                CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON_ALWAYS_FLASH);
             captureBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
           } else {
             captureBuilder.set(CaptureRequest.CONTROL_AE_LOCK, false);
