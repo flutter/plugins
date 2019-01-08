@@ -35,7 +35,7 @@ String serializeResolutionPreset(ResolutionPreset resolutionPreset) {
   throw ArgumentError('Unknown ResolutionPreset value');
 }
 
-/// Returns the flash mode as a Number.
+/// Returns the flash mode as a Number
 int serializeFlashMode(FlashMode flashMode) {
   switch (flashMode) {
     case FlashMode.off:
