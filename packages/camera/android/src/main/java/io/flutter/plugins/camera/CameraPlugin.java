@@ -204,7 +204,7 @@ public class CameraPlugin implements MethodCallHandler {
         }
       case "prepareForVideoRecording":
         {
-          // not yet implemented for Android
+          // This optimization is not required for Android.
           result.success(null);
           break;
         }
