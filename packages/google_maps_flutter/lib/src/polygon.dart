@@ -105,6 +105,7 @@ class PolygonOptions {
     addIfPresent('geodesic', geodesic);
     addIfPresent('clickable', clickable);
 
+    json['pattern'] = _patternToJson();
 
     return json;
   }
@@ -134,7 +135,7 @@ class PolygonOptions {
   dynamic _holesToJson() {
     final List<List<dynamic>> result = <List<dynamic>>[];
     for (final List<LatLng> holePositions in holes) {
-      List<dynamic> positionList = <dynamic>[];
+      final List<dynamic> positionList = <dynamic>[];
       for (final LatLng position in holePositions) {
         positionList.add(position._toJson());
       }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter_example/page.dart';
+import 'page.dart';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -88,7 +88,7 @@ class PlacePolygonBodyState extends State<PlacePolygonBody> {
   void _removeHole() {
     if (_selectedPolygon != null) {
       _updateSelectedPolygon(
-        const PolygonOptions(holes: []),
+        const PolygonOptions(holes: <List<LatLng>>[]),
       );
     }
   }
@@ -96,7 +96,7 @@ class PlacePolygonBodyState extends State<PlacePolygonBody> {
   void _add() {
     if (_polygonCount < 1) {
       controller.addPolygon(
-        PolygonOptions.defaultOptions.copyWith(new PolygonOptions(
+        PolygonOptions.defaultOptions.copyWith(const PolygonOptions(
           points: <LatLng>[
             LatLng(-33.819306, 151.174164),
             LatLng(-33.820311, 151.265666),

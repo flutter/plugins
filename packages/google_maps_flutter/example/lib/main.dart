@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter_example/place_polygon.dart';
+import 'place_polygon.dart';
 import 'animate_camera.dart';
 import 'map_ui.dart';
 import 'move_camera.dart';
