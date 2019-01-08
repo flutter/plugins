@@ -7,5 +7,5 @@ package io.flutter.plugins.googlemaps;
 import com.google.android.gms.maps.model.Marker;
 
 interface OnMarkerTappedListener {
-  void onMarkerTapped(Marker marker);
+    void onMarkerTapped(Marker marker);
 }
