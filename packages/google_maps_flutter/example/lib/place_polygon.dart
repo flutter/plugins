@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'page.dart';
-
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+import 'page.dart';
 
 class PlacePolygonPage extends Page {
   PlacePolygonPage() : super(const Icon(Icons.map), 'Place polygon');

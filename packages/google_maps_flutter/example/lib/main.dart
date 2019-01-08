@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'place_polygon.dart';
 import 'animate_camera.dart';
 import 'map_ui.dart';
 import 'move_camera.dart';
 import 'page.dart';
 import 'place_marker.dart';
+import 'place_polygon.dart';
 import 'scrolling_map.dart';
 
 final List<Page> _allPages = <Page>[
