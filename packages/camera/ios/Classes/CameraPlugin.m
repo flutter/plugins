@@ -116,7 +116,9 @@
 - (void)stopVideoRecordingWithResult:(FlutterResult)result;
 - (void)startImageStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger;
 - (void)stopImageStream;
-- (void)captureToFile:(NSString *)filename flashMode:(NSNumber *)flashMode result:(FlutterResult)result;
+- (void)captureToFile:(NSString *)filename
+            flashMode:(NSNumber *)flashMode
+               result:(FlutterResult)result;
 @end
 
 @implementation FLTCam
@@ -189,17 +191,19 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
 }
 
 - (AVCaptureFlashMode)unserializeFlashMode:(NSNumber *)flashMode {
-    switch ([flashMode integerValue]) {
-        case 1:
-            return AVCaptureFlashModeOn;
-        case 2:
-            return AVCaptureFlashModeAuto;
-        default:
-            return AVCaptureFlashModeOff;
-    }
+  switch ([flashMode integerValue]) {
+    case 1:
+      return AVCaptureFlashModeOn;
+    case 2:
+      return AVCaptureFlashModeAuto;
+    default:
+      return AVCaptureFlashModeOff;
+  }
 }
 
-- (void)captureToFile:(NSString *)path flashMode:(NSNumber *)flashMode result:(FlutterResult)result {
+- (void)captureToFile:(NSString *)path
+            flashMode:(NSNumber *)flashMode
+               result:(FlutterResult)result {
   AVCapturePhotoSettings *settings = [AVCapturePhotoSettings photoSettings];
   [settings setFlashMode:[self unserializeFlashMode:flashMode]];
   [settings setHighResolutionPhotoEnabled:YES];
@@ -671,7 +675,8 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
     NSUInteger textureId = ((NSNumber *)argsMap[@"textureId"]).unsignedIntegerValue;
 
     if ([@"takePicture" isEqualToString:call.method]) {
-      [_camera captureToFile:call.arguments[@"path"] flashMode:((NSNumber *)call.arguments[@"flashMode"]) result:result];
+      [_camera captureToFile:call.arguments[@"path"]
+                   flashMode:((NSNumber *)call.arguments[@"flashMode"])result:result];
     } else if ([@"dispose" isEqualToString:call.method]) {
       [_registry unregisterTexture:textureId];
       [_camera close];
