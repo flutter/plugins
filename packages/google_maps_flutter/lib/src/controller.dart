@@ -16,6 +16,8 @@ part of google_maps_flutter;
 /// Listeners are notified after changes have been applied on the platform side.
 ///
 /// Marker tap events can be received by adding callbacks to [onMarkerTapped].
+///
+/// Polygon tap events can be received by adding callbacks to [onPolygonTapped].
 class GoogleMapController extends ChangeNotifier {
   GoogleMapController._(
       this._id, MethodChannel channel, CameraPosition initialCameraPosition)
@@ -40,6 +42,9 @@ class GoogleMapController extends ChangeNotifier {
   /// Callbacks to receive tap events for markers placed on this map.
   final ArgumentCallbacks<Marker> onMarkerTapped = ArgumentCallbacks<Marker>();
 
+  /// Callbacks to receive tap events for polygons placed on this map.
+  final ArgumentCallbacks<Polygon> onPolygonTapped = ArgumentCallbacks<Polygon>();
+
   /// Callbacks to receive tap events for info windows on markers
   final ArgumentCallbacks<Marker> onInfoWindowTapped =
       ArgumentCallbacks<Marker>();
@@ -49,6 +54,12 @@ class GoogleMapController extends ChangeNotifier {
   /// The returned set will be a detached snapshot of the markers collection.
   Set<Marker> get markers => Set<Marker>.from(_markers.values);
   final Map<String, Marker> _markers = <String, Marker>{};
+
+  /// The current set of polygons on this map.
+  ///
+  /// The returned set will be a detached snapshot of the polygons collection.
+  Set<Polygon> get polygons => Set<Polygon>.from(_polygons.values);
+  final Map<String, Polygon> _polygons = <String, Polygon>{};
 
   /// True if the map camera is currently moving.
   bool get isCameraMoving => _isCameraMoving;
@@ -76,6 +87,13 @@ class GoogleMapController extends ChangeNotifier {
         final Marker marker = _markers[markerId];
         if (marker != null) {
           onMarkerTapped(marker);
+        }
+        break;
+      case 'polygon#onTap':
+        final String polygonId = call.arguments['polygon'];
+        final Polygon polygon = _polygons[polygonId];
+        if (polygon != null) {
+          onPolygonTapped(polygon);
         }
         break;
       case 'camera#onMoveStarted':
@@ -155,6 +173,29 @@ class GoogleMapController extends ChangeNotifier {
     return marker;
   }
 
+  /// Adds a polygon to the map, configured using the specified custom [options].
+  ///
+  /// Change listeners are notified once the marker has been added on the
+  /// platform side.
+  ///
+  /// The returned [Future] completes with the added polygon once listeners have
+  /// been notified.
+  Future<Polygon> addPolygon(PolygonOptions options) async {
+    final PolygonOptions effectiveOptions =
+        PolygonOptions.defaultOptions.copyWith(options);
+
+    final String polygonId = await _channel.invokeMethod(
+      'polygon#add',
+      <String, dynamic>{
+        'options': effectiveOptions._toJson(),
+      },
+    );
+    final Polygon polygon = Polygon(polygonId, effectiveOptions);
+    _polygons[polygonId] = polygon;
+    notifyListeners();
+    return polygon;
+  }
+
   /// Updates the specified [marker] with the given [changes]. The marker must
   /// be a current member of the [markers] set.
   ///
@@ -174,6 +215,25 @@ class GoogleMapController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Updates the specified [polygon] with the given [changes]. The polygon must
+  /// be a current member of the [polygons] set.
+  ///
+  /// Change listeners are notified once the polygon has been updated on the
+  /// platform side.
+  ///
+  /// The returned [Future] completes once listeners have been notified.
+  Future<void> updatePolygon(Polygon polygon, PolygonOptions changes) async {
+    assert(polygon != null);
+    assert(_polygons[polygon._id] == polygon);
+    assert(changes != null);
+    await _channel.invokeMethod('polygon#update', <String, dynamic>{
+      'polygonId': polygon._id,
+      'options': changes._toJson(),
+    });
+    polygon._options = polygon._options.copyWith(changes);
+    notifyListeners();
+  }
+
   /// Removes the specified [marker] from the map. The marker must be a current
   /// member of the [markers] set.
   ///
@@ -185,6 +245,20 @@ class GoogleMapController extends ChangeNotifier {
     assert(marker != null);
     assert(_markers[marker._id] == marker);
     await _removeMarker(marker._id);
+    notifyListeners();
+  }
+
+  /// Removes the specified [polygon] from the map. The polygon must be a current
+  /// member of the [polygons] set.
+  ///
+  /// Change listeners are notified once the polygon has been removed on the
+  /// platform side.
+  ///
+  /// The returned [Future] completes once listeners have been notified.
+  Future<void> removePolygon(Polygon polygon) async {
+    assert(polygon != null);
+    assert(_polygons[polygon._id] == polygon);
+    await _removePolygon(polygon._id);
     notifyListeners();
   }
 
@@ -203,6 +277,21 @@ class GoogleMapController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Removes all [polygons] from the map.
+  ///
+  /// Change listeners are notified once all polygons have been removed on the
+  /// platform side.
+  ///
+  /// The returned [Future] completes once listeners have been notified.
+  Future<void> clearPolygons() async {
+    assert(_polygons != null);
+    final List<String> polygonIds = List<String>.from(_polygons.keys);
+    for (String id in polygonIds) {
+      await _removePolygon(id);
+    }
+    notifyListeners();
+  }
+
   /// Helper method to remove a single marker from the map. Consumed by
   /// [removeMarker] and [clearMarkers].
   ///
@@ -213,5 +302,17 @@ class GoogleMapController extends ChangeNotifier {
       'marker': id,
     });
     _markers.remove(id);
+  }
+
+  /// Helper method to remove a single polygon from the map. Consumed by
+  /// [removePolygon] and [clearPolygons].
+  ///
+  /// The returned [Future] completes once the polygon has been removed from
+  /// [_polygons].
+  Future<void> _removePolygon(String id) async {
+    await _channel.invokeMethod('polygon#remove', <String, dynamic>{
+      'polygonId': id,
+    });
+    _polygons.remove(id);
   }
 }

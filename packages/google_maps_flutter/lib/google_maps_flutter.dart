@@ -19,4 +19,6 @@ part 'src/controller.dart';
 part 'src/google_map.dart';
 part 'src/marker.dart';
 part 'src/location.dart';
+part 'src/pattern_item.dart';
+part 'src/polygon.dart';
 part 'src/ui.dart';

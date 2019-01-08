@@ -10,9 +10,15 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Dash;
+import com.google.android.gms.maps.model.Dot;
+import com.google.android.gms.maps.model.Gap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.PatternItem;
 import io.flutter.view.FlutterMain;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -264,5 +270,112 @@ class Convert {
     if (zIndex != null) {
       sink.setZIndex(toFloat(zIndex));
     }
+  }
+
+  static void interpretPolygonOptions(Object o, PolygonOptionsSink sink) {
+    final Map<?, ?> data = toMap(o);
+
+    final Object points = data.get("points");
+    if (points != null) {
+      sink.setPoints(_toPoints(points));
+    }
+
+    final Object holes = data.get("holes");
+    if (holes != null) {
+      sink.setHoles(_toHoles(holes));
+    }
+
+    final Object pattern = data.get("pattern");
+    if (pattern != null) {
+      sink.setPattern(_toPattern(pattern));
+    } else if (data.containsKey("pattern")) {
+      sink.setPattern(null);
+    }
+
+    final Object strokeWidth = data.get("strokeWidth");
+    if (strokeWidth != null) {
+      sink.setStrokeWidth(toFloat(strokeWidth));
+    }
+    final Object strokeColor = data.get("strokeColor");
+    if (strokeColor != null) {
+      sink.setStrokeColor(toInt(strokeColor));
+    }
+    final Object strokeJointType = data.get("strokeJointType");
+    if (strokeJointType != null) {
+      sink.setStrokeJointType(toInt(strokeJointType));
+    }
+    final Object fillColor = data.get("fillColor");
+    if (fillColor != null) {
+      sink.setFillColor(toInt(fillColor));
+    }
+    final Object zIndex = data.get("zIndex");
+    if (zIndex != null) {
+      sink.setZIndex(toFloat(zIndex));
+    }
+    final Object visible = data.get("visible");
+    if (visible != null) {
+      sink.setVisible(toBoolean(visible));
+    }
+    final Object geodesic = data.get("geodesic");
+    if (geodesic != null) {
+      sink.setGeodesic(toBoolean(geodesic));
+    }
+    final Object clickable = data.get("clickable");
+    if (clickable != null) {
+      sink.setClickable(toBoolean(clickable));
+    }
+  }
+
+  private static List<LatLng> _toPoints(Object o) {
+    final List<?> data = toList(o);
+    final List<LatLng> points = new ArrayList<>(data.size());
+
+    for (Object ob : data) {
+      final List<?> point = toList(ob);
+      points.add(new LatLng(toFloat(point.get(0)), toFloat(point.get(1))));
+    }
+    return points;
+  }
+
+  private static List<? extends List<LatLng>> _toHoles(Object o) {
+    final List<?> data = toList(o);
+
+    final List<List<LatLng>> holes = new ArrayList<>(data.size());
+    for (Object ob : data) {
+      List<?> obData = toList(ob);
+      final List<LatLng> hole = new ArrayList<>(obData.size());
+
+      for (Object holeObj : obData) {
+        List<?> holePositions = toList(holeObj);
+        hole.add(new LatLng(toFloat(holePositions.get(0)), toFloat((holePositions.get(1)))));
+      }
+
+      holes.add(hole);
+    }
+    return holes;
+  }
+
+  private static List<PatternItem> _toPattern(Object o) {
+    final List<?> data = toList(o);
+    final List<PatternItem> pattern = new ArrayList<>(data.size());
+
+    for (Object ob : data) {
+      final List<?> patternItem = toList(ob);
+      switch (toString(patternItem.get(0))) {
+        case "dot":
+          pattern.add(new Dot());
+          break;
+        case "dash":
+          pattern.add(new Dash(toFloat(patternItem.get(1))));
+          break;
+        case "gap":
+          pattern.add(new Gap(toFloat(patternItem.get(1))));
+          break;
+        default:
+          throw new IllegalArgumentException("Cannot interpret " + pattern + " as PatternItem");
+      }
+    }
+
+    return pattern;
   }
 }
