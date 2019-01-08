@@ -8,7 +8,8 @@ dependencies:
   cupertino_icons: ^0.1.2
 
 dev_dependencies:
-  flutter_test:
+  test:
+  flutter_driver:
     sdk: flutter
   in_app_purchase:
     path: ../
