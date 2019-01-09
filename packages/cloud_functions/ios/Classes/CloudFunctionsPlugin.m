@@ -53,11 +53,11 @@
               flutterError = [FlutterError errorWithCode:@"functionsError"
                                                  message:@"Firebase function failed with exception."
                                                  details:details];
-             } else {
-               flutterError = [FlutterError errorWithCode:nil
+            } else {
+              flutterError = [FlutterError errorWithCode:nil
                                                  message:error.localizedDescription
                                                  details:nil];
-             }
+            }
             result(flutterError);
           } else {
             result(callableResult.data);
