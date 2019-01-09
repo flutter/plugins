@@ -7,10 +7,10 @@
 static uint64_t _nextPolylineId = 0;
 
 @implementation FLTGoogleMapPolylineController {
-  GMSPolyline* _polyline;
-  GMSMapView* _mapView;
+  GMSPolyline *_polyline;
+  GMSMapView *_mapView;
 }
-- (instancetype)init: (GMSMapView*)mapView {
+- (instancetype)init:(GMSMapView *)mapView {
   self = [super init];
   if (self) {
     GMSMutablePath *path = [GMSMutablePath path];
@@ -38,9 +38,8 @@ static uint64_t _nextPolylineId = 0;
 - (void)setPoints:(NSMutableArray *)points {
   GMSMutablePath *path = [GMSMutablePath path];
   
-  for (NSObject *point in points)
-  {
-    CLLocation *location =(CLLocation *) point;
+  for (NSObject *point in points) {
+    CLLocation *location = (CLLocation *) point;
     [path addCoordinate:location.coordinate];
   }
   _polyline.path = path;
