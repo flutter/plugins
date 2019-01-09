@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -45,9 +45,10 @@ class FileUtils {
     return path;
   }
 
-  @SuppressLint("NewApi")
-  private String getPathFromLocalUri(final Context context, final Uri uri) {
-    final boolean isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
+  @SuppressLint("NewApi") private String
+      getPathFromLocalUri(final Context context, final Uri uri) {
+    final boolean isKitKat =
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
 
     if (isKitKat && DocumentsContract.isDocumentUri(context, uri)) {
       if (isExternalStorageDocument(uri)) {
@@ -65,10 +66,13 @@ class FileUtils {
           if (id.startsWith("raw:")) {
             return id.replaceFirst("raw:", "");
           }
-          String[] contentUriPrefixesToTry = new String[] { "content://downloads/public_downloads",
-              "content://downloads/my_downloads", "content://downloads/all_downloads" };
+          String[] contentUriPrefixesToTry =
+              new String[]{"content://downloads/public_downloads",
+                           "content://downloads/my_downloads",
+                           "content://downloads/all_downloads"};
           for (String contentUriPrefix : contentUriPrefixesToTry) {
-            Uri contentUri = ContentUris.withAppendedId(Uri.parse(contentUriPrefix), Long.valueOf(id));
+            Uri contentUri = ContentUris.withAppendedId(
+                Uri.parse(contentUriPrefix), Long.valueOf(id));
             try {
               String path = getDataColumn(context, contentUri, null, null);
               if (path != null) {
@@ -95,7 +99,7 @@ class FileUtils {
         }
 
         final String selection = "_id=?";
-        final String[] selectionArgs = new String[] {split[1]};
+        final String[] selectionArgs = new String[]{split[1]};
 
         return getDataColumn(context, contentUri, selection, selectionArgs);
       }
@@ -114,15 +118,17 @@ class FileUtils {
     return null;
   }
 
-  private static String getDataColumn(
-      Context context, Uri uri, String selection, String[] selectionArgs) {
+ private
+  static String getDataColumn(Context context, Uri uri, String selection,
+                              String[] selectionArgs) {
     Cursor cursor = null;
 
     final String column = "_data";
     final String[] projection = {column};
 
     try {
-      cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, null);
+      cursor = context.getContentResolver().query(uri, projection, selection,
+                                                  selectionArgs, null);
       if (cursor != null && cursor.moveToFirst()) {
         final int column_index = cursor.getColumnIndexOrThrow(column);
         return cursor.getString(column_index);
@@ -135,15 +141,17 @@ class FileUtils {
     return null;
   }
 
-  private static String getPathFromRemoteUri(final Context context, final Uri uri) {
-    // The code below is why Java now has try-with-resources and the Files utility.
+ private
+  static String getPathFromRemoteUri(final Context context, final Uri uri) {
+    // The code below is why Java now has try-with-resources and the Files
+    // utility.
     File file = null;
     InputStream inputStream = null;
     OutputStream outputStream = null;
     boolean success = false;
     try {
       inputStream = context.getContentResolver().openInputStream(uri);
-      file = File.createTempFile("image_picker", "jpg", context.getCacheDir());
+      file = File.createTempFile("image_picker", ".jpg", context.getCacheDir());
       outputStream = new FileOutputStream(file);
       if (inputStream != null) {
         copy(inputStream, outputStream);
@@ -167,7 +175,8 @@ class FileUtils {
     return success ? file.getPath() : null;
   }
 
-  private static void copy(InputStream in, OutputStream out) throws IOException {
+ private
+  static void copy(InputStream in, OutputStream out) throws IOException {
     final byte[] buffer = new byte[4 * 1024];
     int bytesRead;
     while ((bytesRead = in.read(buffer)) != -1) {
@@ -176,19 +185,24 @@ class FileUtils {
     out.flush();
   }
 
-  private static boolean isExternalStorageDocument(Uri uri) {
+ private
+  static boolean isExternalStorageDocument(Uri uri) {
     return "com.android.externalstorage.documents".equals(uri.getAuthority());
   }
 
-  private static boolean isDownloadsDocument(Uri uri) {
-    return "com.android.providers.downloads.documents".equals(uri.getAuthority());
+ private
+  static boolean isDownloadsDocument(Uri uri) {
+    return "com.android.providers.downloads.documents".equals(
+        uri.getAuthority());
   }
 
-  private static boolean isMediaDocument(Uri uri) {
+ private
+  static boolean isMediaDocument(Uri uri) {
     return "com.android.providers.media.documents".equals(uri.getAuthority());
   }
 
-  private static boolean isGooglePhotosUri(Uri uri) {
+ private
+  static boolean isGooglePhotosUri(Uri uri) {
     return "com.google.android.apps.photos.content".equals(uri.getAuthority());
   }
 }
