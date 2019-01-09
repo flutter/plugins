@@ -60,6 +60,7 @@ class FileUtils {
         }
       } else if (isDownloadsDocument(uri)) {
         final String id = DocumentsContract.getDocumentId(uri);
+
         if (!TextUtils.isEmpty(id)) {
           if (id.startsWith("raw:")) {
             return id.replaceFirst("raw:", "");
@@ -78,6 +79,7 @@ class FileUtils {
             }
           }
         }
+
       } else if (isMediaDocument(uri)) {
         final String docId = DocumentsContract.getDocumentId(uri);
         final String[] split = docId.split(":");
@@ -93,7 +95,7 @@ class FileUtils {
         }
 
         final String selection = "_id=?";
-        final String[] selectionArgs = new String[] { split[1] };
+        final String[] selectionArgs = new String[] {split[1]};
 
         return getDataColumn(context, contentUri, selection, selectionArgs);
       }
@@ -112,11 +114,12 @@ class FileUtils {
     return null;
   }
 
-  private static String getDataColumn(Context context, Uri uri, String selection, String[] selectionArgs) {
+  private static String getDataColumn(
+      Context context, Uri uri, String selection, String[] selectionArgs) {
     Cursor cursor = null;
 
     final String column = "_data";
-    final String[] projection = { column };
+    final String[] projection = {column};
 
     try {
       cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, null);
@@ -140,7 +143,7 @@ class FileUtils {
     boolean success = false;
     try {
       inputStream = context.getContentResolver().openInputStream(uri);
-      file = File.createTempFile("image_picker", ".jpg", context.getCacheDir());
+      file = File.createTempFile("image_picker", "jpg", context.getCacheDir());
       outputStream = new FileOutputStream(file);
       if (inputStream != null) {
         copy(inputStream, outputStream);
@@ -149,13 +152,11 @@ class FileUtils {
     } catch (IOException ignored) {
     } finally {
       try {
-        if (inputStream != null)
-          inputStream.close();
+        if (inputStream != null) inputStream.close();
       } catch (IOException ignored) {
       }
       try {
-        if (outputStream != null)
-          outputStream.close();
+        if (outputStream != null) outputStream.close();
       } catch (IOException ignored) {
         // If closing the output stream fails, we cannot be sure that the
         // target file was written in full. Flushing the stream merely moves
