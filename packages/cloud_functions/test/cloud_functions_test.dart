@@ -57,11 +57,9 @@ void main() {
           isMethodCall(
             'CloudFunctions#call',
             arguments: <String, dynamic>{
-              'functionName': 'qux',
+              'functionName': 'buz',
               'region': 'us-east1',
-              'parameters': <String, dynamic>{
-                'quux': 'quuz',
-              },
+              'parameters': null,
             },
           ),
         ],
