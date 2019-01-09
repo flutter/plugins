@@ -129,7 +129,9 @@ static const int SOURCE_GALLERY = 1;
   NSURL *videoURL = [info objectForKey:UIImagePickerControllerMediaURL];
   UIImage *image = [info objectForKey:UIImagePickerControllerEditedImage];
   [_imagePickerController dismissViewControllerAnimated:YES completion:nil];
-
+  if (!_result) {
+    return;
+  }
   if (videoURL != nil) {
     NSData *data = [NSData dataWithContentsOfURL:videoURL];
     NSString *guid = [[NSProcessInfo processInfo] globallyUniqueString];
