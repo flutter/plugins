@@ -36,7 +36,7 @@
     NSString *functionName = call.arguments[@"functionName"];
     NSString *region = call.arguments[@"region"];
     NSObject *parameters = call.arguments[@"parameters"];
-    [[[FIRFunctions functionsForRegion:region]HTTPSCallableWithName:functionName]
+    [[[FIRFunctions functionsForRegion:region] HTTPSCallableWithName:functionName]
           withObject:parameters
           completion:^(FIRHTTPSCallableResult *callableResult, NSError *error) {
             if (error) {

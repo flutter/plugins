@@ -35,7 +35,6 @@ class _MyAppState extends State<MyApp> {
                     try {
                       final dynamic resp = await CloudFunctions.instance.call(
                         functionName: 'repeat',
-                        region: 'us-central1',
                         parameters: <String, dynamic>{
                           'message': 'hello world!',
                           'count': _responseCount,
