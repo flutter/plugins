@@ -176,13 +176,11 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
             width: 350.0,
             height: 300.0,
             child: GoogleMap(
-              onMapCreated: _onMapCreated,
-              options: GoogleMapOptions(
-                cameraPosition: const CameraPosition(
-                  target: LatLng(52.4478, -3.5402),
-                  zoom: 7.0,
-                ),
+              initialCameraPosition: const CameraPosition(
+                target: LatLng(52.4478, -3.5402),
+                zoom: 7.0,
               ),
+              onMapCreated: _onMapCreated,
             ),
           ),
         ),
