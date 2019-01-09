@@ -49,18 +49,15 @@
               }
               if (error.userInfo[FIRFunctionsErrorDetailsKey] != nil) {
                 [details setValue:error.userInfo[FIRFunctionsErrorDetailsKey] forKey:@"details"];
-               }
-              result(flutterError);
+              }
               flutterError = [FlutterError errorWithCode:@"functionsError"
                                                  message:@"Firebase function failed with exception."
                                                  details:details];
              } else {
-              result(callableResult.data);
-              flutterError = [FlutterError errorWithCode:nil
+               flutterError = [FlutterError errorWithCode:nil
                                                  message:error.localizedDescription
                                                  details:nil];
              }
-          }];
             result(flutterError);
           } else {
             result(callableResult.data);
