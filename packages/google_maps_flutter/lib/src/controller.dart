@@ -43,7 +43,8 @@ class GoogleMapController extends ChangeNotifier {
   final ArgumentCallbacks<Marker> onMarkerTapped = ArgumentCallbacks<Marker>();
 
   /// Callbacks to receive tap events for polygons placed on this map.
-  final ArgumentCallbacks<Polygon> onPolygonTapped = ArgumentCallbacks<Polygon>();
+  final ArgumentCallbacks<Polygon> onPolygonTapped =
+      ArgumentCallbacks<Polygon>();
 
   /// Callbacks to receive tap events for info windows on markers
   final ArgumentCallbacks<Marker> onInfoWindowTapped =

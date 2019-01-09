@@ -13,19 +13,18 @@ class Polygon {
 }
 
 class PolygonOptions {
-  const PolygonOptions({
-    this.points,
-    this.holes,
-    this.pattern,
-    this.strokeWidth,
-    this.strokeColor,
-    this.strokeJointType,
-    this.fillColor,
-    this.zIndex,
-    this.visible,
-    this.geodesic,
-    this.clickable
-  });
+  const PolygonOptions(
+      {this.points,
+      this.holes,
+      this.pattern,
+      this.strokeWidth,
+      this.strokeColor,
+      this.strokeJointType,
+      this.fillColor,
+      this.zIndex,
+      this.visible,
+      this.geodesic,
+      this.clickable});
 
   final List<LatLng> points;
   final List<List<LatLng>> holes;
@@ -50,9 +49,7 @@ class PolygonOptions {
       zIndex: 0.5,
       visible: true,
       geodesic: true,
-      clickable: true
-  );
-
+      clickable: true);
 
   @override
   String toString() {
@@ -74,10 +71,8 @@ class PolygonOptions {
         zIndex: changes.zIndex ?? zIndex,
         visible: changes.visible ?? visible,
         geodesic: changes.geodesic ?? geodesic,
-        clickable: changes.clickable ?? clickable
-    );
+        clickable: changes.clickable ?? clickable);
   }
-
 
   dynamic _toJson() {
     final Map<String, dynamic> json = <String, dynamic>{};
