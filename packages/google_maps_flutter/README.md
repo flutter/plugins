@@ -20,14 +20,7 @@ The API exposed by this plugin is not yet stable, and we expect some breaking ch
 
 ## Usage
 
-To use this plugin, add
-```yaml
- google_maps_flutter:
-   git:
-     url: git://github.com/flutter/plugins
-     path: packages/google_maps_flutter
-```
-as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
+To use this plugin, add `google_maps_flutter` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
 
 ## Getting Started
 

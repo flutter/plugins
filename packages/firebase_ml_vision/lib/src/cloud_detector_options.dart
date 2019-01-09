@@ -29,7 +29,7 @@ class CloudDetectorOptions {
   /// The type of model to use for the detection.
   final CloudModelType modelType;
 
-  Map<String, dynamic> _toMap() => <String, dynamic>{
+  Map<String, dynamic> _serialize() => <String, dynamic>{
         'maxResults': maxResults,
         'modelType': _enumToString(modelType),
       };
