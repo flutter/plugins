@@ -13,13 +13,13 @@
 - (void)setVisible:(BOOL)visible;
 - (void)setColor:(UIColor*)color;
 - (void)setStrokeWidth:(CGFloat)width;
-- (void)setPoints:(NSMutableArray*)points;
+- (void)setPoints:(NSMutableArray *)points;
 - (void)setZIndex:(int)zIndex;
 @end
 
 // Defines marker controllable by Flutter.
 @interface FLTGoogleMapPolylineController : NSObject <FLTGoogleMapPolylineOptionsSink>
 @property(atomic, readonly) NSString* polylineId;
-- (instancetype)init:(GMSMapView*)mapView;
+- (instancetype)init: (GMSMapView*)mapView;
 @end
 

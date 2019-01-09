@@ -511,16 +511,20 @@ final class GoogleMapController
   }
 
   @Override
-  public void onMarkerDragStart(Marker marker) {}
+  public void onMarkerDragStart(Marker marker) {
+
+  }
 
   @Override
-  public void onMarkerDrag(Marker marker) {}
+  public void onMarkerDrag(Marker marker) {
+
+  }
 
   @Override
   public void onMarkerDragEnd(Marker marker) {
     final Map<String, Object> arguments = new HashMap<>(2);
     arguments.put("marker", marker.getId());
-    arguments.put("position", Convert.toJson( marker.getPosition()));
+    arguments.put("position",Convert.toJson( marker.getPosition()));
     methodChannel.invokeMethod("marker#onDrag", arguments);
   }
 }
