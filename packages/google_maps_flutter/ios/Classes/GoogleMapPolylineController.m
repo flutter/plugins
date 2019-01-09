@@ -7,8 +7,8 @@
 static uint64_t _nextPolylineId = 0;
 
 @implementation FLTGoogleMapPolylineController {
-    GMSPolyline* _polyline;
-    GMSMapView* _mapView;
+  GMSPolyline* _polyline;
+  GMSMapView* _mapView;
 }
 - (instancetype)init: (GMSMapView*)mapView {
     self = [super init];
