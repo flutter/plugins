@@ -38,31 +38,31 @@
     NSObject *parameters = call.arguments[@"parameters"];
     [[[FIRFunctions functionsForRegion:region] HTTPSCallableWithName:functionName]
         callWithObject:parameters
-        completion:^(FIRHTTPSCallableResult *callableResult, NSError *error) {
-          if (error) {
-            FlutterError *flutterError;
-            if (error.domain == FIRFunctionsErrorDomain) {
-              NSDictionary *details = [NSMutableDictionary dictionary];
-              [details setValue:[self mapFunctionsErrorCodes:error.code] forKey:@"code"];
-              if (error.localizedDescription != nil) {
-                [details setValue:error.localizedDescription forKey:@"message"];
-              }
-              if (error.userInfo[FIRFunctionsErrorDetailsKey] != nil) {
-                [details setValue:error.userInfo[FIRFunctionsErrorDetailsKey] forKey:@"details"];
-              }
-              flutterError = [FlutterError errorWithCode:@"functionsError"
+          completion:^(FIRHTTPSCallableResult *callableResult, NSError *error) {
+            if (error) {
+              FlutterError *flutterError;
+              if (error.domain == FIRFunctionsErrorDomain) {
+                NSDictionary *details = [NSMutableDictionary dictionary];
+                [details setValue:[self mapFunctionsErrorCodes:error.code] forKey:@"code"];
+                if (error.localizedDescription != nil) {
+                  [details setValue:error.localizedDescription forKey:@"message"];
+                }
+                if (error.userInfo[FIRFunctionsErrorDetailsKey] != nil) {
+                  [details setValue:error.userInfo[FIRFunctionsErrorDetailsKey] forKey:@"details"];
+                }
+                flutterError = [FlutterError errorWithCode:@"functionsError"
                                                  message:@"Firebase function failed with exception."
                                                  details:details];
-            } else {
-              flutterError = [FlutterError errorWithCode:nil
+              } else {
+                flutterError = [FlutterError errorWithCode:nil
                                                  message:error.localizedDescription
                                                  details:nil];
+              }
+              result(flutterError);
+            } else {
+              result(callableResult.data);
             }
-            result(flutterError);
-          } else {
-            result(callableResult.data);
-          }
-        }];
+          }];
   } else {
     result(FlutterMethodNotImplemented);
   }
