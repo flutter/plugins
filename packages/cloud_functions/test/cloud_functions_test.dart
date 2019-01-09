@@ -32,7 +32,7 @@ void main() {
           .call(functionName: 'qux', parameters: <String, dynamic>{
         'quux': 'quuz',
       });
-      await CloudFunctions.instance.call(functionName: 'buz', region:'us-east1');
+      await CloudFunctions.instance.call(functionName: 'buz', region: 'us-east1');
       expect(
         log,
         <Matcher>[
@@ -40,7 +40,7 @@ void main() {
             'CloudFunctions#call',
             arguments: <String, dynamic>{
               'functionName': 'baz',
-              'region': 'us-central1'
+              'region': 'us-central1',
               'parameters': null,
             },
           ),
@@ -48,7 +48,7 @@ void main() {
             'CloudFunctions#call',
             arguments: <String, dynamic>{
               'functionName': 'qux',
-              'region': 'us-central1'
+              'region': 'us-central1',
               'parameters': <String, dynamic>{
                 'quux': 'quuz',
               },
@@ -58,7 +58,7 @@ void main() {
             'CloudFunctions#call',
             arguments: <String, dynamic>{
               'functionName': 'qux',
-              'region': 'us-east1'
+              'region': 'us-east1',
               'parameters': <String, dynamic>{
                 'quux': 'quuz',
               },
