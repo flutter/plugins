@@ -9,8 +9,8 @@
 
 // Defines map UI options writable from Flutter.
 @protocol FLTGoogleMapOptionsSink
-- (void)setCamera:(GMSCameraPosition*)camera;
-- (void)setCameraTargetBounds:(GMSCoordinateBounds*)bounds;
+- (void)setCamera:(GMSCameraPosition *)camera;
+- (void)setCameraTargetBounds:(GMSCoordinateBounds *)bounds;
 - (void)setCompassEnabled:(BOOL)enabled;
 - (void)setMapType:(GMSMapViewType)type;
 - (void)setMinZoom:(float)minZoom maxZoom:(float)maxZoom;
@@ -28,21 +28,21 @@
 - (instancetype)initWithFrame:(CGRect)frame
                viewIdentifier:(int64_t)viewId
                     arguments:(id _Nullable)args
-                    registrar:(NSObject<FlutterPluginRegistrar>*)registrar;
+                    registrar:(NSObject<FlutterPluginRegistrar> *)registrar;
 - (void)showAtX:(CGFloat)x Y:(CGFloat)y;
 - (void)hide;
-- (void)animateWithCameraUpdate:(GMSCameraUpdate*)cameraUpdate;
-- (void)moveWithCameraUpdate:(GMSCameraUpdate*)cameraUpdate;
-- (GMSCameraPosition*)cameraPosition;
-- (NSString*)addMarkerWithPosition:(CLLocationCoordinate2D)position;
-- (FLTGoogleMapMarkerController*)markerWithId:(NSString*)markerId;
-- (void)removeMarkerWithId:(NSString*)markerId;
-- (NSString*)addPolylineWithPoints:(NSMutableArray *)points;
-- (FLTGoogleMapPolylineController*)polylineWithId:(NSString*)polylineId;
-- (void)removePolylineWithId:(NSString*)polylineId;
+- (void)animateWithCameraUpdate:(GMSCameraUpdate *)cameraUpdate;
+- (void)moveWithCameraUpdate:(GMSCameraUpdate *)cameraUpdate;
+- (GMSCameraPosition *)cameraPosition;
+- (NSString *)addMarkerWithPosition:(CLLocationCoordinate2D)position;
+- (FLTGoogleMapMarkerController *)markerWithId:(NSString *)markerId;
+- (void)removeMarkerWithId:(NSString *)markerId;
+- (NSString *)addPolylineWithPoints:(NSMutableArray *)points;
+- (FLTGoogleMapPolylineController *)polylineWithId:(NSString *)polylineId;
+- (void)removePolylineWithId:(NSString *)polylineId;
 @end
 
 // Allows the engine to create new Google Map instances.
 @interface FLTGoogleMapFactory : NSObject <FlutterPlatformViewFactory>
-- (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar;
+- (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar;
 @end
