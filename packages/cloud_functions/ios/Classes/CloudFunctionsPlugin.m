@@ -37,7 +37,7 @@
     NSString *region = call.arguments[@"region"];
     NSObject *parameters = call.arguments[@"parameters"];
     [[[FIRFunctions functionsForRegion:region] HTTPSCallableWithName:functionName]
-        withObject:parameters
+        callWithObject:parameters
         completion:^(FIRHTTPSCallableResult *callableResult, NSError *error) {
           if (error) {
             FlutterError *flutterError;
