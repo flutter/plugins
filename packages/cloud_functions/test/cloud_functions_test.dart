@@ -32,7 +32,8 @@ void main() {
           .call(functionName: 'qux', parameters: <String, dynamic>{
         'quux': 'quuz',
       });
-      await CloudFunctions.instance.call(functionName: 'buz', region: 'us-east1');
+      await CloudFunctions.instance
+          .call(functionName: 'buz', region: 'us-east1');
       expect(
         log,
         <Matcher>[
