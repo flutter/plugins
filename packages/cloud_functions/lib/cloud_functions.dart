@@ -29,6 +29,7 @@ class CloudFunctions {
   /// Executes this Callable HTTPS trigger asynchronously.
   ///
   /// @param functionName The name of the callable function being triggered.
+  /// @param region The region where the callable function being triggered. Default is us-central1.
   /// @param parameters Parameters to be passed to the callable function.
   Future<dynamic> call(
       {@required String functionName,
