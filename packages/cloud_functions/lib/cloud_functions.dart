@@ -31,11 +31,11 @@ class CloudFunctions {
   /// @param functionName The name of the callable function being triggered.
   /// @param parameters Parameters to be passed to the callable function.
   Future<dynamic> call(
-      {@required String functionName, Map<String, dynamic> parameters}) async {
+      {@required String functionName, String region, Map<String, dynamic> parameters}) async {
     try {
-      final dynamic response =
-          await channel.invokeMethod('CloudFunctions#call', <String, dynamic>{
+      final dynamic response = await channel.invokeMethod('CloudFunctions#call', <String, dynamic>{
         'functionName': functionName,
+        'region': region,
         'parameters': parameters,
       });
       return response;

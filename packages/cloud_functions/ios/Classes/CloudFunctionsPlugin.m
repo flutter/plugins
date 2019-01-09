@@ -34,8 +34,10 @@
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"CloudFunctions#call" isEqualToString:call.method]) {
     NSString *functionName = call.arguments[@"functionName"];
+    NSString *region = call.arguments[@"region"];
     NSObject *parameters = call.arguments[@"parameters"];
-    [[FIRFunctions functions]
+    [[FIRFunctions functionsForRegion]
+        region:region
         callFunction:functionName
           withObject:parameters
           completion:^(FIRHTTPSCallableResult *callableResult, NSError *error) {

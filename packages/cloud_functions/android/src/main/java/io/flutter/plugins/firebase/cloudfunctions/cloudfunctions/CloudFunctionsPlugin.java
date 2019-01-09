@@ -32,8 +32,9 @@ public class CloudFunctionsPlugin implements MethodCallHandler {
     switch (call.method) {
       case "CloudFunctions#call":
         String functionName = call.argument("functionName");
+        String region = call.argument("region");
         HttpsCallableReference httpsCallableReference =
-            FirebaseFunctions.getInstance().getHttpsCallable(functionName);
+            FirebaseFunctions.getInstance(region).getHttpsCallable(functionName);
         Map<String, Object> parameters = call.argument("parameters");
         httpsCallableReference
             .call(parameters)
