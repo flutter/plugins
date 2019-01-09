@@ -182,8 +182,7 @@ static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink
 }
 
 - (NSString*)addPolylineWithPoints:(NSMutableArray*)points {
-  FLTGoogleMapPolylineController* polylineController =
-  [[FLTGoogleMapPolylineController alloc] init: _mapView];
+  FLTGoogleMapPolylineController* polylineController = [[FLTGoogleMapPolylineController alloc] init: _mapView];
   _polylines[polylineController.polylineId] = polylineController;
   return polylineController.polylineId;
 }
@@ -270,9 +269,10 @@ static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink
   return [marker.userData[1] boolValue];
 }
 
-- (void)mapView:(GMSMapView*)mapView didDragMarker:(GMSMarker*)marker{
+- (void)mapView:(GMSMapView*)mapView didDragMarker:(GMSMarker*)marker {
   NSString* markerId = marker.userData[0];
-  [_channel invokeMethod:@"marker#onDrag" arguments:@{@"marker" : markerId, @"position" : markerToJson(marker)}];
+  [_channel invokeMethod:@"marker#onDrag"
+              arguments:@{@"marker" : markerId, @"position" : markerToJson(marker)}];
 }
 
 - (void)mapView:(GMSMapView*)mapView didTapInfoWindowOfMarker:(GMSMarker*)marker {
@@ -280,7 +280,7 @@ static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink
   [_channel invokeMethod:@"infoWindow#onTap" arguments:@{@"marker" : markerId}];
 }
 
-- (void)mapView:(GMSMapView *)mapView didTapOverlay:(GMSOverlay *)overlay {
+- (void)mapView:(GMSMapView*)mapView didTapOverlay:(GMSOverlay*)overlay {
   NSString* polylineId = overlay.userData[0];
   [_channel invokeMethod:@"polyline#onTap" arguments:@{@"polyline" : polylineId}];
 }
@@ -454,8 +454,7 @@ static void interpretMapOptions(id json, id<FLTGoogleMapOptionsSink> sink) {
   }
 }
 
-static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> sink,
-                                    NSObject<FlutterPluginRegistrar>* registrar) {
+static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> sink, NSObject<FlutterPluginRegistrar>* registrar) {
   NSDictionary* data = json;
   id alpha = data[@"alpha"];
   if (alpha) {
@@ -522,8 +521,7 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
   }
 }
 
-static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink> sink,
-                                   NSObject<FlutterPluginRegistrar>* registrar) {
+static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink> sink, NSObject<FlutterPluginRegistrar>* registrar) {
   NSDictionary* data = json;
 
   id position = data[@"points"];
@@ -552,4 +550,3 @@ static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink
     [sink setZIndex:toInt(zIndex)];
   }
 }
-

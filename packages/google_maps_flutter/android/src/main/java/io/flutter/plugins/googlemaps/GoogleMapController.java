@@ -520,7 +520,7 @@ final class GoogleMapController
   public void onMarkerDragEnd(Marker marker) {
     final Map<String, Object> arguments = new HashMap<>(2);
     arguments.put("marker", marker.getId());
-    arguments.put("position", Convert.toJson( marker.getPosition()));
+    arguments.put("position", Convert.toJson(marker.getPosition()));
     methodChannel.invokeMethod("marker#onDrag", arguments);
   }
 }
