@@ -7,6 +7,8 @@
 .pub/
 .dart_tool/
 pubspec.lock
+.project
+*.xcsettings
 
 Podfile
 Podfile.lock
@@ -25,6 +27,7 @@ keystore.properties
 gradlew
 gradlew.bat
 gradle-wrapper.jar
+gradle-wrapper.properties
 *.iml
 
 GeneratedPluginRegistrant.h
