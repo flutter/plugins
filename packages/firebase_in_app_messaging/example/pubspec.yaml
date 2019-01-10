@@ -1,0 +1,15 @@
+name: firebase_in_app_messaging_example
+description: Demonstrates how to use the firebase_in_app_messaging plugin.
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  firebase_in_app_messaging:
+    path: ../
+  firebase_core: ^0.2.5+1
+
+  url_launcher: ^3.0.3
+
+flutter:
+  uses-material-design: true
