@@ -1,3 +1,7 @@
+## 0.2.9+1
+
+* Fix a crash when failing to start preview.
+
 ## 0.2.9
 
 * Save photo orientation data on iOS.
