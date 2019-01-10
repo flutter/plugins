@@ -1,3 +1,7 @@
+## 4.0.4
+
+* Added `universalLinksOnly` setting.
+
 ## 4.0.3
 
 * Fixed launch url fail for Android: `launch` now assert activity not null and using activity to startActivity.
