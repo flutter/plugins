@@ -91,7 +91,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    const String toLaunch = 'https://youtube.com';
+    const String toLaunch = 'https://flutter.io';
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
