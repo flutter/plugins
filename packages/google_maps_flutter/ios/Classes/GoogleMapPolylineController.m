@@ -37,7 +37,7 @@ static uint64_t _nextPolylineId = 0;
 }
 - (void)setPoints:(NSMutableArray *)points {
   GMSMutablePath *path = [GMSMutablePath path];
-  
+
   for (NSObject *point in points) {
     CLLocation *location = (CLLocation *)point;
     [path addCoordinate:location.coordinate];

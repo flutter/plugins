@@ -22,4 +22,3 @@
 @property(atomic, readonly) NSString* polylineId;
 - (instancetype)init:(GMSMapView*)mapView;
 @end
-
