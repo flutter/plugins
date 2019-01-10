@@ -27,5 +27,4 @@ public interface PolygonOptionsSink {
   void setGeodesic(boolean geodesic);
 
   void setClickable(boolean clickable);
-
 }

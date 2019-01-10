@@ -3,7 +3,6 @@ package io.flutter.plugins.googlemaps;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PatternItem;
 import com.google.android.gms.maps.model.Polygon;
-
 import java.util.List;
 
 /** Controller of a Polygons on the map. */
