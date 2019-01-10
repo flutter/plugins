@@ -28,7 +28,7 @@ const MethodChannel _channel = MethodChannel('plugins.flutter.io/url_launcher');
 /// and will always launch a web content in the built-in Safari View Controller regardless
 /// if the url is a universal link or not.
 ///
-/// [universalLinksOnly] is only used in iOS with iOS version > 10.0. This setting is only validated
+/// [universalLinksOnly] is only used in iOS with iOS version >= 10.0. This setting is only validated
 /// when [forceSafariVC] is set to false. The default value of this setting is false.
 /// By default (when unset), the launcher will either launch the url in a browser (when the
 /// url is not a universal link), or launch the respective native app content (when
