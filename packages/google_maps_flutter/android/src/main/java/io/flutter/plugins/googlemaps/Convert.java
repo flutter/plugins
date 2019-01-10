@@ -17,7 +17,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.PatternItem;
 import io.flutter.view.FlutterMain;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;

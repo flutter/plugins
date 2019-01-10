@@ -269,28 +269,28 @@ final class GoogleMapController
           break;
         }
       case "polygon#add":
-      {
-        final PolygonBuilder polygonBuilder = newPolygonBuilder();
-        Convert.interpretPolygonOptions(call.argument("options"), polygonBuilder);
-        final String polygonId = polygonBuilder.build();
-        result.success(polygonId);
-        break;
-      }
+        {
+          final PolygonBuilder polygonBuilder = newPolygonBuilder();
+          Convert.interpretPolygonOptions(call.argument("options"), polygonBuilder);
+          final String polygonId = polygonBuilder.build();
+          result.success(polygonId);
+          break;
+        }
       case "polygon#remove":
-      {
-        final String polygonId = call.argument("polygonId");
-        removePolygon(polygonId);
-        result.success(null);
-        break;
-      }
+        {
+          final String polygonId = call.argument("polygonId");
+          removePolygon(polygonId);
+          result.success(null);
+          break;
+        }
       case "polygon#update":
-      {
-        final String polygonId = call.argument("polygonId");
-        final PolygonController polygon = polygon(polygonId);
-        Convert.interpretPolygonOptions(call.argument("options"), polygon);
-        result.success(null);
-        break;
-      }
+        {
+          final String polygonId = call.argument("polygonId");
+          final PolygonController polygon = polygon(polygonId);
+          Convert.interpretPolygonOptions(call.argument("options"), polygon);
+          result.success(null);
+          break;
+        }
       default:
         result.notImplemented();
     }
@@ -345,9 +345,6 @@ final class GoogleMapController
     arguments.put("polygon", polygon.getId());
     methodChannel.invokeMethod("polygon#onTap", arguments);
   }
-
-
-
 
   @Override
   public void onPolygonClick(Polygon polygon) {
