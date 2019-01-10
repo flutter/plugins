@@ -17,13 +17,13 @@ const MethodChannel _channel = MethodChannel('plugins.flutter.io/url_launcher');
 /// schemes which cannot be handled, that is when [canLaunch] would complete
 /// with false.
 ///
-/// [forceSafariVC] is only used in iOS. If unset, the launcher opens web URLs
-/// in the safari VC, anything else is opened using the default handler on the
-/// platform. If set to true, it opens the URL in the Safari view controller.
+/// [forceSafariVC] is only used in iOS. By default (when unset), the launcher opens web URLs
+/// in the Safari View Controller, anything else is opened using the default handler on the
+/// platform. If set to true, it opens the URL in the Safari View Controller.
 /// If false, the URL is opened in the default browser of the phone. Note that
 /// to work with universal links on iOS, this must be set to false to let
 /// the platform's system handle the URL. Set this to false if you want to
-/// use the cookies/context of the main browser of the app(such as SSO flows).
+/// use the cookies/context of the main browser of the app (such as SSO flows).
 ///
 /// [forceWebView] is an Android only setting. If null or false, the URL is
 /// always launched with the default browser on device. If set to true, the URL
