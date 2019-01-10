@@ -1,38 +1,41 @@
+// Copyright 2019, the Flutter project authors.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
 part of firebase_crashlytics;
 
-class TestError extends Error {
-
-  TestError(this.msg);
-
-  String msg;
-}
-
+/// The entry point for accessing Crashlytics.
+///
+/// You can get an instance by calling `Crashlytics.instance`.
 class Crashlytics {
 
   static final Crashlytics instance = Crashlytics();
 
+  /// Set to true to have Errors sent to Crashlytics while in debug mode.
+  bool reportInDevMode = false;
+
+  bool get isInDebugMode {
+    bool _inDebugMode = false;
+    assert(_inDebugMode = true);
+    return _inDebugMode;
+  }
+
   static const MethodChannel channel =
       MethodChannel('plugins.flutter.io/firebase_crashlytics');
 
-  Future<void> error() async {
-    throw TestError('i am working');
+  Future<void> onError(FlutterErrorDetails details) async {
+    print('Error caught by Crashlytics plugin:');
+    if (isInDebugMode && !reportInDevMode) {
+      print(details.stack.toString());
+    } else {
+      final List<String> stackTraceLines = details.stack.toString()
+          .trimRight().split('\n');
+      await channel.invokeMethod('Crashlytics#onError', <String, dynamic>{
+        'exception': details.exceptionAsString(),
+        'stackTrace': stackTraceLines
+      });
+    }
   }
 
-
-
-  Future<void> log(String level, String tag, String message) {
-
-  }
-
-  Future<void> onError(FlutterErrorDetails details) {
-    print('calling native crash');
-    List<String> lines = details.stack.toString().trimRight().split('\n');
-    channel.invokeMethod('Crashlytics#onError', <String, dynamic>{
-      'exception': details.exceptionAsString(),
-      'stackTrace': lines
-    }).then((dynamic d) {
-      print('crash complete');
-    });
-  }
 }
 

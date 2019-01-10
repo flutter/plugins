@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
 
-import 'package:flutter/services.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 void main() {
+  // Set reportInDevMode to true to see reports while in debug mode
+  // This is only to be used for confirming that reports are being
+  // submitted as expected. It should not intended to be used in production.
+  Crashlytics.instance.reportInDevMode = true;
+
+  // Pass all uncaught errors to Crashlytics.
   FlutterError.onError = (FlutterErrorDetails details) {
     Crashlytics.instance.onError(details);
   };
@@ -28,11 +32,12 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Plugin example app'),
+          title: const Text('Crashlytics example app'),
         ),
         body: Center(
           child: FlatButton(child: const Text('Crash'), onPressed: (){
-            throw StateError('i am working');
+            // Throw an error that will be sent to Crashlytics.
+            throw StateError('Example Error');
           }),
         ),
       ),
