@@ -2,6 +2,7 @@ group 'io.flutter.plugins.firebase.firestore'
 version '1.0-SNAPSHOT'
 
 buildscript {
+    ext.kotlin_version = '1.3.11'
     repositories {
         google()
         jcenter()
@@ -11,6 +12,7 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:3.2.1'
         classpath 'com.dicedmelon.gradle:jacoco-android:0.1.3'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
@@ -24,6 +26,7 @@ allprojects {
 
 apply plugin: 'com.android.library'
 apply plugin: 'jacoco-android'
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 27
@@ -38,4 +41,9 @@ android {
     dependencies {
         api 'com.google.firebase:firebase-firestore:17.1.1'
     }
+}
+
+dependencies {
+    testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    testImplementation 'junit:junit:4.12'
 }
