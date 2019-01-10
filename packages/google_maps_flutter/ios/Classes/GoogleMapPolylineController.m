@@ -39,7 +39,7 @@ static uint64_t _nextPolylineId = 0;
   GMSMutablePath *path = [GMSMutablePath path];
   
   for (NSObject *point in points) {
-    CLLocation *location = (CLLocation *) point;
+    CLLocation *location = (CLLocation *)point;
     [path addCoordinate:location.coordinate];
   }
   _polyline.path = path;

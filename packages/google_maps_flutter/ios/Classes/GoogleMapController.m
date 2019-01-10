@@ -15,8 +15,10 @@ static GMSCameraPosition* toOptionalCameraPosition(id json);
 static GMSCoordinateBounds* toOptionalBounds(id json);
 static GMSCameraUpdate* toCameraUpdate(id json);
 static void interpretMapOptions(id json, id<FLTGoogleMapOptionsSink> sink);
-static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> sink, NSObject<FlutterPluginRegistrar>* registrar);
-static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink> sink, NSObject<FlutterPluginRegistrar>* registrar);
+static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> sink,
+                                    NSObject<FlutterPluginRegistrar>* registrar);
+static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink> sink, 
+                                    NSObject<FlutterPluginRegistrar>* registrar);
 
 @implementation FLTGoogleMapFactory {
   NSObject<FlutterPluginRegistrar>* _registrar;
@@ -181,7 +183,7 @@ static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink
 
 - (NSString*)addPolylineWithPoints:(NSMutableArray*)points {
   FLTGoogleMapPolylineController* polylineController = 
-      [[FLTGoogleMapPolylineController alloc] init: _mapView];
+      [[FLTGoogleMapPolylineController alloc] init:_mapView];
   _polylines[polylineController.polylineId] = polylineController;
   return polylineController.polylineId;
 }
@@ -271,7 +273,7 @@ static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink
 - (void)mapView:(GMSMapView*)mapView didDragMarker:(GMSMarker*)marker {
   NSString* markerId = marker.userData[0];
   [_channel invokeMethod:@"marker#onDrag"
-                arguments:@{@"marker" : markerId, @"position" : markerToJson(marker)}];
+              arguments:@{@"marker" : markerId, @"position" : markerToJson(marker)}];
 }
 
 - (void)mapView:(GMSMapView*)mapView didTapInfoWindowOfMarker:(GMSMarker*)marker {
@@ -336,8 +338,9 @@ static CLLocationCoordinate2D toLocation(id json) {
 static NSMutableArray* toPoints(id json) {
   NSMutableArray* points = [[NSMutableArray alloc] init];
   NSArray* data = json;
-  for (int i = 0; i< [data count]; i++){
-    CLLocation* point = [[CLLocation alloc] initWithLatitude:toDouble(data[i][0]) longitude:toDouble(data[i][1])];
+  for (int i = 0; i < [data count]; i++){
+    CLLocation* point = [[CLLocation alloc] initWithLatitude:toDouble(data[i][0])
+                                                  longitude:toDouble(data[i][1])];
     [points addObject:point];
   }
   
@@ -454,7 +457,7 @@ static void interpretMapOptions(id json, id<FLTGoogleMapOptionsSink> sink) {
 }
 
 static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> sink, 
-                                    NSObject<FlutterPluginRegistrar>* registrar) {
+                                  NSObject<FlutterPluginRegistrar>* registrar) {
   NSDictionary* data = json;
   id alpha = data[@"alpha"];
   if (alpha) {
@@ -521,7 +524,8 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
   }
 }
 
-static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink> sink, NSObject<FlutterPluginRegistrar>* registrar) {
+static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink> sink,
+                                    NSObject<FlutterPluginRegistrar>* registrar) {
   NSDictionary* data = json;
 
   id position = data[@"points"];
@@ -536,10 +540,10 @@ static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink
   if (color) {
     NSNumber* numberColor = (NSNumber*)color;
     long value = [numberColor longValue];
-    [sink setColor: [UIColor colorWithRed:((float)((value & 0xFF0000) >> 16))/255.0
-                                    green:((float)((value & 0xFF00) >> 8))/255.0
-                                    blue:((float)(value & 0xFF))/255.0
-                                    alpha:1.0]];
+    [sink setColor:[UIColor colorWithRed:((float)((value & 0xFF0000) >> 16)) / 255.0
+                                   green:((float)((value & 0xFF00) >> 8)) / 255.0
+                                    blue:((float)(value & 0xFF)) / 255.0
+                                   alpha:1.0]];
   }
   id width = data[@"width"];
   if (width) {
