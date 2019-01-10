@@ -24,7 +24,17 @@ const MethodChannel _channel = MethodChannel('plugins.flutter.io/url_launcher');
 /// default browser of the phone. Note that to work with universal links on iOS,
 /// this must be set to false to let the platform's system handle the URL.
 /// Set this to false if you want to use the cookies/context of the main browser
-/// of the app (such as SSO flows).
+/// of the app (such as SSO flows). This setting will nullify [universalLinksOnly]
+/// and will always launch a web content in the built-in Safari View Controller regardless
+/// if the url is a universal link or not.
+///
+/// [universalLinksOnly] is only used in iOS with iOS version > 10.0. This setting is only validated
+/// when [forceSafariVC] is set to false. The default value of this setting is false.
+/// By default (when unset), the launcher will either launch the url in a browser (when the
+/// url is not a universal link), or launch the respective native app content (when
+/// the url is a universal link). If setting to true, the launcher will only launch the
+/// the content if the url is a universal link and the respective app for the universal
+/// link is installed on the user's device; otherwise throw a [PlatformException].
 ///
 /// [forceWebView] is an Android only setting. If null or false, the URL is
 /// always launched with the default browser on device. If set to true, the URL
@@ -44,6 +54,7 @@ Future<void> launch(
   bool forceSafariVC,
   bool forceWebView,
   bool enableJavaScript,
+  bool universalLinksOnly,
   Brightness statusBarBrightness,
 }) {
   assert(urlString != null);
@@ -72,6 +83,7 @@ Future<void> launch(
       'useSafariVC': forceSafariVC ?? isWebURL,
       'useWebView': forceWebView ?? false,
       'enableJavaScript': enableJavaScript ?? false,
+      'universalLinksOnly': universalLinksOnly ?? false
     },
   ).then((void _) {
     if (statusBarBrightness != null) {

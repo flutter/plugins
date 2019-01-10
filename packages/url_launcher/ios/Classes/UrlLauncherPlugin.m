@@ -81,7 +81,12 @@
     if (useSafariVC.boolValue) {
       [self launchURLInVC:url result:result];
     } else {
-      [self launchURL:url result:result];
+        NSDictionary *options = nil;
+        if (@available(iOS 10.0, *)) {
+            NSNumber *universalLinksOnly = call.arguments[@"universalLinksOnly"]?:@0;
+            options = @{UIApplicationOpenURLOptionUniversalLinksOnly: universalLinksOnly};
+        }
+        [self launchURL:url options:options result:result];
     }
   } else if ([@"closeWebView" isEqualToString:call.method]) {
     [self closeWebView:url result:result];
@@ -96,22 +101,23 @@
   return [application canOpenURL:url];
 }
 
-- (void)launchURL:(NSString *)urlString result:(FlutterResult)result {
+- (void)launchURL:(NSString *)urlString options:(NSDictionary<UIApplicationOpenExternalURLOptionsKey, id> *)options result:(FlutterResult)result {
   NSURL *url = [NSURL URLWithString:urlString];
   UIApplication *application = [UIApplication sharedApplication];
-  if ([application respondsToSelector:@selector(openURL:options:completionHandler:)]) {
-    [application openURL:url
-                  options:@{}
-        completionHandler:^(BOOL success) {
-          if (success) {
-            result(nil);
-          } else {
-            result([FlutterError
-                errorWithCode:@"Error"
-                      message:[NSString stringWithFormat:@"Error while launching %@", url]
-                      details:nil]);
-          }
-        }];
+
+  if (@available(iOS 10.0, *)) {
+      [application openURL:url
+                   options:options
+         completionHandler:^(BOOL success) {
+             if (success) {
+                 result(nil);
+             } else {
+                 result([FlutterError
+                         errorWithCode:@"Error"
+                         message:[NSString stringWithFormat:@"Error while launching %@", url]
+                         details:nil]);
+             }
+     }];
   } else {
     BOOL success = [application openURL:url];
     if (success) {

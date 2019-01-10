@@ -39,8 +39,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> _launchInBrowser(String url) async {
     if (await canLaunch(url)) {
       await launch(url, forceSafariVC: false, forceWebView: false);
-    } else {
-      throw 'Could not launch $url';
     }
   }
 
@@ -65,6 +63,16 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  Future<void> _launchUniversalLinkIos(String url) async {
+    try {
+      await launch('https://youtube.com',
+          forceSafariVC: false, universalLinksOnly: true);
+    } on Exception {
+      await launch('https://youtube.com',
+          forceSafariVC: true, universalLinksOnly: false);
+    }
+  }
+
   Widget _launchStatus(BuildContext context, AsyncSnapshot<void> snapshot) {
     if (snapshot.hasError) {
       return Text('Error: ${snapshot.error}');
@@ -83,7 +91,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    const String toLaunch = 'https://flutter.io';
+    const String toLaunch = 'https://youtube.com';
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -128,6 +136,13 @@ class _MyHomePageState extends State<MyHomePage> {
                     _launched = _launchInWebViewWithJavaScript(toLaunch);
                   }),
               child: const Text('Launch in app(JavaScript ON)'),
+            ),
+            RaisedButton(
+              onPressed: () => setState(() {
+                    _launched = _launchUniversalLinkIos(toLaunch);
+                  }),
+              child: const Text(
+                  'Universal link launch native App or fallback to Safari View Controller(Youtube)'),
             ),
             const Padding(padding: EdgeInsets.all(16.0)),
             RaisedButton(
