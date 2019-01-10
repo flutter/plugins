@@ -498,6 +498,9 @@ public class CameraPlugin implements MethodCallHandler {
                     startPreview();
                   } catch (CameraAccessException e) {
                     if (result != null) result.error("CameraAccess", e.getMessage(), null);
+                    cameraDevice.close();
+                    Camera.this.cameraDevice = null;
+                    return;
                   }
 
                   if (result != null) {
