@@ -64,15 +64,17 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _launchUniversalLinkIos(String url) async {
-    try {
-      if (await canLaunch('https://youtube.com')) {
-        await launch('https://youtube.com',
-          forceSafariVC: false, universalLinksOnly: true);
-      }
-    } on Exception {
-      if (await canLaunch('https://youtube.com')) {
-        await launch('https://youtube.com',
-          forceSafariVC: true, universalLinksOnly: false);
+    if (await canLaunch('https://youtube.com')) {
+      final bool canLaunchInNativeApp = await launch(
+        'https://youtube.com',
+        forceSafariVC: false,
+        universalLinksOnly: true,
+      );
+      if (!canLaunchInNativeApp) {
+        await launch(
+          'https://youtube.com',
+          forceSafariVC: true,
+        );
       }
     }
   }
@@ -146,7 +148,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     _launched = _launchUniversalLinkIos(toLaunch);
                   }),
               child: const Text(
-                  'Universal link launch native App or fallback to Safari View Controller(Youtube)'),
+                  'Launch a universal link in a native app, fallback to Safari.(Youtube)'),
             ),
             const Padding(padding: EdgeInsets.all(16.0)),
             RaisedButton(

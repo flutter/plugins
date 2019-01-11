@@ -17,7 +17,7 @@ const MethodChannel _channel = MethodChannel('plugins.flutter.io/url_launcher');
 /// schemes which cannot be handled, that is when [canLaunch] would complete
 /// with false.
 ///
-/// [forceSafariVC] is only used in iOS. By default (when unset), the launcher
+/// [forceSafariVC] is only used in iOS with iOS version >= 9.0. By default (when unset), the launcher
 /// opens web URLs in the Safari View Controller, anything else is opened
 /// using the default handler on the platform. If set to true, it opens the
 /// URL in the Safari View Controller. If false, the URL is opened in the
@@ -32,7 +32,7 @@ const MethodChannel _channel = MethodChannel('plugins.flutter.io/url_launcher');
 /// when [forceSafariVC] is set to false. The default value of this setting is false.
 /// By default (when unset), the launcher will either launch the url in a browser (when the
 /// url is not a universal link), or launch the respective native app content (when
-/// the url is a universal link). If setting to true, the launcher will only launch the
+/// the url is a universal link). When set to true, the launcher will only launch
 /// the content if the url is a universal link and the respective app for the universal
 /// link is installed on the user's device; otherwise throw a [PlatformException].
 ///
@@ -49,7 +49,7 @@ const MethodChannel _channel = MethodChannel('plugins.flutter.io/url_launcher');
 /// [statusBarBrightness] Sets the status bar brightness of the application
 /// after opening a link on iOS. Does nothing if no value is passed. This does
 /// not handle reseting the previous status bar style.
-Future<void> launch(
+Future<bool> launch(
   String urlString, {
   bool forceSafariVC,
   bool forceWebView,
@@ -109,9 +109,13 @@ Future<bool> canLaunch(String urlString) async {
 ///
 /// If [launch] was never called, then this call will not have any effect.
 ///
-/// On Android systems, if [launch] was called without `forceWebView` being set to
-/// `true`, this call will not do anything either, simply because there is no
-/// WebView available to be closed.
+/// On Android systems, if [launch] was called without `forceWebView` being set to `true`
+/// Or on IOS systems, if [launch] was called without `forceSafariVC` being set to `true`,
+/// this call will not do anything either, simply because there is no
+/// WebView/SafariViewController available to be closed.
+/// 
+/// SafariViewController is only available on IOS version >= 9.0, this method does not do anything
+/// on IOS version below 9.0
 Future<void> closeWebView() async {
   return await _channel.invokeMethod('closeWebView');
 }

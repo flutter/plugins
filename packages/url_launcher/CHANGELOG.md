@@ -1,6 +1,7 @@
-## 4.0.4
+## 4.1.0
 
 * Added `universalLinksOnly` setting.
+* Updated `launch` to return `Future<bool>`.
 
 ## 4.0.3
 
