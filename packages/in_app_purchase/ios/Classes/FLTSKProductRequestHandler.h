@@ -9,7 +9,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface FLTSKProductRequestWrapper : NSObject
+@interface FLTSKProductRequestHandler : NSObject
 
 @end
 
