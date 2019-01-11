@@ -11,37 +11,46 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  bool _storeReady = false;
-
   @override
   void initState() {
     super.initState();
-    initPlatformState();
-  }
-
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    final InAppPurchasePlugin plugin = InAppPurchasePlugin();
-    final bool connected = await plugin.connection.connect();
-    setState(() {
-      _storeReady = connected;
-    });
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
   }
 
   @override
   Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('IAP Example'),
+        ),
+        body: Center(
+            child: FutureBuilder<List<Widget>>(
+                future: buildStorefront(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<List<Widget>> snapshot) {
+                  if (!snapshot.hasData || snapshot.error != null) {
+                    return ListView(children: <Widget>[
+                      buildListCard(
+                          ListTile(title: const Text('Trying to connect...')))
+                    ]);
+                  }
+
+                  return ListView(children: snapshot.data);
+                })),
+      ),
+    );
+  }
+
+  Future<List<Widget>> buildStorefront() async {
+    final bool available = await InAppPurchaseConnection.instance.isAvailable();
     final Widget storeHeader = buildListCard(ListTile(
-        leading: Icon(_storeReady ? Icons.check : Icons.block),
-        title:
-            Text('The store is ' + (_storeReady ? 'open' : 'closed') + '.')));
+        leading: Icon(available ? Icons.check : Icons.block),
+        title: Text('The store is ' +
+            (available ? 'available' : 'unavailable') +
+            '.')));
     final List<Widget> children = <Widget>[storeHeader];
 
-    if (!_storeReady) {
+    if (!available) {
       children.add(buildListCard(ListTile(
           title: Text('Not connected',
               style: TextStyle(color: ThemeData.light().errorColor)),
@@ -52,14 +61,7 @@ class _MyAppState extends State<MyApp> {
           buildListCard(ListTile(title: const Text('Nothing to see yet.'))));
     }
 
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('IAP Example'),
-        ),
-        body: Center(child: ListView(children: children)),
-      ),
-    );
+    return children;
   }
 
   static ListTile buildListCard(ListTile innerTile) =>

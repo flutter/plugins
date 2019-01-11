@@ -17,18 +17,28 @@ class BillingClient {
   }
   static const MethodChannel _channel =
       MethodChannel('plugins.flutter.io/in_app_purchase');
+  // Occasionally methods in the native layer require a Dart callback to be
+  // triggered in response to a Java callback. For example,
+  // [startConnection] registers an [OnBillingServiceDisconnected] callback.
+  // This list of names to callbacks is used to trigger Dart callbacks in
+  // response to those Java callbacks. Dart sends the Java layer a handle to the
+  // matching callback here to remember, and then once its twin is triggered it
+  // sends the handle back over the platform channel. We then access that handle
+  // in this array and call it in Dart code. See also [_callHandler].
   List<Map<String, Function>> _callbacks = <Map<String, Function>>[];
 
   /// Wraps `BillingClient#isReady()`.
-  Future<bool> get isReady async {
-    return await _channel.invokeMethod('BillingClient#isReady()');
-  }
+  Future<bool> isReady() async =>
+      await _channel.invokeMethod('BillingClient#isReady()');
 
-  /// `BillingClient#startConnection(BillingClientStateListener)`
+  /// Calls `BillingClient#startConnection(BillingClientStateListener)`
   ///
   /// [onBillingServiceConnected] has been converted from a callback parameter
   /// to the Future result returned by this function. This returns the
   /// `BillingClient.BillingResponse` `responseCode` of the connection result.
+  ///
+  /// This triggers the creation of a new `BillingClient` instance in Java if
+  /// one doesn't already exist.
   Future<BillingResponse> startConnection(
       {@required
           OnBillingServiceDisconnected onBillingServiceDisconnected}) async {
@@ -41,11 +51,21 @@ class BillingClient {
         <String, dynamic>{'handle': _callbacks.length - 1}));
   }
 
+  /// Calls `BillingClient#endConnection(BillingClientStateListener)`
+  ///
+  /// Will trigger the [OnBillingServiceDisconnected] callback passed to [startConnection].
+  ///
+  /// This triggers the destruction of the `BillingClient` instance in Java.
+  Future<void> endConnection() async {
+    return _channel.invokeMethod("BillingClient#endConnection()", null);
+  }
+
   Future<void> _callHandler(MethodCall call) async {
     switch (call.method) {
       case 'BillingClientStateListener#onBillingServiceDisconnected()':
         final int handle = call.arguments['handle'];
         await _callbacks[handle]['OnBillingServiceDisconnected']();
+        _callbacks.removeAt(handle);
         break;
     }
   }
