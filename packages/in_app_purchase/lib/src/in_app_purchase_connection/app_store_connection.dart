@@ -1,7 +1,7 @@
 import 'dart:async';
 
+import '../../store_kit_wrappers.dart';
 import 'in_app_purchase_connection.dart';
-import 'store_kit_wrappers.dart';
 
 /// An [InAppPurchaseConnection] that wraps StoreKit.
 ///
