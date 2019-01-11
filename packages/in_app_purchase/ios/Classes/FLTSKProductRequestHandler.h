@@ -8,36 +8,35 @@
 #import <Foundation/Foundation.h>
 #import <StoreKit/StoreKit.h>
 
-
 NS_ASSUME_NONNULL_BEGIN
 
-typedef void(^ProductRequestCompletion)(SKProductsResponse * _Nullable response);
+typedef void (^ProductRequestCompletion)(SKProductsResponse *_Nullable response);
 
 @interface FLTSKProductRequestHandler : NSObject
 
 // method to get the complete SKProductResponse object
-- (void)startWithProductIdentifiers:(NSSet<NSString *> *)identifers completionHandler:(nullable ProductRequestCompletion)completion;
+- (void)startWithProductIdentifiers:(NSSet<NSString *> *)identifers
+                  completionHandler:(nullable ProductRequestCompletion)completion;
 
 @end
 
 NS_ASSUME_NONNULL_END
 
-
 #pragma mark - categories
 
-@interface SKProduct(Coder)
+@interface SKProduct (Coder)
 
 - (nullable NSDictionary *)toMap;
 
 @end
 
-@interface SKProductSubscriptionPeriod(Coder)
+@interface SKProductSubscriptionPeriod (Coder)
 
 - (nullable NSDictionary *)toMap;
 
 @end
 
-@interface SKProductDiscount(Coder)
+@interface SKProductDiscount (Coder)
 
 - (nullable NSDictionary *)toMap;
 

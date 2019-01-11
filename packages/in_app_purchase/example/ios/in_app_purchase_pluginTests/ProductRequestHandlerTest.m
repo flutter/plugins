@@ -9,49 +9,83 @@
 #import <XCTest/XCTest.h>
 #import "FLTSKProductRequestHandler.h"
 
-@interface ProductRequestHandlerTest : XCTestCase
+#pragma stubs
 
-@property (strong, nonatomic) FLTSKProductRequestHandler *handler;
+@interface SKProductStub : SKProduct
+@end
+
+@implementation SKProductStub
+
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    [self setValue:@"consumable" forKey:@"productIdentifier"];
+  }
+  return self;
+}
+
+@end
+
+@interface SKProductSubscriptionPeriodStub : SKProductSubscriptionPeriod
+@end
+
+@implementation SKProductSubscriptionPeriodStub
+
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    [self setValue:@(0) forKey:@"numberOfUnits"];
+    [self setValue:@(0) forKey:@"unit"];
+  }
+  return self;
+}
+
+@end
+
+//@implementation SKProductSubscriptionPeriod(Coder)
+//
+//- (NSDictionary *)toMap {
+//    return @{
+//             @"numberOfUnits":@(self.numberOfUnits),
+//             @"unit":@(self.unit)
+//             };
+//}
+//
+//@end
+//
+//@implementation SKProductDiscount(Coder)
+//
+//- (NSDictionary *)toMap {
+//    return @{
+//             @"price": self.price,
+//             @"priceLocale": self.priceLocale,
+//             @"numberOfPeriods": @(self.numberOfPeriods),
+//             @"subscriptionPeriod": [self.subscriptionPeriod toMap],
+//             @"paymentMode": @(self.paymentMode)
+//             };
+//}
+
+#pragma tests
+
+@interface ProductRequestHandlerTest : XCTestCase
 
 @end
 
 @implementation ProductRequestHandlerTest
 
 - (void)setUp {
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        self.handler = [[FLTSKProductRequestHandler alloc] init];
-    });
-
 }
 
-//- (void)testStartWithNoProducts {
-//    self.handler = [[FLTSKProductRequestHandler alloc] initWithProductIdentifiers:[NSSet setWithObjects:@"", @"1", nil]];
-//    [self.handler startWithCompletionHandler:^(SKProductsResponse * _Nullable response) {
-//        XCTAssertNotNil(response);
-//        XCTAssertTrue(response.products.count == 0);
-//    }];
-//    // This is an example of a functional test case.
-//    // Use XCTAssert and related functions to verify your tests produce the correct results.
-//}
+- (void)testSKProductSubscriptionPeriodStubToMap {
+  SKProductSubscriptionPeriodStub *period = [[SKProductSubscriptionPeriodStub alloc] init];
+  NSDictionary *map = [period toMap];
+  NSDictionary *match = @{@"numberOfUnits" : @(0), @"unit" : @(0)};
+  XCTAssertEqualObjects(map, match);
+}
+
+//- (void)testProductToMap {
+//    SKProductStub *product = [[SKProductStub alloc] init];
 //
-//- (void)testEmptySet {
-//    self.handler = [[FLTSKProductRequestHandler alloc] initWithProductIdentifiers:[NSSet new]];
-//    [self.handler startWithCompletionHandler:^(SKProductsResponse * _Nullable response) {
-//        XCTAssertNotNil(response);
-//        XCTAssertTrue(response.products.count == 0);
-//    }];
-//    // This is an example of a functional test case.
-//    // Use XCTAssert and related functions to verify your tests produce the correct results.
 //}
-
-- (void)testSingleItemConsumable {
-    [self.handler startWithProductIdentifiers:[NSSet setWithObjects:@"consumable", nil] completionHandler:^(SKProductsResponse *response) {
-        XCTAssertNil(response);
-    }];
-    // This is an example of a functional test case.
-    // Use XCTAssert and related functions to verify your tests produce the correct results.
-}
-
 
 @end
