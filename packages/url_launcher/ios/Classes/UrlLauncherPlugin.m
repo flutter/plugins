@@ -6,10 +6,12 @@
 
 #import "UrlLauncherPlugin.h"
 
-@interface FLTUrlLaunchSession : NSObject
+API_AVAILABLE(ios(9.0))
+@interface FLTUrlLaunchSession : NSObject <SFSafariViewControllerDelegate>
 
-@property(strong, nonatomic) NSURL *url;
 @property(copy, nonatomic) FlutterResult flutterResult;
+@property(strong, nonatomic) NSURL *url;
+@property(strong, nonatomic) SFSafariViewController *safari;
 
 @end
 
@@ -20,26 +22,10 @@
   if (self) {
     self.url = url;
     self.flutterResult = result;
-  }
-  return self;
-}
-
-@end
-
-API_AVAILABLE(ios(9.0))
-@interface FLTUrlSafariLaunchSession : FLTUrlLaunchSession <SFSafariViewControllerDelegate>
-@property(strong) SFSafariViewController *safari;
-@end
-
-@implementation FLTUrlSafariLaunchSession
-
-- (instancetype)initWithUrl:url withFlutterResult:result {
-  self = [super init];
-  if (self) {
     if (@available(iOS 9.0, *)) {
       self.safari = [[SFSafariViewController alloc] initWithURL:url];
+      self.safari.delegate = self;
     }
-    self.safari.delegate = self;
   }
   return self;
 }
@@ -66,10 +52,16 @@ API_AVAILABLE(ios(9.0))
 
 @end
 
+API_AVAILABLE(ios(9.0))
+@interface FLTUrlLauncherPlugin ()
+
+@property(strong, nonatomic) FLTUrlLaunchSession *currentSession;
+
+@end
+
 @interface FLTUrlLauncherPlugin ()
 
 @property(strong, nonatomic) UIViewController *viewController;
-@property(strong, nonatomic) FLTUrlLaunchSession *currentSession;
 
 @end
 
@@ -151,11 +143,9 @@ API_AVAILABLE(ios(9.0))
 
 - (void)launchURLInVC:(NSString *)urlString result:(FlutterResult)result API_AVAILABLE(ios(9.0)) {
   NSURL *url = [NSURL URLWithString:urlString];
-  self.currentSession = [[FLTUrlSafariLaunchSession alloc] initWithUrl:url
-                                                     withFlutterResult:result];
-  FLTUrlSafariLaunchSession *currentSession = (FLTUrlSafariLaunchSession *)self.currentSession;
+  self.currentSession = [[FLTUrlLaunchSession alloc] initWithUrl:url withFlutterResult:result];
   __weak typeof(self) weakSelf = self;
-  [self.viewController presentViewController:currentSession.safari
+  [self.viewController presentViewController:self.currentSession.safari
                                     animated:YES
                                   completion:^void() {
                                     weakSelf.currentSession = nil;
@@ -163,11 +153,8 @@ API_AVAILABLE(ios(9.0))
 }
 
 - (void)closeWebViewWithResult:(FlutterResult)result API_AVAILABLE(ios(9.0)) {
-  if ([self.currentSession isKindOfClass:[FLTUrlSafariLaunchSession class]]) {
-    FLTUrlSafariLaunchSession *currentSession = (FLTUrlSafariLaunchSession *)self.currentSession;
-    if (currentSession != nil) {
-      [currentSession close];
-    }
+  if (self.currentSession != nil) {
+    [self.currentSession close];
   }
   result(nil);
 }
