@@ -331,6 +331,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
     }
 
     try {
+      // FlashMode.(off|on|auto)
       await controller.takePicture(filePath, FlashMode.off);
     } on CameraException catch (e) {
       _showCameraException(e);
