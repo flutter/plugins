@@ -111,6 +111,9 @@ class Firestore {
     final int transactionId = _transactionHandlerId++;
     _transactionHandlers[transactionId] = transactionHandler;
     final Map<dynamic, dynamic> result = await channel
+        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+        // https://github.com/flutter/flutter/issues/26431
+        // ignore: strong_mode_implicit_dynamic_method
         .invokeMethod('Firestore#runTransaction', <String, dynamic>{
       'app': app.name,
       'transactionId': transactionId,
@@ -122,6 +125,9 @@ class Firestore {
   @deprecated
   Future<void> enablePersistence(bool enable) async {
     assert(enable != null);
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     await channel.invokeMethod('Firestore#enablePersistence', <String, dynamic>{
       'app': app.name,
       'enable': enable,
@@ -133,6 +139,9 @@ class Firestore {
       String host,
       bool sslEnabled,
       bool timestampsInSnapshotsEnabled}) async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     await channel.invokeMethod('Firestore#settings', <String, dynamic>{
       'app': app.name,
       'persistenceEnabled': persistenceEnabled,
