@@ -6,6 +6,8 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <StoreKit/StoreKit.h>
+
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -14,3 +16,24 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
+
+
+#pragma mark - categories
+
+@interface SKProduct(Coder)
+
+- (NSDictionary *)toMap;
+
+@end
+
+@interface SKProductSubscriptionPeriod(Coder)
+
+- (NSDictionary *)toMap;
+
+@end
+
+@interface SKProductDiscount(Coder)
+
+- (NSDictionary *)toMap;
+
+@end
