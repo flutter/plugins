@@ -11,7 +11,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef void(^ProductRequestCompletion)(SKProductsResponse * _Nullable response);
+
 @interface FLTSKProductRequestHandler : NSObject
+
+// method to get the complete SKProductResponse object
+- (void)startWithProductIdentifiers:(NSSet<NSString *> *)identifers completionHandler:(nullable ProductRequestCompletion)completion;
 
 @end
 
@@ -22,18 +27,18 @@ NS_ASSUME_NONNULL_END
 
 @interface SKProduct(Coder)
 
-- (NSDictionary *)toMap;
+- (nullable NSDictionary *)toMap;
 
 @end
 
 @interface SKProductSubscriptionPeriod(Coder)
 
-- (NSDictionary *)toMap;
+- (nullable NSDictionary *)toMap;
 
 @end
 
 @interface SKProductDiscount(Coder)
 
-- (NSDictionary *)toMap;
+- (nullable NSDictionary *)toMap;
 
 @end

@@ -10,4 +10,7 @@ import 'store_kit_wrappers.dart';
 class AppStoreConnection implements InAppPurchaseConnection {
   @override
   Future<bool> isAvailable() => SKPaymentQueueWrapper.canMakePayments;
+
+  @override
+  Future<List<Map<dynamic, dynamic>>> getProductList(List<String> identifiers) => SKPaymentQueueWrapper.getProductList(identifiers);
 }

@@ -7,6 +7,7 @@ import 'google_play_connection.dart';
 abstract class InAppPurchaseConnection {
   /// Returns true if the payment platform is ready and available.
   Future<bool> isAvailable();
+  Future<List<Map<dynamic, dynamic>>> getProductList(List<String> identifiers);
 
   /// The [InAppPurchaseConnection] implemented for this platform.
   ///

@@ -10,45 +10,31 @@
 
 #pragma mark - Main Handler
 
-typedef void(^ProductRequestCompletion)(SKProductsResponse * _Nullable response);
-
 @interface FLTSKProductRequestHandler()<SKProductsRequestDelegate>
 
-@property (strong, nonatomic) SKProductsRequest *request;
 @property (copy, nonatomic) ProductRequestCompletion completion;
+@property (strong, nonatomic) SKProductsRequest *request;
 
 @end
 
 @implementation FLTSKProductRequestHandler
 
-- (instancetype)initWithProductIdentifiers:(NSSet<NSString *> *)identifers
-{
-    self = [super init];
-    if (self) {
-        self.request = [[SKProductsRequest alloc] initWithProductIdentifiers:identifers];
-        self.request.delegate = self;
-    }
-    return self;
-}
-
 // method to get the complete SKProductResponse object
-- (void)startWithCompletionHandler:(nullable ProductRequestCompletion)completion {
-    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0ul);
-    dispatch_async(queue, ^{
-        self.completion = completion;
-        [self.request start];
-    });
+- (void)startWithProductIdentifiers:(NSSet<NSString *> *)identifers completionHandler:(nullable ProductRequestCompletion)completion {
+    self.request = [[SKProductsRequest alloc] initWithProductIdentifiers:identifers];
+    self.request.delegate = self;
+    self.completion = completion;
+    [self.request start];
+
 }
 
 
 #pragma mark SKProductRequestDelegate
 
 - (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if (self.completion) {
-            self.completion(response);
-        }
-    });
+    if (self.completion) {
+        self.completion(response);
+    }
 }
 
 @end
@@ -61,23 +47,35 @@ typedef void(^ProductRequestCompletion)(SKProductsResponse * _Nullable response)
     NSMutableDictionary *map = [[NSMutableDictionary
                                  alloc]
                                 initWithDictionary:@{
-                                                     @"localizedDescription": self.localizedDescription,
-                                                     @"localizedTitle": self.localizedTitle,
-                                                     @"price": self.price,
-                                                     @"priceLocale": self.priceLocale,
+                                                     @"localizedDescription": self.localizedDescription?:@"",
+                                                     @"localizedTitle": self.localizedTitle?:@"",
                                                      @"productIdentifier": self.productIdentifier,
-                                                     @"downloadable": @(self.downloadable),
-                                                     @"downloadContentLengths": self.downloadContentLengths,
-                                                     @"downloadContentVersion": self.downloadContentVersion,
+                                                     @"downloadable": @(self.downloadable)
                                 }];
+    if (self.price) {
+        [map setObject:self.price forKey:@"price"];
+    }
+    if (@available(iOS 10.0, *)) {
+        if (self.priceLocale.currencyCode) {
+            // TODO: NSLocle is a complex object, want to see the actual need of getting this expanded to a map.
+            // Matching android to only get the currencyCode for now.
+            [map setObject:self.priceLocale.currencyCode forKey:@"currencyCode"];
+        }
+    }
+    if (self.downloadContentLengths) {
+        [map setObject:self.downloadContentLengths forKey:@"downloadContentLengths"];
+    }
+    if (self.downloadContentVersion) {
+        [map setObject:self.downloadContentVersion forKey:@"downloadContentVersion"];
+    }
     if (@available(iOS 11.2, *)) {
         if (self.subscriptionPeriod) {
-            [map setObject:[self.subscriptionPeriod toMap] forKey:@"subscriptionPeriod"];
+            [map setObject:[self.subscriptionPeriod toMap]?:@{} forKey:@"subscriptionPeriod"];
         }
     }
     if (@available(iOS 11.2, *)) {
         if (self.introductoryPrice) {
-            [map setObject:[self.introductoryPrice toMap] forKey:@"introductoryPrice"];
+            [map setObject:[self.introductoryPrice toMap]?:@{} forKey:@"introductoryPrice"];
         }
     }
     if (@available(iOS 12.0, *)) {

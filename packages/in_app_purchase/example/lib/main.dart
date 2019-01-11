@@ -42,7 +42,8 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<List<Widget>> buildStorefront() async {
-    final bool available = await InAppPurchaseConnection.instance.isAvailable();
+    final InAppPurchaseConnection connection = InAppPurchaseConnection.instance;
+    final bool available = await connection.isAvailable();
     final Widget storeHeader = buildListCard(ListTile(
         leading: Icon(available ? Icons.check : Icons.block),
         title: Text('The store is ' +
@@ -59,6 +60,12 @@ class _MyAppState extends State<MyApp> {
     } else {
       children.add(
           buildListCard(ListTile(title: const Text('Nothing to see yet.'))));
+    }
+
+    final List<Map<dynamic,dynamic>> items = await connection.getProductList(<String>['consumable']);
+    for (Map<dynamic,dynamic> item in items) {
+      children.add(
+        buildListCard(ListTile(title: Text(item['localizedTitle']))));
     }
 
     return children;

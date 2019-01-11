@@ -9,4 +9,14 @@ const MethodChannel _channel =
 class SKPaymentQueueWrapper {
   static Future<bool> get canMakePayments async =>
       await _channel.invokeMethod('-[SKPaymentQueue canMakePayments:]');
+
+  static Future<List<Map<dynamic, dynamic>>> getProductList(
+      List<String> identifiers) async {
+    return _channel.invokeListMethod<Map<dynamic, dynamic>>(
+      'getProductList',
+      <String, Object>{
+        'identifiers': identifiers,
+      },
+    );
+  }
 }
