@@ -167,7 +167,7 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
 }
 
 - (void)addMapStyle:(NSString*)mapStyle {
-  GMSMapStyle *style = [GMSMapStyle styleWithJSONString:mapStyle error:nil];
+  GMSMapStyle* style = [GMSMapStyle styleWithJSONString:mapStyle error:nil];
   _mapView.mapStyle = style;
 }
 
