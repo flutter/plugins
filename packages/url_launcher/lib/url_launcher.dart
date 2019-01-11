@@ -113,7 +113,7 @@ Future<bool> canLaunch(String urlString) async {
 /// Or on IOS systems, if [launch] was called without `forceSafariVC` being set to `true`,
 /// this call will not do anything either, simply because there is no
 /// WebView/SafariViewController available to be closed.
-/// 
+///
 /// SafariViewController is only available on IOS version >= 9.0, this method does not do anything
 /// on IOS version below 9.0
 Future<void> closeWebView() async {
