@@ -19,7 +19,8 @@ import java.util.Map;
 
 /** Wraps a {@link BillingClient} instance and responds to Dart calls for it. */
 public class InAppPurchasePlugin implements MethodCallHandler {
-  private final BillingClient billingClient;
+  private @Nullable BillingClient billingClient;
+  private final Context context;
   private final MethodChannel channel;
 
   /** Plugin registration. */
@@ -30,15 +31,7 @@ public class InAppPurchasePlugin implements MethodCallHandler {
   }
 
   public InAppPurchasePlugin(Context context, MethodChannel channel) {
-    billingClient =
-        BillingClient.newBuilder(context)
-            .setListener(
-                new PurchasesUpdatedListener() {
-                  @Override
-                  public void onPurchasesUpdated(
-                      int responseCode, @Nullable List<Purchase> purchases) {}
-                })
-            .build();
+    this.context = context;
     this.channel = channel;
   }
 
@@ -46,19 +39,16 @@ public class InAppPurchasePlugin implements MethodCallHandler {
   public void onMethodCall(MethodCall call, Result result) {
     switch (call.method) {
       case "BillingClient#isReady()":
-        {
-          isReady(result);
-          break;
-        }
+        isReady(result);
+        break;
       case "BillingClient#startConnection(BillingClientStateListener)":
-        {
-          startConnection((int) call.argument("handle"), result);
-          break;
-        }
+        startConnection((int) call.argument("handle"), result);
+        break;
+      case "BillingClient#endConnection()":
+        endConnection(result);
+        break;
       default:
-        {
-          result.notImplemented();
-        }
+        result.notImplemented();
     }
   }
 
@@ -66,13 +56,19 @@ public class InAppPurchasePlugin implements MethodCallHandler {
   /*package*/ InAppPurchasePlugin(BillingClient billingClient, MethodChannel channel) {
     this.billingClient = billingClient;
     this.channel = channel;
+    this.context = null;
   }
 
   private void startConnection(final int handle, final Result result) {
+    if (billingClient == null) {
+      billingClient = buildBillingClient(context);
+    }
+
     billingClient.startConnection(
         new BillingClientStateListener() {
           @Override
           public void onBillingSetupFinished(int responseCode) {
+            // Consider finishing at all a "success", leave it to the Dart side to validate the responseCode.
             result.success(responseCode);
           }
 
@@ -81,12 +77,29 @@ public class InAppPurchasePlugin implements MethodCallHandler {
             final Map<String, Object> arguments = new HashMap<>();
             arguments.put("handle", handle);
             channel.invokeMethod(
-                "BillingClientStateListener#onBillingServiceDisconnected()", new HashMap<>());
+                "BillingClientStateListener#onBillingServiceDisconnected()", arguments);
           }
         });
   }
 
+  private void endConnection(final Result result) {
+    billingClient.endConnection();
+    billingClient = null;
+    result.success(null);
+  }
+
   private void isReady(Result result) {
     result.success(billingClient.isReady());
+  }
+
+  private static BillingClient buildBillingClient(Context context) {
+    return BillingClient.newBuilder(context)
+        .setListener(
+            new PurchasesUpdatedListener() {
+              @Override
+              public void onPurchasesUpdated(
+                  int responseCode, @Nullable List<Purchase> purchases) {}
+            })
+        .build();
   }
 }

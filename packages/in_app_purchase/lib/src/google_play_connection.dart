@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/widgets.dart';
 import 'billing_client_wrappers.dart';
 import 'in_app_purchase_connection.dart';
 
@@ -7,27 +8,38 @@ import 'in_app_purchase_connection.dart';
 ///
 /// This translates various [BillingClient] calls and responses into the
 /// common plugin API.
-class GooglePlayConnection implements InAppPurchaseConnection {
-  BillingClient _billingClient = BillingClient();
+class GooglePlayConnection
+    with WidgetsBindingObserver
+    implements InAppPurchaseConnection {
+  GooglePlayConnection() : _billingClient = BillingClient() {
+    _readyFuture = _connect();
+    WidgetsBinding.instance.addObserver(this);
+  }
+  final BillingClient _billingClient;
+  Future<void> _readyFuture;
 
   @override
   Future<bool> isAvailable() async {
-    return await _billingClient.isReady;
+    await _readyFuture;
+    return _billingClient.isReady();
   }
 
   @override
-  Future<bool> connect() async {
-    final BillingResponse responseCode = await _billingClient.startConnection(
-        onBillingServiceDisconnected: () {});
-    final bool finishedSuccessfully = responseCode == BillingResponse.OK;
-    if (!finishedSuccessfully) {
-      print('Failed to connect to Play Billing. Response $responseCode');
-    }
-
-    if (finishedSuccessfully) {
-      return await isAvailable();
-    } else {
-      return false;
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.paused:
+      case AppLifecycleState.suspending:
+        _disconnect();
+        break;
+      case AppLifecycleState.resumed:
+        _readyFuture = _connect();
+        break;
+      default:
     }
   }
+
+  Future<void> _connect() =>
+      _billingClient.startConnection(onBillingServiceDisconnected: () {});
+
+  Future<void> _disconnect() => _billingClient.endConnection();
 }
