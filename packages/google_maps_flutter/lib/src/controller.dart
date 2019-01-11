@@ -133,6 +133,19 @@ class GoogleMapController extends ChangeNotifier {
     });
   }
 
+  /// Add custom styling to the map.
+  ///
+  /// The returned [Future] completes after the change has been made on the
+  /// platform side.
+  Future<void> addMapStyle(String style) async {
+    await _channel.invokeMethod(
+      'style#add',
+      <String, dynamic>{
+        'style': style,
+      },
+    );
+  }
+
   /// Adds a marker to the map, configured using the specified custom [options].
   ///
   /// Change listeners are notified once the marker has been added on the

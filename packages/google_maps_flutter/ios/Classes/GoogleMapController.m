@@ -113,6 +113,9 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
   } else if ([call.method isEqualToString:@"marker#remove"]) {
     [self removeMarkerWithId:call.arguments[@"marker"]];
     result(nil);
+  } else if ([call.method isEqualToString:@"style#add"]) {
+    [self addMapStyle:call.arguments[@"style"]];
+    result(nil);
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -161,6 +164,11 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
     [markerController setVisible:NO];
     [_markers removeObjectForKey:markerId];
   }
+}
+
+- (void)addMapStyle:(NSString*)mapStyle {
+  GMSMapStyle *style = [GMSMapStyle styleWithJSONString:mapStyle error:nil];
+  _mapView.mapStyle = style;
 }
 
 #pragma mark - FLTGoogleMapOptionsSink methods

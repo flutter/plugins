@@ -26,6 +26,7 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import io.flutter.plugin.common.MethodCall;
@@ -235,6 +236,14 @@ final class GoogleMapController
           result.success(null);
           break;
         }
+      case "style#add":
+        {
+          final String style = call.argument("style");
+          MapStyleOptions mapStyleOptions = new MapStyleOptions(style);
+          this.setMapStyle(mapStyleOptions);
+          result.success(null);
+          break;
+        }
       default:
         result.notImplemented();
     }
@@ -411,6 +420,10 @@ final class GoogleMapController
     if (googleMap != null) {
       updateMyLocationEnabled();
     }
+  }
+
+  public void setMapStyle(MapStyleOptions mapStyle) {
+    googleMap.setMapStyle(mapStyle);
   }
 
   private void updateMyLocationEnabled() {
