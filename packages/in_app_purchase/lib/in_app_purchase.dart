@@ -1,12 +1,5 @@
-import 'dart:async';
-
-import 'package:flutter/services.dart';
-
-class InAppPurchase {
-  static const MethodChannel _channel = MethodChannel('in_app_purchase');
-
-  static Future<String> get platformVersion async {
-    final String version = await _channel.invokeMethod('getPlatformVersion');
-    return version;
-  }
-}
+export 'src/app_store_connection.dart';
+export 'src/billing_client_wrappers.dart';
+export 'src/google_play_connection.dart';
+export 'src/in_app_purchase_connection.dart';
+export 'src/store_kit_wrappers.dart';
