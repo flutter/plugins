@@ -37,9 +37,9 @@ API_AVAILABLE(ios(9.0))
   self = [super init];
   if (self) {
     if (@available(iOS 9.0, *)) {
-      _safari = [[SFSafariViewController alloc] initWithURL:url];
+      self.safari = [[SFSafariViewController alloc] initWithURL:url];
     }
-    _safari.delegate = self;
+    self.safari.delegate = self;
   }
   return self;
 }
@@ -61,7 +61,7 @@ API_AVAILABLE(ios(9.0))
 }
 
 - (void)close {
-  [self safariViewControllerDidFinish:_safari];
+  [self safariViewControllerDidFinish:self.safari];
 }
 
 @end
