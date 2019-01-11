@@ -85,7 +85,7 @@ Future<bool> launch(
       'enableJavaScript': enableJavaScript ?? false,
       'universalLinksOnly': universalLinksOnly ?? false
     },
-  ).then<dynamic>((void _) {
+  ).then((void _) {
     if (statusBarBrightness != null) {
       WidgetsBinding.instance.renderView.automaticSystemUiAdjustment =
           previousAutomaticSystemUiAdjustment;
