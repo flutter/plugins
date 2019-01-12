@@ -40,7 +40,7 @@ void main() {
           'useSafariVC': true,
           'useWebView': false,
           'enableJavaScript': false,
-          'universalLinksOnly' :false,
+          'universalLinksOnly': false,
         })
       ],
     );
@@ -56,14 +56,15 @@ void main() {
           'useSafariVC': true,
           'useWebView': false,
           'enableJavaScript': false,
-          'universalLinksOnly' :false,
+          'universalLinksOnly': false,
         })
       ],
     );
   });
 
-    test('launch universal links only', () async {
-    await launch('http://example.com/', forceSafariVC: false, universalLinksOnly: true);
+  test('launch universal links only', () async {
+    await launch('http://example.com/',
+        forceSafariVC: false, universalLinksOnly: true);
     expect(
       log,
       <Matcher>[
@@ -72,7 +73,7 @@ void main() {
           'useSafariVC': false,
           'useWebView': false,
           'enableJavaScript': false,
-          'universalLinksOnly' :true,
+          'universalLinksOnly': true,
         })
       ],
     );
@@ -88,7 +89,7 @@ void main() {
           'useSafariVC': true,
           'useWebView': true,
           'enableJavaScript': false,
-          'universalLinksOnly' :false,
+          'universalLinksOnly': false,
         })
       ],
     );
@@ -105,7 +106,7 @@ void main() {
           'useSafariVC': true,
           'useWebView': true,
           'enableJavaScript': true,
-          'universalLinksOnly' :false,
+          'universalLinksOnly': false,
         })
       ],
     );
@@ -121,7 +122,7 @@ void main() {
           'useSafariVC': false,
           'useWebView': false,
           'enableJavaScript': false,
-          'universalLinksOnly' :false,
+          'universalLinksOnly': false,
         })
       ],
     );
