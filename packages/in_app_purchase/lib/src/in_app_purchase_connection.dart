@@ -21,9 +21,9 @@ abstract class InAppPurchaseConnection {
     }
 
     if (Platform.isAndroid) {
-      _instance = GooglePlayConnection();
+      _instance = GooglePlayConnection.instance;
     } else if (Platform.isIOS) {
-      _instance = AppStoreConnection();
+      _instance = AppStoreConnection.instance;
     } else {
       throw UnsupportedError(
           'InAppPurchase plugin only works on Android and iOS.');

@@ -2,10 +2,13 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 
-/// Wraps a `com.android.billingclient.api.BillingClient` instance.
+/// This class can be used directly instead of [InAppPurchaseConnection] to call
+/// Play-specific billing APIs.
 ///
-/// This class can be used directly instead of [InAppPurchaseConnection] to
-/// call Play-specific billing APIs.
+/// Wraps a
+/// [`com.android.billingclient.api.BillingClient`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient)
+/// instance.
+///
 ///
 /// In general this API conforms to the Java
 /// `com.android.billingclient.api.BillingClient` API as much as possible, with
@@ -27,11 +30,15 @@ class BillingClient {
   // in this array and call it in Dart code. See also [_callHandler].
   List<Map<String, Function>> _callbacks = <Map<String, Function>>[];
 
-  /// Wraps `BillingClient#isReady()`.
+  /// Calls
+  /// [`BillingClient#isReady()`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.html#isReady())
+  /// to get the ready status of the BillingClient instance.
   Future<bool> isReady() async =>
       await _channel.invokeMethod('BillingClient#isReady()');
 
-  /// Calls `BillingClient#startConnection(BillingClientStateListener)`
+  /// Calls
+  /// [`BillingClient#startConnection(BillingClientStateListener)`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.html#startconnection)
+  /// to create and connect a `BillingClient` instance.
   ///
   /// [onBillingServiceConnected] has been converted from a callback parameter
   /// to the Future result returned by this function. This returns the
@@ -51,7 +58,9 @@ class BillingClient {
         <String, dynamic>{'handle': _callbacks.length - 1}));
   }
 
-  /// Calls `BillingClient#endConnection(BillingClientStateListener)`
+  /// Calls
+  /// [`BillingClient#endConnection(BillingClientStateListener)`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.html#endconnect
+  /// to disconnect a `BillingClient` instance.
   ///
   /// Will trigger the [OnBillingServiceDisconnected] callback passed to [startConnection].
   ///
@@ -71,13 +80,16 @@ class BillingClient {
   }
 }
 
-/// Wraps `com.android.billingclient.api.BillingClientStateListener.onServiceDisconnected()`.
+/// Wraps
+/// [`com.android.billingclient.api.BillingClientStateListener.onServiceDisconnected()`](https://developer.android.com/reference/com/android/billingclient/api/BillingClientStateListener.html#onBillingServiceDisconnected())
+/// to call back on `BillingClient` disconnect.
 typedef void OnBillingServiceDisconnected();
 
-/// `BillingClient.BillingResponse`
+/// Wraps
+/// [`BillingClient.BillingResponse`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.BillingResponse),
+/// possible status codes.
 ///
-/// See https://developer.android.com/reference/com/android/billingclient/api/BillingClient.BillingResponse.html
-/// for an explanation of the different constants.
+/// See the `BillingResponse` docs for an explanation of the different constants.
 class BillingResponse {
   const BillingResponse._(this._code);
   final int _code;

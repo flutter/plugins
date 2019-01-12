@@ -28,10 +28,16 @@ class _MyAppState extends State<MyApp> {
                 future: buildStorefront(),
                 builder: (BuildContext context,
                     AsyncSnapshot<List<Widget>> snapshot) {
-                  if (!snapshot.hasData || snapshot.error != null) {
+                  if (!snapshot.hasData) {
                     return ListView(children: <Widget>[
                       buildListCard(
                           ListTile(title: const Text('Trying to connect...')))
+                    ]);
+                  } else if (snapshot.error != null) {
+                    return ListView(children: <Widget>[
+                      buildListCard(ListTile(
+                          title: Text('Error connecting: ' +
+                              snapshot.error.toString())))
                     ]);
                   }
 

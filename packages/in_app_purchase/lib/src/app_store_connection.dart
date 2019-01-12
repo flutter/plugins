@@ -8,6 +8,18 @@ import 'store_kit_wrappers.dart';
 /// This translates various `StoreKit` calls and responses into the
 /// generic plugin API.
 class AppStoreConnection implements InAppPurchaseConnection {
+  static AppStoreConnection get instance => _getOrCreateInstance();
+  static AppStoreConnection _instance;
+
   @override
-  Future<bool> isAvailable() => SKPaymentQueueWrapper.canMakePayments;
+  Future<bool> isAvailable() => SKPaymentQueueWrapper.canMakePayments();
+
+  static AppStoreConnection _getOrCreateInstance() {
+    if (_instance != null) {
+      return _instance;
+    }
+
+    _instance = AppStoreConnection();
+    return _instance;
+  }
 }

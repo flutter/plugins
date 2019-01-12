@@ -68,7 +68,7 @@ public class InAppPurchasePlugin implements MethodCallHandler {
         new BillingClientStateListener() {
           @Override
           public void onBillingSetupFinished(int responseCode) {
-            // Consider finishing at all a "success", leave it to the Dart side to validate the responseCode.
+            // Consider the fact that we've finished a success, leave it to the Dart side to validate the responseCode.
             result.success(responseCode);
           }
 

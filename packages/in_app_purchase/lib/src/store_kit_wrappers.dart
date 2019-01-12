@@ -5,8 +5,9 @@ import 'package:flutter/services.dart';
 const MethodChannel _channel =
     MethodChannel('plugins.flutter.io/in_app_purchase');
 
-/// https://developer.apple.com/documentation/storekit/skpaymentqueue?language=objc
+/// A wrapper around [`SKPaymentQueue`](https://developer.apple.com/documentation/storekit/skpaymentqueue?language=objc).
 class SKPaymentQueueWrapper {
-  static Future<bool> get canMakePayments async =>
+  /// Calls [`-[SKPaymentQueue canMakePayments:]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/1506139-canmakepayments?language=objc).
+  static Future<bool> canMakePayments() async =>
       await _channel.invokeMethod('-[SKPaymentQueue canMakePayments:]');
 }
