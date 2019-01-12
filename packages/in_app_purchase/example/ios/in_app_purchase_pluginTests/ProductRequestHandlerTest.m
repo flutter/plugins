@@ -11,21 +11,6 @@
 
 #pragma stubs
 
-@interface SKProductStub : SKProduct
-@end
-
-@implementation SKProductStub
-
-- (instancetype)init {
-  self = [super init];
-  if (self) {
-    [self setValue:@"consumable" forKey:@"productIdentifier"];
-  }
-  return self;
-}
-
-@end
-
 @interface SKProductSubscriptionPeriodStub : SKProductSubscriptionPeriod
 @end
 
@@ -42,30 +27,56 @@
 
 @end
 
-//@implementation SKProductSubscriptionPeriod(Coder)
-//
-//- (NSDictionary *)toMap {
-//    return @{
-//             @"numberOfUnits":@(self.numberOfUnits),
-//             @"unit":@(self.unit)
-//             };
-//}
-//
-//@end
-//
-//@implementation SKProductDiscount(Coder)
-//
-//- (NSDictionary *)toMap {
-//    return @{
-//             @"price": self.price,
-//             @"priceLocale": self.priceLocale,
-//             @"numberOfPeriods": @(self.numberOfPeriods),
-//             @"subscriptionPeriod": [self.subscriptionPeriod toMap],
-//             @"paymentMode": @(self.paymentMode)
-//             };
-//}
+@interface SKProductDiscountStub : SKProductDiscount
+@end
 
-#pragma tests
+@implementation SKProductDiscountStub
+
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    [self setValue:@(1.0) forKey:@"price"];
+    NSLocale *locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
+    [self setValue:locale forKey:@"priceLocale"];
+    [self setValue:@(1) forKey:@"numberOfPeriods"];
+    SKProductSubscriptionPeriodStub *subscriptionPeriodSub =
+        [[SKProductSubscriptionPeriodStub alloc] init];
+    [self setValue:subscriptionPeriodSub forKey:@"subscriptionPeriod"];
+    [self setValue:@(1) forKey:@"paymentMode"];
+  }
+  return self;
+}
+
+@end
+
+@interface SKProductStub : SKProduct
+@end
+
+@implementation SKProductStub
+
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    [self setValue:@"consumable" forKey:@"productIdentifier"];
+    [self setValue:@"description" forKey:@"localizedDescription"];
+    [self setValue:@"title" forKey:@"localizedTitle"];
+    [self setValue:@YES forKey:@"downloadable"];
+    [self setValue:@(1.0) forKey:@"price"];
+    NSLocale *locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
+    [self setValue:locale forKey:@"priceLocale"];
+    [self setValue:@[ @1, @2 ] forKey:@"downloadContentLengths"];
+    SKProductSubscriptionPeriodStub *period = [[SKProductSubscriptionPeriodStub alloc] init];
+    [self setValue:period forKey:@"subscriptionPeriod"];
+    SKProductDiscountStub *discount = [[SKProductDiscountStub alloc] init];
+    [self setValue:discount forKey:@"introductoryPrice"];
+    [self setValue:@"com.group" forKey:@"subscriptionGroupIdentifier"];
+  }
+  return self;
+}
+
+@end
+
+#pragma tests start here
 
 @interface ProductRequestHandlerTest : XCTestCase
 
@@ -81,11 +92,74 @@
   NSDictionary *map = [period toMap];
   NSDictionary *match = @{@"numberOfUnits" : @(0), @"unit" : @(0)};
   XCTAssertEqualObjects(map, match);
+
+  NSDictionary *notMatch = @{@"numberOfUnits" : @(0), @"unit" : @(1)};
+  XCTAssertNotEqualObjects(map, notMatch);
 }
 
-//- (void)testProductToMap {
-//    SKProductStub *product = [[SKProductStub alloc] init];
-//
-//}
+- (void)testSKProductDiscountStubToMap {
+  SKProductDiscountStub *discount = [[SKProductDiscountStub alloc] init];
+  NSDictionary *map = [discount toMap];
+  NSDictionary *match = @{
+    @"price" : @(1.0),
+    @"currencyCode" : @"USD",
+    @"numberOfPeriods" : @(1),
+    @"subscriptionPeriod" : @{@"numberOfUnits" : @(0), @"unit" : @(0)},
+    @"paymentMode" : @(1)
+  };
+  XCTAssertEqualObjects(map, match);
+
+  NSDictionary *notMatch = @{
+    @"price" : @(1.0),
+    @"currencyCode" : @"USD",
+    @"numberOfPeriods" : @(1),
+    @"subscriptionPeriod" : @{@"numberOfUnits" : @(0), @"unit" : @(0)},
+    @"paymentMode" : @(0)
+  };
+  XCTAssertNotEqualObjects(map, notMatch);
+}
+
+- (void)testProductToMap {
+  SKProductStub *product = [[SKProductStub alloc] init];
+  NSDictionary *map = [product toMap];
+  NSDictionary *match = @{
+    @"price" : @(1.0),
+    @"currencyCode" : @"USD",
+    @"productIdentifier" : @"consumable",
+    @"localizedTitle" : @"title",
+    @"localizedDescription" : @"description",
+    @"downloadable" : @YES,
+    @"downloadContentLengths" : @[ @1, @2 ],
+    @"subscriptionPeriod" : @{@"numberOfUnits" : @(0), @"unit" : @(0)},
+    @"introductoryPrice" : @{
+      @"price" : @(1.0),
+      @"currencyCode" : @"USD",
+      @"numberOfPeriods" : @(1),
+      @"subscriptionPeriod" : @{@"numberOfUnits" : @(0), @"unit" : @(0)},
+      @"paymentMode" : @(1)
+    },
+    @"subscriptionGroupIdentifier" : @"com.group"
+  };
+  XCTAssertEqualObjects(map, match);
+
+  NSDictionary *notMatch = @{
+    @"price" : @(1.0),
+    @"currencyCode" : @"USD",
+    @"productIdentifier" : @"consumable",
+    @"localizedTitle" : @"title",
+    @"downloadable" : @YES,
+    @"downloadContentLengths" : @[ @1, @2 ],
+    @"subscriptionPeriod" : @{@"numberOfUnits" : @(0), @"unit" : @(0)},
+    @"introductoryPrice" : @{
+      @"price" : @(1.0),
+      @"currencyCode" : @"USD",
+      @"numberOfPeriods" : @(1),
+      @"subscriptionPeriod" : @{@"numberOfUnits" : @(0), @"unit" : @(0)},
+      @"paymentMode" : @(1)
+    },
+    @"subscriptionGroupIdentifier" : @"com.group"
+  };
+  XCTAssertNotEqualObjects(map, notMatch);
+}
 
 @end

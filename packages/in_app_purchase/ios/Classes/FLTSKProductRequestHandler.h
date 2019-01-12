@@ -20,6 +20,12 @@ typedef void (^ProductRequestCompletion)(SKProductsResponse *_Nullable response)
 
 @end
 
+@interface FLTSKProductRequestDelegateObject : NSObject
+
+- (instancetype)initWithCompletionHandler:(nullable ProductRequestCompletion)completion;
+
+@end
+
 NS_ASSUME_NONNULL_END
 
 #pragma mark - categories

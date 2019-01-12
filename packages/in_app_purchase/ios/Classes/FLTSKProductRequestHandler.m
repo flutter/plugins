@@ -10,22 +10,21 @@
 
 #pragma mark - Main Handler
 
-@interface FLTSKProductRequestHandler () <SKProductsRequestDelegate>
+@interface FLTSKProductRequestDelegateObject () <SKProductsRequestDelegate>
 
 @property(copy, nonatomic) ProductRequestCompletion completion;
-@property(strong, nonatomic) SKProductsRequest *request;
+@property(weak, nonatomic) NSMutableSet *parentSet;
 
 @end
 
-@implementation FLTSKProductRequestHandler
+@implementation FLTSKProductRequestDelegateObject
 
-// method to get the complete SKProductResponse object
-- (void)startWithProductIdentifiers:(NSSet<NSString *> *)identifers
-                  completionHandler:(nullable ProductRequestCompletion)completion {
-  self.request = [[SKProductsRequest alloc] initWithProductIdentifiers:identifers];
-  self.request.delegate = self;
-  self.completion = completion;
-  [self.request start];
+- (instancetype)initWithCompletionHandler:(nullable ProductRequestCompletion)completion {
+  self = [super init];
+  if (self) {
+    self.completion = completion;
+  }
+  return self;
 }
 
 #pragma mark SKProductRequestDelegate
@@ -35,6 +34,36 @@
   if (self.completion) {
     self.completion(response);
   }
+  [self.parentSet removeObject:self];
+}
+
+@end
+
+@interface FLTSKProductRequestHandler ()
+
+@property(strong, nonatomic) NSMutableSet *delegateObjects;
+
+@end
+
+@implementation FLTSKProductRequestHandler
+
+// method to get the complete SKProductResponse object
+- (void)startWithProductIdentifiers:(NSSet<NSString *> *)identifers
+                  completionHandler:(nullable ProductRequestCompletion)completion {
+  SKProductsRequest *request = [[SKProductsRequest alloc] initWithProductIdentifiers:identifers];
+  FLTSKProductRequestDelegateObject *object =
+      [[FLTSKProductRequestDelegateObject alloc] initWithCompletionHandler:completion];
+  object.parentSet = self.delegateObjects;
+  [self.delegateObjects addObject:object];
+  request.delegate = object;
+  [request start];
+}
+
+- (NSMutableSet *)delegateObjects {
+  if (!_delegateObjects) {
+    _delegateObjects = [NSMutableSet new];
+  }
+  return _delegateObjects;
 }
 
 @end
@@ -97,13 +126,21 @@
 @implementation SKProductDiscount (Coder)
 
 - (NSDictionary *)toMap {
-  return @{
+  NSMutableDictionary *map = [[NSMutableDictionary alloc] initWithDictionary:@{
     @"price" : self.price,
-    @"priceLocale" : self.priceLocale,
     @"numberOfPeriods" : @(self.numberOfPeriods),
     @"subscriptionPeriod" : [self.subscriptionPeriod toMap],
     @"paymentMode" : @(self.paymentMode)
-  };
+  }];
+
+  if (@available(iOS 10.0, *)) {
+    if (self.priceLocale.currencyCode) {
+      // TODO: NSLocle is a complex object, want to see the actual need of getting this expanded to
+      // a map. Matching android to only get the currencyCode for now.
+      [map setObject:self.priceLocale.currencyCode forKey:@"currencyCode"];
+    }
+  }
+  return map;
 }
 
 @end

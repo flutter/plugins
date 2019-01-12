@@ -51,6 +51,15 @@
                   }
                   result(productsDetailsJSON);
                 }];
+  [self.productRequestHandler
+      startWithProductIdentifiers:[NSSet setWithArray:productsIdentifiers]
+                completionHandler:^(SKProductsResponse *_Nullable response) {
+                  NSMutableArray *productsDetailsJSON = [NSMutableArray new];
+                  for (SKProduct *product in response.products) {
+                    [productsDetailsJSON addObject:[product toMap]];
+                  }
+                  result(productsDetailsJSON);
+                }];
 }
 
 @end
