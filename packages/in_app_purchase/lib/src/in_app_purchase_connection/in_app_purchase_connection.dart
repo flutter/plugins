@@ -8,6 +8,8 @@ import 'product.dart';
 abstract class InAppPurchaseConnection {
   /// Returns true if the payment platform is ready and available.
   Future<bool> isAvailable();
+
+  /// [identifiers] is a list of product identifiers that being queried.
   Future<List<Product>> getProductList(List<String> identifiers);
 
   /// The [InAppPurchaseConnection] implemented for this platform.
