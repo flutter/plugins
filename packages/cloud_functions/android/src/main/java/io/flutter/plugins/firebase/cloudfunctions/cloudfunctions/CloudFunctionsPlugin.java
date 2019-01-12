@@ -55,7 +55,18 @@ public class CloudFunctionsPlugin implements MethodCallHandler {
                             "functionsError",
                             "Cloud function failed with exception.",
                             exceptionMap);
-                      } else {
+                      } else if (task.getException() instanceof SocketTimeoutException) {
+                        SocketTimeoutException exception =
+                        (SocketTimeoutException) task.getException();
+                        Map < String, Object > exceptionMap = new HashMap < > ();
+                        exceptionMap.put("code", FirebaseFunctionsException.Code.DEADLINE_EXCEEDED.name());
+                        exceptionMap.put("message", exception.getMessage());
+                        exceptionMap.put("details", "SocketTimeoutException");
+                        result.error(
+                          "functionsError",
+                          "Cloud function failed with exception.",
+                          exceptionMap);
+                        }else {
                         Exception exception = task.getException();
                         result.error(null, exception.getMessage(), null);
                       }
