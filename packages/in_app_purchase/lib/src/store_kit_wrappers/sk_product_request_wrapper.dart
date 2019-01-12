@@ -24,7 +24,7 @@ class SKProductRequestWrapper {
         'identifiers': identifiers,
       },
     ).then<List<Product>>((List<Map<dynamic, dynamic>> productListJson) {
-      final List<Product> productList = [];
+      final List<Product> productList = <Product>[];
       for (Map<dynamic, dynamic> productJson in productListJson) {
           productList.add(Product(skProduct: SKProductWrapper.fromJson(productJson),));
       }
