@@ -35,8 +35,7 @@ void main() {
   test(
       'SKProductDiscountWrapper should have property values consistent with json',
       () {
-
-     final Map<dynamic, dynamic> subJson = <dynamic, dynamic>{
+    final Map<dynamic, dynamic> subJson = <dynamic, dynamic>{
       'numberOfUnits': 0,
       'unit': 1
     };
@@ -66,12 +65,8 @@ void main() {
     expect(wrapper.subscriptionPeriod, null);
   });
 
-
-  test(
-      'SKProductWrapper should have property values consistent with json',
-      () {
-
-     final Map<dynamic, dynamic> subJson = <dynamic, dynamic>{
+  test('SKProductWrapper should have property values consistent with json', () {
+    final Map<dynamic, dynamic> subJson = <dynamic, dynamic>{
       'numberOfUnits': 0,
       'unit': 1
     };
@@ -81,22 +76,21 @@ void main() {
       'paymentMode': 1,
       'subscriptionPeriod': subJson,
     };
-    final Map<dynamic, dynamic> json = <dynamic, dynamic> {
-      'productIdentifier':'id',
-      'localizedTitle':'title',
-      'localizedDescription':'description',
-      'currencyCode':'USD',
-      'downloadContentVersion':'version',
-      'subscriptionGroupIdentifier':'com.group',
-      'price':1.0,
-      'downloadable':true,
-      'downloadContentLengths':[1,2],
-      'subscriptionPeriod':subJson,
-      'introductoryPrice':discountJson,
+    final Map<dynamic, dynamic> json = <dynamic, dynamic>{
+      'productIdentifier': 'id',
+      'localizedTitle': 'title',
+      'localizedDescription': 'description',
+      'currencyCode': 'USD',
+      'downloadContentVersion': 'version',
+      'subscriptionGroupIdentifier': 'com.group',
+      'price': 1.0,
+      'downloadable': true,
+      'downloadContentLengths': [1, 2],
+      'subscriptionPeriod': subJson,
+      'introductoryPrice': discountJson,
     };
 
-    final SKProductWrapper wrapper =
-        SKProductWrapper.fromJson(json);
+    final SKProductWrapper wrapper = SKProductWrapper.fromJson(json);
     expect(wrapper.productIdentifier, 'id');
     expect(wrapper.localizedTitle, 'title');
     expect(wrapper.localizedDescription, 'description');
@@ -105,7 +99,7 @@ void main() {
     expect(wrapper.subscriptionGroupIdentifier, 'com.group');
     expect(wrapper.price, 1.0);
     expect(wrapper.downloadable, true);
-    expect(wrapper.downloadContentLengths, [1,2]);
+    expect(wrapper.downloadContentLengths, [1, 2]);
     expect(wrapper.introductoryPrice.price, 1.0);
     expect(wrapper.introductoryPrice.numberOfPeriods, 1);
     expect(wrapper.introductoryPrice.paymentMode, 1);
@@ -130,6 +124,4 @@ void main() {
     expect(wrapper.downloadable, null);
     expect(wrapper.subscriptionPeriod, null);
   });
-
-
 }

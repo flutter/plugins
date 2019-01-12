@@ -12,8 +12,7 @@ class AppStoreConnection implements InAppPurchaseConnection {
   @override
   Future<bool> isAvailable() => SKPaymentQueueWrapper.canMakePayments;
 
-@override
-  Future<List<Product>> getProductList(
-          List<String> identifiers) =>
+  @override
+  Future<List<Product>> getProductList(List<String> identifiers) =>
       SKProductRequestWrapper.getProductList(identifiers);
 }

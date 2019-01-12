@@ -40,8 +40,7 @@ class GooglePlayConnection
   }
 
   @override
-  Future<List<Product>> getProductList(List<String> identifiers) =>
-      null;
+  Future<List<Product>> getProductList(List<String> identifiers) => null;
 
   Future<void> _connect() =>
       _billingClient.startConnection(onBillingServiceDisconnected: () {});

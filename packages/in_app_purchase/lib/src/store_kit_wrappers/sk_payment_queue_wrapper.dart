@@ -9,5 +9,4 @@ const MethodChannel _channel =
 class SKPaymentQueueWrapper {
   static Future<bool> get canMakePayments async =>
       await _channel.invokeMethod('-[SKPaymentQueue canMakePayments:]');
-
 }

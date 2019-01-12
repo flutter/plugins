@@ -65,8 +65,8 @@ class _MyAppState extends State<MyApp> {
     final List<Product> items =
         await connection.getProductList(<String>['consumable']);
     for (Product item in items) {
-      children
-          .add(buildListCard(ListTile(title: Text(item.skProduct.localizedTitle))));
+      children.add(
+          buildListCard(ListTile(title: Text(item.skProduct.localizedTitle))));
     }
 
     return children;
