@@ -49,6 +49,9 @@ const MethodChannel _channel = MethodChannel('plugins.flutter.io/url_launcher');
 /// [statusBarBrightness] Sets the status bar brightness of the application
 /// after opening a link on iOS. Does nothing if no value is passed. This does
 /// not handle reseting the previous status bar style.
+///
+/// Return a Future contains bool value. If ture, launch url is successful; if false,
+/// launch url is failed.
 Future<bool> launch(
   String urlString, {
   bool forceSafariVC,
