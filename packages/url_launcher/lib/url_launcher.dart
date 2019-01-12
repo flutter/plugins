@@ -76,6 +76,9 @@ Future<bool> launch(
         ? SystemUiOverlayStyle.dark
         : SystemUiOverlayStyle.light);
   }
+  // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+  // https://github.com/flutter/flutter/issues/26431
+  // ignore: strong_mode_implicit_dynamic_method
   return _channel.invokeMethod(
     'launch',
     <String, Object>{
@@ -99,6 +102,9 @@ Future<bool> canLaunch(String urlString) async {
   if (urlString == null) {
     return false;
   }
+  // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+  // https://github.com/flutter/flutter/issues/26431
+  // ignore: strong_mode_implicit_dynamic_method
   return await _channel.invokeMethod(
     'canLaunch',
     <String, Object>{'url': urlString},
@@ -117,5 +123,8 @@ Future<bool> canLaunch(String urlString) async {
 /// SafariViewController is only available on IOS version >= 9.0, this method does not do anything
 /// on IOS version below 9.0
 Future<void> closeWebView() async {
+  // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+  // https://github.com/flutter/flutter/issues/26431
+  // ignore: strong_mode_implicit_dynamic_method
   return await _channel.invokeMethod('closeWebView');
 }

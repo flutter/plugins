@@ -34,6 +34,9 @@ class CloudFunctions {
       {@required String functionName, Map<String, dynamic> parameters}) async {
     try {
       final dynamic response =
+          // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+          // https://github.com/flutter/flutter/issues/26431
+          // ignore: strong_mode_implicit_dynamic_method
           await channel.invokeMethod('CloudFunctions#call', <String, dynamic>{
         'functionName': functionName,
         'parameters': parameters,
