@@ -89,7 +89,7 @@ Future<bool> launch(
       'useSafariVC': forceSafariVC ?? isWebURL,
       'useWebView': forceWebView ?? false,
       'enableJavaScript': enableJavaScript ?? false,
-      'universalLinksOnly': universalLinksOnly ?? false
+      'universalLinksOnly': universalLinksOnly ?? false,
     },
   ).then((void _) {
     if (statusBarBrightness != null) {
