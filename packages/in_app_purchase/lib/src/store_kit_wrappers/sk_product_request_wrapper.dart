@@ -2,20 +2,35 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
+import 'package:in_app_purchase/src/in_app_purchase_connection/product.dart';
 
 const MethodChannel _channel =
     MethodChannel('plugins.flutter.io/in_app_purchase');
 
+/// [SKProductRequestWrapper] wraps IOS SKProductRequest class to to retrive StoreKit product information in dart.
+///
 /// https://developer.apple.com/documentation/storekit/skproductsrequest?language=objc
 class SKProductRequestWrapper {
-  static Future<List<Map<dynamic, dynamic>>> getProductList(
-      List<String> identifiers) async {
-    return _channel.invokeListMethod<Map<dynamic, dynamic>>(
-      'getProductList',
-      <String, Object>{
-        'identifiers': identifiers,
-      },
-    );
+  /// Get product list.
+  ///
+  /// [identifiers] is the product identifiers specified in Itunes Connect for the products that need to be retrived.
+  ///
+  /// Returns a future containing a list of [SKProductWrapper] which then can be queried to get desired information.
+  static Future<List<SKProductWrapper>> getProductList(
+
+    //   List<String> identifiers) async {
+    //  _channel.invokeListMethod<Map<dynamic, dynamic>>(
+    //   'getProductList',
+    //   <String, Object>{
+    //     'identifiers': identifiers,
+    //   },
+    // ).then<List<Map<dynamic, dynamic>>>((List<Map<dynamic, dynamic>> productListJson) {
+    //   List<Product> productList = [];
+    //   for (Map<dynamic, dynamic> productJson in productListJson) {
+    //       productList.add(Product(skProduct: SKProductWrapper.fromJson(productJson),));
+    //   }
+    //   return productList;
+    // });
   }
 }
 
@@ -37,22 +52,23 @@ class SKProductDiscountWrapper {
       {@required this.price,
       @required this.numberOfPeriods,
       @required this.paymentMode,
-      @required this.subscriptionPeriodWrapper});
+      @required this.subscriptionPeriod});
 
   SKProductDiscountWrapper.fromJson(Map<dynamic, dynamic> json)
       : price = json['price'],
         numberOfPeriods = json['numberOfPeriods'],
         paymentMode = json['paymentMode'],
-        subscriptionPeriodWrapper = json['subscriptionPeriod'] != null
+        subscriptionPeriod = json['subscriptionPeriod'] != null
             ? SKProductSubscriptionPeriodWrapper.fromJson(
                 json['subscriptionPeriod'])
             : null;
 
   final double price;
   final int numberOfPeriods, paymentMode;
-  final SKProductSubscriptionPeriodWrapper subscriptionPeriodWrapper;
+  final SKProductSubscriptionPeriodWrapper subscriptionPeriod;
 }
 
+/// https://developer.apple.com/documentation/storekit/skproduct?language=objc
 class SKProductWrapper {
   SKProductWrapper({
     @required this.productIdentifier,

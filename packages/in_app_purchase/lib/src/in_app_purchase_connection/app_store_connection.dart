@@ -2,6 +2,7 @@ import 'dart:async';
 
 import '../../store_kit_wrappers.dart';
 import 'in_app_purchase_connection.dart';
+import 'product.dart';
 
 /// An [InAppPurchaseConnection] that wraps StoreKit.
 ///
@@ -11,8 +12,8 @@ class AppStoreConnection implements InAppPurchaseConnection {
   @override
   Future<bool> isAvailable() => SKPaymentQueueWrapper.canMakePayments;
 
-  @override
-  Future<List<Map<dynamic, dynamic>>> getProductList(
+@override
+  Future<List<Product>> getProductList(
           List<String> identifiers) =>
-      SKPaymentQueueWrapper.getProductList(identifiers);
+      SKProductRequestWrapper.getProductList(identifiers);
 }
