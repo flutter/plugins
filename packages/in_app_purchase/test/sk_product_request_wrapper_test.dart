@@ -85,7 +85,7 @@ void main() {
       'subscriptionGroupIdentifier': 'com.group',
       'price': 1.0,
       'downloadable': true,
-      'downloadContentLengths': [1, 2],
+      'downloadContentLengths': <int>[1, 2],
       'subscriptionPeriod': subJson,
       'introductoryPrice': discountJson,
     };
@@ -99,7 +99,7 @@ void main() {
     expect(wrapper.subscriptionGroupIdentifier, 'com.group');
     expect(wrapper.price, 1.0);
     expect(wrapper.downloadable, true);
-    expect(wrapper.downloadContentLengths, [1, 2]);
+    expect(wrapper.downloadContentLengths, <int>[1, 2]);
     expect(wrapper.introductoryPrice.price, 1.0);
     expect(wrapper.introductoryPrice.numberOfPeriods, 1);
     expect(wrapper.introductoryPrice.paymentMode, 1);
