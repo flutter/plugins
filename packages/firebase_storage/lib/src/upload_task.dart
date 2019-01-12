@@ -89,6 +89,9 @@ abstract class StorageUploadTask {
   }
 
   /// Pause the upload
+  // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+  // https://github.com/flutter/flutter/issues/26431
+  // ignore: strong_mode_implicit_dynamic_method
   void pause() => FirebaseStorage.channel.invokeMethod(
         'UploadTask#pause',
         <String, dynamic>{
@@ -99,6 +102,9 @@ abstract class StorageUploadTask {
       );
 
   /// Resume the upload
+  // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+  // https://github.com/flutter/flutter/issues/26431
+  // ignore: strong_mode_implicit_dynamic_method
   void resume() => FirebaseStorage.channel.invokeMethod(
         'UploadTask#resume',
         <String, dynamic>{
@@ -109,6 +115,9 @@ abstract class StorageUploadTask {
       );
 
   /// Cancel the upload
+  // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+  // https://github.com/flutter/flutter/issues/26431
+  // ignore: strong_mode_implicit_dynamic_method
   void cancel() => FirebaseStorage.channel.invokeMethod(
         'UploadTask#cancel',
         <String, dynamic>{
@@ -128,6 +137,9 @@ class _StorageFileUploadTask extends StorageUploadTask {
 
   @override
   Future<dynamic> _platformStart() {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     return FirebaseStorage.channel.invokeMethod(
       'StorageReference#putFile',
       <String, dynamic>{
@@ -151,6 +163,9 @@ class _StorageDataUploadTask extends StorageUploadTask {
 
   @override
   Future<dynamic> _platformStart() {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     return FirebaseStorage.channel.invokeMethod(
       'StorageReference#putData',
       <String, dynamic>{

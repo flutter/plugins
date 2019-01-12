@@ -43,6 +43,9 @@ void _alarmManagerCallbackDispatcher() {
 
   // Once we've finished initializing, let the native portion of the plugin
   // know that it can start scheduling alarms.
+  // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+  // https://github.com/flutter/flutter/issues/26431
+  // ignore: strong_mode_implicit_dynamic_method
   _channel.invokeMethod('AlarmService.initialized');
 }
 
@@ -67,6 +70,9 @@ class AndroidAlarmManager {
       return false;
     }
     final dynamic r = await _channel
+        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+        // https://github.com/flutter/flutter/issues/26431
+        // ignore: strong_mode_implicit_dynamic_method
         .invokeMethod('AlarmService.start', <dynamic>[handle.toRawHandle()]);
     return r ?? false;
   }
@@ -106,6 +112,9 @@ class AndroidAlarmManager {
     if (handle == null) {
       return false;
     }
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     final dynamic r = await _channel.invokeMethod('Alarm.oneShot', <dynamic>[
       id,
       exact,
@@ -152,6 +161,9 @@ class AndroidAlarmManager {
     if (handle == null) {
       return false;
     }
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     final dynamic r = await _channel.invokeMethod('Alarm.periodic',
         <dynamic>[id, exact, wakeup, first, period, handle.toRawHandle()]);
     return (r == null) ? false : r;
@@ -166,6 +178,9 @@ class AndroidAlarmManager {
   /// failure.
   static Future<bool> cancel(int id) async {
     final dynamic r =
+        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+        // https://github.com/flutter/flutter/issues/26431
+        // ignore: strong_mode_implicit_dynamic_method
         await _channel.invokeMethod('Alarm.cancel', <dynamic>[id]);
     return (r == null) ? false : r;
   }

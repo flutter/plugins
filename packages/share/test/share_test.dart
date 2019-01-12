@@ -17,6 +17,9 @@ void main() {
     mockChannel = MockMethodChannel();
     // Re-pipe to mockito for easier verifies.
     Share.channel.setMockMethodCallHandler((MethodCall call) async {
+      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+      // https://github.com/flutter/flutter/issues/26431
+      // ignore: strong_mode_implicit_dynamic_method
       mockChannel.invokeMethod(call.method, call.arguments);
     });
   });
@@ -42,6 +45,9 @@ void main() {
       'some text to share',
       sharePositionOrigin: Rect.fromLTWH(1.0, 2.0, 3.0, 4.0),
     );
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     verify(mockChannel.invokeMethod('share', <String, dynamic>{
       'text': 'some text to share',
       'originX': 1.0,
