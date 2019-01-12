@@ -7,9 +7,6 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
-const MethodChannel _kChannel =
-    MethodChannel('plugins.flutter.io/quick_actions');
-
 /// Handler for a quick action launch event.
 ///
 /// The argument [type] corresponds to the [ShortcutItem]'s field.
@@ -36,7 +33,16 @@ class ShortcutItem {
 
 /// Quick actions plugin.
 class QuickActions {
-  const QuickActions();
+  factory QuickActions() => _instance;
+
+  @visibleForTesting
+  QuickActions.private(MethodChannel channel) : _kChannel = channel;
+
+  static final QuickActions _instance = QuickActions.private(
+    const MethodChannel('plugins.flutter.io/quick_actions'),
+  );
+
+  final MethodChannel _kChannel;
 
   /// Initializes this plugin.
   ///
