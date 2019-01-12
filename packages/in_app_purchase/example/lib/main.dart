@@ -62,11 +62,11 @@ class _MyAppState extends State<MyApp> {
           buildListCard(ListTile(title: const Text('Nothing to see yet.'))));
     }
 
-    final List<Map<dynamic, dynamic>> items =
+    final List<Product> items =
         await connection.getProductList(<String>['consumable']);
-    for (Map<dynamic, dynamic> item in items) {
+    for (Product item in items) {
       children
-          .add(buildListCard(ListTile(title: Text(item['localizedTitle']))));
+          .add(buildListCard(ListTile(title: Text(item.skProduct.localizedTitle))));
     }
 
     return children;

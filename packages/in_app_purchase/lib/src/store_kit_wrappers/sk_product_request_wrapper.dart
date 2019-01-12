@@ -15,22 +15,21 @@ class SKProductRequestWrapper {
   ///
   /// [identifiers] is the product identifiers specified in Itunes Connect for the products that need to be retrived.
   ///
-  /// Returns a future containing a list of [SKProductWrapper] which then can be queried to get desired information.
-  static Future<List<SKProductWrapper>> getProductList(
-
-    //   List<String> identifiers) async {
-    //  _channel.invokeListMethod<Map<dynamic, dynamic>>(
-    //   'getProductList',
-    //   <String, Object>{
-    //     'identifiers': identifiers,
-    //   },
-    // ).then<List<Map<dynamic, dynamic>>>((List<Map<dynamic, dynamic>> productListJson) {
-    //   List<Product> productList = [];
-    //   for (Map<dynamic, dynamic> productJson in productListJson) {
-    //       productList.add(Product(skProduct: SKProductWrapper.fromJson(productJson),));
-    //   }
-    //   return productList;
-    // });
+  /// Returns a future containing a list of [SKProduct] which then can be queried to get desired information.
+  static Future<List<Product>> getProductList(
+      List<String> identifiers) async {
+    return  _channel.invokeListMethod<Map<dynamic, dynamic>>(
+      'getProductList',
+      <String, Object>{
+        'identifiers': identifiers,
+      },
+    ).then<List<Product>>((List<Map<dynamic, dynamic>> productListJson) {
+      final List<Product> productList = [];
+      for (Map<dynamic, dynamic> productJson in productListJson) {
+          productList.add(Product(skProduct: SKProductWrapper.fromJson(productJson),));
+      }
+      return productList;
+    });
   }
 }
 

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import '../../billing_client_wrappers.dart';
 import 'in_app_purchase_connection.dart';
+import 'product.dart';
 
 /// An [InAppPurchaseConnection] that wraps Google Play Billing.
 ///
@@ -39,7 +40,7 @@ class GooglePlayConnection
   }
 
   @override
-  Future<List<Map<String, dynamic>>> getProductList(List<String> identifiers) =>
+  Future<List<Product>> getProductList(List<String> identifiers) =>
       null;
 
   Future<void> _connect() =>
