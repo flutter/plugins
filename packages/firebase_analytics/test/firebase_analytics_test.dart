@@ -158,7 +158,7 @@ void main() {
       });
     }
 
-  //   smokeTest('add_payment_info', () => analytics.logAddPaymentInfo());
+    // smokeTest('add_payment_info', () => analytics.logAddPaymentInfo());
 
   //   smokeTest(
   //       'add_to_cart',
@@ -296,80 +296,80 @@ void main() {
   //             searchTerm: 'test search term',
   //           ));
 
-  //   void testRequiresValueAndCurrencyTogether(
-  //       String methodName, Future<void> testFn()) {
-  //     test('$methodName requires value and currency together', () async {
-  //       try {
-  //         testFn();
-  //         fail('Expected ArgumentError');
-  //       } on ArgumentError catch (error) {
-  //         expect(error.message, valueAndCurrencyMustBeTogetherError);
-  //       }
-  //     });
-  //   }
+    void testRequiresValueAndCurrencyTogether(
+        String methodName, Future<void> testFn()) {
+      test('$methodName requires value and currency together', () async {
+        try {
+          testFn();
+          fail('Expected ArgumentError');
+        } on ArgumentError catch (error) {
+          expect(error.message, valueAndCurrencyMustBeTogetherError);
+        }
+      });
+    }
 
-  //   testRequiresValueAndCurrencyTogether('logAddToCart', () {
-  //     return analytics.logAddToCart(
-  //       itemId: 'test-id',
-  //       itemName: 'test-name',
-  //       itemCategory: 'test-category',
-  //       quantity: 5,
-  //       value: 123.90,
-  //     );
-  //   });
+    testRequiresValueAndCurrencyTogether('logAddToCart', () {
+      return analytics.logAddToCart(
+        itemId: 'test-id',
+        itemName: 'test-name',
+        itemCategory: 'test-category',
+        quantity: 5,
+        value: 123.90,
+      );
+    });
 
-  //   testRequiresValueAndCurrencyTogether('logAddToWishlist', () {
-  //     return analytics.logAddToWishlist(
-  //       itemId: 'test-id',
-  //       itemName: 'test-name',
-  //       itemCategory: 'test-category',
-  //       quantity: 5,
-  //       value: 123.90,
-  //     );
-  //   });
+    testRequiresValueAndCurrencyTogether('logAddToWishlist', () {
+      return analytics.logAddToWishlist(
+        itemId: 'test-id',
+        itemName: 'test-name',
+        itemCategory: 'test-category',
+        quantity: 5,
+        value: 123.90,
+      );
+    });
 
-  //   testRequiresValueAndCurrencyTogether('logBeginCheckout', () {
-  //     return analytics.logBeginCheckout(
-  //       value: 123.90,
-  //     );
-  //   });
+    testRequiresValueAndCurrencyTogether('logBeginCheckout', () {
+      return analytics.logBeginCheckout(
+        value: 123.90,
+      );
+    });
 
-  //   testRequiresValueAndCurrencyTogether('logEcommercePurchase', () {
-  //     return analytics.logEcommercePurchase(
-  //       value: 123.90,
-  //     );
-  //   });
+    testRequiresValueAndCurrencyTogether('logEcommercePurchase', () {
+      return analytics.logEcommercePurchase(
+        value: 123.90,
+      );
+    });
 
-  //   testRequiresValueAndCurrencyTogether('logGenerateLead', () {
-  //     return analytics.logGenerateLead(
-  //       value: 123.90,
-  //     );
-  //   });
+    testRequiresValueAndCurrencyTogether('logGenerateLead', () {
+      return analytics.logGenerateLead(
+        value: 123.90,
+      );
+    });
 
-  //   testRequiresValueAndCurrencyTogether('logPresentOffer', () {
-  //     return analytics.logPresentOffer(
-  //       itemId: 'test-id',
-  //       itemName: 'test-name',
-  //       itemCategory: 'test-category',
-  //       quantity: 5,
-  //       value: 123.90,
-  //     );
-  //   });
+    testRequiresValueAndCurrencyTogether('logPresentOffer', () {
+      return analytics.logPresentOffer(
+        itemId: 'test-id',
+        itemName: 'test-name',
+        itemCategory: 'test-category',
+        quantity: 5,
+        value: 123.90,
+      );
+    });
 
-  //   testRequiresValueAndCurrencyTogether('logPurchaseRefund', () {
-  //     return analytics.logPurchaseRefund(
-  //       value: 123.90,
-  //     );
-  //   });
+    testRequiresValueAndCurrencyTogether('logPurchaseRefund', () {
+      return analytics.logPurchaseRefund(
+        value: 123.90,
+      );
+    });
 
-  //   testRequiresValueAndCurrencyTogether('logViewItem', () {
-  //     return analytics.logViewItem(
-  //       itemId: 'test-id',
-  //       itemName: 'test-name',
-  //       itemCategory: 'test-category',
-  //       value: 123.90,
-  //     );
-    // });
+    testRequiresValueAndCurrencyTogether('logViewItem', () {
+      return analytics.logViewItem(
+        itemId: 'test-id',
+        itemName: 'test-name',
+        itemCategory: 'test-category',
+        value: 123.90,
+      );
+    });
   });
 }
 
