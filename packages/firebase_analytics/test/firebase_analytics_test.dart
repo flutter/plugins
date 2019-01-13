@@ -12,7 +12,8 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 
 void main() {
   final FirebaseAnalytics analytics = FirebaseAnalytics();
-  const MethodChannel channel = MethodChannel('plugins.flutter.io/firebase_analytics');
+  const MethodChannel channel =
+      MethodChannel('plugins.flutter.io/firebase_analytics');
   group('filterOutNulls', () {
     test('filters out null values', () {
       final Map<String, dynamic> original = <String, dynamic>{
@@ -115,12 +116,13 @@ void main() {
       parameters = null;
 
       channel.setMockMethodCallHandler((MethodCall call) async {
-        if(call.method != 'logEvent'){
+        if (call.method != 'logEvent') {
           throw ArgumentError('Only logEvent invocations expected');
         }
-        final Map<String, dynamic> args = Map<String, dynamic>.from(call.arguments);
+        final Map<String, dynamic> args =
+            Map<String, dynamic>.from(call.arguments);
         name = args['name'];
-        if(args['parameters'] != null) {
+        if (args['parameters'] != null) {
           parameters = Map<String, dynamic>.from(args['parameters']);
         }
         expect(args.keys, unorderedEquals(<String>['name', 'parameters']));
@@ -368,4 +370,3 @@ void main() {
     });
   });
 }
-

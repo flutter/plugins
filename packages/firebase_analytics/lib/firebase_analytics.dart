@@ -9,7 +9,8 @@ import 'package:meta/meta.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 
-const MethodChannel firebaseChannel = MethodChannel('plugins.flutter.io/firebase_analytics');
+const MethodChannel firebaseChannel =
+    MethodChannel('plugins.flutter.io/firebase_analytics');
 
 /// Firebase Analytics API.
 class FirebaseAnalytics {
@@ -25,9 +26,10 @@ class FirebaseAnalytics {
   ///
   ///     FirebaseAnalytics analytics = FirebaseAnalytics();
   ///     analytics.android?.setMinimumSessionDuration(200000);
-  final FirebaseAnalyticsAndroid android = defaultTargetPlatform == TargetPlatform.android
-            ? FirebaseAnalyticsAndroid()
-            : null;
+  final FirebaseAnalyticsAndroid android =
+      defaultTargetPlatform == TargetPlatform.android
+          ? FirebaseAnalyticsAndroid()
+          : null;
 
   /// Logs a custom Flutter Analytics event with the given [name] and event [parameters].
   Future<void> logEvent(
