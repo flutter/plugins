@@ -26,7 +26,10 @@ No configuration required - the plugin should work out of the box.
 ### Example
 
 ``` dart
+import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+
 
 class MyHomePage extends StatefulWidget {
   @override
