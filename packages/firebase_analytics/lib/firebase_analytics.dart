@@ -9,24 +9,11 @@ import 'package:meta/meta.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 
+const MethodChannel firebaseChannel = MethodChannel('plugins.flutter.io/firebase_analytics');
+
 /// Firebase Analytics API.
 class FirebaseAnalytics {
-  /// Provides an instance of this class.
-  factory FirebaseAnalytics() => _instance;
-
-  /// We don't want people to extend this class, but implementing its interface,
-  /// e.g. in tests, is OK.
-  @visibleForTesting
-  FirebaseAnalytics.private(MethodChannel platformChannel)
-      : _channel = platformChannel,
-        android = defaultTargetPlatform == TargetPlatform.android
-            ? FirebaseAnalyticsAndroid.private(platformChannel)
-            : null;
-
-  static final FirebaseAnalytics _instance = FirebaseAnalytics.private(
-      const MethodChannel('plugins.flutter.io/firebase_analytics'));
-
-  final MethodChannel _channel;
+  final MethodChannel _channel = firebaseChannel;
 
   /// Namespace for analytics API available on Android only.
   ///
@@ -38,7 +25,9 @@ class FirebaseAnalytics {
   ///
   ///     FirebaseAnalytics analytics = FirebaseAnalytics();
   ///     analytics.android?.setMinimumSessionDuration(200000);
-  final FirebaseAnalyticsAndroid android;
+  final FirebaseAnalyticsAndroid android = defaultTargetPlatform == TargetPlatform.android
+            ? FirebaseAnalyticsAndroid()
+            : null;
 
   /// Logs a custom Flutter Analytics event with the given [name] and event [parameters].
   Future<void> logEvent(
@@ -786,10 +775,7 @@ class FirebaseAnalytics {
 
 /// Android-specific analytics API.
 class FirebaseAnalyticsAndroid {
-  @visibleForTesting
-  const FirebaseAnalyticsAndroid.private(this._channel);
-
-  final MethodChannel _channel;
+  final MethodChannel _channel = firebaseChannel;
 
   /// Sets whether analytics collection is enabled for this app on this device.
   ///
