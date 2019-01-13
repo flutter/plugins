@@ -117,11 +117,11 @@ class Convert {
     return data;
   }
 
-  private static Object toJson(LatLng latLng) {
+  static Object toJson(LatLng latLng) {
     return Arrays.asList(latLng.latitude, latLng.longitude);
   }
 
-  private static LatLng toLatLng(Object o) {
+  static LatLng toLatLng(Object o) {
     final List<?> data = toList(o);
     return new LatLng(toDouble(data.get(0)), toDouble(data.get(1)));
   }
