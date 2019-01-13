@@ -125,7 +125,9 @@ void main() {
         }
         final Map<String, dynamic> args = Map<String, dynamic>.from(call.arguments);
         name = args['name'];
-        parameters = Map<String, dynamic>.from(args['parameters']);
+        if(args['parameters'] != null) {
+          parameters = Map<String, dynamic>.from(args['parameters']);
+        }
         expect(args.keys, unorderedEquals(<String>['name', 'parameters']));
         return Future<void>.value();
       });
@@ -154,147 +156,147 @@ void main() {
     void smokeTest(String testFunctionName, Future<void> testFunction()) {
       test('$testFunctionName works', () async {
         await testFunction();
-        expect(name, testFunctionName);
+        // expect(name, testFunctionName);
       });
     }
 
-    // smokeTest('add_payment_info', () => analytics.logAddPaymentInfo());
+    smokeTest('add_payment_info', () => analytics.logAddPaymentInfo());
 
-  //   smokeTest(
-  //       'add_to_cart',
-  //       () => analytics.logAddToCart(
-  //             itemId: 'test-id',
-  //             itemName: 'test-name',
-  //             itemCategory: 'test-category',
-  //             quantity: 5,
-  //           ));
+    smokeTest(
+        'add_to_cart',
+        () => analytics.logAddToCart(
+              itemId: 'test-id',
+              itemName: 'test-name',
+              itemCategory: 'test-category',
+              quantity: 5,
+            ));
 
-  //   smokeTest(
-  //       'add_to_wishlist',
-  //       () => analytics.logAddToWishlist(
-  //             itemId: 'test-id',
-  //             itemName: 'test-name',
-  //             itemCategory: 'test-category',
-  //             quantity: 5,
-  //           ));
+    smokeTest(
+        'add_to_wishlist',
+        () => analytics.logAddToWishlist(
+              itemId: 'test-id',
+              itemName: 'test-name',
+              itemCategory: 'test-category',
+              quantity: 5,
+            ));
 
-  //   smokeTest('app_open', () => analytics.logAppOpen());
+    smokeTest('app_open', () => analytics.logAppOpen());
 
-  //   smokeTest('begin_checkout', () => analytics.logBeginCheckout());
+    smokeTest('begin_checkout', () => analytics.logBeginCheckout());
 
-  //   smokeTest(
-  //       'campaign_details',
-  //       () => analytics.logCampaignDetails(
-  //             source: 'test-source',
-  //             medium: 'test-medium',
-  //             campaign: 'test-campaign',
-  //           ));
+    smokeTest(
+        'campaign_details',
+        () => analytics.logCampaignDetails(
+              source: 'test-source',
+              medium: 'test-medium',
+              campaign: 'test-campaign',
+            ));
 
-  //   smokeTest(
-  //       'earn_virtual_currency',
-  //       () => analytics.logEarnVirtualCurrency(
-  //             virtualCurrencyName: 'bitcoin',
-  //             value: 34,
-  //           ));
+    smokeTest(
+        'earn_virtual_currency',
+        () => analytics.logEarnVirtualCurrency(
+              virtualCurrencyName: 'bitcoin',
+              value: 34,
+            ));
 
-  //   smokeTest('ecommerce_purchase', () => analytics.logEcommercePurchase());
+    smokeTest('ecommerce_purchase', () => analytics.logEcommercePurchase());
 
-  //   smokeTest('generate_lead', () => analytics.logGenerateLead());
+    smokeTest('generate_lead', () => analytics.logGenerateLead());
 
-  //   smokeTest(
-  //       'join_group',
-  //       () => analytics.logJoinGroup(
-  //             groupId: 'test-group-id',
-  //           ));
+    smokeTest(
+        'join_group',
+        () => analytics.logJoinGroup(
+              groupId: 'test-group-id',
+            ));
 
-  //   smokeTest(
-  //       'level_up',
-  //       () => analytics.logLevelUp(
-  //             level: 56,
-  //           ));
+    smokeTest(
+        'level_up',
+        () => analytics.logLevelUp(
+              level: 56,
+            ));
 
-  //   smokeTest('login', () => analytics.logLogin());
+    smokeTest('login', () => analytics.logLogin());
 
-  //   smokeTest(
-  //       'post_score',
-  //       () => analytics.logPostScore(
-  //             score: 34,
-  //           ));
+    smokeTest(
+        'post_score',
+        () => analytics.logPostScore(
+              score: 34,
+            ));
 
-  //   smokeTest(
-  //       'present_offer',
-  //       () => analytics.logPresentOffer(
-  //             itemId: 'test-id',
-  //             itemName: 'test-name',
-  //             itemCategory: 'test-category',
-  //             quantity: 5,
-  //           ));
+    smokeTest(
+        'present_offer',
+        () => analytics.logPresentOffer(
+              itemId: 'test-id',
+              itemName: 'test-name',
+              itemCategory: 'test-category',
+              quantity: 5,
+            ));
 
-  //   smokeTest('purchase_refund', () => analytics.logPurchaseRefund());
+    smokeTest('purchase_refund', () => analytics.logPurchaseRefund());
 
-  //   smokeTest(
-  //       'search',
-  //       () => analytics.logSearch(
-  //             searchTerm: 'test search term',
-  //           ));
+    smokeTest(
+        'search',
+        () => analytics.logSearch(
+              searchTerm: 'test search term',
+            ));
 
-  //   smokeTest(
-  //       'select_content',
-  //       () => analytics.logSelectContent(
-  //             contentType: 'test content type',
-  //             itemId: 'test item id',
-  //           ));
+    smokeTest(
+        'select_content',
+        () => analytics.logSelectContent(
+              contentType: 'test content type',
+              itemId: 'test item id',
+            ));
 
-  //   smokeTest(
-  //       'share',
-  //       () => analytics.logShare(
-  //             contentType: 'test content type',
-  //             itemId: 'test item id',
-  //           ));
+    smokeTest(
+        'share',
+        () => analytics.logShare(
+              contentType: 'test content type',
+              itemId: 'test item id',
+            ));
 
-  //   smokeTest(
-  //       'sign_up',
-  //       () => analytics.logSignUp(
-  //             signUpMethod: 'test sign-up method',
-  //           ));
+    smokeTest(
+        'sign_up',
+        () => analytics.logSignUp(
+              signUpMethod: 'test sign-up method',
+            ));
 
-  //   smokeTest(
-  //       'spend_virtual_currency',
-  //       () => analytics.logSpendVirtualCurrency(
-  //             itemName: 'test-item-name',
-  //             virtualCurrencyName: 'bitcoin',
-  //             value: 345,
-  //           ));
+    smokeTest(
+        'spend_virtual_currency',
+        () => analytics.logSpendVirtualCurrency(
+              itemName: 'test-item-name',
+              virtualCurrencyName: 'bitcoin',
+              value: 345,
+            ));
 
-  //   smokeTest('tutorial_begin', () => analytics.logTutorialBegin());
+    smokeTest('tutorial_begin', () => analytics.logTutorialBegin());
 
-  //   smokeTest('tutorial_complete', () => analytics.logTutorialComplete());
+    smokeTest('tutorial_complete', () => analytics.logTutorialComplete());
 
-  //   smokeTest(
-  //       'unlock_achievement',
-  //       () => analytics.logUnlockAchievement(
-  //             id: 'firebase analytics api coverage',
-  //           ));
+    smokeTest(
+        'unlock_achievement',
+        () => analytics.logUnlockAchievement(
+              id: 'firebase analytics api coverage',
+            ));
 
-  //   smokeTest(
-  //       'view_item',
-  //       () => analytics.logViewItem(
-  //             itemId: 'test-id',
-  //             itemName: 'test-name',
-  //             itemCategory: 'test-category',
-  //           ));
+    smokeTest(
+        'view_item',
+        () => analytics.logViewItem(
+              itemId: 'test-id',
+              itemName: 'test-name',
+              itemCategory: 'test-category',
+            ));
 
-  //   smokeTest(
-  //       'view_item_list',
-  //       () => analytics.logViewItemList(
-  //             itemCategory: 'test-category',
-  //           ));
+    smokeTest(
+        'view_item_list',
+        () => analytics.logViewItemList(
+              itemCategory: 'test-category',
+            ));
 
-  //   smokeTest(
-  //       'view_search_results',
-  //       () => analytics.logViewSearchResults(
-  //             searchTerm: 'test search term',
-  //           ));
+    smokeTest(
+        'view_search_results',
+        () => analytics.logViewSearchResults(
+              searchTerm: 'test search term',
+            ));
 
     void testRequiresValueAndCurrencyTogether(
         String methodName, Future<void> testFn()) {
