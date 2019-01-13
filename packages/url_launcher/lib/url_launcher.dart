@@ -38,9 +38,9 @@ const MethodChannel _channel = MethodChannel('plugins.flutter.io/url_launcher');
 ///
 /// [forceWebView] is an Android only setting. If null or false, the URL is
 /// always launched with the default browser on device. If set to true, the URL
-/// is launched in a webview. Unlike iOS, browser context is shared across
+/// is launched in a WebView. Unlike iOS, browser context is shared across
 /// WebViews.
-/// [enableJavaScript] is an Android only setting. If true, webview enable
+/// [enableJavaScript] is an Android only setting. If true, WebView enable
 /// javascript.
 ///
 /// Note that if any of the above are set to true but the URL is not a web URL,
@@ -48,10 +48,10 @@ const MethodChannel _channel = MethodChannel('plugins.flutter.io/url_launcher');
 ///
 /// [statusBarBrightness] Sets the status bar brightness of the application
 /// after opening a link on iOS. Does nothing if no value is passed. This does
-/// not handle reseting the previous status bar style.
+/// not handle resetting the previous status bar style.
 ///
-/// Return a Future contains bool value. If ture, launch url is successful; if false,
-/// launch url is failed.
+/// Returns true if launch url is successful; false is only returned when [universalLinksOnly]
+/// is set to true and the universal link is failed to launch.
 Future<bool> launch(
   String urlString, {
   bool forceSafariVC,
