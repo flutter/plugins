@@ -4,11 +4,11 @@
 
 #import "CloudFunctionsPlugin.h"
 
-#import "FIRFunctions+Internal.h"
 #import "Firebase/Firebase.h"
 
 @interface CloudFunctionsPlugin ()
 @property(nonatomic, retain) FlutterMethodChannel *_channel;
+@property(strong, nonatomic) FIRFunctions *functions;
 @end
 
 @implementation CloudFunctionsPlugin
@@ -35,36 +35,33 @@
   if ([@"CloudFunctions#call" isEqualToString:call.method]) {
     NSString *functionName = call.arguments[@"functionName"];
     NSObject *parameters = call.arguments[@"parameters"];
-    [[FIRFunctions functions]
-        callFunction:functionName
-          withObject:parameters
-          completion:^(FIRHTTPSCallableResult *callableResult, NSError *error) {
+    [[_functions HTTPSCallableWithName:functionName] callWithObject:parameters completion:^(FIRHTTPSCallableResult * _Nullable callRresult, NSError * _Nullable error) {
             if (error) {
-              FlutterError *flutterError;
-              if (error.domain == FIRFunctionsErrorDomain) {
-                NSDictionary *details = [NSMutableDictionary dictionary];
-                [details setValue:[self mapFunctionsErrorCodes:error.code] forKey:@"code"];
-                if (error.localizedDescription != nil) {
-                  [details setValue:error.localizedDescription forKey:@"message"];
-                }
-                if (error.userInfo[FIRFunctionsErrorDetailsKey] != nil) {
-                  [details setValue:error.userInfo[FIRFunctionsErrorDetailsKey] forKey:@"details"];
-                }
-
-                flutterError =
+                FlutterError *flutterError;
+                if (error.domain == FIRFunctionsErrorDomain) {
+                    NSDictionary *details = [NSMutableDictionary dictionary];
+                    [details setValue:[self mapFunctionsErrorCodes:error.code] forKey:@"code"];
+                    if (error.localizedDescription != nil) {
+                        [details setValue:error.localizedDescription forKey:@"message"];
+                    }
+                    if (error.userInfo[FIRFunctionsErrorDetailsKey] != nil) {
+                        [details setValue:error.userInfo[FIRFunctionsErrorDetailsKey] forKey:@"details"];
+                    }
+                    
+                    flutterError =
                     [FlutterError errorWithCode:@"functionsError"
                                         message:@"Firebase function failed with exception."
                                         details:details];
-              } else {
-                flutterError = [FlutterError errorWithCode:nil
-                                                   message:error.localizedDescription
-                                                   details:nil];
-              }
-              result(flutterError);
+                } else {
+                    flutterError = [FlutterError errorWithCode:nil
+                                                       message:error.localizedDescription
+                                                       details:nil];
+                }
+                result(flutterError);
             } else {
-              result(callableResult.data);
+                result(callRresult.data);
             }
-          }];
+        }];
   } else {
     result(FlutterMethodNotImplemented);
   }
