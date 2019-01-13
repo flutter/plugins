@@ -263,8 +263,7 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     return exceptionMap;
   }
 
-  private void handleLinkWithCredential(
-      MethodCall call, Result result, FirebaseAuth firebaseAuth) {
+  private void handleLinkWithCredential(MethodCall call, Result result, FirebaseAuth firebaseAuth) {
     AuthCredential credential = getCredential((Map<String, Object>) call.arguments());
 
     firebaseAuth
