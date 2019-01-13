@@ -22,10 +22,11 @@
       displayName = @"";
     }
     result(@{
-      @"appName" : displayName,
-      @"packageName" : [[NSBundle mainBundle] bundleIdentifier],
-      @"version" : [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"],
-      @"buildNumber" : [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]
+      @"appName" : [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"] ?: @"",
+      @"packageName" : [[NSBundle mainBundle] bundleIdentifier] ?: @"",
+      @"version" : [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"]
+          ?: @"",
+      @"buildNumber" : [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"] ?: @""
     });
   } else {
     result(FlutterMethodNotImplemented);
