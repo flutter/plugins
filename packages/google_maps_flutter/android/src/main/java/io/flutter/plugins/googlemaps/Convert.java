@@ -4,7 +4,11 @@
 
 package io.flutter.plugins.googlemaps;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Point;
+
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -12,15 +16,21 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
-import io.flutter.view.FlutterMain;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/** Conversions between JSON-like values and GoogleMaps data types. */
+import io.flutter.view.FlutterMain;
+
+/**
+ * Conversions between JSON-like values and GoogleMaps data types.
+ */
 class Convert {
-  private static BitmapDescriptor toBitmapDescriptor(Object o) {
+  private static BitmapDescriptor toBitmapDescriptor(Context context, Object o) {
     final List<?> data = toList(o);
     switch (toString(data.get(0))) {
       case "defaultMarker":
@@ -30,12 +40,38 @@ class Convert {
           return BitmapDescriptorFactory.defaultMarker(toFloat(data.get(1)));
         }
       case "fromAsset":
-        if (data.size() == 2) {
-          return BitmapDescriptorFactory.fromAsset(
-              FlutterMain.getLookupKeyForAsset(toString(data.get(1))));
-        } else {
-          return BitmapDescriptorFactory.fromAsset(
-              FlutterMain.getLookupKeyForAsset(toString(data.get(1)), toString(data.get(2))));
+        final String assetFilePath = toString(data.get(1));
+        final String packageName = toString(data.get(2));
+        final String lookupKey = packageName == null
+            ? FlutterMain.getLookupKeyForAsset(assetFilePath)
+            : FlutterMain.getLookupKeyForAsset(assetFilePath, packageName);
+
+        final Integer width = toInteger(data.get(3));
+        final Integer height = toInteger(data.get(4));
+
+        if (width == null || height == null) {
+          // non scaling version
+          return BitmapDescriptorFactory.fromAsset(lookupKey);
+        }
+
+        // scaling version
+        final InputStream asset;
+        try {
+          asset = context.getAssets().open(lookupKey);
+        } catch (IOException e) {
+          throw new IllegalArgumentException("Cannot open asset " + lookupKey + " as BitmapDescriptor", e);
+        }
+
+        try {
+          final Bitmap bitmap = BitmapFactory.decodeStream(asset);
+          final Bitmap resized = Bitmap.createScaledBitmap(bitmap, width, height, true);
+          return BitmapDescriptorFactory.fromBitmap(resized);
+        } finally {
+          try {
+            asset.close();
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
         }
       default:
         throw new IllegalArgumentException("Cannot interpret " + o + " as BitmapDescriptor");
@@ -103,6 +139,10 @@ class Convert {
 
   static int toInt(Object o) {
     return ((Number) o).intValue();
+  }
+
+  static Integer toInteger(Object o) {
+    return o == null ? null : ((Number) o).intValue();
   }
 
   static Object toJson(CameraPosition position) {
@@ -211,7 +251,7 @@ class Convert {
     }
   }
 
-  static void interpretMarkerOptions(Object o, MarkerOptionsSink sink) {
+  static void interpretMarkerOptions(Object o, MarkerOptionsSink sink, Context context) {
     final Map<?, ?> data = toMap(o);
     final Object alpha = data.get("alpha");
     if (alpha != null) {
@@ -236,7 +276,7 @@ class Convert {
     }
     final Object icon = data.get("icon");
     if (icon != null) {
-      sink.setIcon(toBitmapDescriptor(icon));
+      sink.setIcon(toBitmapDescriptor(context, icon));
     }
     final Object infoWindowAnchor = data.get("infoWindowAnchor");
     if (infoWindowAnchor != null) {

@@ -215,7 +215,7 @@ final class GoogleMapController
       case "marker#add":
         {
           final MarkerBuilder markerBuilder = newMarkerBuilder();
-          Convert.interpretMarkerOptions(call.argument("options"), markerBuilder);
+          Convert.interpretMarkerOptions(call.argument("options"), markerBuilder, context);
           final String markerId = markerBuilder.build();
           result.success(markerId);
           break;
@@ -231,7 +231,7 @@ final class GoogleMapController
         {
           final String markerId = call.argument("marker");
           final MarkerController marker = marker(markerId);
-          Convert.interpretMarkerOptions(call.argument("options"), marker);
+          Convert.interpretMarkerOptions(call.argument("options"), marker, context);
           result.success(null);
           break;
         }

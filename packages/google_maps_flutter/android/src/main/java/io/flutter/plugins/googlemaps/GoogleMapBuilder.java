@@ -5,10 +5,13 @@
 package io.flutter.plugins.googlemaps;
 
 import android.content.Context;
+
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLngBounds;
+
 import io.flutter.plugin.common.PluginRegistry;
+
 import java.util.concurrent.atomic.AtomicInteger;
 
 class GoogleMapBuilder implements GoogleMapOptionsSink {

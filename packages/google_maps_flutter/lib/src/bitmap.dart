@@ -35,12 +35,10 @@ class BitmapDescriptor {
 
   /// Creates a BitmapDescriptor using the name of a bitmap image in the assets
   /// directory.
-  static BitmapDescriptor fromAsset(String assetName, {String package}) {
-    if (package == null) {
-      return BitmapDescriptor._(<dynamic>['fromAsset', assetName]);
-    } else {
-      return BitmapDescriptor._(<dynamic>['fromAsset', assetName, package]);
-    }
+  static BitmapDescriptor fromAsset(String assetName,
+      {String package, int width, int height}) {
+    return BitmapDescriptor._(
+        <dynamic>['fromAsset', assetName, package, width, height]);
   }
 
   final dynamic _json;
