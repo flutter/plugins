@@ -28,29 +28,20 @@ void main() {
   });
 
   group('$FirebaseAnalytics', () {
-    FirebaseAnalytics analytics;
+    final FirebaseAnalytics analytics = FirebaseAnalytics();
+    const MethodChannel channel = MethodChannel('plugins.flutter.io/firebase_analytics');
 
     String invokedMethod;
     dynamic arguments;
 
     setUp(() {
-      final MockPlatformChannel mockChannel = MockPlatformChannel();
-
       invokedMethod = null;
       arguments = null;
 
-      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
-      when(mockChannel.invokeMethod(any, any))
-          .thenAnswer((Invocation invocation) {
-        invokedMethod = invocation.positionalArguments[0];
-        arguments = invocation.positionalArguments[1];
-        return Future<void>.value();
+      channel.setMockMethodCallHandler((MethodCall call) async {
+        invokedMethod = call.method;
+        arguments = call.arguments;
       });
-
-      analytics = FirebaseAnalytics.private(mockChannel);
-    });
 
     test('setUserId', () async {
       await analytics.setUserId('test-user-id');
@@ -123,267 +114,264 @@ void main() {
     Map<String, dynamic> parameters;
 
     setUp(() {
-      final MockPlatformChannel mockChannel = MockPlatformChannel();
-
       name = null;
       parameters = null;
 
       // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
       // https://github.com/flutter/flutter/issues/26431
       // ignore: strong_mode_implicit_dynamic_method
-      when(mockChannel.invokeMethod('logEvent', any))
-          .thenAnswer((Invocation invocation) {
-        final Map<String, dynamic> args = invocation.positionalArguments[1];
-        name = args['name'];
-        parameters = args['parameters'];
-        expect(args.keys, unorderedEquals(<String>['name', 'parameters']));
-        return Future<void>.value();
-      });
+      // when(mockChannel.invokeMethod('logEvent', any))
+      //     .thenAnswer((Invocation invocation) {
+      //   final Map<String, dynamic> args = invocation.positionalArguments[1];
+      //   name = args['name'];
+      //   parameters = args['parameters'];
+      //   expect(args.keys, unorderedEquals(<String>['name', 'parameters']));
+      //   return Future<void>.value();
+      // });
 
       // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
       // https://github.com/flutter/flutter/issues/26431
       // ignore: strong_mode_implicit_dynamic_method
-      when(mockChannel.invokeMethod(argThat(isNot('logEvent')), any))
-          .thenThrow(ArgumentError('Only logEvent invocations expected'));
+      // when(mockChannel.invokeMethod(argThat(isNot('logEvent')), any))
+      //     .thenThrow(ArgumentError('Only logEvent invocations expected'));
 
-      analytics = FirebaseAnalytics.private(mockChannel);
+      analytics = FirebaseAnalytics();
     });
 
-    test('logEvent log events', () async {
-      await analytics.logEvent(
-          name: 'test-event', parameters: <String, dynamic>{'a': 'b'});
-      expect(name, 'test-event');
-      expect(parameters, <String, dynamic>{'a': 'b'});
-    });
+  //   test('logEvent log events', () async {
+  //     await analytics.logEvent(
+  //         name: 'test-event', parameters: <String, dynamic>{'a': 'b'});
+  //     expect(name, 'test-event');
+  //     expect(parameters, <String, dynamic>{'a': 'b'});
+  //   });
 
-    test('logEvent rejects events with reserved names', () async {
-      expect(analytics.logEvent(name: 'app_clear_data'), throwsArgumentError);
-    });
+  //   test('logEvent rejects events with reserved names', () async {
+  //     expect(analytics.logEvent(name: 'app_clear_data'), throwsArgumentError);
+  //   });
 
-    test('logEvent rejects events with reserved prefix', () async {
-      expect(analytics.logEvent(name: 'firebase_foo'), throwsArgumentError);
-    });
+  //   test('logEvent rejects events with reserved prefix', () async {
+  //     expect(analytics.logEvent(name: 'firebase_foo'), throwsArgumentError);
+  //   });
 
-    void smokeTest(String testFunctionName, Future<void> testFunction()) {
-      test('$testFunctionName works', () async {
-        await testFunction();
-        expect(name, testFunctionName);
-      });
-    }
+  //   void smokeTest(String testFunctionName, Future<void> testFunction()) {
+  //     test('$testFunctionName works', () async {
+  //       await testFunction();
+  //       expect(name, testFunctionName);
+  //     });
+  //   }
 
-    smokeTest('add_payment_info', () => analytics.logAddPaymentInfo());
+  //   smokeTest('add_payment_info', () => analytics.logAddPaymentInfo());
 
-    smokeTest(
-        'add_to_cart',
-        () => analytics.logAddToCart(
-              itemId: 'test-id',
-              itemName: 'test-name',
-              itemCategory: 'test-category',
-              quantity: 5,
-            ));
+  //   smokeTest(
+  //       'add_to_cart',
+  //       () => analytics.logAddToCart(
+  //             itemId: 'test-id',
+  //             itemName: 'test-name',
+  //             itemCategory: 'test-category',
+  //             quantity: 5,
+  //           ));
 
-    smokeTest(
-        'add_to_wishlist',
-        () => analytics.logAddToWishlist(
-              itemId: 'test-id',
-              itemName: 'test-name',
-              itemCategory: 'test-category',
-              quantity: 5,
-            ));
+  //   smokeTest(
+  //       'add_to_wishlist',
+  //       () => analytics.logAddToWishlist(
+  //             itemId: 'test-id',
+  //             itemName: 'test-name',
+  //             itemCategory: 'test-category',
+  //             quantity: 5,
+  //           ));
 
-    smokeTest('app_open', () => analytics.logAppOpen());
+  //   smokeTest('app_open', () => analytics.logAppOpen());
 
-    smokeTest('begin_checkout', () => analytics.logBeginCheckout());
+  //   smokeTest('begin_checkout', () => analytics.logBeginCheckout());
 
-    smokeTest(
-        'campaign_details',
-        () => analytics.logCampaignDetails(
-              source: 'test-source',
-              medium: 'test-medium',
-              campaign: 'test-campaign',
-            ));
+  //   smokeTest(
+  //       'campaign_details',
+  //       () => analytics.logCampaignDetails(
+  //             source: 'test-source',
+  //             medium: 'test-medium',
+  //             campaign: 'test-campaign',
+  //           ));
 
-    smokeTest(
-        'earn_virtual_currency',
-        () => analytics.logEarnVirtualCurrency(
-              virtualCurrencyName: 'bitcoin',
-              value: 34,
-            ));
+  //   smokeTest(
+  //       'earn_virtual_currency',
+  //       () => analytics.logEarnVirtualCurrency(
+  //             virtualCurrencyName: 'bitcoin',
+  //             value: 34,
+  //           ));
 
-    smokeTest('ecommerce_purchase', () => analytics.logEcommercePurchase());
+  //   smokeTest('ecommerce_purchase', () => analytics.logEcommercePurchase());
 
-    smokeTest('generate_lead', () => analytics.logGenerateLead());
+  //   smokeTest('generate_lead', () => analytics.logGenerateLead());
 
-    smokeTest(
-        'join_group',
-        () => analytics.logJoinGroup(
-              groupId: 'test-group-id',
-            ));
+  //   smokeTest(
+  //       'join_group',
+  //       () => analytics.logJoinGroup(
+  //             groupId: 'test-group-id',
+  //           ));
 
-    smokeTest(
-        'level_up',
-        () => analytics.logLevelUp(
-              level: 56,
-            ));
+  //   smokeTest(
+  //       'level_up',
+  //       () => analytics.logLevelUp(
+  //             level: 56,
+  //           ));
 
-    smokeTest('login', () => analytics.logLogin());
+  //   smokeTest('login', () => analytics.logLogin());
 
-    smokeTest(
-        'post_score',
-        () => analytics.logPostScore(
-              score: 34,
-            ));
+  //   smokeTest(
+  //       'post_score',
+  //       () => analytics.logPostScore(
+  //             score: 34,
+  //           ));
 
-    smokeTest(
-        'present_offer',
-        () => analytics.logPresentOffer(
-              itemId: 'test-id',
-              itemName: 'test-name',
-              itemCategory: 'test-category',
-              quantity: 5,
-            ));
+  //   smokeTest(
+  //       'present_offer',
+  //       () => analytics.logPresentOffer(
+  //             itemId: 'test-id',
+  //             itemName: 'test-name',
+  //             itemCategory: 'test-category',
+  //             quantity: 5,
+  //           ));
 
-    smokeTest('purchase_refund', () => analytics.logPurchaseRefund());
+  //   smokeTest('purchase_refund', () => analytics.logPurchaseRefund());
 
-    smokeTest(
-        'search',
-        () => analytics.logSearch(
-              searchTerm: 'test search term',
-            ));
+  //   smokeTest(
+  //       'search',
+  //       () => analytics.logSearch(
+  //             searchTerm: 'test search term',
+  //           ));
 
-    smokeTest(
-        'select_content',
-        () => analytics.logSelectContent(
-              contentType: 'test content type',
-              itemId: 'test item id',
-            ));
+  //   smokeTest(
+  //       'select_content',
+  //       () => analytics.logSelectContent(
+  //             contentType: 'test content type',
+  //             itemId: 'test item id',
+  //           ));
 
-    smokeTest(
-        'share',
-        () => analytics.logShare(
-              contentType: 'test content type',
-              itemId: 'test item id',
-            ));
+  //   smokeTest(
+  //       'share',
+  //       () => analytics.logShare(
+  //             contentType: 'test content type',
+  //             itemId: 'test item id',
+  //           ));
 
-    smokeTest(
-        'sign_up',
-        () => analytics.logSignUp(
-              signUpMethod: 'test sign-up method',
-            ));
+  //   smokeTest(
+  //       'sign_up',
+  //       () => analytics.logSignUp(
+  //             signUpMethod: 'test sign-up method',
+  //           ));
 
-    smokeTest(
-        'spend_virtual_currency',
-        () => analytics.logSpendVirtualCurrency(
-              itemName: 'test-item-name',
-              virtualCurrencyName: 'bitcoin',
-              value: 345,
-            ));
+  //   smokeTest(
+  //       'spend_virtual_currency',
+  //       () => analytics.logSpendVirtualCurrency(
+  //             itemName: 'test-item-name',
+  //             virtualCurrencyName: 'bitcoin',
+  //             value: 345,
+  //           ));
 
-    smokeTest('tutorial_begin', () => analytics.logTutorialBegin());
+  //   smokeTest('tutorial_begin', () => analytics.logTutorialBegin());
 
-    smokeTest('tutorial_complete', () => analytics.logTutorialComplete());
+  //   smokeTest('tutorial_complete', () => analytics.logTutorialComplete());
 
-    smokeTest(
-        'unlock_achievement',
-        () => analytics.logUnlockAchievement(
-              id: 'firebase analytics api coverage',
-            ));
+  //   smokeTest(
+  //       'unlock_achievement',
+  //       () => analytics.logUnlockAchievement(
+  //             id: 'firebase analytics api coverage',
+  //           ));
 
-    smokeTest(
-        'view_item',
-        () => analytics.logViewItem(
-              itemId: 'test-id',
-              itemName: 'test-name',
-              itemCategory: 'test-category',
-            ));
+  //   smokeTest(
+  //       'view_item',
+  //       () => analytics.logViewItem(
+  //             itemId: 'test-id',
+  //             itemName: 'test-name',
+  //             itemCategory: 'test-category',
+  //           ));
 
-    smokeTest(
-        'view_item_list',
-        () => analytics.logViewItemList(
-              itemCategory: 'test-category',
-            ));
+  //   smokeTest(
+  //       'view_item_list',
+  //       () => analytics.logViewItemList(
+  //             itemCategory: 'test-category',
+  //           ));
 
-    smokeTest(
-        'view_search_results',
-        () => analytics.logViewSearchResults(
-              searchTerm: 'test search term',
-            ));
+  //   smokeTest(
+  //       'view_search_results',
+  //       () => analytics.logViewSearchResults(
+  //             searchTerm: 'test search term',
+  //           ));
 
-    void testRequiresValueAndCurrencyTogether(
-        String methodName, Future<void> testFn()) {
-      test('$methodName requires value and currency together', () async {
-        try {
-          testFn();
-          fail('Expected ArgumentError');
-        } on ArgumentError catch (error) {
-          expect(error.message, valueAndCurrencyMustBeTogetherError);
-        }
-      });
-    }
+  //   void testRequiresValueAndCurrencyTogether(
+  //       String methodName, Future<void> testFn()) {
+  //     test('$methodName requires value and currency together', () async {
+  //       try {
+  //         testFn();
+  //         fail('Expected ArgumentError');
+  //       } on ArgumentError catch (error) {
+  //         expect(error.message, valueAndCurrencyMustBeTogetherError);
+  //       }
+  //     });
+  //   }
 
-    testRequiresValueAndCurrencyTogether('logAddToCart', () {
-      return analytics.logAddToCart(
-        itemId: 'test-id',
-        itemName: 'test-name',
-        itemCategory: 'test-category',
-        quantity: 5,
-        value: 123.90,
-      );
-    });
+  //   testRequiresValueAndCurrencyTogether('logAddToCart', () {
+  //     return analytics.logAddToCart(
+  //       itemId: 'test-id',
+  //       itemName: 'test-name',
+  //       itemCategory: 'test-category',
+  //       quantity: 5,
+  //       value: 123.90,
+  //     );
+  //   });
 
-    testRequiresValueAndCurrencyTogether('logAddToWishlist', () {
-      return analytics.logAddToWishlist(
-        itemId: 'test-id',
-        itemName: 'test-name',
-        itemCategory: 'test-category',
-        quantity: 5,
-        value: 123.90,
-      );
-    });
+  //   testRequiresValueAndCurrencyTogether('logAddToWishlist', () {
+  //     return analytics.logAddToWishlist(
+  //       itemId: 'test-id',
+  //       itemName: 'test-name',
+  //       itemCategory: 'test-category',
+  //       quantity: 5,
+  //       value: 123.90,
+  //     );
+  //   });
 
-    testRequiresValueAndCurrencyTogether('logBeginCheckout', () {
-      return analytics.logBeginCheckout(
-        value: 123.90,
-      );
-    });
+  //   testRequiresValueAndCurrencyTogether('logBeginCheckout', () {
+  //     return analytics.logBeginCheckout(
+  //       value: 123.90,
+  //     );
+  //   });
 
-    testRequiresValueAndCurrencyTogether('logEcommercePurchase', () {
-      return analytics.logEcommercePurchase(
-        value: 123.90,
-      );
-    });
+  //   testRequiresValueAndCurrencyTogether('logEcommercePurchase', () {
+  //     return analytics.logEcommercePurchase(
+  //       value: 123.90,
+  //     );
+  //   });
 
-    testRequiresValueAndCurrencyTogether('logGenerateLead', () {
-      return analytics.logGenerateLead(
-        value: 123.90,
-      );
-    });
+  //   testRequiresValueAndCurrencyTogether('logGenerateLead', () {
+  //     return analytics.logGenerateLead(
+  //       value: 123.90,
+  //     );
+  //   });
 
-    testRequiresValueAndCurrencyTogether('logPresentOffer', () {
-      return analytics.logPresentOffer(
-        itemId: 'test-id',
-        itemName: 'test-name',
-        itemCategory: 'test-category',
-        quantity: 5,
-        value: 123.90,
-      );
-    });
+  //   testRequiresValueAndCurrencyTogether('logPresentOffer', () {
+  //     return analytics.logPresentOffer(
+  //       itemId: 'test-id',
+  //       itemName: 'test-name',
+  //       itemCategory: 'test-category',
+  //       quantity: 5,
+  //       value: 123.90,
+  //     );
+  //   });
 
-    testRequiresValueAndCurrencyTogether('logPurchaseRefund', () {
-      return analytics.logPurchaseRefund(
-        value: 123.90,
-      );
-    });
+  //   testRequiresValueAndCurrencyTogether('logPurchaseRefund', () {
+  //     return analytics.logPurchaseRefund(
+  //       value: 123.90,
+  //     );
+  //   });
 
-    testRequiresValueAndCurrencyTogether('logViewItem', () {
-      return analytics.logViewItem(
-        itemId: 'test-id',
-        itemName: 'test-name',
-        itemCategory: 'test-category',
-        value: 123.90,
-      );
+  //   testRequiresValueAndCurrencyTogether('logViewItem', () {
+  //     return analytics.logViewItem(
+  //       itemId: 'test-id',
+  //       itemName: 'test-name',
+  //       itemCategory: 'test-category',
+  //       value: 123.90,
+  //     );
     });
   });
 }
 
-class MockPlatformChannel extends Mock implements MethodChannel {}
