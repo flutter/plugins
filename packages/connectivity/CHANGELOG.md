@@ -1,3 +1,7 @@
+## 0.3.3
+
+* Fixed crash on IOS when some of the package info is not available.
+
 ## 0.3.2
 
 * Adding getWifiName() to obtain current wifi network's SSID.
