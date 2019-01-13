@@ -42,6 +42,7 @@ void main() {
         invokedMethod = call.method;
         arguments = call.arguments;
       });
+    });
 
     test('setUserId', () async {
       await analytics.setUserId('test-user-id');
@@ -109,6 +110,7 @@ void main() {
 
   group('$FirebaseAnalytics analytics events', () {
     FirebaseAnalytics analytics;
+    const MethodChannel channel = MethodChannel('plugins.flutter.io/firebase_analytics');
 
     String name;
     Map<String, dynamic> parameters;
@@ -117,48 +119,44 @@ void main() {
       name = null;
       parameters = null;
 
-      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
-      // when(mockChannel.invokeMethod('logEvent', any))
-      //     .thenAnswer((Invocation invocation) {
-      //   final Map<String, dynamic> args = invocation.positionalArguments[1];
-      //   name = args['name'];
-      //   parameters = args['parameters'];
-      //   expect(args.keys, unorderedEquals(<String>['name', 'parameters']));
-      //   return Future<void>.value();
-      // });
-
-      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
-      // when(mockChannel.invokeMethod(argThat(isNot('logEvent')), any))
-      //     .thenThrow(ArgumentError('Only logEvent invocations expected'));
-
+      channel.setMockMethodCallHandler((MethodCall call) async {
+        if(call.method != 'logEvent'){
+          throw ArgumentError('Only logEvent invocations expected');
+        }
+        final Map<String, dynamic> args = Map<String, dynamic>.from(call.arguments);
+        name = args['name'];
+        parameters = Map<String, dynamic>.from(args['parameters']);
+        expect(args.keys, unorderedEquals(<String>['name', 'parameters']));
+        return Future<void>.value();
+      });
       analytics = FirebaseAnalytics();
     });
 
-  //   test('logEvent log events', () async {
-  //     await analytics.logEvent(
-  //         name: 'test-event', parameters: <String, dynamic>{'a': 'b'});
-  //     expect(name, 'test-event');
-  //     expect(parameters, <String, dynamic>{'a': 'b'});
-  //   });
+    tearDown(() {
+      channel.setMockMethodCallHandler(null);
+    });
 
-  //   test('logEvent rejects events with reserved names', () async {
-  //     expect(analytics.logEvent(name: 'app_clear_data'), throwsArgumentError);
-  //   });
+    test('logEvent log events', () async {
+      await analytics.logEvent(
+          name: 'test-event', parameters: <String, dynamic>{'a': 'b'});
+      expect(name, 'test-event');
+      expect(parameters, <String, dynamic>{'a': 'b'});
+    });
 
-  //   test('logEvent rejects events with reserved prefix', () async {
-  //     expect(analytics.logEvent(name: 'firebase_foo'), throwsArgumentError);
-  //   });
+    test('logEvent rejects events with reserved names', () async {
+      expect(analytics.logEvent(name: 'app_clear_data'), throwsArgumentError);
+    });
 
-  //   void smokeTest(String testFunctionName, Future<void> testFunction()) {
-  //     test('$testFunctionName works', () async {
-  //       await testFunction();
-  //       expect(name, testFunctionName);
-  //     });
-  //   }
+    test('logEvent rejects events with reserved prefix', () async {
+      expect(analytics.logEvent(name: 'firebase_foo'), throwsArgumentError);
+    });
+
+    void smokeTest(String testFunctionName, Future<void> testFunction()) {
+      test('$testFunctionName works', () async {
+        await testFunction();
+        expect(name, testFunctionName);
+      });
+    }
 
   //   smokeTest('add_payment_info', () => analytics.logAddPaymentInfo());
 
@@ -371,7 +369,7 @@ void main() {
   //       itemCategory: 'test-category',
   //       value: 123.90,
   //     );
-    });
+    // });
   });
 }
 
