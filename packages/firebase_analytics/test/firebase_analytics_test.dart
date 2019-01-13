@@ -4,14 +4,15 @@
 
 import 'dart:async';
 
-import 'package:mockito/mockito.dart';
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 import 'package:flutter/services.dart';
 
 import 'package:firebase_analytics/firebase_analytics.dart';
 
 void main() {
+  final FirebaseAnalytics analytics = FirebaseAnalytics();
+  const MethodChannel channel = MethodChannel('plugins.flutter.io/firebase_analytics');
   group('filterOutNulls', () {
     test('filters out null values', () {
       final Map<String, dynamic> original = <String, dynamic>{
@@ -28,28 +29,17 @@ void main() {
   });
 
   group('$FirebaseAnalytics', () {
-    FirebaseAnalytics analytics;
-
     String invokedMethod;
     dynamic arguments;
 
     setUp(() {
-      final MockPlatformChannel mockChannel = MockPlatformChannel();
-
       invokedMethod = null;
       arguments = null;
 
-      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
-      when(mockChannel.invokeMethod(any, any))
-          .thenAnswer((Invocation invocation) {
-        invokedMethod = invocation.positionalArguments[0];
-        arguments = invocation.positionalArguments[1];
-        return Future<void>.value();
+      channel.setMockMethodCallHandler((MethodCall call) async {
+        invokedMethod = call.method;
+        arguments = call.arguments;
       });
-
-      analytics = FirebaseAnalytics.private(mockChannel);
     });
 
     test('setUserId', () async {
@@ -117,36 +107,29 @@ void main() {
   });
 
   group('$FirebaseAnalytics analytics events', () {
-    FirebaseAnalytics analytics;
-
     String name;
     Map<String, dynamic> parameters;
 
     setUp(() {
-      final MockPlatformChannel mockChannel = MockPlatformChannel();
-
       name = null;
       parameters = null;
 
-      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
-      when(mockChannel.invokeMethod('logEvent', any))
-          .thenAnswer((Invocation invocation) {
-        final Map<String, dynamic> args = invocation.positionalArguments[1];
+      channel.setMockMethodCallHandler((MethodCall call) async {
+        if(call.method != 'logEvent'){
+          throw ArgumentError('Only logEvent invocations expected');
+        }
+        final Map<String, dynamic> args = Map<String, dynamic>.from(call.arguments);
         name = args['name'];
-        parameters = args['parameters'];
+        if(args['parameters'] != null) {
+          parameters = Map<String, dynamic>.from(args['parameters']);
+        }
         expect(args.keys, unorderedEquals(<String>['name', 'parameters']));
         return Future<void>.value();
       });
+    });
 
-      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-      // https://github.com/flutter/flutter/issues/26431
-      // ignore: strong_mode_implicit_dynamic_method
-      when(mockChannel.invokeMethod(argThat(isNot('logEvent')), any))
-          .thenThrow(ArgumentError('Only logEvent invocations expected'));
-
-      analytics = FirebaseAnalytics.private(mockChannel);
+    tearDown(() {
+      channel.setMockMethodCallHandler(null);
     });
 
     test('logEvent log events', () async {
@@ -386,4 +369,3 @@ void main() {
   });
 }
 
-class MockPlatformChannel extends Mock implements MethodChannel {}
