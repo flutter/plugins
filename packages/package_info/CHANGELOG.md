@@ -1,3 +1,8 @@
+## 0.3.3
+
+ * Fixed a crash on IOS when some of the package info is not available.
+
+
 ## 0.3.2
 
 * Updated Gradle tooling to match Android Studio 3.1.2.
