@@ -1,6 +1,6 @@
 ## 0.3.3
 
- * Fixed a crash on IOS when some of the package info is not available.
+ * Fixed a crash on IOS when some of the package infos are not available.
 
 
 ## 0.3.2
