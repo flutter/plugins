@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
-import 'billing_client_wrappers.dart';
+import '../../billing_client_wrappers.dart';
 import 'in_app_purchase_connection.dart';
 
 /// An [InAppPurchaseConnection] that wraps Google Play Billing.

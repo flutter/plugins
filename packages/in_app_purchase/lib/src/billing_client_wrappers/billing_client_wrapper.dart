@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
+import '../channel.dart';
 
 /// This class can be used directly instead of [InAppPurchaseConnection] to call
 /// Play-specific billing APIs.
@@ -16,10 +17,8 @@ import 'package:flutter/foundation.dart';
 /// converted to futures where appropriate.
 class BillingClient {
   BillingClient() {
-    _channel.setMethodCallHandler(_callHandler);
+    channel.setMethodCallHandler(_callHandler);
   }
-  static const MethodChannel _channel =
-      MethodChannel('plugins.flutter.io/in_app_purchase');
   // Occasionally methods in the native layer require a Dart callback to be
   // triggered in response to a Java callback. For example,
   // [startConnection] registers an [OnBillingServiceDisconnected] callback.
@@ -34,7 +33,7 @@ class BillingClient {
   /// [`BillingClient#isReady()`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.html#isReady())
   /// to get the ready status of the BillingClient instance.
   Future<bool> isReady() async =>
-      await _channel.invokeMethod('BillingClient#isReady()');
+      await channel.invokeMethod('BillingClient#isReady()');
 
   /// Calls
   /// [`BillingClient#startConnection(BillingClientStateListener)`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.html#startconnection)
@@ -53,7 +52,7 @@ class BillingClient {
       'OnBillingServiceDisconnected': onBillingServiceDisconnected,
     };
     _callbacks.add(callbacks);
-    return BillingResponse._(await _channel.invokeMethod(
+    return BillingResponse._(await channel.invokeMethod(
         "BillingClient#startConnection(BillingClientStateListener)",
         <String, dynamic>{'handle': _callbacks.length - 1}));
   }
@@ -66,7 +65,7 @@ class BillingClient {
   ///
   /// This triggers the destruction of the `BillingClient` instance in Java.
   Future<void> endConnection() async {
-    return _channel.invokeMethod("BillingClient#endConnection()", null);
+    return channel.invokeMethod("BillingClient#endConnection()", null);
   }
 
   Future<void> _callHandler(MethodCall call) async {
