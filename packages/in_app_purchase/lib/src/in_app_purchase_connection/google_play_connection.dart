@@ -39,6 +39,9 @@ class GooglePlayConnection
     }
   }
 
+  @visibleForTesting
+  static void reset() => _instance = null;
+
   static GooglePlayConnection _getOrCreateInstance() {
     if (_instance != null) {
       return _instance;
