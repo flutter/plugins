@@ -74,41 +74,29 @@
 
 - (NSDictionary *)toMap {
   NSMutableDictionary *map = [[NSMutableDictionary alloc] initWithDictionary:@{
-    @"localizedDescription" : self.localizedDescription ?: @"",
-    @"localizedTitle" : self.localizedTitle ?: @"",
-    @"productIdentifier" : self.productIdentifier,
-    @"downloadable" : @(self.downloadable)
+    @"localizedDescription" : self.localizedDescription ?: [NSNull null],
+    @"localizedTitle" : self.localizedTitle ?: [NSNull null],
+    @"productIdentifier" : self.productIdentifier ?: [NSNull null],
+    @"downloadable" : @(self.downloadable),
+    @"price" : self.price ?: [NSNull null],
+    @"downloadContentLengths" : self.downloadContentLengths ?: [NSNull null],
+    @"downloadContentVersion" : self.downloadContentVersion ?: [NSNull null]
+
   }];
-  if (self.price) {
-    [map setObject:self.price forKey:@"price"];
-  }
   if (@available(iOS 10.0, *)) {
-    if (self.priceLocale.currencyCode) {
-      // TODO: NSLocle is a complex object, want to see the actual need of getting this expanded to
-      // a map. Matching android to only get the currencyCode for now.
-      [map setObject:self.priceLocale.currencyCode forKey:@"currencyCode"];
-    }
-  }
-  if (self.downloadContentLengths) {
-    [map setObject:self.downloadContentLengths forKey:@"downloadContentLengths"];
-  }
-  if (self.downloadContentVersion) {
-    [map setObject:self.downloadContentVersion forKey:@"downloadContentVersion"];
+    // TODO: NSLocle is a complex object, want to see the actual need of getting this expanded to
+    // a map. Matching android to only get the currencyCode for now.
+    [map setObject:self.priceLocale.currencyCode ?: [NSNull null] forKey:@"currencyCode"];
   }
   if (@available(iOS 11.2, *)) {
-    if (self.subscriptionPeriod) {
-      [map setObject:[self.subscriptionPeriod toMap] ?: @{} forKey:@"subscriptionPeriod"];
-    }
+    [map setObject:[self.subscriptionPeriod toMap] ?: [NSNull null] forKey:@"subscriptionPeriod"];
   }
   if (@available(iOS 11.2, *)) {
-    if (self.introductoryPrice) {
-      [map setObject:[self.introductoryPrice toMap] ?: @{} forKey:@"introductoryPrice"];
-    }
+    [map setObject:[self.introductoryPrice toMap] ?: [NSNull null] forKey:@"introductoryPrice"];
   }
   if (@available(iOS 12.0, *)) {
-    if (self.subscriptionGroupIdentifier) {
-      [map setObject:self.subscriptionGroupIdentifier forKey:@"subscriptionGroupIdentifier"];
-    }
+    [map setObject:self.subscriptionGroupIdentifier ?: [NSNull null]
+            forKey:@"subscriptionGroupIdentifier"];
   }
   return map;
 }
@@ -127,18 +115,16 @@
 
 - (NSDictionary *)toMap {
   NSMutableDictionary *map = [[NSMutableDictionary alloc] initWithDictionary:@{
-    @"price" : self.price,
+    @"price" : self.price ?: [NSNull null],
     @"numberOfPeriods" : @(self.numberOfPeriods),
-    @"subscriptionPeriod" : [self.subscriptionPeriod toMap],
+    @"subscriptionPeriod" : [self.subscriptionPeriod toMap] ?: [NSNull null],
     @"paymentMode" : @(self.paymentMode)
   }];
 
   if (@available(iOS 10.0, *)) {
-    if (self.priceLocale.currencyCode) {
-      // TODO: NSLocle is a complex object, want to see the actual need of getting this expanded to
-      // a map. Matching android to only get the currencyCode for now.
-      [map setObject:self.priceLocale.currencyCode forKey:@"currencyCode"];
-    }
+    // TODO: NSLocle is a complex object, want to see the actual need of getting this expanded to
+    // a map. Matching android to only get the currencyCode for now.
+    [map setObject:self.priceLocale.currencyCode ?: [NSNull null] forKey:@"currencyCode"];
   }
   return map;
 }

@@ -130,6 +130,7 @@
     @"localizedDescription" : @"description",
     @"downloadable" : @YES,
     @"downloadContentLengths" : @[ @1, @2 ],
+    @"downloadContentVersion" : [NSNull null],
     @"subscriptionPeriod" : @{@"numberOfUnits" : @(0), @"unit" : @(0)},
     @"introductoryPrice" : @{
       @"price" : @(1.0),
