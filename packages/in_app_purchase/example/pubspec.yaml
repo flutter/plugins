@@ -8,7 +8,8 @@ dependencies:
   cupertino_icons: ^0.1.2
 
 dev_dependencies:
-  flutter_test:
+  test: 1.5.1
+  flutter_driver:
     sdk: flutter
   in_app_purchase:
     path: ../
@@ -16,3 +17,6 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
+environment:
+  sdk: ">=2.0.0-dev.28.0 <3.0.0"
+  flutter: ">=0.4.4 <2.0.0"
