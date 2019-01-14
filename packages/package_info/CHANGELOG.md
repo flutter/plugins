@@ -1,4 +1,4 @@
-## 0.3.3
+## 0.3.2+1
 
 * Fixed a crash on IOS when some of the package infos are not available.
 
