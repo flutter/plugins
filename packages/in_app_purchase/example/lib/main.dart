@@ -28,10 +28,16 @@ class _MyAppState extends State<MyApp> {
                 future: buildStorefront(),
                 builder: (BuildContext context,
                     AsyncSnapshot<List<Widget>> snapshot) {
-                  if (!snapshot.hasData || snapshot.error != null) {
+                  if (!snapshot.hasData) {
                     return ListView(children: <Widget>[
                       buildListCard(
                           ListTile(title: const Text('Trying to connect...')))
+                    ]);
+                  } else if (snapshot.error != null) {
+                    return ListView(children: <Widget>[
+                      buildListCard(ListTile(
+                          title: Text('Error connecting: ' +
+                              snapshot.error.toString())))
                     ]);
                   }
 
@@ -42,8 +48,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<List<Widget>> buildStorefront() async {
-    final InAppPurchaseConnection connection = InAppPurchaseConnection.instance;
-    final bool available = await connection.isAvailable();
+    final bool available = await InAppPurchaseConnection.instance.isAvailable();
     final Widget storeHeader = buildListCard(ListTile(
         leading: Icon(available ? Icons.check : Icons.block),
         title: Text('The store is ' +

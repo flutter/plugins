@@ -8,6 +8,7 @@ dependencies:
   flutter:
     sdk: flutter
   async: ^2.0.8
+  meta: ^1.1.6
 
 dev_dependencies:
   flutter_test:

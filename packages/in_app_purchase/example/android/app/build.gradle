@@ -27,8 +27,6 @@ project.ext {
     KEYSTORE_STORE_PASSWORD = keystoreProperties['storePassword']
     KEYSTORE_KEY_ALIAS = keystoreProperties['keyAlias']
     KEYSTORE_KEY_PASSWORD = keystoreProperties['keyPassword']
-    VERSION_CODE = 1
-    VERSION_NAME = "0.1"
 }
 
 if (project.APP_ID == "io.flutter.plugins.inapppurchaseexample.DEFAULT_DO_NOT_USE") {
@@ -46,6 +44,16 @@ if (!configured) {
 def flutterRoot = localProperties.getProperty('flutter.sdk')
 if (flutterRoot == null) {
     throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
+}
+
+def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
+if (flutterVersionCode == null) {
+    flutterVersionCode = '1'
+}
+
+def flutterVersionName = localProperties.getProperty('flutter.versionName')
+if (flutterVersionName == null) {
+    flutterVersionName = '1.0'
 }
 
 apply plugin: 'com.android.application'
@@ -71,8 +79,8 @@ android {
         applicationId project.APP_ID
         minSdkVersion 16
         targetSdkVersion 27
-        versionCode Integer.valueOf(VERSION_CODE)
-        versionName VERSION_NAME
+        versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
