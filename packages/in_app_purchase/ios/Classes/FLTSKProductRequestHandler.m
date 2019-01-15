@@ -27,6 +27,12 @@
   return self;
 }
 
+#pragma mark - methods for testing
+
+- (NSSet *)getParentSet {
+  return self.parentSet.copy;
+}
+
 #pragma mark SKProductRequestDelegate
 
 - (void)productsRequest:(SKProductsRequest *)request
@@ -64,6 +70,12 @@
     _delegateObjects = [NSMutableSet new];
   }
   return _delegateObjects;
+}
+
+#pragma mark - methods for testing
+
+- (NSSet *)getDelegateObjects {
+  return self.delegateObjects.copy;
 }
 
 @end

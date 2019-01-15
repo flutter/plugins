@@ -18,11 +18,19 @@ typedef void (^ProductRequestCompletion)(SKProductsResponse *_Nullable response)
 - (void)startWithProductIdentifiers:(NSSet<NSString *> *)identifers
                   completionHandler:(nullable ProductRequestCompletion)completion;
 
+#pragma mark - methods for testing
+
+- (nullable NSSet *)getDelegateObjects;
+
 @end
 
 @interface FLTSKProductRequestDelegateObject : NSObject
 
 - (instancetype)initWithCompletionHandler:(nullable ProductRequestCompletion)completion;
+
+#pragma mark - methods for testing
+
+- (nullable NSSet *)getParentSet;
 
 @end
 

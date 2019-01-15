@@ -84,9 +84,6 @@
 
 @implementation ProductRequestHandlerTest
 
-- (void)setUp {
-}
-
 - (void)testSKProductSubscriptionPeriodStubToMap {
   SKProductSubscriptionPeriodStub *period = [[SKProductSubscriptionPeriodStub alloc] init];
   NSDictionary *map = [period toMap];
@@ -161,6 +158,23 @@
     @"subscriptionGroupIdentifier" : @"com.group"
   };
   XCTAssertNotEqualObjects(map, notMatch);
+}
+
+- (void)testRequestDelegateSetup {
+  FLTSKProductRequestHandler *handler = [FLTSKProductRequestHandler new];
+  XCTestExpectation *expectation =
+      [self expectationWithDescription:@"expect delegate set to be empty after complition"];
+  [handler startWithProductIdentifiers:[NSSet new]
+                     completionHandler:^(SKProductsResponse *_Nullable response) {
+                       [expectation fulfill];
+                     }];
+  // One DelegateObject should be added to the set before the block execution is done.
+  XCTAssertEqual([handler getDelegateObjects].count, 1);
+  FLTSKProductRequestDelegateObject *object = [[handler getDelegateObjects] allObjects].firstObject;
+  XCTAssertEqual([object getParentSet].count, 1);
+  [self waitForExpectations:@[ expectation ] timeout:5];
+  // Delegate set to be empty after complition.
+  XCTAssertEqual([handler getDelegateObjects].count, 0);
 }
 
 @end
