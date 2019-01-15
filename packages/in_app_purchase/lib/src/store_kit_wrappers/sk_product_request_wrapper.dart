@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
-import 'package:in_app_purchase/src/in_app_purchase_connection/product.dart';
 import '../channel.dart';
 
 /// [SKProductRequestWrapper] wraps IOS SKProductRequest class to to retrive StoreKit product information in dart.
@@ -16,7 +15,7 @@ class SKProductRequestWrapper {
   /// [identifiers] is the product identifiers specified in Itunes Connect for the products that need to be retrived.
   ///
   /// Returns a future containing a list of [SKProduct] which then can be queried to get desired information.
-  static Future<List<Product>> getProductList(List<String> identifiers) async {
+  static Future<List<SKProductWrapper>> getSKProductList(List<String> identifiers) async {
     final List<Map<dynamic, dynamic>> productListSerilized =
         await _channel.invokeListMethod<Map<dynamic, dynamic>>(
       'getProductList',
@@ -25,11 +24,9 @@ class SKProductRequestWrapper {
       },
     );
 
-    final List<Product> productList = <Product>[];
+    final List<SKProductWrapper> productList = <SKProductWrapper>[];
     for (Map<dynamic, dynamic> productMap in productListSerilized) {
-      productList.add(Product(
-        skProduct: SKProductWrapper.fromMap(productMap.cast<String, dynamic>()),
-      ));
+      productList.add(SKProductWrapper.fromMap(productMap.cast<String, dynamic>(),));
     }
     return productList;
   }

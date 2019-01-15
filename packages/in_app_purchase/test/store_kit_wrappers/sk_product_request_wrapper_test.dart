@@ -129,8 +129,8 @@ void main() {
         name: 'getProductList',
         value: <Map<String, dynamic>>[productMap],
       );
-      final List<Product> productList =
-          await SKProductRequestWrapper.getProductList(
+      final List<SKProductWrapper> productList =
+          await SKProductRequestWrapper.getSKProductList(
         <String>['identifier1'],
           );
           print(productList);
@@ -139,11 +139,11 @@ void main() {
         isNotEmpty,
       );
       expect(
-        productList.first.skProduct.currencyCode,
+        productList.first.currencyCode,
         'USD',
       );
       expect(
-        productList.first.skProduct.currencyCode,
+        productList.first.currencyCode,
         isNot('USDA'),
       );
     });
