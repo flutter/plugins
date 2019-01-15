@@ -48,7 +48,8 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<List<Widget>> buildStorefront() async {
-    final bool available = await InAppPurchaseConnection.instance.isAvailable();
+    final InAppPurchaseConnection connection = InAppPurchaseConnection.instance;
+    final bool available = await connection.isAvailable();
     final Widget storeHeader = buildListCard(ListTile(
         leading: Icon(available ? Icons.check : Icons.block),
         title: Text('The store is ' +

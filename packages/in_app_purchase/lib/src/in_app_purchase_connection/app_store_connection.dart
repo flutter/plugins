@@ -2,6 +2,7 @@ import 'dart:async';
 
 import '../../store_kit_wrappers.dart';
 import 'in_app_purchase_connection.dart';
+import 'product.dart';
 
 /// An [InAppPurchaseConnection] that wraps StoreKit.
 ///
@@ -22,4 +23,8 @@ class AppStoreConnection implements InAppPurchaseConnection {
     _instance = AppStoreConnection();
     return _instance;
   }
+
+  @override
+  Future<List<Product>> getProductList(List<String> identifiers) =>
+      SKProductRequestWrapper.getProductList(identifiers);
 }
