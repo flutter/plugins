@@ -28,7 +28,7 @@
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
   if ([@"Crashlytics#onError" isEqualToString:call.method]) {
     NSError *error = [NSError errorWithDomain:call.arguments[@"exception"]
-                        code:call.arguments[@"code"]
+                        code:(int)call.arguments[@"code"]
                     userInfo: @{
                             @"exception": call.arguments[@"exception"],
                             @"stackTrace": call.arguments[@"stackTrace"]
