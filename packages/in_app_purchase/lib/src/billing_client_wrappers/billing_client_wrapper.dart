@@ -19,7 +19,7 @@ class BillingClient {
   BillingClient() {
     _channel.setMethodCallHandler(_callHandler);
   }
-  MethodChannel _channel = Channel.instance;
+  final MethodChannel _channel = channel;
 
   // Occasionally methods in the native layer require a Dart callback to be
   // triggered in response to a Java callback. For example,
