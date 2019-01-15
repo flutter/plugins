@@ -6,7 +6,6 @@ import 'package:test/test.dart';
 import 'package:in_app_purchase/src/store_kit_wrappers/sk_product_request_wrapper.dart';
 import 'package:in_app_purchase/src/channel.dart';
 import 'package:flutter/services.dart';
-import '../../lib/src/in_app_purchase_connection/product.dart';
 import '../fake_platform_views_controller.dart';
 
 void main() {
