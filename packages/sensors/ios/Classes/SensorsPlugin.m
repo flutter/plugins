@@ -120,10 +120,10 @@ float _parseSampleRateArgument(id arguments) {
   NSString* argument = (NSString*)arguments;
 
   if ([arguments isEqualToString:@"medium"]) {
-      return (float)1 / 50;
+    return (float)1 / 50;
   } else if ([arguments isEqualToString:@"high"]) {
-      return (float)1 / 100;
+    return (float)1 / 100;
   } else {
-      return (float)1 / 15;
+    return (float)1 / 15;
   }
 }
