@@ -9,7 +9,6 @@ import 'package:flutter/services.dart';
 import '../../lib/src/in_app_purchase_connection/product.dart';
 import '../fake_platform_views_controller.dart';
 
-
 void main() {
   final FakePlatformViewsController fakePlatformViewsController =
       FakePlatformViewsController();
@@ -141,7 +140,9 @@ void main() {
   group('getProductList api', () {
     test('platform call should get result', () async {
       fakePlatformViewsController
-          .addCall(name: 'getProductList', value: <dynamic>[<dynamic, dynamic>{'result':'result'}]);
+          .addCall(name: 'getProductList', value: <dynamic>[
+        <dynamic, dynamic>{'result': 'result'}
+      ]);
       expect(
           await SKProductRequestWrapper.getProductList(<String>['identifier1']),
           isNotEmpty);
