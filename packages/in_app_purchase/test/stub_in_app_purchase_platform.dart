@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
 
-class FakeInAppPurchasePlatform {
+class StubInAppPurchasePlatform {
   Map<String, dynamic> _expectedCalls = <String, dynamic>{};
   void addResponse({String name, dynamic value}) =>
       _expectedCalls[name] = value;
