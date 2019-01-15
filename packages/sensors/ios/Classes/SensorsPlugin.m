@@ -117,13 +117,13 @@ static void sendTriplet(Float64 x, Float64 y, Float64 z, FlutterEventSink sink) 
 @end
 
 float _parseSampleRateArgument(id arguments) {
-  NSString *argument = (NSString *) arguments;
+  NSString* argument = (NSString*)arguments;
 
   if ([arguments isEqualToString:@"medium"]) {
-      return (float) 1/50;
+      return (float)1 / 50;
   } else if ([arguments isEqualToString:@"high"]) {
-      return (float) 1/100;
+      return (float)1 / 100;
   } else {
-      return (float) 1/15;
+      return (float)1 / 15;
   }
 }

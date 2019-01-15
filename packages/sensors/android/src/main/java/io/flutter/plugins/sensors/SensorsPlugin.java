@@ -75,7 +75,7 @@ public class SensorsPlugin implements EventChannel.StreamHandler {
   }
 
   private int parseSampleRateArgument(Object arguments) {
-    switch(arguments.toString()) {
+    switch (arguments.toString()) {
       case "medium":
         return sensorManager.SENSOR_DELAY_GAME;
       case "high":
