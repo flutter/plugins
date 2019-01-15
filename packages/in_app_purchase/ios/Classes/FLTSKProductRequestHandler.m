@@ -1,10 +1,3 @@
-//
-//  FLTSKProductRequestWrapper.m
-//  in_app_purchase
-//
-//  Created by Chris Yang on 1/10/19.
-//
-
 #import "FLTSKProductRequestHandler.h"
 #import <StoreKit/StoreKit.h>
 

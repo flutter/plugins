@@ -6,11 +6,36 @@ import 'package:test/test.dart';
 import 'package:in_app_purchase/src/store_kit_wrappers/sk_product_request_wrapper.dart';
 import 'package:in_app_purchase/src/channel.dart';
 import 'package:flutter/services.dart';
+import 'package:in_app_purchase/src/in_app_purchase_connection/product.dart';
 import '../fake_platform_views_controller.dart';
 
 void main() {
   final FakePlatformViewsController fakePlatformViewsController =
       FakePlatformViewsController();
+
+  final Map<String, dynamic> subJson = <String, dynamic>{
+    'numberOfUnits': 0,
+    'unit': 1
+  };
+  final Map<String, dynamic> discountJson = <String, dynamic>{
+    'price': 1.0,
+    'numberOfPeriods': 1,
+    'paymentMode': 1,
+    'subscriptionPeriod': subJson,
+  };
+  final Map<String, dynamic> productJson = <String, dynamic>{
+    'productIdentifier': 'id',
+    'localizedTitle': 'title',
+    'localizedDescription': 'description',
+    'currencyCode': 'USD',
+    'downloadContentVersion': 'version',
+    'subscriptionGroupIdentifier': 'com.group',
+    'price': 1.0,
+    'downloadable': true,
+    'downloadContentLengths': <int>[1, 2],
+    'subscriptionPeriod': subJson,
+    'introductoryPrice': discountJson,
+  };
 
   setUpAll(() {
     Channel.override = SystemChannels.platform_views;
@@ -22,12 +47,8 @@ void main() {
     test(
         'SKProductSubscriptionPeriodWrapper should have property values consistent with json',
         () {
-      final Map<dynamic, dynamic> json = <dynamic, dynamic>{
-        'numberOfUnits': 0,
-        'unit': 1
-      };
       final SKProductSubscriptionPeriodWrapper wrapper =
-          SKProductSubscriptionPeriodWrapper.fromJson(json);
+          SKProductSubscriptionPeriodWrapper.fromJson(subJson);
       expect(wrapper.numberOfUnits, 0);
       expect(wrapper.unit, 1);
     });
@@ -36,7 +57,7 @@ void main() {
         'SKProductSubscriptionPeriodWrapper should have properties to be null if json is empty',
         () {
       final SKProductSubscriptionPeriodWrapper wrapper =
-          SKProductSubscriptionPeriodWrapper.fromJson(<dynamic, dynamic>{});
+          SKProductSubscriptionPeriodWrapper.fromJson(<String, dynamic>{});
       expect(wrapper.numberOfUnits, null);
       expect(wrapper.unit, null);
     });
@@ -44,18 +65,8 @@ void main() {
     test(
         'SKProductDiscountWrapper should have property values consistent with json',
         () {
-      final Map<dynamic, dynamic> subJson = <dynamic, dynamic>{
-        'numberOfUnits': 0,
-        'unit': 1
-      };
-      final Map<dynamic, dynamic> json = <dynamic, dynamic>{
-        'price': 1.0,
-        'numberOfPeriods': 1,
-        'paymentMode': 1,
-        'subscriptionPeriod': subJson,
-      };
       final SKProductDiscountWrapper wrapper =
-          SKProductDiscountWrapper.fromJson(json);
+          SKProductDiscountWrapper.fromJson(discountJson);
       expect(wrapper.price, 1.0);
       expect(wrapper.numberOfPeriods, 1);
       expect(wrapper.paymentMode, 1);
@@ -67,7 +78,7 @@ void main() {
         'SKProductDiscountWrapper should have properties to be null if json is empty',
         () {
       final SKProductDiscountWrapper wrapper =
-          SKProductDiscountWrapper.fromJson(<dynamic, dynamic>{});
+          SKProductDiscountWrapper.fromJson(<String, dynamic>{});
       expect(wrapper.price, null);
       expect(wrapper.numberOfPeriods, null);
       expect(wrapper.paymentMode, null);
@@ -76,31 +87,7 @@ void main() {
 
     test('SKProductWrapper should have property values consistent with json',
         () {
-      final Map<dynamic, dynamic> subJson = <dynamic, dynamic>{
-        'numberOfUnits': 0,
-        'unit': 1
-      };
-      final Map<dynamic, dynamic> discountJson = <dynamic, dynamic>{
-        'price': 1.0,
-        'numberOfPeriods': 1,
-        'paymentMode': 1,
-        'subscriptionPeriod': subJson,
-      };
-      final Map<dynamic, dynamic> json = <dynamic, dynamic>{
-        'productIdentifier': 'id',
-        'localizedTitle': 'title',
-        'localizedDescription': 'description',
-        'currencyCode': 'USD',
-        'downloadContentVersion': 'version',
-        'subscriptionGroupIdentifier': 'com.group',
-        'price': 1.0,
-        'downloadable': true,
-        'downloadContentLengths': <int>[1, 2],
-        'subscriptionPeriod': subJson,
-        'introductoryPrice': discountJson,
-      };
-
-      final SKProductWrapper wrapper = SKProductWrapper.fromJson(json);
+      final SKProductWrapper wrapper = SKProductWrapper.fromJson(productJson);
       expect(wrapper.productIdentifier, 'id');
       expect(wrapper.localizedTitle, 'title');
       expect(wrapper.localizedDescription, 'description');
@@ -123,7 +110,7 @@ void main() {
         'SKProductDiscountWrapper should have properties to be null if json is empty',
         () {
       final SKProductWrapper wrapper =
-          SKProductWrapper.fromJson(<dynamic, dynamic>{});
+          SKProductWrapper.fromJson(<String, dynamic>{});
       expect(wrapper.productIdentifier, null);
       expect(wrapper.localizedTitle, null);
       expect(wrapper.localizedDescription, null);
@@ -138,13 +125,27 @@ void main() {
 
   group('getProductList api', () {
     test('platform call should get result', () async {
-      fakePlatformViewsController
-          .addCall(name: 'getProductList', value: <dynamic>[
-        <dynamic, dynamic>{'result': 'result'}
-      ]);
+      fakePlatformViewsController.addCall(
+        name: 'getProductList',
+        value: <Map<String, dynamic>>[productJson],
+      );
+      final List<Product> productList =
+          await SKProductRequestWrapper.getProductList(
+        <String>['identifier1'],
+          );
+          print(productList);
       expect(
-          await SKProductRequestWrapper.getProductList(<String>['identifier1']),
-          isNotEmpty);
+        productList,
+        isNotEmpty,
+      );
+      expect(
+        productList.first.skProduct.currencyCode,
+        'USD',
+      );
+      expect(
+        productList.first.skProduct.currencyCode,
+        isNot('USDA'),
+      );
     });
   });
 }

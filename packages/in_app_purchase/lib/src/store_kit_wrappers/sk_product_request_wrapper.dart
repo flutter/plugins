@@ -17,20 +17,21 @@ class SKProductRequestWrapper {
   ///
   /// Returns a future containing a list of [SKProduct] which then can be queried to get desired information.
   static Future<List<Product>> getProductList(List<String> identifiers) async {
-    return _channel.invokeListMethod<Map<dynamic, dynamic>>(
+    final List<Map<dynamic, dynamic>> productListSerilized =
+        await _channel.invokeListMethod<Map<dynamic, dynamic>>(
       'getProductList',
       <String, Object>{
         'identifiers': identifiers,
       },
-    ).then<List<Product>>((List<Map<dynamic, dynamic>> productListJson) {
-      final List<Product> productList = <Product>[];
-      for (Map<dynamic, dynamic> productJson in productListJson) {
-        productList.add(Product(
-          skProduct: SKProductWrapper.fromJson(productJson),
-        ));
-      }
-      return productList;
-    });
+    );
+
+    final List<Product> productList = <Product>[];
+    for (Map<dynamic, dynamic> productJson in productListSerilized) {
+      productList.add(Product(
+        skProduct: SKProductWrapper.fromJson(productJson.cast<String, dynamic>()),
+      ));
+    }
+    return productList;
   }
 }
 
@@ -39,7 +40,7 @@ class SKProductSubscriptionPeriodWrapper {
   SKProductSubscriptionPeriodWrapper(
       {@required this.numberOfUnits, @required this.unit});
 
-  SKProductSubscriptionPeriodWrapper.fromJson(Map<dynamic, dynamic> json)
+  SKProductSubscriptionPeriodWrapper.fromJson(Map<String, dynamic> json)
       : numberOfUnits = json['numberOfUnits'],
         unit = json['unit'];
 
@@ -54,13 +55,13 @@ class SKProductDiscountWrapper {
       @required this.paymentMode,
       @required this.subscriptionPeriod});
 
-  SKProductDiscountWrapper.fromJson(Map<dynamic, dynamic> json)
+  SKProductDiscountWrapper.fromJson(Map<String, dynamic> json)
       : price = json['price'],
         numberOfPeriods = json['numberOfPeriods'],
         paymentMode = json['paymentMode'],
         subscriptionPeriod = json['subscriptionPeriod'] != null
             ? SKProductSubscriptionPeriodWrapper.fromJson(
-                json['subscriptionPeriod'])
+                json['subscriptionPeriod'].cast<String, dynamic>())
             : null;
 
   final double price;
@@ -84,7 +85,7 @@ class SKProductWrapper {
     @required this.introductoryPrice,
   });
 
-  SKProductWrapper.fromJson(Map<dynamic, dynamic> json)
+  SKProductWrapper.fromJson(Map<String, dynamic> json)
       : productIdentifier = json['productIdentifier'],
         localizedTitle = json['localizedTitle'],
         localizedDescription = json['localizedDescription'],
@@ -93,13 +94,14 @@ class SKProductWrapper {
         subscriptionGroupIdentifier = json['subscriptionGroupIdentifier'],
         price = json['price'],
         downloadable = json['downloadable'],
-        downloadContentLengths = json['downloadContentLengths'],
+        downloadContentLengths =
+            List.castFrom<dynamic, int>(json['downloadContentLengths']),
         subscriptionPeriod = json['subscriptionPeriod'] != null
             ? SKProductSubscriptionPeriodWrapper.fromJson(
-                json['subscriptionPeriod'])
+                json['subscriptionPeriod'].cast<String, dynamic>())
             : null,
         introductoryPrice = (json['introductoryPrice'] != null)
-            ? SKProductDiscountWrapper.fromJson(json['introductoryPrice'])
+            ? SKProductDiscountWrapper.fromJson(json['introductoryPrice'].cast<String, dynamic>())
             : null;
 
   final String productIdentifier,
