@@ -70,6 +70,7 @@ class SnakeState extends State<Snake> {
   @override
   void initState() {
     super.initState();
+    setSensorsSampleRate(SampleRate.medium);
     accelerometerEvents.listen((AccelerometerEvent event) {
       setState(() {
         acceleration = event;
