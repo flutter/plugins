@@ -3,14 +3,15 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/src/in_app_purchase_connection/product.dart';
+import '../channel.dart';
 
-const MethodChannel _channel =
-    MethodChannel('plugins.flutter.io/in_app_purchase');
 
 /// [SKProductRequestWrapper] wraps IOS SKProductRequest class to to retrive StoreKit product information in dart.
 ///
 /// https://developer.apple.com/documentation/storekit/skproductsrequest?language=objc
 class SKProductRequestWrapper {
+
+  static MethodChannel _channel = Channel.instance;
   /// Get product list.
   ///
   /// [identifiers] is the product identifiers specified in Itunes Connect for the products that need to be retrived.
