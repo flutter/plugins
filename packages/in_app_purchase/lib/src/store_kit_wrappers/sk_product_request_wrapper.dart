@@ -26,9 +26,9 @@ class SKProductRequestWrapper {
     );
 
     final List<Product> productList = <Product>[];
-    for (Map<dynamic, dynamic> productJson in productListSerilized) {
+    for (Map<dynamic, dynamic> productMap in productListSerilized) {
       productList.add(Product(
-        skProduct: SKProductWrapper.fromJson(productJson.cast<String, dynamic>()),
+        skProduct: SKProductWrapper.fromMap(productMap.cast<String, dynamic>()),
       ));
     }
     return productList;
@@ -40,9 +40,9 @@ class SKProductSubscriptionPeriodWrapper {
   SKProductSubscriptionPeriodWrapper(
       {@required this.numberOfUnits, @required this.unit});
 
-  SKProductSubscriptionPeriodWrapper.fromJson(Map<String, dynamic> json)
-      : numberOfUnits = json['numberOfUnits'],
-        unit = json['unit'];
+  SKProductSubscriptionPeriodWrapper.fromMap(Map<String, dynamic> map)
+      : numberOfUnits = map['numberOfUnits'],
+        unit = map['unit'];
 
   final int numberOfUnits, unit;
 }
@@ -55,13 +55,13 @@ class SKProductDiscountWrapper {
       @required this.paymentMode,
       @required this.subscriptionPeriod});
 
-  SKProductDiscountWrapper.fromJson(Map<String, dynamic> json)
-      : price = json['price'],
-        numberOfPeriods = json['numberOfPeriods'],
-        paymentMode = json['paymentMode'],
-        subscriptionPeriod = json['subscriptionPeriod'] != null
-            ? SKProductSubscriptionPeriodWrapper.fromJson(
-                json['subscriptionPeriod'].cast<String, dynamic>())
+  SKProductDiscountWrapper.fromMap(Map<String, dynamic> map)
+      : price = map['price'],
+        numberOfPeriods = map['numberOfPeriods'],
+        paymentMode = map['paymentMode'],
+        subscriptionPeriod = map['subscriptionPeriod'] != null
+            ? SKProductSubscriptionPeriodWrapper.fromMap(
+                map['subscriptionPeriod'].cast<String, dynamic>())
             : null;
 
   final double price;
@@ -85,23 +85,23 @@ class SKProductWrapper {
     @required this.introductoryPrice,
   });
 
-  SKProductWrapper.fromJson(Map<String, dynamic> json)
-      : productIdentifier = json['productIdentifier'],
-        localizedTitle = json['localizedTitle'],
-        localizedDescription = json['localizedDescription'],
-        currencyCode = json['currencyCode'],
-        downloadContentVersion = json['downloadContentVersion'],
-        subscriptionGroupIdentifier = json['subscriptionGroupIdentifier'],
-        price = json['price'],
-        downloadable = json['downloadable'],
+  SKProductWrapper.fromMap(Map<String, dynamic> map)
+      : productIdentifier = map['productIdentifier'],
+        localizedTitle = map['localizedTitle'],
+        localizedDescription = map['localizedDescription'],
+        currencyCode = map['currencyCode'],
+        downloadContentVersion = map['downloadContentVersion'],
+        subscriptionGroupIdentifier = map['subscriptionGroupIdentifier'],
+        price = map['price'],
+        downloadable = map['downloadable'],
         downloadContentLengths =
-            List.castFrom<dynamic, int>(json['downloadContentLengths']),
-        subscriptionPeriod = json['subscriptionPeriod'] != null
-            ? SKProductSubscriptionPeriodWrapper.fromJson(
-                json['subscriptionPeriod'].cast<String, dynamic>())
+            List.castFrom<dynamic, int>(map['downloadContentLengths']),
+        subscriptionPeriod = map['subscriptionPeriod'] != null
+            ? SKProductSubscriptionPeriodWrapper.fromMap(
+                map['subscriptionPeriod'].cast<String, dynamic>())
             : null,
-        introductoryPrice = (json['introductoryPrice'] != null)
-            ? SKProductDiscountWrapper.fromJson(json['introductoryPrice'].cast<String, dynamic>())
+        introductoryPrice = (map['introductoryPrice'] != null)
+            ? SKProductDiscountWrapper.fromMap(map['introductoryPrice'].cast<String, dynamic>())
             : null;
 
   final String productIdentifier,

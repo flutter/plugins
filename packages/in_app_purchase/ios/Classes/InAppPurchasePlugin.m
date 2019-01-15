@@ -45,11 +45,11 @@
   [self.productRequestHandler
       startWithProductIdentifiers:[NSSet setWithArray:productsIdentifiers]
                 completionHandler:^(SKProductsResponse *_Nullable response) {
-                  NSMutableArray *productsDetailsJSON = [NSMutableArray new];
+                  NSMutableArray *productDetailsSerialized = [NSMutableArray new];
                   for (SKProduct *product in response.products) {
-                    [productsDetailsJSON addObject:[product toMap]];
+                    [productDetailsSerialized addObject:[product toMap]];
                   }
-                  result(productsDetailsJSON);
+                  result(productDetailsSerialized);
                 }];
 }
 

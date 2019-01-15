@@ -13,17 +13,17 @@ void main() {
   final FakePlatformViewsController fakePlatformViewsController =
       FakePlatformViewsController();
 
-  final Map<String, dynamic> subJson = <String, dynamic>{
+  final Map<String, dynamic> subMap = <String, dynamic>{
     'numberOfUnits': 0,
     'unit': 1
   };
-  final Map<String, dynamic> discountJson = <String, dynamic>{
+  final Map<String, dynamic> discountMap = <String, dynamic>{
     'price': 1.0,
     'numberOfPeriods': 1,
     'paymentMode': 1,
-    'subscriptionPeriod': subJson,
+    'subscriptionPeriod': subMap,
   };
-  final Map<String, dynamic> productJson = <String, dynamic>{
+  final Map<String, dynamic> productMap = <String, dynamic>{
     'productIdentifier': 'id',
     'localizedTitle': 'title',
     'localizedDescription': 'description',
@@ -33,8 +33,8 @@ void main() {
     'price': 1.0,
     'downloadable': true,
     'downloadContentLengths': <int>[1, 2],
-    'subscriptionPeriod': subJson,
-    'introductoryPrice': discountJson,
+    'subscriptionPeriod': subMap,
+    'introductoryPrice': discountMap,
   };
 
   setUpAll(() {
@@ -45,28 +45,28 @@ void main() {
 
   group('canMakePayments', () {
     test(
-        'SKProductSubscriptionPeriodWrapper should have property values consistent with json',
+        'SKProductSubscriptionPeriodWrapper should have property values consistent with map',
         () {
       final SKProductSubscriptionPeriodWrapper wrapper =
-          SKProductSubscriptionPeriodWrapper.fromJson(subJson);
+          SKProductSubscriptionPeriodWrapper.fromMap(subMap);
       expect(wrapper.numberOfUnits, 0);
       expect(wrapper.unit, 1);
     });
 
     test(
-        'SKProductSubscriptionPeriodWrapper should have properties to be null if json is empty',
+        'SKProductSubscriptionPeriodWrapper should have properties to be null if map is empty',
         () {
       final SKProductSubscriptionPeriodWrapper wrapper =
-          SKProductSubscriptionPeriodWrapper.fromJson(<String, dynamic>{});
+          SKProductSubscriptionPeriodWrapper.fromMap(<String, dynamic>{});
       expect(wrapper.numberOfUnits, null);
       expect(wrapper.unit, null);
     });
 
     test(
-        'SKProductDiscountWrapper should have property values consistent with json',
+        'SKProductDiscountWrapper should have property values consistent with map',
         () {
       final SKProductDiscountWrapper wrapper =
-          SKProductDiscountWrapper.fromJson(discountJson);
+          SKProductDiscountWrapper.fromMap(discountMap);
       expect(wrapper.price, 1.0);
       expect(wrapper.numberOfPeriods, 1);
       expect(wrapper.paymentMode, 1);
@@ -75,19 +75,19 @@ void main() {
     });
 
     test(
-        'SKProductDiscountWrapper should have properties to be null if json is empty',
+        'SKProductDiscountWrapper should have properties to be null if map is empty',
         () {
       final SKProductDiscountWrapper wrapper =
-          SKProductDiscountWrapper.fromJson(<String, dynamic>{});
+          SKProductDiscountWrapper.fromMap(<String, dynamic>{});
       expect(wrapper.price, null);
       expect(wrapper.numberOfPeriods, null);
       expect(wrapper.paymentMode, null);
       expect(wrapper.subscriptionPeriod, null);
     });
 
-    test('SKProductWrapper should have property values consistent with json',
+    test('SKProductWrapper should have property values consistent with map',
         () {
-      final SKProductWrapper wrapper = SKProductWrapper.fromJson(productJson);
+      final SKProductWrapper wrapper = SKProductWrapper.fromMap(productMap);
       expect(wrapper.productIdentifier, 'id');
       expect(wrapper.localizedTitle, 'title');
       expect(wrapper.localizedDescription, 'description');
@@ -107,10 +107,10 @@ void main() {
     });
 
     test(
-        'SKProductDiscountWrapper should have properties to be null if json is empty',
+        'SKProductDiscountWrapper should have properties to be null if map is empty',
         () {
       final SKProductWrapper wrapper =
-          SKProductWrapper.fromJson(<String, dynamic>{});
+          SKProductWrapper.fromMap(<String, dynamic>{});
       expect(wrapper.productIdentifier, null);
       expect(wrapper.localizedTitle, null);
       expect(wrapper.localizedDescription, null);
@@ -127,7 +127,7 @@ void main() {
     test('platform call should get result', () async {
       fakePlatformViewsController.addCall(
         name: 'getProductList',
-        value: <Map<String, dynamic>>[productJson],
+        value: <Map<String, dynamic>>[productMap],
       );
       final List<Product> productList =
           await SKProductRequestWrapper.getProductList(

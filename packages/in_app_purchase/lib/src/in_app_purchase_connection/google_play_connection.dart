@@ -32,7 +32,6 @@ class GooglePlayConnection
   void didChangeAppLifecycleState(AppLifecycleState state) {
     switch (state) {
       case AppLifecycleState.paused:
-      case AppLifecycleState.suspending:
         _disconnect();
         break;
       case AppLifecycleState.resumed:
@@ -43,7 +42,7 @@ class GooglePlayConnection
   }
 
   @override
-  Future<List<Product>> getProductList(List<String> identifiers) => null;
+  Future<List<Product>> getProductList(List<String> identifiers) => throw UnimplementedError();
   @visibleForTesting
   static void reset() => _instance = null;
 
