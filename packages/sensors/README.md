@@ -20,4 +20,8 @@ accelerometerEvents.listen((AccelerometerEvent event) {
 gyroscopeEvents.listen((GyroscopeEvent event) {
  // Do something with the event.
 });
+
+// Optionally, specify the sample rate before listening.
+// .low equals 15 events per second, .medium 50, and .high 100 (iOS) and 120 (Android).
+setSensorsSampleRate(SampleRate.medium);
 ```

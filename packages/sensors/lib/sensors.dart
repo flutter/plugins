@@ -1,5 +1,10 @@
+library sensors;
+
 import 'dart:async';
 import 'package:flutter/services.dart';
+
+part 'models/sample_rate_enum.dart';
+part 'utils/codec.dart';
 
 const EventChannel _accelerometerEventChannel =
     EventChannel('plugins.flutter.io/sensors/accelerometer');
@@ -74,11 +79,17 @@ Stream<AccelerometerEvent> _accelerometerEvents;
 Stream<GyroscopeEvent> _gyroscopeEvents;
 Stream<UserAccelerometerEvent> _userAccelerometerEvents;
 
+SampleRate _sampleRate;
+
+void setSensorsSampleRate(SampleRate sampleRate) {
+  _sampleRate = sampleRate;
+}
+
 /// A broadcast stream of events from the device accelerometer.
 Stream<AccelerometerEvent> get accelerometerEvents {
   if (_accelerometerEvents == null) {
     _accelerometerEvents = _accelerometerEventChannel
-        .receiveBroadcastStream()
+        .receiveBroadcastStream(Codec.encodeSensorsSampleRate(_sampleRate))
         .map(
             (dynamic event) => _listToAccelerometerEvent(event.cast<double>()));
   }
@@ -89,7 +100,7 @@ Stream<AccelerometerEvent> get accelerometerEvents {
 Stream<GyroscopeEvent> get gyroscopeEvents {
   if (_gyroscopeEvents == null) {
     _gyroscopeEvents = _gyroscopeEventChannel
-        .receiveBroadcastStream()
+        .receiveBroadcastStream(Codec.encodeSensorsSampleRate(_sampleRate))
         .map((dynamic event) => _listToGyroscopeEvent(event.cast<double>()));
   }
   return _gyroscopeEvents;
@@ -99,7 +110,7 @@ Stream<GyroscopeEvent> get gyroscopeEvents {
 Stream<UserAccelerometerEvent> get userAccelerometerEvents {
   if (_userAccelerometerEvents == null) {
     _userAccelerometerEvents = _userAccelerometerEventChannel
-        .receiveBroadcastStream()
+        .receiveBroadcastStream(Codec.encodeSensorsSampleRate(_sampleRate))
         .map((dynamic event) =>
             _listToUserAccelerometerEvent(event.cast<double>()));
   }
