@@ -1,7 +1,6 @@
 // Copyright 2019, the Flutter project authors.  Please see the AUTHORS file
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
-
 part of firebase_crashlytics;
 
 /// The entry point for accessing Crashlytics.
@@ -26,14 +25,18 @@ class Crashlytics {
   Future<void> onError(FlutterErrorDetails details) async {
     print('Error caught by Crashlytics plugin:');
     if (isInDebugMode && !reportInDevMode) {
-      print(details.stack.toString());
+      print(Trace.format(details.stack).trimRight().split('\n'));
     } else {
-      final List<String> stackTraceLines = details.stack.toString()
+      final List<String> stackTraceLines = Trace.format(details.stack)
           .trimRight().split('\n');
-      await channel.invokeMethod('Crashlytics#onError', <String, dynamic>{
+      final dynamic result = await channel.invokeMethod('Crashlytics#onError',
+          <String, dynamic>{
         'exception': details.exceptionAsString(),
-        'stackTrace': stackTraceLines
+        'stackTrace': details.stack.toString(),
+        'stackTraceLines': stackTraceLines,
+        'code': stackTraceLines[0].hashCode
       });
+      print(result);
     }
   }
 
