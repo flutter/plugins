@@ -7,9 +7,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@protocol FIAPProductRequestHandlerDelegate;
+
 typedef void (^ProductRequestCompletion)(SKProductsResponse *_Nullable response);
 
 @interface FIAPProductRequestHandler : NSObject
+
+@property(nullable, weak, nonatomic) NSObject<FIAPProductRequestHandlerDelegate> *delegate;
 
 - (instancetype)initWithRequestRequest:(SKProductsRequest *)request;
 - (void)startWithCompletionHandler:(ProductRequestCompletion)completion;
@@ -35,5 +39,11 @@ NS_ASSUME_NONNULL_END
 @interface SKProductDiscount (Coder)
 
 - (nullable NSDictionary *)toMap;
+
+@end
+
+@protocol FIAPProductRequestHandlerDelegate <NSObject>
+
+- (void)productRequestHandlerDidFinish:(nonnull FIAPProductRequestHandler *)handler;
 
 @end

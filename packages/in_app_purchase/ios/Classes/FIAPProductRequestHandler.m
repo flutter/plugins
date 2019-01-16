@@ -36,6 +36,7 @@
   if (self.completion) {
     self.completion(response);
   }
+  [self.delegate productRequestHandlerDidFinish:self];
 }
 
 @end

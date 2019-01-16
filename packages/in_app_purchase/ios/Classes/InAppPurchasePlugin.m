@@ -6,7 +6,7 @@
 #import <StoreKit/StoreKit.h>
 #import "FIAPProductRequestHandler.h"
 
-@interface InAppPurchasePlugin ()
+@interface InAppPurchasePlugin () <FIAPProductRequestHandlerDelegate>
 
 @property(strong, nonatomic) NSMutableSet<FIAPProductRequestHandler *> *productRequestHandlerSet;
 
@@ -47,22 +47,29 @@
   NSArray *productsIdentifiers = call.arguments[@"identifiers"];
   SKProductsRequest *request =
       [self getRequestWithIdentifiers:[NSSet setWithArray:productsIdentifiers]];
-  __weak typeof(self) weakSelf = self;
   FIAPProductRequestHandler *handler =
       [[FIAPProductRequestHandler alloc] initWithRequestRequest:request];
+  handler.delegate = self;
   NSMutableArray *productDetailsSerialized = [NSMutableArray new];
+  [self.productRequestHandlerSet addObject:handler];
   [handler startWithCompletionHandler:^(SKProductsResponse *_Nullable response) {
     for (SKProduct *product in response.products) {
       [productDetailsSerialized addObject:[product toMap]];
     }
     result(productDetailsSerialized);
-    [weakSelf.productRequestHandlerSet removeObject:handler];
   }];
-  [self.productRequestHandlerSet addObject:handler];
 }
 
 - (SKProductsRequest *)getRequestWithIdentifiers:(NSSet *)identifiers {
   return [[SKProductsRequest alloc] initWithProductIdentifiers:identifiers];
+}
+
+#pragma mark - delegates
+
+- (void)productRequestHandlerDidFinish:(FIAPProductRequestHandler *)handler {
+  if ([self.productRequestHandlerSet containsObject:handler]) {
+    [self.productRequestHandlerSet removeObject:handler];
+  }
 }
 
 @end
