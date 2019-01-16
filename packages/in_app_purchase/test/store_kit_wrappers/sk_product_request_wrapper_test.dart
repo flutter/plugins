@@ -5,13 +5,10 @@
 import 'package:test/test.dart';
 import 'package:in_app_purchase/src/store_kit_wrappers/sk_product_request_wrapper.dart';
 import 'package:in_app_purchase/src/channel.dart';
-import 'package:flutter/services.dart';
-import 'package:in_app_purchase/src/in_app_purchase_connection/product.dart';
-import '../fake_platform_views_controller.dart';
+import '../stub_in_app_purchase_platform.dart';
 
 void main() {
-  final FakePlatformViewsController fakePlatformViewsController =
-      FakePlatformViewsController();
+  final StubInAppPurchasePlatform stubPlatform = StubInAppPurchasePlatform();
 
   final Map<String, dynamic> subMap = <String, dynamic>{
     'numberOfUnits': 0,
@@ -37,11 +34,8 @@ void main() {
     'introductoryPrice': discountMap,
   };
 
-  setUpAll(() {
-    Channel.override = SystemChannels.platform_views;
-    SystemChannels.platform_views.setMockMethodCallHandler(
-        fakePlatformViewsController.fakePlatformViewsMethodHandler);
-  });
+  setUpAll(() =>
+      channel.setMockMethodCallHandler(stubPlatform.fakeMethodCallHandler));
 
   group('canMakePayments', () {
     test(
@@ -49,8 +43,8 @@ void main() {
         () {
       final SKProductSubscriptionPeriodWrapper wrapper =
           SKProductSubscriptionPeriodWrapper.fromMap(subMap);
-      expect(wrapper.numberOfUnits, 0);
-      expect(wrapper.unit, 1);
+      expect(wrapper.numberOfUnits, subMap['numberOfUnits']);
+      expect(wrapper.unit, subMap['unit']);
     });
 
     test(
@@ -67,11 +61,13 @@ void main() {
         () {
       final SKProductDiscountWrapper wrapper =
           SKProductDiscountWrapper.fromMap(discountMap);
-      expect(wrapper.price, 1.0);
-      expect(wrapper.numberOfPeriods, 1);
-      expect(wrapper.paymentMode, 1);
-      expect(wrapper.subscriptionPeriod.unit, 1);
-      expect(wrapper.subscriptionPeriod.numberOfUnits, 0);
+      expect(wrapper.price, discountMap['price']);
+      expect(wrapper.numberOfPeriods, discountMap['numberOfPeriods']);
+      expect(wrapper.paymentMode, discountMap['paymentMode']);
+      expect(wrapper.subscriptionPeriod.unit,
+          discountMap['subscriptionPeriod']['unit']);
+      expect(wrapper.subscriptionPeriod.numberOfUnits,
+          discountMap['subscriptionPeriod']['numberOfUnits']);
     });
 
     test(
@@ -92,18 +88,30 @@ void main() {
       expect(wrapper.localizedTitle, productMap['localizedTitle']);
       expect(wrapper.localizedDescription, productMap['localizedDescription']);
       expect(wrapper.currencyCode, productMap['currencyCode']);
-      expect(wrapper.downloadContentVersion, productMap['downloadContentVersion']);
-      expect(wrapper.subscriptionGroupIdentifier, productMap['subscriptionGroupIdentifier']);
+      expect(
+          wrapper.downloadContentVersion, productMap['downloadContentVersion']);
+      expect(wrapper.subscriptionGroupIdentifier,
+          productMap['subscriptionGroupIdentifier']);
       expect(wrapper.price, productMap['price']);
       expect(wrapper.downloadable, productMap['downloadable']);
-      expect(wrapper.downloadContentLengths, productMap['downloadContentLengths']);
-      expect(wrapper.introductoryPrice.price, productMap['introductoryPrice']['price']);
-      expect(wrapper.introductoryPrice.numberOfPeriods, productMap['introductoryPrice']['numberOfPeriods']);
-      expect(wrapper.introductoryPrice.paymentMode, productMap['introductoryPrice']['paymentMode']);
-      expect(wrapper.introductoryPrice.subscriptionPeriod.unit, productMap['introductoryPrice']['unit']);
-      expect(wrapper.introductoryPrice.subscriptionPeriod.numberOfUnits, productMap['introductoryPrice']['numberOfUnits']);
-      expect(wrapper.subscriptionPeriod.unit, productMap['subscriptionPeriod']['unit']);
-      expect(wrapper.subscriptionPeriod.numberOfUnits, productMap['subscriptionPeriod']['numberOfUnits']);
+      expect(
+          wrapper.downloadContentLengths, productMap['downloadContentLengths']);
+      expect(wrapper.introductoryPrice.price,
+          productMap['introductoryPrice']['price']);
+      expect(wrapper.introductoryPrice.numberOfPeriods,
+          productMap['introductoryPrice']['numberOfPeriods']);
+      expect(wrapper.introductoryPrice.paymentMode,
+          productMap['introductoryPrice']['paymentMode']);
+      expect(wrapper.introductoryPrice.subscriptionPeriod.unit,
+          productMap['introductoryPrice']['subscriptionPeriod']['unit']);
+      expect(
+          wrapper.introductoryPrice.subscriptionPeriod.numberOfUnits,
+          productMap['introductoryPrice']['subscriptionPeriod']
+              ['numberOfUnits']);
+      expect(wrapper.subscriptionPeriod.unit,
+          productMap['subscriptionPeriod']['unit']);
+      expect(wrapper.subscriptionPeriod.numberOfUnits,
+          productMap['subscriptionPeriod']['numberOfUnits']);
     });
 
     test(
@@ -125,7 +133,7 @@ void main() {
 
   group('getProductList api', () {
     test('platform call should get result', () async {
-      fakePlatformViewsController.addCall(
+      stubPlatform.addResponse(
         name: 'getProductList',
         value: <Map<String, dynamic>>[productMap],
       );
@@ -133,7 +141,6 @@ void main() {
           await SKProductRequestWrapper.getSKProductList(
         <String>['identifier1'],
       );
-      print(productList);
       expect(
         productList,
         isNotEmpty,

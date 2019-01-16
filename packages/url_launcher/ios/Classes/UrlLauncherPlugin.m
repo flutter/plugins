@@ -81,7 +81,7 @@
     if (useSafariVC.boolValue) {
       [self launchURLInVC:url result:result];
     } else {
-      [self launchURL:url result:result];
+      [self launchURL:url call:call result:result];
     }
   } else if ([@"closeWebView" isEqualToString:call.method]) {
     [self closeWebView:url result:result];
@@ -96,32 +96,23 @@
   return [application canOpenURL:url];
 }
 
-- (void)launchURL:(NSString *)urlString result:(FlutterResult)result {
+- (void)launchURL:(NSString *)urlString
+             call:(FlutterMethodCall *)call
+           result:(FlutterResult)result {
   NSURL *url = [NSURL URLWithString:urlString];
   UIApplication *application = [UIApplication sharedApplication];
-  if ([application respondsToSelector:@selector(openURL:options:completionHandler:)]) {
+
+  if (@available(iOS 10.0, *)) {
+    NSNumber *universalLinksOnly = call.arguments[@"universalLinksOnly"] ?: @0;
+    NSDictionary *options = @{UIApplicationOpenURLOptionUniversalLinksOnly : universalLinksOnly};
     [application openURL:url
-                  options:@{}
+                  options:options
         completionHandler:^(BOOL success) {
-          if (success) {
-            result(nil);
-          } else {
-            result([FlutterError
-                errorWithCode:@"Error"
-                      message:[NSString stringWithFormat:@"Error while launching %@", url]
-                      details:nil]);
-          }
+          result(@(success));
         }];
   } else {
     BOOL success = [application openURL:url];
-    if (success) {
-      result(nil);
-    } else {
-      result([FlutterError
-          errorWithCode:@"Error"
-                message:[NSString stringWithFormat:@"Error while launching %@", url]
-                details:nil]);
-    }
+    result(@(success));
   }
 }
 

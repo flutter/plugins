@@ -60,7 +60,7 @@ public class UrlLauncherPlugin implements MethodCallHandler {
         launchIntent.setData(Uri.parse(url));
       }
       activity.startActivity(launchIntent);
-      result.success(null);
+      result.success(true);
     } else if (call.method.equals("closeWebView")) {
       Intent intent = new Intent("close");
       mRegistrar.context().sendBroadcast(intent);
