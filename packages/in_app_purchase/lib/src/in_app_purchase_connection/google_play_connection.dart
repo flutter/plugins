@@ -46,7 +46,8 @@ class GooglePlayConnection
   }
 
   @override
-  Future<List<Product>> getProductList(List<String> identifiers) => throw UnimplementedError();
+  Future<List<Product>> getProductList(List<String> identifiers) =>
+      throw UnimplementedError();
   @visibleForTesting
   static void reset() => _instance = null;
 

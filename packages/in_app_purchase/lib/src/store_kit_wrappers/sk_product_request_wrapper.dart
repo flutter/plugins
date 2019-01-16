@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import '../channel.dart';
 
@@ -8,16 +7,15 @@ import '../channel.dart';
 ///
 /// https://developer.apple.com/documentation/storekit/skproductsrequest?language=objc
 class SKProductRequestWrapper {
-  static MethodChannel _channel = Channel.instance;
-
   /// Get product list.
   ///
   /// [identifiers] is the product identifiers specified in Itunes Connect for the products that need to be retrived.
   ///
   /// Returns a future containing a list of [SKProduct] which then can be queried to get desired information.
-  static Future<List<SKProductWrapper>> getSKProductList(List<String> identifiers) async {
+  static Future<List<SKProductWrapper>> getSKProductList(
+      List<String> identifiers) async {
     final List<Map<dynamic, dynamic>> productListSerilized =
-        await _channel.invokeListMethod<Map<dynamic, dynamic>>(
+        await channel.invokeListMethod<Map<dynamic, dynamic>>(
       'getProductList',
       <String, Object>{
         'identifiers': identifiers,
@@ -26,7 +24,9 @@ class SKProductRequestWrapper {
 
     final List<SKProductWrapper> productList = <SKProductWrapper>[];
     for (Map<dynamic, dynamic> productMap in productListSerilized) {
-      productList.add(SKProductWrapper.fromMap(productMap.cast<String, dynamic>(),));
+      productList.add(SKProductWrapper.fromMap(
+        productMap.cast<String, dynamic>(),
+      ));
     }
     return productList;
   }
@@ -37,7 +37,6 @@ class SKProductRequestWrapper {
 /// It contains the same field in SKProductSubscriptionPeriod class
 /// https://developer.apple.com/documentation/storekit/skproduct/2936884-subscriptionperiod?language=objc
 class SKProductSubscriptionPeriodWrapper {
-
   SKProductSubscriptionPeriodWrapper(
       {@required this.numberOfUnits, @required this.unit});
 
@@ -118,7 +117,8 @@ class SKProductWrapper {
                 map['subscriptionPeriod'].cast<String, dynamic>())
             : null,
         introductoryPrice = (map['introductoryPrice'] != null)
-            ? SKProductDiscountWrapper.fromMap(map['introductoryPrice'].cast<String, dynamic>())
+            ? SKProductDiscountWrapper.fromMap(
+                map['introductoryPrice'].cast<String, dynamic>())
             : null;
 
   final String productIdentifier,

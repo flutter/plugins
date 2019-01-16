@@ -132,8 +132,8 @@ void main() {
       final List<SKProductWrapper> productList =
           await SKProductRequestWrapper.getSKProductList(
         <String>['identifier1'],
-          );
-          print(productList);
+      );
+      print(productList);
       expect(
         productList,
         isNotEmpty,

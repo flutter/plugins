@@ -51,12 +51,12 @@
 }
 
 - (void)testProductToMap {
-  SKProductStub *product = [[SKProductStub alloc] init];
+  SKProductStub *product = [[SKProductStub alloc] initWithIdentifier:@"11"];
   NSDictionary *map = [product toMap];
   NSDictionary *match = @{
     @"price" : @(1.0),
     @"currencyCode" : @"USD",
-    @"productIdentifier" : @"consumable",
+    @"productIdentifier" : @"11",
     @"localizedTitle" : @"title",
     @"localizedDescription" : @"description",
     @"downloadable" : @YES,
@@ -94,20 +94,23 @@
   XCTAssertNotEqualObjects(map, notMatch);
 }
 
-- (void)testRequestDelegateSetup {
-  FIAPProductRequestHandler *handler = [FIAPProductRequestHandler new];
+- (void)testRequestHandler {
+  SKProductRequestStub *request =
+      [[SKProductRequestStub alloc] initWithProductIdentifiers:[NSSet setWithArray:@[ @"123" ]]];
+  FIAPProductRequestHandler *handler =
+      [[FIAPProductRequestHandler alloc] initWithRequestRequest:request];
   XCTestExpectation *expectation =
-      [self expectationWithDescription:@"expect delegate set to be empty after complition"];
-   __block SKProductsResponse *response;
-  [handler startWithProductIdentifiers:[NSSet new]
-                     completionHandler:^(SKProductsResponse *_Nullable r) {
-                         response = r;
-                       [expectation fulfill];
-                     }];
+      [self expectationWithDescription:@"expect to get response with 1 product"];
+  __block SKProductsResponse *response;
+  [handler startWithCompletionHandler:^(SKProductsResponse *_Nullable r) {
+    response = r;
+    [expectation fulfill];
+  }];
   [self waitForExpectations:@[ expectation ] timeout:5];
-    XCTAssertNotNil(response);
-    XCTAssertEqual(response.products.count, 0);
-    XCTAssertNotEqual(response.products.count, 1);
+  XCTAssertNotNil(response);
+  XCTAssertEqual(response.products.count, 1);
+  SKProduct *product = response.products.firstObject;
+  XCTAssertTrue([product.productIdentifier isEqualToString:@"123"]);
 }
 
 @end

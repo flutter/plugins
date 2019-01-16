@@ -3,8 +3,7 @@
 
 #pragma mark - Main Handler
 
-
-@interface FIAPProductRequestHandler ()<SKProductsRequestDelegate>
+@interface FIAPProductRequestHandler () <SKProductsRequestDelegate>
 
 @property(copy, nonatomic) ProductRequestCompletion completion;
 @property(strong, nonatomic) NSMutableSet *delegateObjects;
@@ -14,24 +13,26 @@
 
 @implementation FIAPProductRequestHandler
 
-- (instancetype)initWithRequestRequest:(SKProductsRequest *)request completion:(ProductRequestCompletion)completion
-{
-    self = [super init];
-    if (self) {
-        request.delegate = self;
-        self.completion = completion;
-        [request start];
-    }
-    return self;
+- (instancetype)initWithRequestRequest:(SKProductsRequest *)request {
+  self = [super init];
+  if (self) {
+    self.request = request;
+    request.delegate = self;
+  }
+  return self;
+}
+
+- (void)startWithCompletionHandler:(ProductRequestCompletion)completion {
+  self.completion = completion;
+  [self.request start];
 }
 
 - (void)productsRequest:(SKProductsRequest *)request
-didReceiveResponse:(SKProductsResponse *)response {
- if (self.completion) {
-     self.completion(response);
- }
+     didReceiveResponse:(SKProductsResponse *)response {
+  if (self.completion) {
+    self.completion(response);
+  }
 }
-
 
 @end
 

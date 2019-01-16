@@ -7,7 +7,8 @@ typedef void (^ProductRequestCompletion)(SKProductsResponse *_Nullable response)
 
 @interface FIAPProductRequestHandler : NSObject
 
-- (instancetype)initWithRequestRequest:(SKProductsRequest *)request completion:(SKProductRequestCompletion)completion;
+- (instancetype)initWithRequestRequest:(SKProductsRequest *)request;
+- (void)startWithCompletionHandler:(ProductRequestCompletion)completion;
 
 NS_ASSUME_NONNULL_END
 

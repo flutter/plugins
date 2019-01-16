@@ -8,18 +8,17 @@
 
 @interface InAppPurchasePlugin ()
 
-@property(strong, nonatomic) FIAPProductRequestHandler *productRequestHandler;
+@property(strong, nonatomic) NSMutableSet<FIAPProductRequestHandler *> *productRequestHandlerSet;
 
 @end
 
 @implementation InAppPurchasePlugin
 
-- (instancetype)init {
-  self = [super init];
-  if (self) {
-    self.productRequestHandler = [FIAPProductRequestHandler new];
+- (NSMutableSet<FIAPProductRequestHandler *> *)productRequestHandlerSet {
+  if (!_productRequestHandlerSet) {
+    _productRequestHandlerSet = [NSMutableSet new];
   }
-  return self;
+  return _productRequestHandlerSet;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -46,15 +45,20 @@
 
 - (void)getProductListWithMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSArray *productsIdentifiers = call.arguments[@"identifiers"];
-  [self.productRequestHandler
-      startWithProductIdentifiers:[NSSet setWithArray:productsIdentifiers]
-                completionHandler:^(SKProductsResponse *_Nullable response) {
-                  NSMutableArray *productDetailsSerialized = [NSMutableArray new];
-                  for (SKProduct *product in response.products) {
-                    [productDetailsSerialized addObject:[product toMap]];
-                  }
-                  result(productDetailsSerialized);
-                }];
+  SKProductsRequest *request = [[SKProductsRequest alloc]
+      initWithProductIdentifiers:[NSSet setWithArray:productsIdentifiers]];
+  __weak typeof(self) weakSelf = self;
+  FIAPProductRequestHandler *handler =
+      [[FIAPProductRequestHandler alloc] initWithRequestRequest:request];
+  NSMutableArray *productDetailsSerialized = [NSMutableArray new];
+  [handler startWithCompletionHandler:^(SKProductsResponse *_Nullable response) {
+    for (SKProduct *product in response.products) {
+      [productDetailsSerialized addObject:[product toMap]];
+    }
+    result(productDetailsSerialized);
+    [weakSelf.productRequestHandlerSet removeObject:handler];
+  }];
+  [self.productRequestHandlerSet addObject:handler];
 }
 
 @end

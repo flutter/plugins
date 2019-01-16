@@ -8,7 +8,6 @@ import '../../store_kit_wrappers.dart';
 import './product.dart';
 import 'in_app_purchase_connection.dart';
 
-
 /// An [InAppPurchaseConnection] that wraps StoreKit.
 ///
 /// This translates various `StoreKit` calls and responses into the

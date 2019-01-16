@@ -44,10 +44,12 @@ InAppPurchasePlugin* plugin;
   XCTAssertEqual(result, [NSNumber numberWithBool:YES]);
 }
 
-- (void)testGetProductListEmpty {
-  XCTestExpectation* expectation = [self expectationWithDescription:@"expect result to be empty"];
-  FlutterMethodCall* call = [FlutterMethodCall methodCallWithMethodName:@"getProductList"
-                                                              arguments:@{@"identifiers" : @[]}];
+- (void)testGetProductList {
+  XCTestExpectation* expectation =
+      [self expectationWithDescription:@"expect response contains 1 item"];
+  FlutterMethodCall* call =
+      [FlutterMethodCall methodCallWithMethodName:@"getProductList"
+                                        arguments:@{@"identifiers" : @[ @"123" ]}];
   __block id result;
   [plugin handleMethodCall:call
                     result:^(id r) {
@@ -56,7 +58,9 @@ InAppPurchasePlugin* plugin;
                     }];
   [self waitForExpectations:@[ expectation ] timeout:5];
   XCTAssert([result isKindOfClass:[NSArray class]]);
-  XCTAssertEqual(((NSArray*)result).count, 0);
+  NSArray* resultArray = (NSArray*)result;
+  XCTAssertEqual(resultArray.count, 1);
+  XCTAssertTrue([resultArray.firstObject[@"identifier"] isEqualToString:@"123"]);
 }
 
 @end

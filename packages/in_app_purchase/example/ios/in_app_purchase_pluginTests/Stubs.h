@@ -9,10 +9,14 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface SKProductStub : SKProduct
+- (nonnull instancetype)initWithIdentifier:(nullable NSString *)identifier;
 @end
 
-
 @interface SKProductRequestStub : SKProductsRequest
+@end
+
+@interface SKProductsResponseStub : SKProductsResponse
+- (instancetype)initWithIdentifiers:(NSSet *)identifiers;
 @end
 
 NS_ASSUME_NONNULL_END
