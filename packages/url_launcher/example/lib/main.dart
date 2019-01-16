@@ -65,6 +65,22 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  Future<void> _launchUniversalLinkIos(String url) async {
+    if (await canLaunch('https://youtube.com')) {
+      final bool nativeAppLaunchSucceeded = await launch(
+        'https://youtube.com',
+        forceSafariVC: false,
+        universalLinksOnly: true,
+      );
+      if (!nativeAppLaunchSucceeded) {
+        await launch(
+          'https://youtube.com',
+          forceSafariVC: true,
+        );
+      }
+    }
+  }
+
   Widget _launchStatus(BuildContext context, AsyncSnapshot<void> snapshot) {
     if (snapshot.hasError) {
       return Text('Error: ${snapshot.error}');
@@ -128,6 +144,13 @@ class _MyHomePageState extends State<MyHomePage> {
                     _launched = _launchInWebViewWithJavaScript(toLaunch);
                   }),
               child: const Text('Launch in app(JavaScript ON)'),
+            ),
+            RaisedButton(
+              onPressed: () => setState(() {
+                    _launched = _launchUniversalLinkIos(toLaunch);
+                  }),
+              child: const Text(
+                  'Launch a universal link in a native app, fallback to Safari.(Youtube)'),
             ),
             const Padding(padding: EdgeInsets.all(16.0)),
             RaisedButton(
