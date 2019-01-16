@@ -109,7 +109,7 @@ void main() {
 
   group('$FirebaseAnalytics analytics events', () {
     String name;
-    Map<String, dynamic> parameters;
+    dynamic parameters;
 
     setUp(() {
       name = null;
@@ -119,12 +119,9 @@ void main() {
         if (call.method != 'logEvent') {
           throw ArgumentError('Only logEvent invocations expected');
         }
-        final Map<String, dynamic> args =
-            Map<String, dynamic>.from(call.arguments);
+        final dynamic args = call.arguments;
         name = args['name'];
-        if (args['parameters'] != null) {
-          parameters = Map<String, dynamic>.from(args['parameters']);
-        }
+        parameters = args['parameters'];
         expect(args.keys, unorderedEquals(<String>['name', 'parameters']));
         return Future<void>.value();
       });
