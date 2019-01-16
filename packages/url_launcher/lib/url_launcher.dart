@@ -51,7 +51,7 @@ const MethodChannel _channel = MethodChannel('plugins.flutter.io/url_launcher');
 /// not handle resetting the previous status bar style.
 ///
 /// Returns true if launch url is successful; false is only returned when [universalLinksOnly]
-/// is set to true and the universal link is failed to launch.
+/// is set to true and the universal link failed to launch.
 Future<bool> launch(
   String urlString, {
   bool forceSafariVC,
