@@ -19,14 +19,17 @@ app](example/README.md) for an example on configuring both.
 
 The API surface is stacked into 2 main layers.
 
-1. [in_app_purchase.dart](lib/in_app_purchase.dart), the generic idiommatic
-   Flutter API. This exposes the most basic IAP-related functionality. The goal
-   is that Flutter apps should be able to use this API surface on its own for
-   the vast majority of cases.
+1. [in_app_purchase_connection.dart](lib/src/in_app_purchase_connection.dart),
+   the generic idiommatic Flutter API. This exposes the most basic IAP-related
+   functionality. The goal is that Flutter apps should be able to use this API
+   surface on its own for the vast majority of cases.
+   [google_play_connection.dart](lib/src/google_play_connection.dart) and
+   [app_store_connection.dart](lib/src/app_store_connection.dart) implement this
+   for the specific platforms.
 
 2. The dart wrappers around the platform specific IAP APIs and their platform
    specific implementations of the generic interface. See
-   [google_play.dart](lib/google_play.dart) and
-   [app_store.dart](lib/app_store.dart). These API surfaces should expose all
-   the platform-specific behavior and allow for more fine-tuned control when
-   needed.
+   [store_kit_wrappers.dart](lib/src/store_kit_wrappers.dart) and
+   [billing_client_wrappers.dart](lib/src/billing_client_wrappers.dart). These
+   API surfaces should expose all the platform-specific behavior and allow for
+   more fine-tuned control when needed.
