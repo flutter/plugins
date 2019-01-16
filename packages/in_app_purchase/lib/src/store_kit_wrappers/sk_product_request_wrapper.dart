@@ -32,11 +32,18 @@ class SKProductRequestWrapper {
   }
 }
 
+/// This class wraps the IOS SKProductSubscriptionPeriod class
+///
+/// It contains the same field in SKProductSubscriptionPeriod class
 /// https://developer.apple.com/documentation/storekit/skproduct/2936884-subscriptionperiod?language=objc
 class SKProductSubscriptionPeriodWrapper {
+
   SKProductSubscriptionPeriodWrapper(
       {@required this.numberOfUnits, @required this.unit});
 
+  /// Consctruter to build with a map
+  ///
+  /// Used for constructing the class with the map passed from the OBJC layer.
   SKProductSubscriptionPeriodWrapper.fromMap(Map<String, dynamic> map)
       : numberOfUnits = map['numberOfUnits'],
         unit = map['unit'];
@@ -44,6 +51,9 @@ class SKProductSubscriptionPeriodWrapper {
   final int numberOfUnits, unit;
 }
 
+/// This class wraps the IOS SKProductDiscount class
+///
+/// It contains the same field in SKProductDiscount class
 /// https://developer.apple.com/documentation/storekit/skproductdiscount?language=objc
 class SKProductDiscountWrapper {
   SKProductDiscountWrapper(
@@ -52,6 +62,9 @@ class SKProductDiscountWrapper {
       @required this.paymentMode,
       @required this.subscriptionPeriod});
 
+  /// Consctruter to build with a map
+  ///
+  /// Used for constructing the class with the map passed from the OBJC layer.
   SKProductDiscountWrapper.fromMap(Map<String, dynamic> map)
       : price = map['price'],
         numberOfPeriods = map['numberOfPeriods'],
@@ -66,6 +79,10 @@ class SKProductDiscountWrapper {
   final SKProductSubscriptionPeriodWrapper subscriptionPeriod;
 }
 
+/// This class wraps the IOS SKProduct class
+///
+/// Most of the fields are the same as in OBJC SKProduct
+/// The only difference is instead of the locale object, we only exposed currencyCode for simplicity.
 /// https://developer.apple.com/documentation/storekit/skproduct?language=objc
 class SKProductWrapper {
   SKProductWrapper({
@@ -82,6 +99,9 @@ class SKProductWrapper {
     @required this.introductoryPrice,
   });
 
+  /// Consctruter to build with a map
+  ///
+  /// Used for constructing the class with the map passed from the OBJC layer.
   SKProductWrapper.fromMap(Map<String, dynamic> map)
       : productIdentifier = map['productIdentifier'],
         localizedTitle = map['localizedTitle'],

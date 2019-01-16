@@ -7,74 +7,8 @@
 //
 
 #import <XCTest/XCTest.h>
-#import "FLTSKProductRequestHandler.h"
-
-#pragma stubs
-
-@interface SKProductSubscriptionPeriodStub : SKProductSubscriptionPeriod
-@end
-
-@implementation SKProductSubscriptionPeriodStub
-
-- (instancetype)init {
-  self = [super init];
-  if (self) {
-    [self setValue:@(0) forKey:@"numberOfUnits"];
-    [self setValue:@(0) forKey:@"unit"];
-  }
-  return self;
-}
-
-@end
-
-@interface SKProductDiscountStub : SKProductDiscount
-@end
-
-@implementation SKProductDiscountStub
-
-- (instancetype)init {
-  self = [super init];
-  if (self) {
-    [self setValue:@(1.0) forKey:@"price"];
-    NSLocale *locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
-    [self setValue:locale forKey:@"priceLocale"];
-    [self setValue:@(1) forKey:@"numberOfPeriods"];
-    SKProductSubscriptionPeriodStub *subscriptionPeriodSub =
-        [[SKProductSubscriptionPeriodStub alloc] init];
-    [self setValue:subscriptionPeriodSub forKey:@"subscriptionPeriod"];
-    [self setValue:@(1) forKey:@"paymentMode"];
-  }
-  return self;
-}
-
-@end
-
-@interface SKProductStub : SKProduct
-@end
-
-@implementation SKProductStub
-
-- (instancetype)init {
-  self = [super init];
-  if (self) {
-    [self setValue:@"consumable" forKey:@"productIdentifier"];
-    [self setValue:@"description" forKey:@"localizedDescription"];
-    [self setValue:@"title" forKey:@"localizedTitle"];
-    [self setValue:@YES forKey:@"downloadable"];
-    [self setValue:@(1.0) forKey:@"price"];
-    NSLocale *locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
-    [self setValue:locale forKey:@"priceLocale"];
-    [self setValue:@[ @1, @2 ] forKey:@"downloadContentLengths"];
-    SKProductSubscriptionPeriodStub *period = [[SKProductSubscriptionPeriodStub alloc] init];
-    [self setValue:period forKey:@"subscriptionPeriod"];
-    SKProductDiscountStub *discount = [[SKProductDiscountStub alloc] init];
-    [self setValue:discount forKey:@"introductoryPrice"];
-    [self setValue:@"com.group" forKey:@"subscriptionGroupIdentifier"];
-  }
-  return self;
-}
-
-@end
+#import "FIAPProductRequestHandler.h"
+#import "Stubs.h"
 
 #pragma tests start here
 
@@ -161,20 +95,19 @@
 }
 
 - (void)testRequestDelegateSetup {
-  FLTSKProductRequestHandler *handler = [FLTSKProductRequestHandler new];
+  FIAPProductRequestHandler *handler = [FIAPProductRequestHandler new];
   XCTestExpectation *expectation =
       [self expectationWithDescription:@"expect delegate set to be empty after complition"];
+   __block SKProductsResponse *response;
   [handler startWithProductIdentifiers:[NSSet new]
-                     completionHandler:^(SKProductsResponse *_Nullable response) {
+                     completionHandler:^(SKProductsResponse *_Nullable r) {
+                         response = r;
                        [expectation fulfill];
                      }];
-  // One DelegateObject should be added to the set before the block execution is done.
-  XCTAssertEqual([handler getDelegateObjects].count, 1);
-  FLTSKProductRequestDelegateObject *object = [[handler getDelegateObjects] allObjects].firstObject;
-  XCTAssertEqual([object getParentSet].count, 1);
   [self waitForExpectations:@[ expectation ] timeout:5];
-  // Delegate set to be empty after complition.
-  XCTAssertEqual([handler getDelegateObjects].count, 0);
+    XCTAssertNotNil(response);
+    XCTAssertEqual(response.products.count, 0);
+    XCTAssertNotEqual(response.products.count, 1);
 }
 
 @end

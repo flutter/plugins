@@ -1,10 +1,10 @@
 #import "InAppPurchasePlugin.h"
 #import <StoreKit/StoreKit.h>
-#import "FLTSKProductRequestHandler.h"
+#import "FIAPProductRequestHandler.h"
 
 @interface InAppPurchasePlugin ()
 
-@property(strong, nonatomic) FLTSKProductRequestHandler *productRequestHandler;
+@property(strong, nonatomic) FIAPProductRequestHandler *productRequestHandler;
 
 @end
 
@@ -13,7 +13,7 @@
 - (instancetype)init {
   self = [super init];
   if (self) {
-    self.productRequestHandler = [FLTSKProductRequestHandler new];
+    self.productRequestHandler = [FIAPProductRequestHandler new];
   }
   return self;
 }

@@ -1,75 +1,37 @@
-#import "FLTSKProductRequestHandler.h"
+#import "FIAPProductRequestHandler.h"
 #import <StoreKit/StoreKit.h>
 
 #pragma mark - Main Handler
 
-@interface FLTSKProductRequestDelegateObject () <SKProductsRequestDelegate>
+
+@interface FIAPProductRequestHandler ()<SKProductsRequestDelegate>
 
 @property(copy, nonatomic) ProductRequestCompletion completion;
-@property(weak, nonatomic) NSMutableSet *parentSet;
+@property(strong, nonatomic) NSMutableSet *delegateObjects;
+@property(strong, nonatomic) SKProductsRequest *request;
 
 @end
 
-@implementation FLTSKProductRequestDelegateObject
+@implementation FIAPProductRequestHandler
 
-- (instancetype)initWithCompletionHandler:(nullable ProductRequestCompletion)completion {
-  self = [super init];
-  if (self) {
-    self.completion = completion;
-  }
-  return self;
+- (instancetype)initWithRequestRequest:(SKProductsRequest *)request completion:(ProductRequestCompletion)completion
+{
+    self = [super init];
+    if (self) {
+        request.delegate = self;
+        self.completion = completion;
+        [request start];
+    }
+    return self;
 }
-
-#pragma mark - methods for testing
-
-- (NSSet *)getParentSet {
-  return self.parentSet.copy;
-}
-
-#pragma mark SKProductRequestDelegate
 
 - (void)productsRequest:(SKProductsRequest *)request
-     didReceiveResponse:(SKProductsResponse *)response {
-  if (self.completion) {
-    self.completion(response);
-  }
-  [self.parentSet removeObject:self];
+didReceiveResponse:(SKProductsResponse *)response {
+ if (self.completion) {
+     self.completion(response);
+ }
 }
 
-@end
-
-@interface FLTSKProductRequestHandler ()
-
-@property(strong, nonatomic) NSMutableSet *delegateObjects;
-
-@end
-
-@implementation FLTSKProductRequestHandler
-
-// method to get the complete SKProductResponse object
-- (void)startWithProductIdentifiers:(NSSet<NSString *> *)identifers
-                  completionHandler:(nullable ProductRequestCompletion)completion {
-  SKProductsRequest *request = [[SKProductsRequest alloc] initWithProductIdentifiers:identifers];
-  FLTSKProductRequestDelegateObject *object =
-      [[FLTSKProductRequestDelegateObject alloc] initWithCompletionHandler:completion];
-  object.parentSet = self.delegateObjects;
-  [self.delegateObjects addObject:object];
-  request.delegate = object;
-  [request start];
-}
-
-- (NSMutableSet *)delegateObjects {
-  if (!_delegateObjects) {
-    _delegateObjects = [NSMutableSet new];
-  }
-  return _delegateObjects;
-}
-
-#pragma mark - methods for testing
-
-- (NSSet *)getDelegateObjects {
-  return self.delegateObjects.copy;
-}
 
 @end
 
