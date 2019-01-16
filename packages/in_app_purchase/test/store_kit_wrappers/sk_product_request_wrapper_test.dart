@@ -88,22 +88,22 @@ void main() {
     test('SKProductWrapper should have property values consistent with map',
         () {
       final SKProductWrapper wrapper = SKProductWrapper.fromMap(productMap);
-      expect(wrapper.productIdentifier, 'id');
-      expect(wrapper.localizedTitle, 'title');
-      expect(wrapper.localizedDescription, 'description');
-      expect(wrapper.currencyCode, 'USD');
-      expect(wrapper.downloadContentVersion, 'version');
-      expect(wrapper.subscriptionGroupIdentifier, 'com.group');
-      expect(wrapper.price, 1.0);
-      expect(wrapper.downloadable, true);
-      expect(wrapper.downloadContentLengths, <int>[1, 2]);
-      expect(wrapper.introductoryPrice.price, 1.0);
-      expect(wrapper.introductoryPrice.numberOfPeriods, 1);
-      expect(wrapper.introductoryPrice.paymentMode, 1);
-      expect(wrapper.introductoryPrice.subscriptionPeriod.unit, 1);
-      expect(wrapper.introductoryPrice.subscriptionPeriod.numberOfUnits, 0);
-      expect(wrapper.subscriptionPeriod.unit, 1);
-      expect(wrapper.subscriptionPeriod.numberOfUnits, 0);
+      expect(wrapper.productIdentifier, productMap['productIdentifier']);
+      expect(wrapper.localizedTitle, productMap['localizedTitle']);
+      expect(wrapper.localizedDescription, productMap['localizedDescription']);
+      expect(wrapper.currencyCode, productMap['currencyCode']);
+      expect(wrapper.downloadContentVersion, productMap['downloadContentVersion']);
+      expect(wrapper.subscriptionGroupIdentifier, productMap['subscriptionGroupIdentifier']);
+      expect(wrapper.price, productMap['price']);
+      expect(wrapper.downloadable, productMap['downloadable']);
+      expect(wrapper.downloadContentLengths, productMap['downloadContentLengths']);
+      expect(wrapper.introductoryPrice.price, productMap['introductoryPrice']['price']);
+      expect(wrapper.introductoryPrice.numberOfPeriods, productMap['introductoryPrice']['numberOfPeriods']);
+      expect(wrapper.introductoryPrice.paymentMode, productMap['introductoryPrice']['paymentMode']);
+      expect(wrapper.introductoryPrice.subscriptionPeriod.unit, productMap['introductoryPrice']['unit']);
+      expect(wrapper.introductoryPrice.subscriptionPeriod.numberOfUnits, productMap['introductoryPrice']['numberOfUnits']);
+      expect(wrapper.subscriptionPeriod.unit, productMap['subscriptionPeriod']['unit']);
+      expect(wrapper.subscriptionPeriod.numberOfUnits, productMap['subscriptionPeriod']['numberOfUnits']);
     });
 
     test(

@@ -44,7 +44,7 @@ class SKProductSubscriptionPeriodWrapper {
   SKProductSubscriptionPeriodWrapper(
       {@required this.numberOfUnits, @required this.unit});
 
-  /// Consctruter to build with a map
+  /// Constructor to build with a map
   ///
   /// Used for constructing the class with the map passed from the OBJC layer.
   SKProductSubscriptionPeriodWrapper.fromMap(Map<String, dynamic> map)
@@ -65,7 +65,7 @@ class SKProductDiscountWrapper {
       @required this.paymentMode,
       @required this.subscriptionPeriod});
 
-  /// Consctruter to build with a map
+  /// Constructor to build with a map
   ///
   /// Used for constructing the class with the map passed from the OBJC layer.
   SKProductDiscountWrapper.fromMap(Map<String, dynamic> map)
@@ -102,7 +102,7 @@ class SKProductWrapper {
     @required this.introductoryPrice,
   });
 
-  /// Consctruter to build with a map
+  /// Constructor to build with a map
   ///
   /// Used for constructing the class with the map passed from the OBJC layer.
   SKProductWrapper.fromMap(Map<String, dynamic> map)
