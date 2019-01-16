@@ -94,3 +94,15 @@
 }
 
 @end
+
+@interface InAppPurchasePluginStub ()
+
+@end
+
+@implementation InAppPurchasePluginStub
+
+- (SKProductsRequest *)getRequestWithIdentifiers:(NSSet *)identifiers {
+  return [[SKProductRequestStub alloc] initWithProductIdentifiers:identifiers];
+}
+
+@end

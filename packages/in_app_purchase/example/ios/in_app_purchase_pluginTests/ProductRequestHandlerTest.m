@@ -21,10 +21,11 @@
 - (void)testSKProductSubscriptionPeriodStubToMap {
   SKProductSubscriptionPeriodStub *period = [[SKProductSubscriptionPeriodStub alloc] init];
   NSDictionary *map = [period toMap];
-  NSDictionary *match = @{@"numberOfUnits" : @(0), @"unit" : @(0)};
+  NSDictionary *match = @{@"numberOfUnits" : @(period.numberOfUnits), @"unit" : @(period.unit)};
   XCTAssertEqualObjects(map, match);
 
-  NSDictionary *notMatch = @{@"numberOfUnits" : @(0), @"unit" : @(1)};
+  NSDictionary *notMatch =
+      @{@"numberOfUnits" : @(period.numberOfUnits + 1), @"unit" : @(period.unit)};
   XCTAssertNotEqualObjects(map, notMatch);
 }
 
@@ -32,20 +33,20 @@
   SKProductDiscountStub *discount = [[SKProductDiscountStub alloc] init];
   NSDictionary *map = [discount toMap];
   NSDictionary *match = @{
-    @"price" : @(1.0),
-    @"currencyCode" : @"USD",
-    @"numberOfPeriods" : @(1),
-    @"subscriptionPeriod" : @{@"numberOfUnits" : @(0), @"unit" : @(0)},
-    @"paymentMode" : @(1)
+    @"price" : discount.price,
+    @"currencyCode" : discount.priceLocale.currencyCode,
+    @"numberOfPeriods" : @(discount.numberOfPeriods),
+    @"subscriptionPeriod" : [discount.subscriptionPeriod toMap],
+    @"paymentMode" : @(discount.paymentMode)
   };
   XCTAssertEqualObjects(map, match);
 
   NSDictionary *notMatch = @{
-    @"price" : @(1.0),
-    @"currencyCode" : @"USD",
-    @"numberOfPeriods" : @(1),
-    @"subscriptionPeriod" : @{@"numberOfUnits" : @(0), @"unit" : @(0)},
-    @"paymentMode" : @(0)
+    @"price" : discount.price,
+    @"currencyCode" : discount.priceLocale.currencyCode,
+    @"numberOfPeriods" : @(discount.numberOfPeriods + 1),
+    @"subscriptionPeriod" : [discount.subscriptionPeriod toMap],
+    @"paymentMode" : @(discount.paymentMode)
   };
   XCTAssertNotEqualObjects(map, notMatch);
 }
@@ -54,42 +55,32 @@
   SKProductStub *product = [[SKProductStub alloc] initWithIdentifier:@"11"];
   NSDictionary *map = [product toMap];
   NSDictionary *match = @{
-    @"price" : @(1.0),
-    @"currencyCode" : @"USD",
-    @"productIdentifier" : @"11",
-    @"localizedTitle" : @"title",
-    @"localizedDescription" : @"description",
-    @"downloadable" : @YES,
-    @"downloadContentLengths" : @[ @1, @2 ],
-    @"downloadContentVersion" : [NSNull null],
-    @"subscriptionPeriod" : @{@"numberOfUnits" : @(0), @"unit" : @(0)},
-    @"introductoryPrice" : @{
-      @"price" : @(1.0),
-      @"currencyCode" : @"USD",
-      @"numberOfPeriods" : @(1),
-      @"subscriptionPeriod" : @{@"numberOfUnits" : @(0), @"unit" : @(0)},
-      @"paymentMode" : @(1)
-    },
-    @"subscriptionGroupIdentifier" : @"com.group"
+    @"price" : product.price,
+    @"currencyCode" : product.priceLocale.currencyCode,
+    @"productIdentifier" : product.productIdentifier,
+    @"localizedTitle" : product.localizedTitle,
+    @"localizedDescription" : product.localizedDescription,
+    @"downloadable" : @(product.downloadable),
+    @"downloadContentLengths" : product.downloadContentLengths,
+    @"downloadContentVersion" : [NSNull null],  // not mockable
+    @"subscriptionPeriod" : [product.subscriptionPeriod toMap],
+    @"introductoryPrice" : [product.introductoryPrice toMap],
+    @"subscriptionGroupIdentifier" : product.subscriptionGroupIdentifier
   };
   XCTAssertEqualObjects(map, match);
 
   NSDictionary *notMatch = @{
-    @"price" : @(1.0),
-    @"currencyCode" : @"USD",
-    @"productIdentifier" : @"consumable",
-    @"localizedTitle" : @"title",
-    @"downloadable" : @YES,
-    @"downloadContentLengths" : @[ @1, @2 ],
-    @"subscriptionPeriod" : @{@"numberOfUnits" : @(0), @"unit" : @(0)},
-    @"introductoryPrice" : @{
-      @"price" : @(1.0),
-      @"currencyCode" : @"USD",
-      @"numberOfPeriods" : @(1),
-      @"subscriptionPeriod" : @{@"numberOfUnits" : @(0), @"unit" : @(0)},
-      @"paymentMode" : @(1)
-    },
-    @"subscriptionGroupIdentifier" : @"com.group"
+    @"price" : product.price,
+    @"currencyCode" : product.priceLocale.currencyCode,
+    @"productIdentifier" : product.productIdentifier,
+    @"localizedTitle" : product.localizedTitle,
+    @"localizedDescription" : product.localizedDescription,
+    @"downloadable" : @(!product.downloadable),
+    @"downloadContentLengths" : product.downloadContentLengths,
+    @"downloadContentVersion" : [NSNull null],  // not mockable
+    @"subscriptionPeriod" : [product.subscriptionPeriod toMap],
+    @"introductoryPrice" : [product.introductoryPrice toMap],
+    @"subscriptionGroupIdentifier" : product.subscriptionGroupIdentifier
   };
   XCTAssertNotEqualObjects(map, notMatch);
 }

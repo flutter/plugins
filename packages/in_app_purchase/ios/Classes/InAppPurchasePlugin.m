@@ -45,8 +45,8 @@
 
 - (void)getProductListWithMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSArray *productsIdentifiers = call.arguments[@"identifiers"];
-  SKProductsRequest *request = [[SKProductsRequest alloc]
-      initWithProductIdentifiers:[NSSet setWithArray:productsIdentifiers]];
+  SKProductsRequest *request =
+      [self getRequestWithIdentifiers:[NSSet setWithArray:productsIdentifiers]];
   __weak typeof(self) weakSelf = self;
   FIAPProductRequestHandler *handler =
       [[FIAPProductRequestHandler alloc] initWithRequestRequest:request];
@@ -59,6 +59,10 @@
     [weakSelf.productRequestHandlerSet removeObject:handler];
   }];
   [self.productRequestHandlerSet addObject:handler];
+}
+
+- (SKProductsRequest *)getRequestWithIdentifiers:(NSSet *)identifiers {
+  return [[SKProductsRequest alloc] initWithProductIdentifiers:identifiers];
 }
 
 @end

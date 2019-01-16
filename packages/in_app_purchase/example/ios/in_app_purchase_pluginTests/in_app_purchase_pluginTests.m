@@ -1,5 +1,6 @@
 #import <XCTest/XCTest.h>
 #import "InAppPurchasePlugin.h"
+#import "Stubs.h"
 
 @interface in_app_purchase_pluginTests : XCTestCase
 
@@ -9,7 +10,7 @@
 InAppPurchasePlugin* plugin;
 
 - (void)setUp {
-  plugin = [[InAppPurchasePlugin alloc] init];
+  plugin = [[InAppPurchasePluginStub alloc] init];
 }
 
 - (void)tearDown {
@@ -60,7 +61,7 @@ InAppPurchasePlugin* plugin;
   XCTAssert([result isKindOfClass:[NSArray class]]);
   NSArray* resultArray = (NSArray*)result;
   XCTAssertEqual(resultArray.count, 1);
-  XCTAssertTrue([resultArray.firstObject[@"identifier"] isEqualToString:@"123"]);
+  XCTAssertTrue([resultArray.firstObject[@"productIdentifier"] isEqualToString:@"123"]);
 }
 
 @end

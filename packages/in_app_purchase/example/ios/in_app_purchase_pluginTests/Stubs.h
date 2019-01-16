@@ -1,5 +1,7 @@
 #import <Foundation/Foundation.h>
 #import <StoreKit/StoreKit.h>
+#import "FIAPProductRequestHandler.h"
+#import "InAppPurchasePlugin.h"
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SKProductSubscriptionPeriodStub : SKProductSubscriptionPeriod
@@ -19,4 +21,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithIdentifiers:(NSSet *)identifiers;
 @end
 
+@interface InAppPurchasePluginStub : InAppPurchasePlugin
+@end
 NS_ASSUME_NONNULL_END
