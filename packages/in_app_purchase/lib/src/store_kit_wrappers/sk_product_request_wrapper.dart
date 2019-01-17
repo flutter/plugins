@@ -38,7 +38,7 @@ class SKProductRequestWrapper {
 
 /// A unit discription the length of a subscription period. 
 /// 
-/// This is wrapper of StoreKit's [SKProductPeriodUnit] https://developer.apple.com/documentation/storekit/skproductperiodunit?language=objc
+/// This is wrapper of StoreKit's [SKProductPeriodUnit](https://developer.apple.com/documentation/storekit/skproductperiodunit?language=objc).
 enum SubscriptionPeriodUnit {
   day,
   week,
@@ -55,14 +55,16 @@ class SKProductSubscriptionPeriodWrapper {
   SKProductSubscriptionPeriodWrapper(
       {@required this.numberOfUnits, @required this.unit});
 
-  /// Constructor to build with a map
+  /// Constructor to build with a map.
   ///
   /// Used for constructing the class with the map passed from the OBJC layer.
   SKProductSubscriptionPeriodWrapper.fromMap(Map<String, dynamic> map)
       : numberOfUnits = map['numberOfUnits'],
         unit = (map['unit']!=null)?SubscriptionPeriodUnit.values[map['unit']]:null;
 
+  /// The number of a certain units to represent the period, the unit is defined in the unit property.
   final int numberOfUnits;
+  /// The unit that combined with numberOfUnits to define the length of the subscripton.
   final SubscriptionPeriodUnit unit;
 }
 
@@ -71,21 +73,18 @@ class SKProductSubscriptionPeriodWrapper {
 /// [PayAsYouGo] allows user to pay the discounted price at each payment period.
 /// [PayUpFront] allows user to pay the discounted price upfront and receive the product for the rest of time that was paid for.
 /// [FreeTrail] user pays nothing during the discounted period. 
-/// This is a wrapper for StoreKit's [SKProductDiscountPaymentMode] https://developer.apple.com/documentation/storekit/skproductdiscountpaymentmode?language=objc
+/// This is a wrapper for StoreKit's [SKProductDiscountPaymentMode](https://developer.apple.com/documentation/storekit/skproductdiscountpaymentmode?language=objc).
 enum ProductDiscountPaymentMode {
   PayAsYouGo,
   PayUpFront,
   FreeTrail,
 }
 
-/// A product discount
+/// A product discount.
 ///
-/// [price] is discounted price.
-/// [numberOfPeriods] is the length of the discounted period represented by an int/
-/// [subscriptionPeriod] is the [SKProductSubscriptionPeriodWrapper] object represent the discount period.
-/// [paymentMode] is [ProductDiscountPaymentMode] for the discount.
-/// 
-/// https://developer.apple.com/documentation/storekit/skproductdiscount?language=objc
+/// Most of the fields are identical to OBJC SKProduct.
+/// The only difference is instead of the locale object, we only exposed currencyCode for simplicity. #26610.
+/// This is a wrapper for StoreKit's [SKProductDiscount](https://developer.apple.com/documentation/storekit/skproductdiscount?language=objc).
 class SKProductDiscountWrapper {
   SKProductDiscountWrapper(
       {@required this.price,
@@ -94,7 +93,7 @@ class SKProductDiscountWrapper {
       @required this.paymentMode,
       @required this.subscriptionPeriod});
 
-  /// Constructor to build with a map
+  /// Constructor to build with a map.
   ///
   /// Used for constructing the class with the map passed from the OBJC layer.
   SKProductDiscountWrapper.fromMap(Map<String, dynamic> map)
@@ -107,18 +106,23 @@ class SKProductDiscountWrapper {
                 map['subscriptionPeriod'].cast<String, dynamic>())
             : null;
 
+  /// The discounted price, in the currency that is defined in [currencyCode].
   final double price;
+  /// The currencyCode for the price, e.g USD for U.S. dollars. 
   final String currencyCode;
+  /// The object represent the discount period.
   final int numberOfPeriods;
+  /// The payment mode for the discount.
   final ProductDiscountPaymentMode paymentMode;
+  /// The object represents the subscription period for the discount.
   final SKProductSubscriptionPeriodWrapper subscriptionPeriod;
 }
 
-/// A product
+/// A product.
 ///
-/// Most of the fields are the same as in OBJC SKProduct
-/// The only difference is instead of the locale object, we only exposed currencyCode for simplicity.
-/// https://developer.apple.com/documentation/storekit/skproduct?language=objc
+/// Most of the fields are identical to OBJC SKProduct.
+/// The only difference is instead of the locale object, we only exposed currencyCode for simplicity. #26610.
+/// This is a wrapper for StoreKit's [SKProduct](https://developer.apple.com/documentation/storekit/skproduct?language=objc).
 class SKProductWrapper {
   SKProductWrapper({
     @required this.productIdentifier,
@@ -156,16 +160,27 @@ class SKProductWrapper {
             ? SKProductDiscountWrapper.fromMap(
                 map['introductoryPrice'].cast<String, dynamic>())
             : null;
-
+  
+  ///The unique identifier of the product.
   final String productIdentifier,
+  /// The localizedTitle of the product.
       localizedTitle,
+  /// The localized description of the product.
       localizedDescription,
+  /// The currencyCode for the price, e.g USD for U.S. dollars. 
       currencyCode,
+  /// The downloadContentVersion, can be null if the product is not a download content.
       downloadContentVersion,
+  /// 
       subscriptionGroupIdentifier;
+  /// The price of the product, in the currency that is defined in [currencyCode].
   final double price;
+  /// If the AppStore has downloadable content for this product.
   final bool downloadable;
+  /// 
   final List<int> downloadContentLengths;
+  /// The object represents the subscription period of the product.
   final SKProductSubscriptionPeriodWrapper subscriptionPeriod;
+  /// The object represents the introductory price of the product. 
   final SKProductDiscountWrapper introductoryPrice;
 }

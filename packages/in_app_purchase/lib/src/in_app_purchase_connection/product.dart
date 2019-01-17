@@ -2,4 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-class Product {}
+/// A consolicated product class represents the common fields between StoreKit product and BillingClient product.
+/// 
+/// If a platform specific impelmentation is required, use the client specific class [SKProductWrapper] or <Android Product class>
+class Product {
+  // TODO: implement required #26325
+}
