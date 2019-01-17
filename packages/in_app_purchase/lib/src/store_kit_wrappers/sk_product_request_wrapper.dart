@@ -80,11 +80,16 @@ enum ProductDiscountPaymentMode {
 
 /// A product discount
 ///
-/// A product discount is defined 
+/// [price] is discounted price.
+/// [numberOfPeriods] is the length of the discounted period represented by an int/
+/// [subscriptionPeriod] is the [SKProductSubscriptionPeriodWrapper] object represent the discount period.
+/// [paymentMode] is [ProductDiscountPaymentMode] for the discount.
+/// 
 /// https://developer.apple.com/documentation/storekit/skproductdiscount?language=objc
 class SKProductDiscountWrapper {
   SKProductDiscountWrapper(
       {@required this.price,
+      @required this.currencyCode,
       @required this.numberOfPeriods,
       @required this.paymentMode,
       @required this.subscriptionPeriod});
@@ -94,6 +99,7 @@ class SKProductDiscountWrapper {
   /// Used for constructing the class with the map passed from the OBJC layer.
   SKProductDiscountWrapper.fromMap(Map<String, dynamic> map)
       : price = map['price'],
+        currencyCode = map['currencyCode'],
         numberOfPeriods = map['numberOfPeriods'],
         paymentMode = (map['paymentMode'] != null)?ProductDiscountPaymentMode.values[map['paymentMode']]:null,
         subscriptionPeriod = map['subscriptionPeriod'] != null
@@ -102,12 +108,13 @@ class SKProductDiscountWrapper {
             : null;
 
   final double price;
+  final String currencyCode;
   final int numberOfPeriods;
   final ProductDiscountPaymentMode paymentMode;
   final SKProductSubscriptionPeriodWrapper subscriptionPeriod;
 }
 
-/// This class wraps the IOS SKProduct class
+/// A product
 ///
 /// Most of the fields are the same as in OBJC SKProduct
 /// The only difference is instead of the locale object, we only exposed currencyCode for simplicity.

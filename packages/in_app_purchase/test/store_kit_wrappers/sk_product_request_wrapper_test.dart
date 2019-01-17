@@ -16,6 +16,7 @@ void main() {
   };
   final Map<String, dynamic> discountMap = <String, dynamic>{
     'price': 1.0,
+    'currencyCode': 'USD',
     'numberOfPeriods': 1,
     'paymentMode': 2,
     'subscriptionPeriod': subMap,
@@ -62,6 +63,7 @@ void main() {
       final SKProductDiscountWrapper wrapper =
           SKProductDiscountWrapper.fromMap(discountMap);
       expect(wrapper.price, discountMap['price']);
+      expect(wrapper.currencyCode, discountMap['currencyCode']);
       expect(wrapper.numberOfPeriods, discountMap['numberOfPeriods']);
       expect(wrapper.paymentMode, ProductDiscountPaymentMode.values[discountMap['paymentMode']]);
       expect(wrapper.subscriptionPeriod.unit,
@@ -76,6 +78,7 @@ void main() {
       final SKProductDiscountWrapper wrapper =
           SKProductDiscountWrapper.fromMap(<String, dynamic>{});
       expect(wrapper.price, null);
+      expect(wrapper.currencyCode, null);
       expect(wrapper.numberOfPeriods, null);
       expect(wrapper.paymentMode, null);
       expect(wrapper.subscriptionPeriod, null);
