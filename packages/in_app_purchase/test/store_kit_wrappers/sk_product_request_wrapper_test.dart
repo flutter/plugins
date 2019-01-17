@@ -12,12 +12,12 @@ void main() {
 
   final Map<String, dynamic> subMap = <String, dynamic>{
     'numberOfUnits': 0,
-    'unit': 1
+    'unit': 2
   };
   final Map<String, dynamic> discountMap = <String, dynamic>{
     'price': 1.0,
     'numberOfPeriods': 1,
-    'paymentMode': 1,
+    'paymentMode': 2,
     'subscriptionPeriod': subMap,
   };
   final Map<String, dynamic> productMap = <String, dynamic>{
@@ -44,7 +44,7 @@ void main() {
       final SKProductSubscriptionPeriodWrapper wrapper =
           SKProductSubscriptionPeriodWrapper.fromMap(subMap);
       expect(wrapper.numberOfUnits, subMap['numberOfUnits']);
-      expect(wrapper.unit, subMap['unit']);
+      expect(wrapper.unit, SubscriptionPeriodUnit.values[subMap['unit']]);
     });
 
     test(
@@ -63,9 +63,9 @@ void main() {
           SKProductDiscountWrapper.fromMap(discountMap);
       expect(wrapper.price, discountMap['price']);
       expect(wrapper.numberOfPeriods, discountMap['numberOfPeriods']);
-      expect(wrapper.paymentMode, discountMap['paymentMode']);
+      expect(wrapper.paymentMode, ProductDiscountPaymentMode.values[discountMap['paymentMode']]);
       expect(wrapper.subscriptionPeriod.unit,
-          discountMap['subscriptionPeriod']['unit']);
+          SubscriptionPeriodUnit.values[discountMap['subscriptionPeriod']['unit']]);
       expect(wrapper.subscriptionPeriod.numberOfUnits,
           discountMap['subscriptionPeriod']['numberOfUnits']);
     });
@@ -101,15 +101,15 @@ void main() {
       expect(wrapper.introductoryPrice.numberOfPeriods,
           productMap['introductoryPrice']['numberOfPeriods']);
       expect(wrapper.introductoryPrice.paymentMode,
-          productMap['introductoryPrice']['paymentMode']);
+          ProductDiscountPaymentMode.values[productMap['introductoryPrice']['paymentMode']]);
       expect(wrapper.introductoryPrice.subscriptionPeriod.unit,
-          productMap['introductoryPrice']['subscriptionPeriod']['unit']);
+          SubscriptionPeriodUnit.values[productMap['introductoryPrice']['subscriptionPeriod']['unit']]);
       expect(
           wrapper.introductoryPrice.subscriptionPeriod.numberOfUnits,
           productMap['introductoryPrice']['subscriptionPeriod']
               ['numberOfUnits']);
       expect(wrapper.subscriptionPeriod.unit,
-          productMap['subscriptionPeriod']['unit']);
+          SubscriptionPeriodUnit.values[productMap['subscriptionPeriod']['unit']]);
       expect(wrapper.subscriptionPeriod.numberOfUnits,
           productMap['subscriptionPeriod']['numberOfUnits']);
     });

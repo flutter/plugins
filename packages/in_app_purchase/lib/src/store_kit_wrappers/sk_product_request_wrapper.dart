@@ -36,10 +36,21 @@ class SKProductRequestWrapper {
   }
 }
 
-/// This class wraps the IOS SKProductSubscriptionPeriod class
+/// A unit discription the length of a subscription period. 
+/// 
+/// This is wrapper of StoreKit's [SKProductPeriodUnit] https://developer.apple.com/documentation/storekit/skproductperiodunit?language=objc
+enum SubscriptionPeriodUnit {
+  day,
+  week,
+  month,
+  year,
+} 
+
+/// A subscription period.
 ///
-/// It contains the same field in SKProductSubscriptionPeriod class
-/// https://developer.apple.com/documentation/storekit/skproduct/2936884-subscriptionperiod?language=objc
+/// A period is defined by a [numberOfUnits] and a [unit], e.g for a 3 months period [numberOfUnits] is 3 and [unit] is a month.
+///
+/// This is a wrapper for StoreKit's [SKProductSubscriptionPeriod](https://developer.apple.com/documentation/storekit/skproductsubscriptionperiod?language=objc).
 class SKProductSubscriptionPeriodWrapper {
   SKProductSubscriptionPeriodWrapper(
       {@required this.numberOfUnits, @required this.unit});
@@ -49,14 +60,27 @@ class SKProductSubscriptionPeriodWrapper {
   /// Used for constructing the class with the map passed from the OBJC layer.
   SKProductSubscriptionPeriodWrapper.fromMap(Map<String, dynamic> map)
       : numberOfUnits = map['numberOfUnits'],
-        unit = map['unit'];
+        unit = (map['unit']!=null)?SubscriptionPeriodUnit.values[map['unit']]:null;
 
-  final int numberOfUnits, unit;
+  final int numberOfUnits;
+  final SubscriptionPeriodUnit unit;
 }
 
-/// This class wraps the IOS SKProductDiscount class
+/// A payment mode to describe how the discounted price is paid.
+/// 
+/// [PayAsYouGo] allows user to pay the discounted price at each payment period.
+/// [PayUpFront] allows user to pay the discounted price upfront and receive the product for the rest of time that was paid for.
+/// [FreeTrail] user pays nothing during the discounted period. 
+/// This is a wrapper for StoreKit's [SKProductDiscountPaymentMode] https://developer.apple.com/documentation/storekit/skproductdiscountpaymentmode?language=objc
+enum ProductDiscountPaymentMode {
+  PayAsYouGo,
+  PayUpFront,
+  FreeTrail,
+}
+
+/// A product discount
 ///
-/// It contains the same field in SKProductDiscount class
+/// A product discount is defined 
 /// https://developer.apple.com/documentation/storekit/skproductdiscount?language=objc
 class SKProductDiscountWrapper {
   SKProductDiscountWrapper(
@@ -71,14 +95,15 @@ class SKProductDiscountWrapper {
   SKProductDiscountWrapper.fromMap(Map<String, dynamic> map)
       : price = map['price'],
         numberOfPeriods = map['numberOfPeriods'],
-        paymentMode = map['paymentMode'],
+        paymentMode = (map['paymentMode'] != null)?ProductDiscountPaymentMode.values[map['paymentMode']]:null,
         subscriptionPeriod = map['subscriptionPeriod'] != null
             ? SKProductSubscriptionPeriodWrapper.fromMap(
                 map['subscriptionPeriod'].cast<String, dynamic>())
             : null;
 
   final double price;
-  final int numberOfPeriods, paymentMode;
+  final int numberOfPeriods;
+  final ProductDiscountPaymentMode paymentMode;
   final SKProductSubscriptionPeriodWrapper subscriptionPeriod;
 }
 
