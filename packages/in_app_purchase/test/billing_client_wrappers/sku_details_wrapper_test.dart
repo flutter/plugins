@@ -35,7 +35,7 @@ void main() {
 
   group('SkuDetailsResponseWrapper', () {
     test('parsed from map', () {
-      final int responseCode = 200;
+      final BillingResponse responseCode = BillingResponse.OK;
       final List<SkuDetailsWrapper> skusDetails = <SkuDetailsWrapper>[
         dummyWrapper,
         dummyWrapper
@@ -45,7 +45,7 @@ void main() {
 
       final SkuDetailsResponseWrapper parsed =
           SkuDetailsResponseWrapper.fromMap(<String, dynamic>{
-        'responseCode': responseCode,
+        'responseCode': int.parse(responseCode.toString()),
         'skuDetailsList': <Map<String, dynamic>>[
           buildSkuMap(dummyWrapper),
           buildSkuMap(dummyWrapper)
@@ -57,14 +57,14 @@ void main() {
     });
 
     test('handles empty list of skuDetails', () {
-      final int responseCode = 500;
+      final BillingResponse responseCode = BillingResponse.ERROR;
       final List<SkuDetailsWrapper> skusDetails = <SkuDetailsWrapper>[];
       final SkuDetailsResponseWrapper expected = SkuDetailsResponseWrapper(
           responseCode: responseCode, skuDetailsList: skusDetails);
 
       final SkuDetailsResponseWrapper parsed =
           SkuDetailsResponseWrapper.fromMap(<String, dynamic>{
-        'responseCode': responseCode,
+        'responseCode': int.parse(responseCode.toString()),
         'skuDetailsList': <Map<String, dynamic>>[]
       });
 

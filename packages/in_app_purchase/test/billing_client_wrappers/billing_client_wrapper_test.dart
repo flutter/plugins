@@ -68,9 +68,9 @@ void main() {
         'BillingClient#querySkuDetailsAsync(SkuDetailsParams, SkuDetailsResponseListener)';
 
     test('handles empty skuDetails', () async {
-      final int responseCode = 500;
+      final BillingResponse responseCode = BillingResponse.DEVELOPER_ERROR;
       stubPlatform.addResponse(name: queryMethodName, value: <dynamic, dynamic>{
-        'responseCode': responseCode,
+        'responseCode': int.parse(responseCode.toString()),
         'skuDetailsList': <Map<String, dynamic>>[]
       });
 
@@ -78,14 +78,14 @@ void main() {
           .querySkuDetails(
               skuType: SkuType.INAPP, skusList: <String>['invalid']);
 
-      expect(response.responseCode, equals(500));
+      expect(response.responseCode, equals(responseCode));
       expect(response.skuDetailsList, isEmpty);
     });
 
     test('returns SkuDetailsResponseWrapper', () async {
-      final int responseCode = 200;
-      stubPlatform.addResponse(name: queryMethodName, value: <dynamic, dynamic>{
-        'responseCode': responseCode,
+      final BillingResponse responseCode = BillingResponse.OK;
+      stubPlatform.addResponse(name: queryMethodName, value: <String, dynamic>{
+        'responseCode': int.parse(responseCode.toString()),
         'skuDetailsList': <Map<String, dynamic>>[buildSkuMap(dummyWrapper)]
       });
 

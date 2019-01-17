@@ -74,11 +74,14 @@ class BillingClient {
     return channel.invokeMethod("BillingClient#endConnection()", null);
   }
 
-  /// Calls through to `BillingClient#querySkuDetailsAsync(SkuDetailsParams params, SkuDetailsResponseListener listener)`
+  /// Returns a list of [SkuDetailsWrapper]s that have [SkuDetailsWrapper.sku]
+  /// in [skusList], and [SkuDetailsWrapper.type] matching [skuType].
   ///
-  /// Instead of taking a callback parameter, it returns the async output in the
-  /// form of a future. It also takes the values of `SkuDetailsParams` as direct
-  /// arguments instead of requiring it constructed and passed in as a class.
+  /// Calls through to `BillingClient#querySkuDetailsAsync(SkuDetailsParams
+  /// params, SkuDetailsResponseListener listener)` Instead of taking a callback
+  /// parameter, it returns a Future [SkuDetailsResponseWrapper]. It also takes
+  /// the values of `SkuDetailsParams` as direct arguments instead of requiring
+  /// it constructed and passed in as a class.
   Future<SkuDetailsResponseWrapper> querySkuDetails(
       {@required SkuType skuType, @required List<String> skusList}) async {
     final Map<String, dynamic> arguments = <String, dynamic>{
@@ -114,6 +117,7 @@ typedef void OnBillingServiceDisconnected();
 /// See the `BillingResponse` docs for an explanation of the different constants.
 class BillingResponse {
   const BillingResponse._(this._code);
+  static BillingResponse fromInt(int code) => BillingResponse._(code);
   final int _code;
   @override
   String toString() => _code.toString();
@@ -135,8 +139,10 @@ class BillingResponse {
   static const BillingResponse ITEM_NOT_OWNED = BillingResponse._(8);
 }
 
-/// Enum representing [`BillingClient.SkuType`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.SkuType)
+/// Enum representing potential [SkuDetailsWrapper.type]s.
 ///
+/// Wraps
+/// [`BillingClient.SkuType`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.SkuType)
 /// See the linked documentation for an explanation of the different constants.
 class SkuType {
   const SkuType._(this._type);
@@ -156,6 +162,9 @@ class SkuType {
   @override
   bool operator ==(dynamic other) => other is SkuType && other._type == _type;
 
+  /// A one time product. Acquired in a single transaction.
   static const SkuType INAPP = SkuType._("inapp");
+
+  /// A product requiring a recurring charge over time.
   static const SkuType SUBS = SkuType._("subs");
 }
