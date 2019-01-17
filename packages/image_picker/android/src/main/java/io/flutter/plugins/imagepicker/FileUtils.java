@@ -20,7 +20,6 @@
 package io.flutter.plugins.imagepicker;
 
 import android.annotation.SuppressLint;
-import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
@@ -63,10 +62,7 @@ class FileUtils {
 
         if (!TextUtils.isEmpty(id)) {
           try {
-            final Uri contentUri =
-                ContentUris.withAppendedId(
-                    Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
-            return getDataColumn(context, contentUri, null, null);
+            return getDataColumn(context, uri, null, null);
           } catch (NumberFormatException e) {
             return null;
           }
