@@ -4,11 +4,18 @@
 
 import 'dart:ui' show hashValues;
 import 'package:flutter/foundation.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'billing_client_wrapper.dart';
+
+// WARNING: Changes to `@JsonSerializable` classes need to be reflected in the
+// below generated file. Run `flutter packages pub run build_runner watch` to
+// rebuild and watch for further changes.
+part 'sku_details_wrapper.g.dart';
 
 /// Dart wrapper around [`com.android.billingclient.api.SkuDetails`](https://developer.android.com/reference/com/android/billingclient/api/SkuDetails).
 ///
 /// Contains the details of an available product in Google Play Billing.
+@JsonSerializable()
 class SkuDetailsWrapper {
   @visibleForTesting
   SkuDetailsWrapper({
@@ -33,21 +40,8 @@ class SkuDetailsWrapper {
   /// The map needs to have named string keys with values matching the names and
   /// types of all of the members on this class.
   @visibleForTesting
-  SkuDetailsWrapper.fromMap(Map<dynamic, dynamic> map)
-      : description = map['description'],
-        freeTrialPeriod = map['freeTrialPeriod'],
-        introductoryPrice = map['introductoryPrice'],
-        introductoryPriceMicros = map['introductoryPriceMicros'],
-        introductoryPriceCycles = map['introductoryPriceCycles'],
-        introductoryPricePeriod = map['introductoryPricePeriod'],
-        price = map['price'],
-        priceAmountMicros = map['priceAmountMicros'],
-        priceCurrencyCode = map['priceCurrencyCode'],
-        sku = map['sku'],
-        subscriptionPeriod = map['subscriptionPeriod'],
-        title = map['title'],
-        type = SkuType.fromString(map['type']),
-        isRewarded = map['isRewarded'];
+  factory SkuDetailsWrapper.fromJson(Map map) =>
+      _$SkuDetailsWrapperFromJson(map);
 
   final String description;
 
@@ -83,6 +77,7 @@ class SkuDetailsWrapper {
   final String title;
 
   /// The [SkuType] of the product.
+  @JsonKey(fromJson: SkuType.fromString)
   final SkuType type;
 
   /// False if the product is paid.
@@ -133,6 +128,7 @@ class SkuDetailsWrapper {
 /// Translation of [`com.android.billingclient.api.SkuDetailsResponseListener`](https://developer.android.com/reference/com/android/billingclient/api/SkuDetailsResponseListener.html).
 ///
 /// Returned by [BillingClient.querySkuDetails].
+@JsonSerializable()
 class SkuDetailsResponseWrapper {
   @visibleForTesting
   SkuDetailsResponseWrapper({@required this.responseCode, this.skuDetailsList});
@@ -141,15 +137,11 @@ class SkuDetailsResponseWrapper {
   ///
   /// The map needs to have named string keys with values matching the names and
   /// types of all of the members on this class.
-  SkuDetailsResponseWrapper.fromMap(Map<dynamic, dynamic> map)
-      : responseCode = BillingResponse.fromInt(map['responseCode']),
-        skuDetailsList =
-            List.castFrom<dynamic, Map<dynamic, dynamic>>(map['skuDetailsList'])
-                .map((Map<dynamic, dynamic> entry) =>
-                    SkuDetailsWrapper.fromMap(entry))
-                .toList();
+  factory SkuDetailsResponseWrapper.fromJson(Map<String, dynamic> map) =>
+      _$SkuDetailsResponseWrapperFromJson(map);
 
   /// The final status of the [BillingClient.querySkuDetails] call.
+  @JsonKey(fromJson: BillingResponse.fromInt)
   final BillingResponse responseCode;
 
   /// A list of [SkuDetailsWrapper] matching the query to [BillingClient.querySkuDetails].

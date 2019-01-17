@@ -89,7 +89,7 @@ class BillingClient {
       'skuType': skuType.toString(),
       'skusList': skusList
     };
-    return SkuDetailsResponseWrapper.fromMap(await channel.invokeMapMethod<
+    return SkuDetailsResponseWrapper.fromJson(await channel.invokeMapMethod<
             String, dynamic>(
         'BillingClient#querySkuDetailsAsync(SkuDetailsParams, SkuDetailsResponseListener)',
         arguments));

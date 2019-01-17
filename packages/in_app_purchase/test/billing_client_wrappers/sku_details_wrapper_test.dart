@@ -27,7 +27,7 @@ void main() {
     test('converts from map', () {
       final SkuDetailsWrapper expected = dummyWrapper;
       final SkuDetailsWrapper parsed =
-          SkuDetailsWrapper.fromMap(buildSkuMap(expected));
+          SkuDetailsWrapper.fromJson(buildSkuMap(expected));
 
       expect(parsed, equals(expected));
     });
@@ -44,7 +44,7 @@ void main() {
           responseCode: responseCode, skuDetailsList: skusDetails);
 
       final SkuDetailsResponseWrapper parsed =
-          SkuDetailsResponseWrapper.fromMap(<String, dynamic>{
+          SkuDetailsResponseWrapper.fromJson(<String, dynamic>{
         'responseCode': int.parse(responseCode.toString()),
         'skuDetailsList': <Map<String, dynamic>>[
           buildSkuMap(dummyWrapper),
@@ -63,7 +63,7 @@ void main() {
           responseCode: responseCode, skuDetailsList: skusDetails);
 
       final SkuDetailsResponseWrapper parsed =
-          SkuDetailsResponseWrapper.fromMap(<String, dynamic>{
+          SkuDetailsResponseWrapper.fromJson(<String, dynamic>{
         'responseCode': int.parse(responseCode.toString()),
         'skuDetailsList': <Map<String, dynamic>>[]
       });
