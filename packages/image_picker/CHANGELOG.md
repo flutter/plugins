@@ -1,4 +1,4 @@
-## 0.4.13
+## 0.4.12+1
 
 * Fix a crash when selecting downloaded images from image picker on certain devices.
 
