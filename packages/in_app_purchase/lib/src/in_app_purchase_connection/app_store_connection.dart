@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'package:in_app_purchase/src/channel.dart';
 
 import '../../store_kit_wrappers.dart';
 import './product.dart';
@@ -32,6 +33,27 @@ class AppStoreConnection implements InAppPurchaseConnection {
   Future<List<Product>> getProductList(List<String> identifiers) =>
       throw UnimplementedError();
 
-  Future<List<SKProductWrapper>> getSKProductList(List<String> identifiers) =>
-      SKProductRequestHandler.getSKProductList(identifiers);
+  /// Get product list.
+  ///
+  /// [identifiers] is the product identifiers specified in Itunes Connect for the products that need to be retrived.
+  ///
+  /// Returns a future containing a list of [SKProductWrapper] which then can be queried to get desired information.
+  Future<List<SKProductWrapper>> getSKProductList(
+      List<String> identifiers) async {
+    final List<Map<dynamic, dynamic>> productListSerilized =
+        await channel.invokeListMethod<Map<dynamic, dynamic>>(
+      'getProductList',
+      <String, Object>{
+        'identifiers': identifiers,
+      },
+    );
+
+    final List<SKProductWrapper> productList = <SKProductWrapper>[];
+    for (Map<dynamic, dynamic> productMap in productListSerilized) {
+      productList.add(SKProductWrapper.fromMap(
+        productMap.cast<String, dynamic>(),
+      ));
+    }
+    return productList;
+  }
 }

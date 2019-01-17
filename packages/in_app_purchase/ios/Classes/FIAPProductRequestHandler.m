@@ -57,8 +57,9 @@
 
   }];
   if (@available(iOS 10.0, *)) {
-    // TODO: NSLocle is a complex object, want to see the actual need of getting this expanded to
-    // a map. Matching android to only get the currencyCode for now.
+    // TODO(cyanglaz): NSLocale is a complex object, want to see the actual need of getting this
+    // expanded to a map. Matching android to only get the currencyCode for now.
+    // https://github.com/flutter/flutter/issues/26610
     [map setObject:self.priceLocale.currencyCode ?: [NSNull null] forKey:@"currencyCode"];
   }
   if (@available(iOS 11.2, *)) {
@@ -95,8 +96,9 @@
   }];
 
   if (@available(iOS 10.0, *)) {
-    // TODO: NSLocle is a complex object, want to see the actual need of getting this expanded to
-    // a map. Matching android to only get the currencyCode for now.
+    // TODO(cyanglaz): NSLocale is a complex object, want to see the actual need of getting this
+    // expanded to a map. Matching android to only get the currencyCode for now.
+    // https://github.com/flutter/flutter/issues/26610
     [map setObject:self.priceLocale.currencyCode ?: [NSNull null] forKey:@"currencyCode"];
   }
   return map;

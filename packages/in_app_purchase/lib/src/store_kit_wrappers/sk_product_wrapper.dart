@@ -2,49 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
-
 import 'package:flutter/foundation.dart';
-import '../channel.dart';
 
-/// [SKProductRequestHandler] wraps IOS SKProductRequest class to to retrive StoreKit product information in dart.
+/// A unit discription the length of a subscription period.
 ///
-/// https://developer.apple.com/documentation/storekit/skproductsrequest?language=objc
-class SKProductRequestHandler {
-  /// Get product list.
-  ///
-  /// [identifiers] is the product identifiers specified in Itunes Connect for the products that need to be retrived.
-  ///
-  /// Returns a future containing a list of [SKProduct] which then can be queried to get desired information.
-  static Future<List<SKProductWrapper>> getSKProductList(
-      List<String> identifiers) async {
-    final List<Map<dynamic, dynamic>> productListSerilized =
-        await channel.invokeListMethod<Map<dynamic, dynamic>>(
-      'getProductList',
-      <String, Object>{
-        'identifiers': identifiers,
-      },
-    );
-
-    final List<SKProductWrapper> productList = <SKProductWrapper>[];
-    for (Map<dynamic, dynamic> productMap in productListSerilized) {
-      productList.add(SKProductWrapper.fromMap(
-        productMap.cast<String, dynamic>(),
-      ));
-    }
-    return productList;
-  }
-}
-
-/// A unit discription the length of a subscription period. 
-/// 
 /// This is wrapper of StoreKit's [SKProductPeriodUnit](https://developer.apple.com/documentation/storekit/skproductperiodunit?language=objc).
 enum SubscriptionPeriodUnit {
   day,
   week,
   month,
   year,
-} 
+}
 
 /// A subscription period.
 ///
@@ -60,19 +28,22 @@ class SKProductSubscriptionPeriodWrapper {
   /// Used for constructing the class with the map passed from the OBJC layer.
   SKProductSubscriptionPeriodWrapper.fromMap(Map<String, dynamic> map)
       : numberOfUnits = map['numberOfUnits'],
-        unit = (map['unit']!=null)?SubscriptionPeriodUnit.values[map['unit']]:null;
+        unit = (map['unit'] != null)
+            ? SubscriptionPeriodUnit.values[map['unit']]
+            : null;
 
   /// The number of a certain units to represent the period, the unit is defined in the unit property.
   final int numberOfUnits;
+
   /// The unit that combined with numberOfUnits to define the length of the subscripton.
   final SubscriptionPeriodUnit unit;
 }
 
 /// A payment mode to describe how the discounted price is paid.
-/// 
+///
 /// [PayAsYouGo] allows user to pay the discounted price at each payment period.
 /// [PayUpFront] allows user to pay the discounted price upfront and receive the product for the rest of time that was paid for.
-/// [FreeTrail] user pays nothing during the discounted period. 
+/// [FreeTrail] user pays nothing during the discounted period.
 /// This is a wrapper for StoreKit's [SKProductDiscountPaymentMode](https://developer.apple.com/documentation/storekit/skproductdiscountpaymentmode?language=objc).
 enum ProductDiscountPaymentMode {
   PayAsYouGo,
@@ -83,7 +54,7 @@ enum ProductDiscountPaymentMode {
 /// A product discount.
 ///
 /// Most of the fields are identical to OBJC SKProduct.
-/// The only difference is instead of the locale object, we only exposed currencyCode for simplicity. #26610.
+/// The only difference is instead of the locale object, we only exposed currencyCode for simplicity.
 /// This is a wrapper for StoreKit's [SKProductDiscount](https://developer.apple.com/documentation/storekit/skproductdiscount?language=objc).
 class SKProductDiscountWrapper {
   SKProductDiscountWrapper(
@@ -100,7 +71,9 @@ class SKProductDiscountWrapper {
       : price = map['price'],
         currencyCode = map['currencyCode'],
         numberOfPeriods = map['numberOfPeriods'],
-        paymentMode = (map['paymentMode'] != null)?ProductDiscountPaymentMode.values[map['paymentMode']]:null,
+        paymentMode = (map['paymentMode'] != null)
+            ? ProductDiscountPaymentMode.values[map['paymentMode']]
+            : null,
         subscriptionPeriod = map['subscriptionPeriod'] != null
             ? SKProductSubscriptionPeriodWrapper.fromMap(
                 map['subscriptionPeriod'].cast<String, dynamic>())
@@ -108,12 +81,19 @@ class SKProductDiscountWrapper {
 
   /// The discounted price, in the currency that is defined in [currencyCode].
   final double price;
-  /// The currencyCode for the price, e.g USD for U.S. dollars. 
+
+  // TODO(cyanglaz): NSLocale is a complex object, want to see the actual need of getting this expanded to
+  //                 a map. Matching android to only get the currencyCode for now.
+  //                 https://github.com/flutter/flutter/issues/26610
+  /// The currencyCode for the price, e.g USD for U.S. dollars.
   final String currencyCode;
+
   /// The object represent the discount period.
   final int numberOfPeriods;
+
   /// The payment mode for the discount.
   final ProductDiscountPaymentMode paymentMode;
+
   /// The object represents the subscription period for the discount.
   final SKProductSubscriptionPeriodWrapper subscriptionPeriod;
 }
@@ -121,7 +101,7 @@ class SKProductDiscountWrapper {
 /// A product.
 ///
 /// Most of the fields are identical to OBJC SKProduct.
-/// The only difference is instead of the locale object, we only exposed currencyCode for simplicity. #26610.
+/// The only difference is instead of the locale object, we only exposed currencyCode for simplicity.
 /// This is a wrapper for StoreKit's [SKProduct](https://developer.apple.com/documentation/storekit/skproduct?language=objc).
 class SKProductWrapper {
   SKProductWrapper({
@@ -160,27 +140,40 @@ class SKProductWrapper {
             ? SKProductDiscountWrapper.fromMap(
                 map['introductoryPrice'].cast<String, dynamic>())
             : null;
-  
+
   ///The unique identifier of the product.
   final String productIdentifier,
-  /// The localizedTitle of the product.
+
+      /// The localizedTitle of the product.
       localizedTitle,
-  /// The localized description of the product.
+
+      /// The localized description of the product.
       localizedDescription,
-  /// The currencyCode for the price, e.g USD for U.S. dollars. 
+
+      // TODO(cyanglaz): NSLocale is a complex object, want to see the actual need of getting this expanded to
+      //                 a map. Matching android to only get the currencyCode for now.
+      //                 https://github.com/flutter/flutter/issues/26610
+      /// The currencyCode for the price, e.g USD for U.S. dollars.
       currencyCode,
-  /// The version of the downloadable content.
+
+      /// The version of the downloadable content.
       downloadContentVersion,
-  /// The subscription group identifer. 
+
+      /// The subscription group identifer.
       subscriptionGroupIdentifier;
+
   /// The price of the product, in the currency that is defined in [currencyCode].
   final double price;
+
   /// If the AppStore has downloadable content for this product.
   final bool downloadable;
-  /// The length of the downloadable content. 
+
+  /// The length of the downloadable content.
   final List<int> downloadContentLengths;
+
   /// The object represents the subscription period of the product.
   final SKProductSubscriptionPeriodWrapper subscriptionPeriod;
-  /// The object represents the introductory price of the product. 
+
+  /// The object represents the introductory price of the product.
   final SKProductDiscountWrapper introductoryPrice;
 }

@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 /// A consolicated product class represents the common fields between StoreKit product and BillingClient product.
-/// 
+///
 /// If a platform specific impelmentation is required, use the client specific class [SKProductWrapper] or <Android Product class>
 class Product {
-  // TODO: implement required #26325
+  // TODO(cyanglaz): implemention required https://github.com/flutter/flutter/issues/26325
 }
