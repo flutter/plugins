@@ -141,7 +141,7 @@ void main() {
         value: <Map<String, dynamic>>[productMap],
       );
       final List<SKProductWrapper> productList =
-          await SKProductRequestWrapper.getSKProductList(
+          await SKProductRequestHandler.getSKProductList(
         <String>['identifier1'],
       );
       expect(

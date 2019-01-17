@@ -7,10 +7,10 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import '../channel.dart';
 
-/// [SKProductRequestWrapper] wraps IOS SKProductRequest class to to retrive StoreKit product information in dart.
+/// [SKProductRequestHandler] wraps IOS SKProductRequest class to to retrive StoreKit product information in dart.
 ///
 /// https://developer.apple.com/documentation/storekit/skproductsrequest?language=objc
-class SKProductRequestWrapper {
+class SKProductRequestHandler {
   /// Get product list.
   ///
   /// [identifiers] is the product identifiers specified in Itunes Connect for the products that need to be retrived.
@@ -169,15 +169,15 @@ class SKProductWrapper {
       localizedDescription,
   /// The currencyCode for the price, e.g USD for U.S. dollars. 
       currencyCode,
-  /// The downloadContentVersion, can be null if the product is not a download content.
+  /// The version of the downloadable content.
       downloadContentVersion,
-  /// 
+  /// The subscription group identifer. 
       subscriptionGroupIdentifier;
   /// The price of the product, in the currency that is defined in [currencyCode].
   final double price;
   /// If the AppStore has downloadable content for this product.
   final bool downloadable;
-  /// 
+  /// The length of the downloadable content. 
   final List<int> downloadContentLengths;
   /// The object represents the subscription period of the product.
   final SKProductSubscriptionPeriodWrapper subscriptionPeriod;

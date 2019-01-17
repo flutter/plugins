@@ -33,5 +33,5 @@ class AppStoreConnection implements InAppPurchaseConnection {
       throw UnimplementedError();
 
   Future<List<SKProductWrapper>> getSKProductList(List<String> identifiers) =>
-      SKProductRequestWrapper.getSKProductList(identifiers);
+      SKProductRequestHandler.getSKProductList(identifiers);
 }
