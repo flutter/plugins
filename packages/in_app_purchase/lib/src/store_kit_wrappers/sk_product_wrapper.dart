@@ -14,17 +14,17 @@ class SKProductRequestWrapper {
   SKProductRequestWrapper({@required this.productIdentifiers});
 
   /// Product identifiers to request with.
-  final String productIdentifiers;
+  final List<String> productIdentifiers;
 
   /// Starts the product request.
   ///
   /// Returns the [SkProductsResponseWrapper] object.
   Future<SkProductsResponseWrapper> start() async {
-    final Map<String, dynamic> productResponseMap = await channel
-        .invokeMethod<Map<String, dynamic>>(
-            'startProductRequest', <String, Object>{
+    final Map<String, dynamic> productResponseMap = (await channel
+        .invokeMethod(
+            'startProductRequest', <String, dynamic>{
       'identifiers': productIdentifiers,
-    });
+    }));
     return SkProductsResponseWrapper.fromMap(productResponseMap);
   }
 }
@@ -34,24 +34,29 @@ class SKProductRequestWrapper {
 /// this is a wrapper for StoreKit's
 class SkProductsResponseWrapper {
   SkProductsResponseWrapper(
-      {@required this.products, @required this.invalidIdentifiers});
+      {@required this.products, @required this.invalidProductIdentifiers});
 
   /// constructor to build with a map
   ///
   /// Used for constructing the class with map passed from the OBJC layer.
   SkProductsResponseWrapper.fromMap(Map<String, dynamic> map)
-      : products = map['products']
-            .cast<List<Map<String, dynamic>>>()
-            .map((Map<String, dynamic> map) => SKProductWrapper.fromMap(
-                  map,
-                )),
-        invalidIdentifiers = map['invalidIdentifiers'].cast<List<String>>();
+      : products = _getListFromMapList(_getProductMapListFromResponseMap(map)),
+        invalidProductIdentifiers =
+            List.castFrom<dynamic, String>(map['invalidProductIdentifiers']);
 
   /// The list of the products.
   final List<SKProductWrapper> products;
 
-  /// The list of invalid identifiers.
-  final List<String> invalidIdentifiers;
+  /// The list of invalid product identifier.
+  final List<String> invalidProductIdentifiers;
+
+  static List<Map<String, dynamic>> _getProductMapListFromResponseMap(Map<String, dynamic> map) {
+    return List.castFrom<dynamic, Map<String, dynamic>>(map['products']);
+  }
+
+  static List<SKProductWrapper> _getListFromMapList(List<Map<String, dynamic>> mapList) {
+    return mapList.map((Map<String, dynamic> map)=>SKProductWrapper.fromMap(map)).toList();
+  }
 }
 
 /// A unit discription the length of a subscription period.

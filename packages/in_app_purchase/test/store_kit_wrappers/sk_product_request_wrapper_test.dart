@@ -35,10 +35,15 @@ void main() {
     'introductoryPrice': discountMap,
   };
 
+  final Map<String, dynamic> productResponseMap = <String, dynamic>{
+    'products': <Map<String, dynamic>>[productMap],
+    'invalidProductIdentifiers': <String>['123'],
+  };
+
   setUpAll(() =>
       channel.setMockMethodCallHandler(stubPlatform.fakeMethodCallHandler));
 
-  group('canMakePayments', () {
+  group('product request wrapper test', () {
     test(
         'SKProductSubscriptionPeriodWrapper should have property values consistent with map',
         () {
@@ -87,9 +92,8 @@ void main() {
       expect(wrapper.subscriptionPeriod, null);
     });
 
-    test('SKProductWrapper should have property values consistent with map',
-        () {
-      final SKProductWrapper wrapper = SKProductWrapper.fromMap(productMap);
+    void testMatchingProductMap(
+        SKProductWrapper wrapper, Map<String, dynamic> productMap) {
       expect(wrapper.productIdentifier, productMap['productIdentifier']);
       expect(wrapper.localizedTitle, productMap['localizedTitle']);
       expect(wrapper.localizedDescription, productMap['localizedDescription']);
@@ -124,6 +128,12 @@ void main() {
               .values[productMap['subscriptionPeriod']['unit']]);
       expect(wrapper.subscriptionPeriod.numberOfUnits,
           productMap['subscriptionPeriod']['numberOfUnits']);
+    }
+
+    test('SKProductWrapper should have property values consistent with map',
+        () {
+      final SKProductWrapper wrapper = SKProductWrapper.fromMap(productMap);
+      testMatchingProductMap(wrapper, productMap);
     });
 
     test(
@@ -141,29 +151,40 @@ void main() {
       expect(wrapper.downloadable, null);
       expect(wrapper.subscriptionPeriod, null);
     });
+
+    test('SKProductResponse wrapper should match', () {
+      final SkProductsResponseWrapper wrapper =
+          SkProductsResponseWrapper.fromMap(productResponseMap);
+      testMatchingProductMap(
+          wrapper.products[0], productResponseMap['products'][0]);
+      expect(wrapper.invalidProductIdentifiers,
+          productResponseMap['invalidProductIdentifiers']);
+    });
   });
 
-  group('getProductList api', () {
+  group('startProductRequest api', () {
     test('platform call should get result', () async {
       stubPlatform.addResponse(
-        name: 'getProductList',
-        value: <Map<String, dynamic>>[productMap],
-      );
-      final List<SKProductWrapper> productList =
-          await SKProductRequestHandler.getSKProductList(
-        <String>['identifier1'],
-      );
+          name: 'startProductRequest',
+          value: productResponseMap);
+      final SKProductRequestWrapper request =
+          SKProductRequestWrapper(productIdentifiers: <String>['identifier1']);
+      final SkProductsResponseWrapper response = await request.start();
       expect(
-        productList,
+        response.products,
         isNotEmpty,
       );
       expect(
-        productList.first.currencyCode,
+        response.products.first.currencyCode,
         'USD',
       );
       expect(
-        productList.first.currencyCode,
+        response.products.first.currencyCode,
         isNot('USDA'),
+      );
+      expect(
+        response.invalidProductIdentifiers,
+        isNotEmpty,
       );
     });
   });
