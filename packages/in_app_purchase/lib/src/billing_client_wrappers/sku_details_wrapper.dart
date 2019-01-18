@@ -6,6 +6,7 @@ import 'dart:ui' show hashValues;
 import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'billing_client_wrapper.dart';
+import 'enum_converters.dart';
 
 // WARNING: Changes to `@JsonSerializable` classes need to be reflected in the
 // below generated file. Run `flutter packages pub run build_runner watch` to
@@ -16,6 +17,7 @@ part 'sku_details_wrapper.g.dart';
 ///
 /// Contains the details of an available product in Google Play Billing.
 @JsonSerializable()
+@SkuTypeConverter()
 class SkuDetailsWrapper {
   @visibleForTesting
   SkuDetailsWrapper({
@@ -48,7 +50,7 @@ class SkuDetailsWrapper {
   /// Trial period in ISO 8601 format.
   final String freeTrialPeriod;
 
-  /// Introductory price, only applies to [SkuType.SUBS]. Formatted ("$0.99").
+  /// Introductory price, only applies to [SkuType.subs]. Formatted ("$0.99").
   final String introductoryPrice;
 
   /// [introductoryPrice] in micro-units 990000
@@ -72,12 +74,11 @@ class SkuDetailsWrapper {
   /// The product ID in Google Play Console.
   final String sku;
 
-  /// Applies to [SkuType.SUBS], formatted in ISO 8601.
+  /// Applies to [SkuType.subs], formatted in ISO 8601.
   final String subscriptionPeriod;
   final String title;
 
   /// The [SkuType] of the product.
-  @JsonKey(fromJson: SkuType.fromString)
   final SkuType type;
 
   /// False if the product is paid.
@@ -129,6 +130,7 @@ class SkuDetailsWrapper {
 ///
 /// Returned by [BillingClient.querySkuDetails].
 @JsonSerializable()
+@BillingResponseConverter()
 class SkuDetailsResponseWrapper {
   @visibleForTesting
   SkuDetailsResponseWrapper({@required this.responseCode, this.skuDetailsList});
@@ -141,9 +143,23 @@ class SkuDetailsResponseWrapper {
       _$SkuDetailsResponseWrapperFromJson(map);
 
   /// The final status of the [BillingClient.querySkuDetails] call.
-  @JsonKey(fromJson: BillingResponse.fromInt)
   final BillingResponse responseCode;
 
   /// A list of [SkuDetailsWrapper] matching the query to [BillingClient.querySkuDetails].
   final List<SkuDetailsWrapper> skuDetailsList;
+
+  @override
+  bool operator ==(dynamic other) {
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
+
+    final SkuDetailsResponseWrapper typedOther = other;
+    return typedOther is SkuDetailsResponseWrapper &&
+        typedOther.responseCode == responseCode &&
+        typedOther.skuDetailsList == skuDetailsList;
+  }
+
+  @override
+  int get hashCode => hashValues(responseCode, skuDetailsList);
 }

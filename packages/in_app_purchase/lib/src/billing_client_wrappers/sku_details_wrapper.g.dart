@@ -20,13 +20,14 @@ SkuDetailsWrapper _$SkuDetailsWrapperFromJson(Map json) {
       sku: json['sku'] as String,
       subscriptionPeriod: json['subscriptionPeriod'] as String,
       title: json['title'] as String,
-      type: SkuType.fromString(json['type'] as String),
+      type: const SkuTypeConverter().fromJson(json['type'] as String),
       isRewarded: json['isRewarded'] as bool);
 }
 
 SkuDetailsResponseWrapper _$SkuDetailsResponseWrapperFromJson(Map json) {
   return SkuDetailsResponseWrapper(
-      responseCode: BillingResponse.fromInt(json['responseCode'] as int),
+      responseCode: const BillingResponseConverter()
+          .fromJson(json['responseCode'] as int),
       skuDetailsList: (json['skuDetailsList'] as List)
           .map((e) => SkuDetailsWrapper.fromJson(e as Map))
           .toList());

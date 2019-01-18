@@ -6,6 +6,7 @@ import 'package:test/test.dart';
 
 import 'package:flutter/widgets.dart';
 import 'package:in_app_purchase/billing_client_wrappers.dart';
+import 'package:in_app_purchase/src/billing_client_wrappers/enum_converters.dart';
 import 'package:in_app_purchase/src/in_app_purchase_connection/google_play_connection.dart';
 import 'package:in_app_purchase/src/channel.dart';
 import '../stub_in_app_purchase_platform.dart';
@@ -24,7 +25,7 @@ void main() {
     WidgetsFlutterBinding.ensureInitialized();
     stubPlatform.addResponse(
         name: startConnectionCall,
-        value: int.parse(BillingResponse.OK.toString()));
+        value: BillingResponseConverter().toJson(BillingResponse.ok));
     stubPlatform.addResponse(name: endConnectionCall, value: null);
     connection = GooglePlayConnection.instance;
   });
