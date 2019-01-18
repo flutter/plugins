@@ -113,16 +113,16 @@ class SKProductSubscriptionPeriodWrapper {
 
 /// A payment mode to describe how the discounted price is paid.
 ///
-/// [PayAsYouGo] allows user to pay the discounted price at each payment period.
-/// [PayUpFront] allows user to pay the discounted price upfront and receive the product for the rest of time that was paid for.
-/// [FreeTrail] user pays nothing during the discounted period.
+/// [payAsYouGo] allows user to pay the discounted price at each payment period.
+/// [payUpFront] allows user to pay the discounted price upfront and receive the product for the rest of time that was paid for.
+/// [freeTrail] user pays nothing during the discounted period.
 /// This is a wrapper for StoreKit's
 /// [SKProductDiscountPaymentMode]
 /// (https://developer.apple.com/documentation/storekit/skproductdiscountpaymentmode?language=objc).
 enum ProductDiscountPaymentMode {
-  PayAsYouGo,
-  PayUpFront,
-  FreeTrail,
+  payAsYouGo,
+  payUpFront,
+  freeTrail,
 }
 
 /// A product discount.
