@@ -54,7 +54,7 @@
   SKProductsRequest *request =
       [self getRequestWithIdentifiers:[NSSet setWithArray:productsIdentifiers]];
   FIAPProductRequestHandler *handler =
-      [[FIAPProductRequestHandler alloc] initWithRequestRequest:request];
+      [[FIAPProductRequestHandler alloc] initWithProductRequest:request];
   handler.delegate = self;
   [self.productRequestHandlerSet addObject:handler];
   [handler startWithCompletionHandler:^(SKProductsResponse *_Nullable response) {

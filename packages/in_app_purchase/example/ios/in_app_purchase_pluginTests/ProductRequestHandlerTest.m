@@ -109,7 +109,7 @@
   SKProductRequestStub *request =
       [[SKProductRequestStub alloc] initWithProductIdentifiers:[NSSet setWithArray:@[ @"123" ]]];
   FIAPProductRequestHandler *handler =
-      [[FIAPProductRequestHandler alloc] initWithRequestRequest:request];
+      [[FIAPProductRequestHandler alloc] initWithProductRequest:request];
   XCTestExpectation *expectation =
       [self expectationWithDescription:@"expect to get response with 1 product"];
   __block SKProductsResponse *response;

@@ -15,7 +15,7 @@ typedef void (^ProductRequestCompletion)(SKProductsResponse *_Nullable response)
 
 @property(nullable, weak, nonatomic) NSObject<FIAPProductRequestHandlerDelegate> *delegate;
 
-- (instancetype)initWithRequestRequest:(SKProductsRequest *)request;
+- (instancetype)initWithProductRequest:(SKProductsRequest *)request;
 - (void)startWithCompletionHandler:(ProductRequestCompletion)completion;
 
 NS_ASSUME_NONNULL_END

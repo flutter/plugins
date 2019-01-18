@@ -17,7 +17,7 @@
 
 @implementation FIAPProductRequestHandler
 
-- (instancetype)initWithRequestRequest:(SKProductsRequest *)request {
+- (instancetype)initWithProductRequest:(SKProductsRequest *)request {
   self = [super init];
   if (self) {
     self.request = request;
