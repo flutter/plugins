@@ -10,6 +10,7 @@ import 'billing_client_wrapper.dart';
 ///
 /// Contains the details of an available product in Google Play Billing.
 class SkuDetailsWrapper {
+  @visibleForTesting
   SkuDetailsWrapper({
     @required this.description,
     @required this.freeTrialPeriod,
@@ -31,23 +32,22 @@ class SkuDetailsWrapper {
   ///
   /// The map needs to have named string keys with values matching the names and
   /// types of all of the members on this class.
-  static SkuDetailsWrapper fromMap(Map<dynamic, dynamic> map) {
-    return SkuDetailsWrapper(
-        description: map['description'],
-        freeTrialPeriod: map['freeTrialPeriod'],
-        introductoryPrice: map['introductoryPrice'],
-        introductoryPriceMicros: map['introductoryPriceMicros'],
-        introductoryPriceCycles: map['introductoryPriceCycles'],
-        introductoryPricePeriod: map['introductoryPricePeriod'],
-        price: map['price'],
-        priceAmountMicros: map['priceAmountMicros'],
-        priceCurrencyCode: map['priceCurrencyCode'],
-        sku: map['sku'],
-        subscriptionPeriod: map['subscriptionPeriod'],
-        title: map['title'],
-        type: SkuType.fromString(map['type']),
-        isRewarded: map['isRewarded']);
-  }
+  @visibleForTesting
+  SkuDetailsWrapper.fromMap(Map<dynamic, dynamic> map)
+      : description = map['description'],
+        freeTrialPeriod = map['freeTrialPeriod'],
+        introductoryPrice = map['introductoryPrice'],
+        introductoryPriceMicros = map['introductoryPriceMicros'],
+        introductoryPriceCycles = map['introductoryPriceCycles'],
+        introductoryPricePeriod = map['introductoryPricePeriod'],
+        price = map['price'],
+        priceAmountMicros = map['priceAmountMicros'],
+        priceCurrencyCode = map['priceCurrencyCode'],
+        sku = map['sku'],
+        subscriptionPeriod = map['subscriptionPeriod'],
+        title = map['title'],
+        type = SkuType.fromString(map['type']),
+        isRewarded = map['isRewarded'];
 
   final String description;
 
@@ -134,16 +134,20 @@ class SkuDetailsWrapper {
 ///
 /// Returned by [BillingClient.querySkuDetails].
 class SkuDetailsResponseWrapper {
+  @visibleForTesting
   SkuDetailsResponseWrapper({@required this.responseCode, this.skuDetailsList});
-  static SkuDetailsResponseWrapper fromMap(Map<dynamic, dynamic> map) {
-    final List<SkuDetailsWrapper> skuDetailsList = List.castFrom<dynamic,
-            Map<dynamic, dynamic>>(map['skuDetailsList'])
-        .map((Map<dynamic, dynamic> entry) => SkuDetailsWrapper.fromMap(entry))
-        .toList();
-    return SkuDetailsResponseWrapper(
-        responseCode: BillingResponse.fromInt(map['responseCode']),
-        skuDetailsList: skuDetailsList);
-  }
+
+  /// Constructs an instance of this from a key value map of data.
+  ///
+  /// The map needs to have named string keys with values matching the names and
+  /// types of all of the members on this class.
+  SkuDetailsResponseWrapper.fromMap(Map<dynamic, dynamic> map)
+      : responseCode = BillingResponse.fromInt(map['responseCode']),
+        skuDetailsList =
+            List.castFrom<dynamic, Map<dynamic, dynamic>>(map['skuDetailsList'])
+                .map((Map<dynamic, dynamic> entry) =>
+                    SkuDetailsWrapper.fromMap(entry))
+                .toList();
 
   /// The final status of the [BillingClient.querySkuDetails] call.
   final BillingResponse responseCode;

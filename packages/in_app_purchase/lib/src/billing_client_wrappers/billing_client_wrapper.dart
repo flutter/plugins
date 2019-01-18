@@ -75,13 +75,14 @@ class BillingClient {
   }
 
   /// Returns a list of [SkuDetailsWrapper]s that have [SkuDetailsWrapper.sku]
-  /// in [skusList], and [SkuDetailsWrapper.type] matching [skuType].
+  /// in `skusList`, and [SkuDetailsWrapper.type] matching `skuType`.
   ///
-  /// Calls through to `BillingClient#querySkuDetailsAsync(SkuDetailsParams
-  /// params, SkuDetailsResponseListener listener)` Instead of taking a callback
-  /// parameter, it returns a Future [SkuDetailsResponseWrapper]. It also takes
-  /// the values of `SkuDetailsParams` as direct arguments instead of requiring
-  /// it constructed and passed in as a class.
+  /// Calls through to [`BillingClient#querySkuDetailsAsync(SkuDetailsParams,
+  /// SkuDetailsResponseListener)`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient#querySkuDetailsAsync(com.android.billingclient.api.SkuDetailsParams,%20com.android.billingclient.api.SkuDetailsResponseListener))
+  /// Instead of taking a callback parameter, it returns a Future
+  /// [SkuDetailsResponseWrapper]. It also takes the values of
+  /// `SkuDetailsParams` as direct arguments instead of requiring it constructed
+  /// and passed in as a class.
   Future<SkuDetailsResponseWrapper> querySkuDetails(
       {@required SkuType skuType, @required List<String> skusList}) async {
     final Map<String, dynamic> arguments = <String, dynamic>{
@@ -105,6 +106,8 @@ class BillingClient {
   }
 }
 
+/// Callback triggered when the [BillingClientWrapper] is disconnected.
+///
 /// Wraps
 /// [`com.android.billingclient.api.BillingClientStateListener.onServiceDisconnected()`](https://developer.android.com/reference/com/android/billingclient/api/BillingClientStateListener.html#onBillingServiceDisconnected())
 /// to call back on `BillingClient` disconnect.
