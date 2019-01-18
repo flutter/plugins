@@ -85,8 +85,8 @@ enum SubscriptionPeriodUnit {
 ///
 /// A period is defined by a [numberOfUnits] and a [unit], e.g for a 3 months period [numberOfUnits] is 3 and [unit] is a month.
 ///
-/// This is a wrapper for StoreKit's [SKProductSubscriptionPeriod]
-/// (https://developer.apple.com/documentation/storekit/skproductsubscriptionperiod?language=objc).
+/// This is a wrapper for StoreKit's
+/// [SKProductSubscriptionPeriod](https://developer.apple.com/documentation/storekit/skproductsubscriptionperiod?language=objc).
 class SKProductSubscriptionPeriodWrapper {
   SKProductSubscriptionPeriodWrapper(
       {@required this.numberOfUnits, @required this.unit});
@@ -113,8 +113,7 @@ class SKProductSubscriptionPeriodWrapper {
 /// [payUpFront] allows user to pay the discounted price upfront and receive the product for the rest of time that was paid for.
 /// [freeTrail] user pays nothing during the discounted period.
 /// This is a wrapper for StoreKit's
-/// [SKProductDiscountPaymentMode]
-/// (https://developer.apple.com/documentation/storekit/skproductdiscountpaymentmode?language=objc).
+/// [SKProductDiscountPaymentMode](https://developer.apple.com/documentation/storekit/skproductdiscountpaymentmode?language=objc).
 enum ProductDiscountPaymentMode {
   payAsYouGo,
   payUpFront,
