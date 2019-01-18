@@ -165,7 +165,7 @@ void main() {
   group('startProductRequest api', () {
     test('platform call should get result', () async {
       stubPlatform.addResponse(
-          name: 'startProductRequest',
+          name: '-[InAppPurchasePlugin startProductRequest:result:]',
           value: productResponseMap.cast<String, dynamic>());
       final SKProductRequestWrapper request =
           SKProductRequestWrapper(productIdentifiers: <String>['identifier1']);
@@ -189,7 +189,9 @@ void main() {
     });
 
     test('result is null should throw', () async {
-      stubPlatform.addResponse(name: 'startProductRequest', value: null);
+      stubPlatform.addResponse(
+          name: '-[InAppPurchasePlugin startProductRequest:result:]',
+          value: null);
       final SKProductRequestWrapper request =
           SKProductRequestWrapper(productIdentifiers: <String>['identifier1']);
       expect(

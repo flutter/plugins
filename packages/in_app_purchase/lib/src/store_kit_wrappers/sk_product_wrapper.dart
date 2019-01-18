@@ -22,7 +22,7 @@ class SKProductRequestWrapper {
   /// Returns the [SkProductsResponseWrapper] object.
   Future<SkProductResponseWrapper> start() async {
     final Map<dynamic, dynamic> productResponseMap = await channel.invokeMethod(
-      'startProductRequest',
+      '-[InAppPurchasePlugin startProductRequest:result:]',
       productIdentifiers,
     );
     if (productResponseMap == null) {

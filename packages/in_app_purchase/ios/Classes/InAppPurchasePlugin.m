@@ -32,7 +32,7 @@
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"-[SKPaymentQueue canMakePayments:]" isEqualToString:call.method]) {
     [self canMakePayments:result];
-  } else if ([@"startProductRequest" isEqualToString:call.method]) {
+  } else if ([@"-[InAppPurchasePlugin startProductRequest:result:]" isEqualToString:call.method]) {
     [self startProductRequest:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
