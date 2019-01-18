@@ -1,6 +1,9 @@
 package io.flutter.plugins.inapppurchase;
 
+import static io.flutter.plugins.inapppurchase.Translator.fromSkuDetailsList;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -8,12 +11,18 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.support.annotation.Nullable;
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClientStateListener;
+import com.android.billingclient.api.SkuDetails;
+import com.android.billingclient.api.SkuDetailsParams;
+import com.android.billingclient.api.SkuDetailsResponseListener;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,6 +64,18 @@ public class InAppPurchasePluginTest {
     when(mockBillingClient.isReady()).thenReturn(false);
     plugin.onMethodCall(call, result);
     verify(result).success(false);
+  }
+
+  @Test
+  public void isReady_clientDisconnected() {
+    MethodCall disconnectCall = new MethodCall("BillingClient#endConnection()", null);
+    plugin.onMethodCall(disconnectCall, mock(Result.class));
+    MethodCall isReadyCall = new MethodCall("BillingClient#isReady()", null);
+
+    plugin.onMethodCall(isReadyCall, result);
+
+    verify(result).error(contains("UNAVAILABLE"), contains("BillingClient"), any());
+    verify(result, never()).success(any());
   }
 
   @Test
@@ -101,5 +122,85 @@ public class InAppPurchasePluginTest {
     verify(mockMethodChannel, times(1))
         .invokeMethod(
             "BillingClientStateListener#onBillingServiceDisconnected()", expectedInvocation);
+  }
+
+  @Test
+  public void querySkuDetailsAsync() {
+    // Connect a billing client and set up the SKU query listeners
+    establishConnectedBillingClient(/*arguments=*/ null, /*result=*/ null);
+    String skuType = BillingClient.SkuType.INAPP;
+    List<String> skusList = Arrays.asList("id1", "id2");
+    HashMap<String, Object> arguments = new HashMap<>();
+    arguments.put("skuType", skuType);
+    arguments.put("skusList", skusList);
+    MethodCall queryCall =
+        new MethodCall(
+            "BillingClient#querySkuDetailsAsync(SkuDetailsParams, SkuDetailsResponseListener)",
+            arguments);
+
+    // Query for SKU details
+    plugin.onMethodCall(queryCall, result);
+
+    // Assert the arguments were forwarded correctly to BillingClient
+    ArgumentCaptor<SkuDetailsParams> paramCaptor = ArgumentCaptor.forClass(SkuDetailsParams.class);
+    ArgumentCaptor<SkuDetailsResponseListener> listenerCaptor =
+        ArgumentCaptor.forClass(SkuDetailsResponseListener.class);
+    verify(mockBillingClient).querySkuDetailsAsync(paramCaptor.capture(), listenerCaptor.capture());
+    assertEquals(paramCaptor.getValue().getSkuType(), skuType);
+    assertEquals(paramCaptor.getValue().getSkusList(), skusList);
+
+    // Assert that we handed result BillingClient's response
+    int responseCode = 200;
+    List<SkuDetails> skuDetailsResponse = Arrays.asList(buildSkuDetails());
+    listenerCaptor.getValue().onSkuDetailsResponse(responseCode, skuDetailsResponse);
+    ArgumentCaptor<HashMap<String, Object>> resultCaptor = ArgumentCaptor.forClass(HashMap.class);
+    verify(result).success(resultCaptor.capture());
+    HashMap<String, Object> resultData = resultCaptor.getValue();
+    assertEquals(resultData.get("responseCode"), responseCode);
+    assertEquals(resultData.get("skuDetailsList"), fromSkuDetailsList(skuDetailsResponse));
+  }
+
+  @Test
+  public void querySkuDetailsAsync_clientDisconnected() {
+    // Disconnect the Billing client and prepare a querySkuDetails call
+    MethodCall disconnectCall = new MethodCall("BillingClient#endConnection()", null);
+    plugin.onMethodCall(disconnectCall, mock(Result.class));
+    String skuType = BillingClient.SkuType.INAPP;
+    List<String> skusList = Arrays.asList("id1", "id2");
+    HashMap<String, Object> arguments = new HashMap<>();
+    arguments.put("skuType", skuType);
+    arguments.put("skusList", skusList);
+    MethodCall queryCall =
+        new MethodCall(
+            "BillingClient#querySkuDetailsAsync(SkuDetailsParams, SkuDetailsResponseListener)",
+            arguments);
+
+    // Query for SKU details
+    plugin.onMethodCall(queryCall, result);
+
+    // Assert that we sent an error back.
+    verify(result).error(contains("UNAVAILABLE"), contains("BillingClient"), any());
+    verify(result, never()).success(any());
+  }
+
+  private void establishConnectedBillingClient(
+      @Nullable Map<String, Integer> arguments, @Nullable Result result) {
+    if (arguments == null) {
+      arguments = new HashMap<>();
+      arguments.put("handle", 1);
+    }
+    if (result == null) {
+      result = mock(Result.class);
+    }
+
+    MethodCall connectCall =
+        new MethodCall("BillingClient#startConnection(BillingClientStateListener)", arguments);
+    plugin.onMethodCall(connectCall, result);
+  }
+
+  private SkuDetails buildSkuDetails() {
+    SkuDetails details = mock(SkuDetails.class);
+    when(details.getSku()).thenReturn("foo");
+    return details;
   }
 }

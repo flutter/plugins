@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:in_app_purchase/billing_client_wrappers.dart';
 import 'package:in_app_purchase/src/channel.dart';
 import '../stub_in_app_purchase_platform.dart';
+import 'sku_details_wrapper_test.dart';
 
 void main() {
   final StubInAppPurchasePlatform stubPlatform = StubInAppPurchasePlatform();
@@ -60,5 +61,40 @@ void main() {
     stubPlatform.addResponse(name: endConnectionName, value: null);
     await billingClient.endConnection();
     expect(stubPlatform.countPreviousCalls(endConnectionName), equals(1));
+  });
+
+  group('querySkuDetails', () {
+    final String queryMethodName =
+        'BillingClient#querySkuDetailsAsync(SkuDetailsParams, SkuDetailsResponseListener)';
+
+    test('handles empty skuDetails', () async {
+      final BillingResponse responseCode = BillingResponse.DEVELOPER_ERROR;
+      stubPlatform.addResponse(name: queryMethodName, value: <dynamic, dynamic>{
+        'responseCode': int.parse(responseCode.toString()),
+        'skuDetailsList': <Map<String, dynamic>>[]
+      });
+
+      final SkuDetailsResponseWrapper response = await billingClient
+          .querySkuDetails(
+              skuType: SkuType.INAPP, skusList: <String>['invalid']);
+
+      expect(response.responseCode, equals(responseCode));
+      expect(response.skuDetailsList, isEmpty);
+    });
+
+    test('returns SkuDetailsResponseWrapper', () async {
+      final BillingResponse responseCode = BillingResponse.OK;
+      stubPlatform.addResponse(name: queryMethodName, value: <String, dynamic>{
+        'responseCode': int.parse(responseCode.toString()),
+        'skuDetailsList': <Map<String, dynamic>>[buildSkuMap(dummyWrapper)]
+      });
+
+      final SkuDetailsResponseWrapper response = await billingClient
+          .querySkuDetails(
+              skuType: SkuType.INAPP, skusList: <String>['invalid']);
+
+      expect(response.responseCode, equals(responseCode));
+      expect(response.skuDetailsList, contains(dummyWrapper));
+    });
   });
 }

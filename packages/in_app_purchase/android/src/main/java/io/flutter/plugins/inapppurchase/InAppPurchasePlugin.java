@@ -4,6 +4,8 @@
 
 package io.flutter.plugins.inapppurchase;
 
+import static io.flutter.plugins.inapppurchase.Translator.fromSkuDetailsList;
+
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
@@ -11,6 +13,9 @@ import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClientStateListener;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.PurchasesUpdatedListener;
+import com.android.billingclient.api.SkuDetails;
+import com.android.billingclient.api.SkuDetailsParams;
+import com.android.billingclient.api.SkuDetailsResponseListener;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -51,6 +56,10 @@ public class InAppPurchasePlugin implements MethodCallHandler {
       case "BillingClient#endConnection()":
         endConnection(result);
         break;
+      case "BillingClient#querySkuDetailsAsync(SkuDetailsParams, SkuDetailsResponseListener)":
+        querySkuDetailsAsync(
+            (String) call.argument("skuType"), (List<String>) call.argument("skusList"), result);
+        break;
       default:
         result.notImplemented();
     }
@@ -87,13 +96,49 @@ public class InAppPurchasePlugin implements MethodCallHandler {
   }
 
   private void endConnection(final Result result) {
-    billingClient.endConnection();
-    billingClient = null;
+    if (billingClient != null) {
+      billingClient.endConnection();
+      billingClient = null;
+    }
     result.success(null);
   }
 
   private void isReady(Result result) {
+    if (billingClientError(result)) {
+      return;
+    }
+
     result.success(billingClient.isReady());
+  }
+
+  private void querySkuDetailsAsync(
+      final String skuType, final List<String> skusList, final Result result) {
+    if (billingClientError(result)) {
+      return;
+    }
+
+    SkuDetailsParams params =
+        SkuDetailsParams.newBuilder().setType(skuType).setSkusList(skusList).build();
+    billingClient.querySkuDetailsAsync(
+        params,
+        new SkuDetailsResponseListener() {
+          public void onSkuDetailsResponse(
+              int responseCode, @Nullable List<SkuDetails> skuDetailsList) {
+            final Map<String, Object> skuDetailsResponse = new HashMap<>();
+            skuDetailsResponse.put("responseCode", responseCode);
+            skuDetailsResponse.put("skuDetailsList", fromSkuDetailsList(skuDetailsList));
+            result.success(skuDetailsResponse);
+          }
+        });
+  }
+
+  private boolean billingClientError(Result result) {
+    if (billingClient != null) {
+      return false;
+    }
+
+    result.error("UNAVAILABLE", "BillingClient is unset. Try reconnecting.", null);
+    return true;
   }
 
   private static BillingClient buildBillingClient(Context context) {

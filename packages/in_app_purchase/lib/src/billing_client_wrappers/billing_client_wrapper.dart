@@ -6,6 +6,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import '../channel.dart';
+import 'sku_details_wrapper.dart';
 
 /// This class can be used directly instead of [InAppPurchaseConnection] to call
 /// Play-specific billing APIs.
@@ -73,6 +74,27 @@ class BillingClient {
     return channel.invokeMethod("BillingClient#endConnection()", null);
   }
 
+  /// Returns a list of [SkuDetailsWrapper]s that have [SkuDetailsWrapper.sku]
+  /// in `skusList`, and [SkuDetailsWrapper.type] matching `skuType`.
+  ///
+  /// Calls through to [`BillingClient#querySkuDetailsAsync(SkuDetailsParams,
+  /// SkuDetailsResponseListener)`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient#querySkuDetailsAsync(com.android.billingclient.api.SkuDetailsParams,%20com.android.billingclient.api.SkuDetailsResponseListener))
+  /// Instead of taking a callback parameter, it returns a Future
+  /// [SkuDetailsResponseWrapper]. It also takes the values of
+  /// `SkuDetailsParams` as direct arguments instead of requiring it constructed
+  /// and passed in as a class.
+  Future<SkuDetailsResponseWrapper> querySkuDetails(
+      {@required SkuType skuType, @required List<String> skusList}) async {
+    final Map<String, dynamic> arguments = <String, dynamic>{
+      'skuType': skuType.toString(),
+      'skusList': skusList
+    };
+    return SkuDetailsResponseWrapper.fromMap(await channel.invokeMapMethod<
+            String, dynamic>(
+        'BillingClient#querySkuDetailsAsync(SkuDetailsParams, SkuDetailsResponseListener)',
+        arguments));
+  }
+
   Future<void> _callHandler(MethodCall call) async {
     switch (call.method) {
       case 'BillingClientStateListener#onBillingServiceDisconnected()':
@@ -84,6 +106,8 @@ class BillingClient {
   }
 }
 
+/// Callback triggered when the [BillingClientWrapper] is disconnected.
+///
 /// Wraps
 /// [`com.android.billingclient.api.BillingClientStateListener.onServiceDisconnected()`](https://developer.android.com/reference/com/android/billingclient/api/BillingClientStateListener.html#onBillingServiceDisconnected())
 /// to call back on `BillingClient` disconnect.
@@ -96,11 +120,12 @@ typedef void OnBillingServiceDisconnected();
 /// See the `BillingResponse` docs for an explanation of the different constants.
 class BillingResponse {
   const BillingResponse._(this._code);
+  static BillingResponse fromInt(int code) => BillingResponse._(code);
   final int _code;
   @override
   String toString() => _code.toString();
   @override
-  int get hashCode => _code;
+  int get hashCode => _code.hashCode;
   @override
   bool operator ==(dynamic other) =>
       other is BillingResponse && other._code == _code;
@@ -115,4 +140,34 @@ class BillingResponse {
   static const BillingResponse ERROR = BillingResponse._(6);
   static const BillingResponse ITEM_ALREADY_OWNED = BillingResponse._(7);
   static const BillingResponse ITEM_NOT_OWNED = BillingResponse._(8);
+}
+
+/// Enum representing potential [SkuDetailsWrapper.type]s.
+///
+/// Wraps
+/// [`BillingClient.SkuType`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.SkuType)
+/// See the linked documentation for an explanation of the different constants.
+class SkuType {
+  const SkuType._(this._type);
+  static SkuType fromString(String type) {
+    final SkuType skuType = SkuType._(type);
+    if (skuType != INAPP && skuType != SUBS) {
+      return null;
+    }
+    return skuType;
+  }
+
+  final String _type;
+  @override
+  String toString() => _type;
+  @override
+  int get hashCode => _type.hashCode;
+  @override
+  bool operator ==(dynamic other) => other is SkuType && other._type == _type;
+
+  /// A one time product. Acquired in a single transaction.
+  static const SkuType INAPP = SkuType._("inapp");
+
+  /// A product requiring a recurring charge over time.
+  static const SkuType SUBS = SkuType._("subs");
 }
