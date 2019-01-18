@@ -1,6 +1,7 @@
 #import "CameraPlugin.h"
 #import <AVFoundation/AVFoundation.h>
 #import <Accelerate/Accelerate.h>
+#import <CoreMotion/CoreMotion.h>
 #import <libkern/OSAtomic.h>
 
 @interface NSError (FlutterError)
@@ -18,8 +19,13 @@
 @interface FLTSavePhotoDelegate : NSObject <AVCapturePhotoCaptureDelegate>
 @property(readonly, nonatomic) NSString *path;
 @property(readonly, nonatomic) FlutterResult result;
+@property(readonly, nonatomic) CMMotionManager *motionManager;
+@property(readonly, nonatomic) AVCaptureDevicePosition cameraPosition;
 
-- initWithPath:(NSString *)filename result:(FlutterResult)result;
+- initWithPath:(NSString *)filename
+            result:(FlutterResult)result
+     motionManager:(CMMotionManager *)motionManager
+    cameraPosition:(AVCaptureDevicePosition)cameraPosition;
 @end
 
 @interface FLTImageStreamHandler : NSObject <FlutterStreamHandler>
@@ -45,11 +51,16 @@
   FLTSavePhotoDelegate *selfReference;
 }
 
-- initWithPath:(NSString *)path result:(FlutterResult)result {
+- initWithPath:(NSString *)path
+            result:(FlutterResult)result
+     motionManager:(CMMotionManager *)motionManager
+    cameraPosition:(AVCaptureDevicePosition)cameraPosition {
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
   _path = path;
   _result = result;
+  _motionManager = motionManager;
+  _cameraPosition = cameraPosition;
   selfReference = self;
   return self;
 }
@@ -68,13 +79,45 @@
   NSData *data = [AVCapturePhotoOutput
       JPEGPhotoDataRepresentationForJPEGSampleBuffer:photoSampleBuffer
                             previewPhotoSampleBuffer:previewPhotoSampleBuffer];
+  UIImage *image = [UIImage imageWithCGImage:[UIImage imageWithData:data].CGImage
+                                       scale:1.0
+                                 orientation:[self getImageRotation]];
   // TODO(sigurdm): Consider writing file asynchronously.
-  bool success = [data writeToFile:_path atomically:YES];
+  bool success = [UIImageJPEGRepresentation(image, 1.0) writeToFile:_path atomically:YES];
   if (!success) {
     _result([FlutterError errorWithCode:@"IOError" message:@"Unable to write file" details:nil]);
     return;
   }
   _result(nil);
+}
+
+- (UIImageOrientation)getImageRotation {
+  // Get the true device orientation out of the accelerometer.
+  const CMQuaternion orientation = _motionManager.deviceMotion.attitude.quaternion;
+  const double roll =
+      atan2(2 * (orientation.w * orientation.x + orientation.y * orientation.z),
+            1 - (2 * (orientation.x * orientation.x + orientation.y * orientation.y)));
+  const double pitch = asin(2 * (orientation.w * orientation.y - orientation.z * orientation.x));
+  const bool vertical = fabs(pitch) <= M_PI_4;
+  const bool pointedRight = pitch >= 0;
+  const bool tiltedUp = roll >= 0;
+  // Pixel input defaults to horizontal pointed left, as if the phone was held
+  // with the home button on the right. Rotate the photo accordingly based on
+  // the orientation the photo should really be displayed as. To make this
+  // extra confusing, the landscape orientations also need to be mirrored
+  // based on whether they were taken with the front facing camera.
+  if (vertical && tiltedUp) {              // [^]
+    return UIImageOrientationRight;        // rotate existing image 90* cw
+  } else if (vertical && !tiltedUp) {      // [v]
+    return UIImageOrientationLeft;         // rotate existing image 90* ccw
+  } else if (!vertical && pointedRight) {  // [>]
+    return _cameraPosition == AVCaptureDevicePositionBack ? UIImageOrientationDown /*rotate 180* */
+                                                          : UIImageOrientationUp /*do not rotate*/;
+  } else if (!vertical && !pointedRight) {  // [<]
+    return _cameraPosition == AVCaptureDevicePositionBack ? UIImageOrientationUp
+                                                          : UIImageOrientationDown;
+  }
+  return UIImageOrientationUp;
 }
 @end
 
@@ -106,6 +149,7 @@
 @property(assign, nonatomic) BOOL isStreamingImages;
 @property(nonatomic) vImage_Buffer destinationBuffer;
 @property(nonatomic) vImage_Buffer conversionBuffer;
+@property(nonatomic) CMMotionManager *motionManager;
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
                              error:(NSError **)error;
@@ -177,6 +221,9 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
   _capturePhotoOutput = [AVCapturePhotoOutput new];
   [_capturePhotoOutput setHighResolutionCaptureEnabled:YES];
   [_captureSession addOutput:_capturePhotoOutput];
+  _motionManager = [[CMMotionManager alloc] init];
+  [_motionManager startDeviceMotionUpdatesUsingReferenceFrame:
+                      CMAttitudeReferenceFrameXArbitraryCorrectedZVertical];
   return self;
 }
 
@@ -191,9 +238,12 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
 - (void)captureToFile:(NSString *)path result:(FlutterResult)result {
   AVCapturePhotoSettings *settings = [AVCapturePhotoSettings photoSettings];
   [settings setHighResolutionPhotoEnabled:YES];
-  [_capturePhotoOutput capturePhotoWithSettings:settings
-                                       delegate:[[FLTSavePhotoDelegate alloc] initWithPath:path
-                                                                                    result:result]];
+  [_capturePhotoOutput
+      capturePhotoWithSettings:settings
+                      delegate:[[FLTSavePhotoDelegate alloc] initWithPath:path
+                                                                   result:result
+                                                            motionManager:_motionManager
+                                                           cameraPosition:_captureDevice.position]];
 }
 
 - (void)captureOutput:(AVCaptureOutput *)output
@@ -337,6 +387,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
   if (_latestPixelBuffer) {
     CFRelease(_latestPixelBuffer);
   }
+  [_motionManager stopDeviceMotionUpdates];
 }
 
 - (CVPixelBufferRef)copyPixelBuffer {

@@ -5,7 +5,7 @@ authors:
   - Flutter Team <flutter-dev@googlegroups.com>
   - Rhodes Davis Jr. <rody.davis.jr@gmail.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/image_picker
-version: 0.4.11
+version: 0.4.12+1
 
 flutter:
   plugin:

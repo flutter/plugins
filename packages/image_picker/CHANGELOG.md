@@ -1,3 +1,11 @@
+## 0.4.12+1
+
+* Fix a crash when selecting downloaded images from image picker on certain devices.
+
+## 0.4.12
+
+* Fix a crash when user tap the image mutiple times.
+
 ## 0.4.11
 
 * Use `api` to define `support-v4` dependency to allow automatic version resolution.

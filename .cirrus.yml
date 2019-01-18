@@ -1,4 +1,5 @@
 task:
+  use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_PR == ''
   container:
     image: cirrusci/flutter:latest
     cpu: 4
@@ -43,9 +44,10 @@ task:
         - export CIRRUS_COMMIT_MESSAGE=`cat /tmp/cirrus_commit_message.txt`
 
 task:
+  use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
   name: build-ipas
   osx_instance:
-    image: high-sierra-xcode-9.4.1
+    image: mojave-xcode-10.1
   env:
     PATH: $PATH:/usr/local/bin
     matrix:

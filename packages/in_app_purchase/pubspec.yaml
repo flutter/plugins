@@ -7,16 +7,23 @@ version: 0.0.2
 dependencies:
   flutter:
     sdk: flutter
+  async: ^2.0.8
+  meta: ^1.1.6
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  test: 1.5.1
+  flutter_driver:
+    sdk: flutter
+  in_app_purchase_example:
+    path: example/
 
 flutter:
   plugin:
     androidPackage: io.flutter.plugins.inapppurchase
-    pluginClass: InAppPurchasePlugin    
-    
+    pluginClass: InAppPurchasePlugin
+
 environment:
   sdk: ">=2.0.0-dev.28.0 <3.0.0"
   flutter: ">=0.4.4 <2.0.0"
