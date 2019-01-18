@@ -6,7 +6,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase_connection.dart';
-import 'package:in_app_purchase/store_kit_wrappers.dart';
 
 void main() => runApp(MyApp());
 
