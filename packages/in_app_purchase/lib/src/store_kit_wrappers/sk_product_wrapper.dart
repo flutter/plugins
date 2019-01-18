@@ -64,7 +64,9 @@ class SkProductResponseWrapper {
 
   static List<SKProductWrapper> _getListFromMapList(
       List<Map<dynamic, dynamic>> mapList) {
-        return mapList.map((Map<dynamic, dynamic> map) => SKProductWrapper.fromMap(map)).toList();
+    return mapList
+        .map((Map<dynamic, dynamic> map) => SKProductWrapper.fromMap(map))
+        .toList();
   }
 }
 
