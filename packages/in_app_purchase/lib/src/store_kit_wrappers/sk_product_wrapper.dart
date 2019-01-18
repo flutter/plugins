@@ -64,13 +64,7 @@ class SkProductResponseWrapper {
 
   static List<SKProductWrapper> _getListFromMapList(
       List<Map<dynamic, dynamic>> mapList) {
-    final List<SKProductWrapper> productList = <SKProductWrapper>[];
-    for (Map<dynamic, dynamic> productMap in mapList) {
-      productList.add(SKProductWrapper.fromMap(
-        productMap.cast<String, dynamic>(),
-      ));
-    }
-    return productList;
+        return mapList.map((Map<dynamic, dynamic> map) => SKProductWrapper.fromMap(map)).toList();
   }
 }
 
@@ -197,7 +191,7 @@ class SKProductWrapper {
   /// Constructor to build with a map
   ///
   /// Used for constructing the class with the map passed from the OBJC layer.
-  SKProductWrapper.fromMap(Map<String, dynamic> map)
+  SKProductWrapper.fromMap(Map<dynamic, dynamic> map)
       : productIdentifier = map['productIdentifier'],
         localizedTitle = map['localizedTitle'],
         localizedDescription = map['localizedDescription'],
