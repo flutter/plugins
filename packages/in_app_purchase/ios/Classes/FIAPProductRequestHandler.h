@@ -42,6 +42,14 @@ NS_ASSUME_NONNULL_END
 
 @end
 
+@interface SKProductsResponse (Coder)
+
+- (nullable NSDictionary *)toMap;
+
+@end
+
+#pragma mark - delegate
+
 @protocol FIAPProductRequestHandlerDelegate <NSObject>
 
 - (void)productRequestHandlerDidFinish:(nonnull FIAPProductRequestHandler *)handler;

@@ -2,11 +2,62 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
 import 'package:flutter/foundation.dart';
+import 'package:in_app_purchase/src/channel.dart';
+
+/// A product request.
+///
+/// This is a wrapper for StoreKit's
+/// [SKProductsRequest](https://developer.apple.com/documentation/storekit/skproductsrequest?language=objc).
+class SKProductRequestWrapper {
+  SKProductRequestWrapper({@required this.productIdentifiers});
+
+  /// Product identifiers to request with.
+  final String productIdentifiers;
+
+  /// Starts the product request.
+  ///
+  /// Returns the [SkProductsResponseWrapper] object.
+  Future<SkProductsResponseWrapper> start() async {
+    final Map<String, dynamic> productResponseMap = await channel
+        .invokeMethod<Map<String, dynamic>>(
+            'startProductRequest', <String, Object>{
+      'identifiers': productIdentifiers,
+    });
+    return SkProductsResponseWrapper.fromMap(productResponseMap);
+  }
+}
+
+/// A product response object returned from product request
+///
+/// this is a wrapper for StoreKit's
+class SkProductsResponseWrapper {
+  SkProductsResponseWrapper(
+      {@required this.products, @required this.invalidIdentifiers});
+
+  /// constructor to build with a map
+  ///
+  /// Used for constructing the class with map passed from the OBJC layer.
+  SkProductsResponseWrapper.fromMap(Map<String, dynamic> map)
+      : products = map['products']
+            .cast<List<Map<String, dynamic>>>()
+            .map((Map<String, dynamic> map) => SKProductWrapper.fromMap(
+                  map,
+                )),
+        invalidIdentifiers = map['invalidIdentifiers'].cast<List<String>>();
+
+  /// The list of the products.
+  final List<SKProductWrapper> products;
+
+  /// The list of invalid identifiers.
+  final List<String> invalidIdentifiers;
+}
 
 /// A unit discription the length of a subscription period.
 ///
-/// This is wrapper of StoreKit's [SKProductPeriodUnit](https://developer.apple.com/documentation/storekit/skproductperiodunit?language=objc).
+/// This is wrapper for StoreKit's
+/// [SKProductPeriodUnit](https://developer.apple.com/documentation/storekit/skproductperiodunit?language=objc).
 enum SubscriptionPeriodUnit {
   day,
   week,
@@ -18,7 +69,8 @@ enum SubscriptionPeriodUnit {
 ///
 /// A period is defined by a [numberOfUnits] and a [unit], e.g for a 3 months period [numberOfUnits] is 3 and [unit] is a month.
 ///
-/// This is a wrapper for StoreKit's [SKProductSubscriptionPeriod](https://developer.apple.com/documentation/storekit/skproductsubscriptionperiod?language=objc).
+/// This is a wrapper for StoreKit's [SKProductSubscriptionPeriod]
+/// (https://developer.apple.com/documentation/storekit/skproductsubscriptionperiod?language=objc).
 class SKProductSubscriptionPeriodWrapper {
   SKProductSubscriptionPeriodWrapper(
       {@required this.numberOfUnits, @required this.unit});
@@ -44,7 +96,9 @@ class SKProductSubscriptionPeriodWrapper {
 /// [PayAsYouGo] allows user to pay the discounted price at each payment period.
 /// [PayUpFront] allows user to pay the discounted price upfront and receive the product for the rest of time that was paid for.
 /// [FreeTrail] user pays nothing during the discounted period.
-/// This is a wrapper for StoreKit's [SKProductDiscountPaymentMode](https://developer.apple.com/documentation/storekit/skproductdiscountpaymentmode?language=objc).
+/// This is a wrapper for StoreKit's
+/// [SKProductDiscountPaymentMode]
+/// (https://developer.apple.com/documentation/storekit/skproductdiscountpaymentmode?language=objc).
 enum ProductDiscountPaymentMode {
   PayAsYouGo,
   PayUpFront,
@@ -55,7 +109,8 @@ enum ProductDiscountPaymentMode {
 ///
 /// Most of the fields are identical to OBJC SKProduct.
 /// The only difference is instead of the locale object, we only exposed currencyCode for simplicity.
-/// This is a wrapper for StoreKit's [SKProductDiscount](https://developer.apple.com/documentation/storekit/skproductdiscount?language=objc).
+/// This is a wrapper for StoreKit's [SKProductDiscount]
+/// (https://developer.apple.com/documentation/storekit/skproductdiscount?language=objc).
 class SKProductDiscountWrapper {
   SKProductDiscountWrapper(
       {@required this.price,
@@ -102,7 +157,8 @@ class SKProductDiscountWrapper {
 ///
 /// Most of the fields are identical to OBJC SKProduct.
 /// The only difference is instead of the locale object, we only exposed currencyCode for simplicity.
-/// This is a wrapper for StoreKit's [SKProduct](https://developer.apple.com/documentation/storekit/skproduct?language=objc).
+/// This is a wrapper for StoreKit's [SKProduct]
+/// (https://developer.apple.com/documentation/storekit/skproduct?language=objc).
 class SKProductWrapper {
   SKProductWrapper({
     @required this.productIdentifier,

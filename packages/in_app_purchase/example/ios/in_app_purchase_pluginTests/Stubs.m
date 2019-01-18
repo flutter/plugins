@@ -93,6 +93,7 @@
       [products addObject:product];
     }
     [self setValue:products forKey:@"products"];
+    [self setValue:@[@"1"] forKey:@"invalidIdentifiers"];
   }
   return self;
 }

@@ -32,8 +32,8 @@
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"-[SKPaymentQueue canMakePayments:]" isEqualToString:call.method]) {
     [self canMakePayments:result];
-  } else if ([@"getProductList" isEqualToString:call.method]) {
-    [self getProductListWithMethodCall:call result:result];
+  } else if ([@"startProductRequest" isEqualToString:call.method]) {
+    [self startProductRequest:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -43,20 +43,16 @@
   result([NSNumber numberWithBool:[SKPaymentQueue canMakePayments]]);
 }
 
-- (void)getProductListWithMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)startProductRequest:(FlutterMethodCall *)call result:(FlutterResult)result {
   NSArray *productsIdentifiers = call.arguments[@"identifiers"];
   SKProductsRequest *request =
       [self getRequestWithIdentifiers:[NSSet setWithArray:productsIdentifiers]];
   FIAPProductRequestHandler *handler =
       [[FIAPProductRequestHandler alloc] initWithRequestRequest:request];
   handler.delegate = self;
-  NSMutableArray *productDetailsSerialized = [NSMutableArray new];
   [self.productRequestHandlerSet addObject:handler];
   [handler startWithCompletionHandler:^(SKProductsResponse *_Nullable response) {
-    for (SKProduct *product in response.products) {
-      [productDetailsSerialized addObject:[product toMap]];
-    }
-    result(productDetailsSerialized);
+    result([response toMap]);
   }];
 }
 
