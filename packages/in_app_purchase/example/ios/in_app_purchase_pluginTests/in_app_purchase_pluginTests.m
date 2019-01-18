@@ -52,9 +52,8 @@ InAppPurchasePlugin* plugin;
 - (void)testGetProductResponse {
   XCTestExpectation* expectation =
       [self expectationWithDescription:@"expect response contains 1 item"];
-  FlutterMethodCall* call =
-      [FlutterMethodCall methodCallWithMethodName:@"startProductRequest"
-                                        arguments:@{@"identifiers" : @[ @"123" ]}];
+  FlutterMethodCall* call = [FlutterMethodCall methodCallWithMethodName:@"startProductRequest"
+                                                              arguments:@[ @"123" ]];
   __block id result;
   [plugin handleMethodCall:call
                     result:^(id r) {

@@ -35,7 +35,7 @@ void main() {
     'introductoryPrice': discountMap,
   };
 
-  final Map<String, dynamic> productResponseMap = <String, dynamic>{
+  final Map<String, List<dynamic>> productResponseMap = <String, List<dynamic>>{
     'products': <Map<String, dynamic>>[productMap],
     'invalidProductIdentifiers': <String>['123'],
   };
@@ -153,8 +153,8 @@ void main() {
     });
 
     test('SKProductResponse wrapper should match', () {
-      final SkProductsResponseWrapper wrapper =
-          SkProductsResponseWrapper.fromMap(productResponseMap);
+      final SkProductResponseWrapper wrapper =
+          SkProductResponseWrapper.fromMap(productResponseMap);
       testMatchingProductMap(
           wrapper.products[0], productResponseMap['products'][0]);
       expect(wrapper.invalidProductIdentifiers,
@@ -166,10 +166,10 @@ void main() {
     test('platform call should get result', () async {
       stubPlatform.addResponse(
           name: 'startProductRequest',
-          value: productResponseMap);
+          value: productResponseMap.cast<String, dynamic>());
       final SKProductRequestWrapper request =
           SKProductRequestWrapper(productIdentifiers: <String>['identifier1']);
-      final SkProductsResponseWrapper response = await request.start();
+      final SkProductResponseWrapper response = await request.start();
       expect(
         response.products,
         isNotEmpty,

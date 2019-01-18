@@ -44,7 +44,12 @@
 }
 
 - (void)startProductRequest:(FlutterMethodCall *)call result:(FlutterResult)result {
-  NSArray *productsIdentifiers = call.arguments[@"identifiers"];
+  if (![call.arguments isKindOfClass:[NSArray class]]) {
+    result([FlutterError errorWithCode:@"in_app_purchase_invalide_type"
+                               message:@"Argument type of startProductRequest is not array"
+                               details:call.arguments]);
+  }
+  NSArray *productsIdentifiers = (NSArray *)call.arguments;
   SKProductsRequest *request =
       [self getRequestWithIdentifiers:[NSSet setWithArray:productsIdentifiers]];
   FIAPProductRequestHandler *handler =

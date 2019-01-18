@@ -19,27 +19,27 @@ class SKProductRequestWrapper {
   /// Starts the product request.
   ///
   /// Returns the [SkProductsResponseWrapper] object.
-  Future<SkProductsResponseWrapper> start() async {
-    final Map<String, dynamic> productResponseMap = (await channel
-        .invokeMethod(
-            'startProductRequest', <String, dynamic>{
-      'identifiers': productIdentifiers,
-    }));
-    return SkProductsResponseWrapper.fromMap(productResponseMap);
+  Future<SkProductResponseWrapper> start() async {
+    final Map<dynamic, dynamic> productResponseMap = await channel.invokeMethod(
+      'startProductRequest',
+      productIdentifiers,
+    );
+    return SkProductResponseWrapper.fromMap(
+        productResponseMap.cast<String, List<dynamic>>());
   }
 }
 
 /// A product response object returned from product request
 ///
 /// this is a wrapper for StoreKit's
-class SkProductsResponseWrapper {
-  SkProductsResponseWrapper(
+class SkProductResponseWrapper {
+  SkProductResponseWrapper(
       {@required this.products, @required this.invalidProductIdentifiers});
 
   /// constructor to build with a map
   ///
   /// Used for constructing the class with map passed from the OBJC layer.
-  SkProductsResponseWrapper.fromMap(Map<String, dynamic> map)
+  SkProductResponseWrapper.fromMap(Map<String, List<dynamic>> map)
       : products = _getListFromMapList(_getProductMapListFromResponseMap(map)),
         invalidProductIdentifiers =
             List.castFrom<dynamic, String>(map['invalidProductIdentifiers']);
@@ -50,12 +50,20 @@ class SkProductsResponseWrapper {
   /// The list of invalid product identifier.
   final List<String> invalidProductIdentifiers;
 
-  static List<Map<String, dynamic>> _getProductMapListFromResponseMap(Map<String, dynamic> map) {
-    return List.castFrom<dynamic, Map<String, dynamic>>(map['products']);
+  static List<Map<dynamic, dynamic>> _getProductMapListFromResponseMap(
+      Map<String, List<dynamic>> map) {
+    return map['products'].cast<Map<dynamic, dynamic>>();
   }
 
-  static List<SKProductWrapper> _getListFromMapList(List<Map<String, dynamic>> mapList) {
-    return mapList.map((Map<String, dynamic> map)=>SKProductWrapper.fromMap(map)).toList();
+  static List<SKProductWrapper> _getListFromMapList(
+      List<Map<dynamic, dynamic>> mapList) {
+    final List<SKProductWrapper> productList = <SKProductWrapper>[];
+    for (Map<dynamic, dynamic> productMap in mapList) {
+      productList.add(SKProductWrapper.fromMap(
+        productMap.cast<String, dynamic>(),
+      ));
+    }
+    return productList;
   }
 }
 

@@ -109,11 +109,14 @@
 @implementation SKProductsResponse (Coder)
 
 - (NSDictionary *)toMap {
-    NSMutableArray *productsMapArray = [NSMutableArray new];
-    for (SKProduct *product in self.products) {
-        [productsMapArray addObject:[product toMap]];
-    }
-    return @{@"products" : productsMapArray, @"invalidProductIdentifiers" : self.invalidProductIdentifiers};
+  NSMutableArray *productsMapArray = [NSMutableArray new];
+  for (SKProduct *product in self.products) {
+    [productsMapArray addObject:[product toMap]];
+  }
+  return @{
+    @"products" : productsMapArray,
+    @"invalidProductIdentifiers" : self.invalidProductIdentifiers
+  };
 }
 
 @end

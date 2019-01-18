@@ -6,6 +6,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase_connection.dart';
+import 'package:in_app_purchase/store_kit_wrappers.dart';
 
 void main() => runApp(MyApp());
 
@@ -70,6 +71,12 @@ class _MyAppState extends State<MyApp> {
       children.add(
           buildListCard(ListTile(title: const Text('Nothing to see yet.'))));
     }
+
+    SKProductRequestWrapper wrapper =
+        SKProductRequestWrapper(productIdentifiers: ['consumable']);
+    SkProductResponseWrapper res = await wrapper.start();
+    print(res.products);
+    print(res.invalidProductIdentifiers);
 
     return children;
   }

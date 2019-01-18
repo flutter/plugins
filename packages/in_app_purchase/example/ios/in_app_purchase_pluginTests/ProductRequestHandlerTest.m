@@ -82,22 +82,27 @@
 }
 
 - (void)testProductResponseToMap {
-    SKProductsResponseStub *response = [[SKProductsResponseStub alloc] initWithIdentifiers:[NSSet setWithArray:@[@"123", @"456"]]];
-    NSDictionary *map = [response toMap];
-    NSDictionary *match = @{
-                            @"products":@[[[[SKProductStub alloc] initWithIdentifier:@"123"] toMap],
-                                            [[[SKProductStub alloc] initWithIdentifier:@"456"] toMap]],
-                             @"invalidProductIdentifiers": @[@"1"]
-                             };
-    XCTAssertEqualObjects(map, match);
+  SKProductsResponseStub *response =
+      [[SKProductsResponseStub alloc] initWithIdentifiers:[NSSet setWithArray:@[ @"123", @"456" ]]];
+  NSDictionary *map = [response toMap];
+  NSDictionary *match = @{
+    @"products" : @[
+      [[[SKProductStub alloc] initWithIdentifier:@"123"] toMap],
+      [[[SKProductStub alloc] initWithIdentifier:@"456"] toMap]
+    ],
+    @"invalidProductIdentifiers" : @[ @"1" ]
+  };
+  XCTAssertEqualObjects(map, match);
 
-    NSDictionary *notMatch = @{
-                            @"products":@[[[[SKProductStub alloc] initWithIdentifier:@"123"] toMap],
-                                          [[[SKProductStub alloc] initWithIdentifier:@"456"] toMap],
-                                          [[[SKProductStub alloc] initWithIdentifier:@"666"] toMap]],
-                            @"invalidProductIdentifiers": @[@"1"]
-                            };
-    XCTAssertNotEqualObjects(map, notMatch);
+  NSDictionary *notMatch = @{
+    @"products" : @[
+      [[[SKProductStub alloc] initWithIdentifier:@"123"] toMap],
+      [[[SKProductStub alloc] initWithIdentifier:@"456"] toMap],
+      [[[SKProductStub alloc] initWithIdentifier:@"666"] toMap]
+    ],
+    @"invalidProductIdentifiers" : @[ @"1" ]
+  };
+  XCTAssertNotEqualObjects(map, notMatch);
 }
 
 - (void)testRequestHandler {
