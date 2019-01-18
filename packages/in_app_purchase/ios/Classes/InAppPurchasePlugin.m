@@ -48,6 +48,7 @@
     result([FlutterError errorWithCode:@"storekit_invalide_argument"
                                message:@"Argument type of startProductRequest is not array"
                                details:call.arguments]);
+    return;
   }
   NSArray *productsIdentifiers = (NSArray *)call.arguments;
   SKProductsRequest *request =
