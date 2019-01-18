@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/src/channel.dart';
 
@@ -24,6 +25,12 @@ class SKProductRequestWrapper {
       'startProductRequest',
       productIdentifiers,
     );
+    if (productResponseMap == null) {
+      throw PlatformException(
+        code: 'storekit_no_response',
+        message: 'StoreKit: Failed to get response from platform.',
+      );
+    }
     return SkProductResponseWrapper.fromMap(
         productResponseMap.cast<String, List<dynamic>>());
   }

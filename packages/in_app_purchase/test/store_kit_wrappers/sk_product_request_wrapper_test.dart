@@ -187,5 +187,15 @@ void main() {
         isNotEmpty,
       );
     });
+
+    test('result is null should throw', () async {
+      stubPlatform.addResponse(name: 'startProductRequest', value: null);
+      final SKProductRequestWrapper request =
+          SKProductRequestWrapper(productIdentifiers: <String>['identifier1']);
+      expect(
+        request.start(),
+        throwsException,
+      );
+    });
   });
 }

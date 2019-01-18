@@ -72,12 +72,6 @@ class _MyAppState extends State<MyApp> {
           buildListCard(ListTile(title: const Text('Nothing to see yet.'))));
     }
 
-    SKProductRequestWrapper wrapper =
-        SKProductRequestWrapper(productIdentifiers: ['consumable']);
-    SkProductResponseWrapper res = await wrapper.start();
-    print(res.products);
-    print(res.invalidProductIdentifiers);
-
     return children;
   }
 

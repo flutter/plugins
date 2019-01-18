@@ -45,7 +45,7 @@
 
 - (void)startProductRequest:(FlutterMethodCall *)call result:(FlutterResult)result {
   if (![call.arguments isKindOfClass:[NSArray class]]) {
-    result([FlutterError errorWithCode:@"in_app_purchase_invalide_type"
+    result([FlutterError errorWithCode:@"storekit_invalide_argument"
                                message:@"Argument type of startProductRequest is not array"
                                details:call.arguments]);
   }
@@ -57,6 +57,13 @@
   handler.delegate = self;
   [self.productRequestHandlerSet addObject:handler];
   [handler startWithCompletionHandler:^(SKProductsResponse *_Nullable response) {
+    if (!response) {
+      result([FlutterError errorWithCode:@"storekit_platform_no_response"
+                                 message:@"Failed to get SKProductResponse in startProductRequest "
+                                         @"call. Error occured on IOS platform"
+                                 details:call.arguments]);
+      return;
+    }
     result([response toMap]);
   }];
 }
