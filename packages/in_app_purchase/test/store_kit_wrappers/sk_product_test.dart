@@ -161,43 +161,4 @@ void main() {
           productResponseMap['invalidProductIdentifiers']);
     });
   });
-
-  group('startProductRequest api', () {
-    test('platform call should get result', () async {
-      stubPlatform.addResponse(
-          name: '-[InAppPurchasePlugin startProductRequest:result:]',
-          value: productResponseMap.cast<String, dynamic>());
-      final SKProductRequestWrapper request =
-          SKProductRequestWrapper(productIdentifiers: <String>['identifier1']);
-      final SkProductResponseWrapper response = await request.start();
-      expect(
-        response.products,
-        isNotEmpty,
-      );
-      expect(
-        response.products.first.currencyCode,
-        'USD',
-      );
-      expect(
-        response.products.first.currencyCode,
-        isNot('USDA'),
-      );
-      expect(
-        response.invalidProductIdentifiers,
-        isNotEmpty,
-      );
-    });
-
-    test('result is null should throw', () async {
-      stubPlatform.addResponse(
-          name: '-[InAppPurchasePlugin startProductRequest:result:]',
-          value: null);
-      final SKProductRequestWrapper request =
-          SKProductRequestWrapper(productIdentifiers: <String>['identifier1']);
-      expect(
-        request.start(),
-        throwsException,
-      );
-    });
-  });
 }

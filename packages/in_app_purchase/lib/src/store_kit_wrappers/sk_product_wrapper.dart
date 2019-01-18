@@ -2,39 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
-import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
-import 'package:in_app_purchase/src/channel.dart';
-
-/// A product request.
-///
-/// This is a wrapper for StoreKit's
-/// [SKProductsRequest](https://developer.apple.com/documentation/storekit/skproductsrequest?language=objc).
-class SKProductRequestWrapper {
-  SKProductRequestWrapper({@required this.productIdentifiers});
-
-  /// Product identifiers to request with.
-  final List<String> productIdentifiers;
-
-  /// Starts the product request.
-  ///
-  /// Returns the [SkProductsResponseWrapper] object.
-  Future<SkProductResponseWrapper> start() async {
-    final Map<dynamic, dynamic> productResponseMap = await channel.invokeMethod(
-      '-[InAppPurchasePlugin startProductRequest:result:]',
-      productIdentifiers,
-    );
-    if (productResponseMap == null) {
-      throw PlatformException(
-        code: 'storekit_no_response',
-        message: 'StoreKit: Failed to get response from platform.',
-      );
-    }
-    return SkProductResponseWrapper.fromMap(
-        productResponseMap.cast<String, List<dynamic>>());
-  }
-}
 
 /// A product response object returned from product request
 ///
