@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "FIAPProductRequestHandler.h"
+#import "FIAPRequestHandler.h"
 #import <StoreKit/StoreKit.h>
 
 #pragma mark - Main Handler
 
-@interface FIAPProductRequestHandler () <SKProductsRequestDelegate>
+@interface FIAPRequestHandler () <SKProductsRequestDelegate>
 
 @property(copy, nonatomic) ProductRequestCompletion completion;
 @property(strong, nonatomic) NSMutableSet *delegateObjects;
@@ -15,9 +15,9 @@
 
 @end
 
-@implementation FIAPProductRequestHandler
+@implementation FIAPRequestHandler
 
-- (instancetype)initWithProductRequest:(SKProductsRequest *)request {
+- (instancetype)initWithRequest:(SKProductsRequest *)request {
   self = [super init];
   if (self) {
     self.request = request;
@@ -26,7 +26,7 @@
   return self;
 }
 
-- (void)startWithCompletionHandler:(ProductRequestCompletion)completion {
+- (void)startProductRequestWithCompletionHandler:(ProductRequestCompletion)completion {
   self.completion = completion;
   [self.request start];
 }
@@ -34,9 +34,18 @@
 - (void)productsRequest:(SKProductsRequest *)request
      didReceiveResponse:(SKProductsResponse *)response {
   if (self.completion) {
-    self.completion(response);
+    self.completion(response, nil);
   }
-  [self.delegate productRequestHandlerDidFinish:self];
+}
+
+- (void)requestDidFinish:(SKRequest *)request {
+  [self.delegate requestHandlerDidFinish:self];
+}
+
+- (void)request:(SKRequest *)request didFailWithError:(NSError *)error {
+  if (self.completion) {
+    self.completion(nil, error);
+  }
 }
 
 @end

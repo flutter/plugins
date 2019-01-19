@@ -4,7 +4,7 @@
 
 #import <Foundation/Foundation.h>
 #import <StoreKit/StoreKit.h>
-#import "FIAPProductRequestHandler.h"
+#import "FIAPRequestHandler.h"
 #import "InAppPurchasePlugin.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -22,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SKProductRequestStub : SKProductsRequest
 - (instancetype)initWithProductIdentifiers:(NSSet<NSString *> *)productIdentifiers;
+- (instancetype)initWithFailureError:(NSError *)error;
 @end
 
 @interface SKProductsResponseStub : SKProductsResponse

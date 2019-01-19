@@ -66,6 +66,7 @@
 @interface SKProductRequestStub ()
 
 @property(strong, nonatomic) NSSet *identifers;
+@property(strong, nonatomic) NSError *error;
 
 @end
 
@@ -77,6 +78,12 @@
   return self;
 }
 
+- (instancetype)initWithFailureError:(NSError *)error {
+  self = [super init];
+  self.error = error;
+  return self;
+}
+
 - (void)start {
   NSMutableArray *productArray = [NSMutableArray new];
   for (NSString *identifier in self.identifers) {
@@ -84,7 +91,12 @@
   }
   SKProductsResponseStub *response =
       [[SKProductsResponseStub alloc] initWithMap:@{@"products" : productArray}];
-  [self.delegate productsRequest:self didReceiveResponse:response];
+  if (self.error) {
+    [self.delegate request:self didFailWithError:self.error];
+  } else {
+    [self.delegate productsRequest:self didReceiveResponse:response];
+  }
+  [self.delegate requestDidFinish:self];
 }
 
 @end
@@ -112,7 +124,7 @@
 
 @implementation InAppPurchasePluginStub
 
-- (SKProductsRequest *)getRequestWithIdentifiers:(NSSet *)identifiers {
+- (SKProductRequestStub *)getProductRequestWithIdentifiers:(NSSet *)identifiers {
   return [[SKProductRequestStub alloc] initWithProductIdentifiers:identifiers];
 }
 

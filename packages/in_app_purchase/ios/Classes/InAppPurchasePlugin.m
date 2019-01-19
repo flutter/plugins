@@ -5,21 +5,21 @@
 #import "InAppPurchasePlugin.h"
 #import <StoreKit/StoreKit.h>
 #import "FIAObjectTranslator.h"
-#import "FIAPProductRequestHandler.h"
+#import "FIAPRequestHandler.h"
 
-@interface InAppPurchasePlugin () <FIAPProductRequestHandlerDelegate>
+@interface InAppPurchasePlugin () <FIAPRequestHandlerDelegate>
 
-@property(strong, nonatomic) NSMutableSet<FIAPProductRequestHandler *> *productRequestHandlerSet;
+@property(strong, nonatomic) NSMutableSet<FIAPRequestHandler *> *RequestHandlerSet;
 
 @end
 
 @implementation InAppPurchasePlugin
 
-- (NSMutableSet<FIAPProductRequestHandler *> *)productRequestHandlerSet {
-  if (!_productRequestHandlerSet) {
-    _productRequestHandlerSet = [NSMutableSet new];
+- (NSMutableSet<FIAPRequestHandler *> *)RequestHandlerSet {
+  if (!_RequestHandlerSet) {
+    _RequestHandlerSet = [NSMutableSet new];
   }
-  return _productRequestHandlerSet;
+  return _RequestHandlerSet;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -33,8 +33,8 @@
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"-[SKPaymentQueue canMakePayments:]" isEqualToString:call.method]) {
     [self canMakePayments:result];
-  } else if ([@"-[InAppPurchasePlugin startProductRequest:result:]" isEqualToString:call.method]) {
-    [self startProductRequest:call result:result];
+  } else if ([@"-[InAppPurchasePlugin startRequest:result:]" isEqualToString:call.method]) {
+    [self startRequest:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -44,24 +44,31 @@
   result([NSNumber numberWithBool:[SKPaymentQueue canMakePayments]]);
 }
 
-- (void)startProductRequest:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)startRequest:(FlutterMethodCall *)call result:(FlutterResult)result {
   if (![call.arguments isKindOfClass:[NSArray class]]) {
     result([FlutterError errorWithCode:@"storekit_invalide_argument"
-                               message:@"Argument type of startProductRequest is not array"
+                               message:@"Argument type of startRequest is not array"
                                details:call.arguments]);
     return;
   }
   NSArray *productsIdentifiers = (NSArray *)call.arguments;
   SKProductsRequest *request =
-      [self getRequestWithIdentifiers:[NSSet setWithArray:productsIdentifiers]];
-  FIAPProductRequestHandler *handler =
-      [[FIAPProductRequestHandler alloc] initWithProductRequest:request];
+      [self getProductRequestWithIdentifiers:[NSSet setWithArray:productsIdentifiers]];
+  FIAPRequestHandler *handler = [[FIAPRequestHandler alloc] initWithRequest:request];
   handler.delegate = self;
-  [self.productRequestHandlerSet addObject:handler];
-  [handler startWithCompletionHandler:^(SKProductsResponse *_Nullable response) {
+  [self.RequestHandlerSet addObject:handler];
+  [handler startProductRequestWithCompletionHandler:^(SKProductsResponse *_Nullable response,
+                                                      NSError *_Nullable error) {
+    if (error) {
+      NSString *details = [NSString stringWithFormat:@"Reason:%@\nRecoverSuggestion:%@",
+                                                     error.localizedFailureReason,
+                                                     error.localizedRecoverySuggestion];
+      result([FlutterError errorWithCode:error.domain message:error.description details:details]);
+      return;
+    }
     if (!response) {
       result([FlutterError errorWithCode:@"storekit_platform_no_response"
-                                 message:@"Failed to get SKProductResponse in startProductRequest "
+                                 message:@"Failed to get SKProductResponse in startRequest "
                                          @"call. Error occured on IOS platform"
                                  details:call.arguments]);
       return;
@@ -70,15 +77,15 @@
   }];
 }
 
-- (SKProductsRequest *)getRequestWithIdentifiers:(NSSet *)identifiers {
+- (SKProductsRequest *)getProductRequestWithIdentifiers:(NSSet *)identifiers {
   return [[SKProductsRequest alloc] initWithProductIdentifiers:identifiers];
 }
 
 #pragma mark - delegates
 
-- (void)productRequestHandlerDidFinish:(FIAPProductRequestHandler *)handler {
-  if ([self.productRequestHandlerSet containsObject:handler]) {
-    [self.productRequestHandlerSet removeObject:handler];
+- (void)requestHandlerDidFinish:(FIAPRequestHandler *)handler {
+  if ([self.RequestHandlerSet containsObject:handler]) {
+    [self.RequestHandlerSet removeObject:handler];
   }
 }
 
