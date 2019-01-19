@@ -24,7 +24,7 @@
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		A5279298219369C600FF69E6 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A5279297219369C600FF69E6 /* StoreKit.framework */; };
-		A59001A721E69658004A3E5E /* invalidProductIdentifiers.m in Sources */ = {isa = PBXBuildFile; fileRef = A59001A621E69658004A3E5E /* invalidProductIdentifiers.m */; };
+		A59001A721E69658004A3E5E /* InAppPurchasePluginTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A59001A621E69658004A3E5E /* InAppPurchasePluginTest.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -76,7 +76,7 @@
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A5279297219369C600FF69E6 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		A59001A421E69658004A3E5E /* in_app_purchase_pluginTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = in_app_purchase_pluginTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		A59001A621E69658004A3E5E /* invalidProductIdentifiers.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = invalidProductIdentifiers.m; sourceTree = "<group>"; };
+		A59001A621E69658004A3E5E /* InAppPurchasePluginTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = InAppPurchasePluginTest.m; sourceTree = "<group>"; };
 		A59001A821E69658004A3E5E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B2AB6BE1D4E2232AB5D4A002 /* libPods-Runner.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Runner.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -172,7 +172,7 @@
 		A59001A521E69658004A3E5E /* in_app_purchase_pluginTests */ = {
 			isa = PBXGroup;
 			children = (
-				A59001A621E69658004A3E5E /* invalidProductIdentifiers.m */,
+				A59001A621E69658004A3E5E /* InAppPurchasePluginTest.m */,
 				6896B34521E9363700D37AEF /* ProductRequestHandlerTest.m */,
 				A59001A821E69658004A3E5E /* Info.plist */,
 				6896B34A21EEB4B800D37AEF /* Stubs.h */,
@@ -384,7 +384,7 @@
 			files = (
 				6896B34621E9363700D37AEF /* ProductRequestHandlerTest.m in Sources */,
 				688DE35121F2A5A100EA2684 /* TranslatorTest.m in Sources */,
-				A59001A721E69658004A3E5E /* invalidProductIdentifiers.m in Sources */,
+				A59001A721E69658004A3E5E /* InAppPurchasePluginTest.m in Sources */,
 				6896B34C21EEB4B800D37AEF /* Stubs.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
