@@ -226,7 +226,8 @@ public class ImagePickerDelegate
     boolean canTakePhotos = intentResolver.resolveActivity(intent);
 
     if (!canTakePhotos) {
-      finishPendingResultWithError("no_available_camera", "No cameras available for taking pictures.");
+      finishPendingResultWithError(
+          "no_available_camera", "No cameras available for taking pictures.");
       return;
     }
 
@@ -282,7 +283,8 @@ public class ImagePickerDelegate
     boolean canTakePhotos = intentResolver.resolveActivity(intent);
 
     if (!canTakePhotos) {
-      finishPendingResultWithError("no_available_camera", "No cameras available for taking pictures.");
+      finishPendingResultWithError(
+          "no_available_camera", "No cameras available for taking pictures.");
       return;
     }
 
