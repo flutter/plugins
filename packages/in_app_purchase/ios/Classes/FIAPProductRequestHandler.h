@@ -24,30 +24,6 @@ NS_ASSUME_NONNULL_END
 
 @end
 
-@interface SKProduct (Coder)
-
-- (nullable NSDictionary *)toMap;
-
-@end
-
-@interface SKProductSubscriptionPeriod (Coder)
-
-- (nullable NSDictionary *)toMap;
-
-@end
-
-@interface SKProductDiscount (Coder)
-
-- (nullable NSDictionary *)toMap;
-
-@end
-
-@interface SKProductsResponse (Coder)
-
-- (nullable NSDictionary *)toMap;
-
-@end
-
 #pragma mark - delegate
 
 @protocol FIAPProductRequestHandlerDelegate <NSObject>

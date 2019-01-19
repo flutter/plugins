@@ -9,20 +9,23 @@
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SKProductSubscriptionPeriodStub : SKProductSubscriptionPeriod
+- (instancetype)initWithMap:(NSDictionary *)map;
 @end
 
 @interface SKProductDiscountStub : SKProductDiscount
+- (instancetype)initWithMap:(NSDictionary *)map;
 @end
 
 @interface SKProductStub : SKProduct
-- (nonnull instancetype)initWithIdentifier:(nullable NSString *)identifier;
+- (instancetype)initWithMap:(NSDictionary *)map;
 @end
 
 @interface SKProductRequestStub : SKProductsRequest
+- (instancetype)initWithProductIdentifiers:(NSSet<NSString *> *)productIdentifiers;
 @end
 
 @interface SKProductsResponseStub : SKProductsResponse
-- (instancetype)initWithIdentifiers:(NSSet *)identifiers;
+- (instancetype)initWithMap:(NSDictionary *)map;
 @end
 
 @interface InAppPurchasePluginStub : InAppPurchasePlugin

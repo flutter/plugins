@@ -4,6 +4,7 @@
 
 #import "InAppPurchasePlugin.h"
 #import <StoreKit/StoreKit.h>
+#import "FIAObjectTranslator.h"
 #import "FIAPProductRequestHandler.h"
 
 @interface InAppPurchasePlugin () <FIAPProductRequestHandlerDelegate>

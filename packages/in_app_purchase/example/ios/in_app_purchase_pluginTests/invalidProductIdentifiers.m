@@ -6,11 +6,11 @@
 #import "InAppPurchasePlugin.h"
 #import "Stubs.h"
 
-@interface in_app_purchase_pluginTests : XCTestCase
+@interface invalidProductIdentifiers : XCTestCase
 
 @end
 
-@implementation in_app_purchase_pluginTests
+@implementation invalidProductIdentifiers
 InAppPurchasePlugin* plugin;
 
 - (void)setUp {

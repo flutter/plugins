@@ -6,11 +6,11 @@
 
 @implementation SKProductSubscriptionPeriodStub
 
-- (instancetype)init {
+- (instancetype)initWithMap:(NSDictionary *)map {
   self = [super init];
   if (self) {
-    [self setValue:@(0) forKey:@"numberOfUnits"];
-    [self setValue:@(0) forKey:@"unit"];
+    [self setValue:map[@"numberOfUnits"] ?: @(0) forKey:@"numberOfUnits"];
+    [self setValue:map[@"unit"] ?: @(0) forKey:@"unit"];
   }
   return self;
 }
@@ -19,17 +19,17 @@
 
 @implementation SKProductDiscountStub
 
-- (instancetype)init {
+- (instancetype)initWithMap:(NSDictionary *)map {
   self = [super init];
   if (self) {
-    [self setValue:@(1.0) forKey:@"price"];
+    [self setValue:map[@"price"] ?: [NSNull null] forKey:@"price"];
     NSLocale *locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
-    [self setValue:locale forKey:@"priceLocale"];
-    [self setValue:@(1) forKey:@"numberOfPeriods"];
+    [self setValue:locale ?: [NSNull null] forKey:@"priceLocale"];
+    [self setValue:map[@"numberOfPeriods"] ?: @(0) forKey:@"numberOfPeriods"];
     SKProductSubscriptionPeriodStub *subscriptionPeriodSub =
-        [[SKProductSubscriptionPeriodStub alloc] init];
+        [[SKProductSubscriptionPeriodStub alloc] initWithMap:map[@"subscriptionPeriod"]];
     [self setValue:subscriptionPeriodSub forKey:@"subscriptionPeriod"];
-    [self setValue:@(1) forKey:@"paymentMode"];
+    [self setValue:map[@"paymentMode"] ?: @(0) forKey:@"paymentMode"];
   }
   return self;
 }
@@ -38,22 +38,25 @@
 
 @implementation SKProductStub
 
-- (instancetype)initWithIdentifier:(NSString *)identifier {
+- (instancetype)initWithMap:(NSDictionary *)map {
   self = [super init];
   if (self) {
-    [self setValue:identifier forKey:@"productIdentifier"];
-    [self setValue:@"description" forKey:@"localizedDescription"];
-    [self setValue:@"title" forKey:@"localizedTitle"];
-    [self setValue:@YES forKey:@"downloadable"];
-    [self setValue:@(1.0) forKey:@"price"];
+    [self setValue:map[@"productIdentifier"] ?: [NSNull null] forKey:@"productIdentifier"];
+    [self setValue:map[@"localizedDescription"] ?: [NSNull null] forKey:@"localizedDescription"];
+    [self setValue:map[@"localizedTitle"] ?: [NSNull null] forKey:@"localizedTitle"];
+    [self setValue:map[@"downloadable"] ?: @NO forKey:@"downloadable"];
+    [self setValue:map[@"price"] ?: [NSNull null] forKey:@"price"];
     NSLocale *locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
-    [self setValue:locale forKey:@"priceLocale"];
-    [self setValue:@[ @1, @2 ] forKey:@"downloadContentLengths"];
-    SKProductSubscriptionPeriodStub *period = [[SKProductSubscriptionPeriodStub alloc] init];
-    [self setValue:period forKey:@"subscriptionPeriod"];
-    SKProductDiscountStub *discount = [[SKProductDiscountStub alloc] init];
-    [self setValue:discount forKey:@"introductoryPrice"];
-    [self setValue:@"com.group" forKey:@"subscriptionGroupIdentifier"];
+    [self setValue:locale ?: [NSNull null] forKey:@"priceLocale"];
+    [self setValue:map[@"downloadContentLengths"] ?: @(0) forKey:@"downloadContentLengths"];
+    SKProductSubscriptionPeriodStub *period =
+        [[SKProductSubscriptionPeriodStub alloc] initWithMap:map[@"subscriptionPeriod"]];
+    [self setValue:period ?: [NSNull null] forKey:@"subscriptionPeriod"];
+    SKProductDiscountStub *discount =
+        [[SKProductDiscountStub alloc] initWithMap:map[@"introductoryPrice"]];
+    [self setValue:discount ?: [NSNull null] forKey:@"introductoryPrice"];
+    [self setValue:map[@"subscriptionGroupIdentifier"] ?: [NSNull null]
+            forKey:@"subscriptionGroupIdentifier"];
   }
   return self;
 }
@@ -75,8 +78,12 @@
 }
 
 - (void)start {
+  NSMutableArray *productArray = [NSMutableArray new];
+  for (NSString *identifier in self.identifers) {
+    [productArray addObject:@{@"productIdentifier" : identifier}];
+  }
   SKProductsResponseStub *response =
-      [[SKProductsResponseStub alloc] initWithIdentifiers:self.identifers];
+      [[SKProductsResponseStub alloc] initWithMap:@{@"products" : productArray}];
   [self.delegate productsRequest:self didReceiveResponse:response];
 }
 
@@ -84,16 +91,15 @@
 
 @implementation SKProductsResponseStub
 
-- (instancetype)initWithIdentifiers:(NSSet *)identifiers {
+- (instancetype)initWithMap:(NSDictionary *)map {
   self = [super init];
   if (self) {
     NSMutableArray *products = [NSMutableArray new];
-    for (NSString *identifier in identifiers) {
-      SKProductStub *product = [[SKProductStub alloc] initWithIdentifier:identifier];
+    for (NSDictionary *productMap in map[@"products"]) {
+      SKProductStub *product = [[SKProductStub alloc] initWithMap:productMap];
       [products addObject:product];
     }
     [self setValue:products forKey:@"products"];
-    [self setValue:@[ @"1" ] forKey:@"invalidIdentifiers"];
   }
   return self;
 }
