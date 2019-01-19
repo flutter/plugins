@@ -1,3 +1,7 @@
+## 0.4.12+1
+
+* Fix a crash when selecting downloaded images from image picker on certain devices.
+
 ## 0.4.12
 
 * Fix a crash when user tap the image mutiple times.
