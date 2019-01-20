@@ -225,7 +225,7 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
 }
 
 - (int64_t)duration {
-  return FLTCMTimeToMillis([[_player currentItem] duration]);
+  return FLTCMTimeToMillis([[[_player currentItem] asset] duration]);
 }
 
 - (void)seekTo:(int)location {
