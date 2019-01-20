@@ -483,7 +483,7 @@ public class ImagePickerDelegate
   }
 
   private void finishWithAlreadyActiveError(MethodChannel.Result result) {
-    if (result!=null) {
+    if (result != null) {
       result.error("already_active", "Image picker is already active", null);
     }
   }
