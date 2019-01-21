@@ -23,7 +23,7 @@ Enable the Google services by configuring the Gradle scripts as such.
 ```gradle
 dependencies {
   // Example existing classpath
-  classpath 'com.android.tools.build:gradle:3.2.1'
+  classpath 'com.android.tools.build:gradle:3.3.0'
   // Add the google services classpath
   classpath 'com.google.gms:google-services:4.2.0'
 }
@@ -91,7 +91,7 @@ the user's phone. The user signs in using a one-time code contained in the SMS m
 
   - When testing you can add test phone numbers and verification codes to the Firebase console.
 
-1. [Enable App verification](https://firebase.google.com/docs/auth/ios/phone-auth#enable-app-verification)  
+1. [Enable App verification](https://firebase.google.com/docs/auth/ios/phone-auth#enable-app-verification)
 
 **Note:** App verification may use APNs, if using a simulator (where APNs does not work) or APNs is not setup on the
 device you are using you must set the `URL Schemes` to the `REVERSE_CLIENT_ID` from the GoogleServices-Info.plist file.
