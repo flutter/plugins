@@ -34,6 +34,6 @@ android {
         disable 'InvalidPackage'
     }
     dependencies {
-        api 'com.google.firebase:firebase-firestore:17.1.1'
+        api 'com.google.firebase:firebase-firestore:17.1.4'
     }
 }
