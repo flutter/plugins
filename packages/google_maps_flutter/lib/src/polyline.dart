@@ -54,7 +54,7 @@ class PolylineOptions {
 
   /// The joint type defines the shape to be used when joining adjacent line segments at all vertices of the
   /// polyline except the start and end vertices. See JointType for supported joint types. The default value is
-  /// DEFAULT.
+  /// mitered.
   final int jointType;
 
   /// The stroke pattern for the polyline.
