@@ -33,7 +33,7 @@ android {
     }
     dependencies {
         api 'com.android.support:support-v4:27.1.1'
-        api 'com.google.firebase:firebase-ml-vision:17.0.1'
-        api 'com.google.firebase:firebase-ml-vision-image-label-model:16.2.0'
+        api 'com.google.firebase:firebase-ml-vision:18.0.2'
+        api 'com.google.firebase:firebase-ml-vision-image-label-model:17.0.2'
     }
 }
