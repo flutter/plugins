@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:sensors/sensors.dart';
 
@@ -41,6 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   List<double> _accelerometerValues;
   List<double> _userAccelerometerValues;
+  List<double> _gravityValues;
   List<double> _gyroscopeValues;
   List<StreamSubscription<dynamic>> _streamSubscriptions =
       <StreamSubscription<dynamic>>[];
@@ -54,6 +56,8 @@ class _MyHomePageState extends State<MyHomePage> {
     final List<String> userAccelerometer = _userAccelerometerValues
         ?.map((double v) => v.toStringAsFixed(1))
         ?.toList();
+    final List<String> gravity =
+        _gravityValues?.map((double v) => v.toStringAsFixed(1))?.toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -100,6 +104,15 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
+                Text('Gravity: $gravity'),
+              ],
+            ),
+            padding: const EdgeInsets.all(16.0),
+          ),
+          Padding(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
                 Text('Gyroscope: $gyroscope'),
               ],
             ),
@@ -136,6 +149,11 @@ class _MyHomePageState extends State<MyHomePage> {
         .add(userAccelerometerEvents.listen((UserAccelerometerEvent event) {
       setState(() {
         _userAccelerometerValues = <double>[event.x, event.y, event.z];
+      });
+    }));
+    _streamSubscriptions.add(gravityEvents.listen((GravityEvent event) {
+      setState(() {
+        _gravityValues = <double>[event.x, event.y, event.z];
       });
     }));
   }
