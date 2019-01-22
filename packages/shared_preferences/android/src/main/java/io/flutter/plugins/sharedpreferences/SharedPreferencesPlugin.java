@@ -5,6 +5,7 @@
 package io.flutter.plugins.sharedpreferences;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.util.Base64;
 import io.flutter.plugin.common.MethodCall;
@@ -33,7 +34,7 @@ public class SharedPreferencesPlugin implements MethodCallHandler {
   private static final String LIST_IDENTIFIER = "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBhIGxpc3Qu";
   private static final String BIG_INTEGER_PREFIX = "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBCaWdJbnRlZ2Vy";
 
-  private final android.content.SharedPreferences preferences;
+  private final SharedPreferences preferences;
 
   public static void registerWith(PluginRegistry.Registrar registrar) {
     MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL_NAME);
