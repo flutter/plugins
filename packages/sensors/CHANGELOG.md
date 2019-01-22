@@ -1,3 +1,7 @@
+## 0.3.6
+
+* Added option to specify sample rate.
+
 ## 0.3.5
 
 * Added missing test package dependency.

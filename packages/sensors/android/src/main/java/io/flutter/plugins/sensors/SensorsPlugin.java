@@ -50,7 +50,7 @@ public class SensorsPlugin implements EventChannel.StreamHandler {
   @Override
   public void onListen(Object arguments, EventChannel.EventSink events) {
     sensorEventListener = createSensorEventListener(events);
-    sensorManager.registerListener(sensorEventListener, sensor, parseSampleRateArgument(arguments));
+    sensorManager.registerListener(sensorEventListener, sensor, (int)(1000000 / (int)arguments));
   }
 
   @Override
@@ -72,16 +72,5 @@ public class SensorsPlugin implements EventChannel.StreamHandler {
         events.success(sensorValues);
       }
     };
-  }
-
-  private int parseSampleRateArgument(Object arguments) {
-    switch (arguments.toString()) {
-      case "medium":
-        return sensorManager.SENSOR_DELAY_GAME;
-      case "high":
-        return sensorManager.SENSOR_DELAY_FASTEST;
-      default:
-        return sensorManager.SENSOR_DELAY_NORMAL;
-    }
   }
 }

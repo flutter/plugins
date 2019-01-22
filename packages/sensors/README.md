@@ -21,7 +21,7 @@ gyroscopeEvents.listen((GyroscopeEvent event) {
  // Do something with the event.
 });
 
-// Optionally, specify the sample rate before listening.
-// .low equals 15 events per second, .medium 50, and .high 100 (iOS) and 120 (Android).
-setSensorsSampleRate(SampleRate.medium);
+// Optionally, specify the sample rate in Hz (events per second) before listening.
+// Note that for Android this is only a hint to the system. Events may be received faster or slower.
+setSensorsSampleRate(50);
 ```

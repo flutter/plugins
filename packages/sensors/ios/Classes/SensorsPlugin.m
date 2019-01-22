@@ -52,7 +52,7 @@ static void sendTriplet(Float64 x, Float64 y, Float64 z, FlutterEventSink sink) 
 
 - (FlutterError*)onListenWithArguments:(id)arguments eventSink:(FlutterEventSink)eventSink {
   _initMotionManager();
-  _motionManager.accelerometerUpdateInterval = _parseSampleRateArgument(arguments);
+  _motionManager.accelerometerUpdateInterval = (float)1 / [arguments integerValue];
   [_motionManager
       startAccelerometerUpdatesToQueue:[[NSOperationQueue alloc] init]
                            withHandler:^(CMAccelerometerData* accelerometerData, NSError* error) {
@@ -76,7 +76,7 @@ static void sendTriplet(Float64 x, Float64 y, Float64 z, FlutterEventSink sink) 
 
 - (FlutterError*)onListenWithArguments:(id)arguments eventSink:(FlutterEventSink)eventSink {
   _initMotionManager();
-  _motionManager.deviceMotionUpdateInterval = _parseSampleRateArgument(arguments);
+  _motionManager.deviceMotionUpdateInterval = (float)1 / [arguments integerValue];
   [_motionManager
       startDeviceMotionUpdatesToQueue:[[NSOperationQueue alloc] init]
                           withHandler:^(CMDeviceMotion* data, NSError* error) {
@@ -99,7 +99,7 @@ static void sendTriplet(Float64 x, Float64 y, Float64 z, FlutterEventSink sink) 
 
 - (FlutterError*)onListenWithArguments:(id)arguments eventSink:(FlutterEventSink)eventSink {
   _initMotionManager();
-  _motionManager.gyroUpdateInterval = _parseSampleRateArgument(arguments);
+  _motionManager.gyroUpdateInterval = (float)1 / [arguments integerValue];
   [_motionManager
       startGyroUpdatesToQueue:[[NSOperationQueue alloc] init]
                   withHandler:^(CMGyroData* gyroData, NSError* error) {
@@ -115,15 +115,3 @@ static void sendTriplet(Float64 x, Float64 y, Float64 z, FlutterEventSink sink) 
 }
 
 @end
-
-float _parseSampleRateArgument(id arguments) {
-  NSString* argument = (NSString*)arguments;
-
-  if ([arguments isEqualToString:@"medium"]) {
-    return (float)1 / 50;
-  } else if ([arguments isEqualToString:@"high"]) {
-    return (float)1 / 100;
-  } else {
-    return (float)1 / 15;
-  }
-}
