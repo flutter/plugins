@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
+import java.util.HashMap;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -48,7 +49,7 @@ public class AndroidIntentPlugin implements MethodCallHandler {
     }
   }
 
-  private Bundle convertArguments(Map<String, ?> arguments) {
+  private Bundle convertMapToBundle(Map<String, ?> arguments) {
     Bundle bundle = new Bundle();
     for (String key : arguments.keySet()) {
       Object value = arguments.get(key);
@@ -75,12 +76,48 @@ public class AndroidIntentPlugin implements MethodCallHandler {
       } else if (isTypedArrayList(value, String.class)) {
         bundle.putStringArrayList(key, (ArrayList<String>) value);
       } else if (isStringKeyedMap(value)) {
-        bundle.putBundle(key, convertArguments((Map<String, ?>) value));
+        bundle.putBundle(key, convertMapToBundle((Map<String, ?>) value));
       } else {
         throw new UnsupportedOperationException("Unsupported type " + value);
       }
     }
     return bundle;
+  }
+
+  private Map<String, Object> convertBundleToMap(Bundle bundle) {
+    Map<String, Object> arguments = new HashMap<String, Object>();
+    for (String key : bundle.keySet()) {
+      Object value = bundle.get(key);
+
+      if (value instanceof Integer) {
+        arguments.put(key, (Integer) value);
+      } else if (value instanceof String) {
+        arguments.put(key, (String) value);
+      } else if (value instanceof Boolean) {
+        arguments.put(key, (Boolean) value);
+      } else if (value instanceof Double) {
+        arguments.put(key, (Double) value);
+      } else if (value instanceof Long) {
+        arguments.put(key, (Long) value);
+      } else if (value instanceof byte[]) {
+        arguments.put(key, (byte[]) value);
+      } else if (value instanceof int[]) {
+        arguments.put(key, (int[]) value);
+      } else if (value instanceof long[]) {
+        arguments.put(key, (long[]) value);
+      } else if (value instanceof double[]) {
+        arguments.put(key, (double[]) value);
+      } else if (isTypedArrayList(value, Integer.class)) {
+        arguments.put(key, (ArrayList<Integer>) value);
+      } else if (isTypedArrayList(value, String.class)) {
+        arguments.put(key, (ArrayList<String>) value);
+      } else if (value instanceof Bundle) {
+        arguments.put(key, convertBundleToMap((Bundle) value));
+      } else {
+        throw new UnsupportedOperationException("Unsupported type " + value);
+      }
+    }
+    return arguments;
   }
 
   private boolean isTypedArrayList(Object value, Class<?> type) {
@@ -116,33 +153,64 @@ public class AndroidIntentPlugin implements MethodCallHandler {
   @Override
   public void onMethodCall(MethodCall call, Result result) {
     Context context = getActiveContext();
-    String action = convertAction((String) call.argument("action"));
 
-    // Build intent
-    Intent intent = new Intent(action);
-    if (mRegistrar.activity() == null) {
-      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    if (call.method.equals("launch")) {
+      String action = convertAction((String) call.argument("action"));
+      // Build intent
+      Intent intent = null;
+      
+      if (action.equals("action_app")) {
+        try {
+          intent = context.getPackageManager().getLeanbackLaunchIntentForPackage(context.getPackageName());
+        } 
+        catch (java.lang.NoSuchMethodError e) { }
+
+        if (intent == null)
+          intent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
+        
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      }
+      else {
+        intent = new Intent(action);
+  
+        if (mRegistrar.activity() == null) {
+          intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        }
+      }
+  
+      if (call.argument("category") != null) {
+        intent.addCategory((String) call.argument("category"));
+      }
+      if (call.argument("data") != null) {
+        intent.setData(Uri.parse((String) call.argument("data")));
+      }
+      if (call.argument("arguments") != null) {
+        intent.putExtras(convertMapToBundle((Map) call.argument("arguments")));
+      }
+      if (call.argument("package") != null) {
+        intent.setPackage((String) call.argument("package"));
+        if (intent.resolveActivity(context.getPackageManager()) == null) {
+          Log.i(TAG, "Cannot resolve explicit intent - ignoring package");
+          intent.setPackage(null);
+        }
+      }
+  
+      Log.i(TAG, "Sending intent " + intent);
+      context.startActivity(intent);
+  
+      result.success(null);
     }
-    if (call.argument("category") != null) {
-      intent.addCategory((String) call.argument("category"));
-    }
-    if (call.argument("data") != null) {
-      intent.setData(Uri.parse((String) call.argument("data")));
-    }
-    if (call.argument("arguments") != null) {
-      intent.putExtras(convertArguments((Map) call.argument("arguments")));
-    }
-    if (call.argument("package") != null) {
-      intent.setPackage((String) call.argument("package"));
-      if (intent.resolveActivity(context.getPackageManager()) == null) {
-        Log.i(TAG, "Cannot resolve explicit intent - ignoring package");
-        intent.setPackage(null);
+    else if (call.method.equals("getIntentExtras")) {
+      if (mRegistrar.activity() != null) {
+        Intent intent = mRegistrar.activity().getIntent();
+        result.success(convertBundleToMap(intent.getExtras()));
       }
     }
-
-    Log.i(TAG, "Sending intent " + intent);
-    context.startActivity(intent);
-
-    result.success(null);
+    else if (call.method.equals("getIntentData")) {
+      if (mRegistrar.activity() != null) {
+        Intent intent = mRegistrar.activity().getIntent();
+        result.success(intent.getData());
+      }
+    }
   }
 }

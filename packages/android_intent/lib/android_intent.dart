@@ -27,7 +27,6 @@ class AndroidIntent {
     this.package,
     Platform platform,
   })  : assert(action != null),
-        _channel = const MethodChannel(kChannelName),
         _platform = platform ?? const LocalPlatform();
 
   final String action;
@@ -35,7 +34,7 @@ class AndroidIntent {
   final String data;
   final Map<String, dynamic> arguments;
   final String package;
-  final MethodChannel _channel;
+  static final MethodChannel _channel = const MethodChannel(kChannelName);
   final Platform _platform;
 
   /// Launch the intent.
@@ -61,5 +60,15 @@ class AndroidIntent {
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
     await _channel.invokeMethod('launch', args);
+  }
+
+  static Future<Map<dynamic, dynamic>> getIntentExtras() async {
+    final Map<dynamic, dynamic> extras = await _channel.invokeMethod('getIntentExtras');
+    return extras;
+  }
+
+  static Future<String> getIntentData() async {
+    final String data = await _channel.invokeMethod('getIntentData');
+    return data;
   }
 }
