@@ -97,6 +97,10 @@ class AndroidAlarmManager {
   /// alarm fires. If `wakeup` is false (the default), the device will not be
   /// woken up to service the alarm.
   ///
+  /// If `allowWhileIdle` is passed as `true`, this alarm will be allowed to
+  /// execute even when the system is in low-power idle modes. If it is false,
+  /// the default, the alarm will be deferred when the device is idle.
+  ///
   /// Returns a [Future] that resolves to `true` on success and `false` on
   /// failure.
   static Future<bool> oneShot(
@@ -105,6 +109,7 @@ class AndroidAlarmManager {
     dynamic Function() callback, {
     bool exact = false,
     bool wakeup = false,
+    bool allowWhileIdle = false,
   }) async {
     final int now = DateTime.now().millisecondsSinceEpoch;
     final int first = now + delay.inMilliseconds;
@@ -119,6 +124,7 @@ class AndroidAlarmManager {
       id,
       exact,
       wakeup,
+      allowWhileIdle,
       first,
       handle.toRawHandle(),
     ]);

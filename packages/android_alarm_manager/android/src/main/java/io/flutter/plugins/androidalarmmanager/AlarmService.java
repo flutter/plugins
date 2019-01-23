@@ -75,10 +75,20 @@ public class AlarmService extends Service {
       int requestCode,
       boolean exact,
       boolean wakeup,
+      boolean allowWhileIdle,
       long startMillis,
       long callbackHandle) {
     final boolean repeating = false;
-    scheduleAlarm(context, requestCode, repeating, exact, wakeup, startMillis, 0, callbackHandle);
+    scheduleAlarm(
+        context,
+        requestCode,
+        repeating,
+        exact,
+        wakeup,
+        allowWhileIdle,
+        startMillis,
+        0,
+        callbackHandle);
   }
 
   public static void setPeriodic(
@@ -90,12 +100,14 @@ public class AlarmService extends Service {
       long intervalMillis,
       long callbackHandle) {
     final boolean repeating = true;
+    final boolean allowWhileIdle = false;
     scheduleAlarm(
         context,
         requestCode,
         repeating,
         exact,
         wakeup,
+        allowWhileIdle,
         startMillis,
         intervalMillis,
         callbackHandle);
@@ -171,6 +183,7 @@ public class AlarmService extends Service {
       boolean repeating,
       boolean exact,
       boolean wakeup,
+      boolean allowWhileIdle,
       long startMillis,
       long intervalMillis,
       long callbackHandle) {
@@ -191,12 +204,16 @@ public class AlarmService extends Service {
     if (exact) {
       if (repeating) {
         manager.setRepeating(clock, startMillis, intervalMillis, pendingIntent);
+      } else if (allowWhileIdle) {
+        manager.setExactAndAllowWhileIdle(clock, startMillis, pendingIntent);
       } else {
         manager.setExact(clock, startMillis, pendingIntent);
       }
     } else {
       if (repeating) {
         manager.setInexactRepeating(clock, startMillis, intervalMillis, pendingIntent);
+      } else if (allowWhileIdle) {
+        manager.setAndAllowWhileIdle(clock, startMillis, pendingIntent);
       } else {
         manager.set(clock, startMillis, pendingIntent);
       }

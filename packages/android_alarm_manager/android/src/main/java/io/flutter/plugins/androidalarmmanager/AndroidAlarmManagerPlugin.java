@@ -79,9 +79,11 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
     int requestCode = arguments.getInt(0);
     boolean exact = arguments.getBoolean(1);
     boolean wakeup = arguments.getBoolean(2);
-    long startMillis = arguments.getLong(3);
-    long callbackHandle = arguments.getLong(4);
-    AlarmService.setOneShot(mContext, requestCode, exact, wakeup, startMillis, callbackHandle);
+    boolean allowWhileIdle = arguments.getBoolean(3);
+    long startMillis = arguments.getLong(4);
+    long callbackHandle = arguments.getLong(5);
+    AlarmService.setOneShot(
+        mContext, requestCode, exact, wakeup, allowWhileIdle, startMillis, callbackHandle);
   }
 
   private void periodic(JSONArray arguments) throws JSONException {
