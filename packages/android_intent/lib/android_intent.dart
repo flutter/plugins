@@ -63,7 +63,8 @@ class AndroidIntent {
   }
 
   static Future<Map<dynamic, dynamic>> getIntentExtras() async {
-    final Map<dynamic, dynamic> extras = await _channel.invokeMethod('getIntentExtras');
+    final Map<dynamic, dynamic> extras =
+        await _channel.invokeMethod('getIntentExtras');
     return extras;
   }
 

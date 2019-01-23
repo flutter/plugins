@@ -10,13 +10,13 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
-import java.util.HashMap;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 /** AndroidIntentPlugin */
@@ -158,26 +158,28 @@ public class AndroidIntentPlugin implements MethodCallHandler {
       String action = convertAction((String) call.argument("action"));
       // Build intent
       Intent intent = null;
-      
+
       if (action.equals("action_app")) {
         try {
-          intent = context.getPackageManager().getLeanbackLaunchIntentForPackage(context.getPackageName());
-        } 
-        catch (java.lang.NoSuchMethodError e) { }
+          intent =
+              context
+                  .getPackageManager()
+                  .getLeanbackLaunchIntentForPackage(context.getPackageName());
+        } catch (java.lang.NoSuchMethodError e) {
+        }
 
         if (intent == null)
           intent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
-        
+
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      }
-      else {
+      } else {
         intent = new Intent(action);
-  
+
         if (mRegistrar.activity() == null) {
           intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         }
       }
-  
+
       if (call.argument("category") != null) {
         intent.addCategory((String) call.argument("category"));
       }
@@ -194,19 +196,17 @@ public class AndroidIntentPlugin implements MethodCallHandler {
           intent.setPackage(null);
         }
       }
-  
+
       Log.i(TAG, "Sending intent " + intent);
       context.startActivity(intent);
-  
+
       result.success(null);
-    }
-    else if (call.method.equals("getIntentExtras")) {
+    } else if (call.method.equals("getIntentExtras")) {
       if (mRegistrar.activity() != null) {
         Intent intent = mRegistrar.activity().getIntent();
         result.success(convertBundleToMap(intent.getExtras()));
       }
-    }
-    else if (call.method.equals("getIntentData")) {
+    } else if (call.method.equals("getIntentData")) {
       if (mRegistrar.activity() != null) {
         Intent intent = mRegistrar.activity().getIntent();
         result.success(intent.getData());
