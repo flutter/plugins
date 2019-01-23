@@ -115,11 +115,12 @@ class BillingClient {
 /// to call back on `BillingClient` disconnect.
 typedef void OnBillingServiceDisconnected();
 
-/// Wraps
-/// [`BillingClient.BillingResponse`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.BillingResponse),
-/// possible status codes.
+/// Possible `BillingClient` response statuses.
 ///
-/// See the `BillingResponse` docs for an explanation of the different constants.
+/// Wraps
+/// [`BillingClient.BillingResponse`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.BillingResponse).
+/// See the `BillingResponse` docs for more explanation of the different
+/// constants.
 enum BillingResponse {
   // WARNING: Changes to this class need to be reflected in our generated code.
   // Run `flutter packages pub run build_runner watch` to rebuild and watch for
