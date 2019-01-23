@@ -1,7 +1,7 @@
 task:
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true' && $CIRRUS_PR == ''
   container:
-    image: cirrusci/flutter:latest
+    dockerfile: .ci/Dockerfile
     cpu: 4
     memory: 8G
   upgrade_script:
