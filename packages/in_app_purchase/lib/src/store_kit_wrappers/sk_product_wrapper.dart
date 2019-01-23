@@ -82,8 +82,10 @@ class SKProductSubscriptionPeriodWrapper {
 enum ProductDiscountPaymentMode {
   /// Allows user to pay the discounted price at each payment period.
   payAsYouGo,
+
   /// Allows user to pay the discounted price upfront and receive the product for the rest of time that was paid for.
   payUpFront,
+
   /// User pays nothing during the discounted period.
   freeTrail,
 }
