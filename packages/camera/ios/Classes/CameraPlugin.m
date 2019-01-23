@@ -633,12 +633,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
-  if ([@"init" isEqualToString:call.method]) {
-    if (_camera) {
-      [_camera close];
-    }
-    result(nil);
-  } else if ([@"availableCameras" isEqualToString:call.method]) {
+  if ([@"availableCameras" isEqualToString:call.method]) {
     AVCaptureDeviceDiscoverySession *discoverySession = [AVCaptureDeviceDiscoverySession
         discoverySessionWithDeviceTypes:@[ AVCaptureDeviceTypeBuiltInWideAngleCamera ]
                               mediaType:AVMediaTypeVideo
