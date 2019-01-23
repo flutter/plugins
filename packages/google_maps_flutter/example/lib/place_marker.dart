@@ -175,9 +175,11 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
             height: 200.0,
             child: GoogleMap(
               onMapCreated: _onMapCreated,
-              initialCameraPosition: const CameraPosition(
+              options: GoogleMapOptions(
+                cameraPosition: const CameraPosition(
                 target: LatLng(-33.852, 151.211),
                 zoom: 11.0,
+                ),
               ),
             ),
           ),
