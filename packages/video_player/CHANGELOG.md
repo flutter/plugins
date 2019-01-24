@@ -1,3 +1,8 @@
+## 0.9.0
+
+* Fixed the aspect ratio and orientation of videos. Videos are now properly displayed when recorded 
+ in portrait mode both in iOS and Android.
+
 ## 0.8.0
 
 * Android: Upgrade ExoPlayer to 2.9.1
