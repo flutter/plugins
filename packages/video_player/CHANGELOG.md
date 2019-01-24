@@ -1,4 +1,4 @@
-## 0.8.1
+## 0.9.0
 
 * Fixed the aspect ratio and orientation of videos. Videos are now properly displayed when recorded 
  in portrait mode both in iOS and Android.
