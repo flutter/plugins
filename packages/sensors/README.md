@@ -20,4 +20,8 @@ accelerometerEvents.listen((AccelerometerEvent event) {
 gyroscopeEvents.listen((GyroscopeEvent event) {
  // Do something with the event.
 });
+
+// Optionally, specify the sample rate in Hz (events per second) before listening.
+// Note that for Android this is only a hint to the system. Events may be received faster or slower.
+setSensorsSampleRate(50);
 ```

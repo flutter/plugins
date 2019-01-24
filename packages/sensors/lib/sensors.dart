@@ -74,11 +74,19 @@ Stream<AccelerometerEvent> _accelerometerEvents;
 Stream<GyroscopeEvent> _gyroscopeEvents;
 Stream<UserAccelerometerEvent> _userAccelerometerEvents;
 
+final int _sampleRateDefault = 15;
+int _sampleRate;
+
+/// Set the specified sample rate if it is greater than zero.
+void setSensorsSampleRate(int sampleRate) {
+  _sampleRate = (sampleRate > 0) ? sampleRate : _sampleRate;
+}
+
 /// A broadcast stream of events from the device accelerometer.
 Stream<AccelerometerEvent> get accelerometerEvents {
   if (_accelerometerEvents == null) {
     _accelerometerEvents = _accelerometerEventChannel
-        .receiveBroadcastStream()
+        .receiveBroadcastStream(_sampleRate ?? _sampleRateDefault)
         .map(
             (dynamic event) => _listToAccelerometerEvent(event.cast<double>()));
   }
@@ -89,7 +97,7 @@ Stream<AccelerometerEvent> get accelerometerEvents {
 Stream<GyroscopeEvent> get gyroscopeEvents {
   if (_gyroscopeEvents == null) {
     _gyroscopeEvents = _gyroscopeEventChannel
-        .receiveBroadcastStream()
+        .receiveBroadcastStream(_sampleRate ?? _sampleRateDefault)
         .map((dynamic event) => _listToGyroscopeEvent(event.cast<double>()));
   }
   return _gyroscopeEvents;
@@ -99,7 +107,7 @@ Stream<GyroscopeEvent> get gyroscopeEvents {
 Stream<UserAccelerometerEvent> get userAccelerometerEvents {
   if (_userAccelerometerEvents == null) {
     _userAccelerometerEvents = _userAccelerometerEventChannel
-        .receiveBroadcastStream()
+        .receiveBroadcastStream(_sampleRate ?? _sampleRateDefault)
         .map((dynamic event) =>
             _listToUserAccelerometerEvent(event.cast<double>()));
   }
