@@ -10,7 +10,6 @@
 @interface FIAPRequestHandler () <SKProductsRequestDelegate>
 
 @property(copy, nonatomic) ProductRequestCompletion completion;
-@property(strong, nonatomic) NSMutableSet *delegateObjects;
 @property(strong, nonatomic) SKProductsRequest *request;
 
 @end
@@ -38,8 +37,8 @@
   }
 }
 
+// Reserved for other SKRequests.
 - (void)requestDidFinish:(SKRequest *)request {
-  [self.delegate requestHandlerDidFinish:self];
 }
 
 - (void)request:(SKRequest *)request didFailWithError:(NSError *)error {
