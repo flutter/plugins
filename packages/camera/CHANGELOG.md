@@ -1,6 +1,6 @@
 ## 0.2.9+2
 
-* Remove 'init' call to avoid MissingPluginException when testing.
+* Remove initial method call invocation from static camera method.
 
 ## 0.2.9+1
 
