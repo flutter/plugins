@@ -7,20 +7,7 @@
 #import "FIAObjectTranslator.h"
 #import "FIAPRequestHandler.h"
 
-@interface InAppPurchasePlugin ()
-
-@property(strong, nonatomic) NSMutableSet<FIAPRequestHandler *> *requestHandlerSet;
-
-@end
-
 @implementation InAppPurchasePlugin
-
-- (NSMutableSet<FIAPRequestHandler *> *)requestHandlerSet {
-  if (!_requestHandlerSet) {
-    _requestHandlerSet = [NSMutableSet new];
-  }
-  return _requestHandlerSet;
-}
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
@@ -55,7 +42,6 @@
   SKProductsRequest *request =
       [self getProductRequestWithIdentifiers:[NSSet setWithArray:productsIdentifiers]];
   FIAPRequestHandler *handler = [[FIAPRequestHandler alloc] initWithRequest:request];
-  [self.requestHandlerSet addObject:handler];
   [handler startProductRequestWithCompletionHandler:^(SKProductsResponse *_Nullable response,
                                                       NSError *_Nullable error) {
     if (error) {
@@ -63,7 +49,6 @@
                                                      error.localizedFailureReason,
                                                      error.localizedRecoverySuggestion];
       result([FlutterError errorWithCode:error.domain message:error.description details:details]);
-      [self.requestHandlerSet removeObject:handler];
       return;
     }
     if (!response) {
@@ -71,10 +56,8 @@
                                  message:@"Failed to get SKProductResponse in startRequest "
                                          @"call. Error occured on IOS platform"
                                  details:call.arguments]);
-      [self.requestHandlerSet removeObject:handler];
       return;
     }
-    [self.requestHandlerSet removeObject:handler];
     result([response toMap]);
   }];
 }
