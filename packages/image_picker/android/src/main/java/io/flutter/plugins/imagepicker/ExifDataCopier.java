@@ -4,7 +4,7 @@
 
 package io.flutter.plugins.imagepicker;
 
-import android.media.ExifInterface;
+import androidx.exifinterface.media.ExifInterface;
 import android.util.Log;
 import java.util.Arrays;
 import java.util.List;
