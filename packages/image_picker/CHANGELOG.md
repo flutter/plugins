@@ -1,3 +1,7 @@
+## 0.4.11+1
+
+* Fixed a crash on Android where Image Picker is registered without an activity.
+
 ## 0.4.11
 
 * Use `api` to define `support-v4` dependency to allow automatic version resolution.
