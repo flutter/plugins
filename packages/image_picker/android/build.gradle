@@ -37,5 +37,6 @@ android {
 }
 
 dependencies {
+    implementation 'androidx.exifinterface:exifinterface:1.0.0'
     api 'androidx.legacy:legacy-support-v4:1.0.0'
 }
