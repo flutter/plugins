@@ -7,13 +7,20 @@ import 'package:flutter/services.dart';
 import 'package:in_app_purchase/src/channel.dart';
 import 'sk_product_wrapper.dart';
 
-/// Handles all the SKRequest subclasses.
+/// A request maker that handles all the requests made by SKRequest subclasses.
 ///
+/// There are multiple [SKRequest] subclasses handling different requests in the [StoreKit] with multiple delegate methods,
+/// we consolidateded all the [SKRequest] subclasses into this class to make requests handling more straightforward.
 /// [SKRequest](https://developer.apple.com/documentation/storekit/skrequest?language=objc)
 class SKRequestMaker {
-  /// A product request.
+  /// Starts a request to get SKProduct response.
   ///
-  /// Returns the [SkProductsResponseWrapper] object.
+  /// [productIdentifiers] should contain legit product identifiers that you decleared for the products in the Itunes Connect.
+  /// Duplicate values in [productIdentifiers] will be omiited. If [productIdentifiers] is null, an ["storekit_invalid_argument"] error will
+  /// be returned. If [productIdentifiers] is empty, a [SkProductResponseWrapper] will still be returned with [products] being null.
+  ///
+  /// [SkProductResponseWrapper] is returned if there is no error during the request.
+  /// An exception can be thrown if an underlining error occurs when making the request from the IOS platform.
   Future<SkProductResponseWrapper> startProductRequest(
       List<String> productIdentifiers) async {
     final Map<dynamic, dynamic> productResponseMap = await channel.invokeMethod(

@@ -33,14 +33,14 @@
 
 - (void)startProductRequest:(FlutterMethodCall *)call result:(FlutterResult)result {
   if (![call.arguments isKindOfClass:[NSArray class]]) {
-    result([FlutterError errorWithCode:@"storekit_invalide_argument"
+    result([FlutterError errorWithCode:@"storekit_invalid_argument"
                                message:@"Argument type of startRequest is not array"
                                details:call.arguments]);
     return;
   }
-  NSArray *productsIdentifiers = (NSArray *)call.arguments;
+  NSArray *productIdentifiers = (NSArray *)call.arguments;
   SKProductsRequest *request =
-      [self getProductRequestWithIdentifiers:[NSSet setWithArray:productsIdentifiers]];
+      [self getProductRequestWithIdentifiers:[NSSet setWithArray:productIdentifiers]];
   FIAPRequestHandler *handler = [[FIAPRequestHandler alloc] initWithRequest:request];
   [handler startProductRequestWithCompletionHandler:^(SKProductsResponse *_Nullable response,
                                                       NSError *_Nullable error) {
@@ -48,7 +48,9 @@
       NSString *details = [NSString stringWithFormat:@"Reason:%@\nRecoverSuggestion:%@",
                                                      error.localizedFailureReason,
                                                      error.localizedRecoverySuggestion];
-      result([FlutterError errorWithCode:error.domain message:error.description details:details]);
+      result([FlutterError errorWithCode:@"storekit_getproductrequest_platform_error"
+                                 message:error.description
+                                 details:details]);
       return;
     }
     if (!response) {
