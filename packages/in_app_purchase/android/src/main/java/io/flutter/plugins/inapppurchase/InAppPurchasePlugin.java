@@ -7,8 +7,8 @@ package io.flutter.plugins.inapppurchase;
 import static io.flutter.plugins.inapppurchase.Translator.fromSkuDetailsList;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClientStateListener;
 import com.android.billingclient.api.Purchase;
