@@ -1,6 +1,7 @@
 ## 0.2.9+2
 
-* Remove 'init' call to avoid MissingPluginException when testing.
+* Remove initial method call invocation from static method. The camera will no longer be closed
+  automatically when using hot restart.
 
 ## 0.2.9+1
 
