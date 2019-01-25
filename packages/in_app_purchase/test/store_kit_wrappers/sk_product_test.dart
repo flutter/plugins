@@ -160,5 +160,16 @@ void main() {
       expect(wrapper.invalidProductIdentifiers,
           productResponseMap['invalidProductIdentifiers']);
     });
+    test('SKProductResponse wrapper should default to empty list', () {
+      final Map<String, List<dynamic>> productResponseMapEmptyList =
+          <String, List<dynamic>>{
+        'products': <Map<String, dynamic>>[],
+        'invalidProductIdentifiers': <String>[],
+      };
+      final SkProductResponseWrapper wrapper =
+          SkProductResponseWrapper.fromMap(productResponseMapEmptyList);
+      expect(wrapper.products.length, 0);
+      expect(wrapper.invalidProductIdentifiers.length, 0);
+    });
   });
 }

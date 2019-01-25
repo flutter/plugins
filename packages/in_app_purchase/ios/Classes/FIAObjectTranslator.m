@@ -78,7 +78,7 @@
   }
   return @{
     @"products" : productsMapArray,
-    @"invalidProductIdentifiers" : self.invalidProductIdentifiers ?: [NSNull null]
+    @"invalidProductIdentifiers" : self.invalidProductIdentifiers ?: @[]
   };
 }
 

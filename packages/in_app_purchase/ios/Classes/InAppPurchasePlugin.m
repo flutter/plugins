@@ -21,7 +21,7 @@
   if ([@"-[SKPaymentQueue canMakePayments:]" isEqualToString:call.method]) {
     [self canMakePayments:result];
   } else if ([@"-[InAppPurchasePlugin startProductRequest:result:]" isEqualToString:call.method]) {
-    [self startProductRequest:call result:result];
+    [self handleProductRequestMethodCall:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -31,7 +31,7 @@
   result([NSNumber numberWithBool:[SKPaymentQueue canMakePayments]]);
 }
 
-- (void)startProductRequest:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (void)handleProductRequestMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if (![call.arguments isKindOfClass:[NSArray class]]) {
     result([FlutterError errorWithCode:@"storekit_invalid_argument"
                                message:@"Argument type of startRequest is not array"

@@ -15,6 +15,6 @@ typedef void (^ProductRequestCompletion)(SKProductsResponse *_Nullable response,
 - (instancetype)initWithRequest:(SKProductsRequest *)request;
 - (void)startProductRequestWithCompletionHandler:(ProductRequestCompletion)completion;
 
-NS_ASSUME_NONNULL_END
-
 @end
+
+NS_ASSUME_NONNULL_END

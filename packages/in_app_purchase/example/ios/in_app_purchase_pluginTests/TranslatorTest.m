@@ -40,7 +40,7 @@
     @"subscriptionGroupIdentifier" : @"com.group"
   };
   self.productResponseMap =
-      @{@"products" : @[ self.productMap ], @"invalidProductIdentifiers" : [NSNull null]};
+      @{@"products" : @[ self.productMap ], @"invalidProductIdentifiers" : @[]};
 }
 
 - (void)testSKProductSubscriptionPeriodStubToMap {
