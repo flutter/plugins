@@ -8,7 +8,7 @@ dependencies:
   cupertino_icons: ^0.1.2
 
 dev_dependencies:
-  test: 1.5.1
+  test: ^1.5.2
   flutter_driver:
     sdk: flutter
   in_app_purchase:
