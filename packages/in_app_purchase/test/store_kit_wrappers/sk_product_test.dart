@@ -4,11 +4,8 @@
 
 import 'package:test/test.dart';
 import 'package:in_app_purchase/src/store_kit_wrappers/sk_product_wrapper.dart';
-import 'package:in_app_purchase/src/channel.dart';
-import '../stub_in_app_purchase_platform.dart';
 
 void main() {
-  final StubInAppPurchasePlatform stubPlatform = StubInAppPurchasePlatform();
 
   final Map<String, dynamic> subMap = <String, dynamic>{
     'numberOfUnits': 1,
