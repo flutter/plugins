@@ -19,6 +19,32 @@ enum JavascriptMode {
   unrestricted,
 }
 
+/// Callback type for handling messages sent from Javascript running in a web view.
+typedef void JavascriptMessageHandler(String message);
+
+/// A named channel for receiving messaged from JavaScript code running inside a web view.
+class JavascriptChannel {
+  /// Constructs a Javascript channel.
+  ///
+  /// The parameters `name` and `onMessageReceived` must not be null.
+  JavascriptChannel({
+    @required this.name,
+    @required this.onMessageReceived,
+  });
+
+  /// The channel's name.
+  ///
+  ///
+  /// Passing this channel object as part of a [WebView.javascriptChannels] adds a channel object to
+  /// the Javascript window object's property named `name`.
+  ///
+  /// See also [WebView.javascriptChannels] for more details on the channel registration mechanism.
+  final String name;
+
+  /// A callback that's invoked when a message is received through the channel.
+  final JavascriptMessageHandler onMessageReceived;
+}
+
 /// A web view widget for showing html content.
 class WebView extends StatefulWidget {
   /// Creates a new web view.
@@ -32,6 +58,7 @@ class WebView extends StatefulWidget {
     this.onWebViewCreated,
     this.initialUrl,
     this.javascriptMode = JavascriptMode.disabled,
+    this.javascriptChannels,
     this.gestureRecognizers,
   })  : assert(javascriptMode != null),
         super(key: key);
@@ -56,13 +83,39 @@ class WebView extends StatefulWidget {
   /// Whether Javascript execution is enabled.
   final JavascriptMode javascriptMode;
 
+  /// The set of [JavascriptChannel]s available to JavaScript code running in the web view.
+  ///
+  /// For each [JavascriptChannel] in the set, a channel object is made available for the
+  /// JavaScript code in a window property named [JavascriptChannel.name].
+  /// The JavaScript code can then call `postMessage` on that object to send a message that will be
+  /// passed to [JavascriptChannel.onMessageReceived].
+  ///
+  /// For example for the following JavascriptChannel:
+  ///
+  /// ```dart
+  /// JavascriptChannel(name: 'Print', onMessageReceived: (String message) { print(message); });
+  /// ```
+  ///
+  /// JavaScript code can call:
+  ///
+  /// ```javascript
+  /// Print.postMessage('Hello');
+  /// ```
+  ///
+  /// To asynchronously invoke the message handler which will print the message to standard output.
+  ///
+  /// Set values must not be null. A [JavascriptChannel.name] cannot be the same for multiple
+  /// channels in the list.
+  ///
+  /// A null value is equivalent to an empty set.
+  final Set<JavascriptChannel> javascriptChannels;
+
   @override
   State<StatefulWidget> createState() => _WebViewState();
 }
 
 class _WebViewState extends State<WebView> {
-  final Completer<WebViewController> _controller =
-      Completer<WebViewController>();
+  final Completer<WebViewController> _controller = Completer<WebViewController>();
 
   _WebSettings _settings;
 
@@ -99,49 +152,78 @@ class _WebViewState extends State<WebView> {
         creationParamsCodec: const StandardMessageCodec(),
       );
     }
-    return Text(
-        '$defaultTargetPlatform is not yet supported by the webview_flutter plugin');
+    return Text('$defaultTargetPlatform is not yet supported by the webview_flutter plugin');
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _assertJavascriptChannelNamesAreUnique();
   }
 
   @override
   void didUpdateWidget(WebView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _updateSettings(_WebSettings.fromWidget(widget));
+    _assertJavascriptChannelNamesAreUnique();
+    _updateConfiguration(_WebSettings.fromWidget(widget));
   }
 
-  Future<void> _updateSettings(_WebSettings settings) async {
+  Future<void> _updateConfiguration(_WebSettings settings) async {
     _settings = settings;
     final WebViewController controller = await _controller.future;
     controller._updateSettings(settings);
+    controller._updateJavascriptChannels(widget.javascriptChannels);
   }
 
   void _onPlatformViewCreated(int id) {
-    final WebViewController controller =
-        WebViewController._(id, _WebSettings.fromWidget(widget));
+    final WebViewController controller = WebViewController._(
+      id,
+      _WebSettings.fromWidget(widget),
+      widget.javascriptChannels,
+    );
     _controller.complete(controller);
     if (widget.onWebViewCreated != null) {
       widget.onWebViewCreated(controller);
     }
   }
+
+  void _assertJavascriptChannelNamesAreUnique() {
+    if (widget.javascriptChannels == null || widget.javascriptChannels.isEmpty) {
+      return;
+    }
+    assert(_extractChannelNames(widget.javascriptChannels).length == widget.javascriptChannels.length);
+  }
+}
+
+Set<String> _extractChannelNames(Set<JavascriptChannel> channels) {
+  final Set<String> channelNames = channels == null
+      ? Set<String>()
+      : channels.map((JavascriptChannel channel) => channel.name).toSet();
+  return channelNames;
 }
 
 class _CreationParams {
-  _CreationParams({this.initialUrl, this.settings});
+  _CreationParams({this.initialUrl, this.settings, this.javascriptChannelNames});
 
   static _CreationParams fromWidget(WebView widget) {
     return _CreationParams(
       initialUrl: widget.initialUrl,
       settings: _WebSettings.fromWidget(widget),
+      javascriptChannelNames: _extractChannelNames(widget.javascriptChannels).toList(),
     );
   }
 
   final String initialUrl;
+
   final _WebSettings settings;
+
+  final List<String> javascriptChannelNames;
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'initialUrl': initialUrl,
       'settings': settings.toMap(),
+      'javascriptChannelNames': javascriptChannelNames,
     };
   }
 }
@@ -178,13 +260,28 @@ class _WebSettings {
 /// A [WebViewController] instance can be obtained by setting the [WebView.onWebViewCreated]
 /// callback for a [WebView] widget.
 class WebViewController {
-  WebViewController._(int id, _WebSettings settings)
-      : _channel = MethodChannel('plugins.flutter.io/webview_$id'),
-        _settings = settings;
+  WebViewController._(int id, this._settings, Set<JavascriptChannel> javascriptChannels)
+      : _channel = MethodChannel('plugins.flutter.io/webview_$id') {
+    _updateJavascriptChannelsFromSet(javascriptChannels);
+    _channel.setMethodCallHandler(_onMethodCall);
+  }
 
   final MethodChannel _channel;
 
   _WebSettings _settings;
+
+  // Maps a channel name to a channel.
+  Map<String, JavascriptChannel> _javascriptChannels = <String, JavascriptChannel> {};
+
+  Future<void> _onMethodCall(MethodCall call) async {
+    switch(call.method) {
+      case 'javascriptChannelMessage':
+        final String channel = call.arguments['channel'];
+        final String message = call.arguments['message'];
+        _javascriptChannels[channel].onMessageReceived(message);
+        break;
+    }
+  }
 
   /// Loads the specified URL.
   ///
@@ -277,6 +374,36 @@ class WebViewController {
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
     return _channel.invokeMethod('updateSettings', updateMap);
+  }
+
+  Future<void> _updateJavascriptChannels(Set<JavascriptChannel> newChannels) async {
+    final Set<String> currentChannels = _javascriptChannels.keys.toSet();
+    final Set<String> newChannelNames = _extractChannelNames(newChannels);
+    final Set<String> channelsToAdd = newChannelNames.difference(currentChannels);
+    final Set<String> channelsToRemove = currentChannels.difference(newChannelNames);
+    if (channelsToRemove.isNotEmpty) {
+      // TODO(amirh): remove this when the invokeMethod update makes it to stable Flutter.
+      // https://github.com/flutter/flutter/issues/26431
+      // ignore: strong_mode_implicit_dynamic_method
+      _channel.invokeMethod('removeJavascriptChannels', channelsToRemove.toList());
+    }
+    if (channelsToAdd.isNotEmpty) {
+      // TODO(amirh): remove this when the invokeMethod update makes it to stable Flutter.
+      // https://github.com/flutter/flutter/issues/26431
+      // ignore: strong_mode_implicit_dynamic_method
+      _channel.invokeMethod('addJavascriptChannels', channelsToAdd.toList());
+    }
+    _updateJavascriptChannelsFromSet(newChannels);
+  }
+
+  void _updateJavascriptChannelsFromSet(Set<JavascriptChannel> channels) {
+    if (channels == null) {
+      return;
+    }
+    _javascriptChannels.clear();
+    for (JavascriptChannel channel in channels) {
+      _javascriptChannels[channel.name] = channel;
+    }
   }
 
   /// Evaluates a JavaScript expression in the context of the current page.
