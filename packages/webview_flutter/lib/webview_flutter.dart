@@ -115,7 +115,8 @@ class WebView extends StatefulWidget {
 }
 
 class _WebViewState extends State<WebView> {
-  final Completer<WebViewController> _controller = Completer<WebViewController>();
+  final Completer<WebViewController> _controller =
+      Completer<WebViewController>();
 
   _WebSettings _settings;
 
@@ -152,7 +153,8 @@ class _WebViewState extends State<WebView> {
         creationParamsCodec: const StandardMessageCodec(),
       );
     }
-    return Text('$defaultTargetPlatform is not yet supported by the webview_flutter plugin');
+    return Text(
+        '$defaultTargetPlatform is not yet supported by the webview_flutter plugin');
   }
 
   @override
@@ -188,10 +190,12 @@ class _WebViewState extends State<WebView> {
   }
 
   void _assertJavascriptChannelNamesAreUnique() {
-    if (widget.javascriptChannels == null || widget.javascriptChannels.isEmpty) {
+    if (widget.javascriptChannels == null ||
+        widget.javascriptChannels.isEmpty) {
       return;
     }
-    assert(_extractChannelNames(widget.javascriptChannels).length == widget.javascriptChannels.length);
+    assert(_extractChannelNames(widget.javascriptChannels).length ==
+        widget.javascriptChannels.length);
   }
 }
 
@@ -203,13 +207,15 @@ Set<String> _extractChannelNames(Set<JavascriptChannel> channels) {
 }
 
 class _CreationParams {
-  _CreationParams({this.initialUrl, this.settings, this.javascriptChannelNames});
+  _CreationParams(
+      {this.initialUrl, this.settings, this.javascriptChannelNames});
 
   static _CreationParams fromWidget(WebView widget) {
     return _CreationParams(
       initialUrl: widget.initialUrl,
       settings: _WebSettings.fromWidget(widget),
-      javascriptChannelNames: _extractChannelNames(widget.javascriptChannels).toList(),
+      javascriptChannelNames:
+          _extractChannelNames(widget.javascriptChannels).toList(),
     );
   }
 
@@ -260,7 +266,8 @@ class _WebSettings {
 /// A [WebViewController] instance can be obtained by setting the [WebView.onWebViewCreated]
 /// callback for a [WebView] widget.
 class WebViewController {
-  WebViewController._(int id, this._settings, Set<JavascriptChannel> javascriptChannels)
+  WebViewController._(
+      int id, this._settings, Set<JavascriptChannel> javascriptChannels)
       : _channel = MethodChannel('plugins.flutter.io/webview_$id') {
     _updateJavascriptChannelsFromSet(javascriptChannels);
     _channel.setMethodCallHandler(_onMethodCall);
@@ -271,10 +278,11 @@ class WebViewController {
   _WebSettings _settings;
 
   // Maps a channel name to a channel.
-  Map<String, JavascriptChannel> _javascriptChannels = <String, JavascriptChannel> {};
+  Map<String, JavascriptChannel> _javascriptChannels =
+      <String, JavascriptChannel>{};
 
   Future<void> _onMethodCall(MethodCall call) async {
-    switch(call.method) {
+    switch (call.method) {
       case 'javascriptChannelMessage':
         final String channel = call.arguments['channel'];
         final String message = call.arguments['message'];
@@ -376,16 +384,20 @@ class WebViewController {
     return _channel.invokeMethod('updateSettings', updateMap);
   }
 
-  Future<void> _updateJavascriptChannels(Set<JavascriptChannel> newChannels) async {
+  Future<void> _updateJavascriptChannels(
+      Set<JavascriptChannel> newChannels) async {
     final Set<String> currentChannels = _javascriptChannels.keys.toSet();
     final Set<String> newChannelNames = _extractChannelNames(newChannels);
-    final Set<String> channelsToAdd = newChannelNames.difference(currentChannels);
-    final Set<String> channelsToRemove = currentChannels.difference(newChannelNames);
+    final Set<String> channelsToAdd =
+        newChannelNames.difference(currentChannels);
+    final Set<String> channelsToRemove =
+        currentChannels.difference(newChannelNames);
     if (channelsToRemove.isNotEmpty) {
       // TODO(amirh): remove this when the invokeMethod update makes it to stable Flutter.
       // https://github.com/flutter/flutter/issues/26431
       // ignore: strong_mode_implicit_dynamic_method
-      _channel.invokeMethod('removeJavascriptChannels', channelsToRemove.toList());
+      _channel.invokeMethod(
+          'removeJavascriptChannels', channelsToRemove.toList());
     }
     if (channelsToAdd.isNotEmpty) {
       // TODO(amirh): remove this when the invokeMethod update makes it to stable Flutter.
