@@ -10,7 +10,7 @@ import 'sk_product_wrapper.dart';
 /// A request maker that handles all the requests made by SKRequest subclasses.
 ///
 /// There are multiple [SKRequest] subclasses handling different requests in the [StoreKit] with multiple delegate methods,
-/// we consolidateded all the [SKRequest] subclasses into this class to make requests in a more straightforward way.
+/// we consolidated all the [SKRequest] subclasses into this class to make requests in a more straightforward way.
 /// [SKRequest](https://developer.apple.com/documentation/storekit/skrequest?language=objc)
 class SKRequestMaker {
   /// Starts a request to get SKProduct response.
