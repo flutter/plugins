@@ -6,28 +6,30 @@ import 'package:flutter/foundation.dart';
 
 /// Dart wrapper around StoreKit's [SKProductsResponse](https://developer.apple.com/documentation/storekit/skproductsresponse?language=objc).
 ///
-/// Represents the response object returned by [startProductRequest].
-/// Contains information about a list of products and a list of invalid product identifers.
+/// Represents the response object returned by [SKRequestMaker.startProductRequest].
+/// Contains information about a list of products and a list of invalid product identifiers.
 class SkProductResponseWrapper {
   SkProductResponseWrapper(
       {@required this.products, @required this.invalidProductIdentifiers});
 
-  /// Used for constructing the class with map passed from the OBJC layer.
+  /// Constructing an instance from a map from the Objective-C layer.
   ///
-  /// The [map] parameter should not be null.
+  /// The `map` parameter must not be null.
   SkProductResponseWrapper.fromMap(Map<String, List<dynamic>> map)
-      : products = _getListFromMapList(_getProductMapListFromResponseMap(map)),
+      : assert(map != null),
+        products = _getListFromMapList(_getProductMapListFromResponseMap(map)),
         invalidProductIdentifiers =
             List.castFrom<dynamic, String>(map['invalidProductIdentifiers']);
 
   /// Stores all matching successfully found products.
   ///
-  /// One product in this list matches one valid product identifer passed in the [startProductRequest].
-  /// Will be empty if the [SKProductRequestMaker]'s [startProductRequest] method does not pass any correct product identifer.
+  /// One product in this list matches one valid product identifier passed to the [SKRequestMaker.startProductRequest].
+  /// Will be empty if the [SKProductRequestMaker]'s [SKRequestMaker.startProductRequest] method does not pass any correct product identifier.
   final List<SKProductWrapper> products;
 
-  /// Stores any product identifer in the [productIdentifers] from [startProductRequest] that is not recognized by the App Store.
-  /// The App Store may not recognize a product identifer unless certain criteria are met. A detailed list of the criteria can be
+  /// Stores product identifiers in the `productIdentifiers` from [SKRequestMaker.startProductRequest] that are not recognized by the App Store.
+  ///
+  /// The App Store will not recognize a product identifier unless certain criteria are met. A detailed list of the criteria can be
   /// found here https://developer.apple.com/documentation/storekit/skproductsresponse/1505985-invalidproductidentifiers?language=objc.
   /// Will be empty if all the product identifiers are valid.
   final List<String> invalidProductIdentifiers;
@@ -65,21 +67,22 @@ class SKProductSubscriptionPeriodWrapper {
   SKProductSubscriptionPeriodWrapper(
       {@required this.numberOfUnits, @required this.unit});
 
-  /// Used for constructing the class with the map passed from the OBJC layer.
+  /// Constructing an instance from a map from the Objective-C layer.
   ///
-  /// The [map] parameter should not be null.
+  /// The `map` parameter must not be null.
   SKProductSubscriptionPeriodWrapper.fromMap(Map<String, dynamic> map)
-      : numberOfUnits = map['numberOfUnits'],
+      : assert(map != null && map['numberOfUnits'] > 0),
+        numberOfUnits = map['numberOfUnits'],
         unit = (map['unit'] != null)
             ? SubscriptionPeriodUnit.values[map['unit']]
             : null;
 
-  /// The number of a certain units to represent the period, the unit is defined in the [unit] property.
+  /// The number of [unit] units in this period.
   ///
-  /// This should have a value >= 0.
+  /// Must be greater than 0.
   final int numberOfUnits;
 
-  /// The unit that combined with [numberOfUnits] to define the length of the subscripton.
+  /// The time unit used to specify the length of this period.
   final SubscriptionPeriodUnit unit;
 }
 
@@ -112,11 +115,12 @@ class SKProductDiscountWrapper {
       @required this.paymentMode,
       @required this.subscriptionPeriod});
 
-  /// Used for constructing the class with the map passed from the OBJC layer.
+  /// Constructing an instance from a map from the Objective-C layer.
   ///
-  /// The [map] parameter should not be null.
+  /// The `map` parameter must not be null.
   SKProductDiscountWrapper.fromMap(Map<String, dynamic> map)
-      : price = map['price'],
+      : assert(map != null),
+        price = map['price'],
         currencyCode = map['currencyCode'],
         numberOfPeriods = map['numberOfPeriods'],
         paymentMode = (map['paymentMode'] != null)
@@ -155,7 +159,7 @@ class SKProductDiscountWrapper {
 ///
 /// Most of the fields are identical to OBJC SKProduct.
 /// The only difference is instead of the locale object, we only exposed currencyCode for simplicity.
-/// A list of [SKProductWrapper] is returned in the [SKProductRequestMaker]'s [startProductRequest] method, and
+/// A list of [SKProductWrapper] is returned in the [SKProductRequestMaker]'s [SKRequestMaker.startProductRequest] method, and
 /// should be stored for use when making a payment.
 class SKProductWrapper {
   SKProductWrapper({
@@ -172,11 +176,12 @@ class SKProductWrapper {
     @required this.introductoryPrice,
   });
 
-  /// Used for constructing the class with the map passed from the OBJC layer.
+  /// Constructing an instance from a map from the Objective-C layer.
   ///
-  /// The [map] parameter should not be null.
+  /// The `map` parameter must not be null.
   SKProductWrapper.fromMap(Map<dynamic, dynamic> map)
-      : productIdentifier = map['productIdentifier'],
+      : assert(map != null),
+        productIdentifier = map['productIdentifier'],
         localizedTitle = map['localizedTitle'],
         localizedDescription = map['localizedDescription'],
         currencyCode = map['currencyCode'],
@@ -196,35 +201,35 @@ class SKProductWrapper {
             : null;
 
   /// The unique identifier of the product.
-  final String productIdentifier,
+  final String productIdentifier;
 
-      /// The localizedTitle of the product.
-      ///
-      /// It is localized based on the current locale.
-      localizedTitle,
+  /// The localizedTitle of the product.
+  ///
+  /// It is localized based on the current locale.
+  final String localizedTitle;
 
-      /// The localized description of the product.
-      ///
-      /// It is localized based on the current locale.
-      localizedDescription,
+  /// The localized description of the product.
+  ///
+  /// It is localized based on the current locale.
+  final String localizedDescription;
 
-      // TODO(cyanglaz): NSLocale is a complex object, want to see the actual need of getting this expanded to
-      //                 a map. Matching android to only get the currencyCode for now.
-      //                 https://github.com/flutter/flutter/issues/26610
-      /// The currencyCode for the price, e.g USD for U.S. dollars.
-      currencyCode,
+  // TODO(cyanglaz): NSLocale is a complex object, want to see the actual need of getting this expanded to
+  //                 a map. Matching android to only get the currencyCode for now.
+  //                 https://github.com/flutter/flutter/issues/26610
+  /// The currencyCode for the price, e.g USD for U.S. dollars.
+  final String currencyCode;
 
-      /// The version of the downloadable content.
-      ///
-      /// This is only available when [downloadable] is true.
-      /// It is formatted as a series of integers separated by periods.
-      downloadContentVersion,
+  /// The version of the downloadable content.
+  ///
+  /// This is only available when [downloadable] is true.
+  /// It is formatted as a series of integers separated by periods.
+  final String downloadContentVersion;
 
-      /// The subscription group identifer.
-      ///
-      /// A subscription group is a collection of subscription products.
-      /// Check [SubscriptionGroup](https://developer.apple.com/app-store/subscriptions/) for more details about subscription group.
-      subscriptionGroupIdentifier;
+  /// The subscription group identifier.
+  ///
+  /// A subscription group is a collection of subscription products.
+  /// Check [SubscriptionGroup](https://developer.apple.com/app-store/subscriptions/) for more details about subscription group.
+  final String subscriptionGroupIdentifier;
 
   /// The price of the product, in the currency that is defined in [currencyCode].
   final double price;

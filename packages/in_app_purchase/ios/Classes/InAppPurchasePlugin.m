@@ -56,7 +56,7 @@
     if (!response) {
       result([FlutterError errorWithCode:@"storekit_platform_no_response"
                                  message:@"Failed to get SKProductResponse in startRequest "
-                                         @"call. Error occured on IOS platform"
+                                         @"call. Error occured on iOS platform"
                                  details:call.arguments]);
       return;
     }

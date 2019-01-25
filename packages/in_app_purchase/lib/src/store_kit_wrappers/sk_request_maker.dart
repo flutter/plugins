@@ -9,18 +9,19 @@ import 'sk_product_wrapper.dart';
 
 /// A request maker that handles all the requests made by SKRequest subclasses.
 ///
-/// There are multiple [SKRequest] subclasses handling different requests in the [StoreKit] with multiple delegate methods,
-/// we consolidated all the [SKRequest] subclasses into this class to make requests in a more straightforward way.
-/// [SKRequest](https://developer.apple.com/documentation/storekit/skrequest?language=objc)
+/// There are multiple [SKRequest](https://developer.apple.com/documentation/storekit/skrequest?language=objc) subclasses handling different requests in the `StoreKit` with multiple delegate methods,
+/// we consolidated all the `SKRequest` subclasses into this class to make requests in a more straightforward way.
+/// The request maker will create a SKRequest object, immediately starting it, and completing the future successfully or throw an exception depending on what happened to the request.
 class SKRequestMaker {
-  /// Starts a request to get SKProduct response.
+  /// Fetches product information for a list of given product identifiers.
   ///
-  /// [productIdentifiers] should contain legit product identifiers that you declared for the products in the Itunes Connect.
-  /// Duplicate values in [productIdentifiers] will be omitted. If [productIdentifiers] is null, an ["storekit_invalid_argument"] error will
-  /// be returned. If [productIdentifiers] is empty, a [SkProductResponseWrapper] will still be returned with [products] being null.
+  /// The `productIdentifiers` should contain legit product identifiers that you declared for the products in the Itunes Connect. invalid identifiers
+  /// Will be stored and returned in [SkProductResponseWrapper]'s [invalidProductIdentifiers]. Duplicate values in `productIdentifiers` will be omitted.
+  /// If `productIdentifiers` is null, an `storekit_invalid_argument` error will be returned. If `productIdentifiers` is empty, a [SkProductResponseWrapper]
+  /// will still be returned with [products] being null.
   ///
   /// [SkProductResponseWrapper] is returned if there is no error during the request.
-  /// An [PlatformException] can be thrown if an underlining error occurs when making the request from the IOS platform.
+  /// A [PlatformException] is thrown if the platform code making the request fails.
   Future<SkProductResponseWrapper> startProductRequest(
       List<String> productIdentifiers) async {
     final Map<dynamic, dynamic> productResponseMap = await channel.invokeMethod(
