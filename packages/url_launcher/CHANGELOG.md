@@ -1,6 +1,10 @@
-## 4.1.0+1
+## 4.1.0+2
 
 * Refactored the Java and Objective-C code. Replaced instance variables with properties in Objective-C.
+
+## 4.1.0+1
+
+* This is just a version bump to republish as 4.1.0 was published with some dirty local state.
 
 ## 4.1.0
 
