@@ -4,6 +4,7 @@
 
 import 'package:test/test.dart';
 import 'package:in_app_purchase/billing_client_wrappers.dart';
+import 'package:in_app_purchase/src/billing_client_wrappers/enum_converters.dart';
 
 final SkuDetailsWrapper dummyWrapper = SkuDetailsWrapper(
   description: 'description',
@@ -18,7 +19,7 @@ final SkuDetailsWrapper dummyWrapper = SkuDetailsWrapper(
   sku: 'sku',
   subscriptionPeriod: 'subscriptionPeriod',
   title: 'title',
-  type: SkuType.INAPP,
+  type: SkuType.inapp,
   isRewarded: true,
 );
 
@@ -27,7 +28,7 @@ void main() {
     test('converts from map', () {
       final SkuDetailsWrapper expected = dummyWrapper;
       final SkuDetailsWrapper parsed =
-          SkuDetailsWrapper.fromMap(buildSkuMap(expected));
+          SkuDetailsWrapper.fromJson(buildSkuMap(expected));
 
       expect(parsed, equals(expected));
     });
@@ -35,7 +36,7 @@ void main() {
 
   group('SkuDetailsResponseWrapper', () {
     test('parsed from map', () {
-      final BillingResponse responseCode = BillingResponse.OK;
+      final BillingResponse responseCode = BillingResponse.ok;
       final List<SkuDetailsWrapper> skusDetails = <SkuDetailsWrapper>[
         dummyWrapper,
         dummyWrapper
@@ -44,8 +45,8 @@ void main() {
           responseCode: responseCode, skuDetailsList: skusDetails);
 
       final SkuDetailsResponseWrapper parsed =
-          SkuDetailsResponseWrapper.fromMap(<String, dynamic>{
-        'responseCode': int.parse(responseCode.toString()),
+          SkuDetailsResponseWrapper.fromJson(<String, dynamic>{
+        'responseCode': BillingResponseConverter().toJson(responseCode),
         'skuDetailsList': <Map<String, dynamic>>[
           buildSkuMap(dummyWrapper),
           buildSkuMap(dummyWrapper)
@@ -57,14 +58,14 @@ void main() {
     });
 
     test('handles empty list of skuDetails', () {
-      final BillingResponse responseCode = BillingResponse.ERROR;
+      final BillingResponse responseCode = BillingResponse.error;
       final List<SkuDetailsWrapper> skusDetails = <SkuDetailsWrapper>[];
       final SkuDetailsResponseWrapper expected = SkuDetailsResponseWrapper(
           responseCode: responseCode, skuDetailsList: skusDetails);
 
       final SkuDetailsResponseWrapper parsed =
-          SkuDetailsResponseWrapper.fromMap(<String, dynamic>{
-        'responseCode': int.parse(responseCode.toString()),
+          SkuDetailsResponseWrapper.fromJson(<String, dynamic>{
+        'responseCode': BillingResponseConverter().toJson(responseCode),
         'skuDetailsList': <Map<String, dynamic>>[]
       });
 
@@ -74,20 +75,21 @@ void main() {
   });
 }
 
-Map<String, dynamic> buildSkuMap(SkuDetailsWrapper original) =>
-    <String, dynamic>{
-      'description': original.description,
-      'freeTrialPeriod': original.freeTrialPeriod,
-      'introductoryPrice': original.introductoryPrice,
-      'introductoryPriceMicros': original.introductoryPriceMicros,
-      'introductoryPriceCycles': original.introductoryPriceCycles,
-      'introductoryPricePeriod': original.introductoryPricePeriod,
-      'price': original.price,
-      'priceAmountMicros': original.priceAmountMicros,
-      'priceCurrencyCode': original.priceCurrencyCode,
-      'sku': original.sku,
-      'subscriptionPeriod': original.subscriptionPeriod,
-      'title': original.title,
-      'type': original.type.toString(),
-      'isRewarded': original.isRewarded,
-    };
+Map<String, dynamic> buildSkuMap(SkuDetailsWrapper original) {
+  return <String, dynamic>{
+    'description': original.description,
+    'freeTrialPeriod': original.freeTrialPeriod,
+    'introductoryPrice': original.introductoryPrice,
+    'introductoryPriceMicros': original.introductoryPriceMicros,
+    'introductoryPriceCycles': original.introductoryPriceCycles,
+    'introductoryPricePeriod': original.introductoryPricePeriod,
+    'price': original.price,
+    'priceAmountMicros': original.priceAmountMicros,
+    'priceCurrencyCode': original.priceCurrencyCode,
+    'sku': original.sku,
+    'subscriptionPeriod': original.subscriptionPeriod,
+    'title': original.title,
+    'type': original.type.toString().substring(8),
+    'isRewarded': original.isRewarded,
+  };
+}

@@ -5,8 +5,10 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
+import 'package:json_annotation/json_annotation.dart';
 import '../channel.dart';
 import 'sku_details_wrapper.dart';
+import 'enum_converters.dart';
 
 /// This class can be used directly instead of [InAppPurchaseConnection] to call
 /// Play-specific billing APIs.
@@ -58,7 +60,7 @@ class BillingClient {
       'OnBillingServiceDisconnected': onBillingServiceDisconnected,
     };
     _callbacks.add(callbacks);
-    return BillingResponse._(await channel.invokeMethod(
+    return BillingResponseConverter().fromJson(await channel.invokeMethod(
         "BillingClient#startConnection(BillingClientStateListener)",
         <String, dynamic>{'handle': _callbacks.length - 1}));
   }
@@ -89,7 +91,7 @@ class BillingClient {
       'skuType': skuType.toString(),
       'skusList': skusList
     };
-    return SkuDetailsResponseWrapper.fromMap(await channel.invokeMapMethod<
+    return SkuDetailsResponseWrapper.fromJson(await channel.invokeMapMethod<
             String, dynamic>(
         'BillingClient#querySkuDetailsAsync(SkuDetailsParams, SkuDetailsResponseListener)',
         arguments));
@@ -113,33 +115,45 @@ class BillingClient {
 /// to call back on `BillingClient` disconnect.
 typedef void OnBillingServiceDisconnected();
 
-/// Wraps
-/// [`BillingClient.BillingResponse`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.BillingResponse),
-/// possible status codes.
+/// Possible `BillingClient` response statuses.
 ///
-/// See the `BillingResponse` docs for an explanation of the different constants.
-class BillingResponse {
-  const BillingResponse._(this._code);
-  static BillingResponse fromInt(int code) => BillingResponse._(code);
-  final int _code;
-  @override
-  String toString() => _code.toString();
-  @override
-  int get hashCode => _code.hashCode;
-  @override
-  bool operator ==(dynamic other) =>
-      other is BillingResponse && other._code == _code;
+/// Wraps
+/// [`BillingClient.BillingResponse`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.BillingResponse).
+/// See the `BillingResponse` docs for more explanation of the different
+/// constants.
+enum BillingResponse {
+  // WARNING: Changes to this class need to be reflected in our generated code.
+  // Run `flutter packages pub run build_runner watch` to rebuild and watch for
+  // further changes.
+  @JsonValue(-2)
+  featureNotSupported,
 
-  static const BillingResponse FEATURE_NOT_SUPPORTED = BillingResponse._(-2);
-  static const BillingResponse OK = BillingResponse._(0);
-  static const BillingResponse USER_CANCELED = BillingResponse._(1);
-  static const BillingResponse SERVICE_UNAVAILABLE = BillingResponse._(2);
-  static const BillingResponse BILLING_UNAVAILABLE = BillingResponse._(3);
-  static const BillingResponse ITEM_UNAVAILABLE = BillingResponse._(4);
-  static const BillingResponse DEVELOPER_ERROR = BillingResponse._(5);
-  static const BillingResponse ERROR = BillingResponse._(6);
-  static const BillingResponse ITEM_ALREADY_OWNED = BillingResponse._(7);
-  static const BillingResponse ITEM_NOT_OWNED = BillingResponse._(8);
+  @JsonValue(0)
+  ok,
+
+  @JsonValue(1)
+  userCanceled,
+
+  @JsonValue(2)
+  serviceUnavailable,
+
+  @JsonValue(3)
+  billingUnavailable,
+
+  @JsonValue(4)
+  itemUnavailable,
+
+  @JsonValue(5)
+  developerError,
+
+  @JsonValue(6)
+  error,
+
+  @JsonValue(7)
+  itemAlreadyOwned,
+
+  @JsonValue(8)
+  itemNotOwned,
 }
 
 /// Enum representing potential [SkuDetailsWrapper.type]s.
@@ -147,27 +161,16 @@ class BillingResponse {
 /// Wraps
 /// [`BillingClient.SkuType`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.SkuType)
 /// See the linked documentation for an explanation of the different constants.
-class SkuType {
-  const SkuType._(this._type);
-  static SkuType fromString(String type) {
-    final SkuType skuType = SkuType._(type);
-    if (skuType != INAPP && skuType != SUBS) {
-      return null;
-    }
-    return skuType;
-  }
-
-  final String _type;
-  @override
-  String toString() => _type;
-  @override
-  int get hashCode => _type.hashCode;
-  @override
-  bool operator ==(dynamic other) => other is SkuType && other._type == _type;
+enum SkuType {
+  // WARNING: Changes to this class need to be reflected in our generated code.
+  // Run `flutter packages pub run build_runner watch` to rebuild and watch for
+  // further changes.
 
   /// A one time product. Acquired in a single transaction.
-  static const SkuType INAPP = SkuType._("inapp");
+  @JsonValue('inapp')
+  inapp,
 
   /// A product requiring a recurring charge over time.
-  static const SkuType SUBS = SkuType._("subs");
+  @JsonValue('subs')
+  subs,
 }

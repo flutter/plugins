@@ -1,3 +1,16 @@
+## 0.10.0
+
+* **Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library.
+
+## 0.9.0
+
+* Fixed the aspect ratio and orientation of videos. Videos are now properly displayed when recorded
+ in portrait mode both in iOS and Android.
+
 ## 0.8.0
 
 * Android: Upgrade ExoPlayer to 2.9.1
@@ -40,7 +53,7 @@
 
 ## 0.6.1
 
-* iOS: add missing observer removals to prevent crashes on deallocation. 
+* iOS: add missing observer removals to prevent crashes on deallocation.
 
 ## 0.6.0
 
