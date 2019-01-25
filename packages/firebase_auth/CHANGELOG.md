@@ -1,3 +1,7 @@
+## 0.8.0+1
+
+* Update a broken dependency.
+
 ## 0.8.0
 
 * **Breaking change**. Migrate from the deprecated original Android Support
