@@ -6,7 +6,6 @@ import 'package:test/test.dart';
 import 'package:in_app_purchase/src/store_kit_wrappers/sk_product_wrapper.dart';
 
 void main() {
-
   final Map<String, dynamic> subMap = <String, dynamic>{
     'numberOfUnits': 1,
     'unit': 2
