@@ -22,11 +22,13 @@ class SkProductResponseWrapper {
 
   /// Stores all matching successfully found products.
   ///
+  /// One product in this list matches one valid product identifer passed in the [startProductRequest].
   /// Will be empty if the [SKProductRequestMaker]'s [startProductRequest] method does not pass any correct product identifer.
   final List<SKProductWrapper> products;
 
-  /// Stores any product identifer in [productIdentifers] that does not match a product.
-  ///
+  /// Stores any product identifer in the [productIdentifers] from [startProductRequest] that is not recognized by the App Store.
+  /// The App Store may not recognize a product identifer unless certain criteria are met. A detailed list of the criteria can be
+  /// found here https://developer.apple.com/documentation/storekit/skproductsresponse/1505985-invalidproductidentifiers?language=objc.
   /// Will be empty if all the product identifiers are valid.
   final List<String> invalidProductIdentifiers;
 
@@ -45,7 +47,7 @@ class SkProductResponseWrapper {
 
 /// Dart wrapper around StoreKit's [SKProductPeriodUnit](https://developer.apple.com/documentation/storekit/skproductperiodunit?language=objc).
 ///
-/// Used as a property in the [SKProductSubscriptionPeriodWrapper].
+/// Used as a property in the [SKProductSubscriptionPeriodWrapper]. Minium is a day and maxium is a year.
 // The values of the enum options are matching the [SKProductPeriodUnit]'s values. Should there be an update or addition
 // in the [SKProductPeriodUnit], this need to be updated to match.
 enum SubscriptionPeriodUnit {
@@ -139,10 +141,13 @@ class SKProductDiscountWrapper {
   /// The value must be >= 0.
   final int numberOfPeriods;
 
-  /// The payment mode for the discount. Check [ProductDiscountPaymentMode] for more details on each payment mode.
+  /// The object indicates how the discount price is charged.
   final ProductDiscountPaymentMode paymentMode;
 
-  /// The object represents the subscription period for the discount. Check [SKProductSubscriptionPeriodWrapper] for more details.
+  /// The object represents the duration of single subscription period for the discount.
+  ///
+  /// The [subscriptionPeriod] of the discount is independent of the product's [subscriptionPeriod],
+  /// and their units and duration do not have to be matched.
   final SKProductSubscriptionPeriodWrapper subscriptionPeriod;
 }
 
@@ -191,30 +196,28 @@ class SKProductWrapper {
             : null;
 
   /// The unique identifier of the product.
-  ///
-  /// Defined in the App Store Connect when you create the product.
   final String productIdentifier,
 
       /// The localizedTitle of the product.
       ///
-      /// Defined in the App Store Connect when you create the product.
+      /// It is localized based on the current locale.
       localizedTitle,
 
       /// The localized description of the product.
       ///
-      /// Defined in the App Store Connect when you create the product.
+      /// It is localized based on the current locale.
       localizedDescription,
 
       // TODO(cyanglaz): NSLocale is a complex object, want to see the actual need of getting this expanded to
       //                 a map. Matching android to only get the currencyCode for now.
       //                 https://github.com/flutter/flutter/issues/26610
       /// The currencyCode for the price, e.g USD for U.S. dollars.
-      /// Defined in the App Store Connect when you create the product.
       currencyCode,
 
       /// The version of the downloadable content.
       ///
       /// This is only available when [downloadable] is true.
+      /// It is formatted as a series of integers separated by periods.
       downloadContentVersion,
 
       /// The subscription group identifer.
@@ -234,11 +237,20 @@ class SKProductWrapper {
   /// The length of the downloadable content.
   ///
   /// This is only available when [downloadable] is true.
+  /// Each element is the size of one of the downloadable files (in bytes).
   final List<int> downloadContentLengths;
 
   /// The object represents the subscription period of the product.
+  ///
+  /// Can be [null] is the product is not a subscription.
   final SKProductSubscriptionPeriodWrapper subscriptionPeriod;
 
-  /// The object represents the introductory price of the product.
+  /// The object represents the duration of single subscription period.
+  ///
+  /// This is only available if you set up the introductory price in the App Store Connect, otherwise it will be null.
+  /// Programmar is also responsible to determine if the user is eligible to receive it. See https://developer.apple.com/documentation/storekit/in-app_purchase/offering_introductory_pricing_in_your_app?language=objc
+  /// for more details.
+  /// The [subscriptionPeriod] of the discount is independent of the product's [subscriptionPeriod],
+  /// and their units and duration do not have to be matched.
   final SKProductDiscountWrapper introductoryPrice;
 }
