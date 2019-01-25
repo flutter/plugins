@@ -41,6 +41,7 @@ class VideoPlayerValue {
   VideoPlayerValue({
     @required this.duration,
     this.size,
+    this.aspectRatio,
     this.position = const Duration(),
     this.buffered = const <DurationRange>[],
     this.isPlaying = false,
@@ -88,13 +89,18 @@ class VideoPlayerValue {
   /// Is null when [initialized] is false.
   final Size size;
 
+  /// The [aspectRatio] of the currently loaded video.
+  ///
+  /// Is 0.0 when [initialized] is false.
+  final double aspectRatio;
+
   bool get initialized => duration != null;
   bool get hasError => errorDescription != null;
-  double get aspectRatio => size != null ? size.width / size.height : 1.0;
 
   VideoPlayerValue copyWith({
     Duration duration,
     Size size,
+    double aspectRatio,
     Duration position,
     List<DurationRange> buffered,
     bool isPlaying,
@@ -106,6 +112,7 @@ class VideoPlayerValue {
     return VideoPlayerValue(
       duration: duration ?? this.duration,
       size: size ?? this.size,
+      aspectRatio: aspectRatio ?? this.aspectRatio,
       position: position ?? this.position,
       buffered: buffered ?? this.buffered,
       isPlaying: isPlaying ?? this.isPlaying,
@@ -121,6 +128,7 @@ class VideoPlayerValue {
     return '$runtimeType('
         'duration: $duration, '
         'size: $size, '
+        'aspectRatio: $aspectRatio,'
         'position: $position, '
         'buffered: [${buffered.join(', ')}], '
         'isPlaying: $isPlaying, '
@@ -235,6 +243,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
             duration: Duration(milliseconds: map['duration']),
             size: Size(map['width']?.toDouble() ?? 0.0,
                 map['height']?.toDouble() ?? 0.0),
+            aspectRatio: map['aspectRatio']?.toDouble() ?? 0.0,
           );
           initializingCompleter.complete(null);
           _applyLooping();

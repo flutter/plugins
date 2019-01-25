@@ -153,7 +153,7 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
   // displays the video https://github.com/flutter/flutter/issues/17606#issuecomment-413473181
   if (transform.tx == 0 && transform.ty == 0) {
     NSInteger rotationDegrees = (NSInteger)round(radiansToDegrees(atan2(transform.b, transform.a)));
-    NSLog(@"TX and TY are 0. Rotation: %d. Natural width,height: %f, %f", rotationDegrees,
+    NSLog(@"TX and TY are 0. Rotation: %ld. Natural width,height: %f, %f", (long)rotationDegrees,
           videoTrack.naturalSize.width, videoTrack.naturalSize.height);
     if (rotationDegrees == 90) {
       NSLog(@"Setting transform tx");
@@ -185,8 +185,6 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
           if (_disposed) return;
           if ([videoTrack statusOfValueForKey:@"preferredTransform"
                                         error:nil] == AVKeyValueStatusLoaded) {
-            CGSize size = videoTrack.naturalSize;
-
             // Rotate the video by using a videoComposition and the preferredTransform
             _preferredTransform = [self fixTransform:videoTrack];
             // Note:
@@ -208,8 +206,6 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
 
   _player = [AVPlayer playerWithPlayerItem:item];
   _player.actionAtItemEnd = AVPlayerActionAtItemEndNone;
-
-  CGSize size = item.presentationSize;
 
   [self createVideoOutputAndDisplayLink:frameUpdater];
 
@@ -273,6 +269,39 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
   }
 }
 
+- (double)getDisplayAspectRatioForItem:(AVPlayerItem*)item {
+  CGSize presentationSize = [item presentationSize];
+  double aspectRatio = presentationSize.width / presentationSize.height;
+
+  for (AVPlayerItemTrack* itemTrack in [item tracks]) {
+    AVAssetTrack* assetTrack = [itemTrack assetTrack];
+    if ([[assetTrack mediaType] isEqualToString:AVMediaTypeVideo]) {
+      NSArray* formatDescriptions = [assetTrack formatDescriptions];
+      if ([formatDescriptions count] > 0) {
+        CMFormatDescriptionRef formatDescription =
+            (__bridge CMFormatDescriptionRef)[formatDescriptions objectAtIndex:0];
+        CFDictionaryRef pixelAspectRatioRef = CMFormatDescriptionGetExtension(
+            formatDescription, kCMFormatDescriptionExtension_PixelAspectRatio);
+        if (pixelAspectRatioRef) {
+          NSDictionary* pixelAspectRatioDict = (__bridge NSDictionary*)pixelAspectRatioRef;
+          double w = [[pixelAspectRatioDict objectForKey:@"HorizontalSpacing"] doubleValue];
+          double h = [[pixelAspectRatioDict objectForKey:@"VerticalSpacing"] doubleValue];
+          double nw = [assetTrack naturalSize].width;
+          double nh = [assetTrack naturalSize].height;
+          if (w != 0 && h != 0 && nw != 0 && nh != 0) {
+            double par = w / h;
+            double dar = par * nw / nh;
+            aspectRatio = dar;
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  return aspectRatio;
+}
+
 - (void)updatePlayingState {
   if (!_isInitialized) {
     return;
@@ -301,12 +330,14 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     CGSize size = [self.player currentItem].presentationSize;
     CGFloat width = size.width;
     CGFloat height = size.height;
+    double dar = [self getDisplayAspectRatioForItem:[self.player currentItem]];
 
     _eventSink(@{
       @"event" : @"initialized",
       @"duration" : @([self duration]),
       @"width" : @(width),
-      @"height" : @(height)
+      @"height" : @(height),
+      @"aspectRatio" : @(dar)
     });
   }
 }
