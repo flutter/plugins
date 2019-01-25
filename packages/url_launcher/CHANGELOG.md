@@ -1,6 +1,6 @@
 ## 4.1.0+1
 
-* Refactored the JAVA and OBJC code. Replaced instance variables with properties in OBJC.
+* Refactored the Java and Objective-C code. Replaced instance variables with properties in Objective-C.
 
 ## 4.1.0
 
