@@ -1,3 +1,7 @@
+## 4.2.0+1
+
+* Refactored the Java and Objective-C code. Replaced instance variables with properties in Objective-C.
+
 ## 4.2.0
 
 * **Breaking change**. Migrate from the deprecated original Android Support
