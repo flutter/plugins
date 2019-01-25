@@ -11,7 +11,7 @@ void main() {
   final StubInAppPurchasePlatform stubPlatform = StubInAppPurchasePlatform();
 
   final Map<String, dynamic> subMap = <String, dynamic>{
-    'numberOfUnits': 0,
+    'numberOfUnits': 1,
     'unit': 2
   };
   final Map<String, dynamic> discountMap = <String, dynamic>{
@@ -39,9 +39,6 @@ void main() {
     'products': <Map<String, dynamic>>[productMap],
     'invalidProductIdentifiers': <String>['123'],
   };
-
-  setUpAll(() =>
-      channel.setMockMethodCallHandler(stubPlatform.fakeMethodCallHandler));
 
   group('product request wrapper test', () {
     test(

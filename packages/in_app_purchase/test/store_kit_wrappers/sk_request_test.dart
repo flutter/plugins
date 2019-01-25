@@ -12,7 +12,7 @@ void main() {
   final StubInAppPurchasePlatform stubPlatform = StubInAppPurchasePlatform();
 
   final Map<String, dynamic> subMap = <String, dynamic>{
-    'numberOfUnits': 0,
+    'numberOfUnits': 1,
     'unit': 2
   };
   final Map<String, dynamic> discountMap = <String, dynamic>{

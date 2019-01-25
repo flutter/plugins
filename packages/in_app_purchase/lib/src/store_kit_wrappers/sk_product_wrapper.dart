@@ -14,6 +14,7 @@ class SkProductResponseWrapper {
 
   /// Constructing an instance from a map from the Objective-C layer.
   ///
+  /// This method should only be used with `map` values returned by [SKRequestMaker.startProductRequest].
   /// The `map` parameter must not be null.
   SkProductResponseWrapper.fromMap(Map<String, List<dynamic>> map)
       : assert(map != null),
@@ -24,7 +25,7 @@ class SkProductResponseWrapper {
   /// Stores all matching successfully found products.
   ///
   /// One product in this list matches one valid product identifier passed to the [SKRequestMaker.startProductRequest].
-  /// Will be empty if the [SKProductRequestMaker]'s [SKRequestMaker.startProductRequest] method does not pass any correct product identifier.
+  /// Will be empty if the [SKRequestMaker.startProductRequest] method does not pass any correct product identifier.
   final List<SKProductWrapper> products;
 
   /// Stores product identifiers in the `productIdentifiers` from [SKRequestMaker.startProductRequest] that are not recognized by the App Store.
@@ -68,10 +69,11 @@ class SKProductSubscriptionPeriodWrapper {
       {@required this.numberOfUnits, @required this.unit});
 
   /// Constructing an instance from a map from the Objective-C layer.
-  ///
+  /// This method should only be used with `map` values returned by [SKProductDiscountWrapper.fromMap] or [SKProductWrapper.fromMap].
   /// The `map` parameter must not be null.
   SKProductSubscriptionPeriodWrapper.fromMap(Map<String, dynamic> map)
-      : assert(map != null && map['numberOfUnits'] > 0),
+      : assert(map != null &&
+            (map['numberOfUnits'] == null || map['numberOfUnits'] > 0)),
         numberOfUnits = map['numberOfUnits'],
         unit = (map['unit'] != null)
             ? SubscriptionPeriodUnit.values[map['unit']]
@@ -117,6 +119,7 @@ class SKProductDiscountWrapper {
 
   /// Constructing an instance from a map from the Objective-C layer.
   ///
+  /// This method should only be used with `map` values returned by [SKProductWrapper.fromMap].
   /// The `map` parameter must not be null.
   SKProductDiscountWrapper.fromMap(Map<String, dynamic> map)
       : assert(map != null),
@@ -159,7 +162,7 @@ class SKProductDiscountWrapper {
 ///
 /// Most of the fields are identical to OBJC SKProduct.
 /// The only difference is instead of the locale object, we only exposed currencyCode for simplicity.
-/// A list of [SKProductWrapper] is returned in the [SKProductRequestMaker]'s [SKRequestMaker.startProductRequest] method, and
+/// A list of [SKProductWrapper] is returned in the [SKRequestMaker.startProductRequest] method, and
 /// should be stored for use when making a payment.
 class SKProductWrapper {
   SKProductWrapper({
@@ -178,6 +181,7 @@ class SKProductWrapper {
 
   /// Constructing an instance from a map from the Objective-C layer.
   ///
+  /// This method should only be used with `map` values returned by [SkProductResponseWrapper.fromMap].
   /// The `map` parameter must not be null.
   SKProductWrapper.fromMap(Map<dynamic, dynamic> map)
       : assert(map != null),
