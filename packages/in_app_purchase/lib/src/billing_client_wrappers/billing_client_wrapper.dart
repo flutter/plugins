@@ -5,7 +5,10 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
+import 'package:json_annotation/json_annotation.dart';
 import '../channel.dart';
+import 'sku_details_wrapper.dart';
+import 'enum_converters.dart';
 
 /// This class can be used directly instead of [InAppPurchaseConnection] to call
 /// Play-specific billing APIs.
@@ -57,7 +60,7 @@ class BillingClient {
       'OnBillingServiceDisconnected': onBillingServiceDisconnected,
     };
     _callbacks.add(callbacks);
-    return BillingResponse._(await channel.invokeMethod(
+    return BillingResponseConverter().fromJson(await channel.invokeMethod(
         "BillingClient#startConnection(BillingClientStateListener)",
         <String, dynamic>{'handle': _callbacks.length - 1}));
   }
@@ -73,6 +76,27 @@ class BillingClient {
     return channel.invokeMethod("BillingClient#endConnection()", null);
   }
 
+  /// Returns a list of [SkuDetailsWrapper]s that have [SkuDetailsWrapper.sku]
+  /// in `skusList`, and [SkuDetailsWrapper.type] matching `skuType`.
+  ///
+  /// Calls through to [`BillingClient#querySkuDetailsAsync(SkuDetailsParams,
+  /// SkuDetailsResponseListener)`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient#querySkuDetailsAsync(com.android.billingclient.api.SkuDetailsParams,%20com.android.billingclient.api.SkuDetailsResponseListener))
+  /// Instead of taking a callback parameter, it returns a Future
+  /// [SkuDetailsResponseWrapper]. It also takes the values of
+  /// `SkuDetailsParams` as direct arguments instead of requiring it constructed
+  /// and passed in as a class.
+  Future<SkuDetailsResponseWrapper> querySkuDetails(
+      {@required SkuType skuType, @required List<String> skusList}) async {
+    final Map<String, dynamic> arguments = <String, dynamic>{
+      'skuType': skuType.toString(),
+      'skusList': skusList
+    };
+    return SkuDetailsResponseWrapper.fromJson(await channel.invokeMapMethod<
+            String, dynamic>(
+        'BillingClient#querySkuDetailsAsync(SkuDetailsParams, SkuDetailsResponseListener)',
+        arguments));
+  }
+
   Future<void> _callHandler(MethodCall call) async {
     switch (call.method) {
       case 'BillingClientStateListener#onBillingServiceDisconnected()':
@@ -84,35 +108,69 @@ class BillingClient {
   }
 }
 
+/// Callback triggered when the [BillingClientWrapper] is disconnected.
+///
 /// Wraps
 /// [`com.android.billingclient.api.BillingClientStateListener.onServiceDisconnected()`](https://developer.android.com/reference/com/android/billingclient/api/BillingClientStateListener.html#onBillingServiceDisconnected())
 /// to call back on `BillingClient` disconnect.
 typedef void OnBillingServiceDisconnected();
 
-/// Wraps
-/// [`BillingClient.BillingResponse`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.BillingResponse),
-/// possible status codes.
+/// Possible `BillingClient` response statuses.
 ///
-/// See the `BillingResponse` docs for an explanation of the different constants.
-class BillingResponse {
-  const BillingResponse._(this._code);
-  final int _code;
-  @override
-  String toString() => _code.toString();
-  @override
-  int get hashCode => _code;
-  @override
-  bool operator ==(dynamic other) =>
-      other is BillingResponse && other._code == _code;
+/// Wraps
+/// [`BillingClient.BillingResponse`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.BillingResponse).
+/// See the `BillingResponse` docs for more explanation of the different
+/// constants.
+enum BillingResponse {
+  // WARNING: Changes to this class need to be reflected in our generated code.
+  // Run `flutter packages pub run build_runner watch` to rebuild and watch for
+  // further changes.
+  @JsonValue(-2)
+  featureNotSupported,
 
-  static const BillingResponse FEATURE_NOT_SUPPORTED = BillingResponse._(-2);
-  static const BillingResponse OK = BillingResponse._(0);
-  static const BillingResponse USER_CANCELED = BillingResponse._(1);
-  static const BillingResponse SERVICE_UNAVAILABLE = BillingResponse._(2);
-  static const BillingResponse BILLING_UNAVAILABLE = BillingResponse._(3);
-  static const BillingResponse ITEM_UNAVAILABLE = BillingResponse._(4);
-  static const BillingResponse DEVELOPER_ERROR = BillingResponse._(5);
-  static const BillingResponse ERROR = BillingResponse._(6);
-  static const BillingResponse ITEM_ALREADY_OWNED = BillingResponse._(7);
-  static const BillingResponse ITEM_NOT_OWNED = BillingResponse._(8);
+  @JsonValue(0)
+  ok,
+
+  @JsonValue(1)
+  userCanceled,
+
+  @JsonValue(2)
+  serviceUnavailable,
+
+  @JsonValue(3)
+  billingUnavailable,
+
+  @JsonValue(4)
+  itemUnavailable,
+
+  @JsonValue(5)
+  developerError,
+
+  @JsonValue(6)
+  error,
+
+  @JsonValue(7)
+  itemAlreadyOwned,
+
+  @JsonValue(8)
+  itemNotOwned,
+}
+
+/// Enum representing potential [SkuDetailsWrapper.type]s.
+///
+/// Wraps
+/// [`BillingClient.SkuType`](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.SkuType)
+/// See the linked documentation for an explanation of the different constants.
+enum SkuType {
+  // WARNING: Changes to this class need to be reflected in our generated code.
+  // Run `flutter packages pub run build_runner watch` to rebuild and watch for
+  // further changes.
+
+  /// A one time product. Acquired in a single transaction.
+  @JsonValue('inapp')
+  inapp,
+
+  /// A product requiring a recurring charge over time.
+  @JsonValue('subs')
+  subs,
 }

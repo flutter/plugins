@@ -15,6 +15,7 @@ import android.view.Surface;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.Player.DefaultEventListener;
 import com.google.android.exoplayer2.SimpleExoPlayer;
@@ -50,6 +51,8 @@ import java.util.List;
 import java.util.Map;
 
 public class VideoPlayerPlugin implements MethodCallHandler {
+
+  private static final String TAG = "VideoPlayerPlugin";
 
   private static class VideoPlayer {
 
@@ -220,9 +223,19 @@ public class VideoPlayerPlugin implements MethodCallHandler {
         Map<String, Object> event = new HashMap<>();
         event.put("event", "initialized");
         event.put("duration", exoPlayer.getDuration());
+
         if (exoPlayer.getVideoFormat() != null) {
-          event.put("width", exoPlayer.getVideoFormat().width);
-          event.put("height", exoPlayer.getVideoFormat().height);
+          Format videoFormat = exoPlayer.getVideoFormat();
+          int width = videoFormat.width;
+          int height = videoFormat.height;
+          int rotationDegrees = videoFormat.rotationDegrees;
+          // Switch the width/height if video was taken in portrait mode
+          if (rotationDegrees == 90 || rotationDegrees == 270) {
+            width = exoPlayer.getVideoFormat().height;
+            height = exoPlayer.getVideoFormat().width;
+          }
+          event.put("width", width);
+          event.put("height", height);
         }
         eventSink.success(event);
       }
