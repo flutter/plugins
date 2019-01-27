@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #import <Flutter/Flutter.h>
-#import <UIKit/UIKit.h>
 #import <GoogleMaps/GoogleMaps.h>
+#import <UIKit/UIKit.h>
 #import "GoogleMapMarkerController.h"
 #import "GoogleMapPolylineController.h"
 

@@ -4,7 +4,11 @@
 
 #import "GoogleMapController.h"
 
-#define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
+#define UIColorFromRGB(rgbValue) [UIColor \
+colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 \
+green:((float)((rgbValue & 0xFF00) >> 8))/255.0 \
+blue:((float)(rgbValue & 0xFF))/255.0 \
+alpha:1.0]
 
 #pragma mark - Conversion of JSON-like values sent via platform channels. Forward declarations.
 
@@ -528,26 +532,10 @@ static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink
   if (color) {
     [sink setColor:UIColorFromRGB(toInt(color))];
   }
-  // id endCap = data[@"endCap"];
-  // if (endCap) {
-  //   [sink setEndCap:toCap(endCap)];
-  // }
   id geodesic = data[@"geodesic"];
   if (geodesic) {
     [sink setGeodesic:toBool(geodesic)];
   }
-  // id jointType = data[@"jointType"];
-  // if (jointType) {
-  //   [sink setJointType:toJointType(jointType)];
-  // }
-  // id pattern = data[@"pattern"];
-  // if (pattern) {
-  //   [sink setPattern:toPatternItemList(pattern)];
-  // }
-  // id startCap = data[@"startCap"];
-  // if (startCap) {
-  //   [sink setStartCap:toCap(startCap)];
-  // }
   id width = data[@"width"];
   if (width) {
     [sink setWidth: (CGFloat) toFloat(width)];
