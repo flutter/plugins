@@ -246,6 +246,8 @@ class GoogleMapController extends ChangeNotifier {
     assert(_polylines[polyline._id] == polyline);
     assert(changes != null);
     changes = polyline._options.copyWith(changes);
+    // Code copied from updateMarker
+    // ignore: strong_mode_implicit_dynamic_method
     await _channel.invokeMethod('polyline#update', <String, dynamic>{
       'polyline': polyline._id,
       'options': changes._toJson(),
@@ -333,6 +335,8 @@ class GoogleMapController extends ChangeNotifier {
   /// The returned [Future] completes once the marker has been removed from
   /// [_polylines].
   Future<void> _removePolyline(String id) async {
+    // Code copied from removeMarker
+    // ignore: strong_mode_implicit_dynamic_method
     await _channel.invokeMethod('polyline#remove', <String, dynamic>{
       'polyline': id,
     });
