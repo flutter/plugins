@@ -8,6 +8,7 @@
 
 static id positionToJson(GMSCameraPosition* position);
 static id markerToJson(GMSMarker* marker);
+static id locationToJson(CLLocationCoordinate2D coordinate);
 static double toDouble(id json);
 static CLLocationCoordinate2D toLocation(id json);
 static NSMutableArray* toPoints(id json);
@@ -286,6 +287,11 @@ static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink
 - (void)mapView:(GMSMapView*)mapView didTapOverlay:(GMSOverlay*)overlay {
   NSString* polylineId = overlay.userData[0];
   [_channel invokeMethod:@"polyline#onTap" arguments:@{@"polyline" : polylineId}];
+}
+
+- (void)mapView:(GMSMapView *)mapView didTapAtCoordinate:(CLLocationCoordinate2D)coordinate {
+    [_channel invokeMethod:@"map#onTap"
+                 arguments:@{@"position" : locationToJson(coordinate)}];
 }
 
 @end
