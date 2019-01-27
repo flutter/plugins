@@ -9,36 +9,51 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.ButtCap;
+import com.google.android.gms.maps.model.Dash;
+import com.google.android.gms.maps.model.Dot;
+import com.google.android.gms.maps.model.Gap;
+import com.google.android.gms.maps.model.RoundCap;
+import com.google.android.gms.maps.model.SquareCap;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Cap;
+import com.google.android.gms.maps.model.PatternItem;
+import com.google.android.gms.maps.model.JointType;
 import io.flutter.view.FlutterMain;
+
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
+
 
 /** Conversions between JSON-like values and GoogleMaps data types. */
 class Convert {
   private static BitmapDescriptor toBitmapDescriptor(Object o) {
     final List<?> data = toList(o);
     switch (toString(data.get(0))) {
-      case "defaultMarker":
-        if (data.size() == 1) {
-          return BitmapDescriptorFactory.defaultMarker();
-        } else {
-          return BitmapDescriptorFactory.defaultMarker(toFloat(data.get(1)));
-        }
+    case "defaultMarker":
+      if (data.size() == 1) {
+        return BitmapDescriptorFactory.defaultMarker();
+      } else {
+        return BitmapDescriptorFactory.defaultMarker(toFloat(data.get(1)));
+      }
       case "fromAsset":
-        if (data.size() == 2) {
-          return BitmapDescriptorFactory.fromAsset(
-              FlutterMain.getLookupKeyForAsset(toString(data.get(1))));
-        } else {
-          return BitmapDescriptorFactory.fromAsset(
-              FlutterMain.getLookupKeyForAsset(toString(data.get(1)), toString(data.get(2))));
-        }
-      default:
-        throw new IllegalArgumentException("Cannot interpret " + o + " as BitmapDescriptor");
+      if (data.size() == 2) {
+        return BitmapDescriptorFactory.fromAsset(
+            FlutterMain.getLookupKeyForAsset(toString(data.get(1))));
+      } else {
+        return BitmapDescriptorFactory.fromAsset(
+            FlutterMain.getLookupKeyForAsset(toString(data.get(1)), toString(data.get(2))));
+      }
+    default:
+      throw new IllegalArgumentException("Cannot interpret " + o + " as BitmapDescriptor");
     }
   }
 
@@ -59,33 +74,33 @@ class Convert {
   static CameraUpdate toCameraUpdate(Object o, float density) {
     final List<?> data = toList(o);
     switch (toString(data.get(0))) {
-      case "newCameraPosition":
-        return CameraUpdateFactory.newCameraPosition(toCameraPosition(data.get(1)));
-      case "newLatLng":
-        return CameraUpdateFactory.newLatLng(toLatLng(data.get(1)));
-      case "newLatLngBounds":
-        return CameraUpdateFactory.newLatLngBounds(
-            toLatLngBounds(data.get(1)), toPixels(data.get(2), density));
-      case "newLatLngZoom":
-        return CameraUpdateFactory.newLatLngZoom(toLatLng(data.get(1)), toFloat(data.get(2)));
-      case "scrollBy":
-        return CameraUpdateFactory.scrollBy( //
-            toFractionalPixels(data.get(1), density), //
-            toFractionalPixels(data.get(2), density));
-      case "zoomBy":
-        if (data.size() == 2) {
-          return CameraUpdateFactory.zoomBy(toFloat(data.get(1)));
-        } else {
-          return CameraUpdateFactory.zoomBy(toFloat(data.get(1)), toPoint(data.get(2), density));
-        }
-      case "zoomIn":
-        return CameraUpdateFactory.zoomIn();
-      case "zoomOut":
-        return CameraUpdateFactory.zoomOut();
-      case "zoomTo":
-        return CameraUpdateFactory.zoomTo(toFloat(data.get(1)));
-      default:
-        throw new IllegalArgumentException("Cannot interpret " + o + " as CameraUpdate");
+    case "newCameraPosition":
+      return CameraUpdateFactory.newCameraPosition(toCameraPosition(data.get(1)));
+    case "newLatLng":
+      return CameraUpdateFactory.newLatLng(toLatLng(data.get(1)));
+    case "newLatLngBounds":
+    return CameraUpdateFactory.newLatLngBounds(
+      toLatLngBounds(data.get(1)), toPixels(data.get(2), density));
+case "newLatLngZoom":
+      return CameraUpdateFactory.newLatLngZoom(toLatLng(data.get(1)), toFloat(data.get(2)));
+    case "scrollBy":
+      return CameraUpdateFactory.scrollBy( //
+          toFractionalPixels(data.get(1), density), //
+          toFractionalPixels(data.get(2), density));
+    case "zoomBy":
+      if (data.size() == 2) {
+        return CameraUpdateFactory.zoomBy(toFloat(data.get(1)));
+      } else {
+        return CameraUpdateFactory.zoomBy(toFloat(data.get(1)), toPoint(data.get(2), density));
+      }
+    case "zoomIn":
+      return CameraUpdateFactory.zoomIn();
+    case "zoomOut":
+      return CameraUpdateFactory.zoomOut();
+    case "zoomTo":
+      return CameraUpdateFactory.zoomTo(toFloat(data.get(1)));
+    default:
+      throw new IllegalArgumentException("Cannot interpret " + o + " as CameraUpdate");
     }
   }
 
@@ -126,6 +141,51 @@ class Convert {
     return new LatLng(toDouble(data.get(0)), toDouble(data.get(1)));
   }
 
+  private static Cap toCap(Object o) {
+
+    switch (toString(o)) {
+      case "Cap.RoundCap" : return new RoundCap();
+      case "Cap.SquareCap" : return new SquareCap();
+      case "Cap.ButtCap" : return new ButtCap();
+      default:
+        throw new IllegalArgumentException("Cannot interpret " + o + " as Cap");
+    }
+  }
+
+  private static int toJointType(Object o) {
+
+    switch (toString(o)) {
+      case "JointType.Bevel" : return JointType.BEVEL;
+      case "JointType.Default" : return JointType.DEFAULT;
+      case "JointType.Route" : return JointType.ROUND;
+      default:
+        throw new IllegalArgumentException("Cannot interpret " + o + " as JointType");
+    }
+  }
+
+  private static List<PatternItem> toPatternItemList(Object o) {
+
+    List<?> list = (List<?>) o;
+    List<PatternItem> items = new ArrayList<>();
+    for (int x = 0; x < list.size(); x++) {
+      final Map<?, ?> data = toMap(list.get(x));
+      int length = toInt(data.get("length"));
+      String pattern = toString(data.get("pattern"));
+
+      switch (pattern) {
+        case "PatternItem.Dash" :  items.add(new Dash(length)); break;
+        case "PatternItem.Gap" :  items.add(new Gap(length)); break;
+        case "PatternItem.Dot" :  items.add(new Dot()); break;
+        default:
+          throw new IllegalArgumentException("Cannot interpret " + pattern + " as PatternItem");
+      }
+    }
+    if (items.size() == 0 ) {
+      return null;
+    }
+    return items;
+  }
+  
   private static LatLngBounds toLatLngBounds(Object o) {
     if (o == null) {
       return null;
@@ -260,6 +320,70 @@ class Convert {
     if (visible != null) {
       sink.setVisible(toBoolean(visible));
     }
+    final Object zIndex = data.get("zIndex");
+    if (zIndex != null) {
+      sink.setZIndex(toFloat(zIndex));
+    }
+  }
+
+  static void interpretPolylineOptions(Object o, PolylineOptionsSink sink) {
+    final Map<?, ?> data = toMap(o);
+
+    final Object points = data.get("points");
+    if (points != null) {
+      final List<?> pointData = toList(points);
+      final List<LatLng> latLngList = new ArrayList<LatLng>();
+      for (int i = 0; i < pointData.size(); i++) {
+        latLngList.add(toLatLng(pointData.get(i)));
+      }
+      sink.setPoints(latLngList);
+    }
+ 
+    final Object clickable = data.get("clickable");
+    if (clickable != null) {
+      sink.setClickable(toBoolean(clickable));
+    }
+
+    final Object color = data.get("color");
+    if (color != null) {
+      sink.setColor(toInt(color));
+    }
+
+    final Object endCap = data.get("endCap");
+    if (endCap != null) {
+      sink.setEndCap(toCap(endCap));
+    }
+
+    final Object geodesic = data.get("geodesic");
+    if (geodesic != null) {
+      sink.setGeodesic(toBoolean(geodesic));
+    }
+
+    final Object jointType = data.get("jointType");
+    if (jointType != null) {
+      sink.setJointType(toJointType(jointType));
+    }
+
+    final Object pattern = data.get("pattern");
+    if (pattern != null) {
+       sink.setPattern(toPatternItemList(pattern));
+    }
+
+    final Object startCap = data.get("startCap");
+    if (startCap != null) {
+      sink.setStartCap(toCap(startCap));
+    }
+
+    final Object visible = data.get("visible");
+    if (visible != null) {
+      sink.setVisible(toBoolean(visible));
+    }
+
+    final Object width = data.get("width");
+    if (width != null) {
+      sink.setWidth(toFloat(width));
+    }
+
     final Object zIndex = data.get("zIndex");
     if (zIndex != null) {
       sink.setZIndex(toFloat(zIndex));
