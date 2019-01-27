@@ -134,9 +134,9 @@ static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink
                              [self polylineWithId:call.arguments[@"polyline"]], _registrar);
     result(nil);
   } else if ([call.method isEqualToString:@"polyline#remove"]) {
-     [self removePolylineWithId:call.arguments[@"polyline"]];
+    [self removePolylineWithId:call.arguments[@"polyline"]];
     result(nil);
-   } else {
+  } else {
     result(FlutterMethodNotImplemented);
   }
 }
