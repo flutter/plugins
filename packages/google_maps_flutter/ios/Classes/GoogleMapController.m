@@ -4,11 +4,6 @@
 
 #import "GoogleMapController.h"
 
-#define UIColorFromRGB(rgbValue) [UIColor \
-colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 \
-green:((float)((rgbValue & 0xFF00) >> 8))/255.0 \
-blue:((float)(rgbValue & 0xFF))/255.0 \
-alpha:1.0]
 #define UIColorFromRGB(rgbValue)                                       \
   [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16)) / 255.0 \
                   green:((float)((rgbValue & 0xFF00) >> 8)) / 255.0    \
@@ -139,9 +134,9 @@ static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink
                              [self polylineWithId:call.arguments[@"polyline"]], _registrar);
     result(nil);
   } else if ([call.method isEqualToString:@"polyline#remove"]) {
-    [self removePolylineWithId:call.arguments[@"polyline"]];
-    result(nil);  
-  } else {
+     [self removePolylineWithId:call.arguments[@"polyline"]];
+    result(nil);
+   } else {
     result(FlutterMethodNotImplemented);
   }
 }
