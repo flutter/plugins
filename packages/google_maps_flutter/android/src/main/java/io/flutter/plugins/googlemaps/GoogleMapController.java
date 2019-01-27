@@ -25,6 +25,7 @@ import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -42,6 +43,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /** Controller of a single GoogleMaps MapView instance. */
 final class GoogleMapController
     implements Application.ActivityLifecycleCallbacks,
+        GoogleMap.OnMapClickListener,
         GoogleMap.OnCameraIdleListener,
         GoogleMap.OnCameraMoveListener,
         GoogleMap.OnCameraMoveStartedListener,
@@ -205,6 +207,7 @@ final class GoogleMapController
       mapReadyResult.success(null);
       mapReadyResult = null;
     }
+    googleMap.setOnMapClickListener(this);
     googleMap.setOnCameraMoveStartedListener(this);
     googleMap.setOnCameraMoveListener(this);
     googleMap.setOnCameraIdleListener(this);
@@ -325,6 +328,13 @@ final class GoogleMapController
   @Override
   public void onCameraIdle() {
     methodChannel.invokeMethod("camera#onIdle", Collections.singletonMap("map", id));
+  }
+
+  @Override
+  public void onMapClick(LatLng latLng) {
+    final Map<String, Object> arguments = new HashMap<>(2);
+    arguments.put("position", Convert.toJson(latLng));
+    methodChannel.invokeMethod("map#onTap", arguments);
   }
 
   @Override
