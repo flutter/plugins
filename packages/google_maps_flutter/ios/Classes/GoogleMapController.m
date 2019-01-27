@@ -345,7 +345,6 @@ static NSMutableArray* toPoints(id json) {
                                                    longitude:toDouble(data[i][1])];
     [points addObject:point];
   }
-  
   return points;
 }
 
