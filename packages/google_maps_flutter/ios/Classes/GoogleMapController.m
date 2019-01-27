@@ -9,6 +9,11 @@ colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 \
 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 \
 blue:((float)(rgbValue & 0xFF))/255.0 \
 alpha:1.0]
+#define UIColorFromRGB(rgbValue)                                       \
+  [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16)) / 255.0 \
+                  green:((float)((rgbValue & 0xFF00) >> 8)) / 255.0    \
+                  blue:((float)(rgbValue & 0xFF)) / 255.0              \
+                  alpha:1.0]
 
 #pragma mark - Conversion of JSON-like values sent via platform channels. Forward declarations.
 
@@ -23,7 +28,7 @@ static void interpretMapOptions(id json, id<FLTGoogleMapOptionsSink> sink);
 static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> sink,
                                    NSObject<FlutterPluginRegistrar>* registrar);
 static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink> sink,
-                                   NSObject<FlutterPluginRegistrar>* registrar);
+                                     NSObject<FlutterPluginRegistrar>* registrar);
 
 @implementation FLTGoogleMapFactory {
   NSObject<FlutterPluginRegistrar>* _registrar;
@@ -131,7 +136,7 @@ static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink
     result(polylineId);
   } else if ([call.method isEqualToString:@"polyline#update"]) {
     interpretPolylineOptions(call.arguments[@"options"],
-                           [self polylineWithId:call.arguments[@"polyline"]], _registrar);
+                             [self polylineWithId:call.arguments[@"polyline"]], _registrar);
     result(nil);
   } else if ([call.method isEqualToString:@"polyline#remove"]) {
     [self removePolylineWithId:call.arguments[@"polyline"]];
@@ -331,7 +336,7 @@ static CLLocationCoordinate2D toLocation(id json) {
 
 static GMSPath* toPath(id json) {
   NSArray* data = json;
-  GMSMutablePath *path = [GMSMutablePath path];
+  GMSMutablePath* path = [GMSMutablePath path];
   for (id object in data) {
     NSArray* d = object;
     [path addCoordinate:CLLocationCoordinate2DMake(toDouble(d[0]), toDouble(d[1]))];
@@ -517,7 +522,7 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
 }
 
 static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink> sink,
-                                   NSObject<FlutterPluginRegistrar>* registrar) {
+                                     NSObject<FlutterPluginRegistrar>* registrar) {
   NSDictionary* data = json;
 
   id points = data[@"points"];
@@ -538,7 +543,7 @@ static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink
   }
   id width = data[@"width"];
   if (width) {
-    [sink setWidth: (CGFloat) toFloat(width)];
+    [sink setWidth:(CGFloat)toFloat(width)];
   }
   id visible = data[@"visible"];
   if (visible) {

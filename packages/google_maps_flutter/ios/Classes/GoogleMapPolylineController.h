@@ -12,7 +12,7 @@
 - (void)setClickable:(BOOL)clickable;
 - (void)setColor:(UIColor*)color;
 - (void)setGeodesic:(BOOL)geodesic;
-- (void)setPattern:(NSArray<GMSStyleSpan *>*)pattern;
+- (void)setPattern:(NSArray<GMSStyleSpan*>*)pattern;
 - (void)setVisible:(BOOL)visible;
 - (void)setWidth:(CGFloat)width;
 - (void)setZIndex:(int)zIndex;

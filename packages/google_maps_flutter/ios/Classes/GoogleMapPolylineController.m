@@ -38,7 +38,7 @@ static uint64_t _nextPolylineId = 0;
 - (void)setGeodesic:(BOOL)geodesic {
   _polyline.geodesic = geodesic;
 }
-- (void)setPattern:(NSArray<GMSStyleSpan *>*)pattern {
+- (void)setPattern:(NSArray<GMSStyleSpan*>*)pattern {
   _polyline.spans = pattern;
 }
 - (void)setWidth:(CGFloat)width {
