@@ -64,7 +64,7 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
 
   int _getColor() {
     int color = 0;
-    var rnd = new Random();
+    final Random rnd = Random();
     switch (rnd.nextInt(7)) {
       case 0:
         color = Colors.blue.value;
@@ -92,7 +92,7 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
   }
 
   void _add() {
-    controller.addPolyline(PolylineOptions(points: [
+    final List<LatLng> points = <LatLng>[
       LatLng(
         center.latitude + sin(_polylineCount * pi / 6.0) / 20.0,
         center.longitude + cos(_polylineCount * pi / 6.0) / 20.0,
@@ -109,7 +109,9 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
         center.latitude + cos((_polylineCount + 3) * pi / 3.0) / 10.0,
         center.longitude + cos((_polylineCount + 2) * pi / 3.0) / 15.0,
       )
-    ], color: _getColor(), width: 10, visible: true));
+    ];
+    controller.addPolyline(PolylineOptions(
+        points: points, color: _getColor(), width: 10, visible: true));
     setState(() {
       _polylineCount += 1;
     });
@@ -204,13 +206,13 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
 
   Future<void> _changePattern() async {
     final List<Pattern> current = _selectedPolyline.options.pattern;
-    if (current.length != 0) {
+    if (current.isNotEmpty) {
       _updateSelectedPolyline(
-        PolylineOptions(pattern: []),
+        const PolylineOptions(pattern: <Pattern>[]),
       );
     } else {
       _updateSelectedPolyline(
-        PolylineOptions(pattern: [
+        const PolylineOptions(pattern: <Pattern>[
           Pattern(length: 20, patternItem: PatternItem.Dash),
           Pattern(length: 10, patternItem: PatternItem.Gap),
         ]),

@@ -40,14 +40,13 @@ class Pattern {
 
   final int length;
   final PatternItem patternItem;
- 
 
   dynamic _toJson() {
     final Map<String, dynamic> json = <String, dynamic>{};
-      json['length'] = length;
-      json['pattern'] = patternItem.toString();
+    json['length'] = length;
+    json['pattern'] = patternItem.toString();
     return json;
-   }
+  }
 }
 
 enum JointType { Bevel, Default, Route }
@@ -120,7 +119,7 @@ class PolylineOptions {
   /// * is visible; [visible] is true
   /// * is placed at the base of the drawing order; [zIndex] is 0.0
   static const PolylineOptions defaultOptions = PolylineOptions(
-    points: [
+    points: <LatLng>[
       LatLng(0.0, 0.0),
       LatLng(1.0, 1.0),
     ],
@@ -129,7 +128,7 @@ class PolylineOptions {
     endCap: Cap.ButtCap,
     geodesic: false,
     jointType: JointType.Default,
-    pattern: [],
+    pattern: <Pattern>[],
     startCap: Cap.ButtCap,
     visible: true,
     width: 10,
@@ -168,14 +167,14 @@ class PolylineOptions {
       }
     }
 
-    List<dynamic> pointsJson = List<dynamic>();
+    final List<dynamic> pointsJson = <dynamic>[];
     if (points != null) {
       for (int i = 0; i < points.length; i++) {
         pointsJson.add(points[i]._toJson());
       }
     }
 
-    List<dynamic> patternsJson = List<dynamic>();
+    final List<dynamic> patternsJson = <dynamic>[];
     if (pattern != null) {
       for (int i = 0; i < pattern.length; i++) {
         patternsJson.add(pattern[i]._toJson());

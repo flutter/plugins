@@ -6,12 +6,11 @@ found in the LICENSE file.
 
 package io.flutter.plugins.googlemaps;
 
+import com.google.android.gms.maps.model.Cap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PatternItem;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.android.gms.maps.model.Cap;
-
 import java.util.List;
 
 class PolylineBuilder implements PolylineOptionsSink {
@@ -43,6 +42,7 @@ class PolylineBuilder implements PolylineOptionsSink {
   public void setClickable(boolean clickable) {
     polylineOptions.clickable(clickable);
   }
+
   @Override
   public void setColor(int color) {
     polylineOptions.color(color);
@@ -86,5 +86,4 @@ class PolylineBuilder implements PolylineOptionsSink {
   public void setZIndex(float zIndex) {
     polylineOptions.zIndex(zIndex);
   }
-  
 }

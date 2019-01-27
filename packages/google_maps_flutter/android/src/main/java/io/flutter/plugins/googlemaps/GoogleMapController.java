@@ -289,7 +289,7 @@ final class GoogleMapController
           Convert.interpretPolylineOptions(call.argument("options"), polyline);
           result.success(null);
           break;
-        }  
+        }
       default:
         result.notImplemented();
     }
@@ -350,7 +350,6 @@ final class GoogleMapController
     final PolylineController polylineController = polylines.get(polyline.getId());
     polylineController.onTap();
   }
-
 
   @Override
   public void dispose() {

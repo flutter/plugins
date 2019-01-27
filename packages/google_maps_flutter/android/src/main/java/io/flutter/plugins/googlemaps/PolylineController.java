@@ -10,7 +10,6 @@ import com.google.android.gms.maps.model.Cap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PatternItem;
 import com.google.android.gms.maps.model.Polyline;
-
 import java.util.List;
 
 /** Controller of a single Polyline on the map. */
@@ -42,7 +41,6 @@ class PolylineController implements PolylineOptionsSink {
     polyline.setPoints(points);
   }
 
-
   @Override
   public void setConsumeTapEvents(boolean consumeTapEvents) {
     this.consumeTapEvents = consumeTapEvents;
@@ -52,6 +50,7 @@ class PolylineController implements PolylineOptionsSink {
   public void setClickable(boolean clickable) {
     polyline.setClickable(clickable);
   }
+
   @Override
   public void setColor(int color) {
     polyline.setColor(color);
@@ -73,7 +72,7 @@ class PolylineController implements PolylineOptionsSink {
   }
 
   @Override
-  public void setPattern(List<PatternItem> pattern){
+  public void setPattern(List<PatternItem> pattern) {
     polyline.setPattern(pattern);
   }
 
@@ -92,8 +91,7 @@ class PolylineController implements PolylineOptionsSink {
     polyline.setWidth(width);
   }
 
-  public void setZIndex(float zIndex){
+  public void setZIndex(float zIndex) {
     polyline.setZIndex(zIndex);
   }
-
 }
