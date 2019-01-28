@@ -321,8 +321,13 @@ static void interpretCircleOptions(id json, id<FLTGoogleMapCircleOptionsSink> si
 }
 
 - (void)mapView:(GMSMapView*)mapView didTapOverlay:(GMSOverlay*)overlay {
-  NSString* polylineId = overlay.userData[0];
-  [_channel invokeMethod:@"polyline#onTap" arguments:@{@"polyline" : polylineId}];
+  if([overlay isKindOfClass:[GMSPolyline class]]){
+    NSString* polylineId = overlay.userData[0];
+    [_channel invokeMethod:@"polyline#onTap" arguments:@{@"polyline" : polylineId}];
+  } else if([overlay isKindOfClass:[GMSCircle class]]){
+    NSString* circleId = overlay.userData[0];
+    [_channel invokeMethod:@"circle#onTap" arguments:@{@"circle" : circleId}];
+  }
 }
 
 - (void)mapView:(GMSMapView *)mapView didTapAtCoordinate:(CLLocationCoordinate2D)coordinate {
