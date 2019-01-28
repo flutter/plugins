@@ -9,6 +9,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
+typedef void VoidCallback();
+
 void main() {
   final _FakePlatformViewsController fakePlatformViewsController =
       _FakePlatformViewsController();
@@ -370,6 +372,22 @@ void main() {
 
     expect(platformWebView.javascriptChannelNames,
         unorderedEquals(<String>['Tts', 'Alarm']));
+  });
+
+  test('Only valid JavaScript channel names are allowed', () {
+    final JavascriptMessageHandler noOp = (String msg) {};
+    JavascriptChannel(name: 'Tts1', onMessageReceived: noOp);
+    JavascriptChannel(name: '_Alarm', onMessageReceived: noOp);
+
+    VoidCallback createChannel(String name) {
+      return () {
+        JavascriptChannel(name: name, onMessageReceived: noOp);
+      };
+    }
+
+    expect(createChannel('1Alarm'), throwsAssertionError);
+    expect(createChannel('foo.bar'), throwsAssertionError);
+    expect(createChannel(''), throwsAssertionError);
   });
 
   testWidgets('Unique JavaScript channel names are required',

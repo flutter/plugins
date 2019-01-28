@@ -22,6 +22,8 @@ enum JavascriptMode {
 /// Callback type for handling messages sent from Javascript running in a web view.
 typedef void JavascriptMessageHandler(String message);
 
+final RegExp _validChannelNames = RegExp('^[a-zA-Z_][a-zA-Z0-9]*\$');
+
 /// A named channel for receiving messaged from JavaScript code running inside a web view.
 class JavascriptChannel {
   /// Constructs a Javascript channel.
@@ -30,13 +32,17 @@ class JavascriptChannel {
   JavascriptChannel({
     @required this.name,
     @required this.onMessageReceived,
-  });
+  })  : assert(name != null),
+        assert(onMessageReceived != null),
+        assert(_validChannelNames.hasMatch(name));
 
   /// The channel's name.
   ///
-  ///
   /// Passing this channel object as part of a [WebView.javascriptChannels] adds a channel object to
   /// the Javascript window object's property named `name`.
+  ///
+  /// The name must start with a letter or underscore(_), followed by any combination of those
+  /// characters plus digits.
   ///
   /// See also [WebView.javascriptChannels] for more details on the channel registration mechanism.
   final String name;
