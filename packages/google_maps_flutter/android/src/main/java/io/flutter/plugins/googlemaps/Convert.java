@@ -326,6 +326,48 @@ class Convert {
     }
   }
 
+  static void interpretCircleOptions(Object o, CircleOptionsSink sink) {
+    final Map<?, ?> data = toMap(o);
+    final Object consumeTapEvents = data.get("consumeTapEvents");
+    if (consumeTapEvents != null) {
+      sink.setConsumeTapEvents(toBoolean(consumeTapEvents));
+    }
+    final Object fillColor = data.get("fillColor");
+    if (fillColor != null) {
+      sink.setFillColor(toInt(fillColor));
+    }
+    final Object center = data.get("center");
+    if (center != null) {
+      sink.setCenter(toLatLng(center));
+    }
+    final Object radius = data.get("radius");
+    if (radius != null) {
+      sink.setRadius(toInt(radius));
+    }
+    final Object strokeColor = data.get("strokeColor");
+    if (strokeColor != null) {
+      sink.setStrokeColor(toInt(strokeColor));
+    }
+    final Object visible = data.get("visible");
+    if (visible != null) {
+      sink.setVisible(toBoolean(visible));
+    }
+    final Object width = data.get("strokeWidth");
+    if (width != null) {
+      sink.setStrokeWidth(toInt(width));
+    }
+    final Object zIndex = data.get("zIndex");
+    if (zIndex != null) {
+      sink.setZIndex(toFloat(zIndex));
+    }
+    final Object pattern = data.get("pattern");
+    if (pattern != null) {
+      sink.setPattern(_toPattern(pattern));
+    } else if (data.containsKey("pattern")) {
+      sink.setPattern(null);
+    }
+  }
+
   private static List<LatLng> _toPoints(Object o) {
     final List<?> data = toList(o);
     final List<LatLng> points = new ArrayList<>(data.size());

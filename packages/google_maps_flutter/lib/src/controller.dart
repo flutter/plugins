@@ -47,6 +47,9 @@ class GoogleMapController extends ChangeNotifier {
   final ArgumentCallbacks<Polyline> onPolylineTapped =
       ArgumentCallbacks<Polyline>();
 
+  /// Callbacks to receive tap events for circles placed on this map.
+  final ArgumentCallbacks<Circle> onCircleTapped = ArgumentCallbacks<Circle>();
+
   /// Callbacks to receive tap events for info windows on markers
   final ArgumentCallbacks<Marker> onInfoWindowTapped =
       ArgumentCallbacks<Marker>();
@@ -59,6 +62,9 @@ class GoogleMapController extends ChangeNotifier {
 
   Set<Polyline> get polylines => Set<Polyline>.from(_polylines.values);
   final Map<String, Polyline> _polylines = <String, Polyline>{};
+
+  Set<Circle> get circles => Set<Circle>.from(_circles.values);
+  final Map<String, Circle> _circles = <String, Circle>{};
 
   /// True if the map camera is currently moving.
   bool get isCameraMoving => _isCameraMoving;
@@ -102,6 +108,13 @@ class GoogleMapController extends ChangeNotifier {
         final Polyline polyline = _polylines[polylineId];
         if (polyline != null) {
           onPolylineTapped(polyline);
+        }
+        break;
+      case 'circle#onTap':
+        final String circleId = call.arguments['circle'];
+        final Circle circle = _circles[circleId];
+        if (circle != null) {
+          onCircleTapped(circle);
         }
         break;
       case 'camera#onMoveStarted':
@@ -263,6 +276,41 @@ class GoogleMapController extends ChangeNotifier {
     return polyline;
   }
 
+  /// Adds a circle to the map, configured using the specified custom [options].
+  ///
+  /// Change listeners are notified once the circle has been added on the
+  /// platform side.
+  ///
+  /// The returned [Future] completes with the added circle once listeners have
+  /// been notified.
+  Future<Circle> addCircle(CircleOptions options) async {
+    final CircleOptions effectiveOptions =
+        CircleOptions.defaultOptions.copyWith(options);
+    print(effectiveOptions._toJson());
+    final String circleId = await _channel.invokeMethod(
+      'circle#add',
+      <String, dynamic>{
+        'options': effectiveOptions._toJson(),
+      },
+    );
+    final Circle circle = Circle(circleId, effectiveOptions);
+    _circles[circleId] = circle;
+    notifyListeners();
+    return circle;
+  }
+
+  Future<void> updateCircle(Circle circle, CircleOptions changes) async {
+    assert(circle != null);
+    assert(_circles[circle._id] == circle);
+    assert(changes != null);
+    await _channel.invokeMethod('circle#update', <String, dynamic>{
+      'circle': circle._id,
+      'options': changes._toJson(),
+    });
+    circle._options = circle._options.copyWith(changes);
+    notifyListeners();
+  }
+
   /// Updates the specified [polyline] with the given [changes]. The polyline must
   /// be a current member of the [polylines] set.
   ///
@@ -297,6 +345,13 @@ class GoogleMapController extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> removeCircle(Circle circle) async {
+    assert(circle != null);
+    assert(_circles[circle._id] == circle);
+    await _removeCircle(circle._id);
+    notifyListeners();
+  }
+
   /// Removes all [polylines] from the map.
   ///
   /// Change listeners are notified once all polylines have been removed on the
@@ -320,6 +375,13 @@ class GoogleMapController extends ChangeNotifier {
   Future<void> _removePolyline(String id) async {
     await _channel.invokeMethod('polyline#remove', <String, dynamic>{
       'polyline': id,
+    });
+    _polylines.remove(id);
+  }
+
+  Future<void> _removeCircle(String id) async {
+    await _channel.invokeMethod('circle#remove', <String, dynamic>{
+      'circle': id,
     });
     _polylines.remove(id);
   }

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter_example/place_circle.dart';
 import 'animate_camera.dart';
 import 'map_ui.dart';
 import 'move_camera.dart';
@@ -17,6 +18,7 @@ final List<Page> _allPages = <Page>[
   MoveCameraPage(),
   PlaceMarkerPage(),
   ScrollingMapPage(),
+  PlaceCirclePage(),
   PlacePolylinePage(),
 ];
 

@@ -23,4 +23,5 @@ part 'src/marker.dart';
 part 'src/location.dart';
 part 'src/pattern_item.dart';
 part 'src/polyline.dart';
+part 'src/circle.dart';
 part 'src/ui.dart';
