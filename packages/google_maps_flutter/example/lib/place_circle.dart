@@ -74,15 +74,12 @@ class PlaceCircleBodyState extends State<PlaceCircleBody> {
   }
 
   void _onCircleTapped(Circle circle) {
-    print(circle.id);
-    print("circle tapped callback aayo");
     setState(() {
       _selectedCircle = circle;
     });
   }
 
   void _updateSelectedCircle(CircleOptions changes) {
-    print(_selectedCircle.id);
     controller.updateCircle(_selectedCircle, changes);
   }
 

@@ -65,10 +65,7 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
     );
   }
 
-  void _onMarkerDragged(Marker marker) {
-    print("dragged you little twak");
-    print(marker.options.position);
-  }
+  void _onMarkerDragged(Marker marker) {}
 
   void _updateSelectedMarker(MarkerOptions changes) {
     controller.updateMarker(_selectedMarker, changes);
