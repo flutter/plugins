@@ -110,8 +110,7 @@ public class AlarmService extends JobIntentService {
   }
 
   public static void setCallbackDispatcher(Context context, long callbackHandle) {
-    SharedPreferences p =
-        context.getSharedPreferences(SHARED_PREFERENCES_KEY, 0);
+    SharedPreferences p = context.getSharedPreferences(SHARED_PREFERENCES_KEY, 0);
     p.edit().putLong(CALLBACK_HANDLE_KEY, callbackHandle).apply();
   }
 
