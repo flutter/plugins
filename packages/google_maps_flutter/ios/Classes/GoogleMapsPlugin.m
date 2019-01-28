@@ -6,6 +6,7 @@
 #import "GoogleMapController.h"
 #import "GoogleMapMarkerController.h"
 #import "GoogleMapPolylineController.h"
+#import "GoogleMapCircleController.h"
 
 #pragma mark - GoogleMaps plugin implementation
 
