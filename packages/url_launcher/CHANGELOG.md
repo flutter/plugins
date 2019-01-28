@@ -1,6 +1,6 @@
 ## 4.2.0+2
 
-* Updated `launch` to use async and await, fixed the incorrect return value by `luanch` method.
+* Updated `launch` to use async and await, fixed the incorrect return value by `launch` method.
 
 ## 4.2.0+1
 
