@@ -293,7 +293,6 @@ class GoogleMapController extends ChangeNotifier {
   Future<Circle> addCircle(CircleOptions options) async {
     final CircleOptions effectiveOptions =
         CircleOptions.defaultOptions.copyWith(options);
-    print(effectiveOptions._toJson());
     final String circleId = await _channel.invokeMethod(
       'circle#add',
       <String, dynamic>{
