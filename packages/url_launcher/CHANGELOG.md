@@ -1,3 +1,7 @@
+## 4.2.0+2
+
+* Updated `launch` to use async and await, fixed the incorrect return value by `launch` method.
+
 ## 4.2.0+1
 
 * Refactored the Java and Objective-C code. Replaced instance variables with properties in Objective-C.

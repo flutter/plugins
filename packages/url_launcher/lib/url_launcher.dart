@@ -59,7 +59,7 @@ Future<bool> launch(
   bool enableJavaScript,
   bool universalLinksOnly,
   Brightness statusBarBrightness,
-}) {
+}) async {
   assert(urlString != null);
   final Uri url = Uri.parse(urlString.trimLeft());
   final bool isWebURL = url.scheme == 'http' || url.scheme == 'https';
@@ -82,7 +82,7 @@ Future<bool> launch(
   // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
   // https://github.com/flutter/flutter/issues/26431
   // ignore: strong_mode_implicit_dynamic_method
-  return _channel.invokeMethod(
+  final bool result = await _channel.invokeMethod(
     'launch',
     <String, Object>{
       'url': urlString,
@@ -91,12 +91,12 @@ Future<bool> launch(
       'enableJavaScript': enableJavaScript ?? false,
       'universalLinksOnly': universalLinksOnly ?? false,
     },
-  ).then((void _) {
-    if (statusBarBrightness != null) {
-      WidgetsBinding.instance.renderView.automaticSystemUiAdjustment =
-          previousAutomaticSystemUiAdjustment;
-    }
-  });
+  );
+  if (statusBarBrightness != null) {
+    WidgetsBinding.instance.renderView.automaticSystemUiAdjustment =
+        previousAutomaticSystemUiAdjustment;
+  }
+  return result;
 }
 
 /// Checks whether the specified URL can be handled by some app installed on the
