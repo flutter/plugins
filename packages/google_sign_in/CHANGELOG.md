@@ -1,4 +1,16 @@
+## 3.3.0+1
+
+* **Revert the breaking 3.3.0 update**. 3.3.0 was known to be breaking and
+  should have incremented the major version number instead of the minor. This
+  revert is in and of itself breaking for anyone that has already migrated
+  however. Anyone who has already migrated their app to AndroidX should
+  immediately update to `4.0.0` instead. That's the correctly versioned new push
+  of `3.3.0`.
+
 ## 3.3.0
+
+* **BAD**. This was a breaking change that was incorrectly published on a minor
+  version upgrade, should never have happened. Reverted by 3.3.0+1.
 
 * **Breaking change**. Migrate from the deprecated original Android Support
   Library to AndroidX. This shouldn't result in any functional changes, but it
