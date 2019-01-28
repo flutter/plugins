@@ -19,8 +19,19 @@ enum JavascriptMode {
   unrestricted,
 }
 
+/// A message that was sent by JavaScript code running in a [WebView].
+class JavascriptMessage {
+  /// Constructs a JavaScript message object.
+  ///
+  /// The `message` parameter must not be null.
+  const JavascriptMessage(this.message) : assert(message != null);
+
+  /// The contents of the message that was sent by the JavaScript code.
+  final String message;
+}
+
 /// Callback type for handling messages sent from Javascript running in a web view.
-typedef void JavascriptMessageHandler(String message);
+typedef void JavascriptMessageHandler(JavascriptMessage message);
 
 final RegExp _validChannelNames = RegExp('^[a-zA-Z_][a-zA-Z0-9]*\$');
 
@@ -43,6 +54,8 @@ class JavascriptChannel {
   ///
   /// The name must start with a letter or underscore(_), followed by any combination of those
   /// characters plus digits.
+  ///
+  /// Note that any JavaScript existing `window` property with this name will be overriden.
   ///
   /// See also [WebView.javascriptChannels] for more details on the channel registration mechanism.
   final String name;
@@ -292,7 +305,7 @@ class WebViewController {
       case 'javascriptChannelMessage':
         final String channel = call.arguments['channel'];
         final String message = call.arguments['message'];
-        _javascriptChannels[channel].onMessageReceived(message);
+        _javascriptChannels[channel].onMessageReceived(JavascriptMessage(message));
         break;
     }
   }

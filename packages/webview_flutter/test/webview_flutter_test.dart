@@ -361,8 +361,8 @@ void main() {
       WebView(
         initialUrl: 'https://youtube.com',
         javascriptChannels: <JavascriptChannel>[
-          JavascriptChannel(name: 'Tts', onMessageReceived: (String msg) {}),
-          JavascriptChannel(name: 'Alarm', onMessageReceived: (String msg) {}),
+          JavascriptChannel(name: 'Tts', onMessageReceived: (JavascriptMessage msg) {}),
+          JavascriptChannel(name: 'Alarm', onMessageReceived: (JavascriptMessage msg) {}),
         ].toSet(),
       ),
     );
@@ -375,7 +375,7 @@ void main() {
   });
 
   test('Only valid JavaScript channel names are allowed', () {
-    final JavascriptMessageHandler noOp = (String msg) {};
+    final JavascriptMessageHandler noOp = (JavascriptMessage msg) {};
     JavascriptChannel(name: 'Tts1', onMessageReceived: noOp);
     JavascriptChannel(name: '_Alarm', onMessageReceived: noOp);
 
@@ -396,8 +396,8 @@ void main() {
       WebView(
         initialUrl: 'https://youtube.com',
         javascriptChannels: <JavascriptChannel>[
-          JavascriptChannel(name: 'Alarm', onMessageReceived: (String msg) {}),
-          JavascriptChannel(name: 'Alarm', onMessageReceived: (String msg) {}),
+          JavascriptChannel(name: 'Alarm', onMessageReceived: (JavascriptMessage msg) {}),
+          JavascriptChannel(name: 'Alarm', onMessageReceived: (JavascriptMessage msg) {}),
         ].toSet(),
       ),
     );
@@ -409,8 +409,8 @@ void main() {
       WebView(
         initialUrl: 'https://youtube.com',
         javascriptChannels: <JavascriptChannel>[
-          JavascriptChannel(name: 'Tts', onMessageReceived: (String msg) {}),
-          JavascriptChannel(name: 'Alarm', onMessageReceived: (String msg) {}),
+          JavascriptChannel(name: 'Tts', onMessageReceived: (JavascriptMessage msg) {}),
+          JavascriptChannel(name: 'Alarm', onMessageReceived: (JavascriptMessage msg) {}),
         ].toSet(),
       ),
     );
@@ -419,9 +419,9 @@ void main() {
       WebView(
         initialUrl: 'https://youtube.com',
         javascriptChannels: <JavascriptChannel>[
-          JavascriptChannel(name: 'Tts', onMessageReceived: (String msg) {}),
-          JavascriptChannel(name: 'Alarm2', onMessageReceived: (String msg) {}),
-          JavascriptChannel(name: 'Alarm3', onMessageReceived: (String msg) {}),
+          JavascriptChannel(name: 'Tts', onMessageReceived: (JavascriptMessage msg) {}),
+          JavascriptChannel(name: 'Alarm2', onMessageReceived: (JavascriptMessage msg) {}),
+          JavascriptChannel(name: 'Alarm3', onMessageReceived: (JavascriptMessage msg) {}),
         ].toSet(),
       ),
     );
@@ -442,13 +442,13 @@ void main() {
         javascriptChannels: <JavascriptChannel>[
           JavascriptChannel(
               name: 'Tts',
-              onMessageReceived: (String msg) {
-                ttsMessagesReceived.add(msg);
+              onMessageReceived: (JavascriptMessage msg) {
+                ttsMessagesReceived.add(msg.message);
               }),
           JavascriptChannel(
               name: 'Alarm',
-              onMessageReceived: (String msg) {
-                alarmMessagesReceived.add(msg);
+              onMessageReceived: (JavascriptMessage msg) {
+                alarmMessagesReceived.add(msg.message);
               }),
         ].toSet(),
       ),
