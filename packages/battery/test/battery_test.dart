@@ -22,6 +22,9 @@ void main() {
   });
 
   test('batteryLevel', () async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     when(methodChannel.invokeMethod('getBatteryLevel'))
         .thenAnswer((Invocation invoke) => Future<int>.value(42));
     expect(await battery.batteryLevel, 42);

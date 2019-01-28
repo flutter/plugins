@@ -194,6 +194,9 @@ class WebViewController {
   Future<void> loadUrl(String url) async {
     assert(url != null);
     _validateUrlString(url);
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     return _channel.invokeMethod('loadUrl', url);
   }
 
@@ -205,6 +208,9 @@ class WebViewController {
   /// words, by the time this future completes, the WebView may be displaying a
   /// different URL).
   Future<String> currentUrl() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     final String url = await _channel.invokeMethod('currentUrl');
     return url;
   }
@@ -214,6 +220,9 @@ class WebViewController {
   /// Note that this operation is asynchronous, and it is possible that the "canGoBack" state has
   /// changed by the time the future completed.
   Future<bool> canGoBack() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     final bool canGoBack = await _channel.invokeMethod("canGoBack");
     return canGoBack;
   }
@@ -223,6 +232,9 @@ class WebViewController {
   /// Note that this operation is asynchronous, and it is possible that the "canGoForward" state has
   /// changed by the time the future completed.
   Future<bool> canGoForward() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     final bool canGoForward = await _channel.invokeMethod("canGoForward");
     return canGoForward;
   }
@@ -231,6 +243,9 @@ class WebViewController {
   ///
   /// If there is no back history item this is a no-op.
   Future<void> goBack() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     return _channel.invokeMethod("goBack");
   }
 
@@ -238,11 +253,17 @@ class WebViewController {
   ///
   /// If there is no forward history item this is a no-op.
   Future<void> goForward() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     return _channel.invokeMethod("goForward");
   }
 
   /// Reloads the current URL.
   Future<void> reload() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     return _channel.invokeMethod("reload");
   }
 
@@ -252,6 +273,9 @@ class WebViewController {
       return null;
     }
     _settings = setting;
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     return _channel.invokeMethod('updateSettings', updateMap);
   }
 
@@ -275,6 +299,9 @@ class WebViewController {
     if (javascriptString == null) {
       throw ArgumentError('The argument javascriptString must not be null. ');
     }
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     final String result =
         await _channel.invokeMethod('evaluateJavascript', javascriptString);
     return result;
