@@ -37,6 +37,9 @@ class GoogleMapController extends ChangeNotifier {
 
   final MethodChannel _channel;
 
+  /// Callbacks to receive tap events placed on this map.
+  final ArgumentCallbacks<LatLng> onMapTapped = ArgumentCallbacks<LatLng>();
+
   /// Callbacks to receive tap events for markers placed on this map.
   final ArgumentCallbacks<Marker> onMarkerTapped = ArgumentCallbacks<Marker>();
 
@@ -92,6 +95,10 @@ class GoogleMapController extends ChangeNotifier {
         if (marker != null) {
           onMarkerTapped(marker);
         }
+        break;
+      case 'map#onTap':
+        final LatLng position = LatLng._fromJson(call.arguments['position']);
+        onMapTapped(position);
         break;
       case 'marker#onDrag':
         final String markerId = call.arguments['marker'];

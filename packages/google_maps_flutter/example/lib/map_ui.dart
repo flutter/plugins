@@ -38,6 +38,7 @@ class MapUiBodyState extends State<MapUiBody> {
 
   GoogleMapController mapController;
   CameraPosition _position = _kInitialPosition;
+  LatLng _tappedLocation;
   bool _isMoving = false;
   bool _compassEnabled = true;
   CameraTargetBounds _cameraTargetBounds = CameraTargetBounds.unbounded;
@@ -61,8 +62,15 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   void _extractMapInfo() {
+    mapController.onMapTapped.add(_onMapTapped);
     _position = mapController.cameraPosition;
     _isMoving = mapController.isCameraMoving;
+  }
+
+  void _onMapTapped(LatLng position) {
+    setState(() {
+      _tappedLocation = position;
+    });
   }
 
   @override
@@ -217,6 +225,9 @@ class MapUiBodyState extends State<MapUiBody> {
         Expanded(
           child: ListView(
             children: <Widget>[
+              Text(_tappedLocation != null
+                  ? 'map tapped at:  ${_tappedLocation.longitude.toStringAsFixed(4)},${_tappedLocation.latitude.toStringAsFixed(4)}'
+                  : "tap on map"),
               Text('camera bearing: ${_position.bearing}'),
               Text(
                   'camera target: ${_position.target.latitude.toStringAsFixed(4)},'

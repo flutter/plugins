@@ -21,6 +21,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -48,7 +49,8 @@ import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.STOPPED;
  * Controller of a single GoogleMaps MapView instance.
  */
 final class GoogleMapController
-        implements Application.ActivityLifecycleCallbacks,
+    implements Application.ActivityLifecycleCallbacks,
+        GoogleMap.OnMapClickListener,
         GoogleMap.OnCameraIdleListener,
         GoogleMap.OnCameraMoveListener,
         GoogleMap.OnCameraMoveStartedListener,
@@ -426,12 +428,112 @@ final class GoogleMapController
             return;
         }
         mapView.onResume();
+        break;
+      case STARTED:
+        mapView.onCreate(null);
+        mapView.onStart();
+        break;
+      case CREATED:
+        mapView.onCreate(null);
+        break;
+      case DESTROYED:
+        // Nothing to do, the activity has been completely destroyed.
+        break;
+      default:
+        throw new IllegalArgumentException(
+            "Cannot interpret " + activityState.get() + " as an activity state");
     }
+    registrar.activity().getApplication().registerActivityLifecycleCallbacks(this);
+    mapView.getMapAsync(this);
+  }
 
-    @Override
-    public void onActivityPaused(Activity activity) {
-        if (disposed || activity.hashCode() != registrarActivityHashCode) {
-            return;
+  private void moveCamera(CameraUpdate cameraUpdate) {
+    googleMap.moveCamera(cameraUpdate);
+  }
+
+  private void animateCamera(CameraUpdate cameraUpdate) {
+    googleMap.animateCamera(cameraUpdate);
+  }
+
+  private CameraPosition getCameraPosition() {
+    return trackCameraPosition ? googleMap.getCameraPosition() : null;
+  }
+
+  private MarkerBuilder newMarkerBuilder() {
+    return new MarkerBuilder(this);
+  }
+
+  private PolylineBuilder newPolylineBuilder() {
+    return new PolylineBuilder(this);
+  }
+
+  Marker addMarker(MarkerOptions markerOptions, boolean consumesTapEvents) {
+    final Marker marker = googleMap.addMarker(markerOptions);
+    markers.put(marker.getId(), new MarkerController(marker, consumesTapEvents, this));
+    return marker;
+  }
+
+  private void removeMarker(String markerId) {
+    final MarkerController markerController = markers.remove(markerId);
+    if (markerController != null) {
+      markerController.remove();
+    }
+  }
+
+  private MarkerController marker(String markerId) {
+    final MarkerController marker = markers.get(markerId);
+    if (marker == null) {
+      throw new IllegalArgumentException("Unknown marker: " + markerId);
+    }
+    return marker;
+  }
+
+  Polyline addPolyline(PolylineOptions polylineOptions) {
+    final Polyline polyline = googleMap.addPolyline(polylineOptions);
+    polylines.put(polyline.getId(), new PolylineController(polyline, this));
+    return polyline;
+  }
+
+  private void removePolyline(String polylineId) {
+    final PolylineController polylineController = polylines.remove(polylineId);
+    if (polylineController != null) {
+      polylineController.remove();
+    }
+  }
+
+  private PolylineController polyline(String polylineId) {
+    final PolylineController polyline = polylines.get(polylineId);
+    if (polyline == null) {
+      throw new IllegalArgumentException("Unknown polyline: " + polylineId);
+    }
+    return polyline;
+  }
+
+  @Override
+  public void onMapReady(GoogleMap googleMap) {
+    this.googleMap = googleMap;
+    googleMap.setOnInfoWindowClickListener(this);
+    if (mapReadyResult != null) {
+      mapReadyResult.success(null);
+      mapReadyResult = null;
+    }
+    googleMap.setOnMapClickListener(this);
+    googleMap.setOnCameraMoveStartedListener(this);
+    googleMap.setOnCameraMoveListener(this);
+    googleMap.setOnCameraIdleListener(this);
+    googleMap.setOnMarkerClickListener(this);
+    googleMap.setOnMarkerDragListener(this);
+    googleMap.setOnPolylineClickListener(this);
+    updateMyLocationEnabled();
+  }
+
+  @Override
+  public void onMethodCall(MethodCall call, MethodChannel.Result result) {
+    switch (call.method) {
+      case "map#waitForMap":
+        if (googleMap != null) {
+          result.success(null);
+          return;
         }
         mapView.onPause();
     }
