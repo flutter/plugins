@@ -1,4 +1,17 @@
+## 2.2.0+1
+
+* **Revert the breaking 2.2.0 update**. 2.2.0 was known to be breaking and
+  should have incremented the major version number instead of the minor. This
+  revert is in and of itself breaking for anyone that has already migrated
+  however. Anyone who has already migrated their app to AndroidX should
+  immediately update to `3.0.0` instead. That's the correctly versioned new push
+  of `2.2.0`.
+
 ## 2.2.0
+
+* **BAD**. This was a breaking change that was incorrectly published on a minor
+  version upgrade, should never have happened. Reverted by `2.2.0+1`.
+
 * **Breaking change**. Migrate from the deprecated original Android Support
   Library to AndroidX. This shouldn't result in any functional changes, but it
   requires any Android apps using this plugin to [also
@@ -39,7 +52,7 @@
 
 ## 1.0.2
 
-* Updated Gradle tooling to match Android Studio 3.1.2.
+* Updated Gradle tooling to match Android Studio 3.2.2.
 
 ## 1.0.1
 
@@ -81,7 +94,7 @@
 
 * Enabled use in Swift projects.
 
-## 0.1.2
+## 0.2.2
 
 * Fix for APNS not being correctly registered on iOS when reinstalling application.
 
@@ -149,7 +162,7 @@ In FirebaseMessagingPlugin.m:
 
 * Updated to latest plugin API
 
-## 0.0.1+2
+## 0.0.2.2
 
 * Downgraded gradle dependency for example app to make `flutter run` happy
 

@@ -1,3 +1,12 @@
+## 4.2.0+3
+
+* **Revert the breaking 4.2.0 update**. 4.2.0 was known to be breaking and
+  should have incremented the major version number instead of the minor. This
+  revert is in and of itself breaking for anyone that has already migrated
+  however. Anyone who has already migrated their app to AndroidX should
+  immediately update to `5.0.0` instead. That's the correctly versioned new push
+  of `4.2.0`.
+
 ## 4.2.0+2
 
 * Updated `launch` to use async and await, fixed the incorrect return value by `launch` method.
@@ -7,6 +16,9 @@
 * Refactored the Java and Objective-C code. Replaced instance variables with properties in Objective-C.
 
 ## 4.2.0
+
+* **BAD**. This was a breaking change that was incorrectly published on a minor
+  version upgrade, should never have happened. Reverted by 4.2.0+3.
 
 * **Breaking change**. Migrate from the deprecated original Android Support
   Library to AndroidX. This shouldn't result in any functional changes, but it
