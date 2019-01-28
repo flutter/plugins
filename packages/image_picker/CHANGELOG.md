@@ -1,6 +1,6 @@
 ## 0.5.0+1
 
- * Fixed a crash on Android where Image Picker is registered without an activity.
+ * Fixed am Android crash when Image Picker is registered without an activity.
 
 ## 0.5.0
 
