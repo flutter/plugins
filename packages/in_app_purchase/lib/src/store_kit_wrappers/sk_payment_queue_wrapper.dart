@@ -3,12 +3,193 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-
-import '../channel.dart';
+import 'package:flutter/foundation.dart';
+import 'package:in_app_purchase/src/channel.dart';
 
 /// A wrapper around [`SKPaymentQueue`](https://developer.apple.com/documentation/storekit/skpaymentqueue?language=objc).
 class SKPaymentQueueWrapper {
   /// Calls [`-[SKPaymentQueue canMakePayments:]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/1506139-canmakepayments?language=objc).
   static Future<bool> canMakePayments() async =>
       await channel.invokeMethod('-[SKPaymentQueue canMakePayments:]');
+}
+
+
+/// Dart wrapper around StoreKit's
+/// [SKPaymentTransactionState](https://developer.apple.com/documentation/storekit/skpaymenttransactionstate?language=objc).
+enum SKPaymentTransactionStateWrapper {
+  /// Indicates the transaction in being processed in App Store.
+  purchasing,
+
+  /// The payment is processed, you should provide user the content they purchased.
+  purchased,
+
+  /// The transaction failed, check the [SKPaymentTransactionWrapper.error] property from [SKPaymentTransactionWrapper] for details.
+  failed,
+
+  /// This transaction restores the content previously purchased by the user, the previous transaction information can be
+  /// obtained in [SKPaymentTransactionWrapper.originalTransaction] fromm [SKPaymentTransactionWrapper].
+  restored,
+
+  /// The transaction is in the queue but pending external action. Wait for another callback to get the final state.
+  deferred,
+}
+
+/// Dart wrapper around StoreKit's [SKPaymentTransaction](https://developer.apple.com/documentation/storekit/skpaymenttransaction?language=objc).
+class SKPaymentTransactionWrapper {
+  SKPaymentTransactionWrapper({
+    @required this.error,
+    @required this.payment,
+    @required this.transactionState,
+    @required this.originalTransaction,
+    @required this.transactionDate,
+    @required this.transactionIdentifier,
+    @required this.downloads,
+  });
+
+  /// The error object, only available if the [transactionState] is [SKPaymentTransactionStateWrapper.failed].
+  final Error error;
+
+  /// Current transaction state.
+  final SKPaymentTransactionStateWrapper transactionState;
+
+  /// The payment that is created and added to the payment queue which generated this transaction.
+  final SKPaymentWrapper payment;
+
+  /// The original Transaction, only available if the [transactionState] is [SKPaymentTransactionStateWrapper.restored].
+  ///
+  /// When the [transactionState] is [SKPaymentTransactionStateWrapper.restored], the current transaction object holds a new
+  /// [transactionIdentifier].
+  final SKPaymentTransactionWrapper originalTransaction;
+
+  /// The timestamp of the transaction in UTC.
+  ///
+  /// It is only defined when the [transactionState] is [SKPaymentTransactionStateWrapper.purchased] or [SKPaymentTransactionStateWrapper.restored].
+  final DateTime transactionDate;
+
+  /// The unique string identifer of the transaction.
+  ///
+  /// It is only defined when the [transactionState] is [SKPaymentTransactionStateWrapper.purchased] or [SKPaymentTransactionStateWrapper.restored].
+  /// You may wish to record this string as part of an audit trail for App Store purchases.
+  /// The value of this string corresponds to the same property in the receipt.
+  final String transactionIdentifier;
+
+  /// An array of the [SKDownloadWrapper] object of this transaction.
+  ///
+  /// Only available if the transaction contains downloadable contents.
+  ///
+  /// It is only defined when the [transactionState] is [SKPaymentTransactionStateWrapper.purchased].
+  /// Must be used to download the transaction's content before the transaction is finished.
+  final List<SKDownloadWrapper> downloads;
+}
+
+/// Dart wrapper around StoreKit's [SKDownloadState](https://developer.apple.com/documentation/storekit/skdownloadstate?language=objc).
+enum SKDownloadState {
+  /// Indicates that downloadable content is waiting to start.
+  waiting,
+
+  /// The downloadable content is currently being downloaded
+  active,
+
+  /// The app paused the download.
+  pause,
+
+  /// The content is succesfully downloaded.
+  finished,
+
+  /// Indicates that some error occured while the content was being downloaded.
+  failed,
+
+  /// The app canceled the download.
+  cancelled,
+}
+
+/// Dart wrapper around StoreKit's [SKDownload](https://developer.apple.com/documentation/storekit/skdownload?language=objc).
+///
+/// When a product is created in the App Store Connect, one or more download contents can be associate with it.
+/// When the product is purchased, a List of download object will present in a [SKPaymentTransactionWrapper] object.
+/// Then download objects can be added to the payment queue.
+/// Read the [contentURL] to get the URL of the downloaded content after download complete.A
+/// All downloaded files must be processed before the completion of the transaction.
+/// After transaction is complete, any download object in the transaction will not be able to add to the payment queue
+/// and the contentURL of the download object will be invalid.
+class SKDownloadWrapper {
+  SKDownloadWrapper({
+    @required this.contentIdentifier,
+    @required this.state,
+    @required this.contentLength,
+    @required this.contentURL,
+    @required this.contentVersion,
+    @required this.transactionID,
+    @required this.progress,
+    @required this.timeRemaining,
+    @required this.downloadTimeUnknown,
+  });
+
+  /// Identifies the downloadable content.
+  ///
+  /// It is specified in the App Store Connect when the downloadable content is created.
+  final String contentIdentifier;
+
+  /// The current download state.
+  ///
+  /// When the state changes, one of the [SKTransactionObserverWrapper] subclass's observing methods should be triggered.
+  /// The developer should properly handle the downloadble content based on the state.
+  final SKDownloadState state;
+
+  /// Length of the content in bytes.
+  final int contentLength;
+
+  /// The URL string of the content.
+  final String contentURL;
+
+  /// Version of the content formatted as a series of dot separated integers.
+  final String contentVersion;
+
+  /// The transaction ID of the transaction that is associated with the downloadable content.
+  final String transactionID;
+
+  /// The download progress, between 0.0 to 1.0.
+  final double progress;
+
+  /// The estimated time remaining for the download; if no good estimate is able to be make,
+  /// [downloadTimeUnknown] will be set to true.
+  final double timeRemaining;
+
+  /// true if [timeRemaining] cannot be estimated.
+  final bool downloadTimeUnknown;
+}
+
+/// Dart wrapper around StoreKit's [SKPayment](https://developer.apple.com/documentation/storekit/skpayment?language=objc).
+///
+/// Used as the paramter to initiate a payment.
+/// In general, a developer should not need to create the payment object explicitly; instead, use
+/// [SKPaymentQueueWrapper.addPayment] directly with a product identifier to initiate a payment.
+class SKPaymentWrapper {
+  SKPaymentWrapper(
+      {@required this.productIdentifier,
+      @required this.applicationUsername,
+      this.requestData,
+      this.quantity = 1,
+      this.simulatesAskToBuyInSandbox = false});
+
+  /// The id for the product that the payment is for.
+  final String productIdentifier;
+
+  /// An opaque id for the user's account.
+  ///
+  /// Used to help the store detect irregular activity. See https://developer.apple.com/documentation/storekit/skpayment/1506116-applicationusername?language=objc for more details.
+  final String applicationUsername;
+
+  /// Reserved for future use from ios platform in UTF8Encoding. Default is null.
+  ///
+  /// If the value is null, the payment is rejected.
+  final String requestData;
+
+  /// The amount of the product this payment is for. Default is 1. Minimum is 1. Maximum is 10.
+  final int quantity;
+
+  /// Produces an "ask to buy" flow in the sandbox if set to true. Default is false.
+  ///
+  /// For how to test in App Store sand box, see https://developer.apple.com/in-app-purchase/.
+  final bool simulatesAskToBuyInSandbox;
 }
