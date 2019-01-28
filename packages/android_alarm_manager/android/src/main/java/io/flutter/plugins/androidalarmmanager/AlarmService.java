@@ -6,11 +6,9 @@ package io.flutter.plugins.androidalarmmanager;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.IBinder;
 import android.util.Log;
 import androidx.core.app.JobIntentService;
 import io.flutter.plugin.common.MethodChannel;
@@ -19,21 +17,18 @@ import io.flutter.view.FlutterCallbackInformation;
 import io.flutter.view.FlutterMain;
 import io.flutter.view.FlutterNativeView;
 import io.flutter.view.FlutterRunArguments;
-import java.util.Iterator;
-import java.util.List;
-import java.util.LinkedList;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AlarmService extends JobIntentService {
   public static final String TAG = "AlarmService";
-  private static final String SHARED_PREFERENCES_KEY =
-      "io.flutter.android_alarm_manager_plugin";
-  private static final String CALLBACK_HANDLE_KEY =
-      "callback_handle";
+  private static final String SHARED_PREFERENCES_KEY = "io.flutter.android_alarm_manager_plugin";
+  private static final String CALLBACK_HANDLE_KEY = "callback_handle";
   private static AtomicBoolean sStarted = new AtomicBoolean(false);
-  private static List<Intent> sAlarmQueue =
-      Collections.synchronizedList(new LinkedList<Intent>());
+  private static List<Intent> sAlarmQueue = Collections.synchronizedList(new LinkedList<Intent>());
   private static FlutterNativeView sBackgroundFlutterView;
   private static MethodChannel sBackgroundChannel;
   private static PluginRegistrantCallback sPluginRegistrantCallback;
@@ -114,8 +109,7 @@ public class AlarmService extends JobIntentService {
   }
 
   public static void setCallbackDispatcher(Context context, long callbackHandle) {
-    SharedPreferences p =
-        context.getSharedPreferences(SHARED_PREFERENCES_KEY, 0);
+    SharedPreferences p = context.getSharedPreferences(SHARED_PREFERENCES_KEY, 0);
     p.edit().putLong(CALLBACK_HANDLE_KEY, callbackHandle).apply();
   }
 
@@ -136,7 +130,7 @@ public class AlarmService extends JobIntentService {
   protected void onHandleWork(Intent intent) {
     // If we're in the middle of processing queued alarms, block until they're
     // done before processing new alarms.
-    synchronized(sAlarmQueue) {
+    synchronized (sAlarmQueue) {
       if (!sStarted.get()) {
         Log.i(TAG, "AlarmService has not yet started.");
         sAlarmQueue.add(intent);
