@@ -4,7 +4,9 @@
 
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:in_app_purchase/src/channel.dart';
+import 'package:json_annotation/json_annotation.dart';
 
 /// A wrapper around [`SKPaymentQueue`](https://developer.apple.com/documentation/storekit/skpaymentqueue?language=objc).
 class SKPaymentQueueWrapper {
@@ -12,7 +14,6 @@ class SKPaymentQueueWrapper {
   static Future<bool> canMakePayments() async =>
       await channel.invokeMethod('-[SKPaymentQueue canMakePayments:]');
 }
-
 
 /// Dart wrapper around StoreKit's
 /// [SKPaymentTransactionState](https://developer.apple.com/documentation/storekit/skpaymenttransactionstate?language=objc).
@@ -37,17 +38,14 @@ enum SKPaymentTransactionStateWrapper {
 /// Dart wrapper around StoreKit's [SKPaymentTransaction](https://developer.apple.com/documentation/storekit/skpaymenttransaction?language=objc).
 class SKPaymentTransactionWrapper {
   SKPaymentTransactionWrapper({
-    @required this.error,
     @required this.payment,
     @required this.transactionState,
     @required this.originalTransaction,
     @required this.transactionDate,
     @required this.transactionIdentifier,
     @required this.downloads,
+    @required this.error,
   });
-
-  /// The error object, only available if the [transactionState] is [SKPaymentTransactionStateWrapper.failed].
-  final Error error;
 
   /// Current transaction state.
   final SKPaymentTransactionStateWrapper transactionState;
@@ -80,6 +78,9 @@ class SKPaymentTransactionWrapper {
   /// It is only defined when the [transactionState] is [SKPaymentTransactionStateWrapper.purchased].
   /// Must be used to download the transaction's content before the transaction is finished.
   final List<SKDownloadWrapper> downloads;
+
+  /// The error object, only available if the [transactionState] is [SKPaymentTransactionStateWrapper.failed].
+  final PlatformException error;
 }
 
 /// Dart wrapper around StoreKit's [SKDownloadState](https://developer.apple.com/documentation/storekit/skdownloadstate?language=objc).
@@ -123,6 +124,7 @@ class SKDownloadWrapper {
     @required this.progress,
     @required this.timeRemaining,
     @required this.downloadTimeUnknown,
+    @required this.error,
   });
 
   /// Identifies the downloadable content.
@@ -157,6 +159,9 @@ class SKDownloadWrapper {
 
   /// true if [timeRemaining] cannot be estimated.
   final bool downloadTimeUnknown;
+
+  /// The error that prevented the downloading; only available if the [transactionState] is [SKPaymentTransactionStateWrapper.failed].
+  final PlatformException error;
 }
 
 /// Dart wrapper around StoreKit's [SKPayment](https://developer.apple.com/documentation/storekit/skpayment?language=objc).
@@ -164,6 +169,7 @@ class SKDownloadWrapper {
 /// Used as the paramter to initiate a payment.
 /// In general, a developer should not need to create the payment object explicitly; instead, use
 /// [SKPaymentQueueWrapper.addPayment] directly with a product identifier to initiate a payment.
+@JsonSerializable()
 class SKPaymentWrapper {
   SKPaymentWrapper(
       {@required this.productIdentifier,
