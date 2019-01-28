@@ -305,7 +305,8 @@ class WebViewController {
       case 'javascriptChannelMessage':
         final String channel = call.arguments['channel'];
         final String message = call.arguments['message'];
-        _javascriptChannels[channel].onMessageReceived(JavascriptMessage(message));
+        _javascriptChannels[channel]
+            .onMessageReceived(JavascriptMessage(message));
         break;
     }
   }

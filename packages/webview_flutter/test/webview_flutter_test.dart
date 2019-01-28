@@ -361,8 +361,10 @@ void main() {
       WebView(
         initialUrl: 'https://youtube.com',
         javascriptChannels: <JavascriptChannel>[
-          JavascriptChannel(name: 'Tts', onMessageReceived: (JavascriptMessage msg) {}),
-          JavascriptChannel(name: 'Alarm', onMessageReceived: (JavascriptMessage msg) {}),
+          JavascriptChannel(
+              name: 'Tts', onMessageReceived: (JavascriptMessage msg) {}),
+          JavascriptChannel(
+              name: 'Alarm', onMessageReceived: (JavascriptMessage msg) {}),
         ].toSet(),
       ),
     );
@@ -396,8 +398,10 @@ void main() {
       WebView(
         initialUrl: 'https://youtube.com',
         javascriptChannels: <JavascriptChannel>[
-          JavascriptChannel(name: 'Alarm', onMessageReceived: (JavascriptMessage msg) {}),
-          JavascriptChannel(name: 'Alarm', onMessageReceived: (JavascriptMessage msg) {}),
+          JavascriptChannel(
+              name: 'Alarm', onMessageReceived: (JavascriptMessage msg) {}),
+          JavascriptChannel(
+              name: 'Alarm', onMessageReceived: (JavascriptMessage msg) {}),
         ].toSet(),
       ),
     );
@@ -409,8 +413,10 @@ void main() {
       WebView(
         initialUrl: 'https://youtube.com',
         javascriptChannels: <JavascriptChannel>[
-          JavascriptChannel(name: 'Tts', onMessageReceived: (JavascriptMessage msg) {}),
-          JavascriptChannel(name: 'Alarm', onMessageReceived: (JavascriptMessage msg) {}),
+          JavascriptChannel(
+              name: 'Tts', onMessageReceived: (JavascriptMessage msg) {}),
+          JavascriptChannel(
+              name: 'Alarm', onMessageReceived: (JavascriptMessage msg) {}),
         ].toSet(),
       ),
     );
@@ -419,9 +425,12 @@ void main() {
       WebView(
         initialUrl: 'https://youtube.com',
         javascriptChannels: <JavascriptChannel>[
-          JavascriptChannel(name: 'Tts', onMessageReceived: (JavascriptMessage msg) {}),
-          JavascriptChannel(name: 'Alarm2', onMessageReceived: (JavascriptMessage msg) {}),
-          JavascriptChannel(name: 'Alarm3', onMessageReceived: (JavascriptMessage msg) {}),
+          JavascriptChannel(
+              name: 'Tts', onMessageReceived: (JavascriptMessage msg) {}),
+          JavascriptChannel(
+              name: 'Alarm2', onMessageReceived: (JavascriptMessage msg) {}),
+          JavascriptChannel(
+              name: 'Alarm3', onMessageReceived: (JavascriptMessage msg) {}),
         ].toSet(),
       ),
     );
