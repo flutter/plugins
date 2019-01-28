@@ -586,7 +586,7 @@ static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink
     [sink setColor:[UIColor colorWithRed:((float)((value & 0xFF0000) >> 16)) / 255.0
                                    green:((float)((value & 0xFF00) >> 8)) / 255.0
                                     blue:((float)(value & 0xFF)) / 255.0
-                                   alpha:1.0]];
+                                   alpha:((float)((value & 0xFF000000) >> 24)) / 255.0]];
   }
   id width = data[@"width"];
   if (width) {
@@ -609,7 +609,7 @@ static void interpretCircleOptions(id json, id<FLTGoogleMapCircleOptionsSink> si
         [sink setFillColor:[UIColor colorWithRed:((float)((value & 0xFF0000) >> 16)) / 255.0
                                        green:((float)((value & 0xFF00) >> 8)) / 255.0
                                         blue:((float)(value & 0xFF)) / 255.0
-                                       alpha:1.0]];
+                                       alpha:((float)((value & 0xFF000000) >> 24)) / 255.0]];
     }
     id visible = data[@"visible"];
     if (visible) {
@@ -622,7 +622,7 @@ static void interpretCircleOptions(id json, id<FLTGoogleMapCircleOptionsSink> si
         [sink setStrokeColor:[UIColor colorWithRed:((float)((value & 0xFF0000) >> 16)) / 255.0
                                        green:((float)((value & 0xFF00) >> 8)) / 255.0
                                         blue:((float)(value & 0xFF)) / 255.0
-                                       alpha:1.0]];
+                                       alpha:((float)((value & 0xFF000000) >> 24)) / 255.0]];
     }
     id strokeWidth = data[@"strokeWidth"];
     if (strokeWidth) {
