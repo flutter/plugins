@@ -148,12 +148,6 @@ public class CameraPlugin implements MethodCallHandler {
   @Override
   public void onMethodCall(MethodCall call, final Result result) {
     switch (call.method) {
-      case "init":
-        if (camera != null) {
-          camera.close();
-        }
-        result.success(null);
-        break;
       case "availableCameras":
         try {
           String[] cameraNames = cameraManager.getCameraIdList();
