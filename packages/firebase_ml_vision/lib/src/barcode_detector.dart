@@ -227,7 +227,7 @@ class BarcodeDetectorOptions {
 class Barcode {
   Barcode._(Map<dynamic, dynamic> _data)
       : boundingBox = _data['left'] != null
-            ? Rectangle<int>(
+            ? Rect.fromLTWH(
                 _data['left'],
                 _data['top'],
                 _data['width'],
@@ -269,7 +269,7 @@ class Barcode {
   /// The bounding rectangle of the detected barcode.
   ///
   /// Could be null if the bounding rectangle can not be determined.
-  final Rectangle<int> boundingBox;
+  final Rect boundingBox;
 
   /// Barcode value as it was encoded in the barcode.
   ///

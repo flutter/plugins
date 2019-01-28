@@ -93,10 +93,10 @@ static FIRVisionTextRecognizer *recognizer;
   [addTo addEntriesFromDictionary:@{
     @"confidence" : confidence ? confidence : [NSNull null],
     @"points" : points,
-    @"left" : @((int)frame.origin.x),
-    @"top" : @((int)frame.origin.y),
-    @"width" : @((int)frame.size.width),
-    @"height" : @((int)frame.size.height),
+    @"left" : @(frame.origin.x),
+    @"top" : @(frame.origin.y),
+    @"width" : @(frame.size.width),
+    @"height" : @(frame.size.height),
     @"recognizedLanguages" : allLanguageData,
     @"text" : text,
   }];

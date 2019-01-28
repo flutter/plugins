@@ -111,7 +111,7 @@ class FaceDetectorOptions {
 /// Represents a face detected by [FaceDetector].
 class Face {
   Face._(dynamic data)
-      : boundingBox = Rectangle<int>(
+      : boundingBox = Rect.fromLTWH(
           data['left'],
           data['top'],
           data['width'],
@@ -140,7 +140,7 @@ class Face {
   /// The axis-aligned bounding rectangle of the detected face.
   ///
   /// The point (0, 0) is defined as the upper-left corner of the image.
-  final Rectangle<int> boundingBox;
+  final Rect boundingBox;
 
   /// The rotation of the face about the vertical axis of the image.
   ///

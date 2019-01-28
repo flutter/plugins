@@ -69,7 +69,7 @@ class RecognizedLanguage {
 abstract class TextContainer {
   TextContainer._(Map<dynamic, dynamic> data)
       : boundingBox = data['left'] != null
-            ? Rectangle<int>(
+            ? Rect.fromLTWH(
                 data['left'],
                 data['top'],
                 data['width'],
@@ -92,7 +92,7 @@ abstract class TextContainer {
   /// The point (0, 0) is defined as the upper-left corner of the image.
   ///
   /// Could be null even if text is found.
-  final Rectangle<int> boundingBox;
+  final Rect boundingBox;
 
   /// The confidence of the recognized text block.
   ///

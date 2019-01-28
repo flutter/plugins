@@ -120,10 +120,10 @@ public class TextRecognizer implements Detector {
       String text) {
 
     if (boundingBox != null) {
-      addTo.put("left", boundingBox.left);
-      addTo.put("top", boundingBox.top);
-      addTo.put("width", boundingBox.width());
-      addTo.put("height", boundingBox.height());
+      addTo.put("left", (double) boundingBox.left);
+      addTo.put("top", (double) boundingBox.top);
+      addTo.put("width", (double) boundingBox.width());
+      addTo.put("height", (double) boundingBox.height());
     }
 
     addTo.put("confidence", confidence == null ? null : (double) confidence);
