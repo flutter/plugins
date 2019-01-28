@@ -63,7 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: const Icon(Icons.battery_unknown),
         onPressed: () async {
           final int batteryLevel = await _battery.batteryLevel;
-          showDialog<Null>(
+          showDialog<void>(
             context: context,
             builder: (_) => AlertDialog(
                   content: Text('Battery: $batteryLevel%'),

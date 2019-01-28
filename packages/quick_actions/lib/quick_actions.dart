@@ -49,14 +49,20 @@ class QuickActions {
   }
 
   /// Sets the [ShortcutItem]s to become the app's quick actions.
-  Future<Null> setShortcutItems(List<ShortcutItem> items) async {
+  Future<void> setShortcutItems(List<ShortcutItem> items) async {
     final List<Map<String, String>> itemsList =
         items.map(_serializeItem).toList();
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     await _kChannel.invokeMethod('setShortcutItems', itemsList);
   }
 
   /// Removes all [ShortcutItem]s registered for the app.
-  Future<Null> clearShortcutItems() =>
+  Future<void> clearShortcutItems() =>
+      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+      // https://github.com/flutter/flutter/issues/26431
+      // ignore: strong_mode_implicit_dynamic_method
       _kChannel.invokeMethod('clearShortcutItems');
 
   Map<String, String> _serializeItem(ShortcutItem item) {

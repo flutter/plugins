@@ -1,6 +1,21 @@
+## 0.8.0
+* **Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library.
+
+## 0.7.0
+
+* Mark Dart code as deprecated where the newer version AdMob deprecates features (Birthday, Gender, and Family targeting).
+* Update gradle dependencies.
+* Add documentation for new AndroidManifest requirements.
+
 ## 0.6.1+1
 
 * Bump Android dependencies to latest.
+* __THIS WAS AN UNINTENTIONAL BREAKING CHANGE__. Users should consume 0.6.1 instead if they need the old API, or 0.7.0 for the bumped version.
+* Guide how to fix crash with admob version 17.0.0 in README
 
 ## 0.6.1
 

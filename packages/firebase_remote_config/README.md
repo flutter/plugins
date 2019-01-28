@@ -18,17 +18,17 @@ To use the firebase_remote_config plugin, follow the [plugin installation instru
 Enable the Google services by configuring the Gradle scripts as such.
 
 1. Add the classpath to the `[project]/android/build.gradle` file.
-```
+```gradle
 dependencies {
   // Example existing classpath
-  classpath 'com.android.tools.build:gradle:3.1.2'
+  classpath 'com.android.tools.build:gradle:3.2.1'
   // Add the google services classpath
-  classpath 'com.google.gms:google-services:3.1.2'
+  classpath 'com.google.gms:google-services:4.2.0'
 }
 ```
 
 2. Add the apply plugin to the `[project]/android/app/build.gradle` file.
-```
+```gradle
 // ADD THIS AT THE BOTTOM
 apply plugin: 'com.google.gms.google-services'
 ```
@@ -46,17 +46,17 @@ Otherwise you will not be able to use Firebase Remote Config.
 ### Use the plugin
 
 Add the following imports to your Dart code:
-```
+```dart
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 ```
 
 Initialize `RemoteConfig`:
-```
+```dart
 final RemoteConfig remoteConfig = await RemoteConfig.instance;
 ```
 
 You can now use the Firebase `remoteConfig` to fetch remote configurations in your Dart code, e.g.
-```
+```dart
 final defaults = <String, dynamic>{'welcome': 'default welcome'};
 await remoteConfig.setDefaults(defaults);
 

@@ -7,7 +7,6 @@ package io.flutter.plugins.googlesignin;
 import android.accounts.Account;
 import android.app.Activity;
 import android.content.Intent;
-import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -28,7 +27,6 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -403,13 +401,31 @@ public class GoogleSignInPlugin implements MethodCallHandler {
 
     /** Clears the token kept in the client side cache. */
     @Override
-    public void clearAuthCache(Result result, String token) {
-      try {
-        GoogleAuthUtil.clearToken(registrar.context(), token);
-        result.success(null);
-      } catch (GoogleAuthException | IOException e) {
-        result.error(ERROR_REASON_EXCEPTION, e.getMessage(), e);
-      }
+    public void clearAuthCache(final Result result, final String token) {
+      Callable<Void> clearTokenTask =
+          new Callable<Void>() {
+            @Override
+            public Void call() throws Exception {
+              GoogleAuthUtil.clearToken(registrar.context(), token);
+              return null;
+            }
+          };
+
+      backgroundTaskRunner.runInBackground(
+          clearTokenTask,
+          new BackgroundTaskRunner.Callback<Void>() {
+            @Override
+            public void run(Future<Void> clearTokenFuture) {
+              try {
+                result.success(clearTokenFuture.get());
+              } catch (ExecutionException e) {
+                result.error(ERROR_REASON_EXCEPTION, e.getCause().getMessage(), null);
+              } catch (InterruptedException e) {
+                result.error(ERROR_REASON_EXCEPTION, e.getMessage(), null);
+                Thread.currentThread().interrupt();
+              }
+            }
+          });
     }
 
     /**
@@ -453,12 +469,19 @@ public class GoogleSignInPlugin implements MethodCallHandler {
               } catch (ExecutionException e) {
                 if (e.getCause() instanceof UserRecoverableAuthException) {
                   if (shouldRecoverAuth && pendingOperation == null) {
-                    checkAndSetPendingOperation(METHOD_GET_TOKENS, result, email);
-                    Intent recoveryIntent =
-                        ((UserRecoverableAuthException) e.getCause()).getIntent();
-                    registrar
-                        .activity()
-                        .startActivityForResult(recoveryIntent, REQUEST_CODE_RECOVER_AUTH);
+                    Activity activity = registrar.activity();
+                    if (activity == null) {
+                      result.error(
+                          ERROR_USER_RECOVERABLE_AUTH,
+                          "Cannot recover auth because app is not in foreground. "
+                              + e.getLocalizedMessage(),
+                          null);
+                    } else {
+                      checkAndSetPendingOperation(METHOD_GET_TOKENS, result, email);
+                      Intent recoveryIntent =
+                          ((UserRecoverableAuthException) e.getCause()).getIntent();
+                      activity.startActivityForResult(recoveryIntent, REQUEST_CODE_RECOVER_AUTH);
+                    }
                   } else {
                     result.error(ERROR_USER_RECOVERABLE_AUTH, e.getLocalizedMessage(), null);
                   }
@@ -492,12 +515,13 @@ public class GoogleSignInPlugin implements MethodCallHandler {
           }
           return true;
         case REQUEST_CODE_SIGNIN:
-          if (resultCode == Activity.RESULT_OK && data != null) {
+          // Whether resultCode is OK or not, the Task returned by GoogleSigIn will determine
+          // failure with better specifics which are extracted in onSignInResult method.
+          if (data != null) {
             onSignInResult(GoogleSignIn.getSignedInAccountFromIntent(data));
-          } else if (resultCode == Activity.RESULT_CANCELED) {
-            finishWithError(ERROR_REASON_SIGN_IN_CANCELED, "User canceled sign in");
           } else {
-            finishWithError(ERROR_REASON_STATUS, "Sign in failed with " + resultCode);
+            // data is null which is highly unusual for a sign in result.
+            finishWithError(ERROR_REASON_SIGN_IN_FAILED, "Signin failed");
           }
           return true;
         default:

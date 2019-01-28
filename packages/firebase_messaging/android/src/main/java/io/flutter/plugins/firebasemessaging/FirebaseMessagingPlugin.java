@@ -9,9 +9,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
+import androidx.annotation.NonNull;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
 import io.flutter.plugin.common.MethodCall;
@@ -20,6 +25,7 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.NewIntentListener;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,6 +36,7 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
   private final MethodChannel channel;
 
   private static final String CLICK_ACTION_VALUE = "FLUTTER_NOTIFICATION_CLICK";
+  private static final String TAG = "FirebaseMessagingPlugin";
 
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel =
@@ -91,7 +98,7 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
   }
 
   @Override
-  public void onMethodCall(MethodCall call, Result result) {
+  public void onMethodCall(final MethodCall call, final Result result) {
     if ("configure".equals(call.method)) {
       FlutterFirebaseInstanceIDService.broadcastToken(registrar.context());
       if (registrar.activity() != null) {
@@ -105,6 +112,43 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
     } else if ("unsubscribeFromTopic".equals(call.method)) {
       String topic = call.arguments();
       FirebaseMessaging.getInstance().unsubscribeFromTopic(topic);
+      result.success(null);
+    } else if ("getToken".equals(call.method)) {
+      FirebaseInstanceId.getInstance()
+          .getInstanceId()
+          .addOnCompleteListener(
+              new OnCompleteListener<InstanceIdResult>() {
+                @Override
+                public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                  if (!task.isSuccessful()) {
+                    Log.w(TAG, "getToken, error fetching instanceID: ", task.getException());
+                    result.success(null);
+                    return;
+                  }
+
+                  result.success(task.getResult().getToken());
+                }
+              });
+    } else if ("deleteInstanceID".equals(call.method)) {
+      new Thread(
+              new Runnable() {
+                @Override
+                public void run() {
+                  try {
+                    FirebaseInstanceId.getInstance().deleteInstanceId();
+                    result.success(true);
+                  } catch (IOException ex) {
+                    Log.e(TAG, "deleteInstanceID, error:", ex);
+                    result.success(false);
+                  }
+                }
+              })
+          .start();
+    } else if ("autoInitEnabled".equals(call.method)) {
+      result.success(FirebaseMessaging.getInstance().isAutoInitEnabled());
+    } else if ("setAutoInitEnabled".equals(call.method)) {
+      Boolean isEnabled = (Boolean) call.arguments();
+      FirebaseMessaging.getInstance().setAutoInitEnabled(isEnabled);
       result.success(null);
     } else {
       result.notImplemented();

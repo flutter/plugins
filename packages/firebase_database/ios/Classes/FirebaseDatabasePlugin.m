@@ -221,58 +221,60 @@ id roundDoubles(id value) {
     [getReference(database, call.arguments) setPriority:call.arguments[@"priority"]
                                     withCompletionBlock:defaultCompletionBlock];
   } else if ([@"DatabaseReference#runTransaction" isEqualToString:call.method]) {
-    [getReference(database, call.arguments) runTransactionBlock:^FIRTransactionResult *_Nonnull(
-                                                FIRMutableData *_Nonnull currentData) {
-      // Create semaphore to allow native side to wait while snapshot
-      // updates occur on the Dart side.
-      dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+    [getReference(database, call.arguments)
+        runTransactionBlock:^FIRTransactionResult *_Nonnull(FIRMutableData *_Nonnull currentData) {
+          // Create semaphore to allow native side to wait while snapshot
+          // updates occur on the Dart side.
+          dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
 
-      NSObject *snapshot =
-          @{@"key" : currentData.key ?: [NSNull null], @"value" : currentData.value};
+          NSObject *snapshot =
+              @{@"key" : currentData.key ?: [NSNull null], @"value" : currentData.value};
 
-      __block bool shouldAbort = false;
+          __block bool shouldAbort = false;
 
-      [self.channel invokeMethod:@"DoTransaction"
-                       arguments:@{
-                         @"transactionKey" : call.arguments[@"transactionKey"],
-                         @"snapshot" : snapshot
-                       }
-                          result:^(id _Nullable result) {
-                            if ([result isKindOfClass:[FlutterError class]]) {
-                              FlutterError *flutterError = ((FlutterError *)result);
-                              NSLog(@"Error code: %@", flutterError.code);
-                              NSLog(@"Error message: %@", flutterError.message);
-                              NSLog(@"Error details: %@", flutterError.details);
-                              shouldAbort = true;
-                            } else if ([result isEqual:FlutterMethodNotImplemented]) {
-                              NSLog(@"DoTransaction not implemented on the Dart side.");
-                              shouldAbort = true;
-                            } else {
-                              [self.updatedSnapshots setObject:result
-                                                        forKey:call.arguments[@"transactionKey"]];
-                            }
-                            dispatch_semaphore_signal(semaphore);
-                          }];
+          [self.channel invokeMethod:@"DoTransaction"
+                           arguments:@{
+                             @"transactionKey" : call.arguments[@"transactionKey"],
+                             @"snapshot" : snapshot
+                           }
+                              result:^(id _Nullable result) {
+                                if ([result isKindOfClass:[FlutterError class]]) {
+                                  FlutterError *flutterError = ((FlutterError *)result);
+                                  NSLog(@"Error code: %@", flutterError.code);
+                                  NSLog(@"Error message: %@", flutterError.message);
+                                  NSLog(@"Error details: %@", flutterError.details);
+                                  shouldAbort = true;
+                                } else if ([result isEqual:FlutterMethodNotImplemented]) {
+                                  NSLog(@"DoTransaction not implemented on the Dart side.");
+                                  shouldAbort = true;
+                                } else {
+                                  [self.updatedSnapshots
+                                      setObject:result
+                                         forKey:call.arguments[@"transactionKey"]];
+                                }
+                                dispatch_semaphore_signal(semaphore);
+                              }];
 
-      // Wait while Dart side updates the snapshot. Incoming transactionTimeout is in milliseconds
-      // so converting to nanoseconds for use with dispatch_semaphore_wait.
-      long result = dispatch_semaphore_wait(
-          semaphore, dispatch_time(DISPATCH_TIME_NOW,
-                                   [call.arguments[@"transactionTimeout"] integerValue] * 1000000));
+          // Wait while Dart side updates the snapshot. Incoming transactionTimeout is in
+          // milliseconds so converting to nanoseconds for use with dispatch_semaphore_wait.
+          long result = dispatch_semaphore_wait(
+              semaphore,
+              dispatch_time(DISPATCH_TIME_NOW,
+                            [call.arguments[@"transactionTimeout"] integerValue] * 1000000));
 
-      if (result == 0 && !shouldAbort) {
-        // Set FIRMutableData value to value returned from the Dart side.
-        currentData.value =
-            [self.updatedSnapshots objectForKey:call.arguments[@"transactionKey"]][@"value"];
-      } else {
-        if (result != 0) {
-          NSLog(@"Transaction at %@ timed out.", [getReference(database, call.arguments) URL]);
+          if (result == 0 && !shouldAbort) {
+            // Set FIRMutableData value to value returned from the Dart side.
+            currentData.value =
+                [self.updatedSnapshots objectForKey:call.arguments[@"transactionKey"]][@"value"];
+          } else {
+            if (result != 0) {
+              NSLog(@"Transaction at %@ timed out.", [getReference(database, call.arguments) URL]);
+            }
+            return [FIRTransactionResult abort];
+          }
+
+          return [FIRTransactionResult successWithValue:currentData];
         }
-        return [FIRTransactionResult abort];
-      }
-
-      return [FIRTransactionResult successWithValue:currentData];
-    }
         andCompletionBlock:^(NSError *_Nullable error, BOOL committed,
                              FIRDataSnapshot *_Nullable snapshot) {
           // Invoke transaction completion on the Dart side.

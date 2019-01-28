@@ -1,3 +1,22 @@
+## 2.2.0
+* **Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library.
+
+## 2.1.0
+
+* Adding support for deleteInstanceID(), autoInitEnabled() and setAutoInitEnabled().
+
+## 2.0.3
+
+* Removing local cache of getToken() in the dart part of the plugin. Now getToken() calls directly its counterparts in the iOS and Android implementations. This enables obtaining its value without calling configure() or having to wait for a new token refresh.
+
+## 2.0.2
+
+* Use boolean values when checking for notification types on iOS.
+
 ## 2.0.1
 
 * Bump Android dependencies to latest.

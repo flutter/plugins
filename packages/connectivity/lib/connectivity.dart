@@ -39,6 +39,9 @@ class Connectivity {
   ///
   /// Instead listen for connectivity changes via [onConnectivityChanged] stream.
   Future<ConnectivityResult> checkConnectivity() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     final String result = await _methodChannel.invokeMethod('check');
     return _parseConnectivityResult(result);
   }
@@ -50,6 +53,9 @@ class Connectivity {
   /// From android 8.0 onwards the GPS must be ON (high accuracy)
   /// in order to be able to obtain the SSID.
   Future<String> getWifiName() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     String wifiName = await _methodChannel.invokeMethod('wifiName');
     // as Android might return <unknown ssid>, uniforming result
     // our iOS implementation will return null

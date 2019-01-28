@@ -57,7 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
-  Future<Null> initConnectivity() async {
+  Future<void> initConnectivity() async {
     String connectionStatus;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {

@@ -71,10 +71,11 @@ class _MyHomePageState extends State<MyHomePage> {
     final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
     final GoogleSignInAuthentication googleAuth =
         await googleUser.authentication;
-    final FirebaseUser user = await _auth.signInWithGoogle(
+    final AuthCredential credential = GoogleAuthProvider.getCredential(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
     );
+    final FirebaseUser user = await _auth.signInWithCredential(credential);
     assert(user.email != null);
     assert(user.displayName != null);
     assert(!user.isAnonymous);
@@ -125,11 +126,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<String> _testSignInWithPhoneNumber(String smsCode) async {
-    final FirebaseUser user = await _auth.signInWithPhoneNumber(
+    final AuthCredential credential = PhoneAuthProvider.getCredential(
       verificationId: verificationId,
       smsCode: smsCode,
     );
-
+    final FirebaseUser user = await _auth.signInWithCredential(credential);
     final FirebaseUser currentUser = await _auth.currentUser();
     assert(user.uid == currentUser.uid);
 
