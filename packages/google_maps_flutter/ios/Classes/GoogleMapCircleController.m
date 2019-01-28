@@ -14,7 +14,6 @@ static uint64_t _nextCircleId = 0;
     self = [super init];
     if (self) {
         _circle = [GMSCircle circleWithPosition:center radius:radius];
-        _circle.tappable = true;
         _mapView = mapView;
         _circleId = [NSString stringWithFormat:@"%lld", _nextCircleId++];
         _circle.userData = @[ _circleId, @(NO) ];
@@ -25,6 +24,9 @@ static uint64_t _nextCircleId = 0;
 #pragma mark - FLTGoogleMapCircleOptionsSink methods
 
 - (void)setConsumeTapEvents:(BOOL)consumes {
+    if(consumes){
+      _circle.tappable = true;
+    }
     _circle.userData[1] = @(consumes);
 }
 - (void)setCenter:(CLLocationCoordinate2D)center {

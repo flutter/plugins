@@ -21,6 +21,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -61,7 +62,7 @@ final class GoogleMapController
         OnMapReadyCallback,
         OnMarkerTappedListener,
         OnPolylineTappedListener,
-        PlatformView, OnCircleTappedListener, GoogleMap.OnCircleClickListener {
+        PlatformView, OnCircleTappedListener, GoogleMap.OnCircleClickListener, GoogleMap.OnMapClickListener {
     private static final String TAG = "GoogleMapController";
     private final int id;
     private final AtomicInteger activityState;
@@ -237,6 +238,7 @@ final class GoogleMapController
         googleMap.setOnCameraMoveListener(this);
         googleMap.setOnCameraIdleListener(this);
         googleMap.setOnMarkerClickListener(this);
+        googleMap.setOnMapClickListener(this);
         googleMap.setOnMarkerDragListener(this);
         googleMap.setOnPolylineClickListener(this);
         googleMap.setOnCircleClickListener(this);
@@ -365,6 +367,13 @@ final class GoogleMapController
     @Override
     public void onCameraIdle() {
         methodChannel.invokeMethod("camera#onIdle", Collections.singletonMap("map", id));
+    }
+
+    @Override
+    public void onMapClick(LatLng latLng) {
+        final Map<String, Object> arguments = new HashMap<>(2);
+        arguments.put("position", Convert.toJson(latLng));
+        methodChannel.invokeMethod("map#onTap", arguments);
     }
 
     @Override
