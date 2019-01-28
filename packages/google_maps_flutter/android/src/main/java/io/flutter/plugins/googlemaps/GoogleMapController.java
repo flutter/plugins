@@ -313,7 +313,6 @@ final class GoogleMapController
             }
             case "circle#add": {
                 final CircleBuilder circleBuilder = newCircleBuilder();
-                Log.d("circle property",call.argument("options"));
                 Convert.interpretCircleOptions(call.argument("options"), circleBuilder);
                 final String circleId = circleBuilder.build();
                 result.success(circleId);
