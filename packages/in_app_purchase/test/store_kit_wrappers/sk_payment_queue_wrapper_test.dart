@@ -27,4 +27,60 @@ void main() {
       expect(await SKPaymentQueueWrapper.canMakePayments(), isFalse);
     });
   });
+
+  group('Wrapper fromJson tests', () {
+    test('Should construct correct SKPaymentWrapper from json', () {
+      SKPaymentWrapper dummyPaymentWrapper = SKPaymentWrapper(
+          productIdentifier: 'prod-id',
+          applicationUsername: 'app-user-name',
+          requestData: 'fake-data-utf8',
+          quantity: 2,
+          simulatesAskToBuyInSandbox: true);
+      SKPaymentWrapper paymentWrapper =
+          SKPaymentWrapper.fromJson(buildPaymentMap(dummyPaymentWrapper));
+      expect(paymentWrapper.productIdentifier,
+          dummyPaymentWrapper.productIdentifier);
+      expect(paymentWrapper.applicationUsername,
+          dummyPaymentWrapper.applicationUsername);
+      expect(paymentWrapper.requestData, dummyPaymentWrapper.requestData);
+      expect(paymentWrapper.quantity, dummyPaymentWrapper.quantity);
+      expect(paymentWrapper.simulatesAskToBuyInSandbox,
+          dummyPaymentWrapper.simulatesAskToBuyInSandbox);
+    });
+  });
+
+    test('Should construct correct SKError from json', () {
+      SKError dummyError = SKError(
+          code: 111,
+          domain: 'dummy-domain',
+          userInfo: {
+            'key':'value'
+          }
+      );
+      SKError error =
+          SKError.fromJson(buildErrorMap(dummyError));
+      expect(error.code,
+          dummyError.code);
+      expect(error.domain,
+          dummyError.domain);
+      expect(error.userInfo, dummyError.userInfo);
+    });
+}
+
+Map<String, dynamic> buildPaymentMap(SKPaymentWrapper paymentWrapper) {
+  return {
+    'productIdentifier': paymentWrapper.productIdentifier,
+    'applicationUsername': paymentWrapper.applicationUsername,
+    'requestData': paymentWrapper.requestData,
+    'quantity': paymentWrapper.quantity,
+    'simulatesAskToBuyInSandbox': paymentWrapper.simulatesAskToBuyInSandbox
+  };
+}
+
+Map<String, dynamic> buildErrorMap(SKError error) {
+  return {
+    'code': error.code,
+    'domain': error.domain,
+    'userInfo': error.userInfo,
+  };
 }

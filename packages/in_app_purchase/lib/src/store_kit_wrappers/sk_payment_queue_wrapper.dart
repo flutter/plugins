@@ -8,6 +8,8 @@ import 'package:flutter/services.dart';
 import 'package:in_app_purchase/src/channel.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+part 'sk_payment_queue_wrapper.g.dart';
+
 /// A wrapper around [`SKPaymentQueue`](https://developer.apple.com/documentation/storekit/skpaymentqueue?language=objc).
 class SKPaymentQueueWrapper {
   /// Calls [`-[SKPaymentQueue canMakePayments:]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/1506139-canmakepayments?language=objc).
@@ -94,10 +96,10 @@ enum SKDownloadState {
   /// The app paused the download.
   pause,
 
-  /// The content is succesfully downloaded.
+  /// The content is successfully downloaded.
   finished,
 
-  /// Indicates that some error occured while the content was being downloaded.
+  /// Indicates that some error occurred while the content was being downloaded.
   failed,
 
   /// The app canceled the download.
@@ -134,8 +136,8 @@ class SKDownloadWrapper {
 
   /// The current download state.
   ///
-  /// When the state changes, one of the [SKTransactionObserverWrapper] subclass's observing methods should be triggered.
-  /// The developer should properly handle the downloadble content based on the state.
+  /// When the state changes, one of the [SKTransactionObserverWrapper] subclasses' observing methods should be triggered.
+  /// The developer should properly handle the downloadable content based on the state.
   final SKDownloadState state;
 
   /// Length of the content in bytes.
@@ -164,9 +166,36 @@ class SKDownloadWrapper {
   final PlatformException error;
 }
 
+/// Dart wrapper around StoreKit's [NSError](https://developer.apple.com/documentation/foundation/nserror?language=objc).
+@JsonSerializable()
+class SKError {
+  SKError(
+      {@required this.code, @required this.domain, @required this.userInfo});
+
+  /// Constructs an instance of this from a key value map of data.
+  ///
+  /// The map needs to have named string keys with values matching the names and
+  /// types of all of the members on this class.
+  /// The `map` parameter must not be null.
+  @visibleForTesting
+  factory SKError.fromJson(Map map) {
+    assert(map != null);
+    return _$SKErrorFromJson(map);
+  }
+
+  /// Error [code](https://developer.apple.com/documentation/foundation/1448136-nserror_codes) defined in the Cocoa Framework.
+  final int code;
+
+  /// Error [domain](https://developer.apple.com/documentation/foundation/nscocoaerrordomain?language=objc) defined in the Cocoa Framework.
+  final String domain;
+
+  /// A map that contains more detailed information about the error. Any key of the map must be one of the [NSErrorUserInfoKey](https://developer.apple.com/documentation/foundation/nserroruserinfokey?language=objc).
+  final Map<String, dynamic> userInfo;
+}
+
 /// Dart wrapper around StoreKit's [SKPayment](https://developer.apple.com/documentation/storekit/skpayment?language=objc).
 ///
-/// Used as the paramter to initiate a payment.
+/// Used as the parameter to initiate a payment.
 /// In general, a developer should not need to create the payment object explicitly; instead, use
 /// [SKPaymentQueueWrapper.addPayment] directly with a product identifier to initiate a payment.
 @JsonSerializable()
@@ -178,6 +207,17 @@ class SKPaymentWrapper {
       this.quantity = 1,
       this.simulatesAskToBuyInSandbox = false});
 
+  /// Constructs an instance of this from a key value map of data.
+  ///
+  /// The map needs to have named string keys with values matching the names and
+  /// types of all of the members on this class.
+  /// The `map` parameter must not be null.
+  @visibleForTesting
+  factory SKPaymentWrapper.fromJson(Map map) {
+    assert(map != null);
+    return _$SKPaymentWrapperFromJson(map);
+  }
+
   /// The id for the product that the payment is for.
   final String productIdentifier;
 
@@ -186,15 +226,19 @@ class SKPaymentWrapper {
   /// Used to help the store detect irregular activity. See https://developer.apple.com/documentation/storekit/skpayment/1506116-applicationusername?language=objc for more details.
   final String applicationUsername;
 
-  /// Reserved for future use from ios platform in UTF8Encoding. Default is null.
+  /// Reserved for future use.
   ///
-  /// If the value is null, the payment is rejected.
+  /// The value must be null before sending the payment. If the value is not null, the payment will be rejected.
+  /// Converted to String from NSData from ios platform using UTF8Encoding. Default is null.
+  // The iOS Platform provided this property but it is reserved for future use. We also provide this
+  // property to match iOS platform; in case any future update for this property occurs, we do not need to
+  // add this property later.
   final String requestData;
 
   /// The amount of the product this payment is for. Default is 1. Minimum is 1. Maximum is 10.
   final int quantity;
 
-  /// Produces an "ask to buy" flow in the sandbox if set to true. Default is false.
+  /// Produces an "ask to buy" flow in the sandbox if set to true. Default is false. I doesn't do it.
   ///
   /// For how to test in App Store sand box, see https://developer.apple.com/in-app-purchase/.
   final bool simulatesAskToBuyInSandbox;
