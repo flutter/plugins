@@ -26,6 +26,7 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
   int _polylineCount = 0;
   Polyline _selectedPolyline;
 
+  // Values when toggling polyline color
   int colorsIndex = 0;
   List<int> colors = <int>[
     0xFF000000,
@@ -33,6 +34,7 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
     0xFFF44336,
   ];
 
+  // Values when toggling polyline width
   int widthsIndex = 0;
   List<double> widths = <double>[10.0, 20.0, 5.0];
 
@@ -43,12 +45,15 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
     JointType.round
   ];
 
+  // Values when toggling polyline end cap type
   int endCapsIndex = 0;
   List<Cap> endCaps = <Cap>[Cap.buttCap, Cap.squareCap, Cap.roundCap];
 
+  // Values when toggling polyline start cap type
   int startCapsIndex = 0;
   List<Cap> startCaps = <Cap>[Cap.buttCap, Cap.squareCap, Cap.roundCap];
 
+  // Values when toggling polyline pattern
   int patternsIndex = 0;
   List<List<PatternItem>> patterns = <List<PatternItem>>[
     null,
