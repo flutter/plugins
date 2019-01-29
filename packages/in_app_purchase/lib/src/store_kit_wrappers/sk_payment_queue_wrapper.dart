@@ -88,21 +88,27 @@ class SKPaymentTransactionWrapper {
 /// Dart wrapper around StoreKit's [SKDownloadState](https://developer.apple.com/documentation/storekit/skdownloadstate?language=objc).
 enum SKDownloadState {
   /// Indicates that downloadable content is waiting to start.
+  @JsonValue(0)
   waiting,
 
   /// The downloadable content is currently being downloaded
+  @JsonValue(1)
   active,
 
   /// The app paused the download.
+  @JsonValue(2)
   pause,
 
   /// The content is successfully downloaded.
+  @JsonValue(3)
   finished,
 
   /// Indicates that some error occurred while the content was being downloaded.
+  @JsonValue(4)
   failed,
 
   /// The app canceled the download.
+  @JsonValue(5)
   cancelled,
 }
 
@@ -115,6 +121,7 @@ enum SKDownloadState {
 /// All downloaded files must be processed before the completion of the transaction.
 /// After transaction is complete, any download object in the transaction will not be able to add to the payment queue
 /// and the contentURL of the download object will be invalid.
+@JsonSerializable()
 class SKDownloadWrapper {
   SKDownloadWrapper({
     @required this.contentIdentifier,
@@ -128,6 +135,17 @@ class SKDownloadWrapper {
     @required this.downloadTimeUnknown,
     @required this.error,
   });
+
+  /// Constructs an instance of this from a key value map of data.
+  ///
+  /// The map needs to have named string keys with values matching the names and
+  /// types of all of the members on this class.
+  /// The `map` parameter must not be null.
+  @visibleForTesting
+  factory SKDownloadWrapper.fromJson(Map map) {
+    assert(map != null);
+    return _$SKDownloadWrapperFromJson(map);
+  }
 
   /// Identifies the downloadable content.
   ///
@@ -163,7 +181,7 @@ class SKDownloadWrapper {
   final bool downloadTimeUnknown;
 
   /// The error that prevented the downloading; only available if the [transactionState] is [SKPaymentTransactionStateWrapper.failed].
-  final PlatformException error;
+  final SKError error;
 }
 
 /// Dart wrapper around StoreKit's [NSError](https://developer.apple.com/documentation/foundation/nserror?language=objc).

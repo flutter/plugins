@@ -49,22 +49,43 @@ void main() {
     });
   });
 
-    test('Should construct correct SKError from json', () {
-      SKError dummyError = SKError(
-          code: 111,
-          domain: 'dummy-domain',
-          userInfo: {
-            'key':'value'
-          }
-      );
-      SKError error =
-          SKError.fromJson(buildErrorMap(dummyError));
-      expect(error.code,
-          dummyError.code);
-      expect(error.domain,
-          dummyError.domain);
-      expect(error.userInfo, dummyError.userInfo);
-    });
+  test('Should construct correct SKError from json', () {
+    SKError dummyError =
+        SKError(code: 111, domain: 'dummy-domain', userInfo: {'key': 'value'});
+    SKError error = SKError.fromJson(buildErrorMap(dummyError));
+    expect(error.code, dummyError.code);
+    expect(error.domain, dummyError.domain);
+    expect(error.userInfo, dummyError.userInfo);
+  });
+
+  test('Should construct correct SKDownloadWrapper from json', () {
+    SKDownloadWrapper dummyDownload = SKDownloadWrapper(
+        contentIdentifier: 'id',
+        state: SKDownloadState.failed,
+        contentLength: 32,
+        contentURL: 'https://download.com',
+        contentVersion: '0.0.1',
+        transactionID: 'tranID',
+        progress: 0.6,
+        timeRemaining: 1231231,
+        downloadTimeUnknown: false,
+        error: SKError(
+            code: 111, domain: 'dummy-domain', userInfo: {'key': 'value'}));
+    SKDownloadWrapper download =
+        SKDownloadWrapper.fromJson(buildDownloadMap(dummyDownload));
+    expect(download.contentIdentifier, dummyDownload.contentIdentifier);
+    expect(download.state, dummyDownload.state);
+    expect(download.contentLength, dummyDownload.contentLength);
+    expect(download.contentURL, dummyDownload.contentURL);
+    expect(download.contentVersion, dummyDownload.contentVersion);
+    expect(download.transactionID, dummyDownload.transactionID);
+    expect(download.progress, dummyDownload.progress);
+    expect(download.timeRemaining, dummyDownload.timeRemaining);
+    expect(download.downloadTimeUnknown, dummyDownload.downloadTimeUnknown);
+    expect(download.error.code, dummyDownload.error.code);
+    expect(download.error.domain, dummyDownload.error.domain);
+    expect(download.error.userInfo, dummyDownload.error.userInfo);
+  });
 }
 
 Map<String, dynamic> buildPaymentMap(SKPaymentWrapper paymentWrapper) {
@@ -82,5 +103,20 @@ Map<String, dynamic> buildErrorMap(SKError error) {
     'code': error.code,
     'domain': error.domain,
     'userInfo': error.userInfo,
+  };
+}
+
+Map<String, dynamic> buildDownloadMap(SKDownloadWrapper download) {
+  return {
+    'contentIdentifier': download.contentIdentifier,
+    'state': SKDownloadState.values.indexOf(download.state),
+    'contentLength': download.contentLength,
+    'contentURL': download.contentURL,
+    'contentVersion': download.contentVersion,
+    'transactionID': download.transactionID,
+    'progress': download.progress,
+    'timeRemaining': download.timeRemaining,
+    'downloadTimeUnknown': download.downloadTimeUnknown,
+    'error': buildErrorMap(download.error)
   };
 }
