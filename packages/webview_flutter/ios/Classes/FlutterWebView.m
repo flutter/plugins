@@ -50,6 +50,16 @@
     }];
     NSDictionary<NSString*, id>* settings = args[@"settings"];
     [self applySettings:settings];
+
+    NSString* userAgent = args[@"userAgent"];
+    if (userAgent && ![userAgent isKindOfClass:[NSNull class]]) {
+      if (@available(iOS 9.0, *)) {
+        _webView.customUserAgent = userAgent;
+      } else {
+        [[NSUserDefaults standardUserDefaults] registerDefaults:@{@"UserAgent": userAgent}];
+      }
+    }
+
     NSString* initialUrl = args[@"initialUrl"];
     if (initialUrl && ![initialUrl isKindOfClass:[NSNull class]]) {
       [self loadUrl:initialUrl];

@@ -33,6 +33,7 @@ class WebView extends StatefulWidget {
     this.initialUrl,
     this.javascriptMode = JavascriptMode.disabled,
     this.gestureRecognizers,
+    this.userAgent,
   })  : assert(javascriptMode != null),
         super(key: key);
 
@@ -55,6 +56,9 @@ class WebView extends StatefulWidget {
 
   /// Whether Javascript execution is enabled.
   final JavascriptMode javascriptMode;
+
+  /// The user agent string.
+  final String userAgent;
 
   @override
   State<StatefulWidget> createState() => _WebViewState();
@@ -126,21 +130,24 @@ class _WebViewState extends State<WebView> {
 }
 
 class _CreationParams {
-  _CreationParams({this.initialUrl, this.settings});
+  _CreationParams({this.initialUrl, this.userAgent, this.settings});
 
   static _CreationParams fromWidget(WebView widget) {
     return _CreationParams(
       initialUrl: widget.initialUrl,
       settings: _WebSettings.fromWidget(widget),
+      userAgent: widget.userAgent,
     );
   }
 
   final String initialUrl;
+  final String userAgent;
   final _WebSettings settings;
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'initialUrl': initialUrl,
+      'userAgent': userAgent,
       'settings': settings.toMap(),
     };
   }
