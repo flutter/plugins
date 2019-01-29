@@ -206,6 +206,13 @@ public class AndroidIntentPlugin implements MethodCallHandler {
         Intent intent = mRegistrar.activity().getIntent();
         result.success(convertBundleToMap(intent.getExtras()));
       }
+    } else if (call.method.equals("setIntentExtra")) {
+      if (mRegistrar.activity() != null) {
+        Intent intent = mRegistrar.activity().getIntent();
+        Map extras = new HashMap(1);
+        extras.put((String) call.argument("name"), call.argument("value"));
+        intent.putExtras(convertMapToBundle(extras));
+      }
     } else if (call.method.equals("getIntentData")) {
       if (mRegistrar.activity() != null) {
         Intent intent = mRegistrar.activity().getIntent();
