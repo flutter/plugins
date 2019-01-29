@@ -4,5 +4,5 @@
 
 #import <Flutter/Flutter.h>
 
-@interface InAppPurchasePlugin<SKProductsRequestDelegate> : NSObject <FlutterPlugin>
+@interface InAppPurchasePlugin : NSObject <FlutterPlugin>
 @end

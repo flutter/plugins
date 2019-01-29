@@ -15,7 +15,16 @@ Play and the App Store require developers to configure an app with in-app items
 for purchase to call their in-app-purchase APIs. You can check out the [example
 app](example/README.md) for an example on configuring both.
 
-## Design
+## Development
+
+This plugin uses
+[json_serializable](https://pub.dartlang.org/packages/json_serializable) for the
+many data structs passed between the underlying platform layers and Dart. After
+editing any of the serialized data structs, rebuild the serializers by running
+`flutter packages pub run build_runner build`. `flutter packages pub run
+build_runner watch` will watch the filesystem for changes.
+
+### Design
 
 The API surface is stacked into 2 main layers.
 

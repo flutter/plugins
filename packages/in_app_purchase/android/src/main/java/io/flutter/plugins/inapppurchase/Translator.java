@@ -4,7 +4,7 @@
 
 package io.flutter.plugins.inapppurchase;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import com.android.billingclient.api.SkuDetails;
 import java.util.ArrayList;
 import java.util.Collections;
