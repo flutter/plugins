@@ -27,6 +27,7 @@ public class AlarmService extends JobIntentService {
   public static final String TAG = "AlarmService";
   private static final String SHARED_PREFERENCES_KEY = "io.flutter.android_alarm_manager_plugin";
   private static final String CALLBACK_HANDLE_KEY = "callback_handle";
+  private static final int JOB_ID = 1984; // Random job ID.
   private static AtomicBoolean sStarted = new AtomicBoolean(false);
   private static List<Intent> sAlarmQueue = Collections.synchronizedList(new LinkedList<Intent>());
   private static FlutterNativeView sBackgroundFlutterView;
@@ -50,7 +51,7 @@ public class AlarmService extends JobIntentService {
 
   // Schedule the alarm to be handled by the AlarmService.
   public static void enqueueAlarmProcessing(Context context, Intent alarmContext) {
-    enqueueWork(context, AlarmService.class, 1984, alarmContext);
+    enqueueWork(context, AlarmService.class, JOB_ID, alarmContext);
   }
 
   // Called once the Dart isolate (sBackgroundFlutterView) has finished
