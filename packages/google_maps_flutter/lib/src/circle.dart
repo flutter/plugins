@@ -24,11 +24,11 @@ class Circle {
 /// set the stroke pattern to the default (solid).
 class CircleOptions {
   const CircleOptions({
+    @required this.radius,
+    @required this.center,
     this.consumeTapEvents,
     this.strokeColor,
     this.fillColor,
-    this.radius,
-    this.center,
     this.jointType,
     this.pattern,
     this.visible,
@@ -88,7 +88,7 @@ class CircleOptions {
   /// * has a width of 10; [width] is 10
   /// * is placed at the base of the drawing order; [zIndex] is 0.0
   static const CircleOptions defaultOptions = CircleOptions(
-    consumeTapEvents: false,
+    consumeTapEvents: true,
     strokeColor: 0xff000000,
     fillColor: null,
     radius: 500,
