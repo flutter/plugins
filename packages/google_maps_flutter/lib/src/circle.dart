@@ -24,8 +24,8 @@ class Circle {
 /// set the stroke pattern to the default (solid).
 class CircleOptions {
   const CircleOptions({
-    @required this.radius,
-    @required this.center,
+    this.radius,
+    this.center,
     this.consumeTapEvents,
     this.strokeColor,
     this.fillColor,
