@@ -130,7 +130,7 @@
     @"payment" : self.payment ? [self.payment toMap] : [NSNull null],
     @"originalTransaction" : self.originalTransaction ? [self.originalTransaction toMap]
                                                       : [NSNull null],
-    @"transactionDate" : self.transactionDate ? @(self.transactionDate.timeIntervalSince1970)
+    @"transactionTimeStamp" : self.transactionDate ? @(self.transactionDate.timeIntervalSince1970)
                                               : [NSNull null],
     @"transactionIdentifier" : self.transactionIdentifier ?: [NSNull null],
     @"transactionState" : @(self.transactionState)

@@ -152,7 +152,7 @@
     }
     [self setValue:map[@"error"] ? [[NSErrorStub alloc] initWithMap:map[@"error"]] : [NSNull null]
             forKey:@"error"];
-    [self setValue:[NSDate dateWithTimeIntervalSince1970:[map[@"transactionDate"] doubleValue]]
+    [self setValue:[NSDate dateWithTimeIntervalSince1970:[map[@"transactionTimeStamp"] doubleValue]]
             forKey:@"transactionDate"];
     NSMutableArray *downloads = [NSMutableArray new];
     for (NSDictionary *downloadMap in map[@"downloads"]) {

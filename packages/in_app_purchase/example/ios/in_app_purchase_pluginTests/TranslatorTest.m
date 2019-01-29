@@ -69,7 +69,7 @@
     @"transactionState" : @(SKPaymentTransactionStatePurchasing),
     @"payment" : [NSNull null],
     @"error" : [[NSError errorWithDomain:@"test_stub" code:123 userInfo:@{}] toMap],
-    @"transactionDate" : @([NSDate date].timeIntervalSince1970),
+    @"transactionTimeStamp" : @([NSDate date].timeIntervalSince1970),
     @"originalTransaction" : [NSNull null],
     @"downloads" : @[ @{
       @"state" : @(0),
@@ -89,7 +89,7 @@
     @"transactionState" : @(SKPaymentTransactionStatePurchasing),
     @"payment" : [NSNull null],
     @"error" : [[NSError errorWithDomain:@"test_stub" code:123 userInfo:@{}] toMap],
-    @"transactionDate" : @([NSDate date].timeIntervalSince1970),
+    @"transactionTimeStamp" : @([NSDate date].timeIntervalSince1970),
     @"originalTransaction" : originalTransactionMap,
     @"downloads" : @[ @{
       @"state" : @(0),
