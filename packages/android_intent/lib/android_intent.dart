@@ -68,8 +68,7 @@ class AndroidIntent {
     return extras;
   }
 
-  static Future<void> setIntentExtra(
-          String name, dynamic value) async {
+  static Future<void> setIntentExtra(String name, dynamic value) async {
     final Map<String, dynamic> args = <String, dynamic>{
       'name': name,
       'value': value
