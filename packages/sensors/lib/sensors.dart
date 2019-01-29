@@ -131,7 +131,7 @@ Stream<List<double>> get _userAccelerometerAndGravityEvents {
 Stream<UserAccelerometerEvent> get userAccelerometerEvents {
   if (_userAccelerometerEvents == null) {
     _userAccelerometerEvents = _userAccelerometerAndGravityEvents
-        .map((data) => _listToUserAccelerometerEvent(data));
+        .map((List<double> data) => _listToUserAccelerometerEvent(data));
   }
   return _userAccelerometerEvents;
 }
@@ -139,7 +139,8 @@ Stream<UserAccelerometerEvent> get userAccelerometerEvents {
 /// Events from the device accelerometer, gravity only.
 Stream<GravityEvent> get gravityEvents {
   if (_gravityEvents == null) {
-    _gravityEvents = _userAccelerometerAndGravityEvents.map((data) {
+    _gravityEvents =
+        _userAccelerometerAndGravityEvents.map((List<double> data) {
       return _listToGravityEvent(data);
     });
   }

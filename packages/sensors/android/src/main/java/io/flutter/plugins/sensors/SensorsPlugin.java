@@ -9,18 +9,15 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-
-import java.util.Arrays;
-
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
+import java.util.Arrays;
 
 /** SensorsPlugin */
 public class SensorsPlugin implements EventChannel.StreamHandler {
   private static final String ACCELEROMETER_CHANNEL_NAME =
       "plugins.flutter.io/sensors/accelerometer";
-  private static final String GYROSCOPE_CHANNEL_NAME =
-      "plugins.flutter.io/sensors/gyroscope";
+  private static final String GYROSCOPE_CHANNEL_NAME = "plugins.flutter.io/sensors/gyroscope";
   private static final String USER_ACCELEROMETER_GRAVITY_CHANNEL_NAME =
       "plugins.flutter.io/sensors/user_accel_gravity";
 
@@ -34,7 +31,8 @@ public class SensorsPlugin implements EventChannel.StreamHandler {
     final EventChannel userAccelGravityChannel =
         new EventChannel(registrar.messenger(), USER_ACCELEROMETER_GRAVITY_CHANNEL_NAME);
     userAccelGravityChannel.setStreamHandler(
-        new SensorsPlugin(registrar.context(), Sensor.TYPE_LINEAR_ACCELERATION, Sensor.TYPE_GRAVITY));
+        new SensorsPlugin(
+            registrar.context(), Sensor.TYPE_LINEAR_ACCELERATION, Sensor.TYPE_GRAVITY));
 
     final EventChannel gyroscopeChannel =
         new EventChannel(registrar.messenger(), GYROSCOPE_CHANNEL_NAME);
@@ -47,17 +45,17 @@ public class SensorsPlugin implements EventChannel.StreamHandler {
   private final Sensor[] sensors;
   private final double[] values;
 
-  private SensorsPlugin(Context context, int ... sensorTypes) {
+  private SensorsPlugin(Context context, int... sensorTypes) {
     sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
     if (sensorManager != null) {
-        sensors = new Sensor[sensorTypes.length];
-        for (int i = 0; i < sensorTypes.length; ++i) {
-            sensors[i] = sensorManager.getDefaultSensor(sensorTypes[i]);
-        }
-        values = new double[sensorTypes.length * 3];
+      sensors = new Sensor[sensorTypes.length];
+      for (int i = 0; i < sensorTypes.length; ++i) {
+        sensors[i] = sensorManager.getDefaultSensor(sensorTypes[i]);
+      }
+      values = new double[sensorTypes.length * 3];
     } else {
-        sensors = new Sensor[0];
-        values = new double[0];
+      sensors = new Sensor[0];
+      values = new double[0];
     }
   }
 
@@ -86,10 +84,10 @@ public class SensorsPlugin implements EventChannel.StreamHandler {
         if (event.values.length >= 3) {
           int offset = -1;
           for (int i = 0; i < sensors.length; ++i) {
-              if (sensors[i].equals(event.sensor)) {
-                  offset = i * 3;
-                  break;
-              }
+            if (sensors[i].equals(event.sensor)) {
+              offset = i * 3;
+              break;
+            }
           }
           if (offset >= 0) {
             for (int i = 0; i < 3; i++) {
