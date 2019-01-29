@@ -442,6 +442,42 @@ void main() {
         unorderedEquals(<String>['Tts', 'Alarm2', 'Alarm3']));
   });
 
+  testWidgets('Remove all JavaScript channels and then add', (WidgetTester tester) async {
+    // This covers a specific bug we had where after updating javascriptChannels to null,
+    // updating it again with a subset of the previously registered channels fails as the
+    // widget's cache of current channel wasn't properly updated when updating javascriptChannels to
+    // null.
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://youtube.com',
+        javascriptChannels: <JavascriptChannel>[
+          JavascriptChannel(name: 'Tts', onMessageReceived: (JavascriptMessage msg) {}),
+        ].toSet(),
+      ),
+    );
+
+    await tester.pumpWidget(
+      const WebView(
+        initialUrl: 'https://youtube.com',
+      ),
+    );
+
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://youtube.com',
+        javascriptChannels: <JavascriptChannel>[
+          JavascriptChannel(name: 'Tts', onMessageReceived: (JavascriptMessage msg) {}),
+        ].toSet(),
+      ),
+    );
+
+    final FakePlatformWebView platformWebView =
+        fakePlatformViewsController.lastCreatedView;
+
+    expect(platformWebView.javascriptChannelNames,
+        unorderedEquals(<String>['Tts']));
+  });
+
   testWidgets('JavaScript channel messages', (WidgetTester tester) async {
     final List<String> ttsMessagesReceived = <String>[];
     final List<String> alarmMessagesReceived = <String>[];
@@ -474,6 +510,7 @@ void main() {
 
     expect(ttsMessagesReceived, <String>['Hello', 'World']);
   });
+
 }
 
 class FakePlatformWebView {

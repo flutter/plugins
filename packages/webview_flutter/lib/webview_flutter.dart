@@ -429,10 +429,10 @@ class WebViewController {
   }
 
   void _updateJavascriptChannelsFromSet(Set<JavascriptChannel> channels) {
+    _javascriptChannels.clear();
     if (channels == null) {
       return;
     }
-    _javascriptChannels.clear();
     for (JavascriptChannel channel in channels) {
       _javascriptChannels[channel.name] = channel;
     }
