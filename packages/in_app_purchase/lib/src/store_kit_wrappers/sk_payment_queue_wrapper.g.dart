@@ -6,17 +6,18 @@ part of 'sk_payment_queue_wrapper.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-SKDownloadWrapper _$SKDownloadWrapperFromJson(Map json) {
-  return SKDownloadWrapper(
-      contentIdentifier: json['contentIdentifier'] as String,
-      state: _$enumDecode(_$SKDownloadStateEnumMap, json['state']),
-      contentLength: json['contentLength'] as int,
-      contentURL: json['contentURL'] as String,
-      contentVersion: json['contentVersion'] as String,
-      transactionID: json['transactionID'] as String,
-      progress: (json['progress'] as num).toDouble(),
-      timeRemaining: (json['timeRemaining'] as num).toDouble(),
-      downloadTimeUnknown: json['downloadTimeUnknown'] as bool,
+SKPaymentTransactionWrapper _$SKPaymentTransactionWrapperFromJson(Map json) {
+  return SKPaymentTransactionWrapper(
+      payment: SKPaymentWrapper.fromJson(json['payment'] as Map),
+      transactionState: _$enumDecode(
+          _$SKPaymentTransactionStateWrapperEnumMap, json['transactionState']),
+      originalTransaction: SKPaymentTransactionWrapper.fromJson(
+          json['originalTransaction'] as Map),
+      transactionTimeStamp: (json['transactionTimeStamp'] as num).toDouble(),
+      transactionIdentifier: json['transactionIdentifier'] as String,
+      downloads: (json['downloads'] as List)
+          .map((e) => SKDownloadWrapper.fromJson(e as Map))
+          .toList(),
       error: SKError.fromJson(json['error'] as Map));
 }
 
@@ -31,6 +32,29 @@ T _$enumDecode<T>(Map<T, dynamic> enumValues, dynamic source) {
               '`$source` is not one of the supported values: '
               '${enumValues.values.join(', ')}'))
       .key;
+}
+
+const _$SKPaymentTransactionStateWrapperEnumMap =
+    <SKPaymentTransactionStateWrapper, dynamic>{
+  SKPaymentTransactionStateWrapper.purchasing: 0,
+  SKPaymentTransactionStateWrapper.purchased: 1,
+  SKPaymentTransactionStateWrapper.failed: 2,
+  SKPaymentTransactionStateWrapper.restored: 3,
+  SKPaymentTransactionStateWrapper.deferred: 4
+};
+
+SKDownloadWrapper _$SKDownloadWrapperFromJson(Map json) {
+  return SKDownloadWrapper(
+      contentIdentifier: json['contentIdentifier'] as String,
+      state: _$enumDecode(_$SKDownloadStateEnumMap, json['state']),
+      contentLength: json['contentLength'] as int,
+      contentURL: json['contentURL'] as String,
+      contentVersion: json['contentVersion'] as String,
+      transactionID: json['transactionID'] as String,
+      progress: (json['progress'] as num).toDouble(),
+      timeRemaining: (json['timeRemaining'] as num).toDouble(),
+      downloadTimeUnknown: json['downloadTimeUnknown'] as bool,
+      error: SKError.fromJson(json['error'] as Map));
 }
 
 const _$SKDownloadStateEnumMap = <SKDownloadState, dynamic>{

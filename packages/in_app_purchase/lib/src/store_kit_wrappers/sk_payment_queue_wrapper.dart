@@ -21,33 +21,52 @@ class SKPaymentQueueWrapper {
 /// [SKPaymentTransactionState](https://developer.apple.com/documentation/storekit/skpaymenttransactionstate?language=objc).
 enum SKPaymentTransactionStateWrapper {
   /// Indicates the transaction in being processed in App Store.
+  @JsonValue(0)
   purchasing,
 
   /// The payment is processed, you should provide user the content they purchased.
+  @JsonValue(1)
   purchased,
 
   /// The transaction failed, check the [SKPaymentTransactionWrapper.error] property from [SKPaymentTransactionWrapper] for details.
+  @JsonValue(2)
   failed,
 
   /// This transaction restores the content previously purchased by the user, the previous transaction information can be
   /// obtained in [SKPaymentTransactionWrapper.originalTransaction] fromm [SKPaymentTransactionWrapper].
+  @JsonValue(3)
   restored,
 
   /// The transaction is in the queue but pending external action. Wait for another callback to get the final state.
+  @JsonValue(4)
   deferred,
 }
 
 /// Dart wrapper around StoreKit's [SKPaymentTransaction](https://developer.apple.com/documentation/storekit/skpaymenttransaction?language=objc).
+@JsonSerializable()
 class SKPaymentTransactionWrapper {
   SKPaymentTransactionWrapper({
     @required this.payment,
     @required this.transactionState,
     @required this.originalTransaction,
-    @required this.transactionDate,
+    @required this.transactionTimeStamp,
     @required this.transactionIdentifier,
     @required this.downloads,
     @required this.error,
   });
+
+  /// Constructs an instance of this from a key value map of data.
+  ///
+  /// The map needs to have named string keys with values matching the names and
+  /// types of all of the members on this class.
+  /// The `map` parameter must not be null.
+  @visibleForTesting
+  factory SKPaymentTransactionWrapper.fromJson(Map map) {
+    if (map == null) {
+      return null;
+    }
+    return _$SKPaymentTransactionWrapperFromJson(map);
+  }
 
   /// Current transaction state.
   final SKPaymentTransactionStateWrapper transactionState;
@@ -61,10 +80,11 @@ class SKPaymentTransactionWrapper {
   /// [transactionIdentifier].
   final SKPaymentTransactionWrapper originalTransaction;
 
-  /// The timestamp of the transaction in UTC.
+  /// The timestamp of the transaction.
   ///
+  /// Milliseconds since epoch.
   /// It is only defined when the [transactionState] is [SKPaymentTransactionStateWrapper.purchased] or [SKPaymentTransactionStateWrapper.restored].
-  final DateTime transactionDate;
+  final double transactionTimeStamp;
 
   /// The unique string identifer of the transaction.
   ///
@@ -82,7 +102,7 @@ class SKPaymentTransactionWrapper {
   final List<SKDownloadWrapper> downloads;
 
   /// The error object, only available if the [transactionState] is [SKPaymentTransactionStateWrapper.failed].
-  final PlatformException error;
+  final SKError error;
 }
 
 /// Dart wrapper around StoreKit's [SKDownloadState](https://developer.apple.com/documentation/storekit/skdownloadstate?language=objc).
