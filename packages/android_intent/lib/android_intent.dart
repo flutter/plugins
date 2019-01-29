@@ -68,10 +68,11 @@ class AndroidIntent {
     return extras;
   }
 
-  static Future<Map<dynamic, dynamic>> setIntentExtra(String name, dynamic value) async {
+  static Future<void> setIntentExtra(
+          String name, dynamic value) async {
     final Map<String, dynamic> args = <String, dynamic>{
-      'name' : name,
-      'value' : value
+      'name': name,
+      'value': value
     };
     await _channel.invokeMethod('setIntentExtra', args);
   }
