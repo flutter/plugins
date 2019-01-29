@@ -56,7 +56,7 @@
       if (@available(iOS 9.0, *)) {
         _webView.customUserAgent = userAgent;
       } else {
-        [[NSUserDefaults standardUserDefaults] registerDefaults:@{@"UserAgent": userAgent}];
+        [[NSUserDefaults standardUserDefaults] registerDefaults:@{@"UserAgent" : userAgent}];
       }
     }
 
