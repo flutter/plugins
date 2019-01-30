@@ -25,6 +25,7 @@ class WebViewExample extends StatelessWidget {
       ),
       body: WebView(
         initialUrl: 'https://flutter.io',
+        htmlData: "<h1>Dispayed a custom html text here.</h1>",
         javascriptMode: JavascriptMode.unrestricted,
         onWebViewCreated: (WebViewController webViewController) {
           _controller.complete(webViewController);
