@@ -20,5 +20,7 @@
 // Defines circle controllable by Flutter.
 @interface FLTGoogleMapCircleController : NSObject <FLTGoogleMapCircleOptionsSink>
 @property(atomic, readonly) NSString* circleId;
-- (instancetype)initWithCenter:(CLLocationCoordinate2D)center radius:(int)radius mapView:(GMSMapView*)mapView;
+- (instancetype)initWithCenter:(CLLocationCoordinate2D)center
+                        radius:(int)radius
+                       mapView:(GMSMapView*)mapView;
 @end

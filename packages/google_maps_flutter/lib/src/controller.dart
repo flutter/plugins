@@ -330,6 +330,9 @@ class GoogleMapController extends ChangeNotifier {
     assert(circle != null);
     assert(_circles[circle._id] == circle);
     assert(changes != null);
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     await _channel.invokeMethod('circle#update', <String, dynamic>{
       'circle': circle._id,
       'options': changes._toJson(),
@@ -413,6 +416,9 @@ class GoogleMapController extends ChangeNotifier {
   }
 
   Future<void> _removeCircle(String id) async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     await _channel.invokeMethod('circle#remove', <String, dynamic>{
       'circle': id,
     });

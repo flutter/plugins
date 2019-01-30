@@ -4,8 +4,8 @@
 
 #import <Flutter/Flutter.h>
 #import <GoogleMaps/GoogleMaps.h>
-#import "GoogleMapMarkerController.h"
 #import "GoogleMapCircleController.h"
+#import "GoogleMapMarkerController.h"
 #import "GoogleMapPolylineController.h"
 
 // Defines map UI options writable from Flutter.
@@ -41,9 +41,9 @@
 - (NSString *)addPolylineWithPoints:(NSMutableArray *)points;
 - (FLTGoogleMapPolylineController *)polylineWithId:(NSString *)polylineId;
 - (void)removePolylineWithId:(NSString *)polylineId;
-- (NSString*)addCircleWithCenter:(CLLocationCoordinate2D)center radius:(int)radius;
-- (FLTGoogleMapCircleController*)circleWithId:(NSString*)circleId;
-- (void)removeCircleWithId:(NSString*)circleId;
+- (NSString *)addCircleWithCenter:(CLLocationCoordinate2D)center radius:(int)radius;
+- (FLTGoogleMapCircleController *)circleWithId:(NSString *)circleId;
+- (void)removeCircleWithId:(NSString *)circleId;
 @end
 
 // Allows the engine to create new Google Map instances.

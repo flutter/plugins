@@ -7,47 +7,49 @@
 static uint64_t _nextCircleId = 0;
 
 @implementation FLTGoogleMapCircleController {
-    GMSCircle* _circle;
-    GMSMapView* _mapView;
+  GMSCircle* _circle;
+  GMSMapView* _mapView;
 }
-- (instancetype)initWithCenter:(CLLocationCoordinate2D)center radius:(int)radius mapView:(GMSMapView*)mapView {
-    self = [super init];
-    if (self) {
-        _circle = [GMSCircle circleWithPosition:center radius:radius];
-        _mapView = mapView;
-        _circleId = [NSString stringWithFormat:@"%lld", _nextCircleId++];
-        _circle.userData = @[ _circleId, @(NO) ];
-    }
-    return self;
+- (instancetype)initWithCenter:(CLLocationCoordinate2D)center
+                        radius:(int)radius
+                       mapView:(GMSMapView*)mapView {
+  self = [super init];
+  if (self) {
+    _circle = [GMSCircle circleWithPosition:center radius:radius];
+    _mapView = mapView;
+    _circleId = [NSString stringWithFormat:@"%lld", _nextCircleId++];
+    _circle.userData = @[ _circleId, @(NO) ];
+  }
+  return self;
 }
 
 #pragma mark - FLTGoogleMapCircleOptionsSink methods
 
 - (void)setConsumeTapEvents:(BOOL)consumes {
-    if(consumes){
-      _circle.tappable = true;
-    }
+  if (consumes) {
+    _circle.tappable = true;
+  }
 }
 - (void)setCenter:(CLLocationCoordinate2D)center {
-    _circle.position = center;
+  _circle.position = center;
 }
 - (void)setVisible:(BOOL)visible {
-    _circle.map = visible ? _mapView : nil;
+  _circle.map = visible ? _mapView : nil;
 }
 - (void)setZIndex:(int)zIndex {
-    _circle.zIndex = zIndex;
+  _circle.zIndex = zIndex;
 }
 - (void)setFillColor:(UIColor *)fillColor {
-    _circle.fillColor = fillColor;
+  _circle.fillColor = fillColor;
 }
 - (void)setRadius:(int)radius {
-    _circle.radius = radius;
+  _circle.radius = radius;
 }
 - (void)setStrokeColor:(UIColor *)strokeColor {
-    _circle.strokeColor  = strokeColor;
+  _circle.strokeColor  = strokeColor;
 }
 - (void)setStrokeWidth:(int)strokeWidth {
-    _circle.strokeWidth = strokeWidth;
+  _circle.strokeWidth = strokeWidth;
 }
 
 @end
