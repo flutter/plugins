@@ -325,8 +325,6 @@ class Convert {
     final Object pattern = data.get("pattern");
     if (pattern != null) {
       sink.setPattern(_toPattern(pattern));
-    } else if (data.containsKey("pattern")) {
-      sink.setPattern(null);
     }
   }
 
@@ -343,6 +341,11 @@ class Convert {
 
   private static List<PatternItem> _toPattern(Object o) {
     final List<?> data = toList(o);
+
+    if (data.isEmpty()) {
+      return null;
+    }
+
     final List<PatternItem> pattern = new ArrayList<>(data.size());
 
     for (Object ob : data) {
