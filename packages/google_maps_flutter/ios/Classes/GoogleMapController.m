@@ -24,7 +24,6 @@ static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink
 static void interpretCircleOptions(id json, id<FLTGoogleMapCircleOptionsSink> sink,
                                      NSObject<FlutterPluginRegistrar>* registrar);
 
-
 @implementation FLTGoogleMapFactory {
   NSObject<FlutterPluginRegistrar>* _registrar;
 }
@@ -238,7 +237,6 @@ static void interpretCircleOptions(id json, id<FLTGoogleMapCircleOptionsSink> si
         [_circles removeObjectForKey:circleId];
     }
 }
-
 
 #pragma mark - FLTGoogleMapOptionsSink methods
 

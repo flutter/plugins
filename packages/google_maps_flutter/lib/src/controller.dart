@@ -350,6 +350,9 @@ class GoogleMapController extends ChangeNotifier {
     assert(polyline != null);
     assert(_polylines[polyline._id] == polyline);
     assert(changes != null);
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     await _channel.invokeMethod('polyline#update', <String, dynamic>{
       'polyline': polyline._id,
       'options': changes._toJson(),
@@ -400,6 +403,9 @@ class GoogleMapController extends ChangeNotifier {
   /// The returned [Future] completes once the polyline has been removed from
   /// [_polylines].
   Future<void> _removePolyline(String id) async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     await _channel.invokeMethod('polyline#remove', <String, dynamic>{
       'polyline': id,
     });
