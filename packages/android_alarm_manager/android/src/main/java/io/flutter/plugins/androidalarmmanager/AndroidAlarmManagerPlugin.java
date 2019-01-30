@@ -72,6 +72,7 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
 
   private void startService(JSONArray arguments) throws JSONException {
     long callbackHandle = arguments.getLong(0);
+    AlarmService.setCallbackDispatcher(mContext, callbackHandle);
     AlarmService.startAlarmService(mContext, callbackHandle);
   }
 

@@ -1,3 +1,10 @@
+## 0.9.0
+* **Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library.
+
 ## 0.8.2+3
 
 * Resolved "explicit self reference" and "loses accuracy" compiler warnings.
