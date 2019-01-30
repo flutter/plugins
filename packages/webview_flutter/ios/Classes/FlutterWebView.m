@@ -51,8 +51,11 @@
     NSDictionary<NSString*, id>* settings = args[@"settings"];
     [self applySettings:settings];
     NSString* initialUrl = args[@"initialUrl"];
+    NSString* htmlData = args[@"htmlData"];
     if (initialUrl && ![initialUrl isKindOfClass:[NSNull class]]) {
       [self loadUrl:initialUrl];
+    } else if(htmlData && ![htmlData isKindOfClass:[NSNull class]]){
+      [self loadHTMLString:htmlData];
     }
   }
   return self;
@@ -187,6 +190,11 @@
   NSURLRequest* req = [NSURLRequest requestWithURL:nsUrl];
   [_webView loadRequest:req];
   return true;
+}
+
+- (void)loadHTMLString:(NSString*)htmlData {
+    // We might have to add more parameters on dart side to ask baseURL
+    [_webView loadHTMLString:htmlData baseURL: nil];
 }
 
 @end

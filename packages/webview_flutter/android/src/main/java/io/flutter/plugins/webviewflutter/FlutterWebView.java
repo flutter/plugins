@@ -18,9 +18,13 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   @SuppressWarnings("unchecked")
   FlutterWebView(Context context, BinaryMessenger messenger, int id, Map<String, Object> params) {
     webView = new WebView(context);
-    if (params.containsKey("initialUrl")) {
-      String url = (String) params.get("initialUrl");
+    String url = (String) params.get("initialUrl");
+    String htmlData = (String) params.get("htmlData");
+    if (params.containsKey("initialUrl") && url != null) {
       webView.loadUrl(url);
+    } else if (params.containsKey("htmlData") && htmlData != null){
+      // We might have to add more parameters on dart side to ask baseURL
+      webView.loadData(htmlData, "text/html",  "UTF-8"); 
     }
     applySettings((Map<String, Object>) params.get("settings"));
     methodChannel = new MethodChannel(messenger, "plugins.flutter.io/webview_" + id);

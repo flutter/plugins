@@ -40,6 +40,20 @@ void main() {
     expect(await controller.currentUrl(), 'https://youtube.com');
   });
 
+  testWidgets('Load HTML Data', (WidgetTester tester) async {
+    WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        htmlData: "<h1>Hello</h1>",
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+    //todo dont know what to expect here.
+    expect(await controller.currentUrl(), 'https://youtube.com');
+  });
+
   testWidgets('Javascript mode', (WidgetTester tester) async {
     await tester.pumpWidget(const WebView(
       initialUrl: 'https://youtube.com',

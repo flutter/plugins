@@ -31,6 +31,7 @@ class WebView extends StatefulWidget {
     Key key,
     this.onWebViewCreated,
     this.initialUrl,
+    this.htmlData,
     this.javascriptMode = JavascriptMode.disabled,
     this.gestureRecognizers,
   })  : assert(javascriptMode != null),
@@ -52,6 +53,9 @@ class WebView extends StatefulWidget {
 
   /// The initial URL to load.
   final String initialUrl;
+
+  /// Html data that should be loaded once the web view is created.
+  final String htmlData;
 
   /// Whether Javascript execution is enabled.
   final JavascriptMode javascriptMode;
@@ -126,21 +130,24 @@ class _WebViewState extends State<WebView> {
 }
 
 class _CreationParams {
-  _CreationParams({this.initialUrl, this.settings});
+  _CreationParams({this.initialUrl, this.htmlData, this.settings});
 
   static _CreationParams fromWidget(WebView widget) {
     return _CreationParams(
       initialUrl: widget.initialUrl,
+      htmlData: widget.htmlData,
       settings: _WebSettings.fromWidget(widget),
     );
   }
 
   final String initialUrl;
+  final String htmlData;
   final _WebSettings settings;
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'initialUrl': initialUrl,
+      'htmlData': htmlData,
       'settings': settings.toMap(),
     };
   }
