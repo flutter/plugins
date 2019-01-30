@@ -577,7 +577,7 @@ static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink
   id position = data[@"points"];
   if (position) {
     [sink setPoints:toPoints(position)];
-  } 
+  }
   id visible = data[@"visible"];
   if (visible) {
     [sink setVisible:toBool(visible)];
@@ -587,11 +587,10 @@ static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink
     NSNumber* numberColor = (NSNumber*)color;
     long value = [numberColor longValue];
     [sink setColor:[UIColor colorWithRed:((float)((value & 0xFF0000) >> 16)) / 255.0
-                                         green:((float)((value & 0xFF00) >> 8)) / 255.0
-                                          blue:((float)(value & 0xFF)) / 255.0
-                                         alpha:((float)((value & 0xFF000000) >> 24)) / 255.0]];
-
-  } 
+                                   green:((float)((value & 0xFF00) >> 8)) / 255.0
+                                    blue:((float)(value & 0xFF)) / 255.0
+                                   alpha:((float)((value & 0xFF000000) >> 24)) / 255.0]];
+  }
   id width = data[@"width"];
   if (width) {
     [sink setStrokeWidth:toFloat(width)];
@@ -625,9 +624,9 @@ static void interpretCircleOptions(id json, id<FLTGoogleMapCircleOptionsSink> si
     NSNumber* numberColor = (NSNumber*)strokeColor;
     long value = [numberColor longValue];
     [sink setStrokeColor:[UIColor colorWithRed:((float)((value & 0xFF0000) >> 16)) / 255.0
-                                         green:((float)((value & 0xFF00) >> 8)) / 255.0
-                                          blue:((float)(value & 0xFF)) / 255.0
-                                         alpha:((float)((value & 0xFF000000) >> 24)) / 255.0]];
+                                       green:((float)((value & 0xFF00) >> 8)) / 255.0
+                                        blue:((float)(value & 0xFF)) / 255.0
+                                       alpha:((float)((value & 0xFF000000) >> 24)) / 255.0]];
   }
   id strokeWidth = data[@"strokeWidth"];
   if (strokeWidth) {
