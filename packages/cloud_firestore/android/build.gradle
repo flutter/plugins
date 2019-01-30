@@ -35,5 +35,6 @@ android {
     }
     dependencies {
         api 'com.google.firebase:firebase-firestore:17.1.1'
+        implementation 'androidx.annotation:annotation:1.0.0'
     }
 }

@@ -41,5 +41,6 @@ android {
     }
     dependencies {
         api 'com.google.firebase:firebase-storage:16.0.3'
+        implementation 'androidx.annotation:annotation:1.0.0'
     }
 }
