@@ -33,5 +33,6 @@ android {
     }
     dependencies {
         api 'com.google.firebase:firebase-config:16.0.1'
+        implementation 'androidx.annotation:annotation:1.0.0'
     }
 }
