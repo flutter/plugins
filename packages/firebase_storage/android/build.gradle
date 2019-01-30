@@ -1,3 +1,14 @@
+def PLUGIN = "firebase_storage";
+def ANDROIDX_WARNING = "flutterPluginsAndroidXWarning";
+if (!rootProject.ext.has(ANDROIDX_WARNING)) {
+    println '         *********************************************************'
+    println 'WARNING: This version of ' + PLUGIN + ' will break your Android build if it isn\'t compatible with AndroidX.'
+    println '         https://goo.gl/y9dCcU describes AndroidX and how to migrate to it using Android Studio.'
+    println '         [WIP https://github.com/flutter/website/pull/2310] describes how to open a Flutter app\'s Android files for refactoring in Android Studio.'
+    println '         *********************************************************'
+    rootProject.ext.set(ANDROIDX_WARNING, true);
+}
+
 group 'io.flutter.plugins.firebase.storage'
 version '1.0-SNAPSHOT'
 

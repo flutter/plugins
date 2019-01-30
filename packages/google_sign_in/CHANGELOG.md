@@ -1,3 +1,8 @@
+## 4.0.1
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
 ## 4.0.0+1
 
 * Added a better error message for iOS when the app is missing necessary URL schemes.
