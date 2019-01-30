@@ -1,10 +1,15 @@
 def PLUGIN = "cloud_functions";
 def ANDROIDX_WARNING = "flutterPluginsAndroidXWarning";
-if (!rootProject.ext.has(ANDROIDX_WARNING)) {
-    println 'WARNING: This version of ' + PLUGIN + ' will break your Android build if it isn\'t compatible with AndroidX.'
-    println '         https://goo.gl/y9dCcU describes AndroidX and how to migrate to it using Android Studio.'
-    println '         https://goo.gl/n2E4mD describes how to open a Flutter app\'s Android files for refactoring in Android Studio.'
-    rootProject.ext.set(ANDROIDX_WARNING, true);
+gradle.buildFinished { buildResult ->
+    if (buildResult.failure && !rootProject.ext.has(ANDROIDX_WARNING)) {
+        println '         *********************************************************'
+        println 'WARNING: This version of ' + PLUGIN + ' will break your Android build if it or its dependencies aren\'t compatible with AndroidX.'
+        println '         https://goo.gl/y9dCcU describes AndroidX and how to migrate to it using Android Studio.'
+        println '         https://goo.gl/n2E4mD describes how to open a Flutter app\'s Android files for refactoring in Android Studio.'
+        println '         This warning prints for all Android build failures. The real root cause of the error may be unrelated.'
+        println '         *********************************************************'
+        rootProject.ext.set(ANDROIDX_WARNING, true);
+    }
 }
 
 group 'io.flutter.plugins.firebase.cloudfunctions.cloudfunctions'
