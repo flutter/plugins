@@ -20,7 +20,6 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
 static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink> sink,
                                      NSObject<FlutterPluginRegistrar>* registrar);
 
-
 @implementation FLTGoogleMapFactory {
   NSObject<FlutterPluginRegistrar>* _registrar;
 }
@@ -202,7 +201,6 @@ static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink
   }
 }
 
-
 #pragma mark - FLTGoogleMapOptionsSink methods
 
 - (void)setCamera:(GMSCameraPosition*)camera {
@@ -345,7 +343,7 @@ static NSMutableArray* toPoints(id json) {
                                                    longitude:toDouble(data[i][1])];
     [points addObject:point];
   }
-  
+
   return points;
 }
 
