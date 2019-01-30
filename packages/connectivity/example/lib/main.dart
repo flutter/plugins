@@ -1,7 +1,3 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -13,29 +9,58 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+  final String title = 'Connectivity Example';
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: title,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(title: title),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+class MyHomePage extends StatelessWidget {
+  const MyHomePage({Key key, this.title}) : super(key: key);
 
   final String title;
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(title),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(15.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            ConnectivityWidget(title: 'A'),
+            ConnectivityWidget(title: 'B'),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class ConnectivityWidget extends StatefulWidget {
+  ConnectivityWidget({
+    Key key,
+    this.title = '',
+  }) : super(key: key);
+
+  final String title;
+  @override
+  _ConnectivityWidgetState createState() => _ConnectivityWidgetState();
+}
+
+class _ConnectivityWidgetState extends State<ConnectivityWidget> {
   String _connectionStatus = 'Unknown';
   final Connectivity _connectivity = Connectivity();
   StreamSubscription<ConnectivityResult> _connectivitySubscription;
@@ -46,6 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
     initConnectivity();
     _connectivitySubscription =
         _connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
+      print('${widget.title} onConnectivityChanged: ${result.toString()}');
       setState(() => _connectionStatus = result.toString());
     });
   }
@@ -56,20 +82,16 @@ class _MyHomePageState extends State<MyHomePage> {
     super.dispose();
   }
 
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initConnectivity() async {
+  Future<Null> initConnectivity() async {
     String connectionStatus;
-    // Platform messages may fail, so we use a try/catch PlatformException.
     try {
       connectionStatus = (await _connectivity.checkConnectivity()).toString();
+      print('${widget.title} checkConnectivity: $connectionStatus');
     } on PlatformException catch (e) {
       print(e.toString());
       connectionStatus = 'Failed to get connectivity.';
     }
 
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
     if (!mounted) {
       return;
     }
@@ -81,11 +103,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Plugin example app'),
-      ),
-      body: Center(child: Text('Connection Status: $_connectionStatus\n')),
-    );
+    return Text('Connection Status: $_connectionStatus\n');
   }
 }
