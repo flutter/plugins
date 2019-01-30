@@ -27,7 +27,6 @@ static uint64_t _nextCircleId = 0;
     if(consumes){
       _circle.tappable = true;
     }
-    _circle.userData[1] = @(consumes);
 }
 - (void)setCenter:(CLLocationCoordinate2D)center {
     _circle.position = center;

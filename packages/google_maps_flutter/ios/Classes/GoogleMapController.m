@@ -580,10 +580,17 @@ static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink
   if (position) {
     [sink setPoints:toPoints(position)];
   }
+    
   id visible = data[@"visible"];
   if (visible) {
     [sink setVisible:toBool(visible)];
   }
+    
+  id consumeTapEvents = data[@"consumeTapEvents"];
+  if (consumeTapEvents) {
+    [sink setConsumeTapEvents:toBool(consumeTapEvents)];
+  }
+    
   id color = data[@"color"];
   if (color) {
     NSNumber* numberColor = (NSNumber*)color;
@@ -593,10 +600,12 @@ static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink
                                     blue:((float)(value & 0xFF)) / 255.0
                                    alpha:((float)((value & 0xFF000000) >> 24)) / 255.0]];
   }
+    
   id width = data[@"width"];
   if (width) {
     [sink setStrokeWidth:toFloat(width)];
   }
+    
   id zIndex = data[@"zIndex"];
   if (zIndex) {
     [sink setZIndex:toInt(zIndex)];
@@ -616,10 +625,12 @@ static void interpretCircleOptions(id json, id<FLTGoogleMapCircleOptionsSink> si
                                         blue:((float)(value & 0xFF)) / 255.0
                                        alpha:((float)((value & 0xFF000000) >> 24)) / 255.0]];
     }
+    
     id visible = data[@"visible"];
     if (visible) {
         [sink setVisible:toBool(visible)];
     }
+    
     id strokeColor = data[@"strokeColor"];
     if (strokeColor) {
         NSNumber* numberColor = (NSNumber*)strokeColor;
@@ -629,10 +640,17 @@ static void interpretCircleOptions(id json, id<FLTGoogleMapCircleOptionsSink> si
                                         blue:((float)(value & 0xFF)) / 255.0
                                        alpha:((float)((value & 0xFF000000) >> 24)) / 255.0]];
     }
+    
     id strokeWidth = data[@"strokeWidth"];
     if (strokeWidth) {
         [sink setStrokeWidth:toFloat(strokeWidth)];
     }
+    
+    id consumeTapEvents = data[@"consumeTapEvents"];
+    if (consumeTapEvents) {
+        [sink setConsumeTapEvents:toBool(consumeTapEvents)];
+    }
+    
     id zIndex = data[@"zIndex"];
     if (zIndex) {
         [sink setZIndex:toInt(zIndex)];
