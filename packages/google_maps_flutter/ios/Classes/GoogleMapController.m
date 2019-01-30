@@ -610,10 +610,9 @@ static void interpretCircleOptions(id json, id<FLTGoogleMapCircleOptionsSink> si
     NSNumber* numberColor = (NSNumber*)fillColor;
     long value = [numberColor longValue];
     [sink setFillColor:[UIColor colorWithRed:((float)((value & 0xFF0000) >> 16)) / 255.0
-                                         green:((float)((value & 0xFF00) >> 8)) / 255.0
-                                          blue:((float)(value & 0xFF)) / 255.0
-                                         alpha:((float)((value & 0xFF000000) >> 24)) / 255.0]];
-
+                                       green:((float)((value & 0xFF00) >> 8)) / 255.0
+                                        blue:((float)(value & 0xFF)) / 255.0
+                                       alpha:((float)((value & 0xFF000000) >> 24)) / 255.0]];
   }
   id visible = data[@"visible"];
   if (visible) {
@@ -624,9 +623,9 @@ static void interpretCircleOptions(id json, id<FLTGoogleMapCircleOptionsSink> si
     NSNumber* numberColor = (NSNumber*)strokeColor;
     long value = [numberColor longValue];
     [sink setStrokeColor:[UIColor colorWithRed:((float)((value & 0xFF0000) >> 16)) / 255.0
-                                       green:((float)((value & 0xFF00) >> 8)) / 255.0
-                                        blue:((float)(value & 0xFF)) / 255.0
-                                       alpha:((float)((value & 0xFF000000) >> 24)) / 255.0]];
+                                         green:((float)((value & 0xFF00) >> 8)) / 255.0
+                                          blue:((float)(value & 0xFF)) / 255.0
+                                         alpha:((float)((value & 0xFF000000) >> 24)) / 255.0]];
   }
   id strokeWidth = data[@"strokeWidth"];
   if (strokeWidth) {
