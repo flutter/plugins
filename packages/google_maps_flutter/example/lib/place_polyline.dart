@@ -109,49 +109,56 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
   Future<void> _toggleGeodesic() async {
     _updateSelectedPolyline(
       PolylineOptions(
-          geodesic: !_selectedPolyline.options.geodesic,),
+        geodesic: !_selectedPolyline.options.geodesic,
+      ),
     );
   }
 
   Future<void> _toggleVisible() async {
     _updateSelectedPolyline(
       PolylineOptions(
-          visible: !_selectedPolyline.options.visible,),
+        visible: !_selectedPolyline.options.visible,
+      ),
     );
   }
 
   Future<void> _changeColor() async {
     _updateSelectedPolyline(
       PolylineOptions(
-          color: colors[++colorsIndex % colors.length],),
+        color: colors[++colorsIndex % colors.length],
+      ),
     );
   }
 
   Future<void> _changeWidth() async {
     _updateSelectedPolyline(
       PolylineOptions(
-          width: widths[++widthsIndex % widths.length],),
+        width: widths[++widthsIndex % widths.length],
+      ),
     );
   }
 
   Future<void> _changeJointType() async {
     _updateSelectedPolyline(
       PolylineOptions(
-          jointType: jointTypes[++jointTypesIndex % jointTypes.length],),
+        jointType: jointTypes[++jointTypesIndex % jointTypes.length],
+      ),
     );
   }
 
   Future<void> _changeEndCap() async {
     _updateSelectedPolyline(
       PolylineOptions(
-          endCap: endCaps[++endCapsIndex % endCaps.length],),
+        endCap: endCaps[++endCapsIndex % endCaps.length],
+      ),
     );
   }
 
   Future<void> _changeStartCap() async {
     _updateSelectedPolyline(
       PolylineOptions(
-          startCap: startCaps[++startCapsIndex % startCaps.length],),
+        startCap: startCaps[++startCapsIndex % startCaps.length],
+      ),
     );
   }
 
