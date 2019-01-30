@@ -1,3 +1,7 @@
+## 0.5.1
+
+* Use String to save double in Android.
+
 ## 0.5.0
 
 * **Breaking change**. Migrate from the deprecated original Android Support
