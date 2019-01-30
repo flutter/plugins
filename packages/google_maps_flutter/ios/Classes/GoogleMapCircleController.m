@@ -39,14 +39,14 @@ static uint64_t _nextCircleId = 0;
 - (void)setZIndex:(int)zIndex {
   _circle.zIndex = zIndex;
 }
-- (void)setFillColor:(UIColor *)fillColor {
+- (void)setFillColor:(UIColor*)fillColor {
   _circle.fillColor = fillColor;
 }
 - (void)setRadius:(int)radius {
   _circle.radius = radius;
 }
-- (void)setStrokeColor:(UIColor *)strokeColor {
-  _circle.strokeColor  = strokeColor;
+- (void)setStrokeColor:(UIColor*)strokeColor {
+  _circle.strokeColor = strokeColor;
 }
 - (void)setStrokeWidth:(int)strokeWidth {
   _circle.strokeWidth = strokeWidth;

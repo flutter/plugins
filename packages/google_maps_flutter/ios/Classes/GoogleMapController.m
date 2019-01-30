@@ -139,17 +139,18 @@ static void interpretCircleOptions(id json, id<FLTGoogleMapCircleOptionsSink> si
     result(nil);
   } else if ([call.method isEqualToString:@"circle#add"]) {
     NSDictionary* options = call.arguments[@"options"];
-    NSString* circleId = [self addCircleWithCenter:toLocation(options[@"center"]) radius:toInt(options[@"radius"])];
+    NSString* circleId = [self addCircleWithCenter:toLocation(options[@"center"])
+                                            radius:toInt(options[@"radius"])];
     interpretCircleOptions(options, [self circleWithId:circleId], _registrar);
     result(circleId);
   } else if ([call.method isEqualToString:@"circle#update"]) {
     interpretCircleOptions(call.arguments[@"options"],
-                             [self circleWithId:call.arguments[@"circle"]], _registrar);
+                           [self circleWithId:call.arguments[@"circle"]], _registrar);
     result(nil);
   } else if ([call.method isEqualToString:@"circle#remove"]) {
     [self removeCircleWithId:call.arguments[@"circle"]];
     result(nil);
-  }else {
+  } else {
     result(FlutterMethodNotImplemented);
   }
 }
@@ -182,14 +183,14 @@ static void interpretCircleOptions(id json, id<FLTGoogleMapCircleOptionsSink> si
 
 - (NSString*)addMarkerWithPosition:(CLLocationCoordinate2D)position {
   FLTGoogleMapMarkerController* markerController =
-  [[FLTGoogleMapMarkerController alloc] initWithPosition:position mapView:_mapView];
+      [[FLTGoogleMapMarkerController alloc] initWithPosition:position mapView:_mapView];
   _markers[markerController.markerId] = markerController;
   return markerController.markerId;
 }
 
 - (NSString*)addCircleWithCenter:(CLLocationCoordinate2D)center radius:(int)radius {
   FLTGoogleMapCircleController* circleController =
-  [[FLTGoogleMapCircleController alloc] initWithCenter:center radius:radius mapView:_mapView];
+      [[FLTGoogleMapCircleController alloc] initWithCenter:center radius:radius mapView:_mapView];
   _circles[circleController.circleId] = circleController;
   return circleController.circleId;
 }
@@ -225,16 +226,16 @@ static void interpretCircleOptions(id json, id<FLTGoogleMapCircleOptionsSink> si
 - (void)removePolylineWithId:(NSString*)polylineId {
   FLTGoogleMapPolylineController* polylineController = _polylines[polylineId];
   if (polylineController) {
-      [polylineController setVisible:NO];
-      [_polylines removeObjectForKey:polylineId];
+    [polylineController setVisible:NO];
+    [_polylines removeObjectForKey:polylineId];
   }
 }
 
 - (void)removeCircleWithId:(NSString*)circleId {
   FLTGoogleMapCircleController* circleController = _circles[circleId];
   if (circleController) {
-      [circleController setVisible:NO];
-      [_circles removeObjectForKey:circleId];
+    [circleController setVisible:NO];
+    [_circles removeObjectForKey:circleId];
   }
 }
 
@@ -319,18 +320,17 @@ static void interpretCircleOptions(id json, id<FLTGoogleMapCircleOptionsSink> si
 }
 
 - (void)mapView:(GMSMapView*)mapView didTapOverlay:(GMSOverlay*)overlay {
-  if([overlay isKindOfClass:[GMSPolyline class]]){
+  if ([overlay isKindOfClass:[GMSPolyline class]]) {
     NSString* polylineId = overlay.userData[0];
     [_channel invokeMethod:@"polyline#onTap" arguments:@{@"polyline" : polylineId}];
-  } else if([overlay isKindOfClass:[GMSCircle class]]){
+  } else if ([overlay isKindOfClass:[GMSCircle class]]) {
     NSString* circleId = overlay.userData[0];
     [_channel invokeMethod:@"circle#onTap" arguments:@{@"circle" : circleId}];
   }
 }
 
-- (void)mapView:(GMSMapView *)mapView didTapAtCoordinate:(CLLocationCoordinate2D)coordinate {
-    [_channel invokeMethod:@"map#onTap"
-                 arguments:@{@"position" : locationToJson(coordinate)}];
+- (void)mapView:(GMSMapView*)mapView didTapAtCoordinate:(CLLocationCoordinate2D)coordinate {
+  [_channel invokeMethod:@"map#onTap" arguments:@{@"position" : locationToJson(coordinate)}];
 }
 
 @end
@@ -577,28 +577,25 @@ static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink
   id position = data[@"points"];
   if (position) {
     [sink setPoints:toPoints(position)];
-  }
-    
+  } 
   id visible = data[@"visible"];
   if (visible) {
     [sink setVisible:toBool(visible)];
   }
-    
   id color = data[@"color"];
   if (color) {
     NSNumber* numberColor = (NSNumber*)color;
     long value = [numberColor longValue];
     [sink setColor:[UIColor colorWithRed:((float)((value & 0xFF0000) >> 16)) / 255.0
-                                   green:((float)((value & 0xFF00) >> 8)) / 255.0
-                                    blue:((float)(value & 0xFF)) / 255.0
-                                   alpha:((float)((value & 0xFF000000) >> 24)) / 255.0]];
-  }
-    
+                                         green:((float)((value & 0xFF00) >> 8)) / 255.0
+                                          blue:((float)(value & 0xFF)) / 255.0
+                                         alpha:((float)((value & 0xFF000000) >> 24)) / 255.0]];
+
+  } 
   id width = data[@"width"];
   if (width) {
     [sink setStrokeWidth:toFloat(width)];
   }
-    
   id zIndex = data[@"zIndex"];
   if (zIndex) {
     [sink setZIndex:toInt(zIndex)];
@@ -606,7 +603,7 @@ static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink
 }
 
 static void interpretCircleOptions(id json, id<FLTGoogleMapCircleOptionsSink> sink,
-                                     NSObject<FlutterPluginRegistrar>* registrar) {
+                                   NSObject<FlutterPluginRegistrar>* registrar) {
   NSDictionary* data = json;
 
   id fillColor = data[@"fillColor"];
@@ -614,36 +611,32 @@ static void interpretCircleOptions(id json, id<FLTGoogleMapCircleOptionsSink> si
     NSNumber* numberColor = (NSNumber*)fillColor;
     long value = [numberColor longValue];
     [sink setFillColor:[UIColor colorWithRed:((float)((value & 0xFF0000) >> 16)) / 255.0
-                                    green:((float)((value & 0xFF00) >> 8)) / 255.0
-                                    blue:((float)(value & 0xFF)) / 255.0
-                                    alpha:((float)((value & 0xFF000000) >> 24)) / 255.0]];
+                                         green:((float)((value & 0xFF00) >> 8)) / 255.0
+                                          blue:((float)(value & 0xFF)) / 255.0
+                                         alpha:((float)((value & 0xFF000000) >> 24)) / 255.0]];
+
   }
-  
   id visible = data[@"visible"];
   if (visible) {
     [sink setVisible:toBool(visible)];
   }
-  
   id strokeColor = data[@"strokeColor"];
   if (strokeColor) {
     NSNumber* numberColor = (NSNumber*)strokeColor;
     long value = [numberColor longValue];
     [sink setStrokeColor:[UIColor colorWithRed:((float)((value & 0xFF0000) >> 16)) / 255.0
-                                    green:((float)((value & 0xFF00) >> 8)) / 255.0
-                                    blue:((float)(value & 0xFF)) / 255.0
-                                    alpha:((float)((value & 0xFF000000) >> 24)) / 255.0]];
+                                         green:((float)((value & 0xFF00) >> 8)) / 255.0
+                                          blue:((float)(value & 0xFF)) / 255.0
+                                         alpha:((float)((value & 0xFF000000) >> 24)) / 255.0]];
   }
-  
   id strokeWidth = data[@"strokeWidth"];
   if (strokeWidth) {
     [sink setStrokeWidth:toFloat(strokeWidth)];
   }
-  
   id consumeTapEvents = data[@"consumeTapEvents"];
   if (consumeTapEvents) {
     [sink setConsumeTapEvents:toBool(consumeTapEvents)];
   }
-  
   id zIndex = data[@"zIndex"];
   if (zIndex) {
     [sink setZIndex:toInt(zIndex)];
