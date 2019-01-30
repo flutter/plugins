@@ -586,11 +586,6 @@ static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink
     [sink setVisible:toBool(visible)];
   }
     
-  id consumeTapEvents = data[@"consumeTapEvents"];
-  if (consumeTapEvents) {
-    [sink setConsumeTapEvents:toBool(consumeTapEvents)];
-  }
-    
   id color = data[@"color"];
   if (color) {
     NSNumber* numberColor = (NSNumber*)color;
