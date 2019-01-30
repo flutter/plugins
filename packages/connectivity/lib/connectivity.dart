@@ -31,10 +31,8 @@ class Connectivity {
   }
 
   Connectivity._internal();
-
   static final Connectivity _singleton = Connectivity._internal();
 
-  static Connectivity _instance;
   Stream<ConnectivityResult> _onConnectivityChanged;
 
   /// Fires whenever the connectivity state changes.
