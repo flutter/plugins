@@ -27,11 +27,15 @@ class Connectivity {
   // EventChannel because it is overridden. Forcing the class to be a singleton class can prevent
   // misusage of creating a second instance from a programmer.
   factory Connectivity() {
+    if (_singleton == null) {
+      _singleton = Connectivity._();
+    }
     return _singleton;
   }
 
-  Connectivity._internal();
-  static final Connectivity _singleton = Connectivity._internal();
+  Connectivity._();
+
+  static Connectivity _singleton;
 
   Stream<ConnectivityResult> _onConnectivityChanged;
 
