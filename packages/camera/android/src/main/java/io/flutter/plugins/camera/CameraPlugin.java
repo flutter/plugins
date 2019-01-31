@@ -49,6 +49,10 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import android.util.Log;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import java.io.ByteArrayOutputStream;
 
 public class CameraPlugin implements MethodCallHandler {
 
@@ -587,8 +591,21 @@ public class CameraPlugin implements MethodCallHandler {
             public void onImageAvailable(ImageReader reader) {
               try (Image image = reader.acquireLatestImage()) {
                 ByteBuffer buffer = image.getPlanes()[0].getBuffer();
-                writeToFile(buffer, file);
-                result.success(null);
+                ByteBuffer bufferWriteToFile = buffer.duplicate();
+                writeToFile(bufferWriteToFile, file);
+                // convert Data buffer to bytes
+                byte[] bytes = new byte[buffer.remaining()];
+                buffer.get(bytes, 0, bytes.length);
+                // convert bytes to bitmap
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                // set quality image 
+                bitmap = Bitmap.createScaledBitmap( bitmap, captureSize.getWidth(), captureSize.getHeight(), false);
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                // convert bitmap to bytes
+                byte[] byteArray = stream.toByteArray();
+                bitmap.recycle();
+                result.success(byteArray);
               } catch (IOException e) {
                 result.error("IOError", "Failed saving image", null);
               }

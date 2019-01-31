@@ -285,7 +285,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   /// The file can be read as this function returns.
   ///
   /// Throws a [CameraException] if the capture fails.
-  Future<void> takePicture(String path, FlashMode flashMode) async {
+  Future<Uint8List> takePicture(String path, FlashMode flashMode) async {
     if (!value.isInitialized || _isDisposed) {
       throw CameraException(
         'Uninitialized CameraController.',
@@ -298,9 +298,10 @@ class CameraController extends ValueNotifier<CameraValue> {
         'takePicture was called before the previous capture returned.',
       );
     }
+    
     try {
       value = value.copyWith(isTakingPicture: true);
-      await _channel.invokeMethod(
+      Uint8List bytes = await _channel.invokeMethod(
         'takePicture',
         <String, dynamic>{
           'textureId': _textureId,
@@ -309,8 +310,10 @@ class CameraController extends ValueNotifier<CameraValue> {
         },
       );
       value = value.copyWith(isTakingPicture: false);
+      return bytes;
     } on PlatformException catch (e) {
       value = value.copyWith(isTakingPicture: false);
+      return null;
       throw CameraException(e.code, e.message);
     }
   }
