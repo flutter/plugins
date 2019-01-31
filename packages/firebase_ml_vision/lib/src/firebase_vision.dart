@@ -229,12 +229,6 @@ class FirebaseVisionImageMetadata {
       };
 }
 
-/// Abstract class for detectors in [FirebaseVision] API.
-abstract class FirebaseVisionDetector {
-  /// Uses machine learning model to detect objects of interest in an image.
-  Future<dynamic> detectInImage(FirebaseVisionImage visionImage);
-}
-
 String _enumToString(dynamic enumValue) {
   final String enumString = enumValue.toString();
   return enumString.substring(enumString.indexOf('.') + 1);
