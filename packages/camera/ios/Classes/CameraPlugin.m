@@ -74,7 +74,29 @@
     _result([FlutterError errorWithCode:@"IOError" message:@"Unable to write file" details:nil]);
     return;
   }
-  _result(nil);
+
+  UIImage *image = [[UIImage alloc] initWithData:data];
+  if(image.size.width < 720.0 || image.size.height < 720.0) {
+    _result(data);
+  }
+  CGFloat newWidth = (720.0*image.size.width)/image.size.height;
+  CGFloat newHeight = 720.0;
+  CGSize size = CGSizeMake(newWidth, newHeight);
+  CGFloat scale = MAX(size.width/image.size.width, size.height/image.size.height);
+  CGFloat width = image.size.width * scale;
+  CGFloat height = image.size.height * scale;
+  CGRect imageRect = CGRectMake((size.width - width)/2.0f,
+                                (size.height - height)/2.0f,
+                                width,
+                                height);
+
+  UIGraphicsBeginImageContextWithOptions(size, NO, 0);
+  [image drawInRect:imageRect];
+  UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+  UIGraphicsEndImageContext();
+  NSData *imageData = UIImageJPEGRepresentation(newImage, 1.0);
+
+  _result(imageData);
 }
 @end
 
