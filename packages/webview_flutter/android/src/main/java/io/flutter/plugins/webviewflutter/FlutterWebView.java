@@ -1,7 +1,11 @@
 package io.flutter.plugins.webviewflutter;
 
 import android.content.Context;
+import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.view.View;
+import android.webkit.CookieManager;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
@@ -12,6 +16,7 @@ import io.flutter.plugin.platform.PlatformView;
 import java.util.Map;
 
 public class FlutterWebView implements PlatformView, MethodCallHandler {
+
   private final WebView webView;
   private final MethodChannel methodChannel;
 
@@ -131,6 +136,11 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         case "jsMode":
           updateJsMode((Integer) settings.get(key));
           break;
+        case "incognito":
+          boolean isIncognito = (Boolean) settings.get(key);
+          if (isIncognito) {
+            Incognito.makeWebViewIncognito(webView);
+          }
         default:
           throw new IllegalArgumentException("Unknown WebView setting: " + key);
       }
@@ -151,5 +161,6 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   }
 
   @Override
-  public void dispose() {}
+  public void dispose() {
+  }
 }
