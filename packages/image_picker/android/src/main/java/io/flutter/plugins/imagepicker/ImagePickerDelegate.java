@@ -482,13 +482,13 @@ public class ImagePickerDelegate
     clearMethodCallAndResult();
   }
 
+  private void finishWithAlreadyActiveError(MethodChannel.Result result) {
+    result.error("already_active", "Image picker is already active.", null);
+  }
+
   private void finishWithError(String errorCode, String errorMessage) {
     pendingResult.error(errorCode, errorMessage, null);
     clearMethodCallAndResult();
-  }
-
-  private void finishWithAlreadyActiveError(MethodChannel.Result result) {
-    result.error("already_active", "Image picker is already active.", null);
   }
 
   private void clearMethodCallAndResult() {
