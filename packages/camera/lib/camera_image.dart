@@ -55,6 +55,9 @@ enum ImageFormatGroup {
   /// On iOS, this is `kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange`. See
   /// https://developer.apple.com/documentation/corevideo/1563591-pixel_format_identifiers/kcvpixelformattype_420ypcbcr8biplanarvideorange?language=objc
   yuv420,
+
+  /// 32-bit BGRA.
+  bgra8888,
 }
 
 /// Describes how pixels are represented in an image.
@@ -75,11 +78,22 @@ class ImageFormat {
 }
 
 ImageFormatGroup _asImageFormatGroup(dynamic rawFormat) {
-  if (rawFormat == 35 || rawFormat == 875704438) {
-    return ImageFormatGroup.yuv420;
-  } else {
-    return ImageFormatGroup.unknown;
+  if (defaultTargetPlatform == TargetPlatform.android) {
+    if (rawFormat == 35) {
+      return ImageFormatGroup.yuv420;
+    }
   }
+
+  if (defaultTargetPlatform == TargetPlatform.iOS) {
+    switch(rawFormat) {
+      case 875704438:
+        return ImageFormatGroup.yuv420;
+      case 1111970369:
+        return ImageFormatGroup.bgra8888;
+    }
+  }
+
+  return ImageFormatGroup.unknown;
 }
 
 /// A single complete image buffer from the platform camera.
