@@ -96,8 +96,10 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
           url.put("url", task.getResult().getShortLink().toString());
 
           List<String> warnings = new ArrayList<>();
-          for (ShortDynamicLink.Warning warning : task.getResult().getWarnings()) {
-            warnings.add(warning.getMessage());
+          if(task.getResult().getWarnings() != null) {
+            for (ShortDynamicLink.Warning warning : task.getResult().getWarnings()) {
+              warnings.add(warning.getMessage());
+            }
           }
           url.put("warnings", warnings);
 
