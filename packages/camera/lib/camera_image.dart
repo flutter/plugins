@@ -88,7 +88,7 @@ ImageFormatGroup _asImageFormatGroup(dynamic rawFormat) {
   }
 
   if (defaultTargetPlatform == TargetPlatform.iOS) {
-    switch(rawFormat) {
+    switch (rawFormat) {
       case 875704438:
         return ImageFormatGroup.yuv420;
       case 1111970369:

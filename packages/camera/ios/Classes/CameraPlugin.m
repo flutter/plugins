@@ -175,11 +175,21 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   _captureSession = [[AVCaptureSession alloc] init];
   AVCaptureSessionPreset preset;
   if ([resolutionPreset isEqualToString:@"high"]) {
-    preset = AVCaptureSessionPreset1280x720;
-    _previewSize = CGSizeMake(1280, 720);
+    if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset1920x1080]) {
+      preset = AVCaptureSessionPreset1920x1080;
+      _previewSize = CGSizeMake(1920, 1080);
+    } else {
+      preset = AVCaptureSessionPreset1280x720;
+      _previewSize = CGSizeMake(1280, 720);
+    }
   } else if ([resolutionPreset isEqualToString:@"medium"]) {
-    preset = AVCaptureSessionPreset640x480;
-    _previewSize = CGSizeMake(640, 480);
+    if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset1280x720]) {
+      preset = AVCaptureSessionPreset1280x720;
+      _previewSize = CGSizeMake(1280, 720);
+    } else {
+      preset = AVCaptureSessionPreset640x480;
+      _previewSize = CGSizeMake(640, 480);
+    }
   } else {
     NSAssert([resolutionPreset isEqualToString:@"low"], @"Unknown resolution preset %@",
              resolutionPreset);
