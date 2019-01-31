@@ -57,6 +57,9 @@ enum ImageFormatGroup {
   yuv420,
 
   /// 32-bit BGRA.
+  ///
+  /// On iOS, this is `kCVPixelFormatType_32BGRA`. See
+  /// https://developer.apple.com/documentation/corevideo/1563591-pixel_format_identifiers/kcvpixelformattype_32bgra?language=objc
   bgra8888,
 }
 
