@@ -20,6 +20,23 @@ const EventChannel _eventChannel =
     EventChannel('plugins.flutter.io/connectivity_status');
 
 class Connectivity {
+  /// Constructs a singleton instance of [Connectivity].
+  ///
+  /// [Connectivity] is designed to work as a singleton.
+  // When a second instance is created, the first instance will not be able to listen to the
+  // EventChannel because it is overridden. Forcing the class to be a singleton class can prevent
+  // misusage of creating a second instance from a programmer.
+  factory Connectivity() {
+    if (_singleton == null) {
+      _singleton = Connectivity._();
+    }
+    return _singleton;
+  }
+
+  Connectivity._();
+
+  static Connectivity _singleton;
+
   Stream<ConnectivityResult> _onConnectivityChanged;
 
   /// Fires whenever the connectivity state changes.
@@ -39,6 +56,9 @@ class Connectivity {
   ///
   /// Instead listen for connectivity changes via [onConnectivityChanged] stream.
   Future<ConnectivityResult> checkConnectivity() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     final String result = await _methodChannel.invokeMethod('check');
     return _parseConnectivityResult(result);
   }
@@ -50,6 +70,9 @@ class Connectivity {
   /// From android 8.0 onwards the GPS must be ON (high accuracy)
   /// in order to be able to obtain the SSID.
   Future<String> getWifiName() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     String wifiName = await _methodChannel.invokeMethod('wifiName');
     // as Android might return <unknown ssid>, uniforming result
     // our iOS implementation will return null

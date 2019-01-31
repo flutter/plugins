@@ -42,6 +42,9 @@ class FirebaseMessaging {
     if (!_platform.isIOS) {
       return;
     }
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     _channel.invokeMethod(
         'requestNotificationPermissions', iosSettings.toMap());
   }
@@ -66,6 +69,9 @@ class FirebaseMessaging {
     _onLaunch = onLaunch;
     _onResume = onResume;
     _channel.setMethodCallHandler(_handleMethod);
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     _channel.invokeMethod('configure');
   }
 
@@ -79,6 +85,9 @@ class FirebaseMessaging {
 
   /// Returns the FCM token.
   Future<String> getToken() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     return await _channel.invokeMethod('getToken');
   }
 
@@ -87,11 +96,17 @@ class FirebaseMessaging {
   /// [topic] must match the following regular expression:
   /// "[a-zA-Z0-9-_.~%]{1,900}".
   void subscribeToTopic(String topic) {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     _channel.invokeMethod('subscribeToTopic', topic);
   }
 
   /// Unsubscribe from topic in background.
   void unsubscribeFromTopic(String topic) {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     _channel.invokeMethod('unsubscribeFromTopic', topic);
   }
 
@@ -101,16 +116,25 @@ class FirebaseMessaging {
   ///
   /// returns true if the operations executed successfully and false if an error ocurred
   Future<bool> deleteInstanceID() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     return await _channel.invokeMethod('deleteInstanceID');
   }
 
   /// Determine whether FCM auto-initialization is enabled or disabled.
   Future<bool> autoInitEnabled() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     return await _channel.invokeMethod('autoInitEnabled');
   }
 
   /// Enable or disable auto-initialization of Firebase Cloud Messaging.
   Future<void> setAutoInitEnabled(bool enabled) async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     await _channel.invokeMethod('setAutoInitEnabled', enabled);
   }
 

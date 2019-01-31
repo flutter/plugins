@@ -44,7 +44,7 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
       case "BarcodeDetector#detectInImage":
         BarcodeDetector.instance.handleDetection(image, options, result);
         break;
-      case "FaceDetector#detectInImage":
+      case "FaceDetector#processImage":
         FaceDetector.instance.handleDetection(image, options, result);
         break;
       case "LabelDetector#detectInImage":

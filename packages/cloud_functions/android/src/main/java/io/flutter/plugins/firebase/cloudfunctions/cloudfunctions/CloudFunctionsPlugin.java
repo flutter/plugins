@@ -4,7 +4,7 @@
 
 package io.flutter.plugins.firebase.cloudfunctions.cloudfunctions;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.functions.FirebaseFunctions;
