@@ -156,6 +156,55 @@ class FirebaseAuth {
     );
   }
 
+  Future<dynamic> sendLinkToEmail({
+    @required String email,
+    @required String url,
+    @required bool handleCodeInApp,
+    @required String iOSBundleID,
+    @required String androidPackageName,
+    @required bool androidInstallIfNotAvailable,
+    @required String androidMinimumVersion,
+    String dynamicLinkDomain,
+  }) async {
+    assert(email != null);
+    // TODO: other assertions
+    return await channel.invokeMethod(
+      'sendLinkToEmail',
+      <String, dynamic>{
+        'email': email,
+        'url': url,
+        'handleCodeInApp': handleCodeInApp,
+        'iOSBundleID': iOSBundleID,
+        'androidPackageName': androidPackageName,
+        'androidInstallIfNotAvailable': androidInstallIfNotAvailable,
+        'androidMinimumVersion': androidMinimumVersion,
+        'dynamicLinkDomain': dynamicLinkDomain,
+        'app': app.name,
+      },
+    );
+  }
+
+  Future<bool> isSignInWithEmailLink({String link}) async {
+    return await channel.invokeMethod(
+      'isSignInWithEmailLink',
+      <String, String>{'link': link, 'app': app.name},
+    );
+  }
+
+  Future<FirebaseUser> signInWithEmailAndLink({String email, String link}) async {
+
+    final Map<dynamic, dynamic> data = await channel.invokeMethod(
+      'signInWithEmailAndLink',
+      <String, dynamic>{
+        'app': app.name,
+        'email': email,
+        'link': link,
+      },
+    );
+    final FirebaseUser currentUser = FirebaseUser._(data, app);
+    return currentUser;
+  }
+
   /// Tries to sign in a user with the given email address and password.
   ///
   /// If successful, it also signs the user in into the app and updates
