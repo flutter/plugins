@@ -54,7 +54,7 @@
     _javaScriptChannelNames = [[NSMutableSet alloc] init];
 
     WKUserContentController* userContentController = [[WKUserContentController alloc] init];
-    if (![args[@"javascriptChannelNames"] isKindOfClass:[NSNull class]]) {
+    if ([args[@"javascriptChannelNames"] isKindOfClass:[NSArray class]]) {
       NSArray* javaScriptChannelNames = args[@"javascriptChannelNames"];
       [_javaScriptChannelNames addObjectsFromArray:javaScriptChannelNames];
       [self registerJavaScriptChannels:_javaScriptChannelNames controller:userContentController];
@@ -105,7 +105,7 @@
   } else if ([[call method] isEqualToString:@"addJavascriptChannels"]) {
     [self onAddJavaScriptChannels:call result:result];
   } else if ([[call method] isEqualToString:@"removeJavascriptChannels"]) {
-    [self onRemoveJavaScriptChannes:call result:result];
+    [self onRemoveJavaScriptChannels:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -188,7 +188,7 @@
   result(nil);
 }
 
-- (void)onRemoveJavaScriptChannes:(FlutterMethodCall*)call result:(FlutterResult)result {
+- (void)onRemoveJavaScriptChannels:(FlutterMethodCall*)call result:(FlutterResult)result {
   // WkWebView does not support removing a single user script, so instead we remove all
   // user scripts, all message handlers. And re-register channels that shouldn't be removed.
   [_webView.configuration.userContentController removeAllUserScripts];
