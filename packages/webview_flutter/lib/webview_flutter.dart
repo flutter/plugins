@@ -123,6 +123,8 @@ class WebView extends StatefulWidget {
   ///
   /// To asynchronously invoke the message handler which will print the message to standard output.
   ///
+  /// Adding a new JavaScript channel only takes affect after the next page is loaded.
+  ///
   /// Set values must not be null. A [JavascriptChannel.name] cannot be the same for multiple
   /// channels in the list.
   ///
