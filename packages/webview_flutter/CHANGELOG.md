@@ -1,3 +1,8 @@
+## 0.3.1
+
+* Added JavaScript channels to facilitate message passing from JavaScript code running inside
+  the WebView to the Flutter app's Dart code.
+
 ## 0.3.0
 
 * **Breaking change**. Migrate from the deprecated original Android Support
