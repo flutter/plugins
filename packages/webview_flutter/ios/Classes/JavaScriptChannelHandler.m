@@ -4,33 +4,38 @@
 
 #import "JavaScriptChannelHandler.h"
 
-@implementation FLTJavaScriptChannel {
-  FlutterMethodChannel* _methodChannel;
-  NSString* _javaScriptChannelName;
-}
+@interface FLTJavaScriptChannel ()
 
-- (instancetype)initWithMethodChannel:(FlutterMethodChannel*)methodChannel
-                javaScriptChannelName:(NSString*)javaScriptChannelName {
+@property(strong, nonatomic) FlutterMethodChannel *methodChannel;
+@property(copy, nonatomic) NSString *javaScriptChannelName;
+
+@end
+
+@implementation FLTJavaScriptChannel
+
+- (instancetype)initWithMethodChannel:(FlutterMethodChannel *)methodChannel
+                javaScriptChannelName:(NSString *)javaScriptChannelName {
   self = [super init];
   NSAssert(methodChannel != nil, @"methodChannel must not be null.");
   NSAssert(javaScriptChannelName != nil, @"javaScriptChannelName must not be null.");
   if (self) {
-    _methodChannel = methodChannel;
-    _javaScriptChannelName = javaScriptChannelName;
+    self.methodChannel = methodChannel;
+    self.javaScriptChannelName = javaScriptChannelName;
   }
   return self;
 }
 
-- (void)userContentController:(WKUserContentController*)userContentController
-      didReceiveScriptMessage:(WKScriptMessage*)message {
-  NSAssert(_methodChannel != nil, @"Can't send a message to an unitialized JavaScript channel.");
-  NSAssert(_javaScriptChannelName != nil,
+- (void)userContentController:(WKUserContentController *)userContentController
+      didReceiveScriptMessage:(WKScriptMessage *)message {
+  NSAssert(self.methodChannel != nil,
            @"Can't send a message to an unitialized JavaScript channel.");
-  NSDictionary* arguments = @{
-    @"channel" : _javaScriptChannelName,
+  NSAssert(self.javaScriptChannelName != nil,
+           @"Can't send a message to an unitialized JavaScript channel.");
+  NSDictionary *arguments = @{
+    @"channel" : self.javaScriptChannelName,
     @"message" : [NSString stringWithFormat:@"%@", message.body]
   };
-  [_methodChannel invokeMethod:@"javascriptChannelMessage" arguments:arguments];
+  [self.methodChannel invokeMethod:@"javascriptChannelMessage" arguments:arguments];
 }
 
 @end

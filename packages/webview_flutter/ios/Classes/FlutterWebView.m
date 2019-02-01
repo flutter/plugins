@@ -5,14 +5,18 @@
 #import "FlutterWebView.h"
 #import "JavaScriptChannelHandler.h"
 
-@implementation FLTWebViewFactory {
-  NSObject<FlutterBinaryMessenger>* _messenger;
-}
+@interface FLTWebViewFactory ()
+
+@property(strong, nonatomic) NSObject<FlutterBinaryMessenger>* messenger;
+
+@end
+
+@implementation FLTWebViewFactory
 
 - (instancetype)initWithMessenger:(NSObject<FlutterBinaryMessenger>*)messenger {
   self = [super init];
   if (self) {
-    _messenger = messenger;
+    self.messenger = messenger;
   }
   return self;
 }
@@ -24,55 +28,61 @@
 - (NSObject<FlutterPlatformView>*)createWithFrame:(CGRect)frame
                                    viewIdentifier:(int64_t)viewId
                                         arguments:(id _Nullable)args {
-  FLTWebViewController* webviewController = [[FLTWebViewController alloc] initWithFrame:frame
-                                                                         viewIdentifier:viewId
-                                                                              arguments:args
-                                                                        binaryMessenger:_messenger];
+  FLTWebViewController* webviewController =
+      [[FLTWebViewController alloc] initWithFrame:frame
+                                   viewIdentifier:viewId
+                                        arguments:args
+                                  binaryMessenger:self.messenger];
   return webviewController;
 }
 
 @end
 
-@implementation FLTWebViewController {
-  WKWebView* _webView;
-  int64_t _viewId;
-  FlutterMethodChannel* _channel;
-  NSString* _currentUrl;
-  // The set of registered JavaScript channel names.
-  NSMutableSet* _javaScriptChannelNames;
-}
+@interface FLTWebViewController ()
+
+@property(strong, nonatomic) WKWebView* webview;
+@property(assign, nonatomic) int64_t viewId;
+@property(strong, nonatomic) FlutterMethodChannel* channel;
+@property(copy, nonatomic) NSString* currentUrl;
+@property(strong, nonatomic) NSMutableSet* javaScriptChannelNames;
+
+@end
+
+@implementation FLTWebViewController
 
 - (instancetype)initWithFrame:(CGRect)frame
                viewIdentifier:(int64_t)viewId
                     arguments:(id _Nullable)args
               binaryMessenger:(NSObject<FlutterBinaryMessenger>*)messenger {
   if ([super init]) {
-    _viewId = viewId;
+    self.viewId = viewId;
 
     NSString* channelName = [NSString stringWithFormat:@"plugins.flutter.io/webview_%lld", viewId];
-    _channel = [FlutterMethodChannel methodChannelWithName:channelName binaryMessenger:messenger];
-    _javaScriptChannelNames = [[NSMutableSet alloc] init];
+    self.channel = [FlutterMethodChannel methodChannelWithName:channelName
+                                               binaryMessenger:messenger];
+    self.javaScriptChannelNames = [[NSMutableSet alloc] init];
 
     WKUserContentController* userContentController = [[WKUserContentController alloc] init];
     if ([args[@"javascriptChannelNames"] isKindOfClass:[NSArray class]]) {
       NSArray* javaScriptChannelNames = args[@"javascriptChannelNames"];
-      [_javaScriptChannelNames addObjectsFromArray:javaScriptChannelNames];
-      [self registerJavaScriptChannels:_javaScriptChannelNames controller:userContentController];
+      [self.javaScriptChannelNames addObjectsFromArray:javaScriptChannelNames];
+      [self registerJavaScriptChannels:self.javaScriptChannelNames
+                            controller:userContentController];
     }
 
     WKWebViewConfiguration* configuration = [[WKWebViewConfiguration alloc] init];
     configuration.userContentController = userContentController;
 
-    _webView = [[WKWebView alloc] initWithFrame:frame configuration:configuration];
+    self.webview = [[WKWebView alloc] initWithFrame:frame configuration:configuration];
     __weak __typeof__(self) weakSelf = self;
-    [_channel setMethodCallHandler:^(FlutterMethodCall* call, FlutterResult result) {
+    [self.channel setMethodCallHandler:^(FlutterMethodCall* call, FlutterResult result) {
       [weakSelf onMethodCall:call result:result];
     }];
     NSDictionary<NSString*, id>* settings = args[@"settings"];
     [self applySettings:settings];
 
     NSString* initialUrl = args[@"initialUrl"];
-    if (initialUrl && ![initialUrl isKindOfClass:[NSNull class]]) {
+    if ([initialUrl isKindOfClass:[NSString class]]) {
       [self loadUrl:initialUrl];
     }
   }
@@ -80,7 +90,7 @@
 }
 
 - (UIView*)view {
-  return _webView;
+  return self.webview;
 }
 
 - (void)onMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
@@ -128,33 +138,33 @@
 }
 
 - (void)onCanGoBack:(FlutterMethodCall*)call result:(FlutterResult)result {
-  BOOL canGoBack = [_webView canGoBack];
+  BOOL canGoBack = [self.webview canGoBack];
   result([NSNumber numberWithBool:canGoBack]);
 }
 
 - (void)onCanGoForward:(FlutterMethodCall*)call result:(FlutterResult)result {
-  BOOL canGoForward = [_webView canGoForward];
+  BOOL canGoForward = [self.webview canGoForward];
   result([NSNumber numberWithBool:canGoForward]);
 }
 
 - (void)onGoBack:(FlutterMethodCall*)call result:(FlutterResult)result {
-  [_webView goBack];
+  [self.webview goBack];
   result(nil);
 }
 
 - (void)onGoForward:(FlutterMethodCall*)call result:(FlutterResult)result {
-  [_webView goForward];
+  [self.webview goForward];
   result(nil);
 }
 
 - (void)onReload:(FlutterMethodCall*)call result:(FlutterResult)result {
-  [_webView reload];
+  [self.webview reload];
   result(nil);
 }
 
 - (void)onCurrentUrl:(FlutterMethodCall*)call result:(FlutterResult)result {
-  _currentUrl = [[_webView URL] absoluteString];
-  result(_currentUrl);
+  self.currentUrl = [[self.webview URL] absoluteString];
+  result(self.currentUrl);
 }
 
 - (void)onEvaluateJavaScript:(FlutterMethodCall*)call result:(FlutterResult)result {
@@ -165,44 +175,46 @@
                                details:nil]);
     return;
   }
-  [_webView evaluateJavaScript:jsString
-             completionHandler:^(_Nullable id evaluateResult, NSError* _Nullable error) {
-               if (error) {
-                 result([FlutterError
-                     errorWithCode:@"evaluateJavaScript_failed"
-                           message:@"Failed evaluating JavaScript"
-                           details:[NSString stringWithFormat:@"JavaScript string was: '%@'\n%@",
-                                                              jsString, error]]);
-               } else {
-                 result([NSString stringWithFormat:@"%@", evaluateResult]);
-               }
-             }];
+  [self.webview
+      evaluateJavaScript:jsString
+       completionHandler:^(_Nullable id evaluateResult, NSError* _Nullable error) {
+         if (error) {
+           result([FlutterError
+               errorWithCode:@"evaluateJavaScript_failed"
+                     message:@"Failed evaluating JavaScript"
+                     details:[NSString stringWithFormat:@"JavaScript string was: '%@'\n%@",
+                                                        jsString, error]]);
+         } else {
+           result([NSString stringWithFormat:@"%@", evaluateResult]);
+         }
+       }];
 }
 
 - (void)onAddJavaScriptChannels:(FlutterMethodCall*)call result:(FlutterResult)result {
   NSArray* channelNames = [call arguments];
   NSSet* channelNamesSet = [[NSSet alloc] initWithArray:channelNames];
-  [_javaScriptChannelNames addObjectsFromArray:channelNames];
+  [self.javaScriptChannelNames addObjectsFromArray:channelNames];
   [self registerJavaScriptChannels:channelNamesSet
-                        controller:_webView.configuration.userContentController];
+                        controller:self.webview.configuration.userContentController];
   result(nil);
 }
 
 - (void)onRemoveJavaScriptChannels:(FlutterMethodCall*)call result:(FlutterResult)result {
   // WkWebView does not support removing a single user script, so instead we remove all
   // user scripts, all message handlers. And re-register channels that shouldn't be removed.
-  [_webView.configuration.userContentController removeAllUserScripts];
-  for (NSString* channelName in _javaScriptChannelNames) {
-    [_webView.configuration.userContentController removeScriptMessageHandlerForName:channelName];
+  [self.webview.configuration.userContentController removeAllUserScripts];
+  for (NSString* channelName in self.javaScriptChannelNames) {
+    [self.webview.configuration.userContentController
+        removeScriptMessageHandlerForName:channelName];
   }
 
   NSArray* channelNamesToRemove = [call arguments];
   for (NSString* channelName in channelNamesToRemove) {
-    [_javaScriptChannelNames removeObject:channelName];
+    [self.javaScriptChannelNames removeObject:channelName];
   }
 
-  [self registerJavaScriptChannels:_javaScriptChannelNames
-                        controller:_webView.configuration.userContentController];
+  [self registerJavaScriptChannels:self.javaScriptChannelNames
+                        controller:self.webview.configuration.userContentController];
   result(nil);
 }
 
@@ -218,7 +230,7 @@
 }
 
 - (void)updateJsMode:(NSNumber*)mode {
-  WKPreferences* preferences = [[_webView configuration] preferences];
+  WKPreferences* preferences = [[self.webview configuration] preferences];
   switch ([mode integerValue]) {
     case 0:  // disabled
       [preferences setJavaScriptEnabled:NO];
@@ -237,7 +249,7 @@
     return false;
   }
   NSURLRequest* req = [NSURLRequest requestWithURL:nsUrl];
-  [_webView loadRequest:req];
+  [self.webview loadRequest:req];
   return true;
 }
 
@@ -245,7 +257,7 @@
                         controller:(WKUserContentController*)userContentController {
   for (NSString* channelName in channelNames) {
     FLTJavaScriptChannel* channel =
-        [[FLTJavaScriptChannel alloc] initWithMethodChannel:_channel
+        [[FLTJavaScriptChannel alloc] initWithMethodChannel:self.channel
                                       javaScriptChannelName:channelName];
     [userContentController addScriptMessageHandler:channel name:channelName];
     NSString* wrapperSource = [NSString
