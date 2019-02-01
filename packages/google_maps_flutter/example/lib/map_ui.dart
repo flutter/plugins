@@ -48,6 +48,8 @@ class MapUiBodyState extends State<MapUiBody> {
   bool _tiltGesturesEnabled = true;
   bool _zoomGesturesEnabled = true;
   bool _myLocationEnabled = true;
+  LatLng _tapped = LatLng(0, 0);
+  LatLng _tappedLong = LatLng(0, 0);
 
   @override
   void initState() {
@@ -58,6 +60,14 @@ class MapUiBodyState extends State<MapUiBody> {
     setState(() {
       _extractMapInfo();
     });
+  }
+
+  void _onMapLongTapped(LatLng location) {
+    _tappedLong = location;
+  }
+
+  void _onMapTapped(LatLng location) {
+    _tapped = location;
   }
 
   void _extractMapInfo() {
@@ -223,6 +233,9 @@ class MapUiBodyState extends State<MapUiBody> {
                   '${_position.target.longitude.toStringAsFixed(4)}'),
               Text('camera zoom: ${_position.zoom}'),
               Text('camera tilt: ${_position.tilt}'),
+              Text('map tapped: ${_tapped.latitude} ${_tapped.longitude}'),
+              Text(
+                  'map long tapped: ${_tappedLong.latitude} ${_tappedLong.longitude}'),
               Text(_isMoving ? '(Camera moving)' : '(Camera idle)'),
               _compassToggler(),
               _latLngBoundsToggler(),
@@ -248,6 +261,8 @@ class MapUiBodyState extends State<MapUiBody> {
   void onMapCreated(GoogleMapController controller) {
     mapController = controller;
     mapController.addListener(_onMapChanged);
+    mapController.onMapLongTapped.add(_onMapLongTapped);
+    mapController.onMapTapped.add(_onMapTapped);
     _extractMapInfo();
     setState(() {});
   }
