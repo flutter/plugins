@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'dart:async' show Future;
-import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
