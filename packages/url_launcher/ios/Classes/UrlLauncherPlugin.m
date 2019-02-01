@@ -144,9 +144,10 @@ API_AVAILABLE(ios(9.0))
 - (void)launchURLInVC:(NSString *)urlString result:(FlutterResult)result API_AVAILABLE(ios(9.0)) {
   NSURL *url = [NSURL URLWithString:urlString];
   self.currentSession = [[FLTUrlLaunchSession alloc] initWithUrl:url withFlutterResult:result];
-  __weak typeof(self) weakSelf = self;
   [self.viewController presentViewController:self.currentSession.safari
-                                    animated:YES];
+                                    animated:YES
+                                  completion:^void() {
+                                  }];
 }
 
 - (void)closeWebViewWithResult:(FlutterResult)result API_AVAILABLE(ios(9.0)) {
