@@ -48,12 +48,10 @@ class GoogleMapController extends ChangeNotifier {
       ArgumentCallbacks<Polyline>();
 
   /// Callbacks to receive tap events for markers placed on this map.
-  final ArgumentCallbacks<LatLng> onMapTapped =
-      ArgumentCallbacks<LatLng>();
+  final ArgumentCallbacks<LatLng> onMapTapped = ArgumentCallbacks<LatLng>();
 
   /// Callbacks to receive tap events for markers placed on this map.
-  final ArgumentCallbacks<LatLng> onMapLongTapped =
-      ArgumentCallbacks<LatLng>();
+  final ArgumentCallbacks<LatLng> onMapLongTapped = ArgumentCallbacks<LatLng>();
 
   /// Callbacks to receive tap events for info windows on markers
   final ArgumentCallbacks<Marker> onInfoWindowTapped =

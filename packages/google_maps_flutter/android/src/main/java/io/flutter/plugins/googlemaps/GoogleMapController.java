@@ -526,5 +526,4 @@ final class GoogleMapController
     return context.checkPermission(
         permission, android.os.Process.myPid(), android.os.Process.myUid());
   }
-
 }

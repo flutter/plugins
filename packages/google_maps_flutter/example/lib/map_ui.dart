@@ -48,8 +48,8 @@ class MapUiBodyState extends State<MapUiBody> {
   bool _tiltGesturesEnabled = true;
   bool _zoomGesturesEnabled = true;
   bool _myLocationEnabled = true;
-  LatLng _tapped = LatLng(0, 0);
-  LatLng _tappedLong = LatLng(0, 0);
+  LatLng _tapped = const LatLng(0, 0);
+  LatLng _tappedLong = const LatLng(0, 0);
 
   @override
   void initState() {
