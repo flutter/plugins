@@ -25,6 +25,7 @@ import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -48,6 +49,8 @@ final class GoogleMapController
         GoogleMap.OnInfoWindowClickListener,
         GoogleMap.OnMarkerClickListener,
         GoogleMap.OnPolylineClickListener,
+        GoogleMap.OnMapClickListener,
+        GoogleMap.OnMapLongClickListener,
         GoogleMapOptionsSink,
         MethodChannel.MethodCallHandler,
         OnMapReadyCallback,
@@ -209,6 +212,8 @@ final class GoogleMapController
     googleMap.setOnCameraIdleListener(this);
     googleMap.setOnMarkerClickListener(this);
     googleMap.setOnPolylineClickListener(this);
+    googleMap.setOnMapLongClickListener(this);
+    googleMap.setOnMapClickListener(this);
     updateMyLocationEnabled();
   }
 
@@ -337,6 +342,22 @@ final class GoogleMapController
     final Map<String, Object> arguments = new HashMap<>(2);
     arguments.put("polyline", polyline.getId());
     methodChannel.invokeMethod("polyline#onTap", arguments);
+  }
+
+  @Override
+  public void onMapClick(LatLng latLng) {
+    final Map<String, Object> arguments = new HashMap<>(2);
+    arguments.put("latitude", latLng.latitude);
+    arguments.put("longitude", latLng.longitude);
+    methodChannel.invokeMethod("map#onTap", arguments);
+  }
+
+  @Override
+  public void onMapLongClick(LatLng latLng) {
+    final Map<String, Object> arguments = new HashMap<>(2);
+    arguments.put("latitude", latLng.latitude);
+    arguments.put("longitude", latLng.longitude);
+    methodChannel.invokeMethod("map#onLongTap", arguments);
   }
 
   @Override
@@ -505,4 +526,5 @@ final class GoogleMapController
     return context.checkPermission(
         permission, android.os.Process.myPid(), android.os.Process.myUid());
   }
+
 }

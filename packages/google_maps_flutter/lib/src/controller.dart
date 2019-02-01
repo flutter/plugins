@@ -47,6 +47,14 @@ class GoogleMapController extends ChangeNotifier {
   final ArgumentCallbacks<Polyline> onPolylineTapped =
       ArgumentCallbacks<Polyline>();
 
+  /// Callbacks to receive tap events for markers placed on this map.
+  final ArgumentCallbacks<LatLng> onMapTapped =
+      ArgumentCallbacks<LatLng>();
+
+  /// Callbacks to receive tap events for markers placed on this map.
+  final ArgumentCallbacks<LatLng> onMapLongTapped =
+      ArgumentCallbacks<LatLng>();
+
   /// Callbacks to receive tap events for info windows on markers
   final ArgumentCallbacks<Marker> onInfoWindowTapped =
       ArgumentCallbacks<Marker>();
@@ -97,6 +105,24 @@ class GoogleMapController extends ChangeNotifier {
         final Polyline polyline = _polylines[polylineId];
         if (polyline != null) {
           onPolylineTapped(polyline);
+        }
+        break;
+
+      case 'map#onTap':
+        final double latitude = call.arguments['latitude'];
+        final double longitude = call.arguments['longitude'];
+        final LatLng latLng = LatLng(latitude, longitude);
+        if (latLng != null) {
+          onMapTapped(latLng);
+        }
+        break;
+
+      case 'map#onLongTap':
+        final double latitude = call.arguments['latitude'];
+        final double longitude = call.arguments['longitude'];
+        final LatLng latLng = LatLng(latitude, longitude);
+        if (latLng != null) {
+          onMapLongTapped(latLng);
         }
         break;
 
