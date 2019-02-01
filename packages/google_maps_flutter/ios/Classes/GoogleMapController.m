@@ -211,14 +211,13 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
 }
 
 - (void)setMapStyle:(NSString*)mapStyle {
-  NSError *error;
-  GMSMapStyle *style = [GMSMapStyle styleWithJSONString:mapStyle error:&error];
+  NSError* error;
+  GMSMapStyle* style = [GMSMapStyle styleWithJSONString:mapStyle error:&error];
   if (!style) {
     NSLog(@"The map style definition could not be loaded: %@", error);
   }
-   _mapView.mapStyle = style;
+  _mapView.mapStyle = style;
 }
-
 
 #pragma mark - GMSMapViewDelegate methods
 
@@ -401,7 +400,7 @@ static void interpretMapOptions(id json, id<FLTGoogleMapOptionsSink> sink) {
   }
   id mapStyle = data[@"mapStyle"];
   if (mapStyle) {
-    NSString * styleString = mapStyle;
+    NSString* styleString = mapStyle;
     [sink setMapStyle:(styleString)];
   }
 }
