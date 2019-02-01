@@ -170,21 +170,25 @@ class BarcodeFormat {
 
 /// Detector for performing barcode scanning on an input image.
 ///
-/// A barcode detector is created via barcodeDetector() in [FirebaseVision]:
+/// A barcode detector is created via
+/// `barcodeDetector([BarcodeDetectorOptions options])` in [FirebaseVision]:
 ///
 /// ```dart
-/// BarcodeDetector barcodeDetector = FirebaseVision.instance.barcodeDetector();
+/// final FirebaseVisionImage image =
+///     FirebaseVisionImage.fromFilePath('path/to/file');
+///
+/// final BarcodeDetector barcodeDetector =
+///     FirebaseVision.instance.barcodeDetector();
+///
+/// final List<Barcode> barcodes = await barcodeDetector.detectInImage(image);
 /// ```
-class BarcodeDetector extends FirebaseVisionDetector {
+class BarcodeDetector {
   BarcodeDetector._(this.options) : assert(options != null);
 
   /// The options for configuring this detector.
   final BarcodeDetectorOptions options;
 
   /// Detects barcodes in the input image.
-  ///
-  /// The barcode scanning is performed asynchronously.
-  @override
   Future<List<Barcode>> detectInImage(FirebaseVisionImage visionImage) async {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431

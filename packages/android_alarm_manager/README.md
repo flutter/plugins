@@ -13,6 +13,10 @@ After importing this plugin to your project as usual, add the following to your
 ```xml
 <service
     android:name="io.flutter.plugins.androidalarmmanager.AlarmService"
+    android:permission="android.permission.BIND_JOB_SERVICE"
+    android:exported="false"/>
+<receiver
+    android:name="io.flutter.plugins.androidalarmmanager.AlarmBroadcastReceiver"
     android:exported="false"/>
 ```
 
