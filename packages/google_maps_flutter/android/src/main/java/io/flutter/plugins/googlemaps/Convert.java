@@ -178,9 +178,9 @@ class Convert {
     if (mapType != null) {
       sink.setMapType(toInt(mapType));
     }
-    final Object styledMapStyle = data.get("styledMapStyle");
-    if (styledMapStyle != null) {
-      sink.setStyledMapStyle(toString(styledMapStyle));
+    final Object mapStyle = data.get("mapStyle");
+    if (mapStyle != null) {
+      sink.setMapStyle(toString(mapStyle));
     }
     final Object minMaxZoomPreference = data.get("minMaxZoomPreference");
     if (minMaxZoomPreference != null) {

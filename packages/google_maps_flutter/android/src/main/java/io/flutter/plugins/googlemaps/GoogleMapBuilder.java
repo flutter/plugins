@@ -15,7 +15,7 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   private final GoogleMapOptions options = new GoogleMapOptions();
   private boolean trackCameraPosition = false;
   private boolean myLocationEnabled = false;
-  private String styledMapStyle = "";
+  private String mapStyle = "";
 
   GoogleMapController build(
       int id, Context context, AtomicInteger state, PluginRegistry.Registrar registrar) {
@@ -24,7 +24,7 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
     controller.init();
     controller.setMyLocationEnabled(myLocationEnabled);
     controller.setTrackCameraPosition(trackCameraPosition);
-    controller.setStyledMapStyle(styledMapStyle);
+    controller.setMapStyle(mapStyle);
     return controller;
   }
 
@@ -48,9 +48,9 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   }
 
   @Override
-  public void setStyledMapStyle(String styledMapStyle) {
-    System.out.println(styledMapStyle);
-    this.styledMapStyle = styledMapStyle;
+  public void setMapStyle(String mapStyle) {
+    System.out.println(mapStyle);
+    this.mapStyle = mapStyle;
   }
 
   @Override

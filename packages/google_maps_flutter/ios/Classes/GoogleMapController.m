@@ -399,7 +399,7 @@ static void interpretMapOptions(id json, id<FLTGoogleMapOptionsSink> sink) {
   if (myLocationEnabled) {
     [sink setMyLocationEnabled:toBool(myLocationEnabled)];
   }
-  id mapStyle = data[@"styledMapStyle"];
+  id mapStyle = data[@"mapStyle"];
   if (mapStyle) {
     NSString * styleString = mapStyle;
     [sink setMapStyle:(styleString)];

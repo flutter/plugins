@@ -21,7 +21,7 @@ class GoogleMap extends StatefulWidget {
     this.tiltGesturesEnabled = true,
     this.trackCameraPosition = false,
     this.myLocationEnabled = false,
-    this.styledMapStyle,
+    this.mapStyle,
   }) : assert(initialCameraPosition != null);
 
   final MapCreatedCallback onMapCreated;
@@ -84,7 +84,28 @@ class GoogleMap extends StatefulWidget {
   final bool myLocationEnabled;
 
   /// The style to be used for the map. The JSON file can be created here at https://mapstyle.withgoogle.com/
-  final String styledMapStyle;
+  /// Add the json file to the assets folder and link it in pubspec.yaml.
+  /// Then you can load the file as string like below
+  ///
+  /// String _mapStyle;
+  ///
+  ///  Future<String> loadMapStyle() async {
+  ///    return await rootBundle.loadString('assets/raw/style_json.json');
+  ///  }
+  ///
+  ///  @override
+  ///  void initState() {
+  ///    super.initState();
+  ///    loadMapStyle().then((String style) {
+  ///      setState(() {
+  ///        _mapStyle = style;
+  ///      });
+  ///    });
+  ///  }
+  ///
+  ///
+  ///
+  final String mapStyle;
 
   /// Which gestures should be consumed by the map.
   ///
@@ -185,7 +206,7 @@ class _GoogleMapOptions {
     this.trackCameraPosition,
     this.zoomGesturesEnabled,
     this.myLocationEnabled,
-    this.styledMapStyle,
+    this.mapStyle,
   });
 
   static _GoogleMapOptions fromWidget(GoogleMap map) {
@@ -200,7 +221,7 @@ class _GoogleMapOptions {
       trackCameraPosition: map.trackCameraPosition,
       zoomGesturesEnabled: map.zoomGesturesEnabled,
       myLocationEnabled: map.myLocationEnabled,
-      styledMapStyle: map.styledMapStyle,
+      mapStyle: map.mapStyle,
     );
   }
 
@@ -224,7 +245,7 @@ class _GoogleMapOptions {
 
   final bool myLocationEnabled;
 
-  final String styledMapStyle;
+  final String mapStyle;
 
   Map<String, dynamic> toMap() {
     final Map<String, dynamic> optionsMap = <String, dynamic>{};
@@ -245,7 +266,7 @@ class _GoogleMapOptions {
     addIfNonNull('zoomGesturesEnabled', zoomGesturesEnabled);
     addIfNonNull('trackCameraPosition', trackCameraPosition);
     addIfNonNull('myLocationEnabled', myLocationEnabled);
-    addIfNonNull('styledMapStyle', styledMapStyle);
+    addIfNonNull('mapStyle', mapStyle);
     return optionsMap;
   }
 
