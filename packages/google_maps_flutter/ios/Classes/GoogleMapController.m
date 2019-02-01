@@ -284,16 +284,12 @@ static void interpretPolylineOptions(id json, id<FLTGoogleMapPolylineOptionsSink
   [_channel invokeMethod:@"polyline#onTap" arguments:@{@"polyline" : polylineId}];
 }
 
-- (void)mapView:(GMSMapView *)mapView didTapAtCoordinate:(CLLocationCoordinate2D)coordinate;
-  double latitude = coordinate.latitude;
-  double longitude = coordinate.longitude;
-  [_channel invokeMethod:@"map#onTap" arguments:@{@"latitude" : latitude, @"longitude" : longitude}];
+- (void)mapView:(GMSMapView *)mapView didTapAtCoordinate:(CLLocationCoordinate2D)coordinate {
+  [_channel invokeMethod:@"map#onTap" arguments:@{@"latitude" : @(coordinate.latitude), @"longitude" : @(coordinate.longitude)}];
 }
 
-- (void)mapView:(GMSMapView *)mapView didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate;
-  double latitude = coordinate.latitude;
-  double longitude = coordinate.longitude;
-  [_channel invokeMethod:@"map#onLongTap" arguments:@{@"latitude" : latitude, @"longitude" : longitude}];
+- (void)mapView:(GMSMapView *)mapView didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate {
+  [_channel invokeMethod:@"map#onLongTap" arguments:@{@"latitude" : @(coordinate.latitude), @"longitude" : @(coordinate.longitude)}];
 }
 
 @end
