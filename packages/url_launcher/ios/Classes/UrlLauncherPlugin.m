@@ -146,7 +146,7 @@ API_AVAILABLE(ios(9.0))
   self.currentSession = [[FLTUrlLaunchSession alloc] initWithUrl:url withFlutterResult:result];
   [self.viewController presentViewController:self.currentSession.safari
                                     animated:YES
-                                  completion:^void() {
+                                  completion:^void(){
                                   }];
 }
 
