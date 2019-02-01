@@ -12,7 +12,6 @@ import io.flutter.plugin.platform.PlatformView;
 import java.util.Map;
 
 public class FlutterWebView implements PlatformView, MethodCallHandler {
-
   private final WebView webView;
   private final MethodChannel methodChannel;
 
@@ -152,6 +151,5 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   }
 
   @Override
-  public void dispose() {
-  }
+  public void dispose() {}
 }
