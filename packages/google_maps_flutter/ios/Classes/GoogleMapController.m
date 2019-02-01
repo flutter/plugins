@@ -210,6 +210,16 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
   _mapView.settings.myLocationButton = enabled;
 }
 
+- (void)setMapStyle:(NSString*)mapStyle {
+  NSError *error;
+  GMSMapStyle *style = [GMSMapStyle styleWithJSONString:mapStyle error:&error];
+  if (!style) {
+    NSLog(@"The map style definition could not be loaded: %@", error);
+  }
+   _mapView.mapStyle = style;
+}
+
+
 #pragma mark - GMSMapViewDelegate methods
 
 - (void)mapView:(GMSMapView*)mapView willMove:(BOOL)gesture {
@@ -388,6 +398,11 @@ static void interpretMapOptions(id json, id<FLTGoogleMapOptionsSink> sink) {
   id myLocationEnabled = data[@"myLocationEnabled"];
   if (myLocationEnabled) {
     [sink setMyLocationEnabled:toBool(myLocationEnabled)];
+  }
+  id mapStyle = data[@"styledMapStyle"];
+  if (mapStyle) {
+    NSString * styleString = mapStyle;
+    [sink setMapStyle:(styleString)];
   }
 }
 
