@@ -200,7 +200,7 @@ class _GoogleMapOptions {
       trackCameraPosition: map.trackCameraPosition,
       zoomGesturesEnabled: map.zoomGesturesEnabled,
       myLocationEnabled: map.myLocationEnabled,
-      styledMapStyle:map.styledMapStyle,
+      styledMapStyle: map.styledMapStyle,
     );
   }
 

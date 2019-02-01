@@ -60,12 +60,11 @@ class MapUiBodyState extends State<MapUiBody> {
   @override
   void initState() {
     super.initState();
-    loadStyledMapStyle().then((String style){
+    loadStyledMapStyle().then((String style) {
       setState(() {
         _styledMapStyle = style;
       });
     });
-
   }
 
   void _onMapChanged() {
