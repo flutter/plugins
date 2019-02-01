@@ -146,10 +146,7 @@ API_AVAILABLE(ios(9.0))
   self.currentSession = [[FLTUrlLaunchSession alloc] initWithUrl:url withFlutterResult:result];
   __weak typeof(self) weakSelf = self;
   [self.viewController presentViewController:self.currentSession.safari
-                                    animated:YES
-                                  completion:^void() {
-                                    weakSelf.currentSession = nil;
-                                  }];
+                                    animated:YES];
 }
 
 - (void)closeWebViewWithResult:(FlutterResult)result API_AVAILABLE(ios(9.0)) {
