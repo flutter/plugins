@@ -48,7 +48,7 @@ void main() {
     test('platform call should get result', () async {
       stubPlatform.addResponse(
           name: '-[InAppPurchasePlugin startProductRequest:result:]',
-          value: productResponseMap.cast<String, dynamic>());
+          value: productResponseMap);
       final SKRequestMaker request = SKRequestMaker();
       final SkProductResponseWrapper response =
           await request.startProductRequest(<String>['123']);
