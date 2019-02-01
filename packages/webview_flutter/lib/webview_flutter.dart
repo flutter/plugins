@@ -308,6 +308,19 @@ class WebViewController {
   }
 }
 
+/// Manages cookies pertaining to all [WebView]s.
+class CookieManager {
+  static const MethodChannel platform =
+      MethodChannel('plugins.flutter.io/cookie_manager');
+
+  const CookieManager._();
+
+  /// Removes all cookies.
+  Future<void> clearCookies(VoidCallback callback) async {
+    await platform.invokeMethod<void>('clearCookies');
+  }
+}
+
 // Throws an ArgumentError if `url` is not a valid URL string.
 void _validateUrlString(String url) {
   try {
@@ -319,3 +332,6 @@ void _validateUrlString(String url) {
     throw ArgumentError(e);
   }
 }
+
+/// Singleton [CookieManager]
+final CookieManager cookieManager = const CookieManager._();
