@@ -26,6 +26,7 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import io.flutter.plugin.common.MethodCall;
@@ -65,6 +66,7 @@ final class GoogleMapController
   private MethodChannel.Result mapReadyResult;
   private final int registrarActivityHashCode;
   private final Context context;
+  private String styledMapStyle = "";
 
   GoogleMapController(
       int id,
@@ -364,6 +366,17 @@ final class GoogleMapController
   @Override
   public void setMapType(int mapType) {
     googleMap.setMapType(mapType);
+  }
+
+  @Override
+  public void setStyledMapStyle(String styledMapStyle) {
+    if (this.styledMapStyle.equals(styledMapStyle)) {
+      return;
+    }
+    this.styledMapStyle = styledMapStyle;
+    if (googleMap != null) {
+      googleMap.setMapStyle(new MapStyleOptions(styledMapStyle));
+    }
   }
 
   @Override
