@@ -35,16 +35,17 @@ public class FlutterCookieManager implements MethodCallHandler {
 
   private static void clearCookies(final Result result) {
     CookieManager cookieManager = CookieManager.getInstance();
+    final boolean hasCookies = cookieManager.hasCookies();
     if (Build.VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
       cookieManager.removeAllCookies(new ValueCallback<Boolean>() {
         @Override
         public void onReceiveValue(Boolean value) {
-          result.success(null);
+          result.success(hasCookies);
         }
       });
     } else {
       cookieManager.removeAllCookie();
-      result.success(null);
+      result.success(hasCookies);
     }
   }
 

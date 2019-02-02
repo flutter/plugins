@@ -26,11 +26,12 @@
 
 - (void)clearCookies:(FlutterMethodCall*)call result:(FlutterResult)result {
   NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+  BOOL hasCookies = NO;
   for (NSHTTPCookie *cookie in [storage cookies]) {
+    hasCookies = YES;
     [storage deleteCookie:cookie];
   }
-  [[NSUserDefaults standardUserDefaults] synchronize];
-  result(nil);
+  result([[NSNumber alloc] initWithBool:hasCookies]);
 }
 
 @end

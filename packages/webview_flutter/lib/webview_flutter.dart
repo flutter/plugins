@@ -315,9 +315,10 @@ class CookieManager {
 
   const CookieManager._();
 
-  /// Removes all cookies.
-  Future<void> clearCookies(VoidCallback callback) async {
-    await platform.invokeMethod<void>('clearCookies');
+  /// Removes all cookies, and returns true if cookies were
+  /// present before clearing, else false.
+  Future<bool> clearCookies(VoidCallback callback) async {
+    return await platform.invokeMethod<bool>('clearCookies');
   }
 }
 
