@@ -310,10 +310,10 @@ class WebViewController {
 
 /// Manages cookies pertaining to all [WebView]s.
 class CookieManager {
+  const CookieManager._();
+
   static const MethodChannel _channel =
       MethodChannel('plugins.flutter.io/cookie_manager');
-
-  const CookieManager._();
 
   /// Removes all cookies, and returns true if cookies were
   /// present before clearing, else false.
