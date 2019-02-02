@@ -58,10 +58,12 @@ class WebViewExample extends StatelessWidget {
 enum MenuOptions {
   evaluateJavascript,
   toast,
+  clearCookies,
 }
 
 class SampleMenu extends StatelessWidget {
   SampleMenu(this.controller);
+
   final Future<WebViewController> controller;
 
   @override
@@ -83,6 +85,9 @@ class SampleMenu extends StatelessWidget {
                   ),
                 );
                 break;
+              case MenuOptions.clearCookies:
+                _onClearCookies(context);
+                break;
             }
           },
           itemBuilder: (BuildContext context) => <PopupMenuItem<MenuOptions>>[
@@ -94,6 +99,10 @@ class SampleMenu extends StatelessWidget {
                 const PopupMenuItem<MenuOptions>(
                   value: MenuOptions.toast,
                   child: Text('Make a toast'),
+                ),
+                const PopupMenuItem<MenuOptions>(
+                  value: MenuOptions.clearCookies,
+                  child: Text('Clear cookies'),
                 ),
               ],
         );
@@ -110,6 +119,17 @@ class SampleMenu extends StatelessWidget {
         content: Text('JavaScript evaluated, the result is: $result'),
       ),
     );
+  }
+
+  void _onClearCookies(BuildContext context) async {
+    final bool hadCookies = await cookieManager.clearCookies();
+    String message = "There were cookies. Now, they are gone!";
+    if (!hadCookies) {
+      message = "There are no cookies.";
+    }
+    Scaffold.of(context).showSnackBar(SnackBar(
+      content: Text(message),
+    ));
   }
 }
 

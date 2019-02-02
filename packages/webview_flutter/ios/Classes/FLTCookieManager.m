@@ -26,12 +26,9 @@
 
 - (void)clearCookies:(FlutterMethodCall*)call result:(FlutterResult)result {
   NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
-  BOOL hasCookies = NO;
-  for (NSHTTPCookie *cookie in [storage cookies]) {
-    hasCookies = YES;
-    [storage deleteCookie:cookie];
-  }
-  result([[NSNumber alloc] initWithBool:hasCookies]);
+  BOOL hasCookies = storage.cookies.count > 0;
+  [storage removeCookiesSinceDate:[NSDate dateWithTimeIntervalSince1970:0]];
+  result(@(hasCookies));
 }
 
 @end

@@ -310,15 +310,16 @@ class WebViewController {
 
 /// Manages cookies pertaining to all [WebView]s.
 class CookieManager {
-  static const MethodChannel platform =
+  static const MethodChannel _channel =
       MethodChannel('plugins.flutter.io/cookie_manager');
 
   const CookieManager._();
 
   /// Removes all cookies, and returns true if cookies were
   /// present before clearing, else false.
-  Future<bool> clearCookies(VoidCallback callback) async {
-    return await platform.invokeMethod<bool>('clearCookies');
+  Future<bool> clearCookies() async {
+    print(defaultTargetPlatform);
+    return await _channel.invokeMethod<bool>('clearCookies');
   }
 }
 
