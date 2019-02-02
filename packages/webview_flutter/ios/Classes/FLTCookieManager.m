@@ -5,9 +5,9 @@
 
 - (instancetype)init:(NSObject<FlutterBinaryMessenger>*)messenger {
   if ([super init]) {
-    FlutterMethodChannel* channel = [FlutterMethodChannel
-        methodChannelWithName:@"plugins.flutter.io/cookie_manager"
-              binaryMessenger:messenger];
+    FlutterMethodChannel* channel =
+        [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/cookie_manager"
+                                    binaryMessenger:messenger];
     [channel setMethodCallHandler:^(FlutterMethodCall* call, FlutterResult result) {
       __weak __typeof__(self) weakSelf = self;
       [weakSelf onMethodCall:call result:result];
@@ -25,7 +25,7 @@
 }
 
 - (void)clearCookies:(FlutterMethodCall*)call result:(FlutterResult)result {
-  NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+  NSHTTPCookieStorage* storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
   BOOL hasCookies = storage.cookies.count > 0;
   [storage removeCookiesSinceDate:[NSDate dateWithTimeIntervalSince1970:0]];
   result(@(hasCookies));
