@@ -20,6 +20,8 @@ After importing this plugin to your project as usual, add the following to your
     android:exported="false"/>
 ```
 
+And in `app/build.gradle`, under `android {`, change `compileSdkVersion` and `targetSdkVersion` to 28.
+
 Then in Dart code add:
 
 ```dart
