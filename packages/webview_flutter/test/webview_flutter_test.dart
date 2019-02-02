@@ -13,13 +13,18 @@ void main() {
   final _FakePlatformViewsController fakePlatformViewsController =
       _FakePlatformViewsController();
 
+  final _FakeCookieManager _fakeCookieManager = _FakeCookieManager();
+
   setUpAll(() {
     SystemChannels.platform_views.setMockMethodCallHandler(
         fakePlatformViewsController.fakePlatformViewsMethodHandler);
+    SystemChannels.platform
+        .setMockMethodCallHandler(_fakeCookieManager.onMethodCall);
   });
 
   setUp(() {
     fakePlatformViewsController.reset();
+    _fakeCookieManager.reset();
   });
 
   testWidgets('Create WebView', (WidgetTester tester) async {
@@ -353,6 +358,29 @@ void main() {
       throwsA(anything),
     );
   });
+
+  testWidgets('Cookies can be cleared once', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const WebView(
+        initialUrl: 'https://flutter.io',
+      ),
+    );
+    final bool hasCookies = await cookieManager.clearCookies();
+    expect(hasCookies, true);
+  });
+
+  testWidgets('Second cookie clear does not have cookies',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const WebView(
+        initialUrl: 'https://flutter.io',
+      ),
+    );
+    final bool hasCookies = await cookieManager.clearCookies();
+    expect(hasCookies, true);
+    final bool hasCookiesSecond = await cookieManager.clearCookies();
+    expect(hasCookiesSecond, false);
+  });
 }
 
 class FakePlatformWebView {
@@ -451,4 +479,36 @@ Map<dynamic, dynamic> _decodeParams(Uint8List paramsMessage) {
     paramsMessage.lengthInBytes,
   );
   return const StandardMessageCodec().decodeMessage(messageBytes);
+}
+
+class _FakeCookieManager {
+  _FakeCookieManager() {
+    final MethodChannel channel = const MethodChannel(
+      'plugins.flutter.io/cookie_manager',
+      StandardMethodCodec(),
+    );
+    channel.setMockMethodCallHandler(onMethodCall);
+  }
+
+  bool hasCookies = true;
+
+  Future<bool> onMethodCall(MethodCall call) {
+    switch (call.method) {
+      case 'clearCookies':
+        bool hadCookies = false;
+        if (hasCookies) {
+          hadCookies = true;
+          hasCookies = false;
+        }
+        return Future<bool>.sync(() {
+          return hadCookies;
+        });
+        break;
+    }
+    return Future<bool>.sync(() {});
+  }
+
+  void reset() {
+    hasCookies = true;
+  }
 }
