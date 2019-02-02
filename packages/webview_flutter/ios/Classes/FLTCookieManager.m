@@ -1,6 +1,6 @@
-#import "FlutterCookieManager.h"
+#import "FLTCookieManager.h"
 
-@implementation FlutterCookieManager {
+@implementation FLTCookieManager {
 }
 
 - (instancetype)init:(NSObject<FlutterBinaryMessenger>*)messenger {

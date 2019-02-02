@@ -3,7 +3,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface FlutterCookieManager : NSObject
+@interface FLTCookieManager : NSObject
 
 - (instancetype)init:(NSObject<FlutterBinaryMessenger>*)messenger;
 @end
