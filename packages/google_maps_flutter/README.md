@@ -103,6 +103,12 @@ class MapsDemoState extends State<MapsDemo> {
               height: 200.0,
               child: GoogleMap(
                 onMapCreated: _onMapCreated,
+                initialCameraPosition: CameraPosition(
+                   target: LatLng(
+                      0.00,
+                      0.00,
+                   ),
+                 ),
               ),
             ),
           ),
