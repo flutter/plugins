@@ -28,7 +28,7 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
 
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel =
-        new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_dynamic_links");
+            new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_dynamic_links");
     channel.setMethodCallHandler(new FirebaseDynamicLinksPlugin(registrar));
   }
 
@@ -61,30 +61,30 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
 
   private void handleRetrieveDynamicLink(final Result result) {
     FirebaseDynamicLinks.getInstance()
-        .getDynamicLink(registrar.activity().getIntent())
-        .addOnCompleteListener(
-            registrar.activity(),
-            new OnCompleteListener<PendingDynamicLinkData>() {
-              @Override
-              public void onComplete(@NonNull Task<PendingDynamicLinkData> task) {
-                if (task.isSuccessful()) {
-                  PendingDynamicLinkData data = task.getResult();
-                  if (data != null) {
-                    Map<String, Object> dynamicLink = new HashMap<>();
-                    dynamicLink.put("link", data.getLink().toString());
+            .getDynamicLink(registrar.activity().getIntent())
+            .addOnCompleteListener(
+                    registrar.activity(),
+                    new OnCompleteListener<PendingDynamicLinkData>() {
+                      @Override
+                      public void onComplete(@NonNull Task<PendingDynamicLinkData> task) {
+                        if (task.isSuccessful()) {
+                          PendingDynamicLinkData data = task.getResult();
+                          if (data != null) {
+                            Map<String, Object> dynamicLink = new HashMap<>();
+                            dynamicLink.put("link", data.getLink().toString());
 
-                    Map<String, Object> androidData = new HashMap<>();
-                    androidData.put("clickTimestamp", data.getClickTimestamp());
-                    androidData.put("minimumVersion", data.getMinimumAppVersion());
+                            Map<String, Object> androidData = new HashMap<>();
+                            androidData.put("clickTimestamp", data.getClickTimestamp());
+                            androidData.put("minimumVersion", data.getMinimumAppVersion());
 
-                    dynamicLink.put("android", androidData);
-                    result.success(dynamicLink);
-                    return;
-                  }
-                }
-                result.success(null);
-              }
-            });
+                            dynamicLink.put("android", androidData);
+                            result.success(dynamicLink);
+                            return;
+                          }
+                        }
+                        result.success(null);
+                      }
+                    });
   }
 
   private OnCompleteListener<ShortDynamicLink> createShortLinkListener(final Result result) {
@@ -101,6 +101,7 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
               warnings.add(warning.getMessage());
             }
           }
+
           url.put("warnings", warnings);
 
           result.success(url);
@@ -117,14 +118,14 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
   }
 
   private void buildShortDynamicLink(
-      DynamicLink.Builder builder, MethodCall call, OnCompleteListener<ShortDynamicLink> listener) {
+          DynamicLink.Builder builder, MethodCall call, OnCompleteListener<ShortDynamicLink> listener) {
     Integer suffix = null;
 
     Map<String, Object> dynamicLinkParametersOptions =
-        call.argument("dynamicLinkParametersOptions");
+            call.argument("dynamicLinkParametersOptions");
     if (dynamicLinkParametersOptions != null) {
       Integer shortDynamicLinkPathLength =
-          (Integer) dynamicLinkParametersOptions.get("shortDynamicLinkPathLength");
+              (Integer) dynamicLinkParametersOptions.get("shortDynamicLinkPathLength");
       if (shortDynamicLinkPathLength != null) {
         switch (shortDynamicLinkPathLength) {
           case 0:
@@ -162,7 +163,7 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
       Integer minimumVersion = valueFor("minimumVersion", androidParameters);
 
       DynamicLink.AndroidParameters.Builder builder =
-          new DynamicLink.AndroidParameters.Builder(packageName);
+              new DynamicLink.AndroidParameters.Builder(packageName);
 
       if (fallbackUrl != null) builder.setFallbackUrl(Uri.parse(fallbackUrl));
       if (minimumVersion != null) builder.setMinimumVersion(minimumVersion);
@@ -179,7 +180,7 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
       String term = valueFor("term", googleAnalyticsParameters);
 
       DynamicLink.GoogleAnalyticsParameters.Builder builder =
-          new DynamicLink.GoogleAnalyticsParameters.Builder();
+              new DynamicLink.GoogleAnalyticsParameters.Builder();
 
       if (campaign != null) builder.setCampaign(campaign);
       if (content != null) builder.setContent(content);
@@ -213,14 +214,14 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
     }
 
     Map<String, Object> itunesConnectAnalyticsParameters =
-        call.argument("itunesConnectAnalyticsParameters");
+            call.argument("itunesConnectAnalyticsParameters");
     if (itunesConnectAnalyticsParameters != null) {
       String affiliateToken = valueFor("affiliateToken", itunesConnectAnalyticsParameters);
       String campaignToken = valueFor("campaignToken", itunesConnectAnalyticsParameters);
       String providerToken = valueFor("providerToken", itunesConnectAnalyticsParameters);
 
       DynamicLink.ItunesConnectAnalyticsParameters.Builder builder =
-          new DynamicLink.ItunesConnectAnalyticsParameters.Builder();
+              new DynamicLink.ItunesConnectAnalyticsParameters.Builder();
 
       if (affiliateToken != null) builder.setAffiliateToken(affiliateToken);
       if (campaignToken != null) builder.setCampaignToken(campaignToken);
@@ -234,7 +235,7 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
       Boolean forcedRedirectEnabled = valueFor("forcedRedirectEnabled", navigationInfoParameters);
 
       DynamicLink.NavigationInfoParameters.Builder builder =
-          new DynamicLink.NavigationInfoParameters.Builder();
+              new DynamicLink.NavigationInfoParameters.Builder();
 
       if (forcedRedirectEnabled != null) builder.setForcedRedirectEnabled(forcedRedirectEnabled);
 
@@ -248,7 +249,7 @@ public class FirebaseDynamicLinksPlugin implements MethodCallHandler {
       String title = valueFor("title", socialMetaTagParameters);
 
       DynamicLink.SocialMetaTagParameters.Builder builder =
-          new DynamicLink.SocialMetaTagParameters.Builder();
+              new DynamicLink.SocialMetaTagParameters.Builder();
 
       if (description != null) builder.setDescription(description);
       if (imageUrl != null) builder.setImageUrl(Uri.parse(imageUrl));
