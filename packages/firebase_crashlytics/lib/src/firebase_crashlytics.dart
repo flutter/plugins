@@ -40,5 +40,59 @@ class Crashlytics {
     }
   }
 
+  void crash() {
+    throw StateError('Error thrown by Crashlytics plugin');
+  }
+
+  Future<bool> isDebuggable() async {
+    final bool result = await channel.invokeMethod('Crashlytics#isDebuggable');
+    return result;
+  }
+
+  Future<String> getVersion() async {
+    final String result = await channel.invokeMethod('Crashlytics#getVersion');
+    return result;
+  }
+
+  Future<void> log(String msg) async {
+    await channel.invokeMethod('Crashlytics#log');
+  }
+
+  Future<void> setBool(String key, bool value) async {
+    await channel.invokeMethod('Crashlytics#setBool', <String, dynamic> {
+      key: value
+    });
+  }
+
+  Future<void> setDouble(String key, double value) async {
+    await channel.invokeMethod('Crashlytics#setDouble', <String, dynamic> {
+      key: value
+    });
+  }
+
+  Future<void> setInt(String key, int value) async {
+    await channel.invokeMethod('Crashlytics#setInt', <String, dynamic> {
+      key: value
+    });
+  }
+
+  Future<void> setUserEmail(String email) async {
+    await channel.invokeMethod('Crashlytics#setUserEmail', <String, dynamic> {
+      'email': email
+    });
+  }
+
+  Future<void> setUserIdentifier(String identifier) async {
+    await channel.invokeMethod('Crashlytics#setUserIdentifier', <String, dynamic> {
+      'identifier': identifier
+    });
+  }
+
+  Future<void> setUserName(String name) async {
+    await channel.invokeMethod('Crashlytics#setUserName', <String, dynamic> {
+      'name': name
+    });
+  }
+
 }
 

@@ -37,7 +37,7 @@ class _MyAppState extends State<MyApp> {
         body: Center(
           child: FlatButton(child: const Text('Crash'), onPressed: (){
             // Throw an error that will be sent to Crashlytics.
-            throw StateError('Example Error');
+            Crashlytics.instance.crash();
           }),
         ),
       ),
