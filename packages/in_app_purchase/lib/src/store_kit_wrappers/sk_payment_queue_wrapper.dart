@@ -133,12 +133,12 @@ enum SKDownloadState {
 
 /// Dart wrapper around StoreKit's [SKDownload](https://developer.apple.com/documentation/storekit/skdownload?language=objc).
 ///
-/// When a product is created in the App Store Connect, one or more download contents can be associate with it.
-/// When the product is purchased, a List of download object will present in a [SKPaymentTransactionWrapper] object.
+/// When a product is created in the App Store Connect, one or more download contents can be associated with it.
+/// When the product is purchased, a List of download object will present in an [SKPaymentTransactionWrapper] object.
 /// Then download objects can be added to the payment queue.
 /// Read the [contentURL] to get the URL of the downloaded content after download complete.A
 /// All downloaded files must be processed before the completion of the transaction.
-/// After transaction is complete, any download object in the transaction will not be able to add to the payment queue
+/// After the transaction is complete, any download object in the transaction will not be able to add to the payment queue
 /// and the contentURL of the download object will be invalid.
 @JsonSerializable()
 class SKDownloadWrapper {
@@ -183,7 +183,7 @@ class SKDownloadWrapper {
   /// The URL string of the content.
   final String contentURL;
 
-  /// Version of the content formatted as a series of dot separated integers.
+  /// Version of the content formatted as a series of dot-separated integers.
   final String contentVersion;
 
   /// The transaction ID of the transaction that is associated with the downloadable content.
@@ -192,7 +192,7 @@ class SKDownloadWrapper {
   /// The download progress, between 0.0 to 1.0.
   final double progress;
 
-  /// The estimated time remaining for the download; if no good estimate is able to be make,
+  /// The estimated time remaining for the download; if no good estimate is able to be made,
   /// [downloadTimeUnknown] will be set to true.
   final double timeRemaining;
 
@@ -209,7 +209,7 @@ class SKError {
   SKError(
       {@required this.code, @required this.domain, @required this.userInfo});
 
-  /// Constructs an instance of this from a key value map of data.
+  /// Constructs an instance of this from a key-value map of data.
   ///
   /// The map needs to have named string keys with values matching the names and
   /// types of all of the members on this class.
@@ -266,13 +266,13 @@ class SKPaymentWrapper {
   /// Reserved for future use.
   ///
   /// The value must be null before sending the payment. If the value is not null, the payment will be rejected.
-  /// Converted to String from NSData from ios platform using UTF8Encoding. Default is null.
+  /// Converted to String from NSData from ios platform using UTF8Encoding. The default is null.
   // The iOS Platform provided this property but it is reserved for future use. We also provide this
-  // property to match iOS platform; in case any future update for this property occurs, we do not need to
+  // property to match the iOS platform; in case any future update for this property occurs, we do not need to
   // add this property later.
   final String requestData;
 
-  /// The amount of the product this payment is for. Default is 1. Minimum is 1. Maximum is 10.
+  /// The amount of the product this payment is for. The default is 1. The minimum is 1. The maximum is 10.
   final int quantity;
 
   /// Produces an "ask to buy" flow in the sandbox if set to true. Default is false. I doesn't do it.
