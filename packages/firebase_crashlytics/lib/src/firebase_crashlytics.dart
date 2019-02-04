@@ -76,6 +76,12 @@ class Crashlytics {
     });
   }
 
+  Future<void> setString(String key, int value) async {
+    await channel.invokeMethod('Crashlytics#setString', <String, dynamic> {
+      key: value
+    });
+  }
+
   Future<void> setUserEmail(String email) async {
     await channel.invokeMethod('Crashlytics#setUserEmail', <String, dynamic> {
       'email': email
