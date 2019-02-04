@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 public class FlutterWebView implements PlatformView, MethodCallHandler {
+  private static final String JS_CHANNEL_NAMES_FIELD = "javascriptChannelNames";
   private final WebView webView;
   private final MethodChannel methodChannel;
 
@@ -25,8 +26,8 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
     applySettings((Map<String, Object>) params.get("settings"));
 
-    if (params.containsKey("javascriptChannelNames")) {
-      registerJavaScriptChannelNames((List<String>) params.get("javascriptChannelNames"));
+    if (params.containsKey(JS_CHANNEL_NAMES_FIELD)) {
+      registerJavaScriptChannelNames((List<String>) params.get(JS_CHANNEL_NAMES_FIELD));
     }
 
     if (params.containsKey("initialUrl")) {
