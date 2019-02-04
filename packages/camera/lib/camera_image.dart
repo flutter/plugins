@@ -38,6 +38,7 @@ class Plane {
   final int width;
 }
 
+// TODO:(bmparr) Turn [ImageFormatGroup] to a class with int values.
 /// Group of image formats that are comparable across Android and iOS platforms.
 enum ImageFormatGroup {
   /// The image format does not fit into any specific group.
@@ -82,16 +83,16 @@ class ImageFormat {
 
 ImageFormatGroup _asImageFormatGroup(dynamic rawFormat) {
   if (defaultTargetPlatform == TargetPlatform.android) {
-    if (rawFormat == 35) {
+    if (rawFormat == 35) { // android.graphics.ImageFormat.YUV_420_888
       return ImageFormatGroup.yuv420;
     }
   }
 
   if (defaultTargetPlatform == TargetPlatform.iOS) {
     switch (rawFormat) {
-      case 875704438:
+      case 875704438: // kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
         return ImageFormatGroup.yuv420;
-      case 1111970369:
+      case 1111970369: // kCVPixelFormatType_32BGRA
         return ImageFormatGroup.bgra8888;
     }
   }
