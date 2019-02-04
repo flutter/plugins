@@ -60,7 +60,7 @@ Otherwise you will not be able to use Firebase Crashlytics.
 
 ### iOS Integration
 
-Add the Crachlytics run scripts
+Add the Crashlytics run scripts
 
 1. From Xcode select Runner from the project navigation.
 1. Select the Build Phases tab.
