@@ -100,7 +100,8 @@
   } else {
     pxBuffer = [self planarBytesToPixelBuffer:width.unsignedLongValue
                                        height:height.unsignedLongValue
-                                       format:format baseAddress:(void *)imageBytes.bytes
+                                       format:format
+                                  baseAddress:(void *)imageBytes.bytes
                                      dataSize:imageBytes.length
                                    planeCount:planeCount
                                     planeData:planeData];
@@ -115,7 +116,8 @@
                            baseAddress:(void *)baseAddress
                            bytesPerRow:(size_t)bytesPerRow {
   CVPixelBufferRef pxBuffer = NULL;
-  CVPixelBufferCreateWithBytes(kCFAllocatorDefault, width, height, format, baseAddress, bytesPerRow, NULL, NULL, NULL, &pxBuffer);
+  CVPixelBufferCreateWithBytes(kCFAllocatorDefault, width, height, format, baseAddress, bytesPerRow,
+                               NULL, NULL, NULL, &pxBuffer);
   return pxBuffer;
 }
 
@@ -153,10 +155,9 @@
   }
 
   CVPixelBufferRef pxBuffer = NULL;
-  CVPixelBufferCreateWithPlanarBytes(kCFAllocatorDefault, width,
-                                     height, format, NULL, dataSize, planeCount,
-                                     baseAddresses, widths, heights, bytesPerRows, NULL, NULL,
-                                     NULL, &pxBuffer);
+  CVPixelBufferCreateWithPlanarBytes(kCFAllocatorDefault, width, height, format, NULL, dataSize,
+                                     planeCount, baseAddresses, widths, heights, bytesPerRows, NULL,
+                                     NULL, NULL, &pxBuffer);
 
   return pxBuffer;
 }
@@ -166,9 +167,9 @@
 
   CIContext *temporaryContext = [CIContext contextWithOptions:nil];
   CGImageRef videoImage =
-  [temporaryContext createCGImage:ciImage
-                         fromRect:CGRectMake(0, 0, CVPixelBufferGetWidth(pixelBufferRef),
-                                             CVPixelBufferGetHeight(pixelBufferRef))];
+      [temporaryContext createCGImage:ciImage
+                             fromRect:CGRectMake(0, 0, CVPixelBufferGetWidth(pixelBufferRef),
+                                                 CVPixelBufferGetHeight(pixelBufferRef))];
 
   UIImage *uiImage = [UIImage imageWithCGImage:videoImage];
   CGImageRelease(videoImage);
