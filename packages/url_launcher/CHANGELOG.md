@@ -1,3 +1,55 @@
+## 5.0.0
+
+* **Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library.
+
+  This was originally incorrectly pushed in the `4.2.0` update.
+
+## 4.2.0+3
+
+* **Revert the breaking 4.2.0 update**. 4.2.0 was known to be breaking and
+  should have incremented the major version number instead of the minor. This
+  revert is in and of itself breaking for anyone that has already migrated
+  however. Anyone who has already migrated their app to AndroidX should
+  immediately update to `5.0.0` instead. That's the correctly versioned new push
+  of `4.2.0`.
+
+## 4.2.0+2
+
+* Updated `launch` to use async and await, fixed the incorrect return value by `launch` method.
+
+## 4.2.0+1
+
+* Refactored the Java and Objective-C code. Replaced instance variables with properties in Objective-C.
+
+## 4.2.0
+
+* **BAD**. This was a breaking change that was incorrectly published on a minor
+  version upgrade, should never have happened. Reverted by 4.2.0+3.
+
+* **Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library.
+
+## 4.1.0+1
+
+* This is just a version bump to republish as 4.1.0 was published with some dirty local state.
+
+## 4.1.0
+
+* Added `universalLinksOnly` setting.
+* Updated `launch` to return `Future<bool>`.
+
+## 4.0.3
+
+* Fixed launch url fail for Android: `launch` now assert activity not null and using activity to startActivity.
+* Fixed `WebViewActivity has leaked IntentReceiver` for Android.
+
 ## 4.0.2
 
 * Added `closeWebView` function to programmatically close the current WebView.

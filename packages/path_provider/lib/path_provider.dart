@@ -21,6 +21,9 @@ const MethodChannel _channel =
 ///
 /// On Android, this uses the `getCacheDir` API on the context.
 Future<Directory> getTemporaryDirectory() async {
+  // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+  // https://github.com/flutter/flutter/issues/26431
+  // ignore: strong_mode_implicit_dynamic_method
   final String path = await _channel.invokeMethod('getTemporaryDirectory');
   if (path == null) {
     return null;
@@ -37,6 +40,9 @@ Future<Directory> getTemporaryDirectory() async {
 /// On Android, this returns the AppData directory.
 Future<Directory> getApplicationDocumentsDirectory() async {
   final String path =
+      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+      // https://github.com/flutter/flutter/issues/26431
+      // ignore: strong_mode_implicit_dynamic_method
       await _channel.invokeMethod('getApplicationDocumentsDirectory');
   if (path == null) {
     return null;
@@ -55,6 +61,9 @@ Future<Directory> getApplicationDocumentsDirectory() async {
 Future<Directory> getExternalStorageDirectory() async {
   if (Platform.isIOS)
     throw UnsupportedError("Functionality not available on iOS");
+  // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+  // https://github.com/flutter/flutter/issues/26431
+  // ignore: strong_mode_implicit_dynamic_method
   final String path = await _channel.invokeMethod('getStorageDirectory');
   if (path == null) {
     return null;

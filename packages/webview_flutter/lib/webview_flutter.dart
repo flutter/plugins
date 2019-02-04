@@ -11,7 +11,7 @@ import 'package:flutter/widgets.dart';
 
 typedef void WebViewCreatedCallback(WebViewController controller);
 
-enum JavaScriptMode {
+enum JavascriptMode {
   /// JavaScript execution is disabled.
   disabled,
 
@@ -26,14 +26,14 @@ class WebView extends StatefulWidget {
   /// The web view can be controlled using a `WebViewController` that is passed to the
   /// `onWebViewCreated` callback once the web view is created.
   ///
-  /// The `javaScriptMode` parameter must not be null.
+  /// The `javascriptMode` parameter must not be null.
   const WebView({
     Key key,
     this.onWebViewCreated,
     this.initialUrl,
-    this.javaScriptMode = JavaScriptMode.disabled,
+    this.javascriptMode = JavascriptMode.disabled,
     this.gestureRecognizers,
-  })  : assert(javaScriptMode != null),
+  })  : assert(javascriptMode != null),
         super(key: key);
 
   /// If not null invoked once the web view is created.
@@ -53,8 +53,8 @@ class WebView extends StatefulWidget {
   /// The initial URL to load.
   final String initialUrl;
 
-  /// Whether JavaScript execution is enabled.
-  final JavaScriptMode javaScriptMode;
+  /// Whether Javascript execution is enabled.
+  final JavascriptMode javascriptMode;
 
   @override
   State<StatefulWidget> createState() => _WebViewState();
@@ -104,31 +104,20 @@ class _WebViewState extends State<WebView> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    _settings = _WebSettings.fromWidget(widget);
-  }
-
-  @override
   void didUpdateWidget(WebView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    final _WebSettings newSettings = _WebSettings.fromWidget(widget);
-    final Map<String, dynamic> settingsUpdate =
-        _settings.updatesMap(newSettings);
-    _updateSettings(settingsUpdate);
-    _settings = newSettings;
+    _updateSettings(_WebSettings.fromWidget(widget));
   }
 
-  Future<void> _updateSettings(Map<String, dynamic> update) async {
-    if (update == null) {
-      return;
-    }
+  Future<void> _updateSettings(_WebSettings settings) async {
+    _settings = settings;
     final WebViewController controller = await _controller.future;
-    controller._updateSettings(update);
+    controller._updateSettings(settings);
   }
 
   void _onPlatformViewCreated(int id) {
-    final WebViewController controller = WebViewController._(id);
+    final WebViewController controller =
+        WebViewController._(id, _WebSettings.fromWidget(widget));
     _controller.complete(controller);
     if (widget.onWebViewCreated != null) {
       widget.onWebViewCreated(controller);
@@ -159,27 +148,27 @@ class _CreationParams {
 
 class _WebSettings {
   _WebSettings({
-    this.javaScriptMode,
+    this.javascriptMode,
   });
 
   static _WebSettings fromWidget(WebView widget) {
-    return _WebSettings(javaScriptMode: widget.javaScriptMode);
+    return _WebSettings(javascriptMode: widget.javascriptMode);
   }
 
-  final JavaScriptMode javaScriptMode;
+  final JavascriptMode javascriptMode;
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'jsMode': javaScriptMode.index,
+      'jsMode': javascriptMode.index,
     };
   }
 
   Map<String, dynamic> updatesMap(_WebSettings newSettings) {
-    if (javaScriptMode == newSettings.javaScriptMode) {
+    if (javascriptMode == newSettings.javascriptMode) {
       return null;
     }
     return <String, dynamic>{
-      'jsMode': newSettings.javaScriptMode.index,
+      'jsMode': newSettings.javascriptMode.index,
     };
   }
 }
@@ -189,10 +178,13 @@ class _WebSettings {
 /// A [WebViewController] instance can be obtained by setting the [WebView.onWebViewCreated]
 /// callback for a [WebView] widget.
 class WebViewController {
-  WebViewController._(int id)
-      : _channel = MethodChannel('plugins.flutter.io/webview_$id');
+  WebViewController._(int id, _WebSettings settings)
+      : _channel = MethodChannel('plugins.flutter.io/webview_$id'),
+        _settings = settings;
 
   final MethodChannel _channel;
+
+  _WebSettings _settings;
 
   /// Loads the specified URL.
   ///
@@ -202,15 +194,121 @@ class WebViewController {
   Future<void> loadUrl(String url) async {
     assert(url != null);
     _validateUrlString(url);
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     return _channel.invokeMethod('loadUrl', url);
   }
 
-  Future<void> _updateSettings(Map<String, dynamic> update) async {
-    return _channel.invokeMethod('updateSettings', update);
+  /// Accessor to the current URL that the WebView is displaying.
+  ///
+  /// If [WebView.initialUrl] was never specified, returns `null`.
+  /// Note that this operation is asynchronous, and it is possible that the
+  /// current URL changes again by the time this function returns (in other
+  /// words, by the time this future completes, the WebView may be displaying a
+  /// different URL).
+  Future<String> currentUrl() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    final String url = await _channel.invokeMethod('currentUrl');
+    return url;
+  }
+
+  /// Checks whether there's a back history item.
+  ///
+  /// Note that this operation is asynchronous, and it is possible that the "canGoBack" state has
+  /// changed by the time the future completed.
+  Future<bool> canGoBack() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    final bool canGoBack = await _channel.invokeMethod("canGoBack");
+    return canGoBack;
+  }
+
+  /// Checks whether there's a forward history item.
+  ///
+  /// Note that this operation is asynchronous, and it is possible that the "canGoForward" state has
+  /// changed by the time the future completed.
+  Future<bool> canGoForward() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    final bool canGoForward = await _channel.invokeMethod("canGoForward");
+    return canGoForward;
+  }
+
+  /// Goes back in the history of this WebView.
+  ///
+  /// If there is no back history item this is a no-op.
+  Future<void> goBack() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    return _channel.invokeMethod("goBack");
+  }
+
+  /// Goes forward in the history of this WebView.
+  ///
+  /// If there is no forward history item this is a no-op.
+  Future<void> goForward() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    return _channel.invokeMethod("goForward");
+  }
+
+  /// Reloads the current URL.
+  Future<void> reload() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    return _channel.invokeMethod("reload");
+  }
+
+  Future<void> _updateSettings(_WebSettings setting) async {
+    final Map<String, dynamic> updateMap = _settings.updatesMap(setting);
+    if (updateMap == null) {
+      return null;
+    }
+    _settings = setting;
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    return _channel.invokeMethod('updateSettings', updateMap);
+  }
+
+  /// Evaluates a JavaScript expression in the context of the current page.
+  ///
+  /// On Android returns the evaluation result as a JSON formatted string.
+  ///
+  /// On iOS depending on the value type the return value would be one of:
+  ///
+  ///  - For primitive JavaScript types: the value string formatted (e.g JavaScript 100 returns '100').
+  ///  - For JavaScript arrays of supported types: a string formatted NSArray(e.g '(1,2,3), note that the string for NSArray is formatted and might contain newlines and extra spaces.').
+  ///  - Other non-primitive types are not supported on iOS and will complete the Future with an error.
+  ///
+  /// The Future completes with an error if a JavaScript error occurred, or on iOS, if the type of the
+  /// evaluated expression is not supported as described above.
+  Future<String> evaluateJavascript(String javascriptString) async {
+    if (_settings.javascriptMode == JavascriptMode.disabled) {
+      throw FlutterError(
+          'JavaScript mode must be enabled/unrestricted when calling evaluateJavascript.');
+    }
+    if (javascriptString == null) {
+      throw ArgumentError('The argument javascriptString must not be null. ');
+    }
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    final String result =
+        await _channel.invokeMethod('evaluateJavascript', javascriptString);
+    return result;
   }
 }
 
-// Throws an ArgumentError if url is not a valid url string.
+// Throws an ArgumentError if `url` is not a valid URL string.
 void _validateUrlString(String url) {
   try {
     final Uri uri = Uri.parse(url);

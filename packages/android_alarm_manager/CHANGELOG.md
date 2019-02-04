@@ -1,10 +1,44 @@
+## 0.4.0
+* **Breaking change**. Migrated the underlying AlarmService to utilize a
+  BroadcastReceiver with a JobIntentService instead of a Service to handle
+  processing of alarms. This requires AndroidManifest.xml to be updated to
+  include the following entries:
+
+  ```xml
+        <service
+            android:name="io.flutter.plugins.androidalarmmanager.AlarmService"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:exported="false"/>
+        <receiver
+            android:name="io.flutter.plugins.androidalarmmanager.AlarmBroadcastReceiver"
+            android:exported="false"/>
+  ```
+
+* Fixed issue where background service was not starting due to background
+  execution restrictions on Android 8+ (see [issue
+  #26846](https://github.com/flutter/flutter/issues/26846)).
+* Fixed issue where alarm events were ignored when the background isolate was
+  still initializing. Alarm events are now queued if the background isolate has
+  not completed initializing and are processed once initialization is complete.
+
+## 0.3.0
+
+* **Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library.
+
+## 0.2.3
+* Move firebase_auth from a dependency to a dev_dependency.
+
 ## 0.2.2
-* Update dependencies for example to point to published versions of firebase_auth
+* Update dependencies for example to point to published versions of firebase_auth.
 
 ## 0.2.1
 * Update dependencies for example to point to published versions of firebase_auth
   and google_sign_in.
-* Add missing dependency on firebase_auth.1
+* Add missing dependency on firebase_auth.
 
 ## 0.2.0
 

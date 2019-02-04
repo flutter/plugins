@@ -9,34 +9,32 @@ part of firebase_ml_vision;
 /// A text recognizer is created via `textRecognizer()` in [FirebaseVision]:
 ///
 /// ```dart
-/// TextRecognizer textRecognizer = FirebaseVision.instance.textRecognizer();
+/// final FirebaseVisionImage image =
+///     FirebaseVisionImage.fromFilePath('path/to/file');
+///
+/// final TextRecognizer textRecognizer =
+///     FirebaseVision.instance.textRecognizer();
+///
+/// final List<VisionText> recognizedText =
+///     await textRecognizer.processImage(image);
 /// ```
-class TextRecognizer implements FirebaseVisionDetector {
+class TextRecognizer {
   TextRecognizer._();
 
   /// Detects [VisionText] from a [FirebaseVisionImage].
-  ///
-  /// The OCR is performed asynchronously.
   Future<VisionText> processImage(FirebaseVisionImage visionImage) async {
     final Map<dynamic, dynamic> reply =
+        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+        // https://github.com/flutter/flutter/issues/26431
+        // ignore: strong_mode_implicit_dynamic_method
         await FirebaseVision.channel.invokeMethod(
       'TextRecognizer#processImage',
       <String, dynamic>{
-        'path': visionImage.imageFile.path,
         'options': <String, dynamic>{},
-      },
+      }..addAll(visionImage._serialize()),
     );
 
     return VisionText._(reply);
-  }
-
-  /// Detects [VisionText] from a [FirebaseVisionImage].
-  ///
-  /// The OCR is performed asynchronously.
-  @Deprecated('Please use `processImage`')
-  @override
-  Future<VisionText> detectInImage(FirebaseVisionImage visionImage) async {
-    return processImage(visionImage);
   }
 }
 

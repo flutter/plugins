@@ -1,6 +1,14 @@
-## 0.2.6
+## 0.3.1
 
 * Bump firebase-core dependency on Android to 16.0.6.
+
+## 0.3.0
+
+* **Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library.
 
 ## 0.2.5+1
 
