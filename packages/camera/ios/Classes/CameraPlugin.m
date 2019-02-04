@@ -289,12 +289,31 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 
       NSMutableArray *planes = [NSMutableArray array];
 
-      size_t planeCount = CVPixelBufferGetPlaneCount(pixelBuffer);
+      Boolean isPlanar = CVPixelBufferIsPlanar(pixelBuffer);
+      size_t planeCount;
+      if (isPlanar) {
+        planeCount = CVPixelBufferGetPlaneCount(pixelBuffer);
+      } else {
+        planeCount = 1;
+      }
+
       for (int i = 0; i < planeCount; i++) {
-        void *planeAddress = CVPixelBufferGetBaseAddressOfPlane(pixelBuffer, i);
-        size_t bytesPerRow = CVPixelBufferGetBytesPerRowOfPlane(pixelBuffer, i);
-        size_t height = CVPixelBufferGetHeightOfPlane(pixelBuffer, i);
-        size_t width = CVPixelBufferGetWidthOfPlane(pixelBuffer, i);
+        void *planeAddress;
+        size_t bytesPerRow;
+        size_t height;
+        size_t width;
+
+        if (isPlanar) {
+          planeAddress = CVPixelBufferGetBaseAddressOfPlane(pixelBuffer, i);
+          bytesPerRow = CVPixelBufferGetBytesPerRowOfPlane(pixelBuffer, i);
+          height = CVPixelBufferGetHeightOfPlane(pixelBuffer, i);
+          width = CVPixelBufferGetWidthOfPlane(pixelBuffer, i);
+        } else {
+          planeAddress = CVPixelBufferGetBaseAddress(pixelBuffer);
+          bytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer);
+          height = CVPixelBufferGetHeight(pixelBuffer);
+          width = CVPixelBufferGetWidth(pixelBuffer);
+        }
 
         NSNumber *length = @(bytesPerRow * height);
         NSData *bytes = [NSData dataWithBytes:planeAddress length:length.unsignedIntegerValue];
@@ -315,6 +334,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
       imageBuffer[@"planes"] = planes;
 
       _imageStreamHandler.eventSink(imageBuffer);
+
 
       CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
     }
