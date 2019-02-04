@@ -335,7 +335,6 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 
       _imageStreamHandler.eventSink(imageBuffer);
 
-
       CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
     }
   }
