@@ -1,3 +1,7 @@
+## 0.10.1
+
+* Android: Upgrade ExoPlayer to 2.9.4
+
 ## 0.10.0
 
 * **Breaking change**. Migrate from the deprecated original Android Support
