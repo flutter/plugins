@@ -49,8 +49,10 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
   FlutterMethodChannel* _channel;
   BOOL _trackCameraPosition;
   NSObject<FlutterPluginRegistrar>* _registrar;
-  // used for the temporary workaround for a bug that the camera is not properly positioned at
+  // Used for the temporary workaround for a bug that the camera is not properly positioned at
   // initialization. https://github.com/flutter/flutter/issues/24806
+  // TODO(cyanglaz): Remove this temporary fix once the Maps SDK issue is resolved.
+  // https://github.com/flutter/flutter/issues/27550
   BOOL _cameraDidInitialSetup;
 }
 
@@ -222,8 +224,12 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
 
 - (void)mapView:(GMSMapView*)mapView didChangeCameraPosition:(GMSCameraPosition*)position {
   if (!_cameraDidInitialSetup) {
-    // A temporary workaround for a bug that the camera is not properly positioned at
+    // We suspected a bug in the iOS Google Maps SDK caused the camera is not properly positioned at
     // initialization. https://github.com/flutter/flutter/issues/24806
+    // This temporary workaround fix is provided while the actual fix in the Google Maps SDK is
+    // still being investigated.
+    // TODO(cyanglaz): Remove this temporary fix once the Maps SDK issue is resolved.
+    // https://github.com/flutter/flutter/issues/27550
     _cameraDidInitialSetup = YES;
     [mapView moveCamera:[GMSCameraUpdate setCamera:_mapView.camera]];
   }
