@@ -30,7 +30,7 @@ void main() {
     'price': 1.0,
     'downloadable': true,
     'downloadContentLengths': <int>[1, 2],
-    'subscriptionPeriod': subMap,
+    'subscriptionPeriod': null,
     'introductoryPrice': discountMap,
   };
 
