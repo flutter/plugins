@@ -9,6 +9,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
+typedef void VoidCallback();
+
 void main() {
   final _FakePlatformViewsController fakePlatformViewsController =
       _FakePlatformViewsController();
@@ -40,23 +42,23 @@ void main() {
     expect(await controller.currentUrl(), 'https://youtube.com');
   });
 
-  testWidgets('JavaScript mode', (WidgetTester tester) async {
+  testWidgets('Javascript mode', (WidgetTester tester) async {
     await tester.pumpWidget(const WebView(
       initialUrl: 'https://youtube.com',
-      javaScriptMode: JavaScriptMode.unrestricted,
+      javascriptMode: JavascriptMode.unrestricted,
     ));
 
     final FakePlatformWebView platformWebView =
         fakePlatformViewsController.lastCreatedView;
 
-    expect(platformWebView.javaScriptMode, JavaScriptMode.unrestricted);
+    expect(platformWebView.javascriptMode, JavascriptMode.unrestricted);
 
     await tester.pumpWidget(const WebView(
       initialUrl: 'https://youtube.com',
-      javaScriptMode: JavaScriptMode.disabled,
+      javascriptMode: JavascriptMode.disabled,
     ));
 
-    expect(platformWebView.javaScriptMode, JavaScriptMode.disabled);
+    expect(platformWebView.javascriptMode, JavascriptMode.disabled);
   });
 
   testWidgets('Load url', (WidgetTester tester) async {
@@ -311,6 +313,206 @@ void main() {
 
     expect(platformWebView.amountOfReloadsOnCurrentUrl, 0);
   });
+
+  testWidgets('evaluate Javascript', (WidgetTester tester) async {
+    WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://flutter.io',
+        javascriptMode: JavascriptMode.unrestricted,
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+    expect(
+        await controller.evaluateJavascript("fake js string"), "fake js string",
+        reason: 'should get the argument');
+    expect(
+      () => controller.evaluateJavascript(null),
+      throwsA(anything),
+    );
+  });
+
+  testWidgets('evaluate Javascript with JavascriptMode disabled',
+      (WidgetTester tester) async {
+    WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://flutter.io',
+        javascriptMode: JavascriptMode.disabled,
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+    expect(
+      () => controller.evaluateJavascript('fake js string'),
+      throwsA(anything),
+    );
+    expect(
+      () => controller.evaluateJavascript(null),
+      throwsA(anything),
+    );
+  });
+
+  testWidgets('Initial JavaScript channels', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://youtube.com',
+        javascriptChannels: <JavascriptChannel>[
+          JavascriptChannel(
+              name: 'Tts', onMessageReceived: (JavascriptMessage msg) {}),
+          JavascriptChannel(
+              name: 'Alarm', onMessageReceived: (JavascriptMessage msg) {}),
+        ].toSet(),
+      ),
+    );
+
+    final FakePlatformWebView platformWebView =
+        fakePlatformViewsController.lastCreatedView;
+
+    expect(platformWebView.javascriptChannelNames,
+        unorderedEquals(<String>['Tts', 'Alarm']));
+  });
+
+  test('Only valid JavaScript channel names are allowed', () {
+    final JavascriptMessageHandler noOp = (JavascriptMessage msg) {};
+    JavascriptChannel(name: 'Tts1', onMessageReceived: noOp);
+    JavascriptChannel(name: '_Alarm', onMessageReceived: noOp);
+
+    VoidCallback createChannel(String name) {
+      return () {
+        JavascriptChannel(name: name, onMessageReceived: noOp);
+      };
+    }
+
+    expect(createChannel('1Alarm'), throwsAssertionError);
+    expect(createChannel('foo.bar'), throwsAssertionError);
+    expect(createChannel(''), throwsAssertionError);
+  });
+
+  testWidgets('Unique JavaScript channel names are required',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://youtube.com',
+        javascriptChannels: <JavascriptChannel>[
+          JavascriptChannel(
+              name: 'Alarm', onMessageReceived: (JavascriptMessage msg) {}),
+          JavascriptChannel(
+              name: 'Alarm', onMessageReceived: (JavascriptMessage msg) {}),
+        ].toSet(),
+      ),
+    );
+    expect(tester.takeException(), isNot(null));
+  });
+
+  testWidgets('JavaScript channels update', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://youtube.com',
+        javascriptChannels: <JavascriptChannel>[
+          JavascriptChannel(
+              name: 'Tts', onMessageReceived: (JavascriptMessage msg) {}),
+          JavascriptChannel(
+              name: 'Alarm', onMessageReceived: (JavascriptMessage msg) {}),
+        ].toSet(),
+      ),
+    );
+
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://youtube.com',
+        javascriptChannels: <JavascriptChannel>[
+          JavascriptChannel(
+              name: 'Tts', onMessageReceived: (JavascriptMessage msg) {}),
+          JavascriptChannel(
+              name: 'Alarm2', onMessageReceived: (JavascriptMessage msg) {}),
+          JavascriptChannel(
+              name: 'Alarm3', onMessageReceived: (JavascriptMessage msg) {}),
+        ].toSet(),
+      ),
+    );
+
+    final FakePlatformWebView platformWebView =
+        fakePlatformViewsController.lastCreatedView;
+
+    expect(platformWebView.javascriptChannelNames,
+        unorderedEquals(<String>['Tts', 'Alarm2', 'Alarm3']));
+  });
+
+  testWidgets('Remove all JavaScript channels and then add',
+      (WidgetTester tester) async {
+    // This covers a specific bug we had where after updating javascriptChannels to null,
+    // updating it again with a subset of the previously registered channels fails as the
+    // widget's cache of current channel wasn't properly updated when updating javascriptChannels to
+    // null.
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://youtube.com',
+        javascriptChannels: <JavascriptChannel>[
+          JavascriptChannel(
+              name: 'Tts', onMessageReceived: (JavascriptMessage msg) {}),
+        ].toSet(),
+      ),
+    );
+
+    await tester.pumpWidget(
+      const WebView(
+        initialUrl: 'https://youtube.com',
+      ),
+    );
+
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://youtube.com',
+        javascriptChannels: <JavascriptChannel>[
+          JavascriptChannel(
+              name: 'Tts', onMessageReceived: (JavascriptMessage msg) {}),
+        ].toSet(),
+      ),
+    );
+
+    final FakePlatformWebView platformWebView =
+        fakePlatformViewsController.lastCreatedView;
+
+    expect(platformWebView.javascriptChannelNames,
+        unorderedEquals(<String>['Tts']));
+  });
+
+  testWidgets('JavaScript channel messages', (WidgetTester tester) async {
+    final List<String> ttsMessagesReceived = <String>[];
+    final List<String> alarmMessagesReceived = <String>[];
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://youtube.com',
+        javascriptChannels: <JavascriptChannel>[
+          JavascriptChannel(
+              name: 'Tts',
+              onMessageReceived: (JavascriptMessage msg) {
+                ttsMessagesReceived.add(msg.message);
+              }),
+          JavascriptChannel(
+              name: 'Alarm',
+              onMessageReceived: (JavascriptMessage msg) {
+                alarmMessagesReceived.add(msg.message);
+              }),
+        ].toSet(),
+      ),
+    );
+
+    final FakePlatformWebView platformWebView =
+        fakePlatformViewsController.lastCreatedView;
+
+    expect(ttsMessagesReceived, isEmpty);
+    expect(alarmMessagesReceived, isEmpty);
+
+    platformWebView.fakeJavascriptPostMessage('Tts', 'Hello');
+    platformWebView.fakeJavascriptPostMessage('Tts', 'World');
+
+    expect(ttsMessagesReceived, <String>['Hello', 'World']);
+  });
 }
 
 class FakePlatformWebView {
@@ -321,7 +523,11 @@ class FakePlatformWebView {
         history.add(initialUrl);
         currentPosition++;
       }
-      javaScriptMode = JavaScriptMode.values[params['settings']['jsMode']];
+      javascriptMode = JavascriptMode.values[params['settings']['jsMode']];
+    }
+    if (params.containsKey('javascriptChannelNames')) {
+      javascriptChannelNames =
+          List<String>.from(params['javascriptChannelNames']);
     }
     channel = MethodChannel(
         'plugins.flutter.io/webview_$id', const StandardMethodCodec());
@@ -335,7 +541,8 @@ class FakePlatformWebView {
   int amountOfReloadsOnCurrentUrl = 0;
 
   String get currentUrl => history.isEmpty ? null : history[currentPosition];
-  JavaScriptMode javaScriptMode;
+  JavascriptMode javascriptMode;
+  List<String> javascriptChannelNames;
 
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
@@ -350,7 +557,7 @@ class FakePlatformWebView {
         if (call.arguments['jsMode'] == null) {
           break;
         }
-        javaScriptMode = JavaScriptMode.values[call.arguments['jsMode']];
+        javascriptMode = JavascriptMode.values[call.arguments['jsMode']];
         break;
       case 'canGoBack':
         return Future<bool>.sync(() => currentPosition > 0);
@@ -372,8 +579,32 @@ class FakePlatformWebView {
       case 'currentUrl':
         return Future<String>.value(currentUrl);
         break;
+      case 'evaluateJavascript':
+        return Future<dynamic>.value(call.arguments);
+        break;
+      case 'addJavascriptChannels':
+        final List<String> channelNames = List<String>.from(call.arguments);
+        javascriptChannelNames.addAll(channelNames);
+        break;
+      case 'removeJavascriptChannels':
+        final List<String> channelNames = List<String>.from(call.arguments);
+        javascriptChannelNames
+            .removeWhere((String channel) => channelNames.contains(channel));
+        break;
     }
     return Future<void>.sync(() {});
+  }
+
+  void fakeJavascriptPostMessage(String jsChannel, String message) {
+    final StandardMethodCodec codec = const StandardMethodCodec();
+    final Map<String, dynamic> arguments = <String, dynamic>{
+      'channel': jsChannel,
+      'message': message
+    };
+    final ByteData data = codec
+        .encodeMethodCall(MethodCall('javascriptChannelMessage', arguments));
+    BinaryMessages.handlePlatformMessage(
+        channel.name, data, (ByteData data) {});
   }
 }
 

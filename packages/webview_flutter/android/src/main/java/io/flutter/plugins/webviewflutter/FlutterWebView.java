@@ -9,22 +9,31 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.platform.PlatformView;
+import java.util.List;
 import java.util.Map;
 
 public class FlutterWebView implements PlatformView, MethodCallHandler {
+  private static final String JS_CHANNEL_NAMES_FIELD = "javascriptChannelNames";
   private final WebView webView;
   private final MethodChannel methodChannel;
 
   @SuppressWarnings("unchecked")
   FlutterWebView(Context context, BinaryMessenger messenger, int id, Map<String, Object> params) {
     webView = new WebView(context);
+
+    methodChannel = new MethodChannel(messenger, "plugins.flutter.io/webview_" + id);
+    methodChannel.setMethodCallHandler(this);
+
+    applySettings((Map<String, Object>) params.get("settings"));
+
+    if (params.containsKey(JS_CHANNEL_NAMES_FIELD)) {
+      registerJavaScriptChannelNames((List<String>) params.get(JS_CHANNEL_NAMES_FIELD));
+    }
+
     if (params.containsKey("initialUrl")) {
       String url = (String) params.get("initialUrl");
       webView.loadUrl(url);
     }
-    applySettings((Map<String, Object>) params.get("settings"));
-    methodChannel = new MethodChannel(messenger, "plugins.flutter.io/webview_" + id);
-    methodChannel.setMethodCallHandler(this);
   }
 
   @Override
@@ -58,6 +67,15 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         break;
       case "currentUrl":
         currentUrl(methodCall, result);
+        break;
+      case "evaluateJavascript":
+        evaluateJavaScript(methodCall, result);
+        break;
+      case "addJavascriptChannels":
+        addJavaScriptChannels(methodCall, result);
+        break;
+      case "removeJavascriptChannels":
+        removeJavaScriptChannels(methodCall, result);
         break;
       default:
         result.notImplemented();
@@ -107,6 +125,37 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     result.success(null);
   }
 
+  private void evaluateJavaScript(MethodCall methodCall, final Result result) {
+    String jsString = (String) methodCall.arguments;
+    if (jsString == null) {
+      throw new UnsupportedOperationException("JavaScript string cannot be null");
+    }
+    webView.evaluateJavascript(
+        jsString,
+        new android.webkit.ValueCallback<String>() {
+          @Override
+          public void onReceiveValue(String value) {
+            result.success(value);
+          }
+        });
+  }
+
+  @SuppressWarnings("unchecked")
+  private void addJavaScriptChannels(MethodCall methodCall, Result result) {
+    List<String> channelNames = (List<String>) methodCall.arguments;
+    registerJavaScriptChannelNames(channelNames);
+    result.success(null);
+  }
+
+  @SuppressWarnings("unchecked")
+  private void removeJavaScriptChannels(MethodCall methodCall, Result result) {
+    List<String> channelNames = (List<String>) methodCall.arguments;
+    for (String channelName : channelNames) {
+      webView.removeJavascriptInterface(channelName);
+    }
+    result.success(null);
+  }
+
   private void applySettings(Map<String, Object> settings) {
     for (String key : settings.keySet()) {
       switch (key) {
@@ -128,7 +177,14 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         webView.getSettings().setJavaScriptEnabled(true);
         break;
       default:
-        throw new IllegalArgumentException("Trying to set unknown Javascript mode: " + mode);
+        throw new IllegalArgumentException("Trying to set unknown JavaScript mode: " + mode);
+    }
+  }
+
+  private void registerJavaScriptChannelNames(List<String> channelNames) {
+    for (String channelName : channelNames) {
+      webView.addJavascriptInterface(
+          new JavaScriptChannel(methodChannel, channelName), channelName);
     }
   }
 

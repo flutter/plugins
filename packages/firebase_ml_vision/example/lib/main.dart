@@ -77,7 +77,7 @@ class _MyHomePageState extends State<_MyHomePage> {
         return mlVision.cloudLabelDetector().detectInImage;
       default:
         assert(_currentDetector == Detector.face);
-        return mlVision.faceDetector().detectInImage;
+        return mlVision.faceDetector().processImage;
     }
   }
 

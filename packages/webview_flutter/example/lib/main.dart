@@ -20,18 +20,35 @@ class WebViewExample extends StatelessWidget {
         // This drop down menu demonstrates that Flutter widgets can be shown over the web view.
         actions: <Widget>[
           NavigationControls(_controller.future),
-          const SampleMenu(),
+          SampleMenu(_controller.future),
         ],
       ),
-      body: WebView(
-        initialUrl: 'https://flutter.io',
-        javaScriptMode: JavaScriptMode.unrestricted,
-        onWebViewCreated: (WebViewController webViewController) {
-          _controller.complete(webViewController);
-        },
-      ),
+      // We're using a Builder here so we have a context that is below the Scaffold
+      // to allow calling Scaffold.of(context) so we can show a snackbar.
+      body: Builder(builder: (BuildContext context) {
+        return WebView(
+          initialUrl: 'https://flutter.io',
+          javascriptMode: JavascriptMode.unrestricted,
+          onWebViewCreated: (WebViewController webViewController) {
+            _controller.complete(webViewController);
+          },
+          javascriptChannels: <JavascriptChannel>[
+            _toasterJavascriptChannel(context),
+          ].toSet(),
+        );
+      }),
       floatingActionButton: favoriteButton(),
     );
+  }
+
+  JavascriptChannel _toasterJavascriptChannel(BuildContext context) {
+    return JavascriptChannel(
+        name: 'Toaster',
+        onMessageReceived: (JavascriptMessage message) {
+          Scaffold.of(context).showSnackBar(
+            SnackBar(content: Text(message.message)),
+          );
+        });
   }
 
   Widget favoriteButton() {
@@ -44,7 +61,7 @@ class WebViewExample extends StatelessWidget {
               onPressed: () async {
                 final String url = await controller.data.currentUrl();
                 Scaffold.of(context).showSnackBar(
-                  SnackBar(content: Text("Favorited $url")),
+                  SnackBar(content: Text('Favorited $url')),
                 );
               },
               child: const Icon(Icons.favorite),
@@ -55,27 +72,58 @@ class WebViewExample extends StatelessWidget {
   }
 }
 
+enum MenuOptions {
+  showUserAgent,
+  toast,
+}
+
 class SampleMenu extends StatelessWidget {
-  const SampleMenu();
+  SampleMenu(this.controller);
+  final Future<WebViewController> controller;
 
   @override
   Widget build(BuildContext context) {
-    return PopupMenuButton<String>(
-      onSelected: (String value) {
-        Scaffold.of(context)
-            .showSnackBar(SnackBar(content: Text('You selected: $value')));
+    return FutureBuilder<WebViewController>(
+      future: controller,
+      builder:
+          (BuildContext context, AsyncSnapshot<WebViewController> controller) {
+        return PopupMenuButton<MenuOptions>(
+          onSelected: (MenuOptions value) {
+            switch (value) {
+              case MenuOptions.showUserAgent:
+                _onShowUserAgent(controller.data, context);
+                break;
+              case MenuOptions.toast:
+                Scaffold.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('You selected: $value'),
+                  ),
+                );
+                break;
+            }
+          },
+          itemBuilder: (BuildContext context) => <PopupMenuItem<MenuOptions>>[
+                PopupMenuItem<MenuOptions>(
+                  value: MenuOptions.showUserAgent,
+                  child: const Text('Show user agent'),
+                  enabled: controller.hasData,
+                ),
+                const PopupMenuItem<MenuOptions>(
+                  value: MenuOptions.toast,
+                  child: Text('Make a toast'),
+                ),
+              ],
+        );
       },
-      itemBuilder: (BuildContext context) => <PopupMenuItem<String>>[
-            const PopupMenuItem<String>(
-              value: 'Item 1',
-              child: Text('Item 1'),
-            ),
-            const PopupMenuItem<String>(
-              value: 'Item 2',
-              child: Text('Item 2'),
-            ),
-          ],
     );
+  }
+
+  void _onShowUserAgent(
+      WebViewController controller, BuildContext context) async {
+    // Send a message with the user agent string to the Toaster JavaScript channel we registered
+    // with the WebView.
+    controller.evaluateJavascript(
+        'Toaster.postMessage("User Agent: " + navigator.userAgent);');
   }
 }
 

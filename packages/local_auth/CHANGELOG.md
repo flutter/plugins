@@ -1,3 +1,14 @@
+## 0.4.0
+
+* **Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library.
+
+## 0.3.1
+* Fix crash on Android versions earlier than 24.
+
 ## 0.3.0
 
 * **Breaking change**. Add canCheckBiometrics and getAvailableBiometrics which leads to a new API.
