@@ -116,9 +116,9 @@ class FirebaseUser extends UserInfo {
     return await FirebaseAuth.channel.invokeMethod(
       'updatePhoneNumberCredential',
       <String, dynamic>{
-        'app': _app.name, 
-        'provider': credential._provider, 
-        'data': credential._data
+        'app': _app.name,
+        'provider': credential._provider,
+        'data': credential._data,
       },
     );
   }
