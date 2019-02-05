@@ -10,10 +10,12 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 
-public class FlutterCookieManager implements MethodCallHandler {
+class FlutterCookieManager implements MethodCallHandler {
 
   private FlutterCookieManager() {
     // Do not instantiate.
+    // This class should only be used in context of a BinaryMessenger.
+    // Use FlutterCookieManager#registerWith instead.
   }
 
   static void registerWith(BinaryMessenger messenger) {

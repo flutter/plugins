@@ -103,7 +103,7 @@ class SampleMenu extends StatelessWidget {
                 );
                 break;
               case MenuOptions.clearCookies:
-                _onClearCookies(context);
+                _onClearCookies(controller.data, context);
                 break;
             }
           },
@@ -135,15 +135,40 @@ class SampleMenu extends StatelessWidget {
         'Toaster.postMessage("User Agent: " + navigator.userAgent);');
   }
 
-  void _onClearCookies(BuildContext context) async {
+  void _onClearCookies(
+      WebViewController controller, BuildContext context) async {
+    final String cookies =
+        await controller.evaluateJavascript('document.cookie');
     final bool hadCookies = await cookieManager.clearCookies();
-    String message = "There were cookies. Now, they are gone!";
+    String message = 'There were cookies. Now, they are gone!';
     if (!hadCookies) {
-      message = "There are no cookies.";
+      message = 'There are no cookies.';
     }
     Scaffold.of(context).showSnackBar(SnackBar(
-      content: Text(message),
+      content: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Text(message),
+          const Text('Cookies:'),
+          _getCookieList(cookies),
+        ],
+      ),
     ));
+  }
+
+  Widget _getCookieList(String cookies) {
+    if (cookies == null || cookies == '""') {
+      return Container();
+    }
+    final List<String> cookieList = cookies.split(';');
+    final Iterable<Text> cookieWidgets =
+        cookieList.map((String cookie) => Text(cookie));
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisSize: MainAxisSize.min,
+      children: cookieWidgets.toList(),
+    );
   }
 }
 

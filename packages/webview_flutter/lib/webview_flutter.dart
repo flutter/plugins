@@ -476,10 +476,10 @@ class CookieManager {
   static const MethodChannel _channel =
       MethodChannel('plugins.flutter.io/cookie_manager');
 
-  /// Removes all cookies, and returns true if cookies were
-  /// present before clearing, else false.
+  /// Clears all cookies.
+  ///
+  /// returns true if cookies were present before clearing, else false.
   Future<bool> clearCookies() async {
-    print(defaultTargetPlatform);
     return await _channel.invokeMethod<bool>('clearCookies');
   }
 }
@@ -496,5 +496,7 @@ void _validateUrlString(String url) {
   }
 }
 
-/// Singleton [CookieManager]
+/// Singleton [CookieManager].
+///
+/// Manages cookies pertaining to all [WebView]s.
 final CookieManager cookieManager = const CookieManager._();
