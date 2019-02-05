@@ -110,9 +110,16 @@ class FirebaseUser extends UserInfo {
   ///
   Future<void> updatePhoneNumberCredential(AuthCredential credential) async {
     assert(credential != null);
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     return await FirebaseAuth.channel.invokeMethod(
       'updatePhoneNumberCredential',
-      <String, dynamic>{'app': _app.name, 'provider': credential._provider, 'data': credential._data},
+      <String, dynamic>{
+        'app': _app.name, 
+        'provider': credential._provider, 
+        'data': credential._data
+      },
     );
   }
 
