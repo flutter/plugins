@@ -49,6 +49,7 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
   FlutterMethodChannel* _channel;
   BOOL _trackCameraPosition;
   NSObject<FlutterPluginRegistrar>* _registrar;
+  BOOL _cameraDidInitialSetup;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -75,6 +76,7 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
     }];
     _mapView.delegate = weakSelf;
     _registrar = registrar;
+      _cameraDidInitialSetup = NO;
   }
   return self;
 }
@@ -217,6 +219,10 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
 }
 
 - (void)mapView:(GMSMapView*)mapView didChangeCameraPosition:(GMSCameraPosition*)position {
+    if (!_cameraDidInitialSetup) {
+        _cameraDidInitialSetup = YES;
+        [mapView moveCamera:[GMSCameraUpdate setCamera:_mapView.camera]];
+    }
   if (_trackCameraPosition) {
     [_channel invokeMethod:@"camera#onMove" arguments:@{@"position" : positionToJson(position)}];
   }
