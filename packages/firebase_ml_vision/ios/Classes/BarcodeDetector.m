@@ -32,8 +32,8 @@ static FIRVisionBarcodeDetector *barcodeDetector;
 NSDictionary *visionBarcodeToDictionary(FIRVisionBarcode *barcode) {
   __block NSMutableArray<NSArray *> *points = [NSMutableArray array];
 
-  for (NSValue *point in points) {
-    [points addObject:@[ @(((__bridge CGPoint *)point)->x), @(((__bridge CGPoint *)point)->y) ]];
+  for (NSValue *point in barcode.cornerPoints) {
+    [points addObject:@[ @(point.CGPointValue.x), @(point.CGPointValue.y) ]];
   }
   return @{
     @"rawValue" : barcode.rawValue,

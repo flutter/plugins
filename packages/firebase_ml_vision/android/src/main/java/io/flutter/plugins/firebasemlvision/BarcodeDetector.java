@@ -66,10 +66,10 @@ class BarcodeDetector implements Detector {
                     barcodeMap.put("height", (double) bounds.height());
                   }
 
-                  List<int[]> points = new ArrayList<>();
+                  List<double[]> points = new ArrayList<>();
                   if (barcode.getCornerPoints() != null) {
                     for (Point point : barcode.getCornerPoints()) {
-                      points.add(new int[] {point.x, point.y});
+                      points.add(new double[] {(double) point.x, (double) point.y});
                     }
                   }
                   barcodeMap.put("points", points);

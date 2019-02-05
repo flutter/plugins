@@ -128,10 +128,10 @@ public class TextRecognizer implements Detector {
 
     addTo.put("confidence", confidence == null ? null : (double) confidence);
 
-    List<int[]> points = new ArrayList<>();
+    List<double[]> points = new ArrayList<>();
     if (cornerPoints != null) {
       for (Point point : cornerPoints) {
-        points.add(new int[] {point.x, point.y});
+        points.add(new double[] {(double) point.x, (double) point.y});
       }
     }
     addTo.put("points", points);
