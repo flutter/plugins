@@ -21,6 +21,7 @@ import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener;
+import com.google.firebase.auth.ActionCodeSettings;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseUser;
@@ -93,6 +94,15 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
         break;
       case "sendPasswordResetEmail":
         handleSendPasswordResetEmail(call, result, getAuth(call));
+        break;
+      case "sendLinkToEmail":
+        handleSendLinkToEmail(call, result, getAuth(call));
+        break;
+      case "isSignInWithEmailLink":
+        handleIsSignInWithEmailLink(call, result, getAuth(call));
+        break;
+      case "signInWithEmailAndLink":
+        handleSignInWithEmailAndLink(call, result, getAuth(call));
         break;
       case "sendEmailVerification":
         handleSendEmailVerification(call, result, getAuth(call));
@@ -321,6 +331,45 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
     firebaseAuth
         .sendPasswordResetEmail(email)
         .addOnCompleteListener(new TaskVoidCompleteListener(result));
+  }
+
+  private void handleSendLinkToEmail(
+          MethodCall call, Result result, FirebaseAuth firebaseAuth) {
+    Map<String, Object> arguments = call.arguments();
+    String email = arguments.get("email").toString();
+    ActionCodeSettings actionCodeSettings =
+        ActionCodeSettings.newBuilder()
+            .setUrl(arguments.get("url").toString())
+            .setHandleCodeInApp((Boolean)arguments.get("handleCodeInApp"))
+            .setIOSBundleId(arguments.get("iOSBundleID").toString())
+            .setAndroidPackageName(
+                arguments.get("androidPackageName").toString(),
+                (Boolean)arguments.get("androidInstallIfNotAvailable"),
+                arguments.get("androidMinimumVersion").toString()
+            ).build();
+            // TODO: Why is this symbol not found?
+            //.setDynamicLinkDomain(arguments.get("dynamicLinkDomain").toString());
+    firebaseAuth
+        .sendSignInLinkToEmail(email, actionCodeSettings);
+  }
+
+  private void handleIsSignInWithEmailLink(
+          MethodCall call, Result result, FirebaseAuth firebaseAuth) {
+    Map<String, String> arguments = call.arguments();
+    String link = arguments.get("link");
+    Boolean isSignInWithEmailLink = firebaseAuth
+            .isSignInWithEmailLink(link);
+    result.success(isSignInWithEmailLink);
+  }
+
+  private void handleSignInWithEmailAndLink(
+          MethodCall call, Result result, FirebaseAuth firebaseAuth) {
+    Map<String, String> arguments = call.arguments();
+    String email = arguments.get("email");
+    String link = arguments.get("link");
+    firebaseAuth
+        .signInWithEmailLink(email, link)
+        .addOnCompleteListener(new SignInCompleteListener(result));
   }
 
   private void handleSendEmailVerification(
