@@ -2,12 +2,12 @@
 
 #import "Firebase/Firebase.h"
 
-@interface NSError (FlutterError)
-@property(readonly, nonatomic) FlutterError *flutterError;
+@interface NSError (FirebaseDynamicLinksPluginFlutterError)
+@property(readonly, nonatomic) FlutterError *fdlp_flutterError;
 @end
 
-@implementation NSError (FlutterError)
-- (FlutterError *)flutterError {
+@implementation NSError (FirebaseDynamicLinksPluginFlutterError)
+- (FlutterError *)fdlp_flutterError {
   return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %d", (int)self.code]
                              message:self.domain
                              details:self.localizedDescription];
@@ -111,7 +111,7 @@
 - (FIRDynamicLinkShortenerCompletion)createShortLinkCompletion:(FlutterResult)result {
   return ^(NSURL *_Nullable shortURL, NSArray *_Nullable warnings, NSError *_Nullable error) {
     if (error) {
-      result([error flutterError]);
+      result([error fdlp_flutterError]);
     } else {
       result(@{@"url" : [shortURL absoluteString], @"warnings" : warnings});
     }

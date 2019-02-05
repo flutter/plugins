@@ -6,12 +6,12 @@
 
 #import <Firebase/Firebase.h>
 
-@interface NSError (FlutterError)
-@property(readonly, nonatomic) FlutterError *flutterError;
+@interface NSError (CloudFirestorePluginFlutterError)
+@property(readonly, nonatomic) FlutterError *cfp_flutterError;
 @end
 
-@implementation NSError (FlutterError)
-- (FlutterError *)flutterError {
+@implementation NSError (CloudFirestorePluginFlutterError)
+- (FlutterError *)cfp_flutterError {
   return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %ld", self.code]
                              message:self.domain
                              details:self.localizedDescription];
@@ -292,7 +292,7 @@ const UInt8 TIMESTAMP = 136;
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   void (^defaultCompletionBlock)(NSError *) = ^(NSError *error) {
-    result(error.flutterError);
+    result(error.cfp_flutterError);
   };
   if ([@"Firestore#runTransaction" isEqualToString:call.method]) {
     [getFirestore(call.arguments)
@@ -396,7 +396,7 @@ const UInt8 TIMESTAMP = 136;
     [document getDocumentWithCompletion:^(FIRDocumentSnapshot *_Nullable snapshot,
                                           NSError *_Nullable error) {
       if (error) {
-        result(error.flutterError);
+        result(error.cfp_flutterError);
       } else {
         result(@{
           @"path" : snapshot.reference.path,
@@ -416,7 +416,7 @@ const UInt8 TIMESTAMP = 136;
     }
     id<FIRListenerRegistration> listener = [query
         addSnapshotListener:^(FIRQuerySnapshot *_Nullable snapshot, NSError *_Nullable error) {
-          if (error) result(error.flutterError);
+          if (error) result(error.cfp_flutterError);
           NSMutableDictionary *arguments = [parseQuerySnapshot(snapshot) mutableCopy];
           [arguments setObject:handle forKey:@"handle"];
           [self.channel invokeMethod:@"QuerySnapshot" arguments:arguments];
@@ -428,7 +428,7 @@ const UInt8 TIMESTAMP = 136;
     FIRDocumentReference *document = getDocumentReference(call.arguments);
     id<FIRListenerRegistration> listener =
         [document addSnapshotListener:^(FIRDocumentSnapshot *snapshot, NSError *_Nullable error) {
-          if (error) result(error.flutterError);
+          if (error) result(error.cfp_flutterError);
           [self.channel invokeMethod:@"DocumentSnapshot"
                            arguments:@{
                              @"handle" : handle,
@@ -449,7 +449,7 @@ const UInt8 TIMESTAMP = 136;
     }
     [query getDocumentsWithCompletion:^(FIRQuerySnapshot *_Nullable snapshot,
                                         NSError *_Nullable error) {
-      if (error) result(error.flutterError);
+      if (error) result(error.cfp_flutterError);
       result(parseQuerySnapshot(snapshot));
     }];
   } else if ([@"Query#removeListener" isEqualToString:call.method]) {

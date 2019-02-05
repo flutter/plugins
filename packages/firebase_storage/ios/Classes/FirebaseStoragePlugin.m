@@ -6,12 +6,12 @@
 
 #import <Firebase/Firebase.h>
 
-@interface NSError (FlutterError)
-@property(readonly, nonatomic) FlutterError *flutterError;
+@interface NSError (FirebaseStoragePluginFlutterError)
+@property(readonly, nonatomic) FlutterError *fsp_flutterError;
 @end
 
-@implementation NSError (FlutterError)
-- (FlutterError *)flutterError {
+@implementation NSError (FirebaseStoragePluginFlutterError)
+- (FlutterError *)fsp_flutterError {
   return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %ld", (long)self.code]
                              message:self.domain
                              details:self.localizedDescription];
@@ -303,7 +303,7 @@ typedef NS_ENUM(NSUInteger, StorageTaskEventType) {
   [ref dataWithMaxSize:[maxSize longLongValue]
             completion:^(NSData *_Nullable data, NSError *_Nullable error) {
               if (error != nil) {
-                result(error.flutterError);
+                result(error.fsp_flutterError);
                 return;
               }
               if (data == nil) {
@@ -330,7 +330,7 @@ typedef NS_ENUM(NSUInteger, StorageTaskEventType) {
   [task observeStatus:FIRStorageTaskStatusFailure
               handler:^(FIRStorageTaskSnapshot *snapshot) {
                 if (snapshot.error != nil) {
-                  result(snapshot.error.flutterError);
+                  result(snapshot.error.fsp_flutterError);
                 }
               }];
 }
@@ -340,7 +340,7 @@ typedef NS_ENUM(NSUInteger, StorageTaskEventType) {
   FIRStorageReference *ref = [storage.reference child:path];
   [ref metadataWithCompletion:^(FIRStorageMetadata *metadata, NSError *error) {
     if (error != nil) {
-      result(error.flutterError);
+      result(error.fsp_flutterError);
     } else {
       result([self buildDictionaryFromMetadata:metadata]);
     }
@@ -354,7 +354,7 @@ typedef NS_ENUM(NSUInteger, StorageTaskEventType) {
   [ref updateMetadata:[self buildMetadataFromDictionary:metadataDictionary]
            completion:^(FIRStorageMetadata *metadata, NSError *error) {
              if (error != nil) {
-               result(error.flutterError);
+               result(error.fsp_flutterError);
              } else {
                result([self buildDictionaryFromMetadata:metadata]);
              }
@@ -384,7 +384,7 @@ typedef NS_ENUM(NSUInteger, StorageTaskEventType) {
   FIRStorageReference *ref = [storage.reference child:path];
   [ref downloadURLWithCompletion:^(NSURL *URL, NSError *error) {
     if (error != nil) {
-      result(error.flutterError);
+      result(error.fsp_flutterError);
     } else {
       result(URL.absoluteString);
     }
@@ -396,7 +396,7 @@ typedef NS_ENUM(NSUInteger, StorageTaskEventType) {
   FIRStorageReference *ref = [storage.reference child:path];
   [ref deleteWithCompletion:^(NSError *error) {
     if (error != nil) {
-      result(error.flutterError);
+      result(error.fsp_flutterError);
     } else {
       result(nil);
     }

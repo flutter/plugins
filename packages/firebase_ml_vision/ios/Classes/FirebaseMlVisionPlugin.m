@@ -1,11 +1,11 @@
 #import "FirebaseMlVisionPlugin.h"
 
-@interface NSError (FlutterError)
-@property(readonly, nonatomic) FlutterError *flutterError;
+@interface NSError (FirebaseMlVisionPluginFlutterError)
+@property(readonly, nonatomic) FlutterError *fmvp_flutterError;
 @end
 
-@implementation NSError (FlutterError)
-- (FlutterError *)flutterError {
+@implementation NSError (FirebaseMlVisionPluginFlutterError)
+- (FlutterError *)fmvp_flutterError {
   return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %d", (int)self.code]
                              message:self.domain
                              details:self.localizedDescription];
@@ -14,7 +14,7 @@
 
 @implementation FLTFirebaseMlVisionPlugin
 + (void)handleError:(NSError *)error result:(FlutterResult)result {
-  result([error flutterError]);
+  result([error fmvp_flutterError]);
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {

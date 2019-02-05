@@ -9,13 +9,13 @@
 @interface FLTFirebaseDatabasePlugin ()
 @end
 
-@interface NSError (FlutterError)
-@property(readonly, nonatomic) FlutterError *flutterError;
+@interface NSError (FirebaseDatabasePluginFlutterError)
+@property(readonly, nonatomic) FlutterError *fdp_flutterError;
 @property(readonly, nonatomic) NSDictionary *dictionary;
 @end
 
-@implementation NSError (FlutterError)
-- (FlutterError *)flutterError {
+@implementation NSError (FirebaseDatabasePluginFlutterError)
+- (FlutterError *)fdp_flutterError {
   return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %ld", self.code]
                              message:self.domain
                              details:self.localizedDescription];
@@ -173,7 +173,7 @@ id roundDoubles(id value) {
   }
   void (^defaultCompletionBlock)(NSError *, FIRDatabaseReference *) =
       ^(NSError *error, FIRDatabaseReference *ref) {
-        result(error.flutterError);
+        result(error.fdp_flutterError);
       };
   if ([@"FirebaseDatabase#goOnline" isEqualToString:call.method]) {
     [database goOnline];

@@ -4,12 +4,12 @@
 #import <CoreMotion/CoreMotion.h>
 #import <libkern/OSAtomic.h>
 
-@interface NSError (FlutterError)
-@property(readonly, nonatomic) FlutterError *flutterError;
+@interface NSError (CameraPluginFlutterError)
+@property(readonly, nonatomic) FlutterError *cp_flutterError;
 @end
 
-@implementation NSError (FlutterError)
-- (FlutterError *)flutterError {
+@implementation NSError (CameraPluginFlutterError)
+- (FlutterError *)cp_flutterError {
   return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %d", (int)self.code]
                              message:self.domain
                              details:self.localizedDescription];
@@ -73,7 +73,7 @@
                                    error:(NSError *)error {
   selfReference = nil;
   if (error) {
-    _result([error flutterError]);
+    _result([error cp_flutterError]);
     return;
   }
   NSData *data = [AVCapturePhotoOutput
@@ -495,7 +495,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
         [NSError errorWithDomain:NSCocoaErrorDomain
                             code:NSURLErrorResourceUnavailable
                         userInfo:@{NSLocalizedDescriptionKey : @"Video is not recording!"}];
-    result([error flutterError]);
+    result([error cp_flutterError]);
   }
 }
 
@@ -668,7 +668,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
                                     resolutionPreset:resolutionPreset
                                                error:&error];
     if (error) {
-      result([error flutterError]);
+      result([error cp_flutterError]);
     } else {
       if (_camera) {
         [_camera close];
