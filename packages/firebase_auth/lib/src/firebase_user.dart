@@ -98,19 +98,18 @@ class FirebaseUser extends UserInfo {
       <String, String>{'email': email, 'app': _app.name},
     );
   }
-  
+
   /// Updates the phone number of the user.
-  /// 
+  ///
   /// The new phone number credential corresponding to the phone number
-  /// to be added to the Firebase account, if a phone number is already linked to the account this
-  /// new phone number will replace it.
-  /// 
-  /// the block invoked when the user profile change has finished.
-  /// Invoked asynchronously on the main thread in the future
-  /// 
+  /// to be added to the Firebase account, if a phone number is already linked to the account.
+  /// this new phone number will replace it.
+  ///
+  /// The block invoked when the user profile change has finished.
+  /// Invoked asynchronously on the main thread in the future.
+  ///
   /// **Important**: This is a security sensitive operation that requires
   /// the user to have recently signed in.
-  /// 
   Future<void> updatePhoneNumberCredential(AuthCredential credential) async {
     assert(credential != null);
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
@@ -118,7 +117,7 @@ class FirebaseUser extends UserInfo {
     // ignore: strong_mode_implicit_dynamic_method
     return await FirebaseAuth.channel.invokeMethod(
       'updatePhoneNumberCredential',
-      <String, dynamic>{'app': _app.name, 'provider': credential._provider, 'data': credential._data}
+      <String, dynamic>{'app': _app.name, 'provider': credential._provider, 'data': credential._data},
     );
   }
 
