@@ -1,5 +1,12 @@
+## 0.4.0
+
+* **Breaking Change** Removal of base detector class `FirebaseVisionDetector`.
+* **Breaking Change** Removal of `TextRecognizer.detectInImage()`. Pleas use `TextRecognizer.processImage()`.
+* **Breaking Change** Changed `FaceDetector.detectInImage()` to `FaceDetector.processImage()`.
+
 ## 0.3.0
-* **Breaking change**. Migrate from the deprecated original Android Support
+
+* **Breaking Change** Migrate from the deprecated original Android Support
   Library to AndroidX. This shouldn't result in any functional changes, but it
   requires any Android apps using this plugin to [also
   migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
