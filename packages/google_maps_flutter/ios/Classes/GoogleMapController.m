@@ -49,6 +49,8 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
   FlutterMethodChannel* _channel;
   BOOL _trackCameraPosition;
   NSObject<FlutterPluginRegistrar>* _registrar;
+  // used for the temporary workaround for a bug that the camera is not properly positioned at
+  // initialization. https://github.com/flutter/flutter/issues/24806
   BOOL _cameraDidInitialSetup;
 }
 
@@ -76,7 +78,7 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
     }];
     _mapView.delegate = weakSelf;
     _registrar = registrar;
-      _cameraDidInitialSetup = NO;
+    _cameraDidInitialSetup = NO;
   }
   return self;
 }
@@ -219,10 +221,12 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
 }
 
 - (void)mapView:(GMSMapView*)mapView didChangeCameraPosition:(GMSCameraPosition*)position {
-    if (!_cameraDidInitialSetup) {
-        _cameraDidInitialSetup = YES;
-        [mapView moveCamera:[GMSCameraUpdate setCamera:_mapView.camera]];
-    }
+  if (!_cameraDidInitialSetup) {
+    // A temporary workaround for a bug that the camera is not properly positioned at
+    // initialization. https://github.com/flutter/flutter/issues/24806
+    _cameraDidInitialSetup = YES;
+    [mapView moveCamera:[GMSCameraUpdate setCamera:_mapView.camera]];
+  }
   if (_trackCameraPosition) {
     [_channel invokeMethod:@"camera#onMove" arguments:@{@"position" : positionToJson(position)}];
   }
