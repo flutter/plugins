@@ -244,7 +244,7 @@ class Barcode {
         _cornerPoints = _data['points'] == null
             ? null
             : _data['points']
-                .map<Point<int>>((dynamic item) => Point<int>(
+                .map<Offset>((dynamic item) => Offset(
                       item[0],
                       item[1],
                     ))
@@ -268,7 +268,7 @@ class Barcode {
             ? null
             : BarcodeDriverLicense._(_data['driverLicense']);
 
-  final List<Point<int>> _cornerPoints;
+  final List<Offset> _cornerPoints;
 
   /// The bounding rectangle of the detected barcode.
   ///
@@ -301,7 +301,7 @@ class Barcode {
   /// The four corner points in clockwise direction starting with top-left.
   ///
   /// Due to the possible perspective distortions, this is not necessarily a rectangle.
-  List<Point<int>> get cornerPoints => List<Point<int>>.from(_cornerPoints);
+  List<Offset> get cornerPoints => List<Offset>.from(_cornerPoints);
 
   /// The format type of the barcode value.
   ///

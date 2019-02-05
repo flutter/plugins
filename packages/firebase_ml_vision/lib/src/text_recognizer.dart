@@ -73,8 +73,8 @@ abstract class TextContainer {
               )
             : null,
         confidence = data['confidence'],
-        cornerPoints = List<Point<int>>.unmodifiable(
-            data['points'].map<Point<int>>((dynamic point) => Point<int>(
+        cornerPoints = List<Offset>.unmodifiable(
+            data['points'].map<Offset>((dynamic point) => Offset(
                   point[0],
                   point[1],
                 ))),
@@ -102,7 +102,7 @@ abstract class TextContainer {
   /// rectangle. Parts of the region could be outside of the image.
   ///
   /// Could be empty even if text is found.
-  final List<Point<int>> cornerPoints;
+  final List<Offset> cornerPoints;
 
   /// All detected languages from recognized text.
   ///

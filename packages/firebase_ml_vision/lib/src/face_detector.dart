@@ -135,7 +135,7 @@ class Face {
               ? null
               : FaceLandmark._(
                   type,
-                  Point<double>(pos[0], pos[1]),
+                  Offset(pos[0], pos[1]),
                 );
         }));
 
@@ -209,5 +209,5 @@ class FaceLandmark {
   /// Gets a 2D point for landmark position.
   ///
   /// The point (0, 0) is defined as the upper-left corner of the image.
-  final Point<double> position;
+  final Offset position;
 }
