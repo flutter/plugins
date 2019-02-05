@@ -1,3 +1,7 @@
+## 0.4.0
+
+* **Breaking Change** Change iOS image stream format to `ImageFormatGroup.bgra8888`.
+
 ## 0.3.0+1
 
 * Remove initial method call invocation from static camera method.
