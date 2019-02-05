@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:io';
 import 'app_store_connection.dart';
 import 'google_play_connection.dart';
+import 'product.dart';
 
 /// Basic generic API for making in app purchases across multiple platforms.
 abstract class InAppPurchaseConnection {
@@ -34,5 +35,9 @@ abstract class InAppPurchaseConnection {
     }
 
     return _instance;
+  }
+
+  List<Product> getProductList() {
+
   }
 }
