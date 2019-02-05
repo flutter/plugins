@@ -20,6 +20,23 @@ const EventChannel _eventChannel =
     EventChannel('plugins.flutter.io/connectivity_status');
 
 class Connectivity {
+  /// Constructs a singleton instance of [Connectivity].
+  ///
+  /// [Connectivity] is designed to work as a singleton.
+  // When a second instance is created, the first instance will not be able to listen to the
+  // EventChannel because it is overridden. Forcing the class to be a singleton class can prevent
+  // misusage of creating a second instance from a programmer.
+  factory Connectivity() {
+    if (_singleton == null) {
+      _singleton = Connectivity._();
+    }
+    return _singleton;
+  }
+
+  Connectivity._();
+
+  static Connectivity _singleton;
+
   Stream<ConnectivityResult> _onConnectivityChanged;
 
   /// Fires whenever the connectivity state changes.

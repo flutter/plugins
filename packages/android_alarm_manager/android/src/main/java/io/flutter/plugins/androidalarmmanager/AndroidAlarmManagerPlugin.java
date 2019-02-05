@@ -72,6 +72,7 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
 
   private void startService(JSONArray arguments) throws JSONException {
     long callbackHandle = arguments.getLong(0);
+    AlarmService.setCallbackDispatcher(mContext, callbackHandle);
     AlarmService.startAlarmService(mContext, callbackHandle);
   }
 
@@ -80,8 +81,10 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
     boolean exact = arguments.getBoolean(1);
     boolean wakeup = arguments.getBoolean(2);
     long startMillis = arguments.getLong(3);
-    long callbackHandle = arguments.getLong(4);
-    AlarmService.setOneShot(mContext, requestCode, exact, wakeup, startMillis, callbackHandle);
+    boolean rescheduleOnReboot = arguments.getBoolean(4);
+    long callbackHandle = arguments.getLong(5);
+    AlarmService.setOneShot(
+        mContext, requestCode, exact, wakeup, startMillis, rescheduleOnReboot, callbackHandle);
   }
 
   private void periodic(JSONArray arguments) throws JSONException {
@@ -90,9 +93,17 @@ public class AndroidAlarmManagerPlugin implements MethodCallHandler, ViewDestroy
     boolean wakeup = arguments.getBoolean(2);
     long startMillis = arguments.getLong(3);
     long intervalMillis = arguments.getLong(4);
-    long callbackHandle = arguments.getLong(5);
+    boolean rescheduleOnReboot = arguments.getBoolean(5);
+    long callbackHandle = arguments.getLong(6);
     AlarmService.setPeriodic(
-        mContext, requestCode, exact, wakeup, startMillis, intervalMillis, callbackHandle);
+        mContext,
+        requestCode,
+        exact,
+        wakeup,
+        startMillis,
+        intervalMillis,
+        rescheduleOnReboot,
+        callbackHandle);
   }
 
   private void cancel(JSONArray arguments) throws JSONException {

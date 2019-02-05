@@ -9,14 +9,19 @@ part of firebase_ml_vision;
 /// A text recognizer is created via `textRecognizer()` in [FirebaseVision]:
 ///
 /// ```dart
-/// TextRecognizer textRecognizer = FirebaseVision.instance.textRecognizer();
+/// final FirebaseVisionImage image =
+///     FirebaseVisionImage.fromFilePath('path/to/file');
+///
+/// final TextRecognizer textRecognizer =
+///     FirebaseVision.instance.textRecognizer();
+///
+/// final List<VisionText> recognizedText =
+///     await textRecognizer.processImage(image);
 /// ```
-class TextRecognizer implements FirebaseVisionDetector {
+class TextRecognizer {
   TextRecognizer._();
 
   /// Detects [VisionText] from a [FirebaseVisionImage].
-  ///
-  /// The OCR is performed asynchronously.
   Future<VisionText> processImage(FirebaseVisionImage visionImage) async {
     final Map<dynamic, dynamic> reply =
         // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
@@ -30,15 +35,6 @@ class TextRecognizer implements FirebaseVisionDetector {
     );
 
     return VisionText._(reply);
-  }
-
-  /// Detects [VisionText] from a [FirebaseVisionImage].
-  ///
-  /// The OCR is performed asynchronously.
-  @Deprecated('Please use `processImage`')
-  @override
-  Future<VisionText> detectInImage(FirebaseVisionImage visionImage) async {
-    return processImage(visionImage);
   }
 }
 

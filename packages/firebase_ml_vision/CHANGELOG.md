@@ -1,6 +1,9 @@
 ## 0.4.0
 
 * **Breaking Change** Change Rectangle<int> to Rect in Text/Face/Barcode results.
+* **Breaking Change** Removal of base detector class `FirebaseVisionDetector`.
+* **Breaking Change** Removal of `TextRecognizer.detectInImage()`. Pleas use `TextRecognizer.processImage()`.
+* **Breaking Change** Changed `FaceDetector.detectInImage()` to `FaceDetector.processImage()`.
 
 ## 0.3.0
 
