@@ -423,6 +423,10 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
         image = [UIImage imageNamed:[registrar lookupKeyForAsset:iconData[1]
                                                      fromPackage:iconData[2]]];
       }
+    } else if ([iconData[0] isEqualToString:@"fromFile"]) {
+        NSData* data = [NSData dataWithContentsOfFile:iconData[1]];
+        CGFloat scale = [UIScreen mainScreen].scale;
+        image = [UIImage imageWithData:data scale:scale];
     }
     [sink setIcon:image];
   }
