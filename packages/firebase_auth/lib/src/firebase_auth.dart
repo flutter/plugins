@@ -191,8 +191,8 @@ class FirebaseAuth {
     );
   }
 
-  Future<FirebaseUser> signInWithEmailAndLink({String email, String link}) async {
-
+  Future<FirebaseUser> signInWithEmailAndLink(
+      {String email, String link}) async {
     final Map<dynamic, dynamic> data = await channel.invokeMethod(
       'signInWithEmailAndLink',
       <String, dynamic>{
