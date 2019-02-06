@@ -10,6 +10,8 @@ import 'package:in_app_purchase/src/billing_client_wrappers/enum_converters.dart
 import 'package:in_app_purchase/src/in_app_purchase_connection/google_play_connection.dart';
 import 'package:in_app_purchase/src/channel.dart';
 import '../stub_in_app_purchase_platform.dart';
+import 'package:in_app_purchase/src/in_app_purchase_connection/product.dart';
+import '../billing_client_wrappers/sku_details_wrapper_test.dart';
 
 void main() {
   final StubInAppPurchasePlatform stubPlatform = StubInAppPurchasePlatform();
@@ -62,6 +64,37 @@ void main() {
     test('false', () async {
       stubPlatform.addResponse(name: 'BillingClient#isReady()', value: false);
       expect(await connection.isAvailable(), isFalse);
+    });
+  });
+
+  group('querySkuDetails', () {
+    final String queryMethodName =
+        'BillingClient#querySkuDetailsAsync(SkuDetailsParams, SkuDetailsResponseListener)';
+
+    test('handles empty skuDetails', () async {
+      final BillingResponse responseCode = BillingResponse.developerError;
+      stubPlatform.addResponse(name: queryMethodName, value: <dynamic, dynamic>{
+        'responseCode': BillingResponseConverter().toJson(responseCode),
+        'skuDetailsList': <Map<String, dynamic>>[]
+      });
+
+      final List<Product> products =
+          await connection.queryProductDetails(<String>['invalid']);
+      expect(products, isEmpty);
+    });
+
+    test('returns SkuDetailsResponseWrapper', () async {
+      final BillingResponse responseCode = BillingResponse.ok;
+      stubPlatform.addResponse(name: queryMethodName, value: <String, dynamic>{
+        'responseCode': BillingResponseConverter().toJson(responseCode),
+        'skuDetailsList': <Map<String, dynamic>>[buildSkuMap(dummyWrapper)]
+      });
+
+      final List<Product> products =
+          await connection.queryProductDetails(<String>['invalid']);
+      expect(products.first.title, dummyWrapper.title);
+      expect(products.first.description, dummyWrapper.description);
+      expect(products.first.price, dummyWrapper.price);
     });
   });
 }

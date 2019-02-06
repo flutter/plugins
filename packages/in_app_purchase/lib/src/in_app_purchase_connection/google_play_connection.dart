@@ -7,6 +7,7 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import '../../billing_client_wrappers.dart';
 import 'in_app_purchase_connection.dart';
+import 'product.dart';
 
 /// An [InAppPurchaseConnection] that wraps Google Play Billing.
 ///
@@ -59,4 +60,23 @@ class GooglePlayConnection
       _billingClient.startConnection(onBillingServiceDisconnected: () {});
 
   Future<void> _disconnect() => _billingClient.endConnection();
+
+  /// query the product detail list using [BillingClient.querySkuDetails]
+  ///
+  /// This method only returns a simple product list that works for both platforms.
+  /// To get detailed Google Play sku list, use [BillingClient.querySkuDetails]
+  /// to get the [SkuDetailsResponseWrapper].
+  Future<List<Product>> queryProductDetails(List<String> identifiers) async {
+    SkuDetailsResponseWrapper inappResponse = await _billingClient
+        .querySkuDetails(skuType: SkuType.inapp, skusList: identifiers);
+    SkuDetailsResponseWrapper subResponse = await _billingClient
+        .querySkuDetails(skuType: SkuType.subs, skusList: identifiers);
+    List<Product> inappProducts = inappResponse.skuDetailsList
+        .map((SkuDetailsWrapper productWrapper) => productWrapper.toProduct())
+        .toList();
+    List<Product> subProducts = subResponse.skuDetailsList
+        .map((SkuDetailsWrapper productWrapper) => productWrapper.toProduct())
+        .toList();
+    return inappProducts + subProducts;
+  }
 }
