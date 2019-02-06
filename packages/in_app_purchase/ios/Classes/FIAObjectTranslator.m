@@ -19,12 +19,10 @@
     @"downloadContentVersion" : self.downloadContentVersion ?: [NSNull null]
 
   }];
-  if (@available(iOS 10.0, *)) {
-    // TODO(cyanglaz): NSLocale is a complex object, want to see the actual need of getting this
-    // expanded to a map. Matching android to only get the currencyCode for now.
-    // https://github.com/flutter/flutter/issues/26610
-    [map setObject:self.priceLocale.currencyCode ?: [NSNull null] forKey:@"currencyCode"];
-  }
+  // TODO(cyanglaz): NSLocale is a complex object, want to see the actual need of getting this
+  // expanded to a map. Matching android to only get the currencySymbol for now.
+  // https://github.com/flutter/flutter/issues/26610
+  [map setObject:[self.priceLocale toMap] ?: [NSNull null] forKey:@"priceLocale"];
   if (@available(iOS 11.2, *)) {
     [map setObject:[self.subscriptionPeriod toMap] ?: [NSNull null] forKey:@"subscriptionPeriod"];
   }
@@ -58,12 +56,10 @@
     @"paymentMode" : @(self.paymentMode)
   }];
 
-  if (@available(iOS 10.0, *)) {
-    // TODO(cyanglaz): NSLocale is a complex object, want to see the actual need of getting this
-    // expanded to a map. Matching android to only get the currencyCode for now.
-    // https://github.com/flutter/flutter/issues/26610
-    [map setObject:self.priceLocale.currencyCode ?: [NSNull null] forKey:@"currencyCode"];
-  }
+  // TODO(cyanglaz): NSLocale is a complex object, want to see the actual need of getting this
+  // expanded to a map. Matching android to only get the currencySymbol for now.
+  // https://github.com/flutter/flutter/issues/26610
+  [map setObject:[self.priceLocale toMap] ?: [NSNull null] forKey:@"priceLocale"];
   return map;
 }
 
@@ -80,6 +76,17 @@
     @"products" : productsMapArray,
     @"invalidProductIdentifiers" : self.invalidProductIdentifiers ?: @[]
   };
+}
+
+@end
+
+@implementation NSLocale (Coder)
+
+- (nullable NSDictionary *)toMap {
+  NSMutableDictionary *map = [[NSMutableDictionary alloc] init];
+  [map setObject:[self objectForKey:NSLocaleCurrencySymbol] ?: [NSNull null]
+          forKey:@"currencySymbol"];
+  return map;
 }
 
 @end

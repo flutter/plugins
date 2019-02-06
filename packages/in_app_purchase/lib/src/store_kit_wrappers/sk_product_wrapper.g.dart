@@ -54,7 +54,9 @@ const _$SubscriptionPeriodUnitEnumMap = <SubscriptionPeriodUnit, dynamic>{
 SKProductDiscountWrapper _$SKProductDiscountWrapperFromJson(Map json) {
   return SKProductDiscountWrapper(
       price: (json['price'] as num)?.toDouble(),
-      currencyCode: json['currencyCode'] as String,
+      priceLocale: json['priceLocale'] == null
+          ? null
+          : PriceLocaleWrapper.fromJson(json['priceLocale'] as Map),
       numberOfPeriods: json['numberOfPeriods'] as int,
       paymentMode: _$enumDecodeNullable(
           _$ProductDiscountPaymentModeEnumMap, json['paymentMode']),
@@ -76,7 +78,9 @@ SKProductWrapper _$SKProductWrapperFromJson(Map json) {
       productIdentifier: json['productIdentifier'] as String,
       localizedTitle: json['localizedTitle'] as String,
       localizedDescription: json['localizedDescription'] as String,
-      currencyCode: json['currencyCode'] as String,
+      priceLocale: json['priceLocale'] == null
+          ? null
+          : PriceLocaleWrapper.fromJson(json['priceLocale'] as Map),
       downloadContentVersion: json['downloadContentVersion'] as String,
       subscriptionGroupIdentifier:
           json['subscriptionGroupIdentifier'] as String,
@@ -93,4 +97,8 @@ SKProductWrapper _$SKProductWrapperFromJson(Map json) {
           ? null
           : SKProductDiscountWrapper.fromJson(
               json['introductoryPrice'] as Map));
+}
+
+PriceLocaleWrapper _$PriceLocaleWrapperFromJson(Map json) {
+  return PriceLocaleWrapper(currencySymbol: json['currencySymbol'] as String);
 }
