@@ -156,7 +156,7 @@ class FirebaseAuth {
     );
   }
 
-  Future<dynamic> sendLinkToEmail({
+  Future<void> sendLinkToEmail({
     @required String email,
     @required String url,
     @required bool handleCodeInApp,
@@ -167,8 +167,16 @@ class FirebaseAuth {
     String dynamicLinkDomain,
   }) async {
     assert(email != null);
-    // TODO: other assertions
-    return await channel.invokeMethod(
+    assert(url != null);
+    assert(handleCodeInApp != null);
+    assert(iOSBundleID != null);
+    assert(androidPackageName != null);
+    assert(androidInstallIfNotAvailable != null);
+    assert(androidMinimumVersion != null);
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    await channel.invokeMethod(
       'sendLinkToEmail',
       <String, dynamic>{
         'email': email,
