@@ -183,11 +183,6 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     return nil;
   }
 
-  vImageBuffer_Init(&_destinationBuffer, _previewSize.width, _previewSize.height, 32,
-                    kvImageNoFlags);
-  vImageBuffer_Init(&_conversionBuffer, _previewSize.width, _previewSize.height, 32,
-                    kvImageNoFlags);
-
   _captureVideoOutput = [AVCaptureVideoDataOutput new];
   _captureVideoOutput.videoSettings =
       @{(NSString *)kCVPixelBufferPixelFormatTypeKey : @(videoFormat)};
@@ -212,6 +207,12 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
                       CMAttitudeReferenceFrameXArbitraryCorrectedZVertical];
 
   [self setCaptureSessionPreset:resolutionPreset];
+
+  vImageBuffer_Init(&_destinationBuffer, _previewSize.width, _previewSize.height, 32,
+                    kvImageNoFlags);
+  vImageBuffer_Init(&_conversionBuffer, _previewSize.width, _previewSize.height, 32,
+                    kvImageNoFlags);
+
   return self;
 }
 
@@ -246,7 +247,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     presetIndex = 3;
   }
 
-  switch(presetIndex) {
+  switch (presetIndex) {
     case 0:
       if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset3840x2160]) {
         _captureSession.sessionPreset = AVCaptureSessionPreset3840x2160;
@@ -278,8 +279,10 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
         break;
       }
     default:
-      @throw [NSException exceptionWithName:@"NoAvailableCaptureSessionException" reason:@"No capture session available for current capture session" userInfo:nil];
-      break;
+      NSException *exception = [NSException exceptionWithName:@"NoAvailableCaptureSessionException"
+                                                       reason:@"No capture session available for current capture session."
+                                                     userInfo:nil];
+      @throw exception;
   }
 }
 
