@@ -61,4 +61,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+@interface NSLocale (Coder)
+
+- (nullable NSDictionary *)toMap;
+
+@end
+
 NS_ASSUME_NONNULL_END
