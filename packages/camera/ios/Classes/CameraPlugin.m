@@ -278,11 +278,13 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
         _previewSize = CGSizeMake(352, 288);
         break;
       }
-    default:
-      NSException *exception = [NSException exceptionWithName:@"NoAvailableCaptureSessionException"
-                                                       reason:@"No capture session available for current capture session."
-                                                     userInfo:nil];
+    default: {
+      NSException *exception = [NSException
+          exceptionWithName:@"NoAvailableCaptureSessionException"
+                     reason:@"No capture session available for current capture session."
+                   userInfo:nil];
       @throw exception;
+    }
   }
 }
 
