@@ -23,7 +23,7 @@
   self = [super init];
   if (self) {
     [self setValue:map[@"price"] ?: [NSNull null] forKey:@"price"];
-    NSLocale *locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
+    NSLocale *locale = NSLocale.systemLocale;
     [self setValue:locale ?: [NSNull null] forKey:@"priceLocale"];
     [self setValue:map[@"numberOfPeriods"] ?: @(0) forKey:@"numberOfPeriods"];
     SKProductSubscriptionPeriodStub *subscriptionPeriodSub =
@@ -46,7 +46,7 @@
     [self setValue:map[@"localizedTitle"] ?: [NSNull null] forKey:@"localizedTitle"];
     [self setValue:map[@"downloadable"] ?: @NO forKey:@"downloadable"];
     [self setValue:map[@"price"] ?: [NSNull null] forKey:@"price"];
-    NSLocale *locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
+    NSLocale *locale = NSLocale.systemLocale;
     [self setValue:locale ?: [NSNull null] forKey:@"priceLocale"];
     [self setValue:map[@"downloadContentLengths"] ?: @(0) forKey:@"downloadContentLengths"];
     SKProductSubscriptionPeriodStub *period =

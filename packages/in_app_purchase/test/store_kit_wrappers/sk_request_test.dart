@@ -11,13 +11,16 @@ import '../stub_in_app_purchase_platform.dart';
 void main() {
   final StubInAppPurchasePlatform stubPlatform = StubInAppPurchasePlatform();
 
+  final Map<String, dynamic> localeMap = <String, dynamic>{
+    'currencySymbol': '\$'
+  };
   final Map<String, dynamic> subMap = <String, dynamic>{
     'numberOfUnits': 1,
     'unit': 2
   };
   final Map<String, dynamic> discountMap = <String, dynamic>{
     'price': 1.0,
-    'currencyCode': 'USD',
+    'priceLocale': localeMap,
     'numberOfPeriods': 1,
     'paymentMode': 2,
     'subscriptionPeriod': subMap,
@@ -26,7 +29,7 @@ void main() {
     'productIdentifier': 'id',
     'localizedTitle': 'title',
     'localizedDescription': 'description',
-    'currencyCode': 'USD',
+    'priceLocale': localeMap,
     'downloadContentVersion': 'version',
     'subscriptionGroupIdentifier': 'com.group',
     'price': 1.0,
@@ -57,12 +60,12 @@ void main() {
         isNotEmpty,
       );
       expect(
-        response.products.first.currencyCode,
-        'USD',
+        response.products.first.priceLocale.currencySymbol,
+        '\$',
       );
       expect(
-        response.products.first.currencyCode,
-        isNot('USDA'),
+        response.products.first.priceLocale.currencySymbol,
+        isNot('A'),
       );
       expect(
         response.invalidProductIdentifiers,

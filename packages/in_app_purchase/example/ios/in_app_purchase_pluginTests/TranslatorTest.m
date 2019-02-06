@@ -12,6 +12,7 @@
 @property(strong, nonatomic) NSDictionary *discountMap;
 @property(strong, nonatomic) NSDictionary *productMap;
 @property(strong, nonatomic) NSDictionary *productResponseMap;
+@property(strong, nonatomic) NSDictionary *localeMap;
 
 @end
 
@@ -21,14 +22,14 @@
   self.periodMap = @{@"numberOfUnits" : @(0), @"unit" : @(0)};
   self.discountMap = @{
     @"price" : @1.0,
-    @"currencyCode" : @"USD",
+    @"priceLocale" : [NSLocale.systemLocale toMap],
     @"numberOfPeriods" : @1,
     @"subscriptionPeriod" : self.periodMap,
     @"paymentMode" : @1
   };
   self.productMap = @{
     @"price" : @1.0,
-    @"currencyCode" : @"USD",
+    @"priceLocale" : [NSLocale.systemLocale toMap],
     @"productIdentifier" : @"123",
     @"localizedTitle" : @"title",
     @"localizedDescription" : @"des",
@@ -67,6 +68,12 @@
       [[SKProductsResponseStub alloc] initWithMap:self.productResponseMap];
   NSDictionary *map = [response toMap];
   XCTAssertEqualObjects(map, self.productResponseMap);
+}
+
+- (void)testLocaleToMap {
+  NSLocale *system = NSLocale.systemLocale;
+  NSDictionary *map = [system toMap];
+  XCTAssertEqualObjects(map[@"currencySymbol"], system.currencySymbol);
 }
 
 @end
