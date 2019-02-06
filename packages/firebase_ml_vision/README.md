@@ -13,15 +13,19 @@ For Flutter plugins for other Firebase products, see [FlutterFire.md](https://gi
 To use this plugin, add `firebase_ml_vision` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/). You must also configure Firebase for each platform project: Android and iOS (see the example folder or https://codelabs.developers.google.com/codelabs/flutter-firebase/#4 for step by step details).
 
 ### Android
-If you're using the on-device `LabelDetector`, include the latest [ML Kit: Image Labeling](https://firebase.google.com/support/release-notes/android) dependency in your app-level build.gradle file.
+If you're using the on-device `LabelDetector`, include the latest matching [ML Kit: Image Labeling](https://firebase.google.com/support/release-notes/android) dependency in your app-level build.gradle file.
 
 ```
-dependencies {
-  // ...
+android {
+    dependencies {
+        // ...
 
-  implementation 'com.google.firebase:firebase-ml-vision-image-label-model:17.0.2'
+        api 'com.google.firebase:firebase-ml-vision-image-label-model:16.2.0'
+    }
 }
 ```
+
+If you receive compilation errors, try an earlier version of [ML Kit: Image Labeling](https://firebase.google.com/support/release-notes/android).
 
 Optional but recommended: If you use the on-device API, configure your app to automatically download the ML model to the device after your app is installed from the Play Store. To do so, add the following declaration to your app's AndroidManifest.xml file:
 
