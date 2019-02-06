@@ -23,15 +23,32 @@ class WebViewExample extends StatelessWidget {
           SampleMenu(_controller.future),
         ],
       ),
-      body: WebView(
-        initialUrl: 'https://flutter.io',
-        javascriptMode: JavascriptMode.unrestricted,
-        onWebViewCreated: (WebViewController webViewController) {
-          _controller.complete(webViewController);
-        },
-      ),
+      // We're using a Builder here so we have a context that is below the Scaffold
+      // to allow calling Scaffold.of(context) so we can show a snackbar.
+      body: Builder(builder: (BuildContext context) {
+        return WebView(
+          initialUrl: 'https://flutter.io',
+          javascriptMode: JavascriptMode.unrestricted,
+          onWebViewCreated: (WebViewController webViewController) {
+            _controller.complete(webViewController);
+          },
+          javascriptChannels: <JavascriptChannel>[
+            _toasterJavascriptChannel(context),
+          ].toSet(),
+        );
+      }),
       floatingActionButton: favoriteButton(),
     );
+  }
+
+  JavascriptChannel _toasterJavascriptChannel(BuildContext context) {
+    return JavascriptChannel(
+        name: 'Toaster',
+        onMessageReceived: (JavascriptMessage message) {
+          Scaffold.of(context).showSnackBar(
+            SnackBar(content: Text(message.message)),
+          );
+        });
   }
 
   Widget favoriteButton() {
@@ -44,7 +61,7 @@ class WebViewExample extends StatelessWidget {
               onPressed: () async {
                 final String url = await controller.data.currentUrl();
                 Scaffold.of(context).showSnackBar(
-                  SnackBar(content: Text("Favorited $url")),
+                  SnackBar(content: Text('Favorited $url')),
                 );
               },
               child: const Icon(Icons.favorite),
@@ -56,7 +73,7 @@ class WebViewExample extends StatelessWidget {
 }
 
 enum MenuOptions {
-  evaluateJavascript,
+  showUserAgent,
   toast,
 }
 
@@ -73,8 +90,8 @@ class SampleMenu extends StatelessWidget {
         return PopupMenuButton<MenuOptions>(
           onSelected: (MenuOptions value) {
             switch (value) {
-              case MenuOptions.evaluateJavascript:
-                _onEvaluateJavascript(controller.data, context);
+              case MenuOptions.showUserAgent:
+                _onShowUserAgent(controller.data, context);
                 break;
               case MenuOptions.toast:
                 Scaffold.of(context).showSnackBar(
@@ -87,8 +104,8 @@ class SampleMenu extends StatelessWidget {
           },
           itemBuilder: (BuildContext context) => <PopupMenuItem<MenuOptions>>[
                 PopupMenuItem<MenuOptions>(
-                  value: MenuOptions.evaluateJavascript,
-                  child: const Text('Evaluate JavaScript'),
+                  value: MenuOptions.showUserAgent,
+                  child: const Text('Show user agent'),
                   enabled: controller.hasData,
                 ),
                 const PopupMenuItem<MenuOptions>(
@@ -101,15 +118,12 @@ class SampleMenu extends StatelessWidget {
     );
   }
 
-  void _onEvaluateJavascript(
+  void _onShowUserAgent(
       WebViewController controller, BuildContext context) async {
-    final String result = await controller
-        .evaluateJavascript("document.body.style.backgroundColor = 'red'");
-    Scaffold.of(context).showSnackBar(
-      SnackBar(
-        content: Text('JavaScript evaluated, the result is: $result'),
-      ),
-    );
+    // Send a message with the user agent string to the Toaster JavaScript channel we registered
+    // with the WebView.
+    controller.evaluateJavascript(
+        'Toaster.postMessage("User Agent: " + navigator.userAgent);');
   }
 }
 
