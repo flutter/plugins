@@ -1,3 +1,7 @@
+## 0.2.0+1
+
+* Fixed a bug which the camera is not positioned correctly at map initialization(temporary workaround)(https://github.com/flutter/flutter/issues/27550).
+
 ## 0.2.0
 
 * **Breaking change**. Migrate from the deprecated original Android Support
