@@ -239,7 +239,7 @@ class SKProductWrapper {
       productIdentifier: productIdentifier,
       title: localizedTitle,
       description: localizedDescription,
-      price: price.toString()
+      price: priceLocale.currencySymbol + price.toString(),
     );
   }
 }

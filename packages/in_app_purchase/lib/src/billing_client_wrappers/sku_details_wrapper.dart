@@ -126,7 +126,7 @@ class SkuDetailsWrapper {
         isRewarded.hashCode);
   }
 
-    /// Method to convert to the wrapper to the consolidated [Product] class.
+  /// Method to convert to the wrapper to the consolidated [Product] class.
   Product toProduct() {
     return Product(
       productIdentifier: sku,

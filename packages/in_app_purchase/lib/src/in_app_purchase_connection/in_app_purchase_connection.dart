@@ -36,8 +36,4 @@ abstract class InAppPurchaseConnection {
 
     return _instance;
   }
-
-  List<Product> getProductList() {
-
-  }
 }
