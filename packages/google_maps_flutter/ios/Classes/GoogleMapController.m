@@ -424,9 +424,9 @@ static void interpretMarkerOptions(id json, id<FLTGoogleMapMarkerOptionsSink> si
                                                      fromPackage:iconData[2]]];
       }
     } else if ([iconData[0] isEqualToString:@"fromFile"]) {
-        NSData* data = [NSData dataWithContentsOfFile:iconData[1]];
-        CGFloat scale = [UIScreen mainScreen].scale;
-        image = [UIImage imageWithData:data scale:scale];
+      NSData* data = [NSData dataWithContentsOfFile:iconData[1]];
+      CGFloat scale = [UIScreen mainScreen].scale;
+      image = [UIImage imageWithData:data scale:scale];
     }
     [sink setIcon:image];
   }
