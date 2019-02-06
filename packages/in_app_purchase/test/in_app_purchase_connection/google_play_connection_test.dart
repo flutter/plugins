@@ -89,7 +89,8 @@ void main() {
         'responseCode': BillingResponseConverter().toJson(responseCode),
         'skuDetailsList': <Map<String, dynamic>>[buildSkuMap(dummyWrapper)]
       });
-
+      // Since queryProductDetails makes 2 platform method calls (one for each SkuType), the result will contain 2 dummyWrapper instead
+      // of 1.
       final List<Product> products =
           await connection.queryProductDetails(<String>['invalid']);
       expect(products.first.title, dummyWrapper.title);

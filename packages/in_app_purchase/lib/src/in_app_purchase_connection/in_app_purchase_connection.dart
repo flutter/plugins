@@ -13,6 +13,12 @@ abstract class InAppPurchaseConnection {
   /// Returns true if the payment platform is ready and available.
   Future<bool> isAvailable();
 
+  /// Query the product list.
+  ///
+  /// Returns a List of [Product] that each [Product] uniquely matches one valid identifier in [identifiers].
+  /// Any item in the `identifiers` that is not specified in App Store Connect or Google Play Console will be ignored.
+  Future<List<Product>> queryProductDetails(List<String> identifiers);
+
   /// The [InAppPurchaseConnection] implemented for this platform.
   ///
   /// Throws an [UnsupportedError] when accessed on a platform other than
