@@ -22,14 +22,14 @@
   self.periodMap = @{@"numberOfUnits" : @(0), @"unit" : @(0)};
   self.discountMap = @{
     @"price" : @1.0,
-    @"priceLocale" : [NSLocale.currentLocale toMap],
+    @"priceLocale" : [NSLocale.systemLocale toMap],
     @"numberOfPeriods" : @1,
     @"subscriptionPeriod" : self.periodMap,
     @"paymentMode" : @1
   };
   self.productMap = @{
     @"price" : @1.0,
-    @"priceLocale" : [NSLocale.currentLocale toMap],
+    @"priceLocale" : [NSLocale.systemLocale toMap],
     @"productIdentifier" : @"123",
     @"localizedTitle" : @"title",
     @"localizedDescription" : @"des",
@@ -71,9 +71,9 @@
 }
 
 - (void)testLocaleToMap {
-  NSLocale *current = [NSLocale currentLocale];
-  NSDictionary *map = [current toMap];
-  XCTAssertEqualObjects(map[@"currencySymbol"], current.currencySymbol);
+  NSLocale *system = NSLocale.systemLocale;
+  NSDictionary *map = [system toMap];
+  XCTAssertEqualObjects(map[@"currencySymbol"], system.currencySymbol);
 }
 
 @end
