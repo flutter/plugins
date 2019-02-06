@@ -71,7 +71,7 @@
 }
 
 - (void)testLocaleToMap {
-    NSLocale *system = NSLocale.systemLocale;
+  NSLocale *system = NSLocale.systemLocale;
   NSDictionary *map = [system toMap];
   XCTAssertEqualObjects(map[@"currencySymbol"], system.currencySymbol);
 }

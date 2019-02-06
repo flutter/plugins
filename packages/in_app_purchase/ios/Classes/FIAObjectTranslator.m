@@ -56,11 +56,10 @@
     @"paymentMode" : @(self.paymentMode)
   }];
 
-
-    // TODO(cyanglaz): NSLocale is a complex object, want to see the actual need of getting this
-    // expanded to a map. Matching android to only get the currencySymbol for now.
-    // https://github.com/flutter/flutter/issues/26610
-    [map setObject:[self.priceLocale toMap] ?: [NSNull null] forKey:@"priceLocale"];
+  // TODO(cyanglaz): NSLocale is a complex object, want to see the actual need of getting this
+  // expanded to a map. Matching android to only get the currencySymbol for now.
+  // https://github.com/flutter/flutter/issues/26610
+  [map setObject:[self.priceLocale toMap] ?: [NSNull null] forKey:@"priceLocale"];
   return map;
 }
 
@@ -85,7 +84,8 @@
 
 - (nullable NSDictionary *)toMap {
   NSMutableDictionary *map = [[NSMutableDictionary alloc] init];
-    [map setObject:[self objectForKey:NSLocaleCurrencySymbol] ?: [NSNull null] forKey:@"currencySymbol"];
+  [map setObject:[self objectForKey:NSLocaleCurrencySymbol] ?: [NSNull null]
+          forKey:@"currencySymbol"];
   return map;
 }
 

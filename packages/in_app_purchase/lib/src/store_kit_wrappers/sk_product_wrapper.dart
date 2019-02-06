@@ -236,8 +236,8 @@ class SKProductWrapper {
 /// Object that indicates the locale of the price
 ///
 /// It is a thin wrapper of [NSLocale](https://developer.apple.com/documentation/foundation/nslocale?language=objc).
-// TODO(cyanglaz): NSLocale is a complex object, want to see the actual need of getting this expanded to
-//                 a map. Matching android to only get the currencySymbol for now.
+// TODO(cyanglaz): NSLocale is a complex object, want to see the actual need of getting this expanded.
+//                 Matching android to only get the currencySymbol for now.
 //                 https://github.com/flutter/flutter/issues/26610
 @JsonSerializable()
 class PriceLocaleWrapper {
