@@ -24,7 +24,7 @@ class SKRequestMaker {
   /// A [PlatformException] is thrown if the platform code making the request fails.
   Future<SkProductResponseWrapper> startProductRequest(
       List<String> productIdentifiers) async {
-    final Map<dynamic, dynamic> productResponseMap = await channel.invokeMethod(
+    final Map productResponseMap = await channel.invokeMethod(
       '-[InAppPurchasePlugin startProductRequest:result:]',
       productIdentifiers,
     );
@@ -34,7 +34,6 @@ class SKRequestMaker {
         message: 'StoreKit: Failed to get response from platform.',
       );
     }
-    return SkProductResponseWrapper.fromMap(
-        productResponseMap.cast<String, List<dynamic>>());
+    return SkProductResponseWrapper.fromJson(productResponseMap);
   }
 }

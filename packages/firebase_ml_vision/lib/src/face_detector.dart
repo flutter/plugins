@@ -26,26 +26,30 @@ enum FaceLandmarkType {
 
 /// Detector for detecting faces in an input image.
 ///
-/// A face detector is created via faceDetector(FaceDetectorOptions options)
-/// in [FirebaseVision]:
+/// A face detector is created via
+/// `faceDetector([FaceDetectorOptions options])` in [FirebaseVision]:
 ///
 /// ```dart
-/// FaceDetector faceDetector = FirebaseVision.instance.faceDetector(options);
+/// final FirebaseVisionImage image =
+///     FirebaseVisionImage.fromFilePath('path/to/file');
+///
+/// final FaceDetector faceDetector = FirebaseVision.instance.faceDetector();
+///
+/// final List<Faces> faces = await faceDetector.processImage(image);
 /// ```
-class FaceDetector extends FirebaseVisionDetector {
+class FaceDetector {
   FaceDetector._(this.options) : assert(options != null);
 
   /// The options for the face detector.
   final FaceDetectorOptions options;
 
   /// Detects faces in the input image.
-  @override
-  Future<List<Face>> detectInImage(FirebaseVisionImage visionImage) async {
+  Future<List<Face>> processImage(FirebaseVisionImage visionImage) async {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
     final List<dynamic> reply = await FirebaseVision.channel.invokeMethod(
-      'FaceDetector#detectInImage',
+      'FaceDetector#processImage',
       <String, dynamic>{
         'options': <String, dynamic>{
           'enableClassification': options.enableClassification,

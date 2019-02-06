@@ -193,7 +193,9 @@ class AndroidBuildVersion {
   /// The user-visible version string.
   final String release;
 
-  /// The user-visible SDK version of the framework; its possible values are defined in [AndroidBuildVersionCodes].
+  /// The user-visible SDK version of the framework.
+  ///
+  /// Possible values are defined in: https://developer.android.com/reference/android/os/Build.VERSION_CODES.html
   final int sdkInt;
 
   /// The user-visible security patch level.

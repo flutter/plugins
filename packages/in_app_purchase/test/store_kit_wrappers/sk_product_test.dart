@@ -41,7 +41,7 @@ void main() {
         'SKProductSubscriptionPeriodWrapper should have property values consistent with map',
         () {
       final SKProductSubscriptionPeriodWrapper wrapper =
-          SKProductSubscriptionPeriodWrapper.fromMap(subMap);
+          SKProductSubscriptionPeriodWrapper.fromJson(subMap);
       expect(wrapper.numberOfUnits, subMap['numberOfUnits']);
       expect(wrapper.unit, SubscriptionPeriodUnit.values[subMap['unit']]);
     });
@@ -50,7 +50,7 @@ void main() {
         'SKProductSubscriptionPeriodWrapper should have properties to be null if map is empty',
         () {
       final SKProductSubscriptionPeriodWrapper wrapper =
-          SKProductSubscriptionPeriodWrapper.fromMap(<String, dynamic>{});
+          SKProductSubscriptionPeriodWrapper.fromJson(<String, dynamic>{});
       expect(wrapper.numberOfUnits, null);
       expect(wrapper.unit, null);
     });
@@ -59,7 +59,7 @@ void main() {
         'SKProductDiscountWrapper should have property values consistent with map',
         () {
       final SKProductDiscountWrapper wrapper =
-          SKProductDiscountWrapper.fromMap(discountMap);
+          SKProductDiscountWrapper.fromJson(discountMap);
       expect(wrapper.price, discountMap['price']);
       expect(wrapper.currencyCode, discountMap['currencyCode']);
       expect(wrapper.numberOfPeriods, discountMap['numberOfPeriods']);
@@ -77,7 +77,7 @@ void main() {
         'SKProductDiscountWrapper should have properties to be null if map is empty',
         () {
       final SKProductDiscountWrapper wrapper =
-          SKProductDiscountWrapper.fromMap(<String, dynamic>{});
+          SKProductDiscountWrapper.fromJson(<String, dynamic>{});
       expect(wrapper.price, null);
       expect(wrapper.currencyCode, null);
       expect(wrapper.numberOfPeriods, null);
@@ -125,15 +125,14 @@ void main() {
 
     test('SKProductWrapper should have property values consistent with map',
         () {
-      final SKProductWrapper wrapper = SKProductWrapper.fromMap(productMap);
+      final SKProductWrapper wrapper = SKProductWrapper.fromJson(productMap);
       testMatchingProductMap(wrapper, productMap);
     });
 
-    test(
-        'SKProductDiscountWrapper should have properties to be null if map is empty',
+    test('SKProductWrapper should have properties to be null if map is empty',
         () {
       final SKProductWrapper wrapper =
-          SKProductWrapper.fromMap(<String, dynamic>{});
+          SKProductWrapper.fromJson(<String, dynamic>{});
       expect(wrapper.productIdentifier, null);
       expect(wrapper.localizedTitle, null);
       expect(wrapper.localizedDescription, null);
@@ -147,7 +146,7 @@ void main() {
 
     test('SKProductResponse wrapper should match', () {
       final SkProductResponseWrapper wrapper =
-          SkProductResponseWrapper.fromMap(productResponseMap);
+          SkProductResponseWrapper.fromJson(productResponseMap);
       testMatchingProductMap(
           wrapper.products[0], productResponseMap['products'][0]);
       expect(wrapper.invalidProductIdentifiers,
@@ -160,7 +159,7 @@ void main() {
         'invalidProductIdentifiers': <String>[],
       };
       final SkProductResponseWrapper wrapper =
-          SkProductResponseWrapper.fromMap(productResponseMapEmptyList);
+          SkProductResponseWrapper.fromJson(productResponseMapEmptyList);
       expect(wrapper.products.length, 0);
       expect(wrapper.invalidProductIdentifiers.length, 0);
     });

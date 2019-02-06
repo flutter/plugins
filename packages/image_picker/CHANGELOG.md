@@ -1,6 +1,10 @@
+## 0.5.0+2
+
+* Fixed am Android crash when Image Picker is registered without an activity.
+
 ## 0.5.0+1
 
- * Fixed am Android crash when Image Picker is registered without an activity.
+* Fix a crash when user calls the plugin in quick succession on Android.
 
 ## 0.5.0
 

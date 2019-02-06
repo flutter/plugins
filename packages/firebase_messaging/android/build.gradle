@@ -33,5 +33,7 @@ android {
     }
     dependencies {
         api 'com.google.firebase:firebase-messaging:17.3.3'
+        implementation 'androidx.annotation:annotation:1.0.0'
+        implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
     }
 }
