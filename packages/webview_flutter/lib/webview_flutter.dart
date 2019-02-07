@@ -489,9 +489,10 @@ class CookieManager {
   ///
   /// This is supported for >= IOS 9 and Android api level >= 16.
   /// returns true if cookies were present before clearing, else false.
-  Future<bool> clearCookies() async {
-    return await _channel.invokeMethod<bool>('clearCookies');
-  }
+  Future<bool> clearCookies() => _channel
+      // ignore: strong_mode_implicit_dynamic_method
+      .invokeMethod('clearCookies')
+      .then<bool>((dynamic result) => result);
 }
 
 // Throws an ArgumentError if `url` is not a valid URL string.
