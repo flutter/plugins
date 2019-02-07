@@ -1,3 +1,7 @@
+## 0.4.1
+
+* Add unit tests
+
 ## 0.4.0+1
 
 * Updated `Connectivity` to a singleton.
