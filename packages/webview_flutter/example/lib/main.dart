@@ -75,6 +75,7 @@ class WebViewExample extends StatelessWidget {
 enum MenuOptions {
   showUserAgent,
   toast,
+  listCookies,
   clearCookies,
 }
 
@@ -103,8 +104,11 @@ class SampleMenu extends StatelessWidget {
                   ),
                 );
                 break;
+              case MenuOptions.listCookies:
+                _onListCookies(controller.data, context);
+                break;
               case MenuOptions.clearCookies:
-                _onClearCookies(controller.data, context);
+                _onClearCookies(context);
                 break;
             }
           },
@@ -117,6 +121,10 @@ class SampleMenu extends StatelessWidget {
                 const PopupMenuItem<MenuOptions>(
                   value: MenuOptions.toast,
                   child: Text('Make a toast'),
+                ),
+                const PopupMenuItem<MenuOptions>(
+                  value: MenuOptions.listCookies,
+                  child: Text('List cookies'),
                 ),
                 const PopupMenuItem<MenuOptions>(
                   value: MenuOptions.clearCookies,
@@ -136,25 +144,30 @@ class SampleMenu extends StatelessWidget {
         'Toaster.postMessage("User Agent: " + navigator.userAgent);');
   }
 
-  void _onClearCookies(
+  void _onListCookies(
       WebViewController controller, BuildContext context) async {
     final String cookies =
         await controller.evaluateJavascript('document.cookie');
+    Scaffold.of(context).showSnackBar(SnackBar(
+      content: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          const Text('Cookies:'),
+          _getCookieList(cookies),
+        ],
+      ),
+    ));
+  }
+
+  void _onClearCookies(BuildContext context) async {
     final bool hadCookies = await cookieManager.clearCookies();
     String message = 'There were cookies. Now, they are gone!';
     if (!hadCookies) {
       message = 'There are no cookies.';
     }
     Scaffold.of(context).showSnackBar(SnackBar(
-      content: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Text(message),
-          const Text('Cookies:'),
-          _getCookieList(cookies),
-        ],
-      ),
+      content: Text(message),
     ));
   }
 

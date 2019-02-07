@@ -21,11 +21,10 @@
 }
 
 - (void)clearCookies:(FlutterResult)result {
-  NSOperatingSystemVersion ios9 = (NSOperatingSystemVersion){9, 0};
-  if ([[NSProcessInfo processInfo] isOperatingSystemAtLeastVersion:ios9]) {
+  if (@available(iOS 9.0, *)) {
     [self clearCookiesIos9AndLater:result];
   } else {
-    // support for IOS-8 tracked in https://github.com/flutter/flutter/issues/27624.
+    // support for iOS8 tracked in https://github.com/flutter/flutter/issues/27624.
     NSLog(@"Clearing cookies is not supported for Flutter WebViews prior to iOS9.");
   }
 }
