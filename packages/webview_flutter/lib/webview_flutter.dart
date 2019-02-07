@@ -471,10 +471,19 @@ class WebViewController {
 
 /// Manages cookies pertaining to all [WebView]s.
 class CookieManager {
-  const CookieManager._();
+  factory CookieManager() {
+    if (_instance == null) {
+      final MethodChannel methodChannel =
+          const MethodChannel('plugins.flutter.io/cookie_manager');
+      _instance = CookieManager.private(methodChannel);
+    }
+    return _instance;
+  }
 
-  static const MethodChannel _channel =
-      MethodChannel('plugins.flutter.io/cookie_manager');
+  CookieManager.private(this._channel);
+
+  static CookieManager _instance;
+  final MethodChannel _channel;
 
   /// Clears all cookies.
   ///
@@ -496,8 +505,3 @@ void _validateUrlString(String url) {
     throw ArgumentError(e);
   }
 }
-
-/// Singleton [CookieManager].
-///
-/// Manages cookies pertaining to all [WebView]s.
-final CookieManager cookieManager = const CookieManager._();

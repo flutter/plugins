@@ -82,6 +82,7 @@ class SampleMenu extends StatelessWidget {
   SampleMenu(this.controller);
 
   final Future<WebViewController> controller;
+  final CookieManager cookieManager = CookieManager();
 
   @override
   Widget build(BuildContext context) {

@@ -367,6 +367,7 @@ void main() {
         initialUrl: 'https://flutter.io',
       ),
     );
+    final CookieManager cookieManager = CookieManager();
     final bool hasCookies = await cookieManager.clearCookies();
     expect(hasCookies, true);
   });
@@ -378,6 +379,7 @@ void main() {
         initialUrl: 'https://flutter.io',
       ),
     );
+    final CookieManager cookieManager = CookieManager();
     final bool hasCookies = await cookieManager.clearCookies();
     expect(hasCookies, true);
     final bool hasCookiesSecond = await cookieManager.clearCookies();
