@@ -488,7 +488,7 @@ class CookieManager {
   ///
   /// Returns true if cookies were present before clearing, else false.
   Future<bool> clearCookies() => _channel
-      // TODO(kaushikiska): remove this when the invokeMethod update makes it to stable Flutter.
+      // TODO(amirh): remove this when the invokeMethod update makes it to stable Flutter.
       // https://github.com/flutter/flutter/issues/26431
       // ignore: strong_mode_implicit_dynamic_method
       .invokeMethod('clearCookies')
