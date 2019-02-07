@@ -1,3 +1,7 @@
+## 0.3.2
+
+* Added CookieManager to interface with WebView cookies. Currently has the ability to clear cookies.
+
 ## 0.3.1
 
 * Added JavaScript channels to facilitate message passing from JavaScript code running inside
