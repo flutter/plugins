@@ -31,6 +31,36 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+@interface SKPayment (Coder)
+
+- (NSDictionary *)toMap;
+
+@end
+
+@interface SKMutablePayment (Coder)
+
+- (instancetype)initWithMap:(NSDictionary *)map;
+
+@end
+
+@interface SKPaymentTransaction (Coder)
+
+- (NSDictionary *)toMap;
+
+@end
+
+@interface SKDownload (Coder)
+
+- (NSDictionary *)toMap;
+
+@end
+
+@interface NSError (Coder)
+
+- (NSDictionary *)toMap;
+
+@end
+
 @interface NSLocale (Coder)
 
 - (nullable NSDictionary *)toMap;

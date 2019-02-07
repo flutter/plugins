@@ -61,15 +61,12 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
 You can now use the Firebase `_auth` to authenticate in your Dart code, e.g.
 ```dart
 Future<FirebaseUser> _handleSignIn() async {
-  final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
-  final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-
-  final AuthCredential credential = GoogleAuthProvider.getCredential(
+  GoogleSignInAccount googleUser = await _googleSignIn.signIn();
+  GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+  FirebaseUser user = await _auth.signInWithGoogle(
     accessToken: googleAuth.accessToken,
     idToken: googleAuth.idToken,
   );
-  
-  final FirebaseUser user = await _auth.signInWithCredential(credential);
   print("signed in " + user.displayName);
   return user;
 }
