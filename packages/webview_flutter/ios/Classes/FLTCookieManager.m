@@ -3,32 +3,47 @@
 @implementation FLTCookieManager {
 }
 
-- (instancetype)init:(NSObject<FlutterBinaryMessenger>*)messenger {
-  if ([super init]) {
-    FlutterMethodChannel* channel =
-        [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/cookie_manager"
-                                    binaryMessenger:messenger];
-    [channel setMethodCallHandler:^(FlutterMethodCall* call, FlutterResult result) {
-      __weak __typeof__(self) weakSelf = self;
-      [weakSelf onMethodCall:call result:result];
-    }];
-  }
-  return self;
++ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
+  FLTCookieManager *instance = [[FLTCookieManager alloc] init];
+
+  FlutterMethodChannel *channel =
+      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/cookie_manager"
+                                  binaryMessenger:[registrar messenger]];
+  [registrar addMethodCallDelegate:instance channel:channel];
 }
 
-- (void)onMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
+- (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([[call method] isEqualToString:@"clearCookies"]) {
-    [self clearCookies:call result:result];
+    [self clearCookies:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
 }
 
-- (void)clearCookies:(FlutterMethodCall*)call result:(FlutterResult)result {
-  NSHTTPCookieStorage* storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
-  BOOL hasCookies = storage.cookies.count > 0;
-  [storage removeCookiesSinceDate:[NSDate dateWithTimeIntervalSince1970:0]];
-  result(@(hasCookies));
+- (void)clearCookies:(FlutterResult)result {
+  NSOperatingSystemVersion ios9 = (NSOperatingSystemVersion){9, 0};
+  if ([[NSProcessInfo processInfo] isOperatingSystemAtLeastVersion:ios9]) {
+    [self clearCookiesIos9AndLater:result];
+  } else {
+    NSLog(@"Clearing cookies is not supported for Flutter WebViews prior to iOS9.");
+  }
+}
+
+- (void)clearCookiesIos9AndLater:(FlutterResult)result {
+  NSSet *websiteDataTypes = [NSSet setWithArray:@[ WKWebsiteDataTypeCookies ]];
+  WKWebsiteDataStore *dataStore = [WKWebsiteDataStore defaultDataStore];
+
+  void (^deleteAndNotify)(NSArray<WKWebsiteDataRecord *> *) =
+      ^(NSArray<WKWebsiteDataRecord *> *cookies) {
+        BOOL hasCookies = cookies.count > 0;
+        [dataStore removeDataOfTypes:websiteDataTypes
+                      forDataRecords:cookies
+                   completionHandler:^{
+                     result(@(hasCookies));
+                   }];
+      };
+
+  [dataStore fetchDataRecordsOfTypes:websiteDataTypes completionHandler:deleteAndNotify];
 }
 
 @end

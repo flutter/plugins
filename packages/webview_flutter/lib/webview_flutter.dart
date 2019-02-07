@@ -478,6 +478,7 @@ class CookieManager {
 
   /// Clears all cookies.
   ///
+  /// This is supported for >= IOS 9 and Android api level >= 16.
   /// returns true if cookies were present before clearing, else false.
   Future<bool> clearCookies() async {
     return await _channel.invokeMethod<bool>('clearCookies');
