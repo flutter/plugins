@@ -16,10 +16,7 @@
 @property(strong, nonatomic) NSDictionary *paymentMap;
 @property(strong, nonatomic) NSDictionary *transactionMap;
 @property(strong, nonatomic) NSDictionary *errorMap;
-<<<<<<< HEAD
-=======
 @property(strong, nonatomic) NSDictionary *localeMap;
->>>>>>> master
 
 @end
 
@@ -170,13 +167,10 @@
   NSDictionary *map = [error toMap];
   XCTAssertEqualObjects(map, self.errorMap);
 }
-<<<<<<< HEAD
-=======
 - (void)testLocaleToMap {
   NSLocale *system = NSLocale.systemLocale;
   NSDictionary *map = [system toMap];
   XCTAssertEqualObjects(map[@"currencySymbol"], system.currencySymbol);
 }
->>>>>>> master
 
 @end
