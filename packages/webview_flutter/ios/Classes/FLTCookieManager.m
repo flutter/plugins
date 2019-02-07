@@ -25,6 +25,7 @@
   if ([[NSProcessInfo processInfo] isOperatingSystemAtLeastVersion:ios9]) {
     [self clearCookiesIos9AndLater:result];
   } else {
+    // support for IOS-8 tracked in https://github.com/flutter/flutter/issues/27624.
     NSLog(@"Clearing cookies is not supported for Flutter WebViews prior to iOS9.");
   }
 }
