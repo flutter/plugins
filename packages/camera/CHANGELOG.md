@@ -1,3 +1,7 @@
+## 0.3.0+2
+
+* Fix issue with calculating iOS image orientation in certain edge cases.
+
 ## 0.3.0+1
 
 * Remove initial method call invocation from static camera method.
