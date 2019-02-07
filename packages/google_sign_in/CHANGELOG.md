@@ -1,6 +1,6 @@
 ## 4.0.0+1
 
-* Added better error message for iOS when the app is missing necessary URL schemes.
+* Added a better error message for iOS when the app is missing necessary URL schemes.
 
 ## 4.0.0
 
