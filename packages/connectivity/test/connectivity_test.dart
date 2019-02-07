@@ -21,29 +21,28 @@ void main() {
           default:
             return null;
         }
-
       });
       log.clear();
-      MethodChannel(Connectivity.eventChannel.name).setMockMethodCallHandler(
-        (MethodCall methodCall) async {
-          switch (methodCall.method) {
-            case 'listen':
-              await BinaryMessages.handlePlatformMessage(
-                Connectivity.eventChannel.name,
-                Connectivity.eventChannel.codec.encodeSuccessEnvelope('wifi'),
-                (_) {},
-              );
-              break;
-            case 'cancel':
-            default:
-              return null;
-          }
+      MethodChannel(Connectivity.eventChannel.name)
+          .setMockMethodCallHandler((MethodCall methodCall) async {
+        switch (methodCall.method) {
+          case 'listen':
+            await BinaryMessages.handlePlatformMessage(
+              Connectivity.eventChannel.name,
+              Connectivity.eventChannel.codec.encodeSuccessEnvelope('wifi'),
+              (_) {},
+            );
+            break;
+          case 'cancel':
+          default:
+            return null;
         }
-      );
+      });
     });
 
     test('onConnectivityChanged', () async {
-      ConnectivityResult result = await Connectivity().onConnectivityChanged.first;
+      ConnectivityResult result =
+          await Connectivity().onConnectivityChanged.first;
       expect(result, ConnectivityResult.wifi);
     });
 
@@ -72,6 +71,5 @@ void main() {
         ],
       );
     });
-
   });
 }
