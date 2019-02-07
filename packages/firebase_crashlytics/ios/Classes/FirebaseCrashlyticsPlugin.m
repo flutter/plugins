@@ -34,7 +34,31 @@
                             @"stackTrace": call.arguments[@"stackTrace"]
                     }];
     [[Crashlytics sharedInstance] recordError:error];
-    result(@"success");
+    result(@"Error reported to Crashlytics.");
+  } else if ([@"Crashlytics#setInt" isEqualToString:call.method]) {
+    [[Crashlytics sharedInstance] setIntValue:(int)call.arguments[@"value"] forKey:call.arguments[@"key"]];
+    result(nil);
+  } else if ([@"Crashlytics#setDouble" isEqualToString:call.method]) {
+    [[Crashlytics sharedInstance] setFloatValue:[call.arguments[@"value"] floatValue] forKey:call.arguments[@"key"]];
+    result(nil);
+  } else if ([@"Crashlytics#setString" isEqualToString:call.method]) {
+    [[Crashlytics sharedInstance] setObjectValue:call.arguments[@"value"] forKey:call.arguments[@"key"]];
+    result(nil);
+  } else if ([@"Crashlytics#setBool" isEqualToString:call.method]) {
+    [[Crashlytics sharedInstance] setBoolValue:[call.arguments[@"value"] boolValue] forKey:call.arguments[@"key"]];
+    result(nil);
+  } else if ([@"Crashlytics#log" isEqualToString:call.method]) {
+    CLS_LOG(@"%@", call.arguments[@"msg"]);
+    result(nil);
+  } else if ([@"Crashlytics#setUserEmail" isEqualToString:call.method]) {
+    [[Crashlytics sharedInstance] setUserEmail:call.arguments[@"email"]];
+    result(nil);
+  } else if ([@"Crashlytics#setUserName" isEqualToString:call.method]) {
+    [[Crashlytics sharedInstance] setUserName:call.arguments[@"name"]];
+    result(nil);
+  } else if ([@"Crashlytics#setUserIdentifier" isEqualToString:call.method]) {
+    [[Crashlytics sharedInstance] setUserEmail:call.arguments[@"identifier"]];
+    result(nil);
   } else {
     result(FlutterMethodNotImplemented);
   }

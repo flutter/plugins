@@ -35,10 +35,23 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Crashlytics example app'),
         ),
         body: Center(
-          child: FlatButton(child: const Text('Crash'), onPressed: (){
-            // Throw an error that will be sent to Crashlytics.
-            Crashlytics.instance.crash();
-          }),
+          child: Column(
+            children: <Widget>[
+              FlatButton(child: const Text('Key'), onPressed: () {
+                Crashlytics.instance.setString('iaw', 'i am working');
+              }),
+              FlatButton(child: const Text('log'), onPressed: () {
+                for (int i = 0; i < 10000; i++) {
+                  Crashlytics.instance.log(
+                      'i am working well ${DateTime.now().millisecondsSinceEpoch}');
+                }
+              }),
+              FlatButton(child: const Text('Crash'), onPressed: () {
+                // Throw an error that will be sent to Crashlytics.
+                Crashlytics.instance.crash();
+              }),
+            ],
+          ),
         ),
       ),
     );

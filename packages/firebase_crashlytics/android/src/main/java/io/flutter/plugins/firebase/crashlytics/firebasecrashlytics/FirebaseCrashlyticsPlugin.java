@@ -1,7 +1,5 @@
 package io.flutter.plugins.firebase.crashlytics.firebasecrashlytics;
 
-import android.util.Log;
-
 import com.crashlytics.android.Crashlytics;
 
 import java.util.ArrayList;
@@ -38,7 +36,31 @@ public class FirebaseCrashlyticsPlugin implements MethodCallHandler {
       Crashlytics.setString("exception", (String) call.argument("exception"));
       Crashlytics.setString("stackTrace", (String) call.argument("stackTrace"));
       Crashlytics.logException(exception);
-      result.success("Error logged");
+      result.success("Error reported to Crashlytics.");
+    } else if (call.method.equals("Crashlytics#setInt")) {
+      Crashlytics.setInt((String) call.argument("key"), (int) call.argument("value"));
+      result.success(null);
+    } else if (call.method.equals("Crashlytics#setDouble")) {
+      Crashlytics.setDouble((String) call.argument("key"), (double) call.argument("value"));
+      result.success(null);
+    } else if (call.method.equals("Crashlytics#setString")) {
+      Crashlytics.setString((String) call.argument("key"), (String) call.argument("value"));
+      result.success(null);
+    } else if (call.method.equals("Crashlytics#setBool")) {
+      Crashlytics.setBool((String) call.argument("key"), (boolean) call.argument("value"));
+      result.success(null);
+    } else if (call.method.equals("Crashlytics#log")) {
+      Crashlytics.log((String) call.argument("msg"));
+      result.success(null);
+    } else if (call.method.equals("Crashlytics#setUserEmail")) {
+      Crashlytics.setUserEmail((String) call.argument("email"));
+      result.success(null);
+    } else if (call.method.equals("Crashlytics#setUserIdentifier")) {
+      Crashlytics.setUserIdentifier((String) call.argument("identifier"));
+      result.success(null);
+    } else if (call.method.equals("Crashlytics#setUserName")) {
+      Crashlytics.setUserName((String) call.argument("name"));
+      result.success(null);
     } else {
       result.notImplemented();
     }
