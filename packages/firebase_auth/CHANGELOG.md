@@ -1,3 +1,7 @@
+## 0.8.1
+
+* Fixes Firebase auth phone sign-in for Android.
+
 ## 0.8.0+2
 
 * Update Google sign-in example in the README.
