@@ -92,31 +92,30 @@
 }
 
 - (UIImageOrientation)getImageRotation {
-  // Get the true device orientation out of the accelerometer.
-  const CMQuaternion orientation = _motionManager.deviceMotion.attitude.quaternion;
-  const double roll =
-      atan2(2 * (orientation.w * orientation.x + orientation.y * orientation.z),
-            1 - (2 * (orientation.x * orientation.x + orientation.y * orientation.y)));
-  const double pitch = asin(2 * (orientation.w * orientation.y - orientation.z * orientation.x));
-  const bool vertical = fabs(pitch) <= M_PI_4;
-  const bool pointedRight = pitch >= 0;
-  const bool tiltedUp = roll >= 0;
-  // Pixel input defaults to horizontal pointed left, as if the phone was held
-  // with the home button on the right. Rotate the photo accordingly based on
-  // the orientation the photo should really be displayed as. To make this
-  // extra confusing, the landscape orientations also need to be mirrored
-  // based on whether they were taken with the front facing camera.
-  if (vertical && tiltedUp) {              // [^]
-    return UIImageOrientationRight;        // rotate existing image 90* cw
-  } else if (vertical && !tiltedUp) {      // [v]
-    return UIImageOrientationLeft;         // rotate existing image 90* ccw
-  } else if (!vertical && pointedRight) {  // [>]
-    return _cameraPosition == AVCaptureDevicePositionBack ? UIImageOrientationDown /*rotate 180* */
-                                                          : UIImageOrientationUp /*do not rotate*/;
-  } else if (!vertical && !pointedRight) {  // [<]
+  float const threshold = 45.0;
+  BOOL (^isNearValue)(float value1, float value2) = ^BOOL(float value1, float value2) {
+    return fabsf(value1 - value2) < threshold;
+  };
+  BOOL (^isNearValueABS)(float value1, float value2) = ^BOOL(float value1, float value2) {
+    return isNearValue(fabsf(value1), fabsf(value2));
+  };
+  float yxAtan = (atan2(_motionManager.accelerometerData.acceleration.y,
+                        _motionManager.accelerometerData.acceleration.x)) *
+                 180 / M_PI;
+  if (isNearValue(-90.0, yxAtan)) {
+    return UIImageOrientationRight;
+  } else if (isNearValueABS(180.0, yxAtan)) {
     return _cameraPosition == AVCaptureDevicePositionBack ? UIImageOrientationUp
                                                           : UIImageOrientationDown;
+  } else if (isNearValueABS(0.0, yxAtan)) {
+    return _cameraPosition == AVCaptureDevicePositionBack ? UIImageOrientationDown /*rotate 180* */
+                                                          : UIImageOrientationUp /*do not rotate*/;
+  } else if (isNearValue(90.0, yxAtan)) {
+    return UIImageOrientationLeft;
   }
+  // If none of the above, then the device is likely facing straight down or straight up -- just
+  // pick something arbitrary
+  // TODO: Maybe use the UIInterfaceOrientation if in these scenarios
   return UIImageOrientationUp;
 }
 @end
@@ -222,8 +221,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
   [_capturePhotoOutput setHighResolutionCaptureEnabled:YES];
   [_captureSession addOutput:_capturePhotoOutput];
   _motionManager = [[CMMotionManager alloc] init];
-  [_motionManager startDeviceMotionUpdatesUsingReferenceFrame:
-                      CMAttitudeReferenceFrameXArbitraryCorrectedZVertical];
+  [_motionManager startAccelerometerUpdates];
   return self;
 }
 
@@ -387,7 +385,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
   if (_latestPixelBuffer) {
     CFRelease(_latestPixelBuffer);
   }
-  [_motionManager stopDeviceMotionUpdates];
+  [_motionManager stopAccelerometerUpdates];
 }
 
 - (CVPixelBufferRef)copyPixelBuffer {
