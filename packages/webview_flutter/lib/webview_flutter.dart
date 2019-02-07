@@ -475,12 +475,12 @@ class CookieManager {
     if (_instance == null) {
       final MethodChannel methodChannel =
           const MethodChannel('plugins.flutter.io/cookie_manager');
-      _instance = CookieManager.private(methodChannel);
+      _instance = CookieManager._(methodChannel);
     }
     return _instance;
   }
 
-  CookieManager.private(this._channel);
+  CookieManager._(this._channel);
 
   static CookieManager _instance;
   final MethodChannel _channel;
