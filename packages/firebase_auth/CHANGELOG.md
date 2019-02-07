@@ -1,3 +1,7 @@
+## 0.8.0+2
+
+* Update Google sign-in example in the README.
+
 ## 0.8.0+1
 
 * Update a broken dependency.
