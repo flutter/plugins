@@ -1,6 +1,6 @@
 ## 0.3.0+2
 
-* Fix issue with calculating iOS image orientation in certain edge cases    
+* Fix issue with calculating iOS image orientation in certain edge cases.
 
 ## 0.3.0+1
 
