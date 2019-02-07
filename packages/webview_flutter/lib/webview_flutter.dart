@@ -473,10 +473,7 @@ class WebViewController {
 class CookieManager {
   /// Creates a [CookieManager] -- returns the instance if it's already been called.
   factory CookieManager() {
-    if (_instance == null) {
-      _instance = CookieManager._();
-    }
-    return _instance;
+    return _instance ??= CookieManager._();
   }
 
   CookieManager._();
