@@ -473,17 +473,16 @@ class WebViewController {
 class CookieManager {
   factory CookieManager() {
     if (_instance == null) {
-      final MethodChannel methodChannel =
-          const MethodChannel('plugins.flutter.io/cookie_manager');
-      _instance = CookieManager._(methodChannel);
+      _instance = CookieManager._();
     }
     return _instance;
   }
 
-  CookieManager._(this._channel);
+  CookieManager._();
 
+  static const MethodChannel _channel =
+      MethodChannel('plugins.flutter.io/cookie_manager');
   static CookieManager _instance;
-  final MethodChannel _channel;
 
   /// Clears all cookies.
   ///
