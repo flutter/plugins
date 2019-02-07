@@ -10,11 +10,7 @@ import 'package:flutter/widgets.dart';
 
 part 'camera_image.dart';
 
-final MethodChannel _channel = const MethodChannel('plugins.flutter.io/camera')
-  // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-  // https://github.com/flutter/flutter/issues/26431
-  // ignore: strong_mode_implicit_dynamic_method
-  ..invokeMethod('init');
+final MethodChannel _channel = const MethodChannel('plugins.flutter.io/camera');
 
 enum CameraLensDirection { front, back, external }
 

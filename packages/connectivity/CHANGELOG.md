@@ -1,3 +1,7 @@
+## 0.4.0+1
+
+* Updated `Connectivity` to a singleton.
+
 ## 0.4.0
 
 * **Breaking change**. Migrate from the deprecated original Android Support

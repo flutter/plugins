@@ -7,7 +7,7 @@ dependencies:
     sdk: flutter
   firebase_storage:
     path: ../
-  firebase_core: "^0.3.0"
+  firebase_core: ^0.3.0
   uuid: "^1.0.0"
   http: ^0.12.0
 
