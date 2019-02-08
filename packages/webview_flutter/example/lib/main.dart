@@ -75,11 +75,15 @@ class WebViewExample extends StatelessWidget {
 enum MenuOptions {
   showUserAgent,
   toast,
+  listCookies,
+  clearCookies,
 }
 
 class SampleMenu extends StatelessWidget {
   SampleMenu(this.controller);
+
   final Future<WebViewController> controller;
+  final CookieManager cookieManager = CookieManager();
 
   @override
   Widget build(BuildContext context) {
@@ -100,6 +104,12 @@ class SampleMenu extends StatelessWidget {
                   ),
                 );
                 break;
+              case MenuOptions.listCookies:
+                _onListCookies(controller.data, context);
+                break;
+              case MenuOptions.clearCookies:
+                _onClearCookies(context);
+                break;
             }
           },
           itemBuilder: (BuildContext context) => <PopupMenuItem<MenuOptions>>[
@@ -111,6 +121,14 @@ class SampleMenu extends StatelessWidget {
                 const PopupMenuItem<MenuOptions>(
                   value: MenuOptions.toast,
                   child: Text('Make a toast'),
+                ),
+                const PopupMenuItem<MenuOptions>(
+                  value: MenuOptions.listCookies,
+                  child: Text('List cookies'),
+                ),
+                const PopupMenuItem<MenuOptions>(
+                  value: MenuOptions.clearCookies,
+                  child: Text('Clear cookies'),
                 ),
               ],
         );
@@ -124,6 +142,47 @@ class SampleMenu extends StatelessWidget {
     // with the WebView.
     controller.evaluateJavascript(
         'Toaster.postMessage("User Agent: " + navigator.userAgent);');
+  }
+
+  void _onListCookies(
+      WebViewController controller, BuildContext context) async {
+    final String cookies =
+        await controller.evaluateJavascript('document.cookie');
+    Scaffold.of(context).showSnackBar(SnackBar(
+      content: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          const Text('Cookies:'),
+          _getCookieList(cookies),
+        ],
+      ),
+    ));
+  }
+
+  void _onClearCookies(BuildContext context) async {
+    final bool hadCookies = await cookieManager.clearCookies();
+    String message = 'There were cookies. Now, they are gone!';
+    if (!hadCookies) {
+      message = 'There are no cookies.';
+    }
+    Scaffold.of(context).showSnackBar(SnackBar(
+      content: Text(message),
+    ));
+  }
+
+  Widget _getCookieList(String cookies) {
+    if (cookies == null || cookies == '""') {
+      return Container();
+    }
+    final List<String> cookieList = cookies.split(';');
+    final Iterable<Text> cookieWidgets =
+        cookieList.map((String cookie) => Text(cookie));
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisSize: MainAxisSize.min,
+      children: cookieWidgets.toList(),
+    );
   }
 }
 
