@@ -1,3 +1,7 @@
+## 4.0.0+1
+
+* Added a better error message for iOS when the app is missing necessary URL schemes.
+
 ## 4.0.0
 
 * **Breaking change**. Migrate from the deprecated original Android Support
