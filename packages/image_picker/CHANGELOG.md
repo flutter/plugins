@@ -1,3 +1,7 @@
+## 0.5.0+3
+
+* Fixed am Android crash when Image Picker is registered without an activity.
+
 ## 0.5.0+2
 
 * Log a more detailed warning at build time about the previous AndroidX
