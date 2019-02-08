@@ -25,32 +25,32 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   private final String[] internalSchemes = {"http", "https", "about"};
 
   @SuppressWarnings("unchecked")
-  FlutterWebView(final Context context, BinaryMessenger messenger, int id,
-                 Map<String, Object> params) {
+  FlutterWebView(
+      final Context context, BinaryMessenger messenger, int id, Map<String, Object> params) {
     webView = new WebView(context);
-    webView.setWebViewClient(new WebViewClient() {
-      @Override
-      @SuppressLint("NewApi")
-      public boolean shouldOverrideUrlLoading(WebView view,
-                                              WebResourceRequest request) {
-        Uri uri = request.getUrl();
-        if (Arrays.asList(internalSchemes).contains(uri.getScheme())) {
-          return false;
-        }
-        context.startActivity(new Intent(Intent.ACTION_VIEW, uri));
-        return true;
-      }
+    webView.setWebViewClient(
+        new WebViewClient() {
+          @Override
+          @SuppressLint("NewApi")
+          public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+            Uri uri = request.getUrl();
+            if (Arrays.asList(internalSchemes).contains(uri.getScheme())) {
+              return false;
+            }
+            context.startActivity(new Intent(Intent.ACTION_VIEW, uri));
+            return true;
+          }
 
-      @Override
-      public boolean shouldOverrideUrlLoading(WebView view, String url) {
-        Uri uri = Uri.parse(url);
-        if (Arrays.asList(internalSchemes).contains(uri.getScheme())) {
-          return false;
-        }
-        context.startActivity(new Intent(Intent.ACTION_VIEW, uri));
-        return true;
-      }
-    });
+          @Override
+          public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            Uri uri = Uri.parse(url);
+            if (Arrays.asList(internalSchemes).contains(uri.getScheme())) {
+              return false;
+            }
+            context.startActivity(new Intent(Intent.ACTION_VIEW, uri));
+            return true;
+          }
+        });
 
     methodChannel = new MethodChannel(messenger, "plugins.flutter.io/webview_" + id);
     methodChannel.setMethodCallHandler(this);

@@ -33,7 +33,7 @@
 
 @end
 
-@interface FLTWebViewController() <WKNavigationDelegate>
+@interface FLTWebViewController () <WKNavigationDelegate>
 @end
 
 @implementation FLTWebViewController {
@@ -43,7 +43,7 @@
   NSString* _currentUrl;
   // The set of registered JavaScript channel names.
   NSMutableSet* _javaScriptChannelNames;
-  NSSet<NSString *> * _internalSchemes;
+  NSSet<NSString*>* _internalSchemes;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -267,10 +267,9 @@
 #pragma mark - WKNavigationDelegate
 - (void)webView:(WKWebView *)webView
     decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction
-                    decisionHandler:
-                        (void (^)(WKNavigationActionPolicy))decisionHandler {
-  NSURL *requestURL = navigationAction.request.URL;
-  NSString *scheme = requestURL.scheme;
+                    decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
+  NSURL* requestURL = navigationAction.request.URL;
+  NSString* scheme = requestURL.scheme;
   if ([_internalSchemes containsObject:scheme]) {
     decisionHandler(WKNavigationActionPolicyAllow);
   } else {
