@@ -265,8 +265,8 @@
 }
 
 #pragma mark - WKNavigationDelegate
-- (void)webView:(WKWebView *)webView
-    decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction
+- (void)webView:(WKWebView*)webView
+    decidePolicyForNavigationAction:(WKNavigationAction*)navigationAction
                     decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
   NSURL* requestURL = navigationAction.request.URL;
   NSString* scheme = requestURL.scheme;
