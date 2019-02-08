@@ -33,7 +33,7 @@ class CloudFunctions {
   /// @param parameters Parameters to be passed to the callable function.
   Future<dynamic> call(
       {@required String functionName,
-      String region,
+      String region = 'us-central1',
       Map<String, dynamic> parameters}) async {
     try {
       final dynamic response =
@@ -42,7 +42,7 @@ class CloudFunctions {
           // ignore: strong_mode_implicit_dynamic_method
           await channel.invokeMethod('CloudFunctions#call', <String, dynamic>{
         'functionName': functionName,
-        'region': region ?? "us-central1",
+        'region': region,
         'parameters': parameters,
       });
       return response;
