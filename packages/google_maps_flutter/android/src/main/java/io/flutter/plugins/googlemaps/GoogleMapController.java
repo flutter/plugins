@@ -28,6 +28,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
@@ -60,6 +61,7 @@ final class GoogleMapController
   private GoogleMap googleMap;
   private boolean trackCameraPosition = false;
   private boolean myLocationEnabled = false;
+  private MapStyleOptions mapStyle;
   private boolean disposed = false;
   private final float density;
   private MethodChannel.Result mapReadyResult;
@@ -178,6 +180,7 @@ final class GoogleMapController
     googleMap.setOnCameraIdleListener(this);
     googleMap.setOnMarkerClickListener(this);
     updateMyLocationEnabled();
+    updateMapStyle();
   }
 
   @Override
@@ -413,6 +416,15 @@ final class GoogleMapController
     }
   }
 
+  @Override
+  public void setMapStyle(MapStyleOptions mapStyle) {
+    this.mapStyle = mapStyle;
+
+    if (googleMap != null) {
+      updateMapStyle();
+    }
+  }
+
   private void updateMyLocationEnabled() {
     if (hasLocationPermission()) {
       googleMap.setMyLocationEnabled(myLocationEnabled);
@@ -421,6 +433,11 @@ final class GoogleMapController
       // https://github.com/flutter/flutter/issues/24327
       Log.e(TAG, "Cannot enable MyLocation layer as location permissions are not granted");
     }
+  }
+
+  private void updateMapStyle() {
+    Log.i("GoogleMapController", "setting mapStyle");
+    googleMap.setMapStyle(mapStyle);
   }
 
   private boolean hasLocationPermission() {

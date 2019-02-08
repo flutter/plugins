@@ -8,6 +8,7 @@ import android.content.Context;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import io.flutter.plugin.common.PluginRegistry;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -15,6 +16,7 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   private final GoogleMapOptions options = new GoogleMapOptions();
   private boolean trackCameraPosition = false;
   private boolean myLocationEnabled = false;
+  private MapStyleOptions mapStyle;
 
   GoogleMapController build(
       int id, Context context, AtomicInteger state, PluginRegistry.Registrar registrar) {
@@ -23,6 +25,7 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
     controller.init();
     controller.setMyLocationEnabled(myLocationEnabled);
     controller.setTrackCameraPosition(trackCameraPosition);
+    controller.setMapStyle(mapStyle);
     return controller;
   }
 
@@ -83,5 +86,10 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   @Override
   public void setMyLocationEnabled(boolean myLocationEnabled) {
     this.myLocationEnabled = myLocationEnabled;
+  }
+
+  @Override
+  public void setMapStyle(MapStyleOptions mapStyle) {
+    this.mapStyle = mapStyle;
   }
 }
