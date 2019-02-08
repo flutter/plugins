@@ -33,6 +33,9 @@
 
 @end
 
+@interface FLTWebViewController() <WKNavigationDelegate>
+@end
+
 @implementation FLTWebViewController {
   WKWebView* _webView;
   int64_t _viewId;
@@ -40,6 +43,7 @@
   NSString* _currentUrl;
   // The set of registered JavaScript channel names.
   NSMutableSet* _javaScriptChannelNames;
+  NSSet<NSString *> * _internalSchemes;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -48,6 +52,7 @@
               binaryMessenger:(NSObject<FlutterBinaryMessenger>*)messenger {
   if ([super init]) {
     _viewId = viewId;
+    _internalSchemes = [NSSet setWithObjects:@"http", @"https", @"about", nil];
 
     NSString* channelName = [NSString stringWithFormat:@"plugins.flutter.io/webview_%lld", viewId];
     _channel = [FlutterMethodChannel methodChannelWithName:channelName binaryMessenger:messenger];
@@ -64,6 +69,7 @@
     configuration.userContentController = userContentController;
 
     _webView = [[WKWebView alloc] initWithFrame:frame configuration:configuration];
+    _webView.navigationDelegate = self;
     __weak __typeof__(self) weakSelf = self;
     [_channel setMethodCallHandler:^(FlutterMethodCall* call, FlutterResult result) {
       [weakSelf onMethodCall:call result:result];
@@ -258,4 +264,18 @@
   }
 }
 
+#pragma mark - WKNavigationDelegate
+- (void)webView:(WKWebView *)webView
+    decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction
+                    decisionHandler:
+                        (void (^)(WKNavigationActionPolicy))decisionHandler {
+  NSURL *requestURL = navigationAction.request.URL;
+  NSString *scheme = requestURL.scheme;
+  if ([_internalSchemes containsObject:scheme]) {
+    decisionHandler(WKNavigationActionPolicyAllow);
+  } else {
+    decisionHandler(WKNavigationActionPolicyCancel);
+    [[UIApplication sharedApplication] openURL:requestURL];
+  }
+}
 @end
