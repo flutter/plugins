@@ -1,3 +1,8 @@
+## 0.3.2+1
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
 ## 0.3.2
 
 * Added CookieManager to interface with WebView cookies. Currently has the ability to clear cookies.

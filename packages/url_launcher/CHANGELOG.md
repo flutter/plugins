@@ -1,3 +1,8 @@
+## 5.0.1
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
 ## 5.0.0
 
 * **Breaking change**. Migrate from the deprecated original Android Support
