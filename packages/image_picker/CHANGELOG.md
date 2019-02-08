@@ -1,3 +1,12 @@
+## 0.5.0+2
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
+## 0.5.0+1
+
+* Fix a crash when user calls the plugin in quick succession on Android.
+
 ## 0.5.0
 
 * **Breaking change**. Migrate from the deprecated original Android Support
