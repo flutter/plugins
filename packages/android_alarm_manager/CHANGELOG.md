@@ -1,3 +1,8 @@
+## 0.4.1+1
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
 ## 0.4.1
 * Added support for setting alarms which persist across reboots.
   * Both `AndroidAlarmManager.oneShot` and `AndroidAlarmManager.periodic` have
@@ -23,6 +28,7 @@
     ```
 
 ## 0.4.0
+
 * **Breaking change**. Migrated the underlying AlarmService to utilize a
   BroadcastReceiver with a JobIntentService instead of a Service to handle
   processing of alarms. This requires AndroidManifest.xml to be updated to

@@ -1,3 +1,12 @@
+## 0.8.0+3
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
+## 0.8.0+2
+
+* Update Google sign-in example in the README.
+
 ## 0.8.0+1
 
 * Update a broken dependency.

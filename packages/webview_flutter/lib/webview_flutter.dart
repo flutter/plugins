@@ -469,6 +469,32 @@ class WebViewController {
   }
 }
 
+/// Manages cookies pertaining to all [WebView]s.
+class CookieManager {
+  /// Creates a [CookieManager] -- returns the instance if it's already been called.
+  factory CookieManager() {
+    return _instance ??= CookieManager._();
+  }
+
+  CookieManager._();
+
+  static const MethodChannel _channel =
+      MethodChannel('plugins.flutter.io/cookie_manager');
+  static CookieManager _instance;
+
+  /// Clears all cookies.
+  ///
+  /// This is supported for >= IOS 9.
+  ///
+  /// Returns true if cookies were present before clearing, else false.
+  Future<bool> clearCookies() => _channel
+      // TODO(amirh): remove this when the invokeMethod update makes it to stable Flutter.
+      // https://github.com/flutter/flutter/issues/26431
+      // ignore: strong_mode_implicit_dynamic_method
+      .invokeMethod('clearCookies')
+      .then<bool>((dynamic result) => result);
+}
+
 // Throws an ArgumentError if `url` is not a valid URL string.
 void _validateUrlString(String url) {
   try {
