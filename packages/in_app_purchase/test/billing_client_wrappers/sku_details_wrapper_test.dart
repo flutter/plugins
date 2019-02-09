@@ -5,7 +5,7 @@
 import 'package:test/test.dart';
 import 'package:in_app_purchase/billing_client_wrappers.dart';
 import 'package:in_app_purchase/src/billing_client_wrappers/enum_converters.dart';
-import 'package:in_app_purchase/src/in_app_purchase_connection/product.dart';
+import 'package:in_app_purchase/src/in_app_purchase_connection/product_details.dart';
 
 final SkuDetailsWrapper dummyWrapper = SkuDetailsWrapper(
   description: 'description',
@@ -58,13 +58,13 @@ void main() {
       expect(parsed.skuDetailsList, containsAll(expected.skuDetailsList));
     });
 
-    test('toProduct() should return correct Product object', () {
+    test('toProductDetails() should return correct Product object', () {
       final SkuDetailsWrapper wrapper =
           SkuDetailsWrapper.fromJson(buildSkuMap(dummyWrapper));
-      final Product product = wrapper.toProduct();
+      final ProductDetails product = wrapper.toProductDetails();
       expect(product.title, wrapper.title);
       expect(product.description, wrapper.description);
-      expect(product.productIdentifier, wrapper.sku);
+      expect(product.id, wrapper.sku);
       expect(product.price, wrapper.price);
     });
 

@@ -7,7 +7,7 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import '../../billing_client_wrappers.dart';
 import 'in_app_purchase_connection.dart';
-import 'product.dart';
+import 'product_details.dart';
 
 /// An [InAppPurchaseConnection] that wraps Google Play Billing.
 ///
@@ -61,22 +61,32 @@ class GooglePlayConnection
 
   Future<void> _disconnect() => _billingClient.endConnection();
 
-  /// query the product detail list using [BillingClient.querySkuDetails]
+  /// Query the product detail list.
   ///
-  /// This method only returns a simple product list that works for both platforms.
+  /// This method only returns [QueryProductDetailsResponse].
   /// To get detailed Google Play sku list, use [BillingClient.querySkuDetails]
   /// to get the [SkuDetailsResponseWrapper].
-  Future<List<Product>> queryProductDetails(List<String> identifiers) async {
-    SkuDetailsResponseWrapper inappResponse = await _billingClient
-        .querySkuDetails(skuType: SkuType.inapp, skusList: identifiers);
+  Future<QueryProductDetailsResponse> queryProductDetails(
+      Set<String> identifiers) async {
+    SkuDetailsResponseWrapper inappResponse =
+        await _billingClient.querySkuDetails(
+            skuType: SkuType.inapp, skusList: identifiers.toList());
     SkuDetailsResponseWrapper subResponse = await _billingClient
-        .querySkuDetails(skuType: SkuType.subs, skusList: identifiers);
-    List<Product> inappProducts = inappResponse.skuDetailsList
-        .map((SkuDetailsWrapper productWrapper) => productWrapper.toProduct())
+        .querySkuDetails(skuType: SkuType.subs, skusList: identifiers.toList());
+    List<ProductDetails> inappProducts = inappResponse.skuDetailsList
+        .map((SkuDetailsWrapper productWrapper) =>
+            productWrapper.toProductDetails())
         .toList();
-    List<Product> subProducts = subResponse.skuDetailsList
-        .map((SkuDetailsWrapper productWrapper) => productWrapper.toProduct())
+    List<ProductDetails> subProducts = subResponse.skuDetailsList
+        .map((SkuDetailsWrapper productWrapper) =>
+            productWrapper.toProductDetails())
         .toList();
-    return inappProducts + subProducts;
+    List<ProductDetails> productDetails = inappProducts + subProducts;
+    Set<String> successIDS = productDetails
+        .map((ProductDetails productDetails) => productDetails.id)
+        .toSet();
+    List<String> notFoundIDS = identifiers.difference(successIDS).toList();
+    return QueryProductDetailsResponse(
+        productDetails: productDetails, notFoundIDs: notFoundIDS);
   }
 }

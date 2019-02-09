@@ -7,7 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'billing_client_wrapper.dart';
 import 'enum_converters.dart';
-import 'package:in_app_purchase/src/in_app_purchase_connection/product.dart';
+import 'package:in_app_purchase/src/in_app_purchase_connection/product_details.dart';
 
 // WARNING: Changes to `@JsonSerializable` classes need to be reflected in the
 // below generated file. Run `flutter packages pub run build_runner watch` to
@@ -126,10 +126,10 @@ class SkuDetailsWrapper {
         isRewarded.hashCode);
   }
 
-  /// Method to convert to the wrapper to the consolidated [Product] class.
-  Product toProduct() {
-    return Product(
-      productIdentifier: sku,
+  /// Method to convert to the wrapper to the consolidated [ProductDetails] class.
+  ProductDetails toProductDetails() {
+    return ProductDetails(
+      id: sku,
       title: title,
       description: description,
       price: price,

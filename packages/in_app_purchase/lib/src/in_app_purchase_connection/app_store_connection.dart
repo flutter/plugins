@@ -5,7 +5,7 @@
 import 'dart:async';
 
 import 'in_app_purchase_connection.dart';
-import 'product.dart';
+import 'product_details.dart';
 import 'package:in_app_purchase/store_kit_wrappers.dart';
 
 /// An [InAppPurchaseConnection] that wraps StoreKit.
@@ -28,17 +28,25 @@ class AppStoreConnection implements InAppPurchaseConnection {
     return _instance;
   }
 
-  /// query the product detail list using [SkProductResponseWrapper.startProductRequest]
+  /// Query the product detail list.
   ///
-  /// This method only returns a simple product list that works for both platforms.
+  /// This method only returns [QueryProductDetailsResponse].
   /// To get detailed Store Kit product list, use [SkProductResponseWrapper.startProductRequest]
   /// to get the [SKProductResponseWrapper].
-  Future<List<Product>> queryProductDetails(List<String> identifiers) async {
+  Future<QueryProductDetailsResponse> queryProductDetails(
+      Set<String> identifiers) async {
     final SKRequestMaker requestMaker = SKRequestMaker();
     SkProductResponseWrapper response =
-        await requestMaker.startProductRequest(identifiers);
-    return response.products
-        .map((SKProductWrapper productWrapper) => productWrapper.toProduct())
+        await requestMaker.startProductRequest(identifiers.toList());
+    List<ProductDetails> productDetails = response.products
+        .map((SKProductWrapper productWrapper) =>
+            productWrapper.toProductDetails())
         .toList();
+    QueryProductDetailsResponse productDetailsResponse =
+        QueryProductDetailsResponse(
+      productDetails: productDetails,
+      notFoundIDs: response.invalidProductIdentifiers,
+    );
+    return productDetailsResponse;
   }
 }

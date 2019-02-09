@@ -7,7 +7,7 @@ import 'package:test/test.dart';
 import 'package:in_app_purchase/src/channel.dart';
 import 'package:in_app_purchase/src/in_app_purchase_connection/app_store_connection.dart';
 import '../stub_in_app_purchase_platform.dart';
-import 'package:in_app_purchase/src/in_app_purchase_connection/product.dart';
+import 'package:in_app_purchase/src/in_app_purchase_connection/product_details.dart';
 
 void main() {
   final StubInAppPurchasePlatform stubPlatform = StubInAppPurchasePlatform();
@@ -59,7 +59,7 @@ void main() {
 
   final Map<String, List<dynamic>> productResponseMap = <String, List<dynamic>>{
     'products': <Map<String, dynamic>>[productMap],
-    'invalidProductIdentifiers': <String>['123'],
+    'invalidProductIdentifiers': <String>['567'],
   };
 
   group('query product list', () {
@@ -68,8 +68,9 @@ void main() {
           name: '-[InAppPurchasePlugin startProductRequest:result:]',
           value: productResponseMap);
       final AppStoreConnection connection = AppStoreConnection();
-      final List<Product> products =
-          await connection.queryProductDetails(<String>['123']);
+      final QueryProductDetailsResponse response =
+          await connection.queryProductDetails(<String>['123'].toSet());
+      List<ProductDetails> products = response.productDetails;
       expect(
         products,
         isNotEmpty,
@@ -81,6 +82,19 @@ void main() {
       expect(
         products.first.title,
         isNot('splash coins'),
+      );
+    });
+
+    test('should get correct not found identifiers', () async {
+      stubPlatform.addResponse(
+          name: '-[InAppPurchasePlugin startProductRequest:result:]',
+          value: productResponseMap);
+      final AppStoreConnection connection = AppStoreConnection();
+      final QueryProductDetailsResponse response =
+          await connection.queryProductDetails(<String>['123'].toSet());
+      expect(
+        response.notFoundIDs,
+        <String>['567'],
       );
     });
   });
