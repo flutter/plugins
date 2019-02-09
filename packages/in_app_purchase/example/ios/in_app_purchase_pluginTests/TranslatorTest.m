@@ -16,7 +16,6 @@
 @property(strong, nonatomic) NSDictionary *paymentMap;
 @property(strong, nonatomic) NSDictionary *transactionMap;
 @property(strong, nonatomic) NSDictionary *errorMap;
-
 @property(strong, nonatomic) NSDictionary *localeMap;
 
 @end
