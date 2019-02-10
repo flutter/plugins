@@ -89,7 +89,7 @@ class LatLngBounds {
   }
 
   static LatLngBounds fromLatLngList(List<LatLng> list) {
-    assert(list.length > 0);
+    assert(list.isNotEmpty);
     double x0, x1, y0, y1;
     for (LatLng latLng in list) {
       if (x0 == null) {
