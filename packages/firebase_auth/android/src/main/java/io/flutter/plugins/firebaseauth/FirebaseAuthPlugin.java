@@ -383,12 +383,12 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
           break;
         }
       case PhoneAuthProvider.PROVIDER_ID:
-      {
-        String accessToken = data.get("verificationId");
-        String smsCode = data.get("smsCode");
-        credential = PhoneAuthProvider.getCredential(accessToken, smsCode);
-        break;
-      }
+        {
+          String accessToken = data.get("verificationId");
+          String smsCode = data.get("smsCode");
+          credential = PhoneAuthProvider.getCredential(accessToken, smsCode);
+          break;
+        }
       default:
         {
           credential = null;
