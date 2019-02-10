@@ -14,7 +14,7 @@ final MethodChannel _channel = const MethodChannel('plugins.flutter.io/camera');
 
 enum CameraLensDirection { front, back, external }
 
-enum ResolutionPreset { low, medium, high }
+enum ResolutionPreset { low, medium, high, fourk }
 
 typedef onLatestImageAvailable = Function(CameraImage image);
 
@@ -27,6 +27,8 @@ String serializeResolutionPreset(ResolutionPreset resolutionPreset) {
       return 'medium';
     case ResolutionPreset.low:
       return 'low';
+    case ResolutionPreset.fourk:
+      return '4k';
   }
   throw ArgumentError('Unknown ResolutionPreset value');
 }
