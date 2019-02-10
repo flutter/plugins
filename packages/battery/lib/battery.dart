@@ -17,7 +17,7 @@ class Battery {
           const MethodChannel('plugins.flutter.io/battery');
       final EventChannel eventChannel =
           const EventChannel('plugins.flutter.io/charging');
-      _instance = new Battery.private(methodChannel, eventChannel);
+      _instance = Battery.private(methodChannel, eventChannel);
     }
     return _instance;
   }
@@ -32,20 +32,25 @@ class Battery {
   Stream<BatteryState> _onBatteryStateChanged;
 
   /// Returns the current battery level in percent.
-  Future<int> get batteryLevel =>
-      _methodChannel.invokeMethod('getBatteryLevel');
+  Future<int> get batteryLevel => _methodChannel
+      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+      // https://github.com/flutter/flutter/issues/26431
+      // ignore: strong_mode_implicit_dynamic_method
+      .invokeMethod('getBatteryLevel')
+      .then<int>((dynamic result) => result);
 
   /// Fires whenever the battery state changes.
   Stream<BatteryState> get onBatteryStateChanged {
     if (_onBatteryStateChanged == null) {
-      _onBatteryStateChanged =
-          _eventChannel.receiveBroadcastStream().map(_stringToBatteryStateEnum);
+      _onBatteryStateChanged = _eventChannel
+          .receiveBroadcastStream()
+          .map((dynamic event) => _parseBatteryState(event));
     }
     return _onBatteryStateChanged;
   }
 }
 
-BatteryState _stringToBatteryStateEnum(String state) {
+BatteryState _parseBatteryState(String state) {
   switch (state) {
     case 'full':
       return BatteryState.full;
@@ -54,6 +59,6 @@ BatteryState _stringToBatteryStateEnum(String state) {
     case 'discharging':
       return BatteryState.discharging;
     default:
-      throw new ArgumentError('$state is not a valid BatteryState.');
+      throw ArgumentError('$state is not a valid BatteryState.');
   }
 }

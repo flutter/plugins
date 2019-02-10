@@ -6,17 +6,17 @@
 
 static NSString *const CHANNEL_NAME = @"plugins.flutter.io/quick_actions";
 
-@interface QuickActionsPlugin ()
+@interface FLTQuickActionsPlugin ()
 @property(nonatomic, retain) FlutterMethodChannel *channel;
 @end
 
-@implementation QuickActionsPlugin
+@implementation FLTQuickActionsPlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:CHANNEL_NAME
                                   binaryMessenger:[registrar messenger]];
-  QuickActionsPlugin *instance = [[QuickActionsPlugin alloc] init];
+  FLTQuickActionsPlugin *instance = [[FLTQuickActionsPlugin alloc] init];
   instance.channel = channel;
   [registrar addMethodCallDelegate:instance channel:channel];
 }

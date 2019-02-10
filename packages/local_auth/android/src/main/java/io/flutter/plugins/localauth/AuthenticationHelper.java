@@ -17,14 +17,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
-import android.support.v4.os.CancellationSignal;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import androidx.core.content.ContextCompat;
+import androidx.core.hardware.fingerprint.FingerprintManagerCompat;
+import androidx.core.os.CancellationSignal;
 import io.flutter.plugin.common.MethodCall;
 
 /**
@@ -73,7 +73,6 @@ class AuthenticationHelper extends FingerprintManagerCompat.AuthenticationCallba
   private final AuthCompletionHandler completionHandler;
   private final KeyguardManager keyguardManager;
   private final FingerprintManagerCompat fingerprintManager;
-  private final CancellationSignal cancellationSignal;
   private final MethodCall call;
 
   /**
@@ -82,12 +81,13 @@ class AuthenticationHelper extends FingerprintManagerCompat.AuthenticationCallba
    */
   private AlertDialog fingerprintDialog;
 
+  private CancellationSignal cancellationSignal;
+
   AuthenticationHelper(
       Activity activity, MethodCall call, AuthCompletionHandler completionHandler) {
     this.activity = activity;
     this.completionHandler = completionHandler;
     this.call = call;
-    this.cancellationSignal = new CancellationSignal();
     this.keyguardManager = (KeyguardManager) activity.getSystemService(Context.KEYGUARD_SERVICE);
     this.fingerprintManager = FingerprintManagerCompat.from(activity);
   }
@@ -112,11 +112,24 @@ class AuthenticationHelper extends FingerprintManagerCompat.AuthenticationCallba
     }
   }
 
-  /** Starts the fingerprint listener and shows the fingerprint dialog. */
   private void start() {
     activity.getApplication().registerActivityLifecycleCallbacks(this);
+    resume();
+  }
+
+  private void resume() {
+    cancellationSignal = new CancellationSignal();
     showFingerprintDialog();
     fingerprintManager.authenticate(null, 0, cancellationSignal, this, null);
+  }
+
+  private void pause() {
+    if (cancellationSignal != null) {
+      cancellationSignal.cancel();
+    }
+    if (fingerprintDialog != null && fingerprintDialog.isShowing()) {
+      fingerprintDialog.dismiss();
+    }
   }
 
   /**
@@ -125,10 +138,7 @@ class AuthenticationHelper extends FingerprintManagerCompat.AuthenticationCallba
    * @param success If the authentication was successful.
    */
   private void stop(boolean success) {
-    cancellationSignal.cancel();
-    if (fingerprintDialog != null && fingerprintDialog.isShowing()) {
-      fingerprintDialog.dismiss();
-    }
+    pause();
     activity.getApplication().unregisterActivityLifecycleCallbacks(this);
     if (success) {
       completionHandler.onSuccess();
@@ -143,7 +153,18 @@ class AuthenticationHelper extends FingerprintManagerCompat.AuthenticationCallba
    */
   @Override
   public void onActivityPaused(Activity activity) {
-    stop(false);
+    if (call.argument("stickyAuth")) {
+      pause();
+    } else {
+      stop(false);
+    }
+  }
+
+  @Override
+  public void onActivityResumed(Activity activity) {
+    if (call.argument("stickyAuth")) {
+      resume();
+    }
   }
 
   @Override
@@ -195,7 +216,7 @@ class AuthenticationHelper extends FingerprintManagerCompat.AuthenticationCallba
     resultInfo.setText(message);
   }
 
-  // Supress inflateParams lint because dialogs do not need to attach to a parent view.
+  // Suppress inflateParams lint because dialogs do not need to attach to a parent view.
   @SuppressLint("InflateParams")
   private void showFingerprintDialog() {
     View view = LayoutInflater.from(activity).inflate(R.layout.scan_fp, null, false);
@@ -221,7 +242,7 @@ class AuthenticationHelper extends FingerprintManagerCompat.AuthenticationCallba
             .show();
   }
 
-  // Supress inflateParams lint because dialogs do not need to attach to a parent view.
+  // Suppress inflateParams lint because dialogs do not need to attach to a parent view.
   @SuppressLint("InflateParams")
   private void showGoToSettingsDialog() {
     View view = LayoutInflater.from(activity).inflate(R.layout.go_to_setting, null, false);
@@ -234,8 +255,8 @@ class AuthenticationHelper extends FingerprintManagerCompat.AuthenticationCallba
         new OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
-            activity.startActivity(new Intent(Settings.ACTION_SECURITY_SETTINGS));
             stop(false);
+            activity.startActivity(new Intent(Settings.ACTION_SECURITY_SETTINGS));
           }
         };
     OnClickListener cancelHandler =
@@ -260,9 +281,6 @@ class AuthenticationHelper extends FingerprintManagerCompat.AuthenticationCallba
 
   @Override
   public void onActivityStarted(Activity activity) {}
-
-  @Override
-  public void onActivityResumed(Activity activity) {}
 
   @Override
   public void onActivityStopped(Activity activity) {}

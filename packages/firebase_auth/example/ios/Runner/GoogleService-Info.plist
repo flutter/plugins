@@ -7,34 +7,34 @@
 	<key>AD_UNIT_ID_FOR_INTERSTITIAL_TEST</key>
 	<string>ca-app-pub-3940256099942544/4411468910</string>
 	<key>CLIENT_ID</key>
-	<string>297855924061-48k2m6hl6pa4q9hukijjd0c20ev4qans.apps.googleusercontent.com</string>
+	<string>466218294969-5mdmh6opkqd87a5m81nm83u4eqd3bvgk.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.297855924061-48k2m6hl6pa4q9hukijjd0c20ev4qans</string>
+	<string>com.googleusercontent.apps.466218294969-5mdmh6opkqd87a5m81nm83u4eqd3bvgk</string>
 	<key>API_KEY</key>
-	<string>AIzaSyBq6mcufFXfyqr79uELCiqM_O_1-G72PVU</string>
+	<string>AIzaSyCb0BM8Q9o_gCubuHvsxdxHSgDZaQoZrv0</string>
 	<key>GCM_SENDER_ID</key>
-	<string>297855924061</string>
+	<string>466218294969</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.yourcompany.firebaseAuthExample</string>
+	<string>io.flutter.plugins.firebaseAuthExample</string>
 	<key>PROJECT_ID</key>
-	<string>flutterfire-cd2f7</string>
+	<string>flutter-plugins-auth</string>
 	<key>STORAGE_BUCKET</key>
-	<string>flutterfire-cd2f7.appspot.com</string>
+	<string>flutter-plugins-auth.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
-	<true/>
+	<true></true>
 	<key>IS_ANALYTICS_ENABLED</key>
-	<false/>
+	<false></false>
 	<key>IS_APPINVITE_ENABLED</key>
-	<false/>
+	<false></false>
 	<key>IS_GCM_ENABLED</key>
-	<true/>
+	<true></true>
 	<key>IS_SIGNIN_ENABLED</key>
-	<true/>
+	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:297855924061:ios:9441bad932d26629</string>
+	<string>1:466218294969:ios:8d89e1b69d780386</string>
 	<key>DATABASE_URL</key>
-	<string>https://flutterfire-cd2f7.firebaseio.com</string>
+	<string>https://flutter-plugins-auth.firebaseio.com</string>
 </dict>
 </plist>

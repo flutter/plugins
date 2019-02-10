@@ -1,9 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="io.flutter.plugins.firebaseadmob"
-  android:versionCode="1"
-  android:versionName="0.0.1">
+  package="io.flutter.plugins.firebaseadmob">
 
-  <uses-sdk android:minSdkVersion="16" android:targetSdkVersion="21" />
-
+  <!-- Sample AdMob App ID: ca-app-pub-3940256099942544~3347511713 -->
+  <meta-data
+      android:name="com.google.android.gms.ads.APPLICATION_ID"
+      android:value="[ADMOB_APP_ID]"/>
   <uses-permission android:name="android.permission.INTERNET" />
 </manifest>

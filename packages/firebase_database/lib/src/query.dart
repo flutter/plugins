@@ -13,7 +13,7 @@ class Query {
       : _database = database,
         _pathComponents = pathComponents,
         _parameters = parameters ??
-            new Map<String, dynamic>.unmodifiable(<String, dynamic>{}),
+            Map<String, dynamic>.unmodifiable(<String, dynamic>{}),
         assert(database != null);
 
   final FirebaseDatabase _database;
@@ -24,17 +24,17 @@ class Query {
   String get path => _pathComponents.join('/');
 
   Query _copyWithParameters(Map<String, dynamic> parameters) {
-    return new Query._(
+    return Query._(
       database: _database,
       pathComponents: _pathComponents,
-      parameters: new Map<String, dynamic>.unmodifiable(
-        new Map<String, dynamic>.from(_parameters)..addAll(parameters),
+      parameters: Map<String, dynamic>.unmodifiable(
+        Map<String, dynamic>.from(_parameters)..addAll(parameters),
       ),
     );
   }
 
   Map<String, dynamic> buildArguments() {
-    return new Map<String, dynamic>.from(_parameters)
+    return Map<String, dynamic>.from(_parameters)
       ..addAll(<String, dynamic>{
         'path': path,
       });
@@ -45,25 +45,35 @@ class Query {
     // It's fine to let the StreamController be garbage collected once all the
     // subscribers have cancelled; this analyzer warning is safe to ignore.
     StreamController<Event> controller; // ignore: close_sinks
-    controller = new StreamController<Event>.broadcast(
+    controller = StreamController<Event>.broadcast(
       onListen: () {
+        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+        // https://github.com/flutter/flutter/issues/26431
+        // ignore: strong_mode_implicit_dynamic_method
         _handle = _database._channel.invokeMethod(
           'Query#observe',
           <String, dynamic>{
+            'app': _database.app?.name,
+            'databaseURL': _database.databaseURL,
             'path': path,
             'parameters': _parameters,
             'eventType': eventType.toString(),
           },
-        );
+        ).then<int>((dynamic result) => result);
         _handle.then((int handle) {
           FirebaseDatabase._observers[handle] = controller;
         });
       },
       onCancel: () {
         _handle.then((int handle) async {
+          // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+          // https://github.com/flutter/flutter/issues/26431
+          // ignore: strong_mode_implicit_dynamic_method
           await _database._channel.invokeMethod(
             'Query#removeObserver',
             <String, dynamic>{
+              'app': _database.app?.name,
+              'databaseURL': _database.databaseURL,
               'path': path,
               'parameters': _parameters,
               'handle': handle,
@@ -100,7 +110,11 @@ class Query {
   /// than or equal to the given key.
   Query startAt(dynamic value, {String key}) {
     assert(!_parameters.containsKey('startAt'));
-    assert(value is String || value is bool || value is double || value is int);
+    assert(value is String ||
+        value is bool ||
+        value is double ||
+        value is int ||
+        value == null);
     final Map<String, dynamic> parameters = <String, dynamic>{'startAt': value};
     if (key != null) parameters['startAtKey'] = key;
     return _copyWithParameters(parameters);
@@ -112,7 +126,11 @@ class Query {
   /// than or equal to the given key.
   Query endAt(dynamic value, {String key}) {
     assert(!_parameters.containsKey('endAt'));
-    assert(value is String || value is bool || value is double || value is int);
+    assert(value is String ||
+        value is bool ||
+        value is double ||
+        value is int ||
+        value == null);
     final Map<String, dynamic> parameters = <String, dynamic>{'endAt': value};
     if (key != null) parameters['endAtKey'] = key;
     return _copyWithParameters(parameters);
@@ -124,10 +142,14 @@ class Query {
   /// If a key is provided, there is at most one such child as names are unique.
   Query equalTo(dynamic value, {String key}) {
     assert(!_parameters.containsKey('equalTo'));
-    assert(value is String || value is bool || value is double || value is int);
-    return _copyWithParameters(
-      <String, dynamic>{'equalTo': value, 'equalToKey': key},
-    );
+    assert(value is String ||
+        value is bool ||
+        value is double ||
+        value is int ||
+        value == null);
+    final Map<String, dynamic> parameters = <String, dynamic>{'equalTo': value};
+    if (key != null) parameters['equalToKey'] = key;
+    return _copyWithParameters(parameters);
   }
 
   /// Create a query with limit and anchor it to the start of the window.
@@ -183,16 +205,21 @@ class Query {
 
   /// Obtains a DatabaseReference corresponding to this query's location.
   DatabaseReference reference() =>
-      new DatabaseReference._(_database, _pathComponents);
+      DatabaseReference._(_database, _pathComponents);
 
   /// By calling keepSynced(true) on a location, the data for that location will
   /// automatically be downloaded and kept in sync, even when no listeners are
   /// attached for that location. Additionally, while a location is kept synced,
   /// it will not be evicted from the persistent disk cache.
-  Future<Null> keepSynced(bool value) {
+  Future<void> keepSynced(bool value) {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     return _database._channel.invokeMethod(
       'Query#keepSynced',
       <String, dynamic>{
+        'app': _database.app?.name,
+        'databaseURL': _database.databaseURL,
         'path': path,
         'parameters': _parameters,
         'value': value

@@ -1,0 +1,12 @@
+name: firestore_example
+description: Demonstrates how to use the firestore plugin.
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cloud_firestore:
+    path: ../
+  firebase_core: "^0.3.0"
+
+flutter:
+  uses-material-design: true

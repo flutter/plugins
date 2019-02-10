@@ -4,7 +4,7 @@
 
 package io.flutter.plugins.sensors;
 
-import android.app.Activity;
+import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -14,28 +14,36 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 /** SensorsPlugin */
 public class SensorsPlugin implements EventChannel.StreamHandler {
-  private static final String ACCELEROMETER_CHANNEL_NAME = "plugins.flutter.io/accelerometer";
-  private static final String GYROSCOPE_CHANNEL_NAME = "plugins.flutter.io/gyroscope";
+  private static final String ACCELEROMETER_CHANNEL_NAME =
+      "plugins.flutter.io/sensors/accelerometer";
+  private static final String GYROSCOPE_CHANNEL_NAME = "plugins.flutter.io/sensors/gyroscope";
+  private static final String USER_ACCELEROMETER_CHANNEL_NAME =
+      "plugins.flutter.io/sensors/user_accel";
 
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
     final EventChannel accelerometerChannel =
         new EventChannel(registrar.messenger(), ACCELEROMETER_CHANNEL_NAME);
     accelerometerChannel.setStreamHandler(
-        new SensorsPlugin(registrar.activity(), Sensor.TYPE_ACCELEROMETER));
+        new SensorsPlugin(registrar.context(), Sensor.TYPE_ACCELEROMETER));
+
+    final EventChannel userAccelChannel =
+        new EventChannel(registrar.messenger(), USER_ACCELEROMETER_CHANNEL_NAME);
+    userAccelChannel.setStreamHandler(
+        new SensorsPlugin(registrar.context(), Sensor.TYPE_LINEAR_ACCELERATION));
 
     final EventChannel gyroscopeChannel =
         new EventChannel(registrar.messenger(), GYROSCOPE_CHANNEL_NAME);
     gyroscopeChannel.setStreamHandler(
-        new SensorsPlugin(registrar.activity(), Sensor.TYPE_GYROSCOPE));
+        new SensorsPlugin(registrar.context(), Sensor.TYPE_GYROSCOPE));
   }
 
   private SensorEventListener sensorEventListener;
   private final SensorManager sensorManager;
   private final Sensor sensor;
 
-  private SensorsPlugin(Activity activity, int sensorType) {
-    sensorManager = (SensorManager) activity.getSystemService(activity.SENSOR_SERVICE);
+  private SensorsPlugin(Context context, int sensorType) {
+    sensorManager = (SensorManager) context.getSystemService(context.SENSOR_SERVICE);
     sensor = sensorManager.getDefaultSensor(sensorType);
   }
 

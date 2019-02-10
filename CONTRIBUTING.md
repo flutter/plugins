@@ -56,6 +56,13 @@ To start working on a patch:
  * `git fetch upstream`
  * `git checkout upstream/master -b <name_of_your_branch>`
  * Hack away.
+ * Verify changes with [flutter_plugin_tools](https://pub.dartlang.org/packages/flutter_plugin_tools)
+```
+pub global activate flutter_plugin_tools
+pub global run flutter_plugin_tools format --plugins plugin_name
+pub global run flutter_plugin_tools analyze --plugins plugin_name
+pub global run flutter_plugin_tools test --plugins plugin_name
+```
  * `git commit -a -m "<your informative commit message>"`
  * `git push origin <name_of_your_branch>`
 
@@ -68,7 +75,7 @@ To send us a pull request:
 Please make sure all your checkins have detailed commit messages explaining the patch.
 
 Once you've gotten an LGTM from a project maintainer and once your PR has received
-the green light from all our automated testing (Travis, Appveyor, etc), submit your
+the green light from all our automated testing (Travis, AppVeyor, etc), submit your
 changes to the `master` branch using one of the following methods:
 
 * Wait for one of the project maintainers to submit it for you.

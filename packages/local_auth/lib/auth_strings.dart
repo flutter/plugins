@@ -8,15 +8,6 @@ import 'package:intl/intl.dart';
 ///
 /// Provides default values for all messages.
 class AndroidAuthMessages {
-  final String fingerprintHint;
-  final String fingerprintNotRecognized;
-  final String fingerprintSuccess;
-  final String cancelButton;
-  final String signInTitle;
-  final String fingerprintRequiredTitle;
-  final String goToSettingsButton;
-  final String goToSettingsDescription;
-
   const AndroidAuthMessages({
     this.fingerprintHint,
     this.fingerprintNotRecognized,
@@ -27,6 +18,15 @@ class AndroidAuthMessages {
     this.goToSettingsButton,
     this.goToSettingsDescription,
   });
+
+  final String fingerprintHint;
+  final String fingerprintNotRecognized;
+  final String fingerprintSuccess;
+  final String cancelButton;
+  final String signInTitle;
+  final String fingerprintRequiredTitle;
+  final String goToSettingsButton;
+  final String goToSettingsDescription;
 
   Map<String, String> get args {
     return <String, String>{
@@ -49,17 +49,17 @@ class AndroidAuthMessages {
 ///
 /// Provides default values for all messages.
 class IOSAuthMessages {
-  final String lockOut;
-  final String goToSettingsButton;
-  final String goToSettingsDescription;
-  final String cancelButton;
-
   const IOSAuthMessages({
     this.lockOut,
     this.goToSettingsButton,
     this.goToSettingsDescription,
     this.cancelButton,
   });
+
+  final String lockOut;
+  final String goToSettingsButton;
+  final String goToSettingsDescription;
+  final String cancelButton;
 
   Map<String, String> get args {
     return <String, String>{
@@ -89,7 +89,7 @@ String get androidFingerprintSuccess => Intl.message('Fingerprint recognized.',
 
 String get androidCancelButton => Intl.message('Cancel',
     desc: 'Message showed on a button that the user can click to leave the '
-        'current dialog. It is used on Andorid side. Maxium 30 characters.');
+        'current dialog. It is used on Android side. Maximum 30 characters.');
 
 String get androidSignInTitle => Intl.message('Fingerprint Authentication',
     desc: 'Message showed as a title in a dialog which indicates the user '
@@ -115,15 +115,18 @@ String get androidGoToSettingsDescription => Intl.message(
         'fingerprint on their device. It shows in a dialog on Android side.');
 
 String get iOSLockOut => Intl.message(
-    'Touch ID is disabled. Please lock and unlock your screen to enable it.',
-    desc: 'Message advising the user to re-enable Touch ID on their device. It '
+    'Biometric authentication is disabled. Please lock and unlock your screen to '
+    'enable it.',
+    desc:
+        'Message advising the user to re-enable biometrics on their device. It '
         'shows in a dialog on iOS side.');
 
 String get iOSGoToSettingsDescription => Intl.message(
-    'Touch ID is not set up on your device. Go to \'Settings > Touch ID & '
-    'Passcode\' to add your fingerprint.',
-    desc: 'Message advising the user to go to the settings and configure Touch '
-        'ID on their device. It shows in a dialog on iOS side.');
+    'Biometric authentication is not set up on your device. Please either enable '
+    'Touch ID or Face ID on your phone.',
+    desc:
+        'Message advising the user to go to the settings and configure Biometrics '
+        'for their device. It shows in a dialog on iOS side.');
 
 String get iOSOkButton => Intl.message('OK',
     desc: 'Message showed on a button that the user can click to leave the '

@@ -5,19 +5,26 @@
 #import "SensorsPlugin.h"
 #import <CoreMotion/CoreMotion.h>
 
-@implementation SensorsPlugin
+@implementation FLTSensorsPlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  AccelerometerStreamHandler* accelerometerStreamHandler =
-      [[AccelerometerStreamHandler alloc] init];
+  FLTAccelerometerStreamHandler* accelerometerStreamHandler =
+      [[FLTAccelerometerStreamHandler alloc] init];
   FlutterEventChannel* accelerometerChannel =
-      [FlutterEventChannel eventChannelWithName:@"plugins.flutter.io/accelerometer"
+      [FlutterEventChannel eventChannelWithName:@"plugins.flutter.io/sensors/accelerometer"
                                 binaryMessenger:[registrar messenger]];
   [accelerometerChannel setStreamHandler:accelerometerStreamHandler];
 
-  GyroscopeStreamHandler* gyroscopeStreamHandler = [[GyroscopeStreamHandler alloc] init];
+  FLTUserAccelStreamHandler* userAccelerometerStreamHandler =
+      [[FLTUserAccelStreamHandler alloc] init];
+  FlutterEventChannel* userAccelerometerChannel =
+      [FlutterEventChannel eventChannelWithName:@"plugins.flutter.io/sensors/user_accel"
+                                binaryMessenger:[registrar messenger]];
+  [userAccelerometerChannel setStreamHandler:userAccelerometerStreamHandler];
+
+  FLTGyroscopeStreamHandler* gyroscopeStreamHandler = [[FLTGyroscopeStreamHandler alloc] init];
   FlutterEventChannel* gyroscopeChannel =
-      [FlutterEventChannel eventChannelWithName:@"plugins.flutter.io/gyroscope"
+      [FlutterEventChannel eventChannelWithName:@"plugins.flutter.io/sensors/gyroscope"
                                 binaryMessenger:[registrar messenger]];
   [gyroscopeChannel setStreamHandler:gyroscopeStreamHandler];
 }
@@ -33,7 +40,15 @@ void _initMotionManager() {
   }
 }
 
-@implementation AccelerometerStreamHandler
+static void sendTriplet(Float64 x, Float64 y, Float64 z, FlutterEventSink sink) {
+  NSMutableData* event = [NSMutableData dataWithCapacity:3 * sizeof(Float64)];
+  [event appendBytes:&x length:sizeof(Float64)];
+  [event appendBytes:&y length:sizeof(Float64)];
+  [event appendBytes:&z length:sizeof(Float64)];
+  sink([FlutterStandardTypedData typedDataWithFloat64:event]);
+}
+
+@implementation FLTAccelerometerStreamHandler
 
 - (FlutterError*)onListenWithArguments:(id)arguments eventSink:(FlutterEventSink)eventSink {
   _initMotionManager();
@@ -43,16 +58,8 @@ void _initMotionManager() {
                              CMAcceleration acceleration = accelerometerData.acceleration;
                              // Multiply by gravity, and adjust sign values to
                              // align with Android.
-                             NSArray* accelerationValues = [NSArray
-                                 arrayWithObjects:[NSNumber
-                                                      numberWithDouble:-acceleration.x * GRAVITY],
-                                                  [NSNumber
-                                                      numberWithDouble:-acceleration.y * GRAVITY],
-                                                  [NSNumber
-                                                      numberWithDouble:-acceleration.z * GRAVITY],
-                                                  nil];
-
-                             eventSink(accelerationValues);
+                             sendTriplet(-acceleration.x * GRAVITY, -acceleration.y * GRAVITY,
+                                         -acceleration.z * GRAVITY, eventSink);
                            }];
   return nil;
 }
@@ -64,7 +71,29 @@ void _initMotionManager() {
 
 @end
 
-@implementation GyroscopeStreamHandler
+@implementation FLTUserAccelStreamHandler
+
+- (FlutterError*)onListenWithArguments:(id)arguments eventSink:(FlutterEventSink)eventSink {
+  _initMotionManager();
+  [_motionManager
+      startDeviceMotionUpdatesToQueue:[[NSOperationQueue alloc] init]
+                          withHandler:^(CMDeviceMotion* data, NSError* error) {
+                            CMAcceleration acceleration = data.userAcceleration;
+                            // Multiply by gravity, and adjust sign values to align with Android.
+                            sendTriplet(-acceleration.x * GRAVITY, -acceleration.y * GRAVITY,
+                                        -acceleration.z * GRAVITY, eventSink);
+                          }];
+  return nil;
+}
+
+- (FlutterError*)onCancelWithArguments:(id)arguments {
+  [_motionManager stopDeviceMotionUpdates];
+  return nil;
+}
+
+@end
+
+@implementation FLTGyroscopeStreamHandler
 
 - (FlutterError*)onListenWithArguments:(id)arguments eventSink:(FlutterEventSink)eventSink {
   _initMotionManager();
@@ -72,11 +101,7 @@ void _initMotionManager() {
       startGyroUpdatesToQueue:[[NSOperationQueue alloc] init]
                   withHandler:^(CMGyroData* gyroData, NSError* error) {
                     CMRotationRate rotationRate = gyroData.rotationRate;
-                    NSArray* gyroscopeValues =
-                        [NSArray arrayWithObjects:[NSNumber numberWithDouble:rotationRate.x],
-                                                  [NSNumber numberWithDouble:rotationRate.y],
-                                                  [NSNumber numberWithDouble:rotationRate.z], nil];
-                    eventSink(gyroscopeValues);
+                    sendTriplet(rotationRate.x, rotationRate.y, rotationRate.z, eventSink);
                   }];
   return nil;
 }

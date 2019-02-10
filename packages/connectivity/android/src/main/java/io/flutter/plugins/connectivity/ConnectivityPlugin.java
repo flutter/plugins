@@ -4,10 +4,17 @@
 
 package io.flutter.plugins.connectivity;
 
-import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
+import io.flutter.plugin.common.EventChannel;
+import io.flutter.plugin.common.EventChannel.EventSink;
+import io.flutter.plugin.common.EventChannel.StreamHandler;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -15,44 +22,108 @@ import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 /** ConnectivityPlugin */
-public class ConnectivityPlugin implements MethodCallHandler {
+public class ConnectivityPlugin implements MethodCallHandler, StreamHandler {
+  private final Registrar registrar;
   private final ConnectivityManager manager;
+  private BroadcastReceiver receiver;
 
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/connectivity");
-    channel.setMethodCallHandler(new ConnectivityPlugin(registrar.activity()));
+    final EventChannel eventChannel =
+        new EventChannel(registrar.messenger(), "plugins.flutter.io/connectivity_status");
+    ConnectivityPlugin instance = new ConnectivityPlugin(registrar);
+    channel.setMethodCallHandler(instance);
+    eventChannel.setStreamHandler(instance);
   }
 
-  private ConnectivityPlugin(Activity activity) {
-    manager = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
+  private ConnectivityPlugin(Registrar registrar) {
+    this.registrar = registrar;
+    this.manager =
+        (ConnectivityManager) registrar.context().getSystemService(Context.CONNECTIVITY_SERVICE);
+  }
+
+  @Override
+  public void onListen(Object arguments, EventSink events) {
+    receiver = createReceiver(events);
+    registrar
+        .context()
+        .registerReceiver(receiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+  }
+
+  @Override
+  public void onCancel(Object arguments) {
+    registrar.context().unregisterReceiver(receiver);
+    receiver = null;
+  }
+
+  private static String getNetworkType(int type) {
+    switch (type) {
+      case ConnectivityManager.TYPE_ETHERNET:
+      case ConnectivityManager.TYPE_WIFI:
+      case ConnectivityManager.TYPE_WIMAX:
+        return "wifi";
+      case ConnectivityManager.TYPE_MOBILE:
+      case ConnectivityManager.TYPE_MOBILE_DUN:
+        return "mobile";
+      default:
+        return "none";
+    }
   }
 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
-    if (call.method.equals("check")) {
-      NetworkInfo info = manager.getActiveNetworkInfo();
-      if (info != null && info.isConnected()) {
-        switch (info.getType()) {
-          case ConnectivityManager.TYPE_ETHERNET:
-          case ConnectivityManager.TYPE_WIFI:
-          case ConnectivityManager.TYPE_WIMAX:
-            result.success("wifi");
-            break;
-          case ConnectivityManager.TYPE_MOBILE:
-          case ConnectivityManager.TYPE_MOBILE_DUN:
-            result.success("mobile");
-            break;
-          default:
-            result.success("none");
-            break;
-        }
-      } else {
-        result.success("none");
-      }
-    } else {
-      result.notImplemented();
+    switch (call.method) {
+      case "check":
+        handleCheck(call, result);
+        break;
+      case "wifiName":
+        handleWifiName(call, result);
+        break;
+      default:
+        result.notImplemented();
+        break;
     }
+  }
+
+  private void handleCheck(MethodCall call, final Result result) {
+    NetworkInfo info = manager.getActiveNetworkInfo();
+    if (info != null && info.isConnected()) {
+      result.success(getNetworkType(info.getType()));
+    } else {
+      result.success("none");
+    }
+  }
+
+  private void handleWifiName(MethodCall call, final Result result) {
+    WifiManager wifiManager =
+        (WifiManager) registrar.context().getSystemService(Context.WIFI_SERVICE);
+
+    WifiInfo wifiInfo = null;
+    if (wifiManager != null) wifiInfo = wifiManager.getConnectionInfo();
+
+    String ssid = null;
+    if (wifiInfo != null) ssid = wifiInfo.getSSID();
+
+    if (ssid != null) ssid = ssid.replaceAll("\"", ""); // Android returns "SSID"
+
+    result.success(ssid);
+  }
+
+  private BroadcastReceiver createReceiver(final EventSink events) {
+    return new BroadcastReceiver() {
+      @Override
+      public void onReceive(Context context, Intent intent) {
+        boolean isLost = intent.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, false);
+        if (isLost) {
+          events.success("none");
+          return;
+        }
+
+        int type = intent.getIntExtra(ConnectivityManager.EXTRA_NETWORK_TYPE, -1);
+        events.success(getNetworkType(type));
+      }
+    };
   }
 }

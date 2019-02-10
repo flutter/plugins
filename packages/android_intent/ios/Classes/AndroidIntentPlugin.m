@@ -4,12 +4,12 @@
 
 #import "AndroidIntentPlugin.h"
 
-@implementation AndroidIntentPlugin
+@implementation FLTAndroidIntentPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   FlutterMethodChannel* channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/android_intent"
                                   binaryMessenger:[registrar messenger]];
-  AndroidIntentPlugin* instance = [[AndroidIntentPlugin alloc] init];
+  FLTAndroidIntentPlugin* instance = [[FLTAndroidIntentPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 

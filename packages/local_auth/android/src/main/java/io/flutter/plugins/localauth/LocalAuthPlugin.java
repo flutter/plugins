@@ -5,28 +5,30 @@
 package io.flutter.plugins.localauth;
 
 import android.app.Activity;
+import androidx.core.hardware.fingerprint.FingerprintManagerCompat;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.plugins.localauth.AuthenticationHelper.AuthCompletionHandler;
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** LocalAuthPlugin */
 public class LocalAuthPlugin implements MethodCallHandler {
-  private final Activity activity;
+  private final Registrar registrar;
   private final AtomicBoolean authInProgress = new AtomicBoolean(false);
 
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/local_auth");
-    channel.setMethodCallHandler(new LocalAuthPlugin(registrar.activity()));
+    channel.setMethodCallHandler(new LocalAuthPlugin(registrar));
   }
 
-  private LocalAuthPlugin(Activity activity) {
-    this.activity = activity;
+  private LocalAuthPlugin(Registrar registrar) {
+    this.registrar = registrar;
   }
 
   @Override
@@ -40,6 +42,11 @@ public class LocalAuthPlugin implements MethodCallHandler {
         result.error("auth_in_progress", "Authentication in progress", null);
         return;
       }
+      Activity activity = registrar.activity();
+      if (activity == null || activity.isFinishing()) {
+        result.error("no_activity", "local_auth plugin requires a foreground activity", null);
+        return;
+      }
       AuthenticationHelper authenticationHelper =
           new AuthenticationHelper(
               activity,
@@ -47,23 +54,43 @@ public class LocalAuthPlugin implements MethodCallHandler {
               new AuthCompletionHandler() {
                 @Override
                 public void onSuccess() {
-                  result.success(true);
-                  authInProgress.set(false);
+                  if (authInProgress.compareAndSet(true, false)) {
+                    result.success(true);
+                  }
                 }
 
                 @Override
                 public void onFailure() {
-                  result.success(false);
-                  authInProgress.set(false);
+                  if (authInProgress.compareAndSet(true, false)) {
+                    result.success(false);
+                  }
                 }
 
                 @Override
                 public void onError(String code, String error) {
-                  result.error(code, error, null);
-                  authInProgress.set(false);
+                  if (authInProgress.compareAndSet(true, false)) {
+                    result.error(code, error, null);
+                  }
                 }
               });
       authenticationHelper.authenticate();
+    } else if (call.method.equals("getAvailableBiometrics")) {
+      try {
+        ArrayList<String> biometrics = new ArrayList<String>();
+        FingerprintManagerCompat fingerprintMgr =
+            FingerprintManagerCompat.from(registrar.activity());
+        if (fingerprintMgr.isHardwareDetected()) {
+          if (fingerprintMgr.hasEnrolledFingerprints()) {
+            biometrics.add("fingerprint");
+          } else {
+            biometrics.add("undefined");
+          }
+        }
+        result.success(biometrics);
+      } catch (Exception e) {
+        result.error("no_biometrics_available", e.getMessage(), null);
+      }
+
     } else {
       result.notImplemented();
     }

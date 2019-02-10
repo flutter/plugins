@@ -8,18 +8,18 @@ import 'package:flutter/material.dart';
 import 'package:battery/battery.dart';
 
 void main() {
-  runApp(new MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
+    return MaterialApp(
       title: 'Flutter Demo',
-      theme: new ThemeData(
+      theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: new MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
@@ -30,11 +30,11 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  _MyHomePageState createState() => new _MyHomePageState();
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Battery _battery = new Battery();
+  Battery _battery = Battery();
 
   BatteryState _batteryState;
   StreamSubscription<BatteryState> _batteryStateSubscription;
@@ -52,29 +52,30 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
+    return Scaffold(
+      appBar: AppBar(
         title: const Text('Plugin example app'),
       ),
-      body: new Center(
-        child: new Text('$_batteryState'),
+      body: Center(
+        child: Text('$_batteryState'),
       ),
-      floatingActionButton: new FloatingActionButton(
+      floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.battery_unknown),
         onPressed: () async {
-          showDialog<Null>(
+          final int batteryLevel = await _battery.batteryLevel;
+          showDialog<void>(
             context: context,
-            child: new AlertDialog(
-              content: new Text('Battery: ${await _battery.batteryLevel}%'),
-              actions: <Widget>[
-                new FlatButton(
-                  child: const Text('OK'),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                )
-              ],
-            ),
+            builder: (_) => AlertDialog(
+                  content: Text('Battery: $batteryLevel%'),
+                  actions: <Widget>[
+                    FlatButton(
+                      child: const Text('OK'),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    )
+                  ],
+                ),
           );
         },
       ),

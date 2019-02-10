@@ -5,18 +5,24 @@
 
 #import "LocalAuthPlugin.h"
 
-@implementation LocalAuthPlugin
+@implementation FLTLocalAuthPlugin {
+  NSDictionary *lastCallArgs;
+  FlutterResult lastResult;
+}
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/local_auth"
                                   binaryMessenger:[registrar messenger]];
-  LocalAuthPlugin *instance = [[LocalAuthPlugin alloc] init];
+  FLTLocalAuthPlugin *instance = [[FLTLocalAuthPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
+  [registrar addApplicationDelegate:instance];
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"authenticateWithBiometrics" isEqualToString:call.method]) {
     [self authenticateWithBiometrics:call.arguments withFlutterResult:result];
+  } else if ([@"getAvailableBiometrics" isEqualToString:call.method]) {
+    [self getAvailableBiometrics:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -45,7 +51,7 @@
         actionWithTitle:secondButton
                   style:UIAlertActionStyleDefault
                 handler:^(UIAlertAction *action) {
-                  if (&UIApplicationOpenSettingsURLString != NULL) {
+                  if (UIApplicationOpenSettingsURLString != NULL) {
                     NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
                     [[UIApplication sharedApplication] openURL:url];
                     result(@NO);
@@ -58,10 +64,35 @@
                                                                                    completion:nil];
 }
 
+- (void)getAvailableBiometrics:(FlutterResult)result {
+  LAContext *context = [[LAContext alloc] init];
+  NSError *authError = nil;
+  NSMutableArray<NSString *> *biometrics = [[NSMutableArray<NSString *> alloc] init];
+  if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
+                           error:&authError]) {
+    if (authError == nil) {
+      if (@available(iOS 11.0.1, *)) {
+        if (context.biometryType == LABiometryTypeFaceID) {
+          [biometrics addObject:@"face"];
+        } else if (context.biometryType == LABiometryTypeTouchID) {
+          [biometrics addObject:@"fingerprint"];
+        }
+      } else {
+        [biometrics addObject:@"fingerprint"];
+      }
+    }
+  } else if (authError.code == LAErrorTouchIDNotEnrolled) {
+    [biometrics addObject:@"undefined"];
+  }
+  result(biometrics);
+}
+
 - (void)authenticateWithBiometrics:(NSDictionary *)arguments
                  withFlutterResult:(FlutterResult)result {
   LAContext *context = [[LAContext alloc] init];
   NSError *authError = nil;
+  lastCallArgs = nil;
+  lastResult = nil;
   context.localizedFallbackTitle = @"";
 
   if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
@@ -81,6 +112,12 @@
                                    flutterArguments:arguments
                                   withFlutterResult:result];
                               return;
+                            case LAErrorSystemCancel:
+                              if ([arguments[@"stickyAuth"] boolValue]) {
+                                lastCallArgs = arguments;
+                                lastResult = result;
+                                return;
+                              }
                           }
                           result(@NO);
                         }
@@ -97,7 +134,7 @@
   switch (authError.code) {
     case LAErrorPasscodeNotSet:
     case LAErrorTouchIDNotEnrolled:
-      if (arguments[@"useErrorDialogs"]) {
+      if ([arguments[@"useErrorDialogs"] boolValue]) {
         [self alertMessage:arguments[@"goToSettingDescriptionIOS"]
                  firstButton:arguments[@"okButton"]
                flutterResult:result
@@ -116,6 +153,14 @@
   result([FlutterError errorWithCode:errorCode
                              message:authError.localizedDescription
                              details:authError.domain]);
+}
+
+#pragma mark - AppDelegate
+
+- (void)applicationDidBecomeActive:(UIApplication *)application {
+  if (lastCallArgs != nil && lastResult != nil) {
+    [self authenticateWithBiometrics:lastCallArgs withFlutterResult:lastResult];
+  }
 }
 
 @end

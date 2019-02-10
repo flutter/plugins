@@ -12,13 +12,6 @@ const String kChannelName = 'plugins.flutter.io/android_intent';
 
 /// Flutter plugin for launching arbitrary Android Intents.
 class AndroidIntent {
-  final String action;
-  final String category;
-  final String data;
-  final Map<String, dynamic> arguments;
-  final MethodChannel _channel;
-  final Platform _platform;
-
   /// Builds an Android intent with the following parameters
   /// [action] refers to the action parameter of the intent.
   /// [category] refers to the category of the intent, can be null.
@@ -26,21 +19,30 @@ class AndroidIntent {
   /// intent.
   /// [arguments] is the map that will be converted into an extras bundle and
   /// passed to the intent.
-  const AndroidIntent(
-      {@required this.action,
-      this.category,
-      this.data,
-      this.arguments,
-      Platform platform})
-      : assert(action != null),
+  const AndroidIntent({
+    @required this.action,
+    this.category,
+    this.data,
+    this.arguments,
+    this.package,
+    Platform platform,
+  })  : assert(action != null),
         _channel = const MethodChannel(kChannelName),
         _platform = platform ?? const LocalPlatform();
+
+  final String action;
+  final String category;
+  final String data;
+  final Map<String, dynamic> arguments;
+  final String package;
+  final MethodChannel _channel;
+  final Platform _platform;
 
   /// Launch the intent.
   ///
   /// This works only on Android platforms. Please guard the call so that your
   /// iOS app does not crash. Checked mode will throw an assert exception.
-  Future<Null> launch() async {
+  Future<void> launch() async {
     assert(_platform.isAndroid);
     final Map<String, dynamic> args = <String, dynamic>{'action': action};
     if (category != null) {
@@ -52,6 +54,12 @@ class AndroidIntent {
     if (arguments != null) {
       args['arguments'] = arguments;
     }
+    if (package != null) {
+      args['package'] = package;
+    }
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     await _channel.invokeMethod('launch', args);
   }
 }

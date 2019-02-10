@@ -52,7 +52,7 @@ From your Dart code, you need to import the plugin and instantiate it:
 ```dart
 import 'package:firebase_messaging/firebase_messaging.dart';
 
-final FirebaseMessaging _firebaseMessaging = new FirebaseMessaging();
+final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 ```
 
 Next, you should probably request permissions for receiving Push Notifications. For this, call `_firebaseMessaging.requestNotificationPermissions()`. This will bring up a permissions dialog for the user to confirm on iOS. It's a no-op on Android. Last, but not least, register `onMessage`, `onResume`, and `onLaunch` callbacks via `_firebaseMessaging.configure()` to listen for incoming messages (see table below for more information).
@@ -78,7 +78,7 @@ For testing purposes, the simplest way to send a notification is via the [Fireba
 Alternatively, a notification or data message can be sent from a terminal:
 
 ```shell
-DATA='{"notification": {"click_action": "FLUTTER_NOTIFICATION_CLICK", "body": "this is a body","title": "this is a title"}, "priority": "high", "data": {"id": "1", "status": "done"}, "to": "<FCM TOKEN>"}'
+DATA='{"notification": {"body": "this is a body","title": "this is a title"}, "priority": "high", "data": {"click_action": "FLUTTER_NOTIFICATION_CLICK", "id": "1", "status": "done"}, "to": "<FCM TOKEN>"}'
 curl https://fcm.googleapis.com/fcm/send -H "Content-Type:application/json" -X POST -d "$DATA" -H "Authorization: key=<FCM SERVER KEY>"
 ```
 

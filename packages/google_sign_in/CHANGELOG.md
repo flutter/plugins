@@ -1,3 +1,141 @@
+## 4.0.1
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
+## 4.0.0+1
+
+* Added a better error message for iOS when the app is missing necessary URL schemes.
+
+## 4.0.0
+
+* **Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library.
+
+  This was originally incorrectly pushed in the `3.3.0` update.
+
+## 3.3.0+1
+
+* **Revert the breaking 3.3.0 update**. 3.3.0 was known to be breaking and
+  should have incremented the major version number instead of the minor. This
+  revert is in and of itself breaking for anyone that has already migrated
+  however. Anyone who has already migrated their app to AndroidX should
+  immediately update to `4.0.0` instead. That's the correctly versioned new push
+  of `3.3.0`.
+
+## 3.3.0
+
+* **BAD**. This was a breaking change that was incorrectly published on a minor
+  version upgrade, should never have happened. Reverted by 3.3.0+1.
+
+* **Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library.
+
+## 3.2.4
+
+* Increase play-services-auth version to 16.0.1
+
+## 3.2.3
+
+* Change google-services.json and GoogleService-Info.plist of example.
+
+## 3.2.2
+
+* Don't use the result code when handling signin. This results in better error codes because result code always returns "cancelled".
+
+## 3.2.1
+
+* Set http version to be compatible with flutter_test.
+
+## 3.2.0
+
+* Add support for clearing authentication cache for Android.
+
+## 3.1.0
+
+* Add support to recover authentication for Android.
+
+## 3.0.6
+
+* Remove flaky displayName assertion
+
+## 3.0.5
+
+* Added missing http package dependency.
+
+## 3.0.4
+
+* Updated Gradle tooling to match Android Studio 3.1.2.
+
+## 3.0.3+1
+
+* Added documentation on where to find the list of available scopes.
+
+## 3.0.3
+
+* Added support for games sign in on Android.
+
+## 3.0.2
+
+* Updated Google Play Services dependency to version 15.0.0.
+
+## 3.0.1
+
+* Simplified podspec for Cocoapods 1.5.0, avoiding link issues in app archives.
+
+## 3.0.0
+
+* **Breaking change**. Set SDK constraints to match the Flutter beta release.
+
+## 2.1.2
+
+* Added a Delegate interface (IDelegate) that can be implemented by clients in
+  order to override the functionality (for testing purposes for example).
+
+## 2.1.1
+
+* Fixed Dart 2 type errors.
+
+## 2.1.0
+
+* Enabled use in Swift projects.
+
+## 2.0.1
+
+* Simplified and upgraded Android project template to Android SDK 27.
+* Updated package description.
+
+## 2.0.0
+
+* **Breaking change**. Upgraded to Gradle 4.1 and Android Studio Gradle plugin
+  3.0.1. Older Flutter projects need to upgrade their Gradle setup as well in
+  order to use this version of the plugin. Instructions can be found
+  [here](https://github.com/flutter/flutter/wiki/Updating-Flutter-projects-to-Gradle-4.1-and-Android-Studio-Gradle-plugin-3.0.1).
+* Relaxed GMS dependency to [11.4.0,12.0[
+
+## 1.0.3
+
+* Add FLT prefix to iOS types
+
+## 1.0.2
+
+* Support setting foregroundColor in the avatar.
+
+## 1.0.1
+
+* Change GMS dependency to 11.+
+
+## 1.0.0
+
+* Make GoogleUserCircleAvatar fade profile image over the top of placeholder
+* Bump to released version
+
 ## 0.3.1
 
 * Updated GMS to always use latest patch version for 11.0.x builds

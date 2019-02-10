@@ -9,29 +9,29 @@ import 'package:sensors/sensors.dart';
 import 'snake.dart';
 
 void main() {
-  runApp(new MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
+    return MaterialApp(
       title: 'Sensors Demo',
-      theme: new ThemeData(
+      theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: new MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  final String title;
-
   MyHomePage({Key key, this.title}) : super(key: key);
 
+  final String title;
+
   @override
-  _MyHomePageState createState() => new _MyHomePageState();
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -40,6 +40,7 @@ class _MyHomePageState extends State<MyHomePage> {
   static const double _snakeCellSize = 10.0;
 
   List<double> _accelerometerValues;
+  List<double> _userAccelerometerValues;
   List<double> _gyroscopeValues;
   List<StreamSubscription<dynamic>> _streamSubscriptions =
       <StreamSubscription<dynamic>>[];
@@ -50,23 +51,26 @@ class _MyHomePageState extends State<MyHomePage> {
         _accelerometerValues?.map((double v) => v.toStringAsFixed(1))?.toList();
     final List<String> gyroscope =
         _gyroscopeValues?.map((double v) => v.toStringAsFixed(1))?.toList();
+    final List<String> userAccelerometer = _userAccelerometerValues
+        ?.map((double v) => v.toStringAsFixed(1))
+        ?.toList();
 
-    return new Scaffold(
-      appBar: new AppBar(
+    return Scaffold(
+      appBar: AppBar(
         title: const Text('Sensor Example'),
       ),
-      body: new Column(
+      body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
-          new Center(
-            child: new DecoratedBox(
-              decoration: new BoxDecoration(
-                border: new Border.all(width: 1.0, color: Colors.black38),
+          Center(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                border: Border.all(width: 1.0, color: Colors.black38),
               ),
-              child: new SizedBox(
+              child: SizedBox(
                 height: _snakeRows * _snakeCellSize,
                 width: _snakeColumns * _snakeCellSize,
-                child: new Snake(
+                child: Snake(
                   rows: _snakeRows,
                   columns: _snakeColumns,
                   cellSize: _snakeCellSize,
@@ -74,20 +78,29 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
           ),
-          new Padding(
-            child: new Row(
+          Padding(
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                new Text('Accelerometer: $accelerometer'),
+                Text('Accelerometer: $accelerometer'),
               ],
             ),
             padding: const EdgeInsets.all(16.0),
           ),
-          new Padding(
-            child: new Row(
+          Padding(
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                new Text('Gyroscope: $gyroscope'),
+                Text('UserAccelerometer: $userAccelerometer'),
+              ],
+            ),
+            padding: const EdgeInsets.all(16.0),
+          ),
+          Padding(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text('Gyroscope: $gyroscope'),
               ],
             ),
             padding: const EdgeInsets.all(16.0),
@@ -117,6 +130,12 @@ class _MyHomePageState extends State<MyHomePage> {
     _streamSubscriptions.add(gyroscopeEvents.listen((GyroscopeEvent event) {
       setState(() {
         _gyroscopeValues = <double>[event.x, event.y, event.z];
+      });
+    }));
+    _streamSubscriptions
+        .add(userAccelerometerEvents.listen((UserAccelerometerEvent event) {
+      setState(() {
+        _userAccelerometerValues = <double>[event.x, event.y, event.z];
       });
     }));
   }

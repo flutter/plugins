@@ -2,62 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+library firebase_storage;
+
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 
-class FirebaseStorage {
-  static const MethodChannel _channel = const MethodChannel('firebase_storage');
-
-  static FirebaseStorage get instance => new FirebaseStorage();
-
-  StorageReference ref() {
-    return const StorageReference._(const <String>[]);
-  }
-}
-
-class StorageReference {
-  const StorageReference._(this._pathComponents);
-  final List<String> _pathComponents;
-
-  StorageReference child(String path) {
-    final List<String> childPath = new List<String>.from(_pathComponents)
-      ..addAll(path.split("/"));
-    return new StorageReference._(childPath);
-  }
-
-  StorageUploadTask put(File file) {
-    final StorageUploadTask task =
-        new StorageUploadTask._(file, _pathComponents.join("/"));
-    task._start();
-    return task;
-  }
-}
-
-class StorageUploadTask {
-  StorageUploadTask._(this.file, this.path);
-  final File file;
-  final String path;
-
-  Completer<UploadTaskSnapshot> _completer =
-      new Completer<UploadTaskSnapshot>();
-  Future<UploadTaskSnapshot> get future => _completer.future;
-
-  Future<Null> _start() async {
-    final String downloadUrl = await FirebaseStorage._channel.invokeMethod(
-      "StorageReference#putFile",
-      <String, String>{
-        'filename': file.absolute.path,
-        'path': path,
-      },
-    );
-    _completer
-        .complete(new UploadTaskSnapshot(downloadUrl: Uri.parse(downloadUrl)));
-  }
-}
-
-class UploadTaskSnapshot {
-  UploadTaskSnapshot({this.downloadUrl});
-  final Uri downloadUrl;
-}
+part 'src/error.dart';
+part 'src/event.dart';
+part 'src/firebase_storage.dart';
+part 'src/storage_metadata.dart';
+part 'src/storage_reference.dart';
+part 'src/upload_task.dart';

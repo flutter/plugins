@@ -1,14 +1,20 @@
 name: device_info
-description: Provides detailed information about the device the Flutter app is running on.
-version: 0.0.1
+description: Flutter plugin providing detailed information about the device
+  (make, model, etc.), and Android or iOS version the app is running on.
 author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/device_info
+version: 0.4.0+1
 
 flutter:
   plugin:
     androidPackage: io.flutter.plugins.deviceinfo
+    iosPrefix: FLT
     pluginClass: DeviceInfoPlugin
 
 dependencies:
   flutter:
     sdk: flutter
+
+environment:
+  sdk: ">=2.0.0-dev.28.0 <3.0.0"
+  flutter: ">=0.1.4 <2.0.0"

@@ -11,7 +11,7 @@ import 'package:device_info/device_info.dart';
 
 void main() {
   runZoned(() {
-    runApp(new MyApp());
+    runApp(MyApp());
   }, onError: (dynamic error, dynamic stack) {
     print(error);
     print(stack);
@@ -20,11 +20,11 @@ void main() {
 
 class MyApp extends StatefulWidget {
   @override
-  _MyAppState createState() => new _MyAppState();
+  _MyAppState createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-  static final DeviceInfoPlugin deviceInfoPlugin = new DeviceInfoPlugin();
+  static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
   Map<String, dynamic> _deviceData = <String, dynamic>{};
 
   @override
@@ -33,7 +33,7 @@ class _MyAppState extends State<MyApp> {
     initPlatformState();
   }
 
-  Future<Null> initPlatformState() async {
+  Future<void> initPlatformState() async {
     Map<String, dynamic> deviceData;
 
     try {
@@ -81,6 +81,8 @@ class _MyAppState extends State<MyApp> {
       'supportedAbis': build.supportedAbis,
       'tags': build.tags,
       'type': build.type,
+      'isPhysicalDevice': build.isPhysicalDevice,
+      'androidId': build.androidId,
     };
   }
 
@@ -92,35 +94,41 @@ class _MyAppState extends State<MyApp> {
       'model': data.model,
       'localizedModel': data.localizedModel,
       'identifierForVendor': data.identifierForVendor,
+      'isPhysicalDevice': data.isPhysicalDevice,
+      'utsname.sysname:': data.utsname.sysname,
+      'utsname.nodename:': data.utsname.nodename,
+      'utsname.release:': data.utsname.release,
+      'utsname.version:': data.utsname.version,
+      'utsname.machine:': data.utsname.machine,
     };
   }
 
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
-      home: new Scaffold(
-        appBar: new AppBar(
-          title: new Text(
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text(
               Platform.isAndroid ? 'Android Device Info' : 'iOS Device Info'),
         ),
-        body: new ListView(
+        body: ListView(
           shrinkWrap: true,
           children: _deviceData.keys.map((String property) {
-            return new Row(
+            return Row(
               children: <Widget>[
-                new Container(
+                Container(
                   padding: const EdgeInsets.all(10.0),
-                  child: new Text(
+                  child: Text(
                     property,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
-                new Expanded(
-                    child: new Container(
+                Expanded(
+                    child: Container(
                   padding: const EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
-                  child: new Text(
+                  child: Text(
                     '${_deviceData[property]}',
                     overflow: TextOverflow.ellipsis,
                   ),

@@ -4,7 +4,6 @@
 
 package io.flutter.plugins.packageinfo;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -13,35 +12,41 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
+import java.util.HashMap;
+import java.util.Map;
 
 /** PackageInfoPlugin */
 public class PackageInfoPlugin implements MethodCallHandler {
-  private final Context context;
+  private final Registrar mRegistrar;
 
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/package_info");
-    channel.setMethodCallHandler(new PackageInfoPlugin(registrar.activity()));
+    channel.setMethodCallHandler(new PackageInfoPlugin(registrar));
   }
 
-  private PackageInfoPlugin(Activity activity) {
-    this.context = activity;
+  private PackageInfoPlugin(Registrar registrar) {
+    this.mRegistrar = registrar;
   }
 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
     try {
-      PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
-      switch (call.method) {
-        case "getVersion":
-          result.success(info.versionName);
-          break;
-        case "getBuildNumber":
-          result.success(String.valueOf(info.versionCode));
-          break;
-        default:
-          result.notImplemented();
+      Context context = mRegistrar.context();
+      if (call.method.equals("getAll")) {
+        PackageManager pm = context.getPackageManager();
+        PackageInfo info = pm.getPackageInfo(context.getPackageName(), 0);
+
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("appName", info.applicationInfo.loadLabel(pm).toString());
+        map.put("packageName", context.getPackageName());
+        map.put("version", info.versionName);
+        map.put("buildNumber", String.valueOf(info.versionCode));
+
+        result.success(map);
+      } else {
+        result.notImplemented();
       }
     } catch (PackageManager.NameNotFoundException ex) {
       result.error("Name not found", ex.getMessage(), null);

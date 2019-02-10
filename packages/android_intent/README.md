@@ -7,9 +7,9 @@ mode, we assert that the platform should be Android.
 Use it by specifying action, category, data and extra arguments for the intent.
 It does not support returning the result of the launched activity. Sample usage:
 
-```
+```dart
 if (platform.isAndroid) {
-  AndroidIntent intent = new AndroidIntent(
+  AndroidIntent intent = AndroidIntent(
       action: 'action_view',
       data: 'https://play.google.com/store/apps/details?'
           'id=com.google.android.apps.myapp',
@@ -28,6 +28,12 @@ for it in the plugin and use an action constant to refer to it. For instance:
 `'action_view'` translates to `android.os.Intent.ACTION_VIEW`
 
 Feel free to add support for additional Android intents.
+
+The Dart values supported for the arguments parameter, and their corresponding
+Android values, are listed [here](https://flutter.io/platform-channels/#codec).
+On the Android side, the arguments are used to populate an Android `Bundle`
+instance. This process currently restricts the use of lists to homogeneous lists
+of integers or strings.
 
 > Note that a similar method does not currently exist for iOS. Instead, the
 [url_launcher](https://pub.dartlang.org/packages/url_launcher) plugin

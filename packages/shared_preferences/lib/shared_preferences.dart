@@ -8,11 +8,12 @@ import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
 const MethodChannel _kChannel =
-    const MethodChannel('plugins.flutter.io/shared_preferences');
+    MethodChannel('plugins.flutter.io/shared_preferences');
 
 /// Wraps NSUserDefaults (on iOS) and SharedPreferences (on Android), providing
-/// a persistent store for simple data. Data is persisted to disk automatically
-/// and asynchronously. Use commit() to be notified when a save is successful.
+/// a persistent store for simple data.
+///
+/// Data is persisted to disk asynchronously.
 class SharedPreferences {
   SharedPreferences._(this._preferenceCache);
 
@@ -20,7 +21,10 @@ class SharedPreferences {
   static SharedPreferences _instance;
   static Future<SharedPreferences> getInstance() async {
     if (_instance == null) {
-      final Map<String, Object> fromSystem =
+      final Map<Object, Object> fromSystem =
+          // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+          // https://github.com/flutter/flutter/issues/26431
+          // ignore: strong_mode_implicit_dynamic_method
           await _kChannel.invokeMethod('getAll');
       assert(fromSystem != null);
       // Strip the flutter. prefix from the returned preferences.
@@ -29,7 +33,7 @@ class SharedPreferences {
         assert(key.startsWith(_prefix));
         preferencesMap[key.substring(_prefix.length)] = fromSystem[key];
       }
-      _instance = new SharedPreferences._(preferencesMap);
+      _instance = SharedPreferences._(preferencesMap);
     }
     return _instance;
   }
@@ -44,64 +48,110 @@ class SharedPreferences {
   /// in sync since the setter method might fail for any reason.
   final Map<String, Object> _preferenceCache;
 
+  /// Returns all keys in the persistent storage.
+  Set<String> getKeys() => Set<String>.from(_preferenceCache.keys);
+
+  /// Reads a value of any type from persistent storage.
+  dynamic get(String key) => _preferenceCache[key];
+
   /// Reads a value from persistent storage, throwing an exception if it's not a
-  /// bool
+  /// bool.
   bool getBool(String key) => _preferenceCache[key];
 
   /// Reads a value from persistent storage, throwing an exception if it's not
-  /// an int
+  /// an int.
   int getInt(String key) => _preferenceCache[key];
 
   /// Reads a value from persistent storage, throwing an exception if it's not a
-  /// double
+  /// double.
   double getDouble(String key) => _preferenceCache[key];
 
   /// Reads a value from persistent storage, throwing an exception if it's not a
-  /// String
+  /// String.
   String getString(String key) => _preferenceCache[key];
 
-  /// Reads a set of string values from persistent storage,
-  /// throwing an exception if it's not a string set.
-  List<String> getStringList(String key) => _preferenceCache[key];
-
-  /// Saves a boolean [value] to persistent storage in the background.
-  void setBool(String key, bool value) => _setValue('Bool', key, value);
-
-  /// Saves an integer [value] to persistent storage in the background.
-  void setInt(String key, int value) => _setValue('Int', key, value);
-
-  /// Saves a double [value] to persistent storage in the background.
-  /// Android doesn't support storing doubles, so it will be stored as a float.
-  void setDouble(String key, double value) => _setValue('Double', key, value);
-
-  /// Saves a string [value] to persistent storage in the background.
-  void setString(String key, String value) => _setValue('String', key, value);
-
-  /// Saves a list of strings [value] to persistent storage in the background.
-  void setStringList(String key, List<String> value) =>
-      _setValue('StringList', key, value);
-
-  void _setValue(String valueType, String key, Object value) {
-    _preferenceCache[key] = value;
-    // Set the value in the background.
-    _kChannel.invokeMethod('set$valueType', <String, dynamic>{
-      'key': '$_prefix$key',
-      'value': value,
-    });
+  /// Reads a set of string values from persistent storage, throwing an
+  /// exception if it's not a string set.
+  List<String> getStringList(String key) {
+    List<Object> list = _preferenceCache[key];
+    if (list != null && list is! List<String>) {
+      list = list.cast<String>().toList();
+      _preferenceCache[key] = list;
+    }
+    return list;
   }
 
-  /// Completes with true once saved values have been persisted to local
-  /// storage, or false if the save failed.
+  /// Saves a boolean [value] to persistent storage in the background.
   ///
-  /// It's usually sufficient to just wait for the set methods to complete which
-  /// ensure the preferences have been modified in memory. Commit is necessary
-  /// only if you need to be absolutely sure that the data is in persistent
-  /// storage before taking some other action.
+  /// If [value] is null, this is equivalent to calling [remove()] on the [key].
+  Future<bool> setBool(String key, bool value) => _setValue('Bool', key, value);
+
+  /// Saves an integer [value] to persistent storage in the background.
+  ///
+  /// If [value] is null, this is equivalent to calling [remove()] on the [key].
+  Future<bool> setInt(String key, int value) => _setValue('Int', key, value);
+
+  /// Saves a double [value] to persistent storage in the background.
+  ///
+  /// Android doesn't support storing doubles, so it will be stored as a float.
+  ///
+  /// If [value] is null, this is equivalent to calling [remove()] on the [key].
+  Future<bool> setDouble(String key, double value) =>
+      _setValue('Double', key, value);
+
+  /// Saves a string [value] to persistent storage in the background.
+  ///
+  /// If [value] is null, this is equivalent to calling [remove()] on the [key].
+  Future<bool> setString(String key, String value) =>
+      _setValue('String', key, value);
+
+  /// Saves a list of strings [value] to persistent storage in the background.
+  ///
+  /// If [value] is null, this is equivalent to calling [remove()] on the [key].
+  Future<bool> setStringList(String key, List<String> value) =>
+      _setValue('StringList', key, value);
+
+  /// Removes an entry from persistent storage.
+  Future<bool> remove(String key) => _setValue(null, key, null);
+
+  Future<bool> _setValue(String valueType, String key, Object value) {
+    final Map<String, dynamic> params = <String, dynamic>{
+      'key': '$_prefix$key',
+    };
+    if (value == null) {
+      _preferenceCache.remove(key);
+      return _kChannel
+          // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+          // https://github.com/flutter/flutter/issues/26431
+          // ignore: strong_mode_implicit_dynamic_method
+          .invokeMethod('remove', params)
+          .then<bool>((dynamic result) => result);
+    } else {
+      _preferenceCache[key] = value;
+      params['value'] = value;
+      return _kChannel
+          // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+          // https://github.com/flutter/flutter/issues/26431
+          // ignore: strong_mode_implicit_dynamic_method
+          .invokeMethod('set$valueType', params)
+          .then<bool>((dynamic result) => result);
+    }
+  }
+
+  /// Always returns true.
+  /// On iOS, synchronize is marked deprecated. On Android, we commit every set.
+  @deprecated
+  // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+  // https://github.com/flutter/flutter/issues/26431
+  // ignore: strong_mode_implicit_dynamic_method
   Future<bool> commit() async => await _kChannel.invokeMethod('commit');
 
   /// Completes with true once the user preferences for the app has been cleared.
   Future<bool> clear() async {
     _preferenceCache.clear();
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     return await _kChannel.invokeMethod('clear');
   }
 

@@ -6,12 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:share/share.dart';
 
 void main() {
-  runApp(new DemoApp());
+  runApp(DemoApp());
 }
 
 class DemoApp extends StatefulWidget {
   @override
-  DemoAppState createState() => new DemoAppState();
+  DemoAppState createState() => DemoAppState();
 }
 
 class DemoAppState extends State<DemoApp> {
@@ -19,34 +19,50 @@ class DemoAppState extends State<DemoApp> {
 
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
+    return MaterialApp(
       title: 'Share Plugin Demo',
-      home: new Scaffold(
-          appBar: new AppBar(
+      home: Scaffold(
+          appBar: AppBar(
             title: const Text('Share Plugin Demo'),
           ),
-          body: new Padding(
+          body: Padding(
             padding: const EdgeInsets.all(24.0),
-            child: new Column(
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                new TextField(
+                TextField(
                   decoration: const InputDecoration(
                     labelText: 'Share:',
                     hintText: 'Enter some text and/or link to share',
                   ),
-                  maxLines: 4,
+                  maxLines: 2,
                   onChanged: (String value) => setState(() {
                         text = value;
                       }),
                 ),
-                new RaisedButton(
-                  child: const Text('Share'),
-                  onPressed: text.isNotEmpty
-                      ? () {
-                          share(text);
-                        }
-                      : null,
+                const Padding(padding: EdgeInsets.only(top: 24.0)),
+                Builder(
+                  builder: (BuildContext context) {
+                    return RaisedButton(
+                      child: const Text('Share'),
+                      onPressed: text.isEmpty
+                          ? null
+                          : () {
+                              // A builder is used to retrieve the context immediately
+                              // surrounding the RaisedButton.
+                              //
+                              // The context's `findRenderObject` returns the first
+                              // RenderObject in its descendent tree when it's not
+                              // a RenderObjectWidget. The RaisedButton's RenderObject
+                              // has its position and size after it's built.
+                              final RenderBox box = context.findRenderObject();
+                              Share.share(text,
+                                  sharePositionOrigin:
+                                      box.localToGlobal(Offset.zero) &
+                                          box.size);
+                            },
+                    );
+                  },
                 ),
               ],
             ),

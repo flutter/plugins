@@ -4,15 +4,17 @@
 
 import 'dart:collection';
 
-import 'package:meta/meta.dart';
+import 'package:flutter/foundation.dart';
 
-import '../firebase_database.dart' show DataSnapshot, Event, Query;
+import '../firebase_database.dart'
+    show DatabaseError, DataSnapshot, Event, Query;
 import 'utils/stream_subscriber_mixin.dart';
 
 typedef void ChildCallback(int index, DataSnapshot snapshot);
 typedef void ChildMovedCallback(
     int fromIndex, int toIndex, DataSnapshot snapshot);
 typedef void ValueCallback(DataSnapshot snapshot);
+typedef void ErrorCallback(DatabaseError error);
 
 /// Sorts the results of `query` on the client side using `DataSnapshot.key`.
 class FirebaseList extends ListBase<DataSnapshot>
@@ -24,13 +26,14 @@ class FirebaseList extends ListBase<DataSnapshot>
     this.onChildChanged,
     this.onChildMoved,
     this.onValue,
+    this.onError,
   }) {
     assert(query != null);
-    listen(query.onChildAdded, _onChildAdded);
-    listen(query.onChildRemoved, _onChildRemoved);
-    listen(query.onChildChanged, _onChildChanged);
-    listen(query.onChildMoved, _onChildMoved);
-    listen(query.onValue, _onValue);
+    listen(query.onChildAdded, _onChildAdded, onError: _onError);
+    listen(query.onChildRemoved, _onChildRemoved, onError: _onError);
+    listen(query.onChildChanged, _onChildChanged, onError: _onError);
+    listen(query.onChildMoved, _onChildMoved, onError: _onError);
+    listen(query.onValue, _onValue, onError: _onError);
   }
 
   /// Database query used to populate the list
@@ -51,6 +54,9 @@ class FirebaseList extends ListBase<DataSnapshot>
   /// Called when the data of the list has finished loading
   final ValueCallback onValue;
 
+  /// Called when an error is reported (e.g. permission denied)
+  final ErrorCallback onError;
+
   // ListBase implementation
   final List<DataSnapshot> _snapshots = <DataSnapshot>[];
 
@@ -59,7 +65,7 @@ class FirebaseList extends ListBase<DataSnapshot>
 
   @override
   set length(int value) {
-    throw new UnsupportedError("List cannot be modified.");
+    throw UnsupportedError("List cannot be modified.");
   }
 
   @override
@@ -67,12 +73,18 @@ class FirebaseList extends ListBase<DataSnapshot>
 
   @override
   void operator []=(int index, DataSnapshot value) {
-    throw new UnsupportedError("List cannot be modified.");
+    throw UnsupportedError("List cannot be modified.");
+  }
+
+  @override
+  void clear() {
+    cancelSubscriptions();
+
+    // Do not call super.clear(), it will set the length, it's unsupported.
   }
 
   int _indexForKey(String key) {
     assert(key != null);
-    // TODO(jackson): We could binary search since the list is already sorted.
     for (int index = 0; index < _snapshots.length; index++) {
       if (key == _snapshots[index].key) {
         return index;
@@ -119,5 +131,10 @@ class FirebaseList extends ListBase<DataSnapshot>
 
   void _onValue(Event event) {
     onValue(event.snapshot);
+  }
+
+  void _onError(Object o) {
+    final DatabaseError error = o;
+    onError?.call(error);
   }
 }

@@ -16,14 +16,17 @@ void main() {
   Battery battery;
 
   setUp(() {
-    methodChannel = new MockMethodChannel();
-    eventChannel = new MockEventChannel();
-    battery = new Battery.private(methodChannel, eventChannel);
+    methodChannel = MockMethodChannel();
+    eventChannel = MockEventChannel();
+    battery = Battery.private(methodChannel, eventChannel);
   });
 
   test('batteryLevel', () async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     when(methodChannel.invokeMethod('getBatteryLevel'))
-        .thenReturn(new Future<int>.value(42));
+        .thenAnswer((Invocation invoke) => Future<int>.value(42));
     expect(await battery.batteryLevel, 42);
   });
 
@@ -31,8 +34,9 @@ void main() {
     StreamController<String> controller;
 
     setUp(() {
-      controller = new StreamController<String>();
-      when(eventChannel.receiveBroadcastStream()).thenReturn(controller.stream);
+      controller = StreamController<String>();
+      when(eventChannel.receiveBroadcastStream())
+          .thenAnswer((Invocation invoke) => controller.stream);
     });
 
     tearDown(() {
@@ -48,7 +52,7 @@ void main() {
 
     test('receive values', () async {
       final StreamQueue<BatteryState> queue =
-          new StreamQueue<BatteryState>(battery.onBatteryStateChanged);
+          StreamQueue<BatteryState>(battery.onBatteryStateChanged);
 
       controller.add("full");
       expect(await queue.next, BatteryState.full);

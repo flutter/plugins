@@ -4,9 +4,12 @@
 
 package io.flutter.plugins.deviceinfo;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
+import android.provider.Settings;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -18,6 +21,7 @@ import java.util.Map;
 
 /** DeviceInfoPlugin */
 public class DeviceInfoPlugin implements MethodCallHandler {
+  private final Context context;
 
   /** Substitute for missing values. */
   private static final String[] EMPTY_STRING_LIST = new String[] {};
@@ -26,11 +30,13 @@ public class DeviceInfoPlugin implements MethodCallHandler {
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/device_info");
-    channel.setMethodCallHandler(new DeviceInfoPlugin());
+    channel.setMethodCallHandler(new DeviceInfoPlugin(registrar.context()));
   }
 
   /** Do not allow direct instantiation. */
-  private DeviceInfoPlugin() {}
+  private DeviceInfoPlugin(Context context) {
+    this.context = context;
+  }
 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
@@ -53,12 +59,14 @@ public class DeviceInfoPlugin implements MethodCallHandler {
         build.put("supported64BitAbis", Arrays.asList(Build.SUPPORTED_64_BIT_ABIS));
         build.put("supportedAbis", Arrays.asList(Build.SUPPORTED_ABIS));
       } else {
-        build.put("supported32BitAbis", EMPTY_STRING_LIST);
-        build.put("supported64BitAbis", EMPTY_STRING_LIST);
-        build.put("supportedAbis", EMPTY_STRING_LIST);
+        build.put("supported32BitAbis", Arrays.asList(EMPTY_STRING_LIST));
+        build.put("supported64BitAbis", Arrays.asList(EMPTY_STRING_LIST));
+        build.put("supportedAbis", Arrays.asList(EMPTY_STRING_LIST));
       }
       build.put("tags", Build.TAGS);
       build.put("type", Build.TYPE);
+      build.put("isPhysicalDevice", !isEmulator());
+      build.put("androidId", getAndroidId());
 
       Map<String, Object> version = new HashMap<>();
       if (VERSION.SDK_INT >= VERSION_CODES.M) {
@@ -76,5 +84,40 @@ public class DeviceInfoPlugin implements MethodCallHandler {
     } else {
       result.notImplemented();
     }
+  }
+
+  /**
+   * Returns the Android hardware device ID that is unique between the device + user and app
+   * signing. This key will change if the app is uninstalled or its data is cleared. Device factory
+   * reset will also result in a value change.
+   *
+   * @return The android ID
+   */
+  @SuppressLint("HardwareIds")
+  private String getAndroidId() {
+    return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+  }
+
+  /**
+   * A simple emulator-detection based on the flutter tools detection logic and a couple of legacy
+   * detection systems
+   */
+  private boolean isEmulator() {
+    return (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic"))
+        || Build.FINGERPRINT.startsWith("generic")
+        || Build.FINGERPRINT.startsWith("unknown")
+        || Build.HARDWARE.contains("goldfish")
+        || Build.HARDWARE.contains("ranchu")
+        || Build.MODEL.contains("google_sdk")
+        || Build.MODEL.contains("Emulator")
+        || Build.MODEL.contains("Android SDK built for x86")
+        || Build.MANUFACTURER.contains("Genymotion")
+        || Build.PRODUCT.contains("sdk_google")
+        || Build.PRODUCT.contains("google_sdk")
+        || Build.PRODUCT.contains("sdk")
+        || Build.PRODUCT.contains("sdk_x86")
+        || Build.PRODUCT.contains("vbox86p")
+        || Build.PRODUCT.contains("emulator")
+        || Build.PRODUCT.contains("simulator");
   }
 }

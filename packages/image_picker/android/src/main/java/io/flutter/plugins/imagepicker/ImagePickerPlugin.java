@@ -4,97 +4,82 @@
 
 package io.flutter.plugins.imagepicker;
 
-import android.app.Activity;
-import android.content.Intent;
-import com.esafirm.imagepicker.features.ImagePicker;
-import com.esafirm.imagepicker.features.camera.DefaultCameraModule;
-import com.esafirm.imagepicker.features.camera.OnImageReadyListener;
-import com.esafirm.imagepicker.model.Image;
+import android.os.Environment;
+import androidx.annotation.VisibleForTesting;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
-import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
-import io.flutter.plugin.common.PluginRegistry.ActivityResultListener;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.File;
 
-/** Location Plugin */
-public class ImagePickerPlugin implements MethodCallHandler, ActivityResultListener {
-  private static String TAG = "flutter";
-  private static final String CHANNEL = "image_picker";
+public class ImagePickerPlugin implements MethodChannel.MethodCallHandler {
+  private static final String CHANNEL = "plugins.flutter.io/image_picker";
 
-  public static final int REQUEST_CODE_PICK = 2342;
-  public static final int REQUEST_CODE_CAMERA = 2343;
+  private static final int SOURCE_CAMERA = 0;
+  private static final int SOURCE_GALLERY = 1;
 
-  private Activity activity;
-
-  private static final DefaultCameraModule cameraModule = new DefaultCameraModule();
-
-  // Pending method call to obtain an image
-  private Result pendingResult;
+  private final PluginRegistry.Registrar registrar;
+  private final ImagePickerDelegate delegate;
 
   public static void registerWith(PluginRegistry.Registrar registrar) {
+    if (registrar.activity() == null) {
+      // If a background flutter view tries to register the plugin, there will be no activity from the registrar,
+      // we stop the registering process immediately because the ImagePicker requires an activity.
+      return;
+    }
     final MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL);
-    final ImagePickerPlugin instance = new ImagePickerPlugin(registrar.activity());
-    registrar.addActivityResultListener(instance);
+
+    final File externalFilesDirectory =
+        registrar.activity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+    final ExifDataCopier exifDataCopier = new ExifDataCopier();
+    final ImageResizer imageResizer = new ImageResizer(externalFilesDirectory, exifDataCopier);
+
+    final ImagePickerDelegate delegate =
+        new ImagePickerDelegate(registrar.activity(), externalFilesDirectory, imageResizer);
+    registrar.addActivityResultListener(delegate);
+    registrar.addRequestPermissionsResultListener(delegate);
+
+    final ImagePickerPlugin instance = new ImagePickerPlugin(registrar, delegate);
     channel.setMethodCallHandler(instance);
   }
 
-  private ImagePickerPlugin(Activity activity) {
-    this.activity = activity;
+  @VisibleForTesting
+  ImagePickerPlugin(PluginRegistry.Registrar registrar, ImagePickerDelegate delegate) {
+    this.registrar = registrar;
+    this.delegate = delegate;
   }
 
   @Override
-  public void onMethodCall(MethodCall call, Result result) {
-    if (pendingResult != null) {
-      result.error("ALREADY_ACTIVE", "Image picker is already active", null);
+  public void onMethodCall(MethodCall call, MethodChannel.Result result) {
+    if (registrar.activity() == null) {
+      result.error("no_activity", "image_picker plugin requires a foreground activity.", null);
       return;
     }
-    pendingResult = result;
     if (call.method.equals("pickImage")) {
-      ImagePicker.create(activity).single().start(REQUEST_CODE_PICK);
-    } else if (call.method.equals("captureImage")) {
-      activity.startActivityForResult(cameraModule.getCameraIntent(activity), REQUEST_CODE_CAMERA);
+      int imageSource = call.argument("source");
+      switch (imageSource) {
+        case SOURCE_GALLERY:
+          delegate.chooseImageFromGallery(call, result);
+          break;
+        case SOURCE_CAMERA:
+          delegate.takeImageWithCamera(call, result);
+          break;
+        default:
+          throw new IllegalArgumentException("Invalid image source: " + imageSource);
+      }
+    } else if (call.method.equals("pickVideo")) {
+      int imageSource = call.argument("source");
+      switch (imageSource) {
+        case SOURCE_GALLERY:
+          delegate.chooseVideoFromGallery(call, result);
+          break;
+        case SOURCE_CAMERA:
+          delegate.takeVideoWithCamera(call, result);
+          break;
+        default:
+          throw new IllegalArgumentException("Invalid video source: " + imageSource);
+      }
     } else {
       throw new IllegalArgumentException("Unknown method " + call.method);
-    }
-  }
-
-  @Override
-  public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
-    if (requestCode == REQUEST_CODE_PICK) {
-      if (resultCode == Activity.RESULT_OK && data != null) {
-        ArrayList<Image> images = (ArrayList<Image>) ImagePicker.getImages(data);
-        handleResult(images.get(0));
-      } else {
-        pendingResult.error("PICK_ERROR", "Error picking image", null);
-        pendingResult = null;
-      }
-      return true;
-    }
-    if (requestCode == REQUEST_CODE_CAMERA) {
-      if (resultCode == Activity.RESULT_OK && data != null)
-        cameraModule.getImage(
-            activity,
-            data,
-            new OnImageReadyListener() {
-              @Override
-              public void onImageReady(List<Image> images) {
-                handleResult(images.get(0));
-              }
-            });
-      return true;
-    }
-    return false;
-  }
-
-  private void handleResult(Image image) {
-    if (pendingResult != null) {
-      pendingResult.success(image.getPath());
-      pendingResult = null;
-    } else {
-      throw new IllegalStateException("Received images from picker that were not requested");
     }
   }
 }

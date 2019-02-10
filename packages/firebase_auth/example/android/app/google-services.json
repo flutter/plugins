@@ -1,27 +1,35 @@
 {
   "project_info": {
-    "project_number": "297855924061",
-    "firebase_url": "https://flutterfire-cd2f7.firebaseio.com",
-    "project_id": "flutterfire-cd2f7",
-    "storage_bucket": "flutterfire-cd2f7.appspot.com"
+    "project_number": "466218294969",
+    "firebase_url": "https://flutter-plugins-auth.firebaseio.com",
+    "project_id": "flutter-plugins-auth",
+    "storage_bucket": "flutter-plugins-auth.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:297855924061:android:669871c998cc21bd",
+        "mobilesdk_app_id": "1:466218294969:android:11e8f037a4a3ec3b",
         "android_client_info": {
-          "package_name": "com.yourcompany.firebaseauth.example"
+          "package_name": "io.flutter.plugins.firebaseauthexample"
         }
       },
       "oauth_client": [
         {
-          "client_id": "297855924061-f68m5v860ms5faiotn5mv9f50cmpacdq.apps.googleusercontent.com",
+          "client_id": "466218294969-ikp8nslafq77v10dkp83f1atvfkacide.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "io.flutter.plugins.firebaseauthexample",
+            "certificate_hash": "f8323ac5fe6e7adc1ddc5612e16b5d04d7f1358b"
+          }
+        },
+        {
+          "client_id": "466218294969-t7bmju7plgllvluqpgb1gklfuv56pfr8.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyD_shO5mfO9lhy2TVWhfo1VUmARKlG4suk"
+          "current_key": "AIzaSyA4il7ZGUO9gi7ErxFspGcaxi0qr9Huifc"
         }
       ],
       "services": {
@@ -29,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "466218294969-t7bmju7plgllvluqpgb1gklfuv56pfr8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2

@@ -1,13 +1,14 @@
 name: firebase_auth_example
 description: Demonstrates how to use the firebase_auth plugin.
+author: Flutter Team <flutter-dev@googlegroups.com>
 
 dependencies:
   flutter:
     sdk: flutter
   firebase_auth:
     path: ../
-  google_sign_in:
-    path: ../../google_sign_in
+  google_sign_in: ^4.0.0
+  firebase_core: ^0.3.0
 
 flutter:
   uses-material-design: true

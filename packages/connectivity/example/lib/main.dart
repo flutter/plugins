@@ -6,22 +6,22 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:connectivity/connectivity.dart' as connectivity;
+import 'package:connectivity/connectivity.dart';
 
 void main() {
-  runApp(new MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
+    return MaterialApp(
       title: 'Flutter Demo',
-      theme: new ThemeData(
+      theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: new MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
@@ -32,24 +32,36 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  _MyHomePageState createState() => new _MyHomePageState();
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
   String _connectionStatus = 'Unknown';
+  final Connectivity _connectivity = Connectivity();
+  StreamSubscription<ConnectivityResult> _connectivitySubscription;
 
   @override
   void initState() {
     super.initState();
     initConnectivity();
+    _connectivitySubscription =
+        _connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
+      setState(() => _connectionStatus = result.toString());
+    });
+  }
+
+  @override
+  void dispose() {
+    _connectivitySubscription.cancel();
+    super.dispose();
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
-  Future<Null> initConnectivity() async {
+  Future<void> initConnectivity() async {
     String connectionStatus;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      connectionStatus = (await connectivity.checkConnectivity()).toString();
+      connectionStatus = (await _connectivity.checkConnectivity()).toString();
     } on PlatformException catch (e) {
       print(e.toString());
       connectionStatus = 'Failed to get connectivity.';
@@ -69,12 +81,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
+    return Scaffold(
+      appBar: AppBar(
         title: const Text('Plugin example app'),
       ),
-      body: new Center(
-          child: new Text('Connection Status: $_connectionStatus\n')),
+      body: Center(child: Text('Connection Status: $_connectionStatus\n')),
     );
   }
 }

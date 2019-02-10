@@ -8,15 +8,15 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  runApp(new MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
+    return MaterialApp(
       title: 'SharedPreferences Demo',
-      home: new SharedPreferencesDemo(),
+      home: SharedPreferencesDemo(),
     );
   }
 }
@@ -25,44 +25,59 @@ class SharedPreferencesDemo extends StatefulWidget {
   SharedPreferencesDemo({Key key}) : super(key: key);
 
   @override
-  SharedPreferencesDemoState createState() => new SharedPreferencesDemoState();
+  SharedPreferencesDemoState createState() => SharedPreferencesDemoState();
 }
 
 class SharedPreferencesDemoState extends State<SharedPreferencesDemo> {
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  Future<int> _counter;
 
-  Future<Null> _incrementCounter() async {
+  Future<void> _incrementCounter() async {
     final SharedPreferences prefs = await _prefs;
     final int counter = (prefs.getInt('counter') ?? 0) + 1;
+
     setState(() {
-      prefs.setInt("counter", counter);
+      _counter = prefs.setInt("counter", counter).then((bool success) {
+        return counter;
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _counter = _prefs.then((SharedPreferences prefs) {
+      return (prefs.getInt('counter') ?? 0);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
+    return Scaffold(
+      appBar: AppBar(
         title: const Text("SharedPreferences Demo"),
       ),
-      body: new Center(
-          child: new FutureBuilder<SharedPreferences>(
-              future: _prefs,
-              builder: (BuildContext context,
-                  AsyncSnapshot<SharedPreferences> snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting)
-                  return const Text('Loading...');
-                final int counter = snapshot.requireData.getInt('counter') ?? 0;
-                // ignore: prefer_const_constructors
-                return new Text(
-                  'Button tapped $counter time${ counter == 1 ? '' : 's' }.\n\n'
-                      'This should persist across restarts.',
-                );
+      body: Center(
+          child: FutureBuilder<int>(
+              future: _counter,
+              builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+                switch (snapshot.connectionState) {
+                  case ConnectionState.waiting:
+                    return const CircularProgressIndicator();
+                  default:
+                    if (snapshot.hasError)
+                      return Text('Error: ${snapshot.error}');
+                    else
+                      return Text(
+                        'Button tapped ${snapshot.data} time${snapshot.data == 1 ? '' : 's'}.\n\n'
+                            'This should persist across restarts.',
+                      );
+                }
               })),
-      floatingActionButton: new FloatingActionButton(
+      floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
         tooltip: 'Increment',
-        child: new Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }
