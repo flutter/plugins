@@ -4,9 +4,9 @@ part of google_maps_flutter;
 class PolyUtil{
   static List<LatLng> decodePoly(String encoded) {
 
-    List<LatLng> poly = List<LatLng>();
+    final List<LatLng> poly = <LatLng>[];
     int index = 0;
-    int len = encoded.length;
+    final int len = encoded.length;
     int lat = 0, lng = 0;
 
     while (index < len) {
@@ -26,10 +26,10 @@ class PolyUtil{
         result |= (b & 0x1f) << shift;
         shift += 5;
       } while (b >= 0x20);
-      int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+      final int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
       lng += dlng;
 
-      LatLng p = LatLng(( lat / 1E5), ( lng / 1E5));
+      final LatLng p = LatLng(( lat / 1E5), ( lng / 1E5));
       poly.add(p);
     }
 

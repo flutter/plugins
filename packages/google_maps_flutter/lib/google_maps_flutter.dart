@@ -18,5 +18,7 @@ part 'src/camera.dart';
 part 'src/controller.dart';
 part 'src/google_map.dart';
 part 'src/marker.dart';
+part 'src/polyline.dart';
 part 'src/location.dart';
 part 'src/ui.dart';
+part 'src/polyutil.dart';
