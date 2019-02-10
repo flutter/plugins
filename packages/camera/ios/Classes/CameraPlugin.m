@@ -174,7 +174,10 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
   NSAssert(self, @"super init cannot be nil");
   _captureSession = [[AVCaptureSession alloc] init];
   AVCaptureSessionPreset preset;
-  if ([resolutionPreset isEqualToString:@"high"]) {
+  if ([resolutionPreset isEqualToString:@"4k"]) {
+    preset = AVCaptureSessionPreset3840x2160;
+    _previewSize = CGSizeMake(3840, 2160);
+  } else if ([resolutionPreset isEqualToString:@"high"]) {
     preset = AVCaptureSessionPreset1280x720;
     _previewSize = CGSizeMake(1280, 720);
   } else if ([resolutionPreset isEqualToString:@"medium"]) {
