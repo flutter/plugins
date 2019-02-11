@@ -1,6 +1,11 @@
 ## 0.3.1
 
-* Bump firebase-core dependency on Android to 16.0.6.
+* Bump firebase-core dependency on Android to 16.0.7.
+
+## 0.3.0+1
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
 
 ## 0.3.0
 
