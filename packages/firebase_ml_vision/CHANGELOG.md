@@ -1,10 +1,13 @@
+## 0.5.1
+
+* iOS now handles non-planar buffers from `FirebaseVisionImage.fromBytes()`.
+
 ## 0.4.0
 
 * **Breaking Change** Removal of base detector class `FirebaseVisionDetector`.
 * **Breaking Change** Removal of `TextRecognizer.detectInImage()`. Please use
   `TextRecognizer.processImage()`.
 * **Breaking Change** Changed `FaceDetector.detectInImage()` to `FaceDetector.processImage()`.
-* iOS now handles non-planar buffers from `FirebaseVisionImage.fromBytes()`.
 
 ## 0.3.0
 
