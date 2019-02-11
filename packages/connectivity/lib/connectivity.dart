@@ -86,8 +86,6 @@ class Connectivity {
   }
 
   /// Obtains the IP address of the connected wifi network
-  ///
-  /// Please note that it DOESN'T WORK on emulators (returns null).
   Future<String> getWifiIP() async {
     return await methodChannel.invokeMethod('wifiIPAddress');
   }
