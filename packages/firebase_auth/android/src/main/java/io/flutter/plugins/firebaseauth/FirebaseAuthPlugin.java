@@ -382,6 +382,13 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
           credential = GithubAuthProvider.getCredential(token);
           break;
         }
+      case PhoneAuthProvider.PROVIDER_ID:
+        {
+          String accessToken = data.get("verificationId");
+          String smsCode = data.get("smsCode");
+          credential = PhoneAuthProvider.getCredential(accessToken, smsCode);
+          break;
+        }
       default:
         {
           credential = null;
