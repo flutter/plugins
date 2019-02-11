@@ -1,3 +1,7 @@
+## 0.4.1
+
+* Add unit tests.
+
 ## 0.4.0+2
 
 * Log a more detailed warning at build time about the previous AndroidX
