@@ -277,7 +277,7 @@ const UInt8 TIMESTAMP = 136;
 - (instancetype)init {
   self = [super init];
   if (self) {
-    if (![FIRApp defaultApp]) {
+    if (![FIRApp appNamed:@"__FIRAPP_DEFAULT"]) {
       [FIRApp configure];
     }
     _listeners = [NSMutableDictionary<NSNumber *, id<FIRListenerRegistration>> dictionary];

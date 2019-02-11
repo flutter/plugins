@@ -1,3 +1,7 @@
+## 0.4.1
+
+* No longer shows a confusing log message about configuring default app
+
 ## 0.4.0+1
 
 * Log a more detailed warning at build time about the previous AndroidX

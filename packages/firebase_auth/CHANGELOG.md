@@ -1,3 +1,7 @@
+## 0.8.2
+
+* No longer shows a confusing log message about configuring default app
+
 ## 0.8.1
 
 * Fixes Firebase auth phone sign-in for Android.

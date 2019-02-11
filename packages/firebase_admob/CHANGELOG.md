@@ -1,3 +1,7 @@
+## 0.8.1
+
+* No longer shows a confusing log message about configuring default app
+
 ## 0.8.0+1
 
 * Log a more detailed warning at build time about the previous AndroidX

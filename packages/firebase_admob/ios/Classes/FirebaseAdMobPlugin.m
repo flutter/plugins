@@ -40,8 +40,7 @@
 
 - (instancetype)init {
   self = [super init];
-  if (self && ![FIRApp defaultApp]) {
-    FLTLogWarning(@"[FIRApp configure]");
+  if (self && ![FIRApp appNamed:@"__FIRAPP_DEFAULT"]) {
     [FIRApp configure];
   }
   return self;

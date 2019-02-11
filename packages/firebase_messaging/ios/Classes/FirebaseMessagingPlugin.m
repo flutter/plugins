@@ -33,7 +33,7 @@
   if (self) {
     _channel = channel;
     _resumingFromBackground = NO;
-    if (![FIRApp defaultApp]) {
+    if (![FIRApp appNamed:@"__FIRAPP_DEFAULT"]) {
       [FIRApp configure];
     }
     [FIRMessaging messaging].delegate = self;

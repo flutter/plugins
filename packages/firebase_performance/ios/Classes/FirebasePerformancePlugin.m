@@ -23,7 +23,7 @@
 - (instancetype)init {
   self = [super init];
   if (self) {
-    if (![FIRApp defaultApp]) {
+    if (![FIRApp appNamed:@"__FIRAPP_DEFAULT"]) {
       [FIRApp configure];
       _traces = [[NSMutableDictionary alloc] init];
     }
