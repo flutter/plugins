@@ -89,7 +89,7 @@ class Connectivity {
   ///
   /// Please note that it DOESN'T WORK on emulators (returns null).
   Future<String> getWifiIP() async {
-    return await _methodChannel.invokeMethod('wifiIPAddress');
+    return await methodChannel.invokeMethod('wifiIPAddress');
   }
 }
 
