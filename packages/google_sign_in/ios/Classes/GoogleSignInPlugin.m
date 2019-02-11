@@ -96,7 +96,12 @@ static NSString *const kErrorReasonSignInFailed = @"sign_in_failed";
     result(@([[GIDSignIn sharedInstance] hasAuthInKeychain]));
   } else if ([call.method isEqualToString:@"signIn"]) {
     if ([self setAccountRequest:result]) {
-      [[GIDSignIn sharedInstance] signIn];
+      @try {
+        [[GIDSignIn sharedInstance] signIn];
+      } @catch (NSException *e) {
+        result([FlutterError errorWithCode:@"google_sign_in" message:e.reason details:e.name]);
+        [e raise];
+      }
     }
   } else if ([call.method isEqualToString:@"getTokens"]) {
     GIDGoogleUser *currentUser = [GIDSignIn sharedInstance].currentUser;
