@@ -67,8 +67,29 @@ class _MyAppState extends State<MyApp> {
           subtitle: const Text(
               'Unable to connect to the payments processor. Has this app been configured correctly? See the example README for instructions.'))));
     } else {
-      children.add(
-          buildListCard(ListTile(title: const Text('Nothing to see yet.'))));
+      QueryProductDetailsResponse response =
+          await InAppPurchaseConnection.instance.queryProductDetails(<String>[
+        'consumable',
+        'gas',
+        'premium',
+        'upgrade',
+        'somethingNotValid'
+      ].toSet());
+      List<ListTile> productDetailsCards = response.productDetails.map(
+        (ProductDetails productDetails) {
+          return buildListCard(ListTile(
+            title: Text(
+              productDetails.title,
+              style: TextStyle(color: ThemeData.dark().colorScheme.primary),
+            ),
+            subtitle: Text(productDetails.description,
+                style: TextStyle(
+                  color: ThemeData.dark().colorScheme.secondary,
+                )),
+          ));
+        },
+      );
+      children.addAll(productDetailsCards);
     }
 
     return children;
