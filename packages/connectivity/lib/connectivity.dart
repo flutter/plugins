@@ -84,6 +84,11 @@ class Connectivity {
     if (wifiName == '<unknown ssid>') wifiName = null;
     return wifiName;
   }
+
+  /// Obtains the IP address of the connected wifi network
+  Future<String> getWifiIP() async {
+    return await methodChannel.invokeMethod('wifiIPAddress');
+  }
 }
 
 ConnectivityResult _parseConnectivityResult(String state) {
