@@ -720,7 +720,10 @@ public class CameraPlugin implements MethodCallHandler {
       Surface previewSurface = new Surface(surfaceTexture);
       surfaces.add(previewSurface);
       captureRequestBuilder.addTarget(previewSurface);
-
+      if (pictureImageReader == null) {
+        sendErrorEvent("Failed to configure the camera for preview.");
+        return;
+      }
       surfaces.add(pictureImageReader.getSurface());
 
       cameraDevice.createCaptureSession(
