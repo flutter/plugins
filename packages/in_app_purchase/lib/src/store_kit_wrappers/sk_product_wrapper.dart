@@ -107,14 +107,12 @@ enum ProductDiscountPaymentMode {
 
 /// Dart wrapper around StoreKit's [SKProductDiscount](https://developer.apple.com/documentation/storekit/skproductdiscount?language=objc).
 ///
-/// Most of the fields are identical to OBJC SKProduct.
-/// The only difference is instead of the locale object, we only exposed currencyCode for simplicity.
 /// It is used as a property in [SKProductWrapper].
 @JsonSerializable(nullable: true)
 class SKProductDiscountWrapper {
   SKProductDiscountWrapper(
       {@required this.price,
-      @required this.currencyCode,
+      @required this.priceLocale,
       @required this.numberOfPeriods,
       @required this.paymentMode,
       @required this.subscriptionPeriod});
@@ -128,14 +126,11 @@ class SKProductDiscountWrapper {
     return _$SKProductDiscountWrapperFromJson(map);
   }
 
-  /// The discounted price, in the currency that is defined in [currencyCode].
+  /// The discounted price, in the currency that is defined in [priceLocale].
   final double price;
 
-  // TODO(cyanglaz): NSLocale is a complex object, want to see the actual need of getting this expanded to
-  //                 a map. Matching android to only get the currencyCode for now.
-  //                 https://github.com/flutter/flutter/issues/26610
-  /// The currencyCode for the [price], e.g USD for U.S. dollars.
-  final String currencyCode;
+  /// Includes locale information about the price, e.g. `$` as the currency symbol for US locale.
+  final PriceLocaleWrapper priceLocale;
 
   /// The object represent the discount period length.
   ///
@@ -154,8 +149,6 @@ class SKProductDiscountWrapper {
 
 /// Dart wrapper around StoreKit's [SKProduct](https://developer.apple.com/documentation/storekit/skproduct?language=objc).
 ///
-/// Most of the fields are identical to OBJC SKProduct.
-/// The only difference is instead of the locale object, we only exposed currencyCode for simplicity.
 /// A list of [SKProductWrapper] is returned in the [SKRequestMaker.startProductRequest] method, and
 /// should be stored for use when making a payment.
 @JsonSerializable(nullable: true)
@@ -164,7 +157,7 @@ class SKProductWrapper {
     @required this.productIdentifier,
     @required this.localizedTitle,
     @required this.localizedDescription,
-    @required this.currencyCode,
+    @required this.priceLocale,
     @required this.downloadContentVersion,
     @required this.subscriptionGroupIdentifier,
     @required this.price,
@@ -196,11 +189,8 @@ class SKProductWrapper {
   /// It is localized based on the current locale.
   final String localizedDescription;
 
-  // TODO(cyanglaz): NSLocale is a complex object, want to see the actual need of getting this expanded to
-  //                 a map. Matching android to only get the currencyCode for now.
-  //                 https://github.com/flutter/flutter/issues/26610
-  /// The currencyCode for the price, e.g USD for U.S. dollars.
-  final String currencyCode;
+  /// Includes locale information about the price, e.g. `$` as the currency symbol for US locale.
+  final PriceLocaleWrapper priceLocale;
 
   /// The version of the downloadable content.
   ///
@@ -214,7 +204,7 @@ class SKProductWrapper {
   /// Check [SubscriptionGroup](https://developer.apple.com/app-store/subscriptions/) for more details about subscription group.
   final String subscriptionGroupIdentifier;
 
-  /// The price of the product, in the currency that is defined in [currencyCode].
+  /// The price of the product, in the currency that is defined in [priceLocale].
   final double price;
 
   /// Whether the AppStore has downloadable content for this product.
@@ -241,4 +231,27 @@ class SKProductWrapper {
   /// The [subscriptionPeriod] of the discount is independent of the product's [subscriptionPeriod],
   /// and their units and duration do not have to be matched.
   final SKProductDiscountWrapper introductoryPrice;
+}
+
+/// Object that indicates the locale of the price
+///
+/// It is a thin wrapper of [NSLocale](https://developer.apple.com/documentation/foundation/nslocale?language=objc).
+// TODO(cyanglaz): NSLocale is a complex object, want to see the actual need of getting this expanded.
+//                 Matching android to only get the currencySymbol for now.
+//                 https://github.com/flutter/flutter/issues/26610
+@JsonSerializable()
+class PriceLocaleWrapper {
+  PriceLocaleWrapper({@required this.currencySymbol});
+
+  /// Constructing an instance from a map from the Objective-C layer.
+  ///
+  /// This method should only be used with `map` values returned by [SKProductWrapper.fromJson] and [SKProductDiscountWrapper.fromJson].
+  /// The `map` parameter must not be null.
+  factory PriceLocaleWrapper.fromJson(Map map) {
+    assert(map != null);
+    return _$PriceLocaleWrapperFromJson(map);
+  }
+
+  ///The currency symbol for the locale, e.g. $ for US locale.
+  final String currencySymbol;
 }
