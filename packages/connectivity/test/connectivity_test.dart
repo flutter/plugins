@@ -1,6 +1,3 @@
-import 'dart:async';
-import 'dart:typed_data';
-
 import 'package:flutter/services.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -41,32 +38,35 @@ void main() {
     });
 
     test('onConnectivityChanged', () async {
-      ConnectivityResult result =
+      final ConnectivityResult result =
           await Connectivity().onConnectivityChanged.first;
       expect(result, ConnectivityResult.wifi);
     });
 
     test('getWifiName', () async {
-      String result = await Connectivity().getWifiName();
+      final String result = await Connectivity().getWifiName();
       expect(result, '1337wifi');
       expect(
         log,
         <Matcher>[
           isMethodCall(
             'wifiName',
+            arguments: null,
           ),
         ],
       );
     });
 
     test('checkConnectivity', () async {
-      ConnectivityResult result = await Connectivity().checkConnectivity();
+      final ConnectivityResult result =
+          await Connectivity().checkConnectivity();
       expect(result, ConnectivityResult.wifi);
       expect(
         log,
         <Matcher>[
           isMethodCall(
             'check',
+            arguments: null,
           ),
         ],
       );

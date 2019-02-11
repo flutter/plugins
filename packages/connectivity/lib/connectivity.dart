@@ -15,16 +15,6 @@ import 'package:meta/meta.dart';
 enum ConnectivityResult { wifi, mobile, none }
 
 class Connectivity {
-  @visibleForTesting
-  static const MethodChannel methodChannel = MethodChannel(
-    'plugins.flutter.io/connectivity',
-  );
-
-  @visibleForTesting
-  static const EventChannel eventChannel = EventChannel(
-    'plugins.flutter.io/connectivity_status',
-  );
-
   /// Constructs a singleton instance of [Connectivity].
   ///
   /// [Connectivity] is designed to work as a singleton.
@@ -43,6 +33,16 @@ class Connectivity {
   static Connectivity _singleton;
 
   Stream<ConnectivityResult> _onConnectivityChanged;
+
+  @visibleForTesting
+  static const MethodChannel methodChannel = MethodChannel(
+    'plugins.flutter.io/connectivity',
+  );
+
+  @visibleForTesting
+  static const EventChannel eventChannel = EventChannel(
+    'plugins.flutter.io/connectivity_status',
+  );
 
   /// Fires whenever the connectivity state changes.
   Stream<ConnectivityResult> get onConnectivityChanged {
