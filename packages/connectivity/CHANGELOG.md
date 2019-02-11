@@ -1,3 +1,7 @@
+## 0.4.2
+
+* Adding getWifiIP() to obtain current wifi network's IP.
+
 ## 0.4.1
 
 * Add unit tests.

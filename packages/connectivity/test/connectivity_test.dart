@@ -15,6 +15,8 @@ void main() {
             return 'wifi';
           case 'wifiName':
             return '1337wifi';
+          case 'wifiIPAddress':
+            return '127.0.0.1';
           default:
             return null;
         }
@@ -51,6 +53,20 @@ void main() {
         <Matcher>[
           isMethodCall(
             'wifiName',
+            arguments: null,
+          ),
+        ],
+      );
+    });
+
+    test('getWifiIP', () async {
+      final String result = await Connectivity().getWifiIP();
+      expect(result, '127.0.0.1');
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'wifiIPAddress',
             arguments: null,
           ),
         ],
