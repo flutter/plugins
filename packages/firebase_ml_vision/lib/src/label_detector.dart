@@ -12,13 +12,19 @@ part of firebase_ml_vision;
 /// this information, you can perform tasks such as automatic metadata
 /// generation and content moderation.
 ///
-/// A label detector is created via labelDetector(LabelDetectorOptions options)
-/// in [FirebaseVision]:
+/// A label detector is created via
+/// `labelDetector([LabelDetectorOptions options])` in [FirebaseVision]:
 ///
 /// ```dart
-/// LabelDetector labelDetector = FirebaseVision.instance.labelDetector(options);
+/// final FirebaseVisionImage image =
+///     FirebaseVisionImage.fromFilePath('path/to/file');
+///
+/// final LabelDetector labelDetector =
+///     FirebaseVision.instance.labelDetector(options);
+///
+/// final List<Label> labels = await labelDetector.detectInImage(image);
 /// ```
-class LabelDetector extends FirebaseVisionDetector {
+class LabelDetector {
   LabelDetector._(this.options) : assert(options != null);
 
   /// The options for the detector.
@@ -27,18 +33,17 @@ class LabelDetector extends FirebaseVisionDetector {
   final LabelDetectorOptions options;
 
   /// Detects entities in the input image.
-  ///
-  /// Performed asynchronously.
-  @override
   Future<List<Label>> detectInImage(FirebaseVisionImage visionImage) async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     final List<dynamic> reply = await FirebaseVision.channel.invokeMethod(
       'LabelDetector#detectInImage',
       <String, dynamic>{
-        'path': visionImage.imageFile.path,
         'options': <String, dynamic>{
           'confidenceThreshold': options.confidenceThreshold,
         },
-      },
+      }..addAll(visionImage._serialize()),
     );
 
     final List<Label> labels = <Label>[];
@@ -60,29 +65,34 @@ class LabelDetector extends FirebaseVisionDetector {
 /// this information, you can perform tasks such as automatic metadata
 /// generation and content moderation.
 ///
-/// A cloud label detector is created via cloudLabelDetector(CloudDetectorOptions options)
-/// in [FirebaseVision]:
+/// A cloud label detector is created via
+/// `cloudLabelDetector([CloudDetectorOptions options])` in [FirebaseVision]:
 ///
 /// ```dart
-/// CloudLabelDetector cloudLabelDetector = FirebaseVision.instance.cloudLabelDetector(options);
+/// final FirebaseVisionImage image =
+///     FirebaseVisionImage.fromFilePath('path/to/file');
+///
+/// final CloudLabelDetector cloudLabelDetector =
+///     FirebaseVision.instance.cloudLabelDetector();
+///
+/// final List<Label> labels = await cloudLabelDetector.detectInImage(image);
 /// ```
-class CloudLabelDetector extends FirebaseVisionDetector {
+class CloudLabelDetector {
   CloudLabelDetector._(this.options) : assert(options != null);
 
   /// Options used to configure this cloud detector.
   final CloudDetectorOptions options;
 
   /// Detects entities in the input image.
-  ///
-  /// Performed asynchronously.
-  @override
   Future<List<Label>> detectInImage(FirebaseVisionImage visionImage) async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     final List<dynamic> reply = await FirebaseVision.channel.invokeMethod(
       'CloudLabelDetector#detectInImage',
       <String, dynamic>{
-        'path': visionImage.imageFile.path,
-        'options': options._toMap(),
-      },
+        'options': options._serialize(),
+      }..addAll(visionImage._serialize()),
     );
 
     final List<Label> labels = <Label>[];

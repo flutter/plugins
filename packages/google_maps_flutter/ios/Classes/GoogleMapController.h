@@ -8,7 +8,6 @@
 
 // Defines map UI options writable from Flutter.
 @protocol FLTGoogleMapOptionsSink
-- (void)setCamera:(GMSCameraPosition*)camera;
 - (void)setCameraTargetBounds:(GMSCoordinateBounds*)bounds;
 - (void)setCompassEnabled:(BOOL)enabled;
 - (void)setMapType:(GMSMapViewType)type;
