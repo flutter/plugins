@@ -7,7 +7,6 @@ part of firebase_crashlytics;
 ///
 /// You can get an instance by calling `Crashlytics.instance`.
 class Crashlytics {
-
   static final Crashlytics instance = Crashlytics();
 
   /// Set to true to have Errors sent to Crashlytics while in debug mode.
@@ -41,10 +40,10 @@ class Crashlytics {
       await _sendKeys();
 
       // Report error
-      final List<String> stackTraceLines = Trace.format(details.stack)
-          .trimRight().split('\n');
-      final dynamic result = await channel.invokeMethod('Crashlytics#onError',
-          <String, dynamic>{
+      final List<String> stackTraceLines =
+          Trace.format(details.stack).trimRight().split('\n');
+      final dynamic result =
+          await channel.invokeMethod('Crashlytics#onError', <String, dynamic>{
         'exception': details.exceptionAsString(),
         'stackTrace': details.stack.toString(),
         'stackTraceLines': stackTraceLines,
@@ -102,26 +101,23 @@ class Crashlytics {
   }
 
   Future<void> setUserEmail(String email) async {
-    await channel.invokeMethod('Crashlytics#setUserEmail', <String, dynamic> {
-      'email': email
-    });
+    await channel.invokeMethod(
+        'Crashlytics#setUserEmail', <String, dynamic>{'email': email});
   }
 
   Future<void> setUserIdentifier(String identifier) async {
-    await channel.invokeMethod('Crashlytics#setUserIdentifier', <String, dynamic> {
-      'identifier': identifier
-    });
+    await channel.invokeMethod('Crashlytics#setUserIdentifier',
+        <String, dynamic>{'identifier': identifier});
   }
 
   Future<void> setUserName(String name) async {
-    await channel.invokeMethod('Crashlytics#setUserName', <String, dynamic> {
-      'name': name
-    });
+    await channel.invokeMethod(
+        'Crashlytics#setUserName', <String, dynamic>{'name': name});
   }
 
   Future<void> _sendLogs() async {
     for (int i = 0; i < _logs.length; i++) {
-      await channel.invokeMethod('Crashlytics#log', <String, dynamic> {
+      await channel.invokeMethod('Crashlytics#log', <String, dynamic>{
         'msg': _logs.elementAt(i),
       });
     }
@@ -131,7 +127,7 @@ class Crashlytics {
     for (String key in _keys.keys) {
       final dynamic value = _keys[key];
 
-      final Map<String, dynamic> crashlyticsKey = <String, dynamic> {
+      final Map<String, dynamic> crashlyticsKey = <String, dynamic>{
         'key': key,
         'value': value
       };
@@ -147,6 +143,4 @@ class Crashlytics {
       }
     }
   }
-
 }
-
