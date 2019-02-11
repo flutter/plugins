@@ -1,3 +1,8 @@
+## 0.4.0+1
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
 ## 0.4.0
 
 * **Breaking Change** Removal of base detector class `FirebaseVisionDetector`.
@@ -6,7 +11,7 @@
 
 ## 0.3.0
 
-* **Breaking Change** Migrate from the deprecated original Android Support
+* **Breaking change**. Migrate from the deprecated original Android Support
   Library to AndroidX. This shouldn't result in any functional changes, but it
   requires any Android apps using this plugin to [also
   migrate](https://developer.android.com/jetpack/androidx/migrate) if they're

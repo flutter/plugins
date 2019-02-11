@@ -2,6 +2,11 @@
 
 * Add unit tests.
 
+## 0.4.0+2
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
 ## 0.4.0+1
 
 * Updated `Connectivity` to a singleton.
