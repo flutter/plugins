@@ -22,7 +22,6 @@
   requires any Android apps using this plugin to [also
   migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
   using the original support library.
->>>>>>> origin/master
 
 ## 0.3.2
 
