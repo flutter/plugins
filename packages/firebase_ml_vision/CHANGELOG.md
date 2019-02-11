@@ -1,3 +1,10 @@
+## 0.5.0
+
+* **Breaking Change** Change `Rectangle<int>` to `Rect` in Text/Face/Barcode results.
+* **Breaking Change** Change `Point<int>`/`Point<double>` to `Offset` in Text/Face/Barcode results.
+
+* Fixed bug where there were no corner points for `VisionText` or `Barcode` on iOS.
+
 ## 0.4.0+1
 
 * Log a more detailed warning at build time about the previous AndroidX
