@@ -1,3 +1,7 @@
+## 0.4.0
+
+* **Breaking Change** Change iOS image stream format to `ImageFormatGroup.bgra8888`.
+
 ## 0.3.0+3
 
 * Log a more detailed warning at build time about the previous AndroidX
