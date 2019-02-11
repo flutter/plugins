@@ -72,7 +72,7 @@
     [self applySettings:settings];
 
     NSString* initialUrl = args[@"initialUrl"];
-    if (initialUrl && ![initialUrl isKindOfClass:[NSNull class]]) {
+    if ([initialUrl isKindOfClass:[NSString class]]) {
       [self loadUrl:initialUrl];
     }
   }

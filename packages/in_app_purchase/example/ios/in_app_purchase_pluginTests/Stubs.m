@@ -23,7 +23,7 @@
   self = [super init];
   if (self) {
     [self setValue:map[@"price"] ?: [NSNull null] forKey:@"price"];
-    NSLocale *locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
+    NSLocale *locale = NSLocale.systemLocale;
     [self setValue:locale ?: [NSNull null] forKey:@"priceLocale"];
     [self setValue:map[@"numberOfPeriods"] ?: @(0) forKey:@"numberOfPeriods"];
     SKProductSubscriptionPeriodStub *subscriptionPeriodSub =
@@ -46,7 +46,7 @@
     [self setValue:map[@"localizedTitle"] ?: [NSNull null] forKey:@"localizedTitle"];
     [self setValue:map[@"downloadable"] ?: @NO forKey:@"downloadable"];
     [self setValue:map[@"price"] ?: [NSNull null] forKey:@"price"];
-    NSLocale *locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
+    NSLocale *locale = NSLocale.systemLocale;
     [self setValue:locale ?: [NSNull null] forKey:@"priceLocale"];
     [self setValue:map[@"downloadContentLengths"] ?: @(0) forKey:@"downloadContentLengths"];
     SKProductSubscriptionPeriodStub *period =
@@ -126,6 +126,73 @@
 
 - (SKProductRequestStub *)getProductRequestWithIdentifiers:(NSSet *)identifiers {
   return [[SKProductRequestStub alloc] initWithProductIdentifiers:identifiers];
+}
+
+@end
+
+@implementation SKPaymentTransactionStub
+
+- (instancetype)initWithID:(NSString *)identifier {
+  self = [super init];
+  if (self) {
+    [self setValue:identifier forKey:@"transactionIdentifier"];
+  }
+  return self;
+}
+
+- (instancetype)initWithMap:(NSDictionary *)map {
+  self = [super init];
+  if (self) {
+    [self setValue:map[@"transactionIdentifier"] forKey:@"transactionIdentifier"];
+    [self setValue:map[@"transactionState"] forKey:@"transactionState"];
+    if (map[@"originalTransaction"] && !
+                                       [map[@"originalTransaction"] isKindOfClass:[NSNull class]]) {
+      [self setValue:[[SKPaymentTransactionStub alloc] initWithMap:map[@"originalTransaction"]]
+              forKey:@"originalTransaction"];
+    }
+    [self setValue:map[@"error"] ? [[NSErrorStub alloc] initWithMap:map[@"error"]] : [NSNull null]
+            forKey:@"error"];
+    [self setValue:[NSDate dateWithTimeIntervalSince1970:[map[@"transactionTimeStamp"] doubleValue]]
+            forKey:@"transactionDate"];
+    NSMutableArray *downloads = [NSMutableArray new];
+    for (NSDictionary *downloadMap in map[@"downloads"]) {
+      [downloads addObject:[[SKDownloadStub alloc] initWithMap:downloadMap]];
+    }
+    [self setValue:downloads forKey:@"downloads"];
+  }
+  return self;
+}
+
+@end
+
+@implementation SKDownloadStub
+
+- (instancetype)initWithMap:(NSDictionary *)map {
+  self = [super init];
+  if (self) {
+    [self setValue:map[@"state"] forKey:@"downloadState"];
+    [self setValue:map[@"contentIdentifier"] ?: [NSNull null] forKey:@"contentIdentifier"];
+    [self setValue:map[@"contentLength"] ?: [NSNull null] forKey:@"contentLength"];
+    [self setValue:[NSURL URLWithString:map[@"contentURL"]] ?: [NSNull null] forKey:@"contentURL"];
+    [self setValue:map[@"error"] ? [[NSErrorStub alloc] initWithMap:map[@"error"]] : [NSNull null]
+            forKey:@"error"];
+    [self setValue:map[@"progress"] ?: [NSNull null] forKey:@"progress"];
+    [self setValue:map[@"timeRemaining"] ?: [NSNull null] forKey:@"timeRemaining"];
+    [self setValue:[[SKPaymentTransactionStub alloc] initWithID:map[@"transactionID"]]
+                       ?: [NSNull null]
+            forKey:@"transaction"];
+  }
+  return self;
+}
+
+@end
+
+@implementation NSErrorStub
+
+- (instancetype)initWithMap:(NSDictionary *)map {
+  return [self initWithDomain:[map objectForKey:@"domain"]
+                         code:[[map objectForKey:@"code"] integerValue]
+                     userInfo:[map objectForKey:@"userInfo"]];
 }
 
 @end
