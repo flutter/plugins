@@ -45,9 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     initConnectivity();
     _connectivitySubscription =
-        _connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
-      setState(() => _connectionStatus = result.toString());
-    });
+        _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
   }
 
   @override
@@ -58,13 +56,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initConnectivity() async {
-    String connectionStatus;
+    ConnectivityResult result;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      connectionStatus = (await _connectivity.checkConnectivity()).toString();
+      result = await _connectivity.checkConnectivity();
     } on PlatformException catch (e) {
       print(e.toString());
-      connectionStatus = 'Failed to get connectivity.';
     }
 
     // If the widget was removed from the tree while the asynchronous platform
@@ -74,9 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
       return;
     }
 
-    setState(() {
-      _connectionStatus = connectionStatus;
-    });
+    _updateConnectionStatus(result);
   }
 
   @override
@@ -85,7 +80,44 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: const Text('Plugin example app'),
       ),
-      body: Center(child: Text('Connection Status: $_connectionStatus\n')),
+      body: Center(child: Text('Connection Status: $_connectionStatus')),
     );
+  }
+
+  Future<void> _updateConnectionStatus(ConnectivityResult result) async {
+    switch (result) {
+      case ConnectivityResult.wifi:
+        String wifiName, wifiIP;
+
+        try {
+          wifiName = (await _connectivity.getWifiName()).toString();
+        } on PlatformException catch (e) {
+          print(e.toString());
+
+          wifiName = "Failed to get Wifi Name";
+        }
+
+        try {
+          wifiIP = (await _connectivity.getWifiIP()).toString();
+        } on PlatformException catch (e) {
+          print(e.toString());
+
+          wifiName = "Failed to get Wifi IP";
+        }
+
+        setState(() {
+          _connectionStatus = '$result\n'
+              'Wifi Name: $wifiName\n'
+              'Wifi IP: $wifiIP\n';
+        });
+        break;
+      case ConnectivityResult.mobile:
+      case ConnectivityResult.none:
+        setState(() => _connectionStatus = result.toString());
+        break;
+      default:
+        setState(() => _connectionStatus = 'Failed to get connectivity.');
+        break;
+    }
   }
 }
