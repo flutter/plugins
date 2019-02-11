@@ -5,18 +5,28 @@ homepage: https://github.com/flutter/plugins/tree/master/packages/in_app_purchas
 version: 0.0.2
 
 dependencies:
+  async: ^2.0.8
   flutter:
     sdk: flutter
+  json_annotation: ^2.0.0
+  meta: ^1.1.6
 
 dev_dependencies:
+  build_runner: ^1.0.0
+  json_serializable: ^2.0.0
   flutter_test:
     sdk: flutter
+  flutter_driver:
+    sdk: flutter
+  in_app_purchase_example:
+    path: example/
+  test: ^1.5.2
 
 flutter:
   plugin:
     androidPackage: io.flutter.plugins.inapppurchase
-    pluginClass: InAppPurchasePlugin    
-    
+    pluginClass: InAppPurchasePlugin
+
 environment:
   sdk: ">=2.0.0-dev.28.0 <3.0.0"
   flutter: ">=0.4.4 <2.0.0"
