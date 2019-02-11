@@ -35,6 +35,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
   String videoPath;
   VideoPlayerController videoController;
   VoidCallback videoPlayerListener;
+  bool audio = true;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -101,30 +102,57 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
     }
   }
 
+  /// Toggle recording audio
+  Widget _toggleAudioWidget() {
+    return Column(
+      children: <Widget>[
+        const Text('Audio'),
+        Switch(
+          value: audio,
+          onChanged: (bool value) {
+            setState(() {
+              audio = value;
+            });
+            if (controller != null) {
+              onNewCameraSelected(controller.description);
+            }
+          },
+        ),
+      ],
+    );
+  }
+
   /// Display the thumbnail of the captured image or video.
   Widget _thumbnailWidget() {
     return Expanded(
       child: Align(
         alignment: Alignment.centerRight,
-        child: videoController == null && imagePath == null
-            ? null
-            : SizedBox(
-                child: (videoController == null)
-                    ? Image.file(File(imagePath))
-                    : Container(
-                        child: Center(
-                          child: AspectRatio(
-                              aspectRatio: videoController.value.size != null
-                                  ? videoController.value.aspectRatio
-                                  : 1.0,
-                              child: VideoPlayer(videoController)),
-                        ),
-                        decoration: BoxDecoration(
-                            border: Border.all(color: Colors.pink)),
-                      ),
-                width: 64.0,
-                height: 64.0,
-              ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            _toggleAudioWidget(),
+            videoController == null && imagePath == null
+                ? null
+                : SizedBox(
+                    child: (videoController == null)
+                        ? Image.file(File(imagePath))
+                        : Container(
+                            child: Center(
+                              child: AspectRatio(
+                                  aspectRatio:
+                                      videoController.value.size != null
+                                          ? videoController.value.aspectRatio
+                                          : 1.0,
+                                  child: VideoPlayer(videoController)),
+                            ),
+                            decoration: BoxDecoration(
+                                border: Border.all(color: Colors.pink)),
+                          ),
+                    width: 64.0,
+                    height: 64.0,
+                  ),
+          ],
+        ),
       ),
     );
   }
@@ -203,7 +231,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome> {
     if (controller != null) {
       await controller.dispose();
     }
-    controller = CameraController(cameraDescription, ResolutionPreset.high);
+    controller =
+        CameraController(cameraDescription, ResolutionPreset.high, audio);
 
     // If the controller is updated then update the UI.
     controller.addListener(() {
