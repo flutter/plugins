@@ -65,7 +65,7 @@ class RecognizedLanguage {
 abstract class TextContainer {
   TextContainer._(Map<dynamic, dynamic> data)
       : boundingBox = data['left'] != null
-            ? Rectangle<int>(
+            ? Rect.fromLTWH(
                 data['left'],
                 data['top'],
                 data['width'],
@@ -73,8 +73,8 @@ abstract class TextContainer {
               )
             : null,
         confidence = data['confidence'],
-        cornerPoints = List<Point<int>>.unmodifiable(
-            data['points'].map<Point<int>>((dynamic point) => Point<int>(
+        cornerPoints = List<Offset>.unmodifiable(
+            data['points'].map<Offset>((dynamic point) => Offset(
                   point[0],
                   point[1],
                 ))),
@@ -88,7 +88,7 @@ abstract class TextContainer {
   /// The point (0, 0) is defined as the upper-left corner of the image.
   ///
   /// Could be null even if text is found.
-  final Rectangle<int> boundingBox;
+  final Rect boundingBox;
 
   /// The confidence of the recognized text block.
   ///
@@ -102,7 +102,7 @@ abstract class TextContainer {
   /// rectangle. Parts of the region could be outside of the image.
   ///
   /// Could be empty even if text is found.
-  final List<Point<int>> cornerPoints;
+  final List<Offset> cornerPoints;
 
   /// All detected languages from recognized text.
   ///
