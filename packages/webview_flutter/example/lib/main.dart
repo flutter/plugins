@@ -29,6 +29,7 @@ class WebViewExample extends StatelessWidget {
         return WebView(
           initialUrl: 'https://flutter.io',
           javascriptMode: JavascriptMode.unrestricted,
+          enableJavascriptRedirects: true,
           onWebViewCreated: (WebViewController webViewController) {
             _controller.complete(webViewController);
           },

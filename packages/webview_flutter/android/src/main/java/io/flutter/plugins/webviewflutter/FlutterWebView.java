@@ -3,6 +3,7 @@ package io.flutter.plugins.webviewflutter;
 import android.content.Context;
 import android.view.View;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -34,6 +35,19 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       String url = (String) params.get("initialUrl");
       webView.loadUrl(url);
     }
+
+    if (params.containsKey("enableJavascriptRedirects")) {
+      boolean enableJavascriptRedirects = (boolean) params.get("enableJavascriptRedirects");
+      if(enableJavascriptRedirects) {
+        webView.setWebViewClient(new WebViewClient() {
+          @Override
+          public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            return false;
+          }
+        });
+      }
+    }
+
   }
 
   @Override
@@ -83,6 +97,12 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   }
 
   private void loadUrl(MethodCall methodCall, Result result) {
+    String url = (String) methodCall.arguments;
+    webView.loadUrl(url);
+    result.success(null);
+  }
+
+  private void doJavascriptRedirect(MethodCall methodCall, Result result) {
     String url = (String) methodCall.arguments;
     webView.loadUrl(url);
     result.success(null);

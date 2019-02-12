@@ -79,8 +79,13 @@ class WebView extends StatefulWidget {
     this.javascriptMode = JavascriptMode.disabled,
     this.javascriptChannels,
     this.gestureRecognizers,
+    this.enableJavascriptRedirects,
   })  : assert(javascriptMode != null),
         super(key: key);
+
+
+  /// enables javascript redirect if sets to true
+  final bool enableJavascriptRedirects;
 
   /// If not null invoked once the web view is created.
   final WebViewCreatedCallback onWebViewCreated;
@@ -229,15 +234,18 @@ Set<String> _extractChannelNames(Set<JavascriptChannel> channels) {
 
 class _CreationParams {
   _CreationParams(
-      {this.initialUrl, this.settings, this.javascriptChannelNames});
+      {this.initialUrl,
+      this.settings,
+      this.javascriptChannelNames,
+      this.enableJavascriptRedirects});
 
   static _CreationParams fromWidget(WebView widget) {
     return _CreationParams(
-      initialUrl: widget.initialUrl,
-      settings: _WebSettings.fromWidget(widget),
-      javascriptChannelNames:
-          _extractChannelNames(widget.javascriptChannels).toList(),
-    );
+        initialUrl: widget.initialUrl,
+        settings: _WebSettings.fromWidget(widget),
+        javascriptChannelNames:
+            _extractChannelNames(widget.javascriptChannels).toList(),
+        enableJavascriptRedirects: widget.enableJavascriptRedirects);
   }
 
   final String initialUrl;
@@ -246,11 +254,14 @@ class _CreationParams {
 
   final List<String> javascriptChannelNames;
 
+  final bool enableJavascriptRedirects;
+
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'initialUrl': initialUrl,
       'settings': settings.toMap(),
       'javascriptChannelNames': javascriptChannelNames,
+      'enableJavascriptRedirects': enableJavascriptRedirects
     };
   }
 }
