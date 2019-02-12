@@ -21,23 +21,23 @@ class SKPaymentQueueWrapper {
 
 /// Dart wrapper around StoreKit's
 /// [SKPaymentTransactionState](https://developer.apple.com/documentation/storekit/skpaymenttransactionstate?language=objc).
-/// 
+///
 /// Presents the state of a transaction. Used for handling a transaction based on different state.
 enum SKPaymentTransactionStateWrapper {
   /// Indicates the transaction is being processed in App Store.
   @JsonValue(0)
   purchasing,
 
-  /// The payment is processed, you should provide user the content they purchased.
+  /// The payment is processed. You should provide the user the content they purchased.
   @JsonValue(1)
   purchased,
 
-  /// The transaction failed, check the [SKPaymentTransactionWrapper.error] property from [SKPaymentTransactionWrapper] for details.
+  /// The transaction failed. Check the [SKPaymentTransactionWrapper.error] property from [SKPaymentTransactionWrapper] for details.
   @JsonValue(2)
   failed,
 
-  /// This transaction restores the content previously purchased by the user, the previous transaction information can be
-  /// obtained in [SKPaymentTransactionWrapper.originalTransaction] fromm [SKPaymentTransactionWrapper].
+  /// This transaction restores the content previously purchased by the user. The previous transaction information can be
+  /// obtained in [SKPaymentTransactionWrapper.originalTransaction] from [SKPaymentTransactionWrapper].
   @JsonValue(3)
   restored,
 
@@ -144,12 +144,12 @@ enum SKDownloadState {
 /// Dart wrapper around StoreKit's [SKDownload](https://developer.apple.com/documentation/storekit/skdownload?language=objc).
 ///
 /// When a product is created in the App Store Connect, one or more download contents can be associated with it.
-/// When the product is purchased, a List of download object will present in an [SKPaymentTransactionWrapper] object.
-/// Then download objects can be added to the payment queue.
-/// Read the [contentURL] to get the URL of the downloaded content after download complete.A
-/// All downloaded files must be processed before the completion of the transaction.
-/// After the transaction is complete, any download object in the transaction will not be able to add to the payment queue
-/// and the contentURL of the download object will be invalid.
+/// When the product is purchased, a List of [SKDownloadWrapper] object will present in an [SKPaymentTransactionWrapper] object.
+/// To download the content, add the [SKDownloadWrapper] objects to the payment queue and wait for the content to be downloaded.
+/// You can also read the [contentURL] to get the URL of the downloaded content after the download completes.
+/// Note that all downloaded files must be processed before the completion of the [SKPaymentTransactionWrapper].
+/// After the transaction is complete, any [SKDownloadWrapper] object in the transaction will not be able to be added to the payment queue
+/// and the [contentURL ]of the [SKDownloadWrapper] object will be invalid.
 @JsonSerializable()
 class SKDownloadWrapper {
   SKDownloadWrapper({
