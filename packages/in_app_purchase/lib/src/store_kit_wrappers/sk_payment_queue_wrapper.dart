@@ -10,6 +10,9 @@ import 'package:json_annotation/json_annotation.dart';
 part 'sk_payment_queue_wrapper.g.dart';
 
 /// A wrapper around [`SKPaymentQueue`](https://developer.apple.com/documentation/storekit/skpaymentqueue?language=objc).
+///
+/// The payment queue contains payment related operations. It communicates with App Store and presents
+/// a user interface for user to process and authorize the payment.
 class SKPaymentQueueWrapper {
   /// Calls [`-[SKPaymentQueue canMakePayments:]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/1506139-canmakepayments?language=objc).
   static Future<bool> canMakePayments() async =>
@@ -18,8 +21,10 @@ class SKPaymentQueueWrapper {
 
 /// Dart wrapper around StoreKit's
 /// [SKPaymentTransactionState](https://developer.apple.com/documentation/storekit/skpaymenttransactionstate?language=objc).
+/// 
+/// Presents the state of a transaction. Used for handling a transaction based on different state.
 enum SKPaymentTransactionStateWrapper {
-  /// Indicates the transaction in being processed in App Store.
+  /// Indicates the transaction is being processed in App Store.
   @JsonValue(0)
   purchasing,
 
@@ -42,6 +47,9 @@ enum SKPaymentTransactionStateWrapper {
 }
 
 /// Dart wrapper around StoreKit's [SKPaymentTransaction](https://developer.apple.com/documentation/storekit/skpaymenttransaction?language=objc).
+///
+/// Created when a payment is added to the [SKPaymentQueueWrapper]. Transactions are delivered to your app when a payment is finished processing.
+/// Completed transactions provide a receipt and transaction identifier that the app can use to save a permanent record of the processed payment.
 @JsonSerializable()
 class SKPaymentTransactionWrapper {
   SKPaymentTransactionWrapper({
@@ -105,6 +113,8 @@ class SKPaymentTransactionWrapper {
 }
 
 /// Dart wrapper around StoreKit's [SKDownloadState](https://developer.apple.com/documentation/storekit/skdownloadstate?language=objc).
+///
+/// The state of a download operation that can be in.
 enum SKDownloadState {
   /// Indicates that downloadable content is waiting to start.
   @JsonValue(0)
