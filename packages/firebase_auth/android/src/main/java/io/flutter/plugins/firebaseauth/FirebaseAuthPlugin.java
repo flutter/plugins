@@ -348,7 +348,9 @@ public class FirebaseAuthPlugin implements MethodCallHandler {
             .build();
     // TODO: Why is this symbol not found?
     //.setDynamicLinkDomain(arguments.get("dynamicLinkDomain").toString());
-    firebaseAuth.sendSignInLinkToEmail(email, actionCodeSettings);
+    firebaseAuth
+        .sendSignInLinkToEmail(email, actionCodeSettings)
+        .addOnCompleteListener(new TaskVoidCompleteListener(result));
   }
 
   private void handleIsSignInWithEmailLink(
