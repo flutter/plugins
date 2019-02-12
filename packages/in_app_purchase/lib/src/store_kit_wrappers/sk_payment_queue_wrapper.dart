@@ -49,7 +49,7 @@ enum SKPaymentTransactionStateWrapper {
 /// Dart wrapper around StoreKit's [SKPaymentTransaction](https://developer.apple.com/documentation/storekit/skpaymenttransaction?language=objc).
 ///
 /// Created when a payment is added to the [SKPaymentQueueWrapper]. Transactions are delivered to your app when a payment is finished processing.
-/// Completed transactions provide a receipt and transaction identifier that the app can use to save a permanent record of the processed payment.
+/// Completed transactions provide a receipt and a transaction identifier that the app can use to save a permanent record of the processed payment.
 @JsonSerializable()
 class SKPaymentTransactionWrapper {
   SKPaymentTransactionWrapper({
