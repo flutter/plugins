@@ -1,3 +1,8 @@
+## 0.5.1+1
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
 ## 0.5.1
 
 * Use String to save double in Android.

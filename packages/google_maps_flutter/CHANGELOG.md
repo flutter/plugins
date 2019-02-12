@@ -1,3 +1,8 @@
+## 0.2.0+2
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
 ## 0.2.0+1
 
 * Fixed a bug which the camera is not positioned correctly at map initialization(temporary workaround)(https://github.com/flutter/flutter/issues/27550).
