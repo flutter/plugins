@@ -18,16 +18,23 @@ part of google_maps_flutter;
 /// Marker tap events can be received by adding callbacks to [onMarkerTapped].
 class GoogleMapController extends ChangeNotifier {
   GoogleMapController._(
-      this._id, MethodChannel channel, CameraPosition initialCameraPosition)
-      : assert(_id != null),
+    this._id,
+    MethodChannel channel,
+    CameraPosition initialCameraPosition,
+    _GoogleMapState googleMap,
+  )   : assert(_id != null),
         assert(channel != null),
-        _channel = channel {
+        _channel = channel,
+        _googleMap = googleMap {
     _cameraPosition = initialCameraPosition;
     _channel.setMethodCallHandler(_handleMethodCall);
   }
 
   static Future<GoogleMapController> init(
-      int id, CameraPosition initialCameraPosition) async {
+    int id,
+    CameraPosition initialCameraPosition,
+    _GoogleMapState googleMap,
+  ) async {
     assert(id != null);
     final MethodChannel channel =
         MethodChannel('plugins.flutter.io/google_maps_$id');
@@ -35,9 +42,10 @@ class GoogleMapController extends ChangeNotifier {
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
     await channel.invokeMethod('map#waitForMap');
-    return GoogleMapController._(id, channel, initialCameraPosition);
+    return GoogleMapController._(id, channel, initialCameraPosition, googleMap);
   }
 
+  final _GoogleMapState _googleMap;
   final MethodChannel _channel;
 
   /// Callbacks to receive tap events for markers placed on this map.
@@ -80,6 +88,13 @@ class GoogleMapController extends ChangeNotifier {
         if (marker != null) {
           onMarkerTapped(marker);
         }
+        break;
+      case 'marker#onDrag':
+        final String markerId = call.arguments['markerId'];
+        final MarkerV2 mv2 = _googleMap._googleMapOptions.markers
+            .firstWhere((m) => m.markerId == markerId);
+        final LatLng position = LatLng._fromJson(call.arguments['position']);
+        mv2.onDrag(position);
         break;
       case 'camera#onMoveStarted':
         _isCameraMoving = true;

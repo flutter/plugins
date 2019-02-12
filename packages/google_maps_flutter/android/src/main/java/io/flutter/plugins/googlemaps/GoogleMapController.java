@@ -12,6 +12,7 @@ import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.STARTED;
 import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.STOPPED;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
@@ -19,22 +20,27 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import com.google.android.gms.common.collect.Sets;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.common.collect.ImmutableList;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.platform.PlatformView;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /** Controller of a single GoogleMaps MapView instance. */
@@ -45,11 +51,13 @@ final class GoogleMapController
         GoogleMap.OnCameraMoveStartedListener,
         GoogleMap.OnInfoWindowClickListener,
         GoogleMap.OnMarkerClickListener,
+        GoogleMap.OnMarkerDragListener,
         GoogleMapOptionsSink,
         MethodChannel.MethodCallHandler,
         OnMapReadyCallback,
         OnMarkerTappedListener,
         PlatformView {
+
   private static final String TAG = "GoogleMapController";
   private final int id;
   private final AtomicInteger activityState;
@@ -66,6 +74,10 @@ final class GoogleMapController
   private final int registrarActivityHashCode;
   private final Context context;
 
+  private final Map<String, MarkerV2Options> mv2s;
+  private final Map<String, Marker> keyToMarker;
+  private final Map<String, String> markerIdToKey;
+
   GoogleMapController(
       int id,
       Context context,
@@ -78,6 +90,9 @@ final class GoogleMapController
     this.registrar = registrar;
     this.mapView = new MapView(context, options);
     this.markers = new HashMap<>();
+    this.mv2s = new HashMap<>();
+    this.keyToMarker = new HashMap<>();
+    this.markerIdToKey = new HashMap<>();
     this.density = context.getResources().getDisplayMetrics().density;
     methodChannel =
         new MethodChannel(registrar.messenger(), "plugins.flutter.io/google_maps_" + id);
@@ -177,6 +192,7 @@ final class GoogleMapController
     googleMap.setOnCameraMoveListener(this);
     googleMap.setOnCameraIdleListener(this);
     googleMap.setOnMarkerClickListener(this);
+    googleMap.setOnMarkerDragListener(this);
     updateMyLocationEnabled();
   }
 
@@ -413,6 +429,60 @@ final class GoogleMapController
     }
   }
 
+  @Override
+  public void setMarkerV2s(Set<MarkerV2Options> markerV2s) {
+    deleteOutdatedMarkers(markerV2s);
+    for (MarkerV2Options mv2 : markerV2s) {
+      String key = mv2.getMarkerId();
+      if (mv2s.containsKey(key)) {
+        Marker marker = keyToMarker.get(key);
+        if (marker == null) {
+          // ERROR HERE!!!
+          return;
+        }
+        if (marker.getAlpha() != mv2.getAlpha()) {
+          marker.setAlpha((float) mv2.getAlpha());
+        }
+        if (marker.getPosition() != mv2.getPosition()) {
+          marker.setPosition(mv2.getPosition());
+        }
+      } else {
+        MarkerOptions mos = new MarkerOptions();
+        mos.alpha((float) mv2.getAlpha());
+        mos.position(mv2.getPosition());
+        mos.draggable(true);
+
+        if (googleMap != null) {
+          Marker marker = googleMap.addMarker(mos);
+          keyToMarker.put(key, marker);
+          markerIdToKey.put(marker.getId(), key);
+          mv2s.put(key, mv2);
+        }
+      }
+    }
+  }
+
+  private void deleteOutdatedMarkers(Set<MarkerV2Options> markerV2s) {
+    Set<String> deletedMarkers = Sets.difference(mv2s.keySet(), toKeys(markerV2s));
+    for (String deletedMarker : deletedMarkers) {
+      Marker marker = keyToMarker.get(deletedMarker);
+      if (marker != null) {
+        marker.remove();
+        keyToMarker.remove(deletedMarker);
+        markerIdToKey.remove(marker.getId());
+      }
+    }
+  }
+
+  private static Set<String> toKeys(Set<MarkerV2Options> markerV2s) {
+    Set<String> keys = new HashSet<>();
+    for (MarkerV2Options m : markerV2s) {
+      keys.add(m.getMarkerId());
+    }
+    return keys;
+  }
+
+  @SuppressLint("MissingPermission")
   private void updateMyLocationEnabled() {
     if (hasLocationPermission()) {
       googleMap.setMyLocationEnabled(myLocationEnabled);
@@ -437,4 +507,24 @@ final class GoogleMapController
     return context.checkPermission(
         permission, android.os.Process.myPid(), android.os.Process.myUid());
   }
+
+  @Override
+  public void onMarkerDragStart(Marker marker) {}
+
+  @Override
+  public void onMarkerDrag(Marker marker) {
+    final Map<String, Object> arguments = new HashMap<>(2);
+    String markerId = markerIdToKey.get(marker.getId());
+    if (markerId == null) {
+      // ERROR HERE!!
+      return;
+    }
+    arguments.put("markerId", markerId);
+    LatLng pos = marker.getPosition();
+    arguments.put("position", ImmutableList.of(pos.latitude, pos.longitude));
+    methodChannel.invokeMethod("marker#onDrag", arguments);
+  }
+
+  @Override
+  public void onMarkerDragEnd(Marker marker) {}
 }

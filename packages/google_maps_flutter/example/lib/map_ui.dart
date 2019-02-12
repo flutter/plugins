@@ -7,6 +7,9 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'page.dart';
 
+final String markerGlobalKey = "marker_id_1";
+const LatLng initialMarkerPosition = LatLng(-33.890648, 151.212921);
+
 final LatLngBounds sydneyBounds = LatLngBounds(
   southwest: const LatLng(-34.022631, 150.620685),
   northeast: const LatLng(-33.571835, 151.325952),
@@ -48,6 +51,7 @@ class MapUiBodyState extends State<MapUiBody> {
   bool _tiltGesturesEnabled = true;
   bool _zoomGesturesEnabled = true;
   bool _myLocationEnabled = true;
+  LatLng _pposition = initialMarkerPosition;
 
   @override
   void initState() {
@@ -197,6 +201,21 @@ class MapUiBodyState extends State<MapUiBody> {
       tiltGesturesEnabled: _tiltGesturesEnabled,
       zoomGesturesEnabled: _zoomGesturesEnabled,
       myLocationEnabled: _myLocationEnabled,
+      markers: Set.of(
+        [
+          MarkerV2(
+              markerId: markerGlobalKey,
+              alpha: 1.0,
+              position: _pposition,
+              onDrag: (LatLng ll) => setState(() {
+                    // this produces flicker, reproable on pure android impl too
+                    // _pposition = LatLng(ll.latitude + 1, ll.longitude);
+
+                    // this is what we expect most people to do.
+                    _pposition = ll;
+                  }))
+        ],
+      ),
     );
 
     final List<Widget> columnChildren = <Widget>[

@@ -9,12 +9,15 @@ import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLngBounds;
 import io.flutter.plugin.common.PluginRegistry;
+import java.util.Collections;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 class GoogleMapBuilder implements GoogleMapOptionsSink {
   private final GoogleMapOptions options = new GoogleMapOptions();
   private boolean trackCameraPosition = false;
   private boolean myLocationEnabled = false;
+  private Set<MarkerV2Options> markerV2s = Collections.emptySet();
 
   GoogleMapController build(
       int id, Context context, AtomicInteger state, PluginRegistry.Registrar registrar) {
@@ -23,6 +26,7 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
     controller.init();
     controller.setMyLocationEnabled(myLocationEnabled);
     controller.setTrackCameraPosition(trackCameraPosition);
+    controller.setMarkerV2s(markerV2s);
     return controller;
   }
 
@@ -83,5 +87,10 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   @Override
   public void setMyLocationEnabled(boolean myLocationEnabled) {
     this.myLocationEnabled = myLocationEnabled;
+  }
+
+  @Override
+  public void setMarkerV2s(Set<MarkerV2Options> markerV2s) {
+    this.markerV2s = markerV2s;
   }
 }

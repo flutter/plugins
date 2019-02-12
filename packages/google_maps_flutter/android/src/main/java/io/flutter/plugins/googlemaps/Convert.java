@@ -15,8 +15,10 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import io.flutter.view.FlutterMain;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /** Conversions between JSON-like values and GoogleMaps data types. */
 class Convert {
@@ -121,7 +123,7 @@ class Convert {
     return Arrays.asList(latLng.latitude, latLng.longitude);
   }
 
-  private static LatLng toLatLng(Object o) {
+  public static LatLng toLatLng(Object o) {
     final List<?> data = toList(o);
     return new LatLng(toDouble(data.get(0)), toDouble(data.get(1)));
   }
@@ -209,6 +211,15 @@ class Convert {
     if (myLocationEnabled != null) {
       sink.setMyLocationEnabled(toBoolean(myLocationEnabled));
     }
+    final Object markers = data.get("markers");
+    final Set<MarkerV2Options> markerV2s = new HashSet<>();
+    if (markers != null) {
+      for (Object marker : (List<?>) markers) {
+        MarkerV2Options markerV2Options = MarkerV2Options.from(marker);
+        markerV2s.add(markerV2Options);
+      }
+    }
+    sink.setMarkerV2s(markerV2s);
   }
 
   static void interpretMarkerOptions(Object o, MarkerOptionsSink sink) {
