@@ -22,7 +22,7 @@ class SharedPreferences {
   static Future<SharedPreferences> getInstance() async {
     if (_instance == null) {
       final Map<String, Object> preferencesMap =
-          await _retrieveSharedPreferences();
+          await _getSharedPreferencesMap();
       _instance = SharedPreferences._(preferencesMap);
     }
     return _instance;
@@ -148,14 +148,15 @@ class SharedPreferences {
     return await _kChannel.invokeMethod('clear');
   }
 
+  /// Refreshes the local cache
   Future<void> refreshCache() async {
     final Map<String, Object> preferences =
-        await SharedPreferences._retrieveSharedPreferences();
+        await SharedPreferences._getSharedPreferencesMap();
     _preferenceCache.clear();
     _preferenceCache.addAll(preferences);
   }
 
-  static Future<Map<String, Object>> _retrieveSharedPreferences() async {
+  static Future<Map<String, Object>> _getSharedPreferencesMap() async {
     final Map<Object, Object> fromSystem =
         await _kChannel.invokeMethod('getAll');
     assert(fromSystem != null);
