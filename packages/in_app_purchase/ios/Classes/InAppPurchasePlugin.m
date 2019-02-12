@@ -7,11 +7,11 @@
 #import "FIAObjectTranslator.h"
 #import "FIAPRequestHandler.h"
 
-@interface InAppPurchasePlugin()
+@interface InAppPurchasePlugin ()
 
 // Holding strong references to FIAPRequestHandlers. Remove the handlers from the set after
 // the request is finished.
-@property (strong, nonatomic) NSMutableSet *requestHandlers;
+@property(strong, nonatomic) NSMutableSet *requestHandlers;
 
 @end
 
@@ -50,29 +50,29 @@
   SKProductsRequest *request =
       [self getProductRequestWithIdentifiers:[NSSet setWithArray:productIdentifiers]];
   FIAPRequestHandler *handler = [[FIAPRequestHandler alloc] initWithRequest:request];
-    [self.requestHandlers addObject:handler];
-    __weak typeof(self) weakSelf = self;
-    [handler startProductRequestWithCompletionHandler:^(SKProductsResponse *_Nullable response,
-                                                        NSError *_Nullable error) {
-        if (error) {
-            NSString *details = [NSString stringWithFormat:@"Reason:%@\nRecoverSuggestion:%@",
-                                 error.localizedFailureReason,
-                                 error.localizedRecoverySuggestion];
-            result([FlutterError errorWithCode:@"storekit_getproductrequest_platform_error"
-                                       message:error.description
-                                       details:details]);
-            return;
-        }
-        if (!response) {
-            result([FlutterError errorWithCode:@"storekit_platform_no_response"
-                                       message:@"Failed to get SKProductResponse in startRequest "
-                    @"call. Error occured on iOS platform"
-                                       details:call.arguments]);
-            return;
-        }
-        result([response toMap]);
-        [weakSelf.requestHandlers removeObject:handler];
-    }];
+  [self.requestHandlers addObject:handler];
+  __weak typeof(self) weakSelf = self;
+  [handler startProductRequestWithCompletionHandler:^(SKProductsResponse *_Nullable response,
+                                                      NSError *_Nullable error) {
+    if (error) {
+      NSString *details = [NSString stringWithFormat:@"Reason:%@\nRecoverSuggestion:%@",
+                                                     error.localizedFailureReason,
+                                                     error.localizedRecoverySuggestion];
+      result([FlutterError errorWithCode:@"storekit_getproductrequest_platform_error"
+                                 message:error.description
+                                 details:details]);
+      return;
+    }
+    if (!response) {
+      result([FlutterError errorWithCode:@"storekit_platform_no_response"
+                                 message:@"Failed to get SKProductResponse in startRequest "
+                                         @"call. Error occured on iOS platform"
+                                 details:call.arguments]);
+      return;
+    }
+    result([response toMap]);
+    [weakSelf.requestHandlers removeObject:handler];
+  }];
 }
 
 - (SKProductsRequest *)getProductRequestWithIdentifiers:(NSSet *)identifiers {
@@ -82,10 +82,10 @@
 #pragma mark - getter
 
 - (NSSet *)requestHandlers {
-    if (!_requestHandlers) {
-        _requestHandlers = [NSMutableSet new];
-    }
-    return _requestHandlers;
+  if (!_requestHandlers) {
+    _requestHandlers = [NSMutableSet new];
+  }
+  return _requestHandlers;
 }
 
 @end
