@@ -13,15 +13,19 @@ class Crashlytics {
   bool reportInDevMode = false;
 
   /// Keys to be included with report.
-  final Map<String, dynamic> _keys = <String, dynamic>{};
+  @visibleForTesting
+  final Map<String, dynamic> keys = <String, dynamic>{};
 
   /// Logs to be included with report.
-  final ListQueue<String> _logs = ListQueue<String>(15);
+  @visibleForTesting
+  final ListQueue<String> logs = ListQueue<String>(15);
   int logSize = 0;
 
   bool get isInDebugMode {
     bool _inDebugMode = false;
-    assert(_inDebugMode = true);
+    if (!reportInDevMode) {
+      assert(_inDebugMode = true);
+    }
     return _inDebugMode;
   }
 
@@ -34,10 +38,10 @@ class Crashlytics {
       print(Trace.format(details.stack).trimRight().split('\n'));
     } else {
       // Send logs
-      await _sendLogs();
+      await sendLogs();
 
       // Send keys
-      await _sendKeys();
+      await sendKeys();
 
       // Report error
       final List<String> stackTraceLines =
@@ -69,18 +73,18 @@ class Crashlytics {
 
   void log(String msg) {
     logSize += Uint8List.fromList(msg.codeUnits).length;
-    _logs.add(msg);
+    logs.add(msg);
     // Remove oldest log till logSize is no more than 64K.
     while (logSize > 65536) {
-      final String first = _logs.removeFirst();
+      final String first = logs.removeFirst();
       logSize -= Uint8List.fromList(first.codeUnits).length;
     }
   }
 
   void setKey(String key, dynamic value) {
     // Check that only 64 keys are set.
-    if (_keys.containsKey(key) || _keys.length <= 64) {
-      _keys[key] = value;
+    if (keys.containsKey(key) || keys.length <= 64) {
+      keys[key] = value;
     }
   }
 
@@ -115,17 +119,19 @@ class Crashlytics {
         'Crashlytics#setUserName', <String, dynamic>{'name': name});
   }
 
-  Future<void> _sendLogs() async {
-    for (int i = 0; i < _logs.length; i++) {
+  @visibleForTesting
+  Future<void> sendLogs() async {
+    for (int i = 0; i < logs.length; i++) {
       await channel.invokeMethod('Crashlytics#log', <String, dynamic>{
-        'msg': _logs.elementAt(i),
+        'msg': logs.elementAt(i),
       });
     }
   }
 
-  Future<void> _sendKeys() async {
-    for (String key in _keys.keys) {
-      final dynamic value = _keys[key];
+  @visibleForTesting
+  Future<void> sendKeys() async {
+    for (String key in keys.keys) {
+      final dynamic value = keys[key];
 
       final Map<String, dynamic> crashlyticsKey = <String, dynamic>{
         'key': key,
