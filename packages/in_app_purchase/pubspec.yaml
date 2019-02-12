@@ -3,6 +3,7 @@ description: A Flutter plugin for in-app purchases.
 author:  Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/in_app_purchase
 version: 0.0.2
+publish_to: none # Not ready to be uploaded
 
 dependencies:
   async: ^2.0.8
