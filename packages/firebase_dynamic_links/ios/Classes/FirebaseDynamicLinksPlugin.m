@@ -113,6 +113,9 @@
     if (error) {
       result([error flutterError]);
     } else {
+      if(warnings == nil) {
+          warnings = [NSMutableArray array];
+      }
       result(@{@"url" : [shortURL absoluteString], @"warnings" : warnings});
     }
   };
@@ -147,8 +150,8 @@
   NSURL *link = [NSURL URLWithString:arguments[@"link"]];
   NSString *domain = arguments[@"domain"];
 
-  FIRDynamicLinkComponents *components = [FIRDynamicLinkComponents componentsWithLink:link
-                                                                               domain:domain];
+  FIRDynamicLinkComponents *components =
+      [FIRDynamicLinkComponents componentsWithLink:link domain:domain];
 
   if (![arguments[@"androidParameters"] isEqual:[NSNull null]]) {
     NSDictionary *params = arguments[@"androidParameters"];
