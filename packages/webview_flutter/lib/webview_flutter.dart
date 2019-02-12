@@ -394,6 +394,16 @@ class WebViewController {
     return _channel.invokeMethod("reload");
   }
 
+  /// Clears the resource cache.
+  ///
+  /// Note that the cache is per-application, so this will clear the cache for all WebViews used.
+  Future<void> clearCache() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    return _channel.invokeMethod("clearCache");
+  }
+
   Future<void> _updateSettings(_WebSettings setting) async {
     final Map<String, dynamic> updateMap = _settings.updatesMap(setting);
     if (updateMap == null) {

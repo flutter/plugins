@@ -77,6 +77,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       case "removeJavascriptChannels":
         removeJavaScriptChannels(methodCall, result);
         break;
+      case "clearCache":
+        clearCache(result);
+        break;
       default:
         result.notImplemented();
     }
@@ -153,6 +156,11 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     for (String channelName : channelNames) {
       webView.removeJavascriptInterface(channelName);
     }
+    result.success(null);
+  }
+
+  private void clearCache(Result result) {
+    webView.clearCache(true);
     result.success(null);
   }
 
