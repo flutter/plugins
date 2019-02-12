@@ -83,7 +83,6 @@ class WebView extends StatefulWidget {
   })  : assert(javascriptMode != null),
         super(key: key);
 
-
   /// enables javascript redirect if sets to true
   final bool enableJavascriptRedirects;
 
