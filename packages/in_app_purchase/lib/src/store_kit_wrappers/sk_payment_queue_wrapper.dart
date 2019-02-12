@@ -12,7 +12,7 @@ part 'sk_payment_queue_wrapper.g.dart';
 /// A wrapper around [`SKPaymentQueue`](https://developer.apple.com/documentation/storekit/skpaymentqueue?language=objc).
 ///
 /// The payment queue contains payment related operations. It communicates with App Store and presents
-/// a user interface for user to process and authorize the payment.
+/// a user interface for the user to process and authorize the payment.
 class SKPaymentQueueWrapper {
   /// Calls [`-[SKPaymentQueue canMakePayments:]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/1506139-canmakepayments?language=objc).
   static Future<bool> canMakePayments() async =>
@@ -114,7 +114,7 @@ class SKPaymentTransactionWrapper {
 
 /// Dart wrapper around StoreKit's [SKDownloadState](https://developer.apple.com/documentation/storekit/skdownloadstate?language=objc).
 ///
-/// The state of a download operation that can be in.
+/// The state a download operation that can be in.
 enum SKDownloadState {
   /// Indicates that downloadable content is waiting to start.
   @JsonValue(0)
@@ -144,7 +144,7 @@ enum SKDownloadState {
 /// Dart wrapper around StoreKit's [SKDownload](https://developer.apple.com/documentation/storekit/skdownload?language=objc).
 ///
 /// When a product is created in the App Store Connect, one or more download contents can be associated with it.
-/// When the product is purchased, a List of [SKDownloadWrapper] object will present in an [SKPaymentTransactionWrapper] object.
+/// When the product is purchased, a List of [SKDownloadWrapper] object will be present in an [SKPaymentTransactionWrapper] object.
 /// To download the content, add the [SKDownloadWrapper] objects to the payment queue and wait for the content to be downloaded.
 /// You can also read the [contentURL] to get the URL of the downloaded content after the download completes.
 /// Note that all downloaded files must be processed before the completion of the [SKPaymentTransactionWrapper].
