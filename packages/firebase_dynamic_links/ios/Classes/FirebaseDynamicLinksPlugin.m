@@ -113,8 +113,8 @@
     if (error) {
       result([error flutterError]);
     } else {
-      if(warnings == nil) {
-          warnings = [NSMutableArray array];
+      if (warnings == nil) {
+        warnings = [NSMutableArray array];
       }
       result(@{@"url" : [shortURL absoluteString], @"warnings" : warnings});
     }
