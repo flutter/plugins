@@ -15,93 +15,125 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  List<Widget> list;
-
   @override
   void initState() {
     super.initState();
-    _buildStorefront();
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-          appBar: AppBar(
-            title: const Text('IAP Example'),
-          ),
-          body: Center(
-              child: list == null
-                  ? Text('Loading...')
-                  : ListView.builder(
-                      itemCount: list.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return list[index];
-                      }))),
+        appBar: AppBar(
+          title: const Text('IAP Example'),
+        ),
+        body: Column(
+          children: [
+            FutureBuilder(
+              future: _buildConnectionCheckTile(),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (!snapshot.hasData) {
+                  return Column(children: <Widget>[
+                    buildListCard(
+                        ListTile(title: const Text('Trying to connect...')))
+                  ]);
+                } else if (snapshot.error != null) {
+                  return Column(children: <Widget>[
+                    buildListCard(ListTile(
+                        title: Text(
+                            'Error connecting: ' + snapshot.error.toString())))
+                  ]);
+                }
+                return Column(
+                  children: snapshot.data,
+                );
+              },
+            ),
+            Expanded(
+              child: FutureBuilder(
+                future: InAppPurchaseConnection.instance.queryProductDetails(
+                    <String>[
+                  'consumable',
+                  'gas',
+                  'premium',
+                  'upgrade',
+                  'somethingNotValid'
+                ].toSet()),
+                builder: (BuildContext context,
+                    AsyncSnapshot<QueryProductDetailsResponse> snapshot) {
+                  if (!snapshot.hasData) {
+                    return Column(children: <Widget>[
+                      buildListCard(ListTile(title: const Text('Loading...')))
+                    ]);
+                  } else if (snapshot.error != null) {
+                    return Center(
+                      child: Text('Error: ' + snapshot.error.toString()),
+                    );
+                  }
+                  List<String> notFound = snapshot.data.notFoundIDs;
+                  return Column(
+                    children: <Widget>[
+                      Center(child: Text('Products')),
+                      Center(
+                        child:
+                            Text('Not found products: ' + notFound.toString()),
+                      ),
+                      Expanded(
+                        child: ListView(
+                          children: _buildProductList(snapshot.data),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
-  _buildStorefront() async {
-    await _buildConnectionCheckTile();
-    await _buildProductList();
-  }
-
-  _buildConnectionCheckTile() async {
+  Future<List<ListTile>> _buildConnectionCheckTile() async {
     final bool available = await InAppPurchaseConnection.instance.isAvailable();
-    final Widget storeHeader = buildListCard(ListTile(
+    final Widget storeHeader = buildListCard(
+      ListTile(
         leading: Icon(available ? Icons.check : Icons.block),
-        title: Text('The store is ' +
-            (available ? 'available' : 'unavailable') +
-            '.')));
-    final List<Widget> children = <Widget>[storeHeader];
+        title: Text(
+            'The store is ' + (available ? 'available' : 'unavailable') + '.'),
+      ),
+    );
+    final List<ListTile> children = <ListTile>[storeHeader];
 
     if (!available) {
-      children.add(buildListCard(ListTile(
-          title: Text('Not connected',
-              style: TextStyle(color: ThemeData.light().errorColor)),
-          subtitle: const Text(
-              'Unable to connect to the payments processor. Has this app been configured correctly? See the example README for instructions.'))));
+      children.add(
+        buildListCard(
+          ListTile(
+            title: Text('Not connected',
+                style: TextStyle(color: ThemeData.light().errorColor)),
+            subtitle: const Text(
+                'Unable to connect to the payments processor. Has this app been configured correctly? See the example README for instructions.'),
+          ),
+        ),
+      );
     }
-    setState(() {
-      list = children;
-    });
+    return children;
   }
 
-  _buildProductList() async {
-    QueryProductDetailsResponse response =
-        await InAppPurchaseConnection.instance.queryProductDetails(<String>[
-      'consumable',
-      'gas',
-      'premium',
-      'upgrade',
-      'somethingNotValid'
-    ].toSet());
+  List<ListTile> _buildProductList(QueryProductDetailsResponse response) {
     List<ListTile> productDetailsCards = response.productDetails.map(
       (ProductDetails productDetails) {
         return buildListCard(ListTile(
           title: Text(
             productDetails.title,
-            style: TextStyle(color: ThemeData.dark().colorScheme.primary),
           ),
-          subtitle: Text(productDetails.description,
-              style: TextStyle(
-                color: ThemeData.dark().colorScheme.secondary,
-              )),
+          subtitle: Text(
+            productDetails.description,
+          ),
         ));
       },
     ).toList();
-    setState(() {
-      if (productDetailsCards.length > 0) {
-        list.addAll(productDetailsCards);
-      } else {
-        list.add(buildListCard(ListTile(
-          title: Text(
-            'No matching products found',
-            style: TextStyle(color: ThemeData.dark().colorScheme.primary),
-          ),
-        )));
-      }
-    });
+    return productDetailsCards;
   }
 
   static ListTile buildListCard(ListTile innerTile) =>
