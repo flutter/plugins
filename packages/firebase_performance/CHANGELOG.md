@@ -1,3 +1,7 @@
+## 0.1.0+2
+
+* Fixed bug where `Traces` and `HttpMetrics` weren't being passed to Firebase on iOS.
+
 ## 0.1.0+1
 
 * Log a more detailed warning at build time about the previous AndroidX
