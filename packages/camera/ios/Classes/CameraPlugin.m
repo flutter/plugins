@@ -146,8 +146,6 @@
 @property(assign, nonatomic) BOOL isRecording;
 @property(assign, nonatomic) BOOL isAudioSetup;
 @property(assign, nonatomic) BOOL isStreamingImages;
-@property(nonatomic) vImage_Buffer destinationBuffer;
-@property(nonatomic) vImage_Buffer conversionBuffer;
 @property(nonatomic) CMMotionManager *motionManager;
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
@@ -205,11 +203,6 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
   [_motionManager startAccelerometerUpdates];
 
   [self setCaptureSessionPreset:resolutionPreset];
-
-  vImageBuffer_Init(&_destinationBuffer, _previewSize.width, _previewSize.height, 32,
-                    kvImageNoFlags);
-  vImageBuffer_Init(&_conversionBuffer, _previewSize.width, _previewSize.height, 32,
-                    kvImageNoFlags);
 
   return self;
 }
