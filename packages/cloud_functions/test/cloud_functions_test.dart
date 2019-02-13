@@ -29,7 +29,7 @@ void main() {
 
     test('call', () async {
       await CloudFunctions.instance.call(functionName: 'baz');
-      await CloudFunctions(app: FirebaseApp(name: '1337'))
+      await CloudFunctions(app: const FirebaseApp(name: '1337'), region: 'space')
           .call(functionName: 'qux', parameters: <String, dynamic>{
         'quux': 'quuz',
       });
@@ -40,6 +40,7 @@ void main() {
             'CloudFunctions#call',
             arguments: <String, dynamic>{
               'app': '[DEFAULT]',
+              'region': null,
               'functionName': 'baz',
               'parameters': null,
             },
@@ -48,6 +49,7 @@ void main() {
             'CloudFunctions#call',
             arguments: <String, dynamic>{
               'app': '1337',
+              'region': 'space',
               'functionName': 'qux',
               'parameters': <String, dynamic>{
                 'quux': 'quuz',
