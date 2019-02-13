@@ -1,3 +1,7 @@
+## 1.0.7
+
+* Enable setAnalyticsCollectionEnabled support for iOS
+
 ## 1.0.6
 
 * Allow user ID to be set to null.
