@@ -1,6 +1,24 @@
+## 0.1.0+1
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
+## 0.1.0
+
+* **Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library.
+
+## 0.0.5
+
+* Set iOS deployment target to 8.0 (minimum supported by both Firebase SDKs and Flutter), fixes compilation errors.
+* Fixes null pointer error when callable function fails with exception (iOS).
+
 ## 0.0.4+1
 
-* Bump Android dependncies to latest.
+* Bump Android dependencies to latest.
 
 ## 0.0.4
 

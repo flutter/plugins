@@ -31,17 +31,23 @@ class MapUiBody extends StatefulWidget {
 class MapUiBodyState extends State<MapUiBody> {
   MapUiBodyState();
 
-  GoogleMapController mapController;
-  CameraPosition _position;
-  GoogleMapOptions _options = GoogleMapOptions(
-    cameraPosition: const CameraPosition(
-      target: LatLng(-33.852, 151.211),
-      zoom: 11.0,
-    ),
-    trackCameraPosition: true,
-    compassEnabled: true,
+  static final CameraPosition _kInitialPosition = const CameraPosition(
+    target: LatLng(-33.852, 151.211),
+    zoom: 11.0,
   );
+
+  GoogleMapController mapController;
+  CameraPosition _position = _kInitialPosition;
   bool _isMoving = false;
+  bool _compassEnabled = true;
+  CameraTargetBounds _cameraTargetBounds = CameraTargetBounds.unbounded;
+  MinMaxZoomPreference _minMaxZoomPreference = MinMaxZoomPreference.unbounded;
+  MapType _mapType = MapType.normal;
+  bool _rotateGesturesEnabled = true;
+  bool _scrollGesturesEnabled = true;
+  bool _tiltGesturesEnabled = true;
+  bool _zoomGesturesEnabled = true;
+  bool _myLocationEnabled = true;
 
   @override
   void initState() {
@@ -55,7 +61,6 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   void _extractMapInfo() {
-    _options = mapController.options;
     _position = mapController.cameraPosition;
     _isMoving = mapController.isCameraMoving;
   }
@@ -68,11 +73,11 @@ class MapUiBodyState extends State<MapUiBody> {
 
   Widget _compassToggler() {
     return FlatButton(
-      child: Text('${_options.compassEnabled ? 'disable' : 'enable'} compass'),
+      child: Text('${_compassEnabled ? 'disable' : 'enable'} compass'),
       onPressed: () {
-        mapController.updateMapOptions(
-          GoogleMapOptions(compassEnabled: !_options.compassEnabled),
-        );
+        setState(() {
+          _compassEnabled = !_compassEnabled;
+        });
       },
     );
   }
@@ -80,110 +85,120 @@ class MapUiBodyState extends State<MapUiBody> {
   Widget _latLngBoundsToggler() {
     return FlatButton(
       child: Text(
-        _options.cameraTargetBounds.bounds == null
+        _cameraTargetBounds.bounds == null
             ? 'bound camera target'
             : 'release camera target',
       ),
       onPressed: () {
-        mapController.updateMapOptions(
-          GoogleMapOptions(
-            cameraTargetBounds: _options.cameraTargetBounds.bounds == null
-                ? CameraTargetBounds(sydneyBounds)
-                : CameraTargetBounds.unbounded,
-          ),
-        );
+        setState(() {
+          _cameraTargetBounds = _cameraTargetBounds.bounds == null
+              ? CameraTargetBounds(sydneyBounds)
+              : CameraTargetBounds.unbounded;
+        });
       },
     );
   }
 
   Widget _zoomBoundsToggler() {
     return FlatButton(
-      child: Text(_options.minMaxZoomPreference.minZoom == null
+      child: Text(_minMaxZoomPreference.minZoom == null
           ? 'bound zoom'
           : 'release zoom'),
       onPressed: () {
-        mapController.updateMapOptions(
-          GoogleMapOptions(
-            minMaxZoomPreference: _options.minMaxZoomPreference.minZoom == null
-                ? const MinMaxZoomPreference(12.0, 16.0)
-                : MinMaxZoomPreference.unbounded,
-          ),
-        );
+        setState(() {
+          _minMaxZoomPreference = _minMaxZoomPreference.minZoom == null
+              ? const MinMaxZoomPreference(12.0, 16.0)
+              : MinMaxZoomPreference.unbounded;
+        });
       },
     );
   }
 
   Widget _mapTypeCycler() {
     final MapType nextType =
-        MapType.values[(_options.mapType.index + 1) % MapType.values.length];
+        MapType.values[(_mapType.index + 1) % MapType.values.length];
     return FlatButton(
       child: Text('change map type to $nextType'),
       onPressed: () {
-        mapController.updateMapOptions(
-          GoogleMapOptions(mapType: nextType),
-        );
+        setState(() {
+          _mapType = nextType;
+        });
       },
     );
   }
 
   Widget _rotateToggler() {
     return FlatButton(
-      child: Text(
-          '${_options.rotateGesturesEnabled ? 'disable' : 'enable'} rotate'),
+      child: Text('${_rotateGesturesEnabled ? 'disable' : 'enable'} rotate'),
       onPressed: () {
-        mapController.updateMapOptions(
-          GoogleMapOptions(
-            rotateGesturesEnabled: !_options.rotateGesturesEnabled,
-          ),
-        );
+        setState(() {
+          _rotateGesturesEnabled = !_rotateGesturesEnabled;
+        });
       },
     );
   }
 
   Widget _scrollToggler() {
     return FlatButton(
-      child: Text(
-          '${_options.scrollGesturesEnabled ? 'disable' : 'enable'} scroll'),
+      child: Text('${_scrollGesturesEnabled ? 'disable' : 'enable'} scroll'),
       onPressed: () {
-        mapController.updateMapOptions(
-          GoogleMapOptions(
-            scrollGesturesEnabled: !_options.scrollGesturesEnabled,
-          ),
-        );
+        setState(() {
+          _scrollGesturesEnabled = !_scrollGesturesEnabled;
+        });
       },
     );
   }
 
   Widget _tiltToggler() {
     return FlatButton(
-      child:
-          Text('${_options.tiltGesturesEnabled ? 'disable' : 'enable'} tilt'),
+      child: Text('${_tiltGesturesEnabled ? 'disable' : 'enable'} tilt'),
       onPressed: () {
-        mapController.updateMapOptions(
-          GoogleMapOptions(
-            tiltGesturesEnabled: !_options.tiltGesturesEnabled,
-          ),
-        );
+        setState(() {
+          _tiltGesturesEnabled = !_tiltGesturesEnabled;
+        });
       },
     );
   }
 
   Widget _zoomToggler() {
     return FlatButton(
-      child:
-          Text('${_options.zoomGesturesEnabled ? 'disable' : 'enable'} zoom'),
+      child: Text('${_zoomGesturesEnabled ? 'disable' : 'enable'} zoom'),
       onPressed: () {
-        mapController.updateMapOptions(
-          GoogleMapOptions(
-            zoomGesturesEnabled: !_options.zoomGesturesEnabled,
-          ),
-        );
+        setState(() {
+          _zoomGesturesEnabled = !_zoomGesturesEnabled;
+        });
+      },
+    );
+  }
+
+  Widget _myLocationToggler() {
+    return FlatButton(
+      child: Text('${_myLocationEnabled ? 'disable' : 'enable'} my location'),
+      onPressed: () {
+        setState(() {
+          _myLocationEnabled = !_myLocationEnabled;
+        });
       },
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final GoogleMap googleMap = GoogleMap(
+      onMapCreated: onMapCreated,
+      initialCameraPosition: _kInitialPosition,
+      trackCameraPosition: true,
+      compassEnabled: _compassEnabled,
+      cameraTargetBounds: _cameraTargetBounds,
+      minMaxZoomPreference: _minMaxZoomPreference,
+      mapType: _mapType,
+      rotateGesturesEnabled: _rotateGesturesEnabled,
+      scrollGesturesEnabled: _scrollGesturesEnabled,
+      tiltGesturesEnabled: _tiltGesturesEnabled,
+      zoomGesturesEnabled: _zoomGesturesEnabled,
+      myLocationEnabled: _myLocationEnabled,
+    );
+
     final List<Widget> columnChildren = <Widget>[
       Padding(
         padding: const EdgeInsets.all(10.0),
@@ -191,16 +206,7 @@ class MapUiBodyState extends State<MapUiBody> {
           child: SizedBox(
             width: 300.0,
             height: 200.0,
-            child: GoogleMap(
-              onMapCreated: onMapCreated,
-              options: GoogleMapOptions(
-                cameraPosition: const CameraPosition(
-                  target: LatLng(-33.852, 151.211),
-                  zoom: 11.0,
-                ),
-                trackCameraPosition: true,
-              ),
-            ),
+            child: googleMap,
           ),
         ),
       ),
@@ -226,6 +232,7 @@ class MapUiBodyState extends State<MapUiBody> {
               _scrollToggler(),
               _tiltToggler(),
               _zoomToggler(),
+              _myLocationToggler(),
             ],
           ),
         ),

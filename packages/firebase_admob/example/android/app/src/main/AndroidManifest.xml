@@ -4,6 +4,9 @@
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application android:name="io.flutter.app.FlutterApplication" android:label="firebase_admob_example" android:icon="@mipmap/ic_launcher">
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3940256099942544~3347511713"/>
         <activity android:name=".MainActivity"
                   android:launchMode="singleTop"
                   android:theme="@android:style/Theme.Black.NoTitleBar"

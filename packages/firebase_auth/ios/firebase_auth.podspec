@@ -14,7 +14,7 @@ Firebase Auth plugin for Flutter.
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'
-  s.ios.deployment_target = '6.0'
+  s.ios.deployment_target = '8.0'
   s.dependency 'Flutter'
   s.dependency 'Firebase/Auth'
   s.dependency 'Firebase/Core'

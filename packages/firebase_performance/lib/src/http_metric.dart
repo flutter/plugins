@@ -48,6 +48,9 @@ class HttpMetric extends PerformanceAttributes {
 
     _hasStarted = true;
     return FirebasePerformance.channel
+        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+        // https://github.com/flutter/flutter/issues/26431
+        // ignore: strong_mode_implicit_dynamic_method
         .invokeMethod('HttpMetric#start', <String, dynamic>{
       'handle': _handle,
       'url': _url,
@@ -76,6 +79,9 @@ class HttpMetric extends PerformanceAttributes {
     };
 
     _hasStopped = true;
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     return FirebasePerformance.channel.invokeMethod('HttpMetric#stop', data);
   }
 

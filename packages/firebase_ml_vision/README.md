@@ -1,8 +1,8 @@
-# ML Kit for Firebase
+# ML Kit Vision for Firebase
 
 [![pub package](https://img.shields.io/pub/v/firebase_ml_vision.svg)](https://pub.dartlang.org/packages/firebase_ml_vision)
 
-A Flutter plugin to use the [ML Kit for Firebase API](https://firebase.google.com/docs/ml-kit/).
+A Flutter plugin to use the [ML Kit Vision for Firebase API](https://firebase.google.com/docs/ml-kit/).
 
 For Flutter plugins for other Firebase products, see [FlutterFire.md](https://github.com/flutter/plugins/blob/master/FlutterFire.md).
 
@@ -15,7 +15,7 @@ To use this plugin, add `firebase_ml_vision` as a [dependency in your pubspec.ya
 ### Android
 Optional but recommended: If you use the on-device API, configure your app to automatically download the ML model to the device after your app is installed from the Play Store. To do so, add the following declaration to your app's AndroidManifest.xml file:
 
-```manifest
+```xml
 <application ...>
   ...
   <meta-data
@@ -153,4 +153,4 @@ for (TextBlock block in visionText.blocks) {
 
 ## Getting Started
 
-See the `example` directory for a complete sample app using ML Kit for Firebase.
+See the `example` directory for a complete sample app using ML Kit Vision for Firebase.

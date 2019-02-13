@@ -1,3 +1,24 @@
+## 0.9.0+1
+
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
+## 0.9.0
+
+* **Breaking change**. Migrate from the deprecated original Android Support
+  Library to AndroidX. This shouldn't result in any functional changes, but it
+  requires any Android apps using this plugin to [also
+  migrate](https://developer.android.com/jetpack/androidx/migrate) if they're
+  using the original support library.
+
+## 0.8.2+3
+
+* Resolved "explicit self reference" and "loses accuracy" compiler warnings.
+
+## 0.8.2+2
+
+* Clean up Android build logs. @SuppressWarnings("unchecked")
+
 ## 0.8.2+1
 
 * Avoid crash in document snapshot callback.

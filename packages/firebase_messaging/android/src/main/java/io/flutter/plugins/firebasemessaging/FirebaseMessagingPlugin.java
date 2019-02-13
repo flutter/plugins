@@ -9,9 +9,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import androidx.annotation.NonNull;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
@@ -25,6 +25,7 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.NewIntentListener;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -128,6 +129,27 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
                   result.success(task.getResult().getToken());
                 }
               });
+    } else if ("deleteInstanceID".equals(call.method)) {
+      new Thread(
+              new Runnable() {
+                @Override
+                public void run() {
+                  try {
+                    FirebaseInstanceId.getInstance().deleteInstanceId();
+                    result.success(true);
+                  } catch (IOException ex) {
+                    Log.e(TAG, "deleteInstanceID, error:", ex);
+                    result.success(false);
+                  }
+                }
+              })
+          .start();
+    } else if ("autoInitEnabled".equals(call.method)) {
+      result.success(FirebaseMessaging.getInstance().isAutoInitEnabled());
+    } else if ("setAutoInitEnabled".equals(call.method)) {
+      Boolean isEnabled = (Boolean) call.arguments();
+      FirebaseMessaging.getInstance().setAutoInitEnabled(isEnabled);
+      result.success(null);
     } else {
       result.notImplemented();
     }
