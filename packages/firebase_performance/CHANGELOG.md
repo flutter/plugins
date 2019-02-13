@@ -1,6 +1,12 @@
-## 0.1.1
+## 0.1.0+3
 
-* No longer shows a confusing log message about configuring default app
+* Log messages about automatic configuration of the default app are now less confusing.
+
+ longer shows a confusing log message about configuring default app
+
+## 0.1.0+2
+
+* Fixed bug where `Traces` and `HttpMetrics` weren't being passed to Firebase on iOS.
 
 ## 0.1.0+1
 

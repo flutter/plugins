@@ -26,8 +26,10 @@
     if (![FIRApp appNamed:@"__FIRAPP_DEFAULT"]) {
       NSLog(@"Configuring the default Firebase app...");
       [FIRApp configure];
-      _traces = [[NSMutableDictionary alloc] init];
     }
+
+    _traces = [[NSMutableDictionary alloc] init];
+    _httpMetrics = [[NSMutableDictionary alloc] init];
   }
 
   return self;

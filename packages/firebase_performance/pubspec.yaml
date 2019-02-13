@@ -4,7 +4,8 @@ description: Flutter plugin for Google Performance Monitoring for Firebase, an a
   iOS.
 author: Flutter Team <flutter-dev@googlegroups.com>
 homepage: https://github.com/flutter/plugins/tree/master/packages/firebase_performance
-version: 0.1.1
+version: 0.1.0+3
+>>>>>>> 4f024c7404c01e1f3b55be61704d2deb53f6ca41
 
 dependencies:
   flutter:

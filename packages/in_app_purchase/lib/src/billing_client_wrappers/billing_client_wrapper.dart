@@ -88,7 +88,7 @@ class BillingClient {
   Future<SkuDetailsResponseWrapper> querySkuDetails(
       {@required SkuType skuType, @required List<String> skusList}) async {
     final Map<String, dynamic> arguments = <String, dynamic>{
-      'skuType': skuType.toString(),
+      'skuType': SkuTypeConverter().toJson(skuType),
       'skusList': skusList
     };
     return SkuDetailsResponseWrapper.fromJson(await channel.invokeMapMethod<
