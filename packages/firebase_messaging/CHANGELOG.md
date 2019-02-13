@@ -1,3 +1,7 @@
+## 3.0.0
+
+*  **Breaking Change** Update message structure for onMessage to match onLaunch and onResume
+
 ## 2.1.0
 
 * Adding support for deleteInstanceID(), autoInitEnabled() and setAutoInitEnabled().
