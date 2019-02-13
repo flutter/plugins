@@ -1,3 +1,6 @@
+# Below is a list of Flutter team members who are suggested reviewers
+# for contributions to plugins in this repository.
+
 packages/cloud_firestore/* @collinjackson @kroikie
 packages/firebase_auth/* @collinjackson @kroikie
 packages/firebase_messaging/* @collinjackson @kroikie
