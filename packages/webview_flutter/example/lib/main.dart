@@ -185,15 +185,17 @@ class SampleMenu extends StatelessWidget {
   }
 
   void _onAddToCache(WebViewController controller, BuildContext context) async {
-    await controller.evaluateJavascript('caches.open("test_cache_entry")');
+    await controller.evaluateJavascript(
+        'caches.open("test_caches_entry"); localStorage["test_localStorage"] = "dummy_entry";');
     Scaffold.of(context).showSnackBar(const SnackBar(
       content: Text('Added a test entry to cache.'),
     ));
   }
 
   void _onListCache(WebViewController controller, BuildContext context) async {
-    await controller.evaluateJavascript(
-        'caches.keys().then((keys) => Toaster.postMessage("Cache keys: " + keys.join(",")))');
+    await controller.evaluateJavascript('caches.keys()'
+        '.then((cacheKeys) => JSON.stringify({"cacheKeys" : cacheKeys, "localStorage" : localStorage}))'
+        '.then((caches) => Toaster.postMessage(caches))');
   }
 
   void _onClearCache(WebViewController controller, BuildContext context) async {

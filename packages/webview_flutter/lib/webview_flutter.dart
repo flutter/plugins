@@ -394,14 +394,22 @@ class WebViewController {
     return _channel.invokeMethod("reload");
   }
 
-  /// Clears the resource cache.
+  /// Clears all of the following caches.
   ///
-  /// Note that the cache is per-application, so this will clear the cache for all WebViews used.
+  /// There are multiple caches we need to be aware of.
+  ///	1. Browser HTTP Cache.
+  ///	2. Caches API caches. https://developers.google.com/web/fundamentals/instant-and-offline/web-storage/cache-api,
+  ///    These are not yet supported in IOS WkWebView. Service workers tend to use this cache.
+  ///	3. Application cache.
+  ///	4. Local Storage.
+  ///
+  /// Note: Calling this method also triggers a reload.
   Future<void> clearCache() async {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
-    return _channel.invokeMethod("clearCache");
+    _channel.invokeMethod("clearCache");
+    return reload();
   }
 
   Future<void> _updateSettings(_WebSettings setting) async {

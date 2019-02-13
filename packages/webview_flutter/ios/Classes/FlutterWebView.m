@@ -210,10 +210,7 @@
 
 - (void)clearCache:(FlutterResult)result {
   if (@available(iOS 9.0, *)) {
-    NSSet* cacheDataTypes = [NSSet setWithArray:@[
-      WKWebsiteDataTypeDiskCache, WKWebsiteDataTypeMemoryCache,
-      WKWebsiteDataTypeOfflineWebApplicationCache
-    ]];
+    NSSet* cacheDataTypes = [WKWebsiteDataStore allWebsiteDataTypes];
     WKWebsiteDataStore* dataStore = [WKWebsiteDataStore defaultDataStore];
     NSDate* dateFrom = [NSDate dateWithTimeIntervalSince1970:0];
     [dataStore removeDataOfTypes:cacheDataTypes
