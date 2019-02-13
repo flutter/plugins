@@ -29,7 +29,8 @@ void main() {
 
     test('call', () async {
       await CloudFunctions.instance.call(functionName: 'baz');
-      await CloudFunctions(app: const FirebaseApp(name: '1337'), region: 'space')
+      await CloudFunctions(
+              app: const FirebaseApp(name: '1337'), region: 'space')
           .call(functionName: 'qux', parameters: <String, dynamic>{
         'quux': 'quuz',
       });
