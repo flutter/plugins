@@ -11,16 +11,21 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:firebase_crashlytics_example/main.dart';
 
 void main() {
-  testWidgets('Verify Platform version', (WidgetTester tester) async {
+  testWidgets('Verify displayed buttons', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(MyApp());
 
-    // Verify that platform version is retrieved.
+    // Verify that buttons are displayed.
     expect(
-      find.byWidgetPredicate(
-        (Widget widget) =>
-            widget is Text && widget.data.startsWith('Running on:'),
-      ),
+      find.widgetWithText(FlatButton, 'Log'),
+      findsOneWidget,
+    );
+    expect(
+      find.widgetWithText(FlatButton, 'Key'),
+      findsOneWidget,
+    );
+    expect(
+      find.widgetWithText(FlatButton, 'Crash'),
       findsOneWidget,
     );
   });

@@ -39,15 +39,12 @@ class _MyAppState extends State<MyApp> {
               FlatButton(
                   child: const Text('Key'),
                   onPressed: () {
-                    Crashlytics.instance.setString('iaw', 'i am working');
+                    Crashlytics.instance.setString('foo', 'bar');
                   }),
               FlatButton(
-                  child: const Text('log'),
+                  child: const Text('Log'),
                   onPressed: () {
-                    for (int i = 0; i < 10000; i++) {
-                      Crashlytics.instance.log(
-                          'i am working well ${DateTime.now().millisecondsSinceEpoch}');
-                    }
+                    Crashlytics.instance.log('baz');
                   }),
               FlatButton(
                   child: const Text('Crash'),
