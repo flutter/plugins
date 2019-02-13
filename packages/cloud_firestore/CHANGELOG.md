@@ -1,3 +1,7 @@
+## 0.9.1
+
+* Fix IllegalStateException errors when using transactions on Android
+
 ## 0.9.0+1
 
 * Log a more detailed warning at build time about the previous AndroidX
