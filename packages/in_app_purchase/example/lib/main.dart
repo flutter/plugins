@@ -52,15 +52,9 @@ class _MyAppState extends State<MyApp> {
             Expanded(
               child: FutureBuilder(
                 future: InAppPurchaseConnection.instance.queryProductDetails(
-                    <String>[
-                  'consumable',
-                  'gas',
-                  'premium',
-                  'upgrade',
-                  'somethingNotValid'
-                ].toSet()),
+                    <String>['consumable', 'upgrade', 'subscription'].toSet()),
                 builder: (BuildContext context,
-                    AsyncSnapshot<QueryProductDetailsResponse> snapshot) {
+                    AsyncSnapshot<ProductDetailsResponse> snapshot) {
                   if (!snapshot.hasData) {
                     return Column(children: <Widget>[
                       buildListCard(ListTile(title: const Text('Loading...')))
@@ -74,10 +68,6 @@ class _MyAppState extends State<MyApp> {
                   return Column(
                     children: <Widget>[
                       Center(child: Text('Products')),
-                      Center(
-                        child:
-                            Text('Not found products: ' + notFound.toString()),
-                      ),
                       Expanded(
                         child: ListView(
                           children: _buildProductList(snapshot.data),
@@ -120,7 +110,7 @@ class _MyAppState extends State<MyApp> {
     return children;
   }
 
-  List<ListTile> _buildProductList(QueryProductDetailsResponse response) {
+  List<ListTile> _buildProductList(ProductDetailsResponse response) {
     List<ListTile> productDetailsCards = response.productDetails.map(
       (ProductDetails productDetails) {
         return buildListCard(ListTile(
@@ -130,6 +120,7 @@ class _MyAppState extends State<MyApp> {
           subtitle: Text(
             productDetails.description,
           ),
+          trailing: Text(productDetails.price),
         ));
       },
     ).toList();

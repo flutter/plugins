@@ -30,10 +30,10 @@ class AppStoreConnection implements InAppPurchaseConnection {
 
   /// Query the product detail list.
   ///
-  /// This method only returns [QueryProductDetailsResponse].
+  /// This method only returns [ProductDetailsResponse].
   /// To get detailed Store Kit product list, use [SkProductResponseWrapper.startProductRequest]
   /// to get the [SKProductResponseWrapper].
-  Future<QueryProductDetailsResponse> queryProductDetails(
+  Future<ProductDetailsResponse> queryProductDetails(
       Set<String> identifiers) async {
     final SKRequestMaker requestMaker = SKRequestMaker();
     SkProductResponseWrapper response =
@@ -42,8 +42,7 @@ class AppStoreConnection implements InAppPurchaseConnection {
         .map((SKProductWrapper productWrapper) =>
             productWrapper.toProductDetails())
         .toList();
-    QueryProductDetailsResponse productDetailsResponse =
-        QueryProductDetailsResponse(
+    ProductDetailsResponse productDetailsResponse = ProductDetailsResponse(
       productDetails: productDetails,
       notFoundIDs: response.invalidProductIdentifiers,
     );
