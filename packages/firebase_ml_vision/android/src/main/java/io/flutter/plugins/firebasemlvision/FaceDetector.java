@@ -1,6 +1,6 @@
 package io.flutter.plugins.firebasemlvision;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.ml.vision.FirebaseVision;
@@ -56,10 +56,10 @@ class FaceDetector implements Detector {
                 for (FirebaseVisionFace face : firebaseVisionFaces) {
                   Map<String, Object> faceData = new HashMap<>();
 
-                  faceData.put("left", face.getBoundingBox().left);
-                  faceData.put("top", face.getBoundingBox().top);
-                  faceData.put("width", face.getBoundingBox().width());
-                  faceData.put("height", face.getBoundingBox().height());
+                  faceData.put("left", (double) face.getBoundingBox().left);
+                  faceData.put("top", (double) face.getBoundingBox().top);
+                  faceData.put("width", (double) face.getBoundingBox().width());
+                  faceData.put("height", (double) face.getBoundingBox().height());
 
                   faceData.put("headEulerAngleY", face.getHeadEulerAngleY());
                   faceData.put("headEulerAngleZ", face.getHeadEulerAngleZ());

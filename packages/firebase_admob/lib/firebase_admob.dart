@@ -1,4 +1,4 @@
-// ignore_for_file: deprecated_member_use
+// ignore_for_file: deprecated_member_use_from_same_package
 // Copyright 2017 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -515,6 +515,9 @@ class FirebaseAdMob {
 }
 
 Future<bool> _invokeBooleanMethod(String method, [dynamic arguments]) async {
+  // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+  // https://github.com/flutter/flutter/issues/26431
+  // ignore: strong_mode_implicit_dynamic_method
   final bool result = await FirebaseAdMob.instance._channel.invokeMethod(
     method,
     arguments,

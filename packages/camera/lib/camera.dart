@@ -1,14 +1,22 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
-final MethodChannel _channel = const MethodChannel('plugins.flutter.io/camera')
-  ..invokeMethod('init');
+part 'camera_image.dart';
+
+final MethodChannel _channel = const MethodChannel('plugins.flutter.io/camera');
 
 enum CameraLensDirection { front, back, external }
 
 enum ResolutionPreset { low, medium, high }
+
+typedef onLatestImageAvailable = Function(CameraImage image);
 
 /// Returns the resolution preset as a String.
 String serializeResolutionPreset(ResolutionPreset resolutionPreset) {
@@ -41,6 +49,9 @@ CameraLensDirection _parseCameraLensDirection(String string) {
 Future<List<CameraDescription>> availableCameras() async {
   try {
     final List<dynamic> cameras =
+        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+        // https://github.com/flutter/flutter/issues/26431
+        // ignore: strong_mode_implicit_dynamic_method
         await _channel.invokeMethod('availableCameras');
     return cameras.map((dynamic camera) {
       return CameraDescription(
@@ -110,13 +121,15 @@ class CameraValue {
     this.previewSize,
     this.isRecordingVideo,
     this.isTakingPicture,
+    this.isStreamingImages,
   });
 
   const CameraValue.uninitialized()
       : this(
             isInitialized: false,
             isRecordingVideo: false,
-            isTakingPicture: false);
+            isTakingPicture: false,
+            isStreamingImages: false);
 
   /// True after [CameraController.initialize] has completed successfully.
   final bool isInitialized;
@@ -126,6 +139,9 @@ class CameraValue {
 
   /// True when the camera is recording (not the same as previewing).
   final bool isRecordingVideo;
+
+  /// True when images from the camera are being streamed.
+  final bool isStreamingImages;
 
   final String errorDescription;
 
@@ -145,6 +161,7 @@ class CameraValue {
     bool isInitialized,
     bool isRecordingVideo,
     bool isTakingPicture,
+    bool isStreamingImages,
     String errorDescription,
     Size previewSize,
   }) {
@@ -154,6 +171,7 @@ class CameraValue {
       previewSize: previewSize ?? this.previewSize,
       isRecordingVideo: isRecordingVideo ?? this.isRecordingVideo,
       isTakingPicture: isTakingPicture ?? this.isTakingPicture,
+      isStreamingImages: isStreamingImages ?? this.isStreamingImages,
     );
   }
 
@@ -164,7 +182,8 @@ class CameraValue {
         'isRecordingVideo: $isRecordingVideo, '
         'isInitialized: $isInitialized, '
         'errorDescription: $errorDescription, '
-        'previewSize: $previewSize)';
+        'previewSize: $previewSize, '
+        'isStreamingImages: $isStreamingImages)';
   }
 }
 
@@ -185,6 +204,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   int _textureId;
   bool _isDisposed = false;
   StreamSubscription<dynamic> _eventSubscription;
+  StreamSubscription<dynamic> _imageStreamSubscription;
   Completer<void> _creatingCompleter;
 
   /// Initializes the camera on the device.
@@ -196,6 +216,9 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
     try {
       _creatingCompleter = Completer<void>();
+      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+      // https://github.com/flutter/flutter/issues/26431
+      // ignore: strong_mode_implicit_dynamic_method
       final Map<dynamic, dynamic> reply = await _channel.invokeMethod(
         'initialize',
         <String, dynamic>{
@@ -265,6 +288,9 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
     try {
       value = value.copyWith(isTakingPicture: true);
+      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+      // https://github.com/flutter/flutter/issues/26431
+      // ignore: strong_mode_implicit_dynamic_method
       await _channel.invokeMethod(
         'takePicture',
         <String, dynamic>{'textureId': _textureId, 'path': path},
@@ -274,6 +300,96 @@ class CameraController extends ValueNotifier<CameraValue> {
       value = value.copyWith(isTakingPicture: false);
       throw CameraException(e.code, e.message);
     }
+  }
+
+  /// Start streaming images from platform camera.
+  ///
+  /// Settings for capturing images on iOS and Android is set to always use the
+  /// latest image available from the camera and will drop all other images.
+  ///
+  /// When running continuously with [CameraPreview] widget, this function runs
+  /// best with [ResolutionPreset.low]. Running on [ResolutionPreset.high] can
+  /// have significant frame rate drops for [CameraPreview] on lower end
+  /// devices.
+  ///
+  /// Throws a [CameraException] if image streaming or video recording has
+  /// already started.
+  // TODO(bmparr): Add settings for resolution and fps.
+  Future<void> startImageStream(onLatestImageAvailable onAvailable) async {
+    if (!value.isInitialized || _isDisposed) {
+      throw CameraException(
+        'Uninitialized CameraController',
+        'startImageStream was called on uninitialized CameraController.',
+      );
+    }
+    if (value.isRecordingVideo) {
+      throw CameraException(
+        'A video recording is already started.',
+        'startImageStream was called while a video is being recorded.',
+      );
+    }
+    if (value.isStreamingImages) {
+      throw CameraException(
+        'A camera has started streaming images.',
+        'startImageStream was called while a camera was streaming images.',
+      );
+    }
+
+    try {
+      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+      // https://github.com/flutter/flutter/issues/26431
+      // ignore: strong_mode_implicit_dynamic_method
+      await _channel.invokeMethod('startImageStream');
+      value = value.copyWith(isStreamingImages: true);
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+    const EventChannel cameraEventChannel =
+        EventChannel('plugins.flutter.io/camera/imageStream');
+    _imageStreamSubscription =
+        cameraEventChannel.receiveBroadcastStream().listen(
+      (dynamic imageData) {
+        onAvailable(CameraImage._fromPlatformData(imageData));
+      },
+    );
+  }
+
+  /// Stop streaming images from platform camera.
+  ///
+  /// Throws a [CameraException] if image streaming was not started or video
+  /// recording was started.
+  Future<void> stopImageStream() async {
+    if (!value.isInitialized || _isDisposed) {
+      throw CameraException(
+        'Uninitialized CameraController',
+        'stopImageStream was called on uninitialized CameraController.',
+      );
+    }
+    if (value.isRecordingVideo) {
+      throw CameraException(
+        'A video recording is already started.',
+        'stopImageStream was called while a video is being recorded.',
+      );
+    }
+    if (!value.isStreamingImages) {
+      throw CameraException(
+        'No camera is streaming images',
+        'stopImageStream was called when no camera is streaming images.',
+      );
+    }
+
+    try {
+      value = value.copyWith(isStreamingImages: false);
+      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+      // https://github.com/flutter/flutter/issues/26431
+      // ignore: strong_mode_implicit_dynamic_method
+      await _channel.invokeMethod('stopImageStream');
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+
+    _imageStreamSubscription.cancel();
+    _imageStreamSubscription = null;
   }
 
   /// Start a video recording and save the file to [path].
@@ -299,7 +415,17 @@ class CameraController extends ValueNotifier<CameraValue> {
         'startVideoRecording was called when a recording is already started.',
       );
     }
+    if (value.isStreamingImages) {
+      throw CameraException(
+        'A camera has started streaming images.',
+        'startVideoRecording was called while a camera was streaming images.',
+      );
+    }
+
     try {
+      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+      // https://github.com/flutter/flutter/issues/26431
+      // ignore: strong_mode_implicit_dynamic_method
       await _channel.invokeMethod(
         'startVideoRecording',
         <String, dynamic>{'textureId': _textureId, 'filePath': filePath},
@@ -326,6 +452,9 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
     try {
       value = value.copyWith(isRecordingVideo: false);
+      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+      // https://github.com/flutter/flutter/issues/26431
+      // ignore: strong_mode_implicit_dynamic_method
       await _channel.invokeMethod(
         'stopVideoRecording',
         <String, dynamic>{'textureId': _textureId},
@@ -345,6 +474,9 @@ class CameraController extends ValueNotifier<CameraValue> {
     super.dispose();
     if (_creatingCompleter != null) {
       await _creatingCompleter.future;
+      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+      // https://github.com/flutter/flutter/issues/26431
+      // ignore: strong_mode_implicit_dynamic_method
       await _channel.invokeMethod(
         'dispose',
         <String, dynamic>{'textureId': _textureId},
