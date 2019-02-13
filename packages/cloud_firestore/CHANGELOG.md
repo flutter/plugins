@@ -1,3 +1,7 @@
+## 0.9.1
+
+* Fix transactions on iOS when getting snapshot that doesn't exist.
+
 ## 0.9.0+1
 
 * Log a more detailed warning at build time about the previous AndroidX
