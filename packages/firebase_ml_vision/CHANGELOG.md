@@ -1,3 +1,7 @@
+## 0.5.0+2
+
+* Fixed iOS bug where an image needed to be rotated up.
+
 ## 0.5.0+1
 
 * Fixes `FIRAnalyticsVersionMismatch` compilation error on iOS. Please run `pod update` in directory

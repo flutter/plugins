@@ -69,7 +69,7 @@
 
       image = newImage;
     }
-    
+
     return [[FIRVisionImage alloc] initWithImage:image];
   } else if ([@"bytes" isEqualToString:imageType]) {
     FlutterStandardTypedData *byteData = imageData[@"bytes"];
