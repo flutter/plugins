@@ -1,15 +1,13 @@
 package io.flutter.plugins.firebase.crashlytics.firebasecrashlytics;
 
 import com.crashlytics.android.Crashlytics;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
+import java.util.ArrayList;
+import java.util.List;
 
 /** FirebaseCrashlyticsPlugin */
 public class FirebaseCrashlyticsPlugin implements MethodCallHandler {
@@ -18,7 +16,8 @@ public class FirebaseCrashlyticsPlugin implements MethodCallHandler {
 
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
-    final MethodChannel channel = new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_crashlytics");
+    final MethodChannel channel =
+        new MethodChannel(registrar.messenger(), "plugins.flutter.io/firebase_crashlytics");
     channel.setMethodCallHandler(new FirebaseCrashlyticsPlugin());
   }
 
@@ -74,9 +73,6 @@ public class FirebaseCrashlyticsPlugin implements MethodCallHandler {
     String className = lineParts[2].trim().substring(0, lineParts[2].indexOf("."));
     String methodName = lineParts[2].trim().substring(lineParts[2].indexOf(".") + 1);
 
-    return new StackTraceElement(className,
-                methodName,
-                fileName,
-                Integer.parseInt(lineNumber));
+    return new StackTraceElement(className, methodName, fileName, Integer.parseInt(lineNumber));
   }
 }

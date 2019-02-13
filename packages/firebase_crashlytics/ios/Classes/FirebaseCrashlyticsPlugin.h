@@ -1,4 +1,4 @@
 #import <Flutter/Flutter.h>
 
-@interface FirebaseCrashlyticsPlugin : NSObject<FlutterPlugin>
+@interface FirebaseCrashlyticsPlugin : NSObject <FlutterPlugin>
 @end
