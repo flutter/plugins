@@ -394,12 +394,12 @@ class WebViewController {
     return _channel.invokeMethod("reload");
   }
 
-  /// Clears all of the following caches.
+  /// Clears all caches used by the [WebView].
   ///
-  /// There are multiple caches we need to be aware of.
+  /// The following caches are cleared:
   ///	1. Browser HTTP Cache.
-  ///	2. Caches API caches. https://developers.google.com/web/fundamentals/instant-and-offline/web-storage/cache-api,
-  ///    These are not yet supported in IOS WkWebView. Service workers tend to use this cache.
+  ///	2. [Cache API](https://developers.google.com/web/fundamentals/instant-and-offline/web-storage/cache-api) caches.
+  ///    These are not yet supported in iOS WkWebView. Service workers tend to use this cache.
   ///	3. Application cache.
   ///	4. Local Storage.
   ///
