@@ -1,6 +1,6 @@
 ## 0.3.1
 
-* Remove an assertion that can interfere with hot-restart
+* Remove an assertion that can interfere with hot-restart.
 
 ## 0.3.0+1
 
