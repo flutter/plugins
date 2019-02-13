@@ -35,7 +35,16 @@
   if ([@"CloudFunctions#call" isEqualToString:call.method]) {
     NSString *functionName = call.arguments[@"functionName"];
     NSObject *parameters = call.arguments[@"parameters"];
-    [[FIRFunctions functions]
+    NSString *appName = call.arguments[@"app"];
+    NSString *region = call.arguments[@"region"];
+    FirebaseApp *app = [FirebaseApp appWithName:appName];
+    FIRFunctions *functions;
+    if (region != nil) {
+      functions = [FIRFunctions functionsWithApp:app region:region];
+    } else {
+      functions = [FIRFunctions functionsWithApp:app];
+    }
+    [functions
         callFunction:functionName
           withObject:parameters
           completion:^(FIRHTTPSCallableResult *callableResult, NSError *error) {
