@@ -167,6 +167,7 @@
   NSDictionary *map = [error toMap];
   XCTAssertEqualObjects(map, self.errorMap);
 }
+
 - (void)testLocaleToMap {
   NSLocale *system = NSLocale.systemLocale;
   NSDictionary *map = [system toMap];
