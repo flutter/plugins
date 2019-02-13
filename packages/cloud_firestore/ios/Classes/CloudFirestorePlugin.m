@@ -416,7 +416,10 @@ const UInt8 TIMESTAMP = 136;
     }
     id<FIRListenerRegistration> listener = [query
         addSnapshotListener:^(FIRQuerySnapshot *_Nullable snapshot, NSError *_Nullable error) {
-          if (error) result(error.flutterError);
+          if (error) {
+            result(error.flutterError);
+            return;
+          }
           NSMutableDictionary *arguments = [parseQuerySnapshot(snapshot) mutableCopy];
           [arguments setObject:handle forKey:@"handle"];
           [self.channel invokeMethod:@"QuerySnapshot" arguments:arguments];
@@ -428,7 +431,10 @@ const UInt8 TIMESTAMP = 136;
     FIRDocumentReference *document = getDocumentReference(call.arguments);
     id<FIRListenerRegistration> listener =
         [document addSnapshotListener:^(FIRDocumentSnapshot *snapshot, NSError *_Nullable error) {
-          if (error) result(error.flutterError);
+          if (error) {
+            result(error.flutterError);
+            return;
+          }
           [self.channel invokeMethod:@"DocumentSnapshot"
                            arguments:@{
                              @"handle" : handle,
