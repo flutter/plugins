@@ -37,12 +37,12 @@
     NSObject *parameters = call.arguments[@"parameters"];
     NSString *appName = call.arguments[@"app"];
     NSString *region = call.arguments[@"region"];
-    FirebaseApp *app = [FirebaseApp appWithName:appName];
+    FIRApp *app = [FIRApp appNamed:appName];
     FIRFunctions *functions;
     if (region != nil) {
-      functions = [FIRFunctions functionsWithApp:app region:region];
+      functions = [FIRFunctions functionsForApp:app region:region];
     } else {
-      functions = [FIRFunctions functionsWithApp:app];
+      functions = [FIRFunctions functionsForApp:app];
     }
     [functions callFunction:functionName
                  withObject:parameters
@@ -65,9 +65,10 @@
                                                message:@"Firebase function failed with exception."
                                                details:details];
                      } else {
-                       flutterError = [FlutterError errorWithCode:nil
-                                                          message:error.localizedDescription
-                                                          details:nil];
+                       flutterError = [FlutterError
+                           errorWithCode:[NSString stringWithFormat:@"%ld", error.code]
+                                 message:error.localizedDescription
+                                 details:nil];
                      }
                      result(flutterError);
                    } else {
