@@ -32,7 +32,8 @@ void main() {
 
     test('isDebuggable', () async {
       expect(await crashlytics.isDebuggable(), true);
-      expect(log, <Matcher>[isMethodCall('Crashlytics#isDebuggable')]);
+      expect(log, <Matcher>[isMethodCall('Crashlytics#isDebuggable',
+          arguments: null)]);
     });
 
     test('log', () {
@@ -55,7 +56,8 @@ void main() {
 
     test('getVersion', () async {
       crashlytics.getVersion();
-      expect(log, <Matcher>[isMethodCall('Crashlytics#getVersion')]);
+      expect(log, <Matcher>[isMethodCall('Crashlytics#getVersion',
+          arguments: null)]);
     });
 
     test('setKey', () {

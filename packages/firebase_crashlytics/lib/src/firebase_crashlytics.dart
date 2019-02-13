@@ -63,11 +63,17 @@ class Crashlytics {
   }
 
   Future<bool> isDebuggable() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     final bool result = await channel.invokeMethod('Crashlytics#isDebuggable');
     return result;
   }
 
   Future<String> getVersion() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
     final String result = await channel.invokeMethod('Crashlytics#getVersion');
     return result;
   }
@@ -106,18 +112,24 @@ class Crashlytics {
   }
 
   Future<void> setUserEmail(String email) async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
     await channel.invokeMethod(
         'Crashlytics#setUserEmail', <String, dynamic>{'email': email});
   }
 
   Future<void> setUserIdentifier(String identifier) async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
     await channel.invokeMethod('Crashlytics#setUserIdentifier',
         <String, dynamic>{'identifier': identifier});
   }
 
   Future<void> setUserName(String name) async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
     await channel.invokeMethod(
         'Crashlytics#setUserName', <String, dynamic>{'name': name});
@@ -126,6 +138,8 @@ class Crashlytics {
   @visibleForTesting
   Future<void> sendLogs() async {
     for (int i = 0; i < logs.length; i++) {
+      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+      // https://github.com/flutter/flutter/issues/26431
       // ignore: strong_mode_implicit_dynamic_method
       await channel.invokeMethod('Crashlytics#log', <String, dynamic>{
         'msg': logs.elementAt(i),
@@ -144,15 +158,23 @@ class Crashlytics {
       };
 
       if (value is int) {
+        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+        // https://github.com/flutter/flutter/issues/26431
         // ignore: strong_mode_implicit_dynamic_method
         await channel.invokeMethod('Crashlytics#setInt', crashlyticsKey);
       } else if (value is double) {
+        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+        // https://github.com/flutter/flutter/issues/26431
         // ignore: strong_mode_implicit_dynamic_method
         await channel.invokeMethod('Crashlytics#setDouble', crashlyticsKey);
       } else if (value is String) {
+        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+        // https://github.com/flutter/flutter/issues/26431
         // ignore: strong_mode_implicit_dynamic_method
         await channel.invokeMethod('Crashlytics#setString', crashlyticsKey);
       } else if (value is bool) {
+        // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+        // https://github.com/flutter/flutter/issues/26431
         // ignore: strong_mode_implicit_dynamic_method
         await channel.invokeMethod('Crashlytics#setBool', crashlyticsKey);
       }
