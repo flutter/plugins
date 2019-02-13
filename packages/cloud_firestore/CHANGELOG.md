@@ -1,6 +1,6 @@
-## 0.9.1
+## 0.9.0+2
 
-* No longer shows a confusing log message about configuring default app
+* Log messages about automatic configuration of the default app are now less confusing.
 
 ## 0.9.0+1
 

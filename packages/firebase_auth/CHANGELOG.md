@@ -1,6 +1,6 @@
-## 0.8.2
+## 0.8.1+1
 
-* No longer shows a confusing log message about configuring default app
+* Log messages about automatic configuration of the default app are now less confusing.
 
 ## 0.8.1
 
