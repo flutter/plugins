@@ -187,6 +187,34 @@ void main() {
       });
     });
 
+    group('getReferenceFromUrl', () {
+      final List<MethodCall> log = <MethodCall>[];
+
+      setUp(() {
+        FirebaseStorage.channel
+            .setMockMethodCallHandler((MethodCall methodCall) async {
+          log.add(methodCall);
+          return 'foo';
+        });
+      });
+
+      test('invokes correct method', () async {
+        String url = 'https://firebasestorage.googleapis.com/v0/b/fake-21c50.appspot.com/o/';
+        StorageReference reference = await storage.getReferenceFromUrl(url);
+        expect(reference.path, 'foo');
+        expect(log, <Matcher>[
+          isMethodCall(
+            'FirebaseStorage#getReferenceFromUrl',
+            arguments: <String, dynamic>{
+              'app': 'testApp',
+              'bucket': 'gs://fake-storage-bucket-url.com',
+              'fullUrl': url,
+            },
+          ),
+        ]);
+      });
+    });
+
     group('StorageReference', () {
       group('getData', () {
         final List<MethodCall> log = <MethodCall>[];

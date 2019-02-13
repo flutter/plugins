@@ -125,6 +125,20 @@ class FirebaseStorage {
       'time': time,
     });
   }
+
+  Future<StorageReference> getReferenceFromUrl(String fullUrl) async {
+    String path = await channel.invokeMethod(
+        "FirebaseStorage#getReferenceFromUrl", <String, dynamic>{
+      'app': app?.name,
+      'bucket': storageBucket,
+      'fullUrl': fullUrl
+    });
+    if (path != null) {
+      return ref().child(path);
+    } else {
+      return null;
+    }
+  }
 }
 
 /// TODO: Move into own file and build out progress functionality
