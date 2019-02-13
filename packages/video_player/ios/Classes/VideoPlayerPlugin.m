@@ -249,14 +249,16 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
       case AVPlayerItemStatusUnknown:
         break;
       case AVPlayerItemStatusReadyToPlay:
-        _isInitialized = true;
         [item addOutput:_videoOutput];
-        [self sendInitialized];
         [self updatePlayingState];
         break;
     }
   } else if (context == playbackLikelyToKeepUpContext) {
     if ([[_player currentItem] isPlaybackLikelyToKeepUp]) {
+      if (!_isInitialized) {
+        _isInitialized = true;
+        [self sendInitialized];
+      }
       [self updatePlayingState];
       if (_eventSink != nil) {
         _eventSink(@{@"event" : @"bufferingEnd"});
