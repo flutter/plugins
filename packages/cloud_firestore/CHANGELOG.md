@@ -1,3 +1,7 @@
+## 0.9.1
+
+* No longer sends empty snapshot events on iOS when encountering errors
+
 ## 0.9.0+1
 
 * Log a more detailed warning at build time about the previous AndroidX
