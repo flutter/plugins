@@ -42,8 +42,7 @@ public class CloudFunctionsPlugin implements MethodCallHandler {
         } else {
           functions = FirebaseFunctions.getInstance(app);
         }
-        HttpsCallableReference httpsCallableReference =
-                functions.getHttpsCallable(functionName);
+        HttpsCallableReference httpsCallableReference = functions.getHttpsCallable(functionName);
         httpsCallableReference
             .call(parameters)
             .addOnCompleteListener(

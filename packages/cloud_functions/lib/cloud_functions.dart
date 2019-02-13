@@ -20,11 +20,12 @@ class CloudFunctionsException implements Exception {
 ///
 /// You can get an instance by calling [CloudFunctions.instance].
 class CloudFunctions {
+  CloudFunctions({FirebaseApp app, String region})
+      : _app = app ?? FirebaseApp.instance,
+        _region = region;
+
   @visibleForTesting
   static const MethodChannel channel = MethodChannel('cloud_functions');
-
-  CloudFunctions({FirebaseApp app, String region})
-      : _app = app ?? FirebaseApp.instance, _region = region;
 
   static CloudFunctions _instance = CloudFunctions();
 
