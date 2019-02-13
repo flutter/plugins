@@ -64,7 +64,6 @@ class _MyAppState extends State<MyApp> {
                       child: Text('Error: ' + snapshot.error.toString()),
                     );
                   }
-                  List<String> notFound = snapshot.data.notFoundIDs;
                   return Column(
                     children: <Widget>[
                       Center(child: Text('Products')),
