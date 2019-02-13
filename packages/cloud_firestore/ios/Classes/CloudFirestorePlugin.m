@@ -278,6 +278,7 @@ const UInt8 TIMESTAMP = 136;
   self = [super init];
   if (self) {
     if (![FIRApp appNamed:@"__FIRAPP_DEFAULT"]) {
+      NSLog(@"Configuring the default Firebase app...");
       [FIRApp configure];
     }
     _listeners = [NSMutableDictionary<NSNumber *, id<FIRListenerRegistration>> dictionary];

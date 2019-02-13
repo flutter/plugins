@@ -34,6 +34,7 @@
     _channel = channel;
     _resumingFromBackground = NO;
     if (![FIRApp appNamed:@"__FIRAPP_DEFAULT"]) {
+      NSLog(@"Configuring the default Firebase app...");
       [FIRApp configure];
     }
     [FIRMessaging messaging].delegate = self;
