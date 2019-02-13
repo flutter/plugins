@@ -46,6 +46,7 @@ class Crashlytics {
       // Report error
       final List<String> stackTraceLines =
           Trace.format(details.stack).trimRight().split('\n');
+      // ignore: strong_mode_implicit_dynamic_method
       final dynamic result =
           await channel.invokeMethod('Crashlytics#onError', <String, dynamic>{
         'exception': details.exceptionAsString(),
@@ -105,16 +106,19 @@ class Crashlytics {
   }
 
   Future<void> setUserEmail(String email) async {
+    // ignore: strong_mode_implicit_dynamic_method
     await channel.invokeMethod(
         'Crashlytics#setUserEmail', <String, dynamic>{'email': email});
   }
 
   Future<void> setUserIdentifier(String identifier) async {
+    // ignore: strong_mode_implicit_dynamic_method
     await channel.invokeMethod('Crashlytics#setUserIdentifier',
         <String, dynamic>{'identifier': identifier});
   }
 
   Future<void> setUserName(String name) async {
+    // ignore: strong_mode_implicit_dynamic_method
     await channel.invokeMethod(
         'Crashlytics#setUserName', <String, dynamic>{'name': name});
   }
@@ -122,6 +126,7 @@ class Crashlytics {
   @visibleForTesting
   Future<void> sendLogs() async {
     for (int i = 0; i < logs.length; i++) {
+      // ignore: strong_mode_implicit_dynamic_method
       await channel.invokeMethod('Crashlytics#log', <String, dynamic>{
         'msg': logs.elementAt(i),
       });
@@ -139,12 +144,16 @@ class Crashlytics {
       };
 
       if (value is int) {
+        // ignore: strong_mode_implicit_dynamic_method
         await channel.invokeMethod('Crashlytics#setInt', crashlyticsKey);
       } else if (value is double) {
+        // ignore: strong_mode_implicit_dynamic_method
         await channel.invokeMethod('Crashlytics#setDouble', crashlyticsKey);
       } else if (value is String) {
+        // ignore: strong_mode_implicit_dynamic_method
         await channel.invokeMethod('Crashlytics#setString', crashlyticsKey);
       } else if (value is bool) {
+        // ignore: strong_mode_implicit_dynamic_method
         await channel.invokeMethod('Crashlytics#setBool', crashlyticsKey);
       }
     }
