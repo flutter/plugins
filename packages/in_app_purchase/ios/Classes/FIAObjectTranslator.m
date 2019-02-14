@@ -6,181 +6,188 @@
 
 #pragma mark - SKProduct Coders
 
-@implementation SKProduct (Coder)
+@implementation FIAObjectTranslator
 
-- (NSDictionary *)toMap {
++ (NSDictionary *)getMapFromSKProduct:(SKProduct *)product {
+  if (!product) {
+    return nil;
+  }
   NSMutableDictionary *map = [[NSMutableDictionary alloc] initWithDictionary:@{
-    @"localizedDescription" : self.localizedDescription ?: [NSNull null],
-    @"localizedTitle" : self.localizedTitle ?: [NSNull null],
-    @"productIdentifier" : self.productIdentifier ?: [NSNull null],
-    @"downloadable" : @(self.downloadable),
-    @"price" : self.price ?: [NSNull null],
-    @"downloadContentLengths" : self.downloadContentLengths ?: [NSNull null],
-    @"downloadContentVersion" : self.downloadContentVersion ?: [NSNull null]
+    @"localizedDescription" : product.localizedDescription ?: [NSNull null],
+    @"localizedTitle" : product.localizedTitle ?: [NSNull null],
+    @"productIdentifier" : product.productIdentifier ?: [NSNull null],
+    @"downloadable" : @(product.downloadable),
+    @"price" : product.price ?: [NSNull null],
+    @"downloadContentLengths" : product.downloadContentLengths ?: [NSNull null],
+    @"downloadContentVersion" : product.downloadContentVersion ?: [NSNull null]
 
   }];
   // TODO(cyanglaz): NSLocale is a complex object, want to see the actual need of getting this
   // expanded to a map. Matching android to only get the currencySymbol for now.
   // https://github.com/flutter/flutter/issues/26610
-  [map setObject:[self.priceLocale toMap] ?: [NSNull null] forKey:@"priceLocale"];
+  [map setObject:[FIAObjectTranslator getMapFromNSLocale:product.priceLocale] ?: [NSNull null]
+          forKey:@"priceLocale"];
   if (@available(iOS 11.2, *)) {
-    [map setObject:[self.subscriptionPeriod toMap] ?: [NSNull null] forKey:@"subscriptionPeriod"];
+    [map setObject:[FIAObjectTranslator
+                       getMapFromSKProductSubscriptionPeriod:product.subscriptionPeriod]
+                       ?: [NSNull null]
+            forKey:@"subscriptionPeriod"];
   }
   if (@available(iOS 11.2, *)) {
-    [map setObject:[self.introductoryPrice toMap] ?: [NSNull null] forKey:@"introductoryPrice"];
+    [map setObject:[FIAObjectTranslator getMapFromSKProductDiscount:product.introductoryPrice]
+                       ?: [NSNull null]
+            forKey:@"introductoryPrice"];
   }
   if (@available(iOS 12.0, *)) {
-    [map setObject:self.subscriptionGroupIdentifier ?: [NSNull null]
+    [map setObject:product.subscriptionGroupIdentifier ?: [NSNull null]
             forKey:@"subscriptionGroupIdentifier"];
   }
   return map;
 }
 
-@end
-
-@implementation SKProductSubscriptionPeriod (Coder)
-
-- (NSDictionary *)toMap {
-  return @{@"numberOfUnits" : @(self.numberOfUnits), @"unit" : @(self.unit)};
++ (NSDictionary *)getMapFromSKProductSubscriptionPeriod:(SKProductSubscriptionPeriod *)period {
+  if (!period) {
+    return nil;
+  }
+  return @{@"numberOfUnits" : @(period.numberOfUnits), @"unit" : @(period.unit)};
 }
 
-@end
-
-@implementation SKProductDiscount (Coder)
-
-- (NSDictionary *)toMap {
++ (NSDictionary *)getMapFromSKProductDiscount:(SKProductDiscount *)discount {
+  if (!discount) {
+    return nil;
+  }
   NSMutableDictionary *map = [[NSMutableDictionary alloc] initWithDictionary:@{
-    @"price" : self.price ?: [NSNull null],
-    @"numberOfPeriods" : @(self.numberOfPeriods),
-    @"subscriptionPeriod" : [self.subscriptionPeriod toMap] ?: [NSNull null],
-    @"paymentMode" : @(self.paymentMode)
+    @"price" : discount.price ?: [NSNull null],
+    @"numberOfPeriods" : @(discount.numberOfPeriods),
+    @"subscriptionPeriod" :
+            [FIAObjectTranslator getMapFromSKProductSubscriptionPeriod:discount.subscriptionPeriod]
+        ?: [NSNull null],
+    @"paymentMode" : @(discount.paymentMode)
   }];
 
   // TODO(cyanglaz): NSLocale is a complex object, want to see the actual need of getting this
   // expanded to a map. Matching android to only get the currencySymbol for now.
   // https://github.com/flutter/flutter/issues/26610
-  [map setObject:[self.priceLocale toMap] ?: [NSNull null] forKey:@"priceLocale"];
+  [map setObject:[FIAObjectTranslator getMapFromNSLocale:discount.priceLocale] ?: [NSNull null]
+          forKey:@"priceLocale"];
   return map;
 }
 
-@end
-
-@implementation SKProductsResponse (Coder)
-
-- (NSDictionary *)toMap {
++ (NSDictionary *)getMapFromSKProductsResponse:(SKProductsResponse *)productResponse {
+  if (!productResponse) {
+    return nil;
+  }
   NSMutableArray *productsMapArray = [NSMutableArray new];
-  for (SKProduct *product in self.products) {
-    [productsMapArray addObject:[product toMap]];
+  for (SKProduct *product in productResponse.products) {
+    [productsMapArray addObject:[FIAObjectTranslator getMapFromSKProduct:product]];
   }
   return @{
     @"products" : productsMapArray,
-    @"invalidProductIdentifiers" : self.invalidProductIdentifiers ?: @[]
+    @"invalidProductIdentifiers" : productResponse.invalidProductIdentifiers ?: @[]
   };
 }
 
-@end
-
-@implementation SKPayment (Coder)
-
-- (NSDictionary *)toMap {
++ (NSDictionary *)getMapFromSKPayment:(SKPayment *)payment {
+  if (!payment) {
+    return nil;
+  }
   NSMutableDictionary *map = [[NSMutableDictionary alloc] initWithDictionary:@{
-    @"productIdentifier" : self.productIdentifier ?: [NSNull null],
-    @"requestData" : self.requestData ? [[NSString alloc] initWithData:self.requestData
-                                                              encoding:NSUTF8StringEncoding]
-                                      : [NSNull null],
-    @"quantity" : @(self.quantity),
-    @"applicationUsername" : self.applicationUsername ?: [NSNull null]
+    @"productIdentifier" : payment.productIdentifier ?: [NSNull null],
+    @"requestData" : payment.requestData ? [[NSString alloc] initWithData:payment.requestData
+                                                                 encoding:NSUTF8StringEncoding]
+                                         : [NSNull null],
+    @"quantity" : @(payment.quantity),
+    @"applicationUsername" : payment.applicationUsername ?: [NSNull null]
   }];
   if (@available(iOS 8.3, *)) {
-    [map setObject:@(self.simulatesAskToBuyInSandbox) forKey:@"simulatesAskToBuyInSandbox"];
+    [map setObject:@(payment.simulatesAskToBuyInSandbox) forKey:@"simulatesAskToBuyInSandbox"];
   }
   return map;
 }
 
-@end
-
-@implementation NSLocale (Coder)
-
-- (nullable NSDictionary *)toMap {
++ (NSDictionary *)getMapFromNSLocale:(NSLocale *)locale {
+  if (!locale) {
+    return nil;
+  }
   NSMutableDictionary *map = [[NSMutableDictionary alloc] init];
-  [map setObject:[self objectForKey:NSLocaleCurrencySymbol] ?: [NSNull null]
+  [map setObject:[locale objectForKey:NSLocaleCurrencySymbol] ?: [NSNull null]
           forKey:@"currencySymbol"];
   return map;
 }
 
-@end
-
-@implementation SKMutablePayment (Coder)
-
-- (instancetype)initWithMap:(NSDictionary *)map {
-  self = [self init];
-  if (self) {
-    self.productIdentifier = map[@"productIdentifier"];
-    NSString *utf8String = map[@"requestData"];
-    self.requestData = [utf8String dataUsingEncoding:NSUTF8StringEncoding];
-    self.quantity = [map[@"quantity"] integerValue];
-    self.applicationUsername = map[@"applicationUsername"];
-    if (@available(iOS 8.3, *)) {
-      self.simulatesAskToBuyInSandbox = [map[@"simulatesAskToBuyInSandbox"] boolValue];
-    }
++ (SKMutablePayment *)getSKMutablePaymentFromMap:(NSDictionary *)map {
+  if (!map) {
+    return nil;
   }
-  return self;
+  SKMutablePayment *payment = [[SKMutablePayment alloc] init];
+  payment.productIdentifier = map[@"productIdentifier"];
+  NSString *utf8String = map[@"requestData"];
+  payment.requestData = [utf8String dataUsingEncoding:NSUTF8StringEncoding];
+  payment.quantity = [map[@"quantity"] integerValue];
+  payment.applicationUsername = map[@"applicationUsername"];
+  if (@available(iOS 8.3, *)) {
+    payment.simulatesAskToBuyInSandbox = [map[@"simulatesAskToBuyInSandbox"] boolValue];
+  }
+  return payment;
 }
 
-@end
-
-@implementation SKPaymentTransaction (Coder)
-
-- (NSDictionary *)toMap {
++ (NSDictionary *)getMapFromSKPaymentTransaction:(SKPaymentTransaction *)transaction {
+  if (!transaction) {
+    return nil;
+  }
   NSMutableDictionary *map = [[NSMutableDictionary alloc] initWithDictionary:@{
-    @"error" : [self.error toMap] ?: [NSNull null],
-    @"payment" : self.payment ? [self.payment toMap] : [NSNull null],
-    @"originalTransaction" : self.originalTransaction ? [self.originalTransaction toMap]
-                                                      : [NSNull null],
-    @"transactionTimeStamp" : self.transactionDate ? @(self.transactionDate.timeIntervalSince1970)
-                                                   : [NSNull null],
-    @"transactionIdentifier" : self.transactionIdentifier ?: [NSNull null],
-    @"transactionState" : @(self.transactionState)
+    @"error" : [FIAObjectTranslator getMapFromNSError:transaction.error] ?: [NSNull null],
+    @"payment" : transaction.payment ? [FIAObjectTranslator getMapFromSKPayment:transaction.payment]
+                                     : [NSNull null],
+    @"originalTransaction" : transaction.originalTransaction
+        ? [FIAObjectTranslator getMapFromSKPaymentTransaction:transaction.originalTransaction]
+        : [NSNull null],
+    @"transactionTimeStamp" : transaction.transactionDate
+        ? @(transaction.transactionDate.timeIntervalSince1970)
+        : [NSNull null],
+    @"transactionIdentifier" : transaction.transactionIdentifier ?: [NSNull null],
+    @"transactionState" : @(transaction.transactionState)
   }];
   NSMutableArray *downloads = [NSMutableArray new];
-  for (SKDownload *download in self.downloads) {
-    [downloads addObject:[download toMap]];
+  for (SKDownload *download in transaction.downloads) {
+    [downloads addObject:[FIAObjectTranslator getMapFromSKDownload:download]];
   }
   [map setObject:downloads forKey:@"downloads"];
   return map;
 }
 
-@end
-
-@implementation SKDownload (Coder)
-
-- (NSDictionary *)toMap {
++ (NSDictionary *)getMapFromSKDownload:(SKDownload *)download {
+  if (!download) {
+    return nil;
+  }
   NSMutableDictionary *map = [[NSMutableDictionary alloc] initWithDictionary:@{
-    @"contentLength" : @(self.contentLength),
-    @"contentIdentifier" : self.contentIdentifier ?: [NSNull null],
-    @"contentURL" : self.contentURL.absoluteString ?: [NSNull null],
-    @"contentVersion" : self.contentVersion ?: [NSNull null],
-    @"error" : [self.error toMap] ?: @{},
-    @"progress" : @(self.progress),
-    @"timeRemaining" : @(self.timeRemaining),
-    @"downloadTimeUnKnown" : @(self.timeRemaining == SKDownloadTimeRemainingUnknown),
-    @"transactionID" : self.transaction.transactionIdentifier ?: [NSNull null]
+    @"contentLength" : @(download.contentLength),
+    @"contentIdentifier" : download.contentIdentifier ?: [NSNull null],
+    @"contentURL" : download.contentURL.absoluteString ?: [NSNull null],
+    @"contentVersion" : download.contentVersion ?: [NSNull null],
+    @"error" : [FIAObjectTranslator getMapFromNSError:download.error] ?: @{},
+    @"progress" : @(download.progress),
+    @"timeRemaining" : @(download.timeRemaining),
+    @"downloadTimeUnKnown" : @(download.timeRemaining == SKDownloadTimeRemainingUnknown),
+    @"transactionID" : download.transaction.transactionIdentifier ?: [NSNull null]
   }];
   if (@available(iOS 12.0, *)) {
-    [map setObject:@(self.state) forKey:@"state"];
+    [map setObject:@(download.state) forKey:@"state"];
   } else {
-    [map setObject:@(self.downloadState) forKey:@"state"];
+    [map setObject:@(download.downloadState) forKey:@"state"];
   }
   return map;
 }
 
-@end
-
-@implementation NSError (Coder)
-
-- (NSDictionary *)toMap {
-  return
-      @{@"code" : @(self.code), @"domain" : self.domain ?: @"", @"userInfo" : self.userInfo ?: @{}};
++ (NSDictionary *)getMapFromNSError:(NSError *)error {
+  if (!error) {
+    return nil;
+  }
+  return @{
+    @"code" : @(error.code),
+    @"domain" : error.domain ?: @"",
+    @"userInfo" : error.userInfo ?: @{}
+  };
 }
 
 @end

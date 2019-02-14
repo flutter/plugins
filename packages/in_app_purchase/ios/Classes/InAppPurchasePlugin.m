@@ -60,7 +60,7 @@
                                  details:call.arguments]);
       return;
     }
-    result([response toMap]);
+    result([FIAObjectTranslator getMapFromSKProductsResponse:response]);
   }];
 }
 
