@@ -1,3 +1,7 @@
+## 0.3.3
+
+* Add clearCache method to WebView controller.
+
 ## 0.3.2+1
 
 * Log a more detailed warning at build time about the previous AndroidX

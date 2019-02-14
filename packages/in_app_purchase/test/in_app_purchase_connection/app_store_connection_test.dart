@@ -68,7 +68,7 @@ void main() {
           name: '-[InAppPurchasePlugin startProductRequest:result:]',
           value: productResponseMap);
       final AppStoreConnection connection = AppStoreConnection();
-      final QueryProductDetailsResponse response =
+      final ProductDetailsResponse response =
           await connection.queryProductDetails(<String>['123'].toSet());
       List<ProductDetails> products = response.productDetails;
       expect(
@@ -90,7 +90,7 @@ void main() {
           name: '-[InAppPurchasePlugin startProductRequest:result:]',
           value: productResponseMap);
       final AppStoreConnection connection = AppStoreConnection();
-      final QueryProductDetailsResponse response =
+      final ProductDetailsResponse response =
           await connection.queryProductDetails(<String>['123'].toSet());
       expect(
         response.notFoundIDs,

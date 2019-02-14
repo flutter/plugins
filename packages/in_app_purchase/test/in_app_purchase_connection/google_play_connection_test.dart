@@ -78,11 +78,7 @@ void main() {
         'skuDetailsList': <Map<String, dynamic>>[]
       });
 
-      final QueryProductDetailsResponse response =
-          await connection.queryProductDetails(<String>[''].toSet());
-      expect(response.productDetails, isEmpty);
     });
-
     test('should get correct product details', () async {
       final BillingResponse responseCode = BillingResponse.ok;
       stubPlatform.addResponse(name: queryMethodName, value: <String, dynamic>{
@@ -91,7 +87,7 @@ void main() {
       });
       // Since queryProductDetails makes 2 platform method calls (one for each SkuType), the result will contain 2 dummyWrapper instead
       // of 1.
-      final QueryProductDetailsResponse response =
+      final ProductDetailsResponse response =
           await connection.queryProductDetails(<String>['valid'].toSet());
       expect(response.productDetails.first.title, dummyWrapper.title);
       expect(
@@ -107,7 +103,7 @@ void main() {
       });
       // Since queryProductDetails makes 2 platform method calls (one for each SkuType), the result will contain 2 dummyWrapper instead
       // of 1.
-      final QueryProductDetailsResponse response =
+      final ProductDetailsResponse response =
           await connection.queryProductDetails(<String>['invalid'].toSet());
       expect(response.notFoundIDs.first, 'invalid');
     });

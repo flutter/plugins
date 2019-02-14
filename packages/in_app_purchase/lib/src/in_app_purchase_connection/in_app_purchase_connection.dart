@@ -13,9 +13,8 @@ abstract class InAppPurchaseConnection {
   /// Returns true if the payment platform is ready and available.
   Future<bool> isAvailable();
 
-  /// Query the product details list.
-  Future<QueryProductDetailsResponse> queryProductDetails(
-      Set<String> identifiers);
+  /// Query product details list that match the given set of identifiers.
+  Future<ProductDetailsResponse> queryProductDetails(Set<String> identifiers);
 
   /// The [InAppPurchaseConnection] implemented for this platform.
   ///

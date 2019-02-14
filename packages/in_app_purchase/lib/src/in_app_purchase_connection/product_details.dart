@@ -5,8 +5,6 @@
 import 'package:flutter/foundation.dart';
 
 /// The class represents the information of a product.
-///
-/// A list of [ProductDetails] can be obtained from the [QueryProductDetailsResponse].
 class ProductDetails {
   ProductDetails({
     @required this.id,
@@ -29,16 +27,19 @@ class ProductDetails {
   final String price;
 }
 
-/// The response returned by [InAppPurchaseConnection.queryProductDetails]
-class QueryProductDetailsResponse {
-  QueryProductDetailsResponse(
+/// The response returned by [InAppPurchaseConnection.queryProductDetails].
+///
+/// A list of [ProductDetails] can be obtained from the this response.
+class ProductDetailsResponse {
+  ProductDetailsResponse(
       {@required this.productDetails, @required this.notFoundIDs});
 
-  ///Each [ProductDetails] uniquely matches one valid identifier in [identifiers] of [InAppPurchaseConnection.queryProductDetails].
+  /// Each [ProductDetails] uniquely matches one valid identifier in [identifiers] of [InAppPurchaseConnection.queryProductDetails].
   final List<ProductDetails> productDetails;
 
-  ///The list of identifiers that are in the `identifiers` of [InAppPurchaseConnection.queryProductDetails] but failed to be fetched.
+  /// The list of identifiers that are in the `identifiers` of [InAppPurchaseConnection.queryProductDetails] but failed to be fetched.
   ///
-  ///These are the identifiers not matching the `productIdentifer` or `sku` in any product on the App Store Connect or Google Play Console.
+  /// There's multiple platform specific reasons that product information could fail to be fetched,
+  /// ranging from products not being correctly configured in the storefront to the queried IDs not existing.
   final List<String> notFoundIDs;
 }
