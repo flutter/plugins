@@ -50,19 +50,7 @@ class RegisterPageState extends State<RegisterPage> {
               child: RaisedButton(
                 onPressed: () async {
                   if (_formKey.currentState.validate()) {
-                    final FirebaseUser user =
-                        await _auth.createUserWithEmailAndPassword(
-                      email: _emailController.text,
-                      password: _passwordController.text,
-                    );
-                    if (user != null) {
-                      setState(() {
-                        _success = true;
-                        _userEmail = user.email;
-                      });
-                    } else {
-                      _success = false;
-                    }
+                    _register();
                   }
                 },
                 child: const Text('Submit'),
@@ -88,5 +76,21 @@ class RegisterPageState extends State<RegisterPage> {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  // Example code for registration.
+  void _register() async {
+    final FirebaseUser user = await _auth.createUserWithEmailAndPassword(
+      email: _emailController.text,
+      password: _passwordController.text,
+    );
+    if (user != null) {
+      setState(() {
+        _success = true;
+        _userEmail = user.email;
+      });
+    } else {
+      _success = false;
+    }
   }
 }

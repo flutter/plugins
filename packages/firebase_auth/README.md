@@ -83,6 +83,16 @@ _handleSignIn()
     .catchError((e) => print(e));
 ```
 
+### Register a user
+
+You can now register a new user using firebase_auth, e.g.
+```dart
+final FirebaseUser user = await _auth.createUserWithEmailAndPassword(
+      email: 'an email',
+      password: 'a password',
+    );
+```
+
 ### Supported firebase authentication methods.
 
 Supported authentication methods includes `Google authentication`, `Email&Password authentication`, `Phone authentication` and `Anonymously Sign in`.
