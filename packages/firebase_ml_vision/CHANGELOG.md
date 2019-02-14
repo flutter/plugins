@@ -1,3 +1,7 @@
+## 0.5.1
+
+* iOS now handles non-planar buffers from `FirebaseVisionImage.fromBytes()`.
+
 ## 0.5.0+1
 
 * Fixes `FIRAnalyticsVersionMismatch` compilation error on iOS. Please run `pod update` in directory
@@ -18,7 +22,8 @@
 ## 0.4.0
 
 * **Breaking Change** Removal of base detector class `FirebaseVisionDetector`.
-* **Breaking Change** Removal of `TextRecognizer.detectInImage()`. Pleas use `TextRecognizer.processImage()`.
+* **Breaking Change** Removal of `TextRecognizer.detectInImage()`. Please use
+  `TextRecognizer.processImage()`.
 * **Breaking Change** Changed `FaceDetector.detectInImage()` to `FaceDetector.processImage()`.
 
 ## 0.3.0
