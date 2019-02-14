@@ -24,7 +24,7 @@ class SigninPageState extends State<SigninPage> {
               child: const Text('Sign out'),
               textColor: Theme.of(context).buttonColor,
               onPressed: () async {
-                FirebaseUser user = await _auth.currentUser();
+                final FirebaseUser user = await _auth.currentUser();
                 if (user == null) {
                   Scaffold.of(context).showSnackBar(SnackBar(
                     content: const Text('No one has signed in.'),
@@ -304,10 +304,10 @@ class _GoogleSigninSectionState extends State<_GoogleSigninSection> {
 }
 
 class _PhoneSignInSection extends StatefulWidget {
-  final ScaffoldState _scaffold;
 
   _PhoneSignInSection(this._scaffold);
 
+  final ScaffoldState _scaffold;
   @override
   State<StatefulWidget> createState() => _PhoneSignInSectionState();
 }
