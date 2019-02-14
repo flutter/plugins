@@ -394,6 +394,24 @@ class WebViewController {
     return _channel.invokeMethod("reload");
   }
 
+  /// Clears all caches used by the [WebView].
+  ///
+  /// The following caches are cleared:
+  ///	1. Browser HTTP Cache.
+  ///	2. [Cache API](https://developers.google.com/web/fundamentals/instant-and-offline/web-storage/cache-api) caches.
+  ///    These are not yet supported in iOS WkWebView. Service workers tend to use this cache.
+  ///	3. Application cache.
+  ///	4. Local Storage.
+  ///
+  /// Note: Calling this method also triggers a reload.
+  Future<void> clearCache() async {
+    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+    // https://github.com/flutter/flutter/issues/26431
+    // ignore: strong_mode_implicit_dynamic_method
+    await _channel.invokeMethod("clearCache");
+    return reload();
+  }
+
   Future<void> _updateSettings(_WebSettings setting) async {
     final Map<String, dynamic> updateMap = _settings.updatesMap(setting);
     if (updateMap == null) {
@@ -467,6 +485,32 @@ class WebViewController {
         await _channel.invokeMethod('evaluateJavascript', javascriptString);
     return result;
   }
+}
+
+/// Manages cookies pertaining to all [WebView]s.
+class CookieManager {
+  /// Creates a [CookieManager] -- returns the instance if it's already been called.
+  factory CookieManager() {
+    return _instance ??= CookieManager._();
+  }
+
+  CookieManager._();
+
+  static const MethodChannel _channel =
+      MethodChannel('plugins.flutter.io/cookie_manager');
+  static CookieManager _instance;
+
+  /// Clears all cookies.
+  ///
+  /// This is supported for >= IOS 9.
+  ///
+  /// Returns true if cookies were present before clearing, else false.
+  Future<bool> clearCookies() => _channel
+      // TODO(amirh): remove this when the invokeMethod update makes it to stable Flutter.
+      // https://github.com/flutter/flutter/issues/26431
+      // ignore: strong_mode_implicit_dynamic_method
+      .invokeMethod('clearCookies')
+      .then<bool>((dynamic result) => result);
 }
 
 // Throws an ArgumentError if `url` is not a valid URL string.

@@ -75,11 +75,18 @@ class WebViewExample extends StatelessWidget {
 enum MenuOptions {
   showUserAgent,
   toast,
+  listCookies,
+  clearCookies,
+  addToCache,
+  listCache,
+  clearCache,
 }
 
 class SampleMenu extends StatelessWidget {
   SampleMenu(this.controller);
+
   final Future<WebViewController> controller;
+  final CookieManager cookieManager = CookieManager();
 
   @override
   Widget build(BuildContext context) {
@@ -100,6 +107,21 @@ class SampleMenu extends StatelessWidget {
                   ),
                 );
                 break;
+              case MenuOptions.listCookies:
+                _onListCookies(controller.data, context);
+                break;
+              case MenuOptions.clearCookies:
+                _onClearCookies(context);
+                break;
+              case MenuOptions.addToCache:
+                _onAddToCache(controller.data, context);
+                break;
+              case MenuOptions.listCache:
+                _onListCache(controller.data, context);
+                break;
+              case MenuOptions.clearCache:
+                _onClearCache(controller.data, context);
+                break;
             }
           },
           itemBuilder: (BuildContext context) => <PopupMenuItem<MenuOptions>>[
@@ -111,6 +133,26 @@ class SampleMenu extends StatelessWidget {
                 const PopupMenuItem<MenuOptions>(
                   value: MenuOptions.toast,
                   child: Text('Make a toast'),
+                ),
+                const PopupMenuItem<MenuOptions>(
+                  value: MenuOptions.listCookies,
+                  child: Text('List cookies'),
+                ),
+                const PopupMenuItem<MenuOptions>(
+                  value: MenuOptions.clearCookies,
+                  child: Text('Clear cookies'),
+                ),
+                const PopupMenuItem<MenuOptions>(
+                  value: MenuOptions.addToCache,
+                  child: Text('Add to cache'),
+                ),
+                const PopupMenuItem<MenuOptions>(
+                  value: MenuOptions.listCache,
+                  child: Text('List cache'),
+                ),
+                const PopupMenuItem<MenuOptions>(
+                  value: MenuOptions.clearCache,
+                  child: Text('Clear cache'),
                 ),
               ],
         );
@@ -124,6 +166,68 @@ class SampleMenu extends StatelessWidget {
     // with the WebView.
     controller.evaluateJavascript(
         'Toaster.postMessage("User Agent: " + navigator.userAgent);');
+  }
+
+  void _onListCookies(
+      WebViewController controller, BuildContext context) async {
+    final String cookies =
+        await controller.evaluateJavascript('document.cookie');
+    Scaffold.of(context).showSnackBar(SnackBar(
+      content: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          const Text('Cookies:'),
+          _getCookieList(cookies),
+        ],
+      ),
+    ));
+  }
+
+  void _onAddToCache(WebViewController controller, BuildContext context) async {
+    await controller.evaluateJavascript(
+        'caches.open("test_caches_entry"); localStorage["test_localStorage"] = "dummy_entry";');
+    Scaffold.of(context).showSnackBar(const SnackBar(
+      content: Text('Added a test entry to cache.'),
+    ));
+  }
+
+  void _onListCache(WebViewController controller, BuildContext context) async {
+    await controller.evaluateJavascript('caches.keys()'
+        '.then((cacheKeys) => JSON.stringify({"cacheKeys" : cacheKeys, "localStorage" : localStorage}))'
+        '.then((caches) => Toaster.postMessage(caches))');
+  }
+
+  void _onClearCache(WebViewController controller, BuildContext context) async {
+    await controller.clearCache();
+    Scaffold.of(context).showSnackBar(const SnackBar(
+      content: Text("Cache cleared."),
+    ));
+  }
+
+  void _onClearCookies(BuildContext context) async {
+    final bool hadCookies = await cookieManager.clearCookies();
+    String message = 'There were cookies. Now, they are gone!';
+    if (!hadCookies) {
+      message = 'There are no cookies.';
+    }
+    Scaffold.of(context).showSnackBar(SnackBar(
+      content: Text(message),
+    ));
+  }
+
+  Widget _getCookieList(String cookies) {
+    if (cookies == null || cookies == '""') {
+      return Container();
+    }
+    final List<String> cookieList = cookies.split(';');
+    final Iterable<Text> cookieWidgets =
+        cookieList.map((String cookie) => Text(cookie));
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisSize: MainAxisSize.min,
+      children: cookieWidgets.toList(),
+    );
   }
 }
 

@@ -25,8 +25,10 @@
   if (self) {
     if (![FIRApp defaultApp]) {
       [FIRApp configure];
-      _traces = [[NSMutableDictionary alloc] init];
     }
+
+    _traces = [[NSMutableDictionary alloc] init];
+    _httpMetrics = [[NSMutableDictionary alloc] init];
   }
 
   return self;

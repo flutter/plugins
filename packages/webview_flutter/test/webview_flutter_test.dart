@@ -15,13 +15,18 @@ void main() {
   final _FakePlatformViewsController fakePlatformViewsController =
       _FakePlatformViewsController();
 
+  final _FakeCookieManager _fakeCookieManager = _FakeCookieManager();
+
   setUpAll(() {
     SystemChannels.platform_views.setMockMethodCallHandler(
         fakePlatformViewsController.fakePlatformViewsMethodHandler);
+    SystemChannels.platform
+        .setMockMethodCallHandler(_fakeCookieManager.onMethodCall);
   });
 
   setUp(() {
     fakePlatformViewsController.reset();
+    _fakeCookieManager.reset();
   });
 
   testWidgets('Create WebView', (WidgetTester tester) async {
@@ -117,6 +122,24 @@ void main() {
     final bool canGoBackNoPageLoaded = await controller.canGoBack();
 
     expect(canGoBackNoPageLoaded, false);
+  });
+
+  testWidgets("Clear Cache", (WidgetTester tester) async {
+    WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+    expect(fakePlatformViewsController.lastCreatedView.hasCache, true);
+
+    await controller.clearCache();
+
+    expect(fakePlatformViewsController.lastCreatedView.hasCache, false);
   });
 
   testWidgets("Can't go back with no history", (WidgetTester tester) async {
@@ -356,6 +379,31 @@ void main() {
     );
   });
 
+  testWidgets('Cookies can be cleared once', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const WebView(
+        initialUrl: 'https://flutter.io',
+      ),
+    );
+    final CookieManager cookieManager = CookieManager();
+    final bool hasCookies = await cookieManager.clearCookies();
+    expect(hasCookies, true);
+  });
+
+  testWidgets('Second cookie clear does not have cookies',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const WebView(
+        initialUrl: 'https://flutter.io',
+      ),
+    );
+    final CookieManager cookieManager = CookieManager();
+    final bool hasCookies = await cookieManager.clearCookies();
+    expect(hasCookies, true);
+    final bool hasCookiesSecond = await cookieManager.clearCookies();
+    expect(hasCookiesSecond, false);
+  });
+
   testWidgets('Initial JavaScript channels', (WidgetTester tester) async {
     await tester.pumpWidget(
       WebView(
@@ -539,6 +587,7 @@ class FakePlatformWebView {
   List<String> history = <String>[];
   int currentPosition = -1;
   int amountOfReloadsOnCurrentUrl = 0;
+  bool hasCache = true;
 
   String get currentUrl => history.isEmpty ? null : history[currentPosition];
   JavascriptMode javascriptMode;
@@ -591,6 +640,9 @@ class FakePlatformWebView {
         javascriptChannelNames
             .removeWhere((String channel) => channelNames.contains(channel));
         break;
+      case 'clearCache':
+        hasCache = false;
+        return Future<void>.sync(() {});
     }
     return Future<void>.sync(() {});
   }
@@ -638,4 +690,36 @@ Map<dynamic, dynamic> _decodeParams(Uint8List paramsMessage) {
     paramsMessage.lengthInBytes,
   );
   return const StandardMessageCodec().decodeMessage(messageBytes);
+}
+
+class _FakeCookieManager {
+  _FakeCookieManager() {
+    final MethodChannel channel = const MethodChannel(
+      'plugins.flutter.io/cookie_manager',
+      StandardMethodCodec(),
+    );
+    channel.setMockMethodCallHandler(onMethodCall);
+  }
+
+  bool hasCookies = true;
+
+  Future<bool> onMethodCall(MethodCall call) {
+    switch (call.method) {
+      case 'clearCookies':
+        bool hadCookies = false;
+        if (hasCookies) {
+          hadCookies = true;
+          hasCookies = false;
+        }
+        return Future<bool>.sync(() {
+          return hadCookies;
+        });
+        break;
+    }
+    return Future<bool>.sync(() {});
+  }
+
+  void reset() {
+    hasCookies = true;
+  }
 }
