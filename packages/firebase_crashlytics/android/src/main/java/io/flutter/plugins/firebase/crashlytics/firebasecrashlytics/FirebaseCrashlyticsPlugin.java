@@ -69,7 +69,7 @@ public class FirebaseCrashlyticsPlugin implements MethodCallHandler {
    * Extract StackTraceElement from line from Dart stack trace. Incoming line is expected in the
    * following format:
    *
-   * FILE_PATH LINE_NUMBER:CHARACTER_NUMBER METHOD_NAME
+   * <p>FILE_PATH LINE_NUMBER:CHARACTER_NUMBER METHOD_NAME
    *
    * @param line Line from Dart stack trace.
    * @return Stack trace element to be used as part of an Exception stack trace.
