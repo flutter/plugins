@@ -146,8 +146,6 @@
 @property(assign, nonatomic) BOOL isRecording;
 @property(assign, nonatomic) BOOL isAudioSetup;
 @property(assign, nonatomic) BOOL isStreamingImages;
-@property(nonatomic) vImage_Buffer destinationBuffer;
-@property(nonatomic) vImage_Buffer conversionBuffer;
 @property(nonatomic) CMMotionManager *motionManager;
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
@@ -163,9 +161,8 @@
 @end
 
 @implementation FLTCam
-// Yuv420 format used for iOS 10+, which is minimum requirement for this plugin.
-// Format is used to stream image byte data to dart.
-FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;
+// Format used for video and image streaming.
+FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
@@ -173,20 +170,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
   _captureSession = [[AVCaptureSession alloc] init];
-  AVCaptureSessionPreset preset;
-  if ([resolutionPreset isEqualToString:@"high"]) {
-    preset = AVCaptureSessionPreset1280x720;
-    _previewSize = CGSizeMake(1280, 720);
-  } else if ([resolutionPreset isEqualToString:@"medium"]) {
-    preset = AVCaptureSessionPreset640x480;
-    _previewSize = CGSizeMake(640, 480);
-  } else {
-    NSAssert([resolutionPreset isEqualToString:@"low"], @"Unknown resolution preset %@",
-             resolutionPreset);
-    preset = AVCaptureSessionPreset352x288;
-    _previewSize = CGSizeMake(352, 288);
-  }
-  _captureSession.sessionPreset = preset;
+
   _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraName];
   NSError *localError = nil;
   _captureVideoInput = [AVCaptureDeviceInput deviceInputWithDevice:_captureDevice
@@ -195,11 +179,6 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
     *error = localError;
     return nil;
   }
-
-  vImageBuffer_Init(&_destinationBuffer, _previewSize.width, _previewSize.height, 32,
-                    kvImageNoFlags);
-  vImageBuffer_Init(&_conversionBuffer, _previewSize.width, _previewSize.height, 32,
-                    kvImageNoFlags);
 
   _captureVideoOutput = [AVCaptureVideoDataOutput new];
   _captureVideoOutput.videoSettings =
@@ -222,6 +201,9 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
   [_captureSession addOutput:_capturePhotoOutput];
   _motionManager = [[CMMotionManager alloc] init];
   [_motionManager startAccelerometerUpdates];
+
+  [self setCaptureSessionPreset:resolutionPreset];
+
   return self;
 }
 
@@ -242,6 +224,59 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
                                                                    result:result
                                                             motionManager:_motionManager
                                                            cameraPosition:_captureDevice.position]];
+}
+
+- (void)setCaptureSessionPreset:(NSString *)resolutionPreset {
+  int presetIndex;
+  if ([resolutionPreset isEqualToString:@"high"]) {
+    presetIndex = 0;
+  } else if ([resolutionPreset isEqualToString:@"medium"]) {
+    presetIndex = 2;
+  } else {
+    NSAssert([resolutionPreset isEqualToString:@"low"], @"Unknown resolution preset %@",
+             resolutionPreset);
+    presetIndex = 3;
+  }
+
+  switch (presetIndex) {
+    case 0:
+      if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset3840x2160]) {
+        _captureSession.sessionPreset = AVCaptureSessionPreset3840x2160;
+        _previewSize = CGSizeMake(3840, 2160);
+        break;
+      }
+    case 1:
+      if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset1920x1080]) {
+        _captureSession.sessionPreset = AVCaptureSessionPreset1920x1080;
+        _previewSize = CGSizeMake(1920, 1080);
+        break;
+      }
+    case 2:
+      if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset1280x720]) {
+        _captureSession.sessionPreset = AVCaptureSessionPreset1280x720;
+        _previewSize = CGSizeMake(1280, 720);
+        break;
+      }
+    case 3:
+      if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset640x480]) {
+        _captureSession.sessionPreset = AVCaptureSessionPreset640x480;
+        _previewSize = CGSizeMake(640, 480);
+        break;
+      }
+    case 4:
+      if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset352x288]) {
+        _captureSession.sessionPreset = AVCaptureSessionPreset352x288;
+        _previewSize = CGSizeMake(352, 288);
+        break;
+      }
+    default: {
+      NSException *exception = [NSException
+          exceptionWithName:@"NoAvailableCaptureSessionException"
+                     reason:@"No capture session available for current capture session."
+                   userInfo:nil];
+      @throw exception;
+    }
+  }
 }
 
 - (void)captureOutput:(AVCaptureOutput *)output
@@ -278,12 +313,31 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
 
       NSMutableArray *planes = [NSMutableArray array];
 
-      size_t planeCount = CVPixelBufferGetPlaneCount(pixelBuffer);
+      const Boolean isPlanar = CVPixelBufferIsPlanar(pixelBuffer);
+      size_t planeCount;
+      if (isPlanar) {
+        planeCount = CVPixelBufferGetPlaneCount(pixelBuffer);
+      } else {
+        planeCount = 1;
+      }
+
       for (int i = 0; i < planeCount; i++) {
-        void *planeAddress = CVPixelBufferGetBaseAddressOfPlane(pixelBuffer, i);
-        size_t bytesPerRow = CVPixelBufferGetBytesPerRowOfPlane(pixelBuffer, i);
-        size_t height = CVPixelBufferGetHeightOfPlane(pixelBuffer, i);
-        size_t width = CVPixelBufferGetWidthOfPlane(pixelBuffer, i);
+        void *planeAddress;
+        size_t bytesPerRow;
+        size_t height;
+        size_t width;
+
+        if (isPlanar) {
+          planeAddress = CVPixelBufferGetBaseAddressOfPlane(pixelBuffer, i);
+          bytesPerRow = CVPixelBufferGetBytesPerRowOfPlane(pixelBuffer, i);
+          height = CVPixelBufferGetHeightOfPlane(pixelBuffer, i);
+          width = CVPixelBufferGetWidthOfPlane(pixelBuffer, i);
+        } else {
+          planeAddress = CVPixelBufferGetBaseAddress(pixelBuffer);
+          bytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer);
+          height = CVPixelBufferGetHeight(pixelBuffer);
+          width = CVPixelBufferGetWidth(pixelBuffer);
+        }
 
         NSNumber *length = @(bytesPerRow * height);
         NSData *bytes = [NSData dataWithBytes:planeAddress length:length.unsignedIntegerValue];
@@ -394,57 +448,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
     pixelBuffer = _latestPixelBuffer;
   }
 
-  return [self convertYUVImageToBGRA:pixelBuffer];
-}
-
-// Since video format was changed to kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange we have to
-// convert image to a usable format for flutter textures. Which is kCVPixelFormatType_32BGRA.
-- (CVPixelBufferRef)convertYUVImageToBGRA:(CVPixelBufferRef)pixelBuffer {
-  CVPixelBufferLockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
-
-  vImage_YpCbCrToARGB infoYpCbCrToARGB;
-  vImage_YpCbCrPixelRange pixelRange;
-  pixelRange.Yp_bias = 16;
-  pixelRange.CbCr_bias = 128;
-  pixelRange.YpRangeMax = 235;
-  pixelRange.CbCrRangeMax = 240;
-  pixelRange.YpMax = 235;
-  pixelRange.YpMin = 16;
-  pixelRange.CbCrMax = 240;
-  pixelRange.CbCrMin = 16;
-
-  vImageConvert_YpCbCrToARGB_GenerateConversion(kvImage_YpCbCrToARGBMatrix_ITU_R_601_4, &pixelRange,
-                                                &infoYpCbCrToARGB, kvImage420Yp8_CbCr8,
-                                                kvImageARGB8888, kvImageNoFlags);
-
-  vImage_Buffer sourceLumaBuffer;
-  sourceLumaBuffer.data = CVPixelBufferGetBaseAddressOfPlane(pixelBuffer, 0);
-  sourceLumaBuffer.height = CVPixelBufferGetHeightOfPlane(pixelBuffer, 0);
-  sourceLumaBuffer.width = CVPixelBufferGetWidthOfPlane(pixelBuffer, 0);
-  sourceLumaBuffer.rowBytes = CVPixelBufferGetBytesPerRowOfPlane(pixelBuffer, 0);
-
-  vImage_Buffer sourceChromaBuffer;
-  sourceChromaBuffer.data = CVPixelBufferGetBaseAddressOfPlane(pixelBuffer, 1);
-  sourceChromaBuffer.height = CVPixelBufferGetHeightOfPlane(pixelBuffer, 1);
-  sourceChromaBuffer.width = CVPixelBufferGetWidthOfPlane(pixelBuffer, 1);
-  sourceChromaBuffer.rowBytes = CVPixelBufferGetBytesPerRowOfPlane(pixelBuffer, 1);
-
-  vImageConvert_420Yp8_CbCr8ToARGB8888(&sourceLumaBuffer, &sourceChromaBuffer, &_destinationBuffer,
-                                       &infoYpCbCrToARGB, NULL, 255,
-                                       kvImagePrintDiagnosticsToConsole);
-
-  CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
-  CVPixelBufferRelease(pixelBuffer);
-
-  const uint8_t map[4] = {3, 2, 1, 0};
-  vImagePermuteChannels_ARGB8888(&_destinationBuffer, &_conversionBuffer, map, kvImageNoFlags);
-
-  CVPixelBufferRef newPixelBuffer = NULL;
-  CVPixelBufferCreateWithBytes(NULL, _conversionBuffer.width, _conversionBuffer.height,
-                               kCVPixelFormatType_32BGRA, _conversionBuffer.data,
-                               _conversionBuffer.rowBytes, NULL, NULL, NULL, &newPixelBuffer);
-
-  return newPixelBuffer;
+  return pixelBuffer;
 }
 
 - (FlutterError *_Nullable)onCancelWithArguments:(id _Nullable)arguments {

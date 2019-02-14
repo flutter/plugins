@@ -1,3 +1,8 @@
+## 0.4.0
+
+* **Breaking Change** Change iOS image stream format to `ImageFormatGroup.bgra8888` from 
+  `ImageFormatGroup.yuv420`.
+
 ## 0.3.0+4
 
 * Fixed bug causing black screen on some Android devices.
