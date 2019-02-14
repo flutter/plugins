@@ -1,3 +1,7 @@
+## 0.3.3+1
+
+* Fixed a memory leak on Android - the WebView was not properly disposed.
+
 ## 0.3.3
 
 * Add clearCache method to WebView controller.
