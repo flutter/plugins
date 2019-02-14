@@ -83,10 +83,19 @@ _handleSignIn()
     .catchError((e) => print(e));
 ```
 
+### Supported firebase authentication methods.
+
+Supported authentication methods includes `Google authentication`, `Email&Password authentication`, `Phone authentication` and `Anonymously Sign in`.
+
 ### Phone Auth
 
 You can use Firebase Authentication to sign in a user by sending an SMS message to
 the user's phone. The user signs in using a one-time code contained in the SMS message.
+
+### After authentication
+
+After a successful authentication, you should get a FirebaseUser object. You can use this object to check if the email is verified, to update email, to send verification email and etc. See [Documentation](https://pub.dartlang.org/documentation/firebase_auth/latest/firebase_auth/FirebaseUser-class.html) for more details on the FirebaseUser Object.
+
 
 #### iOS setup
 
