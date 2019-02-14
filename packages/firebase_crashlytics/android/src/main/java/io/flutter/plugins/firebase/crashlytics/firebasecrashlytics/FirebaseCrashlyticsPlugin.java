@@ -1,7 +1,5 @@
 package io.flutter.plugins.firebase.crashlytics.firebasecrashlytics;
 
-import android.util.Log;
-
 import com.crashlytics.android.Crashlytics;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -71,7 +69,7 @@ public class FirebaseCrashlyticsPlugin implements MethodCallHandler {
    * Extract StackTraceElement from line from Dart stack trace. Incoming line is expected in the
    * following format:
    *
-   * <File Path> <Line Number:Character Number> <Method Name>
+   * FILE_PATH LINE_NUMBER:CHARACTER_NUMBER METHOD_NAME
    *
    * @param line Line from Dart stack trace.
    * @return Stack trace element to be used as part of an Exception stack trace.
