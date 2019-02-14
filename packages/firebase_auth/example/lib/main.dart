@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import './register_page.dart';
+import './signin_page.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final GoogleSignIn _googleSignIn = GoogleSignIn();
@@ -48,16 +49,17 @@ class _MyHomePageState extends State<MyHomePage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Container(
-            child: Text(user == null
-                ? 'Not signed in'
-                : 'Signed in user id: ' + user.uid),
+            child: RaisedButton(
+              child: const Text('Test registration'),
+              onPressed: () => _pushPage(context, RegisterPage()),
+            ),
             padding: const EdgeInsets.all(16),
             alignment: Alignment.center,
           ),
           Container(
             child: RaisedButton(
-              child: const Text('Test registration'),
-              onPressed: () => _pushPage(context, RegisterPage()),
+              child: const Text('Test signin'),
+              onPressed: () => _pushPage(context, SigninPage()),
             ),
             padding: const EdgeInsets.all(16),
             alignment: Alignment.center,
