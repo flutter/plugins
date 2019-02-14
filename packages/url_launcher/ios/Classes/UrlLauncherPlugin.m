@@ -12,6 +12,7 @@ API_AVAILABLE(ios(9.0))
 @property(copy, nonatomic) FlutterResult flutterResult;
 @property(strong, nonatomic) NSURL *url;
 @property(strong, nonatomic) SFSafariViewController *safari;
+@property(nonatomic, copy) void (^didFinish)(void);
 
 @end
 
@@ -144,6 +145,9 @@ API_AVAILABLE(ios(9.0))
 - (void)launchURLInVC:(NSString *)urlString result:(FlutterResult)result API_AVAILABLE(ios(9.0)) {
   NSURL *url = [NSURL URLWithString:urlString];
   self.currentSession = [[FLTUrlLaunchSession alloc] initWithUrl:url withFlutterResult:result];
+  self.currentSession.didFinish = ^(void) {
+      self->_currentSession = nil;
+    };
   __weak typeof(self) weakSelf = self;
   [self.viewController presentViewController:self.currentSession.safari
                                     animated:YES
