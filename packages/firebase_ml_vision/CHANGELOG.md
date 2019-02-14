@@ -2,6 +2,11 @@
 
 * iOS now handles non-planar buffers from `FirebaseVisionImage.fromBytes()`.
 
+## 0.5.0+1
+
+* Fixes `FIRAnalyticsVersionMismatch` compilation error on iOS. Please run `pod update` in directory
+  containing `Podfile`.
+
 ## 0.5.0
 
 * **Breaking Change** Change `Rectangle<int>` to `Rect` in Text/Face/Barcode results.

@@ -1,3 +1,7 @@
+## 0.3.0+4
+
+* Fixed bug causing black screen on some Android devices.
+
 ## 0.3.0+3
 
 * Log a more detailed warning at build time about the previous AndroidX
