@@ -27,14 +27,18 @@
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
   if ([@"Crashlytics#onError" isEqualToString:call.method]) {
-    NSError* error = [NSError errorWithDomain:call.arguments[@"exception"]
-                                         code:(int)call.arguments[@"code"]
+    NSError *error = [NSError errorWithDomain:call.arguments[@"exception"]
+                                         code:(int) call.arguments[@"code"]
                                      userInfo:@{
-                                       @"exception" : call.arguments[@"exception"],
-                                       @"stackTrace" : call.arguments[@"stackTrace"]
+                                             @"exception": call.arguments[@"exception"],
+                                             @"stackTrace": call.arguments[@"stackTrace"]
                                      }];
     [[Crashlytics sharedInstance] recordError:error];
     result(@"Error reported to Crashlytics.");
+  } else if ([@"Crashlytics#isDebuggable" isEqualToString:call.method]) {
+    result([NSNumber numberWithBool:[Crashlytics sharedInstance].debugMode]);
+  } else if ([@"Crashlytics#getVersion" isEqualToString:call.method]) {
+    result([Crashlytics sharedInstance].version);
   } else if ([@"Crashlytics#setInt" isEqualToString:call.method]) {
     [[Crashlytics sharedInstance] setIntValue:(int)call.arguments[@"value"]
                                        forKey:call.arguments[@"key"]];

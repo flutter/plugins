@@ -1,6 +1,8 @@
 package io.flutter.plugins.firebase.crashlytics.firebasecrashlytics;
 
 import com.crashlytics.android.Crashlytics;
+
+import io.fabric.sdk.android.Fabric;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -36,6 +38,10 @@ public class FirebaseCrashlyticsPlugin implements MethodCallHandler {
       Crashlytics.setString("stackTrace", (String) call.argument("stackTrace"));
       Crashlytics.logException(exception);
       result.success("Error reported to Crashlytics.");
+    } else if (call.method.equals("Crashlytics#isDebuggable")) {
+      result.success(Fabric.isDebuggable());
+    } else if (call.method.equals("Crashlytics#getVersion")) {
+      result.success(Crashlytics.getInstance().getVersion());
     } else if (call.method.equals("Crashlytics#setInt")) {
       Crashlytics.setInt((String) call.argument("key"), (int) call.argument("value"));
       result.success(null);
