@@ -178,6 +178,9 @@ class FirebaseVisionImageMetadata {
             : true),
         assert(defaultTargetPlatform == TargetPlatform.iOS
             ? planeData != null
+            : true),
+        assert(defaultTargetPlatform == TargetPlatform.iOS
+            ? planeData.isNotEmpty
             : true);
 
   /// Size of the image in pixels.
