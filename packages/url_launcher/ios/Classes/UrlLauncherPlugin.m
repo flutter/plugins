@@ -45,7 +45,7 @@ API_AVAILABLE(ios(9.0))
 
 - (void)safariViewControllerDidFinish:(SFSafariViewController *)controller API_AVAILABLE(ios(9.0)) {
   [controller dismissViewControllerAnimated:YES completion:nil];
-	self.didFinish();
+  self.didFinish();
 }
 
 - (void)close {
@@ -147,8 +147,8 @@ API_AVAILABLE(ios(9.0))
   NSURL *url = [NSURL URLWithString:urlString];
   self.currentSession = [[FLTUrlLaunchSession alloc] initWithUrl:url withFlutterResult:result];
   self.currentSession.didFinish = ^(void) {
-      self->_currentSession = nil;
-    };
+    self->_currentSession = nil;
+  };
   [self.viewController presentViewController:self.currentSession.safari
                                     animated:YES
                                   completion:nil];
