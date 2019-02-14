@@ -6,6 +6,7 @@ import 'dart:ui' as ui;
 
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 enum Detector { barcode, face, label, cloudLabel, text }
 
@@ -21,11 +22,12 @@ class BarcodeDetectorPainter extends CustomPainter {
     final double scaleY = size.height / absoluteImageSize.height;
 
     Rect scaleRect(Barcode barcode) {
+      bool shouldFlip = defaultTargetPlatform != TargetPlatform.iOS;
       return Rect.fromLTRB(
-        barcode.boundingBox.left * scaleX,
-        barcode.boundingBox.top * scaleY,
-        barcode.boundingBox.right * scaleX,
-        barcode.boundingBox.bottom * scaleY,
+        (shouldFlip ? absoluteImageSize.width - barcode.boundingBox.left : barcode.boundingBox.left) * scaleX,
+        (shouldFlip ? absoluteImageSize.height - barcode.boundingBox.top : barcode.boundingBox.top) * scaleY,
+        (shouldFlip ? absoluteImageSize.width - barcode.boundingBox.right : barcode.boundingBox.right) * scaleX,
+        (shouldFlip ? absoluteImageSize.height - barcode.boundingBox.bottom : barcode.boundingBox.bottom) * scaleY,
       );
     }
 
