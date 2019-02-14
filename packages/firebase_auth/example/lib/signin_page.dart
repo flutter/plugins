@@ -304,7 +304,6 @@ class _GoogleSigninSectionState extends State<_GoogleSigninSection> {
 }
 
 class _PhoneSignInSection extends StatefulWidget {
-
   _PhoneSignInSection(this._scaffold);
 
   final ScaffoldState _scaffold;
