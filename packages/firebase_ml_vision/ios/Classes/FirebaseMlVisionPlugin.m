@@ -88,7 +88,11 @@
   FourCharCode format = FOUR_CHAR_CODE(rawFormat.unsignedIntValue);
 
   CVPixelBufferRef pxBuffer = NULL;
-  if (planeCount == 1) {
+  if (planeCount == 0) {
+    @throw [NSException exceptionWithName:NSInvalidArgumentException
+                                   reason:@"Can't create image buffer with 0 planes."
+                                 userInfo:nil];
+  } else if (planeCount == 1) {
     NSDictionary *plane = planeData[0];
     NSNumber *bytesPerRow = plane[@"bytesPerRow"];
 
