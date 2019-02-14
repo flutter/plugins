@@ -58,7 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           Container(
             child: RaisedButton(
-              child: const Text('Test signin'),
+              child: const Text('Test signin/signout'),
               onPressed: () => _pushPage(context, SigninPage()),
             ),
             padding: const EdgeInsets.all(16),
