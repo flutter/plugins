@@ -44,4 +44,8 @@ class AppStoreConnection implements InAppPurchaseConnection {
         .toList();
     ProductDetailsResponse productDetailsResponse = ProductDetailsResponse(
       productDetails: productDetails,
+      notFoundIDs: response.invalidProductIdentifiers,
+    );
+    return productDetailsResponse;
+  }
 }

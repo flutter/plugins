@@ -78,7 +78,11 @@ void main() {
         'skuDetailsList': <Map<String, dynamic>>[]
       });
 
+      final ProductDetailsResponse response =
+          await connection.queryProductDetails(<String>[''].toSet());
+      expect(response.productDetails, isEmpty);
     });
+
     test('should get correct product details', () async {
       final BillingResponse responseCode = BillingResponse.ok;
       stubPlatform.addResponse(name: queryMethodName, value: <String, dynamic>{
