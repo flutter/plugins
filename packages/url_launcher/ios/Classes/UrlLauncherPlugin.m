@@ -45,6 +45,7 @@ API_AVAILABLE(ios(9.0))
 
 - (void)safariViewControllerDidFinish:(SFSafariViewController *)controller API_AVAILABLE(ios(9.0)) {
   [controller dismissViewControllerAnimated:YES completion:nil];
+	self.didFinish();
 }
 
 - (void)close {
@@ -148,12 +149,9 @@ API_AVAILABLE(ios(9.0))
   self.currentSession.didFinish = ^(void) {
       self->_currentSession = nil;
     };
-  __weak typeof(self) weakSelf = self;
   [self.viewController presentViewController:self.currentSession.safari
                                     animated:YES
-                                  completion:^void() {
-                                    weakSelf.currentSession = nil;
-                                  }];
+                                  completion:nil];
 }
 
 - (void)closeWebViewWithResult:(FlutterResult)result API_AVAILABLE(ios(9.0)) {
