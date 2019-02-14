@@ -18,6 +18,28 @@ class SigninPageState extends State<SigninPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        actions: <Widget>[
+          Builder(builder: (BuildContext context) {
+            return FlatButton(
+              child: const Text('Sign out'),
+              textColor: Theme.of(context).buttonColor,
+              onPressed: () async {
+                FirebaseUser user = await _auth.currentUser();
+                if (user == null) {
+                  Scaffold.of(context).showSnackBar(SnackBar(
+                    content: const Text('No one has signed in.'),
+                  ));
+                  return;
+                }
+                _signOut();
+                final String uid = user.uid;
+                Scaffold.of(context).showSnackBar(SnackBar(
+                  content: Text(uid + ' has successfully signed out.'),
+                ));
+              },
+            );
+          })
+        ],
       ),
       body: Builder(builder: (BuildContext context) {
         return ListView(
@@ -31,6 +53,11 @@ class SigninPageState extends State<SigninPage> {
         );
       }),
     );
+  }
+
+  // Example code for sign out.
+  void _signOut() async {
+    await _auth.signOut();
   }
 }
 
