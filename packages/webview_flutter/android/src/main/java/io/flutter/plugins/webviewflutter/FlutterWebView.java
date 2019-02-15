@@ -23,11 +23,11 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   FlutterWebView(Context context, BinaryMessenger messenger, int id, Map<String, Object> params) {
     webView = new WebView(context);
     webView.setWebViewClient(new WebViewClient() {
-      @Override
-      public boolean shouldOverrideUrlLoading(WebView view, String url) {
-        view.loadUrl(url);
-        return false;
-      }
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+          view.loadUrl(url);
+          return false;
+        }
     });
     // Allow local storage.
     webView.getSettings().setDomStorageEnabled(true);
