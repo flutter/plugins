@@ -5,6 +5,7 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:meta/meta.dart';
 
 /// Connection Status Check Result
 ///
@@ -12,12 +13,6 @@ import 'package:flutter/services.dart';
 /// Mobile: Device connected to cellular network
 /// None: Device not connected to any network
 enum ConnectivityResult { wifi, mobile, none }
-
-const MethodChannel _methodChannel =
-    MethodChannel('plugins.flutter.io/connectivity');
-
-const EventChannel _eventChannel =
-    EventChannel('plugins.flutter.io/connectivity_status');
 
 class Connectivity {
   /// Constructs a singleton instance of [Connectivity].
@@ -39,10 +34,20 @@ class Connectivity {
 
   Stream<ConnectivityResult> _onConnectivityChanged;
 
+  @visibleForTesting
+  static const MethodChannel methodChannel = MethodChannel(
+    'plugins.flutter.io/connectivity',
+  );
+
+  @visibleForTesting
+  static const EventChannel eventChannel = EventChannel(
+    'plugins.flutter.io/connectivity_status',
+  );
+
   /// Fires whenever the connectivity state changes.
   Stream<ConnectivityResult> get onConnectivityChanged {
     if (_onConnectivityChanged == null) {
-      _onConnectivityChanged = _eventChannel
+      _onConnectivityChanged = eventChannel
           .receiveBroadcastStream()
           .map((dynamic event) => _parseConnectivityResult(event));
     }
@@ -59,7 +64,7 @@ class Connectivity {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
-    final String result = await _methodChannel.invokeMethod('check');
+    final String result = await methodChannel.invokeMethod('check');
     return _parseConnectivityResult(result);
   }
 
@@ -73,11 +78,16 @@ class Connectivity {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
     // ignore: strong_mode_implicit_dynamic_method
-    String wifiName = await _methodChannel.invokeMethod('wifiName');
+    String wifiName = await methodChannel.invokeMethod('wifiName');
     // as Android might return <unknown ssid>, uniforming result
     // our iOS implementation will return null
     if (wifiName == '<unknown ssid>') wifiName = null;
     return wifiName;
+  }
+
+  /// Obtains the IP address of the connected wifi network
+  Future<String> getWifiIP() async {
+    return await methodChannel.invokeMethod('wifiIPAddress');
   }
 }
 

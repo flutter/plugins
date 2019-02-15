@@ -1,3 +1,7 @@
+## 0.4.1+2
+
+* Include a missing API dependency.
+
 ## 0.4.1+1
 
 * Log a more detailed warning at build time about the previous AndroidX
