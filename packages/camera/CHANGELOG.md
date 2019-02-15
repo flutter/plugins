@@ -1,3 +1,7 @@
+## 0.4.0+1
+
+* Remove categories.
+
 ## 0.4.0
 
 * **Breaking Change** Change iOS image stream format to `ImageFormatGroup.bgra8888` from 
