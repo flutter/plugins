@@ -324,7 +324,7 @@ typedef NS_ENUM(NSUInteger, StorageTaskEventType) {
   [task observeStatus:FIRStorageTaskStatusFailure
               handler:^(FIRStorageTaskSnapshot *snapshot) {
                 if (snapshot.error != nil) {
-                  result(snapshot.getFlutterError(error));
+                  result(getFlutterError(snapshot.error));
                 }
               }];
 }
