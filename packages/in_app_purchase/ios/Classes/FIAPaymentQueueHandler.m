@@ -17,6 +17,8 @@ NSString *const TestingProductID = @"testing";
 @property(nullable, copy, nonatomic) ShouldAddStorePayment shouldAddStorePayment;
 @property(nullable, copy, nonatomic) UpdatedDownloads updatedDownloads;
 
+@property (strong, nonatomic) NSMutableDictionary *transactionsSetter;
+
 @end
 
 @implementation FIAPaymentQueueHandler
@@ -38,6 +40,7 @@ NSString *const TestingProductID = @"testing";
     self.paymentQueueRestoreCompletedTransactionsFinished = restoreCompletedTransactionsFinished;
     self.shouldAddStorePayment = shouldAddStorePayment;
     self.updatedDownloads = updatedDownloads;
+    self.transactionsSetter = [NSMutableDictionary new];
   }
   return self;
 }
@@ -50,28 +53,25 @@ NSString *const TestingProductID = @"testing";
   [self.queue addPayment:payment];
 }
 
+- (void)finishTransaction:(SKPaymentTransaction *)transaction {
+    @try {
+        [self.queue finishTransaction:transaction];
+    } @catch (NSException *e) {
+        [e raise];
+    }
+}
+
 #pragma mark - observing
 // Sent when the transaction array has changed (additions or state changes).  Client should check
 // state of transactions and finish as appropriate.
 - (void)paymentQueue:(SKPaymentQueue *)queue
     updatedTransactions:(NSArray<SKPaymentTransaction *> *)transactions {
+    for (SKPaymentTransaction *transaction in transactions) {
+        [self.transactionsSetter setObject:transaction forKey:transaction.transactionIdentifier];
+    }
   // notify dart through callbacks.
   if (self.transactionsUpdated) {
     self.transactionsUpdated(transactions);
-  }
-  for (SKPaymentTransaction *transaction in transactions) {
-    switch (transaction.transactionState) {
-        // The following three states indicates that the transaction has been complete.
-        // We mark the transaction to be finished and send the signal back to dart.
-      case SKPaymentTransactionStatePurchased:
-      case SKPaymentTransactionStateFailed:
-      case SKPaymentTransactionStateRestored:
-        // mark finished transaction as finished as required by OBJC api.
-        [queue finishTransaction:transaction];
-        break;
-      default:
-        break;
-    }
   }
 }
 
@@ -115,6 +115,12 @@ NSString *const TestingProductID = @"testing";
     return (self.shouldAddStorePayment(payment, product));
   }
   return YES;
+}
+
+#pragma mark - getter
+
+- (NSDictionary *)transactions {
+    return self.transactionsSetter;
 }
 
 @end

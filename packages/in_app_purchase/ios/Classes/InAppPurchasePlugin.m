@@ -49,7 +49,9 @@ typedef enum : NSUInteger {
   } else if ([@"-[InAppPurchasePlugin startProductRequest:result:]" isEqualToString:call.method]) {
     [self handleProductRequestMethodCall:call result:result];
   } else if ([@"-[InAppPurchasePlugin addPayment:result:]" isEqualToString:call.method]) {
-      [self addPayment:call result:result];
+    [self addPayment:call result:result];
+  } else if ([@"-[InAppPurchasePlugin finishTransaction]" isEqualToString:call.method]) {
+    [self finishTransaction:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -156,6 +158,31 @@ typedef enum : NSUInteger {
     } else {
         SKPayment *payment = [SKPayment paymentWithProduct:product];
         [self.paymentQueueHandler addPayment:payment];
+    }
+}
+
+- (void)finishTransaction:(FlutterMethodCall *)call result:(FlutterResult)result {
+    if (![call.arguments isKindOfClass:[NSString class]]) {
+        result([FlutterError errorWithCode:@"storekit_invalide_argument"
+                                   message:@"Argument type of addPayment is not a string"
+                                   details:call.arguments]);
+        return;
+    }
+    NSString *identifier = call.arguments;
+    SKPaymentTransaction *transaction = [self.paymentQueueHandler.transactions objectForKey:identifier];
+    if (!transaction) {
+        result([FlutterError errorWithCode:@"storekit_platform_invalid_transaction"
+                                   message:@"Invalid transaction ID is used."
+                                   details:call.arguments]);
+        return;
+    }
+    @try {
+        [self.paymentQueueHandler finishTransaction:transaction];
+    } @catch (NSException *e){
+        result([FlutterError errorWithCode:@"storekit_finish_transaction_exception"
+                                   message:e.name
+                                   details:e.description]);
+        return;
     }
 }
 

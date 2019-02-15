@@ -18,6 +18,8 @@ typedef void (^UpdatedDownloads)(NSArray<SKDownload *> *downloads);
 
 @interface FIAPaymentQueueHandler : NSObject <SKPaymentTransactionObserver>
 
+@property (copy, nonatomic, readonly) NSDictionary *transactions;
+
 - (instancetype)initWithQueue:(nonnull SKPaymentQueue *)queue
                      transactionsUpdated:(nullable TransactionsUpdated)transactionsUpdated
                       transactionRemoved:(nullable TransactionsRemoved)transactionsRemoved
@@ -27,6 +29,7 @@ typedef void (^UpdatedDownloads)(NSArray<SKDownload *> *downloads);
                    shouldAddStorePayment:(nullable ShouldAddStorePayment)shouldAddStorePayment
                         updatedDownloads:(nullable UpdatedDownloads)updatedDownloads;
 - (void)addPayment:(SKPayment *)payment;
+- (void)finishTransaction:(SKPaymentTransaction *)transaction;
 
 // Enable testing.
 
