@@ -57,6 +57,7 @@ NSString *const TestingProductID = @"testing";
     @try {
         [self.queue finishTransaction:transaction];
     } @catch (NSException *e) {
+        // finish transaction will throw exception if the transaction type is purchasing. Raise the exception so the InAppPurchasePlugin will get notified.
         [e raise];
     }
 }

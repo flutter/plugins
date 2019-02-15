@@ -178,6 +178,7 @@ typedef enum : NSUInteger {
         return;
     }
     @try {
+        // finish transaction will throw exception if the transaction type is purchasing. Notify dart about this exception.
         [self.paymentQueueHandler finishTransaction:transaction];
     } @catch (NSException *e){
         result([FlutterError errorWithCode:@"storekit_finish_transaction_exception"

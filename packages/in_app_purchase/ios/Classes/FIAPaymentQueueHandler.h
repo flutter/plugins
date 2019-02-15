@@ -29,6 +29,7 @@ typedef void (^UpdatedDownloads)(NSArray<SKDownload *> *downloads);
                    shouldAddStorePayment:(nullable ShouldAddStorePayment)shouldAddStorePayment
                         updatedDownloads:(nullable UpdatedDownloads)updatedDownloads;
 - (void)addPayment:(SKPayment *)payment;
+// Can throw exceptions, should always used in a @try block.
 - (void)finishTransaction:(SKPaymentTransaction *)transaction;
 
 // Enable testing.
