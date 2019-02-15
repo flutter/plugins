@@ -17,7 +17,7 @@ NSString *const TestingProductID = @"testing";
 @property(nullable, copy, nonatomic) ShouldAddStorePayment shouldAddStorePayment;
 @property(nullable, copy, nonatomic) UpdatedDownloads updatedDownloads;
 
-@property (strong, nonatomic) NSMutableDictionary *transactionsSetter;
+@property(strong, nonatomic) NSMutableDictionary *transactionsSetter;
 
 @end
 
@@ -54,12 +54,13 @@ NSString *const TestingProductID = @"testing";
 }
 
 - (void)finishTransaction:(SKPaymentTransaction *)transaction {
-    @try {
-        [self.queue finishTransaction:transaction];
-    } @catch (NSException *e) {
-        // finish transaction will throw exception if the transaction type is purchasing. Raise the exception so the InAppPurchasePlugin will get notified.
-        [e raise];
-    }
+  @try {
+    [self.queue finishTransaction:transaction];
+  } @catch (NSException *e) {
+    // finish transaction will throw exception if the transaction type is purchasing. Raise the
+    // exception so the InAppPurchasePlugin will get notified.
+    [e raise];
+  }
 }
 
 #pragma mark - observing
@@ -67,9 +68,9 @@ NSString *const TestingProductID = @"testing";
 // state of transactions and finish as appropriate.
 - (void)paymentQueue:(SKPaymentQueue *)queue
     updatedTransactions:(NSArray<SKPaymentTransaction *> *)transactions {
-    for (SKPaymentTransaction *transaction in transactions) {
-        [self.transactionsSetter setObject:transaction forKey:transaction.transactionIdentifier];
-    }
+  for (SKPaymentTransaction *transaction in transactions) {
+    [self.transactionsSetter setObject:transaction forKey:transaction.transactionIdentifier];
+  }
   // notify dart through callbacks.
   if (self.transactionsUpdated) {
     self.transactionsUpdated(transactions);
@@ -121,7 +122,7 @@ NSString *const TestingProductID = @"testing";
 #pragma mark - getter
 
 - (NSDictionary *)transactions {
-    return self.transactionsSetter;
+  return self.transactionsSetter;
 }
 
 @end
