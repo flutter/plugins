@@ -1,3 +1,7 @@
+## 0.5.1+1
+
+* Fixes bug where image file is rotated on android.
+
 ## 0.5.1
 
 * iOS now handles non-planar buffers from `FirebaseVisionImage.fromBytes()`.

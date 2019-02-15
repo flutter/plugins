@@ -84,7 +84,7 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
         matrix.postRotate(rotation);
 
         final Bitmap bitmap = BitmapFactory.decodeFile(imageFilePath);
-        final Bitmap rotatedBitmap 
+        final Bitmap rotatedBitmap =
             Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
 
         return FirebaseVisionImage.fromBitmap(rotatedBitmap);
