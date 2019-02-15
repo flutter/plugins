@@ -1,3 +1,7 @@
+## 0.5.1+1
+
+* Remove categories.
+
 ## 0.5.1
 
 * iOS now handles non-planar buffers from `FirebaseVisionImage.fromBytes()`.

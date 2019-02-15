@@ -1,3 +1,7 @@
+## 2.0.1+1
+
+* Remove categories.
+
 ## 2.0.1
 
 * Log a more detailed warning at build time about the previous AndroidX
