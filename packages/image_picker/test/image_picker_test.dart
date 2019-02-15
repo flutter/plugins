@@ -34,11 +34,13 @@ void main() {
               'source': 0,
               'maxWidth': null,
               'maxHeight': null,
+              'crop': false,
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 1,
               'maxWidth': null,
               'maxHeight': null,
+              'crop': false,
             }),
           ],
         );
@@ -67,21 +69,48 @@ void main() {
               'source': 0,
               'maxWidth': null,
               'maxHeight': null,
+              'crop': false,
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': 10.0,
               'maxHeight': null,
+              'crop': false,
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': null,
               'maxHeight': 10.0,
+              'crop': false,
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': 10.0,
               'maxHeight': 20.0,
+              'crop': false,
+            }),
+          ],
+        );
+      });
+
+      test('passes the crop argument correctly', () async {
+        await ImagePicker.pickImage(source: ImageSource.camera, crop: true);
+        await ImagePicker.pickImage(source: ImageSource.camera, crop: false);
+
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall('pickImage', arguments: <String, dynamic>{
+              'source': 0,
+              'maxWidth': null,
+              'maxHeight': null,
+              'crop': true,
+            }),
+            isMethodCall('pickImage', arguments: <String, dynamic>{
+              'source': 0,
+              'maxWidth': null,
+              'maxHeight': null,
+              'crop': false,
             }),
           ],
         );
@@ -95,6 +124,18 @@ void main() {
 
         expect(
           ImagePicker.pickImage(source: ImageSource.camera, maxHeight: -1.0),
+          throwsArgumentError,
+        );
+      });
+
+      test('does not accept a zero width or height argument', () {
+        expect(
+          ImagePicker.pickImage(source: ImageSource.camera, maxWidth: 0.0),
+          throwsArgumentError,
+        );
+
+        expect(
+          ImagePicker.pickImage(source: ImageSource.camera, maxHeight: 0.0),
           throwsArgumentError,
         );
       });

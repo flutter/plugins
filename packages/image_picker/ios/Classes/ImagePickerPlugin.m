@@ -157,9 +157,10 @@ static const int SOURCE_GALLERY = 1;
 
     NSNumber *maxWidth = [_arguments objectForKey:@"maxWidth"];
     NSNumber *maxHeight = [_arguments objectForKey:@"maxHeight"];
+    BOOL crop = [[_arguments objectForKey:@"crop"] boolValue];
 
     if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
-      image = [self scaledImage:image maxWidth:maxWidth maxHeight:maxHeight];
+      image = [self scaledImage:image maxWidth:maxWidth maxHeight:maxHeight crop:crop];
     }
 
     NSData *data = UIImageJPEGRepresentation(image, 1.0);
@@ -206,52 +207,77 @@ static const int SOURCE_GALLERY = 1;
 
 - (UIImage *)scaledImage:(UIImage *)image
                 maxWidth:(NSNumber *)maxWidth
-               maxHeight:(NSNumber *)maxHeight {
-  double originalWidth = image.size.width;
-  double originalHeight = image.size.height;
-
-  bool hasMaxWidth = maxWidth != (id)[NSNull null];
-  bool hasMaxHeight = maxHeight != (id)[NSNull null];
-
-  double width = hasMaxWidth ? MIN([maxWidth doubleValue], originalWidth) : originalWidth;
-  double height = hasMaxHeight ? MIN([maxHeight doubleValue], originalHeight) : originalHeight;
-
-  bool shouldDownscaleWidth = hasMaxWidth && [maxWidth doubleValue] < originalWidth;
-  bool shouldDownscaleHeight = hasMaxHeight && [maxHeight doubleValue] < originalHeight;
-  bool shouldDownscale = shouldDownscaleWidth || shouldDownscaleHeight;
-
-  if (shouldDownscale) {
-    double downscaledWidth = floor((height / originalHeight) * originalWidth);
-    double downscaledHeight = floor((width / originalWidth) * originalHeight);
-
-    if (width < height) {
-      if (!hasMaxWidth) {
-        width = downscaledWidth;
-      } else {
-        height = downscaledHeight;
-      }
-    } else if (height < width) {
-      if (!hasMaxHeight) {
-        height = downscaledHeight;
-      } else {
-        width = downscaledWidth;
-      }
-    } else {
-      if (originalWidth < originalHeight) {
-        width = downscaledWidth;
-      } else if (originalHeight < originalWidth) {
-        height = downscaledHeight;
-      }
-    }
-  }
-
-  UIGraphicsBeginImageContextWithOptions(CGSizeMake(width, height), NO, 1.0);
-  [image drawInRect:CGRectMake(0, 0, width, height)];
+               maxHeight:(NSNumber *)maxHeight
+                    crop:(BOOL)crop {
+  double originalWidth = image.size.width * image.scale;
+  double originalHeight = image.size.height * image.scale;
+  
+  CGSize size;
+  CGRect drawRect;
+  [FLTImagePickerPlugin getSize:&size
+                       drawRect:&drawRect
+                   originalSize:CGSizeMake(originalWidth, originalHeight)
+                       maxWidth:maxWidth
+                      maxHeight:maxHeight
+                           crop:crop];
+    
+  UIGraphicsBeginImageContextWithOptions(size, NO, 1.0);
+  [image drawInRect:drawRect];
 
   UIImage *scaledImage = UIGraphicsGetImageFromCurrentImageContext();
   UIGraphicsEndImageContext();
 
   return scaledImage;
+}
+
++ (void)getSize:(CGSize*)size drawRect:(CGRect*)drawRect
+   originalSize:(CGSize)originalSize
+       maxWidth:(NSNumber*)maxWidth
+      maxHeight:(NSNumber*)maxHeight
+           crop:(BOOL)crop {
+  bool hasMaxWidth = maxWidth != nil && maxWidth != (id)[NSNull null];
+  bool hasMaxHeight = maxHeight != nil && maxHeight != (id)[NSNull null];
+
+  double widthScale = hasMaxWidth ? [maxWidth doubleValue] / MAX(1, originalSize.width) : -1;
+  double heightScale = hasMaxHeight ? [maxHeight doubleValue] / MAX(1, originalSize.height) : -1;
+
+  double scale;
+  if (hasMaxWidth) {
+      if (hasMaxHeight) {
+          if (crop) {
+              scale = MAX(widthScale, heightScale);
+          } else {
+              scale = MIN(widthScale, heightScale);
+          }
+      } else {
+          scale = widthScale;
+      }
+  } else {
+      if (hasMaxHeight) {
+          scale = heightScale;
+      } else {
+          scale = 1.0;
+      }
+  }
+
+  scale = MIN(scale, 1.0);
+
+  double drawWidth = round(scale * originalSize.width);
+  double drawHeight = round(scale * originalSize.height);
+
+  double width = hasMaxWidth ? MIN(drawWidth, [maxWidth doubleValue]) : drawWidth;
+  double height = hasMaxHeight ? MIN(drawHeight, [maxHeight doubleValue]) : drawHeight;
+
+  double drawX = (width - drawWidth) / 2;
+  double drawY = (height - drawHeight) / 2;
+  
+  if (size) {
+    *size = CGSizeMake(width, height);
+  }
+  
+  if (drawRect) {
+    *drawRect = CGRectMake(drawX, drawY, drawWidth, drawHeight);
+  }
 }
 
 @end

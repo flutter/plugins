@@ -29,19 +29,26 @@ class ImagePicker {
   /// If specified, the image will be at most [maxWidth] wide and
   /// [maxHeight] tall. Otherwise the image will be returned at it's
   /// original width and height.
+  ///
+  /// If [crop] is false, then image will be downscaled until both dimensions
+  /// satisfy the limits. If [crop] is true, then image will be downscaled
+  /// until any of dimensions satisfies the limits and another one will be
+  /// cropped.
   static Future<File> pickImage({
     @required ImageSource source,
     double maxWidth,
     double maxHeight,
+    bool crop = false,
   }) async {
     assert(source != null);
+    assert(crop != null);
 
-    if (maxWidth != null && maxWidth < 0) {
-      throw ArgumentError.value(maxWidth, 'maxWidth cannot be negative');
+    if (maxWidth != null && maxWidth <= 0) {
+      throw ArgumentError.value(maxWidth, 'maxWidth must be positive');
     }
 
-    if (maxHeight != null && maxHeight < 0) {
-      throw ArgumentError.value(maxHeight, 'maxHeight cannot be negative');
+    if (maxHeight != null && maxHeight <= 0) {
+      throw ArgumentError.value(maxHeight, 'maxHeight must be positive');
     }
 
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
@@ -53,6 +60,7 @@ class ImagePicker {
         'source': source.index,
         'maxWidth': maxWidth,
         'maxHeight': maxHeight,
+        'crop': crop
       },
     );
 
