@@ -1,7 +1,6 @@
 package io.flutter.plugins.firebase.crashlytics.firebasecrashlytics;
 
 import android.util.Log;
-
 import com.crashlytics.android.Crashlytics;
 import io.fabric.sdk.android.Fabric;
 import io.flutter.plugin.common.MethodCall;
