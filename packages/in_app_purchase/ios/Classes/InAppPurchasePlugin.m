@@ -6,12 +6,30 @@
 #import <StoreKit/StoreKit.h>
 #import "FIAObjectTranslator.h"
 #import "FIAPRequestHandler.h"
+#import "FIAPaymentQueueHandler.h"
+
+typedef enum : NSUInteger {
+    PaymentQueueCallbackTypeUpdate,
+    PaymentQueueCallbackTypeRemoved,
+    PaymentQueueCallbackTypeRestoreTransactionFailed,
+    PaymentQueueCallbackTypeRestoreCompletedTransactionsFinished,
+} PaymentQueueCallbackType;
 
 @interface InAppPurchasePlugin ()
 
 // Holding strong references to FIAPRequestHandlers. Remove the handlers from the set after
 // the request is finished.
 @property(strong, nonatomic) NSMutableSet *requestHandlers;
+
+// After querying the product, the available products will be saved in the map to be used
+// for purchase.
+@property(copy, nonatomic) NSDictionary *productsMap;
+
+// Call back channel to dart used for when a listener function is triggered.
+@property(strong, nonatomic) FlutterMethodChannel *callbackChannel;
+@property(strong, nonatomic) NSObject<FlutterTextureRegistry> *registry;
+@property(strong, nonatomic) NSObject<FlutterBinaryMessenger> *messenger;
+@property(strong, nonatomic) NSObject<FlutterPluginRegistrar> *registrar;
 
 @end
 
@@ -33,6 +51,38 @@
   } else {
     result(FlutterMethodNotImplemented);
   }
+}
+
+- (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
+    self = [self init];
+    self.registrar = registrar;
+    self.registry = [registrar textures];
+    self.messenger = [registrar messenger];
+    __weak typeof(self) weakSelf = self;
+    self.paymentQueueHandler =
+    [[FIAPaymentQueueHandler alloc] initWithQueue:[SKPaymentQueue defaultQueue]
+                              transactionsUpdated:^(NSArray<SKPaymentTransaction *> *_Nonnull transactions) {
+                                  [weakSelf handleTransactionsUpdated:transactions];
+                              }
+                               transactionRemoved:^(NSArray<SKPaymentTransaction *> *_Nonnull transactions) {
+                                   [weakSelf handleTransactionsRemoved:transactions];
+                               }
+                         restoreTransactionFailed:^(NSError *_Nonnull error) {
+                             [self handleTransactionRestoreFailed:error];
+                         }
+             restoreCompletedTransactionsFinished:^{
+                 [self restoreCompletedTransactionsFinished];
+             }
+                            shouldAddStorePayment:^BOOL(SKPayment *payment, SKProduct *product) {
+                                return [self shouldAddStorePayment:payment product:product];
+                            }
+                                 updatedDownloads:^void(NSArray<SKDownload *> *_Nonnull downloads) {
+                                     [self updatedDownloads:downloads];
+                                 }];
+    self.callbackChannel =
+    [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/in_app_purchase_callback"
+                                binaryMessenger:[registrar messenger]];
+    return self;
 }
 
 - (void)canMakePayments:(FlutterResult)result {
