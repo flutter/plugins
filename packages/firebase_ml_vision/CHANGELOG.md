@@ -1,6 +1,6 @@
 ## 0.5.1+1
 
-* Fixes bug where image file is rotated on android.
+* Fixes bug where image file needs to be rotated.
 
 ## 0.5.1
 
