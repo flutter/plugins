@@ -12,16 +12,19 @@ static FlutterError *getFlutterError(NSError *error) {
                              details:error.localizedDescription];
 }
 
-- (NSDictionary *)dictionary {
-  return @{
-    @"code" : @(self.code),
-    @"message" : self.domain ?: [NSNull null],
-    @"details" : self.localizedDescription ?: [NSNull null],
+static NSDictionary *getDictionaryFromError(NSError *error) {
+    return @{
+    @"code" : @(error.code),
+    @"message" : error.domain ?: [NSNull null],
+    @"details" : error.localizedDescription ?: [NSNull null],
   };
 }
+
+@interface FLTFirebaseDatabasePlugin ()
+
 @end
 
-    FIRDatabaseReference *
+FIRDatabaseReference *
     getReference(FIRDatabase *database, NSDictionary *arguments) {
   NSString *path = arguments[@"path"];
   FIRDatabaseReference *ref = database.reference;
@@ -272,7 +275,7 @@ id roundDoubles(id value) {
           // Invoke transaction completion on the Dart side.
           result(@{
             @"transactionKey" : call.arguments[@"transactionKey"],
-            @"error" : error.dictionary ?: [NSNull null],
+            @"error" : getDictionaryFromError(error) ?: [NSNull null],
             @"committed" : [NSNumber numberWithBool:committed],
             @"snapshot" : @{@"key" : snapshot.key ?: [NSNull null], @"value" : snapshot.value}
           });
@@ -306,7 +309,7 @@ id roundDoubles(id value) {
           [self.channel invokeMethod:@"Error"
                            arguments:@{
                              @"handle" : [NSNumber numberWithUnsignedInteger:handle],
-                             @"error" : error.dictionary,
+                             @"error" : getDictionaryFromError(error),
                            }];
         }];
     result([NSNumber numberWithUnsignedInteger:handle]);
