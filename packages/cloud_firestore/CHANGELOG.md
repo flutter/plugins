@@ -1,3 +1,7 @@
+## 0.9.0+2
+
+* Remove categories.
+
 ## 0.9.0+1
 
 * Log a more detailed warning at build time about the previous AndroidX
