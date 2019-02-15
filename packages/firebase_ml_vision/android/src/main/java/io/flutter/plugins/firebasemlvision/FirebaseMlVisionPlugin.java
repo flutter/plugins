@@ -5,7 +5,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
-
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata;
 import io.flutter.plugin.common.MethodCall;
@@ -111,8 +110,8 @@ public class FirebaseMlVisionPlugin implements MethodCallHandler {
 
   private int getImageExifOrientation(String imageFilePath) throws IOException {
     ExifInterface exif = new ExifInterface(imageFilePath);
-    int orientation = exif.getAttributeInt(
-        ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+    int orientation =
+        exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
 
     switch (orientation) {
       case ExifInterface.ORIENTATION_ROTATE_90:
