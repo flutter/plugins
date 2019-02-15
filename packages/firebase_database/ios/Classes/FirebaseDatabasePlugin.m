@@ -13,7 +13,7 @@ static FlutterError *getFlutterError(NSError *error) {
 }
 
 static NSDictionary *getDictionaryFromError(NSError *error) {
-    return @{
+  return @{
     @"code" : @(error.code),
     @"message" : error.domain ?: [NSNull null],
     @"details" : error.localizedDescription ?: [NSNull null],
@@ -24,8 +24,7 @@ static NSDictionary *getDictionaryFromError(NSError *error) {
 
 @end
 
-FIRDatabaseReference *
-    getReference(FIRDatabase *database, NSDictionary *arguments) {
+FIRDatabaseReference *getReference(FIRDatabase *database, NSDictionary *arguments) {
   NSString *path = arguments[@"path"];
   FIRDatabaseReference *ref = database.reference;
   if ([path length] > 0) ref = [ref child:path];
