@@ -41,7 +41,7 @@ Optional but recommended: If you use the on-device API, configure your app to au
 
 ### iOS
 If you're using one of the on-device APIs, include the corresponding ML Kit library model in your
-`Podfile`. Then run `pod install` into a terminal within the same directory as your `Podfile`.
+`Podfile`. Then run `pod update` in a terminal within the same directory as your `Podfile`.
 
 ```
 pod 'Firebase/MLVisionBarcodeModel'
