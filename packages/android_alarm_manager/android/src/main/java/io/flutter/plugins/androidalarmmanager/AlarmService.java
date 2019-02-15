@@ -18,16 +18,23 @@ import io.flutter.view.FlutterMain;
 import io.flutter.view.FlutterNativeView;
 import io.flutter.view.FlutterRunArguments;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class AlarmService extends JobIntentService {
   public static final String TAG = "AlarmService";
-  private static final String SHARED_PREFERENCES_KEY = "io.flutter.android_alarm_manager_plugin";
   private static final String CALLBACK_HANDLE_KEY = "callback_handle";
+  private static final String PERSISTENT_ALARMS_SET_KEY = "persistent_alarm_ids";
+  private static final String SHARED_PREFERENCES_KEY = "io.flutter.android_alarm_manager_plugin";
   private static final int JOB_ID = 1984; // Random job ID.
+  private static final Object sPersistentAlarmsLock = new Object();
   private static AtomicBoolean sStarted = new AtomicBoolean(false);
   private static List<Intent> sAlarmQueue = Collections.synchronizedList(new LinkedList<Intent>());
   private static FlutterNativeView sBackgroundFlutterView;
@@ -168,7 +175,20 @@ public class AlarmService extends JobIntentService {
       boolean wakeup,
       long startMillis,
       long intervalMillis,
+      boolean rescheduleOnReboot,
       long callbackHandle) {
+    if (rescheduleOnReboot) {
+      addPersistentAlarm(
+          context,
+          requestCode,
+          repeating,
+          exact,
+          wakeup,
+          startMillis,
+          intervalMillis,
+          callbackHandle);
+    }
+
     // Create an Intent for the alarm and set the desired Dart callback handle.
     Intent alarm = new Intent(context, AlarmBroadcastReceiver.class);
     alarm.putExtra("callbackHandle", callbackHandle);
@@ -204,9 +224,19 @@ public class AlarmService extends JobIntentService {
       boolean exact,
       boolean wakeup,
       long startMillis,
+      boolean rescheduleOnReboot,
       long callbackHandle) {
     final boolean repeating = false;
-    scheduleAlarm(context, requestCode, repeating, exact, wakeup, startMillis, 0, callbackHandle);
+    scheduleAlarm(
+        context,
+        requestCode,
+        repeating,
+        exact,
+        wakeup,
+        startMillis,
+        0,
+        rescheduleOnReboot,
+        callbackHandle);
   }
 
   public static void setPeriodic(
@@ -216,6 +246,7 @@ public class AlarmService extends JobIntentService {
       boolean wakeup,
       long startMillis,
       long intervalMillis,
+      boolean rescheduleOnReboot,
       long callbackHandle) {
     final boolean repeating = true;
     scheduleAlarm(
@@ -226,10 +257,15 @@ public class AlarmService extends JobIntentService {
         wakeup,
         startMillis,
         intervalMillis,
+        rescheduleOnReboot,
         callbackHandle);
   }
 
   public static void cancel(Context context, int requestCode) {
+    // Clear the alarm if it was set to be rescheduled after reboots.
+    clearPersistentAlarm(context, requestCode);
+
+    // Cancel the alarm with the system alarm service.
     Intent alarm = new Intent(context, AlarmBroadcastReceiver.class);
     PendingIntent existingIntent =
         PendingIntent.getBroadcast(context, requestCode, alarm, PendingIntent.FLAG_NO_CREATE);
@@ -239,5 +275,111 @@ public class AlarmService extends JobIntentService {
     }
     AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
     manager.cancel(existingIntent);
+  }
+
+  private static String getPersistentAlarmKey(int requestCode) {
+    return "android_alarm_manager/persistent_alarm_" + Integer.toString(requestCode);
+  }
+
+  private static void addPersistentAlarm(
+      Context context,
+      int requestCode,
+      boolean repeating,
+      boolean exact,
+      boolean wakeup,
+      long startMillis,
+      long intervalMillis,
+      long callbackHandle) {
+    HashMap<String, Object> alarmSettings = new HashMap<>();
+    alarmSettings.put("repeating", repeating);
+    alarmSettings.put("exact", exact);
+    alarmSettings.put("wakeup", wakeup);
+    alarmSettings.put("startMillis", startMillis);
+    alarmSettings.put("intervalMillis", intervalMillis);
+    alarmSettings.put("callbackHandle", callbackHandle);
+    JSONObject obj = new JSONObject(alarmSettings);
+    String key = getPersistentAlarmKey(requestCode);
+    SharedPreferences p = context.getSharedPreferences(SHARED_PREFERENCES_KEY, 0);
+
+    synchronized (sPersistentAlarmsLock) {
+      Set<String> persistentAlarms = p.getStringSet(PERSISTENT_ALARMS_SET_KEY, null);
+      if (persistentAlarms == null) {
+        persistentAlarms = new HashSet<>();
+      }
+      if (persistentAlarms.isEmpty()) {
+        RebootBroadcastReceiver.enableRescheduleOnReboot(context);
+      }
+      persistentAlarms.add(Integer.toString(requestCode));
+      p.edit()
+          .putString(key, obj.toString())
+          .putStringSet(PERSISTENT_ALARMS_SET_KEY, persistentAlarms)
+          .commit();
+    }
+  }
+
+  private static void clearPersistentAlarm(Context context, int requestCode) {
+    SharedPreferences p = context.getSharedPreferences(SHARED_PREFERENCES_KEY, 0);
+    synchronized (sPersistentAlarmsLock) {
+      Set<String> persistentAlarms = p.getStringSet(PERSISTENT_ALARMS_SET_KEY, null);
+      if ((persistentAlarms == null) || !persistentAlarms.contains(requestCode)) {
+        return;
+      }
+      persistentAlarms.remove(requestCode);
+      String key = getPersistentAlarmKey(requestCode);
+      p.edit().remove(key).putStringSet(PERSISTENT_ALARMS_SET_KEY, persistentAlarms).commit();
+
+      if (persistentAlarms.isEmpty()) {
+        RebootBroadcastReceiver.disableRescheduleOnReboot(context);
+      }
+    }
+  }
+
+  public static void reschedulePersistentAlarms(Context context) {
+    synchronized (sPersistentAlarmsLock) {
+      SharedPreferences p = context.getSharedPreferences(SHARED_PREFERENCES_KEY, 0);
+      Set<String> persistentAlarms = p.getStringSet(PERSISTENT_ALARMS_SET_KEY, null);
+      // No alarms to reschedule.
+      if (persistentAlarms == null) {
+        return;
+      }
+
+      Iterator<String> it = persistentAlarms.iterator();
+      while (it.hasNext()) {
+        int requestCode = Integer.parseInt(it.next());
+        String key = getPersistentAlarmKey(requestCode);
+        String json = p.getString(key, null);
+        if (json == null) {
+          Log.e(
+              TAG, "Data for alarm request code " + Integer.toString(requestCode) + " is invalid.");
+          continue;
+        }
+        try {
+          JSONObject alarm = new JSONObject(json);
+          boolean repeating = alarm.getBoolean("repeating");
+          boolean exact = alarm.getBoolean("exact");
+          boolean wakeup = alarm.getBoolean("wakeup");
+          long startMillis = alarm.getLong("startMillis");
+          long intervalMillis = alarm.getLong("intervalMillis");
+          long callbackHandle = alarm.getLong("callbackHandle");
+          scheduleAlarm(
+              context,
+              requestCode,
+              repeating,
+              exact,
+              wakeup,
+              startMillis,
+              intervalMillis,
+              false,
+              callbackHandle);
+        } catch (JSONException e) {
+          Log.e(
+              TAG,
+              "Data for alarm request code "
+                  + Integer.toString(requestCode)
+                  + " is invalid: "
+                  + json);
+        }
+      }
+    }
   }
 }
