@@ -1,5 +1,7 @@
 package io.flutter.plugins.firebase.crashlytics.firebasecrashlytics;
 
+import android.util.Log;
+
 import com.crashlytics.android.Crashlytics;
 import io.fabric.sdk.android.Fabric;
 import io.flutter.plugin.common.MethodCall;
@@ -29,7 +31,10 @@ public class FirebaseCrashlyticsPlugin implements MethodCallHandler {
       List<String> lines = (List<String>) call.argument("stackTraceLines");
       List<StackTraceElement> elements = new ArrayList<>();
       for (String line : lines) {
-        elements.add(generateStackTraceElement(line));
+        StackTraceElement stackTraceElement = generateStackTraceElement(line);
+        if (stackTraceElement != null) {
+          elements.add(stackTraceElement);
+        }
       }
       exception.setStackTrace(elements.toArray(new StackTraceElement[elements.size()]));
 
@@ -80,13 +85,18 @@ public class FirebaseCrashlyticsPlugin implements MethodCallHandler {
    * @return Stack trace element to be used as part of an Exception stack trace.
    */
   private StackTraceElement generateStackTraceElement(String line) {
-    // Split line on white spaces.
-    String[] lineParts = line.split("\\s+");
-    String fileName = lineParts[0].trim();
-    String lineNumber = lineParts[1].trim().substring(0, lineParts[1].indexOf(":"));
-    String className = lineParts[2].trim().substring(0, lineParts[2].indexOf("."));
-    String methodName = lineParts[2].trim().substring(lineParts[2].indexOf(".") + 1);
+    try {
+      // Split line on white spaces.
+      String[] lineParts = line.split("\\s+");
+      String fileName = lineParts[0].trim();
+      String lineNumber = lineParts[1].substring(0, lineParts[1].indexOf(":")).trim();
+      String className = lineParts[2].substring(0, lineParts[2].indexOf(".")).trim();
+      String methodName = lineParts[2].substring(lineParts[2].indexOf(".") + 1).trim();
 
-    return new StackTraceElement(className, methodName, fileName, Integer.parseInt(lineNumber));
+      return new StackTraceElement(className, methodName, fileName, Integer.parseInt(lineNumber));
+    } catch (Exception e) {
+      Log.e(TAG, "Unable to generate stack trace element from: " + line);
+      return null;
+    }
   }
 }
