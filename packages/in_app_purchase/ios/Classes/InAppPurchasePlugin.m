@@ -227,10 +227,11 @@ typedef enum : NSUInteger {
 }
 
 - (BOOL)shouldAddStorePayment:(SKPayment *)payment product:(SKProduct *)product {
-    // TODO(cyanglaz): getting the callback from dart so dart is able to override this callback.
-    // Currently the invokeMethod gets result asynchronously and dispatch_semaphore does not work
-    // with the invokeMethod api.
-    return YES;
+    // We alwasy return NO here. And we send the message to dart to process the payment; and we will have a incerpection method that deciding if the payment should be processed (implemented by the programmer).
+    [self.callbackChannel invokeMethod:@"shouldAddStorePayment" arguments:@{@"payment":[FIAObjectTranslator getMapFromSKPayment:payment],
+                                                                            @"proudt":[FIAObjectTranslator getMapFromSKProduct:product]
+                                                                            }];
+    return NO;
 }
 
 #pragma mark - dependency injection (for unit testing)
