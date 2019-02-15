@@ -7,26 +7,23 @@
 #import <Firebase/Firebase.h>
 
 static NSDictionary *getDictionaryFromFIROptions(FIROptions *options) {
-    return @{
-             @"googleAppID" : options.googleAppID ?: [NSNull null],
-             @"bundleID" : options.bundleID ?: [NSNull null],
-             @"GCMSenderID" : options.GCMSenderID ?: [NSNull null],
-             @"APIKey" : options.APIKey ?: [NSNull null],
-             @"clientID" : options.clientID ?: [NSNull null],
-             @"trackingID" : options.trackingID ?: [NSNull null],
-             @"projectID" : options.projectID ?: [NSNull null],
-             @"androidClientID" : options.androidClientID ?: [NSNull null],
-             @"databaseUrl" : options.databaseURL ?: [NSNull null],
-             @"storageBucket" : options.storageBucket ?: [NSNull null],
-             @"deepLinkURLScheme" : options.deepLinkURLScheme ?: [NSNull null],
-             };
+  return @{
+    @"googleAppID" : options.googleAppID ?: [NSNull null],
+    @"bundleID" : options.bundleID ?: [NSNull null],
+    @"GCMSenderID" : options.GCMSenderID ?: [NSNull null],
+    @"APIKey" : options.APIKey ?: [NSNull null],
+    @"clientID" : options.clientID ?: [NSNull null],
+    @"trackingID" : options.trackingID ?: [NSNull null],
+    @"projectID" : options.projectID ?: [NSNull null],
+    @"androidClientID" : options.androidClientID ?: [NSNull null],
+    @"databaseUrl" : options.databaseURL ?: [NSNull null],
+    @"storageBucket" : options.storageBucket ?: [NSNull null],
+    @"deepLinkURLScheme" : options.deepLinkURLScheme ?: [NSNull null],
+  };
 }
 
 static NSDictionary *getDictionaryFromFIRApp(FIRApp *app) {
-    return @{
-             @"name" : app.name,
-             @"options" : getDictionaryFromFIROptions(app.options)
-             };
+  return @{@"name" : app.name, @"options" : getDictionaryFromFIROptions(app.options)};
 }
 
 @implementation FLTFirebaseCorePlugin

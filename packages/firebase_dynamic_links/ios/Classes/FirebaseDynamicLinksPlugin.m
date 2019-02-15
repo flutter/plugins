@@ -3,9 +3,9 @@
 #import "Firebase/Firebase.h"
 
 static FlutterError *getFlutterError(NSError *error) {
-    return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %d", (int)error.code]
-                               message:error.domain
-                               details:error.localizedDescription];
+  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %d", (int)error.code]
+                             message:error.domain
+                             details:error.localizedDescription];
 }
 
 @interface FLTFirebaseDynamicLinksPlugin ()

@@ -7,9 +7,9 @@
 #import <Firebase/Firebase.h>
 
 static FlutterError *getFlutterError(NSError *error) {
-    return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %d", (int)error.code]
-                               message:error.domain
-                               details:error.localizedDescription];
+  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %d", (int)error.code]
+                             message:error.domain
+                             details:error.localizedDescription];
 }
 
 - (NSDictionary *)dictionary {
@@ -21,7 +21,8 @@ static FlutterError *getFlutterError(NSError *error) {
 }
 @end
 
-FIRDatabaseReference *getReference(FIRDatabase *database, NSDictionary *arguments) {
+    FIRDatabaseReference *
+    getReference(FIRDatabase *database, NSDictionary *arguments) {
   NSString *path = arguments[@"path"];
   FIRDatabaseReference *ref = database.reference;
   if ([path length] > 0) ref = [ref child:path];

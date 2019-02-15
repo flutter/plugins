@@ -7,7 +7,7 @@
 #import "Firebase/Firebase.h"
 
 static NSString *getFlutterErrorCode(NSError *error) {
-    NSString *code = [error userInfo][FIRAuthErrorNameKey];
+  NSString *code = [error userInfo][FIRAuthErrorNameKey];
   if (code != nil) {
     return code;
   }
