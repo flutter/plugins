@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.View;
 import android.webkit.WebStorage;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -21,6 +22,13 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   @SuppressWarnings("unchecked")
   FlutterWebView(Context context, BinaryMessenger messenger, int id, Map<String, Object> params) {
     webView = new WebView(context);
+    webView.setWebViewClient(new WebViewClient() {
+      @Override
+      public boolean shouldOverrideUrlLoading(WebView view, String url) {
+        view.loadUrl(url);
+        return false;
+      }
+    });
     // Allow local storage.
     webView.getSettings().setDomStorageEnabled(true);
 
