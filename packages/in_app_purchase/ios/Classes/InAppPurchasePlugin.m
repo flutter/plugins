@@ -139,6 +139,7 @@ typedef enum : NSUInteger {
     NSDictionary *paymentMap = (NSDictionary *)call.arguments;
     NSString *productID = [paymentMap objectForKey:@"productID"];
     SKProduct *product = [self.productsMap objectForKey:productID];
+    // User can use  payment object with mutable = true and add simulatesAskToBuyInSandBox = true to test the payment flow.
     if ([[paymentMap objectForKey:@"mutable"] boolValue]) {
         SKMutablePayment *payment = [[SKMutablePayment alloc] init];
         payment.productIdentifier = productID;
