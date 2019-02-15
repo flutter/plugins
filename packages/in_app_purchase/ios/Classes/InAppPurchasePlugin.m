@@ -48,6 +48,8 @@ typedef enum : NSUInteger {
     [self canMakePayments:result];
   } else if ([@"-[InAppPurchasePlugin startProductRequest:result:]" isEqualToString:call.method]) {
     [self handleProductRequestMethodCall:call result:result];
+  } else if ([@"-[InAppPurchasePlugin addPayment:result:]" isEqualToString:call.method]) {
+      [self addPayment:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -124,6 +126,85 @@ typedef enum : NSUInteger {
     [weakSelf.requestHandlers removeObject:handler];
   }];
 }
+
+- (void)addPayment:(FlutterMethodCall *)call result:(FlutterResult)result {
+    if (![call.arguments isKindOfClass:[NSDictionary class]]) {
+        result([FlutterError errorWithCode:@"storekit_invalide_argument"
+                                   message:@"Argument type of addPayment is not a map"
+                                   details:call.arguments]);
+        return;
+    }
+    NSDictionary *paymentMap = (NSDictionary *)call.arguments;
+    NSString *productID = [paymentMap objectForKey:@"productID"];
+    SKProduct *product = [self.productsMap objectForKey:productID];
+    if ([[paymentMap objectForKey:@"mutable"] boolValue]) {
+        SKMutablePayment *payment = [[SKMutablePayment alloc] init];
+        payment.productIdentifier = productID;
+        NSNumber *quantity = [paymentMap objectForKey:@"quantity"];
+        if (quantity) {
+            payment.quantity = quantity.integerValue;
+        }
+        NSString *applicationUsername = [paymentMap objectForKey:@"applicationUsername"];
+        payment.applicationUsername = applicationUsername;
+        if (@available(iOS 8.3, *)) {
+            payment.simulatesAskToBuyInSandbox =
+            [[paymentMap objectForKey:@"simulatesAskToBuyInSandBox"] boolValue];
+        } else {
+            // Fallback on earlier versions
+        }
+        [self.paymentQueueHandler addPayment:payment];
+    } else {
+        SKPayment *payment = [SKPayment paymentWithProduct:product];
+        [self.paymentQueueHandler addPayment:payment];
+    }
+}
+
+#pragma mark - delegates
+
+- (void)handleTransactionsUpdated:(NSArray<SKPaymentTransaction *> *)transactions {
+    NSMutableArray *maps = [NSMutableArray new];
+    for (SKPaymentTransaction *transcation in transactions) {
+        [maps addObject:[FIAObjectTranslator getMapFromSKPaymentTransaction:transcation]];
+    }
+    [self.callbackChannel invokeMethod:@"updatedTransaction" arguments:maps];
+}
+
+- (void)handleTransactionsRemoved:(NSArray<SKPaymentTransaction *> *)transactions {
+    NSMutableArray *maps = [NSMutableArray new];
+    for (SKPaymentTransaction *transcation in transactions) {
+        [maps addObject:[FIAObjectTranslator getMapFromSKPaymentTransaction:transcation]];
+    }
+    [self.callbackChannel invokeMethod:@"removedTransaction" arguments:maps];
+}
+
+- (void)handleTransactionRestoreFailed:(NSError *)error {
+    FlutterError *fltError = [FlutterError errorWithCode:error.domain
+                                                 message:error.description
+                                                 details:error.description];
+    [self.callbackChannel invokeMethod:@"restoreCompletedTransactions" arguments:fltError];
+}
+
+- (void)restoreCompletedTransactionsFinished {
+    [self.callbackChannel invokeMethod:@"paymentQueueRestoreCompletedTransactionsFinished"
+                             arguments:nil];
+}
+
+- (void)updatedDownloads:(NSArray<SKDownload *> *)downloads {
+    NSMutableArray *maps = [NSMutableArray new];
+    for (SKDownload *download in downloads) {
+        [maps addObject:[FIAObjectTranslator getMapFromSKDownload:download]];
+    }
+    [self.callbackChannel invokeMethod:@"updatedDownloads" arguments:maps];
+}
+
+- (BOOL)shouldAddStorePayment:(SKPayment *)payment product:(SKProduct *)product {
+    // TODO(cyanglaz): getting the callback from dart so dart is able to override this callback.
+    // Currently the invokeMethod gets result asynchronously and dispatch_semaphore does not work
+    // with the invokeMethod api.
+    return YES;
+}
+
+#pragma mark - dependency injection (for unit testing)
 
 - (SKProductsRequest *)getProductRequestWithIdentifiers:(NSSet *)identifiers {
   return [[SKProductsRequest alloc] initWithProductIdentifiers:identifiers];
