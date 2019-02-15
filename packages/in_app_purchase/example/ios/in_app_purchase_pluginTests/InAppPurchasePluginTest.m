@@ -70,6 +70,28 @@
   XCTAssertTrue([resultArray.firstObject[@"productIdentifier"] isEqualToString:@"123"]);
 }
 
+- (void)testCreatePaymentWithProduct {
+    XCTestExpectation* expectation =
+    [self expectationWithDescription:@"must return a payment"];
+    FlutterMethodCall* call = [FlutterMethodCall
+                               methodCallWithMethodName:@"-[InAppPurchasePlugin startProductRequest:result:]"
+                               arguments:@[ @"123" ]];
+    FlutterMethodCall* createPaymentCall = [FlutterMethodCall
+                               methodCallWithMethodName:@"-[InAppPurchasePlugin createPaymentWithProductID:result:]"
+                               arguments:@"123"];
+    __block NSDictionary *result;
+    __weak typeof(self) weakSelf = self;
+    [self.plugin handleMethodCall:call
+                           result:^(id queryResult) {
+                               [weakSelf.plugin handleMethodCall:createPaymentCall result:^(id  _Nullable r) {
+                                   result = r;
+                                   [expectation fulfill];
+                               }];
+                           }];
+    [self waitForExpectations:@[ expectation ] timeout:5];
+    XCTAssertTrue([result[@"productIdentifier"] isEqualToString:@"123"]);
+}
+
 - (void)testAddPaymentFailure {
     XCTestExpectation* expectation =
     [self expectationWithDescription:@"result should return failed state"];

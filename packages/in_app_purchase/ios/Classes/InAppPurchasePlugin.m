@@ -23,7 +23,9 @@ typedef enum : NSUInteger {
 
 // After querying the product, the available products will be saved in the map to be used
 // for purchase.
-@property(copy, nonatomic) NSDictionary *productsMap;
+@property(copy, nonatomic) NSMutableDictionary *productsCache;
+// Saved payment object used for resume payments;
+@property(copy, nonatomic) NSMutableDictionary *paymentsCache;;
 
 // Call back channel to dart used for when a listener function is triggered.
 @property(strong, nonatomic) FlutterMethodChannel *callbackChannel;
@@ -50,8 +52,10 @@ typedef enum : NSUInteger {
     [self handleProductRequestMethodCall:call result:result];
   } else if ([@"-[InAppPurchasePlugin addPayment:result:]" isEqualToString:call.method]) {
     [self addPayment:call result:result];
-  } else if ([@"-[InAppPurchasePlugin finishTransaction]" isEqualToString:call.method]) {
+  } else if ([@"-[InAppPurchasePlugin finishTransaction:result:]" isEqualToString:call.method]) {
     [self finishTransaction:call result:result];
+  } else if ([@"-[InAppPurchasePlugin createPaymentWithProductID:result:]" isEqualToString:call.method]) {
+    [self createPaymentWithProductID:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -124,9 +128,32 @@ typedef enum : NSUInteger {
                                  details:call.arguments]);
       return;
     }
+  for (SKProduct *product in response.products) {
+      [self.productsCache setObject:product forKey:product.productIdentifier];
+  }
     result([FIAObjectTranslator getMapFromSKProductsResponse:response]);
     [weakSelf.requestHandlers removeObject:handler];
   }];
+}
+
+- (void)createPaymentWithProductID:(FlutterMethodCall *)call result:(FlutterResult)result {
+    if (![call.arguments isKindOfClass:[NSString class]]) {
+        result([FlutterError errorWithCode:@"storekit_invalide_argument"
+                                   message:@"Argument type of createPaymentWithProductID is not a string."
+                                   details:call.arguments]);
+        return;
+    }
+    NSString *productID = call.arguments;
+    SKProduct *product = [self.productsCache objectForKey:productID];
+    if (!product) {
+        result([FlutterError errorWithCode:@"storekit_product_not_found"
+                                   message:@"Cannot find the product. To create a payment of a product, you must query the product with SKProductRequestMaker.startProductRequest."
+                                   details:call.arguments]);
+        return;
+    }
+    SKPayment *payment = [SKPayment paymentWithProduct:product];
+    [self.paymentsCache setObject:payment forKey:productID];
+    result([FIAObjectTranslator getMapFromSKPayment:payment]);
 }
 
 - (void)addPayment:(FlutterMethodCall *)call result:(FlutterResult)result {
@@ -138,26 +165,23 @@ typedef enum : NSUInteger {
     }
     NSDictionary *paymentMap = (NSDictionary *)call.arguments;
     NSString *productID = [paymentMap objectForKey:@"productID"];
-    SKProduct *product = [self.productsMap objectForKey:productID];
+    SKPayment *payment = [self.paymentsCache objectForKey:productID];
     // User can use  payment object with mutable = true and add simulatesAskToBuyInSandBox = true to test the payment flow.
-    if ([[paymentMap objectForKey:@"mutable"] boolValue]) {
-        SKMutablePayment *payment = [[SKMutablePayment alloc] init];
-        payment.productIdentifier = productID;
+    if (!payment || [paymentMap[@"mutable"] boolValue] == YES) {
+        SKMutablePayment *mutablePayment = [[SKMutablePayment alloc] init];
+        mutablePayment.productIdentifier = productID;
         NSNumber *quantity = [paymentMap objectForKey:@"quantity"];
         if (quantity) {
-            payment.quantity = quantity.integerValue;
+            mutablePayment.quantity = quantity.integerValue;
         }
         NSString *applicationUsername = [paymentMap objectForKey:@"applicationUsername"];
-        payment.applicationUsername = applicationUsername;
+        mutablePayment.applicationUsername = applicationUsername;
         if (@available(iOS 8.3, *)) {
-            payment.simulatesAskToBuyInSandbox =
+            mutablePayment.simulatesAskToBuyInSandbox =
             [[paymentMap objectForKey:@"simulatesAskToBuyInSandBox"] boolValue];
-        } else {
-            // Fallback on earlier versions
         }
         [self.paymentQueueHandler addPayment:payment];
     } else {
-        SKPayment *payment = [SKPayment paymentWithProduct:product];
         [self.paymentQueueHandler addPayment:payment];
     }
 }
@@ -165,7 +189,7 @@ typedef enum : NSUInteger {
 - (void)finishTransaction:(FlutterMethodCall *)call result:(FlutterResult)result {
     if (![call.arguments isKindOfClass:[NSString class]]) {
         result([FlutterError errorWithCode:@"storekit_invalide_argument"
-                                   message:@"Argument type of addPayment is not a string"
+                                   message:@"Argument type of finishTransaction is not a string."
                                    details:call.arguments]);
         return;
     }
@@ -228,6 +252,8 @@ typedef enum : NSUInteger {
 
 - (BOOL)shouldAddStorePayment:(SKPayment *)payment product:(SKProduct *)product {
     // We alwasy return NO here. And we send the message to dart to process the payment; and we will have a incerpection method that deciding if the payment should be processed (implemented by the programmer).
+    [self.productsCache setObject:product forKey:product.productIdentifier];
+    [self.paymentsCache setObject:payment forKey:payment.productIdentifier];
     [self.callbackChannel invokeMethod:@"shouldAddStorePayment" arguments:@{@"payment":[FIAObjectTranslator getMapFromSKPayment:payment],
                                                                             @"proudt":[FIAObjectTranslator getMapFromSKProduct:product]
                                                                             }];
@@ -247,6 +273,20 @@ typedef enum : NSUInteger {
     _requestHandlers = [NSMutableSet new];
   }
   return _requestHandlers;
+}
+
+- (NSMutableDictionary *)productsCache {
+    if (!_productsCache) {
+        _productsCache = [NSMutableDictionary new];
+    }
+    return _productsCache;
+}
+
+- (NSMutableDictionary *)paymentsCache {
+    if (!_paymentsCache) {
+        _paymentsCache = [NSMutableDictionary new];
+    }
+    return _paymentsCache;
 }
 
 @end

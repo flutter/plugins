@@ -186,6 +186,7 @@
 - (instancetype)initWithState:(SKPaymentTransactionState)state {
     self = [super init];
     if (self) {
+        [self setValue:@"fakeID" forKey:@"transactionIdentifier"];
         [self setValue:@(state) forKey:@"transactionState"];
     }
     return self;
