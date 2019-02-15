@@ -50,12 +50,12 @@ typedef enum : NSUInteger {
     [self canMakePayments:result];
   } else if ([@"-[InAppPurchasePlugin startProductRequest:result:]" isEqualToString:call.method]) {
     [self handleProductRequestMethodCall:call result:result];
+  } else if ([@"-[InAppPurchasePlugin createPaymentWithProductID:result:]" isEqualToString:call.method]) {
+      [self createPaymentWithProductID:call result:result];
   } else if ([@"-[InAppPurchasePlugin addPayment:result:]" isEqualToString:call.method]) {
     [self addPayment:call result:result];
   } else if ([@"-[InAppPurchasePlugin finishTransaction:result:]" isEqualToString:call.method]) {
     [self finishTransaction:call result:result];
-  } else if ([@"-[InAppPurchasePlugin createPaymentWithProductID:result:]" isEqualToString:call.method]) {
-    [self createPaymentWithProductID:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
