@@ -25,142 +25,189 @@ class PlaceMarkerBody extends StatefulWidget {
   State<StatefulWidget> createState() => PlaceMarkerBodyState();
 }
 
+typedef Marker MarkerUpdateAction(Marker marker);
+
 class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
   PlaceMarkerBodyState();
 
   static final LatLng center = const LatLng(-33.86711, 151.1947171);
 
   GoogleMapController controller;
-  int _markerCount = 0;
-  Marker _selectedMarker;
+  Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
+  MarkerId selectedMarker;
+  int _markerIdCounter = 1;
 
   void _onMapCreated(GoogleMapController controller) {
     this.controller = controller;
-    controller.onMarkerTapped.add(_onMarkerTapped);
   }
 
   @override
   void dispose() {
-    controller?.onMarkerTapped?.remove(_onMarkerTapped);
     super.dispose();
   }
 
-  void _onMarkerTapped(Marker marker) {
-    if (_selectedMarker != null) {
-      _updateSelectedMarker(
-        const MarkerOptions(icon: BitmapDescriptor.defaultMarker),
-      );
-    }
+  void _updateSelectedMarker(MarkerUpdateAction update) {
     setState(() {
-      _selectedMarker = marker;
+      if (markers.containsKey(selectedMarker)) {
+        final Marker newMarker = update(markers[selectedMarker]);
+        markers[selectedMarker] = newMarker;
+      }
     });
-    _updateSelectedMarker(
-      MarkerOptions(
-        icon: BitmapDescriptor.defaultMarkerWithHue(
-          BitmapDescriptor.hueGreen,
-        ),
-      ),
-    );
-  }
-
-  void _updateSelectedMarker(MarkerOptions changes) {
-    controller.updateMarker(_selectedMarker, changes);
   }
 
   void _add() {
-    controller.addMarker(MarkerOptions(
+    final int markerCount = markers.length;
+
+    if (markerCount == 12) {
+      return;
+    }
+
+    final String markerIdVal = 'marker_id_$_markerIdCounter';
+    _markerIdCounter++;
+    print(markerIdVal);
+    final MarkerId markerId = MarkerId(markerIdVal);
+
+    void _onMarkerTapped() {
+      final Marker tappedMarker = markers[markerId];
+      if (tappedMarker != null) {
+        setState(() {
+          if (markers.containsKey(selectedMarker)) {
+            final Marker resetOld = markers[selectedMarker]
+                .copyWith(iconParam: BitmapDescriptor.defaultMarker);
+            markers[selectedMarker] = resetOld;
+          }
+          selectedMarker = markerId;
+          final Marker newMarker = tappedMarker.copyWith(
+            iconParam: BitmapDescriptor.defaultMarkerWithHue(
+              BitmapDescriptor.hueGreen,
+            ),
+          );
+          markers[markerId] = newMarker;
+        });
+      }
+    }
+
+    final Marker marker = Marker(
+      markerId: markerId,
       position: LatLng(
-        center.latitude + sin(_markerCount * pi / 6.0) / 20.0,
-        center.longitude + cos(_markerCount * pi / 6.0) / 20.0,
+        center.latitude + sin(_markerIdCounter * pi / 6.0) / 20.0,
+        center.longitude + cos(_markerIdCounter * pi / 6.0) / 20.0,
       ),
-      infoWindowText: InfoWindowText('Marker #${_markerCount + 1}', '*'),
-    ));
+      infoWindow: InfoWindow(title: markerIdVal, snippet: '*'),
+      onTap: _onMarkerTapped,
+    );
+
     setState(() {
-      _markerCount += 1;
+      markers[markerId] = marker;
     });
   }
 
   void _remove() {
-    controller.removeMarker(_selectedMarker);
     setState(() {
-      _selectedMarker = null;
-      _markerCount -= 1;
+      if (markers.containsKey(selectedMarker)) {
+        markers.remove(selectedMarker);
+      }
     });
   }
 
   void _changePosition() {
-    final LatLng current = _selectedMarker.options.position;
-    final Offset offset = Offset(
-      center.latitude - current.latitude,
-      center.longitude - current.longitude,
-    );
-    _updateSelectedMarker(
-      MarkerOptions(
-        position: LatLng(
+    _updateSelectedMarker((Marker m) {
+      final LatLng current = m.position;
+      final Offset offset = Offset(
+        center.latitude - current.latitude,
+        center.longitude - current.longitude,
+      );
+      return m.copyWith(
+        positionParam: LatLng(
           center.latitude + offset.dy,
           center.longitude + offset.dx,
         ),
-      ),
-    );
+      );
+    });
   }
 
   void _changeAnchor() {
-    final Offset currentAnchor = _selectedMarker.options.anchor;
-    final Offset newAnchor = Offset(1.0 - currentAnchor.dy, currentAnchor.dx);
-    _updateSelectedMarker(MarkerOptions(anchor: newAnchor));
+    _updateSelectedMarker((Marker m) {
+      final Offset currentAnchor = m.anchor;
+      final Offset newAnchor = Offset(1.0 - currentAnchor.dy, currentAnchor.dx);
+      return m.copyWith(
+        anchorParam: newAnchor,
+      );
+    });
   }
 
   Future<void> _changeInfoAnchor() async {
-    final Offset currentAnchor = _selectedMarker.options.infoWindowAnchor;
-    final Offset newAnchor = Offset(1.0 - currentAnchor.dy, currentAnchor.dx);
-    _updateSelectedMarker(MarkerOptions(infoWindowAnchor: newAnchor));
+    _updateSelectedMarker((Marker m) {
+      final Offset currentAnchor = m.infoWindow.anchor;
+      final Offset newAnchor = Offset(1.0 - currentAnchor.dy, currentAnchor.dx);
+      return m.copyWith(
+        infoWindowParam: m.infoWindow.copyWith(
+          anchorParam: newAnchor,
+        ),
+      );
+    });
   }
 
   Future<void> _toggleDraggable() async {
-    _updateSelectedMarker(
-      MarkerOptions(draggable: !_selectedMarker.options.draggable),
-    );
+    _updateSelectedMarker((Marker m) {
+      return m.copyWith(
+        draggableParam: !m.draggable,
+      );
+    });
   }
 
   Future<void> _toggleFlat() async {
-    _updateSelectedMarker(MarkerOptions(flat: !_selectedMarker.options.flat));
+    _updateSelectedMarker((Marker m) {
+      return m.copyWith(
+        flatParam: !m.flat,
+      );
+    });
   }
 
   Future<void> _changeInfo() async {
-    final InfoWindowText currentInfo = _selectedMarker.options.infoWindowText;
-    _updateSelectedMarker(MarkerOptions(
-      infoWindowText: InfoWindowText(
-        currentInfo.title,
-        currentInfo.snippet + '*',
-      ),
-    ));
+    _updateSelectedMarker((Marker m) {
+      final String newSnippet = m.infoWindow.snippet + '*';
+      return m.copyWith(
+        infoWindowParam: m.infoWindow.copyWith(
+          snippetParam: newSnippet,
+        ),
+      );
+    });
   }
 
   Future<void> _changeAlpha() async {
-    final double current = _selectedMarker.options.alpha;
-    _updateSelectedMarker(
-      MarkerOptions(alpha: current < 0.1 ? 1.0 : current * 0.75),
-    );
+    _updateSelectedMarker((Marker m) {
+      final double current = m.alpha;
+      return m.copyWith(
+        alphaParam: current < 0.1 ? 1.0 : current * 0.75,
+      );
+    });
   }
 
   Future<void> _changeRotation() async {
-    final double current = _selectedMarker.options.rotation;
-    _updateSelectedMarker(
-      MarkerOptions(rotation: current == 330.0 ? 0.0 : current + 30.0),
-    );
+    _updateSelectedMarker((Marker m) {
+      final double current = m.rotation;
+      return m.copyWith(
+        rotationParam: current == 330.0 ? 0.0 : current + 30.0,
+      );
+    });
   }
 
   Future<void> _toggleVisible() async {
-    _updateSelectedMarker(
-      MarkerOptions(visible: !_selectedMarker.options.visible),
-    );
+    _updateSelectedMarker((Marker m) {
+      return m.copyWith(
+        visibleParam: !m.visible,
+      );
+    });
   }
 
   Future<void> _changeZIndex() async {
-    final double current = _selectedMarker.options.zIndex;
-    _updateSelectedMarker(
-      MarkerOptions(zIndex: current == 12.0 ? 0.0 : current + 1.0),
-    );
+    _updateSelectedMarker((Marker m) {
+      final double current = m.zIndex;
+      return m.copyWith(
+        zIndexParam: current == 12.0 ? 0.0 : current + 1.0,
+      );
+    });
   }
 
   @override
@@ -179,6 +226,7 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
                 target: LatLng(-33.852, 151.211),
                 zoom: 11.0,
               ),
+              markers: Set<Marker>.of(markers.values),
             ),
           ),
         ),
@@ -193,22 +241,19 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
                       children: <Widget>[
                         FlatButton(
                           child: const Text('add'),
-                          onPressed: (_markerCount == 12) ? null : _add,
+                          onPressed: _add,
                         ),
                         FlatButton(
                           child: const Text('remove'),
-                          onPressed: (_selectedMarker == null) ? null : _remove,
+                          onPressed: _remove,
                         ),
                         FlatButton(
                           child: const Text('change info'),
-                          onPressed:
-                              (_selectedMarker == null) ? null : _changeInfo,
+                          onPressed: _changeInfo,
                         ),
                         FlatButton(
                           child: const Text('change info anchor'),
-                          onPressed: (_selectedMarker == null)
-                              ? null
-                              : _changeInfoAnchor,
+                          onPressed: _changeInfoAnchor,
                         ),
                       ],
                     ),
@@ -216,46 +261,35 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
                       children: <Widget>[
                         FlatButton(
                           child: const Text('change alpha'),
-                          onPressed:
-                              (_selectedMarker == null) ? null : _changeAlpha,
+                          onPressed: _changeAlpha,
                         ),
                         FlatButton(
                           child: const Text('change anchor'),
-                          onPressed:
-                              (_selectedMarker == null) ? null : _changeAnchor,
+                          onPressed: _changeAnchor,
                         ),
                         FlatButton(
                           child: const Text('toggle draggable'),
-                          onPressed: (_selectedMarker == null)
-                              ? null
-                              : _toggleDraggable,
+                          onPressed: _toggleDraggable,
                         ),
                         FlatButton(
                           child: const Text('toggle flat'),
-                          onPressed:
-                              (_selectedMarker == null) ? null : _toggleFlat,
+                          onPressed: _toggleFlat,
                         ),
                         FlatButton(
                           child: const Text('change position'),
-                          onPressed: (_selectedMarker == null)
-                              ? null
-                              : _changePosition,
+                          onPressed: _changePosition,
                         ),
                         FlatButton(
                           child: const Text('change rotation'),
-                          onPressed: (_selectedMarker == null)
-                              ? null
-                              : _changeRotation,
+                          onPressed: _changeRotation,
                         ),
                         FlatButton(
                           child: const Text('toggle visible'),
-                          onPressed:
-                              (_selectedMarker == null) ? null : _toggleVisible,
+                          onPressed: _toggleVisible,
                         ),
                         FlatButton(
                           child: const Text('change zIndex'),
-                          onPressed:
-                              (_selectedMarker == null) ? null : _changeZIndex,
+                          onPressed: _changeZIndex,
                         ),
                       ],
                     ),

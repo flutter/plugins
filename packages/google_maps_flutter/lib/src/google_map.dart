@@ -21,6 +21,7 @@ class GoogleMap extends StatefulWidget {
     this.tiltGesturesEnabled = true,
     this.trackCameraPosition = false,
     this.myLocationEnabled = false,
+    this.markers,
   }) : assert(initialCameraPosition != null);
 
   final MapCreatedCallback onMapCreated;
@@ -56,6 +57,9 @@ class GoogleMap extends StatefulWidget {
 
   /// True if the map view should relay camera move events to Flutter.
   final bool trackCameraPosition;
+
+  // Markers to be placed on the map.
+  final Set<Marker> markers;
 
   /// True if a "My Location" layer should be shown on the map.
   ///
@@ -100,6 +104,8 @@ class GoogleMap extends StatefulWidget {
 class _GoogleMapState extends State<GoogleMap> {
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
+  final Completer<MarkerControllers> _markerControllers =
+      Completer<MarkerControllers>();
 
   _GoogleMapOptions _googleMapOptions;
 
@@ -141,27 +147,39 @@ class _GoogleMapState extends State<GoogleMap> {
   void didUpdateWidget(GoogleMap oldWidget) {
     super.didUpdateWidget(oldWidget);
     final _GoogleMapOptions newOptions = _GoogleMapOptions.fromWidget(widget);
+    final MarkerUpdates markerUpdates =
+        MarkerUpdates.from(_googleMapOptions.markers, newOptions.markers);
     final Map<String, dynamic> updates =
-        _googleMapOptions.updatesMap(newOptions);
-    _updateOptions(updates);
+        _googleMapOptions.updatesMap(newOptions, markerUpdates);
+    _updateOptions(updates, markerUpdates);
     _googleMapOptions = newOptions;
   }
 
-  void _updateOptions(Map<String, dynamic> updates) async {
+  void _updateOptions(
+      Map<String, dynamic> updates, MarkerUpdates markerUpdates) async {
     if (updates.isEmpty) {
       return;
     }
     final GoogleMapController controller = await _controller.future;
     controller._updateMapOptions(updates);
+    final MarkerControllers markerControllers = await _markerControllers.future;
+    markerControllers.update(markerUpdates);
   }
 
   Future<void> onPlatformViewCreated(int id) async {
     final GoogleMapController controller =
         await GoogleMapController.init(id, widget.initialCameraPosition);
     _controller.complete(controller);
+    _createMarkerControllers();
     if (widget.onMapCreated != null) {
       widget.onMapCreated(controller);
     }
+  }
+
+  void _createMarkerControllers() {
+    final MarkerControllers markerControllers = MarkerControllers();
+    markerControllers.update(MarkerUpdates.from(null, widget.markers));
+    _markerControllers.complete(markerControllers);
   }
 }
 
@@ -181,6 +199,7 @@ class _GoogleMapOptions {
     this.trackCameraPosition,
     this.zoomGesturesEnabled,
     this.myLocationEnabled,
+    this.markers,
   });
 
   static _GoogleMapOptions fromWidget(GoogleMap map) {
@@ -195,6 +214,7 @@ class _GoogleMapOptions {
       trackCameraPosition: map.trackCameraPosition,
       zoomGesturesEnabled: map.zoomGesturesEnabled,
       myLocationEnabled: map.myLocationEnabled,
+      markers: map.markers,
     );
   }
 
@@ -218,6 +238,8 @@ class _GoogleMapOptions {
 
   final bool myLocationEnabled;
 
+  final Set<Marker> markers;
+
   Map<String, dynamic> toMap() {
     final Map<String, dynamic> optionsMap = <String, dynamic>{};
 
@@ -237,13 +259,25 @@ class _GoogleMapOptions {
     addIfNonNull('zoomGesturesEnabled', zoomGesturesEnabled);
     addIfNonNull('trackCameraPosition', trackCameraPosition);
     addIfNonNull('myLocationEnabled', myLocationEnabled);
+    addIfNonNull('markers', _markersToJson());
+
     return optionsMap;
   }
 
-  Map<String, dynamic> updatesMap(_GoogleMapOptions newOptions) {
+  dynamic _markersToJson() {
+    if (markers == null) {
+      return null;
+    }
+    return markers.map<dynamic>((Marker marker) => marker._toJson())?.toList();
+  }
+
+  Map<String, dynamic> updatesMap(
+      _GoogleMapOptions newOptions, MarkerUpdates markerUpdates) {
     final Map<String, dynamic> prevOptionsMap = toMap();
+
     return newOptions.toMap()
-      ..removeWhere(
-          (String key, dynamic value) => prevOptionsMap[key] == value);
+      ..remove('markers')
+      ..removeWhere((String key, dynamic value) => prevOptionsMap[key] == value)
+      ..putIfAbsent('markerUpdates', () => markerUpdates._toJson());
   }
 }
