@@ -60,12 +60,12 @@ public class ImagePickerDelegateTest {
     when(mockFileUtils.getPathFromUri(any(Context.class), any(Uri.class)))
         .thenReturn("pathFromUri");
 
-    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", null, null))
+    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", null, null, false))
         .thenReturn("originalPath");
-    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", WIDTH, HEIGHT))
+    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", WIDTH, HEIGHT, false))
         .thenReturn("scaledPath");
-    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", WIDTH, null)).thenReturn("scaledPath");
-    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", null, HEIGHT))
+    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", WIDTH, null, false)).thenReturn("scaledPath");
+    when(mockImageResizer.resizeImageIfNeeded("pathFromUri", null, HEIGHT, false))
         .thenReturn("scaledPath");
 
     mockFileUriResolver = new MockFileUriResolver();
@@ -271,6 +271,7 @@ public class ImagePickerDelegateTest {
   @Test
   public void
       onActivityResult_WhenImagePickedFromGallery_AndNoResizeNeeded_FinishesWithImagePath() {
+    when(mockMethodCall.argument("crop")).thenReturn(false);
     ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
 
     delegate.onActivityResult(
@@ -284,6 +285,7 @@ public class ImagePickerDelegateTest {
   public void
       onActivityResult_WhenImagePickedFromGallery_AndResizeNeeded_FinishesWithScaledImagePath() {
     when(mockMethodCall.argument("maxWidth")).thenReturn(WIDTH);
+    when(mockMethodCall.argument("crop")).thenReturn(false);
 
     ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
     delegate.onActivityResult(
@@ -297,6 +299,7 @@ public class ImagePickerDelegateTest {
   public void
       onActivityResult_WhenVideoPickedFromGallery_AndResizeParametersSupplied_FinishesWithFilePath() {
     when(mockMethodCall.argument("maxWidth")).thenReturn(WIDTH);
+    when(mockMethodCall.argument("crop")).thenReturn(false);
 
     ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
     delegate.onActivityResult(
@@ -319,6 +322,7 @@ public class ImagePickerDelegateTest {
 
   @Test
   public void onActivityResult_WhenImageTakenWithCamera_AndNoResizeNeeded_FinishesWithImagePath() {
+    when(mockMethodCall.argument("crop")).thenReturn(false);
     ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
 
     delegate.onActivityResult(
@@ -332,6 +336,7 @@ public class ImagePickerDelegateTest {
   public void
       onActivityResult_WhenImageTakenWithCamera_AndResizeNeeded_FinishesWithScaledImagePath() {
     when(mockMethodCall.argument("maxWidth")).thenReturn(WIDTH);
+    when(mockMethodCall.argument("crop")).thenReturn(false);
 
     ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
     delegate.onActivityResult(
@@ -345,6 +350,7 @@ public class ImagePickerDelegateTest {
   public void
       onActivityResult_WhenVideoTakenWithCamera_AndResizeParametersSupplied_FinishesWithFilePath() {
     when(mockMethodCall.argument("maxWidth")).thenReturn(WIDTH);
+    when(mockMethodCall.argument("crop")).thenReturn(false);
 
     ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
     delegate.onActivityResult(
