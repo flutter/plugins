@@ -7,28 +7,31 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SKProduct (Coder)
+@interface FIAObjectTranslator : NSObject
 
-- (nullable NSDictionary *)toMap;
++ (NSDictionary *)getMapFromSKProduct:(SKProduct *)product;
+
++ (NSDictionary *)getMapFromSKProductSubscriptionPeriod:(SKProductSubscriptionPeriod *)period
+    API_AVAILABLE(ios(11.2));
+
++ (NSDictionary *)getMapFromSKProductDiscount:(SKProductDiscount *)discount
+    API_AVAILABLE(ios(11.2));
+
++ (NSDictionary *)getMapFromSKProductsResponse:(SKProductsResponse *)productResponse;
+
++ (NSDictionary *)getMapFromSKPayment:(SKPayment *)payment;
+
++ (NSDictionary *)getMapFromNSLocale:(NSLocale *)locale;
+
++ (SKMutablePayment *)getSKMutablePaymentFromMap:(NSDictionary *)map;
+
++ (NSDictionary *)getMapFromSKPaymentTransaction:(SKPaymentTransaction *)transaction;
+
++ (NSDictionary *)getMapFromSKDownload:(SKDownload *)download;
+
++ (NSDictionary *)getMapFromNSError:(NSError *)error;
 
 @end
-
-@interface SKProductSubscriptionPeriod (Coder)
-
-- (nullable NSDictionary *)toMap;
-
-@end
-
-@interface SKProductDiscount (Coder)
-
-- (nullable NSDictionary *)toMap;
-
-@end
-
-@interface SKProductsResponse (Coder)
-
-- (nullable NSDictionary *)toMap;
-
-@end
+;
 
 NS_ASSUME_NONNULL_END

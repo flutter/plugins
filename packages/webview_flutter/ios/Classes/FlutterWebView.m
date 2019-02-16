@@ -1,4 +1,9 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 #import "FlutterWebView.h"
+#import "JavaScriptChannelHandler.h"
 
 @implementation FLTWebViewFactory {
   NSObject<FlutterBinaryMessenger>* _messenger;
@@ -33,6 +38,8 @@
   int64_t _viewId;
   FlutterMethodChannel* _channel;
   NSString* _currentUrl;
+  // The set of registered JavaScript channel names.
+  NSMutableSet* _javaScriptChannelNames;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -41,17 +48,31 @@
               binaryMessenger:(NSObject<FlutterBinaryMessenger>*)messenger {
   if ([super init]) {
     _viewId = viewId;
-    _webView = [[WKWebView alloc] initWithFrame:frame];
+
     NSString* channelName = [NSString stringWithFormat:@"plugins.flutter.io/webview_%lld", viewId];
     _channel = [FlutterMethodChannel methodChannelWithName:channelName binaryMessenger:messenger];
+    _javaScriptChannelNames = [[NSMutableSet alloc] init];
+
+    WKUserContentController* userContentController = [[WKUserContentController alloc] init];
+    if ([args[@"javascriptChannelNames"] isKindOfClass:[NSArray class]]) {
+      NSArray* javaScriptChannelNames = args[@"javascriptChannelNames"];
+      [_javaScriptChannelNames addObjectsFromArray:javaScriptChannelNames];
+      [self registerJavaScriptChannels:_javaScriptChannelNames controller:userContentController];
+    }
+
+    WKWebViewConfiguration* configuration = [[WKWebViewConfiguration alloc] init];
+    configuration.userContentController = userContentController;
+
+    _webView = [[WKWebView alloc] initWithFrame:frame configuration:configuration];
     __weak __typeof__(self) weakSelf = self;
     [_channel setMethodCallHandler:^(FlutterMethodCall* call, FlutterResult result) {
       [weakSelf onMethodCall:call result:result];
     }];
     NSDictionary<NSString*, id>* settings = args[@"settings"];
     [self applySettings:settings];
+
     NSString* initialUrl = args[@"initialUrl"];
-    if (initialUrl && ![initialUrl isKindOfClass:[NSNull class]]) {
+    if ([initialUrl isKindOfClass:[NSString class]]) {
       [self loadUrl:initialUrl];
     }
   }
@@ -81,6 +102,12 @@
     [self onCurrentUrl:call result:result];
   } else if ([[call method] isEqualToString:@"evaluateJavascript"]) {
     [self onEvaluateJavaScript:call result:result];
+  } else if ([[call method] isEqualToString:@"addJavascriptChannels"]) {
+    [self onAddJavaScriptChannels:call result:result];
+  } else if ([[call method] isEqualToString:@"removeJavascriptChannels"]) {
+    [self onRemoveJavaScriptChannels:call result:result];
+  } else if ([[call method] isEqualToString:@"clearCache"]) {
+    [self clearCache:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -154,6 +181,49 @@
              }];
 }
 
+- (void)onAddJavaScriptChannels:(FlutterMethodCall*)call result:(FlutterResult)result {
+  NSArray* channelNames = [call arguments];
+  NSSet* channelNamesSet = [[NSSet alloc] initWithArray:channelNames];
+  [_javaScriptChannelNames addObjectsFromArray:channelNames];
+  [self registerJavaScriptChannels:channelNamesSet
+                        controller:_webView.configuration.userContentController];
+  result(nil);
+}
+
+- (void)onRemoveJavaScriptChannels:(FlutterMethodCall*)call result:(FlutterResult)result {
+  // WkWebView does not support removing a single user script, so instead we remove all
+  // user scripts, all message handlers. And re-register channels that shouldn't be removed.
+  [_webView.configuration.userContentController removeAllUserScripts];
+  for (NSString* channelName in _javaScriptChannelNames) {
+    [_webView.configuration.userContentController removeScriptMessageHandlerForName:channelName];
+  }
+
+  NSArray* channelNamesToRemove = [call arguments];
+  for (NSString* channelName in channelNamesToRemove) {
+    [_javaScriptChannelNames removeObject:channelName];
+  }
+
+  [self registerJavaScriptChannels:_javaScriptChannelNames
+                        controller:_webView.configuration.userContentController];
+  result(nil);
+}
+
+- (void)clearCache:(FlutterResult)result {
+  if (@available(iOS 9.0, *)) {
+    NSSet* cacheDataTypes = [WKWebsiteDataStore allWebsiteDataTypes];
+    WKWebsiteDataStore* dataStore = [WKWebsiteDataStore defaultDataStore];
+    NSDate* dateFrom = [NSDate dateWithTimeIntervalSince1970:0];
+    [dataStore removeDataOfTypes:cacheDataTypes
+                   modifiedSince:dateFrom
+               completionHandler:^{
+                 result(nil);
+               }];
+  } else {
+    // support for iOS8 tracked in https://github.com/flutter/flutter/issues/27624.
+    NSLog(@"Clearing cache is not supported for Flutter WebViews prior to iOS 9.");
+  }
+}
+
 - (void)applySettings:(NSDictionary<NSString*, id>*)settings {
   for (NSString* key in settings) {
     if ([key isEqualToString:@"jsMode"]) {
@@ -187,6 +257,23 @@
   NSURLRequest* req = [NSURLRequest requestWithURL:nsUrl];
   [_webView loadRequest:req];
   return true;
+}
+
+- (void)registerJavaScriptChannels:(NSSet*)channelNames
+                        controller:(WKUserContentController*)userContentController {
+  for (NSString* channelName in channelNames) {
+    FLTJavaScriptChannel* channel =
+        [[FLTJavaScriptChannel alloc] initWithMethodChannel:_channel
+                                      javaScriptChannelName:channelName];
+    [userContentController addScriptMessageHandler:channel name:channelName];
+    NSString* wrapperSource = [NSString
+        stringWithFormat:@"window.%@ = webkit.messageHandlers.%@;", channelName, channelName];
+    WKUserScript* wrapperScript =
+        [[WKUserScript alloc] initWithSource:wrapperSource
+                               injectionTime:WKUserScriptInjectionTimeAtDocumentStart
+                            forMainFrameOnly:NO];
+    [userContentController addUserScript:wrapperScript];
+  }
 }
 
 @end
