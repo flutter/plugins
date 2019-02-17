@@ -129,7 +129,12 @@ static const int SOURCE_GALLERY = 1;
   NSURL *videoURL = [info objectForKey:UIImagePickerControllerMediaURL];
   UIImage *image = [info objectForKey:UIImagePickerControllerEditedImage];
   [_imagePickerController dismissViewControllerAnimated:YES completion:nil];
-
+  // The method dismissViewControllerAnimated does not immediately prevent further
+  // didFinishPickingMediaWithInfo invocations. A nil check is necessary to prevent below code to
+  // be unwantly executed multiple times and cause a crash.
+  if (!_result) {
+    return;
+  }
   if (videoURL != nil) {
     NSData *data = [NSData dataWithContentsOfURL:videoURL];
     NSString *guid = [[NSProcessInfo processInfo] globallyUniqueString];

@@ -2,7 +2,7 @@ package io.flutter.plugins.firebasemlvision;
 
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.ml.vision.FirebaseVision;
@@ -120,18 +120,18 @@ public class TextRecognizer implements Detector {
       String text) {
 
     if (boundingBox != null) {
-      addTo.put("left", boundingBox.left);
-      addTo.put("top", boundingBox.top);
-      addTo.put("width", boundingBox.width());
-      addTo.put("height", boundingBox.height());
+      addTo.put("left", (double) boundingBox.left);
+      addTo.put("top", (double) boundingBox.top);
+      addTo.put("width", (double) boundingBox.width());
+      addTo.put("height", (double) boundingBox.height());
     }
 
     addTo.put("confidence", confidence == null ? null : (double) confidence);
 
-    List<int[]> points = new ArrayList<>();
+    List<double[]> points = new ArrayList<>();
     if (cornerPoints != null) {
       for (Point point : cornerPoints) {
-        points.add(new int[] {point.x, point.y});
+        points.add(new double[] {(double) point.x, (double) point.y});
       }
     }
     addTo.put("points", points);

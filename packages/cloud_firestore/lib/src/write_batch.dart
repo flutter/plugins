@@ -12,6 +12,9 @@ part of cloud_firestore;
 /// nor can it be committed again.
 class WriteBatch {
   WriteBatch._(this._firestore)
+      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+      // https://github.com/flutter/flutter/issues/26431
+      // ignore: strong_mode_implicit_dynamic_method
       : _handle = Firestore.channel.invokeMethod(
             'WriteBatch#create', <String, dynamic>{'app': _firestore.app.name});
 
@@ -29,6 +32,9 @@ class WriteBatch {
     if (!_committed) {
       _committed = true;
       await Future.wait<dynamic>(_actions);
+      // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+      // https://github.com/flutter/flutter/issues/26431
+      // ignore: strong_mode_implicit_dynamic_method
       await Firestore.channel.invokeMethod(
           'WriteBatch#commit', <String, dynamic>{'handle': await _handle});
     } else {
@@ -41,6 +47,9 @@ class WriteBatch {
     if (!_committed) {
       _handle.then((dynamic handle) {
         _actions.add(
+          // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+          // https://github.com/flutter/flutter/issues/26431
+          // ignore: strong_mode_implicit_dynamic_method
           Firestore.channel.invokeMethod(
             'WriteBatch#delete',
             <String, dynamic>{
@@ -68,6 +77,9 @@ class WriteBatch {
     if (!_committed) {
       _handle.then((dynamic handle) {
         _actions.add(
+          // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+          // https://github.com/flutter/flutter/issues/26431
+          // ignore: strong_mode_implicit_dynamic_method
           Firestore.channel.invokeMethod(
             'WriteBatch#setData',
             <String, dynamic>{
@@ -93,6 +105,9 @@ class WriteBatch {
     if (!_committed) {
       _handle.then((dynamic handle) {
         _actions.add(
+          // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
+          // https://github.com/flutter/flutter/issues/26431
+          // ignore: strong_mode_implicit_dynamic_method
           Firestore.channel.invokeMethod(
             'WriteBatch#updateData',
             <String, dynamic>{
