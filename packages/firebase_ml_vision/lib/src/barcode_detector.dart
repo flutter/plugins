@@ -170,21 +170,25 @@ class BarcodeFormat {
 
 /// Detector for performing barcode scanning on an input image.
 ///
-/// A barcode detector is created via barcodeDetector() in [FirebaseVision]:
+/// A barcode detector is created via
+/// `barcodeDetector([BarcodeDetectorOptions options])` in [FirebaseVision]:
 ///
 /// ```dart
-/// BarcodeDetector barcodeDetector = FirebaseVision.instance.barcodeDetector();
+/// final FirebaseVisionImage image =
+///     FirebaseVisionImage.fromFilePath('path/to/file');
+///
+/// final BarcodeDetector barcodeDetector =
+///     FirebaseVision.instance.barcodeDetector();
+///
+/// final List<Barcode> barcodes = await barcodeDetector.detectInImage(image);
 /// ```
-class BarcodeDetector extends FirebaseVisionDetector {
+class BarcodeDetector {
   BarcodeDetector._(this.options) : assert(options != null);
 
   /// The options for configuring this detector.
   final BarcodeDetectorOptions options;
 
   /// Detects barcodes in the input image.
-  ///
-  /// The barcode scanning is performed asynchronously.
-  @override
   Future<List<Barcode>> detectInImage(FirebaseVisionImage visionImage) async {
     // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
     // https://github.com/flutter/flutter/issues/26431
@@ -227,7 +231,7 @@ class BarcodeDetectorOptions {
 class Barcode {
   Barcode._(Map<dynamic, dynamic> _data)
       : boundingBox = _data['left'] != null
-            ? Rectangle<int>(
+            ? Rect.fromLTWH(
                 _data['left'],
                 _data['top'],
                 _data['width'],
@@ -240,7 +244,7 @@ class Barcode {
         _cornerPoints = _data['points'] == null
             ? null
             : _data['points']
-                .map<Point<int>>((dynamic item) => Point<int>(
+                .map<Offset>((dynamic item) => Offset(
                       item[0],
                       item[1],
                     ))
@@ -264,12 +268,12 @@ class Barcode {
             ? null
             : BarcodeDriverLicense._(_data['driverLicense']);
 
-  final List<Point<int>> _cornerPoints;
+  final List<Offset> _cornerPoints;
 
   /// The bounding rectangle of the detected barcode.
   ///
   /// Could be null if the bounding rectangle can not be determined.
-  final Rectangle<int> boundingBox;
+  final Rect boundingBox;
 
   /// Barcode value as it was encoded in the barcode.
   ///
@@ -297,7 +301,7 @@ class Barcode {
   /// The four corner points in clockwise direction starting with top-left.
   ///
   /// Due to the possible perspective distortions, this is not necessarily a rectangle.
-  List<Point<int>> get cornerPoints => List<Point<int>>.from(_cornerPoints);
+  List<Offset> get cornerPoints => List<Offset>.from(_cornerPoints);
 
   /// The format type of the barcode value.
   ///

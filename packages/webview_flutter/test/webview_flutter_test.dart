@@ -9,17 +9,24 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
+typedef void VoidCallback();
+
 void main() {
   final _FakePlatformViewsController fakePlatformViewsController =
       _FakePlatformViewsController();
 
+  final _FakeCookieManager _fakeCookieManager = _FakeCookieManager();
+
   setUpAll(() {
     SystemChannels.platform_views.setMockMethodCallHandler(
         fakePlatformViewsController.fakePlatformViewsMethodHandler);
+    SystemChannels.platform
+        .setMockMethodCallHandler(_fakeCookieManager.onMethodCall);
   });
 
   setUp(() {
     fakePlatformViewsController.reset();
+    _fakeCookieManager.reset();
   });
 
   testWidgets('Create WebView', (WidgetTester tester) async {
@@ -115,6 +122,24 @@ void main() {
     final bool canGoBackNoPageLoaded = await controller.canGoBack();
 
     expect(canGoBackNoPageLoaded, false);
+  });
+
+  testWidgets("Clear Cache", (WidgetTester tester) async {
+    WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+    expect(fakePlatformViewsController.lastCreatedView.hasCache, true);
+
+    await controller.clearCache();
+
+    expect(fakePlatformViewsController.lastCreatedView.hasCache, false);
   });
 
   testWidgets("Can't go back with no history", (WidgetTester tester) async {
@@ -353,6 +378,189 @@ void main() {
       throwsA(anything),
     );
   });
+
+  testWidgets('Cookies can be cleared once', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const WebView(
+        initialUrl: 'https://flutter.io',
+      ),
+    );
+    final CookieManager cookieManager = CookieManager();
+    final bool hasCookies = await cookieManager.clearCookies();
+    expect(hasCookies, true);
+  });
+
+  testWidgets('Second cookie clear does not have cookies',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const WebView(
+        initialUrl: 'https://flutter.io',
+      ),
+    );
+    final CookieManager cookieManager = CookieManager();
+    final bool hasCookies = await cookieManager.clearCookies();
+    expect(hasCookies, true);
+    final bool hasCookiesSecond = await cookieManager.clearCookies();
+    expect(hasCookiesSecond, false);
+  });
+
+  testWidgets('Initial JavaScript channels', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://youtube.com',
+        javascriptChannels: <JavascriptChannel>[
+          JavascriptChannel(
+              name: 'Tts', onMessageReceived: (JavascriptMessage msg) {}),
+          JavascriptChannel(
+              name: 'Alarm', onMessageReceived: (JavascriptMessage msg) {}),
+        ].toSet(),
+      ),
+    );
+
+    final FakePlatformWebView platformWebView =
+        fakePlatformViewsController.lastCreatedView;
+
+    expect(platformWebView.javascriptChannelNames,
+        unorderedEquals(<String>['Tts', 'Alarm']));
+  });
+
+  test('Only valid JavaScript channel names are allowed', () {
+    final JavascriptMessageHandler noOp = (JavascriptMessage msg) {};
+    JavascriptChannel(name: 'Tts1', onMessageReceived: noOp);
+    JavascriptChannel(name: '_Alarm', onMessageReceived: noOp);
+
+    VoidCallback createChannel(String name) {
+      return () {
+        JavascriptChannel(name: name, onMessageReceived: noOp);
+      };
+    }
+
+    expect(createChannel('1Alarm'), throwsAssertionError);
+    expect(createChannel('foo.bar'), throwsAssertionError);
+    expect(createChannel(''), throwsAssertionError);
+  });
+
+  testWidgets('Unique JavaScript channel names are required',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://youtube.com',
+        javascriptChannels: <JavascriptChannel>[
+          JavascriptChannel(
+              name: 'Alarm', onMessageReceived: (JavascriptMessage msg) {}),
+          JavascriptChannel(
+              name: 'Alarm', onMessageReceived: (JavascriptMessage msg) {}),
+        ].toSet(),
+      ),
+    );
+    expect(tester.takeException(), isNot(null));
+  });
+
+  testWidgets('JavaScript channels update', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://youtube.com',
+        javascriptChannels: <JavascriptChannel>[
+          JavascriptChannel(
+              name: 'Tts', onMessageReceived: (JavascriptMessage msg) {}),
+          JavascriptChannel(
+              name: 'Alarm', onMessageReceived: (JavascriptMessage msg) {}),
+        ].toSet(),
+      ),
+    );
+
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://youtube.com',
+        javascriptChannels: <JavascriptChannel>[
+          JavascriptChannel(
+              name: 'Tts', onMessageReceived: (JavascriptMessage msg) {}),
+          JavascriptChannel(
+              name: 'Alarm2', onMessageReceived: (JavascriptMessage msg) {}),
+          JavascriptChannel(
+              name: 'Alarm3', onMessageReceived: (JavascriptMessage msg) {}),
+        ].toSet(),
+      ),
+    );
+
+    final FakePlatformWebView platformWebView =
+        fakePlatformViewsController.lastCreatedView;
+
+    expect(platformWebView.javascriptChannelNames,
+        unorderedEquals(<String>['Tts', 'Alarm2', 'Alarm3']));
+  });
+
+  testWidgets('Remove all JavaScript channels and then add',
+      (WidgetTester tester) async {
+    // This covers a specific bug we had where after updating javascriptChannels to null,
+    // updating it again with a subset of the previously registered channels fails as the
+    // widget's cache of current channel wasn't properly updated when updating javascriptChannels to
+    // null.
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://youtube.com',
+        javascriptChannels: <JavascriptChannel>[
+          JavascriptChannel(
+              name: 'Tts', onMessageReceived: (JavascriptMessage msg) {}),
+        ].toSet(),
+      ),
+    );
+
+    await tester.pumpWidget(
+      const WebView(
+        initialUrl: 'https://youtube.com',
+      ),
+    );
+
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://youtube.com',
+        javascriptChannels: <JavascriptChannel>[
+          JavascriptChannel(
+              name: 'Tts', onMessageReceived: (JavascriptMessage msg) {}),
+        ].toSet(),
+      ),
+    );
+
+    final FakePlatformWebView platformWebView =
+        fakePlatformViewsController.lastCreatedView;
+
+    expect(platformWebView.javascriptChannelNames,
+        unorderedEquals(<String>['Tts']));
+  });
+
+  testWidgets('JavaScript channel messages', (WidgetTester tester) async {
+    final List<String> ttsMessagesReceived = <String>[];
+    final List<String> alarmMessagesReceived = <String>[];
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://youtube.com',
+        javascriptChannels: <JavascriptChannel>[
+          JavascriptChannel(
+              name: 'Tts',
+              onMessageReceived: (JavascriptMessage msg) {
+                ttsMessagesReceived.add(msg.message);
+              }),
+          JavascriptChannel(
+              name: 'Alarm',
+              onMessageReceived: (JavascriptMessage msg) {
+                alarmMessagesReceived.add(msg.message);
+              }),
+        ].toSet(),
+      ),
+    );
+
+    final FakePlatformWebView platformWebView =
+        fakePlatformViewsController.lastCreatedView;
+
+    expect(ttsMessagesReceived, isEmpty);
+    expect(alarmMessagesReceived, isEmpty);
+
+    platformWebView.fakeJavascriptPostMessage('Tts', 'Hello');
+    platformWebView.fakeJavascriptPostMessage('Tts', 'World');
+
+    expect(ttsMessagesReceived, <String>['Hello', 'World']);
+  });
 }
 
 class FakePlatformWebView {
@@ -365,6 +573,10 @@ class FakePlatformWebView {
       }
       javascriptMode = JavascriptMode.values[params['settings']['jsMode']];
     }
+    if (params.containsKey('javascriptChannelNames')) {
+      javascriptChannelNames =
+          List<String>.from(params['javascriptChannelNames']);
+    }
     channel = MethodChannel(
         'plugins.flutter.io/webview_$id', const StandardMethodCodec());
     channel.setMockMethodCallHandler(onMethodCall);
@@ -375,9 +587,11 @@ class FakePlatformWebView {
   List<String> history = <String>[];
   int currentPosition = -1;
   int amountOfReloadsOnCurrentUrl = 0;
+  bool hasCache = true;
 
   String get currentUrl => history.isEmpty ? null : history[currentPosition];
   JavascriptMode javascriptMode;
+  List<String> javascriptChannelNames;
 
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
@@ -416,8 +630,33 @@ class FakePlatformWebView {
         break;
       case 'evaluateJavascript':
         return Future<dynamic>.value(call.arguments);
+        break;
+      case 'addJavascriptChannels':
+        final List<String> channelNames = List<String>.from(call.arguments);
+        javascriptChannelNames.addAll(channelNames);
+        break;
+      case 'removeJavascriptChannels':
+        final List<String> channelNames = List<String>.from(call.arguments);
+        javascriptChannelNames
+            .removeWhere((String channel) => channelNames.contains(channel));
+        break;
+      case 'clearCache':
+        hasCache = false;
+        return Future<void>.sync(() {});
     }
     return Future<void>.sync(() {});
+  }
+
+  void fakeJavascriptPostMessage(String jsChannel, String message) {
+    final StandardMethodCodec codec = const StandardMethodCodec();
+    final Map<String, dynamic> arguments = <String, dynamic>{
+      'channel': jsChannel,
+      'message': message
+    };
+    final ByteData data = codec
+        .encodeMethodCall(MethodCall('javascriptChannelMessage', arguments));
+    BinaryMessages.handlePlatformMessage(
+        channel.name, data, (ByteData data) {});
   }
 }
 
@@ -451,4 +690,36 @@ Map<dynamic, dynamic> _decodeParams(Uint8List paramsMessage) {
     paramsMessage.lengthInBytes,
   );
   return const StandardMessageCodec().decodeMessage(messageBytes);
+}
+
+class _FakeCookieManager {
+  _FakeCookieManager() {
+    final MethodChannel channel = const MethodChannel(
+      'plugins.flutter.io/cookie_manager',
+      StandardMethodCodec(),
+    );
+    channel.setMockMethodCallHandler(onMethodCall);
+  }
+
+  bool hasCookies = true;
+
+  Future<bool> onMethodCall(MethodCall call) {
+    switch (call.method) {
+      case 'clearCookies':
+        bool hadCookies = false;
+        if (hasCookies) {
+          hadCookies = true;
+          hasCookies = false;
+        }
+        return Future<bool>.sync(() {
+          return hadCookies;
+        });
+        break;
+    }
+    return Future<bool>.sync(() {});
+  }
+
+  void reset() {
+    hasCookies = true;
+  }
 }

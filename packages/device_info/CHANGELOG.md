@@ -1,5 +1,10 @@
 ## 0.4.0
 
+* Log a more detailed warning at build time about the previous AndroidX
+  migration.
+
+## 0.4.0
+
 * **Breaking change**. Migrate from the deprecated original Android Support
   Library to AndroidX. This shouldn't result in any functional changes, but it
   requires any Android apps using this plugin to [also

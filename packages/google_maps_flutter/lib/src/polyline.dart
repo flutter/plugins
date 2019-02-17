@@ -20,8 +20,7 @@ class Polyline {
 /// Configuration options for [Polyline] instances.
 ///
 /// When used to change configuration, null values will be interpreted as
-/// "do not change this configuration option"; except for the pattern, a null pattern will
-/// set the stroke pattern to the default (solid).
+/// "do not change this configuration option".
 class PolylineOptions {
   const PolylineOptions({
     this.consumeTapEvents,
@@ -54,12 +53,12 @@ class PolylineOptions {
 
   /// The joint type defines the shape to be used when joining adjacent line segments at all vertices of the
   /// polyline except the start and end vertices. See JointType for supported joint types. The default value is
-  /// DEFAULT.
+  /// mitered.
   final int jointType;
 
   /// The stroke pattern for the polyline.
   ///
-  /// Solid (default, represented by null) or a sequence of PatternItem objects to be repeated along the line.
+  /// Solid or a sequence of PatternItem objects to be repeated along the line.
   /// Available PatternItem types: Gap (defined by gap length in pixels), Dash (defined by line width and dash
   /// length in pixels) and Dot (circular, centered on the line, diameter defined by line width in pixels).
   final List<PatternItem> pattern;
@@ -102,8 +101,8 @@ class PolylineOptions {
     color: 0xff000000,
     endCap: Cap.buttCap,
     geodesic: false,
-    jointType: 0,
-    pattern: null,
+    jointType: JointType.mitered,
+    pattern: <PatternItem>[],
     points: null,
     startCap: Cap.buttCap,
     visible: true,
@@ -125,7 +124,7 @@ class PolylineOptions {
       endCap: changes.endCap ?? endCap,
       geodesic: changes.geodesic ?? geodesic,
       jointType: changes.jointType ?? jointType,
-      pattern: changes.pattern,
+      pattern: changes.pattern ?? pattern,
       points: changes.points ?? points,
       startCap: changes.startCap ?? startCap,
       visible: changes.visible ?? visible,
@@ -157,7 +156,9 @@ class PolylineOptions {
       json['points'] = _pointsToJson();
     }
 
-    json['pattern'] = _patternToJson();
+    if (pattern != null) {
+      json['pattern'] = _patternToJson();
+    }
 
     return json;
   }
@@ -171,10 +172,6 @@ class PolylineOptions {
   }
 
   dynamic _patternToJson() {
-    if (pattern == null) {
-      return null;
-    }
-
     final List<dynamic> result = <dynamic>[];
     for (final PatternItem patternItem in pattern) {
       if (patternItem != null) {
