@@ -8,9 +8,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.RectF;
-import android.media.ThumbnailUtils;
-import android.util.Size;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
